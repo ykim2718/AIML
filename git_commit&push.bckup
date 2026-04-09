@@ -39,15 +39,7 @@ echo Current branch: %BRANCH%
 REM === 4. Stage all changes ===
 git add .
 
-REM === 5. Stage README.md ===
-if exist "README.md" (
-    echo README.md found. Staging README.md...
-    git add README.md
-) else (
-    echo README.md not found. Skipping README stage.
-)
-
-REM ===6. Check if there are staged changes ===
+REM === 5. Check if there are staged changes ===
 git diff --cached --quiet
 if %errorlevel%==0 (
     echo No changes to commit.
@@ -55,14 +47,14 @@ if %errorlevel%==0 (
     git commit -m "Auto commit at %NOW%"
 )
 
-REM === 7. Add remote origin only if it does not exist ===
+REM === 6. Add remote origin only if it does not exist ===
 git remote | find "origin" >nul
 if %errorlevel% neq 0 (
     echo Adding remote origin...
     git remote add origin https://github.com/USERNAME/REPO.git
 )
 
-REM === 8. Push to remote ===
+REM === 7. Push to remote ===
 echo Pushing to origin %BRANCH%...
 git push -u origin %BRANCH%
 
