@@ -1,176 +1,176 @@
 # 📊 CCC & Bland-Altman Analysis Guide
 
-> **Concordance Correlation Coefficient (CCC)** + **Bland-Altman Plot** 완전 가이드  
-> 두 측정 방법의 일치도 평가를 위한 통계 분석 도구 모음
+> A comprehensive guide to **Concordance Correlation Coefficient (CCC)** + **Bland-Altman Plot**  
+> A statistical toolkit for evaluating agreement between two measurement methods
 
 ---
 
-## 목차
+## Table of Contents
 
-- [CCC란 무엇인가](#ccc란-무엇인가)
-- [CCC 구성 요소](#ccc-구성-요소)
-- [해석 기준](#해석-기준)
+- [What is CCC?](#what-is-ccc)
+- [CCC Components](#ccc-components)
+- [Interpretation Benchmarks](#interpretation-benchmarks)
 - [Bland-Altman Plot](#bland-altman-plot)
-- [CCC + Bland-Altman 조합 분석](#ccc--bland-altman-조합-분석)
-- [데이터 집중 문제와 대안 지표](#데이터-집중-문제와-대안-지표)
-- [AI/ML에서의 활용](#aiml에서의-활용)
-- [Python 코드 예시](#python-코드-예시)
-- [지표 선택 가이드](#지표-선택-가이드)
+- [Combined CCC + Bland-Altman Analysis](#combined-ccc--bland-altman-analysis)
+- [Data Concentration Problem & Alternative Metrics](#data-concentration-problem--alternative-metrics)
+- [Applications in AI/ML](#applications-in-aiml)
+- [Python Code Examples](#python-code-examples)
+- [Metric Selection Guide](#metric-selection-guide)
 
 ---
 
-## CCC란 무엇인가
+## What is CCC?
 
-**Lin's Concordance Correlation Coefficient** (1989, Lawrence Lin)는 두 측정 방법이 얼마나 일치하는지를 평가하는 지표입니다.
+**Lin's Concordance Correlation Coefficient** (Lawrence Lin, 1989) measures how well two measurement methods agree with each other.
 
-단순 Pearson r이 "선형 관계의 강도"만 측정하는 것과 달리, CCC는 **정확도(accuracy) × 정밀도(precision)** 를 동시에 측정합니다.
+Unlike Pearson r, which only measures the strength of a linear relationship, CCC simultaneously captures both **accuracy** and **precision**.
 
-### 수식
+### Formula
 
 $$\rho_c = \frac{2\sigma_{xy}}{\sigma_x^2 + \sigma_y^2 + (\mu_x - \mu_y)^2} = r \times C_b$$
 
-| 기호 | 의미 |
-|------|------|
+| Symbol | Meaning |
+|--------|---------|
 | $\rho_c$ | Concordance Correlation Coefficient |
-| $r$ | Pearson 상관계수 (정밀도) |
-| $C_b$ | 편향 보정 계수 (정확도, 0~1) |
-| $\mu_x, \mu_y$ | 두 방법의 평균 |
-| $\sigma_x^2, \sigma_y^2$ | 두 방법의 분산 |
-| $\sigma_{xy}$ | 공분산 |
+| $r$ | Pearson correlation coefficient (precision) |
+| $C_b$ | Bias correction factor (accuracy, range 0–1) |
+| $\mu_x, \mu_y$ | Means of the two methods |
+| $\sigma_x^2, \sigma_y^2$ | Variances of the two methods |
+| $\sigma_{xy}$ | Covariance |
 
-### Pearson r과의 핵심 차이
+### Key Difference from Pearson r
 
 ```
-r = 0.98 이어도 CCC = 0.73 이 될 수 있다 — 체계적 편향이 있을 때
+r = 0.98 can coexist with CCC = 0.73 — when systematic bias is present
 ```
 
-- **r**: y=x 가 아닌 임의의 직선을 기준으로 선형 관계만 측정
-- **CCC**: y=x (완벽한 일치선) 으로부터의 이탈을 측정
+- **r**: Measures only the linear relationship against *any* straight line
+- **CCC**: Measures deviation from the perfect concordance line y=x
 
 ---
 
-## CCC 구성 요소
+## CCC Components
 
 ```
 CCC (ρc)
-├── Pearson r        ← 정밀도 (Precision): 데이터가 직선을 따르는가
-└── Cb (편향 보정)   ← 정확도 (Accuracy): 그 직선이 y=x 인가
-    ├── 평균 편향 (μx − μy)
-    └── 분산 편향 (σx vs σy)
+├── Pearson r        ← Precision: how tightly data follows a straight line
+└── Cb (bias factor) ← Accuracy: whether that line is y=x
+    ├── Location shift (μx − μy)
+    └── Scale shift    (σx vs σy)
 ```
 
-- `Cb = 1.0` → 완벽한 정확도 (회귀선이 y=x와 일치)
-- `Cb < 1.0` → 편향 존재 (평균 차이 또는 스케일 차이)
+- `Cb = 1.0` → Perfect accuracy (regression line coincides with y=x)
+- `Cb < 1.0` → Bias present (mean difference or scale difference)
 
 ---
 
-## 해석 기준
+## Interpretation Benchmarks
 
-| CCC 값 | 해석 (McBride 2005) |
-|--------|---------------------|
+| CCC value | Strength of agreement (McBride 2005) |
+|-----------|--------------------------------------|
 | > 0.99 | Almost perfect |
-| 0.95 ~ 0.99 | Substantial |
-| 0.90 ~ 0.95 | Moderate |
+| 0.95 – 0.99 | Substantial |
+| 0.90 – 0.95 | Moderate |
 | < 0.90 | Poor |
 
-### 5가지 편향 시나리오
+### Five Bias Scenarios
 
-| 시나리오 | CCC | Pearson r | 원인 |
-|----------|-----|-----------|------|
-| 좋은 일치 | 높음 | 높음 | — |
-| 평균 편향 | **낮음** | 높음 ⚠ | 방법B가 일정하게 높거나 낮음 |
-| 스케일 편향 | **낮음** | 높음 ⚠ | 방법B의 분산이 다름 |
-| 넓은 산포 | 낮음 | 낮음 | 측정 정밀도 부족 |
-| 비례 편향 | 중간 | 높음 ⚠ | 큰 값일수록 오차 증가 |
+| Scenario | CCC | Pearson r | Root cause |
+|----------|-----|-----------|------------|
+| Good agreement | High | High | — |
+| Mean shift bias | **Low** | High ⚠ | Method B consistently higher or lower |
+| Scale bias | **Low** | High ⚠ | Method B has different variance |
+| Wide scatter | Low | Low | Insufficient measurement precision |
+| Proportional bias | Medium | High ⚠ | Error grows with magnitude |
 
-> ⚠ r만 보고 "일치한다"고 판단하는 것은 잘못된 결론으로 이어질 수 있습니다.
+> ⚠ Concluding "agreement" based on r alone can lead to incorrect results.
 
 ---
 
 ## Bland-Altman Plot
 
-1986년 Bland & Altman이 제안한 방법 비교의 표준 시각화입니다.
+The standard visualization for method comparison studies, proposed by Bland & Altman (1986).
 
-- **X축**: 두 측정값의 평균 `(A + B) / 2`
-- **Y축**: 두 측정값의 차이 `B − A`
+- **X-axis**: Mean of the two measurements `(A + B) / 2`
+- **Y-axis**: Difference between the two measurements `B − A`
 
-### 핵심 지표
+### Key Statistics
 
-| 지표 | 계산 | 의미 |
-|------|------|------|
-| Mean Difference (MD) | `mean(B − A)` | 체계적 편향. 0이면 이상적 |
-| LoA (상한) | `MD + 1.96 × SD` | 95% 차이값의 상한 |
-| LoA (하한) | `MD − 1.96 × SD` | 95% 차이값의 하한 |
-| LoA 폭 | `3.92 × SD` | 좁을수록 두 방법이 일치 |
+| Statistic | Formula | Meaning |
+|-----------|---------|---------|
+| Mean Difference (MD) | `mean(B − A)` | Systematic bias; ideally 0 |
+| Upper LoA | `MD + 1.96 × SD` | Upper bound of 95% of differences |
+| Lower LoA | `MD − 1.96 × SD` | Lower bound of 95% of differences |
+| LoA width | `3.92 × SD` | Narrower = better agreement |
 
-### 비례 편향 감지
+### Detecting Proportional Bias
 
-Bland-Altman 플롯에서 점들이 **좌→우로 경사진 패턴**을 보이면 비례 편향(proportional bias)이 존재합니다. 이는 CCC 플롯만으로는 감지하기 어렵습니다.
-
----
-
-## CCC + Bland-Altman 조합 분석
-
-두 플롯은 서로 다른 각도에서 같은 문제를 봅니다.
-
-```
-CCC 플롯         → "전반적으로 얼마나 일치하나" (요약 숫자)
-Bland-Altman     → "왜, 어떻게 안 일치하나"   (편향의 성질 진단)
-```
-
-| 패턴 | CCC 플롯에서 | Bland-Altman에서 | 진단 |
-|------|-------------|-----------------|------|
-| 좋은 일치 | 점들이 y=x 위 | MD≈0, 좁은 LoA | 두 방법 교체 가능 |
-| 평균 편향 | y=x에서 평행 이동 | MD ≠ 0 (일정) | 보정(calibration) 필요 |
-| 비례 편향 | 기울기 차이 | 우상향 패턴 | 구간별 보정 필요 |
-| 넓은 산포 | 넓게 퍼짐 | 넓은 LoA | 측정 정밀도 개선 필요 |
+When points in the Bland-Altman plot show a **sloping pattern from left to right**, proportional bias is present — errors increase as the measured value grows. This pattern is difficult to detect from the concordance plot alone.
 
 ---
 
-## 데이터 집중 문제와 대안 지표
+## Combined CCC + Bland-Altman Analysis
 
-### 문제: 좁은 범위에 집중된 데이터
+The two plots view the same problem from different angles.
 
-데이터가 좁은 범위에 뭉쳐 있으면 CCC/r이 **분산 부족으로 불안정**해집니다.
+```
+Concordance plot  → "How well do the methods agree overall?" (summary number)
+Bland-Altman      → "Why and how do they disagree?"         (bias diagnosis)
+```
+
+| Pattern | Concordance plot | Bland-Altman | Diagnosis |
+|---------|-----------------|--------------|-----------|
+| Good agreement | Points lie on y=x | MD≈0, narrow LoA | Methods interchangeable |
+| Mean shift | Parallel offset from y=x | MD ≠ 0 (constant) | Calibration needed |
+| Proportional bias | Different slope | Upward-sloping pattern | Range-specific correction needed |
+| Wide scatter | Widely spread | Wide LoA | Measurement precision must improve |
+
+---
+
+## Data Concentration Problem & Alternative Metrics
+
+### Problem: Data Clustered in a Narrow Range
+
+When data is tightly clustered, CCC/r becomes **unstable due to near-zero variance**.
 
 ```python
-# 범위가 좁으면 → 분모가 0에 수렴 → CCC 불안정
+# Narrow range → denominator approaches 0 → CCC unstable
 ccc = 2 * cov / (var_x + var_y + (mean_x - mean_y)**2)
-#                ↑ 이 값이 거의 0이 됨
+#                ↑ this value approaches 0
 ```
 
-또한 **두 군집** 데이터는 반대 문제를 일으킵니다: CCC/r이 실제보다 인위적으로 높게 나타납니다 (레인지 효과).
+The opposite problem arises with **two-cluster data**: CCC/r appears artificially inflated due to the range effect — even when within-cluster agreement is poor.
 
-### 대안 지표 (범위 무관)
+### Alternative Metrics (Range-Independent)
 
-| 지표 | 수식 | 특징 |
-|------|------|------|
-| **RMSD₁:₁** | `sqrt(mean((y-x)²)) / sqrt(2)` | 1:1선까지 수직 거리, 정규 오차에 최적 |
-| **MAD₁:₁** | `mean(|y - x|)` | 이상값에 강건, 단위 = 측정 단위 |
-| **TDI (90%)** | 90번째 백분위수의 `|y - x|` | "90%가 이 오차 이내"로 해석 |
-| **CP** | `count(|y-x| ≤ δ) / n × 100` | 허용 기준 δ 대비 통과율 (%) |
+| Metric | Formula | Characteristics |
+|--------|---------|-----------------|
+| **RMSD₁:₁** | `sqrt(mean((y−x)²)) / sqrt(2)` | Perpendicular distance to 1:1 line; optimal for normal errors |
+| **MAD₁:₁** | `mean(\|y − x\|)` | Robust to outliers; same units as measurements |
+| **TDI (90%)** | 90th percentile of `\|y − x\|` | "90% of differences fall within this value" |
+| **CP** | `count(\|y−x\| ≤ δ) / n × 100` | Pass rate (%) against a pre-defined tolerance δ |
 
-### 진단 체크리스트
+### Diagnostic Checklist
 
 ```
-□ Concordance plot에서 데이터가 y=x 선 위에 넓게 퍼져 있는가?
-□ Bland-Altman x축이 임상적으로 의미 있는 전 범위를 커버하는가?
-□ 데이터 범위(span) / LoA 폭 비율이 충분히 큰가?
-□ 두 군집이 혼합되어 레인지 효과가 발생하지 않는가?
+□ Are data points spread widely along y=x in the concordance plot?
+□ Does the Bland-Altman x-axis cover the full clinically relevant range?
+□ Is the data span / LoA width ratio sufficiently large?
+□ Are two clusters mixed, creating an artificial range effect?
 ```
 
-### 권장 조합
+### Recommended Combinations
 
-- 데이터 범위 충분 → **CCC + Bland-Altman**
-- 데이터 집중 / 범위 좁음 → **RMSD₁:₁ + TDI(90%) + CP**
+- Data spread over a wide range → **CCC + Bland-Altman**
+- Data concentrated / narrow range → **RMSD₁:₁ + TDI(90%) + CP**
 
 ---
 
-## AI/ML에서의 활용
+## Applications in AI/ML
 
-### 1. 회귀 모델 평가
+### 1. Regression Model Evaluation
 
-RMSE나 R²만으로는 모델 예측값의 체계적 편향을 감지하기 어렵습니다.
+RMSE or R² alone cannot detect systematic bias in model predictions.
 
 ```python
 from sklearn.metrics import make_scorer
@@ -181,26 +181,26 @@ def ccc_score(y_true, y_pred):
     cov = np.mean((y_true - mu_t) * (y_pred - mu_p))
     return 2 * cov / (var_t + var_p + (mu_t - mu_p)**2)
 
-# GridSearchCV의 최적화 목표로 CCC 사용
+# Use CCC as the optimization objective in GridSearchCV
 ccc_scorer = make_scorer(ccc_score, greater_is_better=True)
 grid = GridSearchCV(model, param_grid, scoring=ccc_scorer)
 ```
 
-### 2. 주요 적용 분야
+### 2. Key Application Domains
 
-| 분야 | 활용 |
-|------|------|
-| 의료 영상 AI | AI vs 전문의 병변 측정 일치도 (FDA 권장) |
-| 자연어 처리 | 자동 채점 vs human annotator 점수 일치도 |
-| 도메인 적응 | 소스 → 타겟 전이 후 예측 일관성 평가 |
-| 앙상블 모델 | 서브모델 간 일치도로 다양성 정량화 |
-| 생체신호 예측 | 혈압, 혈당, SpO₂ 예측의 임상 허용 오차 평가 |
+| Domain | Use case |
+|--------|----------|
+| Medical imaging AI | Agreement between AI and clinician measurements (FDA-recommended) |
+| Natural language processing | Automated scoring vs. human annotator agreement |
+| Domain adaptation | Prediction consistency after source → target transfer |
+| Ensemble models | Quantifying diversity via inter-model agreement |
+| Biosignal prediction | Clinical tolerance evaluation for blood pressure, glucose, SpO₂ |
 
 ---
 
-## Python 코드 예시
+## Python Code Examples
 
-### 기본 CCC 구현
+### Basic CCC Implementation
 
 ```python
 import numpy as np
@@ -231,7 +231,7 @@ def concordance_correlation_coefficient(y_true, y_pred):
     }
 ```
 
-### 신뢰구간 포함 (Fisher's Z + Bootstrap)
+### With Confidence Intervals (Fisher's Z + Bootstrap)
 
 ```python
 def ccc_with_ci(y_true, y_pred, n_boot=1000):
@@ -269,14 +269,14 @@ def ccc_with_ci(y_true, y_pred, n_boot=1000):
     }
 ```
 
-### 집중 데이터용 대안 지표
+### Alternative Metrics for Concentrated Data
 
 ```python
 def robust_agreement_metrics(y_true, y_pred, delta=5.0, tdi_pct=0.90):
     """
-    범위에 무관한 1:1선 이탈 측정 지표
-    - RMSD₁:₁ : 1:1선까지 수직 RMSD
-    - MAD₁:₁  : 평균 절대 편차
+    Range-independent metrics for deviation from the 1:1 line.
+    - RMSD_1_1 : perpendicular RMSD to the 1:1 line
+    - MAD_1_1  : mean absolute deviation from identity
     - TDI      : Total Deviation Index
     - CP       : Coverage Probability
     """
@@ -297,7 +297,7 @@ def robust_agreement_metrics(y_true, y_pred, delta=5.0, tdi_pct=0.90):
     }
 ```
 
-### CCC + Bland-Altman 통합 리포트
+### Full CCC + Bland-Altman Report
 
 ```python
 import matplotlib.pyplot as plt
@@ -319,10 +319,10 @@ def full_agreement_report(y_true, y_pred,
     loa_u  = md + 1.96 * sd
     loa_l  = md - 1.96 * sd
 
-    # 대안 지표
+    # Alternative metrics
     res_rob = robust_agreement_metrics(y_true, y_pred, delta=delta)
 
-    # 시각화
+    # Visualization
     fig, axes = plt.subplots(1, 2, figsize=(11, 5))
 
     # Concordance plot
@@ -364,56 +364,56 @@ def full_agreement_report(y_true, y_pred,
 
 ---
 
-## 지표 선택 가이드
+## Metric Selection Guide
 
 ```
-데이터가 넓은 범위에 고루 분포?
-├── YES → CCC + Bland-Altman (표준 조합)
-│         └── 비례 편향 의심 시 BA 플롯 경사 확인
-└── NO  → 데이터가 좁은 범위에 집중?
+Is data spread over a wide range?
+├── YES → CCC + Bland-Altman  (standard combination)
+│         └── Check BA plot slope if proportional bias is suspected
+└── NO  → Is data concentrated in a narrow range?
           ├── YES → RMSD₁:₁ + TDI(90%) + CP
-          │         (CCC/r은 신뢰 불가)
-          └── 두 군집 혼합?
-              └── YES → 군집별 분리 분석 후 각각 CCC 적용
-                        (전체 합산 CCC는 레인지 효과로 과대 추정)
+          │         (CCC/r cannot be trusted)
+          └── Are two clusters mixed?
+              └── YES → Analyze each cluster separately, then apply CCC
+                        (overall CCC is inflated by the range effect)
 ```
 
-### 최종 권장 보고 항목
+### Recommended Reporting Checklist
 
 ```python
 report = {
-    # 필수
-    'CCC':      ...,   # 전반적 일치도
-    'r':        ...,   # 정밀도
-    'Cb':       ...,   # 정확도 (편향 계수)
-    'CI_95':    ...,   # 신뢰구간
+    # Required
+    'CCC':      ...,   # overall agreement
+    'r':        ...,   # precision
+    'Cb':       ...,   # accuracy (bias correction factor)
+    'CI_95':    ...,   # confidence interval
 
     # Bland-Altman
-    'Bias_MD':  ...,   # 평균 편향
-    'LoA':      ...,   # Limits of Agreement
+    'Bias_MD':  ...,   # mean difference
+    'LoA':      ...,   # limits of agreement
 
-    # 집중 데이터 또는 임상 검증 시 추가
+    # Add for concentrated data or clinical validation
     'RMSD_1_1': ...,
     'TDI_90':   ...,
-    'CP':       ...,   # 허용 한계 δ 명시 필요
+    'CP':       ...,   # tolerance limit δ must be stated explicitly
 }
 ```
 
 ---
 
-## 참고 문헌
+## References
 
-- Lin, L.I. (1989). *A concordance correlation coefficient to evaluate reproducibility.* Biometrics, 45(1), 255-268.
-- Bland, J.M. & Altman, D.G. (1986). *Statistical methods for assessing agreement between two methods of clinical measurement.* Lancet, 327(8476), 307-310.
+- Lin, L.I. (1989). *A concordance correlation coefficient to evaluate reproducibility.* Biometrics, 45(1), 255–268.
+- Bland, J.M. & Altman, D.G. (1986). *Statistical methods for assessing agreement between two methods of clinical measurement.* Lancet, 327(8476), 307–310.
 - McBride, G.B. (2005). *A proposal for strength-of-agreement criteria for Lin's Concordance Correlation Coefficient.* NIWA Client Report.
 - Barnhart, H.X. et al. (2007). *Overview on assessing agreement with continuous measurements.* Journal of Biopharmaceutical Statistics.
 
 ---
 
-## 라이선스
+## License
 
 MIT License
 
 ---
 
-*이 가이드는 측정 방법 비교(Method Comparison Study)를 위한 통계 분석 레퍼런스입니다.*
+*This guide serves as a statistical reference for Method Comparison Studies.*
