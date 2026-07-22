@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 57
+rev. 58
 
 ## 1. Goal
 
@@ -109,7 +109,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. skill은 `descripti
 marketplace repository는 정해진 자리에 manifest file 두 개를 둔 일반 git repository이다. 빈 folder에서 손으로 만들 필요 없이, 이미 동작하는 repository를 Claude Code에 시켜 복사하는 것이 가장 쉽다.
 
 1. GitHub에서 빈 repository를 만든다.
-2. Claude Code session을 열고 지시한다: "`ykim2718/Claude-Configuration` 을 clone 해서 marketplace 이름, plugin 이름, owner를 내 것으로 바꾸고, 내 repository로 push 해줘."
+2. Claude Code session을 열고 지시한다:<br>"`ykim2718/Claude-Configuration` 을 clone 해서 marketplace 이름, plugin 이름, owner를 내 것으로 바꾸고, 내 repository로 push 해줘."
 3. 끝이다. 이후의 수정은 3.1절의 방식으로 반영된다.
 
 두 manifest의 실제 예시는 다음과 같다.
