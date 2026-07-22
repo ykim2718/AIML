@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 55
+rev. 56
 
 ## 1. Goal
 
@@ -319,6 +319,8 @@ WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치
 새 rule 묶음은 skill folder를 추가하는 것으로 끝난다. plugin manifest는 수정하지 않아도 된다.
 
 file 이름은 반드시 `SKILL.md`이며, folder 이름이 skill 이름이 된다. frontmatter의 `description`이 언제 이 skill을 load 할지 판단하는 근거이므로, 적용 시점을 분명히 적는다.
+
+사용자가 prompt에 `/<skill-name>` 을 입력하면 `description`의 판단과 무관하게 그 skill이 바로 load 된다.
 
 ```markdown
 ---
