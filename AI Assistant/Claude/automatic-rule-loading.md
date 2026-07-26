@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 66
+rev. 67
 
 ## 1. Goal
 
@@ -241,7 +241,7 @@ settings file은 여러 층으로 나뉘며, 우선순위는 `global settings < 
 
 OS 단위로 배포하는 managed settings file은 Desktop interface에만 도달하고 Web interface에는 적용되지 않는다.
 
-## 5. Update Timing
+## 5. Automatic Update
 
 ### 5.1 Session-Level Update
 
@@ -268,7 +268,7 @@ marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 
 
 ### 5.3 Manual Force Update
 
-autoUpdate는 session 시작 후 background에서 지연 실행되므로, push 직후에 연 새 session이 이전 cache를 load 할 수 있다. push 내용을 바로 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-installation) 를 본다.
+autoUpdate는 session 시작 후 background에서 지연 실행되므로, push 직후에 연 새 session이 이전 cache를 load 할 수 있다. push 내용을 바로 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli) 를 본다.
 
 ```bash
 claude plugin marketplace update <MARKETPLACE_NAME>
@@ -292,7 +292,7 @@ Show installed_plugins.json
 
 ### 6.2 Claude CLI
 
-Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-installation) 를 본다.
+Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli) 를 본다.
 
 ```
 claude plugin marketplace list
@@ -401,7 +401,9 @@ repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file�
 
 - **Working directory**: Claude Code를 실행한 folder이다. 이 folder가 곧 project가 되며, `.claude/` 와 CLAUDE.md도 이 위치를 기준으로 찾는다.
 
-## Appendix B. Claude CLI Installation
+## Appendix B. Claude CLI
+
+### B.1 CLI Installation
 
 Desktop app을 설치해도 `claude` CLI는 PATH에 들어오지 않는다. terminal에서 `claude` 명령을 쓰려면 별도로 설치한다.
 
@@ -412,14 +414,34 @@ Desktop app을 설치해도 `claude` CLI는 PATH에 들어오지 않는다. term
 
 WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치한다. 설치 후 terminal을 새로 열고 `claude --version` 으로 설치를 확인한다.
 
+### B.2 CLI Commands
+
+terminal에서 실행하는 plugin 관련 명령들이다.
+
+- **`claude plugin marketplace add <OWNER>/<REPO>`**: plugin marketplace를 등록한다.
+- **`claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: plugin을 설치한다.
+- **`claude plugin marketplace update <MARKETPLACE_NAME>`**: marketplace와 plugin을 수동으로 갱신한다.
+- **`claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 설치된 plugin을 수동으로 갱신한다.
+
+이 repository에 적용하는 예시는 다음과 같다.
+
+```bash
+claude plugin marketplace update claude-configuration
+claude plugin update yrocket-rules@claude-configuration
+```
+
 ## Appendix C. Prompt Command
 
 session의 prompt에 입력하는 명령들이다.
 
-- **`/plugin marketplace add <owner>/<repo>`**: plugin marketplace를 등록한다.
-- **`/plugin install <plugin-name>@<marketplace-name>`**: plugin을 설치한다.
-- **`/plugin marketplace update <marketplace-name>`**: marketplace와 plugin을 수동으로 갱신한다.
 - **`/<skill-name>`**: `description`의 판단과 무관하게 그 skill을 바로 load 한다.
+
+`/plugin` 명령이 prompt에서 동작하지 않으면, 아래처럼 CLI 실행을 지시하는 prompt를 입력한다.
+
+```
+claude plugin marketplace update claude-configuration 과
+claude plugin update yrocket-rules@claude-configuration 을 실행해줘.
+```
 
 ## Appendix D. Skill
 
