@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 65
+rev. 66
 
 ## 1. Goal
 
@@ -265,6 +265,17 @@ marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 
 | `[1]` 재조회 | 없다 | 없다 |
 
 따라서 rule을 push 한 뒤 열려 있는 session에서 prompt를 반복해도 새 내용은 들어오지 않는다. 두 interface 모두 새 session을 열어야 반영된다.
+
+### 5.3 Manual Force Update
+
+autoUpdate는 session 시작 후 background에서 지연 실행되므로, push 직후에 연 새 session이 이전 cache를 load 할 수 있다. push 내용을 바로 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-installation) 를 본다.
+
+```bash
+claude plugin marketplace update <MARKETPLACE_NAME>
+claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
+```
+
+갱신된 plugin은 현재 열려 있는 session에는 적용되지 않고, 다음 session부터 적용된다.
 
 ## 6. Verification
 
