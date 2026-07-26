@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 69
+rev. 70
 
 ## 1. Goal
 
@@ -415,7 +415,7 @@ Desktop app을 설치해도 `claude` CLI는 PATH에 들어오지 않는다. term
 | Environment | Command |
 |---|---|
 | Windows (PowerShell) | `# Windows shell`<br>`irm https://claude.ai/install.ps1 \| iex` |
-| macOS / Linux / WSL | `curl -fsSL https://claude.ai/install.sh \| bash` |
+| macOS / Linux / WSL | `# Bash`<br>`curl -fsSL https://claude.ai/install.sh \| bash` |
 
 WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치한다. 설치 후 terminal을 새로 열고 `claude --version` 으로 설치를 확인한다.
 
