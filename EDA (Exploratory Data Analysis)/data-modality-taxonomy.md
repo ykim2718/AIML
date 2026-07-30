@@ -1,10 +1,12 @@
-# Data Modality Taxonomy For General And Semiconductor Data
-rev. 3
+# Data Modality Taxonomy And Semiconductor Data
+rev. 4
 
 > Data modality is the classification that splits data by "in what form the information is represented".
 > This document first establishes a general taxonomy, then extends the axes to fit the semiconductor domain.
 
-## 1. General Taxonomy
+The word modality means the channel or form through which information is carried. In ordinary use it names a mode of sensing such as sight or hearing. In machine learning it names the kind of raw representation a dataset arrives in, such as text, image, waveform, or table, together with the tensor shape and the inductive bias that kind implies. A model is called unimodal when it consumes one such kind and multimodal when it consumes several. Modality therefore answers "what form is this data", which is a different question from "what does this data mean" or "where did it come from".
+
+## 1. General Data Taxonomy
 
 At the top level the data groups along two axes, structure and signal, and these two axes are orthogonal to each other.
 
@@ -62,7 +64,7 @@ Data Modality
 
 The same data groups differently depending on which axis you view it from. An image is unstructured by the structure axis and vision by the signal axis. Therefore, when using this taxonomy you must first pin down which axis you are splitting on.
 
-## 2. Scope And Limits
+### 1.5 Scope And Limits
 
 The structure axis applies to any data, so it covers essentially everything. The signal axis, in contrast, is an open list, so new entries must be added whenever a new domain arrives.
 
@@ -76,11 +78,11 @@ The following cases are distorted when they are forced into the existing eight s
 
 Real data also often occupies several slots at once. Therefore this taxonomy should be used as a tag set rather than an exclusive classification table.
 
-## 3. Semiconductor Taxonomy
+## 2. Semiconductor Taxonomy
 
 Semiconductor data is not covered by the general modality list alone. Which unit a measurement attaches to becomes the primary distinction, so one more axis for the entity hierarchy is added.
 
-### 3.1 Axis A — Entity Hierarchy
+### 2.1 Axis A — Entity Hierarchy
 
 ```text
 Fab -> Tool (Chamber) -> Lot -> Wafer -> Die/Site -> Device/Structure
@@ -95,7 +97,7 @@ Fab -> Tool (Chamber) -> Lot -> Wafer -> Die/Site -> Device/Structure
 | Die / Site | bin code, CD and overlay measurement points |
 | Device | I–V curve, TEM cross-section |
 
-### 3.2 Axis B — Modality
+### 2.2 Axis B — Modality
 
 | Modality | Actual data | Tensor shape |
 |----------|-------------|--------------|
@@ -111,7 +113,7 @@ Fab -> Tool (Chamber) -> Lot -> Wafer -> Die/Site -> Device/Structure
 | Graph / Relational | route flow, tool and lot traversal graph, netlist | node and edge |
 | Text | FA report, PM log, spec document | token sequence |
 
-### 3.3 Axis C — Lifecycle Stage
+### 2.3 Axis C — Lifecycle Stage
 
 This third axis is added when partitioning the problem definition.
 
@@ -128,7 +130,7 @@ Design -> Process -> Metrology -> Inspection -> Test -> Reliability
 | Test | WAT and PCM, sort bin map |
 | Reliability | burn-in, HTOL, FA report |
 
-### 3.4 Composite Patterns
+### 2.4 Composite Patterns
 
 Real analysis holds not on a single slot but on a combination.
 
@@ -140,7 +142,7 @@ Real analysis holds not on a single slot but on a combination.
 | Image with tabular | defect image with coordinates and layer context | ADC classification |
 | Layout with image | GDSII and SEM | hotspot detection |
 
-### 3.5 Tree View
+### 2.5 Tree View
 
 ```text
 Semiconductor Data
@@ -172,19 +174,19 @@ Semiconductor Data
 
 The key is to record together which entity level the data attaches to and what form it takes. Both values are written side by side, as in `wafer × spatial map` or `chamber × trace`.
 
-## 4. Case Study — Wafer Process Data
+## 3. Case Study — Wafer Process Data
 
 Wafers have a processing order, and each wafer carries a process time-series. This section examines whether calling such data a 3D time-series is correct.
 
-### 4.1 Verdict
+### 3.1 Verdict
 
 The name 3D time-series is not used. The tensor rank is indeed 3, but the label invites misunderstanding.
 
-### 4.2 Why Misleading
+### 3.2 Why Misleading
 
 By convention 3D denotes x, y, z spatial geometry. Point cloud and CT volume are the examples. The third axis of wafer process data, however, is not space but sensor channel or wafer index. When it is called 3D on shape alone, the listener takes it as spatial volume data.
 
-### 4.3 Two Time Axes
+### 3.3 Two Time Axes
 
 The key point of this data is that two time axes of different character overlap.
 
@@ -196,7 +198,7 @@ The key point of this data is that two time axes of different character overlap.
 
 Flattened into a tensor it is rank-3 as `[wafer, time, sensor]`, but in meaning it is a bundle of multivariate time-series with wafer-order drift laid on top.
 
-### 4.4 Correct Naming
+### 3.4 Correct Naming
 
 | Scope | Recommended name |
 |-------|------------------|
@@ -212,7 +214,7 @@ Wafer process data
 └── (optional) die map : spatial x-y         -> spatio-temporal
 ```
 
-### 4.5 Conclusion
+### 3.5 Conclusion
 
 For data without die spatial coordinates, the panel form of a multi-scale multivariate time-series is the most accurate name. The word 3D is reserved for when a spatial axis actually enters, as in a wafer map.
 
