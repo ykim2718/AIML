@@ -1,5 +1,5 @@
-# Data Modality Taxonomy
-rev. 2
+# Data Modality Taxonomy For General And Semiconductor Data
+rev. 3
 
 > Data modality is the classification that splits data by "in what form the information is represented".
 > This document first establishes a general taxonomy, then extends the axes to fit the semiconductor domain.
@@ -215,3 +215,62 @@ Wafer process data
 ### 4.5 Conclusion
 
 For data without die spatial coordinates, the panel form of a multi-scale multivariate time-series is the most accurate name. The word 3D is reserved for when a spatial axis actually enters, as in a wafer map.
+
+## Appendix A. Terminology
+
+The terms below appear in the body without being defined there. They are listed in alphabetical order.
+
+- **ADC** is Automatic Defect Classification, the automated sorting of inspection defect images into defect types.
+- **AFM** is the Atomic Force Microscope, a probe instrument that measures surface topography at nanometer scale.
+- **Burn-in** is a reliability screen that operates devices under elevated voltage and temperature to precipitate early failures.
+- **CD** is the Critical Dimension, the measured width of a patterned feature.
+- **Chamber** is the individual process module inside a tool where a wafer is actually processed.
+- **Chamber matching** is the task of confirming that chambers intended to be identical behave identically.
+- **CT volume** is a Computed Tomography reconstruction, a stack of slices forming a true x, y, z volume.
+- **C–V** is a capacitance versus voltage measurement used to characterize dielectric and interface properties.
+- **Die** is one individual chip on a wafer.
+- **Drift** is the slow shift of a tool or process response over time.
+- **Embedding** is a learned dense vector representation of an input.
+- **FA** is Failure Analysis, the investigation that determines the physical root cause of a failed device.
+- **Fab** is the fabrication plant, meaning the whole manufacturing line.
+- **FDC** is Fault Detection and Classification, the system that records equipment sensor traces and flags abnormal behavior.
+- **GDSII** is the standard binary format that stores mask layout as polygons.
+- **Genealogy** is the record of which tools, chambers, and routes a lot or wafer passed through.
+- **Hotspot** is a layout location predicted or observed to print incorrectly.
+- **HTOL** is High Temperature Operating Life, an accelerated reliability stress test.
+- **Interlock** is an equipment safety condition that blocks operation until it is cleared.
+- **IoT** is the Internet of Things, meaning networked devices that emit continuous sensor streams.
+- **I–V** is a current versus voltage measurement used to characterize device electrical behavior.
+- **Latent vector** is the internal representation a model produces in a compressed space.
+- **Lot** is the group of wafers, typically up to 25, that moves through the line together.
+- **Mask** is the patterned plate through which a layer is exposed onto the wafer.
+- **MES** is the Manufacturing Execution System, the system of record for lot movement and processing history.
+- **Metrology** is the measurement of dimensions and film properties on product wafers.
+- **Netlist** is the connectivity description of a circuit as devices and nets.
+- **OPC** is Optical Proximity Correction, the deliberate distortion of mask patterns to compensate for optical effects.
+- **Overlay** is the misalignment between a newly patterned layer and the layer beneath it.
+- **Panel** is, in statistics, data observed on many units repeatedly over time.
+- **PCM** is the Process Control Monitor, meaning test structures measured to monitor process health.
+- **PM** is Preventive Maintenance, the scheduled servicing of a tool.
+- **Queue time** is the waiting time of a lot between two process steps.
+- **Raster** is a regular grid of cells holding values, as opposed to vector geometry.
+- **Recipe** is the ordered set of process steps and their parameters that a tool executes.
+- **RF** is Radio Frequency, the power applied to sustain a plasma.
+- **Route** is the ordered sequence of process steps a product follows.
+- **SEM** is the Scanning Electron Microscope, an imaging instrument used for defect review and CD measurement.
+- **SIMS** is Secondary Ion Mass Spectrometry, a technique that measures elemental concentration versus depth.
+- **Site** is a designated measurement location on a wafer.
+- **SMILES** is the Simplified Molecular Input Line Entry System, a text notation for molecular structure.
+- **Sort bin map** is the wafer map recording the electrical test bin assigned to each die.
+- **Spectrogram** is a time versus frequency image of a signal.
+- **TEM** is the Transmission Electron Microscope, an instrument that images thin cross-sections at atomic scale.
+- **Tensor rank** is the number of axes of a tensor.
+- **Token sequence** is an ordered list of discrete symbols produced by splitting an input.
+- **Tool** is one piece of process equipment in the fab.
+- **Trace** is the time-ordered sensor signal recorded during a process step.
+- **Virtual metrology** is the prediction of a measurement value from equipment data instead of measuring it.
+- **VQA** is Visual Question Answering, a task that answers a text question about an image.
+- **Wafer** is the substrate disc on which dies are fabricated.
+- **WAT** is the Wafer Acceptance Test, the electrical test of process monitor structures after fabrication.
+- **WIP** is Work In Process, meaning the material currently in the line.
+- **Yield** is the fraction of dies that pass test.
