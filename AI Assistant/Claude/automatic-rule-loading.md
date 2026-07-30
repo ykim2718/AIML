@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 70
+rev. 71
 
 ## 1. Goal
 
@@ -10,7 +10,7 @@ rev. 70
 
 Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project는 settings file에 그 repository를 한 번 적어 두는 것으로 끝내는 방식이다. 그 뒤에는 두 가지가 저절로 이루어진다.
 
-1. plugin이 새 session 시작 시 최신 상태로 update 된다.
+1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [5.4](#54-session-start-hook) 의 hook이 이 역할을 맡는다.
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
@@ -197,7 +197,9 @@ project settings는 project 안의 `.claude/settings.json` 이다. 사용자의 
 }
 ```
 
-**`"autoUpdate": true` 가 automatic의 핵심이다.** 이 한 줄이 session 시작 시 marketplace와 plugin을 GitHub 최신 기준으로 자동으로 내려받게 한다. 나머지 field는 무엇을 받을지 가리킬 뿐이고, 저절로 갱신되게 만드는 것은 이 값이다.
+**`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
+
+⛔ **Desktop interface에서는 이 한 줄만으로 갱신되지 않는다.** Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심으므로 plugin 자동 갱신이 통째로 skip 된다. 자세한 내용과 대응은 [5.1](#51-session-level-update) 과 [5.4](#54-session-start-hook) 를 본다.
 
 settings file에 적지 않고 session에서 한 번만 설치할 수도 있다. prompt에 다음을 입력하면 각각 marketplace 등록과 plugin 설치가 일어난다. 단, `"autoUpdate": true` 와 `"yrocket-rules@claude-configuration": true` 는 수동으로 기입해야 한다.
 
@@ -225,7 +227,7 @@ machine 전체에 적용하려면 "project의 .claude/settings.json" 대신 "`~/
 |---|---|
 | `extraKnownMarketplaces` | marketplace의 이름과 source를 등록한다 |
 | `source.source` | source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다 |
-| `autoUpdate` | session 시작 시 marketplace와 plugin을 자동으로 갱신한다 |
+| `autoUpdate` | marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다 |
 | `enabledPlugins` | `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다 |
 
 field의 이름과 의미는 어느 settings file에 두든 동일하다.
@@ -247,13 +249,21 @@ OS 단위로 배포하는 managed settings file은 Desktop interface에만 도�
 
 ### 5.1 Session-Level Update
 
-`autoUpdate`를 `true`로 두면 Claude Code가 session 시작 시 `[1]`을 기준으로 사본을 갱신한다.
+`autoUpdate`를 `true`로 두면 Claude Code가 session 시작 시 `[1]`을 기준으로 사본을 갱신한다. 다만 Desktop interface에서는 이 갱신이 실행되지 않는다.
 
 | Aspect | Desktop interface | Web interface |
 |---|---|---|
-| 갱신 시점 | session 시작 | session 시작 |
-| `autoUpdate: true`의 역할 | 남아 있는 사본을 갱신한다 | 갱신할 이전 사본이 없어 무의미하다 |
-| 결과 | 최신 commit | 최신 commit |
+| 갱신 시점 | 실행되지 않는다 | session 시작 |
+| `autoUpdate: true`의 역할 | 무력하다 | 갱신할 이전 사본이 없어 무의미하다 |
+| 결과 | 설치 당시 commit에 고정된다 | 최신 commit |
+
+Desktop app은 자신의 update를 스스로 관리하므로 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심는데, plugin 갱신이 같은 auto-updater 경로에 얹혀 있어 함께 꺼진다. debug log에는 다음 한 줄이 남는다.
+
+```text
+[DEBUG] Plugin autoupdate: skipped (auto-updater disabled)
+```
+
+이 변수는 settings file의 `env` block으로 덮이지 않는다. app이 값을 나중에 적용하므로 새 session에서도 `1` 이 유지된다. 따라서 Desktop interface에서 갱신을 자동화하려면 [5.4](#54-session-start-hook) 의 hook을 쓴다.
 
 ### 5.2 Prompt-Level Injection
 
@@ -270,7 +280,7 @@ marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 
 
 ### 5.3 Manual Force Update
 
-⚠️ autoUpdate는 session 시작 후 background에서 지연 실행되므로, push 직후에 연 새 session이 이전 cache를 load 할 수 있다. push 내용을 바로 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli) 를 본다.
+⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [5.4](#54-session-start-hook) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli) 를 본다.
 
 ```bash
 # claude CLI
@@ -278,7 +288,55 @@ claude plugin marketplace update <MARKETPLACE_NAME>
 claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
-갱신된 plugin은 현재 열려 있는 session에는 적용되지 않고, 다음 session부터 적용된다.
+갱신은 두 단계이며 앞 단계만으로는 session에 반영되지 않는다.
+
+| Step | Command | Effect |
+|---|---|---|
+| 1 | `claude plugin marketplace update` | marketplace clone을 최신 commit으로 옮긴다 |
+| 2 | `claude plugin update` | 설치본을 새 commit의 cache 사본으로 다시 고정한다 |
+
+`installed_plugins.json` 의 `gitCommitSha` 가 marketplace clone의 HEAD와 같아지면 갱신이 끝난 것이다. 갱신된 plugin은 현재 열려 있는 session에는 적용되지 않고, 다음 session부터 적용된다.
+
+### 5.4 Session Start Hook
+
+SessionStart hook에 5.3의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{ command -v claude >/dev/null 2>&1 || { echo \"claude CLI not found; skipping plugin self-update\"; exit 0; }; state=\"$HOME/.claude/plugins/installed_plugins.json\"; [ -f \"$state\" ] || { echo \"no installed plugins\"; exit 0; }; date \"+=== session start %Y-%m-%d %H:%M:%S\"; claude plugin marketplace update; for p in $(grep -oE '\"[A-Za-z0-9_.-]+@[A-Za-z0-9_.-]+\"' \"$state\" | tr -d '\"' | sort -u); do claude plugin update \"$p\"; done; } >> \"$HOME/.claude/plugin-autoupdate.log\" 2>&1",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+작성할 때 지켜야 할 조건은 세 가지이며, 지키지 않으면 hook이 조용히 실패한다.
+
+| Condition | Reason |
+|---|---|
+| 명령을 bash 문법으로 쓴다 | hook은 OS와 무관하게 bash로 실행된다. PowerShell이나 cmd 문법의 pipe와 redirect는 bash가 다르게 해석하여 아무 일도 일어나지 않는다 |
+| 경로를 `$HOME` 으로 쓴다 | `%USERPROFILE%` 은 bash가 확장하지 않는다 |
+| 이름을 하드코딩하지 않는다 | `installed_plugins.json` 에서 읽으면 marketplace와 plugin이 늘어도 그대로 동작한다 |
+
+hook은 `~/.claude/settings.json`, project settings, plugin의 `hooks.json` 어디에 두어도 실행된다. matcher를 `startup` 으로 두면 새 session에서만 실행되고 resume에서는 실행되지 않는다.
+
+동작 여부는 log 파일로 확인한다.
+
+```bash
+grep -c '=== session start' ~/.claude/plugin-autoupdate.log
+```
+
+session을 열 때마다 이 값이 늘면 정상이다. hook이 실행한 갱신 역시 그 session이 아니라 다음 session부터 적용되므로, 한 session의 지연은 남는다.
 
 ## 6. Verification
 
@@ -368,7 +426,9 @@ repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file�
 
 ## Appendix A. Terminology
 
-- **`autoUpdate`**: marketplace 등록 항목의 field이다. session 시작 시 marketplace와 plugin을 remote 기준으로 갱신한다.
+- **`autoUpdate`**: marketplace 등록 항목의 field이다. session 시작 시 marketplace와 plugin을 remote 기준으로 갱신하지만, Desktop interface에서는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않는다.
+
+- **`DISABLE_AUTOUPDATER`**: Desktop app이 session 프로세스에 심는 환경변수이다. 값이 `1` 이면 plugin 자동 갱신이 skip 되며, settings file의 `env` block으로 덮이지 않는다.
 
 - **claude.ai**: Claude 계정으로 접속하는 web service이다. Web interface는 이 service 안에서 열리며, 개인 skill을 켜고 끄는 화면과 조직의 server-managed settings를 다루는 admin 화면도 여기에 있다. 두 interface가 코드를 다루는 곳이라면, claude.ai는 계정과 조직을 다루는 곳이다.
 
