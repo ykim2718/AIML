@@ -13,11 +13,13 @@
 |----------|-------------|
 | [data-profile.md](data-profile.md) | 새 데이터의 shape 와 X, y 위치, dtype, 결측, 클래스 불균형을 자동으로 파악하는 절차를 정리한다. |
 | [data-modality-taxonomy.md](data-modality-taxonomy.md) | 데이터 모달리티의 범용 분류와 반도체 도메인 확장, wafer 공정 데이터 명명 사례를 다룬다. |
+| [machine-signal-parameters.md](machine-signal-parameters.md) | 설비 파형을 ML 입력용 파라미터로 축약하는 방법을 small signal, large signal, 두 영역의 분해로 나누어 다룬다. |
 
 ## 3. Order Of Use
 
 1. 데이터를 받으면 먼저 프로파일링으로 규모와 타깃, 컬럼별 성질을 확인한다.
 2. 확인한 형태를 taxonomy 에 대응시켜 모달리티를 확정한다.
 3. 확정한 모달리티에 맞는 전처리와 모델 계열을 고른다.
+4. 파형이나 trace 계열이면 파라미터화 문서를 따라 고정 폭 feature 행으로 축약한다.
 
 모달리티는 배타적 분류가 아니라 태그 집합이므로, 하나의 데이터에 여러 태그가 동시에 붙는 경우를 정상으로 본다.
