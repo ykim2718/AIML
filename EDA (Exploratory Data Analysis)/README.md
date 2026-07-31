@@ -1,25 +1,26 @@
 # EDA (Exploratory Data Analysis)
+rev. 10
 
-> 모델을 세우기 전에 데이터의 구조와 성질을 먼저 파악하는 단계를 다룬다.
-> 이 폴더의 문서는 새 데이터를 받았을 때 무엇을 먼저 확인하고 어떤 이름으로 부를지에 답한다.
+> This folder covers the stage that establishes the structure and the properties of the data before a model is built.
+> Its documents answer what to check first when new data arrives and what to call the thing that arrives.
 
 ## 1. Scope
 
-탐색적 데이터 분석은 두 가지 질문에서 시작한다. <br>첫째는 데이터가 어떤 형태인지 규명하는 일이고, 둘째는 그 형태를 어떤 이름으로 분류할지 정하는 일이다. 앞의 질문은 자동 프로파일링으로 답하고, 뒤의 질문은 모달리티 taxonomy 로 답한다.
+Exploratory data analysis starts from two questions. <br>The first is to determine what form the data takes, and the second is to decide which name that form is classified under. The former is answered by automatic profiling, and the latter by the modality taxonomy.
 
 ## 2. Documents
 
 | Document | Description |
 |----------|-------------|
-| [data-profile.md](data-profile.md) | 새 데이터의 shape 와 X, y 위치, dtype, 결측, 클래스 불균형을 자동으로 파악하는 절차를 정리한다. |
-| [data-modality-taxonomy.md](data-modality-taxonomy.md) | 데이터 모달리티의 범용 분류와 반도체 도메인 확장, wafer 공정 데이터 명명 사례를 다룬다. |
-| [machine-signal-parameters.md](machine-signal-parameters.md) | 설비 파형을 ML 입력용 파라미터로 축약하는 방법을 small signal, large signal, 두 영역의 분해로 나누어 다룬다. |
+| [data-profile.md](data-profile.md) | It sets out the procedure that automatically determines the shape of new data, the location of X and y, dtype, missingness, and class imbalance. |
+| [data-modality-taxonomy.md](data-modality-taxonomy.md) | It covers the general classification of data modality, its extension to the semiconductor domain, and the naming case study for wafer process data. |
+| [machine-signal-parameters.md](machine-signal-parameters.md) | It covers the reduction of a machine waveform into parameters for ML input, split into the small-signal regime, the large-signal regime, and the decomposition of the two. |
 
 ## 3. Order Of Use
 
-1. 데이터를 받으면 먼저 프로파일링으로 규모와 타깃, 컬럼별 성질을 확인한다.
-2. 확인한 형태를 taxonomy 에 대응시켜 모달리티를 확정한다.
-3. 확정한 모달리티에 맞는 전처리와 모델 계열을 고른다.
-4. 파형이나 trace 계열이면 파라미터화 문서를 따라 고정 폭 feature 행으로 축약한다.
+1. When data arrives, profile it first to confirm its size, its target, and the properties of each column.
+2. Map the confirmed form onto the taxonomy to fix the modality.
+3. Choose the preprocessing and the model family that suit the fixed modality.
+4. If the data is a waveform or a trace, follow the parameterization document to reduce it to fixed-width feature rows.
 
-모달리티는 배타적 분류가 아니라 태그 집합이므로, 하나의 데이터에 여러 태그가 동시에 붙는 경우를 정상으로 본다.
+Modality is a tag set rather than an exclusive classification, so several tags attaching to one dataset at the same time is treated as normal.

@@ -16,3 +16,18 @@ git pull origin main
 # ... 작업 및 커밋 ...
 git push -u origin main
 ```
+
+## Markdown Document Convention
+
+**모든 `.md` 문서는 H1 바로 아래 줄에 revision 을 표기한다.**
+
+- 형식은 본문 글씨체의 `rev. N` 한 줄이다. heading 이나 bold 로 쓰지 않는다.
+- 문서를 수정할 때마다 N 을 1 증가시킨다 (bump versioning).
+- 오타 수정처럼 작은 변경도 bump 대상이다.
+
+```markdown
+# Document Title
+rev. 10
+
+> 여기서부터 본문이 시작된다.
+```
