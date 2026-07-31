@@ -1,5 +1,5 @@
 # EDA (Exploratory Data Analysis)
-rev. 10
+rev. 11
 
 > This folder covers the stage that establishes the structure and the properties of the data before a model is built.
 > Its documents answer what to check first when new data arrives and what to call the thing that arrives.
@@ -14,7 +14,7 @@ Exploratory data analysis starts from two questions. <br>The first is to determi
 |----------|-------------|
 | [data-profile.md](data-profile.md) | It sets out the procedure that automatically determines the shape of new data, the location of X and y, dtype, missingness, and class imbalance. |
 | [data-modality-taxonomy.md](data-modality-taxonomy.md) | It covers the general classification of data modality, its extension to the semiconductor domain, and the naming case study for wafer process data. |
-| [machine-signal-parameters.md](machine-signal-parameters.md) | It covers the reduction of a machine waveform into parameters for ML input, split into the small-signal regime, the large-signal regime, and the decomposition of the two. |
+| [machine-signal-parameterization.md](machine-signal-parameterization.md) | It covers the reduction of a machine waveform into parameters for ML input, split into the small-signal regime, the large-signal regime, and the decomposition of the two. |
 
 ## 3. Order Of Use
 

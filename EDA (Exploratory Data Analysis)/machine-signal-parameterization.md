@@ -1,5 +1,5 @@
 # Machine Signal Parameterization for ML Modeling
-rev. 1
+rev. 2
 
 > A raw machine waveform cannot enter a model as it is. It must first be reduced to a fixed-width row of numbers.
 > This document defines that reduction for the small-signal regime, for the large-signal regime, and for the case where both regimes occupy the same record.
@@ -23,7 +23,7 @@ Every method in this document produces the same artifact, which is one row of na
 
 ## 2. Small-Signal Parameters
 
-### 2.1 The Three Core Parameters
+### 2.1 The Three Core Parameters 🌳
 
 Count, frequency, and peak-to-peak are the starting set. Each answers a different question, and the three do not substitute for one another.
 
