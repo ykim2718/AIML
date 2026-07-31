@@ -1,5 +1,5 @@
 # Machine Signal Parameterization for ML Modeling
-rev. 2
+rev. 3
 
 > A raw machine waveform cannot enter a model as it is. It must first be reduced to a fixed-width row of numbers.
 > This document defines that reduction for the small-signal regime, for the large-signal regime, and for the case where both regimes occupy the same record.
@@ -47,7 +47,7 @@ These three are correct but incomplete. Count is blind to how large each event w
 | Kurtosis | The fourth standardized moment | It rises when impulsive content appears and is a common early indicator of incipient faults |
 | Zero-crossing rate | The count of sign changes per second | It is a cheap proxy for dominant frequency that needs no transform |
 
-### 2.3 Frequency-Domain Parameters
+### 2.3 Frequency-Domain Parameters 🌈
 
 | Parameter | Definition | Interpretation |
 |-----------|------------|----------------|
