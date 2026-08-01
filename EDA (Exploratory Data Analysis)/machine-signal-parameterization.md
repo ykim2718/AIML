@@ -1,5 +1,5 @@
 # Machine Signal Parameterization for ML Modeling
-rev. 3
+rev. 4
 
 > A raw machine waveform cannot enter a model as it is. It must first be reduced to a fixed-width row of numbers.
 > This document defines that reduction for the small-signal regime, for the large-signal regime, and for the case where both regimes occupy the same record.
@@ -16,6 +16,8 @@ Parameterization is the step that turns a variable-length waveform into a fixed 
 | Large signal | How far the response departs from linear as amplitude grows | Non-linearity, saturation, and clipping must be modeled explicitly |
 
 The split is not about absolute magnitude. It is about whether the machine is still operating inside its linear range. A one-volt swing is a small signal on a rail that saturates at fifty volts and a large signal on a rail that saturates at one and a half.
+
+Both regimes assume the signal varies continuously. A signal that instead rests on a ladder of discrete levels and jumps between them defeats that assumption, since its amplitude distribution is a set of spikes and its derivative is zero almost everywhere. That case is a third regime and is covered by [quantized-signal-parameterization.md](quantized-signal-parameterization.md).
 
 ### 1.2 Output Contract
 
