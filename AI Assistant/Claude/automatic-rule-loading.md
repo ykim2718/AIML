@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 102
+rev. 103
 
 ## 1. Goal
 
@@ -354,7 +354,7 @@ Show known_marketplaces.json
 Show installed_plugins.json
 ```
 
-두 file의 상세는 [Appendix E](#appendix-e-plugin-state-files) 에 있다.
+두 file의 상세는 [Appendix E](#appendix-e-plugin-state-files-desktop) 에 있다.
 
 ### 5.2 Claude CLI (Desktop)
 
@@ -518,9 +518,9 @@ claude plugin marketplace update claude-configuration
 claude plugin update yrocket-rules@claude-configuration
 ```
 
-## Appendix C. Prompt Command
+## Appendix C. Prompt Command (Desktop/Web)
 
-session의 prompt에 입력하는 명령들이다.
+session의 prompt에 입력하는 명령들이며, 두 interface에서 같다.
 
 - **`/<skill-name>`**: `description`의 판단과 무관하게 그 skill을 바로 load 한다.
 
@@ -536,7 +536,7 @@ claude plugin update yrocket-rules@claude-configuration 을 실행해줘.
 
 ### D.1 Skill
 
-새 rule 묶음은 skill folder를 추가하는 것으로 끝난다. plugin manifest는 수정하지 않아도 된다.
+새 rule 묶음은 [3.1](#31-remote-git-repository) 의 remote git repository에 skill folder를 추가하는 것으로 끝난다. plugin manifest는 수정하지 않아도 되고, push 하면 두 interface의 새 session에 함께 따라온다.
 
 file 이름은 반드시 `SKILL.md`이며, folder 이름이 skill 이름이 된다. frontmatter의 `description`이 언제 이 skill을 load 할지 판단하는 근거이므로, 적용 시점을 분명히 적는다.
 
@@ -560,9 +560,9 @@ skills/<skill-name>/
     └── <topic>.md        (loaded on demand)
 ```
 
-## Appendix E. Plugin State Files
+## Appendix E. Plugin State Files (Desktop)
 
-`~/.claude/plugins/` 아래의 두 file은 Claude Code가 plugin 기능을 실제로 사용할 때 자동으로 생성하고 관리하는 내부 상태 file이다.
+`~/.claude/plugins/` 아래의 두 file은 Claude Code가 plugin 기능을 실제로 사용할 때 자동으로 생성하고 관리하는 내부 상태 file이다. 이 경로는 machine에 있으므로 Desktop interface에만 남으며, Web interface의 상태는 session이 끝나면 사라진다.
 
 - **`known_marketplaces.json`**: marketplace를 처음 추가할 때 (`/plugin marketplace add` 를 실행하거나, settings file의 `extraKnownMarketplaces` 항목을 읽어 clone 할 때) 생성된다. marketplace를 하나도 등록한 적 없는 새 설치 환경에는 없다.
 - **`installed_plugins.json`**: plugin을 처음 설치할 때 생성된다. 마찬가지로 설치한 plugin이 없으면 없다.
@@ -618,7 +618,7 @@ skills/<skill-name>/
 
 Obsidian은 local folder에 놓인 md file을 그대로 읽고 쓰는 편집 도구이다. 자체 file 형식이나 database를 두지 않고, folder 하나를 vault로 지정해 그 안의 md file을 note로 다룬다. file 사이의 link를 따라가거나 전체를 한 번에 검색하는 기능이 편집기와 다른 점이다.
 
-rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 별도의 형식이 없으므로 working clone을 vault로 삼으면 그대로 열린다.
+rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 별도의 형식이 없으므로 working clone을 vault로 삼으면 그대로 열린다. 이 appendix는 author의 machine에서 rule을 고치는 이야기이며, 두 interface의 동작에는 영향을 주지 않는다.
 
 ### F.1 Vault Placement
 
