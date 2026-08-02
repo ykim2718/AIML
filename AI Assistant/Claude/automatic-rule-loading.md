@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 108
+rev. 109
 
 ## 1. Goal
 
@@ -20,6 +20,8 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
+
+💡 bootstrap을 적는 횟수가 두 interface의 가장 큰 차이이다. Desktop interface는 machine마다 한 번이면 그 machine의 모든 project가 덮인다. Web interface는 session을 열 때 고른 repository가 곧 project이고 machine settings가 없으므로, Web에서 여는 repository마다 그 두 줄이 있어야 하며 없는 repository에서는 rule이 올라오지 않는다.
 
 ## 2. Architecture
 
