@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 82
+rev. 83
 
 ## 1. Goal
 
@@ -56,7 +56,7 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
-### 2.2 Marketplace and Plugin Layers in Remote Git Repository
+### 2.2 Marketplace and Plugin Layers in Remote Git Repository 🌳
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
@@ -88,7 +88,7 @@ plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 
 
 component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건이 맞을 때만 올라온다.
 
-- **skill**: session에는 각 skill의 이름과 `description` 한 줄만 목록으로 떠 있다. 지금 하는 일이 그 설명과 들어맞는다고 Claude가 판단하면 그때 본문 file을 읽어 들인다. 그래서 `description`은 언제 쓰는 skill인지가 드러나게 적어야 하고, 그렇지 않으면 skill이 있어도 불려 나오지 않는다.
+- **skill**: session에는 각 skill의 이름과 `description` 한 줄만 목록으로 떠 있다. 지금 하는 일이 그 설명과 들어맞는다고 Claude가 판단하면 그때 본문 file을 읽어 들인다. 그래서 `description`은 언제 쓰는 skill인지가 드러나게 적어야 하고, 그렇지 않으면 skill이 있어도 불려 나오지 않는다. 사용자가 `/<skill-name>` 을 입력하면 이 판단을 거치지 않고 곧바로 load 된다.
 - **command**: 사용자가 prompt에 `/<command-name>` 을 입력할 때 그 file이 load 된다.
 - **agent**: 사용자가 이름을 대어 지목하거나, Claude가 그 일을 subagent에 넘기기로 할 때 load 된다.
 - **hook**: `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다.
