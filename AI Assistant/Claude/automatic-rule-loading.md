@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 80
+rev. 81
 
 ## 1. Goal
 
@@ -59,6 +59,8 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
 ### 2.2 Marketplace and Plugin Layers
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
+
+repository 최상위에 `.claude-plugin/` 과 `plugins/` 를 나란히 두는 것은 catalog와 내용물을 갈라 놓기 위해서이다. Claude Code는 repository를 내려받은 뒤 최상위의 `.claude-plugin/marketplace.json` 을 찾아 어떤 plugin이 있는지 읽으므로, 이 file의 자리는 고정되어야 한다. 내용물은 그 옆의 `plugins/` 아래에 plugin마다 folder로 놓이며, 그래서 repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
 
 ```
 <repository root>/
