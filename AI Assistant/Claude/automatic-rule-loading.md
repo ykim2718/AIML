@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 103
+rev. 104
 
 ## 1. Goal
 
@@ -12,7 +12,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
-3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 remote repository에 함께 push 되는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
@@ -114,11 +114,13 @@ User machine
 | Desktop | `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
 | Web | `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
 
+Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
+
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
-💡 Desktop interface의 machine settings와 project settings는 모두 자동으로 갱신되지 않는다. Claude Code는 project의 local repository를 `git pull` 하지 않으므로, 누군가 remote repository의 project settings를 고쳐도 사람이 pull 해야 반영된다. 자동으로 갱신되는 것은 marketplace 사본이지 settings file이 아니다. Web interface는 session마다 remote repository를 새로 clone 하므로 이 차이가 없다.
+Web interface는 machine settings가 없어 project settings가 유일한 자리이다. session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다.
 
-Web interface는 machine settings가 없다. 대신 remote repository의 project settings에 bootstrap이 push 되어 있으면, new session이 `add and install`을 다시 하므로 매 session 최신 marketplace를 받는다. Desktop interface처럼 [4.4](#44-session-start-hook-desktop) 의 hook을 따로 둘 필요도 없다. 다만 remote repository의 project settings가 비어 있으면 rule은 올라오지 않는다.
+💡 Desktop interface의 두 settings file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
 ## 3. Setup
 
@@ -171,7 +173,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ### 3.2 Settings Files (Desktop/Web)
 
-bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳으로 그 machine의 모든 project가 덮이고, Web interface까지 덮으려면 push 되는 `<project>/.claude/settings.json` 에 적어야 한다.
+bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳이면 되고, Web interface까지 덮으려면 `<project>/.claude/settings.json` 에 적어 push 한다.
 
 어느 file이든 적는 내용은 marketplace 위치와 plugin 활성화로 같다.
 
