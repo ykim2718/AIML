@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 97
+rev. 98
 
 ## 1. Goal
 
@@ -12,7 +12,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
-3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 repository에 함께 commit 되는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 remote repository에 함께 commit 되는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
@@ -60,9 +60,9 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
-repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 정해져 있다. Claude Code가 repository를 내려받은 뒤 이 경로에서 catalog를 찾기 때문이며, 다른 곳에 두면 marketplace로 인식되지 않는다.
+remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 정해져 있다. Claude Code가 remote repository를 내려받은 뒤 이 경로에서 catalog를 찾기 때문이며, 다른 곳에 두면 marketplace로 인식되지 않는다.
 
-반면 `plugins/` 라는 folder 이름은 정해진 것이 아니라 관례이다. 각 plugin의 위치는 `marketplace.json` 의 `source` 값이 가리키므로 (`"source": "./plugins/<plugin-name>"`), folder 이름을 달리 하거나 다른 repository를 가리켜도 된다. catalog는 자리를 고정하고 내용물은 그 옆에 모아 두는 이 배치 덕분에, repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
+반면 `plugins/` 라는 folder 이름은 정해진 것이 아니라 관례이다. 각 plugin의 위치는 `marketplace.json` 의 `source` 값이 가리키므로 (`"source": "./plugins/<plugin-name>"`), folder 이름을 달리 하거나 다른 remote repository를 가리켜도 된다. catalog는 자리를 고정하고 내용물은 그 옆에 모아 두는 이 배치 덕분에, remote repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
 
 ```
 <repository root>/
@@ -82,7 +82,7 @@ repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 정해�
         └── agents/               : subagents
 ```
 
-marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다.
+marketplace manifest는 remote repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다.
 
 plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 그 plugin의 이름과 정보를 담는다. 실제 기능은 plugin folder 아래의 component folder가 담는다.
 
@@ -103,7 +103,7 @@ settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적�
 User machine
 ├── ~/.claude/
 │   └── settings.json           : machine settings - all projects on the machine
-└── <project>/                  : git repository
+└── <project>/                  : local git repository
     └── .claude/
         └── settings.json       : project settings - the project only
 ```
@@ -124,7 +124,7 @@ Web interface는 machine settings가 없다. 대신 remote repository의 project
 
 ### 3.1 Remote Git Repository
 
-rule을 담는 plugin marketplace는 일반 git repository이며, 최소 구성은 manifest file 두 개이다.
+rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 구성은 manifest file 두 개이다.
 
 ```
 <repository root>/
@@ -214,7 +214,7 @@ enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 
 machine 전체에 적용하려면 "project의 .claude/settings.json" 대신 "`~/.claude/settings.json`"이라고 지시하면 된다.
 
-settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook-desktop) 처럼 repository가 배포하므로 push만으로 따라온다.
+settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 #### 3.2.1 Field Reference
 
@@ -249,7 +249,7 @@ Desktop app은 자신의 update를 스스로 관리하므로 session 프로세�
 
 ### 4.2 Prompt-Level Injection
 
-marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 prompt 단위로 동작한다. 이 hook이 repository를 다시 읽는 것은 아니며, 이미 내려받아 둔 사본의 내용을 매 prompt마다 context에 넣는다.
+marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 prompt 단위로 동작한다. 이 hook이 remote repository를 다시 읽는 것은 아니며, 이미 내려받아 둔 사본의 내용을 매 prompt마다 context에 넣는다.
 
 | Aspect | Desktop interface | Web interface |
 |---|---|---|
@@ -371,7 +371,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 확장은 모두 [3.1](#31-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.2](#32-settings-files-desktopweb) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
 
-repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
+remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
 ```
 <repository root>/
@@ -420,13 +420,13 @@ repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 fi
 
 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
-repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.2절의 `.claude/settings.json`에 있는 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
+remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.2절의 `.claude/settings.json`에 있는 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
 ## 7. Constraints
 
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
-- private repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 repository 공개 범위를 확인한다.
+- private repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 remote repository 공개 범위를 확인한다.
 - 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ## Appendix A. Terminology
@@ -439,7 +439,7 @@ repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file�
 
 - **Claude Code in the Desktop**: local machine에서 실행하는 interface이다. `~/.claude/` 아래의 machine settings와 plugin cache를 사용한다. Desktop interface로 줄여 쓴다.
 
-- **Claude Code on the Web**: cloud에서 repository를 clone 하여 실행하는 interface이다. local file system이 없으므로 repository에 commit 된 설정만 적용된다. Web interface로 줄여 쓴다.
+- **Claude Code on the Web**: cloud에서 remote repository를 clone 하여 실행하는 interface이다. local file system이 없으므로 remote repository에 commit 된 설정만 적용된다. Web interface로 줄여 쓴다.
 
 - **Context**: model이 응답을 만들 때 참조하는 입력 전체이다. 대화 내용과 함께 load 된 skill, hook이 주입한 rule이 여기에 들어간다. 크기에 한계가 있으므로 항상 load 되는 file은 짧게 유지한다.
 
@@ -453,9 +453,9 @@ repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file�
 
 - **Plugin cache**: Desktop interface가 내려받은 plugin을 실행하는 위치인 `~/.claude/plugins/cache/` 이다. 원본을 그 자리에서 쓰지 않고 이곳으로 복사해 실행한다. Claude Code가 관리하므로 직접 수정하지 않는다.
 
-- **Plugin marketplace**: marketplace manifest와 plugin들을 함께 담은 git repository 전체이다. rule은 이 안에서 관리되고, 각 interface는 이것을 내려받아 사용한다.
+- **Plugin marketplace**: marketplace manifest와 plugin들을 함께 담은 remote git repository 전체이다. rule은 이 안에서 관리되고, 각 interface는 이것을 내려받아 사용한다.
 
-- **Project in Claude Code**: 작업 중인 directory 그 자체이며, 보통 git repository이다. 별도로 등록하는 절차가 없고, Claude Code를 연 위치가 곧 project가 된다. `.claude/` 와 CLAUDE.md도 그 directory를 기준으로 찾는다. Web interface에서는 clone 된 repository가 project가 된다.
+- **Project in Claude Code**: 작업 중인 directory 그 자체이며, 보통 local git repository이다. 별도로 등록하는 절차가 없고, Claude Code를 연 위치가 곧 project가 된다. `.claude/` 와 CLAUDE.md도 그 directory를 기준으로 찾는다. Web interface에서는 clone 된 remote repository가 project가 된다.
 
 - **Project settings**: project의 `.claude/settings.json` 이다. commit 되므로 두 interface와 다른 사용자에게 모두 적용된다.
 
@@ -493,7 +493,7 @@ terminal에서 실행하는 plugin 관련 명령들이다.
 - **`claude plugin marketplace update <MARKETPLACE_NAME>`**: marketplace와 plugin을 수동으로 갱신한다.
 - **`claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 설치된 plugin을 수동으로 갱신한다.
 
-이 repository에 적용하는 예시는 다음과 같다.
+이 remote repository에 적용하는 예시는 다음과 같다.
 
 ```bash
 # claude CLI
@@ -610,10 +610,10 @@ rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 �
 | Placement | Description | Note |
 |---|---|---|
 | working clone 자체를 vault로 연다 | rule만 담긴 독립 vault가 된다 | 가장 단순하며 다른 기록과 섞이지 않는다 |
-| 기존 vault 안에 working clone을 둔다 | vault 하위 folder가 git repository가 된다 | 기존 note와 함께 검색되지만, vault 전체를 sync 하는 도구와 git이 같은 file을 건드린다 |
+| 기존 vault 안에 working clone을 둔다 | vault 하위 folder가 local git repository가 된다 | 기존 note와 함께 검색되지만, vault 전체를 sync 하는 도구와 git이 같은 file을 건드린다 |
 | vault 밖에 두고 symlink를 건다 | 실체는 vault 밖에 있고 vault에는 link만 둔다 | 배치는 자유롭지만 Obsidian이 link 대상을 vault 경계 밖으로 인식하는 경우가 있다 |
 
-기록용 vault를 이미 쓰고 있다면 첫 번째를 권한다. rule repository는 push 시점이 곧 배포 시점이라, 일반 note와 commit 주기를 섞지 않는 편이 안전하다.
+기록용 vault를 이미 쓰고 있다면 첫 번째를 권한다. rule의 remote repository는 push 시점이 곧 배포 시점이라, 일반 note와 commit 주기를 섞지 않는 편이 안전하다.
 
 ### F.2 Link Style
 
@@ -661,4 +661,4 @@ frontmatter를 자동으로 정리하는 부류의 community plugin은 SKILL.md�
 
 ### F.4 Sync
 
-vault 전체를 장치 사이에서 자동으로 복제하는 기능이 있다. Obsidian이 제공하는 sync service, vault folder를 cloud drive 안에 두는 방식, folder를 실시간으로 맞추는 file 동기화 도구가 모두 여기에 해당한다. 이 기능을 모두 끄고 Obsidian은 편집기로만 사용하며, rule repository는 git의 commit과 push로만 관리하여 원본이 remote repository에 있도록 한다.
+vault 전체를 장치 사이에서 자동으로 복제하는 기능이 있다. Obsidian이 제공하는 sync service, vault folder를 cloud drive 안에 두는 방식, folder를 실시간으로 맞추는 file 동기화 도구가 모두 여기에 해당한다. 이 기능을 모두 끄고 Obsidian은 편집기로만 사용하며, rule의 local repository는 git의 commit과 push로만 관리하여 원본이 remote repository에 있도록 한다.
