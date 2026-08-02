@@ -2,13 +2,13 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 73
+rev. 74
 
 ## 1. Goal
 
-이 문서는 Claude Code 전용이다. plugin marketplace는 Claude Code의 기능이며, 다른 환경에는 적용되지 않는다.
+이 문서는 Claude Code 전용으로 desktop과 web interface를 고려한다.
 
-Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project는 settings file에 그 repository를 한 번 적어 두는 것으로 끝내는 방식이다. 그 뒤에는 두 가지가 저절로 이루어진다.
+Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project는 repository에 함께 commit 되는 settings file에 marketplace 등록과 plugin 활성화를 한 번 적어 두는 것으로 끝내는 방식이다. 그 뒤에는 두 가지가 저절로 이루어진다.
 
 1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [5.4](#54-session-start-hook) 의 hook이 이 역할을 맡는다.
 2. rule이 새 session과 새 prompt에 적용된다.
