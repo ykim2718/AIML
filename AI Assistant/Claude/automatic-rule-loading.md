@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 87
+rev. 88
 
 ## 1. Goal
 
@@ -102,7 +102,7 @@ settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적�
 ```
 User machine
 ├── ~/.claude/
-│   └── settings.json           : global settings - all projects on the machine
+│   └── settings.json           : machine settings - all projects on the machine
 └── <project>/                  : git repository
     └── .claude/
         └── settings.json       : project settings - the project only
@@ -114,13 +114,13 @@ User machine
 | Desktop | `<project>/.claude/settings.json` | project | commit 되어 repository와 함께 움직인다 |
 | Web | `<project>/.claude/settings.json` | project | local file system이 없어 이 file만 읽는다 |
 
-Desktop interface는 machine 단위 global settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. 두 file에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
+Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
-Web interface는 machine이 없어 global settings도 없다. 그래서 project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 설치 자체도 session이 끝나면 사라지므로 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
+Web interface는 machine이 없어 machine settings도 없다. 그래서 project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 설치 자체도 session이 끝나면 사라지므로 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
 
 조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
-## 3. Automation Setup
+## 3. Setup
 
 이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 settings file에 bootstrap을 적는다 (3.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다.
 
@@ -231,7 +231,7 @@ field의 이름과 의미는 어느 settings file에 두든 동일하다.
 
 #### 3.2.2 Settings Precedence
 
-settings file은 여러 층으로 나뉘며, 우선순위는 `global settings < project settings` 순이다. 두 file의 위치와 interface별 적용 범위는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표에 있다.
+settings file은 여러 층으로 나뉘며, 우선순위는 `machine settings < project settings` 순이다. 두 file의 위치와 interface별 적용 범위는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표에 있다.
 
 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings file은 Desktop interface에만 도달하고 Web interface에는 적용되지 않는다.
 
@@ -442,7 +442,7 @@ repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file�
 
 - **claude.ai**: Claude 계정으로 접속하는 web service이다. Web interface는 이 service 안에서 열리며, 개인 skill을 켜고 끄는 화면과 조직의 server-managed settings를 다루는 admin 화면도 여기에 있다. 두 interface가 코드를 다루는 곳이라면, claude.ai는 계정과 조직을 다루는 곳이다.
 
-- **Claude Code in the Desktop**: local machine에서 실행하는 interface이다. `~/.claude/` 아래의 global settings와 plugin cache를 사용한다. Desktop interface로 줄여 쓴다.
+- **Claude Code in the Desktop**: local machine에서 실행하는 interface이다. `~/.claude/` 아래의 machine settings와 plugin cache를 사용한다. Desktop interface로 줄여 쓴다.
 
 - **Claude Code on the Web**: cloud에서 repository를 clone 하여 실행하는 interface이다. local file system이 없으므로 repository에 commit 된 설정만 적용된다. Web interface로 줄여 쓴다.
 
