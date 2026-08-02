@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 85
+rev. 86
 
 ## 1. Goal
 
@@ -116,15 +116,17 @@ User machine
 
 두 file에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
-Desktop interface는 machine 단위 global settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. Web interface는 machine이 없어 global settings도 없으므로, project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 또한 Web interface의 설치는 session이 끝나면 사라져 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
+Desktop interface는 machine 단위 global settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다.
+
+Web interface는 machine이 없어 global settings도 없다. 그래서 project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 설치 자체도 session이 끝나면 사라지므로 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
 
 조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ## 3. Automation Setup
 
-이 절은 automatic rule loading에 필요한 설정을 다룬다. plugin marketplace를 만들고(3.1), 각 project의 settings file에 등록한다(3.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다. 기준이 되는 위치는 project settings이고, 범위별 적용 여부는 2.3절의 표에 정리되어 있다.
+이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 settings file에 bootstrap을 적는다 (3.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다.
 
-### 3.1 Git Repository
+### 3.1 Remote Git Repository
 
 rule을 담는 plugin marketplace는 일반 git repository이며, 최소 구성은 manifest file 두 개이다.
 
@@ -169,11 +171,11 @@ rule을 담는 plugin marketplace는 일반 git repository이며, 최소 구성�
 
 ⛔ **`version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
 
-### 3.2 Project Settings
+### 3.2 Settings Files (Desktop/Web)
 
-project settings는 project 안의 `.claude/settings.json` 이다. 사용자의 machine이 아니라 project에 속하므로 commit 되어 함께 배포되며, 그 project를 여는 모든 사용자와 두 interface에 동일하게 적용된다. 그래서 이 file 하나가 공통 설정의 기준이 된다.
+bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳으로 그 machine의 모든 project가 덮이고, Web interface까지 덮으려면 commit 되는 `<project>/.claude/settings.json` 에 적어야 한다.
 
-여기에 marketplace 위치와 plugin 활성화를 적는다.
+어느 file이든 적는 내용은 marketplace 위치와 plugin 활성화로 같다.
 
 ```json
 {
@@ -231,16 +233,9 @@ field의 이름과 의미는 어느 settings file에 두든 동일하다.
 
 #### 3.2.2 Settings Precedence
 
-settings file은 여러 층으로 나뉘며, 우선순위는 `global settings < project settings` 순이다. 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다.
+settings file은 여러 층으로 나뉘며, 우선순위는 `global settings < project settings` 순이다. 두 file의 위치와 interface별 적용 범위는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표에 있다.
 
-| Settings file | Location | Desktop interface | Web interface | Applies to |
-|---|---|---|---|---|
-| `~/.claude/settings.json` | home folder | 적용 | 미적용 | 해당 machine의 모든 project |
-| `<project>/.claude/settings.json` | project folder<br>(git repository) | 적용 | 적용 | 해당 project |
-
-`~/.claude/settings.json` 은 사용자가 자기 machine에 두는 file이므로 Web interface에는 그 file 자체가 없다.
-
-OS 단위로 배포하는 managed settings file은 Desktop interface에만 도달하고 Web interface에는 적용되지 않는다.
+그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings file은 Desktop interface에만 도달하고 Web interface에는 적용되지 않는다.
 
 ## 4. Automatic Update
 
