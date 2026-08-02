@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 75
+rev. 76
 
 ## 1. Goal
 
@@ -20,16 +20,6 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
-
-### 1.1 Problem
-
-기존 방식에는 두 가지 문제가 있다.
-
-1. **CLAUDE.md에 GitHub URL을 적어 두는 방식은 동작하지 않는다.** CLAUDE.md는 local file import (`@path`) 만 지원하며, 원격 URL은 단순 text로 남는다. 새 session이 시작해도 해당 repository를 clone 하거나 내용을 가져오지 않는다.
-
-2. **project마다 skill과 hook을 복사해 두는 방식은 유지가 어렵다.** rule을 고칠 때마다 모든 project를 찾아다녀야 하고, 사본 간에 내용이 어긋난다.
-
-plugin marketplace는 이 두 문제를 함께 해결한다. rule을 한 곳에서 관리하고, 각 project는 참조만 한다.
 
 ## 2. Architecture
 
@@ -66,6 +56,8 @@ User machine의 working clone `[2]` 에서 rule을 수정하고 commit/push 하�
 └── cache/<...>/            : copy of each plugin folder -> plugin cache
 ```
 
+### 2.2 Bootstrap
+
 다음 Edit location의 settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다.
 
 | Site | Edit location | Coverage |
@@ -85,7 +77,7 @@ account 단위 settings file은 어느 interface에도 없다. Desktop interface
 
 조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
-### 2.2 Marketplace and Plugin Layers
+### 2.3 Marketplace and Plugin Layers
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
@@ -111,7 +103,7 @@ marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json
 
 component 중 load 시점이 고정된 것은 hook뿐이다. skill은 `description`이 맞을 때, command와 agent는 호출될 때 load 되지만, `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다. 반드시 지켜야 할 rule을 이 경로에 둔다.
 
-### 2.3 Settings Files
+### 2.4 Settings Files
 
 settings.json은 두 위치에 있고, 이름은 같지만 적용 범위가 다르다.
 
