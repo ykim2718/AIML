@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 83
+rev. 84
 
 ## 1. Goal
 
@@ -23,7 +23,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 ## 2. Architecture
 
-### 2.1 Copies and Coverage
+### 2.1 Copies and Their Roles
 
 plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 다르다. 실행용 사본은 interface마다 별도로 존재한다.
 
