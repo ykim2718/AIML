@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 110
+rev. 111
 
 ## 1. Goal
 
@@ -25,7 +25,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 ## 2. Architecture
 
-### 2.1 Copies and Their Roles
+### 2.1 Plugin Marketplace and Copies
 
 plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[1]`은 원본, `[2]`는 rule을 고치는 자리, `[3]`과 `[4]`는 각 interface가 clone 해 두고 실행하는 사본이다.
 
@@ -58,7 +58,41 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
-### 2.2 Plugin Marketplace in Remote Git Repository 🌳
+### 2.2 Environment Setup Files
+
+사람이 고쳐야 하는 file은 settings file 하나뿐이고, 거기에 적는 항목은 두 개이다.
+
+| Key | Role |
+|---|---|
+| `extraKnownMarketplaces` | 어느 marketplace를 어디에서 받을지 등록한다 |
+| `enabledPlugins` | 그 marketplace의 어느 plugin을 켤지 `plugin-name@marketplace-name` 형식으로 지정한다 |
+
+Claude Code는 이 두 항목대로 marketplace를 내려받고, 저장된 사본 안의 plugin을 session에 load 한다. settings file은 두 자리에 있고, 이름은 같지만 적용 범위가 다르다.
+
+```
+User machine
+├── ~/.claude/
+│   └── settings.json           : machine settings - all projects on the machine
+└── <project>/                  : local git repository
+    └── .claude/
+        └── settings.json       : project settings - the project only
+```
+
+| Interface | Settings file | Coverage | Delivery |
+|---|---|---|---|
+| Desktop | `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
+| Desktop | `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
+| Web | `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
+
+💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
+
+Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
+
+💡 Desktop interface의 두 settings file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
+
+Web interface는 machine settings가 없어 project settings가 유일한 자리이다. session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다.
+
+### 2.3 Plugin Marketplace in Remote Git Repository 🌳
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
@@ -97,35 +131,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
 
-### 2.3 Bootstrap in Settings Files (Desktop/Web)
-
-settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다. 이 file은 두 자리에 있고, 이름은 같지만 적용 범위가 다르다.
-
-```
-User machine
-├── ~/.claude/
-│   └── settings.json           : machine settings - all projects on the machine
-└── <project>/                  : local git repository
-    └── .claude/
-        └── settings.json       : project settings - the project only
-```
-
-| Interface | Settings file | Coverage | Delivery |
-|---|---|---|---|
-| Desktop | `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
-| Desktop | `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
-| Web | `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
-
-💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
-
-Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
-
-💡 Desktop interface의 두 settings file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
-
-Web interface는 machine settings가 없어 project settings가 유일한 자리이다. session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다.
-
-
-## 3. Setup
+## 3. Bootstrap
 
 이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 settings file에 bootstrap을 적는다 (3.2).
 
@@ -176,7 +182,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ### 3.2 Settings Files (Desktop/Web)
 
-손으로 적는 것은 Desktop interface의 machine settings `~/.claude/settings.json` 하나뿐이다. project settings는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 대로 clone 되어 오므로 여기서 다루지 않는다.
+손으로 적는 것은 Desktop interface의 machine settings `~/.claude/settings.json` 하나뿐이다. project settings는 [2.2](#22-environment-setup-files) 대로 clone 되어 오므로 여기서 다루지 않는다.
 
 적는 내용은 marketplace 위치와 plugin 활성화이다.
 
@@ -230,7 +236,7 @@ settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 
 | `autoUpdate` | marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다 |
 | `enabledPlugins` | `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다 |
 
-field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
+field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.2](#22-environment-setup-files) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
 
 ## 4. Automatic Update
 
@@ -439,7 +445,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 Desktop interface에만 해당하는 제약이다.
 
 - `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [4.4](#44-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
-- settings file은 자동으로 pull 되지 않는다 ([2.3](#23-bootstrap-in-settings-files-desktopweb)).
+- settings file은 자동으로 pull 되지 않는다 ([2.2](#22-environment-setup-files)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
