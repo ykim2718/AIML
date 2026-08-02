@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 81
+rev. 82
 
 ## 1. Goal
 
@@ -56,11 +56,13 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
-### 2.2 Marketplace and Plugin Layers
+### 2.2 Marketplace and Plugin Layers in Remote Git Repository
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
-repository 최상위에 `.claude-plugin/` 과 `plugins/` 를 나란히 두는 것은 catalog와 내용물을 갈라 놓기 위해서이다. Claude Code는 repository를 내려받은 뒤 최상위의 `.claude-plugin/marketplace.json` 을 찾아 어떤 plugin이 있는지 읽으므로, 이 file의 자리는 고정되어야 한다. 내용물은 그 옆의 `plugins/` 아래에 plugin마다 folder로 놓이며, 그래서 repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
+repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 정해져 있다. Claude Code가 repository를 내려받은 뒤 이 경로에서 catalog를 찾기 때문이며, 다른 곳에 두면 marketplace로 인식되지 않는다.
+
+반면 `plugins/` 라는 folder 이름은 정해진 것이 아니라 관례이다. 각 plugin의 위치는 `marketplace.json` 의 `source` 값이 가리키므로 (`"source": "./plugins/<plugin-name>"`), folder 이름을 달리 하거나 다른 repository를 가리켜도 된다. catalog는 자리를 고정하고 내용물은 그 옆에 모아 두는 이 배치 덕분에, repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
 
 ```
 <repository root>/
