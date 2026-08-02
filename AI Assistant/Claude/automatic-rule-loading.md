@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 77
+rev. 78
 
 ## 1. Goal
 
@@ -54,6 +54,8 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
 └── cache/<...>/            : copy of each plugin folder -> plugin cache
 ```
 
+`[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
+
 ### 2.2 Marketplace and Plugin Layers
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
@@ -82,46 +84,32 @@ component 중 load 시점이 고정된 것은 hook뿐이다. skill은 `descripti
 
 ### 2.3 Bootstrap
 
-다음 Edit location의 settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다.
-
-| Site | Edit location | Coverage |
-|---|---|---|
-| `[1]` GitHub | plugin marketplace | - |
-| `[2]` User machine | working clone | - |
-| `[3]` Desktop interface | `~/.claude/settings.json`<br>`<project>/.claude/settings.json` | machine<br>project |
-| `[4]` Web interface | `<project>/.claude/settings.json` | project |
-
-`[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
-
-Edit location은 수정이 일어나는 자리이고, Coverage는 그 수정이 적용되는 범위이다. `[4]`의 설치는 session이 끝나면 사라지므로, 다음 session이 `add and install`을 다시 한다.
-
-같은 내용을 여러 settings file에 함께 적으면 병합되고, 겹치는 값은 project settings가 이긴다.
-
-account 단위 settings file은 어느 interface에도 없다. Desktop interface는 machine 단위 global settings가 그 자리를 대신해, machine마다 한 번 적으면 그 machine의 모든 project가 덮인다. Web interface에는 machine이 없어 global settings도 없으며, project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
-
-조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
-
-### 2.4 Settings Files
-
-settings.json은 두 위치에 있고, 이름은 같지만 적용 범위가 다르다.
+settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다. 이 file은 두 자리에 있고, 이름은 같지만 적용 범위가 다르다.
 
 ```
 User machine
 ├── ~/.claude/
-│   └── settings.json           : global settings — all projects on the machine
+│   └── settings.json           : global settings - all projects on the machine
 └── <project>/                  : git repository
     └── .claude/
-        └── settings.json       : project settings — the project only
+        └── settings.json       : project settings - the project only
 ```
 
-- **`~/.claude/settings.json`**: global settings이다. 사용자의 machine에만 있으므로 Desktop interface에서만 적용된다. git repository 밖의 machine 개인 file이라 commit/push 대상이 아니며, 그 machine에서 직접 수정해야만 바뀐다.
-- **`<project>/.claude/settings.json`**: project settings이다. commit 되어 repository와 함께 움직이므로 두 interface에 모두 적용된다.
+| Interface | Settings file | Coverage | Distribution |
+|---|---|---|---|
+| Desktop | `~/.claude/settings.json` | machine | git 밖의 개인 file이라 machine마다 직접 적는다 |
+| Desktop | `<project>/.claude/settings.json` | project | commit 되어 repository와 함께 움직인다 |
+| Web | `<project>/.claude/settings.json` | project | local file system이 없어 이 file만 읽는다 |
 
-두 file에 같은 내용이 있으면 project settings가 이긴다.
+두 file에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
+
+Desktop interface는 machine 단위 global settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. Web interface는 machine이 없어 global settings도 없으므로, project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 또한 Web interface의 설치는 session이 끝나면 사라져 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
+
+조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ## 3. Automation Setup
 
-이 절은 automatic rule loading에 필요한 설정을 다룬다. plugin marketplace를 만들고(4.1), 각 project의 settings file에 등록한다(4.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다. 기준이 되는 위치는 project settings이고, 범위별 적용 여부는 3.1절의 표에 정리되어 있다.
+이 절은 automatic rule loading에 필요한 설정을 다룬다. plugin marketplace를 만들고(3.1), 각 project의 settings file에 등록한다(3.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다. 기준이 되는 위치는 project settings이고, 범위별 적용 여부는 2.3절의 표에 정리되어 있다.
 
 ### 3.1 Git Repository
 
