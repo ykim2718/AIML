@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 84
+rev. 85
 
 ## 1. Goal
 
@@ -95,7 +95,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
 
-### 2.3 Bootstrap
+### 2.3 Bootstrap in Settings Files (Desktop/Web)
 
 settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다. 이 file은 두 자리에 있고, 이름은 같지만 적용 범위가 다르다.
 
