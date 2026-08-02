@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 112
+rev. 113
 
 ## 1. Goal
 
@@ -78,19 +78,30 @@ User machine
         └── settings.json       : project settings - the project only
 ```
 
-| Interface | Settings file | Coverage | Delivery |
-|---|---|---|---|
-| Desktop | `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
-| Desktop | `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
-| Web | `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
-
 💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
-Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
+#### 2.2.1 Desktop Interface
 
-💡 Desktop interface의 두 settings file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
+두 자리 모두 읽으며, 같은 내용이 있으면 병합되고 겹치는 값은 project settings가 이긴다.
 
-Web interface는 machine settings가 없어 project settings가 유일한 자리이다. session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다.
+| Settings file | Coverage | Delivery |
+|---|---|---|
+| `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
+| `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
+
+machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다.
+
+💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
+
+#### 2.2.2 Web Interface
+
+machine이 없어 자리가 하나뿐이다.
+
+| Settings file | Coverage | Delivery |
+|---|---|---|
+| `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
+
+session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
 ### 2.3 Plugin Marketplace in Remote Git Repository 🌳
 
