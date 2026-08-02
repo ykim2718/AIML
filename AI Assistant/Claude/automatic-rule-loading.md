@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 99
+rev. 100
 
 ## 1. Goal
 
@@ -116,7 +116,7 @@ User machine
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
-두 file 모두 자동으로 갱신되지 않는다. Claude Code는 project의 local repository를 `git pull` 하지 않으므로, 누군가 remote repository의 project settings를 고쳐도 사람이 pull 해야 반영된다. 자동으로 갱신되는 것은 marketplace 사본이지 settings file이 아니다. Web interface는 session마다 remote repository를 새로 clone 하므로 이 차이가 없다.
+💡 Desktop interface의 machine settings와 project settings는 모두 자동으로 갱신되지 않는다. Claude Code는 project의 local repository를 `git pull` 하지 않으므로, 누군가 remote repository의 project settings를 고쳐도 사람이 pull 해야 반영된다. 자동으로 갱신되는 것은 marketplace 사본이지 settings file이 아니다. Web interface는 session마다 remote repository를 새로 clone 하므로 이 차이가 없다.
 
 Web interface는 machine settings가 없다. 대신 remote repository의 project settings에 bootstrap이 push 되어 있으면, new session이 `add and install`을 다시 하므로 매 session 최신 marketplace를 받는다. Desktop interface처럼 [4.4](#44-session-start-hook-desktop) 의 hook을 따로 둘 필요도 없다. 다만 remote repository의 project settings가 비어 있으면 rule은 올라오지 않는다.
 
@@ -426,10 +426,19 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 
 ## 7. Constraints
 
+두 interface에 공통인 제약이다.
+
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
-- private repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 remote repository 공개 범위를 확인한다.
-- 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
+- 갱신은 열려 있는 session에 반영되지 않고 다음 session부터 적용되므로, push와 적용 사이에 한 session의 지연이 남는다 ([4.2](#42-prompt-level-injection)).
+- private remote repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 remote repository 공개 범위를 확인한다.
+
+Desktop interface에만 해당하는 제약이다.
+
+- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [4.4](#44-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
+- settings file은 자동으로 pull 되지 않는다 ([2.3](#23-bootstrap-in-settings-files-desktopweb)).
+
+조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ## Appendix A. Terminology
 
