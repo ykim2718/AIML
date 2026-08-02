@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 96
+rev. 97
 
 ## 1. Goal
 
@@ -111,8 +111,8 @@ User machine
 | Interface | Settings file | Coverage | Delivery |
 |---|---|---|---|
 | Desktop | `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
-| Desktop | `<project>/.claude/settings.json` | project | repository에 들어 있어 그 project를 열면 적용된다 |
-| Web | `<project>/.claude/settings.json` | project | session 시작 시 repository가 clone 되면서 함께 온다 |
+| Desktop | `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
+| Web | `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
