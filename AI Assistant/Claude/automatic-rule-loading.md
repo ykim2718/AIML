@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 104
+rev. 105
 
 ## 1. Goal
 
@@ -25,7 +25,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 ### 2.1 Copies and Their Roles
 
-plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 다르다. 실행용 사본은 interface마다 별도로 존재한다.
+plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[1]`은 원본, `[2]`는 rule을 고치는 자리, `[3]`과 `[4]`는 각 interface가 clone 해 두고 실행하는 사본이다.
 
 ```
              +------------------------------------------------------------+
@@ -46,7 +46,7 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
    +------------------------+  +------------------------+  +------------------------+
 ```
 
-`[3]`이 내려받은 사본을 한 folder 아래에 나뉘어 저장한다. `[4]`의 저장 경로는 공식 문서에 없다.
+`[3]`은 내려받은 사본을 machine의 한 folder 아래에 나누어 둔다. `[4]`도 같은 것을 내려받지만 저장 경로는 공식 문서에 없고, session이 끝나면 사라진다.
 
 ```
 ~/.claude/plugins/
@@ -173,7 +173,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ### 3.2 Settings Files (Desktop/Web)
 
-bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳이면 되고, Web interface까지 덮으려면 `<project>/.claude/settings.json` 에 적어 push 한다.
+bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳이면 되고, Web interface까지 덮으려면 `<project>/.claude/settings.json` 에 적는다.
 
 어느 file이든 적는 내용은 marketplace 위치와 plugin 활성화로 같다.
 
