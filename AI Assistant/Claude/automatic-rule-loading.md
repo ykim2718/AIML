@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 95
+rev. 96
 
 ## 1. Goal
 
@@ -108,11 +108,11 @@ User machine
         └── settings.json       : project settings - the project only
 ```
 
-| Interface | Settings file | Coverage | Distribution |
+| Interface | Settings file | Coverage | Delivery |
 |---|---|---|---|
-| Desktop | `~/.claude/settings.json` | machine | git 밖의 개인 file이라 machine마다 직접 적는다 |
-| Desktop | `<project>/.claude/settings.json` | project | local file을 그대로 읽으며, push 하면 다른 machine에도 따라간다 |
-| Web | `<project>/.claude/settings.json` | project | push 해 두면 session 시작 시 clone 된 사본에서 읽힌다 |
+| Desktop | `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
+| Desktop | `<project>/.claude/settings.json` | project | repository에 들어 있어 그 project를 열면 적용된다 |
+| Web | `<project>/.claude/settings.json` | project | session 시작 시 repository가 clone 되면서 함께 온다 |
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
@@ -369,6 +369,8 @@ claude plugin details yrocket-rules@claude-configuration
 
 ## 6. Extension
 
+확장은 모두 [3.1](#31-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.2](#32-settings-files-desktopweb) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
+
 repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
 ```
@@ -400,11 +402,11 @@ repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 fi
 
 ### 6.2 Command
 
-`commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 호출할 때만 load 된다.
+`commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
 
 ### 6.3 Agent
 
-`agents/` 에 md file을 추가한다. subagent의 정의이며, 호출될 때만 load 된다.
+`agents/` 에 md file을 추가한다. subagent의 정의이며, 사용자가 지목하거나 Claude가 일을 넘길 때만 load 된다.
 
 ### 6.4 Plugin
 
@@ -412,7 +414,7 @@ repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 fi
 
 ### 6.5 Skill and Reference File
 
-`skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
+`skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
 
 ### 6.6 Non-Loaded Document
 
