@@ -6,7 +6,7 @@ rev. 74
 
 ## 1. Goal
 
-이 문서는 Claude Code 전용으로 desktop과 web interface를 고려한다.
+이 문서는 Claude Code 전용으로 desktop과 web interface를 고려한다. 두 interface에서 동일한 plugin (skills, hooks, commands, agents) 을 재사용하도록 plugin marketplace를 구성하고 적용하는 방법을 정리한다.
 
 Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project는 repository에 함께 commit 되는 settings file에 marketplace 등록과 plugin 활성화를 한 번 적어 두는 것으로 끝내는 방식이다. 그 뒤에는 두 가지가 저절로 이루어진다.
 
@@ -14,8 +14,6 @@ Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
-
-이 문서는 Claude Code in the Desktop (Desktop interface) 과 Claude Code on the Web (Web interface) 에서 동일한 plugin (skills, hooks, commands, agents) 을 재사용하기 위해, plugin marketplace를 구성하고 적용하는 방법을 정리한다.
 
 ## 2. Problem
 
