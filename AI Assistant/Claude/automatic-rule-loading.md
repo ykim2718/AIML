@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 76
+rev. 77
 
 ## 1. Goal
 
@@ -46,8 +46,6 @@ plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 �
    +------------------------+  +------------------------+  +------------------------+
 ```
 
-User machine의 working clone `[2]` 에서 rule을 수정하고 commit/push 하면, 이후의 새 session부터 자동으로 적용된다.
-
 `[3]`이 내려받은 사본을 한 folder 아래에 나뉘어 저장한다. `[4]`의 저장 경로는 공식 문서에 없다.
 
 ```
@@ -56,28 +54,7 @@ User machine의 working clone `[2]` 에서 rule을 수정하고 commit/push 하�
 └── cache/<...>/            : copy of each plugin folder -> plugin cache
 ```
 
-### 2.2 Bootstrap
-
-다음 Edit location의 settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다.
-
-| Site | Edit location | Coverage |
-|---|---|---|
-| `[1]` GitHub | plugin marketplace | - |
-| `[2]` User machine | working clone | - |
-| `[3]` Desktop interface | `~/.claude/settings.json`<br>`<project>/.claude/settings.json` | machine<br>project |
-| `[4]` Web interface | `<project>/.claude/settings.json` | project |
-
-`[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
-
-Edit location은 수정이 일어나는 자리이고, Coverage는 그 수정이 적용되는 범위이다. `[4]`의 설치는 session이 끝나면 사라지므로, 다음 session이 `add and install`을 다시 한다.
-
-같은 내용을 여러 settings file에 함께 적으면 병합되고, 겹치는 값은 project settings가 이긴다.
-
-account 단위 settings file은 어느 interface에도 없다. Desktop interface는 machine 단위 global settings가 그 자리를 대신해, machine마다 한 번 적으면 그 machine의 모든 project가 덮인다. Web interface에는 machine이 없어 global settings도 없으며, project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
-
-조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
-
-### 2.3 Marketplace and Plugin Layers
+### 2.2 Marketplace and Plugin Layers
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
@@ -102,6 +79,27 @@ marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 pl
 marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다. plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 그 plugin의 이름과 정보를 담는다. 실제 기능은 plugin folder 아래의 component folder가 담는다.
 
 component 중 load 시점이 고정된 것은 hook뿐이다. skill은 `description`이 맞을 때, command와 agent는 호출될 때 load 되지만, `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다. 반드시 지켜야 할 rule을 이 경로에 둔다.
+
+### 2.3 Bootstrap
+
+다음 Edit location의 settings file에는 어느 marketplace를 받고 어느 plugin을 켤지가 적혀 있다. Claude Code는 그 내용대로 저장된 사본 안의 plugin을 session에 load 한다.
+
+| Site | Edit location | Coverage |
+|---|---|---|
+| `[1]` GitHub | plugin marketplace | - |
+| `[2]` User machine | working clone | - |
+| `[3]` Desktop interface | `~/.claude/settings.json`<br>`<project>/.claude/settings.json` | machine<br>project |
+| `[4]` Web interface | `<project>/.claude/settings.json` | project |
+
+`[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
+
+Edit location은 수정이 일어나는 자리이고, Coverage는 그 수정이 적용되는 범위이다. `[4]`의 설치는 session이 끝나면 사라지므로, 다음 session이 `add and install`을 다시 한다.
+
+같은 내용을 여러 settings file에 함께 적으면 병합되고, 겹치는 값은 project settings가 이긴다.
+
+account 단위 settings file은 어느 interface에도 없다. Desktop interface는 machine 단위 global settings가 그 자리를 대신해, machine마다 한 번 적으면 그 machine의 모든 project가 덮인다. Web interface에는 machine이 없어 global settings도 없으며, project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
+
+조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ### 2.4 Settings Files
 
