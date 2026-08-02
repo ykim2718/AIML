@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 89
+rev. 90
 
 ## 1. Goal
 
@@ -116,7 +116,7 @@ User machine
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
-Web interface는 machine이 없어 machine settings도 없다. 그래서 project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 설치 자체도 session이 끝나면 사라지므로 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
+Web interface는 machine settings가 없다. 대신 remote repository의 project settings에 bootstrap이 commit 되어 있으면, session이 끝날 때 사라진 설치를 다음 session이 `add and install`로 다시 하므로 매 session 최신 marketplace를 받는다. Desktop interface처럼 [4.4](#44-session-start-hook) 의 hook을 따로 둘 필요도 없다. 다만 project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
 
 조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
