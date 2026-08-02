@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 86
+rev. 87
 
 ## 1. Goal
 
@@ -114,9 +114,7 @@ User machine
 | Desktop | `<project>/.claude/settings.json` | project | commit 되어 repository와 함께 움직인다 |
 | Web | `<project>/.claude/settings.json` | project | local file system이 없어 이 file만 읽는다 |
 
-두 file에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
-
-Desktop interface는 machine 단위 global settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다.
+Desktop interface는 machine 단위 global settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. 두 file에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
 Web interface는 machine이 없어 global settings도 없다. 그래서 project settings가 비어 있는 project를 열면 rule은 올라오지 않는다. 설치 자체도 session이 끝나면 사라지므로 다음 session이 `add and install`을 다시 한다. claude.ai 설정 화면에서 켠 개인 skill이 Web interface의 session에 들어오기는 하지만, 이는 skill일 뿐 plugin과 marketplace가 아니다.
 
