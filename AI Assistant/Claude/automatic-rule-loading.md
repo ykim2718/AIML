@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 72
+rev. 73
 
 ## 1. Goal
 
@@ -313,7 +313,7 @@ SessionStart hook에 5.3의 두 명령을 걸면 사람이 개입하지 않아�
         "hooks": [
           {
             "type": "command",
-            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/hooks/conversation_rules.md\""
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/hooks/conversation_rules.md\" \"${CLAUDE_PLUGIN_ROOT}/hooks/skill_loading_rules.md\""
           }
         ]
       }
