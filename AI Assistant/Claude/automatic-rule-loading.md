@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 100
+rev. 101
 
 ## 1. Goal
 
@@ -122,7 +122,7 @@ Web interface는 machine settings가 없다. 대신 remote repository의 project
 
 ## 3. Setup
 
-이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 settings file에 bootstrap을 적는다 (3.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다.
+이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 settings file에 bootstrap을 적는다 (3.2).
 
 ### 3.1 Remote Git Repository
 
@@ -442,6 +442,8 @@ Desktop interface에만 해당하는 제약이다.
 
 ## Appendix A. Terminology
 
+- **Agent**: plugin의 `agents/` 에 두는 subagent 정의이다. 사용자가 지목하거나 Claude가 일을 넘길 때 load 된다.
+
 - **`autoUpdate`**: marketplace 등록 항목의 field이다. session 시작 시 marketplace와 plugin을 remote 기준으로 갱신하지만, Desktop interface에서는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않는다.
 
 - **`DISABLE_AUTOUPDATER`**: Desktop app이 session 프로세스에 심는 환경변수이다. 값이 `1` 이면 plugin 자동 갱신이 skip 되며, settings file의 `env` block으로 덮이지 않는다.
@@ -452,11 +454,13 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Claude Code on the Web**: cloud에서 remote repository를 clone 하여 실행하는 interface이다. local file system이 없으므로 remote repository에 commit 된 설정만 적용된다. Web interface로 줄여 쓴다.
 
+- **Command**: plugin의 `commands/` 에 두는 md file이다. file 이름이 곧 명령 이름이 되며, 사용자가 `/<command-name>` 을 입력할 때 load 된다.
+
 - **Context**: model이 응답을 만들 때 참조하는 입력 전체이다. 대화 내용과 함께 load 된 skill, hook이 주입한 rule이 여기에 들어간다. 크기에 한계가 있으므로 항상 load 되는 file은 짧게 유지한다.
 
-- **Global settings**: `~/.claude/settings.json` 이다. 사용자가 자기 machine에 두는 file이므로 그 machine의 모든 project에 적용되고, Web interface에는 존재하지 않는다.
-
 - **Hook**: 지정한 event에 개입하는 실행 지점이다. session 시작 시 동작하는 SessionStart hook과 매 prompt마다 동작하는 UserPromptSubmit hook을 사용한다.
+
+- **Machine settings**: `~/.claude/settings.json` 이다. 사용자가 자기 machine에 두는 file이므로 그 machine의 모든 project에 적용되고, git 밖에 있어 machine마다 손으로 적는다. Web interface에는 존재하지 않는다.
 
 - **Marketplace**: plugin의 catalog이다. `.claude-plugin/marketplace.json` 하나로 정의하며, 어떤 plugin이 어디에 있는지 나열한다.
 
@@ -468,7 +472,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Project in Claude Code**: 작업 중인 directory 그 자체이며, 보통 local git repository이다. 별도로 등록하는 절차가 없고, Claude Code를 연 위치가 곧 project가 된다. `.claude/` 와 CLAUDE.md도 그 directory를 기준으로 찾는다. Web interface에서는 clone 된 remote repository가 project가 된다.
 
-- **Project settings**: project의 `.claude/settings.json` 이다. commit 되므로 두 interface와 다른 사용자에게 모두 적용된다.
+- **Project settings**: project의 `.claude/settings.json` 이다. Desktop interface는 local repository의 사본을 읽고, Web interface는 session 시작 시 clone 된 remote repository의 사본을 읽는다.
 
 - **Prompt**: session 안에서 사용자가 보내는 한 번의 입력이다. session보다 작은 단위이며, UserPromptSubmit hook은 이 단위로 동작한다.
 
@@ -476,7 +480,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Session**: 하나의 Claude Code 실행 단위이다. 시작 시점에 settings, plugin, CLAUDE.md, hook 정의를 읽어 들이고, 그 구성으로 대화가 끝날 때까지 동작한다. rule 변경이 반영되는 경계가 곧 session이다.
 
-- **Skill**: 필요한 시점에 load 되는 rule 묶음이다. folder 이름이 skill 이름이 되고, `SKILL.md`의 `description`이 load 시점을 결정한다.
+- **Skill**: 필요한 시점에 load 되는 rule 묶음이다. folder 이름이 skill 이름이 되고, `SKILL.md`의 `description`이 지금 하는 일과 맞을 때 load 된다. 사용자가 `/<skill-name>` 을 입력해 곧바로 부를 수도 있다.
 
 - **Working clone**: rule을 수정하기 위해 받아 둔 plugin marketplace의 clone이다. 실행에는 쓰이지 않으며, push를 통해서만 동작에 반영된다.
 
