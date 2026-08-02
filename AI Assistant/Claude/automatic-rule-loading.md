@@ -2,20 +2,26 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 74
+rev. 75
 
 ## 1. Goal
 
-이 문서는 Claude Code 전용으로 desktop과 web interface를 고려한다. 두 interface에서 동일한 plugin (skills, hooks, commands, agents) 을 재사용하도록 plugin marketplace를 구성하고 적용하는 방법을 정리한다.
+이 문서는 Claude Code 전용으로 desktop과 web interface를 고려한다.
 
-Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project는 repository에 함께 commit 되는 settings file에 marketplace 등록과 plugin 활성화를 한 번 적어 두는 것으로 끝내는 방식이다. 그 뒤에는 두 가지가 저절로 이루어진다.
+Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가지를 한 번 해 두면 된다.
 
-1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [5.4](#54-session-start-hook) 의 hook이 이 역할을 맡는다.
+1. plugin marketplace에 rule을 기록한다.
+2. 그 marketplace를 remote git repository로 push 한다.
+3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 repository에 함께 commit 되는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+
+그 뒤에는 두 가지가 저절로 이루어진다.
+
+1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [4.4](#44-session-start-hook) 의 hook이 이 역할을 맡는다.
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
 
-## 2. Problem
+### 1.1 Problem
 
 기존 방식에는 두 가지 문제가 있다.
 
@@ -25,9 +31,9 @@ Automatic rule loading은 rule을 한 repository에서 관리하고, 각 project
 
 plugin marketplace는 이 두 문제를 함께 해결한다. rule을 한 곳에서 관리하고, 각 project는 참조만 한다.
 
-## 3. Architecture
+## 2. Architecture
 
-### 3.1 Copies and Coverage
+### 2.1 Copies and Coverage
 
 plugin marketplace의 사본이 여러 곳에 존재하지만 역할이 서로 다르다. 실행용 사본은 interface마다 별도로 존재한다.
 
@@ -79,7 +85,7 @@ account 단위 settings file은 어느 interface에도 없다. Desktop interface
 
 조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
-### 3.2 Marketplace and Plugin Layers
+### 2.2 Marketplace and Plugin Layers
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
@@ -105,7 +111,7 @@ marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json
 
 component 중 load 시점이 고정된 것은 hook뿐이다. skill은 `description`이 맞을 때, command와 agent는 호출될 때 load 되지만, `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다. 반드시 지켜야 할 rule을 이 경로에 둔다.
 
-### 3.3 Settings Files
+### 2.3 Settings Files
 
 settings.json은 두 위치에 있고, 이름은 같지만 적용 범위가 다르다.
 
@@ -123,11 +129,11 @@ User machine
 
 두 file에 같은 내용이 있으면 project settings가 이긴다.
 
-## 4. Automation Setup
+## 3. Automation Setup
 
 이 절은 automatic rule loading에 필요한 설정을 다룬다. plugin marketplace를 만들고(4.1), 각 project의 settings file에 등록한다(4.2). 적는 내용은 하나이며, 그 내용을 어느 settings file에 두는가에 따라 적용 범위가 달라진다. 기준이 되는 위치는 project settings이고, 범위별 적용 여부는 3.1절의 표에 정리되어 있다.
 
-### 4.1 Git Repository
+### 3.1 Git Repository
 
 rule을 담는 plugin marketplace는 일반 git repository이며, 최소 구성은 manifest file 두 개이다.
 
@@ -172,7 +178,7 @@ rule을 담는 plugin marketplace는 일반 git repository이며, 최소 구성�
 
 ⛔ **`version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
 
-### 4.2 Project Settings
+### 3.2 Project Settings
 
 project settings는 project 안의 `.claude/settings.json` 이다. 사용자의 machine이 아니라 project에 속하므로 commit 되어 함께 배포되며, 그 project를 여는 모든 사용자와 두 interface에 동일하게 적용된다. 그래서 이 file 하나가 공통 설정의 기준이 된다.
 
@@ -197,7 +203,7 @@ project settings는 project 안의 `.claude/settings.json` 이다. 사용자의 
 
 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
 
-⛔ **Desktop interface에서는 이 한 줄만으로 갱신되지 않는다.** Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심으므로 plugin 자동 갱신이 통째로 skip 된다. 자세한 내용과 대응은 [5.1](#51-session-level-update) 과 [5.4](#54-session-start-hook) 를 본다.
+⛔ **Desktop interface에서는 이 한 줄만으로 갱신되지 않는다.** Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심으므로 plugin 자동 갱신이 통째로 skip 된다. 자세한 내용과 대응은 [4.1](#41-session-level-update) 과 [4.4](#44-session-start-hook) 를 본다.
 
 settings file에 적지 않고 session에서 한 번만 설치할 수도 있다. prompt에 다음을 입력하면 각각 marketplace 등록과 plugin 설치가 일어난다. 단, `"autoUpdate": true` 와 `"yrocket-rules@claude-configuration": true` 는 수동으로 기입해야 한다.
 
@@ -219,9 +225,9 @@ enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 
 machine 전체에 적용하려면 "project의 .claude/settings.json" 대신 "`~/.claude/settings.json`"이라고 지시하면 된다.
 
-settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [5.4](#54-session-start-hook) 처럼 repository가 배포하므로 push만으로 따라온다.
+settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook) 처럼 repository가 배포하므로 push만으로 따라온다.
 
-#### 4.2.1 Field Reference
+#### 3.2.1 Field Reference
 
 | Field | Role |
 |---|---|
@@ -232,7 +238,7 @@ settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 
 
 field의 이름과 의미는 어느 settings file에 두든 동일하다.
 
-#### 4.2.2 Settings Precedence
+#### 3.2.2 Settings Precedence
 
 settings file은 여러 층으로 나뉘며, 우선순위는 `global settings < project settings` 순이다. 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다.
 
@@ -245,9 +251,9 @@ settings file은 여러 층으로 나뉘며, 우선순위는 `global settings < 
 
 OS 단위로 배포하는 managed settings file은 Desktop interface에만 도달하고 Web interface에는 적용되지 않는다.
 
-## 5. Automatic Update
+## 4. Automatic Update
 
-### 5.1 Session-Level Update
+### 4.1 Session-Level Update
 
 `autoUpdate`를 `true`로 두면 Claude Code가 session 시작 시 `[1]`을 기준으로 사본을 갱신한다. 다만 Desktop interface에서는 이 갱신이 실행되지 않는다.
 
@@ -263,9 +269,9 @@ Desktop app은 자신의 update를 스스로 관리하므로 session 프로세�
 [DEBUG] Plugin autoupdate: skipped (auto-updater disabled)
 ```
 
-이 변수는 settings file의 `env` block으로 덮이지 않는다. app이 값을 나중에 적용하므로 새 session에서도 `1` 이 유지된다. 따라서 Desktop interface에서 갱신을 자동화하려면 [5.4](#54-session-start-hook) 의 hook을 쓴다.
+이 변수는 settings file의 `env` block으로 덮이지 않는다. app이 값을 나중에 적용하므로 새 session에서도 `1` 이 유지된다. 따라서 Desktop interface에서 갱신을 자동화하려면 [4.4](#44-session-start-hook) 의 hook을 쓴다.
 
-### 5.2 Prompt-Level Injection
+### 4.2 Prompt-Level Injection
 
 marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 prompt 단위로 동작한다. 이 hook이 repository를 다시 읽는 것은 아니며, 이미 내려받아 둔 사본의 내용을 매 prompt마다 context에 넣는다.
 
@@ -278,9 +284,9 @@ marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 
 
 따라서 rule을 push 한 뒤 열려 있는 session에서 prompt를 반복해도 새 내용은 들어오지 않는다. 두 interface 모두 새 session을 열어야 반영된다.
 
-### 5.3 Manual Force Update
+### 4.3 Manual Force Update
 
-⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [5.4](#54-session-start-hook) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli) 를 본다.
+⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [4.4](#44-session-start-hook) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli) 를 본다.
 
 ```bash
 # claude CLI
@@ -297,7 +303,7 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 
 `installed_plugins.json` 의 `gitCommitSha` 가 marketplace clone의 HEAD와 같아지면 갱신이 끝난 것이다. 갱신된 plugin은 현재 열려 있는 session에는 적용되지 않고, 다음 session부터 적용된다.
 
-### 5.4 Session Start Hook
+### 4.4 Session Start Hook
 
 SessionStart hook에 5.3의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
@@ -358,9 +364,9 @@ grep -c '=== session start' ~/.claude/plugin-autoupdate.log
 
 session을 열 때마다 이 값이 늘면 정상이다. hook이 실행한 갱신 역시 그 session이 아니라 다음 session부터 적용되므로, 한 session의 지연은 남는다.
 
-## 6. Verification
+## 5. Verification
 
-### 6.1 Session Command
+### 5.1 Session Command
 
 Claude Code의 Desktop과 Web interface에서 prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확인할 수 있다.
 
@@ -372,7 +378,7 @@ Show installed_plugins.json
 
 두 file의 상세는 [Appendix E](#appendix-e-plugin-state-files) 에 있다.
 
-### 6.2 Claude CLI
+### 5.2 Claude CLI
 
 Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli) 를 본다.
 
@@ -385,7 +391,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 `details` 결과에 skill과 hook이 나타나면 정상이다.
 
-## 7. Extension
+## 6. Extension
 
 repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
@@ -412,33 +418,33 @@ repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 fi
 └── docs/                         : non-loaded document
 ```
 
-### 7.1 Hook
+### 6.1 Hook
 
 `hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
 
-### 7.2 Command
+### 6.2 Command
 
 `commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 호출할 때만 load 된다.
 
-### 7.3 Agent
+### 6.3 Agent
 
 `agents/` 에 md file을 추가한다. subagent의 정의이며, 호출될 때만 load 된다.
 
-### 7.4 Plugin
+### 6.4 Plugin
 
 `plugins/` 아래에 새 plugin folder를 만들고 `.claude-plugin/plugin.json`을 둔다. `marketplace.json` 등록이 필요한 유일한 확장이다.
 
-### 7.5 Skill and Reference File
+### 6.5 Skill and Reference File
 
 `skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
 
-### 7.6 Non-Loaded Document
+### 6.6 Non-Loaded Document
 
 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
 repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 4.2절의 `.claude/settings.json`에 있는 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
-## 8. Constraints
+## 7. Constraints
 
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
