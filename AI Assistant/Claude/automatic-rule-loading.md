@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 109
+rev. 110
 
 ## 1. Goal
 
@@ -12,7 +12,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
-3. Desktop interface는 local machine의 `~/.claude/settings.json` 에, Web interface는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+3. Desktop interface는 local machine의 `~/.claude/settings.json` 에, Web interface는 new session 시 선택하는 repository의 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
@@ -21,7 +21,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
 
-💡 bootstrap을 적는 횟수가 두 interface의 가장 큰 차이이다. Desktop interface는 machine마다 한 번이면 그 machine의 모든 project가 덮인다. Web interface는 session을 열 때 고른 repository가 곧 project이고 machine settings가 없으므로, Web에서 여는 repository마다 그 두 줄이 있어야 하며 없는 repository에서는 rule이 올라오지 않는다.
+💡 bootstrap을 적는 횟수가 두 interface의 가장 큰 차이이다. Desktop interface는 machine마다 한 번이면 그 machine의 모든 project가 덮인다. Web interface는 session을 열 때 고른 repository가 곧 project이고 machine settings가 없으므로, Web에서 여는 repository마다 `extraKnownMarketplaces` 와 `enabledPlugins` 가 있어야 하며 없는 repository에서는 rule이 올라오지 않는다.
 
 ## 2. Architecture
 
