@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 71
+rev. 72
 
 ## 1. Goal
 
@@ -221,6 +221,8 @@ enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 
 machine 전체에 적용하려면 "project의 .claude/settings.json" 대신 "`~/.claude/settings.json`"이라고 지시하면 된다.
 
+settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [5.4](#54-session-start-hook) 처럼 repository가 배포하므로 push만으로 따라온다.
+
 #### 4.2.1 Field Reference
 
 | Field | Role |
@@ -301,9 +303,21 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 
 SessionStart hook에 5.3의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
+이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
+
 ```json
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/hooks/conversation_rules.md\""
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "startup",
@@ -328,7 +342,15 @@ SessionStart hook에 5.3의 두 명령을 걸면 사람이 개입하지 않아�
 | 경로를 `$HOME` 으로 쓴다 | `%USERPROFILE%` 은 bash가 확장하지 않는다 |
 | 이름을 하드코딩하지 않는다 | `installed_plugins.json` 에서 읽으면 marketplace와 plugin이 늘어도 그대로 동작한다 |
 
-hook은 `~/.claude/settings.json`, project settings, plugin의 `hooks.json` 어디에 두어도 실행된다. matcher를 `startup` 으로 두면 새 session에서만 실행되고 resume에서는 실행되지 않는다.
+세 위치 모두에서 hook이 실행되지만, 배포 여부가 다르므로 plugin의 `hooks.json` 을 기본으로 삼는다.
+
+| Location | Distributed by push | Applies to a new machine |
+|---|---|---|
+| plugin의 `hooks/hooks.json` | 예 | plugin 설치만으로 적용된다 |
+| project의 `.claude/settings.json` | 예 | 그 project를 열면 적용된다 |
+| `~/.claude/settings.json` | 아니오 | 손으로 적어야 한다 |
+
+같은 hook을 두 곳에 두면 session마다 갱신이 두 번 실행되므로, plugin으로 옮긴 뒤에는 settings file 쪽을 지운다. matcher를 `startup` 으로 두면 새 session에서만 실행되고 resume에서는 실행되지 않는다.
 
 동작 여부는 log 파일로 확인한다.
 
@@ -394,7 +416,7 @@ repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 fi
 
 ### 7.1 Hook
 
-`hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다.
+`hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
 
 ### 7.2 Command
 
