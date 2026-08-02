@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 93
+rev. 94
 
 ## 1. Goal
 
@@ -112,7 +112,7 @@ User machine
 |---|---|---|---|
 | Desktop | `~/.claude/settings.json` | machine | git 밖의 개인 file이라 machine마다 직접 적는다 |
 | Desktop | `<project>/.claude/settings.json` | project | commit 되어 repository와 함께 움직인다 |
-| Web | `<project>/.claude/settings.json` | project | local file system이 없어 이 file만 읽는다 |
+| Web | `<project>/.claude/settings.json` | project | push 해 두면 session 시작 시 clone 된 사본에서 읽힌다 |
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
