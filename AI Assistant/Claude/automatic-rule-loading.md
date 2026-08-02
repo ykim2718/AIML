@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 105
+rev. 106
 
 ## 1. Goal
 
@@ -117,6 +117,7 @@ User machine
 💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
+
 💡 Desktop interface의 두 settings file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
 Web interface는 machine settings가 없어 project settings가 유일한 자리이다. session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다.
@@ -173,9 +174,9 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ### 3.2 Settings Files (Desktop/Web)
 
-bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳이면 되고, Web interface까지 덮으려면 `<project>/.claude/settings.json` 에 적는다.
+손으로 적는 것은 Desktop interface의 machine settings `~/.claude/settings.json` 하나뿐이다. project settings는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 대로 clone 되어 오므로 여기서 다루지 않는다.
 
-어느 file이든 적는 내용은 marketplace 위치와 plugin 활성화로 같다.
+적는 내용은 marketplace 위치와 plugin 활성화이다.
 
 ```json
 {
@@ -210,13 +211,11 @@ settings file 수정도 손으로 할 필요 없이 prompt에서 지시하면 �
 
 ```
 # prompt
-project의 .claude/settings.json에 extraKnownMarketplaces로
+~/.claude/settings.json에 extraKnownMarketplaces로
 ykim2718/Claude-Configuration (github source, autoUpdate: true)을
 claude-configuration 이름으로 등록하고,
 enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 ```
-
-machine 전체에 적용하려면 "project의 .claude/settings.json" 대신 "`~/.claude/settings.json`"이라고 지시하면 된다.
 
 settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
