@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 92
+rev. 93
 
 ## 1. Goal
 
@@ -117,8 +117,6 @@ User machine
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
 
 Web interface는 machine settings가 없다. 대신 remote repository의 project settings에 bootstrap이 push 되어 있으면, new session이 `add and install`을 다시 하므로 매 session 최신 marketplace를 받는다. Desktop interface처럼 [4.4](#44-session-start-hook-desktop) 의 hook을 따로 둘 필요도 없다. 다만 remote repository의 project settings가 비어 있으면 rule은 올라오지 않는다.
-
-조직 단위로는 server-managed settings가 두 interface에 모두 적용된다. Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. 다만 `enabledPlugins`로 특정 plugin을 강제하는 것은 가능하나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ## 3. Setup
 
@@ -420,13 +418,14 @@ repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 fi
 
 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
-repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 4.2절의 `.claude/settings.json`에 있는 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
+repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.2절의 `.claude/settings.json`에 있는 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
 ## 7. Constraints
 
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
 - private repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 repository 공개 범위를 확인한다.
+- 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
 ## Appendix A. Terminology
 
