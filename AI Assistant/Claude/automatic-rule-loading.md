@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 94
+rev. 95
 
 ## 1. Goal
 
@@ -111,7 +111,7 @@ User machine
 | Interface | Settings file | Coverage | Distribution |
 |---|---|---|---|
 | Desktop | `~/.claude/settings.json` | machine | git 밖의 개인 file이라 machine마다 직접 적는다 |
-| Desktop | `<project>/.claude/settings.json` | project | commit 되어 repository와 함께 움직인다 |
+| Desktop | `<project>/.claude/settings.json` | project | local file을 그대로 읽으며, push 하면 다른 machine에도 따라간다 |
 | Web | `<project>/.claude/settings.json` | project | push 해 두면 session 시작 시 clone 된 사본에서 읽힌다 |
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
@@ -342,9 +342,9 @@ session을 열 때마다 이 값이 늘면 정상이다. hook이 실행한 갱�
 
 ## 5. Verification
 
-### 5.1 Session Command
+### 5.1 Session Command (Desktop/Web)
 
-Claude Code의 Desktop과 Web interface에서 prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확인할 수 있다.
+두 interface 모두 prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확인할 수 있다.
 
 ```
 # prompt
@@ -354,9 +354,9 @@ Show installed_plugins.json
 
 두 file의 상세는 [Appendix E](#appendix-e-plugin-state-files) 에 있다.
 
-### 5.2 Claude CLI
+### 5.2 Claude CLI (Desktop)
 
-Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli) 를 본다.
+Desktop interface에서는 `claude` CLI로도 확인할 수 있다. Web interface에는 terminal이 없으므로 5.1의 방법만 쓴다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli) 를 본다.
 
 ```
 # claude CLI
