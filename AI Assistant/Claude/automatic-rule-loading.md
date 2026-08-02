@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 98
+rev. 99
 
 ## 1. Goal
 
@@ -115,6 +115,8 @@ User machine
 | Web | `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
 
 Desktop interface는 machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다. machine settings와 project settings에 같은 내용이 있으면 병합되고, 겹치는 값은 project settings가 이긴다.
+
+두 file 모두 자동으로 갱신되지 않는다. Claude Code는 project의 local repository를 `git pull` 하지 않으므로, 누군가 remote repository의 project settings를 고쳐도 사람이 pull 해야 반영된다. 자동으로 갱신되는 것은 marketplace 사본이지 settings file이 아니다. Web interface는 session마다 remote repository를 새로 clone 하므로 이 차이가 없다.
 
 Web interface는 machine settings가 없다. 대신 remote repository의 project settings에 bootstrap이 push 되어 있으면, new session이 `add and install`을 다시 하므로 매 session 최신 marketplace를 받는다. Desktop interface처럼 [4.4](#44-session-start-hook-desktop) 의 hook을 따로 둘 필요도 없다. 다만 remote repository의 project settings가 비어 있으면 rule은 올라오지 않는다.
 
