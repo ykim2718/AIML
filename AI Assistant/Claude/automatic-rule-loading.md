@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 101
+rev. 102
 
 ## 1. Goal
 
@@ -12,7 +12,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
-3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 remote repository에 함께 commit 되는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 remote repository에 함께 push 되는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
@@ -171,7 +171,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ### 3.2 Settings Files (Desktop/Web)
 
-bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳으로 그 machine의 모든 project가 덮이고, Web interface까지 덮으려면 commit 되는 `<project>/.claude/settings.json` 에 적어야 한다.
+bootstrap을 어느 file에 적을지는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표대로 고른다. Desktop interface만 쓰면 `~/.claude/settings.json` 한 곳으로 그 machine의 모든 project가 덮이고, Web interface까지 덮으려면 push 되는 `<project>/.claude/settings.json` 에 적어야 한다.
 
 어느 file이든 적는 내용은 marketplace 위치와 plugin 활성화로 같다.
 
@@ -264,7 +264,7 @@ marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 
 
 ### 4.3 Manual Force Update (Desktop)
 
-⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [4.4](#44-session-start-hook-desktop) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli) 를 본다.
+⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [4.4](#44-session-start-hook-desktop) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
 # claude CLI
@@ -358,7 +358,7 @@ Show installed_plugins.json
 
 ### 5.2 Claude CLI (Desktop)
 
-Desktop interface에서는 `claude` CLI로도 확인할 수 있다. Web interface에는 terminal이 없으므로 5.1의 방법만 쓴다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli) 를 본다.
+Desktop interface에서는 `claude` CLI로도 확인할 수 있다. Web interface에는 terminal이 없으므로 5.1의 방법만 쓴다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```
 # claude CLI
@@ -452,7 +452,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Claude Code in the Desktop**: local machine에서 실행하는 interface이다. `~/.claude/` 아래의 machine settings와 plugin cache를 사용한다. Desktop interface로 줄여 쓴다.
 
-- **Claude Code on the Web**: cloud에서 remote repository를 clone 하여 실행하는 interface이다. local file system이 없으므로 remote repository에 commit 된 설정만 적용된다. Web interface로 줄여 쓴다.
+- **Claude Code on the Web**: cloud에서 remote repository를 clone 하여 실행하는 interface이다. local file system이 없으므로 remote repository에 push 된 설정만 적용된다. Web interface로 줄여 쓴다.
 
 - **Command**: plugin의 `commands/` 에 두는 md file이다. file 이름이 곧 명령 이름이 되며, 사용자가 `/<command-name>` 을 입력할 때 load 된다.
 
@@ -486,9 +486,11 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Working directory**: Claude Code를 실행한 folder이다. 이 folder가 곧 project가 되며, `.claude/` 와 CLAUDE.md도 이 위치를 기준으로 찾는다.
 
-## Appendix B. Claude CLI
+## Appendix B. Claude CLI (Desktop)
 
 ### B.1 CLI Installation
+
+이 appendix는 Desktop interface에만 해당한다. Web interface에는 terminal이 없어 CLI를 쓸 수 없다.
 
 Desktop app을 설치해도 `claude` CLI는 PATH에 들어오지 않는다. terminal에서 `claude` 명령을 쓰려면 별도로 설치한다.
 
@@ -501,7 +503,7 @@ WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치
 
 ### B.2 CLI Commands
 
-terminal에서 실행하는 plugin 관련 명령들이다.
+terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [4.3](#43-manual-force-update-desktop) 과 짝을 이룬다.
 
 - **`claude plugin marketplace add <OWNER>/<REPO>`**: plugin marketplace를 등록한다.
 - **`claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: plugin을 설치한다.
@@ -668,7 +670,7 @@ working clone 자체를 vault로 열었을 때의 구조는 다음과 같다. Ob
 
 `plugins` 라는 이름이 두 곳에 나오지만 서로 관계가 없다. `.obsidian/plugins/` 는 Obsidian이 쓰는 것이고, 최상위의 `plugins/` 는 Claude Code가 쓰는 것이다.
 
-`.obsidian/` 은 혼자 쓰는 vault라면 `.gitignore` 에 넣고, 설정을 함께 쓰고 싶다면 commit 한다.
+`.obsidian/` 은 혼자 쓰는 vault라면 `.gitignore` 에 넣고, 설정을 함께 쓰고 싶다면 push 한다.
 
 첨부 file이 생길 자리를 미리 지정한다. 지정하지 않으면 note를 만든 위치, 즉 plugin folder 안에 image가 쌓인다.
 
