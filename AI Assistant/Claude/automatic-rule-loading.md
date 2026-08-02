@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 88
+rev. 89
 
 ## 1. Goal
 
@@ -227,13 +227,7 @@ settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 
 | `autoUpdate` | marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다 |
 | `enabledPlugins` | `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다 |
 
-field의 이름과 의미는 어느 settings file에 두든 동일하다.
-
-#### 3.2.2 Settings Precedence
-
-settings file은 여러 층으로 나뉘며, 우선순위는 `machine settings < project settings` 순이다. 두 file의 위치와 interface별 적용 범위는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 의 표에 있다.
-
-그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings file은 Desktop interface에만 도달하고 Web interface에는 적용되지 않는다.
+field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.3](#23-bootstrap-in-settings-files-desktopweb) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
 
 ## 4. Automatic Update
 
