@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 106
+rev. 107
 
 ## 1. Goal
 
@@ -12,7 +12,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
-3. Desktop interface는 `~/.claude/settings.json` 에, Web interface는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+3. Desktop interface는 local machine의 `~/.claude/settings.json` 에, Web interface는 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
