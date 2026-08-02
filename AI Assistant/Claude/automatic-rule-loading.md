@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 111
+rev. 112
 
 ## 1. Goal
 
@@ -58,7 +58,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
-### 2.2 Environment Setup Files
+### 2.2 Bootstrap Files
 
 사람이 고쳐야 하는 file은 settings file 하나뿐이고, 거기에 적는 항목은 두 개이다.
 
@@ -133,7 +133,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 ## 3. Bootstrap
 
-이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 settings file에 bootstrap을 적는다 (3.2).
+이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 [2.2](#22-bootstrap-files) 의 두 항목을 settings file에 적는다 (3.2).
 
 ### 3.1 Remote Git Repository
 
@@ -180,9 +180,9 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ⛔ **`version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
 
-### 3.2 Settings Files (Desktop/Web)
+### 3.2 Bootstrap Entry (Desktop)
 
-손으로 적는 것은 Desktop interface의 machine settings `~/.claude/settings.json` 하나뿐이다. project settings는 [2.2](#22-environment-setup-files) 대로 clone 되어 오므로 여기서 다루지 않는다.
+손으로 적는 것은 Desktop interface의 machine settings `~/.claude/settings.json` 하나뿐이다. project settings는 [2.2](#22-bootstrap-files) 대로 clone 되어 오므로 여기서 다루지 않는다.
 
 적는 내용은 marketplace 위치와 plugin 활성화이다.
 
@@ -236,7 +236,7 @@ settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 
 | `autoUpdate` | marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다 |
 | `enabledPlugins` | `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다 |
 
-field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.2](#22-environment-setup-files) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
+field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.2](#22-bootstrap-files) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
 
 ## 4. Automatic Update
 
@@ -380,7 +380,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 ## 6. Extension
 
-확장은 모두 [3.1](#31-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.2](#32-settings-files-desktopweb) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
+확장은 모두 [3.1](#31-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.2](#32-bootstrap-entry-desktop) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
 
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
@@ -445,7 +445,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 Desktop interface에만 해당하는 제약이다.
 
 - `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [4.4](#44-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
-- settings file은 자동으로 pull 되지 않는다 ([2.2](#22-environment-setup-files)).
+- settings file은 자동으로 pull 되지 않는다 ([2.2](#22-bootstrap-files)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
@@ -456,6 +456,8 @@ Desktop interface에만 해당하는 제약이다.
 - **`autoUpdate`**: marketplace 등록 항목의 field이다. session 시작 시 marketplace와 plugin을 remote 기준으로 갱신하지만, Desktop interface에서는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않는다.
 
 - **`DISABLE_AUTOUPDATER`**: Desktop app이 session 프로세스에 심는 환경변수이다. 값이 `1` 이면 plugin 자동 갱신이 skip 되며, settings file의 `env` block으로 덮이지 않는다.
+
+- **Bootstrap**: settings file에 적는 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목이다. marketplace를 처음 가리키는 자리이므로 marketplace 자신이 배포할 수 없다.
 
 - **claude.ai**: Claude 계정으로 접속하는 web service이다. Web interface는 이 service 안에서 열리며, 개인 skill을 켜고 끄는 화면과 조직의 server-managed settings를 다루는 admin 화면도 여기에 있다. 두 interface가 코드를 다루는 곳이라면, claude.ai는 계정과 조직을 다루는 곳이다.
 
