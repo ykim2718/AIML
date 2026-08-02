@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 107
+rev. 108
 
 ## 1. Goal
 
@@ -56,7 +56,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
-### 2.2 Marketplace and Plugin Layers in Remote Git Repository 🌳
+### 2.2 Plugin Marketplace in Remote Git Repository 🌳
 
 marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
