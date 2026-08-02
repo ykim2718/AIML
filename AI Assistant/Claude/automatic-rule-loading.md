@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 79
+rev. 80
 
 ## 1. Goal
 
@@ -82,7 +82,14 @@ marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json
 
 plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 그 plugin의 이름과 정보를 담는다. 실제 기능은 plugin folder 아래의 component folder가 담는다.
 
-component 중 load 시점이 고정된 것은 hook뿐이다. skill은 `description`이 맞을 때, command와 agent는 호출될 때 load 되지만, `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다. 반드시 지켜야 할 rule을 이 경로에 둔다.
+component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건이 맞을 때만 올라온다.
+
+- **skill**: session에는 각 skill의 이름과 `description` 한 줄만 목록으로 떠 있다. 지금 하는 일이 그 설명과 들어맞는다고 Claude가 판단하면 그때 본문 file을 읽어 들인다. 그래서 `description`은 언제 쓰는 skill인지가 드러나게 적어야 하고, 그렇지 않으면 skill이 있어도 불려 나오지 않는다.
+- **command**: 사용자가 prompt에 `/<command-name>` 을 입력할 때 그 file이 load 된다.
+- **agent**: 사용자가 이름을 대어 지목하거나, Claude가 그 일을 subagent에 넘기기로 할 때 load 된다.
+- **hook**: `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다.
+
+반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
 
 ### 2.3 Bootstrap
 
