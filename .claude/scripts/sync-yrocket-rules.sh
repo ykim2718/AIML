@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-__version__="0.2.0.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
-# Refresh this repository's copy of the yrocket-rules skills and prompt rules.
+__version__="0.2.1.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+# Refresh this repository's copy of the yrocket skills and prompt rules.
 #
 # The rules are vendored under .claude/ rather than installed as a plugin, because a
 # plugin only loads in a session that already had it installed at startup, which a
-# fresh container never does. Their source of truth stays in the yrocket-rules plugin
-# of ykim2718/Claude-Configuration, so this script copies from there.
+# fresh container never does. Their source of truth stays in the yrocket-plugins
+# plugin of ykim2718/Claude-Configuration, so this script copies from there.
 #
 # It never commits; review the diff it reports and commit it yourself.
 #
@@ -18,7 +18,7 @@ __version__="0.2.0.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY
 set -euo pipefail
 
 source_url="https://github.com/ykim2718/Claude-Configuration.git"
-plugin_path="plugins/yrocket-rules"
+plugin_path="plugins/yrocket-plugins"
 skill_names="md_rules coding_rules"
 rule_names="conversation_rules.md skill_loading_rules.md"
 
@@ -27,7 +27,7 @@ project_folder="$(cd "$script_folder/../.." && pwd)"
 
 usage() {
   cat <<USAGE
-Refresh .claude/skills and .claude/hooks from the yrocket-rules plugin in $source_url.
+Refresh .claude/skills and .claude/hooks from the yrocket-plugins plugin in $source_url.
 
 Usage:
   $(basename "${BASH_SOURCE[0]}") [SOURCE_FOLDER]
