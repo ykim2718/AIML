@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 181
+rev. 182
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -283,7 +283,7 @@ hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file�
 } >> "$HOME/.claude/plugin-autoupdate.log" 2>&1
 ```
 
-만드는 방법은 두 가지이다. CLI는 file을 만들어 주지 않으므로 여기서는 쓰지 않는다.
+두 file을 만드는 방법은 두 가지이다. `claude` CLI에는 file을 만드는 명령이 없어 여기서는 쓰지 못한다.
 
 #### Editor
 
@@ -302,6 +302,8 @@ hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file�
 ```
 
 `update-plugins.sh` 도 경로와 code block만 바꾸어 같은 방식으로 지시한다.
+
+#### Distribution
 
 이 hook은 사람이 한 번 작성해 marketplace에 넣어 두면 그다음부터는 plugin과 함께 배포된다. 다른 machine은 plugin을 설치하는 것만으로 같은 갱신 동작을 얻으므로, 손으로 갖추는 것은 처음 한 번뿐이다.
 
