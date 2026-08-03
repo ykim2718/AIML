@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 160
+rev. 161
 
 ## 1. Goal
 
@@ -20,8 +20,6 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
-
-💡 bootstrap을 적는 횟수가 두 interface의 가장 큰 차이이며, 그 자리는 [3](#3-bootstrap) 에서 다룬다.
 
 ## 2. Architecture
 
