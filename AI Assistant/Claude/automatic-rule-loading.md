@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 152
+rev. 153
 
 ## 1. Goal
 
@@ -130,10 +130,10 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 automatic rule loading에 필요한 것은 두 interface가 다르다.
 
-| Item | Desktop interface | Web interface |
-|---|---|---|
-| settings file | `~/.claude/settings.json` | `<project>/.claude/settings.json` |
-| Session Start Hook | 필요 | 불필요 |
+| Interface | Location | Settings file | Session Start Hook |
+|---|---|---|---|
+| Desktop | local repository | `~/.claude/settings.json` | 필요 |
+| Web | remote project repository | `<project>/.claude/settings.json` | 불필요 |
 
 settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다.
 
