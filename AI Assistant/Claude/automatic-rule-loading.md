@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 169
+rev. 170
 
 ## 1. Goal
 
@@ -42,7 +42,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
    |      Working clone     |  |      Installed plugins |  |      Installed plugins |
    |                        |  |                        |  |                        |
    |  author edits          |  |  persists              |  |  discarded             |
-   |  push to [1]           |  |                        |  |  at session end        |
+   |  push to GitHub        |  |  across sessions       |  |  at session end        |
    +------------------------+  +------------------------+  +------------------------+
 ```
 
@@ -546,17 +546,6 @@ skills/<skill-name>/
 - **`known_marketplaces.json`**: marketplace를 처음 추가할 때 (`/plugin marketplace add` 를 실행하거나, settings file의 `extraKnownMarketplaces` 항목을 읽어 clone 할 때) 생성된다. marketplace를 하나도 등록한 적 없는 새 설치 환경에는 없다.
 - **`installed_plugins.json`**: plugin을 처음 설치할 때 생성된다. 마찬가지로 설치한 plugin이 없으면 없다.
 
-역할 구분은 다음과 같다.
-
-**Table 4.** Settings written by the user versus state recorded by Claude Code.
-
-| File | Role |
-|---|---|
-| `extraKnownMarketplaces`, `enabledPlugins` in the settings file | configuration written by the user: what to use |
-| `known_marketplaces.json`, `installed_plugins.json` in `~/.claude/plugins/` | state recorded by Claude Code: what was installed, when, and where |
-
-그래서 settings file은 직접 편집해도 되지만, `~/.claude/plugins/` 아래의 상태 file은 Claude Code가 관리하므로 직접 손대지 않는 게 좋다. 지우더라도 다음에 marketplace와 plugin을 다시 등록하면 재생성된다.
-
 실제 예시는 다음과 같다.
 
 `known_marketplaces.json` — 등록된 marketplace와 그 clone 위치, 마지막 갱신 시각을 기록한다:
@@ -607,7 +596,7 @@ rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 �
 
 배치는 세 가지가 있다.
 
-**Table 5.** Three ways to place the working clone in an Obsidian vault.
+**Table 4.** Three ways to place the working clone in an Obsidian vault.
 
 | Placement | Description | Note |
 |---|---|---|
