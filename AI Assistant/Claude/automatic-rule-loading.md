@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 187
+rev. 188
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -129,6 +129,27 @@ plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 
 ```
 
 ⛔ **`plugin.json`에 `version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
+
+`source` 에 `git-subdir` 를 쓰면 다른 remote repository의 특정 folder를 plugin으로 삼는다. `url` 이 repository를, `path` 가 그 안의 folder를 가리킨다.
+
+```json
+// .claude-plugin/marketplace.json
+{
+  "plugins": [
+    {
+      "name": "<PLUGIN_NAME>",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/<OWNER>/<REPO>.git",
+        "path": "plugins/<PLUGIN_NAME>",
+        "ref": "main"
+      }
+    }
+  ]
+}
+```
+
+`ref` 는 따라갈 branch이다. `sha` 를 함께 적으면 그 commit에 고정되어 갱신이 멈추므로, 최신을 따라가려면 `ref` 만 둔다.
 
 component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건이 맞을 때만 올라온다.
 
