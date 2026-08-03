@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 131
+rev. 132
 
 ## 1. Goal
 
@@ -106,12 +106,11 @@ automatic rule loading에 필요한 것은 두 interface가 다르다.
 | Item | Desktop interface | Web interface |
 |---|---|---|
 | settings file | `~/.claude/settings.json` | `<project>/.claude/settings.json` |
-| `extraKnownMarketplaces`, `enabledPlugins` | 필요하다 | 필요하다 |
-| Session Start Hook | 필요하다 | 필요 없다 |
+| Session Start Hook | 필요 | 불필요 |
 
-`extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다.
+settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다.
 
-Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop은 설치 당시 commit에 고정되어 사람이나 hook이 갱신해야 하지만, Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
+Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심어 `"autoUpdate": true` 가 실행되지 않으므로, plugin이 설치 당시 commit에 고정되어 rule을 push 해도 따라오지 않는다. 그 갱신을 hook이 대신한다. Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
 💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
