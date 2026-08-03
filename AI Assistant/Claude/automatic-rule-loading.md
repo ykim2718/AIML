@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 145
+rev. 146
 
 ## 1. Goal
 
@@ -277,6 +277,8 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
 두 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. 위 code block을 그대로 붙여 넣고 file을 지정하면 Claude가 그 내용대로 만들어 넣는다. 설명으로 시키는 것과 달리 문구 해석이 끼지 않아 문서와 같은 file이 된다.
+
+⛔ **첫 줄의 파일명 주석은 빼고 붙여 넣는다.** JSON은 주석을 허용하지 않아 `//` 줄이 들어가면 `hooks.json` 을 읽을 때 실패한다. 이 주석은 code가 어느 file인지 문서에서 표시하는 표기일 뿐이고, 경로는 prompt에 따로 적는다.
 
 ```
 # prompt
