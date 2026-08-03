@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 147
+rev. 148
 
 ## 1. Goal
 
@@ -189,7 +189,7 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 }
 ```
 
-🌷 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
+💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
 
 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
@@ -218,7 +218,7 @@ claude plugin install yrocket-rules@claude-configuration
 
 ### 3.2 Session Start Hook (Desktop)
 
-🌷 SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+💡 SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 ```bash
 # claude CLI
