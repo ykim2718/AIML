@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 175
+rev. 176
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -208,7 +208,7 @@ enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 settings file을 열지 않고 CLI로 같은 두 항목을 넣을 수도 있다. 다음 두 명령이 각각 marketplace 등록과 plugin 설치를 하며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
-# claude CLI
+# claude CLI, or prompt asking Claude to run them
 claude plugin marketplace add ykim2718/Claude-Configuration
 claude plugin install yrocket-rules@claude-configuration
 ```
@@ -337,7 +337,7 @@ Show installed_plugins.json
 Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```
-# claude CLI
+# claude CLI, or prompt asking Claude to run them
 claude plugin marketplace list
 claude plugin list
 claude plugin details yrocket-rules@claude-configuration
@@ -494,7 +494,7 @@ terminal에서 실행하는 plugin 관련 명령들이다.
 이 remote repository에 적용하는 예시는 다음과 같다.
 
 ```bash
-# claude CLI
+# claude CLI, or prompt asking Claude to run them
 claude plugin marketplace update claude-configuration
 claude plugin update yrocket-rules@claude-configuration
 ```
