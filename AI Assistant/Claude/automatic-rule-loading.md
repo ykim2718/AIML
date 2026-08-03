@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 130
+rev. 131
 
 ## 1. Goal
 
@@ -109,7 +109,7 @@ automatic rule loading에 필요한 것은 두 interface가 다르다.
 | `extraKnownMarketplaces`, `enabledPlugins` | 필요하다 | 필요하다 |
 | Session Start Hook | 필요하다 | 필요 없다 |
 
-두 항목은 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 repository마다 적는다.
+`extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다.
 
 Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop은 설치 당시 commit에 고정되어 사람이나 hook이 갱신해야 하지만, Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
