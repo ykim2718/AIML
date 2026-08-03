@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 166
+rev. 167
 
 ## 1. Goal
 
@@ -145,7 +145,7 @@ Interface에 따라, automatic rule loading을 위해, 직접 작성하여야 �
 
 settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 내용은 같고 적는 자리만 다르며, Desktop은 machine에 한 번 작성으로 완료되고, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
-Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심어 `"autoUpdate": true` 가 실행되지 않으므로, plugin이 설치 당시 commit에 고정되어 rule을 push 해도 따라오지 않는다. 그 갱신을 hook이 대신한다. Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
+Session Start Hook은 사람이 한 번 작성해 marketplace에 넣어 두는 Desktop 전용 항목이다. Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심어 `"autoUpdate": true` 가 실행되지 않으므로, plugin이 설치 당시 commit에 고정되어 rule을 push 해도 따라오지 않는다. 그 갱신을 hook이 대신한다. Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
 💡 사람이 적는 것은 Table 1의 settings file과 hook뿐이고, 그 뒤의 rule은 모두 clone 된 사본에서 온다. Desktop interface는 내려받아 둔 marketplace 사본을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
@@ -162,7 +162,7 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
-이 file은 editor로 직접 열어 적어도 된다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이기 때문이다.
+machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다. 이 file은 editor로 직접 열어 적어도 된다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이기 때문이다.
 
 ```json
 // ~/.claude/settings.json
@@ -184,7 +184,7 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 
 💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이 맡는다.
 
-사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-in-desktop-interface) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+settings file에 사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. rule은 remote repository가 배포하므로 push만으로 따라오고, 갱신 hook도 사람이 한 번 작성해 marketplace에 넣어 두면 그다음부터는 plugin과 함께 배포된다 ([3.2](#32-session-start-hook-in-desktop-interface)).
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
@@ -283,7 +283,7 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 
 ### 3.3 Settings.json in Web Interface
 
-settings.json에 적는 내용은 [3.1](#31-settingsjson-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
+settings.json에 적는 두 항목은 [3.1](#31-settingsjson-in-desktop-interface) 의 JSON과 같고, 그 file이 `<project>/.claude/settings.json` 이라는 점만 다르다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
 
 ```
 Remote project repository
@@ -403,7 +403,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 
 Desktop interface에만 해당하는 제약이다.
 
-- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이나 사람이 맡는다.
+- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이 맡는다. 이 hook을 두지 않으면 갱신이 자동으로 이루어지지 않는다.
 - settings file은 자동으로 pull 되지 않는다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 [Table 1](#3-bootstrap) 의 settings file이 맡는다.
