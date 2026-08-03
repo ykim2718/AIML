@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 150
+rev. 151
 
 ## 1. Goal
 
@@ -126,7 +126,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
 
-## 3. Setup
+## 3. Bootstrap
 
 automatic rule loading에 필요한 것은 두 interface가 다르다.
 
