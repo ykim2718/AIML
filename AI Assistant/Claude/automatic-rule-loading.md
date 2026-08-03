@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 156
+rev. 157
 
 ## 1. Goal
 
@@ -12,7 +12,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
-3. Desktop interface는 local machine의 `~/.claude/settings.json` 에, Web interface는 new session 시 선택하는 repository의 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+3. Desktop interface는 user machine의 `~/.claude/settings.json` 에, Web interface는 session을 열 때 고르는 remote project repository의 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
@@ -55,7 +55,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 `[3]`은 내려받은 사본을 machine의 한 folder 아래에 나누어 둔다. `[4]`도 같은 것을 내려받지만 저장 경로는 공식 문서에 없고, session이 끝나면 사라진다.
 
 ```
-User machine
+[3] Desktop interface
 └── ~/.claude/
     └── plugins/
         ├── marketplaces/<name>/    : clone of <repository root>
@@ -206,7 +206,7 @@ User machine
 - **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다.
 - **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
 
-settings file 수정은 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
+직접 열지 않고 prompt에서 지시해도 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
 
 ```
 # prompt
@@ -284,7 +284,7 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 } >> "$HOME/.claude/plugin-autoupdate.log" 2>&1
 ```
 
-두 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. 위 code block을 그대로 붙여 넣고 file을 지정하면 Claude가 그 내용대로 만들어 넣는다. 설명으로 시키는 것과 달리 문구 해석이 끼지 않아 문서와 같은 file이 된다.
+두 file도 직접 만들지 않고 prompt에서 지시해도 된다. 위 code block을 그대로 붙여 넣고 file을 지정하면 Claude가 그 내용대로 만들어 넣는다. 설명으로 시키는 것과 달리 문구 해석이 끼지 않아 문서와 같은 file이 된다.
 
 ⛔ **첫 줄의 파일명 주석은 빼고 붙여 넣는다.** JSON은 주석을 허용하지 않아 `//` 줄이 들어가면 `hooks.json` 을 읽을 때 실패한다. 이 주석은 code가 어느 file인지 문서에서 표시하는 표기일 뿐이고, 경로는 prompt에 따로 적는다.
 
@@ -317,7 +317,7 @@ Cloud session
 
 **Fig. 6.** The same file after the cloud session clones the repository.
 
-session마다 marketplace를 새로 등록하고 plugin을 다시 설치하므로 매 session 최신 marketplace를 받으며, [3.2](#32-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
+대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
 이 file도 prompt에서 지시하면 Claude가 만들어 넣는다. 만든 뒤에는 remote project repository에 push 한다.
 
@@ -367,13 +367,11 @@ context에 들어온 rule을 그대로 보여줘
 /context
 ```
 
-첫 입력에는 `hooks/` 의 rule file 내용이, 둘째 입력에는 plugin의 skill 이름과 `description`이 나오면 정상이다. `/context` 는 지금 context에 올라온 것을 나열한다.
-
-`/context` 는 cloud session에서 동작하는 명령이며, 확인 결과가 비어 있으면 그 repository의 `.claude/settings.json` 부터 본다 ([3.3](#33-settingsjson-in-web-interface)).
+첫 입력에는 `hooks/` 의 rule file 내용이, 둘째 입력에는 plugin의 skill 이름과 `description`이 나오면 정상이다. `/context` 는 cloud session에서 동작하는 명령으로 지금 context에 올라온 것을 나열한다. 셋 다 비어 있으면 그 repository의 `.claude/settings.json` 부터 본다 ([3.3](#33-settingsjson-in-web-interface)).
 
 ## 5. Extension
 
-확장은 모두 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.1](#31-settingsjson-in-desktop-interface) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
+확장은 모두 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 settings file의 `enabledPlugins` 에 한 줄이 더 필요하며, 이는 두 interface에 모두 해당한다 ([3.1](#31-settingsjson-in-desktop-interface), [3.3](#33-settingsjson-in-web-interface)).
 
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
