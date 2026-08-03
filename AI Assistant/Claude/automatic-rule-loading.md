@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 144
+rev. 145
 
 ## 1. Goal
 
@@ -276,16 +276,12 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 } >> "$HOME/.claude/plugin-autoupdate.log" 2>&1
 ```
 
-두 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. Claude가 위와 같은 내용을 만들어 넣는다.
+두 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. 위 code block을 그대로 붙여 넣고 file을 지정하면 Claude가 그 내용대로 만들어 넣는다. 설명으로 시키는 것과 달리 문구 해석이 끼지 않아 문서와 같은 file이 된다.
 
 ```
 # prompt
-plugins/yrocket-rules/hooks/hooks.json을 만들어줘.
-UserPromptSubmit에는 conversation_rules.md와 skill_loading_rules.md를
-cat 하는 command를 걸고, SessionStart는 matcher를 startup으로 두고
-같은 folder의 update-plugins.sh를 bash로 실행하는 command를
-timeout 180으로 걸어줘. 그 script는 installed_plugins.json에서 읽은
-plugin을 claude plugin update로 갱신하고 결과를 log로 남기게 해줘.
+아래 내용 그대로 plugins/yrocket-rules/hooks/hooks.json 을 만들어줘.
+(hooks.json code block을 여기에 붙여 넣는다)
 ```
 
 ### 3.3 Settings.json in Web Interface
