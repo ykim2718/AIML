@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 174
+rev. 175
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -218,7 +218,7 @@ claude plugin install yrocket-rules@claude-configuration
 💡 SessionStart hook이 다음 두 명령을 실행하면 사람이 개입하지 않아도 session을 열 때마다 갱신이 이루어진다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 ```bash
-# claude CLI
+# claude CLI, or prompt asking Claude to run them
 claude plugin marketplace update <MARKETPLACE_NAME>
 claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
