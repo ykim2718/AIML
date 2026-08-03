@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "aiml": {
+      "source": {
+        "source": "github",
+        "repo": "ykim2718/AIML"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "yrocket-rules@aiml": true
+  }
+}
