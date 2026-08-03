@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 153
+rev. 154
 
 ## 1. Goal
 
@@ -130,7 +130,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 automatic rule loading에 필요한 것은 두 interface가 다르다.
 
-| Interface | Location | Settings file | Session Start Hook |
+| Interface | File location | Settings file | Session Start Hook |
 |---|---|---|---|
 | Desktop | local repository | `~/.claude/settings.json` | 필요 |
 | Web | remote project repository | `<project>/.claude/settings.json` | 불필요 |
