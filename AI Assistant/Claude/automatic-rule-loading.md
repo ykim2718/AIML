@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 163
+rev. 164
 
 ## 1. Goal
 
@@ -168,10 +168,10 @@ User machine
 
 **Table 2.** Coverage and delivery of the two settings files.
 
-| Settings file | Coverage | Delivery |
-|---|---|---|
-| `~/.claude/settings.json` | machine | outside git, so it is written once per machine |
-| `<project>/.claude/settings.json` | project | kept in the local repository, so it applies when the project is opened |
+| Git repository | Settings file | Coverage | Delivery |
+|---|---|---|---|
+| no | `~/.claude/settings.json` | machine | written once per machine |
+| yes | `<project>/.claude/settings.json` | project | kept in the local repository, so it applies when the project is opened |
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
