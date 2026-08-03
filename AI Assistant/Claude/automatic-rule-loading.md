@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 155
+rev. 156
 
 ## 1. Goal
 
@@ -142,8 +142,8 @@ automatic rule loading에 필요한 것은 두 interface가 다르다.
 
 | Interface | File location | Settings file | Session Start Hook |
 |---|---|---|---|
-| Desktop | user machine | `~/.claude/settings.json` | 필요 |
-| Web | remote project repository | `<project>/.claude/settings.json` | 불필요 |
+| Desktop | user machine | `~/.claude/settings.json` | required |
+| Web | remote project repository | `<project>/.claude/settings.json` | not required |
 
 settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
@@ -172,8 +172,8 @@ User machine
 
 | Settings file | Coverage | Delivery |
 |---|---|---|
-| `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
-| `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
+| `~/.claude/settings.json` | machine | outside git, so it is written once per machine |
+| `<project>/.claude/settings.json` | project | kept in the local repository, so it applies when the project is opened |
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
@@ -567,8 +567,8 @@ skills/<skill-name>/
 
 | File | Role |
 |---|---|
-| settings file의 `extraKnownMarketplaces`, `enabledPlugins` | 사용자가 적는 설정 (무엇을 쓰겠다) |
-| `~/.claude/plugins/` 의 `known_marketplaces.json`, `installed_plugins.json` | Claude Code가 기록하는 상태 (실제로 무엇이 언제 어디에 설치됐다) |
+| `extraKnownMarketplaces`, `enabledPlugins` in the settings file | configuration written by the user: what to use |
+| `known_marketplaces.json`, `installed_plugins.json` in `~/.claude/plugins/` | state recorded by Claude Code: what was installed, when, and where |
 
 그래서 settings file은 직접 편집해도 되지만, `~/.claude/plugins/` 아래의 상태 file은 Claude Code가 관리하므로 직접 손대지 않는 게 좋다. 지우더라도 다음에 marketplace와 plugin을 다시 등록하면 재생성된다.
 
@@ -626,9 +626,9 @@ rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 �
 
 | Placement | Description | Note |
 |---|---|---|
-| working clone 자체를 vault로 연다 | rule만 담긴 독립 vault가 된다 | 가장 단순하며 다른 기록과 섞이지 않는다 |
-| 기존 vault 안에 working clone을 둔다 | vault 하위 folder가 local git repository가 된다 | 기존 note와 함께 검색되지만, vault 전체를 sync 하는 도구와 git이 같은 file을 건드린다 |
-| vault 밖에 두고 symlink를 건다 | 실체는 vault 밖에 있고 vault에는 link만 둔다 | 배치는 자유롭지만 Obsidian이 link 대상을 vault 경계 밖으로 인식하는 경우가 있다 |
+| open the working clone itself as a vault | a standalone vault holding only the rules | simplest, and nothing else is mixed in |
+| keep the working clone inside an existing vault | a vault subfolder becomes a local git repository | searchable with existing notes, but a vault sync tool and git touch the same files |
+| keep it outside the vault and add a symlink | the files live outside and the vault holds only a link | placement is free, but Obsidian may treat the target as outside the vault |
 
 기록용 vault를 이미 쓰고 있다면 첫 번째를 권한다. rule의 remote repository는 push 시점이 곧 배포 시점이라, 일반 note와 commit 주기를 섞지 않는 편이 안전하다.
 
