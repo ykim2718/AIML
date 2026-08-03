@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 171
+rev. 172
 
 <img src="assets/claude-logo.png" height="200" alt="Claude logo">
 
@@ -75,7 +75,7 @@ remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 �
 반면 `plugins/` 라는 folder 이름은 정해진 것이 아니라 관례이다. 각 plugin의 위치는 `marketplace.json` 의 `source` 값이 가리키므로 (`"source": "./plugins/<plugin-name>"`), folder 이름을 달리 하거나 다른 remote repository를 가리켜도 된다. catalog는 자리를 고정하고 내용물은 그 옆에 모아 두는 이 배치 덕분에, remote repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
 
 ```
-<repository root>/
+<local repository root>/
 ├── .claude-plugin/
 │   └── marketplace.json          : Marketplace manifest (catalog)
 └── plugins/
