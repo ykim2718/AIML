@@ -2,13 +2,13 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 161
+rev. 162
 
 ## 1. Goal
 
 이 문서는 Claude Code 전용으로 Desktop interface와 Web interface를 고려한다.
 
-Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가지를 한 번 해 두면 된다.
+Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가지를 해 두면 된다. 셋째는 Desktop interface에서는 machine마다 한 번이고, Web interface에서는 여는 repository마다이다.
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
@@ -48,7 +48,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 
 **Fig. 1.** Four copies of the plugin marketplace and how each one is obtained.
 
-`add and install`은 Claude Code가 `[1]` 을 marketplace로 등록하고 그 안의 plugin을 설치하는 두 동작이며, settings file에 적힌 두 항목을 읽어 자동으로 이루어진다.
+`add and install`은 Claude Code가 `[1]` 을 marketplace로 등록하고 그 안의 plugin을 설치하는 두 동작이다. settings file에 적힌 두 항목을 읽어 session 시작 시 자동으로 이루어지며, Desktop interface에서는 CLI로 같은 두 동작을 직접 시킬 수도 있다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
 `[3]`은 내려받은 사본을 machine의 한 folder 아래에 나누어 둔다. `[4]`도 같은 것을 내려받지만 저장 경로는 공식 문서에 없고, session이 끝나면 사라진다.
 
@@ -130,7 +130,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 - **agent**: 사용자가 이름을 대어 지목하거나, Claude가 그 일을 subagent에 넘기기로 할 때 load 된다.
 - **hook**: `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다.
 
-반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
+💡 반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
 
 ## 3. Bootstrap
 
@@ -413,7 +413,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
-- 갱신은 열려 있는 session에 반영되지 않고 다음 session부터 적용되므로, push와 적용 사이에 한 session의 지연이 남는다.
+- push와 적용 사이에 한 session의 지연이 남는다 ([3.2](#32-session-start-hook-desktop)).
 - private remote repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 remote repository 공개 범위를 확인한다.
 
 Desktop interface에만 해당하는 제약이다.
@@ -445,7 +445,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Hook**: 지정한 event에 개입하는 실행 지점이다. session 시작 시 동작하는 SessionStart hook과 매 prompt마다 동작하는 UserPromptSubmit hook을 사용한다.
 
-- **Machine settings**: `~/.claude/settings.json` 이다. 사용자가 자기 machine에 두는 file이므로 그 machine의 모든 project에 적용되고, git 밖에 있어 machine마다 손으로 적는다. Web interface에는 존재하지 않는다.
+- **Machine settings**: `~/.claude/settings.json` 이다. 사용자가 자기 machine에 두는 file이므로 그 machine의 모든 project에 적용되고, git 밖에 있어 machine마다 사람이 적는다. Web interface에는 존재하지 않는다.
 
 - **Marketplace**: plugin의 catalog이다. `.claude-plugin/marketplace.json` 하나로 정의하며, 어떤 plugin이 어디에 있는지 나열한다.
 
