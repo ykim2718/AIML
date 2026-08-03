@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 132
+rev. 133
 
 ## 1. Goal
 
@@ -114,7 +114,7 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 
 💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
-### 3.1 Desktop Interface
+### 3.1 Settings in Desktop Interface
 
 자리가 둘이며, 이름은 같지만 적용 범위가 다르다.
 
@@ -138,9 +138,38 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
-### 3.2 Web Interface
+적는 내용은 marketplace 위치와 plugin 활성화이다.
 
-machine이 없어 자리가 하나뿐이다. 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하며, clone 되면서 그대로 따라온다.
+```json
+// settings.json
+{
+  "extraKnownMarketplaces": {
+    "claude-configuration": {
+      "source": {
+        "source": "github",
+        "repo": "ykim2718/Claude-Configuration"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "yrocket-rules@claude-configuration": true
+  }
+}
+```
+
+🌷 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
+
+손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [5.1](#51-session-start-hook) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+
+- **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
+- **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
+- **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다.
+- **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
+
+### 3.2 Settings in Web Interface
+
+settings.json에 적는 내용은 [3.1](#31-settings-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
 
 ```
 Remote project repository
@@ -163,9 +192,9 @@ session마다 clone 하고 `add and install`을 다시 하므로 매 session 최
 
 ## 4. Bootstrap
 
-이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (4.1), 그다음 [3](#3-setup) 의 두 항목을 settings file에 적는다 (4.2). 그 내용을 어느 file에 적을지는 [5](#5-bootstrap-desktop) 와 [6](#6-bootstrap-web) 에서 갈린다.
+이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. rule을 담는 remote git repository를 먼저 만들고 (4.1), [3](#3-setup) 의 settings file은 [5](#5-bootstrap-desktop) 와 [6](#6-bootstrap-web) 에서 interface별로 적는다.
 
-4.1은 rule을 담고 있는 plugin marketplace의 기본 구성이므로 두 interface에 공통이다. automatic rule loading을 결정하는 것은 4.2이다.
+4.1은 rule을 담고 있는 plugin marketplace의 기본 구성이므로 두 interface에 공통이다.
 
 `autoUpdate`를 `true`로 두면 Claude Code가 session 시작 시 `[1]`을 기준으로 사본을 갱신한다. 다만 Desktop interface에서는 이 갱신이 실행되지 않는다.
 
@@ -227,37 +256,6 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 ```
 
 ⛔ **`version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
-
-### 4.2 Bootstrap Entry
-
-적는 내용은 두 interface에서 같고, marketplace 위치와 plugin 활성화이다. 어느 settings file에 적을지만 interface에 따라 다르다.
-
-```json
-// settings.json
-{
-  "extraKnownMarketplaces": {
-    "claude-configuration": {
-      "source": {
-        "source": "github",
-        "repo": "ykim2718/Claude-Configuration"
-      },
-      "autoUpdate": true
-    }
-  },
-  "enabledPlugins": {
-    "yrocket-rules@claude-configuration": true
-  }
-}
-```
-
-🌷 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
-
-손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [5.1](#51-session-start-hook) 처럼 remote repository가 배포하므로 push만으로 따라온다.
-
-- **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
-- **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
-- **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다.
-- **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
 
 ## 5. Bootstrap (Desktop)
 
@@ -400,7 +398,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 ## 9. Extension
 
-확장은 모두 [4.1](#41-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [4.2](#42-bootstrap-entry) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
+확장은 모두 [4.1](#41-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.1](#31-settings-in-desktop-interface) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
 
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
@@ -451,7 +449,7 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 
 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
-remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 4.2절 `settings.json` 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
+remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.1절 `settings.json` 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
 ## 10. Constraints
 
