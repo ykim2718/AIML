@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 173
+rev. 174
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -68,7 +68,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
-### 2.2 Plugin Marketplace in Remote Git Repository 🌳
+### 2.2 Plugin Marketplace in Git Repository 🌳
 
 rule을 담는 plugin marketplace는 일반 remote git repository이며, 뼈대는 manifest file 두 개이다. 이 둘만 갖추어 push 해도 등록 가능한 marketplace가 되고, 나머지 folder는 그 위에 얹는 component이다. marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
@@ -94,9 +94,9 @@ remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 �
         └── agents/               : subagents
 ```
 
-**Fig. 3.** Layout of a plugin marketplace in a remote git repository.
+**Fig. 3.** Layout of a plugin marketplace in a git repository.
 
-marketplace manifest는 remote repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다.
+marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다.
 
 plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 그 plugin의 이름과 정보를 담는다. 실제 기능은 plugin folder 아래의 component folder가 담는다.
 
@@ -215,7 +215,7 @@ claude plugin install yrocket-rules@claude-configuration
 
 ### 3.2 Session Start Hook in Desktop Interface
 
-💡 SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+💡 SessionStart hook이 다음 두 명령을 실행하면 사람이 개입하지 않아도 session을 열 때마다 갱신이 이루어진다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 ```bash
 # claude CLI
@@ -223,9 +223,9 @@ claude plugin marketplace update <MARKETPLACE_NAME>
 claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
-앞 명령은 marketplace clone을 최신 commit으로 옮기고, 뒤 명령은 설치본을 그 commit의 cache 사본으로 다시 고정한다. 앞 명령만으로는 설치본이 그대로이므로 둘을 차례로 실행하며, 그렇게 갱신해도 지금 열려 있는 session이 아니라 다음 session부터 적용된다.
+앞 명령은 marketplace clone을 최신 commit으로 옮기고, 뒤 명령은 설치본을 그 commit의 cache 사본으로 다시 고정한다. 앞 명령만으로는 설치본이 그대로이므로 둘을 차례로 실행해야 하며, 그렇게 갱신해도 지금 열려 있는 session이 아니라 다음 session부터 적용된다.
 
-이 hook은 plugin의 `hooks/hooks.json` 에 둔다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
+hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file이 부르는 script에 담는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
 ```json
 // plugins/yrocket-rules/hooks/hooks.json
@@ -360,7 +360,7 @@ context에 들어온 rule을 그대로 보여줘
 
 ## 5. Extension
 
-확장은 모두 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 settings file의 `enabledPlugins` 에 한 줄이 더 필요하며, 이는 두 interface에 모두 해당한다 ([3.1](#31-settingsjson-in-desktop-interface), [3.3](#33-settingsjson-in-web-interface)).
+확장은 모두 [2.2](#22-plugin-marketplace-in-git-repository-) 의 구조대로 local repository에 더하고 push 한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 settings file의 `enabledPlugins` 에 한 줄이 더 필요하며, 이는 두 interface에 모두 해당한다 ([3.1](#31-settingsjson-in-desktop-interface), [3.3](#33-settingsjson-in-web-interface)).
 
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
@@ -517,7 +517,7 @@ claude plugin update yrocket-rules@claude-configuration 을 실행해줘.
 
 ### D.1 Skill
 
-새 rule 묶음은 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 skill folder를 추가하는 것으로 끝난다. plugin manifest는 수정하지 않아도 되고, push 하면 두 interface의 새 session에 함께 따라온다.
+새 rule 묶음은 [2.2](#22-plugin-marketplace-in-git-repository-) 의 구조대로 local repository에 skill folder를 추가해 push 하는 것으로 끝난다. plugin manifest는 수정하지 않아도 되고, push 하면 두 interface의 새 session에 함께 따라온다.
 
 file 이름은 반드시 `SKILL.md`이며, folder 이름이 skill 이름이 된다. frontmatter의 `description`이 언제 이 skill을 load 할지 판단하는 근거이므로, 적용 시점을 분명히 적는다.
 
