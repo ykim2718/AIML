@@ -2,19 +2,21 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 172
+rev. 173
 
-<img src="assets/claude-logo.png" height="200" alt="Claude logo">
+<img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
 ## 1. Goal
 
 이 문서는 Claude Code 전용으로 Desktop interface와 Web interface를 고려한다.
 
-Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가지를 해 두면 된다. 셋째는 Desktop interface에서는 machine마다 한 번이고, Web interface에서는 여는 repository마다이다.
+Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가지를 해 두면 된다.
 
 1. plugin marketplace에 rule을 기록한다.
 2. 그 marketplace를 remote git repository로 push 한다.
 3. Desktop interface는 user machine의 `~/.claude/settings.json` 에, Web interface는 session을 열 때 고르는 remote project repository의 project settings file에 marketplace 등록과 plugin 활성화를 적어 bootstrap 한다.
+
+셋째는 Desktop interface에서는 machine마다 한 번이고, Web interface에서는 여는 repository마다이다.
 
 그 뒤에는 두 가지가 사람의 손을 거치지 않고 이루어진다.
 
@@ -58,7 +60,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 [3] Desktop interface
 └── ~/.claude/
     └── plugins/
-        ├── marketplaces/<name>/    : clone of <repository root>
+        ├── marketplaces/<name>/    : clone of <remote repository root>
         └── cache/<...>/            : copy of each plugin folder -> plugin cache
 ```
 
@@ -75,7 +77,7 @@ remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 �
 반면 `plugins/` 라는 folder 이름은 정해진 것이 아니라 관례이다. 각 plugin의 위치는 `marketplace.json` 의 `source` 값이 가리키므로 (`"source": "./plugins/<plugin-name>"`), folder 이름을 달리 하거나 다른 remote repository를 가리켜도 된다. catalog는 자리를 고정하고 내용물은 그 옆에 모아 두는 이 배치 덕분에, remote repository 하나가 plugin 여러 개를 담는 marketplace가 된다.
 
 ```
-<local repository root>/
+<local or remote repository root>/
 ├── .claude-plugin/
 │   └── marketplace.json          : Marketplace manifest (catalog)
 └── plugins/
@@ -363,7 +365,7 @@ context에 들어온 rule을 그대로 보여줘
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
 ```
-<repository root>/
+<local or remote repository root>/
 ├── .claude-plugin/
 │   └── marketplace.json          : register when adding a plugin
 ├── plugins/
