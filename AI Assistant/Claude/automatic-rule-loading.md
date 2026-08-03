@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 179
+rev. 178
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -166,7 +166,7 @@ Session Start Hook은 사람이 한 번 작성해 marketplace에 넣어 두는 D
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
-machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다.
+machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다. 이 file은 editor로 직접 열어 적어도 된다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이기 때문이다.
 
 ```json
 // ~/.claude/settings.json
@@ -188,22 +188,14 @@ machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다
 
 💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이 맡는다.
 
-settings file에 사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다.
+settings file에 사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. rule은 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
 - **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다.
 - **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
 
-적는 방법은 세 가지이며, 어느 것을 쓰든 결과는 같다.
-
-#### Editor
-
-file을 직접 열어 위의 JSON을 적는다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이므로 손대도 된다.
-
-#### Prompt
-
-file을 열지 않고 prompt에서 지시하면 Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
+직접 열지 않고 prompt에서 지시해도 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
 
 ```
 # prompt
@@ -213,9 +205,7 @@ claude-configuration 이름으로 등록하고,
 enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 ```
 
-#### CLI
-
-다음 두 명령을 terminal에서 실행하거나 prompt에 적어 Claude에게 시키면 각각 marketplace 등록과 plugin 설치가 이루어지며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+settings file을 열지 않고 CLI로 같은 두 항목을 넣을 수도 있다. 다음 두 명령을 terminal에서 실행하거나 prompt에 적어 Claude에게 시키면 각각 marketplace 등록과 plugin 설치가 이루어지며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
 # claude CLI, or prompt asking Claude to run them
@@ -470,7 +460,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Skill**: 필요한 시점에 load 되는 rule 묶음이다. folder 이름이 skill 이름이 되고, `SKILL.md`의 `description`이 지금 하는 일과 맞을 때 load 된다. 사용자가 `/<skill-name>` 을 입력해 곧바로 부를 수도 있다.
 
-- **Working clone**: rule을 수정하기 위해 받아 둔 plugin marketplace의 local repository이다. Fig. 1의 `[2]` 가 이것이며, 실행에는 쓰이지 않고 push를 통해서만 동작에 반영된다.
+- **Working clone**: rule을 수정하기 위해 받아 둔 plugin marketplace의 clone이다. 실행에는 쓰이지 않으며, push를 통해서만 동작에 반영된다.
 
 - **Working directory**: Claude Code를 실행한 folder이다. 이 folder가 곧 project가 되며, `.claude/` 와 CLAUDE.md도 이 위치를 기준으로 찾는다.
 
