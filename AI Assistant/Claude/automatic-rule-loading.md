@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 129
+rev. 130
 
 ## 1. Goal
 
@@ -99,16 +99,19 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
 
-## 3. Settings Files
+## 3. Setup
 
-사람이 고쳐야 하는 file은 settings file 하나뿐이고, 거기에 적는 항목은 두 개이다.
+automatic rule loading에 필요한 것은 두 interface가 다르다.
 
-| Key | Role |
-|---|---|
-| `extraKnownMarketplaces` | 어느 marketplace를 어디에서 받을지 등록한다 |
-| `enabledPlugins` | 그 marketplace의 어느 plugin을 켤지 `plugin-name@marketplace-name` 형식으로 지정한다 |
+| Item | Desktop interface | Web interface |
+|---|---|---|
+| settings file | `~/.claude/settings.json` | `<project>/.claude/settings.json` |
+| `extraKnownMarketplaces`, `enabledPlugins` | 필요하다 | 필요하다 |
+| Session Start Hook | 필요하다 | 필요 없다 |
 
-settings file은 사람이 적고 Claude Code는 읽기만 한다. 적힌 두 항목대로 marketplace를 내려받아 [2.1](#21-plugin-marketplace-and-copies) 의 사본을 만들고, 그 사본 안의 plugin을 session에 load 한다. 두 항목의 이름과 뜻은 두 interface에서 같고, 이 file을 어디에 두는지만 다르다.
+두 항목은 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 repository마다 적는다.
+
+Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop은 설치 당시 commit에 고정되어 사람이나 hook이 갱신해야 하지만, Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
 💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
@@ -161,7 +164,7 @@ session마다 clone 하고 `add and install`을 다시 하므로 매 session 최
 
 ## 4. Bootstrap
 
-이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (4.1), 그다음 [3](#3-settings-files) 의 두 항목을 settings file에 적는다 (4.2). 그 내용을 어느 file에 적을지는 [5](#5-bootstrap-desktop) 와 [6](#6-bootstrap-web) 에서 갈린다.
+이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (4.1), 그다음 [3](#3-setup) 의 두 항목을 settings file에 적는다 (4.2). 그 내용을 어느 file에 적을지는 [5](#5-bootstrap-desktop) 와 [6](#6-bootstrap-web) 에서 갈린다.
 
 4.1은 rule을 담고 있는 plugin marketplace의 기본 구성이므로 두 interface에 공통이다. automatic rule loading을 결정하는 것은 4.2이다.
 
@@ -463,7 +466,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 Desktop interface에만 해당하는 제약이다.
 
 - `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [5.1](#51-session-start-hook) 의 hook이나 사람이 맡는다.
-- settings file은 자동으로 pull 되지 않는다 ([3](#3-settings-files)).
+- settings file은 자동으로 pull 되지 않는다 ([3](#3-setup)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
