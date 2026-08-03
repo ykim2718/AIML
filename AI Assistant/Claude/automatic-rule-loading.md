@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 137
+rev. 138
 
 ## 1. Goal
 
@@ -16,7 +16,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
-1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [4.1](#41-session-start-hook) 의 hook이 이 역할을 맡는다.
+1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [3.2](#32-session-start-hook-desktop) 의 hook이 이 역할을 맡는다.
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
@@ -189,7 +189,7 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 
 🌷 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
 
-손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.1](#41-session-start-hook) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
@@ -214,30 +214,9 @@ claude plugin marketplace add ykim2718/Claude-Configuration
 claude plugin install yrocket-rules@claude-configuration
 ```
 
-### 3.2 Settings.json in Web Interface
+### 3.2 Session Start Hook (Desktop)
 
-settings.json에 적는 내용은 [3.1](#31-settingsjson-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
-
-```
-Remote project repository
-└── .claude/
-    └── settings.json           : project settings - written and pushed by the author
-```
-
-```
-Cloud session
-└── <project>/                  : clone of the remote project repository
-    └── .claude/
-        └── settings.json       : project settings - the project only
-```
-
-session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.1](#41-session-start-hook) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
-
-## 4. Bootstrap (Desktop)
-
-### 4.1 Session Start Hook
-
-SessionStart hook에 [6](#6-manual-force-update-desktop) 의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+SessionStart hook에 [5](#5-manual-force-update-desktop) 의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
@@ -296,7 +275,26 @@ grep -c '=== session start' ~/.claude/plugin-autoupdate.log
 
 session을 열 때마다 이 값이 늘면 정상이다. hook이 실행한 갱신 역시 그 session이 아니라 다음 session부터 적용되므로, 한 session의 지연은 남는다.
 
-## 5. Bootstrap (Web)
+### 3.3 Settings.json in Web Interface
+
+settings.json에 적는 내용은 [3.1](#31-settingsjson-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
+
+```
+Remote project repository
+└── .claude/
+    └── settings.json           : project settings - written and pushed by the author
+```
+
+```
+Cloud session
+└── <project>/                  : clone of the remote project repository
+    └── .claude/
+        └── settings.json       : project settings - the project only
+```
+
+session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [3.2](#32-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
+
+## 4. Bootstrap (Web)
 
 session을 열 때 고르는 repository의 project settings `<project>/.claude/settings.json` 에 적고 push 한다. machine settings가 없으므로 Web에서 여는 repository마다 이 file이 있어야 하며, 없는 repository에서는 rule이 올라오지 않는다.
 
@@ -304,9 +302,9 @@ session을 열 때 고르는 repository의 project settings `<project>/.claude/s
 
 `"autoUpdate": true` 는 그대로 적어 두되, session마다 새로 clone 하므로 갱신할 이전 사본이 없어 실질적인 역할은 없다 ([3](#3-setup)).
 
-## 6. Manual Force Update (Desktop)
+## 5. Manual Force Update (Desktop)
 
-⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [4.1](#41-session-start-hook) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [3.2](#32-session-start-hook-desktop) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
 # claude CLI
@@ -323,9 +321,9 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 
 `installed_plugins.json` 의 `gitCommitSha` 가 marketplace clone의 HEAD와 같아지면 갱신이 끝난 것이다. 갱신된 plugin은 현재 열려 있는 session에는 적용되지 않고, 다음 session부터 적용된다.
 
-## 7. Verification
+## 6. Verification
 
-### 7.1 Session Command (Desktop/Web)
+### 6.1 Session Command (Desktop/Web)
 
 두 interface 모두 prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확인할 수 있다.
 
@@ -337,9 +335,9 @@ Show installed_plugins.json
 
 두 file의 상세는 [Appendix E](#appendix-e-plugin-state-files-desktop) 에 있다.
 
-### 7.2 Claude CLI (Desktop)
+### 6.2 Claude CLI (Desktop)
 
-Desktop interface에서는 `claude` CLI로도 확인할 수 있다. Web interface에는 terminal이 없으므로 7.1의 방법만 쓴다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+Desktop interface에서는 `claude` CLI로도 확인할 수 있다. Web interface에는 terminal이 없으므로 6.1의 방법만 쓴다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```
 # claude CLI
@@ -350,7 +348,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 `details` 결과에 skill과 hook이 나타나면 정상이다.
 
-## 8. Extension
+## 7. Extension
 
 확장은 모두 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.1](#31-settingsjson-in-desktop-interface) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
 
@@ -379,33 +377,33 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 └── docs/                         : non-loaded document
 ```
 
-### 8.1 Hook
+### 7.1 Hook
 
 `hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
 
-### 8.2 Command
+### 7.2 Command
 
 `commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
 
-### 8.3 Agent
+### 7.3 Agent
 
 `agents/` 에 md file을 추가한다. subagent의 정의이며, 사용자가 지목하거나 Claude가 일을 넘길 때만 load 된다.
 
-### 8.4 Plugin
+### 7.4 Plugin
 
 `plugins/` 아래에 새 plugin folder를 만들고 `.claude-plugin/plugin.json`을 둔다. `marketplace.json` 등록이 필요한 유일한 확장이다.
 
-### 8.5 Skill and Reference File
+### 7.5 Skill and Reference File
 
 `skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
 
-### 8.6 Non-Loaded Document
+### 7.6 Non-Loaded Document
 
 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
 remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.1절 `settings.json` 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
-## 9. Constraints
+## 8. Constraints
 
 두 interface에 공통인 제약이다.
 
@@ -416,7 +414,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 
 Desktop interface에만 해당하는 제약이다.
 
-- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [4.1](#41-session-start-hook) 의 hook이나 사람이 맡는다.
+- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
 - settings file은 자동으로 pull 되지 않는다 ([3](#3-setup)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
@@ -486,7 +484,7 @@ WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치
 
 ### B.2 CLI Commands
 
-terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [6](#6-manual-force-update-desktop) 과 짝을 이룬다.
+terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [5](#5-manual-force-update-desktop) 과 짝을 이룬다.
 
 - **`claude plugin marketplace add <OWNER>/<REPO>`**: plugin marketplace를 등록한다.
 - **`claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: plugin을 설치한다.
