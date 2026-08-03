@@ -2,7 +2,9 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 170
+rev. 171
+
+<img src="assets/claude-logo.png" height="200" alt="Claude logo">
 
 ## 1. Goal
 
@@ -38,7 +40,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
         manual |                 automatic |                 automatic |
                |                           v                           v
    +------------------------+  +------------------------+  +------------------------+
-   |  [2] User machine      |  |  [3] Desktop interface |  |  [4] Web interface     |
+   |  [2] Local repository  |  |  [3] Desktop interface |  |  [4] Web interface     |
    |      Working clone     |  |      Installed plugins |  |      Installed plugins |
    |                        |  |                        |  |                        |
    |  author edits          |  |  persists              |  |  discarded             |
@@ -201,7 +203,7 @@ claude-configuration 이름으로 등록하고,
 enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 ```
 
-settings file에 적지 않고 CLI로 한 번만 설치할 수도 있다. 다음 두 명령이 각각 marketplace 등록과 plugin 설치를 하며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+settings file을 열지 않고 CLI로 같은 두 항목을 넣을 수도 있다. 다음 두 명령이 각각 marketplace 등록과 plugin 설치를 하며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
 # claude CLI
@@ -495,13 +497,13 @@ claude plugin marketplace update claude-configuration
 claude plugin update yrocket-rules@claude-configuration
 ```
 
-## Appendix C. Prompt Command (Desktop/Web)
+## Appendix C. Prompt Command
 
-session의 prompt에 입력하는 명령들이며, 두 interface에서 같다.
+session의 prompt에 입력하는 명령이다. 다음 하나는 두 interface에서 같다.
 
 - **`/<skill-name>`**: `description`의 판단과 무관하게 그 skill을 바로 load 한다.
 
-Desktop interface에서 `/plugin` 명령이 prompt에서 동작하지 않으면, 아래처럼 CLI 실행을 지시하는 prompt를 입력한다. Web interface에는 `/plugin` 도 terminal도 없으므로 이 방법을 쓸 수 없고, 확인은 [4.3](#43-session-content-web) 을 본다.
+아래는 Desktop interface에만 해당한다. `/plugin` 명령이 prompt에서 동작하지 않으면 CLI 실행을 지시하는 prompt를 입력한다. Web interface에는 `/plugin` 도 terminal도 없으므로 이 방법을 쓸 수 없고, 확인은 [4.3](#43-session-content-web) 을 본다.
 
 ```
 # prompt
@@ -543,7 +545,7 @@ skills/<skill-name>/
 
 `~/.claude/plugins/` 아래의 두 file은 Claude Code가 plugin 기능을 실제로 사용할 때 자동으로 생성하고 관리하는 내부 상태 file이다. 이 경로는 machine에 있으므로 Desktop interface에만 남으며, Web interface의 상태는 session이 끝나면 사라진다.
 
-- **`known_marketplaces.json`**: marketplace를 처음 추가할 때 (`/plugin marketplace add` 를 실행하거나, settings file의 `extraKnownMarketplaces` 항목을 읽어 clone 할 때) 생성된다. marketplace를 하나도 등록한 적 없는 새 설치 환경에는 없다.
+- **`known_marketplaces.json`**: marketplace를 처음 추가할 때 (settings file의 `extraKnownMarketplaces` 항목을 읽어 clone 할 때) 생성된다. marketplace를 하나도 등록한 적 없는 새 설치 환경에는 없다.
 - **`installed_plugins.json`**: plugin을 처음 설치할 때 생성된다. 마찬가지로 설치한 plugin이 없으면 없다.
 
 실제 예시는 다음과 같다.
