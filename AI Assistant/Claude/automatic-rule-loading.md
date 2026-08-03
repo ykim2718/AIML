@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 125
+rev. 126
 
 ## 1. Goal
 
@@ -16,7 +16,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
-1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [6.3](#63-session-start-hook-desktop) 의 hook이 이 역할을 맡는다.
+1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [6.2](#62-session-start-hook-desktop) 의 hook이 이 역할을 맡는다.
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
@@ -118,7 +118,7 @@ Cloud session
 |---|---|---|
 | `<project>/.claude/settings.json` | project | session 시작 시 project repository가 clone 되면서 함께 온다 |
 
-session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [6.3](#63-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
+session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [6.2](#62-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
 ### 2.3 Plugin Marketplace in Remote Git Repository 🌳
 
@@ -179,7 +179,7 @@ Desktop app은 자신의 update를 스스로 관리하므로 session 프로세�
 [DEBUG] Plugin autoupdate: skipped (auto-updater disabled)
 ```
 
-이 변수는 settings file의 `env` block으로 덮이지 않는다. app이 값을 나중에 적용하므로 새 session에서도 `1` 이 유지된다. 따라서 Desktop interface에서 갱신을 자동화하려면 [6.3](#63-session-start-hook-desktop) 의 hook을 쓴다.
+이 변수는 settings file의 `env` block으로 덮이지 않는다. app이 값을 나중에 적용하므로 새 session에서도 `1` 이 유지된다. 따라서 Desktop interface에서 갱신을 자동화하려면 [6.2](#62-session-start-hook-desktop) 의 hook을 쓴다.
 
 ### 3.1 Remote Git Repository
 
@@ -250,7 +250,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 🌷 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
 
-손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [6.3](#63-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [6.2](#62-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
@@ -261,7 +261,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 machine settings `~/.claude/settings.json` 에 적는다. machine마다 한 번이면 그 machine의 모든 project가 덮이므로, project settings는 따로 적지 않아도 된다.
 
-⛔ **Desktop interface에서는 `"autoUpdate": true` 만으로 갱신되지 않으므로** ([3](#3-bootstrap)), 갱신은 [6.3](#63-session-start-hook-desktop) 의 hook이 맡는다.
+⛔ **Desktop interface에서는 `"autoUpdate": true` 만으로 갱신되지 않으므로** ([3](#3-bootstrap)), 갱신은 [6.2](#62-session-start-hook-desktop) 의 hook이 맡는다.
 
 settings file 수정은 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
 
@@ -291,22 +291,9 @@ session을 열 때 고르는 repository의 project settings `<project>/.claude/s
 
 ## 6. Automatic Update
 
-### 6.1 Prompt-Level Injection
+### 6.1 Manual Force Update (Desktop)
 
-marketplace 갱신이 session 단위인 것과 달리, UserPromptSubmit hook은 prompt 단위로 동작한다. 이 hook이 remote repository를 다시 읽는 것은 아니며, 이미 내려받아 둔 사본의 내용을 매 prompt마다 context에 넣는다.
-
-| Aspect | Desktop interface | Web interface |
-|---|---|---|
-| 정의 위치 | plugin의 `hooks/` | 동일 |
-| 실행 시점 | 매 prompt | 매 prompt |
-| 읽는 대상 | `[3]` 설치된 plugin | `[4]` 설치된 plugin |
-| `[1]` 재조회 | 없다 | 없다 |
-
-따라서 rule을 push 한 뒤 열려 있는 session에서 prompt를 반복해도 새 내용은 들어오지 않는다. 두 interface 모두 새 session을 열어야 반영된다.
-
-### 6.2 Manual Force Update (Desktop)
-
-⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [6.3](#63-session-start-hook-desktop) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [6.2](#62-session-start-hook-desktop) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
 # claude CLI
@@ -323,9 +310,9 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 
 `installed_plugins.json` 의 `gitCommitSha` 가 marketplace clone의 HEAD와 같아지면 갱신이 끝난 것이다. 갱신된 plugin은 현재 열려 있는 session에는 적용되지 않고, 다음 session부터 적용된다.
 
-### 6.3 Session Start Hook (Desktop)
+### 6.2 Session Start Hook (Desktop)
 
-SessionStart hook에 [6.2](#62-manual-force-update-desktop) 의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+SessionStart hook에 [6.1](#61-manual-force-update-desktop) 의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
@@ -472,12 +459,12 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
-- 갱신은 열려 있는 session에 반영되지 않고 다음 session부터 적용되므로, push와 적용 사이에 한 session의 지연이 남는다 ([6.1](#61-prompt-level-injection)).
+- 갱신은 열려 있는 session에 반영되지 않고 다음 session부터 적용되므로, push와 적용 사이에 한 session의 지연이 남는다.
 - private remote repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 remote repository 공개 범위를 확인한다.
 
 Desktop interface에만 해당하는 제약이다.
 
-- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [6.3](#63-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
+- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [6.2](#62-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
 - settings file은 자동으로 pull 되지 않는다 ([2.2](#22-settings-files)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
@@ -547,7 +534,7 @@ WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치
 
 ### B.2 CLI Commands
 
-terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [6.2](#62-manual-force-update-desktop) 과 짝을 이룬다.
+terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [6.1](#61-manual-force-update-desktop) 과 짝을 이룬다.
 
 - **`claude plugin marketplace add <OWNER>/<REPO>`**: plugin marketplace를 등록한다.
 - **`claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: plugin을 설치한다.
