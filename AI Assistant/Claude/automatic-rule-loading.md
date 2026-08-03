@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 139
+rev. 140
 
 ## 1. Goal
 
@@ -247,6 +247,17 @@ SessionStart hook에 [4](#4-manual-force-update-desktop) 의 두 명령을 걸�
     ]
   }
 }
+```
+
+이 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. Claude가 위와 같은 내용을 만들어 넣는다.
+
+```
+# prompt
+plugins/yrocket-rules/hooks/hooks.json을 만들어줘.
+UserPromptSubmit에는 conversation_rules.md와 skill_loading_rules.md를
+cat 하는 command를 걸고, SessionStart는 matcher를 startup으로 두고
+installed_plugins.json에서 읽은 plugin을 claude plugin update로
+갱신하는 bash command를 timeout 180으로 걸어줘.
 ```
 
 작성할 때 지켜야 할 조건은 세 가지이며, 지키지 않으면 hook이 조용히 실패한다.
