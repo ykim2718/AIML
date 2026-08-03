@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 183
+rev. 184
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -347,6 +347,8 @@ ykim2718/Claude-Configuration (github source, autoUpdate: true)을
 claude-configuration 이름으로 등록하고,
 enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 ```
+
+Claude가 고치는 것은 열려 있는 사본이므로, 이렇게 만든 뒤에도 remote project repository에 push 해야 session에 따라온다.
 
 ## 4. Verification
 
