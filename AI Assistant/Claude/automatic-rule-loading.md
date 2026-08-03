@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 182
+rev. 183
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -67,6 +67,8 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
 **Fig. 2.** Where the Desktop interface stores the downloaded marketplace.
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
+
+수동으로 하는 add and install은 [Appendix F](#appendix-f-manual-add-and-install) 에 있다.
 
 ### 2.2 Plugin Marketplace in Git Repository 🌳
 
@@ -612,13 +614,28 @@ skills/<skill-name>/
 }
 ```
 
-## Appendix F. Obsidian
+## Appendix F. Manual Add and Install
+
+`add and install`은 settings file을 읽어 session 시작 시 자동으로 이루어지지만, Desktop interface에서는 다음 두 명령으로 같은 두 동작을 손으로 시킬 수도 있다. 이미 등록과 설치를 마친 뒤라면 두 명령이 그 자리를 remote repository의 최신 commit으로 다시 맞춘다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+
+```bash
+# claude CLI, or prompt asking Claude to run them
+claude plugin marketplace update <MARKETPLACE_NAME>
+claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
+```
+
+- **`claude plugin marketplace update <MARKETPLACE_NAME>`**: marketplace clone을 최신 commit으로 옮긴다. 이때 옮겨지는 것은 clone뿐이고 설치본은 그대로이다.
+- **`claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 그 commit의 plugin folder를 plugin cache로 새로 복사하고 설치본을 그 사본에 다시 고정한다.
+
+앞 명령이 clone을 옮겨 놓아야 뒤 명령이 새 내용을 집으므로 순서를 지켜 차례로 실행하며, 갱신 결과는 다음 session부터 적용된다. 같은 두 명령을 session 시작 시 자동으로 실행하는 것이 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이다.
+
+## Appendix G. Obsidian
 
 Obsidian은 local folder에 놓인 md file을 그대로 읽고 쓰는 편집 도구이다. 자체 file 형식이나 database를 두지 않고, folder 하나를 vault로 지정해 그 안의 md file을 note로 다룬다. file 사이의 link를 따라가거나 전체를 한 번에 검색하는 기능이 편집기와 다른 점이다.
 
 rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 별도의 형식이 없으므로 working clone을 vault로 삼으면 그대로 열린다. 이 appendix는 author의 machine에서 rule을 고치는 이야기이며, 두 interface의 동작에는 영향을 주지 않는다.
 
-### F.1 Vault Placement
+### G.1 Vault Placement
 
 배치는 세 가지가 있다.
 
@@ -632,7 +649,7 @@ rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 �
 
 기록용 vault를 이미 쓰고 있다면 첫 번째를 권한다. rule의 remote repository는 push 시점이 곧 배포 시점이라, 일반 note와 commit 주기를 섞지 않는 편이 안전하다.
 
-### F.2 Link Style
+### G.2 Link Style
 
 Obsidian의 기본 link 형식인 `[[wikilink]]` 는 Claude Code가 해석하지 않는다. skill이 reference file을 가리키는 link는 상대 경로 markdown link로 적는다.
 
@@ -643,7 +660,7 @@ Obsidian의 기본 link 형식인 `[[wikilink]]` 는 Claude Code가 해석하지
 
 Obsidian 설정에서 wikilink를 끄고 link를 상대 경로로 두면, 새로 만드는 link도 같은 형식이 된다. vault 안에서만 쓰는 note끼리는 wikilink를 써도 무방하지만, plugin folder 아래 file에는 쓰지 않는다.
 
-### F.3 File Hygiene
+### G.3 File Hygiene
 
 working clone 자체를 vault로 열었을 때의 구조는 다음과 같다. Obsidian이 더하는 것은 최상위의 `.obsidian/` 하나뿐이다.
 
@@ -678,6 +695,6 @@ working clone 자체를 vault로 열었을 때의 구조는 다음과 같다. Ob
 
 frontmatter를 자동으로 정리하는 부류의 community plugin은 SKILL.md에 적용하지 않는다. `name` 과 `description` 은 skill이 언제 load 될지 정하는 값이라, key 순서나 표기가 바뀌면 의도와 다르게 동작할 수 있다.
 
-### F.4 Sync
+### G.4 Sync
 
 vault 전체를 장치 사이에서 자동으로 복제하는 기능이 있다. Obsidian이 제공하는 sync service, vault folder를 cloud drive 안에 두는 방식, folder를 실시간으로 맞추는 file 동기화 도구가 모두 여기에 해당한다. 이 기능을 모두 끄고 Obsidian은 편집기로만 사용하며, rule의 local repository는 git의 commit과 push로만 관리하여 원본이 remote repository에 있도록 한다.
