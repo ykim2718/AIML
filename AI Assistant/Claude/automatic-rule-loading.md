@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 120
+rev. 121
 
 ## 1. Goal
 
@@ -43,8 +43,8 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
    |  [2] User machine      |  |  [3] Desktop interface |  |  [4] Web interface     |
    |      Working clone     |  |      Installed plugins |  |      Installed plugins |
    |                        |  |                        |  |                        |
-   |  author edits          |  |  persists              |  |  discarded at session  |
-   |  push to [1]           |  |                        |  |  end                   |
+   |  author edits          |  |  persists              |  |  discarded             |
+   |  push to [1]           |  |                        |  |  at session end        |
    +------------------------+  +------------------------+  +------------------------+
 ```
 
@@ -99,11 +99,17 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 
 #### 2.2.2 Web Interface
 
-machine이 없어 자리가 하나뿐이다.
+machine이 없어 자리가 하나뿐이다. 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하며, clone 되면서 그대로 따라온다.
+
+```
+Remote project repository
+└── .claude/
+    └── settings.json           : project settings - written and pushed by the author
+```
 
 ```
 Cloud session
-└── <project>/                  : repository cloned at session start
+└── <project>/                  : clone of the remote project repository
     └── .claude/
         └── settings.json       : project settings - the project only
 ```
