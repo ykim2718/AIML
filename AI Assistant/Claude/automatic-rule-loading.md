@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 188
+rev. 189
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -103,28 +103,28 @@ marketplace manifest는 repository 최상위의 `.claude-plugin/marketplace.json
 
 plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 그 plugin의 이름과 정보를 담는다. 실제 기능은 plugin folder 아래의 component folder가 담는다.
 
-두 manifest의 실제 예시는 다음과 같다.
+두 manifest의 예시는 다음과 같다.
 
 ```json
 // .claude-plugin/marketplace.json
 {
-  "name": "claude-configuration",
-  "owner": { "name": "yRocket", "email": "ykim2718@gmail.com" },
+  "name": "<MARKETPLACE_NAME>",
+  "owner": { "name": "<OWNER_NAME>", "email": "<OWNER_EMAIL>" },
   "plugins": [
     {
-      "name": "yrocket-rules",
-      "source": "./plugins/yrocket-rules",
-      "description": "코드/문서 작성 공용 규칙 skill과 hook."
+      "name": "<PLUGIN_NAME>",
+      "source": "./plugins/<PLUGIN_NAME>",
+      "description": "<PLUGIN_DESCRIPTION>"
     }
   ]
 }
 ```
 
 ```json
-// plugins/yrocket-rules/.claude-plugin/plugin.json
+// plugins/<PLUGIN_NAME>/.claude-plugin/plugin.json
 {
-  "name": "yrocket-rules",
-  "description": "코드/문서 작성 공용 규칙: coding_rules·md_doc_rules skill, 대화 규칙과 필수 skill 로딩을 주입하는 UserPromptSubmit hook."
+  "name": "<PLUGIN_NAME>",
+  "description": "<PLUGIN_DESCRIPTION>"
 }
 ```
 
@@ -196,16 +196,16 @@ machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다
 // ~/.claude/settings.json
 {
   "extraKnownMarketplaces": {
-    "claude-configuration": {
+    "<MARKETPLACE_NAME>": {
       "source": {
         "source": "github",
-        "repo": "ykim2718/Claude-Configuration"
+        "repo": "<OWNER>/<REPO>"
       },
       "autoUpdate": true
     }
   },
   "enabledPlugins": {
-    "yrocket-rules@claude-configuration": true
+    "<PLUGIN_NAME>@<MARKETPLACE_NAME>": true
   }
 }
 ```
@@ -232,9 +232,9 @@ file을 열지 않고 prompt에서 지시하면 Claude가 위의 JSON과 같은 
 ```
 # prompt
 ~/.claude/settings.json에 extraKnownMarketplaces로
-ykim2718/Claude-Configuration (github source, autoUpdate: true)을
-claude-configuration 이름으로 등록하고,
-enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
+<OWNER>/<REPO> (github source, autoUpdate: true)을
+<MARKETPLACE_NAME> 이름으로 등록하고,
+enabledPlugins에 <PLUGIN_NAME>@<MARKETPLACE_NAME>: true 를 추가해줘.
 ```
 
 #### CLI
@@ -243,8 +243,8 @@ enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 
 ```bash
 # claude CLI, or prompt asking Claude to run them
-claude plugin marketplace add ykim2718/Claude-Configuration
-claude plugin install yrocket-rules@claude-configuration
+claude plugin marketplace add <OWNER>/<REPO>
+claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
 ### 3.2 Session Start Hook in Desktop Interface
@@ -262,7 +262,7 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file이 부르는 script에 담는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
 ```json
-// plugins/yrocket-rules/hooks/hooks.json
+// plugins/<PLUGIN_NAME>/hooks/hooks.json
 {
   "hooks": {
     "UserPromptSubmit": [
@@ -294,7 +294,7 @@ hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file�
 갱신 script는 같은 folder에 둔다. `hooks.json` 에 한 줄로 넣으면 길어져 읽기 어려우므로 file로 나누며, `${CLAUDE_PLUGIN_ROOT}` 는 Claude Code가 그 plugin의 설치 folder로 바꾸어 준다.
 
 ```bash
-# plugins/yrocket-rules/hooks/update-plugins.sh
+# plugins/<PLUGIN_NAME>/hooks/update-plugins.sh
 {
   command -v claude >/dev/null 2>&1 || { echo "claude CLI not found; skipping plugin self-update"; exit 0; }
   state="$HOME/.claude/plugins/installed_plugins.json"
@@ -321,7 +321,7 @@ hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file�
 
 ```
 # prompt
-아래 내용 그대로 plugins/yrocket-rules/hooks/hooks.json 을 만들어줘.
+아래 내용 그대로 plugins/<PLUGIN_NAME>/hooks/hooks.json 을 만들어줘.
 (hooks.json code block을 여기에 붙여 넣는다)
 ```
 
@@ -365,9 +365,9 @@ prompt에서 지시하면 Claude가 만들어 넣는다.
 ```
 # prompt
 이 repository의 .claude/settings.json에 extraKnownMarketplaces로
-ykim2718/Claude-Configuration (github source, autoUpdate: true)을
-claude-configuration 이름으로 등록하고,
-enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
+<OWNER>/<REPO> (github source, autoUpdate: true)을
+<MARKETPLACE_NAME> 이름으로 등록하고,
+enabledPlugins에 <PLUGIN_NAME>@<MARKETPLACE_NAME>: true 를 추가해줘.
 ```
 
 Claude가 고치는 것은 열려 있는 사본이므로, 이렇게 만든 뒤에도 remote project repository에 push 해야 session에 따라온다.
@@ -395,7 +395,7 @@ Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류
 # claude CLI, or prompt asking Claude to run them
 claude plugin marketplace list
 claude plugin list
-claude plugin details yrocket-rules@claude-configuration
+claude plugin details <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
 `details` 결과에 skill과 hook이 나타나면 정상이다.
@@ -546,14 +546,6 @@ plugin 관련 명령들이며, terminal에서 실행하거나 prompt에 적어 C
 - **`claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 설치본을 새 commit의 cache 사본으로 다시 고정한다.
 - **`claude plugin marketplace list`**, **`claude plugin list`**, **`claude plugin details <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 등록과 설치 상태를 확인한다 ([4.2](#42-claude-cli-desktop)).
 
-이 remote repository에 적용하는 예시는 다음과 같다.
-
-```bash
-# claude CLI, or prompt asking Claude to run them
-claude plugin marketplace update claude-configuration
-claude plugin update yrocket-rules@claude-configuration
-```
-
 ## Appendix C. Prompt Command
 
 session의 prompt에 입력하는 명령이다. 다음 하나는 두 interface에서 같다.
@@ -599,20 +591,20 @@ skills/<skill-name>/
 - **`known_marketplaces.json`**: marketplace를 처음 추가할 때 (settings file의 `extraKnownMarketplaces` 항목을 읽어 clone 할 때) 생성된다. marketplace를 하나도 등록한 적 없는 새 설치 환경에는 없다.
 - **`installed_plugins.json`**: plugin을 처음 설치할 때 생성된다. 마찬가지로 설치한 plugin이 없으면 없다.
 
-실제 예시는 다음과 같다.
+예시는 다음과 같다.
 
 `known_marketplaces.json` — 등록된 marketplace와 그 clone 위치, 마지막 갱신 시각을 기록한다:
 
 ```json
 // ~/.claude/plugins/known_marketplaces.json
 {
-  "claude-configuration": {
+  "<MARKETPLACE_NAME>": {
     "source": {
       "source": "github",
-      "repo": "ykim2718/Claude-Configuration"
+      "repo": "<OWNER>/<REPO>"
     },
-    "installLocation": "C:\\Users\\Asus\\.claude\\plugins\\marketplaces\\claude-configuration",
-    "lastUpdated": "2026-07-21T01:21:01.491Z",
+    "installLocation": "<USER_HOME>\\.claude\\plugins\\marketplaces\\<MARKETPLACE_NAME>",
+    "lastUpdated": "<TIMESTAMP>",
     "autoUpdate": true
   }
 }
@@ -625,14 +617,14 @@ skills/<skill-name>/
 {
   "version": 2,
   "plugins": {
-    "yrocket-rules@claude-configuration": [
+    "<PLUGIN_NAME>@<MARKETPLACE_NAME>": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\Asus\\.claude\\plugins\\cache\\claude-configuration\\yrocket-rules\\ad5437a04a0c79d561ce26748a2fa01f5b37c617",
-        "version": "ad5437a04a0c79d561ce26748a2fa01f5b37c617",
-        "installedAt": "2026-07-21T01:23:23.579Z",
-        "lastUpdated": "2026-07-21T01:23:23.579Z",
-        "gitCommitSha": "ad5437a04a0c79d561ce26748a2fa01f5b37c617"
+        "installPath": "<USER_HOME>\\.claude\\plugins\\cache\\<MARKETPLACE_NAME>\\<PLUGIN_NAME>\\<COMMIT_SHA>",
+        "version": "<COMMIT_SHA>",
+        "installedAt": "<TIMESTAMP>",
+        "lastUpdated": "<TIMESTAMP>",
+        "gitCommitSha": "<COMMIT_SHA>"
       }
     ]
   }
