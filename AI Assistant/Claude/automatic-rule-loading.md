@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 136
+rev. 137
 
 ## 1. Goal
 
@@ -143,7 +143,7 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 
 💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
-### 3.1 Settings in Desktop Interface
+### 3.1 Settings.json in Desktop Interface
 
 자리가 둘이며, 이름은 같지만 적용 범위가 다르다.
 
@@ -196,35 +196,6 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 - **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다.
 - **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
 
-### 3.2 Settings in Web Interface
-
-settings.json에 적는 내용은 [3.1](#31-settings-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
-
-```
-Remote project repository
-└── .claude/
-    └── settings.json           : project settings - written and pushed by the author
-```
-
-```
-Cloud session
-└── <project>/                  : clone of the remote project repository
-    └── .claude/
-        └── settings.json       : project settings - the project only
-```
-
-| Settings file | Coverage | Delivery |
-|---|---|---|
-| `<project>/.claude/settings.json` | project | session 시작 시 project repository가 clone 되면서 함께 온다 |
-
-session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.1](#41-session-start-hook) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
-
-## 4. Bootstrap (Desktop)
-
-machine settings `~/.claude/settings.json` 에 적는다. machine마다 한 번이면 그 machine의 모든 project가 덮이므로, project settings는 따로 적지 않아도 된다.
-
-⛔ **Desktop interface에서는 `"autoUpdate": true` 만으로 갱신되지 않으므로** ([3](#3-setup)), 갱신은 [4.1](#41-session-start-hook) 의 hook이 맡는다.
-
 settings file 수정은 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
 
 ```
@@ -242,6 +213,27 @@ settings file에 적지 않고 CLI로 한 번만 설치할 수도 있다. 다음
 claude plugin marketplace add ykim2718/Claude-Configuration
 claude plugin install yrocket-rules@claude-configuration
 ```
+
+### 3.2 Settings.json in Web Interface
+
+settings.json에 적는 내용은 [3.1](#31-settingsjson-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
+
+```
+Remote project repository
+└── .claude/
+    └── settings.json           : project settings - written and pushed by the author
+```
+
+```
+Cloud session
+└── <project>/                  : clone of the remote project repository
+    └── .claude/
+        └── settings.json       : project settings - the project only
+```
+
+session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.1](#41-session-start-hook) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
+
+## 4. Bootstrap (Desktop)
 
 ### 4.1 Session Start Hook
 
@@ -360,7 +352,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 ## 8. Extension
 
-확장은 모두 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.1](#31-settings-in-desktop-interface) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
+확장은 모두 [2.2](#22-plugin-marketplace-in-remote-git-repository-) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.1](#31-settingsjson-in-desktop-interface) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
 
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
