@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 141
+rev. 142
 
 ## 1. Goal
 
@@ -345,29 +345,12 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 └── docs/                         : non-loaded document
 ```
 
-### 5.1 Hook
-
-`hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
-
-### 5.2 Command
-
-`commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
-
-### 5.3 Agent
-
-`agents/` 에 md file을 추가한다. subagent의 정의이며, 사용자가 지목하거나 Claude가 일을 넘길 때만 load 된다.
-
-### 5.4 Plugin
-
-`plugins/` 아래에 새 plugin folder를 만들고 `.claude-plugin/plugin.json`을 둔다. `marketplace.json` 등록이 필요한 유일한 확장이다.
-
-### 5.5 Skill and Reference File
-
-`skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
-
-### 5.6 Non-Loaded Document
-
-설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
+- **Hook**: `hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
+- **Command**: `commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
+- **Agent**: `agents/` 에 md file을 추가한다. subagent의 정의이며, 사용자가 지목하거나 Claude가 일을 넘길 때만 load 된다.
+- **Plugin**: `plugins/` 아래에 새 plugin folder를 만들고 `.claude-plugin/plugin.json`을 둔다. `marketplace.json` 등록이 필요한 유일한 확장이다.
+- **Skill and reference file**: `skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
+- **Non-loaded document**: 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
 remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.1절 `settings.json` 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
