@@ -2,11 +2,11 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 148
+rev. 149
 
 ## 1. Goal
 
-이 문서는 Claude Code 전용으로 desktop과 web interface를 고려한다.
+이 문서는 Claude Code 전용으로 Desktop interface와 Web interface를 고려한다.
 
 Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가지를 한 번 해 두면 된다.
 
@@ -92,8 +92,6 @@ plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 
 
 두 manifest의 실제 예시는 다음과 같다.
 
-`.claude-plugin/marketplace.json` — 어떤 plugin이 어디에 있는지 나열한다:
-
 ```json
 // .claude-plugin/marketplace.json
 {
@@ -108,8 +106,6 @@ plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 
   ]
 }
 ```
-
-`plugins/yrocket-rules/.claude-plugin/plugin.json` — plugin 자신의 이름과 정보를 담는다:
 
 ```json
 // plugins/yrocket-rules/.claude-plugin/plugin.json
@@ -172,7 +168,7 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 적는 내용은 marketplace 위치와 plugin 활성화이다.
 
 ```json
-// settings.json
+// ~/.claude/settings.json
 {
   "extraKnownMarketplaces": {
     "claude-configuration": {
@@ -390,7 +386,7 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 - **Skill and reference file**: `skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
 - **Non-loaded document**: 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
-remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 3.1절 `settings.json` 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
+remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 [3.1](#31-settingsjson-in-desktop-interface) 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
 ## 6. Constraints
 
@@ -404,7 +400,7 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 Desktop interface에만 해당하는 제약이다.
 
 - `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
-- settings file은 자동으로 pull 되지 않는다 ([3](#3-setup)).
+- settings file은 자동으로 pull 되지 않는다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
 
@@ -413,8 +409,6 @@ Desktop interface에만 해당하는 제약이다.
 - **Agent**: plugin의 `agents/` 에 두는 subagent 정의이다. 사용자가 지목하거나 Claude가 일을 넘길 때 load 된다.
 
 - **`autoUpdate`**: marketplace 등록 항목의 field이다. session 시작 시 marketplace와 plugin을 remote 기준으로 갱신하지만, Desktop interface에서는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않는다.
-
-- **`DISABLE_AUTOUPDATER`**: Desktop app이 session 프로세스에 심는 환경변수이다. 값이 `1` 이면 plugin 자동 갱신이 skip 되며, settings file의 `env` block으로 덮이지 않는다.
 
 - **Bootstrap**: settings file에 적는 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목이다. marketplace를 처음 가리키는 자리이므로 marketplace 자신이 배포할 수 없다.
 
@@ -427,6 +421,8 @@ Desktop interface에만 해당하는 제약이다.
 - **Command**: plugin의 `commands/` 에 두는 md file이다. file 이름이 곧 명령 이름이 되며, 사용자가 `/<command-name>` 을 입력할 때 load 된다.
 
 - **Context**: model이 응답을 만들 때 참조하는 입력 전체이다. 대화 내용과 함께 load 된 skill, hook이 주입한 rule이 여기에 들어간다. 크기에 한계가 있으므로 항상 load 되는 file은 짧게 유지한다.
+
+- **`DISABLE_AUTOUPDATER`**: Desktop app이 session 프로세스에 심는 환경변수이다. 값이 `1` 이면 plugin 자동 갱신이 skip 되며, settings file의 `env` block으로 덮이지 않는다.
 
 - **Hook**: 지정한 event에 개입하는 실행 지점이다. session 시작 시 동작하는 SessionStart hook과 매 prompt마다 동작하는 UserPromptSubmit hook을 사용한다.
 
@@ -473,12 +469,13 @@ WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치
 
 ### B.2 CLI Commands
 
-terminal에서 실행하는 plugin 관련 명령들이다. 갱신은 두 단계이며 앞 단계만으로는 session에 반영되지 않는다.
+terminal에서 실행하는 plugin 관련 명령들이다.
 
 - **`claude plugin marketplace add <OWNER>/<REPO>`**: plugin marketplace를 등록한다.
 - **`claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: plugin을 설치한다.
-- **`claude plugin marketplace update <MARKETPLACE_NAME>`**: marketplace와 plugin을 수동으로 갱신한다.
-- **`claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 설치된 plugin을 수동으로 갱신한다.
+- **`claude plugin marketplace update <MARKETPLACE_NAME>`**: marketplace clone을 최신 commit으로 옮긴다.
+- **`claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 설치본을 새 commit의 cache 사본으로 다시 고정한다.
+- **`claude plugin marketplace list`**, **`claude plugin list`**, **`claude plugin details <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: 등록과 설치 상태를 확인한다 ([4.2](#42-claude-cli-desktop)).
 
 이 remote repository에 적용하는 예시는 다음과 같다.
 
@@ -494,7 +491,7 @@ session의 prompt에 입력하는 명령들이며, 두 interface에서 같다.
 
 - **`/<skill-name>`**: `description`의 판단과 무관하게 그 skill을 바로 load 한다.
 
-`/plugin` 명령이 prompt에서 동작하지 않으면, 아래처럼 CLI 실행을 지시하는 prompt를 입력한다.
+Desktop interface에서 `/plugin` 명령이 prompt에서 동작하지 않으면, 아래처럼 CLI 실행을 지시하는 prompt를 입력한다. Web interface에는 `/plugin` 도 terminal도 없으므로 이 방법을 쓸 수 없고, 확인은 [4.3](#43-session-content-web) 을 본다.
 
 ```
 # prompt
