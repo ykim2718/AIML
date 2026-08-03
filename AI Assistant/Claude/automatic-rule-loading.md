@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 117
+rev. 118
 
 ## 1. Goal
 
@@ -156,6 +156,8 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 ## 3. Bootstrap
 
 이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. 먼저 remote git repository에 marketplace를 만들고 (3.1), 그다음 [2.2](#22-settings-files) 의 두 항목을 settings file에 적는다 (3.2).
+
+3.1은 rule을 담고 있는 plugin marketplace의 기본 구성이므로 두 interface에 공통이다. automatic rule loading을 결정하는 것은 3.2이다.
 
 ### 3.1 Remote Git Repository
 
