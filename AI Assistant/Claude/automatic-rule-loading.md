@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 158
+rev. 159
 
 ## 1. Goal
 
@@ -145,7 +145,7 @@ Interface에 따라, automatic rule loading을 위해, 직접 작성하여야 �
 | Desktop | no | user machine | `~/.claude/settings.json` | required |
 | Web | yes | remote project repository | `<project>/.claude/settings.json` | not required |
 
-settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
+settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 내용은 같고 적는 자리만 다르며, Desktop은 machine에 한 번 작성으로 완료되고, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
 Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심어 `"autoUpdate": true` 가 실행되지 않으므로, plugin이 설치 당시 commit에 고정되어 rule을 push 해도 따라오지 않는다. 그 갱신을 hook이 대신한다. Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
