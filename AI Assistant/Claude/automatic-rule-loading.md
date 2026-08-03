@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 149
+rev. 150
 
 ## 1. Goal
 
@@ -342,11 +342,14 @@ claude plugin details yrocket-rules@claude-configuration
 
 Web interface에는 terminal도 `/plugin` 도 없고 상태 file도 session이 끝나면 사라지므로, 설치 목록 대신 session에 rule이 실제로 올라왔는지로 확인한다. 셋 중 하나만 확인되어도 plugin이 붙은 것이다.
 
-| Check | Prompt | Normal result |
-|---|---|---|
-| hook이 넣은 rule | `context에 들어온 rule을 그대로 보여줘` | `hooks/` 의 rule file 내용이 나온다 |
-| skill 목록 | `쓸 수 있는 skill을 나열해줘` | plugin의 skill 이름과 `description`이 나온다 |
-| context 구성 | `/context` | 지금 context에 올라온 것이 나열된다 |
+```
+# prompt
+context에 들어온 rule을 그대로 보여줘
+쓸 수 있는 skill을 나열해줘
+/context
+```
+
+첫 입력에는 `hooks/` 의 rule file 내용이, 둘째 입력에는 plugin의 skill 이름과 `description`이 나오면 정상이다. `/context` 는 지금 context에 올라온 것을 나열한다.
 
 `/context` 는 cloud session에서 동작하는 명령이며, 확인 결과가 비어 있으면 그 repository의 `.claude/settings.json` 부터 본다 ([3.3](#33-settingsjson-in-web-interface)).
 
