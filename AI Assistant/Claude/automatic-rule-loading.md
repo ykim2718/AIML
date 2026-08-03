@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 118
+rev. 119
 
 ## 1. Goal
 
@@ -204,11 +204,9 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 ⛔ **`version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
 
-### 3.2 Bootstrap Entry (Desktop)
+### 3.2 Bootstrap Entry
 
-손으로 적는 것은 Desktop interface의 machine settings `~/.claude/settings.json` 하나뿐이다. project settings는 [2.2](#22-settings-files) 대로 clone 되어 오므로 여기서 다루지 않는다.
-
-적는 내용은 marketplace 위치와 plugin 활성화이다.
+적는 내용은 두 interface에서 같고, marketplace 위치와 plugin 활성화이다. 어느 settings file에 적을지만 interface에 따라 다르다.
 
 ```json
 {
@@ -229,27 +227,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
 
-⛔ **Desktop interface에서는 이 한 줄만으로 갱신되지 않는다.** Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심으므로 plugin 자동 갱신이 통째로 skip 된다. 자세한 내용과 대응은 [4.1](#41-session-level-update) 과 [4.4](#44-session-start-hook-desktop) 를 본다.
-
-settings file에 적지 않고 session에서 한 번만 설치할 수도 있다. prompt에 다음을 입력하면 각각 marketplace 등록과 plugin 설치가 일어난다. 단, `"autoUpdate": true` 와 `"yrocket-rules@claude-configuration": true` 는 수동으로 기입해야 한다.
-
-```
-# prompt
-/plugin marketplace add ykim2718/Claude-Configuration
-/plugin install yrocket-rules@claude-configuration
-```
-
-settings file 수정도 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
-
-```
-# prompt
-~/.claude/settings.json에 extraKnownMarketplaces로
-ykim2718/Claude-Configuration (github source, autoUpdate: true)을
-claude-configuration 이름으로 등록하고,
-enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
-```
-
-settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 #### 3.2.1 Field Reference
 
@@ -261,6 +239,38 @@ settings file에 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 
 | `enabledPlugins` | `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다 |
 
 field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.2](#22-settings-files) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
+
+#### 3.2.2 Desktop Interface
+
+machine settings `~/.claude/settings.json` 에 적는다. machine마다 한 번이면 그 machine의 모든 project가 덮이므로, project settings는 따로 적지 않아도 된다.
+
+⛔ **Desktop interface에서는 `"autoUpdate": true` 만으로 갱신되지 않는다.** Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심으므로 plugin 자동 갱신이 통째로 skip 된다. 자세한 내용과 대응은 [4.1](#41-session-level-update) 과 [4.4](#44-session-start-hook-desktop) 를 본다.
+
+settings file 수정은 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
+
+```
+# prompt
+~/.claude/settings.json에 extraKnownMarketplaces로
+ykim2718/Claude-Configuration (github source, autoUpdate: true)을
+claude-configuration 이름으로 등록하고,
+enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
+```
+
+settings file에 적지 않고 CLI로 한 번만 설치할 수도 있다. 다음 두 명령이 각각 marketplace 등록과 plugin 설치를 하며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+
+```bash
+# claude CLI
+claude plugin marketplace add ykim2718/Claude-Configuration
+claude plugin install yrocket-rules@claude-configuration
+```
+
+#### 3.2.3 Web Interface
+
+session을 열 때 고르는 repository의 project settings `<project>/.claude/settings.json` 에 적고 push 한다. machine settings가 없으므로 Web에서 여는 repository마다 이 file이 있어야 하며, 없는 repository에서는 rule이 올라오지 않는다.
+
+`/plugin` 명령은 cloud session에서 제공되지 않으므로 session 안에서 임시로 설치할 수 없다. settings file이 유일한 자리이고, 고친 내용은 push 해야 다음 session에 반영된다.
+
+`"autoUpdate": true` 는 그대로 적어 두되, session마다 새로 clone 하므로 갱신할 이전 사본이 없어 실질적인 역할은 없다 ([4.1](#41-session-level-update)).
 
 ## 4. Automatic Update
 
@@ -404,7 +414,7 @@ claude plugin details yrocket-rules@claude-configuration
 
 ## 6. Extension
 
-확장은 모두 [3.1](#31-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.2](#32-bootstrap-entry-desktop) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
+확장은 모두 [3.1](#31-remote-git-repository) 의 remote git repository에 더한다. push 하면 marketplace를 통해 두 interface의 새 session에 함께 따라오므로, settings file은 다시 건드리지 않는다. plugin을 새로 만드는 경우만 예외로 [3.2](#32-bootstrap-entry) 의 `enabledPlugins` 에 한 줄이 더 필요하다.
 
 remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 밖의 file과 folder는 무시되므로 자유롭게 추가할 수 있다. 이 절의 확장이 놓이는 자리는 다음과 같다.
 
