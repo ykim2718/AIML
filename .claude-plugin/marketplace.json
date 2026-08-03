@@ -7,12 +7,8 @@
   "plugins": [
     {
       "name": "yrocket-rules",
-      "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/ykim2718/Claude-Configuration.git",
-        "path": "plugins/yrocket-rules",
-        "ref": "main"
-      }
+      "source": "./plugins/yrocket-rules",
+      "description": "Vendored from ykim2718/Claude-Configuration; refresh with .claude/scripts/sync-yrocket-rules.sh."
     }
   ]
 }
