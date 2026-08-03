@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 180
+rev. 181
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -283,7 +283,15 @@ hook 자체는 plugin의 `hooks/hooks.json` 에 두고, 두 명령은 그 file�
 } >> "$HOME/.claude/plugin-autoupdate.log" 2>&1
 ```
 
-두 file도 직접 만들지 않고 prompt에서 지시해도 된다. 위 code block을 그대로 붙여 넣고 file을 지정하면 Claude가 그 내용대로 만들어 넣는다. 설명으로 시키는 것과 달리 문구 해석이 끼지 않아 문서와 같은 file이 된다.
+만드는 방법은 두 가지이다. CLI는 file을 만들어 주지 않으므로 여기서는 쓰지 않는다.
+
+#### Editor
+
+두 file을 직접 만들어 위의 code block을 그대로 적는다. 만든 뒤에는 marketplace에 push 한다.
+
+#### Prompt
+
+위 code block을 그대로 붙여 넣고 file을 지정하면 Claude가 그 내용대로 만들어 넣는다. 설명으로 시키는 것과 달리 문구 해석이 끼지 않아 문서와 같은 file이 된다.
 
 ⛔ **첫 줄의 파일명 주석은 빼고 붙여 넣는다.** JSON은 주석을 허용하지 않아 `//` 줄이 들어가면 `hooks.json` 을 읽을 때 실패한다. 이 주석은 code가 어느 file인지 문서에서 표시하는 표기일 뿐이고, 경로는 prompt에 따로 적는다.
 
@@ -318,7 +326,15 @@ Cloud session
 
 **Fig. 5.** The same file after the cloud session clones the repository.
 
-이 file도 prompt에서 지시하면 Claude가 만들어 넣는다. 만든 뒤에는 remote project repository에 push 한다.
+방법은 두 가지이다. Web interface에는 terminal도 CLI도 없으므로 CLI는 쓰지 못하며, 어느 쪽으로 만들든 remote project repository에 push 해야 session에 따라온다.
+
+#### Editor
+
+local repository에서 `.claude/settings.json` 을 직접 열어 [3.1](#31-settingsjson-in-desktop-interface) 의 JSON을 적고 push 한다.
+
+#### Prompt
+
+prompt에서 지시하면 Claude가 만들어 넣는다.
 
 ```
 # prompt
