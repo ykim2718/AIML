@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 164
+rev. 165
 
 ## 1. Goal
 
@@ -153,25 +153,14 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 
 자리가 둘이며, 이름은 같지만 적용 범위가 다르다.
 
-```
-User machine
-├── ~/.claude/
-│   └── settings.json           : machine settings - all projects on the machine
-└── <project>/                  : local git repository
-    └── .claude/
-        └── settings.json       : project settings - the project only
-```
-
-**Fig. 4.** The two settings files the Desktop interface reads.
-
 두 자리 모두 읽으며, 같은 내용이 있으면 병합되고 겹치는 값은 project settings가 이긴다.
 
 **Table 2.** Coverage and delivery of the two settings files.
 
-| Git repository | Settings file | Coverage | Delivery |
-|---|---|---|---|
-| no | `~/.claude/settings.json` | machine | written once per machine |
-| yes | `<project>/.claude/settings.json` | project | kept in the local repository, so it applies when the project is opened |
+| Git repository | File location | Settings file | Coverage | Delivery |
+|---|---|---|---|---|
+| no | user machine | `~/.claude/settings.json` | machine | written once per machine |
+| yes | local repository | `<project>/.claude/settings.json` | project | kept in the local repository,<br>so it applies when the project is opened |
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
@@ -304,7 +293,7 @@ Remote project repository
     └── settings.json           : project settings - written and pushed by the author
 ```
 
-**Fig. 5.** Where the settings file sits before the session starts.
+**Fig. 4.** Where the settings file sits before the session starts.
 
 ```
 Cloud session
@@ -313,7 +302,7 @@ Cloud session
         └── settings.json       : project settings - the project only
 ```
 
-**Fig. 6.** The same file after the cloud session clones the repository.
+**Fig. 5.** The same file after the cloud session clones the repository.
 
 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
@@ -396,7 +385,7 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 └── docs/                         : non-loaded document
 ```
 
-**Fig. 7.** Where each kind of extension is placed.
+**Fig. 6.** Where each kind of extension is placed.
 
 - **Hook**: `hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
 - **Command**: `commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
@@ -550,7 +539,7 @@ skills/<skill-name>/
     └── <topic>.md        (loaded on demand)
 ```
 
-**Fig. 8.** A skill folder and its reference file.
+**Fig. 7.** A skill folder and its reference file.
 
 ## Appendix E. Plugin State Files (Desktop)
 
@@ -666,7 +655,7 @@ working clone 자체를 vault로 열었을 때의 구조는 다음과 같다. Ob
     └── assets/               : set attachment location here
 ```
 
-**Fig. 9.** The working clone opened as an Obsidian vault.
+**Fig. 8.** The working clone opened as an Obsidian vault.
 
 `plugins` 라는 이름이 두 곳에 나오지만 서로 관계가 없다. `.obsidian/plugins/` 는 Obsidian이 쓰는 것이고, 최상위의 `plugins/` 는 Claude Code가 쓰는 것이다.
 
