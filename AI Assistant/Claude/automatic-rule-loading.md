@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 143
+rev. 144
 
 ## 1. Goal
 
@@ -218,7 +218,15 @@ claude plugin install yrocket-rules@claude-configuration
 
 ### 3.2 Session Start Hook (Desktop)
 
-SessionStart hook에 [Appendix B](#appendix-b-claude-cli-desktop) 의 갱신 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+
+```bash
+# claude CLI
+claude plugin marketplace update <MARKETPLACE_NAME>
+claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
+```
+
+앞 명령은 marketplace clone을 최신 commit으로 옮기고, 뒤 명령은 설치본을 그 commit의 cache 사본으로 다시 고정한다. 앞 명령만으로는 session에 반영되지 않는다.
 
 이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
@@ -242,7 +250,7 @@ SessionStart hook에 [Appendix B](#appendix-b-claude-cli-desktop) 의 갱신 두
         "hooks": [
           {
             "type": "command",
-            "command": "{ command -v claude >/dev/null 2>&1 || { echo \"claude CLI not found; skipping plugin self-update\"; exit 0; }; state=\"$HOME/.claude/plugins/installed_plugins.json\"; [ -f \"$state\" ] || { echo \"no installed plugins\"; exit 0; }; date \"+=== session start %Y-%m-%d %H:%M:%S\"; claude plugin marketplace update; for p in $(grep -oE '\"[A-Za-z0-9_.-]+@[A-Za-z0-9_.-]+\"' \"$state\" | tr -d '\"' | sort -u); do claude plugin update \"$p\"; done; } >> \"$HOME/.claude/plugin-autoupdate.log\" 2>&1",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/update-plugins.sh\"",
             "timeout": 180
           }
         ]
@@ -252,15 +260,32 @@ SessionStart hook에 [Appendix B](#appendix-b-claude-cli-desktop) 의 갱신 두
 }
 ```
 
-이 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. Claude가 위와 같은 내용을 만들어 넣는다.
+갱신 script는 같은 folder에 둔다. `hooks.json` 에 한 줄로 넣으면 길어져 읽기 어려우므로 file로 나누며, `${CLAUDE_PLUGIN_ROOT}` 는 Claude Code가 그 plugin의 설치 folder로 바꾸어 준다.
+
+```bash
+# plugins/yrocket-rules/hooks/update-plugins.sh
+{
+  command -v claude >/dev/null 2>&1 || { echo "claude CLI not found; skipping plugin self-update"; exit 0; }
+  state="$HOME/.claude/plugins/installed_plugins.json"
+  [ -f "$state" ] || { echo "no installed plugins"; exit 0; }
+  date "+=== session start %Y-%m-%d %H:%M:%S"
+  claude plugin marketplace update
+  for p in $(grep -oE '"[A-Za-z0-9_.-]+@[A-Za-z0-9_.-]+"' "$state" | tr -d '"' | sort -u); do
+    claude plugin update "$p"
+  done
+} >> "$HOME/.claude/plugin-autoupdate.log" 2>&1
+```
+
+두 file도 손으로 적을 필요 없이 prompt에서 지시하면 된다. Claude가 위와 같은 내용을 만들어 넣는다.
 
 ```
 # prompt
 plugins/yrocket-rules/hooks/hooks.json을 만들어줘.
 UserPromptSubmit에는 conversation_rules.md와 skill_loading_rules.md를
 cat 하는 command를 걸고, SessionStart는 matcher를 startup으로 두고
-installed_plugins.json에서 읽은 plugin을 claude plugin update로
-갱신하는 bash command를 timeout 180으로 걸어줘.
+같은 folder의 update-plugins.sh를 bash로 실행하는 command를
+timeout 180으로 걸어줘. 그 script는 installed_plugins.json에서 읽은
+plugin을 claude plugin update로 갱신하고 결과를 log로 남기게 해줘.
 ```
 
 ### 3.3 Settings.json in Web Interface
