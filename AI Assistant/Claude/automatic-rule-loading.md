@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 133
+rev. 134
 
 ## 1. Goal
 
@@ -192,26 +192,6 @@ session마다 clone 하고 `add and install`을 다시 하므로 매 session 최
 
 ## 4. Bootstrap
 
-이 절은 [2](#2-architecture) 의 구조를 실제로 만드는 순서를 다룬다. rule을 담는 remote git repository를 먼저 만들고 (4.1), [3](#3-setup) 의 settings file은 [5](#5-bootstrap-desktop) 와 [6](#6-bootstrap-web) 에서 interface별로 적는다.
-
-4.1은 rule을 담고 있는 plugin marketplace의 기본 구성이므로 두 interface에 공통이다.
-
-`autoUpdate`를 `true`로 두면 Claude Code가 session 시작 시 `[1]`을 기준으로 사본을 갱신한다. 다만 Desktop interface에서는 이 갱신이 실행되지 않는다.
-
-| Aspect | Desktop interface | Web interface |
-|---|---|---|
-| 갱신 시점 | 실행되지 않는다 | session 시작 |
-| `autoUpdate: true`의 역할 | 무력하다 | 갱신할 이전 사본이 없어 무의미하다 |
-| 결과 | 설치 당시 commit에 고정된다 | 최신 commit |
-
-Desktop app은 자신의 update를 스스로 관리하므로 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심는데, plugin 갱신이 같은 auto-updater 경로에 얹혀 있어 함께 꺼진다. debug log에는 다음 한 줄이 남는다.
-
-```text
-[DEBUG] Plugin autoupdate: skipped (auto-updater disabled)
-```
-
-이 변수는 settings file의 `env` block으로 덮이지 않는다. app이 값을 나중에 적용하므로 새 session에서도 `1` 이 유지된다. 따라서 Desktop interface에서 갱신을 자동화하려면 [5.1](#51-session-start-hook) 의 hook을 쓴다.
-
 ### 4.1 Remote Git Repository
 
 rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 구성은 manifest file 두 개이다.
@@ -261,7 +241,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 machine settings `~/.claude/settings.json` 에 적는다. machine마다 한 번이면 그 machine의 모든 project가 덮이므로, project settings는 따로 적지 않아도 된다.
 
-⛔ **Desktop interface에서는 `"autoUpdate": true` 만으로 갱신되지 않으므로** ([4](#4-bootstrap)), 갱신은 [5.1](#51-session-start-hook) 의 hook이 맡는다.
+⛔ **Desktop interface에서는 `"autoUpdate": true` 만으로 갱신되지 않으므로** ([3](#3-setup)), 갱신은 [5.1](#51-session-start-hook) 의 hook이 맡는다.
 
 settings file 수정은 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
 
@@ -348,7 +328,7 @@ session을 열 때 고르는 repository의 project settings `<project>/.claude/s
 
 `/plugin` 명령은 cloud session에서 제공되지 않으므로 session 안에서 임시로 설치할 수 없다. settings file이 유일한 자리이고, 고친 내용은 push 해야 다음 session에 반영된다.
 
-`"autoUpdate": true` 는 그대로 적어 두되, session마다 새로 clone 하므로 갱신할 이전 사본이 없어 실질적인 역할은 없다 ([4](#4-bootstrap)).
+`"autoUpdate": true` 는 그대로 적어 두되, session마다 새로 clone 하므로 갱신할 이전 사본이 없어 실질적인 역할은 없다 ([3](#3-setup)).
 
 ## 7. Manual Force Update (Desktop)
 
