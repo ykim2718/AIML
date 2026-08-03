@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 142
+rev. 143
 
 ## 1. Goal
 
@@ -95,6 +95,7 @@ plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 
 `.claude-plugin/marketplace.json` — 어떤 plugin이 어디에 있는지 나열한다:
 
 ```json
+// .claude-plugin/marketplace.json
 {
   "name": "claude-configuration",
   "owner": { "name": "yRocket", "email": "ykim2718@gmail.com" },
@@ -111,6 +112,7 @@ plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 
 `plugins/yrocket-rules/.claude-plugin/plugin.json` — plugin 자신의 이름과 정보를 담는다:
 
 ```json
+// plugins/yrocket-rules/.claude-plugin/plugin.json
 {
   "name": "yrocket-rules",
   "description": "코드/문서 작성 공용 규칙: coding_rules·md_doc_rules skill, 대화 규칙과 필수 skill 로딩을 주입하는 UserPromptSubmit hook."
@@ -221,6 +223,7 @@ SessionStart hook에 [Appendix B](#appendix-b-claude-cli-desktop) 의 갱신 두
 이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
 ```json
+// plugins/yrocket-rules/hooks/hooks.json
 {
   "hooks": {
     "UserPromptSubmit": [
@@ -513,6 +516,7 @@ skills/<skill-name>/
 `known_marketplaces.json` — 등록된 marketplace와 그 clone 위치, 마지막 갱신 시각을 기록한다:
 
 ```json
+// ~/.claude/plugins/known_marketplaces.json
 {
   "claude-configuration": {
     "source": {
@@ -529,6 +533,7 @@ skills/<skill-name>/
 `installed_plugins.json` — 설치된 plugin의 version, 설치 시각, 설치 당시의 commit을 기록한다. plugin.json에 `version` field가 없으면 commit SHA가 version으로 기록된다:
 
 ```json
+// ~/.claude/plugins/installed_plugins.json
 {
   "version": 2,
   "plugins": {
