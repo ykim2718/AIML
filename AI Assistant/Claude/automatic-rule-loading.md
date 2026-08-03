@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 154
+rev. 155
 
 ## 1. Goal
 
@@ -48,6 +48,10 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
    +------------------------+  +------------------------+  +------------------------+
 ```
 
+**Fig. 1.** Four copies of the plugin marketplace and how each one is obtained.
+
+`add and install`은 Claude Code가 `[1]` 을 marketplace로 등록하고 그 안의 plugin을 설치하는 두 동작이며, settings file에 적힌 두 항목을 읽어 자동으로 이루어진다.
+
 `[3]`은 내려받은 사본을 machine의 한 folder 아래에 나누어 둔다. `[4]`도 같은 것을 내려받지만 저장 경로는 공식 문서에 없고, session이 끝나면 사라진다.
 
 ```
@@ -57,6 +61,8 @@ User machine
         ├── marketplaces/<name>/    : clone of <repository root>
         └── cache/<...>/            : copy of each plugin folder -> plugin cache
 ```
+
+**Fig. 2.** Where the Desktop interface stores the downloaded marketplace.
 
 `[2]`, `[3]`, `[4]`는 서로를 참조하지 않는다. 모두 `[1]`만 바라본다. Claude Code가 읽는 것은 `[3]` 또는 `[4]` 뿐이므로, working clone을 수정해도 push 전까지는 동작에 영향이 없다.
 
@@ -85,6 +91,8 @@ remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 �
         ├── commands/             : slash commands
         └── agents/               : subagents
 ```
+
+**Fig. 3.** Layout of a plugin marketplace in a remote git repository.
 
 marketplace manifest는 remote repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다.
 
@@ -130,12 +138,14 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 automatic rule loading에 필요한 것은 두 interface가 다르다.
 
+**Table 1.** Where each interface is bootstrapped.
+
 | Interface | File location | Settings file | Session Start Hook |
 |---|---|---|---|
-| Desktop | local repository | `~/.claude/settings.json` | 필요 |
+| Desktop | user machine | `~/.claude/settings.json` | 필요 |
 | Web | remote project repository | `<project>/.claude/settings.json` | 불필요 |
 
-settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다.
+settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
 Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심어 `"autoUpdate": true` 가 실행되지 않으므로, plugin이 설치 당시 commit에 고정되어 rule을 push 해도 따라오지 않는다. 그 갱신을 hook이 대신한다. Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
@@ -154,7 +164,11 @@ User machine
         └── settings.json       : project settings - the project only
 ```
 
+**Fig. 4.** The two settings files the Desktop interface reads.
+
 두 자리 모두 읽으며, 같은 내용이 있으면 병합되고 겹치는 값은 project settings가 이긴다.
+
+**Table 2.** Coverage and delivery of the two settings files.
 
 | Settings file | Coverage | Delivery |
 |---|---|---|
@@ -163,7 +177,7 @@ User machine
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
-적는 내용은 marketplace 위치와 plugin 활성화이다.
+적는 내용은 marketplace 위치와 plugin 활성화이다. 이 file은 editor로 직접 열어 적어도 된다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이기 때문이다.
 
 ```json
 // ~/.claude/settings.json
@@ -292,12 +306,16 @@ Remote project repository
     └── settings.json           : project settings - written and pushed by the author
 ```
 
+**Fig. 5.** Where the settings file sits before the session starts.
+
 ```
 Cloud session
 └── <project>/                  : clone of the remote project repository
     └── .claude/
         └── settings.json       : project settings - the project only
 ```
+
+**Fig. 6.** The same file after the cloud session clones the repository.
 
 session마다 marketplace를 새로 등록하고 plugin을 다시 설치하므로 매 session 최신 marketplace를 받으며, [3.2](#32-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
@@ -382,6 +400,8 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 └── docs/                         : non-loaded document
 ```
 
+**Fig. 7.** Where each kind of extension is placed.
+
 - **Hook**: `hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
 - **Command**: `commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
 - **Agent**: `agents/` 에 md file을 추가한다. subagent의 정의이며, 사용자가 지목하거나 Claude가 일을 넘길 때만 load 된다.
@@ -413,7 +433,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **`autoUpdate`**: marketplace 등록 항목의 field이다. session 시작 시 marketplace와 plugin을 remote 기준으로 갱신하지만, Desktop interface에서는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않는다.
 
-- **Bootstrap**: settings file에 적는 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목이다. marketplace를 처음 가리키는 자리이므로 marketplace 자신이 배포할 수 없다.
+- **Bootstrap**: marketplace가 스스로 배포할 수 없어 사람이 한 번 갖추어 주는 것이다. settings file에 적는 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목이 여기에 들고, Desktop interface에서는 갱신을 맡는 Session Start Hook도 처음 한 번은 함께 놓는다.
 
 - **claude.ai**: Claude 계정으로 접속하는 web service이다. Web interface는 이 service 안에서 열리며, 개인 skill을 켜고 끄는 화면과 조직의 server-managed settings를 다루는 admin 화면도 여기에 있다. 두 interface가 코드를 다루는 곳이라면, claude.ai는 계정과 조직을 다루는 곳이다.
 
@@ -462,6 +482,8 @@ Desktop interface에만 해당하는 제약이다.
 이 appendix는 Desktop interface에만 해당한다. Web interface에는 terminal이 없어 CLI를 쓸 수 없다.
 
 Desktop app을 설치해도 `claude` CLI는 PATH에 들어오지 않는다. terminal에서 `claude` 명령을 쓰려면 별도로 설치한다.
+
+**Table 3.** CLI installation command per environment.
 
 | Environment | Command |
 |---|---|
@@ -530,6 +552,8 @@ skills/<skill-name>/
     └── <topic>.md        (loaded on demand)
 ```
 
+**Fig. 8.** A skill folder and its reference file.
+
 ## Appendix E. Plugin State Files (Desktop)
 
 `~/.claude/plugins/` 아래의 두 file은 Claude Code가 plugin 기능을 실제로 사용할 때 자동으로 생성하고 관리하는 내부 상태 file이다. 이 경로는 machine에 있으므로 Desktop interface에만 남으며, Web interface의 상태는 session이 끝나면 사라진다.
@@ -538,6 +562,8 @@ skills/<skill-name>/
 - **`installed_plugins.json`**: plugin을 처음 설치할 때 생성된다. 마찬가지로 설치한 plugin이 없으면 없다.
 
 역할 구분은 다음과 같다.
+
+**Table 4.** Settings written by the user versus state recorded by Claude Code.
 
 | File | Role |
 |---|---|
@@ -596,6 +622,8 @@ rule은 결국 md file이므로 Obsidian으로 편집할 수 있다. vault에 �
 
 배치는 세 가지가 있다.
 
+**Table 5.** Three ways to place the working clone in an Obsidian vault.
+
 | Placement | Description | Note |
 |---|---|---|
 | working clone 자체를 vault로 연다 | rule만 담긴 독립 vault가 된다 | 가장 단순하며 다른 기록과 섞이지 않는다 |
@@ -639,6 +667,8 @@ working clone 자체를 vault로 열었을 때의 구조는 다음과 같다. Ob
     ├── <document>.md
     └── assets/               : set attachment location here
 ```
+
+**Fig. 9.** The working clone opened as an Obsidian vault.
 
 `plugins` 라는 이름이 두 곳에 나오지만 서로 관계가 없다. `.obsidian/plugins/` 는 Obsidian이 쓰는 것이고, 최상위의 `plugins/` 는 Claude Code가 쓰는 것이다.
 
