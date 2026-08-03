@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 176
+rev. 177
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -205,7 +205,7 @@ claude-configuration 이름으로 등록하고,
 enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 ```
 
-settings file을 열지 않고 CLI로 같은 두 항목을 넣을 수도 있다. 다음 두 명령이 각각 marketplace 등록과 plugin 설치를 하며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+settings file을 열지 않고 CLI로 같은 두 항목을 넣을 수도 있다. 다음 두 명령을 terminal에서 실행하거나 prompt에 적어 Claude에게 시키면 각각 marketplace 등록과 plugin 설치가 이루어지며, 결과는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file에 기록된다. CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```bash
 # claude CLI, or prompt asking Claude to run them
@@ -334,9 +334,9 @@ Show installed_plugins.json
 
 ### 4.2 Claude CLI (Desktop)
 
-Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행하며, 같은 명령을 prompt에 적어 Claude에게 시켜도 된다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
-```
+```bash
 # claude CLI, or prompt asking Claude to run them
 claude plugin marketplace list
 claude plugin list
@@ -505,13 +505,7 @@ session의 prompt에 입력하는 명령이다. 다음 하나는 두 interface�
 
 - **`/<skill-name>`**: `description`의 판단과 무관하게 그 skill을 바로 load 한다.
 
-아래는 Desktop interface에만 해당한다. `/plugin` 명령이 prompt에서 동작하지 않으면 CLI 실행을 지시하는 prompt를 입력한다. Web interface에는 `/plugin` 도 terminal도 없으므로 이 방법을 쓸 수 없고, 확인은 [4.3](#43-session-content-web) 을 본다.
-
-```
-# prompt
-claude plugin marketplace update claude-configuration 과
-claude plugin update yrocket-rules@claude-configuration 을 실행해줘.
-```
+`/plugin` 명령은 Desktop interface의 prompt에서 동작하지 않을 수 있고 Web interface에는 아예 없다. 대신 [Appendix B](#appendix-b-claude-cli-desktop) 의 CLI 명령을 prompt에 적어 Claude에게 시키며, Web interface에는 terminal도 CLI도 없으므로 확인은 [4.3](#43-session-content-web) 을 본다.
 
 ## Appendix D. Skill
 
