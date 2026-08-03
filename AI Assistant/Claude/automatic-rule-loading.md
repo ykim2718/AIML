@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 157
+rev. 158
 
 ## 1. Goal
 
@@ -136,14 +136,14 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 ## 3. Bootstrap
 
-automatic rule loading에 필요한 것은 두 interface가 다르다.
+Interface에 따라, automatic rule loading을 위해, 직접 작성하여야 하는 file이 다르다.
 
 **Table 1.** Where each interface is bootstrapped.
 
-| Interface | File location | Settings file | Session Start Hook |
-|---|---|---|---|
-| Desktop | user machine | `~/.claude/settings.json` | required |
-| Web | remote project repository | `<project>/.claude/settings.json` | not required |
+| Interface | Git repository | File location | Settings file | Session Start Hook |
+|---|---|---|---|---|
+| Desktop | no | user machine | `~/.claude/settings.json` | required |
+| Web | yes | remote project repository | `<project>/.claude/settings.json` | not required |
 
 settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 적는 자리만 다르며, Desktop은 machine에 한 번, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
