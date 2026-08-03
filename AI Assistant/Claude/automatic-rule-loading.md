@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 122
+rev. 123
 
 ## 1. Goal
 
@@ -236,18 +236,14 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 
 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [4.4](#44-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
-#### 3.2.1 Field Reference
-
-| Field | Role |
-|---|---|
-| `extraKnownMarketplaces` | marketplace의 이름과 source를 등록한다 |
-| `source.source` | source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다 |
-| `autoUpdate` | marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다 |
-| `enabledPlugins` | `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다 |
+- **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
+- **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
+- **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다.
+- **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
 
 field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.2](#22-settings-files) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
 
-#### 3.2.2 Desktop Interface
+#### 3.2.1 Desktop Interface
 
 machine settings `~/.claude/settings.json` 에 적는다. machine마다 한 번이면 그 machine의 모든 project가 덮이므로, project settings는 따로 적지 않아도 된다.
 
@@ -271,7 +267,7 @@ claude plugin marketplace add ykim2718/Claude-Configuration
 claude plugin install yrocket-rules@claude-configuration
 ```
 
-#### 3.2.3 Web Interface
+#### 3.2.2 Web Interface
 
 session을 열 때 고르는 repository의 project settings `<project>/.claude/settings.json` 에 적고 push 한다. machine settings가 없으므로 Web에서 여는 repository마다 이 file이 있어야 하며, 없는 repository에서는 rule이 올라오지 않는다.
 
