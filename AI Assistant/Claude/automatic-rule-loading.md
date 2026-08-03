@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 151
+rev. 152
 
 ## 1. Goal
 
@@ -21,7 +21,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
 
-💡 bootstrap을 적는 횟수가 두 interface의 가장 큰 차이이다. Desktop interface는 machine마다 한 번이면 그 machine의 모든 project가 덮인다. Web interface는 session을 열 때 고른 repository가 곧 project이고 machine settings가 없으므로, Web에서 여는 repository마다 `extraKnownMarketplaces` 와 `enabledPlugins` 가 있어야 하며 없는 repository에서는 rule이 올라오지 않는다.
+💡 bootstrap을 적는 횟수가 두 interface의 가장 큰 차이이며, 그 자리는 [3](#3-bootstrap) 에서 다룬다.
 
 ## 2. Architecture
 
@@ -62,7 +62,7 @@ User machine
 
 ### 2.2 Plugin Marketplace in Remote Git Repository 🌳
 
-rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 구성은 manifest file 두 개이다. marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
+rule을 담는 plugin marketplace는 일반 remote git repository이며, 뼈대는 manifest file 두 개이다. 이 둘만 갖추어 push 해도 등록 가능한 marketplace가 되고, 나머지 folder는 그 위에 얹는 component이다. marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
 remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 정해져 있다. Claude Code가 remote repository를 내려받은 뒤 이 경로에서 catalog를 찾기 때문이며, 다른 곳에 두면 marketplace로 인식되지 않는다.
 
@@ -161,8 +161,6 @@ User machine
 | `~/.claude/settings.json` | machine | git 밖에 있어 machine마다 한 번 손으로 적는다 |
 | `<project>/.claude/settings.json` | project | local repository에 들어 있어 그 project를 열면 적용된다 |
 
-machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모든 project가 덮인다.
-
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
 적는 내용은 marketplace 위치와 plugin 활성화이다.
@@ -185,13 +183,13 @@ machine settings 덕분에 machine마다 한 번만 적으면 그 machine의 모
 }
 ```
 
-💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다.
+💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이 맡는다.
 
 손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
-- **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다.
+- **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다.
 - **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
 
 settings file 수정은 손으로 할 필요 없이 prompt에서 지시하면 된다. Claude가 위의 JSON과 같은 내용을 만들어 넣는다.
@@ -222,7 +220,7 @@ claude plugin marketplace update <MARKETPLACE_NAME>
 claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
-앞 명령은 marketplace clone을 최신 commit으로 옮기고, 뒤 명령은 설치본을 그 commit의 cache 사본으로 다시 고정한다. 앞 명령만으로는 session에 반영되지 않는다.
+앞 명령은 marketplace clone을 최신 commit으로 옮기고, 뒤 명령은 설치본을 그 commit의 cache 사본으로 다시 고정한다. 앞 명령만으로는 설치본이 그대로이므로 둘을 차례로 실행하며, 그렇게 갱신해도 지금 열려 있는 session이 아니라 다음 session부터 적용된다.
 
 이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
@@ -282,6 +280,8 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 (hooks.json code block을 여기에 붙여 넣는다)
 ```
 
+`update-plugins.sh` 도 경로와 code block만 바꾸어 같은 방식으로 지시한다.
+
 ### 3.3 Settings.json in Web Interface
 
 settings.json에 적는 내용은 [3.1](#31-settingsjson-in-desktop-interface) 과 동일하다. machine이 없어 자리가 하나뿐이며, 이 file은 session을 열 때 고르는 remote project repository 안에 있어야 하고 clone 되면서 그대로 따라온다.
@@ -299,7 +299,7 @@ Cloud session
         └── settings.json       : project settings - the project only
 ```
 
-session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [3.2](#32-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
+session마다 marketplace를 새로 등록하고 plugin을 다시 설치하므로 매 session 최신 marketplace를 받으며, [3.2](#32-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
 이 file도 prompt에서 지시하면 Claude가 만들어 넣는다. 만든 뒤에는 remote project repository에 push 한다.
 
