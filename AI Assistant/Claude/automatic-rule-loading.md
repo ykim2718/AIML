@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 146
+rev. 147
 
 ## 1. Goal
 
@@ -218,7 +218,7 @@ claude plugin install yrocket-rules@claude-configuration
 
 ### 3.2 Session Start Hook (Desktop)
 
-SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+🌷 SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 ```bash
 # claude CLI
@@ -317,9 +317,9 @@ enabledPlugins에 yrocket-rules@claude-configuration: true 를 추가해줘.
 
 ## 4. Verification
 
-### 4.1 Session Command (Desktop/Web)
+### 4.1 Session Command (Desktop)
 
-두 interface 모두 prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확인할 수 있다.
+prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확인할 수 있다.
 
 ```
 # prompt
@@ -331,7 +331,7 @@ Show installed_plugins.json
 
 ### 4.2 Claude CLI (Desktop)
 
-Desktop interface에서는 `claude` CLI로도 확인할 수 있다. Web interface에는 terminal이 없으므로 4.1의 방법만 쓴다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
+Desktop interface에서는 `claude` CLI로도 확인할 수 있다. shell 종류와 무관하므로 PowerShell, bash 등 아무 terminal에서나 실행한다. 단, CLI는 별도 설치가 필요하다. 설치 방법은 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
 ```
 # claude CLI
@@ -341,6 +341,18 @@ claude plugin details yrocket-rules@claude-configuration
 ```
 
 `details` 결과에 skill과 hook이 나타나면 정상이다.
+
+### 4.3 Session Content (Web)
+
+Web interface에는 terminal도 `/plugin` 도 없고 상태 file도 session이 끝나면 사라지므로, 설치 목록 대신 session에 rule이 실제로 올라왔는지로 확인한다. 셋 중 하나만 확인되어도 plugin이 붙은 것이다.
+
+| Check | Prompt | Normal result |
+|---|---|---|
+| hook이 넣은 rule | `context에 들어온 rule을 그대로 보여줘` | `hooks/` 의 rule file 내용이 나온다 |
+| skill 목록 | `쓸 수 있는 skill을 나열해줘` | plugin의 skill 이름과 `description`이 나온다 |
+| context 구성 | `/context` | 지금 context에 올라온 것이 나열된다 |
+
+`/context` 는 cloud session에서 동작하는 명령이며, 확인 결과가 비어 있으면 그 repository의 `.claude/settings.json` 부터 본다 ([3.3](#33-settingsjson-in-web-interface)).
 
 ## 5. Extension
 
