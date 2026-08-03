@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 159
+rev. 160
 
 ## 1. Goal
 
@@ -149,7 +149,7 @@ settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interf
 
 Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다. Desktop app이 session 프로세스에 `DISABLE_AUTOUPDATER=1` 을 심어 `"autoUpdate": true` 가 실행되지 않으므로, plugin이 설치 당시 commit에 고정되어 rule을 push 해도 따라오지 않는다. 그 갱신을 hook이 대신한다. Web은 session마다 새로 clone 하므로 갱신이 저절로 되어 hook이 필요 없다.
 
-💡 Desktop interface의 machine settings 하나를 빼면, bootstrap은 모두 clone 된 사본에서 온다. Desktop interface는 project의 local clone을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
+💡 사람이 적는 것은 Table 1의 settings file과 hook뿐이고, 그 뒤의 rule은 모두 clone 된 사본에서 온다. Desktop interface는 내려받아 둔 marketplace 사본을, Web interface는 session 시작 시 만들어진 clone을 읽는다.
 
 ### 3.1 Settings.json in Desktop Interface
 
@@ -199,7 +199,7 @@ User machine
 
 💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이 맡는다.
 
-손으로 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
@@ -407,7 +407,7 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 - **Skill and reference file**: `skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
 - **Non-loaded document**: 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
-remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 [3.1](#31-settingsjson-in-desktop-interface) 의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
+remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰 file은 피한다. 필요하면 settings file의 `source` object에 `"sparsePaths": [<path>, ...]` 를 지정하여 일부 folder만 받도록 제한할 수 있다.
 
 ## 6. Constraints
 
@@ -423,7 +423,7 @@ Desktop interface에만 해당하는 제약이다.
 - `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
 - settings file은 자동으로 pull 되지 않는다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
-조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 project settings가 맡는다.
+조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 [Table 1](#3-bootstrap) 의 settings file이 맡는다.
 
 ## Appendix A. Terminology
 
@@ -466,6 +466,8 @@ Desktop interface에만 해당하는 제약이다.
 - **Server-managed settings**: 조직 단위로 배포되는 settings이다. Team이나 Enterprise plan의 조직에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정하며, session 시작 시 서버에서 내려와 두 interface에 모두 적용된다. OS 단위로 배포하는 managed settings file과 달리 Web interface까지 도달한다.
 
 - **Session**: 하나의 Claude Code 실행 단위이다. 시작 시점에 settings, plugin, CLAUDE.md, hook 정의를 읽어 들이고, 그 구성으로 대화가 끝날 때까지 동작한다. rule 변경이 반영되는 경계가 곧 session이다.
+
+- **Session Start Hook**: SessionStart event에 걸어 두는 hook이다. Desktop interface에서 실행되지 않는 `autoUpdate`를 대신하여 session을 열 때마다 marketplace와 plugin을 갱신한다.
 
 - **Skill**: 필요한 시점에 load 되는 rule 묶음이다. folder 이름이 skill 이름이 되고, `SKILL.md`의 `description`이 지금 하는 일과 맞을 때 load 된다. 사용자가 `/<skill-name>` 을 입력해 곧바로 부를 수도 있다.
 
