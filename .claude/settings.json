@@ -1,24 +1,11 @@
 {
-  "extraKnownMarketplaces": {
-    "aiml": {
-      "source": {
-        "source": "github",
-        "repo": "ykim2718/AIML"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "yrocket-rules@aiml": true
-  },
   "hooks": {
-    "SessionStart": [
+    "UserPromptSubmit": [
       {
-        "matcher": "startup",
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/bootstrap-plugins.sh\"",
-            "timeout": 180
+            "command": "cat \"$CLAUDE_PROJECT_DIR/.claude/hooks/conversation_rules.md\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/skill_loading_rules.md\""
           }
         ]
       }

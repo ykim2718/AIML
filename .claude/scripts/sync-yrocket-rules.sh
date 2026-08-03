@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-__version__="0.1.0.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
-# Refresh the vendored copy of the yrocket-rules plugin from its source repository.
+__version__="0.2.0.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+# Refresh this repository's copy of the yrocket-rules skills and prompt rules.
 #
-# The plugin body is vendored into this repository so that a session can install it
-# without reaching a private repository. Its source of truth stays in
-# ykim2718/Claude-Configuration, so this script pulls that repository and overwrites
-# the vendored copy. It never commits; review the diff and commit it yourself.
+# The rules are vendored under .claude/ rather than installed as a plugin, because a
+# plugin only loads in a session that already had it installed at startup, which a
+# fresh container never does. Their source of truth stays in the yrocket-rules plugin
+# of ykim2718/Claude-Configuration, so this script copies from there.
+#
+# It never commits; review the diff it reports and commit it yourself.
 #
 # Usage:
 #   .claude/scripts/sync-yrocket-rules.sh [SOURCE_FOLDER]
@@ -17,13 +19,15 @@ set -euo pipefail
 
 source_url="https://github.com/ykim2718/Claude-Configuration.git"
 plugin_path="plugins/yrocket-rules"
+skill_names="md_rules coding_rules"
+rule_names="conversation_rules.md skill_loading_rules.md"
 
 script_folder="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_folder="$(cd "$script_folder/../.." && pwd)"
 
 usage() {
   cat <<USAGE
-Refresh the vendored copy of the yrocket-rules plugin from $source_url.
+Refresh .claude/skills and .claude/hooks from the yrocket-rules plugin in $source_url.
 
 Usage:
   $(basename "${BASH_SOURCE[0]}") [SOURCE_FOLDER]
@@ -58,10 +62,6 @@ trap cleanup EXIT
 
 if [ $# -eq 1 ]; then
   source_folder="$1"
-  if [ ! -d "$source_folder/$plugin_path" ]; then
-    echo "sync: $source_folder/$plugin_path not found" >&2
-    exit 1
-  fi
 else
   cleanup_folder="$(mktemp -d)"
   source_folder="$cleanup_folder/claude-configuration"
@@ -72,22 +72,41 @@ else
 fi
 
 source_plugin="$source_folder/$plugin_path"
-target_plugin="$project_folder/$plugin_path"
-
-if [ ! -f "$source_plugin/.claude-plugin/plugin.json" ]; then
-  echo "sync: $source_plugin is not a plugin folder" >&2
+if [ ! -d "$source_plugin" ]; then
+  echo "sync: $source_plugin not found" >&2
   exit 1
 fi
 
-rm -rf "$target_plugin"
-mkdir -p "$(dirname "$target_plugin")"
-cp -a "$source_plugin" "$target_plugin"
+# Every source file is checked before anything is overwritten, so a source that
+# renamed or dropped a file cannot leave this repository half updated.
+for skill in $skill_names; do
+  if [ ! -f "$source_plugin/skills/$skill/SKILL.md" ]; then
+    echo "sync: $source_plugin/skills/$skill/SKILL.md not found" >&2
+    exit 1
+  fi
+done
+for rule in $rule_names; do
+  if [ ! -f "$source_plugin/hooks/$rule" ]; then
+    echo "sync: $source_plugin/hooks/$rule not found" >&2
+    exit 1
+  fi
+done
 
-echo "sync: vendored $plugin_path from $source_folder"
-if git -C "$project_folder" diff --quiet -- "$plugin_path" &&
-  [ -z "$(git -C "$project_folder" ls-files --others --exclude-standard -- "$plugin_path")" ]; then
+for skill in $skill_names; do
+  rm -rf "${project_folder:?}/.claude/skills/$skill"
+  mkdir -p "$project_folder/.claude/skills"
+  cp -a "$source_plugin/skills/$skill" "$project_folder/.claude/skills/$skill"
+done
+for rule in $rule_names; do
+  cp -a "$source_plugin/hooks/$rule" "$project_folder/.claude/hooks/$rule"
+done
+
+echo "sync: vendored skills and prompt rules from $source_folder"
+targets=".claude/skills .claude/hooks"
+if git -C "$project_folder" diff --quiet -- $targets &&
+  [ -z "$(git -C "$project_folder" ls-files --others --exclude-standard -- $targets)" ]; then
   echo "sync: no change"
 else
-  git -C "$project_folder" status --short -- "$plugin_path"
+  git -C "$project_folder" status --short -- $targets
   echo "sync: review the diff above and commit it"
 fi
