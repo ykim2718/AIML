@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 134
+rev. 135
 
 ## 1. Goal
 
@@ -62,7 +62,7 @@ User machine
 
 ### 2.2 Plugin Marketplace in Remote Git Repository 🌳
 
-marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
+rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 구성은 manifest file 두 개이다. marketplace는 catalog이고, plugin은 배포 단위이며, 실제 기능은 plugin 안의 component가 제공한다.
 
 remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 정해져 있다. Claude Code가 remote repository를 내려받은 뒤 이 경로에서 catalog를 찾기 때문이며, 다른 곳에 두면 marketplace로 인식되지 않는다.
 
@@ -89,6 +89,33 @@ remote repository 최상위의 `.claude-plugin/marketplace.json` 은 자리가 �
 marketplace manifest는 remote repository 최상위의 `.claude-plugin/marketplace.json` 하나뿐이며, 어떤 plugin이 어디에 있는지만 나열한다.
 
 plugin manifest는 각 plugin folder 안의 `.claude-plugin/plugin.json`으로, 그 plugin의 이름과 정보를 담는다. 실제 기능은 plugin folder 아래의 component folder가 담는다.
+
+두 manifest의 실제 예시는 다음과 같다.
+
+`.claude-plugin/marketplace.json` — 어떤 plugin이 어디에 있는지 나열한다:
+
+```json
+{
+  "name": "claude-configuration",
+  "owner": { "name": "yRocket", "email": "ykim2718@gmail.com" },
+  "plugins": [
+    {
+      "name": "yrocket-rules",
+      "source": "./plugins/yrocket-rules",
+      "description": "코드/문서 작성 공용 규칙 skill과 hook."
+    }
+  ]
+}
+```
+
+`plugins/yrocket-rules/.claude-plugin/plugin.json` — plugin 자신의 이름과 정보를 담는다:
+
+```json
+{
+  "name": "yrocket-rules",
+  "description": "코드/문서 작성 공용 규칙: coding_rules·md_doc_rules skill, 대화 규칙과 필수 skill 로딩을 주입하는 UserPromptSubmit hook."
+}
+```
 
 component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건이 맞을 때만 올라온다.
 
@@ -194,8 +221,6 @@ session마다 clone 하고 `add and install`을 다시 하므로 매 session 최
 
 ### 4.1 Remote Git Repository
 
-rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 구성은 manifest file 두 개이다.
-
 ```
 <repository root>/
 ├── .claude-plugin/
@@ -207,33 +232,6 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 ```
 
 이 구조만 갖추어 GitHub에 push 하면 등록 가능한 marketplace가 된다.
-
-두 manifest의 실제 예시는 다음과 같다.
-
-`.claude-plugin/marketplace.json` — 어떤 plugin이 어디에 있는지 나열한다:
-
-```json
-{
-  "name": "claude-configuration",
-  "owner": { "name": "yRocket", "email": "ykim2718@gmail.com" },
-  "plugins": [
-    {
-      "name": "yrocket-rules",
-      "source": "./plugins/yrocket-rules",
-      "description": "코드/문서 작성 공용 규칙 skill과 hook."
-    }
-  ]
-}
-```
-
-`plugins/yrocket-rules/.claude-plugin/plugin.json` — plugin 자신의 이름과 정보를 담는다:
-
-```json
-{
-  "name": "yrocket-rules",
-  "description": "코드/문서 작성 공용 규칙: coding_rules·md_doc_rules skill, 대화 규칙과 필수 skill 로딩을 주입하는 UserPromptSubmit hook."
-}
-```
 
 ⛔ **`version` field는 넣지 않는다.** `version`을 적으면 그 값이 바뀔 때까지 plugin이 갱신되지 않는다 (pin). 값을 그대로 두고 내용만 push 하면 Claude Code는 같은 version으로 판정하여 cache 사본을 유지한다. `version`을 생략하면 commit SHA가 version이 되어, push 할 때마다 새 version으로 인식되고 자동으로 갱신된다.
 
