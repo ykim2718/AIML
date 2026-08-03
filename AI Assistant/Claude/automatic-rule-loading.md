@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 185
+rev. 186
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -44,6 +44,7 @@ plugin marketplace의 사본은 네 곳에 있고 역할이 서로 다르다. `[
    +------------------------+  +------------------------+  +------------------------+
    |  [2] Local repository  |  |  [3] Desktop interface |  |  [4] Web interface     |
    |      Working clone     |  |      Installed plugins |  |      Installed plugins |
+   |                        |  |      (user machine)    |  |      (container)       |
    |                        |  |                        |  |                        |
    |  author edits          |  |  persists              |  |  discarded             |
    |  push to GitHub        |  |  across sessions       |  |  at session end        |
