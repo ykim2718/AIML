@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 165
+rev. 166
 
 ## 1. Goal
 
@@ -16,7 +16,7 @@ Automatic rule loading을 새 session과 새 machine에서 얻으려면 세 가�
 
 그 뒤에는 두 가지가 저절로 이루어진다.
 
-1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [3.2](#32-session-start-hook-desktop) 의 hook이 이 역할을 맡는다.
+1. plugin이 새 session 시작 시 최신 상태로 update 된다. Desktop interface에서는 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이 이 역할을 맡는다.
 2. rule이 새 session과 새 prompt에 적용된다.
 
 문서에서 자동이라고 할 때는 이 두 가지를 뜻한다.
@@ -138,10 +138,10 @@ Interface에 따라, automatic rule loading을 위해, 직접 작성하여야 �
 
 **Table 1.** Where each interface is bootstrapped.
 
-| Interface | Git repository | File location | Settings file | Session Start Hook |
+| Interface | Settings file | Git repository | File location | Session Start Hook |
 |---|---|---|---|---|
-| Desktop | no | user machine | `~/.claude/settings.json` | required |
-| Web | yes | remote project repository | `<project>/.claude/settings.json` | not required |
+| Desktop | `~/.claude/settings.json` | no | user machine | required |
+| Web | `<project>/.claude/settings.json` | yes | remote project repository | not required |
 
 settings.json의 `extraKnownMarketplaces` 와 `enabledPlugins` 는 어느 interface에서든 있어야 plugin이 올라온다. 내용은 같고 적는 자리만 다르며, Desktop은 machine에 한 번 작성으로 완료되고, Web은 session을 열 때 고르는 remote project repository마다 적어 push 한다. Desktop도 project settings를 함께 읽지만 machine settings 하나면 그 machine의 모든 project가 덮이므로 표에는 그 자리만 적었다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
@@ -151,20 +151,18 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 
 ### 3.1 Settings.json in Desktop Interface
 
-자리가 둘이며, 이름은 같지만 적용 범위가 다르다.
+자리가 둘이며 이름은 같지만 적용 범위가 다르다. 두 자리 모두 읽으며, 같은 내용이 있으면 병합되고 겹치는 값은 project settings가 이긴다.
 
-두 자리 모두 읽으며, 같은 내용이 있으면 병합되고 겹치는 값은 project settings가 이긴다.
+**Table 2.** The two settings files the Desktop interface reads.
 
-**Table 2.** Coverage and delivery of the two settings files.
-
-| Git repository | File location | Settings file | Coverage | Delivery |
+| Settings file | Git repository | File location | Coverage | Delivery |
 |---|---|---|---|---|
-| no | user machine | `~/.claude/settings.json` | machine | written once per machine |
-| yes | local repository | `<project>/.claude/settings.json` | project | kept in the local repository,<br>so it applies when the project is opened |
+| `~/.claude/settings.json` | no | user machine | machine | written once per machine |
+| `<project>/.claude/settings.json` | yes | user machine | project | kept in the local repository,<br>so it applies when the project is opened |
 
 💡 두 file은 자동으로 갱신되지 않는다. Claude Code가 project를 `git pull` 하지 않으므로 사람이 pull 해야 하며, 자동으로 갱신되는 것은 marketplace 사본뿐이다.
 
-적는 내용은 marketplace 위치와 plugin 활성화이다. 이 file은 editor로 직접 열어 적어도 된다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이기 때문이다.
+이 file은 editor로 직접 열어 적어도 된다. Claude Code가 관리하는 [Appendix E](#appendix-e-plugin-state-files-desktop) 의 상태 file과 달리 사용자의 file이기 때문이다.
 
 ```json
 // ~/.claude/settings.json
@@ -184,9 +182,9 @@ Session Start Hook은 그 위에 갱신을 얹는 Desktop 전용 보완책이다
 }
 ```
 
-💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이 맡는다.
+💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이 맡는다.
 
-사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-desktop) 처럼 remote repository가 배포하므로 push만으로 따라온다.
+사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. 그 뒤의 rule과 갱신 hook은 [3.2](#32-session-start-hook-in-desktop-interface) 처럼 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
@@ -211,7 +209,7 @@ claude plugin marketplace add ykim2718/Claude-Configuration
 claude plugin install yrocket-rules@claude-configuration
 ```
 
-### 3.2 Session Start Hook (Desktop)
+### 3.2 Session Start Hook in Desktop Interface
 
 💡 SessionStart hook에 다음 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
@@ -303,8 +301,6 @@ Cloud session
 ```
 
 **Fig. 5.** The same file after the cloud session clones the repository.
-
-대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
 이 file도 prompt에서 지시하면 Claude가 만들어 넣는다. 만든 뒤에는 remote project repository에 push 한다.
 
@@ -402,12 +398,12 @@ remote repository 전체가 실행용 사본으로 복사되므로 용량이 큰
 
 - plugin에 담을 수 있는 component는 skill, hook, command, agent뿐이다. CLAUDE.md는 plugin에 담을 수 없으므로, 반드시 지켜야 할 지시는 매 prompt 주입되는 UserPromptSubmit hook에 둔다.
 - 저장된 CLAUDE.md를 치환하는 것은, hook이 임의의 command를 실행할 수 있으므로, SessionStart hook에 "cache의 CLAUDE.md를 project로 복사"를 시켜서 기술적으로 가능하다. 하지만 CLAUDE.md는 session 시작 시 읽히는데, hook도 session 시작 시 돌므로 복사 결과가 이번 session에 잡힌다는 보장이 없다.
-- push와 적용 사이에 한 session의 지연이 남는다 ([3.2](#32-session-start-hook-desktop)).
+- push와 적용 사이에 한 session의 지연이 남는다 ([3.2](#32-session-start-hook-in-desktop-interface)).
 - private remote repository는 GitHub 인증이 된 환경에서만 설치된다. 설치가 실패하면 remote repository 공개 범위를 확인한다.
 
 Desktop interface에만 해당하는 제약이다.
 
-- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-desktop) 의 hook이나 사람이 맡는다.
+- `"autoUpdate": true` 는 `DISABLE_AUTOUPDATER=1` 때문에 실행되지 않으므로, 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이나 사람이 맡는다.
 - settings file은 자동으로 pull 되지 않는다 ([3.1](#31-settingsjson-in-desktop-interface)).
 
 조직 단위로 배포하는 server-managed settings는 두 interface에 모두 적용되며, Team이나 Enterprise plan에서 owner 또는 admin이 claude.ai의 admin 화면에서 설정한다. `enabledPlugins`로 특정 plugin을 강제할 수는 있으나 `extraKnownMarketplaces`를 이 경로로 배포하는 방법은 문서에 없으므로, marketplace 등록은 여전히 [Table 1](#3-bootstrap) 의 settings file이 맡는다.
