@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 190
+rev. 191
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -111,6 +111,8 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 - **hook**: `hooks.json`에 UserPromptSubmit으로 묶은 file은 매 prompt마다 조건 없이 context에 들어간다.
 
 💡 반드시 지켜야 할 rule은 조건에 걸리지 않는 hook 경로에 둔다.
+
+#### Manifest Examples
 
 marketplace와 plugin manifest의 실제 예시는 다음과 같다.
 
