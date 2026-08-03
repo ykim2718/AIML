@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-__version__="0.2.1.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__="0.2.2.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 # Refresh this repository's copy of the yrocket skills and prompt rules.
 #
 # The rules are vendored under .claude/ rather than installed as a plugin, because a
@@ -10,7 +10,7 @@ __version__="0.2.1.2026.8.3"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY
 # It never commits; review the diff it reports and commit it yourself.
 #
 # Usage:
-#   .claude/scripts/sync-yrocket-rules.sh [SOURCE_FOLDER]
+#   .claude/scripts/sync-yrocket-plugins.sh [SOURCE_FOLDER]
 #
 #   SOURCE_FOLDER  an existing checkout of ykim2718/Claude-Configuration. Omit it to
 #                  clone the repository into a temporary folder.
