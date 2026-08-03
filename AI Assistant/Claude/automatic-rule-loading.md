@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 167
+rev. 168
 
 ## 1. Goal
 
@@ -184,7 +184,7 @@ machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다
 
 💡 **`"autoUpdate": true` 는 marketplace를 GitHub 최신 기준으로 갱신하라는 지시이다.** 나머지 field는 무엇을 받을지 가리킬 뿐이고, 갱신 대상을 정하는 것은 이 값이다. Desktop interface에서는 이 지시가 실행되지 않지만 ([3](#3-bootstrap)), 같은 file을 Web에서도 쓰고 Desktop app이 이 제약을 거두면 그대로 동작하므로 적어 둔다. 실행되지 않는 동안의 갱신은 [3.2](#32-session-start-hook-in-desktop-interface) 의 hook이 맡는다.
 
-settings file에 사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. rule은 remote repository가 배포하므로 push만으로 따라오고, 갱신 hook도 사람이 한 번 작성해 marketplace에 넣어 두면 그다음부터는 plugin과 함께 배포된다 ([3.2](#32-session-start-hook-in-desktop-interface)).
+settings file에 사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 `enabledPlugins` 두 항목뿐이다. 이 둘은 marketplace를 처음 가리키는 bootstrap이라 marketplace 자신이 배포할 수 없다. rule은 remote repository가 배포하므로 push만으로 따라온다.
 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
@@ -280,6 +280,8 @@ claude plugin update <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
 `update-plugins.sh` 도 경로와 code block만 바꾸어 같은 방식으로 지시한다.
+
+이 hook은 사람이 한 번 작성해 marketplace에 넣어 두면 그다음부터는 plugin과 함께 배포된다. 다른 machine은 plugin을 설치하는 것만으로 같은 갱신 동작을 얻으므로, 손으로 갖추는 것은 처음 한 번뿐이다.
 
 ### 3.3 Settings.json in Web Interface
 
