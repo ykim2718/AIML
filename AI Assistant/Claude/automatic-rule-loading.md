@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 184
+rev. 185
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -334,7 +334,7 @@ Cloud session
 
 #### Editor
 
-local repository에서 `.claude/settings.json` 을 직접 열어 [3.1](#31-settingsjson-in-desktop-interface) 의 JSON을 적고 push 한다.
+local repository (author machine) 에서 `.claude/settings.json` 을 직접 열어 [3.1](#31-settingsjson-in-desktop-interface) 의 JSON을 적고 push 한다. remote git repository의 url은 `git remote -v` 로 확인한다.
 
 #### Prompt
 
