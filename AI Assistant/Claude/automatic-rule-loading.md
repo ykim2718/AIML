@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 119
+rev. 120
 
 ## 1. Goal
 
@@ -110,7 +110,7 @@ Cloud session
 
 | Settings file | Coverage | Delivery |
 |---|---|---|
-| `<project>/.claude/settings.json` | project | session 시작 시 remote repository가 clone 되면서 함께 온다 |
+| `<project>/.claude/settings.json` | project | session 시작 시 project repository가 clone 되면서 함께 온다 |
 
 session마다 clone 하고 `add and install`을 다시 하므로 매 session 최신 marketplace를 받으며, [4.4](#44-session-start-hook-desktop) 의 hook도 필요 없다. 대신 session을 열 때 고르는 repository마다 이 file이 있어야 한다.
 
@@ -209,6 +209,7 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 적는 내용은 두 interface에서 같고, marketplace 위치와 plugin 활성화이다. 어느 settings file에 적을지만 interface에 따라 다르다.
 
 ```json
+// settings.json
 {
   "extraKnownMarketplaces": {
     "claude-configuration": {
