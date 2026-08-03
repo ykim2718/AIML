@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 123
+rev. 124
 
 ## 1. Goal
 
@@ -240,8 +240,6 @@ rule을 담는 plugin marketplace는 일반 remote git repository이며, 최소 
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
 - **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다. Desktop interface에서는 실행되지 않는다.
 - **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
-
-field의 이름과 의미는 어느 settings file에 두든 동일하다. 두 file에 함께 적었을 때의 우선순위는 [2.2](#22-settings-files) 대로 `machine settings < project settings` 이며, 그 위에 실행할 때 지정하는 option과 OS 단위로 배포하는 managed settings가 있다. managed settings는 Desktop interface에만 도달한다.
 
 #### 3.2.1 Desktop Interface
 
