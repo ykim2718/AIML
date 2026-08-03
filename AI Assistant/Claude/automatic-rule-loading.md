@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 127
+rev. 128
 
 ## 1. Goal
 
@@ -283,7 +283,7 @@ claude plugin install yrocket-rules@claude-configuration
 
 ### 4.1 Session Start Hook
 
-SessionStart hook에 [6](#6-automatic-update) 의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
+SessionStart hook에 [6](#6-manual-force-update-desktop) 의 두 명령을 걸면 사람이 개입하지 않아도 session을 열 때마다 갱신이 실행된다. Desktop interface에서 autoUpdate를 대신하는 자리이다.
 
 이 hook은 plugin의 `hooks/hooks.json` 에 둔다. 그러면 hook 자신이 marketplace를 통해 배포되므로, 다른 컴퓨터는 plugin을 설치하는 것만으로 같은 갱신 동작을 얻는다. UserPromptSubmit과 같은 file에 나란히 놓이며, 전문은 다음과 같다.
 
@@ -350,7 +350,7 @@ session을 열 때 고르는 repository의 project settings `<project>/.claude/s
 
 `"autoUpdate": true` 는 그대로 적어 두되, session마다 새로 clone 하므로 갱신할 이전 사본이 없어 실질적인 역할은 없다 ([3](#3-bootstrap)).
 
-## 6. Automatic Update
+## 6. Manual Force Update (Desktop)
 
 ⚠️ Desktop interface에서는 autoUpdate가 실행되지 않으므로, 갱신은 사람이 시키거나 [4.1](#41-session-start-hook) 의 hook이 대신해야 한다. push 내용을 반영하려면 terminal에서 Claude CLI로 다음 두 명령을 차례로 실행한다. Desktop interface의 prompt에서는 `/plugin` 명령이 동작하지 않을 수 있으므로 terminal CLI를 사용하며, CLI 설치는 [Appendix B](#appendix-b-claude-cli-desktop) 를 본다.
 
@@ -532,7 +532,7 @@ WSL은 Windows와 별개의 환경이므로 양쪽에서 쓰려면 각각 설치
 
 ### B.2 CLI Commands
 
-terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [6](#6-automatic-update) 과 짝을 이룬다.
+terminal에서 실행하는 plugin 관련 명령들이며, 갱신 두 단계는 [6](#6-manual-force-update-desktop) 과 짝을 이룬다.
 
 - **`claude plugin marketplace add <OWNER>/<REPO>`**: plugin marketplace를 등록한다.
 - **`claude plugin install <PLUGIN_NAME>@<MARKETPLACE_NAME>`**: plugin을 설치한다.
