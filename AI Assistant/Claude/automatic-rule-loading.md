@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 186
+rev. 187
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -361,6 +361,7 @@ prompt에 다음을 입력하면 설치된 marketplace와 plugin 목록을 확�
 # prompt
 Show known_marketplaces.json
 Show installed_plugins.json
+Show me the installed plugins as a tree diagram
 ```
 
 두 file의 상세는 [Appendix E](#appendix-e-plugin-state-files-desktop) 에 있다.
