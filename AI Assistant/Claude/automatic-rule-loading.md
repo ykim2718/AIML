@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 192
+rev. 193
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -114,7 +114,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 #### Manifest Examples
 
-marketplace와 plugin manifest의 실제 예시는 다음과 같다.
+marketplace와 plugin manifest의 실제 예시는 다음과 같다. marketplace name은 kebab-case 규격이라 밑줄을 쓰지 않는다.
 
 ```json
 // .claude-plugin/marketplace.json
