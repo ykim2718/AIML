@@ -1,4 +1,15 @@
 {
+  "extraKnownMarketplaces": {
+    "yrocket-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "ykim2718/AIML"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "yrocket-plugins@yrocket-marketplace": true
+  },
   "hooks": {
     "UserPromptSubmit": [
       {
