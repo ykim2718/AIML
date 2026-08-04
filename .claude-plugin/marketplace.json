@@ -1,7 +1,8 @@
 {
-  "name": "aiml",
+  "name": "yrocket_marketplace",
   "owner": {
-    "name": "yRocket"
+    "name": "yrocket",
+    "email": "ykim2718@gmail.com"
   },
   "plugins": [
     {
