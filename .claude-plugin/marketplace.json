@@ -1,0 +1,17 @@
+{
+  "name": "aiml",
+  "owner": {
+    "name": "yRocket"
+  },
+  "plugins": [
+    {
+      "name": "yrocket-plugins",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/ykim2718/Claude-Configuration.git",
+        "path": "plugins/yrocket-plugins",
+        "ref": "main"
+      }
+    }
+  ]
+}
