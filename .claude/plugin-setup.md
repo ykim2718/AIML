@@ -1,9 +1,25 @@
 # Plugin Setup And Verification
-rev. 1
+rev. 2
 
-이 문서는 `yrocket-plugins` plugin 으로 공용 규칙을 싣는 절차와, Claude Code 2.1.221 에서 실제로 실행하여 확인한 결과를 정리한다. plugin 의 실체는 `ykim2718/Claude-Configuration` 의 `plugins/yrocket-plugins` folder 에 있고, 이 repo 는 그 위치를 가리키는 catalog 와 설정만 가진다.
+이 문서는 새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 6 장에 남긴다.
 
-## 1. Files
+## 1. Mechanism
+
+Claude Code 는 세션을 시작할 때 repo 의 `.claude/settings.json` 을 읽어, `extraKnownMarketplaces` 에 적힌 catalog 를 내려받고 `enabledPlugins` 에 적힌 plugin 을 설치한다. container 안에 아무것도 남아 있지 않아도 매번 remote 에서 받아오므로, container 사이에 상태를 옮길 필요가 없다.
+
+이 동작에는 두 가지 전제가 있다.
+
+- 해당 folder 가 trust 된 상태여야 한다. trust 가 없으면 설치 단계 전체를 건너뛴다.
+- catalog 와 plugin 의 source 를 모두 network 로 읽을 수 있어야 한다. 읽기에 인증이 필요한 source 라면 git 이 그 인증을 얻을 수 있어야 한다.
+
+두 번째 전제가 이 setup 의 실패 지점이었다. catalog 는 붙지만 plugin 의 source 를 clone 하는 단계에서 git 이 인증을 얻지 못해 아래 오류로 끝난다.
+
+```
+Failed to clone repository for git-subdir source:
+fatal: could not read Username for 'https://github.com': terminal prompts disabled
+```
+
+## 2. Files In The Repository
 
 Table 1. Files this setup requires
 
@@ -35,7 +51,7 @@ Table 1. Files this setup requires
 }
 ```
 
-`.claude/settings.json` 의 `extraKnownMarketplaces` 는 catalog 를 어디서 읽을지 정하고, `enabledPlugins` 는 그 catalog 의 어떤 plugin 을 켤지 정한다. key 는 `<PLUGIN_NAME>@<MARKETPLACE_NAME>` 형식이며 두 이름 모두 catalog 에 적은 값과 같아야 한다.
+`.claude/settings.json` 의 `enabledPlugins` key 는 `<PLUGIN_NAME>@<MARKETPLACE_NAME>` 형식이며 두 이름 모두 catalog 에 적은 값과 같아야 한다.
 
 ```json
 {
@@ -53,30 +69,48 @@ Table 1. Files this setup requires
 }
 ```
 
-## 2. Installation
+## 3. Credential For The Plugin Source
 
-위 두 파일만으로는 설치가 일어나지 않는다. 설치를 한 번 실행해야 하며, 아래 두 command 가 그 역할을 한다. 인자는 catalog 를 담은 repo 와 `<PLUGIN_NAME>@<MARKETPLACE_NAME>` 이다.
+git 에 인증을 주는 방법은 global URL rewrite 이다. rewrite 는 remote 주소 자체에 자격 증명을 넣으므로, credential helper 를 쓰지 않는 경로에서도 적용된다.
 
 ```bash
-# run once per machine
-claude plugin marketplace add ykim2718/AIML
-claude plugin install yrocket-plugins@yrocket-marketplace
+# the trailing form matters: git takes the user name from the URL and still asks for a password
+git config --global url."https://x-access-token:<TOKEN>@github.com/".insteadOf "https://github.com/"
 ```
 
-`Claude-Configuration` 은 private 이므로 이 machine 에 git credential helper 가 설정되어 있어야 두 번째 command 가 성공한다. 설치 결과는 `claude plugin list` 로 확인한다.
+`<TOKEN>` 은 plugin 이 담긴 repo 를 읽을 수 있는 access token 이다. rewrite 는 그 repo 로만 좁혀 적는 편이 안전하다. host 만 적으면 그 machine 의 모든 github.com 통신에 적용되어 평소 자격 증명을 덮어쓴다.
 
-```
-Installed plugins:
-
-  > yrocket-plugins@yrocket-marketplace
-    Version: 5afc699f89c8-5953cdc5
-    Scope: user
-    Status: enabled
+```bash
+# scope the rewrite to one repository
+git config --global \
+  url."https://x-access-token:<TOKEN>@github.com/ykim2718/Claude-Configuration.git".insteadOf \
+  "https://github.com/ykim2718/Claude-Configuration.git"
 ```
 
-## 3. Verification
+`https://<TOKEN>@github.com/` 처럼 사용자 이름 자리에만 token 을 넣으면 부족하다. git 이 그 값을 사용자 이름으로 받고 password 를 따로 묻기 때문이다. `x-access-token:` 을 앞에 두어야 한 번에 끝난다.
 
-설치 이후 새로 시작한 세션에서 `/md_rules` 를 호출하면 skill 이 실린다.
+## 4. Container Setup
+
+위 rewrite 와 설치를 container 가 만들어질 때 실행한다. 아래 script 는 Claude Code 가 뜨기 전에 돌아야 하며, 각 줄에 `|| true` 를 붙여 일시적인 실패가 세션 시작을 막지 않게 한다.
+
+```bash
+#!/usr/bin/env bash
+# container setup: fetch the plugin from the remote repository
+set -uo pipefail
+
+git config --global \
+  url."https://x-access-token:${GH_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
+  "https://github.com/ykim2718/Claude-Configuration.git" || true
+
+claude plugin marketplace add ykim2718/AIML || true
+claude plugin install yrocket-plugins@yrocket-marketplace || true
+```
+
+`GH_TOKEN` 은 container 의 환경 변수로 넘긴다. 이 값은 그 환경을 쓰는 사람이 모두 읽을 수 있으므로, 읽기 권한만 가진 token 을 쓴다.
+
+## 5. Verification
+
+새 세션에서 `/md_rules` 를 호출한다.
 
 ```bash
 # run from the repository root
@@ -84,61 +118,45 @@ claude -p "/md_rules" < /dev/null
 ```
 
 ```
-**English:** "What markdown document task would you like me to perform?"
+**English:** "Which markdown file should I apply the documentation rules to?"
 
-md_rules skill을 로드했습니다. 어떤 .md 파일을 작성/수정/검토할지 알려주세요.
+어떤 .md 파일에 이 규칙을 적용할지 알려주세요.
 ```
 
-첫 줄이 영어 문장으로 시작하면 plugin 의 UserPromptSubmit hook 까지 정상이다. 그 hook 이 대화 규칙을 주입하고, 규칙 중 하나가 매 질문을 영어로 옮겨 먼저 보이는 것이다.
+첫 줄이 영어 문장이면 plugin 의 UserPromptSubmit hook 까지 정상이다. 그 hook 이 대화 규칙을 주입하고, 규칙 중 하나가 매 질문을 영어로 옮겨 먼저 보이게 한다.
 
 Skill 의 정식 이름에는 plugin 이름이 namespace 로 붙어 `yrocket-rules:md_rules` 가 된다. 이 namespace 는 catalog 의 entry 이름이 아니라 plugin 자신의 `plugin.json` 에 적힌 이름에서 온다. 이름이 겹치지 않으면 `/md_rules` 처럼 짧게 불러도 같은 skill 이 실린다.
 
-## 4. Timing Constraint
+## 6. Experiment Record
 
-plugin 은 세션이 시작되는 시점에 이미 설치되어 있어야 실린다. 아래는 확인한 결과이다.
+빈 HOME 을 만들어 새 container 를 흉내내고, 조건을 하나씩 바꾸며 확인한 결과이다.
 
-Table 2. What each state produces in a newly started session
+Table 2. What each condition produced
 
-| State at session start | `/md_rules` |
+| Condition | Result |
 |---|---|
-| 두 파일만 있고 설치 이력이 없음 | Unknown command |
-| 두 파일을 user settings 에 두고 설치 이력이 없음 | Unknown command |
-| SessionStart hook 이 그 세션에서 설치를 실행함 | Unknown command |
-| 이전 세션까지 설치가 끝나 있음 | 정상 로드 |
+| 빈 HOME, repo 의 두 파일만 있음 | Unknown command |
+| `CLAUDE_CODE_SYNC_PLUGIN_INSTALL` 을 켬 | Unknown command |
+| trust 를 미리 승인해 둠 | Unknown command |
+| `CLAUDE_CODE_REMOTE` 을 켬 | Unknown command |
+| 대화형으로 시작함 | catalog 는 붙고 plugin 은 설치 실패 |
+| 설치를 직접 실행하여 오류를 확인함 | git 이 인증을 얻지 못함 |
+| URL rewrite 를 걸고 설치함 | 설치 성공 |
+| 빈 HOME 에서 rewrite, catalog, 설치를 차례로 실행한 뒤 새 세션 | **정상 로드** |
+| `https://<TOKEN>@github.com/` 형태로 rewrite | git 이 password 를 따로 물어 실패 |
 
-세 번째 행이 핵심이다. SessionStart hook 이 설치를 마쳐도 그 세션은 이미 plugin 목록을 확정한 뒤이므로 규칙이 실리지 않고, 다음 세션부터 실린다. 따라서 세션마다 새 container 를 만드는 환경에서는 다음 세션이 오지 않으므로 이 방식으로 규칙이 실리지 않는다.
-
-그런 환경에서 첫 세션부터 규칙이 필요하면 plugin 대신 skill 과 hook 파일을 repo 의 `.claude/` 에 직접 두어야 한다. checkout 에 이미 들어 있는 파일은 설치 단계 없이 읽히기 때문이다.
-
-## 5. Setup For Another Repository
-
-대상 repo 의 root 에서 `.claude/settings.json` 만 복사하면 된다. catalog 는 이 repo 에 둔 것을 그대로 가리키므로 대상 repo 에 다시 만들 필요가 없다.
-
-```bash
-# run from the target repository root
-mkdir -p .claude
-cp <SOURCE_REPO>/.claude/settings.json .claude/settings.json
-```
-
-commit 하고 push 한 뒤, 그 machine 에서 2 장의 command 를 한 번 실행하고 새 세션을 열어 3 장의 방법으로 확인한다.
-
-## 6. Update
-
-원본 repo 의 규칙이 바뀌면 아래로 갱신한다. `ref` 가 branch 이므로 별도의 version 표기 없이 새 commit 이 곧 새 version 이 된다. 갱신 역시 다음 세션부터 반영된다.
-
-```bash
-claude plugin marketplace update yrocket-marketplace
-claude plugin update yrocket-plugins@yrocket-marketplace
-```
+앞의 네 줄은 모두 같은 이유로 실패한다. `-p` 로 시작하는 세션은 설치 단계를 아예 실행하지 않으므로, 이 방식으로는 설치 여부를 확인할 수 없다. 다섯째 줄에서 대화형으로 바꾸자 설치 단계가 돌기 시작했고, 그때 비로소 진짜 원인인 인증 실패가 드러났다.
 
 ## Appendix A. Terminology
 
 - **catalog**: plugin 의 이름과 위치를 나열한 `marketplace.json` 파일이다.
 - **container**: 세션이 실행되는 격리된 실행 환경이다.
 - **credential helper**: git 이 remote 인증 정보를 얻을 때 호출하는 외부 program 이다.
-- **hook**: 정해진 시점에 Claude Code 가 실행하는 command 이다. UserPromptSubmit hook 의 출력은 prompt 마다 context 에 주입되고, SessionStart hook 은 세션이 시작될 때 한 번 실행된다.
+- **hook**: 정해진 시점에 Claude Code 가 실행하는 command 이다. UserPromptSubmit hook 의 출력은 prompt 마다 context 에 주입된다.
 - **marketplace**: catalog 를 통해 plugin 을 배포하는 단위이다.
 - **namespace**: skill 이름 앞에 붙어 소속 plugin 을 나타내는 접두사이다.
 - **plugin**: skill, hook 등을 묶어 배포하는 단위이다.
 - **skill**: `SKILL.md` 한 개로 정의하는 지시문 묶음이다.
 - **sparse clone**: repo 의 일부 folder 만 내려받는 clone 방식이다.
+- **trust**: 그 folder 의 설정을 실행해도 되는지에 대한 승인이다.
+- **URL rewrite**: git 이 특정 주소를 다른 주소로 바꿔 접속하게 하는 설정이다.
