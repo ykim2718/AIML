@@ -1,5 +1,5 @@
 # EDA (Exploratory Data Analysis)
-rev. 13
+rev. 14
 
 > This folder covers the stage that establishes the structure and the properties of the data before a model is built.
 > Its documents answer what to check first when new data arrives and what to call the thing that arrives.
@@ -12,7 +12,7 @@ Exploratory data analysis starts from two questions. <br>The first is to determi
 
 | Document | Description |
 |----------|-------------|
-| [data-manifest.md](data-manifest.md) | It defines the JSON files that record what a stored dataset is, splitting the values a human declares from the values an analysis decides, and fixes the class vocabulary each column is labelled with. |
+| [tabular-data-manifest.md](tabular-data-manifest.md) | It defines the JSON files that record what a stored table is, splitting the values a human writes from the values an analysis decides, and fixes the class vocabulary each column is labelled with. |
 | [data-profile.md](data-profile.md) | It sets out the procedure that automatically determines the shape of new data, the location of X and y, dtype, missingness, and class imbalance. |
 | [data-modality-taxonomy.md](data-modality-taxonomy.md) | It covers the general classification of data modality, its extension to the semiconductor domain, and the naming case study for wafer process data. |
 | [machine-signal-parameterization.md](machine-signal-parameterization.md) | It covers the reduction of a machine waveform into parameters for ML input, split into the small-signal regime, the large-signal regime, and the decomposition of the two. |
