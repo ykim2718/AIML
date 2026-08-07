@@ -1,5 +1,5 @@
 # Data Manifest
-rev. 1
+rev. 2
 
 > Data manifest 는 object storage 에 적재된 데이터가 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 정한 값과 분석이 판정한 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람의 결정이 지워지지 않게 한다.
@@ -192,12 +192,14 @@ Table 5. Class axes
 
 Activity 는 열에 변화가 있는지를 나눈다. 열을 쓸 것인지 말 것인지의 결정이 아니라 데이터를 읽어 판정하는 사실이다.
 
+판정은 행 사이의 비교로 한다. Cell 을 통째로 하나의 값으로 보므로, cell 이 배열인 열에서는 배열 전체가 같아야 두 행이 같은 값을 가진 것이 된다. Cell 안에서 값이 변하는지는 activity 가 아니라 `trace_quantum` 이 다룬다.
+
 Table 6. Activity labels
 
 | Label | Rule |
 |-------|------|
-| `active` | 결측을 제외한 값 중 서로 다른 것이 둘 이상 있다 |
-| `inactive` | 결측을 제외한 값이 모두 같거나, 모든 값이 결측이다 |
+| `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
+| `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
 
 ### 6.3 Form
 
@@ -218,16 +220,18 @@ Table 7. Form labels
 
 ### 6.4 Trace Quantum
 
-Trace 가 연속으로 변하지 않고 몇 개의 level 위에 머무를 때, level 이 몇 개인지를 나눈다. Level 은 baseline 을 제외하고 센다.
+Trace 가 연속으로 변하지 않고 몇 개의 level 위에 머무를 때, level 이 몇 개인지를 나눈다. Level 은 baseline 을 포함해서 센다.
 
 Table 8. Trace quantum labels
 
 | Label | Rule |
 |-------|------|
-| `q1` | Baseline 외의 level 이 하나이다 |
-| `qn` | Baseline 외의 level 이 둘 이상이다 |
+| `q1` | Cell 하나 안에서 값이 level 하나 위에만 머문다 |
+| `qn` | Cell 하나 안에서 값이 둘 이상의 level 위를 오간다 |
 
-Baseline 을 세지 않는 이유는 `q1` 을 on 과 off 두 상태를 오가는 trace 로 두기 위해서이다. Baseline 을 포함해 세면 level 이 하나인 trace 는 값이 변하지 않는 것이 되어 `inactive` 와 뜻이 겹친다.
+`q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 수치 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 6.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
+
+`q1` 인 열은 cell 을 그 하나의 값으로 바꾸어 `scalar` 로 축약할 수 있다. 축약하면 행 사이의 차이는 그대로 남고 시간축만 사라지므로 activity 는 바뀌지 않는다.
 
 ### 6.5 Trace Shape
 
@@ -250,8 +254,8 @@ Table 9. Trace shape labels
 // column-class.json
 {
   "activity": {
-    "active": "결측을 제외한 값 중 서로 다른 것이 둘 이상 있다",
-    "inactive": "결측을 제외한 값이 모두 같거나, 모든 값이 결측이다"
+    "active": "결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다",
+    "inactive": "결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다"
   },
   "form": {
     "category": "값이 유한한 이름의 집합에서 나오고, 값 사이의 산술 연산이 의미를 갖지 않는다",
@@ -260,8 +264,8 @@ Table 9. Trace shape labels
     "trace": "cell 하나가 배열이고, 원소가 시간 순서로 정렬되어 있다"
   },
   "trace_quantum": {
-    "q1": "baseline 외의 level 이 하나이다",
-    "qn": "baseline 외의 level 이 둘 이상이다"
+    "q1": "cell 하나 안에서 값이 level 하나 위에만 머문다",
+    "qn": "cell 하나 안에서 값이 둘 이상의 level 위를 오간다"
   },
   "trace_shape": {
     "rectangle": "값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 dwell_ratio 배 이상 길다",
