@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 13
+rev. 14
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -23,13 +23,16 @@ Table 1. Manifest files
 | `column-profile.json` | Analysis | 데이터를 읽어 판정한 class 를 기록한다 |
 | `column-class.json` | Definition | Class 의 axis 와 label, 그리고 각 label 의 판정 규칙을 정의한다 |
 
-각 file 이 무엇을 최상위 key 로 쓰는지는 서로 다르다. Object key 는 catalog 에만 나오고, 나머지 file 은 object key 를 쓰지 않는다.
+Dataset 을 기술하는 세 file 은 모두 object key 를 최상위 key 로 쓴다. 세 file 을 잇는 참조 항목을 따로 두지 않으며, 같은 key 를 쓰는 것이 곧 연결이다. Column class 는 dataset 에 매이지 않는 어휘이므로 object key 를 쓰지 않는다.
 
 ```text
-catalog.json           object key  -> what the dataset is
-column-config.json     column name -> what a human declares
-column-profile.json    column name -> what the analysis decides
-column-class.json      axis        -> label and its rule
+object key
+    |
+    +--> catalog.json          what the dataset is
+    +--> column-config.json    what a human declares
+    +--> column-profile.json   what the analysis decides
+
+column-class.json              axis -> label and its rule
 ```
 
 열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이며, 두 file 을 합치는 절차는 필요하지 않다.
@@ -112,79 +115,32 @@ Table 3. Column config operation keys
 ```json
 // column-config.json
 {
-  "column_mapping": {
-    "RF_FORWARD_POWER": "rf_fwd_pwr_w"
-  },
-  "na_values": {
-    "chamber_pressure": [-999]
-  },
-  "columns_to_drop": ["reserved_1"],
-  "type_conversion": {
-    "rf_fwd_pwr_w": "float32"
-  },
-  "class": {
-    "bin_code": ["category"],
-    "site_thickness": ["vector"]
-  }
-}
-```
-
-## 4. Column Profile
-
-Column profile 은 데이터를 읽어 판정한 결과를 담는다. 열마다 최종 class label 과, 그 판정을 뒷받침하는 관측값을 함께 둔다.
-
-Table 4. Column profile keys
-
-| Key | Description |
-|-----|-------------|
-| `profiled_at` | 판정을 수행한 시각을 적는다 |
-| `thresholds` | 판정에 쓴 임계값을 적는다 |
-| `columns` | 열마다 최종 class 와 관측값을 적는다 |
-
-`thresholds` 를 함께 두는 이유는 5절의 판정 규칙 여러 개가 임계값을 필요로 하고, 그 값이 다르면 같은 데이터에서 다른 label 이 나오기 때문이다. 임계값 없이 label 만 남은 profile 은 재현되지 않는다.
-
-`category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
-
-판정 결과가 column config 에 사람이 적은 label 과 다르게 나왔다면 둘 중 하나가 틀린 것이므로, 두 file 을 비교하면 손볼 열이 드러난다.
-
-```json
-// column-profile.json
-{
-  "profiled_at": "2026-08-07T09:12:00+09:00",
-  "thresholds": {
-    "dwell_ratio": 5.0,
-    "ramp_fraction": 0.8,
-    "acf_peak": 0.6
-  },
-  "columns": {
-    "rf_fwd_pwr_w": {
-      "class": ["active", "numeric", "trace", "fixed", "qn", "rectangle"],
-      "missing_rate": 0.003
+  "Ulvac/AlPVDPoC/SilverData/#0/V0": {
+    "column_mapping": {
+      "RF_FORWARD_POWER": "rf_fwd_pwr_w"
     },
-    "chamber_pressure": {
-      "class": ["active", "numeric", "trace", "fixed", "infinite", "ramp"],
-      "missing_rate": 0.0
+    "na_values": {
+      "chamber_pressure": [-999]
     },
-    "bin_code": {
-      "class": ["active", "category", "scalar"],
-      "levels": [1, 2, 3, 4, 5, 6, 7, 8],
-      "missing_rate": 0.0
+    "columns_to_drop": ["reserved_1"],
+    "type_conversion": {
+      "rf_fwd_pwr_w": "float32"
     },
-    "reserved_1": {
-      "class": ["inactive", "numeric", "scalar"],
-      "missing_rate": 0.0
+    "class": {
+      "bin_code": ["category"],
+      "site_thickness": ["vector"]
     }
   }
 }
 ```
 
-## 5. Column Class
+## 4. Column Class
 
-### 5.1 Axis
+### 4.1 Axis
 
 Class 는 하나의 목록이 아니라 여러 개의 axis 로 나뉜다. 한 axis 안의 label 은 서로 배타적이므로, 이렇게 나누면 서로 무관한 성질을 하나의 label 에 섞지 않아도 되고 모순된 조합을 규칙으로 걸러낼 수 있다.
 
-Table 5. Class axes
+Table 4. Class axes
 
 | Axis | Label | Applies to | Source |
 |------|-------|------------|--------|
@@ -203,13 +159,13 @@ Table 5. Class axes
 
 한 label 은 한 axis 에만 속한다. 열의 class 를 label 의 목록으로 적으므로, 같은 label 이 두 axis 에 있으면 그 label 이 어느 axis 의 값인지 가릴 수 없다.
 
-### 5.2 Activity
+### 4.2 Activity
 
 Activity 는 열에 변화가 있는지를 나눈다. 열을 쓸 것인지 말 것인지의 결정이 아니라 데이터를 읽어 판정하는 사실이다.
 
 판정은 행 사이의 비교로 한다. Cell 을 통째로 하나의 값으로 보므로, cell 이 배열인 열에서는 배열 전체가 같아야 두 행이 같은 값을 가진 것이 된다. Cell 안에서 값이 변하는지는 activity 가 아니라 `trace_quantum` 이 다룬다.
 
-Table 6. Activity labels
+Table 5. Activity labels
 
 | Label | Rule |
 |-------|------|
@@ -218,11 +174,11 @@ Table 6. Activity labels
 
 한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `key` 의 `entity` 로 행을 묶은 뒤 entity 사이를 비교한다.
 
-### 5.3 Value Type
+### 4.3 Value Type
 
 Value type 은 값 하나가 이름인지 수치인지를 나눈다. Cell 이 배열인 열에서는 그 원소 하나를 두고 판정한다.
 
-Table 7. Value type labels
+Table 6. Value type labels
 
 | Label | Rule |
 |-------|------|
@@ -240,30 +196,32 @@ Table 7. Value type labels
 
 `category` 는 사람이 정한다. 판정은 고유값이 몇 개인지까지만 알 수 있고, 그 값들이 이름인지 크기인지는 데이터에 들어 있지 않다. `bin_code` 의 값 `1` 과 `2` 는 두 종류의 불량을 가리키는 이름이지 크기가 아니지만, 데이터만 보아서는 그것을 알 수 없다.
 
-### 5.4 Structure
+### 4.4 Structure
 
 Structure 는 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다.
 
-Table 8. Structure labels
+Table 7. Structure labels
 
 | Label | Rule |
 |-------|------|
 | `scalar` | Cell 하나가 값 하나를 담는다 |
-| `vector` | Cell 하나가 배열을 담고, 원소의 순서가 의미를 갖지 않는다 |
+| `vector` | Cell 하나가 배열을 담고, 원소가 시간축이 아닌 축을 따라 놓인다 |
 | `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 |
 | `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 |
 
-`vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 시간축의 유무이다. Wafer 위 여러 지점에서 잰 두께는 원소를 섞어도 뜻이 같으므로 `vector` 이고, 공정 중에 기록한 압력은 순서가 곧 정보이므로 `trace` 이다.
+`vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
+
+어느 쪽이든 원소의 자리는 고정되어 있어야 한다. 두께 배열의 세 번째 원소가 행마다 다른 site 를 가리키면 wafer 끼리 비교할 수 없으므로, `vector` 는 순서가 없는 배열이 아니라 시간이 아닌 축을 따라 정렬된 배열이다.
 
 `matrix` 는 원소의 자리가 한 축이 아니라 두 축으로 정해지는 경우이다. Wafer 위 die 마다의 bin code 를 격자로 담은 열이 여기에 해당하며, 같은 값을 자리 정보 없이 늘어놓으면 `vector` 가 되어 이웃 관계를 잃는다.
 
 값의 성격과 cell 의 모양을 두 축으로 나누어 두었으므로 조합이 뜻을 갖는다. 공정 중 압력은 `numeric` 과 `trace` 이고, 장비가 거쳐 간 mode 를 시간순으로 적은 열은 `category` 와 `trace` 이다. 축이 하나뿐이면 이 둘을 가릴 수 없다.
 
-### 5.5 Array Length
+### 4.5 Array Length
 
 Array length 는 배열의 길이가 행마다 같은지를 나눈다. Cell 이 배열인 열에만 적용된다.
 
-Table 9. Array length labels
+Table 8. Array length labels
 
 | Label | Rule |
 |-------|------|
@@ -272,11 +230,11 @@ Table 9. Array length labels
 
 Wafer 마다 정해진 자리에서 재는 두께는 자리 수가 늘 같으므로 `fixed` 이고, wafer 마다 검출되는 defect 의 좌표 목록은 개수가 제각각이므로 `variable` 이다. 둘을 갈라 두는 이유는 `fixed` 인 열만 그대로 고정 폭의 feature 로 펼칠 수 있기 때문이다.
 
-### 5.6 Trace Quantum
+### 4.6 Trace Quantum
 
 Trace 의 값이 몇 개의 level 위에 머무는지를 나눈다. Level 은 baseline 을 포함해서 센다.
 
-Table 10. Trace quantum labels
+Table 9. Trace quantum labels
 
 | Label | Rule |
 |-------|------|
@@ -286,15 +244,15 @@ Table 10. Trace quantum labels
 
 세 label 은 level 개수가 하나, 여럿, 무한인 경우이므로 어떤 trace 든 하나에 들어간다. `infinite` 는 양자화되지 않은 아날로그 신호가 앉는 자리이고, 이것이 없으면 매끄럽게 변하는 압력이 `qn` 으로 잘못 적혀 있지도 않은 level 을 주장하게 된다.
 
-`q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 수치 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 5.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
+`q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 수치 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 4.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
 
 `q1` 인 열은 cell 을 그 하나의 값으로 바꾸어 `scalar` 로 축약할 수 있다. 축약하면 행 사이의 차이는 그대로 남고 시간축만 사라지므로 activity 는 바뀌지 않는다.
 
-### 5.7 Trace Shape
+### 4.7 Trace Shape
 
-Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 4절의 `thresholds` 에 함께 기록한다.
+Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 5절의 `thresholds` 에 함께 기록한다.
 
-Table 11. Trace shape labels
+Table 10. Trace shape labels
 
 | Label | Rule |
 |-------|------|
@@ -309,55 +267,113 @@ Table 11. Trace shape labels
 
 `irregular` 는 앞의 다섯이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
 
-### 5.8 File Format
+### 4.8 File Format
 
-`column-class.json` 은 axis 를 key 로 두고, 그 아래에 label 과 판정 규칙의 쌍을 둔다. 규칙을 label 옆에 두는 이유는 규칙 없는 label 이 사람마다 다른 뜻으로 쓰이기 때문이다.
+`column-class.json` 은 `axis` 아래에 axis 이름을 key 로 두고, 그 아래에 label 과 판정 규칙의 쌍을 둔다. Axis 를 한 겹 안에 넣는 이유는 `version` 이 axis 로 잘못 읽히지 않게 하기 위해서이다. `version` 은 label 이나 규칙이 바뀔 때마다 올린다. 규칙을 label 옆에 두는 이유는 규칙 없는 label 이 사람마다 다른 뜻으로 쓰이기 때문이다.
 
 ```json
 // column-class.json
 {
-  "activity": {
-    "active": "two or more distinct cell values exist among the rows that are not missing",
-    "inactive": "every row that is not missing holds the same cell value, or every row is missing"
-  },
-  "value_type": {
-    "category": "the value comes from a finite set of names and the values carry no order",
-    "ordinal": "the value comes from a finite set of names that carry an order, while arithmetic between them carries no meaning",
-    "numeric": "the value has magnitude and arithmetic between values carries meaning",
-    "text": "the value is a string and the set it comes from is not fixed in advance",
-    "datetime": "the value points to an instant, and the difference between two values carries meaning while their sum does not"
-  },
-  "structure": {
-    "scalar": "one cell holds a single value",
-    "vector": "one cell holds an array whose element order carries no meaning",
-    "matrix": "one cell holds an array with two axes and neither axis is time",
-    "trace": "one cell holds an array whose elements are ordered in time"
-  },
-  "array_length": {
-    "fixed": "the array has the same length in every row, and an array with two axes has the same length on both",
-    "variable": "the array length differs from row to row"
-  },
-  "trace_quantum": {
-    "q1": "within one cell the value stays on a single level",
-    "qn": "within one cell the value moves across a countable number of levels",
-    "infinite": "within one cell the value changes continuously and rests on no level"
-  },
-  "trace_shape": {
-    "flat": "the value does not change over the window",
-    "rectangle": "the value alternates between two levels and the time held on a level is at least dwell_ratio times the time taken to move between them",
-    "triangle": "the rising and the falling slope have a similar magnitude and no flat segment lies between them",
-    "ramp": "the segments where the value moves in one direction only cover at least ramp_fraction of the window",
-    "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval",
-    "irregular": "none of the five rules above is satisfied"
+  "version": 3,
+  "axis": {
+    "activity": {
+      "active": "two or more distinct cell values exist among the rows that are not missing",
+      "inactive": "every row that is not missing holds the same cell value, or every row is missing"
+    },
+    "value_type": {
+      "category": "the value comes from a finite set of names and the values carry no order",
+      "ordinal": "the value comes from a finite set of names that carry an order, while arithmetic between them carries no meaning",
+      "numeric": "the value has magnitude and arithmetic between values carries meaning",
+      "text": "the value is a string and the set it comes from is not fixed in advance",
+      "datetime": "the value points to an instant, and the difference between two values carries meaning while their sum does not"
+    },
+    "structure": {
+      "scalar": "one cell holds a single value",
+      "vector": "one cell holds an array whose elements lie along an axis that is not time",
+      "matrix": "one cell holds an array with two axes and neither axis is time",
+      "trace": "one cell holds an array whose elements are ordered in time"
+    },
+    "array_length": {
+      "fixed": "the array has the same length in every row, and an array with two axes has the same length on both",
+      "variable": "the array length differs from row to row"
+    },
+    "trace_quantum": {
+      "q1": "within one cell the value stays on a single level",
+      "qn": "within one cell the value moves across a countable number of levels",
+      "infinite": "within one cell the value changes continuously and rests on no level"
+    },
+    "trace_shape": {
+      "flat": "the value does not change over the window",
+      "rectangle": "the value alternates between two levels and the time held on a level is at least dwell_ratio times the time taken to move between them",
+      "triangle": "the rising and the falling slope have a similar magnitude and no flat segment lies between them",
+      "ramp": "the segments where the value moves in one direction only cover at least ramp_fraction of the window",
+      "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval",
+      "irregular": "none of the five rules above is satisfied"
+    }
   }
 }
 ```
 
 새 label 이 필요하면 이 file 에 규칙과 함께 한 줄을 더한다. 여기에 없는 label 은 6절의 규칙에 따라 거부된다.
 
+## 5. Column Profile
+
+Column profile 은 데이터를 읽어 판정한 결과를 담는다. 열마다 최종 class label 과, 그 판정을 뒷받침하는 관측값을 함께 둔다.
+
+Table 11. Column profile keys
+
+| Key | Description |
+|-----|-------------|
+| `profiled_at` | 판정을 수행한 시각을 적는다 |
+| `class_version` | 판정에 쓴 `column-class.json` 의 version 을 적는다 |
+| `thresholds` | 판정에 쓴 임계값을 적는다 |
+| `columns` | 열마다 최종 class 와 관측값을 적는다 |
+
+`class_version` 과 `thresholds` 를 함께 두는 이유는 같다. 어휘에 label 이 늘거나 임계값이 바뀌면 같은 데이터에서 다른 label 이 나오므로, 그 둘이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
+
+`thresholds` 를 함께 두는 이유는 4절의 판정 규칙 여러 개가 임계값을 필요로 하고, 그 값이 다르면 같은 데이터에서 다른 label 이 나오기 때문이다. 임계값 없이 label 만 남은 profile 은 재현되지 않는다.
+
+`category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
+
+판정 결과가 column config 에 사람이 적은 label 과 다르게 나왔다면 둘 중 하나가 틀린 것이므로, 두 file 을 비교하면 손볼 열이 드러난다.
+
+```json
+// column-profile.json
+{
+  "Ulvac/AlPVDPoC/SilverData/#0/V0": {
+    "profiled_at": "2026-08-07T09:12:00+09:00",
+    "class_version": 3,
+    "thresholds": {
+      "dwell_ratio": 5.0,
+      "ramp_fraction": 0.8,
+      "acf_peak": 0.6
+    },
+    "columns": {
+      "rf_fwd_pwr_w": {
+        "class": ["active", "numeric", "trace", "fixed", "qn", "rectangle"],
+        "missing_rate": 0.003
+      },
+      "chamber_pressure": {
+        "class": ["active", "numeric", "trace", "fixed", "infinite", "ramp"],
+        "missing_rate": 0.0
+      },
+      "bin_code": {
+        "class": ["active", "category", "scalar"],
+        "levels": [1, 2, 3, 4, 5, 6, 7, 8],
+        "missing_rate": 0.0
+      },
+      "reserved_1": {
+        "class": ["inactive", "numeric", "scalar"],
+        "missing_rate": 0.0
+      }
+    }
+  }
+}
+```
+
 ## 6. Integrity Rules
 
-Manifest 가 지켜야 하는 조건은 세 가지이다.
+Manifest 가 지켜야 하는 조건은 네 가지이다.
 
 Table 12. Integrity rules
 
@@ -366,8 +382,9 @@ Table 12. Integrity rules
 | 1 | 모든 label 은 `column-class.json` 에 있어야 한다 | 오타와 미등록 label |
 | 2 | 열은 적용되는 axis 마다 label 을 정확히 하나 갖는다 | `scalar` 와 `trace` 를 함께 붙이는 모순, 그리고 판정이 끝나지 않은 열 |
 | 3 | 열은 적용되지 않는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
+| 4 | `column-config.json` 과 `column-profile.json` 의 최상위 key 는 `catalog.json` 에 있어야 한다 | Catalog 에 없는 dataset 의 설정과 판정이 남아 있는 상태 |
 
-이 세 가지는 label 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
+이 네 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
 ## Appendix A. Terminology
 
