@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 9
+rev. 10
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -203,10 +203,13 @@ Table 7. Value type labels
 
 | Label | Rule |
 |-------|------|
-| `category` | 값이 유한한 이름의 집합에서 나오고, 값 사이의 산술 연산이 의미를 갖지 않는다 |
+| `category` | 값이 유한한 이름의 집합에서 나오고, 값 사이에 순서가 없다 |
+| `ordinal` | 값이 유한한 이름의 집합에서 나오고, 값 사이에 순서가 있으나 산술 연산은 의미를 갖지 않는다 |
 | `numeric` | 값이 크기를 갖는 수치이고, 값 사이의 산술 연산이 의미를 갖는다 |
 | `text` | 값이 문자열이고, 값의 집합이 미리 정해져 있지 않다 |
 | `datetime` | 값이 시각을 가리키고, 값 사이의 차는 의미를 갖지만 합은 의미를 갖지 않는다 |
+
+`ordinal` 은 `category` 와 `numeric` 사이에 놓인다. 비교는 되고 산술은 되지 않으므로, 등급이나 심각도처럼 값을 줄 세울 수 있는 열이 여기에 속한다. `ordinal` 을 `category` 로 적으면 순서를 잃고, `numeric` 으로 적으면 등급 사이의 간격이 모두 같다고 주장하게 된다.
 
 `category` 와 `text` 는 둘 다 문자열을 담을 수 있고, 값의 집합이 미리 정해져 있는지로 갈린다. 고유값이 수만 개여도 그 집합이 정해져 있으면 `category` 이므로 식별자는 여기에 속하고, FA report 본문처럼 매번 새로 쓰이는 값은 `text` 이다.
 
@@ -273,7 +276,8 @@ Table 10. Trace shape labels
     "inactive": "every row that is not missing holds the same cell value, or every row is missing"
   },
   "value_type": {
-    "category": "the value comes from a finite set of names and arithmetic between values carries no meaning",
+    "category": "the value comes from a finite set of names and the values carry no order",
+    "ordinal": "the value comes from a finite set of names that carry an order, while arithmetic between them carries no meaning",
     "numeric": "the value has magnitude and arithmetic between values carries meaning",
     "text": "the value is a string and the set it comes from is not fixed in advance",
     "datetime": "the value points to an instant, and the difference between two values carries meaning while their sum does not"
