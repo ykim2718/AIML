@@ -1,10 +1,12 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 19
+rev. 20
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
+
+Manifest 를 만드는 목적은 column profile 을 얻는 것이다. 사람이 적는 앞의 두 file 은 그 자체가 목적이 아니라 판정을 세울 수 있게 하는 입력이며, 열마다 무엇이 담겨 있는지에 대한 답은 마지막에 나오는 column profile 하나에 모인다.
 
 ## 1. Scope And File Order
 
@@ -77,9 +79,9 @@ Table 2. Catalog description keys
 ```json
 // catalog.json
 {
-  "Ulvac/AlPVDPoC/SilverData/#0/V0": {
-    "project_goal": "collect chamber trace for etch CD prediction",
-    "provider": "FDC / Etch Bay 3",
+  "Ultah/AlPVDPoC/SilverData/#0/V0": {
+    "project_goal": "Thin film thickness prediction",
+    "provider": "PVD unit",
     "date": "2026-08-07",
     "medallion": "silver",
     "grain": "one wafer and one process step",
@@ -87,9 +89,9 @@ Table 2. Catalog description keys
       "entity_columns": ["LOT_ID", "WAFER_ID"],
       "sequence_columns": ["STEP_ID"]
     },
-    "derived_from": "Ulvac/AlPVDPoC/BronzeData/#0/V0",
+    "derived_from": "Ultah/AlPVDPoC/BronzeData/#0/V0",
     "rows": 1043221,
-    "note": "pressure is in Pa for the loads before 2026-06"
+    "note": "POC (Proof of Concept)"
   }
 }
 ```
@@ -122,7 +124,7 @@ Table 3. Column config operation keys
 ```json
 // column-config.json
 {
-  "Ulvac/AlPVDPoC/SilverData/#0/V0": {
+  "Ultah/AlPVDPoC/SilverData/#0/V0": {
     "column_mapping": {
       "RF_FORWARD_POWER": "rf_fwd_pwr_w"
     },
@@ -355,7 +357,7 @@ Table 11. Column profile keys
 ```json
 // column-profile.json
 {
-  "Ulvac/AlPVDPoC/SilverData/#0/V0": {
+  "Ultah/AlPVDPoC/SilverData/#0/V0": {
     "profiled_at": "2026-08-07T09:12:00+09:00",
     "class_version": 3,
     "thresholds": {
