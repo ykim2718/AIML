@@ -1,5 +1,5 @@
 # AIML
-rev. 4
+rev. 5
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -21,7 +21,7 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 
 | Folder | Description |
 |--------|-------------|
-| [EDA](EDA/) | It covers the stage before modeling — automatic data profiling, the modality taxonomy that names what arrived, and the reduction of machine waveforms into fixed-width parameter rows. |
+| [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, and the reduction of machine waveforms into fixed-width parameter rows. |
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds regression recipes, with an emphasis on step-like and piecewise responses that a single global fit handles badly. |
@@ -37,7 +37,6 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 |----------|-------------|
 | [EDA/README.md](EDA/README.md) | It indexes the folder and sets the order in which the documents are used. |
 | [EDA/tabular-data-manifest-for-semiconductor-machine-data.md](EDA/tabular-data-manifest-for-semiconductor-machine-data.md) | It defines the JSON files that record what a stored table is, separating the values a human writes from the values an analysis decides, and fixes the class vocabulary and the integrity rules the manifest is checked against. |
-| [EDA/data-profile.md](EDA/data-profile.md) | It sets out the procedure that determines the shape of new data, the location of X and y, dtype, missingness, and class imbalance, driven by `data_profiler.py`. |
 | [EDA/data-modality-taxonomy.md](EDA/data-modality-taxonomy.md) | It classifies data by the form the information takes, then extends the axes to the semiconductor domain and works through wafer process data as a case study. |
 | [EDA/machine-signal-parameterization.md](EDA/machine-signal-parameterization.md) | It reduces a continuous machine waveform to a parameter row, split into the small-signal regime, the large-signal regime, and the decomposition of a record that contains both. |
 | [EDA/quantized-signal-parameterization.md](EDA/quantized-signal-parameterization.md) | It does the same for a signal that rests on a ladder of discrete levels, built so that the row width never depends on the level count and so that the waveform can be rebuilt from the row. |
@@ -68,7 +67,7 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 
 ## 4. Order Of Use
 
-1. Profile the data first to confirm its size, its target, and the properties of each column.
+1. Record the data in the manifest first, so that its origin, its grain, and the class of each column are fixed.
 2. Map the confirmed form onto the modality taxonomy to fix what kind of data it is.
 3. If the data is a waveform or a trace, parameterize it into fixed-width feature rows before anything else.
 4. Apply the feature engineering that suits the fixed modality, cross-sectional or sequential or wide.
