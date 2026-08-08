@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 7
+rev. 8
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -58,13 +58,13 @@ Table 2. Catalog description keys
 ```json
 // catalog.json
 {
-  "silver/fdc/etch-ch1.parquet": {
+  "Ulvac/AlPVDPoC/SilverData/#0/V0": {
     "project_goal": "collect chamber trace for etch CD prediction",
     "provider": "FDC / Etch Bay 3",
     "date": "2026-08-07",
     "medallion": "silver",
     "grain": "one wafer and one process step",
-    "derived_from": "bronze/fdc/etch-raw.parquet",
+    "derived_from": "Ulvac/AlPVDPoC/BronzeData/#0/V0",
     "rows": 1043221,
     "note": "pressure is in Pa for the loads before 2026-06"
   }
@@ -218,9 +218,12 @@ Table 8. Structure labels
 |-------|------|
 | `scalar` | Cell 하나가 값 하나를 담는다 |
 | `vector` | Cell 하나가 길이가 고정된 배열을 담고, 원소의 순서가 의미를 갖지 않는다 |
+| `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 |
 | `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 |
 
 `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 시간축의 유무이다. Wafer 위 여러 지점에서 잰 두께는 원소를 섞어도 뜻이 같으므로 `vector` 이고, 공정 중에 기록한 압력은 순서가 곧 정보이므로 `trace` 이다.
+
+`matrix` 는 원소의 자리가 한 축이 아니라 두 축으로 정해지는 경우이다. Wafer 위 die 마다의 bin code 를 격자로 담은 열이 여기에 해당하며, 같은 값을 자리 정보 없이 늘어놓으면 `vector` 가 되어 이웃 관계를 잃는다.
 
 값의 성격과 cell 의 모양을 두 축으로 나누어 두었으므로 조합이 뜻을 갖는다. 공정 중 압력은 `numeric` 과 `trace` 이고, 장비가 거쳐 간 mode 를 시간순으로 적은 열은 `category` 와 `trace` 이다. 축이 하나뿐이면 이 둘을 가릴 수 없다.
 
@@ -270,6 +273,7 @@ Table 10. Trace shape labels
   "structure": {
     "scalar": "one cell holds a single value",
     "vector": "one cell holds a fixed length array whose element order carries no meaning",
+    "matrix": "one cell holds an array with two axes and neither axis is time",
     "trace": "one cell holds an array whose elements are ordered in time"
   },
   "trace_quantum": {
