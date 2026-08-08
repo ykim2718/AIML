@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 8
+rev. 9
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -205,6 +205,12 @@ Table 7. Value type labels
 |-------|------|
 | `category` | 값이 유한한 이름의 집합에서 나오고, 값 사이의 산술 연산이 의미를 갖지 않는다 |
 | `numeric` | 값이 크기를 갖는 수치이고, 값 사이의 산술 연산이 의미를 갖는다 |
+| `text` | 값이 문자열이고, 값의 집합이 미리 정해져 있지 않다 |
+| `datetime` | 값이 시각을 가리키고, 값 사이의 차는 의미를 갖지만 합은 의미를 갖지 않는다 |
+
+`category` 와 `text` 는 둘 다 문자열을 담을 수 있고, 값의 집합이 미리 정해져 있는지로 갈린다. 고유값이 수만 개여도 그 집합이 정해져 있으면 `category` 이므로 식별자는 여기에 속하고, FA report 본문처럼 매번 새로 쓰이는 값은 `text` 이다.
+
+`datetime` 과 `numeric` 은 합이 의미를 갖는지로 갈린다. 두 시각을 더한 값은 뜻이 없지만 두 소요 시간을 더한 값은 뜻이 있으므로, queue time 처럼 길이를 재는 열은 `datetime` 이 아니라 `numeric` 이다.
 
 `category` 는 사람이 정한다. 판정은 고유값이 몇 개인지까지만 알 수 있고, 그 값들이 이름인지 크기인지는 데이터에 들어 있지 않다. `bin_code` 의 값 `1` 과 `2` 는 두 종류의 불량을 가리키는 이름이지 크기가 아니지만, 데이터만 보아서는 그것을 알 수 없다.
 
@@ -268,7 +274,9 @@ Table 10. Trace shape labels
   },
   "value_type": {
     "category": "the value comes from a finite set of names and arithmetic between values carries no meaning",
-    "numeric": "the value has magnitude and arithmetic between values carries meaning"
+    "numeric": "the value has magnitude and arithmetic between values carries meaning",
+    "text": "the value is a string and the set it comes from is not fixed in advance",
+    "datetime": "the value points to an instant, and the difference between two values carries meaning while their sum does not"
   },
   "structure": {
     "scalar": "one cell holds a single value",
