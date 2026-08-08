@@ -1,4 +1,5 @@
 # CAI (Center Alignment Index)
+rev. 7
 
 1:1 line 위에서 두 변수의 데이터 중심이 일치하는 정도를 0~1 scale로 평가하는 지표다.
 
