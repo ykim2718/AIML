@@ -1,27 +1,31 @@
 # Tabular Data Manifest
-rev. 16
+rev. 17
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
-## 1. Scope And Files
+## 1. Scope And File Order
 
 ### 1.1 Tabular Data
 
 이 문서가 다루는 데이터는 tabular data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있으나, 데이터 전체가 행과 열의 틀에 들어간다는 점은 유지된다. 행과 열의 틀에 들어가지 않는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
-### 1.2 File Layout
+### 1.2 File Order
 
 Table 1. Manifest files
 
-| File | Source | Content |
-|------|--------|---------|
-| `catalog.json` | Human | Dataset 이 어디서 왔고 무엇을 위한 것인지 기록한다 |
-| `column-config.json` | Human | 열 이름, 삭제, 형 변환, 결측 표시와 사람이 아는 class 를 기록한다 |
-| `column-profile.json` | Analysis | 데이터를 읽어 판정한 class 를 기록한다 |
-| `column-class.json` | Definition | Class 의 axis 와 label, 그리고 각 label 의 판정 규칙을 정의한다 |
+| Order | File | Source | Content |
+|-------|------|--------|---------|
+| 1 | `catalog.json` | Human | Dataset 이 어디서 왔고 무엇을 위한 것인지 기록한다 |
+| 2 | `column-config.json` | Human | 열 이름, 삭제, 형 변환, 결측 표시, 단위와 사람이 아는 class 를 기록한다 |
+| 3 | `column-profile.json` | Analysis | 데이터를 읽어 판정한 class 를 기록한다 |
+| - | `column-class.json` | Definition | Class 의 axis 와 label, 그리고 각 label 의 판정 규칙을 정의한다 |
+
+`Order` 는 file 이 쓰이는 순서이다. Catalog 가 dataset 이 무엇인지 기록하고, column config 가 그 table 을 어떻게 다듬을지 적으며, column profile 은 그 조작을 마친 table 을 읽어 판정한 결과이다. Column class 는 dataset 마다 다시 쓰는 file 이 아니라 세 file 이 공유하는 어휘이므로 순서를 갖지 않는다.
+
+이 순서 때문에 열 이름의 기준이 file 마다 다르다. Catalog 는 `column_mapping` 보다 먼저 쓰이므로 상류에서 온 그대로의 이름을 적고, column config 의 나머지 항목과 column profile 은 `column_mapping` 을 거친 뒤의 이름을 적는다. 그래서 column profile 이 기술하는 것은 상류에서 온 table 이 아니라 column config 를 적용하고 난 table 이다.
 
 Dataset 을 기술하는 세 file 은 모두 object key 를 최상위 key 로 쓴다. 세 file 을 잇는 참조 항목을 따로 두지 않으며, 같은 key 를 쓰는 것이 곧 연결이다. Column class 는 dataset 에 매이지 않는 어휘이므로 object key 를 쓰지 않는다.
 
@@ -34,8 +38,6 @@ object key
 
 column-class.json              axis -> label and its rule
 ```
-
-세 file 은 순서를 갖는다. Catalog 가 dataset 이 무엇인지 기록하고, column config 가 그 table 을 어떻게 다듬을지 적으며, column profile 은 그 조작을 마친 table 을 읽어 판정한 결과이다. 그래서 column profile 이 기술하는 것은 상류에서 온 table 이 아니라 column config 를 적용하고 난 table 이고, 거기 적히는 열 이름은 `column_mapping` 을 거친 뒤의 이름이다.
 
 열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이다.
 
@@ -52,23 +54,25 @@ Table 2. Catalog description keys
 | `date` | Yes | 마지막으로 갱신된 시각을 적는다 |
 | `medallion` | Yes | `bronze`, `silver`, `gold` 중 하나를 적는다 |
 | `grain` | Yes | 행 하나가 무엇인지 한 문장으로 적는다 |
-| `key` | Yes | Entity 를 묶는 열과 그 안에서 행을 가르는 열을 적는다 |
+| `row_key` | Yes | 행을 유일하게 만드는 열을, entity 를 묶는 것과 그 안에서 행을 가르는 것으로 나누어 적는다 |
 | `derived_from` | No | 이 데이터를 만들어 낸 상류 object key 를 적고, 원본이면 생략한다 |
 | `rows` | No | 행 수를 적는다 |
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
 
 `grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 관계가 된다.
 
-`key` 는 행이 서로 어떻게 구별되는지를 두 목록으로 적는다.
+`row_key` 는 행이 서로 어떻게 구별되는지를 두 목록으로 적는다.
 
-- `entity` 는 어느 열로 묶으면 한 entity 가 되는지를 적는다.
-- `sequence` 는 한 entity 안에서 행을 가르는 열을 순서대로 적고, 행 하나가 곧 entity 하나이면 비운다.
+- `entity_columns` 는 어느 열로 묶으면 한 entity 가 되는지를 적는다.
+- `sequence_columns` 는 한 entity 안에서 행을 가르는 열을 순서대로 적고, 행 하나가 곧 entity 하나이면 빈 목록으로 둔다.
 
-두 목록을 이은 것이 행마다 유일한 조합이다. **행이 중복인지 아닌지를 명시하는 것이 이 조합이며**, 중복 검사는 `entity` 가 아니라 이 조합으로 한다. 한 wafer 의 trace 를 행마다 한 점씩 펼친 table 에서 `wafer_id` 는 수천 행에 걸쳐 같은 값이지만, `sequence` 의 시간 열이 그 행들을 갈라 놓으므로 중복이 아니다. `sequence` 를 적지 않으면 그 table 을 중복 제거해도 되는지가 기록되지 않는다.
+두 목록을 이은 것이 행마다 유일한 조합이다. **행이 중복인지 아닌지를 명시하는 것이 이 조합이며**, 중복 검사는 `entity_columns` 가 아니라 이 조합으로 한다. 한 wafer 의 trace 를 행마다 한 점씩 펼친 table 에서 wafer 번호는 수천 행에 걸쳐 같은 값이지만, `sequence_columns` 의 시간 열이 그 행들을 갈라 놓으므로 중복이 아니다. `sequence_columns` 를 적지 않으면 그 table 을 중복 제거해도 되는지가 기록되지 않는다.
 
-두 목록의 일은 서로 다르다. `entity` 는 묶는 방법을 말하고 `sequence` 는 가르는 방법을 말한다. 행 하나가 wafer 와 process step 의 조합이면 `entity` 는 wafer 까지이고 `sequence` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
+두 목록의 일은 서로 다르다. `entity_columns` 는 묶는 방법을 말하고 `sequence_columns` 는 가르는 방법을 말한다. 행 하나가 wafer 와 process step 의 조합이면 `entity_columns` 는 wafer 까지이고 `sequence_columns` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
 
-같은 데이터를 cell 안의 배열로 담을 수도 있고 행으로 펼칠 수도 있는데, 그 차이는 `key` 가 아니라 열의 class 가 말해 준다. 배열로 담으면 그 열이 `trace` 이고, 행으로 펼치면 `scalar` 가 되면서 시간 열이 `sequence` 에 들어간다.
+두 목록에 적는 이름은 1.2 절이 정한 대로 상류에서 온 그대로의 이름이다.
+
+같은 데이터를 cell 안의 배열로 담을 수도 있고 행으로 펼칠 수도 있는데, 그 차이는 `row_key` 가 아니라 열의 class 가 말해 준다. 배열로 담으면 그 열이 `trace` 이고, 행으로 펼치면 `scalar` 가 되면서 시간 열이 `sequence_columns` 에 들어간다.
 
 ```json
 // catalog.json
@@ -79,9 +83,9 @@ Table 2. Catalog description keys
     "date": "2026-08-07",
     "medallion": "silver",
     "grain": "one wafer and one process step",
-    "key": {
-      "entity": ["lot_id", "wafer_id"],
-      "sequence": ["step_id"]
+    "row_key": {
+      "entity_columns": ["LOT_ID", "WAFER_ID"],
+      "sequence_columns": ["STEP_ID"]
     },
     "derived_from": "Ulvac/AlPVDPoC/BronzeData/#0/V0",
     "rows": 1043221,
@@ -179,7 +183,7 @@ Table 5. Activity labels
 | `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
 | `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
 
-한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `key` 의 `entity` 로 행을 묶은 뒤 entity 사이를 비교한다.
+한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence_columns` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `row_key` 의 `entity_columns` 로 행을 묶은 뒤 entity 사이를 비교한다.
 
 ### 4.3 Value Type
 
