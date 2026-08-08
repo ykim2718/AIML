@@ -1,5 +1,5 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 21
+rev. 22
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -213,7 +213,7 @@ Table 6. Value type labels
 
 `ordinal` 은 `category` 와 `numeric` 사이에 놓인다. 비교는 되고 산술은 되지 않으므로, 등급이나 심각도처럼 값을 줄 세울 수 있는 열이 여기에 속한다. `ordinal` 을 `category` 로 적으면 순서를 잃고, `numeric` 으로 적으면 등급 사이의 간격이 모두 같다고 주장하게 된다.
 
-`category` 와 `text` 는 둘 다 문자열을 담을 수 있고, 값의 집합이 미리 정해져 있는지로 갈린다. 고유값이 수만 개여도 그 집합이 정해져 있으면 `category` 이므로 식별자는 여기에 속하고, FA report 본문처럼 매번 새로 쓰이는 값은 `text` 이다.
+`category` 와 `text` 는 둘 다 문자열을 담을 수 있고, 값의 집합이 미리 정해져 있는지로 갈린다. 고유값이 수만 개여도 그 집합이 정해져 있으면 `category` 이므로 식별자는 여기에 속하고, 작업자가 그때그때 적어 넣는 설명문처럼 값이 매번 새로 쓰이면 `text` 이다.
 
 `datetime` 과 `numeric` 은 합이 의미를 갖는지로 갈린다. 두 시각을 더한 값은 뜻이 없지만 두 소요 시간을 더한 값은 뜻이 있으므로, queue time 처럼 길이를 재는 열은 `datetime` 이 아니라 `numeric` 이다.
 
@@ -430,14 +430,16 @@ Table 12. Integrity rules
 | 4 | `column-config.json` 과 `column-profile.json` 의 최상위 key 는 `catalog.json` 에 있어야 한다 | Catalog 에 없는 dataset 의 설정과 판정이 남아 있는 상태 |
 | 5 | `columns_to_drop` 은 `row_key` 에 적힌 열을 담을 수 없다 | 행을 구별하는 근거를 버리는 설정 |
 | 6 | `column-profile.json` 의 `columns` 는 `columns_to_drop` 에 적힌 열을 담을 수 없다 | 이미 버린 열에 남아 있는 판정 |
-| 7 | `column-config.json` 의 `unit` 과 `class` 에 적힌 열은 `column-profile.json` 의 `columns` 에 있어야 한다 | 사람이 적어 둔 열이 판정에서 빠진 상태 |
+| 7 | `catalog.json` 과 `column-config.json` 이 이름으로 지시하는 열은 `column-profile.json` 의 `columns` 에 있어야 한다 | 어느 열에도 걸리지 않는 설정과 판정에서 빠진 열 |
 | 8 | `medallion` 은 `bronze`, `silver`, `gold` 중 하나여야 한다 | 정제 단계를 부르는 이름이 갈리는 것 |
 
 규칙 2 와 3 이 보는 class 는 column profile 이 담은 최종 class 이다. Column config 의 `class` 는 사람이 아는 것만 골라 적는 부분 목록이므로 axis 가 비어 있는 것이 정상이고, 이 두 규칙의 대상이 아니다.
 
 규칙 5 는 이름 기준이 서로 다른 두 file 을 맞대므로, `row_key` 에 `column_mapping` 을 적용해 이름을 맞춘 뒤에 비교한다. 열을 버리면 그 열로 묶거나 가르던 근거가 사라지므로, `row_key` 에 적힌 열은 버릴 수 없다.
 
-규칙 6 과 7 은 `columns` 가 전수라는 것을 양쪽에서 확인한다. 버린 열이 들어 있으면 판정이 오래된 것이고, 사람이 단위나 class 를 적어 둔 열이 빠져 있으면 판정이 그 열을 지나친 것이다.
+규칙 7 이 말하는 지시 자리는 `column_mapping` 의 값, `na_values` 와 `type_conversion` 과 `unit` 과 `class` 의 key, 그리고 `row_key` 의 두 목록이다. `columns_to_drop` 은 열을 없애는 자리이므로 규칙 6 이 맡고 여기서 뺀다. `row_key` 는 상류 이름을 적으므로 규칙 5 와 마찬가지로 `column_mapping` 을 적용한 뒤 비교한다.
+
+규칙 6 과 7 은 `columns` 가 전수라는 것을 양쪽에서 확인한다. 버린 열이 들어 있으면 판정이 오래된 것이고, 사람이 지시한 열이 빠져 있으면 판정이 그 열을 지나쳤거나 이름을 잘못 적은 것이다. 이름을 잘못 적은 조작은 아무 열에도 걸리지 않고 조용히 넘어가므로, 이 규칙이 없으면 드러나지 않는다.
 
 이 여덟 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
