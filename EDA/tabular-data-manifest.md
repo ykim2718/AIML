@@ -1,7 +1,7 @@
-# Tabular Data Manifest
-rev. 18
+# Tabular Data Manifest For Semiconductor Machine Data
+rev. 19
 
-> Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
+> Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
@@ -21,9 +21,9 @@ Table 1. Manifest files
 | 1 | `catalog.json` | Human | Dataset 이 어디서 왔고 무엇을 위한 것인지 기록한다 |
 | 2 | `column-config.json` | Human | 열 이름, 삭제, 형 변환, 결측 표시, 단위와 사람이 아는 class 를 기록한다 |
 | 3 | `column-profile.json` | Analysis | 데이터를 읽어 판정한 class 를 기록한다 |
-| - | `column-class.json` | Definition | Class 의 axis 와 label, 그리고 각 label 의 판정 규칙을 정의한다 |
+| - | `column-class.json` | Reference | Class 의 axis 와 label, 그리고 각 label 의 판정 규칙을 정의한다 |
 
-`Order` 는 file 이 쓰이는 순서이다. Catalog 가 dataset 이 무엇인지 기록하고, column config 가 그 table 을 어떻게 다듬을지 적으며, column profile 은 그 조작을 마친 table 을 읽어 판정한 결과이다. Column class 는 dataset 마다 다시 쓰는 file 이 아니라 세 file 이 공유하는 어휘이므로 순서를 갖지 않는다.
+`Order` 는 file 이 쓰이는 순서이다. Catalog 가 dataset 이 무엇인지 기록하고, column config 가 그 table 을 어떻게 다듬을지 적으며, column profile 은 그 조작을 마친 table 을 읽어 판정한 결과이다. Column class 는 dataset 마다 다시 쓰는 file 이 아니라 project 사이에서 함께 참조하는 어휘이므로 순서를 갖지 않는다.
 
 이 순서 때문에 열 이름의 기준이 file 마다 다르다. Catalog 는 `column_mapping` 보다 먼저 쓰이므로 상류에서 온 그대로의 이름을 적고, column config 의 나머지 항목과 column profile 은 `column_mapping` 을 거친 뒤의 이름을 적는다. 그래서 column profile 이 기술하는 것은 상류에서 온 table 이 아니라 column config 를 적용하고 난 table 이다.
 
@@ -115,7 +115,7 @@ Table 3. Column config operation keys
 
 `na_values` 가 필요한 이유는 계측 데이터가 결측을 `-999` 같은 실수로 표시하는 일이 많고, 이것을 그대로 두면 실제 측정값으로 학습되기 때문이다. 이 값은 데이터를 읽어서는 알 수 없으므로 사람이 적어야 한다.
 
-`unit` 은 값이 어떤 단위로 적혀 있는지를 남긴다. 숫자 `3.3` 이 V 인지 mV 인지는 데이터에 들어 있지 않으므로 판정이 알아낼 수 없고, 적지 않으면 단위는 열 이름에만 남거나 아예 사라진다. `value_type` 이 `numeric` 인 열에만 적는다.
+`unit` 은 값이 어떤 단위로 적혀 있는지를 남긴다. 숫자 `3.3` 이 V 인지 mV 인지는 데이터에 들어 있지 않으므로 판정이 알아낼 수 없고, 적지 않으면 단위는 열 이름에만 남거나 아예 사라진다. 수치를 담는 열에만 적는다.
 
 `class` 에는 사람이 아는 열만 적고 나머지는 생략한다. 사람이 확실하게 아는 것은 대개 열이 `category` 라는 사실이다. 어떤 값이 실제로 들어오는지는 데이터를 읽어야 알 수 있으므로 판정이 채운다.
 
@@ -263,6 +263,8 @@ Table 9. Trace quantum labels
 
 Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 5절의 `thresholds` 에 함께 기록한다.
 
+규칙에 나오는 window 는 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다. 앞뒤의 대기 구간을 떼어 내는 것처럼 일부만 보아야 할 이유가 있으면 그 구간을 임계값과 함께 기록한다.
+
 Table 10. Trace shape labels
 
 | Label | Rule |
@@ -279,6 +281,8 @@ Table 10. Trace shape labels
 `irregular` 는 앞의 다섯이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
 
 ### 4.8 File Format
+
+`column-class.json` 은 project 사이에서 함께 참조하는 file 이다. Dataset 하나에 매이지 않을 뿐 아니라 project 하나에도 매이지 않으므로, project 마다 복사해 고치지 않고 하나를 두고 같이 읽는다. 복사해 고치기 시작하면 같은 label 이 project 마다 다른 규칙으로 판정되어, 열의 class 를 project 를 넘어 비교할 수 없게 된다. `version` 이 dataset 이 아니라 이 어휘에 붙어 있는 이유도 같다.
 
 `column-class.json` 은 `axis` 아래에 axis 이름을 key 로 두고, 그 아래에 label 과 판정 규칙의 쌍을 둔다. Axis 를 한 겹 안에 넣는 이유는 `version` 이 axis 로 잘못 읽히지 않게 하기 위해서이다. `version` 은 label 이나 규칙이 바뀔 때마다 올린다. 규칙을 label 옆에 두는 이유는 규칙 없는 label 이 사람마다 다른 뜻으로 쓰이기 때문이다.
 
@@ -340,6 +344,8 @@ Table 11. Column profile keys
 | `thresholds` | 판정에 쓴 임계값을 적는다 |
 | `columns` | 열마다 최종 class 와 관측값을 적는다. `class` 외의 key 는 정해 두지 않는다 |
 
+`columns` 는 전수이다. Column config 를 적용하고 난 table 의 모든 열이 여기에 있어야 하고, 버린 열은 그 table 에 없으므로 여기에도 없다. 열이 빠져 있으면 그 열이 판정되지 않은 것인지 대상이 아닌 것인지 가릴 수 없으므로, 빠진 열은 판정이 끝나지 않았다는 뜻이다.
+
 `class_version` 과 `thresholds` 를 함께 두는 이유는 같다. 4절의 판정 규칙 여러 개가 임계값을 필요로 하고 어휘에는 label 이 늘 수 있으므로, 둘 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나온다. 그 둘이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
@@ -358,6 +364,19 @@ Table 11. Column profile keys
       "acf_peak": 0.6
     },
     "columns": {
+      "LOT_ID": {
+        "class": ["active", "category", "scalar"],
+        "missing_rate": 0.0
+      },
+      "WAFER_ID": {
+        "class": ["active", "category", "scalar"],
+        "missing_rate": 0.0
+      },
+      "STEP_ID": {
+        "class": ["active", "ordinal", "scalar"],
+        "levels": [10, 20, 30, 40],
+        "missing_rate": 0.0
+      },
       "rf_fwd_pwr_w": {
         "class": ["active", "numeric", "trace", "fixed", "qn", "rectangle"],
         "missing_rate": 0.003
@@ -366,13 +385,13 @@ Table 11. Column profile keys
         "class": ["active", "numeric", "trace", "fixed", "infinite", "ramp"],
         "missing_rate": 0.0
       },
+      "site_thickness": {
+        "class": ["active", "numeric", "vector", "fixed"],
+        "missing_rate": 0.0
+      },
       "bin_code": {
         "class": ["active", "category", "scalar"],
         "levels": [1, 2, 3, 4, 5, 6, 7, 8],
-        "missing_rate": 0.0
-      },
-      "reserved_1": {
-        "class": ["inactive", "numeric", "scalar"],
         "missing_rate": 0.0
       }
     }
@@ -382,7 +401,7 @@ Table 11. Column profile keys
 
 ## 6. Integrity Rules
 
-Manifest 가 지켜야 하는 조건은 다섯 가지이다.
+여기의 규칙은 manifest 자체의 형식 검사가 아니라, manifest 를 데이터에 적용할 때 성립해야 하는 조건이다. Manifest 는 세 file 이 순서대로 채워지는 동안 아직 비어 있는 자리를 갖지만, 데이터에 적용하는 시점에는 그 자리가 모두 메워져 있어야 한다.
 
 Table 12. Integrity rules
 
@@ -393,10 +412,16 @@ Table 12. Integrity rules
 | 3 | 열은 적용되지 않는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
 | 4 | `column-config.json` 과 `column-profile.json` 의 최상위 key 는 `catalog.json` 에 있어야 한다 | Catalog 에 없는 dataset 의 설정과 판정이 남아 있는 상태 |
 | 5 | `columns_to_drop` 은 `row_key` 에 적힌 열을 담을 수 없다 | 행을 구별하는 근거를 버리는 설정 |
+| 6 | `column-profile.json` 의 `columns` 는 `columns_to_drop` 에 적힌 열을 담을 수 없다 | 이미 버린 열에 남아 있는 판정 |
+| 7 | `column-config.json` 의 `unit` 과 `class` 에 적힌 열은 `column-profile.json` 의 `columns` 에 있어야 한다 | 사람이 적어 둔 열이 판정에서 빠진 상태 |
+
+규칙 2 와 3 이 보는 class 는 column profile 이 담은 최종 class 이다. Column config 의 `class` 는 사람이 아는 것만 골라 적는 부분 목록이므로 axis 가 비어 있는 것이 정상이고, 이 두 규칙의 대상이 아니다.
 
 규칙 5 는 이름 기준이 서로 다른 두 file 을 맞대므로, `row_key` 에 `column_mapping` 을 적용해 이름을 맞춘 뒤에 비교한다. 열을 버리면 그 열로 묶거나 가르던 근거가 사라지므로, `row_key` 에 적힌 열은 버릴 수 없다.
 
-이 다섯 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
+규칙 6 과 7 은 `columns` 가 전수라는 것을 양쪽에서 확인한다. 버린 열이 들어 있으면 판정이 오래된 것이고, 사람이 단위나 class 를 적어 둔 열이 빠져 있으면 판정이 그 열을 지나친 것이다.
+
+이 일곱 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
 ## Appendix A. Terminology
 
@@ -411,6 +436,7 @@ Table 12. Integrity rules
 - **Medallion architecture** 는 데이터를 원본에 가까운 bronze, 정제된 silver, 사용 목적에 맞춘 gold 의 세 단계로 나누어 적재하는 방식이다.
 - **Object key** 는 object storage 에서 저장된 항목 하나를 가리키는 문자열이다.
 - **Object storage** 는 파일을 directory 구조가 아니라 key 로 지시해 저장하는 storage 이다.
+- **Semiconductor machine data** 는 반도체 공정 장비와 계측 장비가 남긴 기록이고, 공정 중에 받은 sensor trace, 계측 결과, 그리고 그 측정이 귀속되는 lot 과 wafer 의 식별자가 여기에 속한다.
 - **Tabular data** 는 행과 열로 이루어진 데이터이고, 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응한다. Cell 이 단일 값이 아니라 배열이어도 행과 열의 틀이 유지되면 tabular data 이다.
 - **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이고, 값 자체와 값이 놓인 순서가 함께 정보를 이룬다.
-- **Window** 는 trace 에서 판정 대상으로 잘라낸 시간 구간이다.
+- **Window** 는 trace 에서 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다.
