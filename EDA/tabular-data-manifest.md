@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 5
+rev. 6
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -296,4 +296,5 @@ Table 10. Integrity rules
 - **Object key** 는 object storage 에서 저장된 항목 하나를 가리키는 문자열이다.
 - **Object storage** 는 파일을 directory 구조가 아니라 key 로 지시해 저장하는 storage 이다.
 - **Tabular data** 는 행과 열로 이루어진 데이터이고, 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응한다. Cell 이 단일 값이 아니라 배열이어도 행과 열의 틀이 유지되면 tabular data 이다.
+- **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이고, 값 자체와 값이 놓인 순서가 함께 정보를 이룬다.
 - **Window** 는 trace 에서 판정 대상으로 잘라낸 시간 구간이다.
