@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 4
+rev. 5
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -59,14 +59,14 @@ Table 2. Catalog description keys
 // catalog.json
 {
   "silver/fdc/etch-ch1.parquet": {
-    "project_goal": "etch CD 예측을 위한 chamber trace 확보",
+    "project_goal": "collect chamber trace for etch CD prediction",
     "provider": "FDC / Etch Bay 3",
     "date": "2026-08-07",
     "medallion": "silver",
-    "grain": "wafer 1장과 process step 1개의 조합",
+    "grain": "one wafer and one process step",
     "derived_from": "bronze/fdc/etch-raw.parquet",
     "rows": 1043221,
-    "note": "2026-06 이전 적재분은 pressure 단위가 Pa 이다"
+    "note": "pressure is in Pa for the loads before 2026-06"
   }
 }
 ```
@@ -112,8 +112,6 @@ Table 3. Column config operation keys
   }
 }
 ```
-
-조작의 적용 순서는 `column_mapping`, `na_values`, `columns_to_drop`, `type_conversion` 이다. 순서를 JSON 에 담지 않고 고정하는 이유는 JSON object 의 key 순서가 규격상 보장되지 않기 때문이다. 순서가 의미를 가지는 값은 object 가 아니라 array 에 담거나, 이 경우처럼 file 밖에 고정한다.
 
 ## 4. Column Profile
 
@@ -247,24 +245,24 @@ Table 9. Trace shape labels
 // column-class.json
 {
   "activity": {
-    "active": "결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다",
-    "inactive": "결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다"
+    "active": "two or more distinct cell values exist among the rows that are not missing",
+    "inactive": "every row that is not missing holds the same cell value, or every row is missing"
   },
   "form": {
-    "category": "값이 유한한 이름의 집합에서 나오고, 값 사이의 산술 연산이 의미를 갖지 않는다",
-    "scalar": "cell 하나가 크기를 갖는 단일 수치이다",
-    "vector": "cell 하나가 길이가 고정된 배열이고, 원소의 순서가 의미를 갖지 않는다",
-    "trace": "cell 하나가 배열이고, 원소가 시간 순서로 정렬되어 있다"
+    "category": "the value comes from a finite set of names and arithmetic between values carries no meaning",
+    "scalar": "one cell holds a single number that has magnitude",
+    "vector": "one cell holds a fixed length array whose element order carries no meaning",
+    "trace": "one cell holds an array whose elements are ordered in time"
   },
   "trace_quantum": {
-    "q1": "cell 하나 안에서 값이 level 하나 위에만 머문다",
-    "qn": "cell 하나 안에서 값이 둘 이상의 level 위를 오간다"
+    "q1": "within one cell the value stays on a single level",
+    "qn": "within one cell the value moves across two or more levels"
   },
   "trace_shape": {
-    "rectangle": "값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 dwell_ratio 배 이상 길다",
-    "triangle": "상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다",
-    "ramp": "window 에서 값이 한 방향으로만 변하는 구간이 ramp_fraction 이상을 차지한다",
-    "oscillation": "autocorrelation 에 acf_peak 이상의 peak 이 일정한 간격으로 나타난다"
+    "rectangle": "the value alternates between two levels and the time held on a level is at least dwell_ratio times the time taken to move between them",
+    "triangle": "the rising and the falling slope have a similar magnitude and no flat segment lies between them",
+    "ramp": "the segments where the value moves in one direction only cover at least ramp_fraction of the window",
+    "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval"
   }
 }
 ```
