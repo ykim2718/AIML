@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 10
+rev. 11
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -49,11 +49,25 @@ Table 2. Catalog description keys
 | `date` | Yes | 마지막으로 갱신된 시각을 적는다 |
 | `medallion` | Yes | `bronze`, `silver`, `gold` 중 하나를 적는다 |
 | `grain` | Yes | 행 하나가 무엇인지 한 문장으로 적는다 |
+| `layout` | Yes | 행이 entity 하나에 대응하는지 그 안의 sequence 한 점에 대응하는지 적는다 |
 | `derived_from` | No | 이 데이터를 만들어 낸 상류 object key 를 적고, 원본이면 생략한다 |
 | `rows` | No | 행 수를 적는다 |
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
 
 `grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 관계가 된다.
+
+`layout` 은 같은 데이터를 담는 두 가지 배치를 가른다. Wide 는 행 하나가 entity 하나이고 시간에 따라 변하는 값이 cell 안의 배열로 들어간다. Long 은 행 하나가 entity 하나의 sequence 한 점이어서, 한 entity 가 여러 행에 걸쳐 놓인다.
+
+Long 에서는 `entity_key` 의 값이 여러 행에서 같으므로 얼핏 같은 행이 중복된 것처럼 보인다. 중복이 아니라는 것은 `sequence_key` 가 말해 준다. 그 열의 값이 행마다 다르므로 두 열을 함께 보면 행이 서로 구별되며, 이 두 열이 없으면 long table 을 중복 제거해서는 안 된다는 사실조차 기록되지 않는다.
+
+```json
+// catalog.json, the layout of a long table
+{
+  "form": "long",
+  "entity_key": ["lot_id", "wafer_id"],
+  "sequence_key": "ts"
+}
+```
 
 ```json
 // catalog.json
@@ -64,6 +78,10 @@ Table 2. Catalog description keys
     "date": "2026-08-07",
     "medallion": "silver",
     "grain": "one wafer and one process step",
+    "layout": {
+      "form": "wide",
+      "entity_key": ["lot_id", "wafer_id"]
+    },
     "derived_from": "Ulvac/AlPVDPoC/BronzeData/#0/V0",
     "rows": 1043221,
     "note": "pressure is in Pa for the loads before 2026-06"
@@ -142,11 +160,11 @@ Table 4. Column profile keys
   },
   "columns": {
     "rf_fwd_pwr_w": {
-      "class": ["active", "numeric", "trace", "qn", "rectangle"],
+      "class": ["active", "numeric", "trace", "fixed", "qn", "rectangle"],
       "missing_rate": 0.003
     },
     "chamber_pressure": {
-      "class": ["active", "numeric", "trace", "ramp"],
+      "class": ["active", "numeric", "trace", "fixed", "infinite", "ramp"],
       "missing_rate": 0.0
     },
     "bin_code": {
@@ -166,19 +184,24 @@ Table 4. Column profile keys
 
 ### 5.1 Axis
 
-Class 는 하나의 목록이 아니라 여러 개의 axis 로 나뉜다. 한 axis 안의 label 은 서로 배타적이고, 한 열은 axis 마다 최대 하나의 label 을 가진다. 이렇게 나누면 서로 무관한 성질을 하나의 label 에 섞지 않아도 되고, 모순된 조합을 규칙으로 걸러낼 수 있다.
+Class 는 하나의 목록이 아니라 여러 개의 axis 로 나뉜다. 한 axis 안의 label 은 서로 배타적이므로, 이렇게 나누면 서로 무관한 성질을 하나의 label 에 섞지 않아도 되고 모순된 조합을 규칙으로 걸러낼 수 있다.
 
 Table 5. Class axes
 
-| Axis | Applies to | Source |
-|------|------------|--------|
-| `activity` | 모든 열 | Analysis |
-| `value_type` | 모든 열 | Human or analysis |
-| `structure` | 모든 열 | Human or analysis |
-| `trace_quantum` | `structure` 가 `trace` 인 열 | Analysis |
-| `trace_shape` | `structure` 가 `trace` 인 열 | Analysis |
+| Axis | Label | Applies to | Source |
+|------|-------|------------|--------|
+| `activity` | `active`, `inactive` | 모든 열 | Analysis |
+| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | 모든 열 | Human or analysis |
+| `structure` | `scalar`, `vector`, `matrix`, `trace` | 모든 열 | Human or analysis |
+| `array_length` | `fixed`, `variable` | `structure` 가 `vector`, `matrix`, `trace` 인 열 | Analysis |
+| `trace_quantum` | `q1`, `qn`, `infinite` | `structure` 가 `trace` 인 열 | Analysis |
+| `trace_shape` | `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `structure` 가 `trace` 인 열 | Analysis |
 
-`trace_` 로 시작하는 axis 는 `structure` 가 `trace` 일 때만 값을 가진다. 이름에 의존 관계를 넣어 두었으므로 axis 이름만 보고 이 제약을 알 수 있다.
+**열은 자기에게 적용되는 axis 마다 label 을 정확히 하나씩 갖는다.** 적용되지 않는 axis 에는 label 을 갖지 않는다. 그래서 label 이 비어 있는 axis 는 판정이 아직 끝나지 않았다는 뜻이며, 판정이 끝난 열은 어느 axis 를 물어도 답이 하나 나온다.
+
+이 규약 때문에 각 axis 의 label 은 그 axis 가 적용되는 모든 열을 남김없이 받아야 한다. `trace_shape` 의 `irregular` 가 그 자리를 맡는다.
+
+`array_` 와 `trace_` 로 시작하는 axis 는 `structure` 가 각각 배열일 때와 `trace` 일 때만 적용된다. 이름에 의존 관계를 넣어 두었으므로 axis 이름만 보고 이 제약을 알 수 있다.
 
 한 label 은 한 axis 에만 속한다. 열의 class 를 label 의 목록으로 적으므로, 같은 label 이 두 axis 에 있으면 그 label 이 어느 axis 의 값인지 가릴 수 없다.
 
@@ -194,6 +217,8 @@ Table 6. Activity labels
 |-------|------|
 | `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
 | `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
+
+Long table 에서는 한 entity 의 행들이 sequence 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. Long table 에서는 `entity_key` 로 행을 묶은 뒤 entity 사이를 비교한다.
 
 ### 5.3 Value Type
 
@@ -226,7 +251,7 @@ Table 8. Structure labels
 | Label | Rule |
 |-------|------|
 | `scalar` | Cell 하나가 값 하나를 담는다 |
-| `vector` | Cell 하나가 길이가 고정된 배열을 담고, 원소의 순서가 의미를 갖지 않는다 |
+| `vector` | Cell 하나가 배열을 담고, 원소의 순서가 의미를 갖지 않는다 |
 | `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 |
 | `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 |
 
@@ -236,26 +261,42 @@ Table 8. Structure labels
 
 값의 성격과 cell 의 모양을 두 축으로 나누어 두었으므로 조합이 뜻을 갖는다. 공정 중 압력은 `numeric` 과 `trace` 이고, 장비가 거쳐 간 mode 를 시간순으로 적은 열은 `category` 와 `trace` 이다. 축이 하나뿐이면 이 둘을 가릴 수 없다.
 
-### 5.5 Trace Quantum
+### 5.5 Array Length
 
-Trace 가 연속으로 변하지 않고 몇 개의 level 위에 머무를 때, level 이 몇 개인지를 나눈다. Level 은 baseline 을 포함해서 센다.
+Array length 는 배열의 길이가 행마다 같은지를 나눈다. Cell 이 배열인 열에만 적용된다.
 
-Table 9. Trace quantum labels
+Table 9. Array length labels
+
+| Label | Rule |
+|-------|------|
+| `fixed` | 모든 행에서 배열의 길이가 같고, 축이 둘인 배열에서는 두 축의 길이가 모두 같다 |
+| `variable` | 행에 따라 배열의 길이가 다르다 |
+
+Wafer 마다 정해진 자리에서 재는 두께는 자리 수가 늘 같으므로 `fixed` 이고, wafer 마다 검출되는 defect 의 좌표 목록은 개수가 제각각이므로 `variable` 이다. 둘을 갈라 두는 이유는 `fixed` 인 열만 그대로 고정 폭의 feature 로 펼칠 수 있기 때문이다.
+
+### 5.6 Trace Quantum
+
+Trace 의 값이 몇 개의 level 위에 머무는지를 나눈다. Level 은 baseline 을 포함해서 센다.
+
+Table 10. Trace quantum labels
 
 | Label | Rule |
 |-------|------|
 | `q1` | Cell 하나 안에서 값이 level 하나 위에만 머문다 |
-| `qn` | Cell 하나 안에서 값이 둘 이상의 level 위를 오간다 |
+| `qn` | Cell 하나 안에서 값이 셀 수 있는 여러 level 위를 오간다 |
+| `infinite` | Cell 하나 안에서 값이 level 위에 머물지 않고 연속으로 변한다 |
+
+세 label 은 level 개수가 하나, 여럿, 무한인 경우이므로 어떤 trace 든 하나에 들어간다. `infinite` 는 양자화되지 않은 아날로그 신호가 앉는 자리이고, 이것이 없으면 매끄럽게 변하는 압력이 `qn` 으로 잘못 적혀 있지도 않은 level 을 주장하게 된다.
 
 `q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 수치 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 5.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
 
 `q1` 인 열은 cell 을 그 하나의 값으로 바꾸어 `scalar` 로 축약할 수 있다. 축약하면 행 사이의 차이는 그대로 남고 시간축만 사라지므로 activity 는 바뀌지 않는다.
 
-### 5.6 Trace Shape
+### 5.7 Trace Shape
 
 Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 4절의 `thresholds` 에 함께 기록한다.
 
-Table 10. Trace shape labels
+Table 11. Trace shape labels
 
 | Label | Rule |
 |-------|------|
@@ -263,8 +304,11 @@ Table 10. Trace shape labels
 | `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
 | `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 정해진 비율 이상을 차지한다 |
 | `oscillation` | Autocorrelation 에 정해진 크기 이상의 peak 이 일정한 간격으로 나타난다 |
+| `irregular` | 위 네 규칙을 모두 만족하지 않는다 |
 
-### 5.7 File Format
+`irregular` 는 앞의 넷이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 네 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
+
+### 5.8 File Format
 
 `column-class.json` 은 axis 를 key 로 두고, 그 아래에 label 과 판정 규칙의 쌍을 둔다. 규칙을 label 옆에 두는 이유는 규칙 없는 label 이 사람마다 다른 뜻으로 쓰이기 때문이다.
 
@@ -284,19 +328,25 @@ Table 10. Trace shape labels
   },
   "structure": {
     "scalar": "one cell holds a single value",
-    "vector": "one cell holds a fixed length array whose element order carries no meaning",
+    "vector": "one cell holds an array whose element order carries no meaning",
     "matrix": "one cell holds an array with two axes and neither axis is time",
     "trace": "one cell holds an array whose elements are ordered in time"
   },
+  "array_length": {
+    "fixed": "the array has the same length in every row, and an array with two axes has the same length on both",
+    "variable": "the array length differs from row to row"
+  },
   "trace_quantum": {
     "q1": "within one cell the value stays on a single level",
-    "qn": "within one cell the value moves across two or more levels"
+    "qn": "within one cell the value moves across a countable number of levels",
+    "infinite": "within one cell the value changes continuously and rests on no level"
   },
   "trace_shape": {
     "rectangle": "the value alternates between two levels and the time held on a level is at least dwell_ratio times the time taken to move between them",
     "triangle": "the rising and the falling slope have a similar magnitude and no flat segment lies between them",
     "ramp": "the segments where the value moves in one direction only cover at least ramp_fraction of the window",
-    "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval"
+    "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval",
+    "irregular": "none of the four rules above is satisfied"
   }
 }
 ```
@@ -307,13 +357,13 @@ Table 10. Trace shape labels
 
 Manifest 가 지켜야 하는 조건은 세 가지이다.
 
-Table 11. Integrity rules
+Table 12. Integrity rules
 
 | Rule | Condition | Catches |
 |------|-----------|---------|
 | 1 | 모든 label 은 `column-class.json` 에 있어야 한다 | 오타와 미등록 label |
-| 2 | 한 열의 label 은 axis 마다 최대 하나이다 | `scalar` 와 `trace` 를 함께 붙이는 모순 |
-| 3 | `structure` 가 `trace` 가 아니면 `trace_` 로 시작하는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
+| 2 | 열은 적용되는 axis 마다 label 을 정확히 하나 갖는다 | `scalar` 와 `trace` 를 함께 붙이는 모순, 그리고 판정이 끝나지 않은 열 |
+| 3 | 열은 적용되지 않는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
 
 이 세 가지는 label 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
@@ -324,6 +374,7 @@ Table 11. Integrity rules
 - **Autocorrelation** 은 신호를 시간축으로 밀어 가며 자기 자신과 곱해 평균한 값이고, 주기 성분이 있으면 그 주기마다 peak 이 나타난다.
 - **Baseline** 은 trace 가 아무 동작도 하지 않을 때 머무는 기준 level 이다.
 - **Cell** 은 table 에서 행 하나와 열 하나가 만나는 자리이다.
+- **Entity** 는 데이터가 붙는 대상이고, wafer 나 lot 처럼 측정이 귀속되는 단위를 말한다.
 - **Grain** 은 table 의 행 하나가 무엇을 나타내는지를 말한다.
 - **Level** 은 값이 연속으로 변하지 않고 몇 개의 값 위에만 머무를 때 그 값 하나를 말한다.
 - **Medallion architecture** 는 데이터를 원본에 가까운 bronze, 정제된 silver, 사용 목적에 맞춘 gold 의 세 단계로 나누어 적재하는 방식이다.
