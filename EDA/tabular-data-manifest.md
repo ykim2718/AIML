@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 14
+rev. 15
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -35,7 +35,7 @@ object key
 column-class.json              axis -> label and its rule
 ```
 
-열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이며, 두 file 을 합치는 절차는 필요하지 않다.
+열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이며, 두 file 을 합치는 절차는 필요하지 않다. 판정이 그 입력을 얼마나 믿고 어떻게 쓸지는 판정을 만드는 쪽이 정한다.
 
 Column profile 은 판정의 산출물이므로 손으로 고치지 않는다. 고쳐도 다음 판정에서 지워진다. 판정 결과를 바꾸고 싶으면 column config 에 사람의 값을 적어 판정에 넘긴다.
 
@@ -102,13 +102,16 @@ Table 3. Column config operation keys
 | 2 | `na_values` | 결측을 나타내는 값을 결측으로 바꾼다 |
 | 3 | `columns_to_drop` | 버릴 열을 적는다 |
 | 4 | `type_conversion` | 열의 형을 바꾼다 |
+| - | `unit` | 열의 값이 어떤 단위인지 적는다 |
 | - | `class` | 사람이 아는 class label 을 열마다 적는다 |
 
-`Order` 는 조작을 적용하는 순서이고, `class` 는 조작이 아니므로 순서를 갖지 않는다. 이름 바꾸기가 첫째인 이유는 뒤의 세 조작이 모두 바뀐 이름으로 열을 지시하게 하기 위해서이다. 형 바꾸기가 마지막인 이유는 결측 표시를 걷어낸 뒤라야 열이 목표한 형으로 들어가기 때문이다. `-999` 가 남아 있는 열을 먼저 정수로 바꾸면 결측이 값으로 굳는다.
+`Order` 는 조작을 적용하는 순서이고, `unit` 과 `class` 는 조작이 아니므로 순서를 갖지 않는다. 이름 바꾸기가 첫째인 이유는 뒤의 세 조작이 모두 바뀐 이름으로 열을 지시하게 하기 위해서이다. 형 바꾸기가 마지막인 이유는 결측 표시를 걷어낸 뒤라야 열이 목표한 형으로 들어가기 때문이다. `-999` 가 남아 있는 열을 먼저 정수로 바꾸면 결측이 값으로 굳는다.
 
 순서를 JSON 에 담지 않고 표에 고정하는 이유는 JSON object 의 key 순서가 규격상 보장되지 않기 때문이다. 순서가 의미를 가지는 값은 object 가 아니라 array 에 담거나, 이 경우처럼 file 밖에 고정한다.
 
 `na_values` 가 필요한 이유는 계측 데이터가 결측을 `-999` 같은 실수로 표시하는 일이 많고, 이것을 그대로 두면 실제 측정값으로 학습되기 때문이다. 이 값은 데이터를 읽어서는 알 수 없으므로 사람이 적어야 한다.
+
+`unit` 은 값이 어떤 단위로 적혀 있는지를 남긴다. 숫자 `3.3` 이 V 인지 mV 인지는 데이터에 들어 있지 않으므로 판정이 알아낼 수 없고, 적지 않으면 단위는 열 이름에만 남거나 아예 사라진다. `value_type` 이 `numeric` 인 열에만 적는다.
 
 `class` 에는 사람이 아는 열만 적고 나머지는 생략한다. 사람이 확실하게 아는 것은 대개 열이 `category` 라는 사실이다. 어떤 값이 실제로 들어오는지는 데이터를 읽어야 알 수 있으므로 판정이 채운다.
 
@@ -125,6 +128,10 @@ Table 3. Column config operation keys
     "columns_to_drop": ["reserved_1"],
     "type_conversion": {
       "rf_fwd_pwr_w": "float32"
+    },
+    "unit": {
+      "rf_fwd_pwr_w": "W",
+      "chamber_pressure": "mTorr"
     },
     "class": {
       "bin_code": ["category"],
@@ -327,13 +334,15 @@ Table 11. Column profile keys
 | `profiled_at` | 판정을 수행한 시각을 적는다 |
 | `class_version` | 판정에 쓴 `column-class.json` 의 version 을 적는다 |
 | `thresholds` | 판정에 쓴 임계값을 적는다 |
-| `columns` | 열마다 최종 class 와 관측값을 적는다 |
+| `columns` | 열마다 최종 class 와 관측값을 적는다. `class` 외의 key 는 정해 두지 않는다 |
 
 `class_version` 과 `thresholds` 를 함께 두는 이유는 같다. 어휘에 label 이 늘거나 임계값이 바뀌면 같은 데이터에서 다른 label 이 나오므로, 그 둘이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
 
 `thresholds` 를 함께 두는 이유는 4절의 판정 규칙 여러 개가 임계값을 필요로 하고, 그 값이 다르면 같은 데이터에서 다른 label 이 나오기 때문이다. 임계값 없이 label 만 남은 profile 은 재현되지 않는다.
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
+
+열 항목에서 정해진 key 는 `class` 하나이다. 나머지는 열어 두어, 판정이 근거로 남기고 싶은 관측값을 자유롭게 더한다. 예시의 `missing_rate` 와 `levels` 가 그렇게 더해진 것이고, 무엇을 남길지는 판정을 만드는 쪽이 정한다.
 
 판정 결과가 column config 에 사람이 적은 label 과 다르게 나왔다면 둘 중 하나가 틀린 것이므로, 두 file 을 비교하면 손볼 열이 드러난다.
 
