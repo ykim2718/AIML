@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 17
+rev. 18
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -340,9 +340,7 @@ Table 11. Column profile keys
 | `thresholds` | 판정에 쓴 임계값을 적는다 |
 | `columns` | 열마다 최종 class 와 관측값을 적는다. `class` 외의 key 는 정해 두지 않는다 |
 
-`class_version` 과 `thresholds` 를 함께 두는 이유는 같다. 어휘에 label 이 늘거나 임계값이 바뀌면 같은 데이터에서 다른 label 이 나오므로, 그 둘이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
-
-`thresholds` 를 함께 두는 이유는 4절의 판정 규칙 여러 개가 임계값을 필요로 하고, 그 값이 다르면 같은 데이터에서 다른 label 이 나오기 때문이다. 임계값 없이 label 만 남은 profile 은 재현되지 않는다.
+`class_version` 과 `thresholds` 를 함께 두는 이유는 같다. 4절의 판정 규칙 여러 개가 임계값을 필요로 하고 어휘에는 label 이 늘 수 있으므로, 둘 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나온다. 그 둘이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
 
@@ -384,7 +382,7 @@ Table 11. Column profile keys
 
 ## 6. Integrity Rules
 
-Manifest 가 지켜야 하는 조건은 네 가지이다.
+Manifest 가 지켜야 하는 조건은 다섯 가지이다.
 
 Table 12. Integrity rules
 
@@ -394,8 +392,11 @@ Table 12. Integrity rules
 | 2 | 열은 적용되는 axis 마다 label 을 정확히 하나 갖는다 | `scalar` 와 `trace` 를 함께 붙이는 모순, 그리고 판정이 끝나지 않은 열 |
 | 3 | 열은 적용되지 않는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
 | 4 | `column-config.json` 과 `column-profile.json` 의 최상위 key 는 `catalog.json` 에 있어야 한다 | Catalog 에 없는 dataset 의 설정과 판정이 남아 있는 상태 |
+| 5 | `columns_to_drop` 은 `row_key` 에 적힌 열을 담을 수 없다 | 행을 구별하는 근거를 버리는 설정 |
 
-이 네 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
+규칙 5 는 이름 기준이 서로 다른 두 file 을 맞대므로, `row_key` 에 `column_mapping` 을 적용해 이름을 맞춘 뒤에 비교한다. 열을 버리면 그 열로 묶거나 가르던 근거가 사라지므로, `row_key` 에 적힌 열은 버릴 수 없다.
+
+이 다섯 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
 ## Appendix A. Terminology
 
