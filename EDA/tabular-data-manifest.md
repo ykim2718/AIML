@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 11
+rev. 12
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -49,25 +49,23 @@ Table 2. Catalog description keys
 | `date` | Yes | 마지막으로 갱신된 시각을 적는다 |
 | `medallion` | Yes | `bronze`, `silver`, `gold` 중 하나를 적는다 |
 | `grain` | Yes | 행 하나가 무엇인지 한 문장으로 적는다 |
-| `layout` | Yes | 행이 entity 하나에 대응하는지 그 안의 sequence 한 점에 대응하는지 적는다 |
+| `layout` | Yes | 행을 유일하게 만드는 열, entity 를 묶는 열, 행의 순서를 정하는 열을 적는다 |
 | `derived_from` | No | 이 데이터를 만들어 낸 상류 object key 를 적고, 원본이면 생략한다 |
 | `rows` | No | 행 수를 적는다 |
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
 
 `grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 관계가 된다.
 
-`layout` 은 같은 데이터를 담는 두 가지 배치를 가른다. Wide 는 행 하나가 entity 하나이고 시간에 따라 변하는 값이 cell 안의 배열로 들어간다. Long 은 행 하나가 entity 하나의 sequence 한 점이어서, 한 entity 가 여러 행에 걸쳐 놓인다.
+`layout` 은 같은 데이터를 담는 두 가지 배치를 가른다. Wide 는 시간에 따라 변하는 값이 cell 안의 배열로 들어간다. Long 은 행 하나가 sequence 한 점이어서, 한 entity 가 여러 행에 걸쳐 놓인다. `layout` 은 네 가지를 적는다.
 
-Long 에서는 `entity_key` 의 값이 여러 행에서 같으므로 얼핏 같은 행이 중복된 것처럼 보인다. 중복이 아니라는 것은 `sequence_key` 가 말해 준다. 그 열의 값이 행마다 다르므로 두 열을 함께 보면 행이 서로 구별되며, 이 두 열이 없으면 long table 을 중복 제거해서는 안 된다는 사실조차 기록되지 않는다.
+- `form` 은 `wide` 와 `long` 중 하나이다.
+- `row_key` 는 값의 조합이 행마다 유일한 열의 목록이다.
+- `entity_key` 는 어느 열로 묶으면 한 entity 가 되는지를 적는다.
+- `sequence_key` 는 한 entity 안에서 행의 순서를 정하는 열이고, `form` 이 `wide` 이면 없다.
 
-```json
-// catalog.json, the layout of a long table
-{
-  "form": "long",
-  "entity_key": ["lot_id", "wafer_id"],
-  "sequence_key": "ts"
-}
-```
+Long 에서는 `entity_key` 의 값이 여러 행에서 같으므로 얼핏 같은 행이 중복된 것처럼 보인다. **중복이 아니라는 것을 명시하는 것이 `row_key` 이다.** 중복 검사는 `entity_key` 가 아니라 `row_key` 로 하며, 그렇게 하면 sequence 를 따라 늘어선 정상 행들이 중복으로 잡히지 않는다. `row_key` 를 적지 않으면 long table 을 그냥 중복 제거해도 되는지 아닌지가 기록되지 않는다.
+
+세 key 는 하는 일이 서로 다르다. `row_key` 는 유일성을 말하고, `entity_key` 는 묶는 방법을 말하며, `sequence_key` 는 순서를 말한다. Wide 에서도 셋이 같지 않을 수 있다. 행 하나가 wafer 와 process step 의 조합이면 `entity_key` 는 wafer 까지이고 `row_key` 는 step 까지이므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
 
 ```json
 // catalog.json
@@ -80,12 +78,25 @@ Long 에서는 `entity_key` 의 값이 여러 행에서 같으므로 얼핏 같�
     "grain": "one wafer and one process step",
     "layout": {
       "form": "wide",
+      "row_key": ["lot_id", "wafer_id", "step_id"],
       "entity_key": ["lot_id", "wafer_id"]
     },
     "derived_from": "Ulvac/AlPVDPoC/BronzeData/#0/V0",
     "rows": 1043221,
     "note": "pressure is in Pa for the loads before 2026-06"
   }
+}
+```
+
+같은 데이터를 long 으로 담으면 `layout` 만 달라진다. 열 자체는 `trace` 대신 `scalar` 가 되고, 그 열들이 모여 trace 를 이룬다는 사실은 `entity_key` 와 `sequence_key` 가 말해 준다.
+
+```json
+// catalog.json, the layout of a long table
+{
+  "form": "long",
+  "row_key": ["lot_id", "wafer_id", "ts"],
+  "entity_key": ["lot_id", "wafer_id"],
+  "sequence_key": "ts"
 }
 ```
 
@@ -195,7 +206,7 @@ Table 5. Class axes
 | `structure` | `scalar`, `vector`, `matrix`, `trace` | 모든 열 | Human or analysis |
 | `array_length` | `fixed`, `variable` | `structure` 가 `vector`, `matrix`, `trace` 인 열 | Analysis |
 | `trace_quantum` | `q1`, `qn`, `infinite` | `structure` 가 `trace` 인 열 | Analysis |
-| `trace_shape` | `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `structure` 가 `trace` 인 열 | Analysis |
+| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `structure` 가 `trace` 인 열 | Analysis |
 
 **열은 자기에게 적용되는 axis 마다 label 을 정확히 하나씩 갖는다.** 적용되지 않는 axis 에는 label 을 갖지 않는다. 그래서 label 이 비어 있는 axis 는 판정이 아직 끝나지 않았다는 뜻이며, 판정이 끝난 열은 어느 axis 를 물어도 답이 하나 나온다.
 
@@ -300,13 +311,16 @@ Table 11. Trace shape labels
 
 | Label | Rule |
 |-------|------|
+| `flat` | Window 에서 값이 변하지 않는다 |
 | `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 정해진 배수 이상 길다 |
 | `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
 | `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 정해진 비율 이상을 차지한다 |
 | `oscillation` | Autocorrelation 에 정해진 크기 이상의 peak 이 일정한 간격으로 나타난다 |
-| `irregular` | 위 네 규칙을 모두 만족하지 않는다 |
+| `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
 
-`irregular` 는 앞의 넷이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 네 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
+`flat` 과 `trace_quantum` 의 `q1` 은 같은 사실을 두 관점에서 적는다. Level 이 하나뿐인 trace 는 값이 변할 곳이 없으므로 언제나 평탄하다. 따라서 한쪽만 붙어 있는 열은 판정에 오류가 있다는 신호이며, 두 axis 를 맞대어 보는 것으로 확인된다.
+
+`irregular` 는 앞의 다섯이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
 
 ### 5.8 File Format
 
@@ -342,11 +356,12 @@ Table 11. Trace shape labels
     "infinite": "within one cell the value changes continuously and rests on no level"
   },
   "trace_shape": {
+    "flat": "the value does not change over the window",
     "rectangle": "the value alternates between two levels and the time held on a level is at least dwell_ratio times the time taken to move between them",
     "triangle": "the rising and the falling slope have a similar magnitude and no flat segment lies between them",
     "ramp": "the segments where the value moves in one direction only cover at least ramp_fraction of the window",
     "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval",
-    "irregular": "none of the four rules above is satisfied"
+    "irregular": "none of the five rules above is satisfied"
   }
 }
 ```
