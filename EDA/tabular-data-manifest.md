@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 12
+rev. 13
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -49,23 +49,23 @@ Table 2. Catalog description keys
 | `date` | Yes | 마지막으로 갱신된 시각을 적는다 |
 | `medallion` | Yes | `bronze`, `silver`, `gold` 중 하나를 적는다 |
 | `grain` | Yes | 행 하나가 무엇인지 한 문장으로 적는다 |
-| `layout` | Yes | 행을 유일하게 만드는 열, entity 를 묶는 열, 행의 순서를 정하는 열을 적는다 |
+| `key` | Yes | Entity 를 묶는 열과 그 안에서 행을 가르는 열을 적는다 |
 | `derived_from` | No | 이 데이터를 만들어 낸 상류 object key 를 적고, 원본이면 생략한다 |
 | `rows` | No | 행 수를 적는다 |
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
 
 `grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 관계가 된다.
 
-`layout` 은 같은 데이터를 담는 두 가지 배치를 가른다. Wide 는 시간에 따라 변하는 값이 cell 안의 배열로 들어간다. Long 은 행 하나가 sequence 한 점이어서, 한 entity 가 여러 행에 걸쳐 놓인다. `layout` 은 네 가지를 적는다.
+`key` 는 행이 서로 어떻게 구별되는지를 두 목록으로 적는다.
 
-- `form` 은 `wide` 와 `long` 중 하나이다.
-- `row_key` 는 값의 조합이 행마다 유일한 열의 목록이다.
-- `entity_key` 는 어느 열로 묶으면 한 entity 가 되는지를 적는다.
-- `sequence_key` 는 한 entity 안에서 행의 순서를 정하는 열이고, `form` 이 `wide` 이면 없다.
+- `entity` 는 어느 열로 묶으면 한 entity 가 되는지를 적는다.
+- `sequence` 는 한 entity 안에서 행을 가르는 열을 순서대로 적고, 행 하나가 곧 entity 하나이면 비운다.
 
-Long 에서는 `entity_key` 의 값이 여러 행에서 같으므로 얼핏 같은 행이 중복된 것처럼 보인다. **중복이 아니라는 것을 명시하는 것이 `row_key` 이다.** 중복 검사는 `entity_key` 가 아니라 `row_key` 로 하며, 그렇게 하면 sequence 를 따라 늘어선 정상 행들이 중복으로 잡히지 않는다. `row_key` 를 적지 않으면 long table 을 그냥 중복 제거해도 되는지 아닌지가 기록되지 않는다.
+두 목록을 이은 것이 행마다 유일한 조합이다. **행이 중복인지 아닌지를 명시하는 것이 이 조합이며**, 중복 검사는 `entity` 가 아니라 이 조합으로 한다. 한 wafer 의 trace 를 행마다 한 점씩 펼친 table 에서 `wafer_id` 는 수천 행에 걸쳐 같은 값이지만, `sequence` 의 시간 열이 그 행들을 갈라 놓으므로 중복이 아니다. `sequence` 를 적지 않으면 그 table 을 중복 제거해도 되는지가 기록되지 않는다.
 
-세 key 는 하는 일이 서로 다르다. `row_key` 는 유일성을 말하고, `entity_key` 는 묶는 방법을 말하며, `sequence_key` 는 순서를 말한다. Wide 에서도 셋이 같지 않을 수 있다. 행 하나가 wafer 와 process step 의 조합이면 `entity_key` 는 wafer 까지이고 `row_key` 는 step 까지이므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
+두 목록의 일은 서로 다르다. `entity` 는 묶는 방법을 말하고 `sequence` 는 가르는 방법을 말한다. 행 하나가 wafer 와 process step 의 조합이면 `entity` 는 wafer 까지이고 `sequence` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
+
+같은 데이터를 cell 안의 배열로 담을 수도 있고 행으로 펼칠 수도 있는데, 그 차이는 `key` 가 아니라 열의 class 가 말해 준다. 배열로 담으면 그 열이 `trace` 이고, 행으로 펼치면 `scalar` 가 되면서 시간 열이 `sequence` 에 들어간다.
 
 ```json
 // catalog.json
@@ -76,27 +76,14 @@ Long 에서는 `entity_key` 의 값이 여러 행에서 같으므로 얼핏 같�
     "date": "2026-08-07",
     "medallion": "silver",
     "grain": "one wafer and one process step",
-    "layout": {
-      "form": "wide",
-      "row_key": ["lot_id", "wafer_id", "step_id"],
-      "entity_key": ["lot_id", "wafer_id"]
+    "key": {
+      "entity": ["lot_id", "wafer_id"],
+      "sequence": ["step_id"]
     },
     "derived_from": "Ulvac/AlPVDPoC/BronzeData/#0/V0",
     "rows": 1043221,
     "note": "pressure is in Pa for the loads before 2026-06"
   }
-}
-```
-
-같은 데이터를 long 으로 담으면 `layout` 만 달라진다. 열 자체는 `trace` 대신 `scalar` 가 되고, 그 열들이 모여 trace 를 이룬다는 사실은 `entity_key` 와 `sequence_key` 가 말해 준다.
-
-```json
-// catalog.json, the layout of a long table
-{
-  "form": "long",
-  "row_key": ["lot_id", "wafer_id", "ts"],
-  "entity_key": ["lot_id", "wafer_id"],
-  "sequence_key": "ts"
 }
 ```
 
@@ -229,7 +216,7 @@ Table 6. Activity labels
 | `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
 | `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
 
-Long table 에서는 한 entity 의 행들이 sequence 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. Long table 에서는 `entity_key` 로 행을 묶은 뒤 entity 사이를 비교한다.
+한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `key` 의 `entity` 로 행을 묶은 뒤 entity 사이를 비교한다.
 
 ### 5.3 Value Type
 
