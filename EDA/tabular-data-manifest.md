@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 3
+rev. 4
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -77,13 +77,17 @@ Column config 는 사람이 적는 file 이다. 상류에서 온 table 을 쓰�
 
 Table 3. Column config operation keys
 
-| Key | Description |
-|-----|-------------|
-| `column_mapping` | 상류의 열 이름을 쓸 이름으로 바꾼다 |
-| `columns_to_drop` | 버릴 열을 적는다 |
-| `type_conversion` | 열의 형을 바꾼다 |
-| `na_values` | 결측을 나타내는 값을 적는다 |
-| `class` | 사람이 아는 class label 을 열마다 적는다 |
+| Order | Key | Description |
+|-------|-----|-------------|
+| 1 | `column_mapping` | 상류의 열 이름을 쓸 이름으로 바꾼다 |
+| 2 | `na_values` | 결측을 나타내는 값을 결측으로 바꾼다 |
+| 3 | `columns_to_drop` | 버릴 열을 적는다 |
+| 4 | `type_conversion` | 열의 형을 바꾼다 |
+| - | `class` | 사람이 아는 class label 을 열마다 적는다 |
+
+`Order` 는 조작을 적용하는 순서이고, `class` 는 조작이 아니므로 순서를 갖지 않는다. 이름 바꾸기가 첫째인 이유는 뒤의 세 조작이 모두 바뀐 이름으로 열을 지시하게 하기 위해서이다. 형 바꾸기가 마지막인 이유는 결측 표시를 걷어낸 뒤라야 열이 목표한 형으로 들어가기 때문이다. `-999` 가 남아 있는 열을 먼저 정수로 바꾸면 결측이 값으로 굳는다.
+
+순서를 JSON 에 담지 않고 표에 고정하는 이유는 JSON object 의 key 순서가 규격상 보장되지 않기 때문이다. 순서가 의미를 가지는 값은 object 가 아니라 array 에 담거나, 이 경우처럼 file 밖에 고정한다.
 
 `na_values` 가 필요한 이유는 계측 데이터가 결측을 `-999` 같은 실수로 표시하는 일이 많고, 이것을 그대로 두면 실제 측정값으로 학습되기 때문이다. 이 값은 데이터를 읽어서는 알 수 없으므로 사람이 적어야 한다.
 
@@ -95,12 +99,12 @@ Table 3. Column config operation keys
   "column_mapping": {
     "RF_FORWARD_POWER": "rf_fwd_pwr_w"
   },
+  "na_values": {
+    "chamber_pressure": [-999]
+  },
   "columns_to_drop": ["reserved_1"],
   "type_conversion": {
     "rf_fwd_pwr_w": "float32"
-  },
-  "na_values": {
-    "chamber_pressure": [-999]
   },
   "class": {
     "bin_code": ["category"],
