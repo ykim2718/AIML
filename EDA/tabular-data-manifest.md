@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 6
+rev. 7
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -142,20 +142,20 @@ Table 4. Column profile keys
   },
   "columns": {
     "rf_fwd_pwr_w": {
-      "class": ["active", "trace", "qn", "rectangle"],
+      "class": ["active", "numeric", "trace", "qn", "rectangle"],
       "missing_rate": 0.003
     },
     "chamber_pressure": {
-      "class": ["active", "trace", "ramp"],
+      "class": ["active", "numeric", "trace", "ramp"],
       "missing_rate": 0.0
     },
     "bin_code": {
-      "class": ["active", "category"],
+      "class": ["active", "category", "scalar"],
       "levels": [1, 2, 3, 4, 5, 6, 7, 8],
       "missing_rate": 0.0
     },
     "reserved_1": {
-      "class": ["inactive", "scalar"],
+      "class": ["inactive", "numeric", "scalar"],
       "missing_rate": 0.0
     }
   }
@@ -173,11 +173,14 @@ Table 5. Class axes
 | Axis | Applies to | Source |
 |------|------------|--------|
 | `activity` | 모든 열 | Analysis |
-| `form` | 모든 열 | Human or analysis |
-| `trace_quantum` | `form` 이 `trace` 인 열 | Analysis |
-| `trace_shape` | `form` 이 `trace` 인 열 | Analysis |
+| `value_type` | 모든 열 | Human or analysis |
+| `structure` | 모든 열 | Human or analysis |
+| `trace_quantum` | `structure` 가 `trace` 인 열 | Analysis |
+| `trace_shape` | `structure` 가 `trace` 인 열 | Analysis |
 
-`trace_` 로 시작하는 axis 는 `form` 이 `trace` 일 때만 값을 가진다. 이름에 의존 관계를 넣어 두었으므로 axis 이름만 보고 이 제약을 알 수 있다.
+`trace_` 로 시작하는 axis 는 `structure` 가 `trace` 일 때만 값을 가진다. 이름에 의존 관계를 넣어 두었으므로 axis 이름만 보고 이 제약을 알 수 있다.
+
+한 label 은 한 axis 에만 속한다. 열의 class 를 label 의 목록으로 적으므로, 같은 label 이 두 axis 에 있으면 그 label 이 어느 axis 의 값인지 가릴 수 없다.
 
 ### 5.2 Activity
 
@@ -192,28 +195,40 @@ Table 6. Activity labels
 | `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
 | `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
 
-### 5.3 Form
+### 5.3 Value Type
 
-Form 은 cell 하나가 어떤 형태의 값을 담는지를 나눈다.
+Value type 은 값 하나가 이름인지 수치인지를 나눈다. Cell 이 배열인 열에서는 그 원소 하나를 두고 판정한다.
 
-Table 7. Form labels
+Table 7. Value type labels
 
 | Label | Rule |
 |-------|------|
 | `category` | 값이 유한한 이름의 집합에서 나오고, 값 사이의 산술 연산이 의미를 갖지 않는다 |
-| `scalar` | Cell 하나가 크기를 갖는 단일 수치이다 |
-| `vector` | Cell 하나가 길이가 고정된 배열이고, 원소의 순서가 의미를 갖지 않는다 |
-| `trace` | Cell 하나가 배열이고, 원소가 시간 순서로 정렬되어 있다 |
+| `numeric` | 값이 크기를 갖는 수치이고, 값 사이의 산술 연산이 의미를 갖는다 |
+
+`category` 는 사람이 정한다. 판정은 고유값이 몇 개인지까지만 알 수 있고, 그 값들이 이름인지 크기인지는 데이터에 들어 있지 않다. `bin_code` 의 값 `1` 과 `2` 는 두 종류의 불량을 가리키는 이름이지 크기가 아니지만, 데이터만 보아서는 그것을 알 수 없다.
+
+### 5.4 Structure
+
+Structure 는 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다.
+
+Table 8. Structure labels
+
+| Label | Rule |
+|-------|------|
+| `scalar` | Cell 하나가 값 하나를 담는다 |
+| `vector` | Cell 하나가 길이가 고정된 배열을 담고, 원소의 순서가 의미를 갖지 않는다 |
+| `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 |
 
 `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 시간축의 유무이다. Wafer 위 여러 지점에서 잰 두께는 원소를 섞어도 뜻이 같으므로 `vector` 이고, 공정 중에 기록한 압력은 순서가 곧 정보이므로 `trace` 이다.
 
-`category` 만 사람이 정한다. 판정은 고유값이 몇 개인지까지만 알 수 있고, 그 값들이 이름인지 크기인지는 데이터에 들어 있지 않다.
+값의 성격과 cell 의 모양을 두 축으로 나누어 두었으므로 조합이 뜻을 갖는다. 공정 중 압력은 `numeric` 과 `trace` 이고, 장비가 거쳐 간 mode 를 시간순으로 적은 열은 `category` 와 `trace` 이다. 축이 하나뿐이면 이 둘을 가릴 수 없다.
 
-### 5.4 Trace Quantum
+### 5.5 Trace Quantum
 
 Trace 가 연속으로 변하지 않고 몇 개의 level 위에 머무를 때, level 이 몇 개인지를 나눈다. Level 은 baseline 을 포함해서 센다.
 
-Table 8. Trace quantum labels
+Table 9. Trace quantum labels
 
 | Label | Rule |
 |-------|------|
@@ -224,11 +239,11 @@ Table 8. Trace quantum labels
 
 `q1` 인 열은 cell 을 그 하나의 값으로 바꾸어 `scalar` 로 축약할 수 있다. 축약하면 행 사이의 차이는 그대로 남고 시간축만 사라지므로 activity 는 바뀌지 않는다.
 
-### 5.5 Trace Shape
+### 5.6 Trace Shape
 
 Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 4절의 `thresholds` 에 함께 기록한다.
 
-Table 9. Trace shape labels
+Table 10. Trace shape labels
 
 | Label | Rule |
 |-------|------|
@@ -237,7 +252,7 @@ Table 9. Trace shape labels
 | `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 정해진 비율 이상을 차지한다 |
 | `oscillation` | Autocorrelation 에 정해진 크기 이상의 peak 이 일정한 간격으로 나타난다 |
 
-### 5.6 File Format
+### 5.7 File Format
 
 `column-class.json` 은 axis 를 key 로 두고, 그 아래에 label 과 판정 규칙의 쌍을 둔다. 규칙을 label 옆에 두는 이유는 규칙 없는 label 이 사람마다 다른 뜻으로 쓰이기 때문이다.
 
@@ -248,9 +263,12 @@ Table 9. Trace shape labels
     "active": "two or more distinct cell values exist among the rows that are not missing",
     "inactive": "every row that is not missing holds the same cell value, or every row is missing"
   },
-  "form": {
+  "value_type": {
     "category": "the value comes from a finite set of names and arithmetic between values carries no meaning",
-    "scalar": "one cell holds a single number that has magnitude",
+    "numeric": "the value has magnitude and arithmetic between values carries meaning"
+  },
+  "structure": {
+    "scalar": "one cell holds a single value",
     "vector": "one cell holds a fixed length array whose element order carries no meaning",
     "trace": "one cell holds an array whose elements are ordered in time"
   },
@@ -273,13 +291,13 @@ Table 9. Trace shape labels
 
 Manifest 가 지켜야 하는 조건은 세 가지이다.
 
-Table 10. Integrity rules
+Table 11. Integrity rules
 
 | Rule | Condition | Catches |
 |------|-----------|---------|
 | 1 | 모든 label 은 `column-class.json` 에 있어야 한다 | 오타와 미등록 label |
 | 2 | 한 열의 label 은 axis 마다 최대 하나이다 | `scalar` 와 `trace` 를 함께 붙이는 모순 |
-| 3 | `form` 이 `trace` 가 아니면 `trace_` 로 시작하는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
+| 3 | `structure` 가 `trace` 가 아니면 `trace_` 로 시작하는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
 
 이 세 가지는 label 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
