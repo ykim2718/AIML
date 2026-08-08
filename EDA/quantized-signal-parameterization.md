@@ -1,5 +1,5 @@
-# Quantized-Signal Parameterization for ML Modeling
-rev. 1
+# Semiconductor Machine Signal Parameterization for ML Modeling: Quantized Signals
+rev. 2
 
 > A quantized signal does not vary continuously. It rests on a ladder of discrete levels and jumps between them, and the number of levels is usually not known in advance.
 > This document defines the parameter row for that case, built so that the row width never depends on the level count and so that the original waveform can be rebuilt from what the row stores.
