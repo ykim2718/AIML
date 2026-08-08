@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Quantized Signals
-rev. 2
+rev. 3
 
 > A quantized signal does not vary continuously. It rests on a ladder of discrete levels and jumps between them, and the number of levels is usually not known in advance.
 > This document defines the parameter row for that case, built so that the row width never depends on the level count and so that the original waveform can be rebuilt from what the row stores.
@@ -13,6 +13,8 @@ rev. 2
 A signal belongs here when its samples cluster onto a small set of distinct values and spend most of their time sitting on one of them. The cause does not matter. A converter quantizing an analog rail, a controller stepping a setpoint through a recipe, a valve moving between fixed apertures, and a state machine reporting its own mode all produce the same shape and take the same treatment.
 
 The formal test is the residual ratio of section 4.1. Fit the ladder, subtract it, and compare the leftover to the ladder pitch. When the leftover is far smaller than the pitch, the signal is quantized and this document applies. When it is comparable to the pitch, the ladder is an artifact of the fitting and the continuous treatment is the correct one.
+
+Table 1. Which document each signal belongs to
 
 | Signal | Governing question | Correct document |
 |--------|--------------------|------------------|
@@ -53,6 +55,8 @@ k(t) = round( ( x(t) − b ) / Δ )        k(t) ∈ ℤ
 
 Once the signal is in the index domain it is piecewise constant, so it is fully described by where it starts and by the transitions that follow. Write `S` for the number of transitions in the window and `T` for the window length in samples.
 
+Table 2. Components of an exact representation
+
 | Component | Count | Note |
 |-----------|-------|------|
 | Ladder pitch `Δ` and anchor `b` | 2 | Restores physical units |
@@ -76,6 +80,8 @@ Everything above assumes `Δ`, `b`, and `n̂` are already known. They are not, a
 
 ### 3.1 Recovering The Pitch
 
+Table 3. Methods for recovering the pitch
+
 | Method | Procedure | Note |
 |--------|-----------|------|
 | Difference histogram | Take the first difference, discard the zeros, and read the mode of the remaining magnitudes | It is one pass and it is the correct first attempt, since in a clean record most transitions are a single level |
@@ -86,6 +92,8 @@ Everything above assumes `Δ`, `b`, and `n̂` are already known. They are not, a
 ### 3.2 Recovering The Level Count
 
 The pitch alone gives a candidate count as `n̂ = round((max k − min k)) + 1`, which is the occupied span. That number is correct only when the record actually visits every level in its span, so it is an upper bound and must be checked against a method that counts occupied levels directly.
+
+Table 4. Methods for recovering the level count
 
 | Method | Procedure | Note |
 |--------|-----------|------|
@@ -116,6 +124,8 @@ One extra parameter absorbs a smoothly bowed ladder. A ladder whose deviations a
 ### 3.4 Locating The Transitions
 
 The pitch tells us the ladder, not where the signal moved on it. Rounding noisy samples straight to indices produces chatter at every level boundary, which inflates `S` without limit and destroys the count result of section 2.2. Segment first, then round the segment means.
+
+Table 5. Methods for locating the transitions
 
 | Method | Procedure | Note |
 |--------|-----------|------|
@@ -150,6 +160,8 @@ The row has two blocks. Block B is the descriptor summary that the model consume
 
 Eleven columns, none of which change width with `n` or with `S`.
 
+Table 6. Block B, the descriptor columns
+
 | Group | Parameter | Definition | Interpretation |
 |-------|-----------|------------|----------------|
 | Ladder | `q_lsb` | The ladder pitch `Δ`, in physical units per level | It is the resolution of the signal and it sets the unit every other parameter is expressed in |
@@ -167,6 +179,8 @@ Eleven columns, none of which change width with `n` or with `S`.
 ### 4.2 The Core Five
 
 When the column budget is tight, five of the eleven carry the structure and the rest refine it.
+
+Table 7. The core five columns
 
 | Parameter | Why it cannot be dropped |
 |-----------|--------------------------|
@@ -225,6 +239,8 @@ The extraction block is configuration rather than signal, so it does not enter t
 
 Each width buys a different guarantee. Declaring which tier a table was built to is part of the artifact, because "reconstructible" without a tier is not a claim that can be checked.
 
+Table 8. Reconstruction tiers
+
 | Tier | Width | What is recovered | Cost |
 |------|-------|-------------------|------|
 | R0 | 3 | The quantizer ladder, meaning the pitch, the anchor, and the curvature that place every level, but nothing about the signal on it | Three columns |
@@ -240,6 +256,8 @@ Each width buys a different guarantee. Declaring which tier a table was built to
 Sections 6.1 through 6.6 of [semiconductor-machine-signal-parameterization-continuous.md](semiconductor-machine-signal-parameterization-continuous.md) govern this table too, covering window definition, leakage, normalization across machines, and the treatment of undefined values. Only the additions specific to a quantized signal are stated here.
 
 ### 6.1 Parameters That Carry Hidden Configuration
+
+Table 9. Parameters that carry hidden configuration
 
 | Parameter | Hidden configuration | Consequence if unrecorded |
 |-----------|----------------------|---------------------------|
@@ -265,6 +283,8 @@ Tree ensembles tolerate this. Linear and distance-based models do not, so for th
 
 ### 6.4 Failure Modes
 
+Table 10. Failure modes and their handling
+
 | Situation | Symptom | Handling |
 |-----------|---------|----------|
 | The pitch estimate locks onto a divisor of the true pitch | `q_nlev` is an integer multiple of the truth and `q_jump_rms_lsb` is unusually large | Cross-check the difference histogram against the lattice scan and prefer the larger candidate pitch that still explains the data |
@@ -275,6 +295,8 @@ Tree ensembles tolerate this. Linear and distance-based models do not, so for th
 ## 7. Industry Practice By Field
 
 The same signal shape is studied under different names in fields that arrived at their own standards, and each standard is the best available answer within its own constraints.
+
+Table 11. Industry practice by field
 
 | Field | Standard practice | What it is best at |
 |-------|-------------------|--------------------|

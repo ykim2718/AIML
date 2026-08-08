@@ -1,4 +1,5 @@
 # 📊 CCC & Bland-Altman Analysis Guide
+rev. 1
 
 > A comprehensive guide to **Concordance Correlation Coefficient (CCC)** + **Bland-Altman Plot**  
 > A statistical toolkit for evaluating agreement between two measurement methods
@@ -28,6 +29,8 @@ Unlike Pearson r, which only measures the strength of a linear relationship, CCC
 ### Formula
 
 $$\rho_c = \frac{2\sigma_{xy}}{\sigma_x^2 + \sigma_y^2 + (\mu_x - \mu_y)^2} = r \times C_b$$
+
+Table 1. Symbols in the CCC formula
 
 | Symbol | Meaning |
 |--------|---------|
@@ -66,6 +69,8 @@ CCC (ρc)
 
 ## Interpretation Benchmarks
 
+Table 2. Strength of agreement by CCC value
+
 | CCC value | Strength of agreement (McBride 2005) |
 |-----------|--------------------------------------|
 | > 0.99 | Almost perfect |
@@ -74,6 +79,8 @@ CCC (ρc)
 | < 0.90 | Poor |
 
 ### Five Bias Scenarios
+
+Table 3. Five bias scenarios
 
 | Scenario | CCC | Pearson r | Root cause |
 |----------|-----|-----------|------------|
@@ -96,6 +103,8 @@ The standard visualization for method comparison studies, proposed by Bland & Al
 
 ### Key Statistics
 
+Table 4. Bland-Altman statistics
+
 | Statistic | Formula | Meaning |
 |-----------|---------|---------|
 | Mean Difference (MD) | `mean(B − A)` | Systematic bias; ideally 0 |
@@ -117,6 +126,8 @@ The two plots view the same problem from different angles.
 Concordance plot  → "How well do the methods agree overall?" (summary number)
 Bland-Altman      → "Why and how do they disagree?"         (bias diagnosis)
 ```
+
+Table 5. Diagnosis from the two plots read together
 
 | Pattern | Concordance plot | Bland-Altman | Diagnosis |
 |---------|-----------------|--------------|-----------|
@@ -142,6 +153,8 @@ ccc = 2 * cov / (var_x + var_y + (mean_x - mean_y)**2)
 The opposite problem arises with **two-cluster data**: CCC/r appears artificially inflated due to the range effect — even when within-cluster agreement is poor.
 
 ### Alternative Metrics (Range-Independent)
+
+Table 6. Range-independent alternative metrics
 
 | Metric | Formula | Characteristics |
 |--------|---------|-----------------|
@@ -187,6 +200,8 @@ grid = GridSearchCV(model, param_grid, scoring=ccc_scorer)
 ```
 
 ### 2. Key Application Domains
+
+Table 7. Application domains
 
 | Domain | Use case |
 |--------|----------|

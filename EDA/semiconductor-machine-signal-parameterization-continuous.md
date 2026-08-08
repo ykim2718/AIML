@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Continuous Signals
-rev. 5
+rev. 6
 
 > A raw machine waveform cannot enter a model as it is. It must first be reduced to a fixed-width row of numbers.
 > This document defines that reduction for the small-signal regime, for the large-signal regime, and for the case where both regimes occupy the same record.
@@ -9,6 +9,8 @@ Parameterization is the step that turns a variable-length waveform into a fixed 
 ## 1. Scope And Framing
 
 ### 1.1 Two Regimes
+
+Table 1. The two regimes
 
 | Regime | Governing question | System assumption |
 |--------|--------------------|-------------------|
@@ -29,6 +31,8 @@ Every method in this document produces the same artifact, which is one row of na
 
 Count, frequency, and peak-to-peak are the starting set. Each answers a different question, and the three do not substitute for one another.
 
+Table 2. The three core parameters
+
 | Parameter | Definition | What it captures | Typical use |
 |-----------|------------|------------------|-------------|
 | Count | The number of excursions crossing a fixed threshold within the window | Event occurrence, meaning how often something happened | noise burst rate, sensor event rate, acoustic emission hit count |
@@ -38,6 +42,8 @@ Count, frequency, and peak-to-peak are the starting set. Each answers a differen
 These three are correct but incomplete. Count is blind to how large each event was, P2P is set entirely by two samples and therefore by any single outlier, and frequency says nothing about amplitude. Adding RMS and SNR from the sections below closes those gaps, and that five-parameter set is the recommended minimum.
 
 ### 2.2 Time-Domain Parameters
+
+Table 3. Time-domain parameters
 
 | Parameter | Formula or definition | Interpretation |
 |-----------|-----------------------|----------------|
@@ -51,6 +57,8 @@ These three are correct but incomplete. Count is blind to how large each event w
 
 ### 2.3 Frequency-Domain Parameters 🌈
 
+Table 4. Frequency-domain parameters
+
 | Parameter | Definition | Interpretation |
 |-----------|------------|----------------|
 | Peak frequency | The frequency bin holding the most energy after an FFT | It is the dominant component of the signal |
@@ -63,6 +71,8 @@ These three are correct but incomplete. Count is blind to how large each event w
 ### 2.4 Linear-Response Parameters
 
 When the small signal is a response to a known excitation rather than a free-running observation, the regime is described by the transfer relation instead of by the waveform alone.
+
+Table 5. Linear-response parameters
 
 | Parameter | Definition | Interpretation |
 |-----------|------------|----------------|
@@ -93,6 +103,8 @@ Large-signal work asks three questions that small-signal work never raises.
 
 ### 3.2 Distortion And Non-linearity
 
+Table 6. Distortion and non-linearity parameters
+
 | Parameter | Definition | Interpretation |
 |-----------|------------|----------------|
 | THD | The ratio of total harmonic power to fundamental power, in percent or dB | It is the headline measure of waveform distortion under drive |
@@ -104,6 +116,8 @@ Large-signal work asks three questions that small-signal work never raises.
 
 ### 3.3 Power And Dynamic Limits
 
+Table 7. Power and dynamic-limit parameters
+
 | Parameter | Definition | Interpretation |
 |-----------|------------|----------------|
 | Saturation voltage or current | The rail value the output cannot exceed | It is the hard boundary of the operating envelope |
@@ -114,6 +128,8 @@ Large-signal work asks three questions that small-signal work never raises.
 | Efficiency | Output power divided by input power | It is the summary figure of merit for a drive stage |
 
 ### 3.4 Amplitude And Operating Point
+
+Table 8. Amplitude and operating-point parameters
 
 | Parameter | Role in the large-signal regime |
 |-----------|---------------------------------|
@@ -133,6 +149,8 @@ Large-signal work asks three questions that small-signal work never raises.
 
 ## 4. Regime Comparison
 
+Table 9. Small signal against large signal
+
 | Aspect | Small signal | Large signal |
 |--------|--------------|--------------|
 | Purpose | It detects fine variation, characterizes noise, and estimates linear response | It measures distortion, locates the output ceiling, and characterizes non-linear behavior |
@@ -149,6 +167,8 @@ The canonical form is `x(t) = x_large(t) + x_small(t)`, where the large part car
 
 ### 5.1 Time-Domain Decomposition
 
+Table 10. Time-domain decomposition methods
+
 | Method | Procedure | Note |
 |--------|-----------|------|
 | Low-pass and high-pass split | The LPF output is taken as the large component and the HPF output as the small component | It is the simplest method and requires a cutoff that genuinely separates the two scales |
@@ -157,6 +177,8 @@ The canonical form is `x(t) = x_large(t) + x_small(t)`, where the large part car
 | EMD | The signal is decomposed into intrinsic mode functions, with early IMFs holding the small signal and late IMFs holding the trend | It is adaptive and needs no cutoff, but mode mixing makes the output unstable across records unless the ensemble variant is used |
 
 ### 5.2 Time-Frequency Decomposition
+
+Table 11. Time-frequency decomposition methods
 
 | Method | Procedure | Note |
 |--------|-----------|------|
@@ -167,6 +189,8 @@ Use this family when the two regimes differ in frequency content or occur at dif
 
 ### 5.3 Statistical And Threshold Decomposition
 
+Table 12. Statistical and threshold decomposition methods
+
 | Method | Procedure | Note |
 |--------|-----------|------|
 | Derivative threshold | The first difference is taken, and intervals with a large `dX/dt` are marked large-signal | It is effectively a slew-rate detector and reacts to steps rather than to level |
@@ -176,6 +200,8 @@ Use this family when the two regimes differ in frequency content or occur at dif
 ### 5.4 Learned Decomposition
 
 Reach for this family only when the rule-based methods above fail, since a learned split is harder to audit and its threshold is no longer an explicit number.
+
+Table 13. Learned decomposition methods
 
 | Method | Procedure | Note |
 |--------|-----------|------|
@@ -208,6 +234,8 @@ Use `<channel>_<domain>_<parameter>_<unit>` so that the column name alone identi
 
 ### 6.3 Parameters That Carry Hidden Configuration
 
+Table 14. Parameters that carry hidden configuration
+
 | Parameter | Hidden configuration | Consequence if unrecorded |
 |-----------|----------------------|---------------------------|
 | Count | The threshold and the hysteresis | Counts from two extractions are not comparable |
@@ -237,6 +265,8 @@ Tree ensembles tolerate this. Linear and distance-based models do not, so for th
 Small-signal parameters carry the absolute scale of the channel, so when several machines contribute rows, per-machine offsets let the model identify the machine instead of learning the physics. Normalize within machine or within chamber, and validate by grouped split so that a machine present in training is never also scored in validation.
 
 ### 6.7 Modeling The Two Regimes Together
+
+Table 15. Handling for each mixture of regimes
 
 | Situation | Recommended handling |
 |-----------|----------------------|

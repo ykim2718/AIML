@@ -1,5 +1,5 @@
 # AIML
-rev. 6
+rev. 7
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -10,6 +10,8 @@ Most of what is collected here answers a question that comes up before a model i
 
 Two kinds of files live side by side.
 
+Table 1. File kinds and their roles
+
 | Kind | Role |
 |------|------|
 | `.md` | It fixes a decision or a taxonomy in prose, so that the same question is not re-argued later. |
@@ -18,6 +20,8 @@ Two kinds of files live side by side.
 The scripts are not a library. Each one runs on its own and is meant to be read as much as executed, so there is no package layout, no shared import root, and no build step.
 
 ## 2. Repository Map
+
+Table 2. Folders and what they hold
 
 | Folder | Description |
 |--------|-------------|
@@ -33,6 +37,8 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 
 ### 3.1 EDA
 
+Table 3. EDA documents
+
 | Document | Description |
 |----------|-------------|
 | [EDA/README.md](EDA/README.md) | It indexes the folder and sets the order in which the documents are used. |
@@ -43,6 +49,8 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 
 ### 3.2 Feature Engineering
 
+Table 4. Feature engineering documents
+
 | Document | Description |
 |----------|-------------|
 | [Feature-Engineering/fe-cs.md](Feature-Engineering/fe-cs.md) | It maps feature engineering for cross-sectional data, where rows are independent and row order carries no information. |
@@ -51,6 +59,8 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 
 ### 3.3 Metrics
 
+Table 5. Metrics documents
+
 | Document | Description |
 |----------|-------------|
 | [Metrics/CCC/README.md](Metrics/CCC/README.md) | It is a full guide to Lin's Concordance Correlation Coefficient and the Bland-Altman plot, including interpretation benchmarks and a metric selection guide. |
@@ -58,6 +68,8 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 | [Metrics/R2/r2-vs-mape.md](Metrics/R2/r2-vs-mape.md) | It shows by derivation and by experiment that no single universal formula links R² and MAPE, and that an apparent straight line is an artifact of how the data was generated. |
 
 ### 3.4 Automation
+
+Table 6. Automation documents
 
 | Document | Description |
 |----------|-------------|
@@ -79,6 +91,7 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 - The repository uses the `main` branch only. Work is committed to `main` directly, without feature branches and without pull requests.
 - Every `.md` document carries a `rev. N` line directly under its H1, written in body text. The number is incremented on every edit, including a typo fix.
 - Documents are written in prose rather than in bullet fragments, and tables describe an item with a full sentence.
+- Every table carries a `Table N. Title` caption on the line above it, numbered in order within the document. A figure takes the same form as `Fig N. Title`.
 - Some of the older documents and script comments are written in Korean. Newer documents are written in English.
 - These rules are recorded in [CLAUDE.md](CLAUDE.md) so that an assistant working in the repository follows them without being told, and the shared rules that apply across projects arrive automatically through the plugin declared in [.claude/settings.json](.claude/settings.json).
 

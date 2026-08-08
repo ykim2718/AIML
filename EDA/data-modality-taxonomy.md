@@ -1,5 +1,5 @@
 # Data Modality Taxonomy and Semiconductor Data
-rev. 5
+rev. 6
 
 > Data modality is the classification that splits data by "in what form the information is represented".
 > This document first establishes a general taxonomy, then extends the axes to fit the semiconductor domain.
@@ -12,6 +12,8 @@ At the top level the data groups along two axes, structure and signal, and these
 
 ### 1.1 By Structure
 
+Table 1. Data types by structure
+
 | Type | Description | Example |
 |------|-------------|---------|
 | Structured | It fits a row and column schema exactly | relational table, transaction log |
@@ -21,6 +23,8 @@ At the top level the data groups along two axes, structure and signal, and these
 ### 1.2 By Signal
 
 This is the axis that machine learning usually calls modality.
+
+Table 2. Data types by signal
 
 | Modality | Representation |
 |----------|----------------|
@@ -88,6 +92,8 @@ Semiconductor data is not covered by the general modality list alone. Which unit
 Fab -> Tool (Chamber) -> Lot -> Wafer -> Die/Site -> Device/Structure
 ```
 
+Table 3. Entity levels and their typical data
+
 | Level | Typical data |
 |-------|--------------|
 | Fab | line-level capacity and total WIP |
@@ -98,6 +104,8 @@ Fab -> Tool (Chamber) -> Lot -> Wafer -> Die/Site -> Device/Structure
 | Device | I–V curve, TEM cross-section |
 
 ### 2.2 Axis B — Modality
+
+Table 4. Modalities and their tensor shapes
 
 | Modality | Actual data | Tensor shape |
 |----------|-------------|--------------|
@@ -121,6 +129,8 @@ This third axis is added when partitioning the problem definition.
 Design -> Process -> Metrology -> Inspection -> Test -> Reliability
 ```
 
+Table 5. Lifecycle stages and their representative data
+
 | Stage | Representative data |
 |-------|---------------------|
 | Design | layout, netlist, OPC pattern |
@@ -133,6 +143,8 @@ Design -> Process -> Metrology -> Inspection -> Test -> Reliability
 ### 2.4 Composite Patterns
 
 Real analysis holds not on a single slot but on a combination.
+
+Table 6. Composite patterns and their use cases
 
 | Pattern | Composition | Use case |
 |---------|-------------|----------|
@@ -190,6 +202,8 @@ By convention 3D denotes x, y, z spatial geometry. Point cloud and CT volume are
 
 The key point of this data is that two time axes of different character overlap.
 
+Table 7. The two time axes
+
 | Axis | Meaning | Character |
 |------|---------|-----------|
 | Inter-wafer | wafer and lot processing order | It is slow time and carries tool aging and drift |
@@ -199,6 +213,8 @@ The key point of this data is that two time axes of different character overlap.
 Flattened into a tensor it is rank-3 as `[wafer, time, sensor]`, but in meaning it is a bundle of multivariate time-series with wafer-order drift laid on top.
 
 ### 3.4 Correct Naming
+
+Table 8. Recommended names by scope
 
 | Scope | Recommended name |
 |-------|------------------|

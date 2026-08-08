@@ -1,5 +1,5 @@
 # EDA (Exploratory Data Analysis)
-rev. 17
+rev. 18
 
 > This folder covers the stage that establishes the structure and the properties of the data before a model is built.
 > Its documents answer what to check first when new data arrives and what to call the thing that arrives.
@@ -9,6 +9,8 @@ rev. 17
 Exploratory data analysis starts from two questions. <br>The first is to determine what form the data takes, and the second is to decide which name that form is classified under. The former is answered by the manifest that profiles every column, and the latter by the modality taxonomy.
 
 ## 2. Documents
+
+Table 1. Documents in this folder
 
 | Document | Description |
 |----------|-------------|
