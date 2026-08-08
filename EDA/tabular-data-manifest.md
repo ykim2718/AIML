@@ -1,5 +1,5 @@
 # Tabular Data Manifest
-rev. 15
+rev. 16
 
 > Tabular data manifest 는 object storage 에 적재된 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -35,9 +35,9 @@ object key
 column-class.json              axis -> label and its rule
 ```
 
-열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이며, 두 file 을 합치는 절차는 필요하지 않다. 판정이 그 입력을 얼마나 믿고 어떻게 쓸지는 판정을 만드는 쪽이 정한다.
+세 file 은 순서를 갖는다. Catalog 가 dataset 이 무엇인지 기록하고, column config 가 그 table 을 어떻게 다듬을지 적으며, column profile 은 그 조작을 마친 table 을 읽어 판정한 결과이다. 그래서 column profile 이 기술하는 것은 상류에서 온 table 이 아니라 column config 를 적용하고 난 table 이고, 거기 적히는 열 이름은 `column_mapping` 을 거친 뒤의 이름이다.
 
-Column profile 은 판정의 산출물이므로 손으로 고치지 않는다. 고쳐도 다음 판정에서 지워진다. 판정 결과를 바꾸고 싶으면 column config 에 사람의 값을 적어 판정에 넘긴다.
+열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이다.
 
 ## 2. Catalog
 
@@ -342,9 +342,7 @@ Table 11. Column profile keys
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
 
-열 항목에서 정해진 key 는 `class` 하나이다. 나머지는 열어 두어, 판정이 근거로 남기고 싶은 관측값을 자유롭게 더한다. 예시의 `missing_rate` 와 `levels` 가 그렇게 더해진 것이고, 무엇을 남길지는 판정을 만드는 쪽이 정한다.
-
-판정 결과가 column config 에 사람이 적은 label 과 다르게 나왔다면 둘 중 하나가 틀린 것이므로, 두 file 을 비교하면 손볼 열이 드러난다.
+열 항목에서 정해진 key 는 `class` 하나이다. 나머지는 열어 두어, 판정이 근거로 남기고 싶은 관측값을 자유롭게 더한다. 예시의 `missing_rate` 와 `levels` 가 그렇게 더해진 것이다.
 
 ```json
 // column-profile.json
