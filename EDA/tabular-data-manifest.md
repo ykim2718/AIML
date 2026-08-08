@@ -1,5 +1,5 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 22
+rev. 23
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -68,7 +68,7 @@ Table 2. Catalog description keys
 
 `file_format` 은 `csv` 나 `parquet` 처럼 적재된 형식을 적는다. Object key 에 확장자가 드러나지 않을 수 있고 형식은 데이터를 열기 전에 알아야 하는 값이므로, 데이터를 읽어 알아내는 대신 사람이 적는다.
 
-`medallion` 은 `bronze`, `silver`, `gold` 세 값만 쓴다. 정제 단계를 부르는 이름이 사람마다 갈리면 상류를 거슬러 올라가는 관계도 함께 흐려지므로, 6절의 규칙이 이 세 값을 벗어난 표기를 거른다.
+`medallion` 은 `bronze`, `silver`, `gold` 세 값만 쓴다. 정제 단계를 부르는 이름이 사람마다 갈리면 `derived_from` 으로 상류를 거슬러 올라가도 그 단계가 무엇인지 알 수 없게 된다.
 
 `row_key` 는 행이 서로 어떻게 구별되는지를 두 목록으로 적는다.
 
@@ -418,30 +418,20 @@ Table 11. Column profile keys
 
 ## 6. Integrity Rules
 
-여기의 규칙은 manifest 자체의 형식 검사가 아니라, manifest 를 데이터에 적용할 때 성립해야 하는 조건이다. Manifest 는 세 file 이 순서대로 채워지는 동안 아직 비어 있는 자리를 갖지만, 데이터에 적용하는 시점에는 그 자리가 모두 메워져 있어야 한다.
+여기의 규칙은 manifest 자체의 형식 검사가 아니라, manifest 를 데이터에 적용할 때 성립해야 하는 조건이다. 아래 넷은 앞 절의 설계에서 바로 따라 나오는 최소한의 예시이며, 검사 규칙의 전부를 이 문서에서 정하지 않는다.
 
 Table 12. Integrity rules
 
 | Rule | Condition | Catches |
 |------|-----------|---------|
 | 1 | 모든 label 은 `column-class.json` 에 있어야 한다 | 오타와 미등록 label |
-| 2 | 열은 적용되는 axis 마다 label 을 정확히 하나 갖는다 | `scalar` 와 `trace` 를 함께 붙이는 모순, 그리고 판정이 끝나지 않은 열 |
-| 3 | 열은 적용되지 않는 axis 의 label 을 가질 수 없다 | 의존 관계 위반 |
-| 4 | `column-config.json` 과 `column-profile.json` 의 최상위 key 는 `catalog.json` 에 있어야 한다 | Catalog 에 없는 dataset 의 설정과 판정이 남아 있는 상태 |
-| 5 | `columns_to_drop` 은 `row_key` 에 적힌 열을 담을 수 없다 | 행을 구별하는 근거를 버리는 설정 |
-| 6 | `column-profile.json` 의 `columns` 는 `columns_to_drop` 에 적힌 열을 담을 수 없다 | 이미 버린 열에 남아 있는 판정 |
-| 7 | `catalog.json` 과 `column-config.json` 이 이름으로 지시하는 열은 `column-profile.json` 의 `columns` 에 있어야 한다 | 어느 열에도 걸리지 않는 설정과 판정에서 빠진 열 |
-| 8 | `medallion` 은 `bronze`, `silver`, `gold` 중 하나여야 한다 | 정제 단계를 부르는 이름이 갈리는 것 |
+| 2 | 열은 적용되는 axis 마다 label 을 정확히 하나 갖고, 적용되지 않는 axis 의 label 을 갖지 않는다 | `scalar` 와 `trace` 를 함께 붙이는 모순, 그리고 판정이 끝나지 않은 열 |
+| 3 | `column-config.json` 과 `column-profile.json` 의 최상위 key 는 `catalog.json` 에 있어야 한다 | Catalog 에 없는 dataset 의 설정과 판정 |
+| 4 | `column-profile.json` 의 `columns` 는 column config 를 적용하고 난 열의 전수여야 한다 | 판정에서 빠진 열과 이미 버린 열에 남은 판정 |
 
-규칙 2 와 3 이 보는 class 는 column profile 이 담은 최종 class 이다. Column config 의 `class` 는 사람이 아는 것만 골라 적는 부분 목록이므로 axis 가 비어 있는 것이 정상이고, 이 두 규칙의 대상이 아니다.
+규칙 2 가 보는 class 는 column profile 이 담은 최종 class 이다. Column config 의 `class` 는 사람이 아는 것만 골라 적는 부분 목록이므로 axis 가 비어 있는 것이 정상이고, 이 규칙의 대상이 아니다.
 
-규칙 5 는 이름 기준이 서로 다른 두 file 을 맞대므로, `row_key` 에 `column_mapping` 을 적용해 이름을 맞춘 뒤에 비교한다. 열을 버리면 그 열로 묶거나 가르던 근거가 사라지므로, `row_key` 에 적힌 열은 버릴 수 없다.
-
-규칙 7 이 말하는 지시 자리는 `column_mapping` 의 값, `na_values` 와 `type_conversion` 과 `unit` 과 `class` 의 key, 그리고 `row_key` 의 두 목록이다. `columns_to_drop` 은 열을 없애는 자리이므로 규칙 6 이 맡고 여기서 뺀다. `row_key` 는 상류 이름을 적으므로 규칙 5 와 마찬가지로 `column_mapping` 을 적용한 뒤 비교한다.
-
-규칙 6 과 7 은 `columns` 가 전수라는 것을 양쪽에서 확인한다. 버린 열이 들어 있으면 판정이 오래된 것이고, 사람이 지시한 열이 빠져 있으면 판정이 그 열을 지나쳤거나 이름을 잘못 적은 것이다. 이름을 잘못 적은 조작은 아무 열에도 걸리지 않고 조용히 넘어가므로, 이 규칙이 없으면 드러나지 않는다.
-
-이 여덟 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
+넷 모두 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
 ## Appendix A. Terminology
 
