@@ -1,5 +1,5 @@
 # AIML
-rev. 5
+rev. 6
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -38,8 +38,8 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 | [EDA/README.md](EDA/README.md) | It indexes the folder and sets the order in which the documents are used. |
 | [EDA/tabular-data-manifest-for-semiconductor-machine-data.md](EDA/tabular-data-manifest-for-semiconductor-machine-data.md) | It defines the JSON files that record what a stored table is, separating the values a human writes from the values an analysis decides, and fixes the class vocabulary and the integrity rules the manifest is checked against. |
 | [EDA/data-modality-taxonomy.md](EDA/data-modality-taxonomy.md) | It classifies data by the form the information takes, then extends the axes to the semiconductor domain and works through wafer process data as a case study. |
-| [EDA/machine-signal-parameterization.md](EDA/machine-signal-parameterization.md) | It reduces a continuous machine waveform to a parameter row, split into the small-signal regime, the large-signal regime, and the decomposition of a record that contains both. |
-| [EDA/quantized-signal-parameterization.md](EDA/quantized-signal-parameterization.md) | It does the same for a signal that rests on a ladder of discrete levels, built so that the row width never depends on the level count and so that the waveform can be rebuilt from the row. |
+| [EDA/semiconductor-machine-signal-parameterization-continuous.md](EDA/semiconductor-machine-signal-parameterization-continuous.md) | It is the continuous half of the parameterization pair, reducing a smoothly varying machine waveform to a parameter row across the small-signal regime, the large-signal regime, and the decomposition of a record that contains both. |
+| [EDA/semiconductor-machine-signal-parameterization-quantized.md](EDA/semiconductor-machine-signal-parameterization-quantized.md) | It is the quantized half of the same pair, for a signal that rests on a ladder of discrete levels, built so that the row width never depends on the level count and so that the waveform can be rebuilt from the row. |
 
 ### 3.2 Feature Engineering
 

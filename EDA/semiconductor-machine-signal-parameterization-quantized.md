@@ -4,7 +4,7 @@ rev. 2
 > A quantized signal does not vary continuously. It rests on a ladder of discrete levels and jumps between them, and the number of levels is usually not known in advance.
 > This document defines the parameter row for that case, built so that the row width never depends on the level count and so that the original waveform can be rebuilt from what the row stores.
 
-[machine-signal-parameterization.md](machine-signal-parameterization.md) reduces a continuous waveform to a fixed-width row of scalars. A quantized signal breaks the assumptions behind that reduction. Its amplitude distribution is a set of spikes rather than a density, its derivative is zero almost everywhere and enormous at a handful of instants, and its natural description is a list of levels and dwell times whose length changes from record to record. Applying the continuous parameter set to it does not fail loudly. It produces values such as RMS and spectral centroid that are computable, stable, and blind to the only structure the signal actually has.
+[semiconductor-machine-signal-parameterization-continuous.md](semiconductor-machine-signal-parameterization-continuous.md) reduces a continuous waveform to a fixed-width row of scalars. A quantized signal breaks the assumptions behind that reduction. Its amplitude distribution is a set of spikes rather than a density, its derivative is zero almost everywhere and enormous at a handful of instants, and its natural description is a list of levels and dwell times whose length changes from record to record. Applying the continuous parameter set to it does not fail loudly. It produces values such as RMS and spectral centroid that are computable, stable, and blind to the only structure the signal actually has.
 
 ## 1. Scope And Framing
 
@@ -16,8 +16,8 @@ The formal test is the residual ratio of section 4.1. Fit the ladder, subtract i
 
 | Signal | Governing question | Correct document |
 |--------|--------------------|------------------|
-| Small signal | How much real variation exists above the noise floor | machine-signal-parameterization.md, section 2 |
-| Large signal | How far the response departs from linear as amplitude grows | machine-signal-parameterization.md, section 3 |
+| Small signal | How much real variation exists above the noise floor | semiconductor-machine-signal-parameterization-continuous.md, section 2 |
+| Large signal | How far the response departs from linear as amplitude grows | semiconductor-machine-signal-parameterization-continuous.md, section 3 |
 | Quantized signal | Which levels it occupies, for how long, and in what order | This document |
 
 A record may hold a quantized component and a continuous one at the same time, in which case the decomposition methods of section 5 of the companion document apply first and each component is then parameterized by its own rules.
@@ -237,7 +237,7 @@ Each width buys a different guarantee. Declaring which tier a table was built to
 
 ## 6. Feature-Table Rules
 
-Sections 6.1 through 6.6 of [machine-signal-parameterization.md](machine-signal-parameterization.md) govern this table too, covering window definition, leakage, normalization across machines, and the treatment of undefined values. Only the additions specific to a quantized signal are stated here.
+Sections 6.1 through 6.6 of [semiconductor-machine-signal-parameterization-continuous.md](semiconductor-machine-signal-parameterization-continuous.md) govern this table too, covering window definition, leakage, normalization across machines, and the treatment of undefined values. Only the additions specific to a quantized signal are stated here.
 
 ### 6.1 Parameters That Carry Hidden Configuration
 
@@ -289,7 +289,7 @@ Learned quantization, meaning vector quantization, product quantization, and VQ-
 
 ## Appendix A. Terminology
 
-The terms below appear in the body without being defined there. They are listed in alphabetical order. Terms already defined in Appendix A of [machine-signal-parameterization.md](machine-signal-parameterization.md) are not repeated.
+The terms below appear in the body without being defined there. They are listed in alphabetical order. Terms already defined in Appendix A of [semiconductor-machine-signal-parameterization-continuous.md](semiconductor-machine-signal-parameterization-continuous.md) are not repeated.
 
 - **Anchor** is the physical value corresponding to level index zero, which fixes the absolute position of the ladder.
 - **APCA** is Adaptive Piecewise Constant Approximation, a representation that approximates a series by a fixed number of constant segments of variable length.

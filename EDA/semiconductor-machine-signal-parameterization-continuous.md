@@ -17,7 +17,7 @@ Parameterization is the step that turns a variable-length waveform into a fixed 
 
 The split is not about absolute magnitude. It is about whether the machine is still operating inside its linear range. A one-volt swing is a small signal on a rail that saturates at fifty volts and a large signal on a rail that saturates at one and a half.
 
-Both regimes assume the signal varies continuously. A signal that instead rests on a ladder of discrete levels and jumps between them defeats that assumption, since its amplitude distribution is a set of spikes and its derivative is zero almost everywhere. That case is a third regime and is covered by [quantized-signal-parameterization.md](quantized-signal-parameterization.md).
+Both regimes assume the signal varies continuously. A signal that instead rests on a ladder of discrete levels and jumps between them defeats that assumption, since its amplitude distribution is a set of spikes and its derivative is zero almost everywhere. That case is a third regime and is covered by [semiconductor-machine-signal-parameterization-quantized.md](semiconductor-machine-signal-parameterization-quantized.md).
 
 ### 1.2 Output Contract
 
