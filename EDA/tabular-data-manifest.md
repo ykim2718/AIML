@@ -1,5 +1,5 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 20
+rev. 21
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -41,7 +41,7 @@ object key
 column-class.json              axis -> label and its rule
 ```
 
-열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다. 그래서 class 를 읽을 곳은 언제나 column profile 하나이다.
+열의 class 는 column profile 에서 정해진다. Column config 의 `class` 는 사람이 아는 것을 판정에 넘겨 주는 입력이고, 판정은 그것을 받아 최종 class 를 column profile 에 쓴다.
 
 ## 2. Catalog
 
@@ -53,7 +53,8 @@ Table 2. Catalog description keys
 |-----|----------|-------------|
 | `project_goal` | Yes | 이 데이터를 어떤 목적으로 적재했는지 한 문장으로 적는다 |
 | `provider` | Yes | 데이터를 낸 주체나 system 을 적는다 |
-| `date` | Yes | 마지막으로 갱신된 시각을 적는다 |
+| `date` | Yes | 데이터를 제공받은 날짜를 적는다 |
+| `file_format` | Yes | 데이터가 어떤 형식으로 적재되어 있는지 적는다 |
 | `medallion` | Yes | `bronze`, `silver`, `gold` 중 하나를 적는다 |
 | `grain` | Yes | 행 하나가 무엇인지 한 문장으로 적는다 |
 | `row_key` | Yes | 행을 유일하게 만드는 열을, entity 를 묶는 것과 그 안에서 행을 가르는 것으로 나누어 적는다 |
@@ -62,6 +63,12 @@ Table 2. Catalog description keys
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
 
 `grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 관계가 된다.
+
+`date` 는 데이터를 제공받은 날짜이지 catalog 항목을 손본 날짜가 아니다. 같은 key 에 새 적재가 덮이면 이 날짜도 함께 바뀌므로, 손에 든 데이터가 언제 것인지는 이 값 하나로 답한다.
+
+`file_format` 은 `csv` 나 `parquet` 처럼 적재된 형식을 적는다. Object key 에 확장자가 드러나지 않을 수 있고 형식은 데이터를 열기 전에 알아야 하는 값이므로, 데이터를 읽어 알아내는 대신 사람이 적는다.
+
+`medallion` 은 `bronze`, `silver`, `gold` 세 값만 쓴다. 정제 단계를 부르는 이름이 사람마다 갈리면 상류를 거슬러 올라가는 관계도 함께 흐려지므로, 6절의 규칙이 이 세 값을 벗어난 표기를 거른다.
 
 `row_key` 는 행이 서로 어떻게 구별되는지를 두 목록으로 적는다.
 
@@ -83,6 +90,7 @@ Table 2. Catalog description keys
     "project_goal": "Thin film thickness prediction",
     "provider": "PVD unit",
     "date": "2026-08-07",
+    "file_format": "parquet",
     "medallion": "silver",
     "grain": "one wafer and one process step",
     "row_key": {
@@ -185,7 +193,9 @@ Table 5. Activity labels
 | `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
 | `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
 
-한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence_columns` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `row_key` 의 `entity_columns` 로 행을 묶은 뒤 entity 사이를 비교한다.
+한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence_columns` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `row_key` 의 `entity_columns` 로 행을 묶은 뒤 entity 사이를 비교한다. 한 entity 가 담은 값 전체를 하나의 값으로 보므로, 두 entity 는 그 값의 묶음이 서로 달라야 다른 값을 가진 것이 된다.
+
+두 비교는 같은 열에 서로 다른 답을 주므로, 어느 쪽으로 판정했는지를 5절의 `activity_basis` 에 남긴다. 행 사이의 비교는 `row` 이고 entity 사이의 비교는 `entity` 이다. 이 값이 없으면 `active` 와 `inactive` 가 무엇을 비교한 결과인지 알 수 없다.
 
 ### 4.3 Value Type
 
@@ -265,7 +275,7 @@ Table 9. Trace quantum labels
 
 Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 5절의 `thresholds` 에 함께 기록한다.
 
-규칙에 나오는 window 는 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다. 앞뒤의 대기 구간을 떼어 내는 것처럼 일부만 보아야 할 이유가 있으면 그 구간을 임계값과 함께 기록한다.
+규칙에 나오는 window 는 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다. 앞뒤의 대기 구간을 떼어 내는 것처럼 일부만 보아야 할 이유가 있으면 그 구간을 `thresholds` 안의 `window` 에 적는다.
 
 Table 10. Trace shape labels
 
@@ -343,12 +353,15 @@ Table 11. Column profile keys
 |-----|-------------|
 | `profiled_at` | 판정을 수행한 시각을 적는다 |
 | `class_version` | 판정에 쓴 `column-class.json` 의 version 을 적는다 |
-| `thresholds` | 판정에 쓴 임계값을 적는다 |
+| `activity_basis` | Activity 를 `row` 와 `entity` 중 어느 비교로 판정했는지 적는다 |
+| `thresholds` | 판정에 쓴 임계값과 window 를 적는다 |
 | `columns` | 열마다 최종 class 와 관측값을 적는다. `class` 외의 key 는 정해 두지 않는다 |
 
 `columns` 는 전수이다. Column config 를 적용하고 난 table 의 모든 열이 여기에 있어야 하고, 버린 열은 그 table 에 없으므로 여기에도 없다. 열이 빠져 있으면 그 열이 판정되지 않은 것인지 대상이 아닌 것인지 가릴 수 없으므로, 빠진 열은 판정이 끝나지 않았다는 뜻이다.
 
-`class_version` 과 `thresholds` 를 함께 두는 이유는 같다. 4절의 판정 규칙 여러 개가 임계값을 필요로 하고 어휘에는 label 이 늘 수 있으므로, 둘 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나온다. 그 둘이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
+`class_version` 과 `activity_basis` 와 `thresholds` 는 모두 같은 이유로 있다. 어휘에는 label 이 늘 수 있고, activity 는 무엇과 무엇을 비교하느냐에 따라 답이 갈리며, 4절의 판정 규칙 여러 개가 임계값을 필요로 한다. 셋 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나오므로, 이 셋이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
+
+`thresholds` 에는 window 도 함께 둔다. Trace 전체를 보았으면 `full` 이고, 구간을 좁혔으면 그 시작과 끝을 적는다. Window 는 임계값이 아니지만 바꾸면 같은 trace 가 다른 label 을 받는다는 점이 같으므로, 판정 configuration 을 한자리에 모아 둔다.
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
 
@@ -360,7 +373,9 @@ Table 11. Column profile keys
   "Ultah/AlPVDPoC/SilverData/#0/V0": {
     "profiled_at": "2026-08-07T09:12:00+09:00",
     "class_version": 3,
+    "activity_basis": "row",
     "thresholds": {
+      "window": "full",
       "dwell_ratio": 5.0,
       "ramp_fraction": 0.8,
       "acf_peak": 0.6
@@ -416,6 +431,7 @@ Table 12. Integrity rules
 | 5 | `columns_to_drop` 은 `row_key` 에 적힌 열을 담을 수 없다 | 행을 구별하는 근거를 버리는 설정 |
 | 6 | `column-profile.json` 의 `columns` 는 `columns_to_drop` 에 적힌 열을 담을 수 없다 | 이미 버린 열에 남아 있는 판정 |
 | 7 | `column-config.json` 의 `unit` 과 `class` 에 적힌 열은 `column-profile.json` 의 `columns` 에 있어야 한다 | 사람이 적어 둔 열이 판정에서 빠진 상태 |
+| 8 | `medallion` 은 `bronze`, `silver`, `gold` 중 하나여야 한다 | 정제 단계를 부르는 이름이 갈리는 것 |
 
 규칙 2 와 3 이 보는 class 는 column profile 이 담은 최종 class 이다. Column config 의 `class` 는 사람이 아는 것만 골라 적는 부분 목록이므로 axis 가 비어 있는 것이 정상이고, 이 두 규칙의 대상이 아니다.
 
@@ -423,7 +439,7 @@ Table 12. Integrity rules
 
 규칙 6 과 7 은 `columns` 가 전수라는 것을 양쪽에서 확인한다. 버린 열이 들어 있으면 판정이 오래된 것이고, 사람이 단위나 class 를 적어 둔 열이 빠져 있으면 판정이 그 열을 지나친 것이다.
 
-이 일곱 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
+이 여덟 가지는 label 과 key 만 비교하면 확인되므로 데이터를 읽지 않고 검사할 수 있다. 선언한 형과 실제 값이 맞는지처럼 데이터를 읽어야 아는 것은 판정이 담당한다.
 
 ## Appendix A. Terminology
 
