@@ -1,5 +1,5 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 26
+rev. 27
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -157,7 +157,7 @@ Table 3. Column config operation keys
 
 ## 4. Column Class
 
-### 4.1 Class Axis
+### 4.1 Axis
 
 Class 는 하나의 목록이 아니라 여러 개의 axis 로 나뉜다. 한 axis 안의 label 은 서로 배타적이므로, 이렇게 나누면 서로 무관한 성질을 하나의 label 에 섞지 않아도 되고 모순된 조합을 규칙으로 걸러낼 수 있다.
 
@@ -232,9 +232,9 @@ Table 7. Structure labels
 | `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 | `[wafer, feature, die_x, die_y]` |
 | `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 | `[wafer, feature, trace]` |
 
-Matrix notation 은 그 열을 담은 table 을 배열로 펼쳤을 때의 축 목록이다. 배열의 첫 element 를 axis 0 이라 부르는 것은 표준 용어이므로 이 문서도 그대로 쓴다. Axis 0 은 행이고 axis 1 은 열이며, axis 2 부터가 cell 하나가 안에 갖는 축이다. Axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다. `scalar` 는 axis 2 가 없어 table 이 그대로 2 차원이고, 나머지는 cell 안의 축이 붙어 3 차원 이상이 된다.
+Matrix notation 은 그 열을 담은 table 을 배열로 펼쳤을 때의 축 목록이다. 배열의 첫 element 를 axis 0 이라 부르는 것은 표준 용어이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 matrix axis 0 처럼 적는다. Matrix axis 0 은 행이고 matrix axis 1 은 열이며, matrix axis 2 부터가 cell 하나가 안에 갖는 축이다. Matrix axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다. `scalar` 는 matrix axis 2 가 없어 table 이 그대로 2 차원이고, 나머지는 cell 안의 축이 붙어 3 차원 이상이 된다.
 
-`site` 와 `die_x, die_y` 와 `trace` 는 그 축이 무엇을 따라 놓였는지를 가리킨다. `vector` 는 자리 하나로 원소가 정해지므로 axis 2 하나가 붙고, `matrix` 는 자리가 두 좌표로 정해지므로 axis 2 와 axis 3 이 붙으며, `trace` 는 axis 2 가 시간이다. 축의 개수가 아니라 축의 정체가 label 을 가르므로, axis 2 까지만 갖는 `vector` 와 `trace` 는 matrix notation 의 길이가 같아도 다른 label 이다.
+`site` 와 `die_x, die_y` 와 `trace` 는 그 축이 무엇을 따라 놓였는지를 가리킨다. `vector` 는 자리 하나로 원소가 정해지므로 matrix axis 2 하나가 붙고, `matrix` 는 자리가 두 좌표로 정해지므로 matrix axis 2 와 matrix axis 3 이 붙으며, `trace` 는 matrix axis 2 가 시간이다. 축의 개수가 아니라 축의 정체가 label 을 가르므로, matrix axis 2 까지만 갖는 `vector` 와 `trace` 는 matrix notation 의 길이가 같아도 다른 label 이다.
 
 `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
 
