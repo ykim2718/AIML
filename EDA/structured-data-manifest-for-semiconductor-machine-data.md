@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 41
+rev. 42
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -59,7 +59,7 @@ Table 2. Catalog description keys
 | `rows` | No | 행 수를 적는다 |
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
 
-`grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 관계가 된다.
+`grain` 이 필수인 이유는 행 하나가 무엇인지를 모르면 join 과 집계가 조용히 틀리기 때문이다. `derived_from` 이 있어야 `medallion` 이 이름표에 그치지 않고 상류를 거슬러 올라갈 수 있는 사슬의 한 마디가 된다.
 
 `date` 는 데이터를 제공받은 날짜이지 catalog 항목을 손본 날짜가 아니다. 같은 key 에 새 적재가 덮이면 이 날짜도 함께 바뀌므로, 손에 든 데이터가 언제 것인지는 이 값 하나로 답한다.
 
@@ -74,7 +74,7 @@ Table 2. Catalog description keys
 
 두 목록을 이은 것이 행마다 유일한 조합이다. **행이 중복인지 아닌지를 명시하는 것이 이 조합이며**, 중복 검사는 `entity_columns` 가 아니라 이 조합으로 한다. 한 wafer 의 trace 를 행마다 한 점씩 펼친 table 에서 wafer 번호는 수천 행에 걸쳐 같은 값이지만, `sequence_columns` 의 시간 열이 그 행들을 서로 구별하므로 중복이 아니다. `sequence_columns` 를 적지 않으면 그 table 을 중복 제거해도 되는지가 기록되지 않는다.
 
-두 목록의 일은 서로 다르다. `entity_columns` 는 묶는 방법을 말하고 `sequence_columns` 는 그 안에서 구별하는 방법을 말한다. 행 하나가 wafer 와 process step 의 조합이면 `entity_columns` 는 wafer 까지이고 `sequence_columns` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
+행 하나가 wafer 와 process step 의 조합이면 `entity_columns` 는 wafer 까지이고 `sequence_columns` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
 
 두 목록에 적는 이름은 1.2 절이 정한 대로 상류에서 온 그대로의 이름이다.
 
@@ -116,7 +116,7 @@ Table 3. Column config operation keys
 | - | `unit` | 열의 값이 어떤 단위인지 적는다 |
 | - | `class` | 사람이 아는 class label 을 열마다 적는다 |
 
-`Order` 는 조작을 적용하는 순서이고, `unit` 과 `class` 는 조작이 아니므로 순서를 갖지 않는다. 이름 바꾸기가 첫째인 이유는 뒤의 세 조작이 모두 바뀐 이름으로 열을 지시하게 하기 위해서이다. 형 바꾸기가 마지막인 이유는 결측 표시를 걷어낸 뒤라야 열이 목표한 형으로 들어가기 때문이다. `-999` 가 남아 있는 열을 먼저 정수로 바꾸면 결측이 값으로 굳는다.
+`Order` 는 조작을 적용하는 순서이고, `unit` 과 `class` 는 조작이 아니므로 순서를 갖지 않는다. 이름 바꾸기가 첫째인 이유는 뒤의 세 조작이 모두 바뀐 이름으로 열을 가리키게 하기 위해서이다. 형 바꾸기가 마지막인 이유는 결측 표시를 걷어낸 뒤라야 열이 목표한 형으로 들어가기 때문이다. `-999` 가 남아 있는 열을 먼저 정수로 바꾸면 결측이 값으로 굳는다.
 
 순서를 JSON 에 담지 않고 표에 고정하는 이유는 JSON object 의 key 순서가 규격상 보장되지 않기 때문이다. 순서가 의미를 가지는 값은 object 가 아니라 array 에 담거나, 이 경우처럼 file 밖에 고정한다.
 
@@ -368,7 +368,7 @@ Table 11. Column profile keys
 
 `class_version` 과 `activity_basis` 와 `thresholds` 는 모두 같은 이유로 있다. 어휘에는 label 이 늘 수 있고, activity 는 무엇과 무엇을 비교하느냐에 따라 답이 갈리며, 4 절의 판정 규칙 여러 개가 임계값을 필요로 한다. 셋 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나오므로, 이 셋이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
 
-`thresholds` 에는 window 도 함께 둔다. Trace 전체를 보았으면 `full` 이고, 구간을 좁혔으면 그 시작과 끝을 적는다. Window 는 임계값이 아니지만 바꾸면 같은 trace 가 다른 label 을 받는다는 점이 같으므로, 판정 configuration 을 한자리에 모아 둔다.
+`thresholds` 에는 window 도 함께 둔다. Trace 전체를 보았으면 `full` 이고, 구간을 좁혔으면 그 시작과 끝을 적는다. Window 는 임계값이 아니다. 그러나 바꾸면 같은 trace 가 다른 label 을 받는다는 점은 임계값과 같으므로, 판정 configuration 을 한자리에 모아 둔다.
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
 
@@ -425,7 +425,7 @@ Table 11. Column profile keys
 
 ## 6. Integrity Rules
 
-여기의 규칙은 manifest 자체의 형식 검사가 아니라, manifest 를 데이터에 적용할 때 성립해야 하는 조건이다. 아래 넷은 앞 절의 설계에서 바로 따라 나오는 최소한의 예시이며, 검사 규칙의 전부를 이 문서에서 정하지 않는다.
+여기의 규칙은 manifest 자체의 형식 검사가 아니라, manifest 를 데이터에 적용할 때 성립해야 하는 조건이다. 아래 넷은 앞의 절들이 세운 설계에서 바로 따라 나오는 최소한의 예시이며, 검사 규칙의 전부를 이 문서에서 정하지 않는다.
 
 Table 12. Integrity rules
 
