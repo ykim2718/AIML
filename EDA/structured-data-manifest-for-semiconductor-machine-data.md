@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 33
+rev. 34
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -224,14 +224,14 @@ Table 7. Structure labels
 
 | Label | Rule | Matrix notation |
 |-------|------|-----------------|
-| `scalar` | Cell 하나가 값 하나를 담는다 | `[wafer, feature]` |
+| `scalar` | Cell 하나가 값 하나를 담는다 (tabular data) | `[wafer, feature]` |
 | `vector` | Cell 하나가 배열을 담고, 원소가 시간축이 아닌 축을 따라 놓인다 | `[wafer, feature, site]` |
 | `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 | `[wafer, feature, die_x, die_y]` |
 | `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 | `[wafer, feature, trace]` |
 
 Matrix notation 은 그 열을 담은 table 을 배열로 펼쳤을 때의 축 목록이다. 첫 element 를 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 matrix axis 0 처럼 적는다. Matrix axis 0 은 행이고 matrix axis 1 은 열이며, matrix axis 2 부터는 cell 안의 축이다. Matrix axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
 
-Cell 안의 축이 곧 structure label 을 가른다. `scalar` 는 matrix axis 2 가 없어 table 이 그대로 2 차원이고, `vector` 와 `trace` 는 원소의 자리가 하나로 정해지므로 matrix axis 2 하나가 붙으며, `matrix` 는 두 좌표로 정해지므로 matrix axis 2 와 matrix axis 3 이 붙는다. Notation 에 적은 `site`, `die_x` 와 `die_y`, `trace` 는 그 축이 무엇을 따라 놓였는지를 가리킨다.
+Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지 셋은 cell 안에 배열을 담아 그 틀을 넘어선다. `scalar` 는 matrix axis 2 가 없어 table 이 그대로 2 차원이고, `vector` 와 `trace` 는 원소의 자리가 하나로 정해지므로 matrix axis 2 하나가 붙으며, `matrix` 는 두 좌표로 정해지므로 matrix axis 2 와 matrix axis 3 이 붙는다. Notation 에 적은 `site`, `die_x` 와 `die_y`, `trace` 는 그 축이 무엇을 따라 놓였는지를 가리킨다.
 
 `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
 
@@ -449,4 +449,5 @@ Table 12. Integrity rules
 - **Object storage** 는 파일을 directory 구조가 아니라 key 로 지시해 저장하는 storage 이다.
 - **Semiconductor machine data** 는 반도체 공정 장비와 계측 장비가 남긴 기록이고, 공정 중에 받은 sensor trace, 계측 결과, 그리고 그 측정이 귀속되는 lot 과 wafer 의 식별자가 여기에 속한다.
 - **Structured data** 는 미리 정한 schema 를 따르는 데이터이고, 반도체 장비 데이터에서는 그 schema 가 행과 열로 나타난다. 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응하고, cell 이 단일 값이 아니라 배열이어도 그 틀이 유지되면 structured data 이다.
+- **Tabular data** 는 cell 하나가 값 하나를 담는 structured data 이다. Cell 이 배열을 담으면 structured data 이기는 하나 tabular data 는 아니다.
 - **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이고, 값 자체와 값이 놓인 순서가 함께 정보를 이룬다.
