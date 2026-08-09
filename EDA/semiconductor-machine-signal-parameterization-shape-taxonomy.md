@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 167
+rev. 168
 
 > 상위 문서: [README](./README.md)
 >
@@ -9,14 +9,18 @@ rev. 167
 ## Contents
 
 - [Goals](#goals)
-- [1. Shape Archetypes](#1-shape-archetypes)
-  - [1.1 Chart Class](#11-chart-class)
-  - [1.2 Parameter Schematics](#12-parameter-schematics)
-  - [1.3 Column Class Axes](#13-column-class-axes)
+- [1. Shape Vocabulary](#1-shape-vocabulary)
+  - [1.1 Scope](#11-scope)
+  - [1.2 Chart Class](#12-chart-class)
+  - [1.3 Shape Axis](#13-shape-axis)
+  - [1.4 Mapping Between The Two Vocabularies](#14-mapping-between-the-two-vocabularies)
+  - [1.5 Activity](#15-activity)
 - [2. MTSV](#2-mtsv)
-  - [2.1 Cycle Count](#21-cycle-count)
-  - [2.2 Periodic Chart](#22-periodic-chart)
-  - [2.3 Non-Periodic Chart](#23-non-periodic-chart)
+  - [2.1 Chart Classes And Reconstruction Parameters](#21-chart-classes-and-reconstruction-parameters)
+  - [2.2 Parameter Schematics](#22-parameter-schematics)
+  - [2.3 Cycle Count](#23-cycle-count)
+  - [2.4 Periodic Chart](#24-periodic-chart)
+  - [2.5 Non-Periodic Chart](#25-non-periodic-chart)
 - [3. Chart Classification](#3-chart-classification)
   - [3.1 Pre-Classification](#31-pre-classification)
   - [3.2 Notation](#32-notation)
@@ -66,7 +70,7 @@ rev. 167
 2. **chart class는 모든 wafer에서 일정하다.** 같은 센서는 웨이퍼가 바뀌어도
    같은 클래스여야 하며, 이것이 벡터 정의를 고정하는 전제다 (§2, §6).
 3. **class classification은 shape taxonomy hierarchy로 구한다 — MLE.**
-   Table 1의 클래스족을 모델족으로 보고 maximum likelihood로 적합한 뒤
+   Table 8의 클래스족을 모델족으로 보고 maximum likelihood로 적합한 뒤
    BIC argmin으로 채택한다 (§3).
 4. **class confidence와 class stability로 classification의 정확도와 일관성을
    측정한다.** confidence는 트레이스 한 장의 재현 정확도(§5), stability는
@@ -74,19 +78,40 @@ rev. 167
 
 형상만으로 taxonomy를 세우면 **물리 도메인 지식 없이도 자동 분류가 가능하다.** 128개 센서를 사람이 눈으로 분류하지 않고 4개의 판별 통계량으로 기계적으로 나눌 수 있다.
 
-## 1. Shape Archetypes
+## 1. Shape Vocabulary
 
-### 1.1 Chart Class
+이 절은 형상을 부르는 두 어휘를 함께 세운다. 하나는 structured data manifest 가 열 하나에 붙이는 여섯 개의 class axis 이고, 다른 하나는 이 문서가 파형의 기하로 정의하는 chart class 다. **두 어휘는 경쟁하는 것이 아니라 같은 형상을 다른 해상도로 부르는 것이다.** Chart class 는 재현 파라미터까지 딸린 모델족이고, manifest 의 label 은 그 모델족을 몇 무리로 접은 이름표다.
+
+접는 이유는 쓰는 자리가 다르기 때문이다. 열 하나에 label 하나를 적는 profile 은 파라미터를 담지 않으므로 `R1` 과 `R2` 를 가릴 필요가 없고, 반대로 벡터를 만드는 자리에서는 `n` 이 몇인지가 벡터 크기를 정하므로 반드시 갈라야 한다.
+
+절의 순서가 그 관계를 따른다. 어느 열이 형상을 갖는지를 manifest 의 axis 로 먼저 정하고 (§1.1), 그 열의 형상을 chart class 로 정의한 뒤 (§1.2), 같은 형상을 manifest 의 label 로 부르는 방법 (§1.3) 과 두 어휘를 잇는 대응 (§1.4) 을 둔다. 두 어휘가 같은 이름을 다른 뜻으로 쓰는 자리는 activity 하나이고, §1.5 가 그것을 다룬다.
+
+재현 파라미터의 목록과 그 파라미터가 파형의 어디를 가리키는지는 벡터를 만드는 자리의 문제이므로 §2 에 둔다.
+
+### 1.1 Scope
+
+Table 1. The six class axes and what this document does with each
+
+| Axis | Label | Handling here |
+|---|---|---|
+| `activity` | `active`, `inactive` | 이름은 같고 판정 기준이 다르다 (§1.5) |
+| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `numeric` 인 열만 다룬다 |
+| `structure` | `scalar`, `vector`, `matrix`, `trace` | `trace` 인 열만 다룬다 |
+| `array_length` | `fixed`, `variable` | 형상 판정을 가르지 않는다 |
+| `trace_quantum` | `q1`, `qn`, `infinite` | chart class 로 잇는다 (§1.4.2) |
+| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | chart class 로 잇는다 (§1.4.1) |
+
+**이 문서의 판정 대상은 `value_type` 이 `numeric` 이고 `structure` 가 `trace` 인 열이다.** 크기를 갖지 않는 값에는 기울기도 진폭도 정의되지 않고, 시간 순서가 없는 배열에는 되돌릴 파형이 없다. 나머지 조합의 열은 이 문서의 어휘로 부를 수 없으며, manifest 에서 `trace_shape` 를 아예 갖지 않는 열이 그것이다.
+
+`array_length` 는 label 이 무엇이든 형상 판정을 바꾸지 않는다. 임계값이 모두 window 에 대한 비율이거나 표본 수의 비이기 때문이다 (§1.3.2). 다만 `variable` 인 열은 window 가 행마다 다르므로, 판정에 쓴 window 를 행 단위로 남겨야 같은 label 이 같은 뜻을 갖는다.
+
+### 1.2 Chart Class
 
 Chart class는 **파형의 기하학적 정의와 재현 파라미터 집합만으로 정의**한다.
 분류를 어떻게 구현하는가와 무관하게 성립하는 정의다 — 즉 어떤 분류 알고리즘을 쓰든 클래스 체계는
 바뀌지 않는다. **parameter count가 곧 그 클래스의 최소 벡터 크기**이다.
 
-chart class 계층의 최상위는 **INACTIVE**(모든 웨이퍼에서 동일 차트 —
-클래스·파라미터 벡터가 웨이퍼 불변)와 **ACTIVE**(= not INACTIVE, 웨이퍼 간
-변동 존재)이다. ACTIVE는 DETERMINISTIC/STOCHASTIC으로 나뉜다. INACTIVE
-판정은 단일 트레이스가 아니라 **웨이퍼 축 전체**에서 내려지며(lot/period 전체
-기준), 해당 센서는 벡터에서 제외하고 대표값 1회만 기록한다.
+계층의 최상위는 **INACTIVE** 와 **ACTIVE** 로 갈리고, ACTIVE 는 다시 **DETERMINISTIC** 과 **STOCHASTIC** 으로 나뉜다. 위쪽 분기는 형상을 가르는 것이 아니라 그 센서를 벡터에 넣을지 정하는 게이트이므로 §1.5 에서 다룬다.
 
 ```
 Chart Class
@@ -97,7 +122,7 @@ Chart Class
        ├── DETERMINISTIC   waveform itself is reconstructed — reconstruction parameter vector (§5.2)
        │      ├── S  STEP       (S1 single / S2 multi)
        │      ├── R  RECTANGLE     (R1 single / R2 multi)   — plateau ratio κ ≥ 0.7
-       │      │      └── R1s RECTANGLE carrying a small signal on the plateau (§1.2.3)
+       │      │      └── R1s RECTANGLE carrying a small signal on the plateau (§2.2.3)
        │      └── T  TRIANGLE   (T1 single / T2 sawtooth) — plateau ratio κ < 0.7
        └── STOCHASTIC      only statistics are reconstructed — spectral parameters (§3.7.1)
               ├── Q2…Q9  QUANTIZED OSCILLATION — quantum count m = 준위 개수
@@ -108,39 +133,6 @@ Chart Class
 *Fig. 1. Chart class hierarchy — top-level ACTIVE/INACTIVE split, with the
 DETERMINISTIC/STOCHASTIC division inside ACTIVE.*
 
-*Table 1. Chart classes and reconstruction parameters*
-
-| Type | Code | Name | Events | Event<br>parameter | parameter<br>count | Reconstruction parameters |
-|---|---|---|---|---|---|---|
-| DET | `S1` | STEP (single) | 1 | `t_edge`, `t_rise`, `L1` | 4 | `L0`, `L1`, `t_edge`, `t_rise`; `t_edge = (t_rise_start + t_rise_end)/2` |
-| DET | `S2` | STEP (multi) | n | `t_edge`, `t_rise`, `L_k` | 1+3n | `L0` + `(t_edge, t_rise, L_k)` × n |
-| DET | `R1` | RECTANGLE (single) | 1 | `t_on`, `t_off`, `L_top` | 7 | `L_base`, `L_top`, `t_on`, `t_off`, `t_rise`, `t_fall`, `droop` |
-| DET | `R1s` | RECTANGLE + small<br>signal | 1 | `t_on`, `t_off`, `L_top` | 9 | `R1` 의 7개 + `ss_freq`, `ss_p2p` (플래토 잔차, §1.2.3) |
-| DET | `R2` | RECTANGLE (multi) | n | `t_on`, `t_off`, `L_top` | 2+3n | `L_base`, `droop` + `(t_on, t_off, L_top)` × n |
-| DET | `T1` | TRIANGLE | 1 | `t_start`, `t_peak`, `t_end` | 5 | `baseline`, `t_start`, `t_peak`, `t_end`, `A_peak`. **`A_peak` 는 부호가 있다** — 양수면 봉우리, 음수면 골짜기 (§1.2.5) |
-| DET | `T2` | SAWTOOTH | n | `t_start`, `t_peak`, `t_reset` | 3n | `(t_start, t_peak, t_reset)` × n. 공유 상수 `A_peak` 도 부호를 갖는다 |
-| DET | `Q1` | CONSTANT | — | quantum value | 1 | `q_1`. quantum 이 하나면 오갈 준위가 없어 진동이 성립하지 않는다 (§1.2.7) |
-| STO | `Q2`~`Q9` | QUANTIZED<br>OSCILLATION | — | quantum value | m | `q_1`…`q_m` (m = quantum count = 준위 개수, §1.2.7) |
-| STO | `O2` | OSCILLATION<br>(limit cycle) | n | `center` knot | n+4 | `center (n)` + `A`, `ω_0`, `γ`, `σ_w²` (§3.7.1) |
-| STO | `O3` | OSCILLATION<br>(bang-bang) | n | `center` knot | n+5 | `center (n)` + `A`, `ω_0`, `γ`, `D`, `σ_w²` (§3.7.1) |
-| STO | `O4` | OSCILLATION<br>(broadband) | n | `center` knot | n+4 | `center (n)` + `σ_b²`, `ω_c`, `α`, `σ_w²` (§3.7.1) |
-
-**`Events` 는 주기적 반복이 아니다.** `Events = n` 은 그 클래스의 **Event
-parameter 블록이 n번 들어간다**는 뜻, 즉 모델 차수(model order)다. 이벤트의
-정의는 클래스마다 다르다 — `L` 은 준위 전이(엣지), `R` 은 펄스(on–off 쌍),
-`T` 는 정점, `O2`~`O4` 는 중심선 knot 이다. `Q1`~`Q9` 는 이벤트가 아니라 **quantum
-count** 로 갈리므로 `Events` 가 없다. 그 이벤트들이 규칙적으로
-반복되는지는 별도로 §2.1의 **cycle count** 로 센다 — 상승부가 두 단계로 꺾인
-펄스 하나도 엣지가 2개이므로 `Events = 2` 이지만 극대는 1개라 `cycle = 1` 이다.
-**cycle count 가 후보 클래스를 가른다**: `cycle = 1` 이면 단일 이벤트 계열
-(`S1`·`R1`·`T1`), `cycle ≥ 2` 면 반복 계열
-(`S2`·`R2`·`T2`)만 후보가 된다 (§3.8).
-
-Activity(ACTIVE/INACTIVE, Fig. 1)는 단일 트레이스의 속성이 아니라 웨이퍼
-축 전체의 판정이므로 표가 아니라 **`chart_index.py --activity`(CLI)**가
-수행한다 — 모든 live wafer에서 동일 차트(동일 클래스·불변 파라미터)를
-보이면 INACTIVE로 보고하고 벡터에서 제외한다.
-
 **중복 클래스는 두지 않는다.** 같은 평균함수를 파라미터 값만 달리해 표현하는
 형상은 별도 클래스로 두지 않는다. 임계값 하나로 갈라놓아도 웨이퍼마다 그
 임계값을 넘나들며 라벨이 흔들릴 뿐이다 (class_stability 저하). 완만한 엣지의
@@ -148,7 +140,7 @@ Activity(ACTIVE/INACTIVE, Fig. 1)는 단일 트레이스의 속성이 아니라 
 봉우리는 폭이 작은 `T1` 이다 — 모두 상위 클래스의 파라미터 영역이며, 그 값
 자체가 진단 파라미터다.
 
-Table 1 의 클래스 사이에 남는 형상 경계는 하나다.
+Table 8 의 클래스 사이에 남는 형상 경계는 하나다.
 
 - **`R` vs `T`** — **평탄도 `κ = W_90 / W_50`** 로 가른다. `W_a` 는 신호가
   정점 높이의 `a` 이상에 머무는 표본 수다. 정상이 평탄하면 `R`, 뾰족하면 `T`.
@@ -188,7 +180,148 @@ Table 1 의 클래스 사이에 남는 형상 경계는 하나다.
 
 §3의 분류 방법은 이 경계의 측정 수단일 뿐이며, 경계 정의 자체를 바꾸지 않는다.
 
-### 1.2 Parameter Schematics
+### 1.3 Shape Axis
+
+Shape axis 는 manifest 의 `trace_shape` axis 이고, 형상을 여섯 label 로 부른다.
+
+#### 1.3.1 Labels
+
+Table 3. `trace_shape` labels
+
+| Label | Rule |
+|---|---|
+| `flat` | Window 에서 값이 변하지 않는다 |
+| `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 `dwell_ratio` 배 이상 길다 |
+| `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
+| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 `ramp_fraction` 이상을 차지한다 |
+| `oscillation` | Autocorrelation 에 `acf_peak` 이상의 peak 이 일정한 간격으로 나타난다 |
+| `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
+
+여섯 규칙은 서로 겹치므로 **판정 순서가 정의의 일부다.** 평탄한 trace 는 한 방향으로만 움직이는 구간이 window 전체를 덮기도 하고, pulse 열은 autocorrelation 에도 걸린다. 위 표의 순서대로, 가장 좁은 규칙부터 시험한다.
+
+`irregular` 는 앞의 다섯이 받지 못한 trace 를 받아 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙과 그 임계값에 매여 있다는 것이다.
+
+#### 1.3.2 Thresholds
+
+Table 4. Thresholds the labels depend on
+
+| Threshold | Default | Used by |
+|---|---|---|
+| `dwell_ratio` | 5.0 | `rectangle` — 머문 표본 수 대 이동 표본 수의 하한 |
+| `kappa` | 0.7 | `triangle` — 평탄도 `κ = W_90 / W_50` 의 상한 (§1.2) |
+| `slope_tolerance` | 3.0 | `triangle` — 두 플랭크 기울기 크기의 비의 상한 |
+| `ramp_fraction` | 0.8 | `ramp` — 단조 구간이 덮어야 하는 window 비율 |
+| `acf_peak` | 0.6 | `oscillation` — autocorrelation peak 높이의 하한 |
+| `peak_jitter` | 0.25 | `oscillation` — peak 간격의 상대 편차 상한 |
+
+임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, **임계값을 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.** 판정 결과를 적을 때는 위 값들을 함께 적는다.
+
+`triangle` 은 §2.2.5 대로 `x` 와 `−x` 양쪽에서 시험한다. `A_peak` 가 부호를 갖는 것과 같은 사실이며, `κ` 는 정류한 신호에서 잰다 (§1.2).
+
+### 1.4 Mapping Between The Two Vocabularies
+
+#### 1.4.1 Trace Shape To Chart Class
+
+Table 5. `trace_shape` label to chart class
+
+| `trace_shape` | Chart class | Note |
+|---|---|---|
+| `flat` | `Q1` | 준위가 하나뿐이라 변할 곳이 없다. `trace_quantum` 의 `q1` 과 같은 사실이다 |
+| `rectangle` | `R1`, `R1s`, `R2` | 사다리꼴은 `t_rise`·`t_fall` 이 큰 `R1` 이므로 여기 속한다 |
+| `triangle` | `T1`, `T2` | 좁은 봉우리는 폭이 작은 `T1`, 골짜기는 `A_peak` 가 음수인 `T1` 이다 |
+| `ramp` | `S1` (`t_rise` 가 큰 경우) | 램프는 전이가 window 를 덮을 만큼 완만한 `S1` 이다 (§2.2.2) |
+| `oscillation` | `O2`, `O3`, `O4`, `Q2`~`Q9` | 격자 위의 왕복과 격자 밖의 진동이 이 label 로 함께 접힌다 |
+| `irregular` | 없음 | 어느 class 도 형상을 설명하지 못한 경우이므로 대응하는 class 가 없다 |
+
+**대응은 일대일이 아니고, 양쪽 모두에 빈자리가 있다.**
+
+- `S1` 의 급준한 계단과 `S2` 는 `trace_shape` 에 대응하는 label 이 없다. 단조 구간이 짧아 `ramp` 에 걸리지 않고 두 level 에 머무는 시간이 조건을 채우지 못해 `rectangle` 에도 걸리지 않으므로 `irregular` 로 떨어진다. 계단이 흔한 데이터라면 `trace_shape` 만으로는 그 사실을 볼 수 없다.
+- `irregular` 에 대응하는 class 가 없는 것은 설계상 그렇다. Table 8 은 형상을 주장하는 모델족의 목록이고, `irregular` 는 주장이 실패했다는 표시다.
+- `Q2`~`Q9` 와 `O` 가 한 label 로 접히므로, 계측 아티팩트와 실제 물리 진동의 구분(§2.2.7)이 `trace_shape` 에서는 사라진다. 그 구분이 필요하면 `trace_quantum` 을 함께 읽어야 한다.
+
+#### 1.4.2 Trace Quantum To Chart Class
+
+Table 6. `trace_quantum` label to chart class
+
+| `trace_quantum` | Chart class | Note |
+|---|---|---|
+| `q1` | `Q1` | 준위가 하나뿐이다. `trace_shape` 의 `flat` 과 같은 사실이다 |
+| `qn` | `Q2`~`Q9` | LSB 격자 위 `m` 개 준위를 오간다. 이 문서는 `m <= 9` 까지만 격자로 보고 그 위는 `O` 로 넘긴다 (§2.2.7) |
+| `infinite` | `S`, `R`, `T`, `O` 계열 전부 | 준위에 머물지 않으므로 `Q` 계열을 뺀 나머지가 모두 여기 속한다 |
+
+두 어휘가 같은 경계를 쓴다. manifest 가 `qn` 과 `infinite` 를 가르는 기준은 값이 셀 수 있는 준위 위에 머무는가이고, 이 문서가 `Q` 계열과 나머지를 가르는 기준도 값이 LSB 격자 몇 칸에 갇히는가이다 (§2.2.7). 다른 점은 이 문서가 그 칸 수에 `m <= 9` 라는 상한을 두어, 준위가 그보다 많으면 격자를 주장하지 않고 진동으로 본다는 것이다.
+
+`infinite` 는 열 개가 넘는 class 를 한 label 로 접으므로 형상에 대해서는 아무것도 말하지 않는다. 그 열의 형상은 `trace_shape` 가 답하고, 되돌릴 파라미터는 Table 8 이 답한다.
+
+#### 1.4.3 Which Vocabulary To Use
+
+Table 7. Choosing between the two
+
+| Question | Vocabulary |
+|---|---|
+| 이 열에 무엇이 담겨 있는가 | `trace_shape` — label 하나로 답한다 |
+| 이 트레이스를 되돌리려면 무엇을 저장해야 하는가 | Table 8 의 class — 재현 파라미터가 딸려 있다 |
+| 이 센서가 웨이퍼마다 같은 형상인가 | Table 8 의 class — `class_stability`(§6)가 이 어휘 위에서 정의된다 |
+| 열 백 개를 한 표로 훑어야 한다 | `trace_shape` — 여섯 칸이면 표가 읽힌다 |
+
+`trace_shape` 로 적은 열을 나중에 벡터화하려면 Table 5 를 거슬러 올라가 class 를 다시 판정해야 한다. 접는 과정에서 `n` 과 파라미터가 버려지기 때문이며, 그래서 **`trace_shape` 는 요약이지 중간 산출물이 아니다.**
+
+### 1.5 Activity
+
+**INACTIVE** 는 모든 live wafer 에서 동일한 차트를 보이는 센서다 — 클래스도
+파라미터 벡터도 웨이퍼에 따라 변하지 않는다. **ACTIVE** 는 그 여집합이다
+(Fig. 1). 판정이 단일 트레이스가 아니라 **웨이퍼 축 전체**에서
+(lot/period 전체 기준) 내려지므로 표가 아니라
+**`chart_index.py --activity`(CLI)** 가 수행하며, INACTIVE 로 판정된 센서는
+벡터에서 빼고 대표값 1회만 기록한다.
+
+manifest 의 `activity` 는 결측을 뺀 행 사이에 서로 다른 cell 값이 둘 이상 있는지로 판정하고, 무엇과 무엇을 비교했는지를 `row` 와 `entity` 중 하나로 함께 남긴다.
+
+**두 판정은 이름이 같고 견주는 것이 다르다.** manifest 는 cell 값을 그대로 견주므로 잡음만 실린 trace 도 값이 달라 `active` 가 된다. 이 문서는 적합된 class 와 파라미터를 견주므로 같은 trace 를 INACTIVE 로 볼 수 있다. 따라서 manifest 의 `active` 는 이 문서의 INACTIVE 를 배제하지 않으며, 두 값을 같은 뜻으로 읽으면 벡터에서 빼야 할 센서를 남기게 된다.
+
+## 2. MTSV
+
+MTSV의 벡터 크기는 Table 8의 parameter count로 결정된다. Events = 1 인
+클래스는 이미 고정 크기 벡터이므로 추가 축소가 필요 없다. 반면
+Events = n 인 클래스(`S2`, `R2`, `T2`, `O`)는 벡터 크기가 이벤트 수 n에
+비례한다(3n류). 그래서 벡터를 만들기 전에 먼저 **cycle count**(§2.3)를 세어
+반복이 있는지부터 가른다. 반복이 있고 그것이 **규칙적(periodic)**이면
+이벤트 목록을 고정 크기 벡터로 줄일 수 있으므로 periodic(§2.4)으로,
+불규칙하면 non-periodic(§2.5)으로 처리한다.
+
+### 2.1 Chart Classes And Reconstruction Parameters
+
+§1.2 가 정의한 class 마다 파형을 되돌리는 데 필요한 파라미터와 그 개수를 적는다. 앞 문단이 말한 parameter count 가 이 표의 한 열이다.
+
+*Table 8. Chart classes and reconstruction parameters*
+
+| Type | Code | Name | Events | Event<br>parameter | parameter<br>count | Reconstruction parameters |
+|---|---|---|---|---|---|---|
+| DET | `S1` | STEP (single) | 1 | `t_edge`, `t_rise`, `L1` | 4 | `L0`, `L1`, `t_edge`, `t_rise`; `t_edge = (t_rise_start + t_rise_end)/2` |
+| DET | `S2` | STEP (multi) | n | `t_edge`, `t_rise`, `L_k` | 1+3n | `L0` + `(t_edge, t_rise, L_k)` × n |
+| DET | `R1` | RECTANGLE (single) | 1 | `t_on`, `t_off`, `L_top` | 7 | `L_base`, `L_top`, `t_on`, `t_off`, `t_rise`, `t_fall`, `droop` |
+| DET | `R1s` | RECTANGLE + small<br>signal | 1 | `t_on`, `t_off`, `L_top` | 9 | `R1` 의 7개 + `ss_freq`, `ss_p2p` (플래토 잔차, §2.2.3) |
+| DET | `R2` | RECTANGLE (multi) | n | `t_on`, `t_off`, `L_top` | 2+3n | `L_base`, `droop` + `(t_on, t_off, L_top)` × n |
+| DET | `T1` | TRIANGLE | 1 | `t_start`, `t_peak`, `t_end` | 5 | `baseline`, `t_start`, `t_peak`, `t_end`, `A_peak`. **`A_peak` 는 부호가 있다** — 양수면 봉우리, 음수면 골짜기 (§2.2.5) |
+| DET | `T2` | SAWTOOTH | n | `t_start`, `t_peak`, `t_reset` | 3n | `(t_start, t_peak, t_reset)` × n. 공유 상수 `A_peak` 도 부호를 갖는다 |
+| DET | `Q1` | CONSTANT | — | quantum value | 1 | `q_1`. quantum 이 하나면 오갈 준위가 없어 진동이 성립하지 않는다 (§2.2.7) |
+| STO | `Q2`~`Q9` | QUANTIZED<br>OSCILLATION | — | quantum value | m | `q_1`…`q_m` (m = quantum count = 준위 개수, §2.2.7) |
+| STO | `O2` | OSCILLATION<br>(limit cycle) | n | `center` knot | n+4 | `center (n)` + `A`, `ω_0`, `γ`, `σ_w²` (§3.7.1) |
+| STO | `O3` | OSCILLATION<br>(bang-bang) | n | `center` knot | n+5 | `center (n)` + `A`, `ω_0`, `γ`, `D`, `σ_w²` (§3.7.1) |
+| STO | `O4` | OSCILLATION<br>(broadband) | n | `center` knot | n+4 | `center (n)` + `σ_b²`, `ω_c`, `α`, `σ_w²` (§3.7.1) |
+
+**`Events` 는 주기적 반복이 아니다.** `Events = n` 은 그 클래스의 **Event
+parameter 블록이 n번 들어간다**는 뜻, 즉 모델 차수(model order)다. 이벤트의
+정의는 클래스마다 다르다 — `L` 은 준위 전이(엣지), `R` 은 펄스(on–off 쌍),
+`T` 는 정점, `O2`~`O4` 는 중심선 knot 이다. `Q1`~`Q9` 는 이벤트가 아니라 **quantum
+count** 로 갈리므로 `Events` 가 없다. 그 이벤트들이 규칙적으로
+반복되는지는 별도로 §2.3의 **cycle count** 로 센다 — 상승부가 두 단계로 꺾인
+펄스 하나도 엣지가 2개이므로 `Events = 2` 이지만 극대는 1개라 `cycle = 1` 이다.
+**cycle count 가 후보 클래스를 가른다**: `cycle = 1` 이면 단일 이벤트 계열
+(`S1`·`R1`·`T1`), `cycle ≥ 2` 면 반복 계열
+(`S2`·`R2`·`T2`)만 후보가 된다 (§3.8).
+
+### 2.2 Parameter Schematics
 
 | | | |
 |:---:|:---:|:---:|
@@ -197,7 +330,7 @@ Table 1 의 클래스 사이에 남는 형상 경계는 하나다.
 | ![R2](./class/schematic_g_R2.png)<br>**(g)** `R2` — RECTANGLE (multi), Param 2+3n | ![T1](./class/schematic_h_T1.png)<br>**(h)** `T1` — TRIANGLE, Param 5 | ![T2](./class/schematic_i_T2.png)<br>**(i)** `T2` — SAWTOOTH, Param 3n |
 | ![O2/O3/O4](./class/schematic_j_O2O3O4.png)<br>**(j)** `O2/O3/O4` — OSCILLATION, Param n+k_spec |  |  |
 
-*Fig. 2. Location of each Table 1 reconstruction parameter on its chart
+*Fig. 2. Location of each Table 8 reconstruction parameter on its chart
 class waveform, one panel per class. **Red bold = Event parameter** (the block
 that repeats n times); black italic = the remaining reconstruction parameters.
 Dotted lines = level/time guides; double arrows = span dimensions. Each panel
@@ -230,7 +363,7 @@ checked in beside this document under `class/`.*
 sat(u) = clip(u, 0, 1) = 0 (u < 0),  u (0 <= u <= 1),  1 (u > 1)
 ```
 
-#### 1.2.1 CONSTANT (`Q1`)
+#### 2.2.1 CONSTANT (`Q1`)
 
 ```
 y(t) = q_1                                    (Param 1)
@@ -243,7 +376,7 @@ y(t) = q_1                                    (Param 1)
 - `drift` — 선형회귀 기울기 × T / A. 상수여야 할 값의 서서한 변화.
 - `valid` — `value ∈ physical_range`. `−275°C` 류 무효값 검출.
 
-#### 1.2.2 STEP
+#### 2.2.2 STEP
 
 ```
 y(t) = L_0 + SUM_{k=1..n} (L_k - L_{k-1}) * sat( (t - (t_edge,k - t_rise,k/2)) / t_rise,k )
@@ -266,7 +399,7 @@ y(t) = L_0 + SUM_{k=1..n} (L_k - L_{k-1}) * sat( (t - (t_edge,k - t_rise,k/2)) /
 
 **FDC 민감도가 가장 높은 3개: `t_edge`, `t_rise`, `overshoot`.**
 
-#### 1.2.3 RECTANGLE (single)
+#### 2.2.3 RECTANGLE (single)
 
 ```
 up(t)  = sat( (t - (t_on  - t_rise/2)) / t_rise )
@@ -320,7 +453,7 @@ chattering 의 감시 지표로는 계속 쓴다 (§4).
 아니면 `R1` 이다. **BIC 경쟁이 아니라 `R1` 이 채택된 뒤의 추가 분류**이며
 (Fig. 3), `O` 의 하위형 판별과 같은 자리에 있다.
 
-#### 1.2.4 RECTANGLE (multi) — Pulse Train
+#### 2.2.4 RECTANGLE (multi) — Pulse Train
 
 ```
 gate_k(t) = sat( (t - t_on,k) / w ) - sat( (t - t_off,k) / w ),   w = 0.02 * (t_off,k - t_on,k)
@@ -344,7 +477,7 @@ y(t) = L_base + SUM_{k=1..n} ( L_top,k + droop * (t - t_on,k) - L_base ) * gate_
 
 개별 펄스 파라미터를 그대로 피처로 쓰면 차원이 폭발하고, 펄스 개수가 웨이퍼마다 다르면 정렬 자체가 불가능하다. **반드시 집계 통계로 고정 차원화한다.**
 
-#### 1.2.5 TRIANGLE (single)
+#### 2.2.5 TRIANGLE (single)
 
 ```
 y(t) = baseline + A_peak * [ sat( (t - t_start) / (t_peak - t_start) )
@@ -359,7 +492,7 @@ y(t) = baseline + A_peak * [ sat( (t - t_start) / (t_peak - t_start) )
 **`A_peak` 는 부호를 갖는다 — 골짜기는 `A_peak < 0` 인 `T1` 이다.** 위 평균함수는
 `A_peak` 가 음수여도 그대로 성립하며, `sat` 두 개의 차가 여전히 게이트이고 그
 게이트에 음의 진폭이 곱해질 뿐이다. 그래서 골짜기를 받자고 클래스를 새로 두지
-않는다 — §1.1의 "중복 클래스는 두지 않는다" 가 여기에도 적용되며, 봉우리와
+않는다 — §1.2의 "중복 클래스는 두지 않는다" 가 여기에도 적용되며, 봉우리와
 골짜기는 같은 평균함수의 부호 차이일 뿐이다. 파라미터 수도 5 로 그대로다.
 
 - `t_peak` — SG 평활 후 `|x − baseline|` 이 최대인 시각. 봉우리면 `argmax`,
@@ -377,7 +510,7 @@ y(t) = baseline + A_peak * [ sat( (t - t_start) / (t_peak - t_start) )
 `area`와 `t_peak`는 매우 안정적이다.
 **피처 우선순위: `area` > `t_peak` > `FWHM` > `A_peak`.**
 
-#### 1.2.6 TRIANGLE (multi) / SAWTOOTH
+#### 2.2.6 TRIANGLE (multi) / SAWTOOTH
 
 ```
 y(t) = baseline + A_peak * SUM_{k=1..n} [ sat( (t - t_start,k) / (t_peak,k - t_start,k) )
@@ -396,7 +529,7 @@ y(t) = baseline + A_peak * SUM_{k=1..n} [ sat( (t - t_start,k) / (t_peak,k - t_s
 - `A_trend` — 사이클별 정점 진폭의 회귀 기울기 (사이클 간 드리프트).
 - `k_up_cv` — 상승 기울기의 사이클 간 변동계수.
 
-#### 1.2.7 CONSTANT (`Q1`), QUANTIZED OSCILLATION (`Q2`~`Q9`) and OSCILLATION (`O`)
+#### 2.2.7 CONSTANT (`Q1`), QUANTIZED OSCILLATION (`Q2`~`Q9`) and OSCILLATION (`O`)
 
 진동을 단일 클래스로 두면 안 된다. **계측 아티팩트와 실제 물리 진동을 반드시 분리해야 한다.**
 판별 도구: 값 히스토그램 + Welch PSD + 자기상관(ACF) 3종.
@@ -468,126 +601,7 @@ Parseval 에 의해 트레이스 분산 그 자체다(상수는 `J = (N−1)/2` 
 
 **웨이퍼 간 비교는 `center` 궤적으로만 수행하고, `bandwidth`는 별도 센서 건전성 지표로 분리 관리한다.**
 
-### 1.3 Column Class Axes
-
-Structured data manifest 는 열 하나에 여섯 개의 class axis 로 label 을 붙인다. 그 어휘와 Table 1 의 chart class 가 어떻게 이어지는지를 이 절이 정한다. **두 어휘는 경쟁하는 것이 아니라 같은 형상을 다른 해상도로 부르는 것이다.** Table 1 은 재현 파라미터까지 딸린 모델족이고, manifest 의 label 은 그 모델족을 몇 무리로 접은 이름표다.
-
-접는 이유는 쓰는 자리가 다르기 때문이다. 열 하나에 label 하나를 적는 profile 은 파라미터를 담지 않으므로 `R1` 과 `R2` 를 가릴 필요가 없고, 반대로 벡터를 만드는 자리에서는 `n` 이 몇인지가 벡터 크기를 정하므로 반드시 갈라야 한다.
-
-#### 1.3.1 Axes And Scope
-
-Table 3. The six class axes and what this document does with each
-
-| Axis | Label | Handling here |
-|---|---|---|
-| `activity` | `active`, `inactive` | 이름은 같고 판정 기준이 다르다 (§1.3.6) |
-| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `numeric` 인 열만 다룬다 |
-| `structure` | `scalar`, `vector`, `matrix`, `trace` | `trace` 인 열만 다룬다 |
-| `array_length` | `fixed`, `variable` | 형상 판정을 가르지 않는다 |
-| `trace_quantum` | `q1`, `qn`, `infinite` | chart class 로 잇는다 (§1.3.5) |
-| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | chart class 로 잇는다 (§1.3.4) |
-
-**이 문서의 판정 대상은 `value_type` 이 `numeric` 이고 `structure` 가 `trace` 인 열이다.** 크기를 갖지 않는 값에는 기울기도 진폭도 정의되지 않고, 시간 순서가 없는 배열에는 되돌릴 파형이 없다. 나머지 조합의 열은 이 문서의 어휘로 부를 수 없으며, manifest 에서 `trace_shape` 를 아예 갖지 않는 열이 그것이다.
-
-`array_length` 는 label 이 무엇이든 형상 판정을 바꾸지 않는다. 임계값이 모두 window 에 대한 비율이거나 표본 수의 비이기 때문이다 (§1.3.3). 다만 `variable` 인 열은 window 가 행마다 다르므로, 판정에 쓴 window 를 행 단위로 남겨야 같은 label 이 같은 뜻을 갖는다.
-
-#### 1.3.2 Trace Shape Labels
-
-Table 4. `trace_shape` labels
-
-| Label | Rule |
-|---|---|
-| `flat` | Window 에서 값이 변하지 않는다 |
-| `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 `dwell_ratio` 배 이상 길다 |
-| `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
-| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 `ramp_fraction` 이상을 차지한다 |
-| `oscillation` | Autocorrelation 에 `acf_peak` 이상의 peak 이 일정한 간격으로 나타난다 |
-| `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
-
-여섯 규칙은 서로 겹치므로 **판정 순서가 정의의 일부다.** 평탄한 trace 는 한 방향으로만 움직이는 구간이 window 전체를 덮기도 하고, pulse 열은 autocorrelation 에도 걸린다. 위 표의 순서대로, 가장 좁은 규칙부터 시험한다.
-
-`irregular` 는 앞의 다섯이 받지 못한 trace 를 받아 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙과 그 임계값에 매여 있다는 것이다.
-
-#### 1.3.3 Thresholds
-
-Table 5. Thresholds the labels depend on
-
-| Threshold | Default | Used by |
-|---|---|---|
-| `dwell_ratio` | 5.0 | `rectangle` — 머문 표본 수 대 이동 표본 수의 하한 |
-| `kappa` | 0.7 | `triangle` — 평탄도 `κ = W_90 / W_50` 의 상한 (§1.1) |
-| `slope_tolerance` | 3.0 | `triangle` — 두 플랭크 기울기 크기의 비의 상한 |
-| `ramp_fraction` | 0.8 | `ramp` — 단조 구간이 덮어야 하는 window 비율 |
-| `acf_peak` | 0.6 | `oscillation` — autocorrelation peak 높이의 하한 |
-| `peak_jitter` | 0.25 | `oscillation` — peak 간격의 상대 편차 상한 |
-
-임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, **임계값을 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.** 판정 결과를 적을 때는 위 값들을 함께 적는다.
-
-`triangle` 은 §1.2.5 대로 `x` 와 `−x` 양쪽에서 시험한다. `A_peak` 가 부호를 갖는 것과 같은 사실이며, `κ` 는 정류한 신호에서 잰다 (§1.1).
-
-#### 1.3.4 Mapping To The Chart Classes
-
-Table 6. `trace_shape` label to chart class
-
-| `trace_shape` | Chart class | Note |
-|---|---|---|
-| `flat` | `Q1` | 준위가 하나뿐이라 변할 곳이 없다. `trace_quantum` 의 `q1` 과 같은 사실이다 |
-| `rectangle` | `R1`, `R1s`, `R2` | 사다리꼴은 `t_rise`·`t_fall` 이 큰 `R1` 이므로 여기 속한다 |
-| `triangle` | `T1`, `T2` | 좁은 봉우리는 폭이 작은 `T1`, 골짜기는 `A_peak` 가 음수인 `T1` 이다 |
-| `ramp` | `S1` (`t_rise` 가 큰 경우) | 램프는 전이가 window 를 덮을 만큼 완만한 `S1` 이다 (§1.2.2) |
-| `oscillation` | `O2`, `O3`, `O4`, `Q2`~`Q9` | 격자 위의 왕복과 격자 밖의 진동이 이 label 로 함께 접힌다 |
-| `irregular` | 없음 | 어느 class 도 형상을 설명하지 못한 경우이므로 대응하는 class 가 없다 |
-
-**대응은 일대일이 아니고, 양쪽 모두에 빈자리가 있다.**
-
-- `S1` 의 급준한 계단과 `S2` 는 `trace_shape` 에 대응하는 label 이 없다. 단조 구간이 짧아 `ramp` 에 걸리지 않고 두 level 에 머무는 시간이 조건을 채우지 못해 `rectangle` 에도 걸리지 않으므로 `irregular` 로 떨어진다. 계단이 흔한 데이터라면 `trace_shape` 만으로는 그 사실을 볼 수 없다.
-- `irregular` 에 대응하는 class 가 없는 것은 설계상 그렇다. Table 1 은 형상을 주장하는 모델족의 목록이고, `irregular` 는 주장이 실패했다는 표시다.
-- `Q2`~`Q9` 와 `O` 가 한 label 로 접히므로, 계측 아티팩트와 실제 물리 진동의 구분(§1.2.7)이 `trace_shape` 에서는 사라진다. 그 구분이 필요하면 `trace_quantum` 을 함께 읽어야 한다.
-
-#### 1.3.5 Trace Quantum And The Chart Classes
-
-Table 7. `trace_quantum` label to chart class
-
-| `trace_quantum` | Chart class | Note |
-|---|---|---|
-| `q1` | `Q1` | 준위가 하나뿐이다. `trace_shape` 의 `flat` 과 같은 사실이다 |
-| `qn` | `Q2`~`Q9` | LSB 격자 위 `m` 개 준위를 오간다. 이 문서는 `m <= 9` 까지만 격자로 보고 그 위는 `O` 로 넘긴다 (§1.2.7) |
-| `infinite` | `S`, `R`, `T`, `O` 계열 전부 | 준위에 머물지 않으므로 `Q` 계열을 뺀 나머지가 모두 여기 속한다 |
-
-두 어휘가 같은 경계를 쓴다. manifest 가 `qn` 과 `infinite` 를 가르는 기준은 값이 셀 수 있는 준위 위에 머무는가이고, 이 문서가 `Q` 계열과 나머지를 가르는 기준도 값이 LSB 격자 몇 칸에 갇히는가이다 (§1.2.7). 다른 점은 이 문서가 그 칸 수에 `m <= 9` 라는 상한을 두어, 준위가 그보다 많으면 격자를 주장하지 않고 진동으로 본다는 것이다.
-
-`infinite` 는 열 개가 넘는 class 를 한 label 로 접으므로 형상에 대해서는 아무것도 말하지 않는다. 그 열의 형상은 `trace_shape` 가 답하고, 되돌릴 파라미터는 Table 1 이 답한다.
-
-#### 1.3.6 Activity
-
-manifest 의 `activity` 는 결측을 뺀 행 사이에 서로 다른 cell 값이 둘 이상 있는지로 판정하고, 무엇과 무엇을 비교했는지를 `row` 와 `entity` 중 하나로 함께 남긴다. 이 문서의 ACTIVE / INACTIVE 는 웨이퍼 축 전체에서 같은 class 와 불변 파라미터가 나오는지로 판정한다 (§1.1).
-
-**두 판정은 이름이 같고 견주는 것이 다르다.** manifest 는 cell 값을 그대로 견주므로 잡음만 실린 trace 도 값이 달라 `active` 가 된다. 이 문서는 적합된 class 와 파라미터를 견주므로 같은 trace 를 INACTIVE 로 볼 수 있다. 따라서 manifest 의 `active` 는 이 문서의 INACTIVE 를 배제하지 않으며, 두 값을 같은 뜻으로 읽으면 벡터에서 빼야 할 센서를 남기게 된다.
-
-#### 1.3.7 Which Vocabulary To Use
-
-Table 8. Choosing between the two
-
-| Question | Vocabulary |
-|---|---|
-| 이 열에 무엇이 담겨 있는가 | `trace_shape` — label 하나로 답한다 |
-| 이 트레이스를 되돌리려면 무엇을 저장해야 하는가 | Table 1 의 class — 재현 파라미터가 딸려 있다 |
-| 이 센서가 웨이퍼마다 같은 형상인가 | Table 1 의 class — `class_stability`(§6)가 이 어휘 위에서 정의된다 |
-| 열 백 개를 한 표로 훑어야 한다 | `trace_shape` — 여섯 칸이면 표가 읽힌다 |
-
-`trace_shape` 로 적은 열을 나중에 벡터화하려면 Table 6 를 거슬러 올라가 class 를 다시 판정해야 한다. 접는 과정에서 `n` 과 파라미터가 버려지기 때문이며, 그래서 **`trace_shape` 는 요약이지 중간 산출물이 아니다.**
-
-## 2. MTSV
-
-MTSV의 벡터 크기는 Table 1의 parameter count로 결정된다. Events = 1 인
-클래스는 이미 고정 크기 벡터이므로 추가 축소가 필요 없다. 반면
-Events = n 인 클래스(`S2`, `R2`, `T2`, `O`)는 벡터 크기가 이벤트 수 n에
-비례한다(3n류). 그래서 벡터를 만들기 전에 먼저 **cycle count**(§2.1)를 세어
-반복이 있는지부터 가른다. 반복이 있고 그것이 **규칙적(periodic)**이면
-이벤트 목록을 고정 크기 벡터로 줄일 수 있으므로 periodic(§2.2)으로,
-불규칙하면 non-periodic(§2.3)으로 처리한다.
-
-### 2.1 Cycle Count
+### 2.3 Cycle Count
 
 트레이스가 같은 형상을 몇 번 반복하는지를 세는 값이다. **분류(§3)에 앞서
 정하며, cycle count 가 후보 클래스를 단일 이벤트 계열과 반복 계열로 가른다.**
@@ -613,7 +627,7 @@ Events = n 인 클래스(`S2`, `R2`, `T2`, `O`)는 벡터 크기가 이벤트 �
   단일 펄스·단일 정점(`R1`, `T1`)이 모두 여기 속한다.
 - `cycle ≥ 2` — 반복 있음. 펄스 열(`R2`)·톱니(`T2`)·다중 준위 전이(`S2`)다.
 
-**cycle count 는 Table 1 의 `Events` 와 다르다.** `Events = n` 은 모델 차수,
+**cycle count 는 Table 8 의 `Events` 와 다르다.** `Events = n` 은 모델 차수,
 즉 이벤트(엣지·펄스·정점) 블록의 개수일 뿐이다. 상승부가 두 단계로 꺾인
 펄스 하나는 엣지가 3개라 `Events = 3` 이지만 극대는 1개뿐이므로
 `cycle = 1` 이다. 반복이 아닌 것을 반복 클래스로 판정하는 일을 막는 것이
@@ -636,13 +650,13 @@ cycle count 를 먼저 세는 이유다.
 
 주기성 판별(periodic / non-periodic): cycle count 가 정해진 뒤 같은 극성
 극점의 시각 `t_k` 로 `T_period = mean(Δt)`, `jitter = std(Δt)/mean(Δt)` 를
-구해 `cycle ≥ 3` 이고 `jitter ≤ 0.1` 이면 periodic(§2.2), 그 외는
-non-periodic(§2.3)이다. `O` 처럼 극점 경계가 불명확하면 ACF
+구해 `cycle ≥ 3` 이고 `jitter ≤ 0.1` 이면 periodic(§2.4), 그 외는
+non-periodic(§2.5)이다. `O` 처럼 극점 경계가 불명확하면 ACF
 ([Appendix B.1](#b1-autocorrelation-function-acf))의 주기적 피크나 Welch PSD
 ([Appendix B.2](#b2-welch-power-spectral-density-psd))의 우세 피크로 보조
-판정한다 (§1.2.7의 O2 판별과 같은 도구).
+판정한다 (§2.2.7의 O2 판별과 같은 도구).
 
-### 2.2 Periodic Chart
+### 2.4 Periodic Chart
 
 이벤트별 목록 대신 반복의 통계만 저장한다 (periodic summary). n이 아무리
 커도 벡터 크기가 고정된다.
@@ -661,7 +675,7 @@ non-periodic(§2.3)이다. `O` 처럼 극점 경계가 불명확하면 ACF
   파형 재현 검증이 불가능해진다. `O`처럼 통계 재현(이벤트 수·주기·duty
   분포의 일치)으로 confidence를 측정한다.
 
-### 2.3 Non-Periodic Chart
+### 2.5 Non-Periodic Chart
 
 이벤트 목록 = 이벤트마다 파라미터 튜플을 그대로 저장하는 형태
 (예: `R2`의 `(t_on, t_off, L_top)` × n — 크기가 3n에 비례; 1+3n, 2+3n도 같은
@@ -682,7 +696,7 @@ non-periodic(§2.3)이다. `O` 처럼 극점 경계가 불명확하면 ACF
     `mu(y)`, `stdev(y)`, `min(y)`, `max(y)`, `count(y)`,
     `mu(Δt)`, `stdev(Δt)`, `min(Δt)`, `max(Δt)`.
   - n·주기성과 무관하게 항상 적용 가능한 최소 고정 벡터. 위상과 개별
-    이벤트 정보를 포기하므로 검증은 통계 재현(§2.2와 동일)으로 한다.
+    이벤트 정보를 포기하므로 검증은 통계 재현(§2.4와 동일)으로 한다.
 - **방법 D — AUC (스칼라 1개)**
   - `AUC = ∫(x − baseline) dt` — 트레이스 전체(또는 이벤트별 면적의 합)의
     누적 면적으로, 총 투입량(총 유량·총 전력량·총 아킹 에너지)을 1개
@@ -696,10 +710,10 @@ non-periodic(§2.3)이다. `O` 처럼 극점 경계가 불명확하면 ACF
 
 ## 3. Chart Classification
 
-트레이스 1개를 Table 1의 클래스 하나로 판정한다. 판정 원리는 **penalized
+트레이스 1개를 Table 8의 클래스 하나로 판정한다. 판정 원리는 **penalized
 maximum likelihood**다 — 각 클래스를 하나의 모수적 모델로 보고 maximum
 likelihood로 적합한 뒤, **파라미터 수로 penalize한 BIC가 최소인 클래스를
-채택**한다. 클래스 체계(§1.1)와 재현 파라미터(Table 1)가 이미 모델족과
+채택**한다. 클래스 체계(§1.2)와 재현 파라미터(Table 8)가 이미 모델족과
 그 복잡도를 정의하고 있으므로, 분류에 새로 도입하는 것은 penalty 항
 하나뿐이다.
 
@@ -708,7 +722,7 @@ likelihood로 적합한 뒤, **파라미터 수로 penalize한 BIC가 최소인 
 
 - **별표 마디는 전부 선행 판별(§3.1)이다** — 적합 없이 정의로 정해진다.
   다만 하는 일이 두 가지다.
-- `INACTIVE*`/`ACTIVE*`(§1.1의 Activity Check)·`Q1*`·`Qn*` 은 **클래스를
+- `INACTIVE*`/`ACTIVE*`(§1.5의 Activity Check)·`Q1*`·`Qn*` 은 **클래스를
   확정**한다. 걸리면 거기서 끝이다.
 - `cyclic*` / `acyclic*` 은 클래스를 고르는 것이 아니라 **후보 집합을 줄인다** —
   `cycle = 1` 이면 `{S1, R1, T1, O}`, `cycle ≥ 2` 면 `{S2, R2, T2, O}` 만 남는다.
@@ -720,17 +734,17 @@ likelihood로 적합한 뒤, **파라미터 수로 penalize한 BIC가 최소인 
 ```
 root
 ├── INACTIVE*          identical chart on every wafer  -> excluded from the vector
-│                                                          (Activity Check, §1.1)
+│                                                          (Activity Check, §1.5)
 └── ACTIVE*            varies across wafers  (= not INACTIVE)
      │
      ├── Q1*           CONSTANT — one quantum, no oscillation
      │                 chart_class_Qn(),  m = 1
      │
      ├── Qn*           QUANTIZED OSCILLATION,  n = 2..9
-     │                 n = number of distinct levels on an LSB grid  (§1.2.7)
+     │                 n = number of distinct levels on an LSB grid  (§2.2.7)
      │                 chart_class_Qn()
      │
-     ├── cyclic*       cycle >= 2  (§2.1)              -> repetition classes
+     ├── cyclic*       cycle >= 2  (§2.3)              -> repetition classes
      │    ├── S2        STEP (multi)
      │    ├── R2        RECTANGLE (multi)
      │    ├── T2        SAWTOOTH
@@ -739,7 +753,7 @@ root
      │         ├── O3    bang-bang
      │         └── O4    broadband
      │
-     └── acyclic*      cycle = 1  (§2.1)               -> single-event classes
+     └── acyclic*      cycle = 1  (§2.3)               -> single-event classes
           ├── S1        STEP (single)
           ├── R1        RECTANGLE (single),  kappa >= 0.7
           │    ├── R1   no small signal on the plateau
@@ -753,7 +767,7 @@ root
 
 *Fig. 3. Chart class search tree. **An asterisk marks a pre-classification
 node (§3.1) — decided by definition alone, before any fitting.** Two kinds:
-`INACTIVE*` / `ACTIVE*` (the Activity Check of §1.1), `Q1*` and `Qn*` **terminate** (the trace is classified there and
+`INACTIVE*` / `ACTIVE*` (the Activity Check of §1.5), `Q1*` and `Qn*` **terminate** (the trace is classified there and
 nothing below runs — no cycle count, no MLE fit, no BIC), while `cyclic*` and
 `acyclic*` **prune** (they pick no class, they only cut the candidate set that
 goes to the fit). Everything under the pruning nodes is fitted and settled by
@@ -787,19 +801,19 @@ Fig. 3에서 별표가 붙은 마디(`INACTIVE*`·`ACTIVE*`·`Q1*`·`Qn*`·`cycl
 이유가 없다. 선행 처리는 세 가지이며 순서대로 진행한다. **2 에서 확정되면 그
 트레이스는 거기서 끝난다** — cycle count 도, 적합도, BIC 도 돌지 않는다.
 
-1. **Activity Check** — INACTIVE 센서·웨이퍼를 먼저 제외한다 (§1.1). 값만
+1. **Activity Check** — INACTIVE 센서·웨이퍼를 먼저 제외한다 (§1.5). 값만
    읽어서 판정하므로 분류 비용이 들지 않으며, 본 데이터에서 센서 128개 중
    78개가 여기서 빠진다. 웨이퍼 축 전체를 봐야 내려지는 판정이므로 트레이스
    단위 처리보다 먼저 와야 한다.
 2. **`Q1`~`Q9` 확정** (`chart_class_Qn()`) — 값이 LSB 격자 위 `m` 개 준위만
    가지면(`m ≤ 9`, `A ≤ (m−1+0.5)·LSB`) 형상이 아니라 분해능 바닥의
    왕복이므로 적합할 결정형 모델이 없다. **`Qm` 으로 확정하고
-   `q_1`…`q_m` 을 바로 뽑는다** (§1.2.7).
+   `q_1`…`q_m` 을 바로 뽑는다** (§2.2.7).
    **`m = 1` 은 `Q1` CONSTANT 다** — quantum 이 하나면 진동이 성립하지
    않으므로 DETERMINISTIC 이고 `q_1` 하나만 저장한다(`k = 1`). 어떤 클래스로
    적합해도 잔차가 0이라 파라미터가 가장 적은 것이 이긴다. 표본이 너무
    적어(`N < 8`) 어떤 모델도 식별되지 않는 경우도 여기서 `Q1` 로 둔다.
-3. **cycle count 확정** — 위에서 걸러지지 않은 트레이스만 대상이다. §2.1의
+3. **cycle count 확정** — 위에서 걸러지지 않은 트레이스만 대상이다. §2.3의
    cycle count 로 후보 집합 자체를 단일 이벤트 계열과 반복 계열로 가른다.
    적합 횟수가 절반 이하로 줄고, 반복이 아닌 트레이스가 반복 클래스로
    판정되는 일이 사라진다.
@@ -811,14 +825,14 @@ Fig. 3에서 별표가 붙은 마디(`INACTIVE*`·`ACTIVE*`·`Q1*`·`Qn*`·`cycl
 
 - `x = (x_1, …, x_N)` — 판정 대상 트레이스. 웨이퍼 1장에서 센서 1개가 기록한 시계열 하나다.
 - `N` — 트레이스의 샘플 수.
-- `i` — 샘플 인덱스, `i = 1 … N`. Table 1의 반복 수 `n`과 구별한다.
+- `i` — 샘플 인덱스, `i = 1 … N`. Table 8의 반복 수 `n`과 구별한다.
 - `t_i` — `i`번째 샘플의 시각.
 - `x_i` — `t_i`에서의 관측값.
-- `C` — Table 1이 정의하는 후보 클래스의 집합. `c ∈ C`가 개별 후보 클래스다.
-- `θ_c` — 클래스 `c`의 **재현 파라미터 벡터**. 성분 목록은 Table 1의
+- `C` — Table 8이 정의하는 후보 클래스의 집합. `c ∈ C`가 개별 후보 클래스다.
+- `θ_c` — 클래스 `c`의 **재현 파라미터 벡터**. 성분 목록은 Table 8의
   Reconstruction parameters 열이 클래스마다 지정한다 (예: `c = S1`이면
   `θ_c = (L0, L1, t_edge, t_rise)`). MTSV가 저장하는 벡터가 바로 이것이다.
-- `k_c` — `θ_c`의 성분 개수 `dim(θ_c)`. Table 1의 parameter count 열과 같다.
+- `k_c` — `θ_c`의 성분 개수 `dim(θ_c)`. Table 8의 parameter count 열과 같다.
 - `f_c(t; θ_c)` — 클래스 `c`의 **평균함수**. `θ_c`만으로 결정되는 이상화된
   파형이며, §5.2의 클래스별 재현 모델과 같은 함수족이다.
 - `ε_i` — `t_i`에서의 **잔차항**. 관측값이 평균함수에서 벗어난 양
@@ -857,7 +871,7 @@ log-likelihood는 `SSE_c(θ̂_c)`만의 함수로 남는다.
 
 ### 3.4 Raw Likelihood Alone Is Not a Decision Rule
 
-Table 1의 모델족은 **nested**다 — `S1 ⊂ R1 ⊂ R2`, `S1 ⊂ S2`,
+Table 8의 모델족은 **nested**다 — `S1 ⊂ R1 ⊂ R2`, `S1 ⊂ S2`,
 `T1 ⊂ T2`처럼 상위 클래스는 하위 클래스를 파라미터의 특수해로 포함한다.
 따라서 `argmax_c ℓ̂_c`는 **항상 `k_c`가 가장 큰 클래스를 고른다**.
 `SSE_c`는 자유도가 늘면 단조 감소하므로 이 순위는 데이터가 무엇이든
@@ -875,7 +889,7 @@ class = argmin_{c ∈ C} BIC_c
   클래스 공통 상수를 뺀 적합도 항과, `k_c`에 비례하는 penalty 항의 합이다.
   **작을수록 좋다.**
 - `N_eff` — 유효 표본 수. 정의는 §3.6.
-- `k_c`는 **Table 1의 parameter count 열을 그대로** 쓴다. 복잡도 정의를
+- `k_c`는 **Table 8의 parameter count 열을 그대로** 쓴다. 복잡도 정의를
   분류 절이 따로 만들지 않는다는 뜻이다.
 - `σ²`가 더하는 자유도 1은 모든 클래스에 공통이므로 argmin 순위에
   영향을 주지 않는다. 생략해도 되고 넣어도 결과가 같다.
@@ -966,7 +980,7 @@ likelihood**를 쓰면 DETERMINISTIC 클래스와 **같은 축의 값**이 나�
 x_i = c(t_i; θ_center) + u_i
 ```
 
-- `c(t; θ_center)` — 중심선. Table 1의 `center (n)`, 즉 `n`개 노드를 잇는
+- `c(t; θ_center)` — 중심선. Table 8의 `center (n)`, 즉 `n`개 노드를 잇는
   조각선형 궤적이다. 파라미터 수는 `n`.
 - `u_i` — 중심선을 뺀 나머지. 평균 0의 정상 확률과정으로 보고, 이
   과정의 스펙트럼 밀도가 `S(ω; θ_spec)`다.
@@ -985,11 +999,11 @@ x_i = c(t_i; θ_center) + u_i
 | `O3` 뱅뱅 | `σ_w² + Σ_{k≥1} A_k²·γ² / ((ω − k·ω_0)² + γ²)`,  `A_k = A·sin(πkD)/(πk)` | `A`, `ω_0`, `γ`, `D`, `σ_w²` | 5 | 구형파 고조파 열. `D`가 고조파 세기를 정하므로 duty가 스펙트럼에서 직접 추정된다 |
 | `O4` 광대역 | `σ_w² + σ_b² / (1 + (ω / ω_c)^α)` | `σ_b²`, `ω_c`, `α`, `σ_w²` | 4 | peak 없는 감쇠 스펙트럼. 센서 잡음(α≈0) 또는 난류(α>0) |
 
-- `ω_0` — 기본 각주파수 `2π·f_dom` (rad/sample). `f_dom`은 Table 1의 진동
+- `ω_0` — 기본 각주파수 `2π·f_dom` (rad/sample). `f_dom`은 Table 8의 진동
   주파수와 같은 값이다.
 - `γ` — peak의 반치 반폭(rad/sample). `Q = ω_0 / (2γ)`로 환산되며 값이
   작을수록 순수한 정현 진동이다.
-- `A` — peak 성분의 진폭 척도. `bandwidth ≈ 2√2·A` 로 Table 1의
+- `A` — peak 성분의 진폭 척도. `bandwidth ≈ 2√2·A` 로 Table 8의
   `bandwidth`와 대응한다.
 - `D` — duty (`O3`). 정의는 Appendix A.
 - `σ_w²` — 주파수에 무관한 백색 바닥. 센서 잡음 + 양자화 잔여.
@@ -1048,13 +1062,13 @@ partition    F(b) = min_{a < b} [ F(a) + C(a, b) + lambda ]        F(0) = −lam
 분할 결과에서 클래스 파라미터를 직접 읽는다 — breakpoint가 `t_edge`·`t_on`·
 `t_off`·`t_start`·`t_peak`이고, 세그먼트 절편·기울기가 `L0`·`L1`·`L_base`·
 `L_top`·`slope`·`droop`이다. 세그먼트 개수와 기울기 부호 패턴이 클래스를
-가르며, 경계가 겹치는 클래스(`R1` vs `T1`)만 §1.1의 형상 경계로
+가르며, 경계가 겹치는 클래스(`R1` vs `T1`)만 §1.2의 형상 경계로
 갈라낸다.
 
-**cycle count 로 후보를 먼저 가른다** (§2.1). 분할이 주는 것은 이벤트 수 `n`
+**cycle count 로 후보를 먼저 가른다** (§2.3). 분할이 주는 것은 이벤트 수 `n`
 의 상한일 뿐이어서, 반복이 없는 트레이스도 엣지만 여럿이면 `S2` 같은 반복
 클래스가 후보로 들어온다. 이런 모델은 어떤 형상에나 잘 맞는 만능 적합이 되어
-BIC 를 이기고, 형상 정보가 없는 라벨을 남긴다. 그래서 §2.1의 cycle count 로
+BIC 를 이기고, 형상 정보가 없는 라벨을 남긴다. 그래서 §2.3의 cycle count 로
 후보 집합 자체를 제한한다.
 
 - `cycle = 1` → `{S1, R1, T1}` 만 적합한다.
@@ -1100,7 +1114,7 @@ BIC는 **후보들 사이의 상대 순위**만 말하고, 채택된 모델이 �
 ### 4.2 Derived Diagnostic Parameters
 
 `θ̂` 만으로는 재현이 되지만, 이상 진단에는 잔차와 구간 통계가 더 필요하다.
-정의는 §1.2의 클래스별 표에 있고, 계산은 적합이 끝난 뒤 한 번 더 훑어서 한다.
+정의는 §2.2의 클래스별 표에 있고, 계산은 적합이 끝난 뒤 한 번 더 훑어서 한다.
 
 | 종류 | 계산 방법 | 해당 파라미터 |
 |---|---|---|
@@ -1112,7 +1126,7 @@ BIC는 **후보들 사이의 상대 순위**만 말하고, 채택된 모델이 �
 
 Events = n 클래스는 개별 이벤트 파라미터를 그대로 피처로 쓰면 차원이
 폭발하고 이벤트 수가 웨이퍼마다 달라 정렬이 불가능하다. **반드시 집계 통계로
-고정 차원화한다** (§2.2의 periodic summary와 같은 원리).
+고정 차원화한다** (§2.4의 periodic summary와 같은 원리).
 
 ### 4.3 When the Class Is Ambiguous
 
@@ -1124,7 +1138,7 @@ Events = n 클래스는 개별 이벤트 파라미터를 그대로 피처로 쓰
 
 - `ΔBIC < 5` 인 (웨이퍼 × 센서)는 **모호(ambiguous)** 로 표기하고 그대로 쓰지
   않는다. §6의 `class_stability` 집계에서도 분리한다.
-- 형상 경계가 정의된 쌍(`R1` vs `T1`)은 §1.1의 경계 규칙
+- 형상 경계가 정의된 쌍(`R1` vs `T1`)은 §1.2의 경계 규칙
   (플랭크 선형성 `R²`, 평탄도 `κ = W_90/W_50`)으로 사후 확정한다.
 - 실제 형상이 웨이퍼마다 다른 경우(`ΔBIC` 가 큰데도 클래스가 갈림)는 분류기
   문제가 아니라 FDC 신호다. `ΔBIC` 임계값으로 두 갈래를 먼저 분리한 뒤에야
@@ -1197,7 +1211,7 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 - `s` — 대상 센서 하나 (`x_machine_` 컬럼 하나).
 - `W` — 판정에 쓴 **ACTIVE wafer 의 집합**. INACTIVE wafer 는 넣지 않는다.
 - `w` — `W` 의 원소, 즉 웨이퍼 1장.
-- `C` — Table 1 의 클래스 코드 집합 `{Q1, Q2…Q9, S1, S2, R1, R1s, R2, T1, T2, O2, O3, O4}`.
+- `C` — Table 8 의 클래스 코드 집합 `{Q1, Q2…Q9, S1, S2, R1, R1s, R2, T1, T2, O2, O3, O4}`.
 - `c` — `C` 의 원소 하나, 즉 클래스 코드 하나.
 - `class(w, s)` — 웨이퍼 `w` 의 센서 `s` 가 §3에서 받은 채택 클래스 코드.
 - `{ w ∈ W : class(w, s) = c }` — `W` 중에서 센서 `s` 가 클래스 `c` 로 판정된
@@ -1237,22 +1251,22 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 
 - **ACF** — Autocorrelation Function. 주기 판별 도구, 정의는 Appendix B.1.
 - **Archetype** — chart class가 대표하는 이상화된 파형 원형. Fig. 2의 각 패널이 클래스별 archetype이다.
-- **AUC** — Area Under Curve. `∫(x − baseline) dt`, 총 투입량을 1개 스칼라로 요약하는 피처 (§2.3 방법 D).
+- **AUC** — Area Under Curve. `∫(x − baseline) dt`, 총 투입량을 1개 스칼라로 요약하는 피처 (§2.5 방법 D).
 - **Baseline** — 이벤트(엣지·펄스·정점) 전후에 신호가 머무는 기준 준위.
 - **BIC** — Bayesian Information Criterion. `N_eff·log(SSE/N) + k·log N_eff`. 클래스 선택의 판정 기준으로, 적합도와 파라미터 수를 함께 계산한다 (§3.5).
 - **Censored** — 값이 샘플링 분해능 한계보다 작아 측정 불가로 판정된 파라미터의 표기 (0으로 저장 금지).
 - **Changepoint** — 시계열의 통계적 성질(준위·기울기)이 바뀌는 시각. 후보 클래스 screening의 입력 (§3.8).
-- **Chart class** — 트레이스 파형의 형상 분류 코드. 전체 목록은 Table 1.
+- **Chart class** — 트레이스 파형의 형상 분류 코드. 전체 목록은 Table 8.
 - **class_stability** — 웨이퍼 간 동일 센서의 클래스 일치율. 최빈 클래스로 판정된 ACTIVE wafer 의 비율이며 정의는 §6.
 - **Corridor** — `center(n) ± bandwidth/2` 밴드. STOCHASTIC 클래스의 재현·검증 단위.
 - **DETERMINISTIC / STOCHASTIC** — 파형 자체를 재현하는 클래스 / 통계량만 재현하는 클래스 (Fig. 1).
 - **Droop** — plateau의 완만한 기울기. 타깃 침식·히터 열화·MFC 드리프트의 지표.
 - **DTW** — Dynamic Time Warping. 시간축을 뒤틀어 정렬하는 거리 척도 (Appendix C.2.1).
 - **Duty (D)** — 한 주기에서 ON 준위가 차지하는 시간 비율 `D = W / T`.
-- **Cycle count** — 트레이스가 같은 형상을 반복한 횟수. 극대(peak)·극소(valley)의 번갈아 나오는 개수로 세며, 분류 후보를 단일 이벤트 계열과 반복 계열로 가른다 (§2.1). **Events(모델 차수)와 다르다.**
+- **Cycle count** — 트레이스가 같은 형상을 반복한 횟수. 극대(peak)·극소(valley)의 번갈아 나오는 개수로 세며, 분류 후보를 단일 이벤트 계열과 반복 계열로 가른다 (§2.3). **Events(모델 차수)와 다르다.**
 - **Envelope** — 신호의 국소 극대/극소점을 이어 만든 상·하한 곡선.
-- **Quantum count** — `m` = 고유 준위 개수. `Q1`~`Q9` 클래스를 가르며, `m = 1` 은 상수(`Q1`), `m ≥ 2` 가 양자화 진동이다 (§1.2.7).
-- **Small signal** — 큰 신호(베이스라인·준위·엣지·`droop`)를 모델이 가져가고 남은 잔차 `u = x − x̂`. `R1` 플래토의 `u` 로 `R1s` 를 가른다 (§1.2.3).
+- **Quantum count** — `m` = 고유 준위 개수. `Q1`~`Q9` 클래스를 가르며, `m = 1` 은 상수(`Q1`), `m ≥ 2` 가 양자화 진동이다 (§2.2.7).
+- **Small signal** — 큰 신호(베이스라인·준위·엣지·`droop`)를 모델이 가져가고 남은 잔차 `u = x − x̂`. `R1` 플래토의 `u` 로 `R1s` 를 가른다 (§2.2.3).
 - **FDC** — Fault Detection and Classification. 장비 센서로 공정 이상을 감지·분류하는 시스템.
 - **FWHM** — Full Width at Half Maximum. 정점 높이의 절반에서 잰 파형 폭.
 - **Jitter** — 반복 이벤트 주기의 상대 변동 `std(Δt) / mean(Δt)`.
@@ -1263,15 +1277,15 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 - **Maximum likelihood** — 관측 데이터의 가능도를 최대로 만드는 파라미터 추정법. Gaussian 잡음 가정에서는 least squares와 일치한다 (§3.3).
 - **MTSV** — Minimal Time-Series Vectorization. 형상 재현 파라미터만 남겨 벡터 크기를 최소화하는 벡터화 (§2).
 - **N_eff** — Effective sample size. 잔차 자기상관을 반영한 독립 표본 수 (§3.6).
-- **Nested model** — 상위 모델이 하위 모델을 파라미터의 특수해로 포함하는 관계. Table 1의 클래스족이 여기 해당한다 (§3.4).
+- **Nested model** — 상위 모델이 하위 모델을 파라미터의 특수해로 포함하는 관계. Table 8의 클래스족이 여기 해당한다 (§3.4).
 - **NRMSE** — Normalized Root Mean Square Error. 파형 일치도 종합 점수, 정의는 Appendix C.
 - **PELT** — Pruned Exact Linear Time. changepoint 검출용 dynamic programming 알고리즘 (§3.8).
-- **Periodic / Non-periodic** — 반복 극점의 간격이 규칙적인가의 판정 결과 (§2.1).
+- **Periodic / Non-periodic** — 반복 극점의 간격이 규칙적인가의 판정 결과 (§2.3).
 - **Periodogram** — 단일 구간 FFT로 얻는 전력 스펙트럼 추정치 (Appendix B.2, §3.7).
 - **Plateau** — 준위가 일정하게 유지되는 평탄 구간.
-- **Polarity** — 정점이 baseline 위에 있는지 아래에 있는지. `A_peak` 의 부호로 적으며, 양수가 봉우리, 음수가 골짜기다. 별도 파라미터가 아니라 `A_peak` 의 부호다 (§1.2.5).
+- **Polarity** — 정점이 baseline 위에 있는지 아래에 있는지. `A_peak` 의 부호로 적으며, 양수가 봉우리, 음수가 골짜기다. 별도 파라미터가 아니라 `A_peak` 의 부호다 (§2.2.5).
 - **PSD** — Power Spectral Density. Welch 방법의 주기 판별, 정의는 Appendix B.2.
-- **Events** — 트레이스 안의 이벤트(엣지·펄스·정점·중심선 knot) 개수, 즉 모델 차수. 1(single) 또는 n(multi) (Table 1). **주기적 반복을 뜻하지 않는다** — 상승부가 두 단계로 꺾인 펄스도 엣지가 2개이므로 Events = 2 지만 cycle count 는 1이다.
+- **Events** — 트레이스 안의 이벤트(엣지·펄스·정점·중심선 knot) 개수, 즉 모델 차수. 1(single) 또는 n(multi) (Table 8). **주기적 반복을 뜻하지 않는다** — 상승부가 두 단계로 꺾인 펄스도 엣지가 2개이므로 Events = 2 지만 cycle count 는 1이다.
 - **Sensor** — 데이터의 `x_machine_` 접두 컬럼 하나. 웨이퍼 처리 동안 센서 1개가 기록한 계측 항목이며, 본 데이터에 128개 있다.
 - **Trace** — 웨이퍼 1장을 처리하는 동안 센서 1개가 기록한 시계열 `x = (x_1, …, x_N)`. 분류·파라미터 추출·재현의 입력 단위이며, 본 데이터에서 `N ≈ 748` 이다 (§3.2).
 - **Whittle likelihood** — 주파수 영역에서 정상 확률과정의 log-likelihood를 근사하는 식. STOCHASTIC 클래스를 같은 BIC 축에 올리는 데 쓴다 (§3.7).
@@ -1292,7 +1306,7 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
   스케일에 좌우되므로 비교 대상이 아니고, 판단은 같은 트레이스 안의 후보
   사이의 차이로만 한다 (§3.5).
 - **cycle count 와 `Events` 는 다른 값이다.** `Events` 는 모델 차수(파라미터
-  블록 개수), cycle count 는 극대·극소의 반복 횟수다 (§2.1).
+  블록 개수), cycle count 는 극대·극소의 반복 횟수다 (§2.3).
 - **`knot` 은 구간 선형 중심선이 꺾이는 점이다.** 스플라인 이론의 표준
   용어로, 다항식 조각들이 이어 붙는 마디를 뜻한다. `O` 클래스는 진동의
   파형을 재현하지 않고 **중심선(trend)** 만 재현하는데, 그 중심선을 `n` 개
@@ -1304,7 +1318,7 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 
   `knots_t` 는 `linspace(0, N−1, n)` 으로 **시간축에 등간격 고정**이고,
   `knots_y` 는 각 knot 주변 창의 중앙값이다. 즉 **자유 파라미터는 y 값 `n`
-  개뿐**이고, 그래서 Table 1 의 parameter count 가 `n + k_spec` 이다
+  개뿐**이고, 그래서 Table 8 의 parameter count 가 `n + k_spec` 이다
   (시각은 파라미터가 아니다). `n` 이 클수록 중심선이 더 굽어질 수 있으므로
   **`n` 은 추세의 모델 차수이지 반복 횟수가 아니다** — Fig. 3 에서 `O` 가
   cycle count 게이트를 받지 않는 이유가 이것이다. `n` 은 `1 … 9` 를 각각
@@ -1315,8 +1329,8 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 
 ## Appendix B — Time Series Period Separation
 
-반복 이벤트의 주기성 판별(§2.1)에 쓰는 두 도구. 이벤트 경계가
-불명확해 `Δt` 통계를 낼 수 없는 경우의 보조 판별이며, §1.2.7의 O2
+반복 이벤트의 주기성 판별(§2.3)에 쓰는 두 도구. 이벤트 경계가
+불명확해 `Δt` 통계를 낼 수 없는 경우의 보조 판별이며, §2.2.7의 O2
 판별에도 같은 도구를 쓴다.
 
 ### B.1 Autocorrelation Function (ACF)
@@ -1330,8 +1344,8 @@ r(τ) = Σ_t (x_t − x̄)(x_{t+τ} − x̄) / Σ_t (x_t − x̄)²      (r(0) =
 
 - 주기 `T`인 신호는 `τ = T, 2T, …` 에서 피크가 반복된다. 첫 유의 피크의
   위치가 `T_period` 추정치다.
-- 유의한 주기 피크가 없으면 non-periodic으로 판정한다 (§2.1의 보조 판별,
-  §1.2.7 O2 판별에 사용).
+- 유의한 주기 피크가 없으면 non-periodic으로 판정한다 (§2.3의 보조 판별,
+  §2.2.7 O2 판별에 사용).
 
 ### B.2 Welch Power Spectral Density (PSD)
 
@@ -1346,7 +1360,7 @@ P̂(f)  = (1/K) Σ_i P_i(f)
 
 - 우세 피크 주파수 `f_dom`의 역수 `1/f_dom`이 반복 주기다.
 - 피크 prominence > 10 dB 이면 periodic(제어 발진 포함)으로 판정한다
-  (§2.1의 보조 판별, §1.2.7 O2 판별에 사용). `scipy.signal.welch`로 계산.
+  (§2.3의 보조 판별, §2.2.7 O2 판별에 사용). `scipy.signal.welch`로 계산.
 
 ## Appendix C — Chart Agreement Metrics
 
@@ -1493,7 +1507,7 @@ x와 y 어긋남을 분리해 보고하려면 metric을 바꾸는 것보다 **�
 §3의 분류와 §5의 class_confidence를 구현한 CLI다. 입력은 웨이퍼 CSV의
 `x_machine_` 접두 센서 열이고, 출력은 센서별 클래스·파라미터·confidence다.
 
-이 script 는 본 문서와 같은 저장소에 있지 않다. `chart_index.py` 와 §1.2의
+이 script 는 본 문서와 같은 저장소에 있지 않다. `chart_index.py` 와 §2.2의
 도해를 그리는 `chart_class.py` 는 `Claude-Code` 저장소의 `Ultah/` 아래에 있다.
 본 문서는 규칙을 정하고 그 저장소가 규칙을 구현하므로, 어느 한쪽을 고치면
 다른 쪽의 절 번호를 함께 맞춰야 한다.
@@ -1509,10 +1523,10 @@ x와 y 어긋남을 분리해 보고하려면 metric을 바꾸는 것보다 **�
      ▼
  wafer_stats()                   collect (median, range, cycle) per sensor — no fit
      │                           cycle is kept per wafer, never folded
-     │   └─ cycle_count()            §2.1 number of peak/valley repetitions
+     │   └─ cycle_count()            §2.3 number of peak/valley repetitions
      │
      ▼
- activity_from_stats()           §1.1 Activity Check — done first
+ activity_from_stats()           §1.5 Activity Check — done first
      │   ├─ INACTIVE wafer  : every sensor invariant → dropped downstream
      │   └─ INACTIVE sensor : same value and spread on every ACTIVE wafer
      │                        → one representative value, never classified
@@ -1543,7 +1557,7 @@ x와 y 어긋남을 분리해 보고하려면 metric을 바꾸는 것보다 **�
             │                                     the partition
             │                                     (edges, peaks, pulse spans, resets)
             │
-            ├─ [pre 3 of §3.1]  split the candidate set by cycle count   §2.1
+            ├─ [pre 3 of §3.1]  split the candidate set by cycle count   §2.3
             │       ├─ acyclic  cycle = 1  : {S1, R1, T1}
             │       └─ cyclic   cycle >= 2 : {S2, R2, T2}, n = cycle +/- 1
             │       └─ loop c, n :  fit_*()       §3.3 MLE fit → SSE_c, k_c
@@ -1557,10 +1571,10 @@ x와 y 어긋남을 분리해 보고하려면 metric을 바꾸는 것보다 **�
             │
             ├─ (7) argmin BIC                     adopted class, dBIC
             │       └─ if {1st, 2nd} == {R1, T1} and dBIC < 5 :
-            │              plateau_ratio()        kappa >= 0.7 -> R1, else T1 (§1.1)
+            │              plateau_ratio()        kappa >= 0.7 -> R1, else T1 (§1.2)
             │
             ├─ (8) post-hoc refinement of the adopted class (not a BIC contest)
-            │       ├─ if adopted == R1 : small_signal()      §1.2.3
+            │       ├─ if adopted == R1 : small_signal()      §2.2.3
             │       │      plateau residual -> present ? R1s + (freq, p2p)
             │       └─ if adopted == O  : fit_o_subtypes()    §3.7.1
             │              loop O2, O3, O4         BIC argmin on the Whittle axis
@@ -1589,10 +1603,10 @@ definitions in this document; the class search space itself is Fig. 3.*
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `path` | 위치 인자 (필수) | — | 웨이퍼 CSV 파일 또는 CSV가 든 디렉터리. 파일이면 단일 웨이퍼 모드, 디렉터리면 전체 스윕 모드로 자동 전환된다 |
-| `--find` | `active` \| `class` \| `all` | `all` | 수행할 작업. `class` = 분류와 class_stability(§6)만, `active` = ACTIVE/INACTIVE 판정만 (§1.1 — 모든 웨이퍼에서 동일 차트면 INACTIVE), `all` = 둘 다 |
+| `--find` | `active` \| `class` \| `all` | `all` | 수행할 작업. `class` = 분류와 class_stability(§6)만, `active` = ACTIVE/INACTIVE 판정만 (§1.5 — 모든 웨이퍼에서 동일 차트면 INACTIVE), `all` = 둘 다 |
 | `--limit` | 정수 | `0` (무제한) | 디렉터리 모드에서 처리할 웨이퍼 수 상한. 시험 실행용 |
-| `--cycle-prominence` | 실수 | `0.25` | §2.1 극대·극소 판정 문턱 — 진폭 `A` 대비 prominence 비율. 값을 올리면 작은 흔들림이 cycle 로 세어지지 않는다 |
-| `--cycle-width` | 실수 | `0.02` | §2.1 극대·극소 최소 폭 — 표본 수 `N` 대비 비율. 값을 올리면 짧게 스치는 요동이 cycle 로 세어지지 않는다 |
+| `--cycle-prominence` | 실수 | `0.25` | §2.3 극대·극소 판정 문턱 — 진폭 `A` 대비 prominence 비율. 값을 올리면 작은 흔들림이 cycle 로 세어지지 않는다 |
+| `--cycle-width` | 실수 | `0.02` | §2.3 극대·극소 최소 폭 — 표본 수 `N` 대비 비율. 값을 올리면 짧게 스치는 요동이 cycle 로 세어지지 않는다 |
 | `--plot-unstable` | 플래그 | `False` | `class_stability < 1` 인 센서마다 웨이퍼별 트레이스를 matrix chart(10열)로 저장한다 |
 | `-j`, `--jobs` | 정수 | `1` | 병렬 프로세스 수. 코어 수 이하로 두는 것이 빠르다 (BLAS 스레드와 경합) |
 | `-o`, `--out` | 경로 | `None` (미저장) | 리포트 CSV를 쓸 디렉터리. 없으면 만든다 |
@@ -1625,8 +1639,8 @@ python chart_index.py data/CleanData#0V0 --find active
 | `confidence_matrix.csv` | 웨이퍼 1장 | 센서 1개 | `class_confidence` (§5, Appendix C.1.3) | `class`, `all` |
 | `class_count.csv` | chart class 1개 | `count` | 그 클래스로 판정된 (웨이퍼 × 센서) 건수. 많은 순 정렬 — `README.md` 의 **클래스 분포**와 같은 값이다 | `class`, `all` |
 | `class_stability.csv` | 센서 1개 | `major_class` · `class_stability` · `conf_mean` · `conf_min` | 최빈 클래스 / 웨이퍼 간 일치율 / confidence 평균 · 최솟값 | `class`, `all` |
-| `activity.csv` | 센서 1개 | `activity` | `ACTIVE` 또는 `INACTIVE` (§1.1) | `active`, `all` |
-| `cycle.csv` | 웨이퍼 1장 | 센서 1개 | 그 트레이스의 cycle count (§2.1). 웨이퍼 간 값이 갈리면 형상이 실제로 바뀐 것이므로 FDC 신호다 | `class`, `all` |
+| `activity.csv` | 센서 1개 | `activity` | `ACTIVE` 또는 `INACTIVE` (§1.5) | `active`, `all` |
+| `cycle.csv` | 웨이퍼 1장 | 센서 1개 | 그 트레이스의 cycle count (§2.3). 웨이퍼 간 값이 갈리면 형상이 실제로 바뀐 것이므로 FDC 신호다 | `class`, `all` |
 | `unstable/unstable_<센서명>.png` | 서브차트 1개 = 웨이퍼 1장 | 10열 고정 | 트레이스 파형 + 웨이퍼명 · `class_confidence`(큰 붉은 숫자) · 클래스 코드. **confidence 내림차순 — 좌상단 최고, 우하단 최저** | `--plot-unstable` |
 | `README.md` | — | — | 실행 요약. 머리 표(**실행 시각 · 출력 시각 · 실행 시간 · 명령**) + 아래 요약 항목 리스트 | `class`, `all` |
 
@@ -1637,13 +1651,13 @@ python chart_index.py data/CleanData#0V0 --find active
 
 `README.md` 의 요약 항목은 다음과 같다.
 
-- **ACTIVE wafer** — `ACTIVE wafer 수 / 전체 웨이퍼 수` (§1.1).
-- **ACTIVE sensor** — `ACTIVE sensor 수 / 전체 센서 수` (§1.1).
+- **ACTIVE wafer** — `ACTIVE wafer 수 / 전체 웨이퍼 수` (§1.5).
+- **ACTIVE sensor** — `ACTIVE sensor 수 / 전체 센서 수` (§1.5).
 - **클래스 분포** — 채택 클래스별 (웨이퍼 × 센서) 판정 건수, 많은 순.
 - **class_stability** — `=1.0` · `≥0.95` · `≥0.9` 를 만족하는 센서 수와 전체
   센서 수 (§6).
 - **class_confidence** — 전 (웨이퍼 × 센서)의 `1/(1 + log10 misfit)` 평균 (§5).
-- **cycle count** — 웨이퍼 간 cycle 이 갈리는 센서 수 (§2.1).
+- **cycle count** — 웨이퍼 간 cycle 이 갈리는 센서 수 (§2.3).
 - **unstable chart** — 저장한 matrix chart 개수 (`--plot-unstable`).
 - **ΔBIC 동률 센서 분석** — `ΔBIC < 5` 인 (웨이퍼 × 센서) 건수와 비율,
   그 비율이 과반인 센서 수, 그리고 비율이 큰 센서 5개를
@@ -1653,7 +1667,7 @@ python chart_index.py data/CleanData#0V0 --find active
 
 ### D.5 `find_peaks` Options Used in Cycle Count
 
-§2.1의 cycle count 는 `scipy.signal.find_peaks` 하나로 극점을 뽑는다. 쓰는
+§2.3의 cycle count 는 `scipy.signal.find_peaks` 하나로 극점을 뽑는다. 쓰는
 지정하는 인자는 `prominence` 와 `width` 둘뿐이고 나머지는 전부
 기본값(`None`)이다.
 
@@ -1697,7 +1711,7 @@ prominence 를 통과). `3·LSB` 는 한 계단 잡음(±1 LSB)과 그 왕복까
 | `prominence` | `max(0.25·A, 3·LSB, 1e-12)` | **prominence 는 그 극점이 주변 지형에서 얼마나 솟았는가**여서, 진폭 대비 비율로 두면 센서 단위·스케일에 무관해진다. `0.25·A` 는 `--cycle-prominence` 로 바꾼다. `3·LSB` 하한은 양자화 계단을 극점으로 세지 않게 막는다 |
 | `height` | 기본값 `None` | 절대 높이 기준은 baseline 이 센서마다 달라 쓸 수 없다. `prominence` 가 같은 역할을 상대적으로 한다 |
 | `threshold` | 기본값 `None` | 이웃 표본과의 **수직 거리**여서 잡음에 민감하다. 완만한 정점을 놓친다 |
-| `distance` | 기본값 `None` | 최소 간격을 강제하면 실제 주기를 모르는 상태에서 cycle 수를 미리 제한하게 된다. 대신 §2.1 3단계의 **극대·극소 교대 정리**로 중복 극점을 없앤다 |
+| `distance` | 기본값 `None` | 최소 간격을 강제하면 실제 주기를 모르는 상태에서 cycle 수를 미리 제한하게 된다. 대신 §2.3 3단계의 **극대·극소 교대 정리**로 중복 극점을 없앤다 |
 | `width` | `max(3, 0.02·N)` | **머무는 길이**의 하한. 이것이 없으면 진폭이 큰 불규칙 요동이 전부 반복으로 세어진다 (실측: 히터 계열이 `jitter` 0.82 인데 `cycle = 8`). 한 사이클이라면 정점 부근에 최소한 트레이스의 2% 는 머문다. `--cycle-width` 로 바꾼다 |
 | `wlen` | 기본값 `None` | prominence 계산 창을 제한하지 않는다 — 트레이스 전체를 기준으로 솟음을 재야 전역 형상이 반영된다 |
 | `rel_height` | 기본값 `0.5` | `width` 를 재는 높이. prominence 의 절반 지점에서 재므로 사각 펄스든 삼각이든 같은 기준이 된다 |
@@ -1772,7 +1786,7 @@ definitions in the text. Regenerated by `make_o_subtypes.py`.*
 
 - **`O4` 가 압도적이다.** `α ≈ 3` 은 전력이 `ω^-3` 으로 떨어진다는 뜻이고,
   `ω_c ≈ 0.29 rad/sample`(`f_c ≈ 0.046`)에서 꺾인다. 히터 계열의 요동은
-  **우세 주파수가 없는 저주파 잡음**이라는 판정이며, §2.1에서 그 계열의
+  **우세 주파수가 없는 저주파 잡음**이라는 판정이며, §2.3에서 그 계열의
   `jitter` 가 0.82로 측정된 것과 같은 결론이다.
 - **`O2` 3건 중 2건은 퇴화해 있다.** `Heater Voltage` 의 두 건은
   `ω_0 = 1.1e-49`, `f_dom = 1.8e-50` 으로 **피크가 DC 로 붕괴**했다.
