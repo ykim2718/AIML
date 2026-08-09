@@ -1,8 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 32
-
-> Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
-> 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
+rev. 33
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -10,9 +7,9 @@ Manifest 를 만드는 목적은 column profile 을 얻는 것이다. 사람이 
 
 ## 1. Scope And File Order
 
-### 1.1 Tabular Data
+### 1.1 Structured Data
 
-이 문서가 다루는 데이터는 tabular data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있으나, 데이터 전체가 행과 열의 틀에 들어간다는 점은 유지된다. 행과 열의 틀에 들어가지 않는 image directory 나 layout file 은 이 문서의 대상이 아니다.
+이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있으나, 데이터 전체가 행과 열의 틀에 들어간다는 점은 유지된다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
 ### 1.2 File Order
 
@@ -451,5 +448,5 @@ Table 12. Integrity rules
 - **Object key** 는 object storage 에서 저장된 항목 하나를 가리키는 문자열이다.
 - **Object storage** 는 파일을 directory 구조가 아니라 key 로 지시해 저장하는 storage 이다.
 - **Semiconductor machine data** 는 반도체 공정 장비와 계측 장비가 남긴 기록이고, 공정 중에 받은 sensor trace, 계측 결과, 그리고 그 측정이 귀속되는 lot 과 wafer 의 식별자가 여기에 속한다.
-- **Tabular data** 는 행과 열로 이루어진 데이터이고, 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응한다. Cell 이 단일 값이 아니라 배열이어도 행과 열의 틀이 유지되면 tabular data 이다.
+- **Structured data** 는 미리 정한 schema 를 따르는 데이터이고, 반도체 장비 데이터에서는 그 schema 가 행과 열로 나타난다. 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응하고, cell 이 단일 값이 아니라 배열이어도 그 틀이 유지되면 structured data 이다.
 - **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이고, 값 자체와 값이 놓인 순서가 함께 정보를 이룬다.
