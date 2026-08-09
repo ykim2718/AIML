@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 35
+rev. 36
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -42,7 +42,7 @@ column-class.json              axis -> label and its rule
 
 ## 2. Catalog
 
-Catalog 는 object key 하나마다 그 데이터가 무엇인지를 기록한다. Key 는 항상 같은 dataset 을 가리키고 내용만 갱신되므로, key 자체가 식별자로 성립한다. 같은 key 에 다른 dataset 이 올라오는 일이 없어야 이것이 성립한다.
+Catalog 는 object key 하나마다 그 데이터가 무엇인지를 기록한다. Key 는 항상 같은 dataset 을 가리키고 내용만 갱신되므로, key 자체가 식별자로 성립한다. 이는 같은 key 에 다른 dataset 이 올라오는 일이 없다는 조건 위에서만 참이다.
 
 Table 2. Catalog description keys
 
