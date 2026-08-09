@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 34
+rev. 35
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -9,7 +9,7 @@ Manifest 를 만드는 목적은 column profile 을 얻는 것이다. 사람이 
 
 ### 1.1 Structured Data
 
-이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있으나, 데이터 전체가 행과 열의 틀에 들어간다는 점은 유지된다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
+이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
 ### 1.2 File Order
 
@@ -42,7 +42,7 @@ column-class.json              axis -> label and its rule
 
 ## 2. Catalog
 
-Catalog 는 object key 하나마다 그 데이터가 무엇인지를 기록한다. Key 는 항상 같은 dataset 을 가리키고 내용만 갱신되므로, key 자체가 식별자로 성립한다. 같은 key 에 다른 dataset 이 올라오는 일이 없다는 것이 이 전제의 조건이다.
+Catalog 는 object key 하나마다 그 데이터가 무엇인지를 기록한다. Key 는 항상 같은 dataset 을 가리키고 내용만 갱신되므로, key 자체가 식별자로 성립한다. 같은 key 에 다른 dataset 이 올라오는 일이 없어야 이것이 성립한다.
 
 Table 2. Catalog description keys
 
@@ -444,6 +444,7 @@ Table 12. Integrity rules
 - **Entity** 는 데이터가 붙는 대상이고, wafer 나 lot 처럼 측정이 귀속되는 단위를 말한다.
 - **Grain** 은 table 의 행 하나가 무엇을 나타내는지를 말한다.
 - **Level** 은 값이 연속으로 변하지 않고 몇 개의 값 위에만 머무를 때 그 값 하나를 말한다.
+- **Manifest** 는 저장된 데이터가 무엇인지 기록해 두는 file 의 모음이고, 데이터 자체와 따로 보관된다.
 - **Medallion architecture** 는 데이터를 원본에 가까운 bronze, 정제된 silver, 사용 목적에 맞춘 gold 의 세 단계로 나누어 적재하는 방식이다.
 - **Object key** 는 object storage 에서 저장된 항목 하나를 가리키는 문자열이다.
 - **Object storage** 는 파일을 directory 구조가 아니라 key 로 지시해 저장하는 storage 이다.
