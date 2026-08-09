@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 164
+rev. 165
 
 > 상위 문서: [README](./README.md)
 >
@@ -12,6 +12,7 @@ rev. 164
 - [1. Shape Archetypes](#1-shape-archetypes)
   - [1.1 Chart Class](#11-chart-class)
   - [1.2 Parameter Schematics](#12-parameter-schematics)
+  - [1.3 Trace Shape Axis](#13-trace-shape-axis)
 - [2. MTSV](#2-mtsv)
   - [2.1 Cycle Count](#21-cycle-count)
   - [2.2 Periodic Chart](#22-periodic-chart)
@@ -467,6 +468,78 @@ Parseval 에 의해 트레이스 분산 그 자체다(상수는 `J = (N−1)/2` 
 
 **웨이퍼 간 비교는 `center` 궤적으로만 수행하고, `bandwidth`는 별도 센서 건전성 지표로 분리 관리한다.**
 
+### 1.3 Trace Shape Axis
+
+Tabular data manifest 는 열마다 `trace_shape` 라는 axis 를 두고 label 하나를 붙인다. 그 axis 의 label 여섯 개가 Table 1 의 class 와 어떻게 이어지는지를 이 절이 정한다. **두 어휘는 경쟁하는 것이 아니라 같은 형상을 다른 해상도로 부르는 것이다.** Table 1 은 재현 파라미터까지 딸린 모델족이고, `trace_shape` 는 그 모델족을 여섯 무리로 접은 이름표다.
+
+접는 이유는 쓰는 자리가 다르기 때문이다. 열 하나에 label 하나를 적는 profile 은 파라미터를 담지 않으므로 `R1` 과 `R2` 를 가릴 필요가 없고, 반대로 벡터를 만드는 자리에서는 `n` 이 몇인지가 벡터 크기를 정하므로 반드시 갈라야 한다.
+
+#### 1.3.1 Labels
+
+Table 3. `trace_shape` labels
+
+| Label | Rule |
+|---|---|
+| `flat` | Window 에서 값이 변하지 않는다 |
+| `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 `dwell_ratio` 배 이상 길다 |
+| `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
+| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 `ramp_fraction` 이상을 차지한다 |
+| `oscillation` | Autocorrelation 에 `acf_peak` 이상의 peak 이 일정한 간격으로 나타난다 |
+| `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
+
+여섯 규칙은 서로 겹치므로 **판정 순서가 정의의 일부다.** 평탄한 trace 는 한 방향으로만 움직이는 구간이 window 전체를 덮기도 하고, pulse 열은 autocorrelation 에도 걸린다. 위 표의 순서대로, 가장 좁은 규칙부터 시험한다.
+
+`irregular` 는 앞의 다섯이 받지 못한 trace 를 받아 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙과 그 임계값에 매여 있다는 것이다.
+
+#### 1.3.2 Thresholds
+
+Table 4. Thresholds the labels depend on
+
+| Threshold | Default | Used by |
+|---|---|---|
+| `dwell_ratio` | 5.0 | `rectangle` — 머문 표본 수 대 이동 표본 수의 하한 |
+| `kappa` | 0.7 | `triangle` — 평탄도 `κ = W_90 / W_50` 의 상한 (§1.1) |
+| `slope_tolerance` | 3.0 | `triangle` — 두 플랭크 기울기 크기의 비의 상한 |
+| `ramp_fraction` | 0.8 | `ramp` — 단조 구간이 덮어야 하는 window 비율 |
+| `acf_peak` | 0.6 | `oscillation` — autocorrelation peak 높이의 하한 |
+| `peak_jitter` | 0.25 | `oscillation` — peak 간격의 상대 편차 상한 |
+
+임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, **임계값을 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.** 판정 결과를 적을 때는 위 값들을 함께 적는다.
+
+`triangle` 은 §1.2.5 대로 `x` 와 `−x` 양쪽에서 시험한다. `A_peak` 가 부호를 갖는 것과 같은 사실이며, `κ` 는 정류한 신호에서 잰다 (§1.1).
+
+#### 1.3.3 Mapping To The Chart Classes
+
+Table 5. `trace_shape` label to chart class
+
+| `trace_shape` | Chart class | Note |
+|---|---|---|
+| `flat` | `Q1` | 준위가 하나뿐이라 변할 곳이 없다. `trace_quantum` 의 `q1` 과 같은 사실이다 |
+| `rectangle` | `R1`, `R1s`, `R2` | 사다리꼴은 `t_rise`·`t_fall` 이 큰 `R1` 이므로 여기 속한다 |
+| `triangle` | `T1`, `T2` | 좁은 봉우리는 폭이 작은 `T1`, 골짜기는 `A_peak` 가 음수인 `T1` 이다 |
+| `ramp` | `S1` (`t_rise` 가 큰 경우) | 램프는 전이가 window 를 덮을 만큼 완만한 `S1` 이다 (§1.2.2) |
+| `oscillation` | `O2`, `O3`, `O4`, `Q2`~`Q9` | 격자 위의 왕복과 격자 밖의 진동이 이 label 로 함께 접힌다 |
+| `irregular` | 없음 | 어느 class 도 형상을 설명하지 못한 경우이므로 대응하는 class 가 없다 |
+
+**대응은 일대일이 아니고, 양쪽 모두에 빈자리가 있다.**
+
+- `S1` 의 급준한 계단과 `S2` 는 `trace_shape` 에 대응하는 label 이 없다. 단조 구간이 짧아 `ramp` 에 걸리지 않고 두 level 에 머무는 시간이 조건을 채우지 못해 `rectangle` 에도 걸리지 않으므로 `irregular` 로 떨어진다. 계단이 흔한 데이터라면 `trace_shape` 만으로는 그 사실을 볼 수 없다.
+- `irregular` 에 대응하는 class 가 없는 것은 설계상 그렇다. Table 1 은 형상을 주장하는 모델족의 목록이고, `irregular` 는 주장이 실패했다는 표시다.
+- `Q2`~`Q9` 와 `O` 가 한 label 로 접히므로, 계측 아티팩트와 실제 물리 진동의 구분(§1.2.7)이 `trace_shape` 에서는 사라진다. 그 구분이 필요하면 `trace_quantum` 을 함께 읽어야 한다.
+
+#### 1.3.4 Which Vocabulary To Use
+
+Table 6. Choosing between the two
+
+| Question | Vocabulary |
+|---|---|
+| 이 열에 무엇이 담겨 있는가 | `trace_shape` — label 하나로 답한다 |
+| 이 트레이스를 되돌리려면 무엇을 저장해야 하는가 | Table 1 의 class — 재현 파라미터가 딸려 있다 |
+| 이 센서가 웨이퍼마다 같은 형상인가 | Table 1 의 class — `class_stability`(§6)가 이 어휘 위에서 정의된다 |
+| 열 백 개를 한 표로 훑어야 한다 | `trace_shape` — 여섯 칸이면 표가 읽힌다 |
+
+`trace_shape` 로 적은 열을 나중에 벡터화하려면 Table 5 를 거슬러 올라가 class 를 다시 판정해야 한다. 접는 과정에서 `n` 과 파라미터가 버려지기 때문이며, 그래서 **`trace_shape` 는 요약이지 중간 산출물이 아니다.**
+
 ## 2. MTSV
 
 MTSV의 벡터 크기는 Table 1의 parameter count로 결정된다. Events = 1 인
@@ -537,7 +610,7 @@ non-periodic(§2.3)이다. `O` 처럼 극점 경계가 불명확하면 ACF
 이벤트별 목록 대신 반복의 통계만 저장한다 (periodic summary). n이 아무리
 커도 벡터 크기가 고정된다.
 
-*Table 3. Periodic-summary vectors for Events = n classes*
+*Table 7. Periodic-summary vectors for Events = n classes*
 
 | Code | List form (size) | Periodic-summary form (size) |
 |---|---|---|
@@ -784,7 +857,7 @@ class = argmin_{c ∈ C} BIC_c
 스케일에 좌우되므로 `−686` 같은 절대값은 비교 대상이 아니다 (`σ̂² < 1` 이면
 그냥 음수다). 판단은 **같은 트레이스의 후보 사이의 차이 `ΔBIC`** 로만 한다.
 
-*Table 4. `ΔBIC` interpretation*
+*Table 8. `ΔBIC` interpretation*
 
 | `ΔBIC` | 근거의 세기 (Kass & Raftery 1995) | 본 문서의 처리 |
 |---|---|---|
@@ -867,7 +940,7 @@ x_i = c(t_i; θ_center) + u_i
 모델 스펙트럼은 **백색 바닥 + 하위형별 성분**의 합이다. Whittle 합이
 `ω_j > 0`만 쓰므로 아래 식은 양의 주파수에서만 정의한다.
 
-*Table 5. `O` subtype spectral densities*
+*Table 9. `O` subtype spectral densities*
 
 | Subtype | `S(ω; θ_spec)` | `θ_spec` | `k_spec` | 물리 의미 |
 |---|---|---|---|---|
@@ -1024,7 +1097,7 @@ Events = n 클래스는 개별 이벤트 파라미터를 그대로 피처로 쓰
 
 추출된 파라미터를 무조건 신뢰하면 안 된다. 각 파라미터에 다음 메타데이터를 동반 저장한다.
 
-*Table 6. Parameter quality metadata*
+*Table 10. Parameter quality metadata*
 
 | Item | Reason |
 |---|---|
@@ -1055,7 +1128,7 @@ Events = n 클래스는 개별 이벤트 파라미터를 그대로 피처로 쓰
 
 ### 5.2 Per-Class Reconstruction Models
 
-*Table 7. Per-class reconstruction models*
+*Table 11. Per-class reconstruction models*
 
 | Class | Reconstruction model (θ → x̂) |
 |---|---|
@@ -1315,7 +1388,7 @@ confidence  = 1 / (1 + log10 misfit),      misfit <= 1  ->  confidence = 1
   호환된다. `misfit` = 1 / 10 / 100 / 1000 이 각각
   `confidence` = 1.00 / 0.50 / 0.33 / 0.25 다.
 
-*Table 8. `misfit` to `confidence`*
+*Table 12. `misfit` to `confidence`*
 
 | `misfit` (잡음 대비 배수) | `confidence` | 해석 |
 |---|---|---|
@@ -1366,7 +1439,7 @@ x와 y 어긋남을 분리해 보고하려면 metric을 바꾸는 것보다 **�
 공간에서 직접 비교**하는 것이 실무적으로 가장 깔끔하다. 파이프라인이
 어차피 파라미터를 추출하므로 추가 비용이 없다:
 
-*Table 9. x/y residual metrics*
+*Table 13. x/y residual metrics*
 
 | Axis | Residual metric |
 |---|---|
@@ -1474,7 +1547,7 @@ definitions in this document; the class search space itself is Fig. 3.*
 
 ### D.2 Options
 
-*Table 10. `chart_index.py` command-line options*
+*Table 14. `chart_index.py` command-line options*
 
 | Option | Type | Default | Description |
 |---|---|---|---|
@@ -1507,7 +1580,7 @@ python chart_index.py data/CleanData#0V0 --find active
 이전 실행의 산출물이 남아 결과가 섞이는 것을 막기 위해서다.
 파일마다 행·열·값의 의미가 다르다.
 
-*Table 11. `chart_index.py` output files*
+*Table 15. `chart_index.py` output files*
 
 | File | 행 (row) | 열 (column) | 값 (value) | 쓰이는 `--find` |
 |---|---|---|---|---|
@@ -1538,7 +1611,7 @@ python chart_index.py data/CleanData#0V0 --find active
 - **ΔBIC 동률 센서 분석** — `ΔBIC < 5` 인 (웨이퍼 × 센서) 건수와 비율,
   그 비율이 과반인 센서 수, 그리고 비율이 큰 센서 5개를
   `센서명 비율(ΔBIC 중앙값)` 형식으로 나열한다. `ΔBIC` 가 작다는 것은 1순위와
-  2순위 클래스가 사실상 동률이라는 뜻이므로 (§3.5 Table 4), 이 목록이
+  2순위 클래스가 사실상 동률이라는 뜻이므로 (§3.5 Table 8), 이 목록이
   `class_stability` 가 낮은 센서의 1차 원인 후보다 (§4.3의 마스킹 대상).
 
 ### D.5 `find_peaks` Options Used in Cycle Count
@@ -1580,7 +1653,7 @@ prominence 를 통과). `3·LSB` 는 한 계단 잡음(±1 LSB)과 그 왕복까
 되어 `find_peaks` 가 모든 표본을 극점으로 돌려주는 것을 막는 하한이다
 (이 경우는 §3.1의 선행 처리에서 이미 `Q1` 로 빠진다).
 
-*Table 12. `find_peaks` arguments in `cycle_count()`*
+*Table 16. `find_peaks` arguments in `cycle_count()`*
 
 | Argument | 쓰는 값 | 이유 |
 |---|---|---|
@@ -1631,7 +1704,7 @@ definitions in the text. Regenerated by `make_o_subtypes.py`.*
 그림에 쓴 파라미터 값은 다음과 같다. 형상이 어떻게 스펙트럼으로 옮겨지는지
 보이기 위한 값이며 실측값이 아니다.
 
-*Table 13. Parameters used in Fig. 5*
+*Table 17. Parameters used in Fig. 5*
 
 | Subtype | `θ_spec` | Fig. 5 의 값 | 시간영역 형상 |
 |---|---|---|---|
@@ -1650,7 +1723,7 @@ definitions in the text. Regenerated by `make_o_subtypes.py`.*
 156장 실측에서 `O` 하위형까지 확정된 것은 19건이다. 전부 히터 계열과
 `Step Process Time` 이며, 대부분 `O4` 다.
 
-*Table 14. `O` subtypes measured on 156 wafers*
+*Table 18. `O` subtypes measured on 156 wafers*
 
 | Subtype | 건수 | 센서 | `θ_spec` 중앙값 | `LSD` | `confidence` |
 |---|---|---|---|---|---|

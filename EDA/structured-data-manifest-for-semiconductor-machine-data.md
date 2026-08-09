@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 36
+rev. 37
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -275,6 +275,8 @@ Table 9. Trace quantum labels
 ### 4.7 Trace Shape
 
 Trace shape 는 trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 5 절의 `thresholds` 에 함께 기록한다.
+
+이 axis 의 reference 는 [semiconductor-machine-signal-parameterization-shape-taxonomy.md](semiconductor-machine-signal-parameterization-shape-taxonomy.md) 의 1.3 절이다. 아래 표는 label 과 규칙을 그대로 옮긴 것이고, 규칙이 쓰는 임계값의 기본값, 규칙을 시험하는 순서, 그리고 각 label 이 어떤 형상 모델족에 대응하는지는 그 문서가 정한다. 두 곳이 어긋나면 그 문서를 따른다.
 
 규칙에 나오는 window 는 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다. 앞뒤의 대기 구간을 떼어 내는 것처럼 일부만 보아야 할 이유가 있으면 그 구간을 `thresholds` 안의 `window` 에 적는다.
 
