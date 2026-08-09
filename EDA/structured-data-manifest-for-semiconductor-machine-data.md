@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 38
+rev. 39
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -54,7 +54,7 @@ Table 2. Catalog description keys
 | `file_format` | Yes | 데이터가 어떤 형식으로 적재되어 있는지 적는다 |
 | `medallion` | Yes | `bronze`, `silver`, `gold` 중 하나를 적는다 |
 | `grain` | Yes | 행 하나가 무엇인지 한 문장으로 적는다 |
-| `row_key` | Yes | 행을 유일하게 만드는 열을, entity 를 묶는 것과 그 안에서 행을 가르는 것으로 나누어 적는다 |
+| `row_key` | Yes | 행을 유일하게 만드는 열을, 같은 entity 로 묶는 열과 그 entity 안에서 행을 구별하는 열로 나누어 적는다 |
 | `derived_from` | No | 이 데이터를 만들어 낸 상류 object key 를 적고, 원본이면 생략한다 |
 | `rows` | No | 행 수를 적는다 |
 | `note` | No | 이 데이터를 쓸 때 알아야 할 예외를 적는다 |
@@ -69,12 +69,12 @@ Table 2. Catalog description keys
 
 `row_key` 는 행이 서로 어떻게 구별되는지를 두 목록으로 적는다.
 
-- `entity_columns` 는 어느 열로 묶으면 한 entity 가 되는지를 적는다.
-- `sequence_columns` 는 한 entity 안에서 행을 가르는 열을 순서대로 적고, 행 하나가 곧 entity 하나이면 빈 목록으로 둔다.
+- `entity_columns` 는 값이 같으면 같은 entity 로 보는 열을 적는다.
+- `sequence_columns` 는 한 entity 가 여러 행을 가질 때 그 행들을 서로 구별하는 열을 순서대로 적고, 행 하나가 곧 entity 하나이면 빈 목록으로 둔다.
 
-두 목록을 이은 것이 행마다 유일한 조합이다. **행이 중복인지 아닌지를 명시하는 것이 이 조합이며**, 중복 검사는 `entity_columns` 가 아니라 이 조합으로 한다. 한 wafer 의 trace 를 행마다 한 점씩 펼친 table 에서 wafer 번호는 수천 행에 걸쳐 같은 값이지만, `sequence_columns` 의 시간 열이 그 행들을 갈라 놓으므로 중복이 아니다. `sequence_columns` 를 적지 않으면 그 table 을 중복 제거해도 되는지가 기록되지 않는다.
+두 목록을 이은 것이 행마다 유일한 조합이다. **행이 중복인지 아닌지를 명시하는 것이 이 조합이며**, 중복 검사는 `entity_columns` 가 아니라 이 조합으로 한다. 한 wafer 의 trace 를 행마다 한 점씩 펼친 table 에서 wafer 번호는 수천 행에 걸쳐 같은 값이지만, `sequence_columns` 의 시간 열이 그 행들을 서로 구별하므로 중복이 아니다. `sequence_columns` 를 적지 않으면 그 table 을 중복 제거해도 되는지가 기록되지 않는다.
 
-두 목록의 일은 서로 다르다. `entity_columns` 는 묶는 방법을 말하고 `sequence_columns` 는 가르는 방법을 말한다. 행 하나가 wafer 와 process step 의 조합이면 `entity_columns` 는 wafer 까지이고 `sequence_columns` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
+두 목록의 일은 서로 다르다. `entity_columns` 는 묶는 방법을 말하고 `sequence_columns` 는 그 안에서 구별하는 방법을 말한다. 행 하나가 wafer 와 process step 의 조합이면 `entity_columns` 는 wafer 까지이고 `sequence_columns` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
 
 두 목록에 적는 이름은 1.2 절이 정한 대로 상류에서 온 그대로의 이름이다.
 
@@ -154,7 +154,7 @@ Table 3. Column config operation keys
 
 ## 4. Column Class
 
-판정의 단위는 axis 마다 다르다. `value_type` 과 `structure` 와 `trace_quantum` 과 `trace_shape` 는 cell 하나 안을 보고 정하므로 다른 행에 무엇이 들어 있든 답이 바뀌지 않는다. `array_length` 는 행 사이를 견주고, `activity` 는 행 사이 또는 catalog 의 `row_key` 가 묶어 준 entity 사이를 견준다. 그래서 이 절에서 `row_key` 에 매이는 axis 는 `activity` 하나이며, 어느 쪽으로 견주었는지는 5 절의 `activity_basis` 에 남는다.
+Class 는 cell 하나 안을 보고 정하거나, 행 사이를 견주어 정한다. 행 사이를 견줄 때 무엇을 한 덩어리로 묶을지는 catalog 의 `row_key` 가 정한다. Axis 마다 어느 쪽인지는 Table 4 의 `Basis` 열에 적는다.
 
 ### 4.1 Axis
 
@@ -162,14 +162,14 @@ Class 는 하나의 목록이 아니라 여러 개의 axis 로 나뉜다. 한 ax
 
 Table 4. Class axes
 
-| Axis | Label | Applies to | Source |
-|------|-------|------------|--------|
-| `activity` | `active`, `inactive` | 모든 열 | Analysis |
-| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | 모든 열 | Human or analysis |
-| `structure` | `scalar`, `vector`, `matrix`, `trace` | 모든 열 | Human or analysis |
-| `array_length` | `fixed`, `variable` | `structure` 가 `vector`, `matrix`, `trace` 인 열 | Analysis |
-| `trace_quantum` | `q1`, `qn`, `infinite` | `structure` 가 `trace` 인 열 | Analysis |
-| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `structure` 가 `trace` 인 열 | Analysis |
+| Axis | Label | Applies to | Basis | Source |
+|------|-------|------------|-------|--------|
+| `activity` | `active`, `inactive` | `all` | 행 사이 또는 entity 사이 | Analysis |
+| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `all` | Cell 하나 | Human or analysis |
+| `structure` | `scalar`, `vector`, `matrix`, `trace` | `all` | Cell 하나 | Human or analysis |
+| `array_length` | `fixed`, `variable` | `non-scalar` | 행 사이 | Analysis |
+| `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | Cell 하나 | Analysis |
+| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `trace` | Cell 하나 | Analysis |
 
 **열은 자기에게 적용되는 axis 마다 label 을 정확히 하나씩 갖는다.** 적용되지 않는 axis 에는 label 을 갖지 않는다. 그래서 label 이 비어 있는 axis 는 판정이 아직 끝나지 않았다는 뜻이며, 판정이 끝난 열은 어느 axis 를 물어도 답이 하나 나온다.
 
@@ -445,7 +445,7 @@ Table 12. Integrity rules
 - **Autocorrelation** 은 신호를 시간축으로 밀어 가며 자기 자신과 곱해 평균한 값이고, 주기 성분이 있으면 그 주기마다 peak 이 나타난다.
 - **Baseline** 은 trace 가 아무 동작도 하지 않을 때 머무는 기준 level 이다.
 - **Cell** 은 table 에서 행 하나와 열 하나가 만나는 자리이다.
-- **Entity** 는 데이터가 붙는 대상이고, wafer 나 lot 처럼 측정이 귀속되는 단위를 말한다.
+- **Entity** 는 데이터로 관리하는 대상이고, 서로 구별해 저장할 필요가 있는 사람이나 사물이나 개념을 말한다. 관계형 database 에서는 entity 하나가 table 하나로 표현되며, 쇼핑몰이라면 회원과 상품과 주문이 각각 하나의 entity 다. 이 문서에서는 wafer 나 lot 처럼 측정이 귀속되는 단위가 여기에 해당한다.
 - **Grain** 은 table 의 행 하나가 무엇을 나타내는지를 말한다.
 - **Level** 은 값이 연속으로 변하지 않고 몇 개의 값 위에만 머무를 때 그 값 하나를 말한다.
 - **Manifest** 는 저장된 데이터가 무엇인지 기록해 두는 file 의 모음이고, 데이터 자체와 따로 보관된다.
