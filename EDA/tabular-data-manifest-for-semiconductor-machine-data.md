@@ -1,5 +1,5 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 30
+rev. 31
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -195,7 +195,7 @@ Table 5. Activity labels
 
 한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence_columns` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `row_key` 의 `entity_columns` 로 행을 묶은 뒤 entity 사이를 비교한다. 한 entity 가 담은 값 전체를 하나의 값으로 보므로, 두 entity 는 그 값의 묶음이 서로 달라야 다른 값을 가진 것이 된다.
 
-두 비교는 같은 열에 서로 다른 답을 주므로, 어느 쪽으로 판정했는지를 5절의 `activity_basis` 에 남긴다. 행 사이의 비교는 `row` 이고 entity 사이의 비교는 `entity` 이다. 이 값이 없으면 `active` 와 `inactive` 가 무엇을 비교한 결과인지 알 수 없다.
+두 비교는 같은 열에 서로 다른 답을 주므로, 어느 쪽으로 판정했는지를 5 절의 `activity_basis` 에 남긴다. 행 사이의 비교는 `row` 이고 entity 사이의 비교는 `entity` 이다. 이 값이 없으면 `active` 와 `inactive` 가 무엇을 비교한 결과인지 알 수 없다.
 
 ### 4.3 Value Type
 
@@ -259,7 +259,7 @@ Wafer 마다 정해진 site 에서 재는 두께는 site 개수가 늘 같으므
 
 ### 4.6 Trace Quantum
 
-Trace 의 값이 몇 개의 level 위에 머무는지를 나눈다. Level 은 baseline 을 포함해서 센다.
+Trace quantum 은 trace 의 값이 몇 개의 level 위에 머무는지를 나눈다. Level 은 baseline 을 포함해서 센다.
 
 Table 9. Trace quantum labels
 
@@ -269,7 +269,7 @@ Table 9. Trace quantum labels
 | `qn` | Cell 하나 안에서 값이 셀 수 있는 여러 level 위를 오간다 |
 | `infinite` | Cell 하나 안에서 값이 level 위에 머물지 않고 연속으로 변한다 |
 
-세 label 은 level 개수가 하나, 여럿, 무한인 경우이므로 어떤 trace 든 하나에 들어간다. `infinite` 는 양자화되지 않은 아날로그 신호가 앉는 자리이고, 이것이 없으면 매끄럽게 변하는 압력이 `qn` 으로 잘못 적혀 있지도 않은 level 을 주장하게 된다.
+세 label 은 level 개수가 하나, 여럿, 무한인 경우이므로 어떤 trace 든 하나에 들어간다. `infinite` 는 양자화되지 않은 아날로그 신호가 앉는 자리이고, 이것이 없으면 매끄럽게 변하는 압력이 `qn` 으로 잘못 적혀, 있지도 않은 level 을 주장하게 된다.
 
 `q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 수치 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 4.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
 
@@ -277,7 +277,7 @@ Table 9. Trace quantum labels
 
 ### 4.7 Trace Shape
 
-Trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 5절의 `thresholds` 에 함께 기록한다.
+Trace shape 는 trace 의 모양을 나눈다. 각 규칙에 나오는 임계값은 판정 configuration 이며, 5 절의 `thresholds` 에 함께 기록한다.
 
 규칙에 나오는 window 는 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다. 앞뒤의 대기 구간을 떼어 내는 것처럼 일부만 보아야 할 이유가 있으면 그 구간을 `thresholds` 안의 `window` 에 적는다.
 
@@ -325,7 +325,7 @@ Table 10. Trace shape labels
       "trace": "one cell holds an array whose elements are ordered in time"
     },
     "array_length": {
-      "fixed": "the array has the same length in every row, and an array with two axes has the same length on both",
+      "fixed": "the array has the same length in every row, and an array with two axes has the same length on each of its axes in every row",
       "variable": "the array length differs from row to row"
     },
     "trace_quantum": {
@@ -345,7 +345,7 @@ Table 10. Trace shape labels
 }
 ```
 
-새 label 이 필요하면 이 file 에 규칙과 함께 한 줄을 더한다. 여기에 없는 label 은 6절의 규칙에 따라 거부된다.
+새 label 이 필요하면 이 file 에 규칙과 함께 한 줄을 더한다. 여기에 없는 label 은 6 절의 규칙에 따라 거부된다.
 
 ## 5. Column Profile
 
@@ -363,7 +363,7 @@ Table 11. Column profile keys
 
 `columns` 는 전수이다. Column config 를 적용하고 난 table 의 모든 열이 여기에 있어야 하고, 버린 열은 그 table 에 없으므로 여기에도 없다. 열이 빠져 있으면 그 열이 판정되지 않은 것인지 대상이 아닌 것인지 가릴 수 없으므로, 빠진 열은 판정이 끝나지 않았다는 뜻이다.
 
-`class_version` 과 `activity_basis` 와 `thresholds` 는 모두 같은 이유로 있다. 어휘에는 label 이 늘 수 있고, activity 는 무엇과 무엇을 비교하느냐에 따라 답이 갈리며, 4절의 판정 규칙 여러 개가 임계값을 필요로 한다. 셋 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나오므로, 이 셋이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
+`class_version` 과 `activity_basis` 와 `thresholds` 는 모두 같은 이유로 있다. 어휘에는 label 이 늘 수 있고, activity 는 무엇과 무엇을 비교하느냐에 따라 답이 갈리며, 4 절의 판정 규칙 여러 개가 임계값을 필요로 한다. 셋 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나오므로, 이 셋이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
 
 `thresholds` 에는 window 도 함께 둔다. Trace 전체를 보았으면 `full` 이고, 구간을 좁혔으면 그 시작과 끝을 적는다. Window 는 임계값이 아니지만 바꾸면 같은 trace 가 다른 label 을 받는다는 점이 같으므로, 판정 configuration 을 한자리에 모아 둔다.
 
@@ -453,4 +453,3 @@ Table 12. Integrity rules
 - **Semiconductor machine data** 는 반도체 공정 장비와 계측 장비가 남긴 기록이고, 공정 중에 받은 sensor trace, 계측 결과, 그리고 그 측정이 귀속되는 lot 과 wafer 의 식별자가 여기에 속한다.
 - **Tabular data** 는 행과 열로 이루어진 데이터이고, 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응한다. Cell 이 단일 값이 아니라 배열이어도 행과 열의 틀이 유지되면 tabular data 이다.
 - **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이고, 값 자체와 값이 놓인 순서가 함께 정보를 이룬다.
-- **Window** 는 trace 에서 판정 대상으로 삼는 시간 구간이고, trace 의 전체일 수도 일부일 수도 있다. 따로 정하지 않으면 trace 전체이다.
