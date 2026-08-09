@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 39
+rev. 40
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -154,7 +154,7 @@ Table 3. Column config operation keys
 
 ## 4. Column Class
 
-Class 는 cell 하나 안을 보고 정하거나, 행 사이를 견주어 정한다. 행 사이를 견줄 때 무엇을 한 덩어리로 묶을지는 catalog 의 `row_key` 가 정한다. Axis 마다 어느 쪽인지는 Table 4 의 `Basis` 열에 적는다.
+판정은 cell 하나 안을 보고 하거나 행 사이를 견주어 한다. 행 사이를 견줄 때 무엇을 한 덩어리로 묶을지는 catalog 의 `row_key` 가 정한다. Axis 마다 어느 쪽인지는 Table 4 의 `Basis` 열에 적는다.
 
 ### 4.1 Axis
 
@@ -164,12 +164,14 @@ Table 4. Class axes
 
 | Axis | Label | Applies to | Basis | Source |
 |------|-------|------------|-------|--------|
-| `activity` | `active`, `inactive` | `all` | 행 사이 또는 entity 사이 | Analysis |
-| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `all` | Cell 하나 | Human or analysis |
-| `structure` | `scalar`, `vector`, `matrix`, `trace` | `all` | Cell 하나 | Human or analysis |
-| `array_length` | `fixed`, `variable` | `non-scalar` | 행 사이 | Analysis |
-| `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | Cell 하나 | Analysis |
-| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `trace` | Cell 하나 | Analysis |
+| `activity` | `active`, `inactive` | `all` | `rows or entities` | Analysis |
+| `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `all` | `cell` | Human or analysis |
+| `structure` | `scalar`, `vector`, `matrix`, `trace` | `all` | `cell` | Human or analysis |
+| `array_length` | `fixed`, `variable` | `non-scalar` | `rows` | Analysis |
+| `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | `cell` | Analysis |
+| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | `trace` | `cell` | Analysis |
+
+`Applies to` 는 그 axis 가 어느 열에 적용되는지를 적고, `Basis` 는 그 axis 를 판정할 때 무엇을 보는지를 적는다. `cell` 은 cell 하나 안만 보므로 다른 행에 무엇이 들어 있든 답이 같다. `rows` 는 그 열의 행을 서로 견준다. `rows or entities` 는 행끼리 견줄 수도 있고 `row_key` 로 묶은 entity 끼리 견줄 수도 있다는 뜻이다.
 
 **열은 자기에게 적용되는 axis 마다 label 을 정확히 하나씩 갖는다.** 적용되지 않는 axis 에는 label 을 갖지 않는다. 그래서 label 이 비어 있는 axis 는 판정이 아직 끝나지 않았다는 뜻이며, 판정이 끝난 열은 어느 axis 를 물어도 답이 하나 나온다.
 
@@ -181,7 +183,7 @@ Table 4. Class axes
 
 ### 4.2 Activity
 
-Activity 는 열에 변화가 있는지를 나눈다. 열을 쓸 것인지 말 것인지의 결정이 아니라 데이터를 읽어 판정하는 사실이다.
+Activity 는 열에 변화가 있는지를 나눈다. 열을 쓸 것인지 말 것인지를 정하는 것이 아니라, 데이터를 읽어 판정한 결과다.
 
 판정은 행 사이의 비교로 한다. Cell 을 통째로 하나의 값으로 보므로, cell 이 배열인 열에서는 배열 전체가 같아야 두 행이 같은 값을 가진 것이 된다. Cell 안에서 값이 변하는지는 activity 가 아니라 `trace_quantum` 이 다룬다.
 
