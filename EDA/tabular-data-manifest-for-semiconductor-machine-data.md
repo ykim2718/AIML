@@ -1,5 +1,5 @@
 # Tabular Data Manifest For Semiconductor Machine Data
-rev. 28
+rev. 29
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
@@ -252,10 +252,10 @@ Table 8. Array length labels
 
 | Label | Rule |
 |-------|------|
-| `fixed` | 모든 행에서 배열의 길이가 같고, 축이 둘인 배열에서는 두 축의 길이가 모두 같다 |
+| `fixed` | 모든 행에서 배열의 길이가 같고, `matrix` 처럼 축이 둘이면 두 축이 각각 행마다 같은 길이를 갖는다 |
 | `variable` | 행에 따라 배열의 길이가 다르다 |
 
-Wafer 마다 정해진 자리에서 재는 두께는 자리 수가 늘 같으므로 `fixed` 이고, wafer 마다 검출되는 defect 의 좌표 목록은 개수가 제각각이므로 `variable` 이다. 둘을 갈라 두는 이유는 `fixed` 인 열만 그대로 고정 폭의 feature 로 펼칠 수 있기 때문이다.
+Wafer 마다 정해진 site 에서 재는 두께는 site 개수가 늘 같으므로 `fixed` 이고, wafer 마다 검출되는 defect 의 좌표 목록은 개수가 제각각이므로 `variable` 이다. 둘을 갈라 두는 이유는 `fixed` 인 열만 그대로 고정 폭의 feature 로 펼칠 수 있기 때문이다.
 
 ### 4.6 Trace Quantum
 
