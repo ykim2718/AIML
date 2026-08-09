@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 165
+rev. 166
 
 > 상위 문서: [README](./README.md)
 >
@@ -470,7 +470,7 @@ Parseval 에 의해 트레이스 분산 그 자체다(상수는 `J = (N−1)/2` 
 
 ### 1.3 Trace Shape Axis
 
-Tabular data manifest 는 열마다 `trace_shape` 라는 axis 를 두고 label 하나를 붙인다. 그 axis 의 label 여섯 개가 Table 1 의 class 와 어떻게 이어지는지를 이 절이 정한다. **두 어휘는 경쟁하는 것이 아니라 같은 형상을 다른 해상도로 부르는 것이다.** Table 1 은 재현 파라미터까지 딸린 모델족이고, `trace_shape` 는 그 모델족을 여섯 무리로 접은 이름표다.
+Structured data manifest 는 열마다 `trace_shape` 라는 axis 를 두고 label 하나를 붙인다. 그 axis 의 label 여섯 개가 Table 1 의 class 와 어떻게 이어지는지를 이 절이 정한다. **두 어휘는 경쟁하는 것이 아니라 같은 형상을 다른 해상도로 부르는 것이다.** Table 1 은 재현 파라미터까지 딸린 모델족이고, `trace_shape` 는 그 모델족을 여섯 무리로 접은 이름표다.
 
 접는 이유는 쓰는 자리가 다르기 때문이다. 열 하나에 label 하나를 적는 profile 은 파라미터를 담지 않으므로 `R1` 과 `R2` 를 가릴 필요가 없고, 반대로 벡터를 만드는 자리에서는 `n` 이 몇인지가 벡터 크기를 정하므로 반드시 갈라야 한다.
 
