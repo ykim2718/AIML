@@ -1,5 +1,5 @@
-# Tabular Data Manifest For Semiconductor Machine Data
-rev. 31
+# Structured Data Manifest for Semiconductor Machine Data
+rev. 32
 
 > Tabular data manifest 는 object storage 에 적재된 반도체 장비 데이터 table 이 무엇인지 기록하는 JSON file 의 모음이다.
 > 사람이 적는 값과 분석이 판정하는 값을 서로 다른 file 에 두어, 판정을 다시 돌릴 때 사람이 적은 값이 지워지지 않게 한다.
