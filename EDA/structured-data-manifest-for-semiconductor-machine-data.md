@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 37
+rev. 38
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -153,6 +153,8 @@ Table 3. Column config operation keys
 ```
 
 ## 4. Column Class
+
+판정의 단위는 axis 마다 다르다. `value_type` 과 `structure` 와 `trace_quantum` 과 `trace_shape` 는 cell 하나 안을 보고 정하므로 다른 행에 무엇이 들어 있든 답이 바뀌지 않는다. `array_length` 는 행 사이를 견주고, `activity` 는 행 사이 또는 catalog 의 `row_key` 가 묶어 준 entity 사이를 견준다. 그래서 이 절에서 `row_key` 에 매이는 axis 는 `activity` 하나이며, 어느 쪽으로 견주었는지는 5 절의 `activity_basis` 에 남는다.
 
 ### 4.1 Axis
 
