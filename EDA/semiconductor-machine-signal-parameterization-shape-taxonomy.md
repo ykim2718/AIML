@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 168
+rev. 169
 
 > 상위 문서: [README](./README.md)
 >
@@ -103,7 +103,7 @@ Table 1. The six class axes and what this document does with each
 
 **이 문서의 판정 대상은 `value_type` 이 `numeric` 이고 `structure` 가 `trace` 인 열이다.** 크기를 갖지 않는 값에는 기울기도 진폭도 정의되지 않고, 시간 순서가 없는 배열에는 되돌릴 파형이 없다. 나머지 조합의 열은 이 문서의 어휘로 부를 수 없으며, manifest 에서 `trace_shape` 를 아예 갖지 않는 열이 그것이다.
 
-`array_length` 는 label 이 무엇이든 형상 판정을 바꾸지 않는다. 임계값이 모두 window 에 대한 비율이거나 표본 수의 비이기 때문이다 (§1.3.2). 다만 `variable` 인 열은 window 가 행마다 다르므로, 판정에 쓴 window 를 행 단위로 남겨야 같은 label 이 같은 뜻을 갖는다.
+`array_length` 는 label 이 무엇이든 형상 판정을 바꾸지 않는다. 임계값이 모두 무차원 비율이라 배열의 길이에 영향을 받지 않기 때문이다 (§1.3.2). 다만 `variable` 인 열은 window 가 행마다 다르므로, 판정에 쓴 window 를 행 단위로 남겨야 같은 label 이 같은 뜻을 갖는다.
 
 ### 1.2 Chart Class
 
@@ -140,7 +140,7 @@ DETERMINISTIC/STOCHASTIC division inside ACTIVE.*
 봉우리는 폭이 작은 `T1` 이다 — 모두 상위 클래스의 파라미터 영역이며, 그 값
 자체가 진단 파라미터다.
 
-Table 8 의 클래스 사이에 남는 형상 경계는 하나다.
+Fig. 1 의 클래스 사이에 남는 형상 경계는 하나다.
 
 - **`R` vs `T`** — **평탄도 `κ = W_90 / W_50`** 로 가른다. `W_a` 는 신호가
   정점 높이의 `a` 이상에 머무는 표본 수다. 정상이 평탄하면 `R`, 뾰족하면 `T`.
@@ -291,7 +291,7 @@ Events = n 인 클래스(`S2`, `R2`, `T2`, `O`)는 벡터 크기가 이벤트 �
 
 ### 2.1 Chart Classes And Reconstruction Parameters
 
-§1.2 가 정의한 class 마다 파형을 되돌리는 데 필요한 파라미터와 그 개수를 적는다. 앞 문단이 말한 parameter count 가 이 표의 한 열이다.
+§1.2 가 정의한 class 마다 파형을 되돌리는 데 필요한 파라미터와 그 개수를 적는다. MTSV 의 벡터 크기를 정하는 parameter count 가 이 표의 한 열이다.
 
 *Table 8. Chart classes and reconstruction parameters*
 
@@ -315,11 +315,8 @@ parameter 블록이 n번 들어간다**는 뜻, 즉 모델 차수(model order)�
 정의는 클래스마다 다르다 — `L` 은 준위 전이(엣지), `R` 은 펄스(on–off 쌍),
 `T` 는 정점, `O2`~`O4` 는 중심선 knot 이다. `Q1`~`Q9` 는 이벤트가 아니라 **quantum
 count** 로 갈리므로 `Events` 가 없다. 그 이벤트들이 규칙적으로
-반복되는지는 별도로 §2.3의 **cycle count** 로 센다 — 상승부가 두 단계로 꺾인
-펄스 하나도 엣지가 2개이므로 `Events = 2` 이지만 극대는 1개라 `cycle = 1` 이다.
-**cycle count 가 후보 클래스를 가른다**: `cycle = 1` 이면 단일 이벤트 계열
-(`S1`·`R1`·`T1`), `cycle ≥ 2` 면 반복 계열
-(`S2`·`R2`·`T2`)만 후보가 된다 (§3.8).
+반복되는지는 별도로 §2.3의 **cycle count** 로 세며, 그 값이 후보 클래스를
+가른다 (§2.3, §3.8).
 
 ### 2.2 Parameter Schematics
 
@@ -798,7 +795,7 @@ is adopted, not by competing in BIC.*
 Fig. 3에서 별표가 붙은 마디(`INACTIVE*`·`ACTIVE*`·`Q1*`·`Qn*`·`cyclic*`·`acyclic*`)의 판정이다. 적합(§3.3)
 이전에 **적합 없이 확정되는 것부터 먼저 처리한다** — 후보를 전부 적합해 BIC 를
 비교하는 것은 비싸고, 어차피 결과가 정해져 있는 트레이스까지 그 비용을 낼
-이유가 없다. 선행 처리는 세 가지이며 순서대로 진행한다. **2 에서 확정되면 그
+이유가 없다. 선행 처리는 세 가지이며 순서대로 진행한다. **2 번에서 확정되면 그
 트레이스는 거기서 끝난다** — cycle count 도, 적합도, BIC 도 돌지 않는다.
 
 1. **Activity Check** — INACTIVE 센서·웨이퍼를 먼저 제외한다 (§1.5). 값만
