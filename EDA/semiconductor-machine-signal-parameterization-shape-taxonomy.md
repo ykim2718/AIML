@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 173
+rev. 174
 
 > 상위 문서: [README](./README.md)
 >
@@ -95,7 +95,7 @@ Table 1. The six class axes and what this document does with each
 | `structure` | `scalar`, `vector`, `matrix`, `trace` | `trace` 인 열만 다룬다 |
 | `array_length` | `fixed`, `variable` | 형상 판정을 가르지 않는다 |
 | `trace_quantum` | `q1`, `qn`, `infinite` | chart class 로 잇는다 (§1.4.2) |
-| `trace_shape` | `flat`, `rectangle`, `triangle`, `ramp`, `oscillation`, `irregular` | chart class 로 잇는다 (§1.4.1) |
+| `trace_shape` | `flat`, `ramp`, `rectangle`, `triangle`, `oscillation`, `irregular` | chart class 로 잇는다 (§1.4.1) |
 
 **이 문서의 판정 대상은 `value_type` 이 `numeric` 이고 `structure` 가 `trace` 인 열이다.** 크기를 갖지 않는 값에는 기울기도 진폭도 정의되지 않고, 시간 순서가 없는 배열에는 되돌릴 파형이 없다. 나머지 조합의 열은 이 문서의 어휘로 부를 수 없으며, manifest 에서 `trace_shape` 를 아예 갖지 않는 열이 그것이다.
 
@@ -187,9 +187,9 @@ Table 3. `trace_shape` labels
 | Label | Rule |
 |---|---|
 | `flat` | Window 에서 값이 변하지 않는다 |
+| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 `ramp_fraction` 이상을 차지한다 |
 | `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 `dwell_ratio` 배 이상 길다 |
 | `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없으며, 정점이 뾰족하다 |
-| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 `ramp_fraction` 이상을 차지한다 |
 | `oscillation` | Autocorrelation 에 `acf_peak` 이상의 peak 이 일정한 간격으로 나타난다 |
 | `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
 
@@ -205,10 +205,10 @@ Table 4. Thresholds the labels depend on
 
 | Threshold | Default | Used by |
 |---|---|---|
+| `ramp_fraction` | 0.8 | `ramp` — 단조 구간이 덮어야 하는 window 비율 |
 | `dwell_ratio` | 5.0 | `rectangle` — 머문 표본 수 대 이동 표본 수의 하한 |
 | `kappa` | 0.45 | `triangle` — 평탄도 `κ = W_90 / W_50` 의 상한 (§1.2). 뾰족한 정점의 실측 대역(≤ 0.402)을 덮고 둥근 정점의 중간대를 `irregular` 로 보낸다. §1.2 의 0.7 은 `R1` 대 `T1` 동률을 가르는 다른 자리의 값이다 |
 | `slope_tolerance` | 3.0 | `triangle` — 두 플랭크 기울기 크기의 비의 상한 |
-| `ramp_fraction` | 0.8 | `ramp` — 단조 구간이 덮어야 하는 window 비율 |
 | `acf_peak` | 0.6 | `oscillation` — autocorrelation peak 높이의 하한 |
 | `peak_jitter` | 0.25 | `oscillation` — peak 간격의 상대 편차 상한 |
 
@@ -225,9 +225,9 @@ Table 5. `trace_shape` label to chart class
 | `trace_shape` | Chart class | Note |
 |---|---|---|
 | `flat` | `Q1` | 준위가 하나뿐이라 변할 곳이 없다. `trace_quantum` 의 `q1` 과 같은 사실이다 |
+| `ramp` | `S1` (`t_rise` 가 큰 경우) | 램프는 전이가 window 를 덮을 만큼 완만한 `S1` 이다 (§2.2.2) |
 | `rectangle` | `R1`, `R1s`, `R2` | 사다리꼴은 `t_rise`·`t_fall` 이 큰 `R1` 이므로 여기 속한다 |
 | `triangle` | `T1`, `T2` | 좁은 봉우리는 폭이 작은 `T1`, 골짜기는 `A_peak` 가 음수인 `T1` 이다 |
-| `ramp` | `S1` (`t_rise` 가 큰 경우) | 램프는 전이가 window 를 덮을 만큼 완만한 `S1` 이다 (§2.2.2) |
 | `oscillation` | `O2`, `O3`, `O4`, `Q2`~`Q9` | 격자 위의 왕복과 격자 밖의 진동이 이 label 로 함께 접힌다 |
 | `irregular` | 없음 | 어느 class 도 형상을 설명하지 못한 경우이므로 대응하는 class 가 없다 |
 
