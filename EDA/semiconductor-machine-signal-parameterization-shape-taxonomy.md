@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 174
+rev. 175
 
 > 상위 문서: [README](./README.md)
 >
@@ -187,7 +187,7 @@ Table 3. `trace_shape` labels
 | Label | Rule |
 |---|---|
 | `flat` | Window 에서 값이 변하지 않는다 |
-| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간이 `ramp_fraction` 이상을 차지한다 |
+| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간 하나가 `ramp_fraction` 이상을 차지한다 |
 | `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 `dwell_ratio` 배 이상 길다 |
 | `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없으며, 정점이 뾰족하다 |
 | `oscillation` | Autocorrelation 에 `acf_peak` 이상의 peak 이 일정한 간격으로 나타난다 |
