@@ -1,10 +1,10 @@
 # PCA Algorithm
-Rev. 1 | Created: 2026-08-11 | Updated: 2026-08-11 17:34 CDT
+Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-11 17:38 CDT
 
 > The other documents in this folder say which variant to reach for. This one says what the plain procedure actually does.
 > It fixes the notation, walks the steps in order, states what each step produces, and lists the conventions that decide whether two implementations agree.
 
-PCA is short enough to write out in full, and writing it out settles questions that a library call hides — what the sign of a component means, why the rank stops at `n − 1`, which mean gets subtracted from new data, and what is lost when components are dropped.
+PCA (Principal Component Analysis) is short enough to write out in full, and writing it out settles questions that a library call hides — what the sign of a component means, why the rank stops at `n − 1`, which mean gets subtracted from new data, and what is lost when components are dropped.
 
 ## 1. Notation
 
@@ -24,7 +24,7 @@ Table 1. Symbols used throughout
 | `λ_j` | — | The variance explained by component `j` |
 | `r` | — | The rank of `X_c`, at most `min(n − 1, p)` |
 
-The loadings are the new axes and the scores are the coordinates on them. Confusing the two is the most common reading error, because both come out of the same decomposition and both are called "the components" in loose speech.
+The loadings are the new axes and the scores are the coordinates on them. The two are easy to confuse, because they come out of the same decomposition and both get called "the components" in casual use.
 
 ## 2. The Procedure
 
@@ -44,11 +44,11 @@ Step 2 is a modelling choice. Without scaling, the variable with the largest num
 
 ## 3. Two Routes To The Same Answer
 
-The decomposition in step 3 can be reached from either side, and the two agree in exact arithmetic.
+The decomposition in step 3 can be reached by either of two routes, and they agree in exact arithmetic.
 
 Table 2. Covariance route against SVD route
 
-| | Covariance route | SVD route |
+| Aspect | Covariance route | SVD route |
 |---|---|---|
 | What is formed | `C = X_cᵀ X_c / (n − 1)`, then its eigendecomposition | The SVD of `X_c` directly |
 | Loadings | The eigenvectors of `C` | The columns of `V` |
@@ -70,7 +70,7 @@ Table 3. The three outputs and what each is for
 
 The explained variance ratio is `λ_j / Σλ`, where the sum runs over all `r` components and not only the `k` that were kept. Dividing by the sum of the kept ones inflates every figure and hides exactly what truncation discarded.
 
-Reconstruction follows the same path backwards. With `X̂ = T V_kᵀ`, undoing the scaling and adding `μ` back returns the approximation in the original units, and the squared error of that approximation equals the sum of the discarded `λ_j`. That identity is what makes the explained variance ratio a statement about reconstruction rather than a bare number.
+Reconstruction follows the same path backwards. With `X̂ = T V_kᵀ`, undoing the scaling and adding `μ` back returns the approximation in the original units, and the average squared error per sample equals the sum of the discarded `λ_j`. That identity is what makes the explained variance ratio a statement about reconstruction rather than a bare number.
 
 ## 5. Choosing The Component Count
 
@@ -84,7 +84,7 @@ Table 4. Ways to fix `k`
 | Parallel analysis | Keep the components whose eigenvalues exceed those of shuffled data | It needs repeated runs but answers the right question |
 | Cross-validation | Keep the count that minimizes held-out reconstruction error | The most defensible, and the most expensive |
 
-Parallel analysis and cross-validation both compare against a null in which there is no structure, which is the comparison the other three leave to the reader's judgement.
+Parallel analysis compares the eigenvalues against a null in which there is no structure, and cross-validation asks directly which count generalizes. The other three settle the question by a threshold the reader has to choose.
 
 ## 6. Applying It To New Data
 
