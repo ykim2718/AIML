@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 6 | Created: 2026-08-11 | Updated: 2026-08-11 15:03 CDT
+Rev. 7 | Created: 2026-08-11 | Updated: 2026-08-11 15:30 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -82,11 +82,17 @@ Table 4. Three ways to handle a trace
 
 **Parameterizing before unfolding is usually the better move.** Once every instant becomes its own variable, neighbouring instants become unrelated columns and the fact that a trace is a curve disappears from the model. A second problem remains on top of that: step length drifts slightly from wafer to wafer, so the same column stops pointing at the same moment.
 
-Functional PCA requires that **every curve be comparable to every other at matching instants on a shared time axis**. Three things have to hold. First, values must be resamplable onto a common grid even when the sampling instants differ from curve to curve. Second, the start and the end must be anchored to the same reference; unless the moment a step begins is set to zero, the same instant refers to different process phases on different wafers. Third, whatever phase difference remains must be removed by registration — step length wanders even under the same recipe, so the time axis is stretched or compressed to line up landmarks such as a peak or a transition.
+Functional PCA requires that **every curve be comparable to every other at matching instants on a shared time axis**. An instant is one point on that axis — one sampling time inside a trace, such as 3.20 s after the step began, or equivalently the sample sitting at index 501. The common domain is that shared axis itself: the same start, the same end, and the same grid of instants for every curve, so that index 501 names the same point of the process on every wafer. It is a property of the time axis, not of the equipment; two curves from one chamber can still sit on different domains, and two curves from different chambers can share one.
+
+Three things have to hold.
+
+1. **Resampling.** Values must be obtainable on a common grid even when the recorded sampling instants differ from curve to curve. Sensors that log at 10 Hz and at 12 Hz can still be compared once both are interpolated onto one grid.
+2. **Anchoring.** The start and the end must be tied to the same reference. Unless the moment the step begins is set to zero, the instant 3.20 s falls in the middle of the ramp on one wafer and already inside the plateau on the next, so the same instant refers to different process phases.
+3. **Registration.** Whatever phase difference is left must be removed. Step length wanders even under the same recipe, so the time axis is stretched or compressed to line up landmarks such as a peak or a transition.
 
 **Without that alignment a phase difference is read as an amplitude change.** A curve that merely started a little late is scored as a change in magnitude, and the first component ends up carrying the timing mismatch instead of the process variation.
 
-Autocorrelation matters as well. If instants are left as raw variables, adjacent variables hold nearly the same value, so the first component reflects that redundancy. Dynamic PCA, which states the lag explicitly, or parameterization reduces it.
+Autocorrelation within a trace matters as well — not correlation between one trace and another, but the correlation of a trace with itself at neighbouring instants. If instants are left as raw variables, adjacent variables hold nearly the same value, so the first component reflects that redundancy. Dynamic PCA, which states the lag explicitly, or parameterization reduces it.
 
 ### 2.3 Wafer Map
 
@@ -157,12 +163,14 @@ The `Cell` column says what one cell of the table holds, in the vocabulary of sc
 
 The terms below appear in the body without being defined there.
 
+- **Common domain** is the shared input axis on which every curve is expressed, with the same start, the same end, and the same grid of instants.
 - **Contrastive PCA** finds the directions whose variance is large in the target data compared with a background dataset.
 - **DOE** is Design of Experiments, a study whose conditions are placed by design rather than observed as they come.
 - **Dynamic PCA** appends lagged copies of the variables so that autocorrelation enters the model explicitly.
 - **FDC** is Fault Detection and Classification, the practice of finding faults from the sensor record of process equipment.
 - **FPCA** is Functional PCA, which treats an observation as a curve rather than a vector when taking components.
 - **Incremental PCA** updates the components block by block instead of decomposing the whole matrix at once.
+- **Instant** is one point on the time axis of a trace, that is one sampling time within it.
 - **Kernel trick** computes in a feature space using inner products alone, without ever forming the coordinates of that space.
 - **Manifold learning** assumes the data lies on a low-dimensional surface and finds coordinates that preserve neighbour relations.
 - **Multi-block** divides the variables into blocks and models the relations between blocks separately.
