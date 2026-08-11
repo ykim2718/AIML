@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 8 | Created: 2026-08-11 | Updated: 2026-08-11 15:44 CDT
+Rev. 9 | Created: 2026-08-11 | Updated: 2026-08-11 16:50 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -68,9 +68,9 @@ The first is units. Thickness is written in nanometres, resistance in ohms, and 
 
 The second is the sample count, which is A2. Twenty-five wafers in a lot is not enough to estimate components stably. Eigenvalue shrinkage, or a conservative choice of how many components to keep, is needed, and the count should be confirmed by cross-validation rather than read off a scree plot alone.
 
-### 2.2 FDC Trace
+### 2.2 FDC Trace 🎈
 
-A trace is a three-way structure of wafer × sensor × time. Unfolding it into a wafer × (sensor·time) matrix is the most common handling, and `p` passes several hundred thousand the moment that happens.
+A trace is a three-way structure of wafer × sensor × time, so it breaks A1 before anything else is even considered. Unfolding it into a wafer × (sensor·time) matrix is the usual first move, and `p` passes several hundred thousand the moment that happens, which breaks A2 as well.
 
 Table 4. Three ways to handle a trace
 
@@ -80,19 +80,21 @@ Table 4. Three ways to handle a trace
 | Functional PCA | Take the components while keeping the smoothness of the curve | The curves must be registered onto a common domain first |
 | Tensor decomposition | Decompose the three axes without unfolding them | Harder to read and expensive to compute |
 
-**Parameterizing before unfolding is usually the better move.** Once every instant becomes its own variable, neighbouring instants become unrelated columns and the fact that a trace is a curve disappears from the model. A second problem remains on top of that: step length drifts slightly from wafer to wafer, so the same column stops pointing at the same moment.
+**Parameterizing before unfolding is usually the better move.** Once every instant becomes its own variable, neighbouring instants become unrelated columns and the fact that a trace is a curve disappears from the model. A second problem remains on top of that: the columns of two wafers stop pointing at the same moment, which is what the requirements below are about.
 
-Functional PCA requires that **every curve be comparable to every other at matching instants on a shared time axis**. An instant is one point on that axis — one sampling time inside a trace, such as 3.20 s after the step began, or equivalently the sample sitting at index 501. The common domain is that shared axis itself: the same start, the same end, and the same grid of instants for every curve, so that index 501 names the same point of the process on every wafer. It is a property of the time axis, not of the equipment; two curves from one chamber can still sit on different domains, and two curves from different chambers can share one.
+Functional PCA requires that **every curve be comparable to every other at matching instants on a shared time axis**. An instant is one point on that axis — one sampling time inside a trace, such as 3.20 s after the step began, or equivalently the sample sitting at index 501. The common domain is that shared axis itself: the same start, the same end, and the same grid of instants for every curve, so that index 501 names the same point of the process on every wafer.
+
+The common domain is a property of the time axis, not of the equipment. Two curves from one chamber can still sit on different domains, and two curves from different chambers can share one.
 
 Three things have to hold.
 
-1. **Resampling.** Values must be obtainable on a common grid even when the recorded sampling instants differ from curve to curve. Sensors that log at 10 Hz and at 12 Hz can still be compared once both are interpolated onto one grid.
+1. **Resampling.** Every curve must be readable on a common grid even when the recorded sampling instants differ from curve to curve. Sensors that log at 10 Hz and at 12 Hz can still be compared once both are interpolated onto one grid.
 2. **Anchoring.** The start and the end must be tied to the same reference. Unless the moment the step begins is set to zero, the instant 3.20 s falls in the middle of the ramp on one wafer and already inside the plateau on the next, so the same instant refers to different process phases.
 3. **Registration.** Whatever phase difference is left must be removed. Resampling puts the curves on one grid; registration moves the curves along that grid, warping each time axis with a monotone function. Step length wanders even under the same recipe, so the time axis is stretched or compressed to line up landmarks such as a peak or a transition. What remains afterwards is amplitude variation alone.
 
 **Without that alignment a phase difference is read as an amplitude change.** A curve that merely started a little late is scored as a change in magnitude, and the first component ends up carrying the timing mismatch instead of the process variation.
 
-Autocorrelation within a trace matters as well — not correlation between one trace and another, but the correlation of a trace with itself at neighbouring instants. If instants are left as raw variables, adjacent variables hold nearly the same value, so the first component reflects that redundancy. Dynamic PCA, which states the lag explicitly, or parameterization reduces it.
+Autocorrelation within a trace matters as well — not correlation between one trace and another, but the correlation of a trace with itself at neighbouring instants. If instants are left as raw variables, adjacent variables hold nearly the same value, so the first component reflects that redundancy. Dynamic PCA, which states the lag explicitly, reduces it, and so does parameterization.
 
 ### 2.3 Wafer Map
 
