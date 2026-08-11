@@ -1,14 +1,37 @@
 # PCA Applications
-Rev. 1 | Created: 2026-08-11 | Updated: 2026-08-11 13:16 CDT
+Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-11 14:40 CDT
 
 > 계통을 아는 것과 무엇을 쓸지 정하는 것은 다른 일이다.
-> 이 문서는 반도체 계측 데이터에서 어느 가지가 실제로 쓰이는지를 데이터 종류별로 적고, 데이터 조건에서 기법으로 가는 결정표를 둔다.
+> 이 문서는 확장이 어느 방향으로 일어났는지를 먼저 묶고, 반도체 계측 데이터에서 어느 가지가 실제로 쓰이는지를 데이터 종류별로 적은 뒤, 데이터 조건에서 기법으로 가는 결정표를 둔다.
 
-PCA 의 가지는 열 개가 넘지만 한 현장에서 동시에 쓰이는 것은 두셋이다. 무엇이 쓰이는지는 데이터가 어떤 모양으로 오는지와 그 데이터에서 어떤 가정이 깨져 있는지로 정해진다. 반도체 데이터는 그 조건이 비교적 뚜렷해서, 데이터 종류만 알아도 후보가 크게 좁혀진다.
+PCA 의 변형은 열 갈래가 넘지만 한 현장에서 동시에 쓰이는 것은 두셋이다. 무엇이 쓰이는지는 데이터가 어떤 모양으로 오는지와 그 데이터에서 어떤 가정이 깨져 있는지로 정해진다. 반도체 데이터는 그 조건이 비교적 뚜렷해서, 데이터 종류만 알아도 후보가 크게 좁혀진다.
 
-## 1. Data Types And Their Conditions
+## 1. Four Directions Of Extension
 
-Table 1. What each data type breaks
+확장은 데이터의 한계와 분석의 목적을 따라 네 방향으로 일어났다. 아래 넷은 배타적이지 않으며, 한 데이터가 둘 이상에 걸리는 것이 보통이다.
+
+Table 1. Four directions and their methods
+
+| Direction | Limitation or purpose | Methods |
+|---|---|---|
+| Nonlinear and kernel | 선형 부분공간으로 나뉘지 않는다 | Kernel PCA |
+| Robustness and missing data | 이상치가 섞이고 결측이 많다 | Robust PCA, Probabilistic PCA |
+| Complex data structure | 행렬로 펼치면 구조를 잃는다 | Sparse PCA, Tensor PCA, Functional PCA |
+| High-dimensional and large data | 메모리와 계산 시간이 한계다 | Randomized PCA, Incremental PCA |
+
+**Nonlinear and kernel.** Kernel PCA 는 커널 트릭으로 특징 공간에서 성분을 구해, 선형으로 나뉘지 않는 구조를 뽑는다. 이웃 관계를 보존하는 매니폴드 학습과 맞닿아 있으나, 사영 함수를 주는지가 둘을 가른다.
+
+**Robustness and missing data.** Robust PCA 는 행렬을 정상 차원과 이상치의 합으로 분해해 둘을 갈라 놓는다. Probabilistic PCA 는 PCA 를 확률 모형으로 다시 써서, 결측이 많은 데이터에서도 주성분을 안정적으로 추정한다.
+
+**Complex data structure.** Sparse PCA 는 성분이 쓰는 변수를 줄여 읽을 수 있게 만들고, Tensor PCA 는 다차원 구조를 펼치지 않은 채 축소하며, Functional PCA 는 이어진 곡선 자체를 하나의 단위로 다룬다. Functional PCA 는 배경 대비 특이한 곡선 변동을 찾는 contrastive 형태로도 이어졌다.
+
+**High-dimensional and large data.** Randomized PCA 는 무작위 사영으로 상위 성분을 빠르게 근사하고, Incremental PCA 는 데이터를 조각으로 나누어 갱신해 메모리 한계를 넘는다.
+
+네 방향은 서로 다른 것을 고친다. 첫째는 모양을, 둘째는 자료의 질을, 셋째는 구조를, 넷째는 규모를 고친다. 그래서 규모 문제를 강건성 기법으로 풀거나 그 반대로 하는 선택은 성립하지 않는다.
+
+## 2. Data Types And Their Conditions
+
+Table 2. What each data type breaks
 
 | Data type | Shape | Broken assumption |
 |---|---|---|
@@ -20,7 +43,7 @@ Table 1. What each data type breaks
 
 깨진 가정이 다르므로 같은 공장 안에서도 데이터마다 다른 가지를 쓴다. 계측값 표에는 고전 PCA 로 충분한 경우가 많고, 트레이스에는 구조를 지키는 가지가 필요하다.
 
-## 2. Wafer Metrology
+## 3. Wafer Metrology
 
 계측값은 웨이퍼 하나가 한 행이고 두께·저항·임계치수 같은 항목이 열이 되는 표다. 항목 수가 수십 개 수준이라 계산은 문제가 되지 않고, 대신 두 가지가 걸린다.
 
@@ -28,11 +51,11 @@ Table 1. What each data type breaks
 
 둘째는 표본 수다. 로트 하나에 웨이퍼 25 장이면 성분을 안정적으로 추정하기에 부족하다. 고유값 축소나 성분 개수를 보수적으로 잡는 처리가 필요하며, 성분을 몇 개 쓸지는 scree 만으로 정하지 않고 교차검증으로 확인한다.
 
-## 3. FDC Trace
+## 4. FDC Trace
 
-트레이스는 웨이퍼 × 센서 × 시각의 3 차 구조다. 이것을 웨이퍼 × (센서·시각) 행렬로 펼치는 것이 가장 흔한 처리이고, 그 순간 `p` 가 수만이 된다.
+트레이스는 웨이퍼 × 센서 × 시각의 3 차 구조다. 이것을 웨이퍼 × (센서·시각) 행렬로 펼치는 것이 가장 흔한 처리이고, 그 순간 `p` 가 수십만을 넘는다.
 
-Table 2. Three ways to handle a trace
+Table 3. Three ways to handle a trace
 
 | Approach | Idea | Trade-off |
 |---|---|---|
@@ -44,15 +67,15 @@ Table 2. Three ways to handle a trace
 
 자기상관도 고려해야 한다. 시각을 그대로 변수로 두면 인접 변수가 거의 같은 값이라 첫 성분이 그 중복을 반영하게 되므로, 시차를 명시하는 Dynamic PCA 나 파라미터화가 그 중복을 줄인다.
 
-## 4. Wafer Map
+## 5. Wafer Map
 
 Die 마다의 값을 격자로 담은 자료는 이웃 관계가 정보다. 격자를 한 줄로 늘어놓고 PCA 를 걸면 인접한 die 가 서로 무관한 변수가 되어 공간 패턴을 잃는다. 2DPCA 처럼 행과 열 구조를 유지하는 가지나, 공간 상관을 명시하는 처리가 필요하다.
 
-## 5. Multiple Tools And Chambers
+## 6. Multiple Tools And Chambers
 
 여러 장비의 데이터를 한 표에 모으면 장비 사이의 차이가 가장 큰 분산이 되어 첫 성분을 차지한다. 그 성분은 공정 변동이 아니라 장비 식별자와 같으므로, 그대로 두면 뒤 성분이 밀려난다.
 
-Table 3. Removing the tool effect
+Table 4. Removing the tool effect
 
 | Approach | Idea | Note |
 |---|---|---|
@@ -62,36 +85,39 @@ Table 3. Removing the tool effect
 
 장비 차이를 지울지 남길지는 목적이 정한다. 수율 예측이면 지우는 편이 낫고, 장비 간 정합성 감시가 목적이면 그 성분이 바로 보려는 대상이다.
 
-## 6. Drift Over Time
+## 7. Drift Over Time
 
 장기 운전 데이터에서는 부분공간 자체가 천천히 변한다. 고정된 성분으로 계속 사영하면 잔차가 서서히 커지는데, 이것을 모형 열화로 볼지 공정 변화로 볼지가 갈린다.
 
 증분 계통을 쓰면 성분을 갱신해 잔차를 낮게 유지할 수 있지만, 그 갱신이 감시하려던 변화를 흡수해 버린다. 그래서 감시용 기준 성분은 고정하고, 갱신형 성분은 따로 두어 둘의 차이를 보는 구성을 쓴다.
 
-## 7. Selection Map
+## 8. Selection Map
 
 데이터 조건에서 기법으로 가는 결정표다. 위에서부터 차례로 확인하고, 처음 걸리는 줄이 답이다.
 
-Table 4. From condition to method
+Table 5. From condition to method
 
-| Condition | Method | Section |
-|---|---|---|
-| 데이터가 곡선이고 매끄러움이 정보다 | Functional PCA 또는 파라미터화 후 PCA | §3 |
-| 데이터가 세 축 이상의 구조다 | Tensor 또는 Multilinear PCA | §3 |
-| 격자 위의 공간 패턴이 정보다 | 2DPCA 또는 공간 상관을 명시한 처리 | §4 |
-| 이상치가 상시 존재한다 | Robust PCA 또는 L1-PCA | — |
-| `p` 가 `n` 을 크게 넘는다 | 고유값 축소와 보수적 성분 수 | §2 |
-| 데이터가 흘러 들어온다 | 증분 또는 스트리밍 계통 | §6 |
-| 성분을 사람이 읽어야 한다 | Sparse PCA 또는 varimax 회전 | — |
-| 예측 목표가 정해져 있다 | PLS 또는 supervised 계통 | — |
-| 장비 효과가 첫 성분을 차지한다 | 장비별 정규화 또는 contrastive | §5 |
-| 위 어느 것도 아니다 | 표준화 후 고전 PCA | — |
+| Condition | Method | Direction | Section |
+|---|---|---|---|
+| 데이터가 곡선이고 매끄러움이 정보다 | Functional PCA 또는 파라미터화 후 PCA | Structure | §4 |
+| 데이터가 세 축 이상의 구조다 | Tensor 또는 Multilinear PCA | Structure | §4 |
+| 격자 위의 공간 패턴이 정보다 | 2DPCA 또는 공간 상관을 명시한 처리 | Structure | §5 |
+| 이상치가 상시 존재한다 | Robust PCA 또는 L1-PCA | Robustness | §1 |
+| 결측이 많다 | Probabilistic PCA | Robustness | §1 |
+| `p` 가 `n` 을 크게 넘는다 | 고유값 축소와 보수적 성분 수 | Scale | §3 |
+| 데이터가 메모리에 들어가지 않는다 | Randomized 또는 Incremental PCA | Scale | §1 |
+| 데이터가 흘러 들어온다 | 증분 또는 스트리밍 계통 | Scale | §7 |
+| 성분을 사람이 읽어야 한다 | Sparse PCA 또는 varimax 회전 | Structure | §1 |
+| 구조가 선형이 아니다 | Kernel PCA | Nonlinear | §1 |
+| 예측 목표가 정해져 있다 | PLS 또는 supervised 계통 | — | — |
+| 장비 효과가 첫 성분을 차지한다 | 장비별 정규화 또는 contrastive | — | §6 |
+| 위 어느 것도 아니다 | 표준화 후 고전 PCA | — | — |
 
 ```text
 트레이스인가?
 ├── 예 → 곡선 구조를 지킬 것인가?
 │         ├── 예 → Functional PCA / 파라미터화
-│         └── 아니오 → 펼친 뒤 고차원 처리 (§2 의 축소)
+│         └── 아니오 → 펼친 뒤 고차원 처리 (§3 의 축소)
 └── 아니오 → 목표 변수가 있는가?
               ├── 예 → PLS / supervised 계통
               └── 아니오 → 이상치가 있는가?
@@ -110,11 +136,17 @@ Table 4. From condition to method
 - **Dynamic PCA** 는 시차를 변수로 덧붙여 자기상관을 모형에 넣는 PCA 이다.
 - **FDC** 는 Fault Detection and Classification 이고, 공정 장비의 센서 기록으로 이상을 찾는 체계이다.
 - **FPCA** 는 Functional PCA 이고, 관측을 벡터가 아니라 곡선으로 보고 주성분을 구한다.
+- **Incremental PCA** 는 데이터를 블록으로 나누어 성분을 갱신해 나가는 PCA 이다.
+- **Kernel trick** 은 특징 공간의 좌표를 만들지 않고 내적만으로 계산을 마치는 기법이다.
+- **Manifold learning** 은 고차원 데이터가 저차원 곡면 위에 있다고 보고 이웃 관계를 보존해 좌표를 찾는 방법이다.
 - **Multi-block** 은 변수를 블록으로 나누고 블록 사이의 관계를 따로 모형화하는 방식이다.
 - **PLS** 는 Partial Least Squares 이고, 입력과 목표의 공분산이 큰 방향을 찾는다.
+- **Probabilistic PCA** 는 관측을 저차원 잠재변수의 선형 사상에 등방 잡음을 더한 것으로 보는 확률 모형이다.
+- **Randomized PCA** 는 무작위 사영으로 부분공간을 좁힌 뒤 상위 성분을 근사하는 PCA 이다.
 - **Robust PCA** 는 행렬을 저계수 성분과 희소 성분의 합으로 분해해 이상치를 분리하는 방법이다.
 - **Scree** 는 고유값을 크기순으로 그린 그림이고, 꺾이는 자리를 성분 개수로 삼는다.
 - **Sparse PCA** 는 하중의 상당수를 0 으로 만들어 성분을 읽을 수 있게 하는 PCA 이다.
+- **Tensor PCA** 는 세 축 이상의 배열을 펼치지 않은 채 축소하는 방법이다.
 - **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이다.
 - **Varimax** 는 하중의 분산을 키워 해석을 쉽게 하는 직교 회전이다.
 - **2DPCA** 는 이미지를 벡터로 펼치지 않고 행과 열 구조를 유지한 채 성분을 구하는 방법이다.

@@ -1,10 +1,10 @@
 # PCA Classical Lineage
-Rev. 1 | Created: 2026-08-11 | Updated: 2026-08-11 13:16 CDT
+Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-11 14:40 CDT
 
 > PCA 는 하나의 기법이 아니라 같은 뿌리에서 갈라져 나온 계통이다.
 > 이 문서는 그 가지를 "원래 PCA 의 어떤 가정을 풀었는가" 라는 한 축으로 세우고, 가지마다 무엇을 얻고 무엇을 잃는지를 적는다.
 
-원래 PCA 는 여러 가정을 한꺼번에 깔고 있다. 데이터가 행렬이고, 한 번에 메모리에 들어가며, 이상치가 없고, 성분이 모든 변수를 조금씩 쓰고, 구조가 선형이며, 표본이 변수보다 많고, 목표 변수를 모른다는 가정이다. 각 가지는 이 중 하나를 풀어 준 대가로 다른 것을 내놓는다. 그래서 어느 가지를 고를지는 성능 비교가 아니라 **어떤 가정이 내 데이터에서 깨졌는가** 로 정해진다.
+원래 PCA 는 여러 가정을 한꺼번에 전제한다. 데이터가 행렬이고, 한 번에 메모리에 들어가며, 이상치가 없고, 성분이 모든 변수를 조금씩 쓰고, 구조가 선형이며, 표본이 변수보다 많고, 목표 변수를 모른다는 가정이다. 각 가지는 이 중 하나를 푸는 대신 다른 것을 내준다. 그래서 어느 가지를 고를지는 성능 비교가 아니라 **어떤 가정이 내 데이터에서 깨졌는가** 로 정해진다.
 
 ## 1. Reading The Map
 
@@ -16,18 +16,18 @@ Table 1. The lineage at a glance
 | Probabilistic (§4) | 생성 모형이 없어도 된다 | PPCA, Factor Analysis, Bayesian PCA | 잡음 구조를 가정해야 한다 |
 | Online (§5) | 데이터가 한 번에 다 있다 | Oja, GHA, CCIPCA, Incremental PCA | 수렴 속도와 학습률에 매인다 |
 | Robustness (§6) | 이상치가 없다 | L1-PCA, Robust PCA | 계산이 비싸고 해가 유일하지 않을 수 있다 |
-| Sparsity (§7) | 성분이 모든 변수를 써도 된다 | SCoTLASS, Sparse PCA | 직교성과 분산 최대성을 일부 포기한다 |
+| Sparsity (§7) | 성분이 모든 변수를 써도 된다 | SCoTLASS, Sparse PCA | 직교성과 설명 분산을 일부 포기한다 |
 | Non-linear (§8) | 구조가 선형 부분공간이다 | Kernel PCA, Autoencoder | 역변환과 해석이 어려워진다 |
 | Asymptotics (§9) | 표본이 변수보다 많다 | Shrinkage, spiked model | 추정량이 모형 가정에 의존한다 |
 | Data structure (§10) | 데이터가 행렬이다 | FPCA, Tensor PCA, Dynamic PCA | 구조를 사람이 선언해야 한다 |
 | Supervised (§11) | 목표 변수를 모른다 | Supervised PCA, PLS, Contrastive PCA | 목표가 바뀌면 축도 바뀐다 |
 | Distribution (§12) | 데이터를 한곳에 모을 수 있다 | Distributed PCA, DP-PCA | 통신량이나 정확도를 내준다 |
 
-가지는 서로 배타적이지 않다. 웨이퍼 계측처럼 변수가 많고 이상치도 있는 데이터에서는 §6 과 §9 를 함께 쓰는 것이 보통이다. 다만 한 번에 두 가정을 풀면 대가도 함께 붙으므로, 깨진 가정을 먼저 특정하고 그 가지부터 적용한다.
+가지는 서로 배타적이지 않다. 센서를 시각마다 펼친 데이터처럼 변수가 많고 이상치도 있으면 §6 과 §9 를 함께 쓰는 것이 보통이다. 다만 한 번에 두 가정을 풀면 대가도 함께 붙으므로, 깨진 가정을 먼저 특정하고 그 가지부터 적용한다.
 
 ## 2. Root
 
-PCA 는 두 가지 서로 다른 목적이 같은 답에 도달한다는 사실 위에 서 있다. 하나는 사영된 데이터의 분산을 최대로 만드는 방향을 찾는 것이고, 다른 하나는 원 데이터를 가장 작은 오차로 근사하는 저계수 부분공간을 찾는 것이다. Eckart–Young 정리가 두 번째 문제의 답이 절단 SVD 임을 말하고, 그 답이 첫 번째 문제의 답과 같다.
+PCA 는 두 가지 서로 다른 목적이 같은 답에 도달한다는 사실 위에 서 있다. 하나는 사영된 데이터의 분산을 최대로 만드는 방향을 찾는 것이고, 다른 하나는 원 데이터를 가장 작은 오차로 근사하는 저계수 부분공간을 찾는 것이다. Eckart–Young 정리가 두 번째 문제의 답이 절단 SVD 임을 말하고, 그 답이 첫 번째 문제의 답과 같다. 여기에 선형 autoencoder 를 더하면 세 가지가 같은 부분공간을 가리킨다.
 
 Table 2. Three equivalent formulations
 
@@ -43,7 +43,7 @@ Table 2. Three equivalent formulations
 
 ## 3. Computation Branch
 
-같은 부분공간을 구하는 방법이 여럿이고, 데이터의 크기와 접근 방식이 어느 것을 쓸지 정한다.
+같은 부분공간을 구하는 방법이 여럿이고, 데이터의 크기와 데이터를 몇 번 읽을 수 있는지가 어느 것을 쓸지 정한다.
 
 Table 3. Ways to reach the same subspace
 
@@ -55,7 +55,7 @@ Table 3. Ways to reach the same subspace
 | Randomized SVD | 무작위 사영으로 부분공간을 먼저 좁힌다 | 큰 행렬에서 상위 `k` 개를 빠르게 얻을 때 |
 | Frequent Directions | 한 번 읽으며 고정 크기 sketch 를 유지한다 | 데이터를 두 번 읽을 수 없을 때 |
 
-`p` 가 크면 `p × p` 공분산을 만드는 것 자체가 병목이 된다. 센서 200 개를 시각 10000 개로 펼친 행렬처럼 `p` 가 수만을 넘으면 공분산은 만들지 않고 SVD 나 randomized SVD 로 바로 간다.
+`p` 가 크면 `p × p` 공분산을 만드는 것 자체가 병목이 된다. 센서 200 개를 시각 10000 개로 펼치면 `p` 가 이백만이 되므로, 공분산은 만들지 않고 SVD 나 randomized SVD 로 바로 간다.
 
 ## 4. Probabilistic Branch
 
@@ -70,7 +70,7 @@ Table 4. Generative reformulations
 | EM for PCA | — | 공분산을 만들지 않고 반복으로 푼다 |
 | Bayesian PCA | 성분별 사전분포 | 성분 개수를 자동으로 줄인다 |
 
-PPCA 와 Factor Analysis 의 차이가 실무에서 갈리는 지점은 센서마다 잡음 크기가 다를 때다. 잡음이 등방이라는 가정을 유지하면 잡음이 큰 센서가 주성분 방향을 끌어당긴다.
+PPCA 와 Factor Analysis 가 실무에서 갈리는 자리는 센서마다 잡음 크기가 다를 때다. 잡음이 등방이라는 가정을 유지하면 잡음이 큰 센서가 주성분 방향을 끌어당긴다.
 
 ## 5. Online And Incremental Branch
 
@@ -189,7 +189,7 @@ Table 12. Computing without gathering the data
 | Federated PCA | 원 데이터를 내보낼 수 없다 | 갱신량만 주고받는다 |
 | Differentially Private PCA | 개별 표본이 드러나면 안 된다 | 공분산이나 성분에 잡음을 더한다 |
 
-공장 사이, 고객 사이에 데이터를 옮길 수 없는 상황이 이 가지가 필요한 자리다. 정확도를 얼마나 내주는지가 그 제약의 값이다.
+공장 사이, 고객 사이에 데이터를 옮길 수 없는 상황이 이 가지가 필요한 자리다. 정확도를 얼마나 내주어야 하는지가 그 제약의 대가다.
 
 ## Appendix A. Terminology
 
