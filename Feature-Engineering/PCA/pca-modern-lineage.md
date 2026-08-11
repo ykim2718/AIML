@@ -1,10 +1,10 @@
 # PCA Modern Lineage
-Rev. 1 | Created: 2026-08-11 | Updated: 2026-08-11 13:16 CDT
+Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-11 14:52 CDT
 
-> PCA 는 표현학습이 등장하면서 밀려난 것이 아니라 그 안에서 다시 쓰였다.
-> 이 문서는 신경망 표현을 다루는 자리에서 PCA 가 무엇으로 남아 있는지, 그리고 함수형 데이터·딥러닝·목표 변수를 결합한 최근 갈래가 무엇을 노리는지를 적는다.
+> PCA was not pushed aside when representation learning arrived; it was rewritten inside it.
+> This document records what remains of PCA where neural representations are handled, and what the recent branches that combine functional data, deep learning, and the target variable are aiming at.
 
-고전 계통이 "원래 PCA 의 어떤 가정을 풀었는가" 로 갈라졌다면, 현대 계통은 다른 질문에서 갈라진다. 표현을 학습으로 얻는 시대에 **선형 부분공간이라는 개념이 어디에 남아 있는가** 이다. 답은 세 자리다. 학습이 무너지지 않게 붙잡는 제약으로, 학습된 표현을 사후에 읽는 도구로, 그리고 구조와 목표를 학습에 끼워 넣는 결합 모형으로 남아 있다.
+The classical lineage divides on the question of which assumption was relaxed. The modern lineage divides on a different one: in an era when representations are learned, **where does the idea of a linear subspace still live?** It lives in three places — as the constraint that keeps training from degenerating, as the tool that reads a representation after the fact, and as the model that fuses structure or a target into the learning itself.
 
 ## 1. Reading The Map
 
@@ -12,93 +12,93 @@ Table 1. Where PCA survives in learned representations
 
 | Place | Role of PCA | Section |
 |---|---|---|
-| 학습 중의 제약 | 표현이 한 점으로 무너지는 것을 막는다 | §2 |
-| 학습 뒤의 분석 | 학습된 표현의 축을 찾아 읽는다 | §3 |
-| 구조와의 결합 | 함수형 구조를 신경망과 잇는다 | §4 |
-| 목표와의 결합 | 목표 변수를 축소 단계에 넣는다 | §5 |
+| A constraint during training | It keeps the representation from collapsing to a point | §2 |
+| An analysis after training | It finds axes in the learned representation so it can be read | §3 |
+| Fusion with structure | It ties functional structure to a neural encoder | §4 |
+| Fusion with a target | It brings the target variable into the reduction | §5 |
 
-앞의 둘은 PCA 를 쓰는 자리가 바뀐 것이고, 뒤의 둘은 PCA 자체가 다른 모형과 합쳐진 것이다.
+The first two change where PCA is used. The last two fuse PCA itself with another model.
 
 ## 2. Collapse Prevention And Whitening
 
-자기지도 학습은 같은 대상의 두 관점을 가깝게 만든다. 이 목적만 두면 모든 입력을 같은 벡터로 보내는 해가 최적이 되는데, 이것을 표현 붕괴라 부른다. 붕괴를 막는 방법이 PCA 와 같은 대상을 다룬다 — 표현의 공분산 행렬이다.
+Self-supervised learning pulls two views of the same subject together. With only that objective, mapping every input to one vector is optimal, which is called representation collapse. The remedies work on the same object PCA works on — the covariance matrix of the representation.
 
 Table 2. Non-contrastive objectives and the covariance
 
 | Approach | What it constrains | Relation to PCA |
 |---|---|---|
-| 분산 항 | 각 차원의 표준편차가 임계값 이상이 되게 한다 | 고유값이 0 으로 가는 것을 막는다 |
-| 공분산 항 | 차원 사이의 공분산을 0 으로 민다 | 상관을 없애는 것이 PCA 의 목적과 같다 |
-| Whitening | 표현의 공분산을 단위행렬로 만든다 | 백색화 자체가 PCA 의 사후 변환이다 |
-| 중복 제거 | 두 관점의 교차상관을 단위행렬에 맞춘다 | 같은 축을 두 번 배우지 않게 한다 |
+| Variance term | It holds the standard deviation of each dimension above a threshold | It stops eigenvalues from going to zero |
+| Covariance term | It pushes the covariance between dimensions toward zero | Removing correlation is what PCA does |
+| Whitening | It forces the covariance of the representation to the identity | Whitening is itself a post-hoc PCA transform |
+| Redundancy reduction | It matches the cross-correlation of two views to the identity | It stops the same axis from being learned twice |
 
-세 방법 모두 "차원이 서로 다른 것을 담게 하라" 는 요구이며, 그것이 주성분이 직교인 이유와 같다. 다른 점은 PCA 가 그 조건을 닫힌 해로 한 번에 주는 반면, 학습은 손실 항으로 밀어 근사한다는 것이다.
+All three amount to one demand — that the dimensions carry different things — and that is the reason principal components are orthogonal. What differs is that PCA delivers the condition in one closed-form solution while training pushes toward it with loss terms.
 
-**백색화가 공짜가 아니라는 점이 실무의 함정이다.** 공분산을 단위행렬로 만들면 작은 고유값 방향이 크게 증폭되는데, 그 방향은 대개 잡음이다. 그래서 백색화 앞에 성분을 자르거나 고유값에 하한을 두는 처리가 붙는다.
+**Whitening is not free, and that is where practice trips.** Forcing the covariance to the identity amplifies the small-eigenvalue directions, and those directions are mostly noise. A truncation of the components, or a floor on the eigenvalues, is therefore placed in front of it.
 
 ## 3. Reading Learned Representations
 
-학습이 끝난 표현은 수백에서 수천 차원이고, 그 축은 사람이 정한 것이 아니다. 그 표현을 이해하려는 자리에서 PCA 가 다시 나온다.
+A trained representation has hundreds to thousands of dimensions, and no person chose its axes. PCA reappears where that representation has to be understood.
 
 Table 3. Post-hoc analysis of a representation
 
 | Tool | Question it answers | Limit |
 |---|---|---|
-| PCA of activations | 표현이 실제로 몇 차원을 쓰고 있는가 | 축이 해석 가능하다는 보장은 없다 |
-| Effective rank | 고유값 분포가 얼마나 퍼져 있는가 | 값 하나로 접히므로 원인을 말하지 않는다 |
-| Sparse autoencoder | 겹쳐 있는 개념을 희소 축으로 푼다 | 사전 크기와 희소도가 결과를 바꾼다 |
+| PCA of activations | How many dimensions the representation actually uses | It does not guarantee the axes are interpretable |
+| Effective rank | How widely the eigenvalues are spread | It folds into one number, so it names no cause |
+| Sparse autoencoder | It untangles concepts that are superposed on shared axes | Dictionary size and sparsity level change the answer |
 
-PCA 와 sparse autoencoder 가 같은 표현에서 다른 답을 주는 이유는 가정이 다르기 때문이다. PCA 는 직교하는 소수의 축을 찾고, sparse autoencoder 는 직교하지 않아도 되는 많은 축 중 표본마다 몇 개만 켜지는 구성을 찾는다. 하나의 축에 여러 개념이 겹쳐 있는 표현에서는 후자가 그 겹침을 풀어낸다.
+PCA and a sparse autoencoder give different answers on the same representation because their assumptions differ. PCA looks for a few orthogonal axes; a sparse autoencoder looks for many axes that need not be orthogonal, of which only a few switch on per sample. Where several concepts share one axis, the latter is what pulls them apart.
 
 ## 4. Functional Data And Deep Learning Hybrids
 
-계측 곡선이나 센서 트레이스는 본래 함수이지 벡터가 아니다. 시각마다 하나의 변수로 펼치면 이웃한 시각이 서로 무관한 변수가 되고, 곡선이 매끄럽다는 사실이 사라진다. Functional PCA 는 그 매끄러움을 기저함수와 벌점으로 유지한다.
+A measurement curve or a sensor trace is a function, not a vector. Unfolding it into one variable per instant turns neighbouring instants into unrelated variables and erases the fact that the curve is smooth. Functional PCA preserves that smoothness through basis functions and a roughness penalty.
 
-최근 갈래는 그 함수형 구조를 신경망과 잇는다.
+The recent branch ties that functional structure to neural models.
 
 Table 4. Combining functional structure with learned encoders
 
 | Form | Idea | What it targets |
 |---|---|---|
-| FPCA 앞단 | FPCA 로 계수를 뽑고 그 계수를 신경망에 넣는다 | 입력 차원을 줄이고 매끄러움을 유지한다 |
-| Basis layer | 기저함수 전개를 신경망의 한 층으로 둔다 | 계수와 표현을 함께 학습한다 |
-| Functional autoencoder | encoder 와 decoder 가 함수를 입출력한다 | 비선형 구조까지 담되 곡선으로 되돌린다 |
-| Neural ODE 계열 | 곡선을 미분방정식의 해로 본다 | 불규칙 표본 간격을 다룬다 |
+| FPCA as a front end | Take coefficients with FPCA and feed those to the network | It cuts the input dimension while keeping smoothness |
+| Basis layer | Put the basis expansion inside the network as a layer | Coefficients and representation are learned together |
+| Functional autoencoder | The encoder and decoder take and return functions | It carries non-linear structure yet returns a curve |
+| Neural ODE family | Treat the curve as the solution of a differential equation | It handles irregular sampling intervals |
 
-**결합의 이유는 두 가지 약점이 서로를 메우기 때문이다.** FPCA 는 매끄러움을 지키지만 선형이고, autoencoder 는 비선형을 담지만 곡선이라는 사실을 모른다. 표본 간격이 행마다 다르거나 곡선 길이가 흔들리는 데이터에서는 이 결합이 특히 값을 갖는다.
+**The reason to combine them is that two weaknesses cover each other.** FPCA keeps smoothness but is linear; an autoencoder carries non-linearity but does not know the input is a curve. The combination earns its cost on data where sampling intervals differ from row to row or curve lengths wander.
 
-대가도 분명하다. 신경망을 끼우는 순간 성분의 순서와 직교성이 사라지고, 설명 분산 같은 익숙한 지표를 쓸 수 없게 된다. 재현 오차만 남으므로 성분 개수를 고르는 근거가 약해진다.
+The cost is plain as well. The moment a network is inserted, the ordering and orthogonality of the components are gone, and familiar figures such as explained variance can no longer be quoted. Only reconstruction error remains, which weakens the basis for choosing how many components to keep.
 
 ## 5. Supervised Directions
 
-또 하나의 방향은 목표 변수 `y` 를 축소 단계로 끌어들이는 것이다. 비지도 축소는 분산이 큰 방향을 주는데, 그 방향이 `y` 와 관계있다는 보장이 없다. 장비 사이의 큰 차이가 첫 성분을 차지하고 수율과 관계있는 미세한 변동이 뒤로 밀리는 상황이 그 예다.
+The other direction pulls the target variable `y` into the reduction step. Unsupervised reduction returns the directions of largest variance, with no guarantee that they relate to `y`. A large difference between tools taking the first component while the fine variation tied to yield is pushed down the list is the standard example.
 
 Table 5. Bringing the target into the reduction
 
 | Form | Idea | Note |
 |---|---|---|
-| Supervised autoencoder | 재현 손실과 예측 손실을 함께 최소화한다 | 두 손실의 가중치가 결과를 지배한다 |
-| Deep PLS 계열 | PLS 의 공분산 최대화를 층으로 쌓는다 | 회귀와 축소를 한 모형에서 한다 |
-| Target-aware bottleneck | 병목이 `y` 를 예측하기에 충분한 정보만 남긴다 | 정보병목 관점의 정식화 |
-| Contrastive with labels | 같은 label 을 가깝게, 다른 label 을 멀게 둔다 | label 이 있는 표본에만 쓸 수 있다 |
+| Supervised autoencoder | Minimize reconstruction loss and prediction loss together | The weighting between the two losses dominates the result |
+| Deep PLS family | Stack the covariance maximization of PLS as layers | Regression and reduction happen in one model |
+| Target-aware bottleneck | Keep only what the bottleneck needs to predict `y` | The information-bottleneck formulation |
+| Contrastive with labels | Pull same-label samples together and push others apart | It applies only to labelled samples |
 
-**목표를 넣으면 축이 목표에 매인다.** 같은 데이터라도 예측 대상이 바뀌면 축을 다시 학습해야 하고, 여러 목표를 동시에 다루면 축이 그 절충이 된다. 비지도 축소가 목표와 무관하게 재사용되는 것과 반대되는 성질이므로, 축을 여러 모형이 공유해야 하는 상황에서는 오히려 불리하다.
+**Bringing in the target ties the axes to that target.** On the same data, changing what is predicted means relearning the axes, and handling several targets at once makes the axes a compromise between them. This is the opposite of the property that lets an unsupervised reduction be reused regardless of target, so it is a disadvantage where several models must share one set of axes.
 
-검증에도 함정이 있다. `y` 를 본 축소를 교차검증 바깥에서 한 번만 수행하면 검증 집합의 정보가 축에 새어 든다. 축소를 학습 fold 안에서 수행해야 성능 추정이 성립한다.
+Validation holds a trap too. Performing a `y`-aware reduction once, outside the cross-validation loop, leaks information from the validation set into the axes. The reduction has to happen inside each training fold for the performance estimate to stand.
 
 ## Appendix A. Terminology
 
-본문에서 정의하지 않고 쓴 용어를 정리한다.
+The terms below appear in the body without being defined there.
 
-- **Autoencoder** 는 입력을 저차원으로 부호화한 뒤 다시 복원하도록 학습하는 신경망이다.
-- **Basis function** 은 함수를 유한한 계수로 적기 위해 쓰는 기준 함수의 모음이다.
-- **Effective rank** 는 고유값 분포의 퍼짐을 하나의 수로 요약해 실제로 쓰이는 차원 수를 재는 값이다.
-- **FPCA** 는 Functional PCA 이고, 관측을 벡터가 아니라 곡선으로 보고 주성분을 구한다.
-- **Information bottleneck** 은 입력의 정보를 줄이면서 목표에 대한 정보를 남기는 표현을 찾는 관점이다.
-- **Neural ODE** 는 은닉 상태의 변화를 미분방정식으로 두고 그 해를 표현으로 쓰는 신경망이다.
-- **Non-contrastive** 는 음성 표본 쌍 없이 표현을 학습하는 자기지도 방식이다.
-- **PLS** 는 Partial Least Squares 이고, 입력과 목표의 공분산이 큰 방향을 찾는다.
-- **Representation collapse** 는 서로 다른 입력이 같은 표현으로 보내지는 상태이다.
-- **Self-supervised learning** 은 label 없이 데이터 자체에서 만든 과제로 표현을 학습하는 방식이다.
-- **Sparse autoencoder** 는 은닉 표현의 대부분이 0 이 되도록 벌점을 준 autoencoder 이다.
-- **Whitening** 은 표현의 공분산을 단위행렬로 만드는 선형 변환이다.
+- **Autoencoder** is a network trained to encode an input into a low-dimensional code and restore it from that code.
+- **Basis function** is one of a set of reference functions used to write a function as a finite list of coefficients.
+- **Effective rank** summarizes the spread of the eigenvalue distribution as one number that stands for the dimensions actually in use.
+- **FPCA** is Functional PCA, which treats an observation as a curve rather than a vector when taking components.
+- **Information bottleneck** is the view that seeks a representation which discards input information while retaining information about the target.
+- **Neural ODE** is a network whose hidden state evolves by a differential equation, the solution of which serves as the representation.
+- **Non-contrastive** describes self-supervised learning that trains without negative sample pairs.
+- **PLS** is Partial Least Squares, which finds the directions of largest covariance between the inputs and the target.
+- **Representation collapse** is the state in which different inputs are mapped to the same representation.
+- **Self-supervised learning** trains representations from tasks built out of the data itself, without labels.
+- **Sparse autoencoder** is an autoencoder penalized so that most of the hidden representation is zero.
+- **Whitening** is the linear transform that forces the covariance of a representation to the identity.
