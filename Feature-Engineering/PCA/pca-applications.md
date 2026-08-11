@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 7 | Created: 2026-08-11 | Updated: 2026-08-11 15:30 CDT
+Rev. 8 | Created: 2026-08-11 | Updated: 2026-08-11 15:44 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -88,7 +88,7 @@ Three things have to hold.
 
 1. **Resampling.** Values must be obtainable on a common grid even when the recorded sampling instants differ from curve to curve. Sensors that log at 10 Hz and at 12 Hz can still be compared once both are interpolated onto one grid.
 2. **Anchoring.** The start and the end must be tied to the same reference. Unless the moment the step begins is set to zero, the instant 3.20 s falls in the middle of the ramp on one wafer and already inside the plateau on the next, so the same instant refers to different process phases.
-3. **Registration.** Whatever phase difference is left must be removed. Step length wanders even under the same recipe, so the time axis is stretched or compressed to line up landmarks such as a peak or a transition.
+3. **Registration.** Whatever phase difference is left must be removed. Resampling puts the curves on one grid; registration moves the curves along that grid, warping each time axis with a monotone function. Step length wanders even under the same recipe, so the time axis is stretched or compressed to line up landmarks such as a peak or a transition. What remains afterwards is amplitude variation alone.
 
 **Without that alignment a phase difference is read as an amplitude change.** A curve that merely started a little late is scored as a change in magnitude, and the first component ends up carrying the timing mismatch instead of the process variation.
 
@@ -163,6 +163,7 @@ The `Cell` column says what one cell of the table holds, in the vocabulary of sc
 
 The terms below appear in the body without being defined there.
 
+- **Amplitude variation** is the part of the difference between curves that is vertical, that is how large the value is at a given point.
 - **Common domain** is the shared input axis on which every curve is expressed, with the same start, the same end, and the same grid of instants.
 - **Contrastive PCA** finds the directions whose variance is large in the target data compared with a background dataset.
 - **DOE** is Design of Experiments, a study whose conditions are placed by design rather than observed as they come.
@@ -175,6 +176,7 @@ The terms below appear in the body without being defined there.
 - **Manifold learning** assumes the data lies on a low-dimensional surface and finds coordinates that preserve neighbour relations.
 - **Multi-block** divides the variables into blocks and models the relations between blocks separately.
 - **PLS** is Partial Least Squares, which finds the directions of largest covariance between the inputs and the target.
+- **Phase variation** is the part of the difference between curves that is horizontal, that is when a feature occurs along the axis.
 - **Probabilistic PCA** models an observation as a linear map of a low-dimensional latent variable plus isotropic noise.
 - **Randomized PCA** narrows the subspace with a random projection and then approximates the leading components.
 - **Registration** stretches or compresses a misaligned time axis so that curves line up instant for instant.
@@ -185,4 +187,5 @@ The terms below appear in the body without being defined there.
 - **Tensor PCA** reduces an array of three or more axes without unfolding it.
 - **Trace** is a series of values recorded from one subject continuously over time.
 - **Varimax** is an orthogonal rotation that increases the spread of the loadings to make them easier to read.
+- **Warping function** is the monotone map applied to one curve's time axis during registration, which carries the phase that registration removes.
 - **2DPCA** takes components while keeping the row and column structure of an image instead of flattening it into a vector.
