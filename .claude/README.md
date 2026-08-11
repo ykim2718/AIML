@@ -1,5 +1,5 @@
 # Claude Rules Setup
-rev. 2
+Rev. 3 | Created: 2026-08-03 | Updated: 2026-08-10 22:02 CDT
 
 이 폴더는 세션이 시작될 때마다 공용 규칙이 자동으로 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-plugins` plugin 이고, 이 repo 는 그 plugin 을 가리키는 marketplace catalog 와 설정만 가진다.
 

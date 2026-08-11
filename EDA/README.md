@@ -1,5 +1,5 @@
 # EDA (Exploratory Data Analysis)
-rev. 20
+Rev. 21 | Created: 2026-07-29 | Updated: 2026-08-10 22:02 CDT
 
 > This folder covers the stage that establishes the structure and the properties of the data before a model is built.
 > Its documents answer what to check first when new data arrives and what to call the thing that arrives.

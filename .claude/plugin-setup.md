@@ -1,5 +1,5 @@
 # Plugin Setup And Verification
-rev. 2
+Rev. 3 | Created: 2026-08-04 | Updated: 2026-08-10 22:02 CDT
 
 이 문서는 새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 6 장에 남긴다.
 

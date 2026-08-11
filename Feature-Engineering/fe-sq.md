@@ -1,4 +1,5 @@
 # 🗺️ Feature Engineering (FE) — Sequence
+Rev. 1 | Created: 2026-06-27 | Updated: 2026-08-10 22:02 CDT
 
 순서형은 행 단위로 독립이 아니라 **시간 순서가 곧 정보**다. 과거 값을 끌어와 변수로 굳히는 방식이 핵심이다.
 

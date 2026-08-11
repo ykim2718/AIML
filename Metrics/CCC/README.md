@@ -1,5 +1,5 @@
 # 📊 CCC & Bland-Altman Analysis Guide
-rev. 1
+Rev. 2 | Created: 2026-04-09 | Updated: 2026-08-10 22:02 CDT
 
 > A comprehensive guide to **Concordance Correlation Coefficient (CCC)** + **Bland-Altman Plot**  
 > A statistical toolkit for evaluating agreement between two measurement methods

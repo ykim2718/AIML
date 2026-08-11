@@ -1,5 +1,5 @@
 # Data Modality Taxonomy and Semiconductor Data
-rev. 6
+Rev. 7 | Created: 2026-07-29 | Updated: 2026-08-10 22:02 CDT
 
 > Data modality is the classification that splits data by "in what form the information is represented".
 > This document first establishes a general taxonomy, then extends the axes to fit the semiconductor domain.

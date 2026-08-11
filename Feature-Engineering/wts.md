@@ -1,4 +1,5 @@
 # 🗺️ Wide Time Series (WTS) — Capability Map
+Rev. 1 | Created: 2026-06-27 | Updated: 2026-08-10 22:02 CDT
 
 A consolidated map of techniques for handling **wide (p≫n) time-series data**, grounded in semiconductor FDC / DOE / metrology practice.
 
