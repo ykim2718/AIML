@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 12 | Created: 2026-8-1 | Updated: 2026-8-10 17:17 CDT
+Rev. 13 | Created: 2026-08-01 | Updated: 2026-08-10 22:15 CDT
 
 ## 1. Terminology
 + 정의되지 않은 용어는 사용하지 않는다.
@@ -42,7 +42,7 @@ Rev. 12 | Created: 2026-8-1 | Updated: 2026-8-10 17:17 CDT
 + 이미 기술한 내용을 부가가치 없이 반복하지 않는다.
 
 ## 8. Versioning
-+ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. 12 | Created: 2026-08-01 | Updated: 2026-08-10 17:16 CDT` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일, Updated는 문서 수정 시간을 기록한다.
++ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. 12 | Created: 2026-08-01 | Updated: 2026-08-10 17:16 CDT` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일, Updated는 문서 수정 시간을 기록한다. Updated 끝의 CDT 는 time zone 이며, 저자의 지역 시간대 `America/Chicago` 로 적는다. 겨울에는 같은 시간대가 CST 로 표기된다.
 + 버전 표시를 제외한 변경 이력 표현은 문서에서 삭제한다.
 
 ## 9. Code Block

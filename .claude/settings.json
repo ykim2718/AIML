@@ -9,5 +9,8 @@
   },
   "enabledPlugins": {
     "yrocket-plugins@yrocket-marketplace": true
+  },
+  "env": {
+    "TZ": "America/Chicago"
   }
 }

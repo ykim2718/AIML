@@ -1,5 +1,5 @@
 # Claude Rules Setup
-Rev. 3 | Created: 2026-08-03 | Updated: 2026-08-10 22:02 CDT
+Rev. 4 | Created: 2026-08-03 | Updated: 2026-08-10 22:15 CDT
 
 이 폴더는 세션이 시작될 때마다 공용 규칙이 자동으로 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-plugins` plugin 이고, 이 repo 는 그 plugin 을 가리키는 marketplace catalog 와 설정만 가진다.
 
@@ -10,7 +10,7 @@ Table 1. Files and their roles
 | Path | Role |
 |---|---|
 | `.claude-plugin/marketplace.json` | plugin 의 위치를 적은 marketplace catalog 이다. |
-| `.claude/settings.json` | marketplace 를 등록하고 plugin 을 활성화한다. |
+| `.claude/settings.json` | marketplace 를 등록하고 plugin 을 활성화하며, container 의 time zone 을 저자의 지역 시간대로 맞춘다. |
 
 ## 2. Marketplace Catalog
 
