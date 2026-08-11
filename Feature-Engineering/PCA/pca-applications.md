@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-11 14:40 CDT
+Rev. 3 | Created: 2026-08-11 | Updated: 2026-08-11 14:46 CDT
 
 > 계통을 아는 것과 무엇을 쓸지 정하는 것은 다른 일이다.
 > 이 문서는 확장이 어느 방향으로 일어났는지를 먼저 묶고, 반도체 계측 데이터에서 어느 가지가 실제로 쓰이는지를 데이터 종류별로 적은 뒤, 데이터 조건에서 기법으로 가는 결정표를 둔다.
@@ -41,6 +41,8 @@ Table 2. What each data type breaks
 | DOE result | 조건 × 응답 | 표본이 설계로 배치되어 분산이 정보가 아니다 |
 | Marathon test | 시간 × 센서 | 부분공간이 시간에 따라 변한다 |
 
+여기서 `n` 은 표본 수, 곧 행의 개수이고 `p` 는 변수 수, 곧 열의 개수이다. 웨이퍼 하나가 한 행이면 `n` 은 웨이퍼 장수이고, 계측 항목 하나가 한 열이면 `p` 는 항목 수이다. `p` 가 `n` 을 넘는 상태를 wide 라 부르며, 이때는 표본보다 추정할 값이 많아 표본 공분산이 온전한 계수를 갖지 못한다.
+
 깨진 가정이 다르므로 같은 공장 안에서도 데이터마다 다른 가지를 쓴다. 계측값 표에는 고전 PCA 로 충분한 경우가 많고, 트레이스에는 구조를 지키는 가지가 필요하다.
 
 ## 3. Wafer Metrology
@@ -59,11 +61,15 @@ Table 3. Three ways to handle a trace
 
 | Approach | Idea | Trade-off |
 |---|---|---|
-| 파라미터화 후 PCA | 트레이스를 소수의 형상 파라미터로 줄인 뒤 PCA 를 건다 | 파라미터가 담지 못한 변동은 사라진다 |
-| Functional PCA | 곡선의 매끄러움을 유지한 채 성분을 구한다 | 표본 간격이 고르지 않으면 정렬이 필요하다 |
-| Tensor 분해 | 세 축을 펼치지 않고 그대로 분해한다 | 해석이 어렵고 계산이 비싸다 |
+| Parameterize, then PCA | Reduce the trace to a few shape parameters and run PCA on them | Variation the parameters do not carry is lost |
+| Functional PCA | Take the components while keeping the smoothness of the curve | The curves must be registered onto a common domain first |
+| Tensor decomposition | Decompose the three axes without unfolding them | Harder to read and expensive to compute |
 
 **펼치기 전에 파라미터화하는 쪽이 대개 낫다.** 시각마다 하나의 변수로 펼치면 이웃한 시각이 서로 무관한 변수가 되어, 트레이스가 곡선이라는 사실이 모형에서 사라진다. 그리고 step 길이가 웨이퍼마다 조금씩 달라 같은 열이 같은 시점을 가리키지 않게 되는 문제가 남는다.
+
+Functional PCA 가 요구하는 상태는 **모든 곡선이 같은 시간축 위에서 같은 시점끼리 견줄 수 있는 상태**이다. 세 가지가 갖추어져야 한다. 첫째, 표본 시각이 곡선마다 달라도 공통 격자 위의 값으로 다시 뽑을 수 있어야 한다. 둘째, 시작과 끝의 기준점이 같아야 한다. Step 이 시작되는 순간을 0 으로 맞추지 않으면 같은 시각이 서로 다른 공정 단계를 가리킨다. 셋째, 남은 위상 차이를 registration 으로 없애야 한다. Recipe 가 같아도 step 길이가 웨이퍼마다 흔들리므로, 정점이나 전이 같은 표식을 맞추어 시간축을 늘이거나 줄인다.
+
+**정렬하지 않으면 위상 차이가 진폭 변동으로 둔갑한다.** 같은 곡선이 조금 늦게 시작했을 뿐인데도 성분은 그것을 크기 변화로 읽고, 첫 성분이 공정 변동이 아니라 시각 어긋남을 담게 된다.
 
 자기상관도 고려해야 한다. 시각을 그대로 변수로 두면 인접 변수가 거의 같은 값이라 첫 성분이 그 중복을 반영하게 되므로, 시차를 명시하는 Dynamic PCA 나 파라미터화가 그 중복을 줄인다.
 
@@ -114,15 +120,15 @@ Table 5. From condition to method
 | 위 어느 것도 아니다 | 표준화 후 고전 PCA | — | — |
 
 ```text
-트레이스인가?
-├── 예 → 곡선 구조를 지킬 것인가?
-│         ├── 예 → Functional PCA / 파라미터화
-│         └── 아니오 → 펼친 뒤 고차원 처리 (§3 의 축소)
-└── 아니오 → 목표 변수가 있는가?
-              ├── 예 → PLS / supervised 계통
-              └── 아니오 → 이상치가 있는가?
-                            ├── 예 → Robust PCA
-                            └── 아니오 → 표준화 후 고전 PCA
+Is the column a trace?
+├── yes → keep the curve structure?
+│          ├── yes → functional PCA / parameterize        [4]
+│          └── no  → unfold, then shrink eigenvalues      [3]
+└── no  → is there a target variable?
+           ├── yes → PLS / supervised branch
+           └── no  → are outliers always present?
+                      ├── yes → robust PCA
+                      └── no  → standardize, then classical PCA
 ```
 
 **결정표가 하나를 고르지 못하는 경우가 정상이다.** 트레이스이면서 이상치가 있고 장비도 여럿인 데이터가 흔하다. 그럴 때는 위에서부터 순서대로 적용하되, 한 번에 하나씩 넣고 그때마다 재현 오차와 성분 해석이 나아졌는지 확인한다. 두 가지를 동시에 넣으면 어느 쪽이 효과를 냈는지 알 수 없게 된다.
@@ -143,6 +149,7 @@ Table 5. From condition to method
 - **PLS** 는 Partial Least Squares 이고, 입력과 목표의 공분산이 큰 방향을 찾는다.
 - **Probabilistic PCA** 는 관측을 저차원 잠재변수의 선형 사상에 등방 잡음을 더한 것으로 보는 확률 모형이다.
 - **Randomized PCA** 는 무작위 사영으로 부분공간을 좁힌 뒤 상위 성분을 근사하는 PCA 이다.
+- **Registration** 은 곡선마다 어긋난 시간축을 늘이거나 줄여 같은 시점끼리 맞추는 처리이다.
 - **Robust PCA** 는 행렬을 저계수 성분과 희소 성분의 합으로 분해해 이상치를 분리하는 방법이다.
 - **Scree** 는 고유값을 크기순으로 그린 그림이고, 꺾이는 자리를 성분 개수로 삼는다.
 - **Sparse PCA** 는 하중의 상당수를 0 으로 만들어 성분을 읽을 수 있게 하는 PCA 이다.
