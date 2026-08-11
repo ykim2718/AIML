@@ -1,5 +1,5 @@
 # CLAUDE.md
-Rev. 1 | Created: 2026-07-31 | Updated: 2026-08-10 22:02 CDT
+Rev. 2 | Created: 2026-07-31 | Updated: 2026-08-10 22:11 CDT
 
 ## Git Workflow
 
@@ -20,17 +20,8 @@ git push -u origin main
 
 ## Markdown Document Convention
 
-**모든 `.md` 문서는 H1 바로 아래 줄에 revision 을 표기한다.**
+**`.md` 파일을 만들거나 고치기 전에 `md_rules` skill 을 반드시 로드하고 그 규칙을 따른다.**
 
-- 형식은 본문 글씨체의 `Rev. N | Created: YYYY-MM-DD | Updated: YYYY-MM-DD HH:MM TZ` 한 줄이다. heading 이나 bold 로 쓰지 않는다.
-- `Created` 는 문서가 저장소에 처음 등록된 날짜이고, 한 번 정하면 바뀌지 않는다.
-- 문서를 수정할 때마다 N 을 1 증가시키고 `Updated` 를 그 수정 시각으로 고친다.
-- 오타 수정처럼 작은 변경도 bump 대상이다.
-- 문서 규칙 전체는 `md_rules` skill 이 갖는다. 이 항목과 어긋나면 skill 을 따른다.
-
-```markdown
-# Document Title
-Rev. 12 | Created: 2026-08-01 | Updated: 2026-08-10 17:16 CDT
-
-> 여기서부터 본문이 시작된다.
-```
+- 버전 표기, 제목 번호, 표와 figure 의 제목, code block 표기, 용어 규칙이 모두 그 skill 에 있다.
+- 규칙 자체는 여기에 옮겨 적지 않는다. 두 곳에 적으면 한쪽만 바뀌어 어긋나므로, 형식이 달라지면 skill 만 고친다.
+- 이 저장소는 그 규칙에 예외를 두지 않는다.
