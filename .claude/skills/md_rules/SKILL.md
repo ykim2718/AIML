@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-rev. 10
+Rev. 12 | Created: 2026-8-1 | Updated: 2026-8-10 17:17 CDT
 
 ## 1. Terminology
 + 정의되지 않은 용어는 사용하지 않는다.
@@ -42,7 +42,7 @@ rev. 10
 + 이미 기술한 내용을 부가가치 없이 반복하지 않는다.
 
 ## 8. Versioning
-+ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `rev. 0` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다.
++ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. 12 | Created: 2026-08-01 | Updated: 2026-08-10 17:16 CDT` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일, Updated는 문서 수정 시간을 기록한다.
 + 버전 표시를 제외한 변경 이력 표현은 문서에서 삭제한다.
 
 ## 9. Code Block
@@ -78,6 +78,7 @@ result = [x * 2 for x in range(10)]
 
 ## 11. Figure
 + 모든 figure 에는 Fig 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
++ 복수 panel figure 에는 전부 panel labels를 (a), (b), (c) ... 처럼 붙일 것. 단 Matrix chart는 예외로 panel labels를 붙이지 말 것.
 
 ## 12. Appendix
 + Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
