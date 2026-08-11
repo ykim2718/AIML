@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 46
+rev. 47
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -369,6 +369,8 @@ Table 11. Column profile keys
 `class_version` 과 `activity_basis` 와 `thresholds` 는 모두 같은 이유로 있다. 어휘에는 label 이 늘 수 있고, activity 는 무엇과 무엇을 비교하느냐에 따라 답이 갈리며, 4 절의 판정 규칙 여러 개가 임계값을 필요로 한다. 셋 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나오므로, 이 셋이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
 
 `thresholds` 에는 window 도 함께 둔다. Trace 전체를 보았으면 `full` 이고, 구간을 좁혔으면 그 시작과 끝을 적는다. Window 는 임계값이 아니다. 그러나 바꾸면 같은 trace 가 다른 label 을 받는다는 점은 임계값과 같으므로, 판정 configuration 을 한자리에 모아 둔다.
+
+`step_min` 은 무차원이 아니라 센서 분해능의 배수로 적는다. 예시의 `3.0` 은 분해능의 3 배라는 뜻이며, `dwell_ratio` 와 `acf_peak` 처럼 그 자체가 비인 값과 달리 이 단서가 없으면 숫자를 읽을 수 없다.
 
 `category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
 
