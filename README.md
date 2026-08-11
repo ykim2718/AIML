@@ -1,5 +1,5 @@
 # AIML
-Rev. 10 | Created: 2026-08-07 | Updated: 2026-08-10 22:11 CDT
+Rev. 11 | Created: 2026-08-07 | Updated: 2026-08-11 13:16 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -26,7 +26,7 @@ Table 2. Folders and what they hold
 | Folder | Description |
 |--------|-------------|
 | [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, and the reduction of machine waveforms into fixed-width parameter rows. |
-| [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with implementations of Mahalanobis distance, incremental PCA, and smoothing. |
+| [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds regression recipes, with an emphasis on step-like and piecewise responses that a single global fit handles badly. |
 | [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, and a cointegration example on daily price series. |
@@ -56,6 +56,7 @@ Table 4. Feature engineering documents
 | [Feature-Engineering/fe-cs.md](Feature-Engineering/fe-cs.md) | It maps feature engineering for cross-sectional data, where rows are independent and row order carries no information. |
 | [Feature-Engineering/fe-sq.md](Feature-Engineering/fe-sq.md) | It maps feature engineering for sequences, where time order is itself the information, covering univariate and multivariate series. |
 | [Feature-Engineering/wts.md](Feature-Engineering/wts.md) | It consolidates techniques for wide time series where features far outnumber samples, grounded in FDC, DOE, and metrology practice. |
+| [Feature-Engineering/PCA/README.md](Feature-Engineering/PCA/README.md) | It indexes the PCA folder, which treats PCA as a lineage of variants — the classical branches, their selection for semiconductor data, and the modern reinterpretation in representation learning. |
 
 ### 3.3 Metrics
 
