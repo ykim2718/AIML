@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-Rev. 177 | Created: 2026-08-08 | Updated: 2026-08-10 22:02 CDT
+Rev. 178 | Created: 2026-08-01 | Updated: 2026-08-10 22:17 CDT
 
 > 상위 문서: [README](./README.md)
 >
