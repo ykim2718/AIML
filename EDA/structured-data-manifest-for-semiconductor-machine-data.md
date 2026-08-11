@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-rev. 45
+rev. 46
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -169,7 +169,7 @@ Table 4. Class axes
 | `structure` | `scalar`, `vector`, `matrix`, `trace` | `all` | `cell` | Human or analysis |
 | `array_length` | `fixed`, `variable` | `non-scalar` | `rows` | Analysis |
 | `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | `cell` | Analysis |
-| `trace_shape` | `flat`, `ramp`, `rectangle`, `triangle`, `oscillation`, `irregular` | `trace` | `cell` | Analysis |
+| `trace_shape` | `flat`, `step`, `rectangle`, `triangle`, `oscillation`, `irregular` | `trace` | `cell` | Analysis |
 
 `Applies to` 는 그 axis 가 어느 열에 적용되는지를 적고, `Basis` 는 그 axis 를 판정할 때 무엇을 보는지를 적는다. `cell` 은 cell 하나 안만 보므로 다른 행에 무엇이 들어 있든 답이 같다. `rows` 는 그 열의 행을 서로 견준다. `rows or entities` 는 행끼리 견줄 수도 있고 `row_key` 로 묶은 entity 끼리 견줄 수도 있다는 뜻이다.
 
@@ -289,7 +289,7 @@ Table 10. Trace shape labels
 | Label | Rule |
 |-------|------|
 | `flat` | Window 에서 값이 변하지 않는다 |
-| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간 하나가 정해진 비율 이상을 차지한다 |
+| `step` | 값이 한 준위에 머물다 다른 준위로 옮겨 가 그대로 머무르고, 두 준위의 차가 정해진 값 이상이다 |
 | `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 정해진 배수 이상 길다 |
 | `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
 | `oscillation` | Autocorrelation 에 정해진 크기 이상의 peak 이 일정한 간격으로 나타난다 |
@@ -338,7 +338,7 @@ Table 10. Trace shape labels
     },
     "trace_shape": {
       "flat": "the value does not change over the window",
-      "ramp": "a single segment where the value moves in one direction only covers at least ramp_fraction of the window",
+      "step": "the value holds one level, moves to another and stays there, and the difference between the two levels is at least step_min",
       "rectangle": "the value alternates between two levels and the time held on a level is at least dwell_ratio times the time taken to move between them",
       "triangle": "the rising and the falling slope have a similar magnitude and no flat segment lies between them",
       "oscillation": "the autocorrelation shows a peak of at least acf_peak at a regular interval",
@@ -384,7 +384,7 @@ Table 11. Column profile keys
     "thresholds": {
       "window": "full",
       "dwell_ratio": 5.0,
-      "ramp_fraction": 0.8,
+      "step_min": 3.0,
       "acf_peak": 0.6
     },
     "columns": {
@@ -406,7 +406,7 @@ Table 11. Column profile keys
         "missing_rate": 0.003
       },
       "chamber_pressure": {
-        "class": ["active", "numeric", "trace", "fixed", "infinite", "ramp"],
+        "class": ["active", "numeric", "trace", "fixed", "infinite", "step"],
         "missing_rate": 0.0
       },
       "site_thickness": {
