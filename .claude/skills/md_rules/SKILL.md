@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 14 | Created: 2026-8-1 | Updated: 2026-8-11 12:10 CDT
+Rev. 15 | Created: 2026-08-01 | Updated: 2026-08-11 13:35 CDT
 
 ## 1. Terminology
 

@@ -12,7 +12,7 @@ description: |-
 ---
 
 # Documentation Conventions
-Rev. 0 | Created: 2026-8-11 | Updated: 2026-8-11 12:45 CDT
+Rev. 0 | Created: 2026-08-11 | Updated: 2026-08-11 12:45 CDT
 
 ## 1. Headings
 
