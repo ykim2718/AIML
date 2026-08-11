@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 5 | Created: 2026-08-11 | Updated: 2026-08-11 15:04 CDT
+Rev. 6 | Created: 2026-08-11 | Updated: 2026-08-11 15:03 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -118,21 +118,24 @@ The table below goes from a data condition to a method. Read it from the top, an
 
 Table 6. From condition to method
 
-| Condition | Method | Direction | Section |
-|---|---|---|---|
-| The data is a curve and its smoothness is information | Functional PCA, or parameterize then PCA | Structure | §2.2 |
-| The data has three or more axes | Tensor or Multilinear PCA | Structure | §2.2 |
-| A spatial pattern on a grid is information | 2DPCA, or a treatment that states spatial correlation | Structure | §2.3 |
-| Outliers are always present | Robust PCA or L1-PCA | Robustness | §1 |
-| Many values are missing | Probabilistic PCA | Robustness | §1 |
-| `p` far exceeds `n` | Eigenvalue shrinkage and a conservative component count | Scale | §2.1 |
-| The data does not fit in memory | Randomized or Incremental PCA | Scale | §1 |
-| The data arrives as a stream | An incremental or streaming branch | Scale | §2.5 |
-| A person has to read the components | Sparse PCA or varimax rotation | Structure | §1 |
-| The structure is not linear | Kernel PCA | Nonlinear | §1 |
-| A prediction target is fixed | PLS or a supervised branch | — | — |
-| A tool effect takes the first component | Per-tool normalization or contrastive PCA | — | §2.4 |
-| None of the above | Standardize, then classical PCA | — | — |
+| Cell | Condition | Method | Direction | Section |
+|---|---|---|---|---|
+| `trace` | The data is a curve and its smoothness is information | Functional PCA, or parameterize then PCA | Structure | §2.2 |
+| `trace` | Several traces per row make a three-way array | Tensor or Multilinear PCA | Structure | §2.2 |
+| `matrix` | A spatial pattern on a grid is information | 2DPCA, or a treatment that states spatial correlation | Structure | §2.3 |
+| `vector` | Elements lie along a fixed non-time axis such as a site index | Classical PCA, after confirming the positions are fixed | — | §2.1 |
+| any | Outliers are always present | Robust PCA or L1-PCA | Robustness | §1 |
+| any | Many values are missing | Probabilistic PCA | Robustness | §1 |
+| any | `p` far exceeds `n` | Eigenvalue shrinkage and a conservative component count | Scale | §2.1 |
+| any | The data does not fit in memory | Randomized or Incremental PCA | Scale | §1 |
+| any | The data arrives as a stream | An incremental or streaming branch | Scale | §2.5 |
+| any | A person has to read the components | Sparse PCA or varimax rotation | Structure | §1 |
+| any | The structure is not linear | Kernel PCA | Nonlinear | §1 |
+| any | A prediction target is fixed | PLS or Supervised PCA | — | — |
+| any | A tool effect takes the first component | Per-tool normalization or contrastive PCA | — | §2.4 |
+| any | None of the above | Standardize, then classical PCA | — | — |
+
+The tree below walks the first three questions of that table for the cases that come up most — the shape of the cell, then the target, then the outliers. It is a shorthand for those rows and not a replacement for them; the conditions it leaves out, such as missing values and memory limits, are still read from the table.
 
 ```text
 Is the column a trace?
@@ -140,11 +143,13 @@ Is the column a trace?
 │          ├── yes → functional PCA / parameterize        [2.2]
 │          └── no  → unfold, then shrink eigenvalues      [2.1]
 └── no  → is there a target variable?
-           ├── yes → PLS / supervised branch
+           ├── yes → PLS / supervised PCA
            └── no  → are outliers always present?
                       ├── yes → robust PCA
                       └── no  → standardize, then classical PCA
 ```
+
+The `Cell` column says what one cell of the table holds, in the vocabulary of scalar, vector, matrix, and trace. The first four rows are chosen by that shape alone, and the rest apply whatever the shape is. Two rows carry no direction: a fixed prediction target and a tool effect are not limitations of the data but purposes of the analysis, and the four directions of §1 were drawn from limitations.
 
 **The table failing to pick exactly one row is the normal case.** Data that is a trace, carries outliers, and spans several tools at once is common. Apply the matching rows from the top in order, one at a time, and after each one check whether the reconstruction error and the readability of the components improved. Adding two at once leaves no way to tell which of them worked.
 
@@ -168,6 +173,7 @@ The terms below appear in the body without being defined there.
 - **Robust PCA** decomposes a matrix into a low-rank part and a sparse part, which separates the outliers.
 - **Scree** is the plot of eigenvalues in decreasing order, whose bend is taken as the component count.
 - **Sparse PCA** drives most of the loadings to zero so that a component can be read.
+- **Supervised PCA** screens the variables by their correlation with the target and then runs ordinary PCA on the survivors.
 - **Tensor PCA** reduces an array of three or more axes without unfolding it.
 - **Trace** is a series of values recorded from one subject continuously over time.
 - **Varimax** is an orthogonal rotation that increases the spread of the loadings to make them easier to read.
