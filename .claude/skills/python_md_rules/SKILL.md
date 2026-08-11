@@ -1,7 +1,7 @@
 ---
 name: python_md_rules
 description: |-
-  사용자가 python code에 대한 markdown document의 생성을 원할 때 로드 할 것.Python 소스(.py 파일, 패키지, 리포지토리)를 읽어 구조·공개 API·사용
+  사용자가 python code에 대한 markdown document의 생성을 원할 때 로드 할 것. Python 소스(.py 파일, 패키지, 리포지토리)를 읽어 구조·공개 API·사용
     예시를 정리한 Markdown 문서(README, API 레퍼런스, 모듈 설명서)를
     생성한다. 사용자가 Python 코드를 두고 "문서 만들어줘", "README 써줘",
     "API 정리해줘", "모듈 설명서", "docstring 기반 문서화" 등을 요청하면
@@ -11,8 +11,8 @@ description: |-
     추가하는 경우, Python 이외의 언어는 대상이 아니다.
 ---
 
-# Documentation Conventions
-Rev. 0 | Created: 2026-08-11 | Updated: 2026-08-11 12:45 CDT
+# Python Documentation Conventions
+Rev. 1 | Created: 2026-08-11 | Updated: 2026-08-11 13:40 CDT
 
 ## 1. Headings
 
