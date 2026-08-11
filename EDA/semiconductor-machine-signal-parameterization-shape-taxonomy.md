@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-rev. 175
+rev. 176
 
 > 상위 문서: [README](./README.md)
 >
@@ -95,7 +95,7 @@ Table 1. The six class axes and what this document does with each
 | `structure` | `scalar`, `vector`, `matrix`, `trace` | `trace` 인 열만 다룬다 |
 | `array_length` | `fixed`, `variable` | 형상 판정을 가르지 않는다 |
 | `trace_quantum` | `q1`, `qn`, `infinite` | chart class 로 잇는다 (§1.4.2) |
-| `trace_shape` | `flat`, `ramp`, `rectangle`, `triangle`, `oscillation`, `irregular` | chart class 로 잇는다 (§1.4.1) |
+| `trace_shape` | `flat`, `step`, `rectangle`, `triangle`, `oscillation`, `irregular` | chart class 로 잇는다 (§1.4.1) |
 
 **이 문서의 판정 대상은 `value_type` 이 `numeric` 이고 `structure` 가 `trace` 인 열이다.** 크기를 갖지 않는 값에는 기울기도 진폭도 정의되지 않고, 시간 순서가 없는 배열에는 되돌릴 파형이 없다. 나머지 조합의 열은 이 문서의 어휘로 부를 수 없으며, manifest 에서 `trace_shape` 를 아예 갖지 않는 열이 그것이다.
 
@@ -187,13 +187,13 @@ Table 3. `trace_shape` labels
 | Label | Rule |
 |---|---|
 | `flat` | Window 에서 값이 변하지 않는다 |
-| `ramp` | Window 에서 값이 한 방향으로만 변하는 구간 하나가 `ramp_fraction` 이상을 차지한다 |
+| `step` | 값이 한 준위에 머물다 다른 준위로 옮겨 가 그대로 머무르고, 두 준위의 차가 `step_min` 이상이다 |
 | `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 `dwell_ratio` 배 이상 길다 |
 | `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없으며, 정점이 뾰족하다 |
 | `oscillation` | Autocorrelation 에 `acf_peak` 이상의 peak 이 일정한 간격으로 나타난다 |
 | `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
 
-여섯 규칙은 서로 겹치므로 **판정 순서가 정의의 일부다.** 평탄한 trace 는 한 방향으로만 움직이는 구간이 window 전체를 덮기도 하고, pulse 열은 autocorrelation 에도 걸린다. 위 표의 순서대로, 가장 좁은 규칙부터 시험한다.
+여섯 규칙은 서로 겹치므로 **판정 순서가 정의의 일부다.** 준위를 옮겨 가며 진동하는 trace 는 `step` 과 `oscillation` 을 함께 채울 수 있고, pulse 열은 autocorrelation 에도 걸린다. 위 표의 순서대로, 가장 좁은 규칙부터 시험한다.
 
 `triangle` 의 기준은 폭이 아니라 **정점의 뾰족함**이다. 시간축으로 아무리 넓어도 플랭크가 직선이고 정점이 뾰족하면 `triangle` 이고, 정점이 뾰족하지 않은 봉우리 — 둥근 언덕처럼 `κ` 가 삼각형 이론값(0.2)과 사각형(1.0) 사이 중간대에 놓이는 형상 — 는 `rectangle` 의 dwell 조건도 채우지 못하므로 `irregular` 다. 뾰족함도 `κ` 로 재며, `kappa` 임계값이 그 상한이다.
 
@@ -205,7 +205,7 @@ Table 4. Thresholds the labels depend on
 
 | Threshold | Default | Used by |
 |---|---|---|
-| `ramp_fraction` | 0.8 | `ramp` — 단조 구간이 덮어야 하는 window 비율 |
+| `step_min` | `3·LSB` | `step` — 두 준위 차의 하한. 분해능의 3 배로 두어 잡음만으로 생긴 준위 차를 배제한다 |
 | `dwell_ratio` | 5.0 | `rectangle` — 머문 표본 수 대 이동 표본 수의 하한 |
 | `kappa` | 0.45 | `triangle` — 평탄도 `κ = W_90 / W_50` 의 상한 (§1.2). 뾰족한 정점의 실측 대역(≤ 0.402)을 덮고 둥근 정점의 중간대를 `irregular` 로 보낸다. §1.2 의 0.7 은 `R1` 대 `T1` 동률을 가르는 다른 자리의 값이다 |
 | `slope_tolerance` | 3.0 | `triangle` — 두 플랭크 기울기 크기의 비의 상한 |
@@ -225,15 +225,15 @@ Table 5. `trace_shape` label to chart class
 | `trace_shape` | Chart class | Note |
 |---|---|---|
 | `flat` | `Q1` | 준위가 하나뿐이라 변할 곳이 없다. `trace_quantum` 의 `q1` 과 같은 사실이다 |
-| `ramp` | `S1` (`t_rise` 가 큰 경우) | 램프는 전이가 window 를 덮을 만큼 완만한 `S1` 이다 (§2.2.2) |
+| `step` | `S1`, `S2` | 전이가 하나면 `S1`, 여럿이면 `S2` 다. 완만한 램프도 전이가 window 를 덮을 만큼 `t_rise` 가 큰 `S1` 이므로 여기 속한다 (§2.2.2) |
 | `rectangle` | `R1`, `R1s`, `R2` | 사다리꼴은 `t_rise`·`t_fall` 이 큰 `R1` 이므로 여기 속한다 |
 | `triangle` | `T1`, `T2` | 좁은 봉우리는 폭이 작은 `T1`, 골짜기는 `A_peak` 가 음수인 `T1` 이다 |
 | `oscillation` | `O2`, `O3`, `O4`, `Q2`~`Q9` | 격자 위의 왕복과 격자 밖의 진동이 이 label 로 함께 접힌다 |
 | `irregular` | 없음 | 어느 class 도 형상을 설명하지 못한 경우이므로 대응하는 class 가 없다 |
 
-**대응은 일대일이 아니고, 양쪽 모두에 빈자리가 있다.**
+**대응은 일대일이 아니다.**
 
-- `S1` 의 급준한 계단과 `S2` 는 `trace_shape` 에 대응하는 label 이 없다. 단조 구간이 짧아 `ramp` 에 걸리지 않고 두 level 에 머무는 시간이 조건을 채우지 못해 `rectangle` 에도 걸리지 않으므로 `irregular` 로 떨어진다. 계단이 흔한 데이터라면 `trace_shape` 만으로는 그 사실을 볼 수 없다.
+- `S1` 과 `S2` 가 `step` 하나로 접히므로 전이가 몇 번인지는 `trace_shape` 에서 사라진다. 그 수가 필요하면 chart class 를 다시 판정해야 한다.
 - `irregular` 에 대응하는 class 가 없는 것은 설계상 그렇다. Table 8 은 형상을 주장하는 모델족의 목록이고, `irregular` 는 주장이 실패했다는 표시다.
 - `Q2`~`Q9` 와 `O` 가 한 label 로 접히므로, 계측 아티팩트와 실제 물리 진동의 구분(§2.2.7)이 `trace_shape` 에서는 사라진다. 그 구분이 필요하면 `trace_quantum` 을 함께 읽어야 한다.
 
