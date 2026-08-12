@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 56 | Created: 2026-08-07 | Updated: 2026-08-12 10:57 CDT
+Rev. 57 | Created: 2026-08-07 | Updated: 2026-08-12 11:04 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -222,7 +222,7 @@ Table 6. Value type labels
 
 ### 4.4 Structure
 
-Structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. Structure label 은 cell structure label 이다.
+Structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. 판정이 보는 것이 cell 하나이므로 structure label 은 cell 의 label 이다.
 
 Table 7. Structure labels
 
@@ -234,15 +234,17 @@ Table 7. Structure labels
 | `trace` | An array whose elements are ordered in time | 1 | `[wafer, feature, trace]` | tensor |
 | `tensor` | A multidimensional array with three or more axes | >=3 | `[wafer, feature, x, y, z]` | tensor |
 
-Label 마다 cell 에 값이 어떻게 담기는지는 [Appendix B. Structure Example](#appendix-b-structure-example) 에 data example 로 두었다.
+Label 마다 cell 에 값이 어떻게 담기는지는 [Appendix B. Structure Example](#appendix-b-structure-example) 의 data example 에서 볼 수 있다.
 
-Array notation 은 그 label 을 갖는 열만 모은 table 을 배열 하나로 펼쳤을 때의 축 목록이다. 첫 element 를 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 array axis 0 처럼 적는다. Array axis 0 은 행이고 array axis 1 은 열이며, array axis 2 부터는 cell 안의 축이다. Array axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
+Array notation 은 그 label 을 갖는 열만 모은 table 을 배열 하나로 펼쳤을 때의 축 목록이다. 첫 축을 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 array axis 0 처럼 적는다. Array axis 0 은 행이고 array axis 1 은 열이며, array axis 2 부터는 cell 안의 축이다. Array axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
 
-Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지는 cell 안에 배열을 담아 그 틀을 넘어선다. `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
+Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지는 cell 안에 배열을 담아 그 틀을 넘어선다. `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지 아닌지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
 
-어느 쪽이든 원소의 자리는 고정되어 있어야 한다. 두께 배열의 세 번째 원소가 행마다 다른 site 를 가리키면 wafer 끼리 비교할 수 없으므로, `vector` 는 순서가 없는 배열이 아니라 시간이 아닌 축을 따라 정렬된 배열이다.
+어느 쪽이든 원소의 자리는 고정되어 있어야 한다. 두께 배열의 세 번째 원소가 행마다 다른 site 를 가리키면 wafer 끼리 비교할 수 없다. 그래서 `vector` 는 순서가 없는 배열이 아니라 시간이 아닌 축을 따라 정렬된 배열이다.
 
-`matrix` 는 원소의 자리가 한 축이 아니라 두 축으로 정해지는 경우이다. Wafer 위 die 마다의 bin code 를 격자로 담은 열이 여기에 해당하며, 같은 값을 자리 정보 없이 늘어놓으면 `vector` 가 되어 이웃 관계를 잃는다.
+`matrix` 는 원소의 자리가 한 축이 아니라 두 축으로 정해지는 경우이다. Wafer 의 die 마다 bin code 를 격자로 담은 열이 여기에 해당한다. 같은 값을 자리 정보 없이 늘어놓으면 `vector` 가 되어 이웃 관계를 잃는다.
+
+`tensor` 는 cell 안의 축이 셋 이상인 경우이다. Wafer 를 x 와 y 와 z 세 좌표로 훑어 담은 온도장이 여기에 해당한다.
 
 ### 4.5 Array Length
 
