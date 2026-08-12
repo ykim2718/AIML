@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 15 | Created: 2026-08-01 | Updated: 2026-08-11 13:35 CDT
+Rev. 15 | Created: 2026-8-1 | Updated: 2026-8-11 17:45 CDT
 
 ## 1. Terminology
 
@@ -49,7 +49,7 @@ Rev. 15 | Created: 2026-08-01 | Updated: 2026-08-11 13:35 CDT
 
 ## 8. Versioning
 
-+ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. <N> | Created: <YYYY-MM-DD> | Updated: <YYYY-MM-DD HH:MM> <TIMEZONE>` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일, Updated는 문서 수정 시간을 기록한다. `<TIMEZONE>`은 실행 환경의 시간대이며 `date +%Z` 로 읽는다.
++ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. <N> | Created: <YYYY-MM-DD> | Updated: <YYYY-MM-DD HH:MM> <TIMEZONE>` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일, Updated는 문서 수정 시간을 기록한다. `<TIMEZONE>`은 실행 환경의 시간대이며 `date +%Z` 로 읽는다.  최초 문서 제작 시 버전은 0 이다.
 + 버전 표시를 제외한 변경 이력 표현은 문서에서 삭제한다.
 
 ## 9. Code Block
@@ -57,22 +57,17 @@ Rev. 15 | Created: 2026-08-01 | Updated: 2026-08-11 13:35 CDT
 + Code block 내부의 inline comment는 모두 영어로 작성한다. 주석 기호는 해당 언어의 문법을 따른다 (예: Python `#`, JavaScript `//`, SQL `--`).
 + Code block의 첫 줄에 파일명, 실행 환경 또는 언어를 주석으로 명기한다. 실제 파일이 있으면 파일명 주석이 우선하고, 출력·로그처럼 실행 대상이 아닌 block만 예외로 한다.  JSON의 경우 실제 파일에서 주석이 있으면 동작하지 않지만, md에서만 예외로 첫 줄 주석을 //를 써서 허용한다.
 + 실제 파일이 있는 코드는 block 첫 줄에 주석으로 파일명을 표시한다. 프로젝트 루트 기준의 상대 경로로 적어 위치를 알 수 있게 한다.
-
 ```python
 # src/utils/parser.py
 def parse(text: str) -> dict:
     ...
 ```
-
 + 실제 파일이 없는 예시 코드는 파일명 대신 언어명을 주석으로 표시한다. 단, code fence에 이미 언어가 명시되어 있으면(예: ```python```) 첫 줄 주석은 생략해도 된다.
-
 ```python
 # Python
 result = [x * 2 for x in range(10)]
 ```
-
 + JSON 및 dict 형태의 데이터는 pretty print 한다. 들여쓰기는 2칸(space)을 기본으로 하고, key 순서는 원본을 유지한다.
-
 ```json
 {
   "name": "example",
@@ -82,7 +77,6 @@ result = [x * 2 for x in range(10)]
   }
 }
 ```
-
 + 언어를 특정할 수 없는 터미널 출력·로그·설정값 등은 fence에 언어를 지정하지 않거나 `text`/`bash`를 사용하고, 파일명·언어 주석은 붙이지 않는다.
 + 값을 치환해야 하는 자리표시자는 `<UPPER_CASE>` 형태로 통일하고, 실제 값과 혼동되지 않게 한다 (예: `Authorization: Bearer <API_KEY>`).
 
