@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 55 | Created: 2026-08-07 | Updated: 2026-08-12 10:50 CDT
+Rev. 56 | Created: 2026-08-07 | Updated: 2026-08-12 10:57 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -226,7 +226,7 @@ Structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하
 
 Table 7. Structure labels
 
-| Cell label | Cell value | Cell dim | Array notation | Data label |
+| Cell label | Cell value | Cell dim | Array notation | Array type |
 |------------|------------|----------|----------------|------------|
 | `scalar` | A single value (tabular data) | 0 | `[wafer, feature]` | matrix |
 | `vector` | An array whose elements lie along an axis that is not time | 1 | `[wafer, feature, site]` | tensor |
