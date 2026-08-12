@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 50 | Created: 2026-08-07 | Updated: 2026-08-12 10:23 CDT
+Rev. 51 | Created: 2026-08-07 | Updated: 2026-08-12 10:33 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -222,12 +222,12 @@ Table 6. Value type labels
 
 ### 4.4 Structure
 
-Structure 는 wafer 당 data structure 를 의미한다.
+Structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. Structure label 은 cell structure label 이다.
 
 Table 7. Structure labels
 
-| Label | Rule | Array notation | Data dim |
-|-------|------|-----------------|----------|
+| Label | Cell rule | Array notation | Cell dim |
+|-------|-----------|----------------|----------|
 | `scalar` | Cell 하나가 값 하나를 담는다 (tabular data) | `[wafer, feature]` | 1 |
 | `vector` | Cell 하나가 배열을 담고, 원소가 시간축이 아닌 축을 따라 놓인다 | `[wafer, feature, site]` | 2 |
 | `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 | `[wafer, feature, die_x, die_y]` | 2 |
@@ -235,6 +235,8 @@ Table 7. Structure labels
 | `tensor` | Cell 하나가 3D 이상의 다차원 배열이다 | `[wafer, feature, x, y, z]` | >=3 |
 
 Array notation 은 그 열을 담은 table 을 배열로 펼쳤을 때의 축 목록이다. 첫 element 를 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 array axis 0 처럼 적는다. Array axis 0 은 행이고 array axis 1 은 열이며, array axis 2 부터는 cell 안의 축이다. Array axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
+
+Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지는 cell 안에 배열을 담아 그 틀을 넘어선다.
 
 `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
 
