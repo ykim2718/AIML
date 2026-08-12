@@ -1,9 +1,9 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 5 | Created: 2026-08-12 | Updated: 2026-08-12 17:58 CDT
+Rev. 6 | Created: 2026-08-12 | Updated: 2026-08-12 18:16 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
-## 1. Terminology and Core Concepts
+## 1. Taxonomy
 
 대표적인 명칭과 핵심 개념은 Table 1과 같다.
 
@@ -17,36 +17,28 @@ Table 1. Common names and core concepts
 
 세 명칭은 관점의 차이일 뿐 서로 배타적이지 않으며, 어느 관점에서 부르는지는 6장에서 정리한다.
 
-이들 주변에는 transfer learning, meta-learning, test-time adaptation 같은 인접 개념이 있다. 기법 전체는 모델 갱신 방식 기준과 forgetting 대응 기준의 두 축으로 크게 분류할 수 있으며, 전체 구조는 Fig 1과 같다. 점선 화살표 (`<....`) 는 각 명칭이 주로 속하는 분류를 나타낸다.
+명칭을 나열하는 방식으로는 transfer learning, meta-learning 같은 인접 개념과의 경계가 모호해진다. 그래서 관련 개념 전체를 세 가지 질문 — 언제 갱신하는가, 어떻게 갱신하는가, 무엇을 보존하는가 — 으로 나눈 하나의 통합 체계로 정리하면 Fig 1과 같다. 각 항목의 오른쪽에는 그 분류로 불리는 대표 명칭이나 기법을 표기한다.
 
-Fig 1. CLTS taxonomy of names, adjacent concepts, and classifications
+Fig 1. Unified taxonomy of continual learning for time series
 
 ```
 CLTS (Continuous Learning for Time Series)
 |
-+-- Common names
-|   +-- Recursive / Rolling Retraining .... periodic refresh on rolling or expanding window
-|   +-- Online / Streaming Learning ....... instant update per sample or mini-batch
-|   +-- Incremental / Continual Learning .. accumulate knowledge, prevent forgetting
++-- When to update (trigger)
+|   +-- Periodic (per day / week / month) ......... Recursive / Rolling Retraining
+|   +-- Continuous (per sample or mini-batch) ..... Online / Streaming Learning, Data Stream Mining
+|   +-- On drift alarm ............................ Concept Drift Detection / Adaptation
 |
-+-- Adjacent concepts
-|   +-- Transfer Learning / Fine-Tuning
-|   +-- Meta-Learning
-|   +-- Test-Time Adaptation
-|   +-- Concept Drift Detection / Adaptation
-|   +-- Adaptive Filtering (Kalman filter, RLS)
-|   +-- Data Stream Mining
-|   +-- Lifelong Learning
++-- How to update (mechanism)
+|   +-- Full retraining on a window ............... rolling / expanding window
+|   +-- Native sequential update .................. SGD, Adaptive Filtering (Kalman filter, RLS)
+|   +-- Fine-tuning of a pre-trained model ........ Transfer Learning, warm start
+|   +-- Learned / self-adaptation ................. Meta-Learning, Test-Time Adaptation
 |
-+-- Classification by update strategy
-|   +-- Periodic retraining (rolling / expanding window) <..... Recursive / Rolling Retraining
-|   +-- Online update (SGD, Kalman filter) <................... Online / Streaming Learning
-|   +-- Pre-trained + fine-tuning (warm start) <............... Transfer Learning / Fine-Tuning
-|
-+-- Classification by forgetting mitigation <................... Incremental / Continual Learning
-    +-- Replay-based
-    +-- Regularization-based (EWC)
-    +-- Architecture-based (parameter isolation)
++-- What to preserve (forgetting mitigation) ...... Incremental / Continual / Lifelong Learning
+    +-- Replay-based .............................. keep and mix past samples
+    +-- Regularization-based ...................... EWC penalty on important weights
+    +-- Architecture-based ........................ parameter isolation
 ```
 
 ## 2. Key Strategies
@@ -88,8 +80,10 @@ Table 2. Python tools for continual time series learning
 | statsmodels | State Space Models | Kalman filter 기반 state space 모델로 새 관측값에 대한 상태 갱신을 지원한다. |
 | pySmooth | Kalman Filter / Online ARIMA | 이산·확장·unscented Kalman filter와 online ARIMA를 제공한다. |
 | LightGBM | Continued Training | `init_model` 에 기존 booster를 전달하면 새 데이터로 tree를 추가하며 이어서 학습한다. |
+| PyTorch / TensorFlow | Fine-Tuning | 사전 학습 모델의 가중치를 유지한 채 새 데이터로 소량 추가 학습하는 warm start 패턴을 지원한다. |
+| Avalanche | Continual Learning | PyTorch 기반으로 replay·EWC·parameter isolation 등 forgetting 완화 strategy를 제공한다. |
 
-scikit-learn·LightGBM·statsmodels·River의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
+Table 2 도구의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
 
 ## 6. Summary
 
@@ -114,6 +108,7 @@ scikit-learn·LightGBM·statsmodels·River의 구현 예시는 [Appendix B](#app
 + data stream mining: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
 + EWC: Elastic Weight Consolidation. 이전 과제에 중요한 가중치의 변화에 벌점을 주어 forgetting을 줄이는 regularization 기법이다.
 + expanding window: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
++ experience: Avalanche에서 continual learning stream을 구성하는 학습 단위로, 한 번에 도착하는 데이터 묶음이다.
 + forecast horizon: 예측 시점부터 예측 대상 시점까지의 시간 간격이다.
 + FSNet: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
 + gradient boosting: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
@@ -268,32 +263,131 @@ for t in range(WINDOW, len(X)):
     preds.append(model.predict(X[t:t + 1])[0])
 ```
 
+#### Online ARIMA with pySmooth
+
+pySmooth는 pip 패키지가 아니므로 저장소를 clone 한 뒤 `ML` 폴더를 모듈 경로에 추가해 사용하고, NumPy 2.0에서 제거된 `np.mat` 을 사용하므로 NumPy 1.x 환경이 필요하다. RecursiveARIMA는 새 관측값이 올 때마다 `update` 로 내부 상태를 갱신한다.
+
+```python
+# clone first: git clone https://github.com/kenluck2001/pySmooth
+import sys
+
+import numpy as np
+
+sys.path.insert(0, "pySmooth/ML")
+from RecursiveARIMA import RecursiveARIMA
+
+np.random.seed(0)
+X = np.random.rand(30, 3)
+
+model = RecursiveARIMA(p=2, d=0, q=2)
+model.init(X)
+
+# update the internal state with each new observation, then forecast
+for _ in range(5):
+    model.update(np.random.rand(1, 3))
+forecast = model.predict()
+```
+
+#### Fine-tuning with PyTorch
+
+사전 학습된 신경망의 가중치를 초기화하지 않고, 새 데이터에 대해서만 더 작은 learning rate로 소량 추가 학습한다. TensorFlow에서도 같은 warm start 패턴을 사용한다.
+
+```python
+import numpy as np
+import torch
+from torch import nn
+
+rng = np.random.default_rng(0)
+torch.manual_seed(0)
+X_old = torch.tensor(rng.random((200, 3)), dtype=torch.float32)
+y_old = torch.tensor(rng.random((200, 1)), dtype=torch.float32)
+X_new = torch.tensor(rng.random((30, 3)), dtype=torch.float32)
+y_new = torch.tensor(rng.random((30, 1)), dtype=torch.float32)
+
+model = nn.Sequential(nn.Linear(3, 16), nn.ReLU(), nn.Linear(16, 1))
+loss_fn = nn.MSELoss()
+
+# pre-train on the old data
+opt = torch.optim.Adam(model.parameters(), lr=1e-2)
+for _ in range(200):
+    opt.zero_grad()
+    loss_fn(model(X_old), y_old).backward()
+    opt.step()
+
+# fine-tune on the new data only, with a smaller learning rate (warm start)
+opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+for _ in range(50):
+    opt.zero_grad()
+    loss_fn(model(X_new), y_new).backward()
+    opt.step()
+```
+
+#### Continual learning with Avalanche EWC
+
+Avalanche는 데이터를 experience 단위의 stream으로 나누고, strategy가 experience를 차례로 학습한다. EWC strategy는 이전 experience에 중요했던 가중치의 변화에 벌점을 주어 forgetting을 줄인다. 아래는 class 2개씩 두 experience로 나눈 최소 분류 예시이다.
+
+```python
+import torch
+from avalanche.benchmarks import nc_benchmark
+from avalanche.models import SimpleMLP
+from avalanche.training.supervised import EWC
+from torch.utils.data import TensorDataset
+
+torch.manual_seed(0)
+
+# two experiences: classes 0-1 arrive first, classes 2-3 arrive later
+X = torch.randn(400, 8)
+y = torch.randint(0, 4, (400,))
+train_ds = TensorDataset(X, y)
+test_ds = TensorDataset(torch.randn(100, 8), torch.randint(0, 4, (100,)))
+train_ds.targets = y.tolist()
+test_ds.targets = test_ds.tensors[1].tolist()
+
+benchmark = nc_benchmark(train_ds, test_ds, n_experiences=2, task_labels=False)
+
+model = SimpleMLP(num_classes=4, input_size=8, hidden_size=32)
+strategy = EWC(
+    model=model,
+    optimizer=torch.optim.SGD(model.parameters(), lr=0.01),
+    criterion=torch.nn.CrossEntropyLoss(),
+    ewc_lambda=0.4,
+    train_mb_size=32,
+    train_epochs=1,
+    eval_mb_size=32,
+)
+
+# train on each experience in order; EWC penalizes drifting from old weights
+for experience in benchmark.train_stream:
+    strategy.train(experience)
+    strategy.eval(benchmark.test_stream)
+```
+
 ## Appendix C. Taxonomy with Python Libraries
 
-Fig 1의 두 분류 축을 각 분류별 대표 Python library와 연결하면 Fig 2와 같다. 이 중 scikit-learn·LightGBM·statsmodels·River의 실행 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
+Fig 1의 "어떻게 갱신하는가"와 "무엇을 보존하는가" 축을 각 분류별 대표 Python library와 연결하면 Fig 2와 같다. Fig 2에 등장하는 library의 실행 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
 
 Fig 2. Classifications of Fig 1 extended with representative Python libraries
 
 ```
-Classification by update strategy
+How to update (mechanism)
 |
-+-- Periodic retraining (rolling / expanding window)
++-- Full retraining on a window
 |   +-- scikit-learn ........... refit any estimator on each window
 |   +-- statsmodels ............ refit ARIMA / state space models per window
 |   +-- LightGBM ............... periodic retraining of boosting models
 |
-+-- Online update (per sample or mini-batch)
++-- Native sequential update (per sample or mini-batch)
 |   +-- River .................. predict_one / learn_one streaming pipeline
 |   +-- scikit-learn ........... partial_fit (SGDRegressor, MLPRegressor)
 |   +-- statsmodels ............ Kalman filter state update via append
 |   +-- pySmooth ............... online ARIMA, Kalman filter variants
 |
-+-- Pre-trained + fine-tuning (warm start)
++-- Fine-tuning of a pre-trained model (warm start)
     +-- scikit-learn ........... warm_start=True (GradientBoostingRegressor)
     +-- LightGBM ............... continued training via init_model
     +-- PyTorch / TensorFlow ... load pre-trained weights and fine-tune
 
-Classification by forgetting mitigation
+What to preserve (forgetting mitigation)
 |
 +-- Replay-based ............... Avalanche (replay plugin), custom replay buffer
 +-- Regularization-based ....... Avalanche (EWC plugin)
