@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 65 | Created: 2026-08-07 | Updated: 2026-08-12 11:23 CDT
+Rev. 66 | Created: 2026-08-07 | Updated: 2026-08-12 11:36 CDT
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
@@ -9,7 +9,7 @@ Manifest 를 만드는 목적은 column profile 을 얻는 것이다. 사람이 
 
 ## 1. Manifest Files
 
-Table 1. Manifest files
+Table 1. Manifest JSON files
 
 | Order | File | Source | Content |
 |-------|------|--------|---------|
@@ -477,28 +477,19 @@ Table 13. Structure examples
 
 `scalar` 만 cell 에 축이 없고 나머지 넷은 cell 안에 축을 갖는다. `vector` 와 `trace` 는 축이 하나여서 값의 나열로 보이지만 그 축이 site 인지 시각인지가 다르고, `matrix` 는 축이 둘이어서 배열이 한 겹 더 중첩되며, `tensor` 는 축이 셋이어서 두 겹 더 중첩된다.
 
-Table 13 은 cell 하나만 보였다. `matrix` 인 열만 모아 table 을 배열 하나로 펼치면 wafer 축과 feature 축이 앞에 붙어 4.4 절 Table 7 의 `[wafer, feature, die_x, die_y]` 가 된다.
+Table 13 의 `matrix` 경우의 실제 데이터는 `[wafer, feature, die_x, die_y]` 이며 예시는 아래이다.
 
 ```python
 # array axis 0 is wafer, 1 is feature, 2 is die_x, 3 is die_y
 table = [
     [                        # wafer 0
-        [[3, 3, ...],        # bin_code_map, die_x 0
-         [3, 1, ...],        # die_x 1
-         ...],
-        ...                  # the other matrix columns of wafer 0
+        [
+            [3, 3, ...],     # feature, die_x 0
+            [3, 1, ...],     # die_x 1
+            ...
+        ],
+        ...                  # the other matrix features of wafer 0
     ],
     ...                      # the other wafers
 ]
 ```
-
-Table 14. Array axes of the matrix example
-
-| Array axis | Name | Index selects | Comes from |
-|------------|------|---------------|------------|
-| 0 | `wafer` | One row | Table |
-| 1 | `feature` | One column, here `bin_code_map` | Table |
-| 2 | `die_x` | One die column of the grid | Cell |
-| 3 | `die_y` | One die row of the grid | Cell |
-
-`table[0][0][2][3]` 은 wafer 0 의 첫 열인 `bin_code_map` 이 담은 격자에서 `die_x` 가 2 이고 `die_y` 가 3 인 die 의 bin code 하나이다. 앞의 두 축은 table 의 행과 열에서 오고 뒤의 두 축은 cell 안에서 오므로, `Cell dim` 이 2 인 것과 array 의 축이 넷인 것이 어긋나지 않는다.
