@@ -1,14 +1,14 @@
 # PCA Algorithm
-Rev. 3 | Created: 2026-08-11 | Updated: 2026-08-11 19:02 CDT
+Rev. 4 | Created: 2026-08-11 | Updated: 2026-08-11 20:21 CDT
 
 > The other documents in this folder say which variant to reach for. This one says what the plain procedure actually does.
 > It fixes the notation, walks the steps in order, states what each step produces, and lists the conventions that decide whether two implementations agree.
 
-PCA algorithm은 p개 변수로 표현된 데이터를, 정보 손실이 가장 적은 순서로 정렬된 k개 (k < p) 의 새 축으로 갈아타기 위한 절차입니다. §4의 Table 3에 따르면 구체적으로 얻는 것은 세 가지입니다.
+The PCA algorithm is a procedure for moving data expressed in `p` variables onto `k` new axes (`k < p`), ordered so that the information lost by keeping only `k` of them is as small as possible. As laid out in Table 3 of §4, it concretely produces three things.
 
-1. Loadings `V_k` (p × k) — 새 축 그 자체. 데이터가 가장 많이 퍼진 방향부터 순서대로 늘어놓은 k개의 직교 방향입니다. 각 축이 원래 변수들의 어떤 조합인지를 담고 있어서, "이 데이터의 변동은 주로 어떤 변수 조합에서 오는가"를 읽는 데 씁니다.
-2. Scores `T` (n × k) — 새 축 위에서의 좌표. 각 샘플을 p차원에서 k차원으로 옮긴 결과물로, 이것이 회귀·분류 등 후속 모델에 실제로 입력되는 데이터입니다. 차원 축소의 결과물이 바로 이것입니다.
-3. Explained variance `λ_j` — 각 축의 중요도. 각 성분이 전체 변동의 몇 %를 담당하는지를 말해 주고, 버린 성분들의 λ 합이 곧 재구성 오차와 같으므로 (§4 마지막 문단), "k개만 남기면 무엇을 얼마나 잃는가"에 대한 정량적 답이 됩니다.
+1. The loadings `V_k` (`p × k`) are the new axes themselves — `k` orthogonal directions listed from the one along which the data spreads most. Each axis records the combination of the original variables it is built from, which is what answers where the variation in the data mainly comes from.
+2. The scores `T` (`n × k`) are the coordinates on the new axes — each sample moved from `p` dimensions to `k`, and the data that regression, classification, or any other downstream model actually receives. This is the product of the dimension reduction.
+3. The explained variance `λ_j` is the weight of each axis — the fraction of the total variation each component carries. Since the sum of the discarded `λ_j` equals the reconstruction error (the last paragraph of §4), it gives a quantitative answer to what is lost by keeping only `k` components.
 
 PCA (Principal Component Analysis) is short enough to write out in full, and writing it out settles questions that a library call hides — what the sign of a component means, why the rank stops at `n − 1`, which mean gets subtracted from new data, and what is lost when components are dropped.
 
