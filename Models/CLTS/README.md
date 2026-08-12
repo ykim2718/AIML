@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 6 | Created: 2026-08-12 | Updated: 2026-08-12 18:16 CDT
+Rev. 7 | Created: 2026-08-12 | Updated: 2026-08-12 18:26 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -15,7 +15,7 @@ Table 1. Common names and core concepts
 | Online Learning / Streaming Learning | 데이터가 실시간 streaming 형태로 들어올 때, 전체 데이터를 저장하지 않고 새 샘플 단위 (또는 mini-batch) 로 가중치를 즉시 업데이트하는 방식이다. |
 | Incremental Learning / Continual Learning | 기존에 학습한 지식을 잊어버리지 않고 (catastrophic forgetting 방지), 새로 들어오는 데이터의 특성을 계속해서 누적 축적하는 학습 방식이다. |
 
-세 명칭은 관점의 차이일 뿐 서로 배타적이지 않으며, 어느 관점에서 부르는지는 6장에서 정리한다.
+세 명칭은 관점의 차이일 뿐 서로 배타적이지 않다.
 
 명칭을 나열하는 방식으로는 transfer learning, meta-learning 같은 인접 개념과의 경계가 모호해진다. 그래서 관련 개념 전체를 세 가지 질문 — 언제 갱신하는가, 어떻게 갱신하는가, 무엇을 보존하는가 — 으로 나눈 하나의 통합 체계로 정리하면 Fig 1과 같다. 각 항목의 오른쪽에는 그 분류로 불리는 대표 명칭이나 기법을 표기한다.
 
@@ -85,11 +85,7 @@ Table 2. Python tools for continual time series learning
 
 Table 2 도구의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
 
-## 6. Summary
-
-새 샘플이 추가될 때 전체 재학습 없이 모델을 갱신하는 기법의 명칭은 관점에 따라 다르다. 일반적인 시계열 머신러닝 pipeline 관점의 명칭은 재귀적 재학습 (Recursive Retraining) 또는 롤링 윈도우 재학습 (Rolling Window Retraining) 이고, 데이터가 실시간으로 들어오는 시스템 관점의 명칭은 온라인 학습 (Online Learning) 또는 점진적 학습 (Incremental Learning) 이다. 구현 전략은 rolling window 재학습, Kalman filter 기반 상태 갱신, warm start 기반 fine-tuning의 3가지가 대표적이며, concept drift·catastrophic forgetting·delayed feedback이 공통 난제이다.
-
-## 7. References
+## 6. References
 
 + [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)
 + [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)
