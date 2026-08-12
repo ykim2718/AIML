@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 1 | Created: 2026-08-12 | Updated: 2026-08-12 15:44 CDT
+Rev. 2 | Created: 2026-08-12 | Updated: 2026-08-12 16:58 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -57,7 +57,7 @@ Table 2. Python tools for continual time series learning
 | pySmooth | Kalman Filter / Online ARIMA | 이산·확장·unscented Kalman filter와 online ARIMA를 제공한다. |
 | LightGBM | Continued Training | `init_model` 에 기존 booster를 전달하면 새 데이터로 tree를 추가하며 이어서 학습한다. |
 
-scikit-learn과 LightGBM의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
+scikit-learn·LightGBM·statsmodels·River의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
 
 ## 6. Summary
 
@@ -82,7 +82,10 @@ scikit-learn과 LightGBM의 구현 예시는 [Appendix B](#appendix-b-python-exa
 + FSNet: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
 + gradient boosting: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
 + LightGBM: gradient boosting 기반의 오픈소스 머신러닝 framework이다.
++ local level model: 관측값을 서서히 변하는 수준 성분과 관측 노이즈로 분해하는 가장 단순한 state space 모델이다.
++ MAE: Mean Absolute Error. 예측 오차 절대값의 평균이다.
 + OneNet: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
++ progressive validation: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
 + recursive least squares: 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
 + replay: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
 + rolling window: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
@@ -158,6 +161,48 @@ booster = lgb.train(
     num_boost_round=20,
     init_model=booster,
 )
+```
+
+#### Kalman filter update with statsmodels
+
+statsmodels의 UnobservedComponents로 local level model을 적합한 뒤, `append` 로 새 관측값을 Kalman filter 상태에 반영한다. 파라미터를 다시 추정하지 않으므로 갱신 비용이 매우 낮다.
+
+```python
+import numpy as np
+import statsmodels.api as sm
+
+rng = np.random.default_rng(0)
+y_old = rng.normal(0, 0.5, 100).cumsum()
+y_new = y_old[-1] + rng.normal(0, 0.5, 10).cumsum()
+
+model = sm.tsa.UnobservedComponents(y_old, level="local level")
+res = model.fit(disp=False)
+
+# update the Kalman filter state with new observations, keeping the fitted parameters
+res = res.append(y_new)
+forecast = res.forecast(5)
+```
+
+#### Online learning with River
+
+River는 샘플을 dict 형태로 받아 `predict_one` 과 `learn_one` 으로 한 건씩 처리한다. 각 샘플에 대해 예측을 먼저 하고 같은 샘플로 학습하면, 별도의 평가 데이터 없이 online 성능을 측정하는 progressive validation이 된다.
+
+```python
+import numpy as np
+from river import linear_model, metrics, preprocessing
+
+rng = np.random.default_rng(0)
+model = preprocessing.StandardScaler() | linear_model.LinearRegression()
+metric = metrics.MAE()
+
+for _ in range(200):
+    x = {"x1": rng.random(), "x2": rng.random()}
+    y = 2 * x["x1"] - x["x2"]
+
+    # predict first, then learn from the same sample (progressive validation)
+    y_pred = model.predict_one(x)
+    metric.update(y, y_pred)
+    model.learn_one(x, y)
 ```
 
 #### Rolling window retraining
