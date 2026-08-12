@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 0 | Created: 2026-08-12 | Updated: 2026-08-12 15:43 CDT
+Rev. 1 | Created: 2026-08-12 | Updated: 2026-08-12 15:44 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -55,6 +55,9 @@ Table 2. Python tools for continual time series learning
 | scikit-learn | Incremental Learning / Warm Start | `partial_fit` 을 제공하는 estimator는 mini-batch 단위 갱신을 지원하고, `warm_start=True` 는 이전 학습 결과에서 이어서 학습한다. |
 | statsmodels | State Space Models | Kalman filter 기반 state space 모델로 새 관측값에 대한 상태 갱신을 지원한다. |
 | pySmooth | Kalman Filter / Online ARIMA | 이산·확장·unscented Kalman filter와 online ARIMA를 제공한다. |
+| LightGBM | Continued Training | `init_model` 에 기존 booster를 전달하면 새 데이터로 tree를 추가하며 이어서 학습한다. |
+
+scikit-learn과 LightGBM의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
 
 ## 6. Summary
 
@@ -72,11 +75,106 @@ Table 2. Python tools for continual time series learning
 ## Appendix A. Terminology
 
 + ARIMA: Autoregressive Integrated Moving Average. 자기회귀와 이동평균을 결합한 고전적 시계열 예측 모델이다.
++ booster: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
 + concept drift: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
 + expanding window: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
 + forecast horizon: 예측 시점부터 예측 대상 시점까지의 시간 간격이다.
 + FSNet: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
++ gradient boosting: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
++ LightGBM: gradient boosting 기반의 오픈소스 머신러닝 framework이다.
 + OneNet: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
 + recursive least squares: 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
 + replay: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
 + rolling window: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
++ SGD: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
+
+## Appendix B. Python Examples
+
+아래 예시는 모두 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다.
+
+#### Incremental learning with scikit-learn partial_fit
+
+`partial_fit` 을 제공하는 estimator (SGDRegressor, SGDClassifier, MLPRegressor 등) 는 새 샘플이 도착할 때마다 파라미터 초기화 없이 모델을 갱신한다.
+
+```python
+import numpy as np
+from sklearn.linear_model import SGDRegressor
+
+rng = np.random.default_rng(0)
+model = SGDRegressor(learning_rate="constant", eta0=0.01, random_state=0)
+
+# initial fit on the first batch
+X_init, y_init = rng.random((100, 3)), rng.random(100)
+model.partial_fit(X_init, y_init)
+
+# update the model one sample at a time as new data arrives
+X_stream, y_stream = rng.random((50, 3)), rng.random(50)
+for i in range(len(X_stream)):
+    model.partial_fit(X_stream[i:i + 1], y_stream[i:i + 1])
+```
+
+#### Warm start with scikit-learn GradientBoostingRegressor
+
+`warm_start=True` 는 이미 학습된 tree를 유지한 채, 늘어난 `n_estimators` 만큼의 tree만 추가로 학습한다.
+
+```python
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor
+
+rng = np.random.default_rng(0)
+X_old, y_old = rng.random((200, 3)), rng.random(200)
+X_new, y_new = rng.random((30, 3)), rng.random(30)
+
+model = GradientBoostingRegressor(n_estimators=100, warm_start=True, random_state=0)
+model.fit(X_old, y_old)
+
+# grow 20 more trees on the combined data; existing trees are kept
+model.n_estimators += 20
+model.fit(np.vstack([X_old, X_new]), np.concatenate([y_old, y_new]))
+```
+
+#### Continued training with LightGBM init_model
+
+`lgb.train` 의 `init_model` 에 기존 booster를 전달하면, 기존 tree를 그대로 둔 채 새 데이터에 대한 tree를 이어서 학습한다.
+
+```python
+import lightgbm as lgb
+import numpy as np
+
+rng = np.random.default_rng(0)
+X_old, y_old = rng.random((200, 3)), rng.random(200)
+X_new, y_new = rng.random((30, 3)), rng.random(30)
+params = {
+  "objective": "regression",
+  "verbosity": -1,
+}
+
+booster = lgb.train(params, lgb.Dataset(X_old, y_old), num_boost_round=100)
+
+# continue training from the existing booster with new data only
+booster = lgb.train(
+    params,
+    lgb.Dataset(X_new, y_new),
+    num_boost_round=20,
+    init_model=booster,
+)
+```
+
+#### Rolling window retraining
+
+새 시점마다 최근 `WINDOW` 개의 샘플로만 모델을 다시 학습시켜 concept drift에 대응한다. 재학습 주기를 매 시점 대신 매주·매월로 늘리면 계산 비용을 줄일 수 있다.
+
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(0)
+X, y = rng.random((120, 3)), rng.random(120)
+
+WINDOW = 30
+preds = []
+for t in range(WINDOW, len(X)):
+    # keep only the latest WINDOW samples and retrain
+    model = LinearRegression().fit(X[t - WINDOW:t], y[t - WINDOW:t])
+    preds.append(model.predict(X[t:t + 1])[0])
+```
