@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 68 | Created: 2026-08-07 | Updated: 2026-08-12 11:47 CDT
+Rev. 69 | Created: 2026-08-07 | Updated: 2026-08-12 11:51 CDT
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
@@ -501,7 +501,11 @@ Table 13 의 `matrix` 경우의 실제 데이터는 `[wafer, feature, die_x, die
 table = [
     [                        # wafer 0
         [                    # feature
-            [3, 3, ...],     # die_x 0
+            [                # die_x 0
+                3,           # die_y 0
+                3,           # die_y 1
+                ...
+            ],
             [3, 1, ...],     # die_x 1
             ...
         ],
