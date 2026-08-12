@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 63 | Created: 2026-08-07 | Updated: 2026-08-12 11:12 CDT
+Rev. 64 | Created: 2026-08-07 | Updated: 2026-08-12 11:18 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -166,7 +166,7 @@ Table 4. Class axes
 |------|-------|------------|-------|--------|
 | `activity` | `active`, `inactive` | `all` | `rows or entities` | Analysis |
 | `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `all` | `cell` | Human or analysis |
-| `structure` | `scalar`, `vector`, `matrix`, `trace`, `tensor` | `all` | `cell` | Human or analysis |
+| `cell_structure` | `scalar`, `vector`, `matrix`, `trace`, `tensor` | `all` | `cell` | Human or analysis |
 | `array_length` | `fixed`, `variable` | `non-scalar` | `rows` | Analysis |
 | `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | `cell` | Analysis |
 | `trace_shape` | `flat`, `step`, `rectangle`, `triangle`, `oscillation`, `irregular` | `trace` | `cell` | Analysis |
@@ -177,7 +177,7 @@ Table 4. Class axes
 
 이 규약 때문에 각 axis 의 label 은 그 axis 가 적용되는 모든 열을 남김없이 받아야 한다. `trace_shape` 의 `irregular` 가 그 자리를 맡는다.
 
-`array_` 와 `trace_` 로 시작하는 axis 는 `structure` 가 각각 배열일 때와 `trace` 일 때만 적용된다. 이름에 의존 관계를 넣어 두었으므로 axis 이름만 보고 이 제약을 알 수 있다.
+`array_` 와 `trace_` 로 시작하는 axis 는 `cell_structure` 가 각각 배열일 때와 `trace` 일 때만 적용된다. 이름에 의존 관계를 넣어 두었으므로 axis 이름만 보고 이 제약을 알 수 있다.
 
 한 label 은 한 axis 에만 속한다. 열의 class 를 label 의 목록으로 적으므로, 같은 label 이 두 axis 에 있으면 그 label 이 어느 axis 의 값인지 가릴 수 없다.
 
@@ -191,8 +191,8 @@ Table 5. Activity labels
 
 | Label | Rule |
 |-------|------|
-| `active` | 결측을 제외한 행 중 서로 다른 cell 값이 둘 이상 있다 |
-| `inactive` | 결측을 제외한 행의 cell 값이 모두 같거나, 모든 행이 결측이다 |
+| `active` | Two or more distinct cell values exist among the rows that are not missing |
+| `inactive` | Every row that is not missing holds the same cell value, or every row is missing |
 
 한 entity 에 여러 행이 놓인 table 에서는 그 행들이 `sequence_columns` 를 따라 서로 다르므로, 이 규칙을 그대로 쓰면 거의 모든 열이 `active` 로 나온다. 그럴 때는 `row_key` 의 `entity_columns` 로 행을 묶은 뒤 entity 사이를 비교한다. 한 entity 가 담은 값 전체를 하나의 값으로 보므로, 두 entity 는 그 값의 묶음이 서로 달라야 다른 값을 가진 것이 된다.
 
@@ -206,11 +206,11 @@ Table 6. Value type labels
 
 | Label | Rule |
 |-------|------|
-| `category` | 값이 유한한 이름의 집합에서 나오고, 값 사이에 순서가 없다 |
-| `ordinal` | 값이 유한한 이름의 집합에서 나오고, 값 사이에 순서가 있으나 산술 연산은 의미를 갖지 않는다 |
-| `numeric` | 값이 크기를 갖는 수치이고, 값 사이의 산술 연산이 의미를 갖는다 |
-| `text` | 값이 문자열이고, 값의 집합이 미리 정해져 있지 않다 |
-| `datetime` | 값이 시각을 가리키고, 값 사이의 차는 의미를 갖지만 합은 의미를 갖지 않는다 |
+| `category` | The value comes from a finite set of names and the values carry no order |
+| `ordinal` | The value comes from a finite set of names that carry an order, while arithmetic between them carries no meaning |
+| `numeric` | The value has magnitude and arithmetic between values carries meaning |
+| `text` | The value is a string and the set it comes from is not fixed in advance |
+| `datetime` | The value points to an instant, and the difference between two values carries meaning while their sum does not |
 
 `ordinal` 은 `category` 와 `numeric` 사이에 놓인다. 비교는 되고 산술은 되지 않으므로, 등급이나 심각도처럼 값을 줄 세울 수 있는 열이 여기에 속한다. `ordinal` 을 `category` 로 적으면 순서를 잃고, `numeric` 으로 적으면 등급 사이의 간격이 모두 같다고 주장하게 된다.
 
@@ -222,9 +222,9 @@ Table 6. Value type labels
 
 ### 4.4 Cell Structure
 
-Structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. 판정이 보는 것이 cell 하나이므로 structure label 은 cell 의 label 이다.
+Cell structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. 판정이 보는 것이 cell 하나이므로 이 axis 의 label 은 cell 의 label 이다.
 
-Table 7. Structure labels
+Table 7. Cell structure labels
 
 | Cell label | Cell value | Cell dim | Array notation | Array type |
 |------------|------------|----------|----------------|------------|
@@ -238,7 +238,7 @@ Label 마다 cell 에 값이 어떻게 담기는지는 [Appendix B. Structure Ex
 
 Array notation 은 그 label 을 갖는 열만 모은 table 을 배열 하나로 펼쳤을 때의 축 목록이다. 첫 축을 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 array axis 0 처럼 적는다. Array axis 0 은 행이고 array axis 1 은 열이며, array axis 2 부터는 cell 안의 축이다. Array axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
 
-Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지는 cell 안에 배열을 담아 그 틀을 넘어선다. `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지 아닌지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
+Cell 안의 축이 곧 cell structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지는 cell 안에 배열을 담아 그 틀을 넘어선다. `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지 아닌지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
 
 어느 쪽이든 원소의 자리는 고정되어 있어야 한다. 두께 배열의 세 번째 원소가 행마다 다른 site 를 가리키면 wafer 끼리 비교할 수 없다. 그래서 `vector` 는 순서가 없는 배열이 아니라 시간이 아닌 축을 따라 정렬된 배열이다.
 
@@ -254,8 +254,8 @@ Table 8. Array length labels
 
 | Label | Rule |
 |-------|------|
-| `fixed` | 모든 행에서 배열의 길이가 같고, `matrix` 처럼 축이 둘이면 두 축이 각각 행마다 같은 길이를 갖는다 |
-| `variable` | 행에 따라 배열의 길이가 다르다 |
+| `fixed` | The array has the same length in every row, and an array with two axes has the same length on each of its axes in every row |
+| `variable` | The array length differs from row to row |
 
 Wafer 마다 정해진 site 에서 재는 두께는 site 개수가 늘 같으므로 `fixed` 이고, wafer 마다 검출되는 defect 의 좌표 목록은 개수가 제각각이므로 `variable` 이다. 공정 중에 받은 trace 는 recipe 가 같아도 step 이 끝나는 시점이 행마다 조금씩 달라 길이가 흔들리므로 대개 `variable` 이다. 둘을 갈라 두는 이유는 `fixed` 인 열만 그대로 고정 폭의 feature 로 펼칠 수 있기 때문이다.
 
@@ -267,9 +267,9 @@ Table 9. Trace quantum labels
 
 | Label | Rule |
 |-------|------|
-| `q1` | Cell 하나 안에서 값이 level 하나 위에만 머문다 |
-| `qn` | Cell 하나 안에서 값이 셀 수 있는 여러 level 위를 오간다 |
-| `infinite` | Cell 하나 안에서 값이 level 위에 머물지 않고 연속으로 변한다 |
+| `q1` | Within one cell the value stays on a single level |
+| `qn` | Within one cell the value moves across a countable number of levels |
+| `infinite` | Within one cell the value changes continuously and rests on no level |
 
 세 label 은 level 개수가 하나, 여럿, 무한인 경우이므로 어떤 trace 든 하나에 들어간다. `infinite` 는 양자화되지 않은 아날로그 신호가 앉는 자리이고, 이것이 없으면 매끄럽게 변하는 압력이 `qn` 으로 잘못 적혀, 있지도 않은 level 을 주장하게 된다.
 
@@ -289,12 +289,12 @@ Table 10. Trace shape labels
 
 | Label | Rule |
 |-------|------|
-| `flat` | Window 에서 값이 변하지 않는다 |
-| `step` | 값이 한 준위에 머물다 다른 준위로 옮겨 가 그대로 머무르고, 두 준위의 차가 정해진 값 이상이다 |
-| `rectangle` | 값이 두 level 사이를 오가고, 한 level 에 머무는 시간이 level 사이를 이동하는 시간보다 정해진 배수 이상 길다 |
-| `triangle` | 상승 구간과 하강 구간의 기울기 크기가 서로 비슷하고, 두 구간 사이에 평탄한 구간이 없다 |
-| `oscillation` | Autocorrelation 에 정해진 크기 이상의 peak 이 일정한 간격으로 나타난다 |
-| `irregular` | 위 다섯 규칙을 모두 만족하지 않는다 |
+| `flat` | The value does not change over the window |
+| `step` | The value holds one level, moves to another and stays there, and the difference between the two levels is at least `step_min` |
+| `rectangle` | The value alternates between two levels and the time held on a level is at least `dwell_ratio` times the time taken to move between them |
+| `triangle` | The rising and the falling slope have a similar magnitude and no flat segment lies between them |
+| `oscillation` | The autocorrelation shows a peak of at least `acf_peak` at a regular interval |
+| `irregular` | None of the five rules above is satisfied |
 
 `flat` 과 `trace_quantum` 의 `q1` 은 같은 사실을 두 관점에서 적는다. Level 이 하나뿐인 trace 는 값이 변할 곳이 없으므로 언제나 평탄하다. 따라서 한쪽만 붙어 있는 열은 판정에 오류가 있다는 신호이며, 두 axis 를 맞대어 보는 것으로 확인된다.
 
@@ -322,7 +322,7 @@ Table 10. Trace shape labels
       "text": "the value is a string and the set it comes from is not fixed in advance",
       "datetime": "the value points to an instant, and the difference between two values carries meaning while their sum does not"
     },
-    "structure": {
+    "cell_structure": {
       "scalar": "one cell holds a single value",
       "vector": "one cell holds an array whose elements lie along an axis that is not time",
       "matrix": "one cell holds an array with two axes and neither axis is time",
@@ -480,3 +480,29 @@ Table 13. Structure examples
 `...` 은 같은 방식으로 이어지는 원소를 줄인 것이고, 어느 축이든 앞의 두 자리만 적었다. `thickness_site` 에 site 두 곳만 적은 것도 그 생략이며, wafer 에 site 가 스물이면 원소도 스물이다.
 
 `scalar` 만 cell 에 축이 없고 나머지 넷은 cell 안에 축을 갖는다. `vector` 와 `trace` 는 축이 하나여서 값의 나열로 보이지만 그 축이 site 인지 시각인지가 다르고, `matrix` 는 축이 둘이어서 배열이 한 겹 더 중첩되며, `tensor` 는 축이 셋이어서 두 겹 더 중첩된다.
+
+Table 13 은 cell 하나만 보였다. `matrix` 인 열만 모아 table 을 배열 하나로 펼치면 wafer 축과 feature 축이 앞에 붙어 4.4 절 Table 7 의 `[wafer, feature, die_x, die_y]` 가 된다.
+
+```python
+# array axis 0 is wafer, 1 is feature, 2 is die_x, 3 is die_y
+table = [
+    [                        # wafer 0
+        [[3, 3, ...],        # bin_code_map, die_x 0
+         [3, 1, ...],        # die_x 1
+         ...],
+        ...                  # the other matrix columns of wafer 0
+    ],
+    ...                      # the other wafers
+]
+```
+
+Table 14. Array axes of the matrix example
+
+| Array axis | Name | Index selects | Comes from |
+|------------|------|---------------|------------|
+| 0 | `wafer` | One row | Table |
+| 1 | `feature` | One column, here `bin_code_map` | Table |
+| 2 | `die_x` | One die column of the grid | Cell |
+| 3 | `die_y` | One die row of the grid | Cell |
+
+`table[0][0][2][3]` 은 wafer 0 의 첫 열인 `bin_code_map` 이 담은 격자에서 `die_x` 가 2 이고 `die_y` 가 3 인 die 의 bin code 하나이다. 앞의 두 축은 table 의 행과 열에서 오고 뒤의 두 축은 cell 안에서 오므로, `Cell dim` 이 2 인 것과 array 의 축이 넷인 것이 어긋나지 않는다.
