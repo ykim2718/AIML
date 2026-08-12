@@ -1,5 +1,5 @@
 # PCA Derivation
-Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-12 18:42 CDT
+Rev. 3 | Created: 2026-08-11 | Updated: 2026-08-12 18:44 CDT
 
 > The procedure can be followed without knowing why its answer is right, and most uses never need to ask.
 > This document is for when the question comes up: it derives, from the requirement of keeping as much variance as possible, that the axes PCA returns must be eigenvectors of the covariance matrix.
@@ -20,6 +20,7 @@ Table 1. Symbols used throughout
 | `u` | `p × 1` | A candidate direction, constrained to unit length |
 | `λ` | — | The Lagrange multiplier, which turns out to be an eigenvalue and a variance |
 | `u_j`, `λ_j` | — | The j-th eigenvector and eigenvalue of `C`, ordered so that `λ_1 ≥ λ_2 ≥ …` |
+| `V` | `p × k` | The loadings matrix, the kept components stacked as columns `V = [u_1 … u_k]` |
 | `k` | — | The number of components kept |
 
 Two remarks keep the reading smooth. First, `C` is symmetric, because `(X_cᵀ X_c)ᵀ = X_cᵀ X_c`; the derivation leans on that fact twice, once in the gradient and once in the orthogonality argument. Second, the denominator `n − 1` is the unbiased convention, and nothing below depends on it — replacing it with `n` scales every eigenvalue by the same factor and leaves every eigenvector unchanged.
@@ -93,6 +94,8 @@ The orthogonality was not a stylistic preference. Eigenvectors of a symmetric ma
 
 There is also a fixed budget being divided. The trace of `C` is the sum of the individual variable variances and equals `Σ_j λ_j`, so each component claims a share of a total that no choice of basis can change. That total is the denominator of every explained variance ratio.
 
+One more object falls out of this section. Stacking the kept components as columns gives the loadings matrix `V = [u_1 … u_k]` of shape `p × k`, and the two facts in hand — the unit length imposed in §2 and the orthogonality just proved — compress into the single statement `Vᵀ V = I_k`. A matrix with that property is called column-wise orthonormal, or semi-orthogonal; the unqualified name orthogonal matrix is reserved for the square case `k = p`, where `Vᵀ = V⁻¹` and the change of basis is a pure rotation that preserves every length and angle. The reversed product is a different object altogether: `V Vᵀ` is the `p × p` projection onto the span of the kept components — the `P` that §6 is about to use — and it cannot equal `I_p` while `k < p`, because its rank is only `k`. [Appendix C](#appendix-c-the-column-wise-orthonormal-matrix) lays the two products side by side.
+
 ## 6. The Reconstruction View
 
 PCA is often introduced by a different requirement: choose the k-dimensional subspace that minimizes the average squared distance between each sample and its projection. The two requirements meet in one identity. With `P` the projection onto any subspace, each sample splits at a right angle:
@@ -111,7 +114,7 @@ Implementations rarely form `C`, and the derivation explains what they do instea
 C = X_cᵀ X_c / (n − 1) = V (S² / (n − 1)) Vᵀ
 ```
 
-This is already an eigendecomposition: the columns of `V` are the eigenvectors the derivation demands, with eigenvalues `λ_j = s_j² / (n − 1)`. Decomposing `X_c` directly therefore returns the same axes without ever building the covariance matrix, and it is the preferred route because forming `C` squares the condition number of the problem before the eigensolver starts.
+This is already an eigendecomposition: the columns of `V` are the eigenvectors the derivation demands, with eigenvalues `λ_j = s_j² / (n − 1)`, and the `V` the SVD returns is exactly the column-wise orthonormal matrix that §5 built one column at a time. Decomposing `X_c` directly therefore returns the same axes without ever building the covariance matrix, and it is the preferred route because forming `C` squares the condition number of the problem before the eigensolver starts.
 
 ## 8. A Worked Example
 
@@ -157,8 +160,12 @@ The terms below appear in the body without being defined there.
 - **Eigendecomposition** writes a symmetric matrix as its eigenvectors scaled by its eigenvalues.
 - **Eigenvector and eigenvalue** are a vector that a matrix maps to a multiple of itself, and that multiple.
 - **Gradient** is the vector of partial derivatives of a function, which vanishes where the function is flat.
+- **Identity matrix** `I_k` is the `k × k` matrix with ones on the diagonal and zeros elsewhere, which maps every vector to itself.
 - **Lagrange multiplier** is the extra variable that folds a constraint into an objective so that a constrained optimum appears as a stationary point.
+- **Orthonormal** describes a set of vectors that each have unit length and are mutually orthogonal.
 - **Projection** is the component of a vector along a direction or inside a subspace.
+- **Rank** is the number of linearly independent directions a matrix spans.
+- **Span** is the set of all linear combinations of a set of vectors.
 - **Stationary point** is a point where the gradient vanishes, which covers maxima, minima, and saddle points alike.
 - **SVD** decomposes a matrix into left singular vectors, singular values, and right singular vectors.
 - **Thin SVD** returns only the singular vectors that correspond to non-zero singular values.
@@ -171,3 +178,41 @@ The terms below appear in the body without being defined there.
 Fig 2. The worked example of §8 in pictures. Panel (a) shows the three samples, their mean `μ = (2, 2)`, and the centering that moves each sample by `−μ` so the cloud sits about the origin. Panel (b) shows the centered samples with the axis `u_1` and the direction `u_2`; the open circles are the projections onto `u_1`, whose positions along the axis are the scores `√2, −2√2, √2`, and the dashed segments are the residuals, whose average square `(2 + 0 + 2) / 2 = 2` equals the discarded `λ_2`.
 
 Every number in Table 2 has a visible counterpart here. The scores are where the open circles sit along `u_1`, the spread of those circles is the `λ_1 = 6` the derivation maximized, and the dashed segments are what the one-component reconstruction gives up. Two details reward a second look. `x_2` lies on the axis already, so keeping one component reconstructs it exactly. And `x_1` and `x_3` land on the same projected point — two different samples that the one-component summary can no longer tell apart, which is what losing `λ_2` means in concrete terms.
+
+## Appendix C. The Column-wise Orthonormal Matrix
+
+The components of §5 are usually handled not one at a time but stacked into a single matrix, one component per column:
+
+```text
+       [  |    |          |  ]
+V  =   [ u_1  u_2   ...  u_k ]    ∈  ℝ^(p × k)
+       [  |    |          |  ]
+```
+
+Every entry of `Vᵀ V` is a product of one column with another, `(Vᵀ V)_ij = u_iᵀ u_j`, so the unit lengths of §2 fill the diagonal with ones and the orthogonality of §5 fills everything off the diagonal with zeros. No such argument exists for the rows, and the two products come out asymmetric:
+
+```text
+column test    Vᵀ V  =  I_k     (k × k)    the columns have length 1 and are mutually orthogonal
+row test       V Vᵀ  ≠  I_p     (p × p)    fails whenever k < p, because the rank of V Vᵀ is only k
+```
+
+The asymmetry is why the naming is column-wise. A rectangular `V` that passes only the column test is called a column-wise orthonormal matrix, or a semi-orthogonal matrix; the unqualified name orthogonal matrix is reserved for the square case `k = p`, where both tests pass at once and `Vᵀ = V⁻¹`. The failed row test is not a defect but the point of the truncation: `V Vᵀ` is the projection onto the span of the kept components — the `P` of §6 — and a projection that changed nothing would have compressed nothing.
+
+Table 3. The two products of the loadings matrix
+
+| Product | Shape | Value | Reading |
+|---|---|---|---|
+| `Vᵀ V` | `k × k` | `I_k` always | The columns are unit length and mutually orthogonal |
+| `V Vᵀ` | `p × p` | `I_p` only when `k = p` | The projection onto the span of the kept components, with rank `k` |
+
+The worked example of §8 shows both cases in the smallest possible numbers. Keeping both components makes `V` square, and both tests pass; keeping only `u_1` leaves the column test intact while the row test produces the projection that drew the open circles of Fig 2:
+
+```text
+keep both      V  =  1/√2 [ 1   1 ]      Vᵀ V = I_2    and    V Vᵀ = I_2
+                          [ 1  −1 ]
+
+keep u_1 only  V  =  1/√2 [ 1 ]          Vᵀ V = [ 1 ]   but   V Vᵀ = 1/2 [ 1  1 ]  ≠  I_2
+                          [ 1 ]                                         [ 1  1 ]
+```
+
+Applying that last `V Vᵀ` to `x_1 = (2, 0)` gives `(1, 1)`, which is exactly where the dashed segment of Fig 2 lands — the matrix that fails the row test is the same map that sent `x_1` and `x_3` to their shared projection.
