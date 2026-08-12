@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 67 | Created: 2026-08-07 | Updated: 2026-08-12 11:40 CDT
+Rev. 68 | Created: 2026-08-07 | Updated: 2026-08-12 11:47 CDT
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
@@ -476,6 +476,23 @@ Table 13. Structure examples
 `...` 은 같은 방식으로 이어지는 원소를 줄인 것이고, 어느 축이든 앞의 두 자리만 적었다. `thickness_site` 에 site 두 곳만 적은 것도 그 생략이며, wafer 에 site 가 스물이면 원소도 스물이다.
 
 `scalar` 만 cell 에 축이 없고 나머지 넷은 cell 안에 축을 갖는다. `vector` 와 `trace` 는 축이 하나여서 값의 나열로 보이지만 그 축이 site 인지 시각인지가 다르고, `matrix` 는 축이 둘이어서 배열이 한 겹 더 중첩되며, `tensor` 는 축이 셋이어서 두 겹 더 중첩된다.
+
+Table 13 의 `trace` 경우의 실제 데이터는 `[wafer, feature, trace]` 이며 예시는 아래이다.
+
+```python
+# array axis 0 is wafer, 1 is feature, 2 is trace
+table = [
+    [                        # wafer 0
+        [                    # feature
+            0.98,            # trace 0
+            1.02,            # trace 1
+            ...
+        ],
+        ...                  # the other trace features of wafer 0
+    ],
+    ...                      # the other wafers
+]
+```
 
 Table 13 의 `matrix` 경우의 실제 데이터는 `[wafer, feature, die_x, die_y]` 이며 예시는 아래이다.
 
