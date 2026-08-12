@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 61 | Created: 2026-08-07 | Updated: 2026-08-12 11:09 CDT
+Rev. 62 | Created: 2026-08-07 | Updated: 2026-08-12 11:10 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -230,8 +230,8 @@ Table 7. Structure labels
 |------------|------------|----------|----------------|------------|
 | `scalar` | A single value (tabular data) | 0 | `[wafer, feature]` | matrix |
 | `vector` | An array whose elements lie along an axis that is not time | 1 | `[wafer, feature, site]` | tensor |
-| `trace` | An array whose elements are ordered in time | 1 | `[wafer, feature, trace]` | tensor |
 | `matrix` | An array with two axes, neither of which is time | 2 | `[wafer, feature, die_x, die_y]` | tensor |
+| `trace` | An array whose elements are ordered in time | 1 | `[wafer, feature, trace]` | tensor |
 | `tensor` | A multidimensional array with three or more axes | >=3 | `[wafer, feature, x, y, z]` | tensor |
 
 Label 마다 cell 에 값이 어떻게 담기는지는 [Appendix B. Structure Example](#appendix-b-structure-example) 의 data example 에서 볼 수 있다.
@@ -473,8 +473,8 @@ Table 13. Structure examples
 |------------|--------|------------|-----------|
 | `scalar` | `thickness_mean` | `812.4` | None |
 | `vector` | `thickness_site` | `[812.4, 809.7, ...]` | `site` |
-| `trace` | `chamber_pressure` | `[0.98, 1.02, ...]` | `trace` |
 | `matrix` | `bin_code_map` | `[[3, 3, ...], [3, 1, ...], ...]` | `die_x`, `die_y` |
+| `trace` | `chamber_pressure` | `[0.98, 1.02, ...]` | `trace` |
 | `tensor` | `thermal_field` | `[[[21.4, 21.6, ...], ...], ...]` | `x`, `y`, `z` |
 
 `...` 은 같은 방식으로 이어지는 원소를 줄인 것이고, 어느 축이든 앞의 두 자리만 적었다. `thickness_site` 에 site 두 곳만 적은 것도 그 생략이며, wafer 에 site 가 스물이면 원소도 스물이다.
