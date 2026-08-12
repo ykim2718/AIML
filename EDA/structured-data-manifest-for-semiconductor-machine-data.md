@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 48 | Created: 2026-08-07 | Updated: 2026-08-10 22:02 CDT
+Rev. 49 | Created: 2026-08-07 | Updated: 2026-08-12 10:13 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -166,7 +166,7 @@ Table 4. Class axes
 |------|-------|------------|-------|--------|
 | `activity` | `active`, `inactive` | `all` | `rows or entities` | Analysis |
 | `value_type` | `category`, `ordinal`, `numeric`, `text`, `datetime` | `all` | `cell` | Human or analysis |
-| `structure` | `scalar`, `vector`, `matrix`, `trace` | `all` | `cell` | Human or analysis |
+| `structure` | `scalar`, `vector`, `matrix`, `trace`, `tensor` | `all` | `cell` | Human or analysis |
 | `array_length` | `fixed`, `variable` | `non-scalar` | `rows` | Analysis |
 | `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | `cell` | Analysis |
 | `trace_shape` | `flat`, `step`, `rectangle`, `triangle`, `oscillation`, `irregular` | `trace` | `cell` | Analysis |
@@ -222,28 +222,25 @@ Table 6. Value type labels
 
 ### 4.4 Structure
 
-Structure 는 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다.
+Structure 는 wafer 당 data structure 를 의미한다.
 
 Table 7. Structure labels
 
-| Label | Rule | Matrix notation |
-|-------|------|-----------------|
-| `scalar` | Cell 하나가 값 하나를 담는다 (tabular data) | `[wafer, feature]` |
-| `vector` | Cell 하나가 배열을 담고, 원소가 시간축이 아닌 축을 따라 놓인다 | `[wafer, feature, site]` |
-| `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 | `[wafer, feature, die_x, die_y]` |
-| `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 | `[wafer, feature, trace]` |
+| Label | Rule | Matrix notation | Data dim |
+|-------|------|-----------------|----------|
+| `scalar` | Cell 하나가 값 하나를 담는다 (tabular data) | `[wafer, feature]` | 1 |
+| `vector` | Cell 하나가 배열을 담고, 원소가 시간축이 아닌 축을 따라 놓인다 | `[wafer, feature, site]` | 2 |
+| `matrix` | Cell 하나가 두 축을 갖는 배열을 담고, 두 축 모두 시간축이 아니다 | `[wafer, feature, die_x, die_y]` | 2 |
+| `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 | `[wafer, feature, trace]` | 2 |
+| `tensor` | Cell 하나가 3D 이상의 다차원 배열이다 | `[wafer, x, y, z]` | >=3 |
 
 Matrix notation 은 그 열을 담은 table 을 배열로 펼쳤을 때의 축 목록이다. 첫 element 를 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 matrix axis 0 처럼 적는다. Matrix axis 0 은 행이고 matrix axis 1 은 열이며, matrix axis 2 부터는 cell 안의 축이다. Matrix axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
-
-Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지 셋은 cell 안에 배열을 담아 그 틀을 넘어선다. `scalar` 는 matrix axis 2 가 없어 table 이 그대로 2 차원이고, `vector` 와 `trace` 는 원소의 자리가 하나로 정해지므로 matrix axis 2 하나가 붙으며, `matrix` 는 두 좌표로 정해지므로 matrix axis 2 와 matrix axis 3 이 붙는다. Notation 에 적은 `site`, `die_x` 와 `die_y`, `trace` 는 그 축이 무엇을 따라 놓였는지를 가리킨다.
 
 `vector` 와 `trace` 를 가르는 것은 배열이라는 사실이 아니라 그 축이 시간인지이다. Wafer 위 여러 지점에서 잰 두께는 원소가 site 자리를 따라 놓이므로 `vector` 이고, 공정 중에 기록한 압력은 원소가 시각을 따라 놓이므로 `trace` 이다.
 
 어느 쪽이든 원소의 자리는 고정되어 있어야 한다. 두께 배열의 세 번째 원소가 행마다 다른 site 를 가리키면 wafer 끼리 비교할 수 없으므로, `vector` 는 순서가 없는 배열이 아니라 시간이 아닌 축을 따라 정렬된 배열이다.
 
 `matrix` 는 원소의 자리가 한 축이 아니라 두 축으로 정해지는 경우이다. Wafer 위 die 마다의 bin code 를 격자로 담은 열이 여기에 해당하며, 같은 값을 자리 정보 없이 늘어놓으면 `vector` 가 되어 이웃 관계를 잃는다.
-
-값의 성격과 cell 의 모양을 두 class axis 로 나누어 두었으므로 조합이 뜻을 갖는다. 공정 중 압력은 `numeric` 과 `trace` 이고, 장비가 거쳐 간 mode 를 시간순으로 적은 열은 `category` 와 `trace` 이다. Class axis 가 하나뿐이면 이 둘을 가릴 수 없다.
 
 ### 4.5 Array Length
 
@@ -325,7 +322,8 @@ Table 10. Trace shape labels
       "scalar": "one cell holds a single value",
       "vector": "one cell holds an array whose elements lie along an axis that is not time",
       "matrix": "one cell holds an array with two axes and neither axis is time",
-      "trace": "one cell holds an array whose elements are ordered in time"
+      "trace": "one cell holds an array whose elements are ordered in time",
+      "tensor": "one cell holds a multidimensional array with three or more axes"
     },
     "array_length": {
       "fixed": "the array has the same length in every row, and an array with two axes has the same length on each of its axes in every row",
