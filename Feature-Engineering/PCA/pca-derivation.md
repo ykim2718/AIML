@@ -1,5 +1,5 @@
 # PCA Derivation
-Rev. 1 | Created: 2026-08-11 | Updated: 2026-08-11 20:27 CDT
+Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-12 18:42 CDT
 
 > The procedure can be followed without knowing why its answer is right, and most uses never need to ask.
 > This document is for when the question comes up: it derives, from the requirement of keeping as much variance as possible, that the axes PCA returns must be eigenvectors of the covariance matrix.
@@ -146,7 +146,7 @@ Table 2. The claims checked against the example
 | The total variance equals `Σ λ_j` (§5) | The trace of `C` is `4 + 4` | `8 = 6 + 2` |
 | The discarded `λ` equals the reconstruction error (§6) | Keeping only `u_1`, the residuals are the coordinates along `u_2`, namely `√2, 0, −√2`, with mean square `(2 + 0 + 2) / 2` | `2 = λ_2` |
 
-The explained variance ratio of the first component is `6 / 8 = 0.75`, and the example is small enough that all of these numbers survive being recomputed on paper.
+The explained variance ratio of the first component is `6 / 8 = 0.75`, and the example is small enough that all of these numbers survive being recomputed on paper. [Appendix B](#appendix-b-the-worked-example-drawn) draws the same numbers in both coordinate systems.
 
 ## Appendix A. Terminology
 
@@ -163,3 +163,11 @@ The terms below appear in the body without being defined there.
 - **SVD** decomposes a matrix into left singular vectors, singular values, and right singular vectors.
 - **Thin SVD** returns only the singular vectors that correspond to non-zero singular values.
 - **Trace** is the sum of the diagonal entries of a matrix, which equals the sum of its eigenvalues.
+
+## Appendix B. The Worked Example Drawn
+
+![Fig 2](pca-derivation-fig2.png)
+
+Fig 2. The worked example of §8 in pictures. Panel (a) shows the three samples, their mean `μ = (2, 2)`, and the centering that moves each sample by `−μ` so the cloud sits about the origin. Panel (b) shows the centered samples with the axis `u_1` and the direction `u_2`; the open circles are the projections onto `u_1`, whose positions along the axis are the scores `√2, −2√2, √2`, and the dashed segments are the residuals, whose average square `(2 + 0 + 2) / 2 = 2` equals the discarded `λ_2`.
+
+Every number in Table 2 has a visible counterpart here. The scores are where the open circles sit along `u_1`, the spread of those circles is the `λ_1 = 6` the derivation maximized, and the dashed segments are what the one-component reconstruction gives up. Two details reward a second look. `x_2` lies on the axis already, so keeping one component reconstructs it exactly. And `x_1` and `x_3` land on the same projected point — two different samples that the one-component summary can no longer tell apart, which is what losing `λ_2` means in concrete terms.
