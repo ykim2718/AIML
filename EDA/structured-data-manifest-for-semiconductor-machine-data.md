@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 60 | Created: 2026-08-07 | Updated: 2026-08-12 11:04 CDT
+Rev. 61 | Created: 2026-08-07 | Updated: 2026-08-12 11:09 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -220,7 +220,7 @@ Table 6. Value type labels
 
 `category` 는 사람이 정한다. 판정은 고유값이 몇 개인지까지만 알 수 있고, 그 값들이 이름인지 크기인지는 데이터에 들어 있지 않다. `bin_code` 의 값 `1` 과 `2` 는 두 종류의 불량을 가리키는 이름이지 크기가 아니지만, 데이터만 보아서는 그것을 알 수 없다.
 
-### 4.4 Structure
+### 4.4 Cell Structure
 
 Structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. 판정이 보는 것이 cell 하나이므로 structure label 은 cell 의 label 이다.
 
