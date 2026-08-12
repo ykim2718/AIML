@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 4 | Created: 2026-08-12 | Updated: 2026-08-12 17:46 CDT
+Rev. 5 | Created: 2026-08-12 | Updated: 2026-08-12 17:58 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -17,52 +17,36 @@ Table 1. Common names and core concepts
 
 세 명칭은 관점의 차이일 뿐 서로 배타적이지 않으며, 어느 관점에서 부르는지는 6장에서 정리한다.
 
-이들 주변에는 transfer learning, meta-learning, test-time adaptation 같은 인접 개념이 있다. 기법 전체는 모델 갱신 방식 기준과 forgetting 대응 기준의 두 축으로 크게 분류할 수 있으며, 전체 구조는 Fig 1과 같다. 점선은 각 명칭이 주로 속하는 분류를 나타낸다.
+이들 주변에는 transfer learning, meta-learning, test-time adaptation 같은 인접 개념이 있다. 기법 전체는 모델 갱신 방식 기준과 forgetting 대응 기준의 두 축으로 크게 분류할 수 있으며, 전체 구조는 Fig 1과 같다. 점선 화살표 (`<....`) 는 각 명칭이 주로 속하는 분류를 나타낸다.
 
 Fig 1. CLTS taxonomy of names, adjacent concepts, and classifications
 
-```mermaid
-flowchart TB
-    ROOT["CLTS<br/>Continuous Learning for Time Series"]
-
-    subgraph NAMES["Common names"]
-        direction TB
-        RR["Recursive / Rolling Retraining<br/>periodic refresh on rolling or expanding window"]
-        OL["Online / Streaming Learning<br/>instant update per sample or mini-batch"]
-        IL["Incremental / Continual Learning<br/>accumulate knowledge, prevent forgetting"]
-    end
-
-    subgraph ADJ["Adjacent concepts"]
-        direction TB
-        TL["Transfer Learning / Fine-Tuning"]
-        MEL["Meta-Learning"]
-        TTA["Test-Time Adaptation"]
-        CDA["Concept Drift Detection / Adaptation"]
-        AFI["Adaptive Filtering<br/>Kalman filter, RLS"]
-        DSM["Data Stream Mining"]
-        LLL["Lifelong Learning"]
-    end
-
-    subgraph UPD["Classification by update strategy"]
-        direction TB
-        U1["Periodic retraining<br/>rolling / expanding window"]
-        U2["Online update<br/>SGD, Kalman filter"]
-        U3["Pre-trained + fine-tuning<br/>warm start"]
-    end
-
-    subgraph FGT["Classification by forgetting mitigation"]
-        direction TB
-        F1["Replay-based"]
-        F2["Regularization-based<br/>EWC"]
-        F3["Architecture-based<br/>parameter isolation"]
-    end
-
-    ROOT --> NAMES
-    ROOT --> ADJ
-    RR -.-> U1
-    OL -.-> U2
-    TL -.-> U3
-    IL -.-> FGT
+```
+CLTS (Continuous Learning for Time Series)
+|
++-- Common names
+|   +-- Recursive / Rolling Retraining .... periodic refresh on rolling or expanding window
+|   +-- Online / Streaming Learning ....... instant update per sample or mini-batch
+|   +-- Incremental / Continual Learning .. accumulate knowledge, prevent forgetting
+|
++-- Adjacent concepts
+|   +-- Transfer Learning / Fine-Tuning
+|   +-- Meta-Learning
+|   +-- Test-Time Adaptation
+|   +-- Concept Drift Detection / Adaptation
+|   +-- Adaptive Filtering (Kalman filter, RLS)
+|   +-- Data Stream Mining
+|   +-- Lifelong Learning
+|
++-- Classification by update strategy
+|   +-- Periodic retraining (rolling / expanding window) <..... Recursive / Rolling Retraining
+|   +-- Online update (SGD, Kalman filter) <................... Online / Streaming Learning
+|   +-- Pre-trained + fine-tuning (warm start) <............... Transfer Learning / Fine-Tuning
+|
++-- Classification by forgetting mitigation <................... Incremental / Continual Learning
+    +-- Replay-based
+    +-- Regularization-based (EWC)
+    +-- Architecture-based (parameter isolation)
 ```
 
 ## 2. Key Strategies
@@ -124,6 +108,7 @@ scikit-learn·LightGBM·statsmodels·River의 구현 예시는 [Appendix B](#app
 
 + adaptive filter: 새 관측값이 들어올 때마다 계수를 실시간으로 갱신하는 filter이다.
 + ARIMA: Autoregressive Integrated Moving Average. 자기회귀와 이동평균을 결합한 고전적 시계열 예측 모델이다.
++ Avalanche: PyTorch 기반의 continual learning 라이브러리로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
 + booster: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
 + concept drift: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
 + data stream mining: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
@@ -140,11 +125,13 @@ scikit-learn·LightGBM·statsmodels·River의 구현 예시는 [Appendix B](#app
 + OneNet: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
 + parameter isolation: 과제별로 서로 다른 파라미터 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
 + progressive validation: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
++ PyTorch: Meta가 주도하는 오픈소스 딥러닝 framework이다.
 + recursive least squares (RLS): 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
 + regularization: 모델의 복잡도나 파라미터 변화에 벌점을 주어 과적합과 forgetting을 억제하는 기법이다.
 + replay: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
 + rolling window: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
 + SGD: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
++ TensorFlow: Google이 주도하는 오픈소스 딥러닝 framework이다.
 + test-time adaptation: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
 + transfer learning: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
 
@@ -279,4 +266,36 @@ for t in range(WINDOW, len(X)):
     # keep only the latest WINDOW samples and retrain
     model = LinearRegression().fit(X[t - WINDOW:t], y[t - WINDOW:t])
     preds.append(model.predict(X[t:t + 1])[0])
+```
+
+## Appendix C. Taxonomy with Python Libraries
+
+Fig 1의 두 분류 축을 각 분류별 대표 Python library와 연결하면 Fig 2와 같다. 이 중 scikit-learn·LightGBM·statsmodels·River의 실행 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
+
+Fig 2. Classifications of Fig 1 extended with representative Python libraries
+
+```
+Classification by update strategy
+|
++-- Periodic retraining (rolling / expanding window)
+|   +-- scikit-learn ........... refit any estimator on each window
+|   +-- statsmodels ............ refit ARIMA / state space models per window
+|   +-- LightGBM ............... periodic retraining of boosting models
+|
++-- Online update (per sample or mini-batch)
+|   +-- River .................. predict_one / learn_one streaming pipeline
+|   +-- scikit-learn ........... partial_fit (SGDRegressor, MLPRegressor)
+|   +-- statsmodels ............ Kalman filter state update via append
+|   +-- pySmooth ............... online ARIMA, Kalman filter variants
+|
++-- Pre-trained + fine-tuning (warm start)
+    +-- scikit-learn ........... warm_start=True (GradientBoostingRegressor)
+    +-- LightGBM ............... continued training via init_model
+    +-- PyTorch / TensorFlow ... load pre-trained weights and fine-tune
+
+Classification by forgetting mitigation
+|
++-- Replay-based ............... Avalanche (replay plugin), custom replay buffer
++-- Regularization-based ....... Avalanche (EWC plugin)
++-- Architecture-based ......... Avalanche (parameter isolation strategies)
 ```
