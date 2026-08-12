@@ -1,17 +1,13 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 64 | Created: 2026-08-07 | Updated: 2026-08-12 11:18 CDT
+Rev. 65 | Created: 2026-08-07 | Updated: 2026-08-12 11:23 CDT
+
+이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
 Manifest 를 만드는 목적은 column profile 을 얻는 것이다. 사람이 적는 앞의 두 file 은 그 자체가 목적이 아니라 판정을 세울 수 있게 하는 입력이며, 열마다 무엇이 담겨 있는지에 대한 답은 마지막에 나오는 column profile 하나에 모인다.
 
-## 1. Scope And File Order
-
-### 1.1 Structured Data
-
-이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
-
-### 1.2 File Order
+## 1. Manifest Files
 
 Table 1. Manifest files
 
@@ -76,7 +72,7 @@ Table 2. Catalog description keys
 
 행 하나가 wafer 와 process step 의 조합이면 `entity_columns` 는 wafer 까지이고 `sequence_columns` 에 step 이 들어가므로, 이때도 wafer 는 여러 행에 걸쳐 되풀이된다.
 
-두 목록에 적는 이름은 1.2 절이 정한 대로 상류에서 온 그대로의 이름이다.
+두 목록에 적는 이름은 1 절이 정한 대로 상류에서 온 그대로의 이름이다.
 
 같은 데이터를 cell 안의 배열로 담을 수도 있고 행으로 펼칠 수도 있는데, 그 차이는 `row_key` 가 아니라 열의 class 가 말해 준다. 배열로 담으면 그 열이 `trace` 이고, 행으로 펼치면 `scalar` 가 되면서 시간 열이 `sequence_columns` 에 들어간다.
 
