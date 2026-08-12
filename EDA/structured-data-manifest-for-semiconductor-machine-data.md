@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 51 | Created: 2026-08-07 | Updated: 2026-08-12 10:33 CDT
+Rev. 52 | Created: 2026-08-07 | Updated: 2026-08-12 10:39 CDT
 
 데이터를 받아서 모델에 넣기까지 반복해서 답해야 하는 질문은 세 가지이다. 이 데이터가 어디서 왔고 무엇을 위한 것인가 (provenance), 열 이름과 형을 어떻게 맞출 것인가 (configuration), 그리고 각 열이 어떤 성격의 값인가 (class) 이다. Manifest 는 이 세 질문에 각각 하나의 file 을 대응시키고, 네 번째 file 에 class 를 부르는 이름과 그 판정 규칙을 모아 둔다.
 
@@ -234,6 +234,8 @@ Table 7. Structure labels
 | `trace` | Cell 하나가 배열을 담고, 원소가 시간 순서로 정렬되어 있다 | `[wafer, feature, trace]` | 2 |
 | `tensor` | Cell 하나가 3D 이상의 다차원 배열이다 | `[wafer, feature, x, y, z]` | >=3 |
 
+Label 마다 cell 에 값이 어떻게 담기는지는 [Appendix B. Structure Example](#appendix-b-structure-example) 에 data example 로 두었다.
+
 Array notation 은 그 열을 담은 table 을 배열로 펼쳤을 때의 축 목록이다. 첫 element 를 axis 0 이라 부르는 것이 배열의 표준 표기이므로 이 문서도 그대로 쓰되, 4.1 절의 class axis 와 가르기 위해 array axis 0 처럼 적는다. Array axis 0 은 행이고 array axis 1 은 열이며, array axis 2 부터는 cell 안의 축이다. Array axis 0 을 `wafer` 라고 적은 것은 이 문서의 예가 wafer 단위이기 때문이고, 실제 이름은 catalog 의 `grain` 이 정한 행 단위를 따른다.
 
 Cell 안의 축이 곧 structure label 을 가른다. 모든 열이 `scalar` 인 table 이 tabular data 이고, 나머지는 cell 안에 배열을 담아 그 틀을 넘어선다.
@@ -460,3 +462,21 @@ Table 12. Integrity rules
 - **Structured data** 는 미리 정한 schema 를 따르는 데이터이고, 반도체 장비 데이터에서는 그 schema 가 행과 열로 나타난다. 행 하나가 관측 하나에 대응하며 열 하나가 그 관측의 한 항목에 대응하고, cell 이 단일 값이 아니라 배열이어도 그 틀이 유지되면 structured data 이다.
 - **Tabular data** 는 cell 하나가 값 하나를 담는 structured data 이다. Cell 이 배열을 담으면 structured data 이기는 하나 tabular data 는 아니다.
 - **Trace** 는 한 대상을 시간에 따라 이어서 기록한 값의 열이고, 값 자체와 값이 놓인 순서가 함께 정보를 이룬다.
+
+## Appendix B. Structure Example
+
+4.4 절 Table 7 의 label 마다 cell 하나에 무엇이 담기는지를 wafer 한 행을 두고 보인다.
+
+Table 13. Structure examples
+
+| Label | Column | Cell value | Cell axes |
+|-------|--------|------------|-----------|
+| `scalar` | `thickness_mean` | `812.4` | 없음 |
+| `vector` | `thickness_site` | `[812.4, 809.7, ...]` | `site` |
+| `matrix` | `bin_code_map` | `[[3, 3, ...], [3, 1, ...], ...]` | `die_x`, `die_y` |
+| `trace` | `chamber_pressure` | `[0.98, 1.02, ...]` | `trace` |
+| `tensor` | `thermal_field` | `[[[21.4, 21.6, ...], ...], ...]` | `x`, `y`, `z` |
+
+`...` 은 같은 방식으로 이어지는 원소를 줄인 것이고, 어느 축이든 앞의 두 자리만 적었다. `thickness_site` 에 site 두 곳만 적은 것도 그 생략이며, wafer 에 site 가 스물이면 원소도 스물이다.
+
+`scalar` 만 cell 에 축이 없고 나머지 넷은 cell 안에 축을 갖는다. `vector` 와 `trace` 는 축이 하나여서 값의 나열로 보이지만 그 축이 site 인지 시각인지가 다르고, `matrix` 는 축이 둘이어서 배열이 한 겹 더 중첩되며, `tensor` 는 축이 셋이어서 두 겹 더 중첩된다.
