@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 9 | Created: 2026-08-11 | Updated: 2026-08-11 16:50 CDT
+Rev. 10 | Created: 2026-08-11 | Updated: 2026-08-12 19:08 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -96,6 +96,8 @@ Three things have to hold.
 
 Autocorrelation within a trace matters as well — not correlation between one trace and another, but the correlation of a trace with itself at neighbouring instants. If instants are left as raw variables, adjacent variables hold nearly the same value, so the first component reflects that redundancy. Dynamic PCA, which states the lag explicitly, reduces it, and so does parameterization.
 
+Whether a fitted FPCA can extrapolate — past the end of the time window, over the missing part of a trace, or into future runs — is answered in [Appendix B](#appendix-b-fpca-and-extrapolation).
+
 ### 2.3 Wafer Map
 
 A per-die value laid out on a grid carries its information in the neighbour relation. Flattening the grid into one row and running PCA turns adjacent dies into unrelated variables and loses the spatial pattern. A branch that keeps the row and column structure, such as 2DPCA, or a treatment that states the spatial correlation, is needed instead.
@@ -167,9 +169,12 @@ The terms below appear in the body without being defined there.
 
 - **Amplitude variation** is the part of the difference between curves that is vertical, that is how large the value is at a given point.
 - **Common domain** is the shared input axis on which every curve is expressed, with the same start, the same end, and the same grid of instants.
+- **Conditional expectation** is the average of a quantity taken over only the cases that agree with what has been observed.
 - **Contrastive PCA** finds the directions whose variance is large in the target data compared with a background dataset.
+- **Covariance surface** is the covariance between the values of a curve at two instants, written as a function of the two.
 - **DOE** is Design of Experiments, a study whose conditions are placed by design rather than observed as they come.
 - **Dynamic PCA** appends lagged copies of the variables so that autocorrelation enters the model explicitly.
+- **Eigenfunction** is the continuous counterpart of an eigenvector, one principal direction of a covariance surface expressed as a function.
 - **FDC** is Fault Detection and Classification, the practice of finding faults from the sensor record of process equipment.
 - **FPCA** is Functional PCA, which treats an observation as a curve rather than a vector when taking components.
 - **Incremental PCA** updates the components block by block instead of decomposing the whole matrix at once.
@@ -183,6 +188,7 @@ The terms below appear in the body without being defined there.
 - **Randomized PCA** narrows the subspace with a random projection and then approximates the leading components.
 - **Registration** stretches or compresses a misaligned time axis so that curves line up instant for instant.
 - **Robust PCA** decomposes a matrix into a low-rank part and a sparse part, which separates the outliers.
+- **Score** is the coordinate of one sample — for FPCA, one curve — along one principal direction.
 - **Scree** is the plot of eigenvalues in decreasing order, whose bend is taken as the component count.
 - **Sparse PCA** drives most of the loadings to zero so that a component can be read.
 - **Supervised PCA** screens the variables by their correlation with the target and then runs ordinary PCA on the survivors.
@@ -191,3 +197,23 @@ The terms below appear in the body without being defined there.
 - **Varimax** is an orthogonal rotation that increases the spread of the loadings to make them easier to read.
 - **Warping function** is the monotone map applied to one curve's time axis during registration, which carries the phase that registration removes.
 - **2DPCA** takes components while keeping the row and column structure of an image instead of flattening it into a vector.
+
+## Appendix B. FPCA And Extrapolation
+
+FPCA writes each curve as $x_i(t) = \mu(t) + \sum_j \xi_{ij}\, \varphi_j(t)$, where the mean function $\mu(t)$ and the eigenfunctions $\varphi_j(t)$ are estimated from the covariance surface on the observed domain $[0, T]$, and the scores $\xi_{ij}$ say how much of each eigenfunction one curve contains. The observed domain is a range of the argument $t$ alone — for a trace, the time window the training curves cover — and not a range of the measured values; what happens when the values are unusual is a separate question, taken up after the table. Three different questions get called extrapolation, and they have different answers.
+
+Table 7. Three questions called extrapolation
+
+| Question | Answer | Reason |
+|---|---|---|
+| Values at $t > T$, past the observed domain | No | $\mu(t)$ and $\varphi_j(t)$ exist only where the covariance surface was estimated, and evaluating a spline basis past the boundary returns the arithmetic of the basis, not information from the data |
+| The unobserved remainder of a partially observed curve inside $[0, T]$ | Yes | The conditional expectation of the scores given the observed segment completes the curve — extrapolation for that curve, interpolation for the model |
+| The next curves in a sequence of runs | Only with a second model | FPCA reduces each curve to a few scores, a time-series model on the score sequence does the forecasting, and the eigenfunctions rebuild the forecast curve |
+
+**Past the domain the failure is structural, not statistical.** No amount of data inside $[0, T]$ says anything about the basis outside it, so a trace recorded to 100 seconds cannot be read at 120 seconds, and gathering more wafers does not change that.
+
+**Completing a partial curve is a standard use.** When the training curves cover the full window and a new trace has only run to its middle, the scores estimated from the observed segment reconstruct the rest — the route known in the FPCA literature as PACE, principal analysis by conditional expectation. The completion answers what a curve from the training population would do from here. A drifted or faulted run is therefore completed into a normal-looking curve, and the gap between that completion and what the sensor actually records afterwards is itself a usable fault signal.
+
+**The value range is a soft boundary where the domain is a hard one.** A new curve whose values run outside anything seen in training breaks no requirement: the projection and the completion are still defined. Its scores simply land outside the score distribution of the training set, so the reliability of the completion degrades with the distance rather than failing outright. The domain limit cannot be traded against; the value limit is a statement about trust.
+
+**Forecasting future runs is done by another model standing on FPCA.** When curves accumulate run by run, each one is reduced to its scores, the score sequence is forecast with a time-series model, and the forecast scores are turned back into a curve through the eigenfunctions. The extrapolation across runs is performed entirely by the time-series model; FPCA contributes the reduction that makes the problem small enough to forecast.
