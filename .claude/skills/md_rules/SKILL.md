@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 15 | Created: 2026-8-1 | Updated: 2026-8-11 17:45 CDT
+Rev. 16 | Created: 2026-8-1 | Updated: 2026-08-12 19:10 CDT
 
 ## 1. Terminology
 
@@ -88,6 +88,7 @@ result = [x * 2 for x in range(10)]
 
 + 모든 figure 에는 Fig 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
 + 복수 panel figure 에는 전부 panel labels를 (a), (b), (c) ... 처럼 붙일 것. 단 Matrix chart는 예외로 panel labels를 붙이지 말 것.
++ Diagram은 text diagram으로 작성하며, mermaid는 사용하지 않는다.
 
 ## 12. Appendix
 
