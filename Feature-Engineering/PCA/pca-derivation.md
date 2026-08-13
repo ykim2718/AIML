@@ -1,5 +1,5 @@
 # PCA Derivation
-Rev. 4 | Created: 2026-08-11 | Updated: 2026-08-12 19:04 CDT
+Rev. 5 | Created: 2026-08-11 | Updated: 2026-08-13 01:55 CDT
 
 > The procedure can be followed without knowing why its answer is right, and most uses never need to ask.
 > This document is for when the question comes up: it derives, from the requirement of keeping as much variance as possible, that the axes PCA returns must be eigenvectors of the covariance matrix.
@@ -99,7 +99,7 @@ The orthogonality was not a stylistic preference. Eigenvectors of a symmetric ma
 
 There is also a fixed budget being divided. The trace of $C$ is the sum of the individual variable variances and equals $\sum_j \lambda_j$, so each component claims a share of a total that no choice of basis can change. That total is the denominator of every explained variance ratio.
 
-One more object falls out of this section. Stacking the kept components as columns gives the loadings matrix $V = [\, u_1 \cdots u_k \,]$ of shape $p \times k$, and the two facts in hand — the unit length imposed in §2 and the orthogonality just proved — compress into the single statement $V^\top V = I_k$. A matrix with that property is called column-wise orthonormal, or semi-orthogonal; the unqualified name orthogonal matrix is reserved for the square case $k = p$, where $V^\top = V^{-1}$ and the change of basis is a pure rotation that preserves every length and angle. The reversed product is a different object altogether: $V V^\top$ is the $p \times p$ projection onto the span of the kept components — the $P$ that §6 is about to use — and it cannot equal $I_p$ while $k < p$, because its rank is only $k$. [Appendix C](#appendix-c-the-column-wise-orthonormal-matrix) lays the two products side by side.
+One more object falls out of this section. Stacking the kept components as columns gives the loadings matrix $V = [\, u_1 \cdots u_k \,]$ of shape $p \times k$, and the two facts in hand — the unit length imposed in §2 and the orthogonality just proved — compress into the single statement $V^\top V = I_k$. A matrix with that property is called column-wise orthonormal, or semi-orthogonal; the unqualified name orthogonal matrix is reserved for the square case $k = p$, where $V^\top = V^{-1}$ and the change of basis is a pure rotation that preserves every length and angle. The reversed product is a different object altogether: $V V^\top$ is the $p \times p$ projection onto the span of the kept components — the $P$ that §6 is about to use — and it cannot equal $I_p$ while $k \lt p$, because its rank is only $k$. [Appendix C](#appendix-c-the-column-wise-orthonormal-matrix) lays the two products side by side.
 
 ## 6. The Reconstruction View
 
@@ -206,7 +206,7 @@ Every entry of $V^\top V$ is a product of one column with another, $(V^\top V)_{
 $$
 \underbrace{\; V^\top V = I_k \;}_{\textbf{column test:} \text{ always passes}}
 \qquad\qquad
-\underbrace{\; V V^\top \neq I_p \;}_{\textbf{row test:} \text{ fails whenever } k < p}
+\underbrace{\; V V^\top \neq I_p \;}_{\textbf{row test:} \text{ fails whenever } k \lt p}
 $$
 
 The asymmetry is why the naming is column-wise. A rectangular $V$ that passes only the column test is called a column-wise orthonormal matrix, or a semi-orthogonal matrix; the unqualified name orthogonal matrix is reserved for the square case $k = p$, where both tests pass at once and $V^\top = V^{-1}$. The failed row test is not a defect but the point of the truncation: $V V^\top$ is the projection onto the span of the kept components — the $P$ of §6 — and a projection that changed nothing would have compressed nothing.

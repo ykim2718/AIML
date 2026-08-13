@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 10 | Created: 2026-08-11 | Updated: 2026-08-12 19:08 CDT
+Rev. 11 | Created: 2026-08-11 | Updated: 2026-08-13 01:55 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -206,7 +206,7 @@ Table 7. Three questions called extrapolation
 
 | Question | Answer | Reason |
 |---|---|---|
-| Values at $t > T$, past the observed domain | No | $\mu(t)$ and $\varphi_j(t)$ exist only where the covariance surface was estimated, and evaluating a spline basis past the boundary returns the arithmetic of the basis, not information from the data |
+| Values at $t \gt T$, past the observed domain | No | $\mu(t)$ and $\varphi_j(t)$ exist only where the covariance surface was estimated, and evaluating a spline basis past the boundary returns the arithmetic of the basis, not information from the data |
 | The unobserved remainder of a partially observed curve inside $[0, T]$ | Yes | The conditional expectation of the scores given the observed segment completes the curve — extrapolation for that curve, interpolation for the model |
 | The next curves in a sequence of runs | Only with a second model | FPCA reduces each curve to a few scores, a time-series model on the score sequence does the forecasting, and the eigenfunctions rebuild the forecast curve |
 

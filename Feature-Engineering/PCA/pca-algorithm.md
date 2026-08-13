@@ -1,10 +1,10 @@
 # PCA Algorithm
-Rev. 5 | Created: 2026-08-11 | Updated: 2026-08-12 19:08 CDT
+Rev. 6 | Created: 2026-08-11 | Updated: 2026-08-13 01:55 CDT
 
 > The other documents in this folder say which variant to reach for. This one says what the plain procedure actually does.
 > It fixes the notation, walks the steps in order, states what each step produces, and lists the conventions that decide whether two implementations agree.
 
-The PCA algorithm is a procedure for moving data expressed in $p$ variables onto $k$ new axes ($k < p$), ordered so that the information lost by keeping only $k$ of them is as small as possible. As laid out in Table 3 of §4, it concretely produces three things.
+The PCA algorithm is a procedure for moving data expressed in $p$ variables onto $k$ new axes ($k \lt p$), ordered so that the information lost by keeping only $k$ of them is as small as possible. As laid out in Table 3 of §4, it concretely produces three things.
 
 1. The loadings $V_k$ ($p \times k$) are the new axes themselves — $k$ orthogonal directions listed from the one along which the data spreads most. Each axis records the combination of the original variables it is built from, which is what answers where the variation in the data mainly comes from.
 2. The scores $T$ ($n \times k$) are the coordinates on the new axes — each sample moved from $p$ dimensions to $k$, and the data that regression, classification, or any other downstream model actually receives. This is the product of the dimension reduction.
