@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 18 | Created: 2026-8-1 | Updated: 2026-8-14 16:52 CDT
+Rev. 19 | Created: 2026-8-1 | Updated: 2026-8-14 18:44 CDT
 
 ## 1. Terminology
 
@@ -55,6 +55,9 @@ Rev. 18 | Created: 2026-8-1 | Updated: 2026-8-14 16:52 CDT
 ## 9. Math
 
 + GitHub web page에서 rendering시, 표·본문 안의 $...$ 수식에서 <, >를 HTML entity (&lt;, &gt;) 로 바꿔 MathJax에 넘기는 바람에 "Misplaced &" 오류가 나는 알려진 문제가 있기에,  수식 안의 부등호를 MathJax 매크로 \lt, \gt로 바꿀  것.
++ 수식 안에서 \text{} 로 code 식별자를 쓰지 않는다. GitHub이 \_ 의 backslash를 떼어내 맨 _ 를 text mode로 넘기는 바람에 "_ allowed only in math mode" 오류가 난다. underscore가 든 식별자는 수식 밖 code span으로 적고, 수식에는 값과 연산자만 남긴다.
+    - 나쁨: $\mathrm{corr}(\text{max\_delta},\ \text{sigma\_st})$
+    - 좋음: corr(`max_delta`, `sigma_st`)
 
 ## 10. Code Block
 
