@@ -1,5 +1,5 @@
-# Semiconductor Equipment Trace Non-Integral Statistics
-Rev. 18 | Created: 2026-07-29 | Updated: 2026-08-14 16:17 CDT
+# Semiconductor Equipment Trace Non-Integral Summary Statistics
+Rev. 19 | Created: 2026-07-29 | Updated: 2026-08-14 16:19 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -125,6 +125,7 @@ Table 3. Redundancy checks
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.
 - **PLS (Partial Least Squares)**: 예측변수와 응답변수의 공분산을 최대화하는 latent 변수 회귀 방법이다.
 - **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
+- **Summary statistics**: trace 전체를 소수의 스칼라로 요약한 값이다.
 - **Taxonomy**: trace를 가스, 전력, 압력, 온도 등 물리 계통으로 묶는 분류 체계다.
 - **Trace**: 장비가 주기적으로 송출하는 시계열 기록이다.
 - **Wide data**: 표본 수 $n$ 보다 변수 수 $p$ 가 많은 ($p \gt n$) 데이터를 가리킨다.

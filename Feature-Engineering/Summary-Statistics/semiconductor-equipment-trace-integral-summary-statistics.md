@@ -1,5 +1,5 @@
-# Semiconductor Equipment Trace Integral Statistics
-Rev. 17 | Created: 2026-07-29 | Updated: 2026-08-14 16:16 CDT
+# Semiconductor Equipment Trace Integral Summary Statistics
+Rev. 18 | Created: 2026-07-29 | Updated: 2026-08-14 16:19 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
