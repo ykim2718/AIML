@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Summary Statistics
-Rev. 13 | Created: 2026-07-29 | Updated: 2026-08-14 15:47 CDT
+Rev. 14 | Created: 2026-07-29 | Updated: 2026-08-14 16:00 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하기 위한 특징 정의, 수학적 성질, 차원 통제, 검증 규약을 정리한다. 특징은 적분 연산자를 쓰는지에 따라 non-integral과 integral 두 갈래로 나누어 정리한다. Non-integral 특징은 §2에서 다루고, 적분으로 정의되는 AUC 계열의 integral 특징은 §3에서 다룬다.
 
@@ -9,7 +9,7 @@ Data는 [wafer, feature, trace] 의 dimension을 갖는다. 여기서 trace의 �
 
 ## 1. Notation
 
-단일 sensor의 단일 wafer trace를 다음과 같이 둔다.
+단일 wafer trace를 다음과 같이 둔다.
 
 - $x(t)$, $t \in [0, T]$ 로 둔다.
 - $\tau = t - T/2$ 는 중심화한 시간축이다.
@@ -77,7 +77,7 @@ $$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rve
 
 Table 3. Physics-based integrals
 
-| Sensor | Integral form | Physical quantity |
+| Trace | Integral form | Physical quantity |
 |---|---|---|
 | 가스 유량 (sccm) | $\int Q\,dt$ | 총 투입 가스량 (sccm·s) |
 | RF power | $\int P\,dt$ | 총 이온/plasma dose (J) |
@@ -144,7 +144,7 @@ Table 4. Interpretation of R
 | $R \gt 1$ | 신호가 중앙에 집중 (단봉, 중앙 볼록) |
 | $R \lt 1$ | 신호가 양 끝단에 집중 (U자형, 중앙 함몰) |
 
-`R` 은 sensor 단위와 무관하고 곱셈적 scale 변화에 불변이다. Gain drift나 chamber 간 절대 offset에 강건하며, 총량인 AUC와 구조적으로 독립적인 정보를 담는다.
+`R` 은 trace의 물리 단위와 무관하고 곱셈적 scale 변화에 불변이다. Gain drift나 chamber 간 절대 offset에 강건하며, 총량인 AUC와 구조적으로 독립적인 정보를 담는다.
 
 #### Noise Properties
 
@@ -195,13 +195,13 @@ $$s = \mathrm{OLS}\big(\text{AUC}_i \sim i\big) \quad \text{over the last } m \t
 
 반드시 strictly causal window, 즉 현재 wafer 이전 $m$ 장만 사용한다. 중심 이동창이나 전체 구간 회귀를 쓰면 미래 정보가 들어가고, 시계열 CV로는 잡히지 않는 종류의 누출이 생긴다.
 
-Sensor나 특징 단위가 아니라 chamber 단위로 소수만 추가한다.
+Trace나 특징 단위가 아니라 chamber 단위로 소수만 추가한다.
 
 ## 4. Failure Modes and Mitigations
 
 ### 4.1 Baseline Drift
 
-적분은 drift를 누적한다. Sensor에 느린 offset $\delta$ 가 있으면 AUC는 $\delta T$ 만큼 통째로 이동하므로, 공정 변화가 아니라 sensor calibration 이력이 AUC 변동의 지배 성분이 되어 model을 완전히 오염시킨다. 필수 대응은 다음과 같다.
+적분은 drift를 누적한다. Trace에 느린 offset $\delta$ 가 있으면 AUC는 $\delta T$ 만큼 통째로 이동하므로, 공정 변화가 아니라 계측 calibration 이력이 AUC 변동의 지배 성분이 되어 model을 완전히 오염시킨다. 필수 대응은 다음과 같다.
 
 1. A1/A2 형태만 사용한다. Baseline 또는 golden reference를 빼고 적분하면 drift가 상쇄된다.
 2. Pre-trace baseline을 차감한다. 초기 구간 중앙값 $x_0$ 기준으로 $\int (x - x_0)\,dt$ 를 쓴다.
@@ -222,7 +222,7 @@ Sensor나 특징 단위가 아니라 chamber 단위로 소수만 추가한다.
 
 ## 5. Dimensionality Control
 
-### 5.1 Sensor Channel Pruning
+### 5.1 Channel Pruning
 
 다음에 해당하는 channel을 제거한다.
 
@@ -242,16 +242,16 @@ AUC는 가법적 (additive) 이므로 그룹 합산이 통계적 편법이 아�
 
 ### 5.3 Supervised Final Reduction
 
-- Taxonomy를 group으로 하는 sparse group lasso는 물리적으로 해석 가능한 희소성을 준다. 개별 sensor 전부를 lasso에 던지는 것보다 표본이 작을 때 선택 변동성이 훨씬 작다.
+- Taxonomy를 group으로 하는 sparse group lasso는 물리적으로 해석 가능한 희소성을 준다. 개별 channel 전부를 lasso에 던지는 것보다 표본이 작을 때 선택 변동성이 훨씬 작다.
 - PLS latent 변수를 쓴다.
 
 표본이 작으면 이 단계 이후 규제 선형 model이나 PLS가 GBM보다 안정적이다.
 
 ## 6. Recommended Feature Set
 
-Sensor당 소수의 특징만 유지한다.
+Trace당 소수의 특징만 유지한다.
 
-Table 7. Recommended per-sensor features
+Table 7. Recommended per-trace features
 
 | Feature | Type | Captures |
 |---|---|---|
@@ -272,7 +272,7 @@ import numpy as np
 
 def trace_features(x, t, x_ref=None, n_sub=3, block_w=20):
     """
-    x, t : (N,) single-sensor, single-wafer trace. t holds real timestamps.
+    x, t : (N,) single-wafer trace. t holds real timestamps.
     x_ref: golden reference (computed inside the train fold only, aligned to x).
     """
     dt   = np.diff(t)                                  # real differences, not nominal
@@ -358,11 +358,12 @@ Table 8. Redundancy checks
 ## Appendix A. Terminology
 
 - **AUC (Area Under the Curve)**: trace를 시간에 대해 적분한 값이다.
+- **Channel**: trace 하나가 기록되는 개별 측정 계열이다.
 - **Covariate shift**: 입력 변수의 분포가 학습 시점과 예측 시점 사이에 달라지는 dataset shift의 한 형태다.
 - **CV (Cross-Validation)**: 데이터를 여러 fold로 나눠 학습과 평가를 반복하는 model 검증 방법이다.
 - **DC (Direct Current)**: 주파수 0 성분, 즉 신호의 평균 성분을 가리킨다.
 - **Epanechnikov kernel**: $1 - u^2$ 에 비례하는 포물선 형태의 kernel 함수다.
-- **FDC (Fault Detection and Classification)**: 장비 sensor 신호로 공정 이상을 탐지하고 분류하는 체계다.
+- **FDC (Fault Detection and Classification)**: 장비 신호로 공정 이상을 탐지하고 분류하는 체계다.
 - **GBM (Gradient Boosting Machine)**: 얕은 결정 나무를 순차적으로 더해 가는 ensemble 학습 방법이다.
 - **Golden reference**: 정상 상태를 대표하는 기준 trace다.
 - **L1**: 절댓값의 합 또는 적분으로 정의되는 norm이다.
@@ -376,9 +377,9 @@ Table 8. Redundancy checks
 - **sccm (standard cubic centimeters per minute)**: 표준 상태 기준 분당 세제곱센티미터로 나타낸 가스 유량 단위다.
 - **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
 - **Summary statistics**: trace 전체를 소수의 스칼라로 요약한 값이다.
-- **Taxonomy**: sensor를 가스, 전력, 압력, 온도 등 물리 계통으로 묶는 분류 체계다.
+- **Taxonomy**: trace를 가스, 전력, 압력, 온도 등 물리 계통으로 묶는 분류 체계다.
 - **Thermal budget**: 공정 중 온도와 시간의 누적 효과를 나타내는 양이다.
-- **Trace**: 장비가 주기적으로 송출하는 시계열 sensor 기록이다.
+- **Trace**: 장비가 주기적으로 송출하는 시계열 기록이다.
 - **VIF (Variance Inflation Factor)**: 다중공선성이 회귀 계수의 분산을 키우는 정도를 나타내는 지표다.
 - **Wide data**: 표본 수 $n$ 보다 변수 수 $p$ 가 많은 ($p \gt n$) 데이터를 가리킨다.
 
