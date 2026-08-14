@@ -1,8 +1,9 @@
 # FPCA Worked Example
-Rev. 0 | Created: 2026-08-14 | Updated: 2026-08-14 09:49 CDT
+Rev. 1 | Created: 2026-08-14 | Updated: 2026-08-14 11:21 CDT
 
 > Every number in this document can be recomputed by hand: four curves are built from a known mean and two known eigenfunctions, and the FPCA pipeline is run on them step by step.
 > The point is to watch each stage transform the numbers — data, mean, covariance, eigenpairs — until the pipeline hands back exactly the scores that were planted.
+> The formulation follows the Wikipedia article [Functional principal component analysis](https://en.wikipedia.org/wiki/Functional_principal_component_analysis).
 
 FPCA treats each observation as a curve $X_i(t)$ and decomposes the collection into a mean function plus a few dominant modes of variation, the Karhunen–Loève expansion:
 
