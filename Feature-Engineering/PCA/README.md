@@ -1,5 +1,5 @@
 # PCA
-Rev. 4 | Created: 2026-08-11 | Updated: 2026-08-11 20:27 CDT
+Rev. 5 | Created: 2026-08-11 | Updated: 2026-08-14 09:52 CDT
 
 > This folder treats PCA as a lineage rather than as a single technique.
 > The documents divide into building that lineage, holding it against field data, and placing it in the era of representation learning.
@@ -19,6 +19,7 @@ Table 1. Documents in this folder
 | [pca-classical-lineage.md](pca-classical-lineage.md) | It builds the classical lineage as ten branches — computation, probabilistic models, online estimation, robustness, sparsity, non-linearity, high-dimensional asymptotics, data structure, supervision, and distribution — with a summary table at the head serving as the map. |
 | [pca-applications.md](pca-applications.md) | It groups the extensions into four directions, says which branch is actually used for each kind of semiconductor measurement data, and closes with a table that goes from a data condition to a method. |
 | [pca-modern-lineage.md](pca-modern-lineage.md) | It records where PCA survives inside self-supervised representation learning, and the recent branches that combine functional data, deep learning, and the target variable. |
+| [fpca-worked-example.md](fpca-worked-example.md) | It runs the FPCA pipeline on four planted curves small enough to redo by hand, tracing the numbers through mean, covariance, eigenpairs, and scores until the planted values come back exactly. |
 
 ## 3. Code
 
@@ -27,6 +28,7 @@ Table 2. Scripts in this folder
 | File | Description |
 |---|---|
 | `ccipca.py` | It implements Candid Covariance-free Incremental PCA, which updates the components one sample at a time and averages by sample count instead of a learning rate. It is an instance of the online branch. |
+| `fpca-worked-example.py` | It builds the planted curves of the FPCA worked example, runs the estimation pipeline on them, and regenerates the figures of that document. |
 
 ## 4. Order Of Use
 
@@ -35,5 +37,6 @@ Table 2. Scripts in this folder
 3. If it is not yet clear which assumption broke, start from the summary table of the classical lineage document.
 4. If the data is already understood, start from the selection table of the applications document and walk back up to only the branches it points at.
 5. If learned representations are involved, or a neural model is to be combined with the reduction, read the modern lineage document.
+6. If the data is curves and the mechanics of FPCA need to be seen once on concrete numbers, read the worked example document.
 
 The branches are not exclusive. One dataset falling under two or more of them is the normal case, and the way through it is to apply one at a time and check what each one changed.
