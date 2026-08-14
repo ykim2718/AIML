@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 15 | Created: 2026-07-29 | Updated: 2026-08-14 18:49 CDT
+Rev. 16 | Created: 2026-07-29 | Updated: 2026-08-14 18:56 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -17,20 +17,20 @@ Table 1. Non-integral features
 
 | Feature | Axis | Captures | Role | Redundant with |
 |---|---|---|---|---|
-| `mean` | 위치 | 산술 중심 | Core | — |
-| `median` | 위치 | outlier에 강건한 중심 | Option | `mean` |
-| `std` | 산포 | 전체 구간 변동 폭 | Core | — |
-| `range` | 산포 | 최대 진폭 | Option | `std` |
-| `iqr` | 산포 | outlier에 강건한 변동 폭 | Option | `std` |
-| `slope` | 추세 | 1차 시간 moment | Core | — |
-| `sigma_st` | 단기 변동 | 이웃 sample 간 변동, SPC short-term sigma | Core | — |
-| `max_delta` | 단기 변동 | 단발 jump 진폭 | Option | `sigma_st` |
-| `sigma_ratio` | 거칠기 | 단기 변동과 전체 변동의 비 | Core | — |
-| `zcr` | 거칠기 | 중심선 교차 빈도 | Option | `sigma_ratio` |
-| `peak_time_norm` | 시각 | 최대점의 상대 시각 | Core | — |
-| `duration` | 길이 | 처리 시간 | Core | — |
+| `mean` | Location | Arithmetic center | Core | — |
+| `median` | Location | Center robust to outliers | Option | `mean` |
+| `std` | Dispersion | Spread over the whole trace | Core | — |
+| `range` | Dispersion | Peak-to-peak amplitude | Option | `std` |
+| `iqr` | Dispersion | Spread robust to outliers | Option | `std` |
+| `slope` | Trend | First time moment | Core | — |
+| `sigma_st` | Short-term variation | Step-to-step variation, SPC short-term sigma | Core | — |
+| `max_delta` | Short-term variation | Largest single jump | Option | `sigma_st` |
+| `sigma_ratio` | Roughness | Short-term over overall variation | Core | — |
+| `zcr` | Roughness | Center-line crossing rate | Option | `sigma_ratio` |
+| `peak_time_norm` | Timing | Relative time of the maximum | Core | — |
+| `duration` | Length | Processing time | Core | — |
 
-수식 정의는 [Appendix B](#appendix-b-feature-definitions) 에, 계산 절차는 [Appendix C](#appendix-c-implementation) 에 정리한다.
+수식 정의는 [Appendix B](#appendix-b-feature-definitions) 에, 계산 절차는 [Appendix E](#appendix-e-implementation) 에 정리한다.
 
 ### 1.1 Short-Term Sigma and Roughness
 
@@ -40,7 +40,7 @@ Table 1. Non-integral features
 
 $$\frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
 
-백색잡음이면 $\mathrm{MSSD} = 2s^2$ 이므로 비가 정확히 1이 된다. 임의로 문턱을 정할 필요 없이 이론값 1을 기준으로 읽으면 된다.
+백색잡음이면 $\mathrm{MSSD} = 2s^2$ 이므로 비가 정확히 1이 된다. 임의로 문턱을 정할 필요 없이 이론값 1을 기준으로 읽으면 된다. 이 관계의 유도와 $\rho_1$ 의 정의는 [Appendix C](#appendix-c-lag-1-autocorrelation) 에, 파형별 실측값은 [Appendix D](#appendix-d-roughness) 에 있다.
 
 - 비가 1보다 작으면 신호가 매끄럽다. 이웃 sample이 서로 닮아 있다.
 - 비가 1이면 백색잡음이다.
@@ -184,7 +184,60 @@ Table 3. Feature definitions
 | `peak_time_norm` | $(t_{i^*} - t_1) / T$ | $i^* = \arg\max_i x_i$ 는 최댓값이 나오는 sample index다 |
 | `duration` | $T$ | — |
 
-## Appendix C. Implementation
+## Appendix C. Lag-1 Autocorrelation
+
+$\rho_1$ 은 신호를 sample 하나만큼 밀어 자기 자신과 겹쳤을 때의 상관계수다. 이웃한 두 sample이 서로 얼마나 닮았는지를 재며, 값의 범위는 $[-1, 1]$ 이다.
+
+표본 추정량은 다음과 같다.
+
+$$\hat{\rho}_1 = \frac{\sum_{i=1}^{N-1}(x_i - \bar{x})(x_{i+1} - \bar{x})}{\sum_{i=1}^{N}(x_i - \bar{x})^2}$$
+
+분자는 한 칸 어긋난 두 계열의 공분산이고, 분모는 분산이다. $\hat{\rho}_1 = 1$ 이면 이웃 sample이 완전히 같은 방향으로 움직이고, $0$ 이면 서로 무관하며, $-1$ 이면 매 sample마다 부호가 뒤집힌다.
+
+#### Relation to the Roughness Ratio
+
+차분의 제곱을 전개하면 $\mathrm{MSSD}$ 가 $\rho_1$ 으로 표현된다. $x$ 를 평균 0, 분산 $\sigma^2$ 인 정상 신호로 두면
+
+$$\mathbb{E}\big[(x_{i+1} - x_i)^2\big] = \mathbb{E}[x_{i+1}^2] - 2\,\mathbb{E}[x_i x_{i+1}] + \mathbb{E}[x_i^2] = 2\sigma^2 - 2\rho_1 \sigma^2 = 2\sigma^2 (1 - \rho_1)$$
+
+이므로 $\mathrm{MSSD} \approx 2 s^2 (1 - \hat{\rho}_1)$ 이고, 여기에 §1.1의 정의를 넣으면 다음을 얻는다.
+
+$$\sigma_{\text{st}} = \sqrt{\frac{\mathrm{MSSD}}{2}} = s\sqrt{1 - \hat{\rho}_1} \quad\Longrightarrow\quad \frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}, \qquad \hat{\rho}_1 = 1 - \left(\frac{\sigma_{\text{st}}}{s}\right)^2$$
+
+즉 두 양은 일대일 대응이며, `sigma_ratio` 를 재는 것은 $\rho_1$ 을 재는 것과 같다.
+
+Table 4. Correspondence between the lag-1 autocorrelation and the ratio
+
+| $\hat{\rho}_1$ | $\sigma_{\text{st}} / s$ | Waveform |
+|---|---|---|
+| 1.00 | 0.00 | 이웃 sample이 동일, 계단 없는 매끄러운 신호 |
+| 0.90 | 0.32 | 매끄러운 추세에 약한 잡음 |
+| 0.50 | 0.71 | 추세와 잡음이 비슷한 크기 |
+| 0.00 | 1.00 | 백색잡음 |
+| -0.50 | 1.22 | sample 단위 진동이 지배 |
+| -1.00 | 1.41 | 매 sample마다 부호 반전, Nyquist 진동 |
+
+비의 최댓값은 $\sqrt{2} \approx 1.41$ 이다.
+
+이 유도는 정상성을 전제한다. 추세가 뚜렷한 trace에서는 $s$ 가 잡음이 아니라 추세의 진폭을 재므로 $\hat{\rho}_1$ 이 1 쪽으로 부풀고, 비는 그만큼 작게 나온다. 이때의 비는 "잡음 대비 추세의 우세" 를 읽는 값으로 해석해야 한다.
+
+## Appendix D. Roughness
+
+`sigma_ratio` 가 파형에 따라 실제로 어떤 값을 갖는지 보이기 위해, 진폭 1인 sine에 백색잡음을 더해 가며 계산했다. Trace 길이는 300 sample이고, 열은 trace 구간에 담기는 sine의 주기 수, 행은 진폭 대비 잡음 표준편차다.
+
+![Fig 1](roughness-matrix.png)
+
+Fig 1. Sine 주파수와 잡음 수준에 따른 $\sigma_{\text{st}}/s$. 열은 왼쪽부터 1, 2, 5, 12, 30 주기이고, 행은 위에서부터 잡음 표준편차 0, 0.05, 0.20, 0.60, 2.00이다. 각 panel의 값이 그 파형에서 계산한 비다.
+
+읽어야 할 것은 세 가지다.
+
+- **첫 행 (잡음 없음)** 에서 비가 0.01에서 0.44까지 오른다. 다섯 파형의 진폭은 모두 1로 같으므로, 이 비가 재는 것은 진폭이 아니라 주파수 구성이다. 순수 sine에서는 $\hat{\rho}_1 = \cos(2\pi f / N)$ 이므로 비가 $\sqrt{1 - \cos(2\pi f / N)}$ 이 되며, $f = 30$, $N = 300$ 을 넣으면 0.44로 실측값과 일치한다.
+- **마지막 행 (잡음 지배)** 에서는 주파수와 무관하게 비가 0.91–1.00에 모인다. 백색잡음의 이론값 1이 실제로 관측되며, 이것이 기준값을 임의로 정하지 않아도 되는 근거다.
+- **행을 따라 내려가면** 같은 주파수에서 비가 단조 증가한다. 1 주기 열은 0.01 → 0.07 → 0.31 → 0.63 → 0.97로, 잡음이 섞이는 정도를 그대로 따라간다.
+
+30 주기 열도 0.44에 그친다. 비가 1을 넘으려면 sample 단위로 부호가 뒤집혀야 하는데, 300 sample에 30 주기면 주기당 10 sample이라 아직 매끄러운 축에 속하기 때문이다. 실제 trace에서 1을 넘는 값이 나오면 공정 진동이 아니라 계측계의 sample 단위 잡음을 의심하는 것이 맞다.
+
+## Appendix E. Implementation
 
 ```python
 # Python
