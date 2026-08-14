@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 18 | Created: 2026-07-29 | Updated: 2026-08-14 16:19 CDT
+Rev. 19 | Created: 2026-07-29 | Updated: 2026-08-14 16:26 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -245,7 +245,7 @@ Table 6. Recommended per-trace features
 # Python
 import numpy as np
 
-def integral_features(x, t, x_ref=None, n_sub=3, block_w=20):
+def integral_summary(x, t, x_ref=None, n_sub=3, block_w=20):
     """
     x, t : (N,) single-wafer trace. t holds real timestamps.
     x_ref: golden reference (computed inside the train fold only, aligned to x).
