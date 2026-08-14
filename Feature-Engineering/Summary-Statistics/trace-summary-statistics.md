@@ -1,17 +1,9 @@
 # Trace Summary Statistics
-Rev. 10 | Created: 2026-07-29 | Updated: 2026-08-14 14:58 CDT
+Rev. 11 | Created: 2026-07-29 | Updated: 2026-08-14 15:39 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하기 위한 특징 정의, 수학적 성질, 차원 통제, 검증 규약을 정리한다. 적분 연산으로 정의되는 AUC 계열 특징을 중심으로 다룬다.
 
-Table 1. Target data scale
-
-| Item | Value |
-|---|---|
-| Sensor channel 수 | ~200 |
-| Wafer당 trace 길이 $T$ | ~300 sample points |
-| Wafer 수 $n$ | ~300 |
-
-이 규모에서 핵심 제약은 하나다. 결과가 wide data, 즉 $p \gg n$ 이 되지 않아야 한다.
+핵심 제약은 결과가 wide data, 즉 $p \gg n$ 이 되지 않아야 한다.
 
 ## 1. Notation
 
@@ -28,7 +20,7 @@ Table 1. Target data scale
 
 Wafer 1장의 원자료는 200 sensor × 300 시점 행렬이다. 그대로 flatten하면 60,000열이 되어 $n = 300$ 대비 즉시 붕괴한다. 차원은 세 축에서 발생하고, 세 축 모두에서 줄여야 한다.
 
-Table 2. Reduction method per axis
+Table 1. Reduction method per axis
 
 | Axis | Reduction method |
 |---|---|
@@ -44,7 +36,7 @@ Sensor축으로는 concatenate하지 않는다. Sensor당 $d$ 차원 표현을 2
 
 적분을 쓰지 않는 기본 특징으로, 해석성이 높고 계산 비용이 낮다.
 
-Table 3. Non-integral features
+Table 2. Non-integral features
 
 | Feature | Definition | Captures |
 |---|---|---|
@@ -72,7 +64,7 @@ $$\text{AUC} = \int_0^T x(t)\,dt \approx \bar{x}\,T$$
 
 ### 4.2 AUC Variants That Add Information
 
-Table 4. Informative AUC variants
+Table 3. Informative AUC variants
 
 | ID | Feature | Definition | Physical meaning |
 |---|---|---|---|
@@ -97,7 +89,7 @@ $$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rve
 
 물리량과 직결되므로 응답변수와의 선형성이 높다.
 
-Table 5. Physics-based integrals
+Table 4. Physics-based integrals
 
 | Sensor | Integral form | Physical quantity |
 |---|---|---|
@@ -158,7 +150,7 @@ $$\boxed{\;b = \bar{x}\left(\frac{3}{2} - \frac{6\,m_2}{T^{2}}\right)\;}$$
 
 $$R = \frac{b}{\bar{x}} = \frac{3}{2} - \frac{6\,m_2}{T^{2}}$$
 
-Table 6. Interpretation of R
+Table 5. Interpretation of R
 
 | R | Waveform |
 |---|---|
@@ -182,7 +174,7 @@ $$A_k = \int_{t_k}^{t_k + w} x\,dt, \qquad \text{slope}_{\text{blk}} = \mathrm{O
 
 #### Variance Scale versus Raw Differencing
 
-Table 7. Variance comparison
+Table 6. Variance comparison
 
 | Method | Variance |
 |---|---|
@@ -196,7 +188,7 @@ Table 7. Variance comparison
 
 #### Frequency View
 
-Table 8. Frequency characteristics per feature
+Table 7. Frequency characteristics per feature
 
 | Feature | Frequency characteristic | Strong domain |
 |---|---|---|
@@ -282,7 +274,7 @@ $n = 300$ 이면 이 단계 이후 규제 선형 model이나 PLS가 GBM보다 �
 
 Sensor당 4개 이내를 유지한다.
 
-Table 9. Recommended per-sensor features
+Table 8. Recommended per-sensor features
 
 | Feature | Type | Captures |
 |---|---|---|
@@ -366,7 +358,7 @@ def trace_features(x, t, x_ref=None, n_sub=3, block_w=20):
 
 ### 9.1 Redundancy Checks before Adding Features
 
-Table 10. Redundancy checks
+Table 9. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
@@ -414,7 +406,7 @@ Table 10. Redundancy checks
 
 ## Appendix B. Feature-Moment Correspondence
 
-Table 11. Feature-moment correspondence
+Table 10. Feature-moment correspondence
 
 | Feature | Mathematical identity | Time moment order |
 |---|---|---|
