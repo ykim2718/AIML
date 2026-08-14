@@ -1,7 +1,7 @@
 # Semiconductor Equipment Trace Summary Statistics
-Rev. 12 | Created: 2026-07-29 | Updated: 2026-08-14 15:41 CDT
+Rev. 13 | Created: 2026-07-29 | Updated: 2026-08-14 15:47 CDT
 
-장비 trace 시계열을 wafer당 고정 길이 vector로 변환하기 위한 특징 정의, 수학적 성질, 차원 통제, 검증 규약을 정리한다. 적분 연산으로 정의되는 AUC 계열 특징을 중심으로 다룬다.
+장비 trace 시계열을 wafer당 고정 길이 vector로 변환하기 위한 특징 정의, 수학적 성질, 차원 통제, 검증 규약을 정리한다. 특징은 적분 연산자를 쓰는지에 따라 non-integral과 integral 두 갈래로 나누어 정리한다. Non-integral 특징은 §2에서 다루고, 적분으로 정의되는 AUC 계열의 integral 특징은 §3에서 다룬다.
 
 Data는 [wafer, feature, trace] 의 dimension을 갖는다. 여기서 trace의 예로는 sensor 신호나 FDC data가 있다.
 
@@ -30,15 +30,15 @@ Table 1. Non-integral features
 | `std` | 표본표준편차 | 산포 |
 | `range` | $\max - \min$ | 진폭 |
 | `iqr` | $Q_3 - Q_1$ | 강건 산포 |
-| `slope` | $\dfrac{12}{T^3}\displaystyle\int \tau\,x\,d\tau$ | 1차 시간 moment, 즉 추세 |
+| `slope` | $\mathrm{OLS}(x \sim t)$ 의 기울기 | 1차 시간 moment, 즉 추세 |
 | `noise` | $\mathrm{std}(\Delta x)$ | 고주파 잡음 수준 |
 | `duration` | $T$ | 처리 시간 |
 
-`slope` 는 원신호에 직접 OLS를 적용한 것으로, §3.6의 누적 AUC 기울기와는 다른 양이다.
+`slope` 는 원신호에 직접 OLS를 적용한 것이며, 닫힌 형태로 쓰면 $\dfrac{12}{T^3}\int \tau\,x\,d\tau$ 인 1차 시간 moment다. §3.6의 누적 AUC 기울기와는 다른 양이다.
 
 ## 3. Integral Summary Statistics
 
-AUC는 summary statistics의 부분집합이다. trace 전체를 스칼라 하나로 요약한다는 점에서 `mean`, `std` 와 동일한 범주이며, 적분 연산자를 쓴다는 점만 다르다.
+AUC는 summary statistics의 부분집합이다. trace 전체를 스칼라 하나로 요약한다는 점에서 `mean`, `std` 와 동일한 범주에 속한다.
 
 ### 3.1 Plain AUC Carries No Information
 
