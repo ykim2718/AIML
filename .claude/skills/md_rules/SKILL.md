@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 17 | Created: 2026-8-1 | Updated: 2026-8-14 15:45 CDT
+Rev. 18 | Created: 2026-8-1 | Updated: 2026-8-14 16:52 CDT
 
 ## 1. Terminology
 
@@ -106,6 +106,14 @@ result = [x * 2 for x in range(10)]
 + 본문에서 Appendix를 언급한 경우, 본문에 anchor link를 둔다.
 
 ## 15. Review (required — do not finish the task before completing this step)
+
++ 검수 범위는 변경의 성격으로 정한다.
+    - 기계적 변경은 검수를 생략하고, 바꾼 줄과 그것을 가리키는 상호참조만 확인한다.
+      Rev. 번호와 Updated 시간 갱신, 식별자·파일명·제목의 이름 바꾸기,
+      제목 번호와 표 번호 재정렬, 그에 따른 상호참조 갱신이 여기에 속한다.
+    - 내용 변경은 아래 절차대로 전량 검수한다. 문장·표·수식·코드를 새로 쓰거나 고친 경우,
+      절을 추가·삭제·이동한 경우, 문서를 나누거나 합친 경우가 여기에 속한다.
+    - 한 작업에 둘이 섞이면 내용 변경으로 본다.
 
 + 작성한 .md 파일을 **다시 읽는다** (Read 도구로 실제 파일을 연다).
      기억에 의존한 검토는 하지 않는다.

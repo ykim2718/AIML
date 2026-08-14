@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 10 | Created: 2026-07-29 | Updated: 2026-08-14 16:26 CDT
+Rev. 11 | Created: 2026-07-29 | Updated: 2026-08-14 16:52 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -18,20 +18,26 @@ Table 1. Non-integral features
 | Feature | Definition | Captures |
 |---|---|---|
 | `mean` | $\bar{x}$ | 위치 |
+| `median` | 표본중앙값 | 강건 위치 |
 | `std` | 표본표준편차 | 산포 |
 | `range` | $\max - \min$ | 진폭 |
 | `iqr` | $Q_3 - Q_1$ | 강건 산포 |
 | `slope` | $\mathrm{OLS}(x \sim t)$ 의 기울기 | 1차 시간 moment, 즉 추세 |
 | `noise` | $\mathrm{std}(\Delta x)$ | 고주파 잡음 수준 |
+| `max_delta` | $\max \lvert \Delta x \rvert$ | 단발 jump 진폭 |
+| `zcr` | 중심화한 신호의 zero-crossing rate | 진동 빈도 |
+| `peak_time_norm` | $\arg\max x / T$ | 최대점 시각 |
 | `duration` | $T$ | 처리 시간 |
 
-각 특징이 잡는 축이 서로 다르다. `mean` 은 위치, `std` 와 `iqr` 은 산포, `slope` 는 시간축 추세, `noise` 는 고주파 성분이며, 이 축들이 겹치는 만큼만 특징 사이에 공선성이 생긴다. 계산 절차는 [Appendix B](#appendix-b-implementation) 에 정리한다.
+각 특징이 잡는 축이 서로 다르다. `mean` 과 `median` 은 위치, `std` 와 `iqr` 은 산포, `slope` 는 시간축 추세, `noise` 와 `max_delta` 는 고주파 성분의 크기, `zcr` 은 그 빈도, `peak_time_norm` 은 최대점의 시각이며, 이 축들이 겹치는 만큼만 특징 사이에 공선성이 생긴다. 계산 절차는 [Appendix B](#appendix-b-implementation) 에 정리한다.
+
+`mean` 과 `median` 은 짝으로 둘 때 값을 한다. 둘의 차이가 곧 진폭 분포의 비대칭이므로, 3차 moment를 따로 계산하는 것보다 강건하게 같은 정보를 준다. `noise` 와 `max_delta` 도 같은 관계다. `noise` 는 차분의 표준편차라 단발 spike 하나를 평균해 버리지만, `max_delta` 는 그 하나를 그대로 잡는다.
 
 ## 2. Failure Modes and Mitigations
 
 ### 2.1 Baseline Drift
 
-Trace에 느린 offset $\delta$ 가 있으면 `mean` 은 그만큼 통째로 이동한다. 반면 `std`, `iqr`, `range`, `slope` 는 offset에 불변이므로 drift의 영향을 받지 않는다. 위치 특징만 오염된다는 이 비대칭이 진단의 출발점이다.
+Trace에 느린 offset $\delta$ 가 있으면 위치 특징인 `mean` 과 `median` 은 그만큼 통째로 이동한다. 반면 나머지 특징은 산포·차분·순위로 정의되어 offset에 불변이므로 drift의 영향을 받지 않는다. 위치 특징만 오염된다는 이 비대칭이 진단의 출발점이다.
 
 - 초기 구간 중앙값을 pre-trace baseline으로 잡아 차감한 뒤 위치 특징을 계산한다.
 - Chamber가 여러 대라면 chamber 내 중심화로 절대 offset을 제거한다.
@@ -49,7 +55,7 @@ Trace에 느린 offset $\delta$ 가 있으면 `mean` 은 그만큼 통째로 이
 
 `mean`, `std`, `range`, `iqr` 은 모두 trace의 물리 단위를 그대로 갖는다. 따라서 gain drift나 chamber 간 절대 offset에 취약하고, chamber 교차 검증에서 먼저 무너지는 쪽이 된다.
 
-변동계수 $\mathrm{std}/\bar{x}$ 처럼 비율로 만든 특징은 곱셈적 scale 변화에 불변이므로 이식성이 높다. 단위를 갖는 특징과 무차원 특징을 함께 두고, chamber 교차 검증에서 어느 쪽이 살아남는지로 오염 여부를 판정한다.
+변동계수 $\mathrm{std}/\bar{x}$ 처럼 비율로 만든 특징과 시간축을 정규화한 `peak_time_norm` 은 곱셈적 scale 변화에 불변이므로 이식성이 높다. 단위를 갖는 특징과 무차원 특징을 함께 두고, chamber 교차 검증에서 어느 쪽이 살아남는지로 오염 여부를 판정한다.
 
 ## 3. Dimensionality Control
 
@@ -90,7 +96,7 @@ Table 2. Recommended per-trace features
 | `slope` | 시간축 추세 |
 | `noise` | 고주파 잡음 |
 
-`iqr` 은 outlier가 잦은 trace에서 `std` 를 대체하고, `range` 는 단발성 spike를 잡아야 할 때만 추가한다. `duration` 은 trace 길이가 wafer마다 달라질 때만 정보를 갖는다.
+`iqr` 은 outlier가 잦은 trace에서 `std` 를 대체하고, `median` 은 위치가 outlier에 흔들릴 때 `mean` 을 보완한다. 단발 spike가 문제라면 `range` 보다 `max_delta` 를 쓴다. 전자는 절대 진폭이라 drift에 딸려 움직이지만 후자는 차분이라 그렇지 않다. `zcr` 과 `peak_time_norm` 은 각각 진동과 timing이 응답변수와 관련될 때만 추가하며, `duration` 은 trace 길이가 wafer마다 달라질 때만 정보를 갖는다.
 
 ## 5. Validation Protocol
 
@@ -100,9 +106,12 @@ Table 3. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
+| $\mathrm{corr}(\text{median},\ \text{mean})$ | $\gt 0.98$ | 분포가 대칭, `median` 폐기 |
 | $\mathrm{corr}(\text{std},\ \text{iqr})$ | $\gt 0.98$ | 하나만 유지, outlier가 잦으면 `iqr` |
 | $\mathrm{corr}(\text{range},\ \text{std})$ | $\gt 0.95$ | `range` 폐기 |
 | $\mathrm{corr}(\text{noise},\ \text{std})$ | $\gt 0.95$ | 잡음이 산포를 지배, `noise` 폐기 |
+| $\mathrm{corr}(\text{max\_delta},\ \text{noise})$ | $\gt 0.95$ | 단발 spike가 없음, `max_delta` 폐기 |
+| $\mathrm{Var}(\text{zcr})$ (wafer 간) | $\approx 0$ | 진동 양상이 일정, 폐기 |
 | $\mathrm{Var}(\text{duration})$ (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
 
 ### 5.2 Performance Criteria
@@ -142,14 +151,20 @@ def non_integral_summary(x, t):
     """
     T      = t[-1] - t[0]
     q1, q3 = np.percentile(x, [25, 75])
+    xc     = x - x.mean()                            # centered, for zero crossings
+    dx     = np.diff(x)
 
     return {
-        'mean':     x.mean(),
-        'std':      x.std(ddof=1),
-        'range':    x.max() - x.min(),
-        'iqr':      q3 - q1,
-        'slope':    np.polyfit(t - t[0], x, 1)[0],   # OLS on the raw signal
-        'noise':    np.std(np.diff(x), ddof=1),
-        'duration': T,
+        'mean':           x.mean(),
+        'median':         np.median(x),
+        'std':            x.std(ddof=1),
+        'range':          x.max() - x.min(),
+        'iqr':            q3 - q1,
+        'slope':          np.polyfit(t - t[0], x, 1)[0],   # OLS on the raw signal
+        'noise':          np.std(dx, ddof=1),
+        'max_delta':      np.max(np.abs(dx)),
+        'zcr':            np.mean(np.signbit(xc[:-1]) != np.signbit(xc[1:])),
+        'peak_time_norm': (t[np.argmax(x)] - t[0]) / T,
+        'duration':       T,
     }
 ```
