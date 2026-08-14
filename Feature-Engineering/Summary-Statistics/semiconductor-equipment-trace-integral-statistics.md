@@ -1,5 +1,5 @@
-# Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 16 | Created: 2026-07-29 | Updated: 2026-08-14 16:11 CDT
+# Semiconductor Equipment Trace Integral Statistics
+Rev. 17 | Created: 2026-07-29 | Updated: 2026-08-14 16:16 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -7,7 +7,7 @@ Data는 [wafer, feature, trace] 의 dimension을 갖는다. 여기서 trace의 �
 
 핵심 제약은 결과가 wide data, 즉 $p \gg n$ 이 되지 않아야 한다.
 
-## 1. Integral Summary Statistics
+## 1. Integral Statistics
 
 단일 wafer trace를 $x(t)$, $t \in [0, T]$ 로 두고, $\bar{x}$ 를 그 산술평균, $\tau = t - T/2$ 를 중심화한 시간축으로 쓴다. 이하의 모든 적분은 실제 timestamp 차분에 의한 사다리꼴 적분으로 계산한다.
 
