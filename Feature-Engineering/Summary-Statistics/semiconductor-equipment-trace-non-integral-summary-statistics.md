@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 9 | Created: 2026-07-29 | Updated: 2026-08-14 16:19 CDT
+Rev. 10 | Created: 2026-07-29 | Updated: 2026-08-14 16:26 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -136,7 +136,7 @@ Table 3. Redundancy checks
 # Python
 import numpy as np
 
-def non_integral_features(x, t):
+def non_integral_summary(x, t):
     """
     x, t : (N,) single-wafer trace. t holds real timestamps.
     """
