@@ -1,5 +1,5 @@
-# Semiconductor Equipment Trace Summary Statistics
-Rev. 0 | Created: 2026-08-14 | Updated: 2026-08-14 14:45 CDT
+# Trace Summary Statistics
+Rev. 10 | Created: 2026-07-29 | Updated: 2026-08-14 14:58 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하기 위한 특징 정의, 수학적 성질, 차원 통제, 검증 규약을 정리한다. 적분 연산으로 정의되는 AUC 계열 특징을 중심으로 다룬다.
 
@@ -13,29 +13,7 @@ Table 1. Target data scale
 
 이 규모에서 핵심 제약은 하나다. 결과가 wide data, 즉 $p \gg n$ 이 되지 않아야 한다.
 
-## 1. Terminology
-
-Table 2. Core terms
-
-| Term | Definition | Note |
-|---|---|---|
-| trace | 장비가 주기적으로 송출하는 시계열 sensor 기록 | SEMI E134 등 표준 어휘 |
-| summary statistics | trace를 스칼라로 요약한 값 | FDC 현장에서는 indicator, key number로도 불림 |
-| integral-based features | 적분 연산으로 정의되는 summary statistics | AUC 계열, 본 문서의 중심 |
-
-`baseline statistics` 라는 표현은 사용하지 않는다. FDC/APC에서 baseline은 이미 정상 기준 상태, 즉 golden reference를 의미하므로 의미 충돌이 발생한다.
-
-AUC는 summary statistics의 부분집합이다. trace 전체를 스칼라 하나로 요약한다는 점에서 `mean`, `std` 와 동일한 범주이며, 적분 연산자를 쓴다는 점만 다르다.
-
-Table 3. Recommended wording by audience
-
-| Audience | Recommended wording |
-|---|---|
-| 공정 / APC / FDC | indicators, summary statistics |
-| ML 팀 / 기술 문서 | trace features, feature extraction from traces |
-| 사용 회피 | baseline statistics (FDC의 baseline과 충돌) |
-
-## 2. Notation
+## 1. Notation
 
 단일 sensor의 단일 wafer trace를 다음과 같이 둔다.
 
@@ -46,11 +24,11 @@ Table 3. Recommended wording by audience
 - $\bar{x}$ 는 산술평균이다.
 - 적분은 실제 timestamp 차분에 의한 사다리꼴 적분으로 계산한다.
 
-## 3. Dimensionality Structure
+## 2. Dimensionality Structure
 
 Wafer 1장의 원자료는 200 sensor × 300 시점 행렬이다. 그대로 flatten하면 60,000열이 되어 $n = 300$ 대비 즉시 붕괴한다. 차원은 세 축에서 발생하고, 세 축 모두에서 줄여야 한다.
 
-Table 4. Reduction method per axis
+Table 2. Reduction method per axis
 
 | Axis | Reduction method |
 |---|---|
@@ -62,11 +40,11 @@ Sensor축으로는 concatenate하지 않는다. Sensor당 $d$ 차원 표현을 2
 
 목표는 $n = 300$ 기준 최종 예측변수 $p_{\text{final}} \approx 30\text{–}60$ 이다.
 
-## 4. Non-Integral Summary Statistics
+## 3. Non-Integral Summary Statistics
 
 적분을 쓰지 않는 기본 특징으로, 해석성이 높고 계산 비용이 낮다.
 
-Table 5. Non-integral features
+Table 3. Non-integral features
 
 | Feature | Definition | Captures |
 |---|---|---|
@@ -78,11 +56,13 @@ Table 5. Non-integral features
 | `noise` | $\mathrm{std}(\Delta x)$ | 고주파 잡음 수준 |
 | `duration` | $T$ | 처리 시간 |
 
-`slope` 는 원신호에 직접 OLS를 적용한 것으로, §7의 누적 AUC 기울기와는 다른 양이다.
+`slope` 는 원신호에 직접 OLS를 적용한 것으로, §4.6의 누적 AUC 기울기와는 다른 양이다.
 
-## 5. Integral-Based Features
+## 4. Integral Summary Statistics
 
-### 5.1 Plain AUC Carries No Information
+AUC는 summary statistics의 부분집합이다. trace 전체를 스칼라 하나로 요약한다는 점에서 `mean`, `std` 와 동일한 범주이며, 적분 연산자를 쓴다는 점만 다르다.
+
+### 4.1 Plain AUC Carries No Information
 
 균등 sampling에서
 
@@ -90,9 +70,9 @@ $$\text{AUC} = \int_0^T x(t)\,dt \approx \bar{x}\,T$$
 
 이므로 단순 AUC는 평균 × 길이다. `mean` 과 `duration` 을 이미 갖고 있다면 단순 AUC는 완전 공선이며, $n = 300$ 조건에서 VIF만 올리고 정확도를 떨어뜨린다. AUC의 가치는 평균 × 길이로 분해되지 않는 변형형에서 나온다.
 
-### 5.2 AUC Variants That Add Information
+### 4.2 AUC Variants That Add Information
 
-Table 6. Informative AUC variants
+Table 4. Informative AUC variants
 
 | ID | Feature | Definition | Physical meaning |
 |---|---|---|---|
@@ -105,7 +85,7 @@ Table 6. Informative AUC variants
 
 A2/A3가 핵심이다. 스칼라 하나로 파형 전체의 이탈을 요약하므로 정보 대비 차원 비율이 가장 좋다.
 
-### 5.3 Phase Features from Cumulative AUC Quantiles
+### 4.3 Phase Features from Cumulative AUC Quantiles
 
 $$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rvert\,d\tau}, \qquad t_q = F^{-1}(q)$$
 
@@ -113,11 +93,11 @@ $$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rve
 - Ramp 속도, 정착 지연, valve와 MFC의 응답 지연이 여기에 반영된다.
 - 0–1 무차원이므로 chamber와 recipe 간 직접 비교가 가능하다.
 
-### 5.4 Domain Physics AUC
+### 4.4 Domain Physics AUC
 
 물리량과 직결되므로 응답변수와의 선형성이 높다.
 
-Table 7. Physics-based integrals
+Table 5. Physics-based integrals
 
 | Sensor | Integral form | Physical quantity |
 |---|---|---|
@@ -126,9 +106,9 @@ Table 7. Physics-based integrals
 | 압력 | $\int p\,dt$ | 압력–시간 적분 |
 | 온도 | $\int \exp(-E_a / k_B T(t))\,dt$ | Arrhenius thermal budget |
 
-마지막 항이 특히 유효하다. 증착과 확산의 두께는 온도의 산술평균보다 Arrhenius 가중 적분에 훨씬 선형적으로 반응한다. $E_a$ 는 공정 문헌값을 쓰거나 소수 후보값 중 CV로 선택한다.
+마지막 항이 특히 유효하다. 증착과 확산의 두께는 온도의 산술평균보다 Arrhenius 가중 적분에 훨씬 선형적으로 반응한다. $E_a$ 는 문헌값을 쓰거나 소수 후보값 중 CV로 선택한다.
 
-## 6. Golden Reference Construction
+### 4.5 Golden Reference Construction
 
 A2/A3에 필요한 참조 trace $x_{\text{ref}}$ 는 다음과 같이 만든다.
 
@@ -138,11 +118,11 @@ A2/A3에 필요한 참조 trace $x_{\text{ref}}$ 는 다음과 같이 만든다.
 
 전체 데이터의 평균 또는 중앙값 trace를 $x_{\text{ref}}$ 로 쓰면 test 정보가 특징에 침투한다. 반드시 fold 내부에서만 산출한다.
 
-## 7. Slope of the Cumulative AUC Curve
+### 4.6 Slope of the Cumulative AUC Curve
 
 누적곡선을 $C(t) = \int_0^t x\,d\tau$ 로 두고, 전체 구간에 OLS 직선을 적합했을 때의 기울기 $b$ 를 구한다. 직관적으로는 $\bar{x}$ 가 나올 것 같지만 그렇지 않다. $\bar{x}$ 가 나오는 것은 secant 기울기 $C(T)/T$ 이고, OLS 기울기는 다르다.
 
-### 7.1 Derivation
+#### Derivation
 
 $$b = \frac{\mathrm{Cov}(t, C)}{\mathrm{Var}(t)}, \qquad \mathrm{Var}(t) = \frac{T^2}{12}$$
 
@@ -156,11 +136,11 @@ $$\boxed{\;b = \int_{-T/2}^{T/2} w(\tau)\,x(\tau)\,d\tau, \qquad w(\tau) = \frac
 
 $w$ 는 $\int w\,d\tau = 1$ 인 정규화 포물선 (Epanechnikov) kernel로, 중앙에서 최대이고 양 끝에서 정확히 0이다.
 
-### 7.2 The Slope Is a Weighted Average, Not a Trend
+#### The Slope Is a Weighted Average, Not a Trend
 
 $w \ge 0$ 이고 적분이 1이므로 $b$ 는 원신호의 가중평균이다. 추세를 재는 양이 전혀 아니며, 실제로는 양 끝단을 버리고 중앙부에 가중치를 준 중심경향 추정량이다.
 
-### 7.3 The Real Information Is the Second Time Moment
+#### The Real Information Is the Second Time Moment
 
 중점 기준 2차 moment를
 
@@ -174,11 +154,11 @@ $$\boxed{\;b = \bar{x}\left(\frac{3}{2} - \frac{6\,m_2}{T^{2}}\right)\;}$$
 
 즉 $b$ 는 평균과 시간축 분산 함수의 곱으로 완전히 분해된다. `mean` 을 이미 갖고 있다면 $b$ 를 그대로 넣는 것은 심한 공선성만 만든다.
 
-### 7.4 Use the Dimensionless Ratio R
+#### Use the Dimensionless Ratio R
 
 $$R = \frac{b}{\bar{x}} = \frac{3}{2} - \frac{6\,m_2}{T^{2}}$$
 
-Table 8. Interpretation of R
+Table 6. Interpretation of R
 
 | R | Waveform |
 |---|---|
@@ -188,21 +168,21 @@ Table 8. Interpretation of R
 
 `R` 은 sensor 단위와 무관하고 곱셈적 scale 변화에 불변이다. Gain drift나 chamber 간 절대 offset에 강건하며, 총량인 AUC와 구조적으로 독립적인 정보를 담는다.
 
-### 7.5 Noise Properties
+#### Noise Properties
 
 $$\int w^2\,d\tau = \frac{36}{T^{6}}\cdot\frac{T^{5}}{30} = \frac{1.2}{T} \quad\Longrightarrow\quad \mathrm{Var}(b) = 1.2\,\mathrm{Var}(\bar{x})$$
 
 평균 대비 분산이 20%만 증가한다. 양의 kernel 평균이기 때문이며, 일반적인 slope가 잡음을 증폭하는 것과 정반대다.
 
-## 8. Block AUC Slope
+### 4.7 Block AUC Slope
 
 진짜 추세를 재되 잡음에 강건하게 하려면, trace를 폭 $w$ 의 등간격 연속 block $K$ 개로 나눠 block별 AUC 수열의 기울기를 취한다. Block 간 간격은 $h$ 로 둔다.
 
 $$A_k = \int_{t_k}^{t_k + w} x\,dt, \qquad \text{slope}_{\text{blk}} = \mathrm{OLS}(A_k \sim k)$$
 
-### 8.1 Variance Scale versus Raw Differencing
+#### Variance Scale versus Raw Differencing
 
-Table 9. Variance comparison
+Table 7. Variance comparison
 
 | Method | Variance |
 |---|---|
@@ -214,9 +194,9 @@ Table 9. Variance comparison
 
 파라미터는 $T = 300$ 에서 $w \approx 20$, $K \approx 15$ 로 잡는다. $w$ 는 잡음 상관시간보다 크게 하되 $K \ge 10$ 을 유지한다. $K \lt 8$ 이면 기울기 추정이 불안정해진다.
 
-### 8.2 Frequency View
+#### Frequency View
 
-Table 10. Frequency characteristics per feature
+Table 8. Frequency characteristics per feature
 
 | Feature | Frequency characteristic | Strong domain |
 |---|---|---|
@@ -227,9 +207,21 @@ Table 10. Frequency characteristics per feature
 
 AUC와 slope를 함께 쓰는 근거는 서로 다른 주파수 대역을 보기 때문이다. 선형 신호 $x = a + bt$ 에서는 $\text{AUC} = aT + bT^2/2$ 이므로 둘이 강하게 공선이고, 파형이 비선형일 때만 분리된다.
 
-## 9. Failure Modes and Mitigations
+### 4.8 Run-to-Run AUC Slope on the Wafer Axis
 
-### 9.1 Baseline Drift
+Wafer index $i$ 에 대한 AUC의 기울기는 wafer 내부 특징이 아니라 장비 상태 특징이다.
+
+$$s = \mathrm{OLS}\big(\text{AUC}_i \sim i\big) \quad \text{over the last } m \text{ wafers (strictly causal)}$$
+
+잡는 물리량은 chamber seasoning 진행도, 벽면 증착물 축적, target과 전극 소모, MFC와 압력계의 calibration drift, PM 이후 회복 궤적이다. AUC가 drift를 누적하는 성질이 여기서는 단점이 아니라 신호가 된다. R2R 제어 지표 및 covariate shift 진단에 그대로 사용한다.
+
+반드시 strictly causal window, 즉 현재 wafer 이전 $m$ 장만 사용한다. 중심 이동창이나 전체 구간 회귀를 쓰면 미래 정보가 들어가고, 시계열 CV로는 잡히지 않는 종류의 누출이 생긴다.
+
+Sensor나 특징 단위가 아니라 chamber 단위로 소수 (5–10개) 만 추가한다.
+
+## 5. Failure Modes and Mitigations
+
+### 5.1 Baseline Drift
 
 적분은 drift를 누적한다. Sensor에 느린 offset $\delta$ 가 있으면 AUC는 $\delta T$ 만큼 통째로 이동하므로, 공정 변화가 아니라 sensor calibration 이력이 AUC 변동의 지배 성분이 된다. $n = 300$ 규모에서 model을 완전히 오염시킨다. 필수 대응은 다음과 같다.
 
@@ -238,7 +230,7 @@ AUC와 slope를 함께 쓰는 근거는 서로 다른 주파수 대역을 보기
 3. Chamber가 여러 대라면 chamber 내 중심화로 절대 offset을 제거한다.
 4. Drift 자체를 chamber 누적 RF hour 등 별도 공변량으로 명시한다.
 
-### 9.2 Timestamp Accuracy
+### 5.2 Timestamp Accuracy
 
 $T \approx 300$ 이면 1 sample 오배치가 0.33%의 적분 오차이고, AUC는 이 오차에 선형으로 민감하다.
 
@@ -246,13 +238,13 @@ $T \approx 300$ 이면 1 sample 오배치가 0.33%의 적분 오차이고, AUC�
 - 결측은 적분 전에 선형보간한다. NaN 하나가 적분 전체를 무효화한다.
 - trace 시작과 종료 경계의 transient 구간은 baseline 산출에서 제외한다.
 
-### 9.3 Value of Dimensionless Features
+### 5.3 Value of Dimensionless Features
 
 `R`, `t50`, `pauc_k` 는 모두 무차원이라 장비와 chamber 간 이식성이 있다. 절대 AUC 위주의 특징 세트는 chamber 교차 검증에서 무너지고, 무차원 특징 위주는 유지된다. 이것이 drift 오염의 가장 빠른 진단법이다.
 
-## 10. Dimensionality Control
+## 6. Dimensionality Control
 
-### 10.1 Arithmetic
+### 6.1 Arithmetic
 
 ```text
 before pruning        : 200 sensors x 5 features = 1,000  -> p/n = 3.3   (wide)
@@ -261,7 +253,7 @@ taxonomy pooling      :                             ~100
 supervised reduction  :                            30-60  <- target
 ```
 
-### 10.2 Sensor Channel Pruning
+### 6.2 Sensor Channel Pruning
 
 200개 중 다음을 제거한다. 경험적으로 200개가 60–90개로 축소된다.
 
@@ -271,7 +263,7 @@ supervised reduction  :                            30-60  <- target
 
 Chamber가 여러 대라면 이 판정은 chamber별로 수행한다.
 
-### 10.3 Taxonomy Group Pooling
+### 6.3 Taxonomy Group Pooling
 
 AUC는 가법적 (additive) 이므로 그룹 합산이 통계적 편법이 아니라 물리량이다.
 
@@ -279,30 +271,18 @@ AUC는 가법적 (additive) 이므로 그룹 합산이 통계적 편법이 아�
 - RF forward AUC의 합은 총 전력 dose로, 특징 1개가 된다.
 - 압력계 3 channel은 대표 1개와 channel 간 AUC 비율 1개로 줄인다.
 
-### 10.4 Supervised Final Reduction
+### 6.4 Supervised Final Reduction
 
 - Taxonomy를 group으로 하는 sparse group lasso는 물리적으로 해석 가능한 희소성을 준다. 200개 개별 sensor를 lasso에 던지는 것보다 $n$ 이 작을 때 선택 변동성이 훨씬 작다.
 - PLS는 latent 8–15개를 쓴다.
 
 $n = 300$ 이면 이 단계 이후 규제 선형 model이나 PLS가 GBM보다 안정적이다.
 
-## 11. Run-to-Run AUC Slope on the Wafer Axis
-
-Wafer index $i$ 에 대한 AUC의 기울기는 wafer 내부 특징이 아니라 장비 상태 특징이다.
-
-$$s = \mathrm{OLS}\big(\text{AUC}_i \sim i\big) \quad \text{over the last } m \text{ wafers (strictly causal)}$$
-
-잡는 물리량은 chamber seasoning 진행도, 벽면 증착물 축적, target과 전극 소모, MFC와 압력계의 calibration drift, PM 이후 회복 궤적이다. AUC가 drift를 누적하는 성질이 여기서는 단점이 아니라 신호가 된다. APC/R2R 지표 및 covariate shift 진단에 그대로 사용한다.
-
-반드시 strictly causal window, 즉 현재 wafer 이전 $m$ 장만 사용한다. 중심 이동창이나 전체 구간 회귀를 쓰면 미래 정보가 들어가고, 시계열 CV로는 잡히지 않는 종류의 누출이 생긴다.
-
-Sensor나 특징 단위가 아니라 chamber 단위로 소수 (5–10개) 만 추가한다.
-
-## 12. Recommended Feature Set
+## 7. Recommended Feature Set
 
 Sensor당 4개 이내를 유지한다.
 
-Table 11. Recommended per-sensor features
+Table 9. Recommended per-sensor features
 
 | Feature | Type | Captures |
 |---|---|---|
@@ -313,9 +293,9 @@ Table 11. Recommended per-sensor features
 
 선택적 추가는 `slope` (1차 moment), `slope_blk` (대역통과 추세), `tv` (진동) 다. `mean` 과 `auc` 는 $T$ 가 wafer마다 일정하다면 상수배 관계이므로 둘 중 하나만 사용한다.
 
-여기에 §11의 chamber 단위 R2R 특징을 별도로 소수 추가한다. 특징별 수학적 정체는 [Appendix B](#appendix-b-feature-moment-correspondence) 에 정리한다.
+여기에 §4.8의 chamber 단위 R2R 특징을 별도로 소수 추가한다. 특징별 수학적 정체는 [Appendix B](#appendix-b-feature-moment-correspondence) 에 정리한다.
 
-## 13. Implementation
+## 8. Implementation
 
 ```python
 # Python
@@ -382,11 +362,11 @@ def trace_features(x, t, x_ref=None, n_sub=3, block_w=20):
     return f
 ```
 
-## 14. Validation Protocol
+## 9. Validation Protocol
 
-### 14.1 Redundancy Checks before Adding Features
+### 9.1 Redundancy Checks before Adding Features
 
-Table 12. Redundancy checks
+Table 10. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
@@ -395,29 +375,28 @@ Table 12. Redundancy checks
 | $\mathrm{corr}(\text{slope\_blk},\ \text{auc\_base})$ | $\gt 0.95$ | 파형이 거의 선형이므로 하나 폐기 |
 | $\mathrm{Var}(R)$ (wafer 간) | $\approx 0$ | 형상 변동 없음, 폐기 |
 
-### 14.2 Performance Criteria
+### 9.2 Performance Criteria
 
 - Test $R^2$ 증분만 근거로 사용한다. Train $R^2$ 개선은 근거가 되지 않는다. $n = 300$ 에서는 특징을 늘릴수록 train $R^2$ 는 거의 항상 올라간다.
 - Nested time-series CV를 쓴다. Golden reference, pruning 기준, scaler, 그룹 정의를 모두 train fold 내부에서만 산출한다.
 - $R^2_{\max}$ 대비로 평가한다. 계측 반복성 $\sigma$ 로부터 잡음 천장을 계산하고, 그 대비 몇 %에 도달했는지로 판단한다. 천장의 80%를 넘으면 특징 추가를 멈추는 것이 합리적이다.
-- Chamber 교차 검증을 한다. 한 chamber로 학습해 다른 chamber로 평가하며, 판정 기준은 §9.3과 같다.
+- Chamber 교차 검증을 한다. 한 chamber로 학습해 다른 chamber로 평가하며, 판정 기준은 §5.3과 같다.
 
-### 14.3 Dimensionality Gate
+### 9.3 Dimensionality Gate
 
 최종 model 입력이 $p_{\text{final}} \le n/5$ 를 만족하는지 확인한다. $n = 300$ 기준 $p \le 60$ 이다.
 
 ## Appendix A. Terminology
 
-- **APC (Advanced Process Control)**: 공정 결과를 목표에 맞추기 위해 run 간에 recipe 변수를 보정하는 공정 제어 체계다.
+- **AUC (Area Under the Curve)**: trace를 시간에 대해 적분한 값이다.
 - **Covariate shift**: 입력 변수의 분포가 학습 시점과 예측 시점 사이에 달라지는 dataset shift의 한 형태다.
 - **CV (Cross-Validation)**: 데이터를 여러 fold로 나눠 학습과 평가를 반복하는 model 검증 방법이다.
 - **DC (Direct Current)**: 주파수 0 성분, 즉 신호의 평균 성분을 가리킨다.
 - **Epanechnikov kernel**: $1 - u^2$ 에 비례하는 포물선 형태의 kernel 함수다.
-- **FDC (Fault Detection and Classification)**: 장비 sensor 신호로 공정 이상을 탐지하고 분류하는 체계다.
 - **GBM (Gradient Boosting Machine)**: 얕은 결정 나무를 순차적으로 더해 가는 ensemble 학습 방법이다.
-- **Golden reference**: 정상 공정을 대표하는 기준 trace다.
+- **Golden reference**: 정상 상태를 대표하는 기준 trace다.
 - **L1**: 절댓값의 합 또는 적분으로 정의되는 norm이다.
-- **MFC (Mass Flow Controller)**: 공정 가스의 유량을 제어하는 장치다.
+- **MFC (Mass Flow Controller)**: 가스 유량을 제어하는 장치다.
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.
 - **PLS (Partial Least Squares)**: 예측변수와 응답변수의 공분산을 최대화하는 latent 변수 회귀 방법이다.
 - **PM (Preventive Maintenance)**: 장비의 예방 정비 작업이다.
@@ -425,16 +404,17 @@ Table 12. Redundancy checks
 - **RF (Radio Frequency)**: plasma 생성에 쓰이는 고주파 전력을 가리킨다.
 - **Savitzky–Golay filter**: 이동 구간에 다항식을 적합해 평활과 미분을 동시에 수행하는 filter다.
 - **sccm (standard cubic centimeters per minute)**: 표준 상태 기준 분당 세제곱센티미터로 나타낸 가스 유량 단위다.
-- **SEMI E134**: 장비 데이터 수집을 정의하는 반도체 산업 표준이다.
 - **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
+- **Summary statistics**: trace 전체를 소수의 스칼라로 요약한 값이다.
 - **Taxonomy**: sensor를 가스, 전력, 압력, 온도 등 물리 계통으로 묶는 분류 체계다.
 - **Thermal budget**: 공정 중 온도와 시간의 누적 효과를 나타내는 양이다.
+- **Trace**: 장비가 주기적으로 송출하는 시계열 sensor 기록이다.
 - **VIF (Variance Inflation Factor)**: 다중공선성이 회귀 계수의 분산을 키우는 정도를 나타내는 지표다.
 - **Wide data**: 표본 수보다 변수 수가 많은 ($p \gt n$) 데이터를 가리킨다.
 
 ## Appendix B. Feature-Moment Correspondence
 
-Table 13. Feature-moment correspondence
+Table 11. Feature-moment correspondence
 
 | Feature | Mathematical identity | Time moment order |
 |---|---|---|
