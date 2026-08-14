@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 12 | Created: 2026-07-29 | Updated: 2026-08-14 17:06 CDT
+Rev. 13 | Created: 2026-07-29 | Updated: 2026-08-14 18:06 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -163,26 +163,26 @@ Table 2. Redundancy checks
 
 ## Appendix B. Feature Definitions
 
-Trace를 $x_1, \dots, x_N$ 으로, timestamp를 $t_1, \dots, t_N$ 으로 두고 $T = t_N - t_1$ 로 쓴다. 차분은 $\Delta x_i = x_{i+1} - x_i$ 다.
+Trace를 $x_1, \dots, x_N$ 으로, timestamp를 $t_1, \dots, t_N$ 으로 두고 $T = t_N - t_1$ 로 쓴다. 차분은 $\Delta x_i = x_{i+1} - x_i$ 이며, $i$ 는 sample index, $N$ 은 sample 수다.
+
+Variable 열은 그 행에서 새로 쓰는 기호만 밝힌다. 표시가 없는 행은 위의 공통 표기만 쓴다.
 
 Table 3. Feature definitions
 
-| Feature | Definition |
-|---|---|
-| `mean` | $\bar{x} = \dfrac{1}{N}\sum_{i=1}^{N} x_i$ |
-| `median` | 정렬한 $x$ 의 중앙값 |
-| `std` | $s = \sqrt{\dfrac{1}{N-1}\sum_{i=1}^{N}(x_i - \bar{x})^2}$ |
-| `range` | $\max_i x_i - \min_i x_i$ |
-| `iqr` | $Q_3 - Q_1$ |
-| `slope` | $\dfrac{\sum_i (t_i - \bar{t})(x_i - \bar{x})}{\sum_i (t_i - \bar{t})^2}$ |
-| `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}, \quad \mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ |
-| `max_delta` | $\max_i \lvert \Delta x_i \rvert$ |
-| `sigma_ratio` | $\sigma_{\text{st}} / s$ |
-| `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[\mathrm{sign}(x_i - \bar{x}) \neq \mathrm{sign}(x_{i+1} - \bar{x})\big]$ |
-| `peak_time_norm` | $(t_{i^*} - t_1) / T, \quad i^* = \arg\max_i x_i$ |
-| `duration` | $T$ |
-
-`std` 와 `sigma_st` 는 같은 $\sigma$ 를 서로 다른 시간 scale에서 추정한다. 백색잡음이면 두 추정값이 일치하며, 이것이 `sigma_ratio` 의 기준값 1의 근거다.
+| Feature | Definition | Variable |
+|---|---|---|
+| `mean` | $\bar{x} = \dfrac{1}{N}\sum_{i=1}^{N} x_i$ | $\bar{x}$ 는 산술평균이며, 이후 행에서 그대로 쓴다 |
+| `median` | 정렬한 $x$ 의 중앙값 | — |
+| `std` | $s = \sqrt{\dfrac{1}{N-1}\sum_{i=1}^{N}(x_i - \bar{x})^2}$ | $s$ 는 표본표준편차이며, 이후 행에서 그대로 쓴다. 분모 $N-1$ 은 불편추정을 위한 자유도다 |
+| `range` | $\max_i x_i - \min_i x_i$ | — |
+| `iqr` | $Q_3 - Q_1$ | $Q_1$ 과 $Q_3$ 은 $x$ 의 제1·제3 사분위수다 |
+| `slope` | $\dfrac{\sum_i (t_i - \bar{t})(x_i - \bar{x})}{\sum_i (t_i - \bar{t})^2}$ | $\bar{t}$ 는 timestamp의 산술평균이다 |
+| `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 §1.1에 있다 |
+| `max_delta` | $\max_i \lvert \Delta x_i \rvert$ | — |
+| `sigma_ratio` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
+| `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[\mathrm{sign}(x_i - \bar{x}) \neq \mathrm{sign}(x_{i+1} - \bar{x})\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $\mathrm{sign}$ 의 기준선은 $\bar{x}$ 다 |
+| `peak_time_norm` | $(t_{i^*} - t_1) / T$ | $i^* = \arg\max_i x_i$ 는 최댓값이 나오는 sample index다 |
+| `duration` | $T$ | — |
 
 ## Appendix C. Implementation
 
