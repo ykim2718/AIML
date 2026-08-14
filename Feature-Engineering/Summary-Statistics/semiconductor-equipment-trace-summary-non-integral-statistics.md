@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 16 | Created: 2026-07-29 | Updated: 2026-08-14 16:11 CDT
+Rev. 17 | Created: 2026-07-29 | Updated: 2026-08-14 16:15 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -7,7 +7,7 @@ Data는 [wafer, feature, trace] 의 dimension을 갖는다. 여기서 trace의 �
 
 핵심 제약은 결과가 wide data, 즉 $p \gg n$ 이 되지 않아야 한다.
 
-## 1. Non-Integral Summary Statistics
+## 1. Non-Integral Statistics
 
 단일 wafer trace를 $x(t)$, $t \in [0, T]$ 로 두고, $\bar{x}$ 를 그 산술평균으로 쓴다.
 
@@ -25,7 +25,7 @@ Table 1. Non-integral features
 | `noise` | $\mathrm{std}(\Delta x)$ | 고주파 잡음 수준 |
 | `duration` | $T$ | 처리 시간 |
 
-각 특징이 잡는 축이 서로 다르다. `mean` 은 위치, `std` 와 `iqr` 은 산포, `slope` 는 시간축 추세, `noise` 는 고주파 성분이며, 이 축들이 겹치는 만큼만 특징 사이에 공선성이 생긴다.
+각 특징이 잡는 축이 서로 다르다. `mean` 은 위치, `std` 와 `iqr` 은 산포, `slope` 는 시간축 추세, `noise` 는 고주파 성분이며, 이 축들이 겹치는 만큼만 특징 사이에 공선성이 생긴다. 계산 절차는 [Appendix B](#appendix-b-implementation) 에 정리한다.
 
 ## 2. Failure Modes and Mitigations
 
@@ -92,7 +92,45 @@ Table 2. Recommended per-trace features
 
 `iqr` 은 outlier가 잦은 trace에서 `std` 를 대체하고, `range` 는 단발성 spike를 잡아야 할 때만 추가한다. `duration` 은 trace 길이가 wafer마다 달라질 때만 정보를 갖는다.
 
-## 5. Implementation
+## 5. Validation Protocol
+
+### 5.1 Redundancy Checks before Adding Features
+
+Table 3. Redundancy checks
+
+| Check | Threshold | Action |
+|---|---|---|
+| $\mathrm{corr}(\text{std},\ \text{iqr})$ | $\gt 0.98$ | 하나만 유지, outlier가 잦으면 `iqr` |
+| $\mathrm{corr}(\text{range},\ \text{std})$ | $\gt 0.95$ | `range` 폐기 |
+| $\mathrm{corr}(\text{noise},\ \text{std})$ | $\gt 0.95$ | 잡음이 산포를 지배, `noise` 폐기 |
+| $\mathrm{Var}(\text{duration})$ (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
+
+### 5.2 Performance Criteria
+
+- Test $R^2$ 증분만 근거로 사용한다. Train $R^2$ 개선은 근거가 되지 않는다. 표본이 작으면 특징을 늘릴수록 train $R^2$ 는 거의 항상 올라간다.
+- Nested time-series CV를 쓴다. Pruning 기준, scaler, 그룹 정의를 모두 train fold 내부에서만 산출한다.
+- $R^2_{\max}$ 대비로 평가한다. 계측 반복성 $\sigma$ 로부터 잡음 천장을 계산하고, 그 대비 몇 %에 도달했는지로 판단한다. 천장의 80%를 넘으면 특징 추가를 멈추는 것이 합리적이다.
+- Chamber 교차 검증을 한다. 한 chamber로 학습해 다른 chamber로 평가하며, 판정 기준은 §2.3과 같다.
+
+### 5.3 Dimensionality Gate
+
+최종 model 입력 특징 수 $p_{\text{final}}$ 이 $n/5$ 이하인지 확인한다.
+
+## Appendix A. Terminology
+
+- **Channel**: trace 하나가 기록되는 개별 측정 계열이다.
+- **CV (Cross-Validation)**: 데이터를 여러 fold로 나눠 학습과 평가를 반복하는 model 검증 방법이다.
+- **FDC (Fault Detection and Classification)**: 장비 신호로 공정 이상을 탐지하고 분류하는 체계다.
+- **GBM (Gradient Boosting Machine)**: 얕은 결정 나무를 순차적으로 더해 가는 ensemble 학습 방법이다.
+- **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.
+- **PLS (Partial Least Squares)**: 예측변수와 응답변수의 공분산을 최대화하는 latent 변수 회귀 방법이다.
+- **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
+- **Summary statistics**: trace 전체를 소수의 스칼라로 요약한 값이다.
+- **Taxonomy**: trace를 가스, 전력, 압력, 온도 등 물리 계통으로 묶는 분류 체계다.
+- **Trace**: 장비가 주기적으로 송출하는 시계열 기록이다.
+- **Wide data**: 표본 수 $n$ 보다 변수 수 $p$ 가 많은 ($p \gt n$) 데이터를 가리킨다.
+
+## Appendix B. Implementation
 
 ```python
 # Python
@@ -115,41 +153,3 @@ def non_integral_features(x, t):
         'duration': T,
     }
 ```
-
-## 6. Validation Protocol
-
-### 6.1 Redundancy Checks before Adding Features
-
-Table 3. Redundancy checks
-
-| Check | Threshold | Action |
-|---|---|---|
-| $\mathrm{corr}(\text{std},\ \text{iqr})$ | $\gt 0.98$ | 하나만 유지, outlier가 잦으면 `iqr` |
-| $\mathrm{corr}(\text{range},\ \text{std})$ | $\gt 0.95$ | `range` 폐기 |
-| $\mathrm{corr}(\text{noise},\ \text{std})$ | $\gt 0.95$ | 잡음이 산포를 지배, `noise` 폐기 |
-| $\mathrm{Var}(\text{duration})$ (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
-
-### 6.2 Performance Criteria
-
-- Test $R^2$ 증분만 근거로 사용한다. Train $R^2$ 개선은 근거가 되지 않는다. 표본이 작으면 특징을 늘릴수록 train $R^2$ 는 거의 항상 올라간다.
-- Nested time-series CV를 쓴다. Pruning 기준, scaler, 그룹 정의를 모두 train fold 내부에서만 산출한다.
-- $R^2_{\max}$ 대비로 평가한다. 계측 반복성 $\sigma$ 로부터 잡음 천장을 계산하고, 그 대비 몇 %에 도달했는지로 판단한다. 천장의 80%를 넘으면 특징 추가를 멈추는 것이 합리적이다.
-- Chamber 교차 검증을 한다. 한 chamber로 학습해 다른 chamber로 평가하며, 판정 기준은 §2.3과 같다.
-
-### 6.3 Dimensionality Gate
-
-최종 model 입력 특징 수 $p_{\text{final}}$ 이 $n/5$ 이하인지 확인한다.
-
-## Appendix A. Terminology
-
-- **Channel**: trace 하나가 기록되는 개별 측정 계열이다.
-- **CV (Cross-Validation)**: 데이터를 여러 fold로 나눠 학습과 평가를 반복하는 model 검증 방법이다.
-- **FDC (Fault Detection and Classification)**: 장비 신호로 공정 이상을 탐지하고 분류하는 체계다.
-- **GBM (Gradient Boosting Machine)**: 얕은 결정 나무를 순차적으로 더해 가는 ensemble 학습 방법이다.
-- **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.
-- **PLS (Partial Least Squares)**: 예측변수와 응답변수의 공분산을 최대화하는 latent 변수 회귀 방법이다.
-- **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
-- **Summary statistics**: trace 전체를 소수의 스칼라로 요약한 값이다.
-- **Taxonomy**: trace를 가스, 전력, 압력, 온도 등 물리 계통으로 묶는 분류 체계다.
-- **Trace**: 장비가 주기적으로 송출하는 시계열 기록이다.
-- **Wide data**: 표본 수 $n$ 보다 변수 수 $p$ 가 많은 ($p \gt n$) 데이터를 가리킨다.
