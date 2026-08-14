@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 14 | Created: 2026-07-29 | Updated: 2026-08-14 18:12 CDT
+Rev. 15 | Created: 2026-07-29 | Updated: 2026-08-14 18:49 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -66,7 +66,7 @@ Trace에 느린 offset $\delta$ 가 있으면 위치 특징인 `mean` 과 `media
 - 결측은 특징 계산 전에 선형보간한다. 보간하지 않으면 결측 위치의 큰 차분이 `sigma_st` 와 `max_delta` 를 부풀린다.
 - trace 시작과 종료 경계의 transient 구간은 baseline 산출에서 제외한다.
 
-`sigma_ratio` 도 sampling 주기에 의존한다. 매끄러운 신호에서는 $\Delta x \approx x' \Delta t$ 이므로 비가 $\Delta t$ 에 비례한다. 진폭 단위로는 무차원이지만 시간 단위로는 아니므로, 주기가 다른 recipe나 chamber 사이에서는 직접 비교하지 않는다.
+`sigma_ratio` 와 `zcr` 도 sampling 주기에 의존한다. 매끄러운 신호에서는 $\Delta x \approx x' \Delta t$ 이므로 `sigma_ratio` 가 $\Delta t$ 에 비례하고, `zcr` 은 sample 쌍 단위의 비율이라 같은 물리적 진동이라도 주기를 촘촘히 하면 값이 낮아진다. 둘 다 진폭 단위로는 무차원이지만 시간 단위로는 아니므로, 주기가 다른 recipe나 chamber 사이에서는 직접 비교하지 않는다.
 
 ### 2.3 Unit Dependence
 
@@ -128,7 +128,7 @@ Table 2. Redundancy checks
 | corr(`range`, `std`) | $\gt 0.95$ | `range` 폐기 |
 | corr(`max_delta`, `sigma_st`) | $\gt 0.95$ | 단발 spike 없음, `max_delta` 폐기 |
 | corr(`zcr`, `sigma_ratio`) | $\gt 0.95$ | 같은 거칠기를 잼, `zcr` 폐기 |
-| corr(`sigma_st`, `std`) | $\gt 0.95$ | 두 시간 scale이 구분되지 않음, `sigma_ratio` 도 무정보 |
+| corr(`sigma_st`, `std`) | $\gt 0.95$ | 단기와 전체 변동이 분리되지 않음, `sigma_st` 폐기 |
 | var(`sigma_ratio`) (wafer 간) | $\approx 0$ | 거칠기가 일정, `sigma_ratio` 와 `zcr` 폐기 |
 | var(`duration`) (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
 

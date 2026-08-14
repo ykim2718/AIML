@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 20 | Created: 2026-07-29 | Updated: 2026-08-14 18:12 CDT
+Rev. 21 | Created: 2026-07-29 | Updated: 2026-08-14 18:49 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -57,9 +57,11 @@ Table 2. Physics-based integrals
 | 가스 유량 (sccm) | $\int Q\,dt$ | 총 투입 가스량 (sccm·s) |
 | RF power | $\int P\,dt$ | 총 이온/plasma dose (J) |
 | 압력 | $\int p\,dt$ | 압력–시간 적분 |
-| 온도 | $\int \exp(-E_a / k_B T(t))\,dt$ | Arrhenius thermal budget |
+| 온도 | $\int \exp(-E_a / k_B \Theta(t))\,dt$ | Arrhenius thermal budget |
 
-마지막 항이 특히 유효하다. 증착과 확산의 두께는 온도의 산술평균보다 Arrhenius 가중 적분에 훨씬 선형적으로 반응한다. $E_a$ 는 문헌값을 쓰거나 소수 후보값 중 CV로 선택한다.
+마지막 항에서 $\Theta(t)$ 는 절대온도, $E_a$ 는 활성화 에너지, $k_B$ 는 Boltzmann 상수다. 시간축 길이 $T$ 와 구분하기 위해 온도를 $\Theta$ 로 쓴다.
+
+이 항이 특히 유효하다. 증착과 확산의 두께는 온도의 산술평균보다 Arrhenius 가중 적분에 훨씬 선형적으로 반응한다. $E_a$ 는 문헌값을 쓰거나 소수 후보값 중 CV로 선택한다.
 
 ### 1.5 Golden Reference Construction
 
@@ -304,7 +306,7 @@ Table 7. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
-| corr(`auc_base`, $\bar{x}\,T$) | $\gt 0.99$ | AUC 폐기, 평균만 유지 |
+| corr(`auc_base`, $(\bar{x} - x_0)\,T$) | $\gt 0.99$ | AUC 폐기, 평균만 유지 |
 | corr($b$, $\bar{x}$) | $\gt 0.95$ | $b$ 대신 무차원 `R` 사용 |
 | corr(`slope_blk`, `auc_base`) | $\gt 0.95$ | 파형이 거의 선형이므로 하나 폐기 |
 | var(`R`) (wafer 간) | $\approx 0$ | 형상 변동 없음, 폐기 |
