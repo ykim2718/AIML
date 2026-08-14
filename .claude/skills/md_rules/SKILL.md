@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 17 | Created: 2026-8-1 | Updated: 2026-08-13 02:01 CDT
+Rev. 17 | Created: 2026-8-1 | Updated: 2026-8-14 15:45 CDT
 
 ## 1. Terminology
 
@@ -49,10 +49,14 @@ Rev. 17 | Created: 2026-8-1 | Updated: 2026-08-13 02:01 CDT
 
 ## 8. Versioning
 
-+ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. <N> | Created: <YYYY-MM-DD> | Updated: <YYYY-MM-DD HH:MM> <TIMEZONE>` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일, Updated는 문서 수정 시간을 기록한다. `<TIMEZONE>`은 실행 환경의 시간대이며 `date +%Z` 로 읽는다.  최초 문서 제작 시 버전은 0 이다.
++ 문서 머리에 있는 H1 꼭지 다음에 본문 글씨체로 `Rev. <N> | Created: <YYYY-MM-DD> | Updated: <YYYY-MM-DD HH:MM> <TIMEZONE>` 형식의 버전 표시를 추가하고, 문서를 수정할 때마다 버전을 올린다. Created는 최초 문서 제작일 (ISO 8601 형식), Updated는 문서 수정 시간을 기록한다. `<TIMEZONE>`은 실행 환경의 시간대이며 `date +%Z` 로 읽는다.  최초 문서 제작 시 버전은 0 이다.
 + 버전 표시를 제외한 변경 이력 표현은 문서에서 삭제한다.
 
-## 9. Code Block
+## 9. Math
+
++ GitHub web page에서 rendering시, 표·본문 안의 $...$ 수식에서 <, >를 HTML entity (&lt;, &gt;) 로 바꿔 MathJax에 넘기는 바람에 "Misplaced &" 오류가 나는 알려진 문제가 있기에,  수식 안의 부등호를 MathJax 매크로 \lt, \gt로 바꿀  것.
+
+## 10. Code Block
 
 + Code block 내부의 inline comment는 모두 영어로 작성한다. 주석 기호는 해당 언어의 문법을 따른다 (예: Python `#`, JavaScript `//`, SQL `--`).
 + Code block의 첫 줄에 파일명, 실행 환경 또는 언어를 주석으로 명기한다. 실제 파일이 있으면 파일명 주석이 우선하고, 출력·로그처럼 실행 대상이 아닌 block만 예외로 한다.  JSON의 경우 실제 파일에서 주석이 있으면 동작하지 않지만, md에서만 예외로 첫 줄 주석을 //를 써서 허용한다.
@@ -80,27 +84,28 @@ result = [x * 2 for x in range(10)]
 + 언어를 특정할 수 없는 터미널 출력·로그·설정값 등은 fence에 언어를 지정하지 않거나 `text`/`bash`를 사용하고, 파일명·언어 주석은 붙이지 않는다.
 + 값을 치환해야 하는 자리표시자는 `<UPPER_CASE>` 형태로 통일하고, 실제 값과 혼동되지 않게 한다 (예: `Authorization: Bearer <API_KEY>`).
 
-## 10. Table
+## 11. Table
 + 모든 table 에는 Table 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
 + Table의 열 제목은 영어로 한다.
 
-## 11. Figure
+## 12. Figure
 
 + 모든 figure 에는 Fig 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
 + 복수 panel figure 에는 전부 panel labels를 (a), (b), (c) ... 처럼 붙일 것. 단 Matrix chart는 예외로 panel labels를 붙이지 말 것.
-+ Diagram은 text diagram으로 작성하며, mermaid는 사용하지 않는다.
 
-## 12. Appendix
+## 13. Lists
+
+- Use `-` as the bullet marker throughout. Do not mix in `*` or `+`.
+- Indent nested items by two spaces per level.
+- Do not nest more than two levels deep. If a third level seems necessary,
+  split the content into a separate section instead.
+
+## 14. Appendix
 
 + Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
 + 본문에서 Appendix를 언급한 경우, 본문에 anchor link를 둔다.
 
-## 13. Math
-
-+ 수식은 GitHub이 렌더링하는 LaTeX으로 작성한다. Inline 수식은 `$...$`, 별도 행 수식은 `$$...$$`를 쓰고, code block으로 수식을 흉내 내지 않는다.
-+ GitHub은 표·본문 안의 `$...$` 수식에서 `<`, `>`를 HTML entity (`&lt;`, `&gt;`) 로 바꿔 MathJax에 넘기는 바람에 "Misplaced &" 오류가 나는 알려진 문제가 있기에, 수식 안의 부등호를 MathJax 매크로 `\lt`, `\gt`로 바꿀 것. `\le`, `\ge`, `\neq`는 매크로이므로 그대로 쓴다.
-
-## 14. 검수 (필수 — 이 단계를 마치기 전에 작업을 종료하지 않는다)
+## 15. Review (required — do not finish the task before completing this step)
 
 + 작성한 .md 파일을 **다시 읽는다** (Read 도구로 실제 파일을 연다).
      기억에 의존한 검토는 하지 않는다.
@@ -110,7 +115,7 @@ result = [x * 2 for x in range(10)]
 
      - 중복: 동일한 논지·정의·예시가 2회 이상 등장
      - 반복: 같은 문장 구조/접속 표현이 3연속 이상
-     - 오류: 앞 섹션과 모순되는 서술, 근거 없이 등장한 수치·고유명사, 정의 없이 처음 등장한 약어, 깨진 링크·잘못된 코드 식별자, 수식 안의 raw `<`·`>`
+     - 오류: 앞 섹션과 모순되는 서술, 근거 없이 등장한 수치·고유명사, 정의 없이 처음 등장한 약어, 깨진 링크·잘못된 코드 식별자
      - 어색: 한 문장 안에 주어가 바뀌거나 60자 이상 수식이 겹친 문장
      - 비맥락: 해당 섹션 제목이 예고하지 않은 내용, 문서 목적과 무관한 배경 설명
 
