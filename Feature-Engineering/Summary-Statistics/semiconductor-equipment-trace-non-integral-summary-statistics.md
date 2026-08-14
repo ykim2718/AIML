@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 13 | Created: 2026-07-29 | Updated: 2026-08-14 18:06 CDT
+Rev. 14 | Created: 2026-07-29 | Updated: 2026-08-14 18:12 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -38,7 +38,7 @@ Table 1. Non-integral features
 
 두 양의 비 `sigma_ratio` 는 lag-1 autocorrelation $\rho_1$ 의 직접적인 추정량이다.
 
-$$\text{sigma\_ratio} = \frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
+$$\frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
 
 백색잡음이면 $\mathrm{MSSD} = 2s^2$ 이므로 비가 정확히 1이 된다. 임의로 문턱을 정할 필요 없이 이론값 1을 기준으로 읽으면 된다.
 
@@ -123,14 +123,14 @@ Table 2. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
-| $\mathrm{corr}(\text{median},\ \text{mean})$ | $\gt 0.98$ | 분포가 대칭, `median` 폐기 |
-| $\mathrm{corr}(\text{iqr},\ \text{std})$ | $\gt 0.98$ | outlier 없음, `iqr` 폐기 |
-| $\mathrm{corr}(\text{range},\ \text{std})$ | $\gt 0.95$ | `range` 폐기 |
-| $\mathrm{corr}(\text{max\_delta},\ \text{sigma\_st})$ | $\gt 0.95$ | 단발 spike 없음, `max_delta` 폐기 |
-| $\mathrm{corr}(\text{zcr},\ \text{sigma\_ratio})$ | $\gt 0.95$ | 같은 거칠기를 잼, `zcr` 폐기 |
-| $\mathrm{corr}(\text{sigma\_st},\ \text{std})$ | $\gt 0.95$ | 두 시간 scale이 구분되지 않음, `sigma_ratio` 도 무정보 |
-| $\mathrm{Var}(\text{sigma\_ratio})$ (wafer 간) | $\approx 0$ | 거칠기가 일정, `sigma_ratio` 와 `zcr` 폐기 |
-| $\mathrm{Var}(\text{duration})$ (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
+| corr(`median`, `mean`) | $\gt 0.98$ | 분포가 대칭, `median` 폐기 |
+| corr(`iqr`, `std`) | $\gt 0.98$ | outlier 없음, `iqr` 폐기 |
+| corr(`range`, `std`) | $\gt 0.95$ | `range` 폐기 |
+| corr(`max_delta`, `sigma_st`) | $\gt 0.95$ | 단발 spike 없음, `max_delta` 폐기 |
+| corr(`zcr`, `sigma_ratio`) | $\gt 0.95$ | 같은 거칠기를 잼, `zcr` 폐기 |
+| corr(`sigma_st`, `std`) | $\gt 0.95$ | 두 시간 scale이 구분되지 않음, `sigma_ratio` 도 무정보 |
+| var(`sigma_ratio`) (wafer 간) | $\approx 0$ | 거칠기가 일정, `sigma_ratio` 와 `zcr` 폐기 |
+| var(`duration`) (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
 
 ### 5.2 Performance Criteria
 

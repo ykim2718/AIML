@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 19 | Created: 2026-07-29 | Updated: 2026-08-14 16:26 CDT
+Rev. 20 | Created: 2026-07-29 | Updated: 2026-08-14 18:12 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -40,7 +40,7 @@ A2/A3가 핵심이다. 스칼라 하나로 파형 전체의 이탈을 요약하�
 
 ### 1.3 Phase Features from Cumulative AUC Quantiles
 
-$$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rvert\,d\tau}, \qquad t_q = F^{-1}(q)$$
+$$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rvert\,d\tau}, \qquad t_q = \frac{F^{-1}(q)}{T}$$
 
 - `t25`, `t50`, `t75` 는 신호의 무게중심이 시간축 앞쪽인지 뒤쪽인지를 나타낸다.
 - Ramp 속도, 정착 지연, valve와 MFC의 응답 지연이 여기에 반영된다.
@@ -237,7 +237,7 @@ Table 6. Recommended per-trace features
 
 선택적 추가는 `slope_blk` (대역통과 추세) 와 `tv` (진동) 다. 평균 $\bar{x}$ 와 단순 AUC는 $T$ 가 wafer마다 일정하다면 상수배 관계이므로 둘 중 하나만 사용한다.
 
-여기에 §1.8의 chamber 단위 R2R 특징을 별도로 소수 추가한다. 특징별 수학적 정체는 [Appendix B](#appendix-b-feature-moment-correspondence) 에 정리한다.
+여기에 §1.8의 chamber 단위 R2R 특징을 별도로 소수 추가한다. 이산 형태의 수식 정의는 [Appendix B](#appendix-b-feature-definitions) 에, 특징별 수학적 정체는 [Appendix C](#appendix-c-feature-moment-correspondence) 에 정리한다.
 
 ## 5. Implementation
 
@@ -304,10 +304,10 @@ Table 7. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
-| $\mathrm{corr}(\text{auc\_base},\ \bar{x} T)$ | $\gt 0.99$ | AUC 폐기, 평균만 유지 |
-| $\mathrm{corr}(b,\ \bar{x})$ | $\gt 0.95$ | $b$ 대신 무차원 `R` 사용 |
-| $\mathrm{corr}(\text{slope\_blk},\ \text{auc\_base})$ | $\gt 0.95$ | 파형이 거의 선형이므로 하나 폐기 |
-| $\mathrm{Var}(R)$ (wafer 간) | $\approx 0$ | 형상 변동 없음, 폐기 |
+| corr(`auc_base`, $\bar{x}\,T$) | $\gt 0.99$ | AUC 폐기, 평균만 유지 |
+| corr($b$, $\bar{x}$) | $\gt 0.95$ | $b$ 대신 무차원 `R` 사용 |
+| corr(`slope_blk`, `auc_base`) | $\gt 0.95$ | 파형이 거의 선형이므로 하나 폐기 |
+| var(`R`) (wafer 간) | $\approx 0$ | 형상 변동 없음, 폐기 |
 
 ### 6.2 Performance Criteria
 
@@ -348,9 +348,36 @@ Table 7. Redundancy checks
 - **VIF (Variance Inflation Factor)**: 다중공선성이 회귀 계수의 분산을 키우는 정도를 나타내는 지표다.
 - **Wide data**: 표본 수 $n$ 보다 변수 수 $p$ 가 많은 ($p \gt n$) 데이터를 가리킨다.
 
-## Appendix B. Feature-Moment Correspondence
+## Appendix B. Feature Definitions
 
-Table 8. Feature-moment correspondence
+본문의 정의는 연속형 적분이다. 실제 계산은 이산 표본에 대한 사다리꼴 합으로 하므로, 그 형태를 여기에 둔다.
+
+Trace를 $x_1, \dots, x_N$ 으로, timestamp를 $t_1, \dots, t_N$ 으로 두고 $T = t_N - t_1$ 로 쓴다. 차분은 $\Delta x_i = x_{i+1} - x_i$, $\Delta t_i = t_{i+1} - t_i$ 이며, $i$ 는 sample index, $N$ 은 sample 수다. 사다리꼴 합 연산자를 다음과 같이 둔다.
+
+$$\mathcal{T}[y] = \sum_{i=1}^{N-1} \frac{y_i + y_{i+1}}{2}\,\Delta t_i$$
+
+부분 구간 $B$ 에 대한 합은 $\mathcal{T}_B[y]$ 로 쓴다. Variable 열은 그 행에서 새로 쓰는 기호만 밝힌다. 표시가 없는 행은 위의 공통 표기만 쓴다.
+
+Table 8. Feature definitions
+
+| Feature | Definition | Variable |
+|---|---|---|
+| `auc_base` | $\mathcal{T}[x - x_0]$ | $x_0$ 는 초기 구간의 중앙값 (pre-trace baseline) 이다 |
+| `auc_res_abs` | $\mathcal{T}\big[\lvert x - x_{\text{ref}}\rvert\big]$ | $x_{\text{ref}}$ 는 §1.5에서 산출한 golden reference이며, $x$ 와 시점이 정렬되어 있다 |
+| `auc_res_over` | $\mathcal{T}\big[\max(x - x_{\text{ref}},\,0)\big]$ | — |
+| `auc_res_under` | $\mathcal{T}\big[\max(x_{\text{ref}} - x,\,0)\big]$ | — |
+| `pauc_k` | $\mathcal{T}_{P_k}\big[\lvert x - x_0\rvert\big] \big/ \mathcal{T}\big[\lvert x - x_0\rvert\big]$ | $P_k$ 는 sample을 등분한 $k$ 번째 block의 index 구간이다 |
+| `tv` | $\sum_{i=1}^{N-1} \lvert \Delta x_i \rvert$ | $\int \lvert dx/dt\rvert\,dt$ 의 이산형이며, $\Delta t_i$ 가 상쇄되어 남지 않는다 |
+| `auc_energy` | $\mathcal{T}\big[(x - \bar{x})^2\big]$ | $\bar{x}$ 는 산술평균이다 |
+| `t25`, `t50`, `t75` | $F_j = \mathcal{T}_{1:j}\big[\lvert x - x_0\rvert\big] \big/ \mathcal{T}\big[\lvert x - x_0\rvert\big]$ 를 선형보간해 $F = q$ 가 되는 시각 $t_q$ 를 찾고, $(t_q - t_1)/T$ 로 정규화한다 | $\mathcal{T}_{1:j}$ 는 처음부터 $j$ 번째 sample까지의 누적 합이고, $q$ 는 0.25, 0.50, 0.75다 |
+| `b` | $C_j = \mathcal{T}_{1:j}[x]$ 에 대한 $\mathrm{OLS}(C \sim t)$ 의 기울기 | $C_j$ 는 누적 AUC 곡선이다 |
+| `R` | $\dfrac{3}{2} - \dfrac{6\,m_2}{T^2}, \quad m_2 = \dfrac{\mathcal{T}\big[\tau^2 (x - x_0)\big]}{\mathcal{T}[x - x_0]}$ | $\tau_i = (t_i - t_1) - T/2$ 는 중심화한 시간축이다. $m_2$ 를 baseline 차감 후에 구하는 것은 §2.1의 drift 대응을 따른 것이다 |
+| `slope_blk` | $A_k = \mathcal{T}_{B_k}[x - x_0]$ 에 대한 $\mathrm{OLS}(A \sim k)$ 의 기울기 | $B_k$ 는 폭 $w$ 의 $k$ 번째 block 구간이다 |
+| `s` | 최근 $m$ 장에 대한 $\mathrm{OLS}(\text{AUC}_i \sim i)$ 의 기울기 | $i$ 는 wafer index이며, 현재 wafer 이전만 쓴다 (§1.8) |
+
+## Appendix C. Feature-Moment Correspondence
+
+Table 9. Feature-moment correspondence
 
 | Feature | Mathematical identity | Time moment order |
 |---|---|---|
@@ -358,7 +385,7 @@ Table 8. Feature-moment correspondence
 | 원신호 OLS 기울기 | $\int \tau x\,d\tau$ 정규화 | 1차 |
 | $b$ / `R` | $\int \tau^2 x\,d\tau$ 를 통한 분해 | 2차 |
 | `t50` | 누적분포 중앙값 | 위상 (분위) |
-| `skew` | $\int \tau^3 x\,d\tau$ 정규화 | 3차 |
+| 3차 시간 moment (본 문서 미사용) | $\int \tau^3 x\,d\tau$ 정규화 | 3차 |
 | `slope_blk` | 대역통과 filter 후 1차 | 1차 (평활) |
 
 0차만 쓰면 형상 정보가 전부 소실되고, 차수를 무한정 올리면 잡음만 증폭된다. 0–2차와 위상 하나의 조합이 정보 대비 분산의 절충점이다.
