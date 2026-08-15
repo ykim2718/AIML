@@ -1,5 +1,5 @@
 # Wide-Data
-Rev. 0 | Created: 2026-08-15 | Updated: 2026-08-15 08:38 CDT
+Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-15 10:48 CDT
 
 > This folder holds strategies for wide data, where the columns that describe one wafer far outnumber the wafers themselves.
 > The documents start from the (wafer, feature, trace) sensor tensor and work toward a narrow per-wafer table.
@@ -15,3 +15,4 @@ Table 1. Documents in this folder
 | Document | Description |
 |---|---|
 | [semiconductor-sensor-trace-wide-to-narrow.md](semiconductor-sensor-trace-wide-to-narrow.md) | It surveys wide-to-narrow conversion methods in order of difficulty — summary statistics, linear projection, feature libraries, tensor decomposition, random convolution kernels, deep representations, and foundation-model embeddings — and closes with a recommended pipeline for this scale and a further-development appendix. |
+| [wide-to-narrow-practice.md](wide-to-narrow-practice.md) | It works out the construction details of three methods from that landscape — weight-shared channel-independent encoding, sparse sensor selection with group lasso and sparse PCA, and PLS with a nested lot-grouped validation protocol — down to the objective functions, the code, and the pitfalls. |
