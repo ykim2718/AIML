@@ -1,5 +1,5 @@
 # AIML
-Rev. 12 | Created: 2026-08-07 | Updated: 2026-08-15 05:56 CDT
+Rev. 13 | Created: 2026-08-07 | Updated: 2026-08-15 08:38 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -57,7 +57,7 @@ Table 4. Feature engineering documents
 | [Feature-Engineering/fe-sq.md](Feature-Engineering/fe-sq.md) | It maps feature engineering for sequences, where time order is itself the information, covering univariate and multivariate series. |
 | [Feature-Engineering/wts.md](Feature-Engineering/wts.md) | It consolidates techniques for wide time series where features far outnumber samples, grounded in FDC, DOE, and metrology practice. |
 | [Feature-Engineering/PCA/README.md](Feature-Engineering/PCA/README.md) | It indexes the PCA folder, which treats PCA as a lineage of variants — the classical branches, their selection for semiconductor data, and the modern reinterpretation in representation learning. |
-| [Feature-Engineering/Wide-Data/semiconductor-sensor-trace-wide-to-narrow.md](Feature-Engineering/Wide-Data/semiconductor-sensor-trace-wide-to-narrow.md) | It surveys methods for compressing the (wafer, feature, trace) sensor tensor into a narrow per-wafer table while preserving information, ordered from summary statistics through tensor decomposition to foundation-model embeddings. |
+| [Feature-Engineering/Wide-Data/README.md](Feature-Engineering/Wide-Data/README.md) | It indexes the Wide-Data folder, which surveys how the (wafer, feature, trace) sensor tensor is compressed into a narrow per-wafer table while preserving information. |
 
 ### 3.3 Metrics
 
