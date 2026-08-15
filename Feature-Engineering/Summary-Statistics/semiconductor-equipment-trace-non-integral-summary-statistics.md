@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 17 | Created: 2026-07-29 | Updated: 2026-08-14 19:07 CDT
+Rev. 18 | Created: 2026-07-29 | Updated: 2026-08-14 19:21 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -228,7 +228,7 @@ Table 4. Correspondence between the lag-1 autocorrelation and SLSR
 
 `slsr` 이 파형에 따라 실제로 어떤 값을 갖는지 보이기 위해, 진폭 1인 sine에 백색잡음을 더해 가며 계산했다. Trace 길이는 300 sample이고, 열은 trace 구간에 담기는 sine의 주기 수, 행은 진폭 대비 잡음 표준편차다.
 
-![Fig 1](roughness-matrix.png)
+![Fig 1](semiconductor-equipment-trace-non-integral-summary-statistics_fig/fig1.png)
 
 Fig 1. Sine 주파수와 잡음 수준에 따른 $\sigma_{\text{st}}/s$. 열은 왼쪽부터 1, 2, 5, 12, 30 주기이고, 행은 위에서부터 잡음 표준편차 0, 0.05, 0.20, 0.60, 2.00이다. 각 panel의 값이 그 파형에서 계산한 비다.
 

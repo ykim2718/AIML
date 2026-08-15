@@ -1,5 +1,5 @@
 __author__ = 'yRocket'
-__version__ = "0.0.1.2026.8.14"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.2.2026.8.14"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 """
 Render a 5 x 5 matrix chart of sine traces with additive white noise and report slsr on each panel.
 
@@ -21,7 +21,8 @@ AMPLITUDE = 1.0                                  # sine amplitude
 CYCLE_LIST = [1, 2, 5, 12, 30]                   # sine cycles over the trace, one per column
 NOISE_LIST = [0.0, 0.05, 0.2, 0.6, 2.0]          # noise sigma relative to the amplitude, one per row
 SEED = 0
-OUT_PATH = pathlib.Path(__file__).with_suffix('.png')
+DOC_STEM = 'semiconductor-equipment-trace-non-integral-summary-statistics'
+OUT_PATH = pathlib.Path(__file__).parent / f"{DOC_STEM}_fig" / 'fig1.png'
 
 LINE_COLOR = TABLEAU_COLORS['tab:blue']
 INK_COLOR = '#333333'
