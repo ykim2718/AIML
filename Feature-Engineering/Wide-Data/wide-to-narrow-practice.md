@@ -1,7 +1,7 @@
 # Wide-to-Narrow Practice
-Rev. 0 | Created: 2026-08-15 | Updated: 2026-08-15 10:48 CDT
+Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-15 10:53 CDT
 
-반도체 장비 sensor trace의 wide data를 narrow data로 바꾸는 방법 가운데 세 가지 — 가중치 공유 encoding, sparsity 기반 sensor 선택, PLS 지도적 축약 — 의 시공 세부를 다룬다. 각 방법이 왜 동작하는지, 구현에서 무엇이 필수인지, 어떤 함정이 있는지를 적는다.
+반도체 장비 sensor trace의 wide data를 narrow data로 바꾸는 방법 가운데 세 가지 — 가중치 공유 encoding, sparsity 기반 sensor 선택, PLS 지도적 축약 — 의 구현 세부를 다룬다. 각 방법이 왜 동작하는지, 구현에서 무엇이 필수인지, 어떤 함정이 있는지를 적는다.
 
 ## 1. Scope and Premise
 
@@ -28,7 +28,7 @@ Table 1. Independent versus weight-shared encoders
 | Sensor별 독립 encoder | $P \times s$ | sensor당 $n$ 개 |
 | 가중치 공유 encoder | $P$ | $n \times s$ 개 |
 
-두 번째 열이 본질이다. Wafer가 수백 장뿐이어도, (wafer, sensor) 쌍을 표본으로 삼으면 encoder는 수만 개의 1차원 sequence를 학습 data로 받는다. Sensor 200개를 하나의 다변량 입력으로 붙여 넣으면 표본이 $n$ 개에 머물지만, sensor축을 배치 차원으로 접으면 $n \times s$ 개가 된다. 이것이 $n$ 이 작은 fab data에서 deep encoder를 성립시키는 유일한 장치다.
+두 번째 열이 본질이다. Wafer가 수백 장뿐이어도, (wafer, sensor) 쌍을 표본으로 삼으면 encoder는 수만 개의 1차원 sequence를 학습 data로 받는다. Sensor 200개를 하나의 다변량 입력으로 붙여 넣으면 표본이 $n$ 개에 머물지만, sensor축을 batch 차원으로 접으면 $n \times s$ 개가 된다. 이것이 $n$ 이 작은 fab data에서 deep encoder를 성립시키는 유일한 장치다.
 
 ### 2.2 Why One Encoder Suffices
 
@@ -50,7 +50,7 @@ xn = (x - mu) / sd                         # (B, C, T)
 # 2. Fold channels into the batch axis — the encoder sees univariate series
 z = xn.reshape(B * C, 1, T)
 z = encoder(z)                             # shared weights, output (B*C, d)
-z = z.reshape(B, C, d)
+z = z.reshape(B, C, -1)                    # (B, C, d)
 
 # 3. Restore sensor identity and re-inject the level statistics
 z = z + channel_emb                        # learnable (C, d), broadcast over B
@@ -63,8 +63,8 @@ wafer_vec = (w * z).sum(dim=1)             # (B, d + 2)
 
 ### 2.4 Stepwise Requirements
 
-- 채널별 정규화 (단계 1): 압력 (mTorr, $10^0$ 규모) 과 RF power (W, $10^3$ 규모) 를 같은 encoder에 넣으려면 규모를 반드시 제거해야 한다. 제거하지 않으면 kernel이 규모 큰 sensor에만 반응한다. 단, 제거한 `mu` 와 `sd` 는 버리지 말고 단계 3에서 다시 붙인다. VM에서 "평균 압력이 얼마였는가"는 두께를 결정하는 1차 정보이기 때문이다. 정규화로 형상 정보만 encoding하고, level 정보는 스칼라로 우회 전달하는 구조다.
-- Channel embedding (단계 3): 배치 차원으로 접는 순간 "몇 번 sensor였는지"가 사라진다. 학습 가능한 $(s, d)$ embedding을 더해 정체성을 복원한다. Sensor를 기능 그룹으로 묶는 taxonomy가 있으면 무작위 초기화 대신 그룹 one-hot을 초기값으로 주는데, 수렴이 빨라지고 해석이 붙는다.
+- Channel별 정규화 (단계 1): 압력 (mTorr, $10^0$ 규모) 과 RF power (W, $10^3$ 규모) 를 같은 encoder에 넣으려면 규모를 반드시 제거해야 한다. 제거하지 않으면 kernel이 규모 큰 sensor에만 반응한다. 단, 제거한 `mu` 와 `sd` 는 버리지 말고 단계 3에서 다시 붙인다. VM에서 "평균 압력이 얼마였는가"는 두께를 결정하는 1차 정보이기 때문이다. 정규화로 형상 정보만 encoding하고, level 정보는 scalar로 우회 전달하는 구조다.
+- Channel embedding (단계 3): batch 차원으로 접는 순간 "몇 번 sensor였는지"가 사라진다. 학습 가능한 $(s, d)$ embedding을 더해 정체성을 복원한다. Sensor를 기능 그룹으로 묶는 taxonomy가 있으면 무작위 초기화 대신 그룹 one-hot을 초기값으로 주는데, 수렴이 빨라지고 해석이 붙는다.
 - 집계 (단계 4): channel 독립 encoding은 sensor 간 상호작용 — 예를 들어 RF reflected power 상승과 chamber 압력 이상의 동시 발생 — 을 볼 수 없다. 이 상호작용은 전부 집계 층에서 회복해야 한다. 단순 mean pooling은 정보 손실이 크고, attention pooling이나 taxonomy 그룹별 pooling 후 그룹 간 소형 MLP가 낫다.
 
 ### 2.5 Limitations
@@ -170,7 +170,7 @@ PCA는 첫 항만 최대화하고 둘째 항을 무시한다. 문제는 fab trac
 
 ### 4.2 Multi-Response PLS2
 
-두께와 면저항을 동시에 예측한다면 개별 PLS1 두 개보다 잠재공간을 공유하는 PLS2를 권한다. 두 응답이 동일한 물리적 원인 (막 두께 profile) 을 공유하므로, 잠재공간을 공유하면 상호 정칙화 효과가 생겨 $n$ 이 작을 때 유리하다. 단, 두 응답의 규모와 노이즈 수준이 크게 다르면 PLS2가 분산 큰 쪽에 끌려가므로 응답변수도 반드시 autoscaling한다.
+두께와 면저항을 동시에 예측한다면 개별 PLS1 두 개보다 잠재공간을 공유하는 PLS2를 권한다. 두 응답이 동일한 물리적 원인 (막 두께 profile) 을 공유하므로, 잠재공간을 공유하면 상호 정칙화 효과가 생겨 $n$ 이 작을 때 유리하다. 단, 두 응답의 규모와 noise 수준이 크게 다르면 PLS2가 분산 큰 쪽에 끌려가므로 응답변수도 반드시 autoscaling한다.
 
 ### 4.3 Choosing the Component Count
 
@@ -179,7 +179,7 @@ PCA는 첫 항만 최대화하고 둘째 항을 무시한다. 문제는 fab trac
 무작위 KFold가 안 되는 이유는 누수 경로가 두 가지 있기 때문이다.
 
 - 시간 누수: 장기 drift와 계단형 shift가 있는 data에서 무작위 분할은 미래 wafer로 학습해 과거를 예측하게 만든다. 실제 운영에서는 불가능한 조건이며, drift 아래에서 이 편향은 결정계수 0.1~0.2 수준으로 크다.
-- Lot 누수 (더 치명적): 같은 lot, 같은 배치의 wafer는 trace가 거의 동일하다. 무작위 분할은 같은 lot의 wafer를 train과 test에 나눠 넣어, 사실상 동일 표본을 양쪽에 두는 것이 된다. 반드시 lot 또는 일자 단위로 그룹을 묶어 분할한다.
+- Lot 누수 (더 치명적): 같은 lot, 같은 batch의 wafer는 trace가 거의 동일하다. 무작위 분할은 같은 lot의 wafer를 train과 test에 나눠 넣어, 사실상 동일 표본을 양쪽에 두는 것이 된다. 반드시 lot 또는 일자 단위로 그룹을 묶어 분할한다.
 
 ```python
 # Python — nested, time-ordered, lot-grouped CV for the component count
@@ -207,8 +207,8 @@ for tr, te in outer:                       # outer loop: performance estimate
     # refit with best_A, then evaluate on the outer test block
 ```
 
-- 중첩 구조가 필수인 이유: 단일 CV로 $A$ 를 고르고 같은 CV 점수를 성능으로 보고하면 selection bias가 들어간다. 후보 20개에서 고른 최댓값은 이미 CV 노이즈의 상위 극단을 취한 값이다. 목적함수가 train 성능을 보상하도록 잘못 설계된 hyperparameter 탐색이 과적합을 유도하는 것과 동일 계열의 오류이며, 여기서는 CV 점수 자체가 오염된다.
-- 1-SE 규칙: 최고 점수의 $A$ 대신, 최고 점수에서 1 표준오차 이내를 달성하는 최소 $A$ 를 고른다. $n$ 이 작을 때 CV 곡선은 평탄하고 노이즈가 크므로 최댓값의 $A$ 는 거의 항상 과대추정이다. 이 규칙 하나로 $A$ 가 절반 이하로 줄어드는 경우가 흔하다.
+- 중첩 구조가 필수인 이유: 단일 CV로 $A$ 를 고르고 같은 CV 점수를 성능으로 보고하면 selection bias가 들어간다. 후보 20개에서 고른 최댓값은 이미 CV noise의 상위 극단을 취한 값이다. 목적함수가 train 성능을 보상하도록 잘못 설계된 hyperparameter 탐색이 과적합을 유도하는 것과 동일 계열의 오류이며, 여기서는 CV 점수 자체가 오염된다.
+- 1-SE 규칙: 최고 점수의 $A$ 대신, 최고 점수에서 1 표준오차 이내를 달성하는 최소 $A$ 를 고른다. $n$ 이 작을 때 CV 곡선은 평탄하고 noise가 크므로 최댓값의 $A$ 는 거의 항상 과대추정이다. 이 규칙 하나로 $A$ 가 절반 이하로 줄어드는 경우가 흔하다.
 - Purge gap: train의 마지막 lot과 test의 첫 lot 사이에 공백을 두는 이유는 인접 lot 간 자기상관 때문이다. Chamber 상태는 연속적으로 변하므로, 바로 다음 lot을 예측하는 것은 실제 배포 조건 (주 단위 재학습) 보다 쉽다.
 
 ### 4.4 Diagnostics
@@ -252,6 +252,7 @@ for tr, te in outer:                       # outer loop: performance estimate
 - QR 분해: 행렬을 직교 행렬과 상삼각 행렬의 곱으로 나누는 분해. 그룹 whitening에 쓴다.
 - RevIN: Reversible Instance Normalization. 표본별 평균·분산을 제거했다가 출력에서 되돌리는 정규화.
 - Rs: 면저항. Sheet resistance.
+- Selection bias: 여러 후보 중 점수 최댓값을 고르는 절차 자체가 만드는 낙관 편향.
 - SPE: Squared Prediction Error. 잠재공간 밖 잔차의 제곱합. Q 통계량으로도 부른다.
 - THK: 두께. Thickness.
 - VIP: Variable Importance in Projection. PLS에서 특징별 기여도를 요약한 지표.
