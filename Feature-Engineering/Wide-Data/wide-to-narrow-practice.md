@@ -1,5 +1,5 @@
 # Wide-to-Narrow Practice
-Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-15 10:53 CDT
+Rev. 2 | Created: 2026-07-29 | Updated: 2026-08-15 11:20 CDT
 
 반도체 장비 sensor trace의 wide data를 narrow data로 바꾸는 방법 가운데 세 가지 — 가중치 공유 encoding, sparsity 기반 sensor 선택, PLS 지도적 축약 — 의 구현 세부를 다룬다. 각 방법이 왜 동작하는지, 구현에서 무엇이 필수인지, 어떤 함정이 있는지를 적는다.
 
