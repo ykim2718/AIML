@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 21 | Created: 2026-8-1 | Updated: 2026-8-14 21:14 CDT
+Rev. 21 | Created: 2026-8-1 | Updated: 2026-8-14 21:20 CDT
 
 ## 1. Terminology
 
@@ -54,8 +54,8 @@ Rev. 21 | Created: 2026-8-1 | Updated: 2026-8-14 21:14 CDT
 
 ## 9. Math
 
-+ GitHub web page에서 rendering시, 표·본문 안의 $...$ 수식에서 <, >를 HTML entity (&lt;, &gt;) 로 바꿔 MathJax에 넘기는 바람에 "Misplaced &" 오류가 나는 알려진 문제가 있기에,  수식 안의 부등호를 MathJax 매크로 \lt, \gt로 바꿀  것.
-+ 수식 안에서 \text{} 로 code 식별자를 쓰지 않는다. GitHub이 \_ 의 backslash를 떼어내 맨 _ 를 text mode로 넘기는 바람에 "_ allowed only in math mode" 오류가 난다. underscore가 든 식별자는 수식 밖 code span으로 적고, 수식에는 값과 연산자만 남긴다.
++ GitHub web page rendering을 위해서, 표·본문 안의 $...$ 수식에서 <, >를 HTML entity (&lt;, &gt;) 로 바꿔 MathJax에 넘기는 바람에 "Misplaced &" 오류가 나는 알려진 문제가 있기에,  수식 안의 부등호를 MathJax 매크로 \lt, \gt로 바꿀  것.
++ GitHub web page rendering을 위해서, 수식 안에 \text{} 로 code 식별자를 쓰지 않는다. GitHub이 \_ 의 backslash를 떼어내 맨 _ 를 text mode로 넘기는 바람에 "_ allowed only in math mode" 오류가 난다. underscore가 든 식별자는 수식 밖 code span으로 적고, 수식에는 값과 연산자만 남긴다.
     - 나쁨: $\mathrm{corr}(\text{max\_delta},\ \text{sigma\_st})$
     - 좋음: corr(`max_delta`, `sigma_st`)
 
@@ -108,11 +108,11 @@ result = [x * 2 for x in range(10)]
 
 ## 14. Appendix
 
-+ Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
-+ 본문에서 Appendix를 언급한 경우, 본문에 anchor link를 둔다.
-+ 본문과 첫 Appendix 사이에 `---` 을 한 줄 두어 경계를 표시한다. Appendix 사이에는 두지 않는다.
-    - `---` 의 위아래에 빈 줄을 둔다. 위에 빈 줄이 없으면 앞 줄이 setext heading으로 해석된다.
-    - 빈 줄을 여러 개 넣는 방법은 쓰지 않는다. GitHub이 연속된 빈 줄을 하나로 합치므로 렌더링에서는 여백이 생기지 않는다.
+- Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
+- 본문에서 Appendix를 언급한 경우, 본문에 anchor link를 둔다.
+- 본문과 첫 Appendix 사이에 `---` 을 한 줄 두어 경계를 표시한다. Appendix 사이에는 두지 않는다.
+    + `---` 의 위아래에 빈 줄을 둔다. 위에 빈 줄이 없으면 앞 줄이 setext heading으로 해석된다.
+    + 빈 줄을 여러 개 넣는 방법은 쓰지 않는다. GitHub이 연속된 빈 줄을 하나로 합치므로 렌더링에서는 여백이 생기지 않는다.
 
 ## 15. Review (required — do not finish the task before completing this step)
 
