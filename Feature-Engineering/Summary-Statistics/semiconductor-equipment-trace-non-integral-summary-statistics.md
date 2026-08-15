@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 19 | Created: 2026-07-29 | Updated: 2026-08-14 21:14 CDT
+Rev. 20 | Created: 2026-07-29 | Updated: 2026-08-15 11:35 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -11,9 +11,13 @@ Data는 [wafer, feature, trace] 의 dimension을 갖는다. 여기서 trace의 �
 
 단일 wafer trace를 $x(t)$, $t \in [0, T]$ 로 두고, $\bar{x}$ 를 그 산술평균으로 쓴다.
 
-적분을 쓰지 않는 기본 특징으로, 해석성이 높고 계산 비용이 낮다. 특징은 잡는 축으로 묶이며, 축마다 core를 하나 두고 대체 가능한 특징이 있으면 option으로 함께 둔다. Option이 없는 축도 있다. Option은 core와 같은 축을 재므로 둘을 함께 넣으면 공선성이 생긴다. 축당 하나만 고르고, 어느 쪽을 고를지는 §5.1의 검사로 정한다.
+적분을 쓰지 않는 특징은 값이 정해지는 방식에 따라 둘로 갈린다. Closed-form 특징은 자료만 있으면 값이 하나로 정해지고, event-counting 특징은 무엇을 사건으로 볼지 정하는 문턱값이 있어야 값이 정해진다. 수식 정의는 [Appendix B](#appendix-b-feature-definitions) 에, 계산 절차는 [Appendix E](#appendix-e-implementation) 에 정리한다.
 
-Table 1. Non-integral features
+### 1.1 Closed-Form Statistics
+
+해석성이 높고 계산 비용이 낮다. 특징은 잡는 축으로 묶이며, 축마다 core를 하나 두고 대체 가능한 특징이 있으면 option으로 함께 둔다. Option이 없는 축도 있다. Option은 core와 같은 축을 재므로 둘을 함께 넣으면 공선성이 생긴다. 축당 하나만 고르고, 어느 쪽을 고를지는 §5.1의 검사로 정한다.
+
+Table 1. Closed-form non-integral features
 
 | Feature | Axis | Captures | Role | Redundant with |
 |---|---|---|---|---|
@@ -26,13 +30,37 @@ Table 1. Non-integral features
 | `sigma_st` | Short-term variation | Step-to-step variation, SPC short-term sigma | Core | — |
 | `max_delta` | Short-term variation | Largest single jump | Option | `sigma_st` |
 | `slsr` | Roughness | Short-term over overall variation | Core | — |
-| `zcr` | Roughness | Center-line crossing rate | Option | `slsr` |
 | `peak_time_norm` | Timing | Relative time of the maximum | Core | — |
 | `duration` | Length | Processing time | Core | — |
 
-수식 정의는 [Appendix B](#appendix-b-feature-definitions) 에, 계산 절차는 [Appendix E](#appendix-e-implementation) 에 정리한다.
+### 1.2 Event-Counting Features
 
-### 1.1 Short-Term Sigma and Roughness
+신호에서 사건을 검출해 세는 특징이다. 진동 횟수를 세는 방법은 ASTM E1049가 level-crossing counting과 peak counting 등으로 규정하고 있으며, hysteresis와 prominence가 각 방법의 문턱값이다.
+
+Table 2. Event-counting features
+
+| Feature | Axis | Captures | Parameter | Redundant with |
+|---|---|---|---|---|
+| `zcr` | Roughness | Center-line crossing rate | 기준선, hysteresis $h$ | `slsr` |
+| `cycle_count` | Roughness | Number of oscillation cycles | Peak prominence $\pi$ | `zcr` |
+
+문턱값을 대가로 얻는 것은 물리적 해석이다. `slsr` 이 0.32라는 값은 model에는 쓸모가 있어도 공정 담당자에게는 읽히지 않지만, 밸브가 12번 hunting했다는 말은 바로 조치로 이어진다.
+
+두 특징은 상수배 관계에 가깝다. 한 주기가 기준선을 두 번 지나므로
+
+$$\text{cycle count} \approx \frac{(N-1)\,\text{zcr}}{2}$$
+
+이며, trace 길이가 고정된 recipe에서는 완전 공선이 된다. Roughness 축의 세 특징 가운데 하나만 쓰고, 어느 것을 고를지는 §5.1의 검사로 정한다.
+
+문턱값은 다음 기준으로 정한다.
+
+- 기준선은 추세가 있으면 평균 대신 이동중앙값을 쓴다. 평균을 쓰면 ramp가 있는 trace에서 교차가 한 번만 잡힌다.
+- Hysteresis $h$ 는 잡음 수준에 맞춘다. `sigma_st` 의 2–3배가 출발점이며, 이보다 작으면 잡음이 가짜 교차를 만든다.
+- Prominence $\pi$ 도 같은 근거로 잡는다. 주변보다 $\pi$ 만큼 솟지 않은 봉우리는 진동으로 세지 않는다.
+
+문턱값은 train fold 안에서 정하고 test fold에 그대로 적용한다. Fold마다 다시 정하면 §5.2의 누출 조건을 어긴다.
+
+### 1.3 Short-Term Sigma and Roughness
 
 `sigma_st` 는 MSSD를 2로 나눈 값의 제곱근이며, SPC의 I-MR chart가 쓰는 short-term sigma와 같은 양이다. `std` 가 전체 구간의 변동을 재는 데 반해 이쪽은 이웃 sample 사이의 변동만 재므로, 둘은 서로 다른 시간 scale을 본다.
 
@@ -46,7 +74,7 @@ $$\frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
 - 비가 1이면 백색잡음이다.
 - 비가 1보다 크면 sample 단위로 진동한다.
 
-`slsr` 은 분자와 분모가 같은 단위라 gain drift와 chamber 간 scale 차이에 불변이다. 같은 축의 option인 `zcr` 은 중심선 교차를 세는 방식이라 진폭 outlier에 강건한 대신, ramp가 있는 trace에서는 중심선을 한 번만 지나므로 진동을 과소평가한다. 추세가 뚜렷한 trace에는 `slsr`, 진폭이 튀는 trace에는 `zcr` 이 맞다.
+`slsr` 은 분자와 분모가 같은 단위라 gain drift와 chamber 간 scale 차이에 불변이고, 문턱값도 필요 없다. 같은 축의 `zcr` (§1.2) 은 중심선 교차를 세는 방식이라 진폭 outlier에 강건한 대신, ramp가 있는 trace에서 기준선을 평균으로 잡으면 교차가 한 번만 잡혀 진동을 과소평가한다. 추세가 뚜렷한 trace에는 `slsr`, 진폭이 튀는 trace에는 `zcr` 이 맞다.
 
 ## 2. Failure Modes and Mitigations
 
@@ -66,7 +94,7 @@ Trace에 느린 offset $\delta$ 가 있으면 위치 특징인 `mean` 과 `media
 - 결측은 특징 계산 전에 선형보간한다. 보간하지 않으면 결측 위치의 큰 차분이 `sigma_st` 와 `max_delta` 를 부풀린다.
 - trace 시작과 종료 경계의 transient 구간은 baseline 산출에서 제외한다.
 
-`slsr` 과 `zcr` 도 sampling 주기에 의존한다. 매끄러운 신호에서는 $\Delta x \approx x' \Delta t$ 이므로 `slsr` 이 $\Delta t$ 에 비례하고, `zcr` 은 sample 쌍 단위의 비율이라 같은 물리적 진동이라도 주기를 촘촘히 하면 값이 낮아진다. 둘 다 진폭 단위로는 무차원이지만 시간 단위로는 아니므로, 주기가 다른 recipe나 chamber 사이에서는 직접 비교하지 않는다.
+Roughness 축의 세 특징도 sampling 주기에 의존한다. 매끄러운 신호에서는 $\Delta x \approx x' \Delta t$ 이므로 `slsr` 이 $\Delta t$ 에 비례하고, `zcr` 은 sample 쌍 단위의 비율이라 같은 물리적 진동이라도 주기를 촘촘히 하면 값이 낮아진다. `cycle_count` 는 sample 수에 비례해 반대로 커진다. 셋 다 진폭 단위로는 무차원이지만 시간 단위로는 아니므로, 주기가 다른 recipe나 chamber 사이에서는 직접 비교하지 않는다.
 
 ### 2.3 Unit Dependence
 
@@ -109,7 +137,8 @@ Option은 core를 보태는 것이 아니라 **교체**하는 용도다. 축당 
 - 위치가 outlier에 흔들리면 `mean` 대신 `median` 을 쓴다.
 - 산포가 outlier에 흔들리면 `std` 대신 `iqr` 을, 절대 진폭 자체가 규격 항목이면 `range` 를 쓴다.
 - 단발 spike가 관심사면 `sigma_st` 대신 `max_delta` 를 쓴다. 전자는 spike 하나를 전체 구간에 평균해 버린다.
-- 진폭이 크게 튀는 trace라면 `slsr` 대신 `zcr` 을 쓴다 (§1.1).
+- 진폭이 크게 튀는 trace라면 `slsr` 대신 `zcr` 을 쓴다 (§1.3).
+- 진동 횟수 자체를 공정 담당자에게 보고해야 하면 `slsr` 대신 `cycle_count` 를 쓴다. 문턱값을 정해야 하는 부담을 해석성과 맞바꾸는 선택이다 (§1.2).
 
 `duration` 은 trace 길이가 wafer마다 달라질 때만 정보를 가지므로, 길이가 고정된 recipe에서는 core에서 뺀다.
 
@@ -119,7 +148,7 @@ Option은 core를 보태는 것이 아니라 **교체**하는 용도다. 축당 
 
 Core와 option을 함께 넣었는지, 또는 core끼리 우연히 겹쳤는지를 다음으로 판정한다.
 
-Table 2. Redundancy checks
+Table 3. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
@@ -128,14 +157,15 @@ Table 2. Redundancy checks
 | corr(`range`, `std`) | $\gt 0.95$ | `range` 폐기 |
 | corr(`max_delta`, `sigma_st`) | $\gt 0.95$ | 단발 spike 없음, `max_delta` 폐기 |
 | corr(`zcr`, `slsr`) | $\gt 0.95$ | 같은 거칠기를 잼, `zcr` 폐기 |
+| corr(`cycle_count`, `zcr`) | $\gt 0.95$ | trace 길이가 일정, 둘 중 하나 폐기 |
 | corr(`sigma_st`, `std`) | $\gt 0.95$ | 단기와 전체 변동이 분리되지 않음, `sigma_st` 폐기 |
-| var(`slsr`) (wafer 간) | $\approx 0$ | 거칠기가 일정, `slsr` 과 `zcr` 폐기 |
+| var(`slsr`) (wafer 간) | $\approx 0$ | 거칠기가 일정, Roughness 축 전부 폐기 |
 | var(`duration`) (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
 
 ### 5.2 Performance Criteria
 
 - Test $R^2$ 증분만 근거로 사용한다. Train $R^2$ 개선은 근거가 되지 않는다. 표본이 작으면 특징을 늘릴수록 train $R^2$ 는 거의 항상 올라간다.
-- Nested time-series CV를 쓴다. Pruning 기준, scaler, 그룹 정의를 모두 train fold 내부에서만 산출한다.
+- Nested time-series CV를 쓴다. Pruning 기준, scaler, 그룹 정의, §1.2의 문턱값을 모두 train fold 내부에서만 산출한다.
 - $R^2_{\max}$ 대비로 평가한다. 계측 반복성 $\sigma$ 로부터 잡음 천장을 계산하고, 그 대비 몇 %에 도달했는지로 판단한다. 천장의 80%를 넘으면 특징 추가를 멈추는 것이 합리적이다.
 - Chamber 교차 검증을 한다. 한 chamber로 학습해 다른 chamber로 평가하며, 판정 기준은 §2.3과 같다.
 
@@ -147,14 +177,17 @@ Table 2. Redundancy checks
 
 ## Appendix A. Terminology
 
+- **ASTM E1049**: 피로 해석을 위한 cycle counting 방법을 규정한 표준이다. Level-crossing counting과 peak counting이 여기에 속한다.
 - **Channel**: trace 하나가 기록되는 개별 측정 계열이다.
 - **CV (Cross-Validation)**: 데이터를 여러 fold로 나눠 학습과 평가를 반복하는 model 검증 방법이다.
 - **FDC (Fault Detection and Classification)**: 장비 신호로 공정 이상을 탐지하고 분류하는 체계다.
 - **GBM (Gradient Boosting Machine)**: 얕은 결정 나무를 순차적으로 더해 가는 ensemble 학습 방법이다.
+- **Hysteresis**: 사건 검출에서 상태가 바뀌려면 넘어야 하는 dead band다. 기준선 근처의 잡음이 가짜 사건을 만드는 것을 막는다.
 - **I-MR chart**: 개별값과 이동범위를 함께 보는 SPC 관리도다.
 - **MSSD (Mean Square Successive Difference)**: 이웃 sample 차분의 제곱평균이다.
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.
 - **PLS (Partial Least Squares)**: 예측변수와 응답변수의 공분산을 최대화하는 latent 변수 회귀 방법이다.
+- **Prominence**: 봉우리가 양옆의 최저점보다 얼마나 솟았는지를 재는 값이다.
 - **SLSR (Short-term to Long-term Sigma Ratio)**: 단기 sigma를 전체 구간 sigma로 나눈 무차원 비다.
 - **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
 - **SPC (Statistical Process Control)**: 공정 변동을 통계적 관리한계로 감시하는 체계다.
@@ -170,7 +203,7 @@ Trace를 $x_1, \dots, x_N$ 으로, timestamp를 $t_1, \dots, t_N$ 으로 두고 
 
 Variable 열은 그 행에서 새로 쓰는 기호만 밝힌다. 표시가 없는 행은 위의 공통 표기만 쓴다.
 
-Table 3. Feature definitions
+Table 4. Feature definitions
 
 | Feature | Definition | Variable |
 |---|---|---|
@@ -180,12 +213,15 @@ Table 3. Feature definitions
 | `range` | $\max_i x_i - \min_i x_i$ | — |
 | `iqr` | $Q_3 - Q_1$ | $Q_1$ 과 $Q_3$ 은 $x$ 의 제1·제3 사분위수다 |
 | `slope` | $\dfrac{\sum_i (t_i - \bar{t})(x_i - \bar{x})}{\sum_i (t_i - \bar{t})^2}$ | $\bar{t}$ 는 timestamp의 산술평균이다 |
-| `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 §1.1에 있다 |
+| `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 §1.3에 있다 |
 | `max_delta` | $\max_i \lvert \Delta x_i \rvert$ | — |
 | `slsr` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
-| `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[\mathrm{sign}(x_i - \bar{x}) \neq \mathrm{sign}(x_{i+1} - \bar{x})\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $\mathrm{sign}$ 의 기준선은 $\bar{x}$ 다 |
+| `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[g_i \neq g_{i+1}\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $g_i \in \{-1, +1\}$ 은 hysteresis를 적용한 부호로, $x_i - c \gt h/2$ 이면 $+1$, $x_i - c \lt -h/2$ 이면 $-1$, 그 사이면 직전 값을 유지한다. $c$ 는 기준선, $h$ 는 dead band 폭이다 |
+| `cycle_count` | $\lvert \{\, i : x_i \text{ is a peak with prominence} \ge \pi \,\} \rvert$ | $\pi$ 는 prominence 문턱값이다. 봉우리 하나가 진동 한 주기에 대응한다 |
 | `peak_time_norm` | $(t_{i^*} - t_1) / T$ | $i^* = \arg\max_i x_i$ 는 최댓값이 나오는 sample index다 |
 | `duration` | $T$ | — |
+
+`zcr` 에서 $h = 0$, $c = \bar{x}$ 로 두면 단순 부호 교차 계수가 된다. 문턱값을 주지 않았을 때의 기본값은 $c = \bar{x}$, $h = 2\sigma_{\text{st}}$, $\pi = 3\sigma_{\text{st}}$ 다. 추세가 뚜렷한 trace에서는 §1.2에 따라 $c$ 를 이동중앙값으로 바꿔 넘긴다.
 
 ## Appendix C. Lag-1 Autocorrelation
 
@@ -203,13 +239,13 @@ $$\hat{\rho}_1 = \frac{\sum_{i=1}^{N-1}(x_i - \bar{x})(x_{i+1} - \bar{x})}{\sum_
 
 $$\mathbb{E}\big[(x_{i+1} - x_i)^2\big] = \mathbb{E}[x_{i+1}^2] - 2\,\mathbb{E}[x_i x_{i+1}] + \mathbb{E}[x_i^2] = 2\sigma^2 - 2\rho_1 \sigma^2 = 2\sigma^2 (1 - \rho_1)$$
 
-이므로 $\mathrm{MSSD} \approx 2 s^2 (1 - \hat{\rho}_1)$ 이고, 여기에 §1.1의 정의를 넣으면 다음을 얻는다.
+이므로 $\mathrm{MSSD} \approx 2 s^2 (1 - \hat{\rho}_1)$ 이고, 여기에 §1.3의 정의를 넣으면 다음을 얻는다.
 
 $$\sigma_{\text{st}} = \sqrt{\frac{\mathrm{MSSD}}{2}} = s\sqrt{1 - \hat{\rho}_1} \quad\Longrightarrow\quad \frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}, \qquad \hat{\rho}_1 = 1 - \left(\frac{\sigma_{\text{st}}}{s}\right)^2$$
 
 즉 두 양은 일대일 대응이며, `slsr` 을 재는 것은 $\rho_1$ 을 재는 것과 같다.
 
-Table 4. Correspondence between the lag-1 autocorrelation and SLSR
+Table 5. Correspondence between the lag-1 autocorrelation and SLSR
 
 | $\hat{\rho}_1$ | $\sigma_{\text{st}} / s$ | Waveform |
 |---|---|---|
@@ -244,17 +280,36 @@ Fig 1. Sine 주파수와 잡음 수준에 따른 $\sigma_{\text{st}}/s$. 열은 
 
 ## Appendix E. Implementation
 
+Closed-form 특징은 자료만 받고, event-counting 특징은 문턱값을 함께 받는다. 문턱값을 주지 않으면 `sigma_st` 에서 §1.2의 기본값을 유도한다.
+
 ```python
 # Python
 import numpy as np
+from scipy.signal import find_peaks
 
-def non_integral_summary(x, t):
+def hysteresis_sign(x, center, dead_band):
+    """Sign of x - center, holding the previous state while inside the dead band."""
+    d = x - center
+    state = np.empty(len(d), dtype=int)
+    current = 1 if d[0] >= 0 else -1
+    for i, value in enumerate(d):
+        if value > dead_band / 2:
+            current = 1
+        elif value < -dead_band / 2:
+            current = -1
+        state[i] = current
+    return state
+
+
+def non_integral_summary(x, t, center=None, dead_band=None, prominence=None):
     """
-    x, t : (N,) single-wafer trace. t holds real timestamps.
+    x, t       : (N,) single-wafer trace. t holds real timestamps.
+    center     : zcr reference line. Defaults to the arithmetic mean.
+    dead_band  : zcr hysteresis width. Defaults to 2 * sigma_st.
+    prominence : cycle_count peak threshold. Defaults to 3 * sigma_st.
     """
     T        = t[-1] - t[0]
     q1, q3   = np.percentile(x, [25, 75])
-    xc       = x - x.mean()                          # centered, for zero crossings
     dx       = np.diff(x)
     std      = x.std(ddof=1)
     mssd     = np.mean(dx ** 2)                      # mean square successive difference
@@ -262,6 +317,13 @@ def non_integral_summary(x, t):
 
     if std == 0:
         raise ValueError("constant trace: prune the channel before summarizing")
+
+    center = x.mean() if center is None else center
+    dead_band = 2.0 * sigma_st if dead_band is None else dead_band
+    prominence = 3.0 * sigma_st if prominence is None else prominence
+
+    g = hysteresis_sign(x=x, center=center, dead_band=dead_band)
+    peak_index, _ = find_peaks(x, prominence=prominence)
 
     return {
         'mean':           x.mean(),
@@ -272,8 +334,9 @@ def non_integral_summary(x, t):
         'slope':          np.polyfit(t - t[0], x, 1)[0],   # OLS on the raw signal
         'sigma_st':       sigma_st,
         'max_delta':      np.max(np.abs(dx)),
-        'slsr':    sigma_st / std,
-        'zcr':            np.mean(np.signbit(xc[:-1]) != np.signbit(xc[1:])),
+        'slsr':           sigma_st / std,
+        'zcr':            np.mean(g[:-1] != g[1:]),
+        'cycle_count':    len(peak_index),
         'peak_time_norm': (t[np.argmax(x)] - t[0]) / T,
         'duration':       T,
     }
