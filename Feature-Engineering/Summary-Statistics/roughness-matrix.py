@@ -1,5 +1,5 @@
 __author__ = 'yRocket'
-__version__ = "0.1.1.2026.8.15"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.2.2026.8.15"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 """
 Render a 5 x 5 matrix chart of sine traces with additive white noise and report the three roughness
 features on each panel.
@@ -56,8 +56,9 @@ def hysteresis_sign(x: np.ndarray, center: float = 0.0, dead_band: float = 0.0) 
 def roughness_features(x: np.ndarray) -> dict:
     """Return slsr, zcr and cycle_count with the thresholds derived from the trace itself."""
     sigma_st = short_term_sigma(x)
+    range_ = float(x.max() - x.min())
     g = hysteresis_sign(x=x, center=float(x.mean()), dead_band=DEAD_BAND_FACTOR * sigma_st)
-    peak_index, _ = find_peaks(x, prominence=PROMINENCE_FACTOR * float(x.max() - x.min()))
+    peak_index, _ = find_peaks(x, prominence=PROMINENCE_FACTOR * range_)
     return {
         'slsr': sigma_st / float(np.std(x, ddof=1)),
         'zcr': float(np.mean(g[:-1] != g[1:])),

@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 23 | Created: 2026-07-29 | Updated: 2026-08-15 12:08 CDT
+Rev. 24 | Created: 2026-07-29 | Updated: 2026-08-15 12:13 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -319,6 +319,7 @@ def non_integral_summary(x, t, center=None, dead_band_factor=2.0, prominence_fac
     T        = t[-1] - t[0]
     q1, q3   = np.percentile(x, [25, 75])
     dx       = np.diff(x)
+    range_   = x.max() - x.min()
     std      = x.std(ddof=1)
     mssd     = np.mean(dx ** 2)                      # mean square successive difference
     sigma_st = np.sqrt(mssd / 2)                     # SPC short-term sigma
@@ -329,13 +330,13 @@ def non_integral_summary(x, t, center=None, dead_band_factor=2.0, prominence_fac
     center = x.mean() if center is None else center
 
     g = hysteresis_sign(x=x, center=center, dead_band=dead_band_factor * sigma_st)
-    peak_index, _ = find_peaks(x, prominence=prominence_factor * (x.max() - x.min()))
+    peak_index, _ = find_peaks(x, prominence=prominence_factor * range_)
 
     return {
         'mean':           x.mean(),
         'median':         np.median(x),
         'std':            std,
-        'range':          x.max() - x.min(),
+        'range':          range_,
         'iqr':            q3 - q1,
         'slope':          np.polyfit(t - t[0], x, 1)[0],   # OLS on the raw signal
         'sigma_st':       sigma_st,
