@@ -1,9 +1,9 @@
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.8.14"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.8.14"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 """
-Render a 5 x 5 matrix chart of sine traces with additive white noise and report sigma_ratio on each panel.
+Render a 5 x 5 matrix chart of sine traces with additive white noise and report slsr on each panel.
 
-sigma_ratio = sqrt(MSSD / 2) / s, where MSSD is the mean square successive difference and s the sample
+slsr = sqrt(MSSD / 2) / s, where MSSD is the mean square successive difference and s the sample
 standard deviation. The ratio equals sqrt(1 - rho_1), so it reads 1 for white noise, below 1 for a smooth
 trace and above 1 for sample-level oscillation.
 """
@@ -28,7 +28,7 @@ INK_COLOR = '#333333'
 MUTED_COLOR = '#767676'
 
 
-def sigma_ratio(x: np.ndarray) -> float:
+def slsr(x: np.ndarray) -> float:
     """Short-term sigma over sample standard deviation."""
     dx = np.diff(x)
     mssd = np.mean(dx ** 2)
@@ -48,7 +48,7 @@ for row, noise in enumerate(NOISE_LIST):
     for col, cycle in enumerate(CYCLE_LIST):
         ax = axes[row, col]
         x = make_trace(cycle=cycle, noise=noise, rng=rng)
-        ratio = sigma_ratio(x)
+        ratio = slsr(x)
 
         ax.plot(x, color=LINE_COLOR, linewidth=0.9)
         ax.text(0.04, 0.95, f"$\\sigma_{{st}}/s$ = {ratio:.2f}", transform=ax.transAxes,
@@ -73,6 +73,6 @@ fig.savefig(OUT_PATH, dpi=300)
 print(f"{'noise':>7}" + ''.join(f"{cycle:>10}" for cycle in CYCLE_LIST))
 rng = np.random.default_rng(SEED)
 for noise in NOISE_LIST:
-    row_value = [sigma_ratio(make_trace(cycle=cycle, noise=noise, rng=rng)) for cycle in CYCLE_LIST]
+    row_value = [slsr(make_trace(cycle=cycle, noise=noise, rng=rng)) for cycle in CYCLE_LIST]
     print(f"{noise:>7.2f}" + ''.join(f"{value:>10.2f}" for value in row_value))
 print(f"saved {OUT_PATH}")
