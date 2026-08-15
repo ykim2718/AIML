@@ -1,5 +1,5 @@
 # Semiconductor Sensor Trace Wide-to-Narrow Conversion
-Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-15 05:39 CDT
+Rev. 2 | Created: 2026-07-29 | Updated: 2026-08-15 08:26 CDT
 
 반도체 장비의 sensor 시계열 data는 [wafer, feature, trace] 구조의 3-way 배열이며, wafer 하나에 딸린 열의 수가 표본 수를 압도하는 wide data ($p \gg n$) 다. 이 문서는 정보를 최대한 유지하면서 이 wide data를 narrow data ($p \lesssim n$) 로 바꾸는 방법을 쉬운 방법부터 어려운 방법, 최신 방법 순으로 정리한다.
 
@@ -163,6 +163,7 @@ selected = stability_select(feats, y, n_resample=100)   # fit inside cross-valid
 - Goswami, M. et al., "MOMENT: A Family of Open Time-series Foundation Models", ICML, 2024. <https://arxiv.org/abs/2402.03885>
 - Kaufman, R. et al., "LETS-C: Leveraging Text Embedding for Time Series Classification", 2024. <https://arxiv.org/pdf/2407.06533>
 - "A Survey of Deep Learning and Foundation Models for Time Series Forecasting", 2024. <https://arxiv.org/pdf/2401.13912>
+- "Non-Stationarity in the Embedding Space of Time Series Foundation Models", 2026. <https://arxiv.org/pdf/2604.16428>
 
 ---
 
@@ -174,8 +175,11 @@ selected = stability_select(feats, y, n_resample=100)   # fit inside cross-valid
 - Downstream task: 축소된 표현을 입력으로 수행하는 후속 과제. 예측, 분류, 이상탐지가 해당한다.
 - DTW: Dynamic Time Warping. 길이와 위상이 다른 두 시계열을 비선형 시간축 왜곡으로 정렬하는 방법.
 - FDC: Fault Detection and Classification. 장비 sensor trace로 공정 이상을 탐지·분류하는 반도체 제조 시스템.
+- FDR: False Discovery Rate. 다중검정에서 허위 발견의 기대 비율. Benjamini-Yekutieli 절차가 이를 통제한다.
 - Foundation model: 대규모 이종 자료로 pretraining되어 추가 학습 없이 여러 과제에 전용되는 범용 모형.
 - FPCA: Functional PCA. Trace를 함수로 보고 기저 전개 후 수행하는 PCA.
+- FRESH: FeatuRe Extraction based on Scalable Hypothesis tests. tsfresh의 가설검정 기반 특징 선별 절차.
+- GBM: Gradient Boosting Machine. 얕은 tree를 순차적으로 더해 가는 boosting 예측 모형. LightGBM이 대표 구현이다.
 - Landmark registration: 함수 자료 분석에서 특징적 시점 (peak, 변곡점) 을 기준으로 시간축을 정렬하는 방법.
 - Lasso: L1 정칙화로 일부 계수를 0으로 만들어 특징 선택을 겸하는 선형 회귀.
 - LSTM: Long Short-Term Memory. 장기 의존성을 다루는 순환 신경망 구조.
@@ -188,7 +192,55 @@ selected = stability_select(feats, y, n_resample=100)   # fit inside cross-valid
 - Ridge 회귀: L2 정칙화로 wide data에서도 안정적으로 적합되는 선형 회귀.
 - ROCKET: RandOm Convolutional KErnel Transform. 무작위 convolution kernel로 시계열 특징을 만드는 방법.
 - Stability selection: resampling을 반복하며 선택 빈도가 높은 특징만 남기는 안정화된 특징 선택 절차.
+- TSFM: Time Series Foundation Model. 시계열용 foundation model.
 - Tucker 분해: mode별로 다른 rank를 허용하는 tensor 분해. core tensor와 mode별 factor 행렬로 구성된다.
 - VAE: Variational Autoencoder. 잠재 공간에 확률적 정칙화를 가한 autoencoder.
+- VM: Virtual Metrology. 장비 sensor data로 metrology 측정값을 예측하는 기술.
 - VQ-VAE: Vector Quantized VAE. 잠재 표현을 이산 codebook token으로 양자화하는 autoencoder.
 - Zero-shot: 추가 학습 없이 pretrained 모형을 그대로 새 자료에 적용하는 사용 방식.
+
+## Appendix B. Further Development
+
+본문의 방법들을 실제로 조합할 때의 심화 지침이다. 라벨 (metrology 측정값) 은 sampling 측정이라 희소하므로, 어느 계열이 정확한지는 라벨된 wafer 수 $n$ 이 결정한다. $n \lesssim 1000$ 이면 고전 계열이, $n \gtrsim 5000$ 이면 encoder 계열이 유리하며, 대부분의 fab 사례는 전자에 속한다. 경험적으로 $n$ 이 수백 규모일 때는 고전 계열이 deep learning 계열을 이긴다. 목적함수가 train 성능을 보상하도록 잘못 설계된 hyperparameter 탐색이 과적합을 유도하는 함정은 deep encoder에서 훨씬 심하게 나타난다.
+
+#### FPCA-PLS Pipeline
+
+$n \lesssim 1000$ 에서의 첫 번째 권장 조합이다.
+
+- 각 sensor trace를 B-spline 기저 (knot 8~12개) 로 평활화해 함수형 자료로 취급한다.
+- Sensor별로 FPC (Functional Principal Component) score 상위 3~4개를 추출한다. 보통 누적분산 95% 이상을 기준으로 삼는다.
+- Trace 하나가 score 3~4개로 압축되며, 펼친 PCA와 달리 곡선의 형상 자체를 보존한다. 노이즈에 강하고, 첫 두 FPC가 "전체 level 이동 / 기울기 변화"처럼 물리적으로 해석된다.
+- 이후 PLS로 응답변수 — 두께 (THK) 나 면저항 (Rs) 의 uniformity — 를 향해 지도적으로 축약한다. 반도체 VM에서 오랫동안 표준인 이유는 $p \gg n$ 상황에서 PCA와 달리 응답변수와의 공분산을 최대화하기 때문이다.
+- Trace에 위상 변동 (step 시작 시점의 흔들림) 이 있으면 FPCA 전에 curve registration 또는 DTW 정렬을 반드시 넣는다. 정렬 없이 FPCA를 하면 진폭 정보와 위상 정보가 뒤섞여 score가 오염된다.
+
+#### Feature Library Pipeline
+
+$n \lesssim 1000$ 에서의 두 번째 권장 조합이다.
+
+- catch22는 22개의 canonical feature로 압축이 이미 내장되어 있어, 수백 개를 쏟아내는 tsfresh보다 이 규모에 적합하다.
+- FRESH 절차로 유의한 특징만 선별하되 FDR을 Benjamini-Yekutieli로 통제해, sensor 200개에 대한 다중검정을 통계적으로 관리한다.
+- 선별된 특징은 GBM (LightGBM) 에 입력한다.
+
+#### Channel-Independent Encoder Embedding
+
+$n \gtrsim 5000$ 에서의 구성이다.
+
+- 1D-CNN (InceptionTime, dilated convolution) 또는 PatchTST encoder를 sensor 200개에 가중치 공유로 적용해 sensor당 16차원 embedding을 만든다.
+- Sensor축을 attention pooling으로 집계해 wafer당 64~128차원 vector 하나로 만든다.
+- Channel별 독립 parameter를 쓰면 parameter 수가 200배로 늘어 즉시 과적합한다. 가중치 공유가 wide 구조를 막는 핵심 장치다.
+- 라벨이 부족하면 미측정 wafer의 trace로 TS2Vec이나 SimMTM 자기지도 사전학습을 하고, 소량의 라벨로 예측 head만 fine-tuning한다.
+
+#### Recent Methods
+
+Table 2. Recent methods (2024~2026) and their fit to this scale
+
+| Method | Core idea | Fit |
+|---|---|---|
+| PatchTST | 시간축을 patch로 묶어 token화하고 channel을 독립으로 다룬다. | $T = 10^3 \sim 10^4$ 인 이 규모에서는 patch화가 sequence 길이를 유효하게 줄여 준다. 수백 점 이하의 짧은 trace에서는 이득이 제한적이다. |
+| TOTEM | Trace를 VQ-VAE로 이산 token으로 양자화하고 channel 간 codebook을 공유한다. | Channel 200개가 codebook 하나를 공유해 차원 폭증이 없어 유망하다. |
+| TSFM frozen embedding | Chronos-2나 MOMENT의 encoder를 동결하고 mean pooling으로 embedding을 뽑는다. | 사전학습 corpus에 fab trace가 없어 domain gap이 크다. PCA로 32차원 이하로 줄여 baseline과 병렬 비교하는 용도만 권한다. |
+| iTransformer | 시간축이 아니라 변수 (sensor) 를 token으로 취급해 200개 token을 만든다. | Sensor 간 상호작용을 직접 modeling하며 구조적으로 wide 구조를 회피한다. |
+| Graph attention VM | (step, parameter) 쌍을 그래프의 마디로 두고 방향성 attention을 준다. | 2026년 박막 증착 두께 예측에 실증되었다. 공정 지식을 그래프 구조로 그대로 투입할 수 있어 활용도가 높다. |
+| Path signature | 경로적분의 대수적 불변량을 level 2~3에서 절단해 쓴다. | 가변 길이 trace를 수학적으로 원리적인 고정 길이 vector로 만든다. log-signature로 더 압축할 수 있다. |
+
+TSFM embedding 공간은 입력 분포 변화에 대해 비정상성을 보인다는 보고가 있다. Chamber drift가 있는 환경에서는 embedding 자체가 시간에 따라 이동하므로, 적용할 때 embedding 공간의 shift 모니터링을 병행해야 한다.
