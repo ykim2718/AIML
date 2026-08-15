@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 24 | Created: 2026-07-29 | Updated: 2026-08-15 12:13 CDT
+Rev. 25 | Created: 2026-07-29 | Updated: 2026-08-15 12:18 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -292,6 +292,8 @@ Closed-form 특징은 자료만 받고, event-counting 특징은 문턱값을 �
 
 ```python
 # Python
+__version__ = "0.0.0.2026.8.15"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+
 import numpy as np
 from scipy.signal import find_peaks
 
