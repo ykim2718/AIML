@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 16 | Created: 2026-07-29 | Updated: 2026-08-14 18:56 CDT
+Rev. 17 | Created: 2026-07-29 | Updated: 2026-08-14 19:07 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -25,8 +25,8 @@ Table 1. Non-integral features
 | `slope` | Trend | First time moment | Core | — |
 | `sigma_st` | Short-term variation | Step-to-step variation, SPC short-term sigma | Core | — |
 | `max_delta` | Short-term variation | Largest single jump | Option | `sigma_st` |
-| `sigma_ratio` | Roughness | Short-term over overall variation | Core | — |
-| `zcr` | Roughness | Center-line crossing rate | Option | `sigma_ratio` |
+| `slsr` | Roughness | Short-term over overall variation | Core | — |
+| `zcr` | Roughness | Center-line crossing rate | Option | `slsr` |
 | `peak_time_norm` | Timing | Relative time of the maximum | Core | — |
 | `duration` | Length | Processing time | Core | — |
 
@@ -36,7 +36,7 @@ Table 1. Non-integral features
 
 `sigma_st` 는 MSSD를 2로 나눈 값의 제곱근이며, SPC의 I-MR chart가 쓰는 short-term sigma와 같은 양이다. `std` 가 전체 구간의 변동을 재는 데 반해 이쪽은 이웃 sample 사이의 변동만 재므로, 둘은 서로 다른 시간 scale을 본다.
 
-두 양의 비 `sigma_ratio` 는 lag-1 autocorrelation $\rho_1$ 의 직접적인 추정량이다.
+두 양의 비 `slsr` 은 lag-1 autocorrelation $\rho_1$ 의 직접적인 추정량이다.
 
 $$\frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
 
@@ -46,7 +46,7 @@ $$\frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
 - 비가 1이면 백색잡음이다.
 - 비가 1보다 크면 sample 단위로 진동한다.
 
-`sigma_ratio` 는 분자와 분모가 같은 단위라 gain drift와 chamber 간 scale 차이에 불변이다. 같은 축의 option인 `zcr` 은 중심선 교차를 세는 방식이라 진폭 outlier에 강건한 대신, ramp가 있는 trace에서는 중심선을 한 번만 지나므로 진동을 과소평가한다. 추세가 뚜렷한 trace에는 `sigma_ratio`, 진폭이 튀는 trace에는 `zcr` 이 맞다.
+`slsr` 은 분자와 분모가 같은 단위라 gain drift와 chamber 간 scale 차이에 불변이다. 같은 축의 option인 `zcr` 은 중심선 교차를 세는 방식이라 진폭 outlier에 강건한 대신, ramp가 있는 trace에서는 중심선을 한 번만 지나므로 진동을 과소평가한다. 추세가 뚜렷한 trace에는 `slsr`, 진폭이 튀는 trace에는 `zcr` 이 맞다.
 
 ## 2. Failure Modes and Mitigations
 
@@ -66,13 +66,13 @@ Trace에 느린 offset $\delta$ 가 있으면 위치 특징인 `mean` 과 `media
 - 결측은 특징 계산 전에 선형보간한다. 보간하지 않으면 결측 위치의 큰 차분이 `sigma_st` 와 `max_delta` 를 부풀린다.
 - trace 시작과 종료 경계의 transient 구간은 baseline 산출에서 제외한다.
 
-`sigma_ratio` 와 `zcr` 도 sampling 주기에 의존한다. 매끄러운 신호에서는 $\Delta x \approx x' \Delta t$ 이므로 `sigma_ratio` 가 $\Delta t$ 에 비례하고, `zcr` 은 sample 쌍 단위의 비율이라 같은 물리적 진동이라도 주기를 촘촘히 하면 값이 낮아진다. 둘 다 진폭 단위로는 무차원이지만 시간 단위로는 아니므로, 주기가 다른 recipe나 chamber 사이에서는 직접 비교하지 않는다.
+`slsr` 과 `zcr` 도 sampling 주기에 의존한다. 매끄러운 신호에서는 $\Delta x \approx x' \Delta t$ 이므로 `slsr` 이 $\Delta t$ 에 비례하고, `zcr` 은 sample 쌍 단위의 비율이라 같은 물리적 진동이라도 주기를 촘촘히 하면 값이 낮아진다. 둘 다 진폭 단위로는 무차원이지만 시간 단위로는 아니므로, 주기가 다른 recipe나 chamber 사이에서는 직접 비교하지 않는다.
 
 ### 2.3 Unit Dependence
 
 `mean`, `median`, `std`, `range`, `iqr`, `sigma_st`, `max_delta` 는 모두 trace의 물리 단위를 그대로 갖는다. 따라서 gain drift나 chamber 간 절대 offset에 취약하고, chamber 교차 검증에서 먼저 무너지는 쪽이 된다.
 
-`sigma_ratio`, `zcr`, `peak_time_norm` 은 무차원이라 곱셈적 scale 변화에 불변이므로 이식성이 높다. 변동계수 $s/\bar{x}$ 처럼 비율로 만든 특징도 같은 성질을 갖는다. 다만 `sigma_ratio` 와 `zcr` 의 chamber 간 비교는 §2.2의 sampling 주기 조건을 만족할 때만 유효하다. 단위를 갖는 특징과 무차원 특징을 함께 두고, chamber 교차 검증에서 어느 쪽이 살아남는지로 오염 여부를 판정한다.
+`slsr`, `zcr`, `peak_time_norm` 은 무차원이라 곱셈적 scale 변화에 불변이므로 이식성이 높다. 변동계수 $s/\bar{x}$ 처럼 비율로 만든 특징도 같은 성질을 갖는다. 다만 `slsr` 과 `zcr` 의 chamber 간 비교는 §2.2의 sampling 주기 조건을 만족할 때만 유효하다. 단위를 갖는 특징과 무차원 특징을 함께 두고, chamber 교차 검증에서 어느 쪽이 살아남는지로 오염 여부를 판정한다.
 
 ## 3. Dimensionality Control
 
@@ -84,7 +84,7 @@ Trace에 느린 offset $\delta$ 가 있으면 위치 특징인 `mean` 과 `media
 - Setpoint 복제 channel
 - 상호상관 $\lvert\rho\rvert \gt 0.98$ 인 중복 channel
 
-Chamber가 여러 대라면 이 판정은 chamber별로 수행한다. 상수 channel은 `sigma_ratio` 의 분모를 0으로 만들므로 이 단계에서 반드시 걸러야 한다.
+Chamber가 여러 대라면 이 판정은 chamber별로 수행한다. 상수 channel은 `slsr` 의 분모를 0으로 만들므로 이 단계에서 반드시 걸러야 한다.
 
 ### 3.2 Taxonomy Group Pooling
 
@@ -109,7 +109,7 @@ Option은 core를 보태는 것이 아니라 **교체**하는 용도다. 축당 
 - 위치가 outlier에 흔들리면 `mean` 대신 `median` 을 쓴다.
 - 산포가 outlier에 흔들리면 `std` 대신 `iqr` 을, 절대 진폭 자체가 규격 항목이면 `range` 를 쓴다.
 - 단발 spike가 관심사면 `sigma_st` 대신 `max_delta` 를 쓴다. 전자는 spike 하나를 전체 구간에 평균해 버린다.
-- 진폭이 크게 튀는 trace라면 `sigma_ratio` 대신 `zcr` 을 쓴다 (§1.1).
+- 진폭이 크게 튀는 trace라면 `slsr` 대신 `zcr` 을 쓴다 (§1.1).
 
 `duration` 은 trace 길이가 wafer마다 달라질 때만 정보를 가지므로, 길이가 고정된 recipe에서는 core에서 뺀다.
 
@@ -127,9 +127,9 @@ Table 2. Redundancy checks
 | corr(`iqr`, `std`) | $\gt 0.98$ | outlier 없음, `iqr` 폐기 |
 | corr(`range`, `std`) | $\gt 0.95$ | `range` 폐기 |
 | corr(`max_delta`, `sigma_st`) | $\gt 0.95$ | 단발 spike 없음, `max_delta` 폐기 |
-| corr(`zcr`, `sigma_ratio`) | $\gt 0.95$ | 같은 거칠기를 잼, `zcr` 폐기 |
+| corr(`zcr`, `slsr`) | $\gt 0.95$ | 같은 거칠기를 잼, `zcr` 폐기 |
 | corr(`sigma_st`, `std`) | $\gt 0.95$ | 단기와 전체 변동이 분리되지 않음, `sigma_st` 폐기 |
-| var(`sigma_ratio`) (wafer 간) | $\approx 0$ | 거칠기가 일정, `sigma_ratio` 와 `zcr` 폐기 |
+| var(`slsr`) (wafer 간) | $\approx 0$ | 거칠기가 일정, `slsr` 과 `zcr` 폐기 |
 | var(`duration`) (wafer 간) | $\approx 0$ | 길이가 일정, 폐기 |
 
 ### 5.2 Performance Criteria
@@ -153,6 +153,7 @@ Table 2. Redundancy checks
 - **MSSD (Mean Square Successive Difference)**: 이웃 sample 차분의 제곱평균이다.
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.
 - **PLS (Partial Least Squares)**: 예측변수와 응답변수의 공분산을 최대화하는 latent 변수 회귀 방법이다.
+- **SLSR (Short-term to Long-term Sigma Ratio)**: 단기 sigma를 전체 구간 sigma로 나눈 무차원 비다.
 - **Sparse group lasso**: 그룹 단위와 개별 계수 단위의 희소성을 동시에 유도하는 규제 회귀 방법이다.
 - **SPC (Statistical Process Control)**: 공정 변동을 통계적 관리한계로 감시하는 체계다.
 - **Summary statistics**: trace 전체를 소수의 스칼라로 요약한 값이다.
@@ -179,7 +180,7 @@ Table 3. Feature definitions
 | `slope` | $\dfrac{\sum_i (t_i - \bar{t})(x_i - \bar{x})}{\sum_i (t_i - \bar{t})^2}$ | $\bar{t}$ 는 timestamp의 산술평균이다 |
 | `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 §1.1에 있다 |
 | `max_delta` | $\max_i \lvert \Delta x_i \rvert$ | — |
-| `sigma_ratio` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
+| `slsr` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
 | `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[\mathrm{sign}(x_i - \bar{x}) \neq \mathrm{sign}(x_{i+1} - \bar{x})\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $\mathrm{sign}$ 의 기준선은 $\bar{x}$ 다 |
 | `peak_time_norm` | $(t_{i^*} - t_1) / T$ | $i^* = \arg\max_i x_i$ 는 최댓값이 나오는 sample index다 |
 | `duration` | $T$ | — |
@@ -194,7 +195,7 @@ $$\hat{\rho}_1 = \frac{\sum_{i=1}^{N-1}(x_i - \bar{x})(x_{i+1} - \bar{x})}{\sum_
 
 분자는 한 칸 어긋난 두 계열의 공분산이고, 분모는 분산이다. $\hat{\rho}_1 = 1$ 이면 이웃 sample이 완전히 같은 방향으로 움직이고, $0$ 이면 서로 무관하며, $-1$ 이면 매 sample마다 부호가 뒤집힌다.
 
-#### Relation to the Roughness Ratio
+#### Relation to SLSR
 
 차분의 제곱을 전개하면 $\mathrm{MSSD}$ 가 $\rho_1$ 으로 표현된다. $x$ 를 평균 0, 분산 $\sigma^2$ 인 정상 신호로 두면
 
@@ -204,9 +205,9 @@ $$\mathbb{E}\big[(x_{i+1} - x_i)^2\big] = \mathbb{E}[x_{i+1}^2] - 2\,\mathbb{E}[
 
 $$\sigma_{\text{st}} = \sqrt{\frac{\mathrm{MSSD}}{2}} = s\sqrt{1 - \hat{\rho}_1} \quad\Longrightarrow\quad \frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}, \qquad \hat{\rho}_1 = 1 - \left(\frac{\sigma_{\text{st}}}{s}\right)^2$$
 
-즉 두 양은 일대일 대응이며, `sigma_ratio` 를 재는 것은 $\rho_1$ 을 재는 것과 같다.
+즉 두 양은 일대일 대응이며, `slsr` 을 재는 것은 $\rho_1$ 을 재는 것과 같다.
 
-Table 4. Correspondence between the lag-1 autocorrelation and the ratio
+Table 4. Correspondence between the lag-1 autocorrelation and SLSR
 
 | $\hat{\rho}_1$ | $\sigma_{\text{st}} / s$ | Waveform |
 |---|---|---|
@@ -221,9 +222,11 @@ Table 4. Correspondence between the lag-1 autocorrelation and the ratio
 
 이 유도는 정상성을 전제한다. 추세가 뚜렷한 trace에서는 $s$ 가 잡음이 아니라 추세의 진폭을 재므로 $\hat{\rho}_1$ 이 1 쪽으로 부풀고, 비는 그만큼 작게 나온다. 이때의 비는 "잡음 대비 추세의 우세" 를 읽는 값으로 해석해야 한다.
 
+`slsr` 을 제곱해 2를 곱하면 $\mathrm{VN} = 2\,\text{slsr}^2 = \mathrm{MSSD}/s^2$ 로 von Neumann ratio가 된다. 이 통계량은 무작위성 검정의 임계값표가 정리되어 있으므로, 관측된 거칠기가 백색잡음과 유의하게 다른지를 눈대중이 아니라 검정으로 판정할 수 있다.
+
 ## Appendix D. Roughness
 
-`sigma_ratio` 가 파형에 따라 실제로 어떤 값을 갖는지 보이기 위해, 진폭 1인 sine에 백색잡음을 더해 가며 계산했다. Trace 길이는 300 sample이고, 열은 trace 구간에 담기는 sine의 주기 수, 행은 진폭 대비 잡음 표준편차다.
+`slsr` 이 파형에 따라 실제로 어떤 값을 갖는지 보이기 위해, 진폭 1인 sine에 백색잡음을 더해 가며 계산했다. Trace 길이는 300 sample이고, 열은 trace 구간에 담기는 sine의 주기 수, 행은 진폭 대비 잡음 표준편차다.
 
 ![Fig 1](roughness-matrix.png)
 
@@ -267,7 +270,7 @@ def non_integral_summary(x, t):
         'slope':          np.polyfit(t - t[0], x, 1)[0],   # OLS on the raw signal
         'sigma_st':       sigma_st,
         'max_delta':      np.max(np.abs(dx)),
-        'sigma_ratio':    sigma_st / std,
+        'slsr':    sigma_st / std,
         'zcr':            np.mean(np.signbit(xc[:-1]) != np.signbit(xc[1:])),
         'peak_time_norm': (t[np.argmax(x)] - t[0]) / T,
         'duration':       T,
