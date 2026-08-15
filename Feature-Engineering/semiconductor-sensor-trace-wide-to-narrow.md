@@ -1,5 +1,5 @@
 # Semiconductor Sensor Trace Wide-to-Narrow Conversion
-Rev. 0 | Created: 2026-08-15 | Updated: 2026-08-15 05:25 CDT
+Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-15 05:39 CDT
 
 반도체 장비의 sensor 시계열 data는 [wafer, feature, trace] 구조의 3-way 배열이며, wafer 하나에 딸린 열의 수가 표본 수를 압도하는 wide data ($p \gg n$) 다. 이 문서는 정보를 최대한 유지하면서 이 wide data를 narrow data ($p \lesssim n$) 로 바꾸는 방법을 쉬운 방법부터 어려운 방법, 최신 방법 순으로 정리한다.
 
@@ -40,7 +40,7 @@ Table 1. Wide-to-narrow methods ordered by difficulty
 | 3 | Automated feature library + selection | 선별된 특징 수십~수백 개 | 선택 단계에서 활용 가능 | 중간~높음 |
 | 4 | Tensor decomposition (CP, Tucker) | wafer-mode factor 수십 개 | 불필요 | 중간 |
 | 5 | Random convolution kernel (ROCKET 계열) | kernel 특징 수천 개 → 사후 축소 | 불필요 | 낮음 |
-| 6 | Deep representation learning (AE, contrastive, masked) | embedding 수십~수백 차원 | 불필요 (self-supervised) | 낮음 |
+| 6 | Deep representation learning (autoencoder, contrastive, masked) | embedding 수십~수백 차원 | 불필요 (self-supervised) | 낮음 |
 | 7 | Foundation model embedding | pretrained embedding 수백 차원 | 불필요 (zero-shot) | 낮음 |
 
 모든 level에 공통되는 전처리가 있다. Trace 길이가 wafer마다 다르면 공통 시간축으로 resampling하거나, recipe step 경계 기준으로 자르거나, DTW로 정렬한 뒤에 변환을 적용한다. Sensor별 단위 차이는 sensor 단위 표준화로 제거한다.
@@ -95,7 +95,7 @@ Library 출력은 여전히 $p \gt n$ 이므로 선택이 필수다. $n = 200$ �
 
 펼치지 않고 3-way 구조를 그대로 두고 분해한다. Unfolding PCA가 버리는 "같은 sensor의 시간 pattern은 wafer마다 공유된다"는 구조적 정보를 활용하므로, 같은 차원 수에서 더 많은 정보를 유지한다.
 
-- CP (CANDECOMP/PARAFAC) 분해는 tensor를 rank-1 tensor $R$ 개의 합 $X \approx \sum_{r=1}^{R} a_r \circ b_r \circ c_r$ 로 근사한다. wafer-mode factor $A \in \mathbb{R}^{n \times R}$ 의 각 행이 wafer의 narrow 표현이 되고, sensor-mode·time-mode factor가 "어떤 sensor 조합의 어떤 시간 pattern"인지 알려 주므로 해석도 가능하다.
+- CP (CANDECOMP/PARAFAC) 분해는 tensor를 rank-1 tensor $R$ 개의 합 $X \approx \sum_{r=1}^{R} a_r \circ b_r \circ c_r$ 로 근사한다. Wafer-mode factor $A \in \mathbb{R}^{n \times R}$ 의 각 행이 wafer의 narrow 표현이 되고, sensor-mode·time-mode factor가 "어떤 sensor 조합의 어떤 시간 pattern"인지 알려 주므로 해석도 가능하다.
 - Tucker 분해는 mode마다 다른 rank를 허용해 CP보다 유연하며, time mode의 rank를 크게 잡아 형상 정보를 더 보존할 수 있다.
 - 각 mode의 요인 수는 재구성 오차가 더 이상 크게 줄지 않는 지점으로 고른다. 결측이 있어도 분해가 가능하다는 실무적 장점이 있다.
 
@@ -148,7 +148,7 @@ steps = segment_by_recipe_step(X)    # list of (n_wafer, n_sensor, T_step)
 feats = np.concatenate(
     [summary_stats(s) for s in steps], axis=1
 )                                    # (n_wafer, n_sensor * n_step * n_stat)
-selected = stability_select(feats, y, n_resample=100)   # fit inside CV folds
+selected = stability_select(feats, y, n_resample=100)   # fit inside cross-validation folds
 ```
 
 ## 11. References
@@ -171,10 +171,13 @@ selected = stability_select(feats, y, n_resample=100)   # fit inside CV folds
 - 1D-CNN: 1-Dimensional Convolutional Neural Network. 시간축 방향 convolution으로 국소 pattern을 학습하는 신경망.
 - AUC: Area Under the Curve. Trace를 시간에 대해 적분한 값과 그 변형들.
 - CP (CANDECOMP/PARAFAC): tensor를 rank-1 tensor들의 합으로 근사하는 분해.
+- Downstream task: 축소된 표현을 입력으로 수행하는 후속 과제. 예측, 분류, 이상탐지가 해당한다.
 - DTW: Dynamic Time Warping. 길이와 위상이 다른 두 시계열을 비선형 시간축 왜곡으로 정렬하는 방법.
 - FDC: Fault Detection and Classification. 장비 sensor trace로 공정 이상을 탐지·분류하는 반도체 제조 시스템.
+- Foundation model: 대규모 이종 자료로 pretraining되어 추가 학습 없이 여러 과제에 전용되는 범용 모형.
 - FPCA: Functional PCA. Trace를 함수로 보고 기저 전개 후 수행하는 PCA.
 - Landmark registration: 함수 자료 분석에서 특징적 시점 (peak, 변곡점) 을 기준으로 시간축을 정렬하는 방법.
+- Lasso: L1 정칙화로 일부 계수를 0으로 만들어 특징 선택을 겸하는 선형 회귀.
 - LSTM: Long Short-Term Memory. 장기 의존성을 다루는 순환 신경망 구조.
 - MPCA: Multiway PCA. Tensor를 행렬로 펼친 뒤 적용하는 PCA. Batch process 감시의 고전적 방법.
 - mRMR: minimum Redundancy Maximum Relevance. 응답과의 관련성은 크고 특징 간 중복은 작게 뽑는 특징 선택 기준.
@@ -182,6 +185,7 @@ selected = stability_select(feats, y, n_resample=100)   # fit inside CV folds
 - PCA: Principal Component Analysis. 분산이 큰 직교 방향으로 투영하는 선형 차원 축소.
 - PLS: Partial Least Squares. 응답변수와의 공분산이 큰 방향으로 투영하는 지도 학습형 차원 축소.
 - PPV: Proportion of Positive Values. Convolution 출력에서 양수의 비율을 취하는 ROCKET의 pooling 통계량.
+- Ridge 회귀: L2 정칙화로 wide data에서도 안정적으로 적합되는 선형 회귀.
 - ROCKET: RandOm Convolutional KErnel Transform. 무작위 convolution kernel로 시계열 특징을 만드는 방법.
 - Stability selection: resampling을 반복하며 선택 빈도가 높은 특징만 남기는 안정화된 특징 선택 절차.
 - Tucker 분해: mode별로 다른 rank를 허용하는 tensor 분해. core tensor와 mode별 factor 행렬로 구성된다.
