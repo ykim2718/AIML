@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 22 | Created: 2026-07-29 | Updated: 2026-08-15 12:02 CDT
+Rev. 23 | Created: 2026-07-29 | Updated: 2026-08-15 12:08 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -309,11 +309,11 @@ def hysteresis_sign(x, center, dead_band):
     return state
 
 
-def non_integral_summary(x, t, center=None, dead_band=None, prominence_factor=0.25):
+def non_integral_summary(x, t, center=None, dead_band_factor=2.0, prominence_factor=0.25):
     """
     x, t              : (N,) single-wafer trace. t holds real timestamps.
     center            : zcr reference line. Defaults to the arithmetic mean.
-    dead_band         : zcr hysteresis width. Defaults to 2 * sigma_st.
+    dead_band_factor  : zcr hysteresis width as a multiple of sigma_st.
     prominence_factor : cycle_count peak threshold as a fraction of the trace range.
     """
     T        = t[-1] - t[0]
@@ -327,9 +327,8 @@ def non_integral_summary(x, t, center=None, dead_band=None, prominence_factor=0.
         raise ValueError("constant trace: prune the channel before summarizing")
 
     center = x.mean() if center is None else center
-    dead_band = 2.0 * sigma_st if dead_band is None else dead_band
 
-    g = hysteresis_sign(x=x, center=center, dead_band=dead_band)
+    g = hysteresis_sign(x=x, center=center, dead_band=dead_band_factor * sigma_st)
     peak_index, _ = find_peaks(x, prominence=prominence_factor * (x.max() - x.min()))
 
     return {
