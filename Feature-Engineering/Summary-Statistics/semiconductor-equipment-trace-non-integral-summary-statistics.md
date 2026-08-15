@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 21 | Created: 2026-07-29 | Updated: 2026-08-15 11:52 CDT
+Rev. 22 | Created: 2026-07-29 | Updated: 2026-08-15 12:02 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -56,7 +56,7 @@ $$\text{cycle count} \approx \frac{(N-1)\,\text{zcr}}{2}$$
 
 - 기준선은 추세가 있으면 평균 대신 이동중앙값을 쓴다. 평균을 쓰면 ramp가 있는 trace에서 교차가 한 번만 잡힌다.
 - Hysteresis $h$ 는 잡음 수준에 맞춘다. `sigma_st` 의 2–3배가 출발점이며, 이보다 작으면 잡음이 가짜 교차를 만든다.
-- Prominence $\pi$ 도 같은 근거로 잡는다. 주변보다 $\pi$ 만큼 솟지 않은 봉우리는 진동으로 세지 않는다.
+- Prominence $\pi$ 는 진폭 대비 비율로 잡는다. 기본값은 range의 0.25배이며, 주변보다 $\pi$ 만큼 솟지 않은 봉우리는 진동으로 세지 않는다. $\sigma_{\text{st}}$ 의 배수로 잡는 관례는 없다.
 
 문턱값은 train fold 안에서 정하고 test fold에 그대로 적용한다. Fold마다 다시 정하면 §5.2의 누출 조건을 어긴다.
 
@@ -217,11 +217,11 @@ Table 4. Feature definitions
 | `max_delta` | $\max_i \lvert \Delta x_i \rvert$ | — |
 | `slsr` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
 | `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[g_i \neq g_{i+1}\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $g_i \in \{-1, +1\}$ 은 hysteresis를 적용한 부호로, $x_i - c \gt h/2$ 이면 $+1$, $x_i - c \lt -h/2$ 이면 $-1$, 그 사이면 직전 값을 유지한다. $c$ 는 기준선, $h$ 는 dead band 폭이다 |
-| `cycle_count` | $\lvert \{\, i : x_i \text{ is a peak with prominence} \ge \pi \,\} \rvert$ | $\pi$ 는 prominence 문턱값이다. 봉우리 하나가 진동 한 주기에 대응한다 |
+| `cycle_count` | $\lvert \{\, i : x_i \text{ is a peak with prominence} \ge \pi \,\} \rvert$ | $\pi$ 는 prominence 문턱값으로, range에 대한 비율로 잡는다. 봉우리 하나가 진동 한 주기에 대응한다 |
 | `peak_time_norm` | $(t_{i^*} - t_1) / T$ | $i^* = \arg\max_i x_i$ 는 최댓값이 나오는 sample index다 |
 | `duration` | $T$ | — |
 
-`zcr` 에서 $h = 0$, $c = \bar{x}$ 로 두면 단순 부호 교차 계수가 된다. 문턱값을 주지 않았을 때의 기본값은 $c = \bar{x}$, $h = 2\sigma_{\text{st}}$, $\pi = 3\sigma_{\text{st}}$ 다. 추세가 뚜렷한 trace에서는 §1.2에 따라 $c$ 를 이동중앙값으로 바꿔 넘긴다.
+`zcr` 에서 $h = 0$, $c = \bar{x}$ 로 두면 단순 부호 교차 계수가 된다. 문턱값을 주지 않았을 때의 기본값은 $c = \bar{x}$, $h = 2\sigma_{\text{st}}$, $\pi = 0.25\,(\max_i x_i - \min_i x_i)$ 다. 추세가 뚜렷한 trace에서는 §1.2에 따라 $c$ 를 이동중앙값으로 바꿔 넘긴다.
 
 ## Appendix C. Lag-1 Autocorrelation
 
@@ -278,9 +278,11 @@ Fig 1. Sine 주파수와 잡음 수준에 따른 Roughness 축 세 특징. 열�
 
 30 주기 열도 0.44에 그친다. 값이 1을 넘으려면 sample 단위로 부호가 뒤집혀야 하는데, 300 sample에 30 주기면 주기당 10 sample이라 아직 매끄러운 축에 속하기 때문이다. 실제 trace에서 1을 넘는 값이 나오면 공정 진동이 아니라 계측계의 sample 단위 잡음을 의심하는 것이 맞다.
 
-**`cycle_count` 는 첫 행에서 1, 2, 5, 12, 30을 정확히 복원한다.** 문턱값을 정한 대가로 얻는 것이 이것이다 — `slsr` 의 0.44는 해석이 필요하지만 30이라는 숫자는 그대로 읽힌다. 다만 잡음이 들어오면 값이 무너진다. 1 주기 열은 1 → 4 → 13 → 17 → 17로, 잡음 봉우리를 진동으로 세기 시작한다. Prominence 문턱이 `sigma_st` 에 비례해 함께 커지는데도 막지 못한다.
+**`cycle_count` 는 위 두 행에서 1, 2, 5, 12, 30을 정확히 복원한다.** 문턱값을 정한 대가로 얻는 것이 이것이다 — `slsr` 의 0.44는 해석이 필요하지만 30이라는 숫자는 그대로 읽힌다. 잡음 0.20에서도 2 주기 이상은 3, 6, 12, 29로 참값 부근을 지킨다.
 
-`zcr` 은 그 중간이다. Hysteresis가 기준선 근처의 잡음 교차를 걸러 주므로 5 주기 열이 0.033 → 0.030 → 0.030 → 0.043 → 0.140으로 잡음 0.60까지 거의 유지된다. 같은 열의 `cycle_count` 가 5 → 5 → 10 → 12 → 15로 흔들리는 것과 대비된다. 환산식도 잘 맞는다. 첫 행 30 주기에서 $(N-1)\,\text{zcr}/2 = 299 \times 0.201 / 2 = 30.0$ 이다.
+그러나 잡음 0.60을 넘으면 무너진다. 값이 40, 38, 33, 29, 32로 올라가고 마지막 행에서는 41–56에 이른다. Range가 잡음 outlier로 함께 커지는데도 그 0.25배를 넘는 봉우리가 계속 생기기 때문이다. 잡음이 진폭을 지배하는 구간에서는 이 특징을 쓰지 않는 것이 맞다.
+
+`zcr` 은 그 중간이다. Hysteresis가 기준선 근처의 잡음 교차를 걸러 주므로 5 주기 열이 0.033 → 0.030 → 0.030 → 0.043 → 0.140으로 잡음 0.60까지 거의 유지된다. 같은 열의 `cycle_count` 가 5 → 5 → 6 → 33 → 41로 뛰는 것과 대비된다. 환산식도 잘 맞는다. 첫 행 30 주기에서 $(N-1)\,\text{zcr}/2 = 299 \times 0.201 / 2 = 30.0$ 이다.
 
 정리하면 잡음 강건성은 `slsr` 이 가장 높고 `cycle_count` 가 가장 낮으며, 물리적 해석은 그 반대 순서다. §1.2의 맞바꿈이 수치로 확인된다.
 
@@ -307,12 +309,12 @@ def hysteresis_sign(x, center, dead_band):
     return state
 
 
-def non_integral_summary(x, t, center=None, dead_band=None, prominence=None):
+def non_integral_summary(x, t, center=None, dead_band=None, prominence_factor=0.25):
     """
-    x, t       : (N,) single-wafer trace. t holds real timestamps.
-    center     : zcr reference line. Defaults to the arithmetic mean.
-    dead_band  : zcr hysteresis width. Defaults to 2 * sigma_st.
-    prominence : cycle_count peak threshold. Defaults to 3 * sigma_st.
+    x, t              : (N,) single-wafer trace. t holds real timestamps.
+    center            : zcr reference line. Defaults to the arithmetic mean.
+    dead_band         : zcr hysteresis width. Defaults to 2 * sigma_st.
+    prominence_factor : cycle_count peak threshold as a fraction of the trace range.
     """
     T        = t[-1] - t[0]
     q1, q3   = np.percentile(x, [25, 75])
@@ -326,10 +328,9 @@ def non_integral_summary(x, t, center=None, dead_band=None, prominence=None):
 
     center = x.mean() if center is None else center
     dead_band = 2.0 * sigma_st if dead_band is None else dead_band
-    prominence = 3.0 * sigma_st if prominence is None else prominence
 
     g = hysteresis_sign(x=x, center=center, dead_band=dead_band)
-    peak_index, _ = find_peaks(x, prominence=prominence)
+    peak_index, _ = find_peaks(x, prominence=prominence_factor * (x.max() - x.min()))
 
     return {
         'mean':           x.mean(),

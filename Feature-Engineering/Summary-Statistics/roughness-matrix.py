@@ -1,5 +1,5 @@
 __author__ = 'yRocket'
-__version__ = "0.1.0.2026.8.15"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.1.2026.8.15"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 """
 Render a 5 x 5 matrix chart of sine traces with additive white noise and report the three roughness
 features on each panel.
@@ -7,7 +7,7 @@ features on each panel.
 slsr        = sqrt(MSSD / 2) / s, where MSSD is the mean square successive difference and s the sample
               standard deviation. It equals sqrt(1 - rho_1), so it reads 1 for white noise.
 zcr         = center-line crossing rate with a hysteresis dead band of 2 * sigma_st.
-cycle_count = number of peaks whose prominence reaches 3 * sigma_st.
+cycle_count = number of peaks whose prominence reaches 0.25 * the trace range.
 """
 import pathlib
 
@@ -24,7 +24,7 @@ AMPLITUDE = 1.0                                  # sine amplitude
 CYCLE_LIST = [1, 2, 5, 12, 30]                   # sine cycles over the trace, one per column
 NOISE_LIST = [0.0, 0.05, 0.2, 0.6, 2.0]          # noise sigma relative to the amplitude, one per row
 DEAD_BAND_FACTOR = 2.0                           # hysteresis width in units of sigma_st
-PROMINENCE_FACTOR = 3.0                          # peak threshold in units of sigma_st
+PROMINENCE_FACTOR = 0.25                         # peak threshold in units of the trace range
 SEED = 0
 DOC_STEM = 'semiconductor-equipment-trace-non-integral-summary-statistics'
 OUT_PATH = pathlib.Path(__file__).parent / f"{DOC_STEM}_fig" / 'fig1.png'
@@ -54,10 +54,10 @@ def hysteresis_sign(x: np.ndarray, center: float = 0.0, dead_band: float = 0.0) 
 
 
 def roughness_features(x: np.ndarray) -> dict:
-    """Return slsr, zcr and cycle_count with the thresholds derived from the short-term sigma."""
+    """Return slsr, zcr and cycle_count with the thresholds derived from the trace itself."""
     sigma_st = short_term_sigma(x)
     g = hysteresis_sign(x=x, center=float(x.mean()), dead_band=DEAD_BAND_FACTOR * sigma_st)
-    peak_index, _ = find_peaks(x, prominence=PROMINENCE_FACTOR * sigma_st)
+    peak_index, _ = find_peaks(x, prominence=PROMINENCE_FACTOR * float(x.max() - x.min()))
     return {
         'slsr': sigma_st / float(np.std(x, ddof=1)),
         'zcr': float(np.mean(g[:-1] != g[1:])),
