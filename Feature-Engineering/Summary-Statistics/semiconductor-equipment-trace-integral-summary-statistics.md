@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 21 | Created: 2026-07-29 | Updated: 2026-08-14 18:49 CDT
+Rev. 22 | Created: 2026-07-29 | Updated: 2026-08-14 21:14 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -321,6 +321,8 @@ Table 7. Redundancy checks
 ### 6.3 Dimensionality Gate
 
 최종 model 입력 특징 수 $p_{\text{final}}$ 이 $n/5$ 이하인지 확인한다.
+
+---
 
 ## Appendix A. Terminology
 

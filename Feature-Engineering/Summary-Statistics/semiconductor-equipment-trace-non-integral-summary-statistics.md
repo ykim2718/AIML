@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 18 | Created: 2026-07-29 | Updated: 2026-08-14 19:21 CDT
+Rev. 19 | Created: 2026-07-29 | Updated: 2026-08-14 21:14 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -142,6 +142,8 @@ Table 2. Redundancy checks
 ### 5.3 Dimensionality Gate
 
 최종 model 입력 특징 수 $p_{\text{final}}$ 이 $n/5$ 이하인지 확인한다.
+
+---
 
 ## Appendix A. Terminology
 
