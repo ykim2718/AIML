@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 25 | Created: 2026-07-29 | Updated: 2026-08-15 12:18 CDT
+Rev. 26 | Created: 2026-07-29 | Updated: 2026-08-15 12:25 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -68,7 +68,7 @@ $$\text{cycle count} \approx \frac{(N-1)\,\text{zcr}}{2}$$
 
 $$\frac{\sigma_{\text{st}}}{s} = \sqrt{1 - \hat{\rho}_1}$$
 
-백색잡음이면 $\mathrm{MSSD} = 2s^2$ 이므로 비가 정확히 1이 된다. 임의로 문턱을 정할 필요 없이 이론값 1을 기준으로 읽으면 된다. 이 관계의 유도와 $\rho_1$ 의 정의는 [Appendix C](#appendix-c-lag-1-autocorrelation) 에, 파형별 실측값은 [Appendix D](#appendix-d-roughness) 에 있다.
+백색잡음이면 이웃 sample이 독립이라 차분의 분산이 두 분산의 합이 되므로 $\mathrm{MSSD} = 2s^2$ 이고, 비가 정확히 1이 된다. 임의로 문턱을 정할 필요 없이 이론값 1을 기준으로 읽으면 된다. 이 관계의 유도와 $\rho_1$ 의 정의는 [Appendix C](#appendix-c-lag-1-autocorrelation) 에, 파형별 실측값은 [Appendix D](#appendix-d-roughness) 에 있다.
 
 - 비가 1보다 작으면 신호가 매끄럽다. 이웃 sample이 서로 닮아 있다.
 - 비가 1이면 백색잡음이다.
@@ -213,7 +213,7 @@ Table 4. Feature definitions
 | `range` | $\max_i x_i - \min_i x_i$ | — |
 | `iqr` | $Q_3 - Q_1$ | $Q_1$ 과 $Q_3$ 은 $x$ 의 제1·제3 사분위수다 |
 | `slope` | $\dfrac{\sum_i (t_i - \bar{t})(x_i - \bar{x})}{\sum_i (t_i - \bar{t})^2}$ | $\bar{t}$ 는 timestamp의 산술평균이다 |
-| `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 §1.3에 있다 |
+| `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 [Appendix C](#appendix-c-lag-1-autocorrelation) 에 있다 |
 | `max_delta` | $\max_i \lvert \Delta x_i \rvert$ | — |
 | `slsr` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
 | `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[g_i \neq g_{i+1}\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $g_i \in \{-1, +1\}$ 은 hysteresis를 적용한 부호로, $x_i - c \gt h/2$ 이면 $+1$, $x_i - c \lt -h/2$ 이면 $-1$, 그 사이면 직전 값을 유지한다. $c$ 는 기준선, $h$ 는 dead band 폭이다 |
@@ -257,6 +257,16 @@ Table 5. Correspondence between the lag-1 autocorrelation and SLSR
 | -1.00 | 1.41 | 매 sample마다 부호 반전, Nyquist 진동 |
 
 비의 최댓값은 $\sqrt{2} \approx 1.41$ 이다.
+
+#### Why the Divisor Is 2
+
+표의 네 번째 줄이 기준값 1을 주는 이유를 따로 본다. 백색잡음은 이웃 sample이 독립이므로 $\rho_1 = 0$ 이고, 차분의 분산에서 공분산 항이 사라진다.
+
+$$\mathrm{Var}(x_{i+1} - x_i) = \mathrm{Var}(x_{i+1}) + \mathrm{Var}(x_i) - 2\,\mathrm{Cov}(x_i, x_{i+1}) = \sigma^2 + \sigma^2 - 0 = 2\sigma^2$$
+
+차분의 기댓값이 0이므로 $\mathbb{E}\big[(\Delta x)^2\big] = \mathrm{Var}(\Delta x)$ 이고, 따라서 $\mathrm{MSSD} = 2\sigma^2$ 이다. 인수 2는 sample 두 개의 분산이 더해져 생긴 것이지 임의로 붙인 상수가 아니다.
+
+$\sigma_{\text{st}}$ 를 $\sqrt{\mathrm{MSSD}/2}$ 로 정의하는 이유가 여기에 있다. 2로 나누고 제곱근을 취하면 백색잡음에서 $\sigma_{\text{st}} = \sigma$ 가 되어 `std` 와 같은 척도의 $\sigma$ 추정량이 되고, 두 추정량의 비가 정확히 1이 된다. 이것이 §1.3에서 기준값 1을 쓰는 근거다.
 
 이 유도는 정상성을 전제한다. 추세가 뚜렷한 trace에서는 $s$ 가 잡음이 아니라 추세의 진폭을 재므로 $\hat{\rho}_1$ 이 1 쪽으로 부풀고, 비는 그만큼 작게 나온다. 이때의 비는 "잡음 대비 추세의 우세" 를 읽는 값으로 해석해야 한다.
 
