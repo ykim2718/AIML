@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 70 | Created: 2026-08-07 | Updated: 2026-08-15 21:26 CDT
+Rev. 71 | Created: 2026-08-07 | Updated: 2026-08-15 23:13 CDT
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
@@ -362,7 +362,7 @@ Table 11. Column profile keys
 |-----|---------|
 | `metadata` | 아무도 고르지 않았고 실행이 남긴 사실을 적는다. 판정을 수행한 시각 `profiled_at` 과 판정에 쓴 `column-class.json` 의 version `class_version` 이 여기에 든다 |
 | `thresholds` | 사람이 고른 판정 configuration 을 전부 적는다. Activity 를 무엇끼리 비교할지를 정하는 `activity_basis`, 어느 열까지 판정할지를 정하는 `active_only`, 판정 구간을 정하는 `window`, 그리고 4 절의 규칙들이 읽는 임계값이 여기에 든다 |
-| `columns` | 열마다 최종 class 와 그 판정을 뒷받침하는 관측값을 적는다. 정해진 key 는 `class` 하나이고 나머지는 열어 둔다 |
+| `columns` | 열마다 최종 class 와 그 판정을 뒷받침하는 관측값을 적는다. 정해진 key 는 `axis` 하나로 4 절의 axis 를 key 에 두고 그 label 을 value 에 두며, 나머지는 열어 둔다 |
 
 `metadata` 와 `thresholds` 를 가르는 이유는 둘을 읽는 목적이 다르기 때문이다. `thresholds` 는 판정을 되짚거나 다시 돌리기 위해 읽으며, 그 안의 값 하나만 바뀌어도 같은 데이터에서 다른 label 이 나온다. `metadata` 는 그 판정이 언제 어떤 어휘로 이루어졌는지를 말할 뿐 판정을 바꾸지 않는다.
 
