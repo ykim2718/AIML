@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 71 | Created: 2026-08-07 | Updated: 2026-08-15 23:13 CDT
+Rev. 73 | Created: 2026-08-07 | Updated: 2026-08-15 23:53 CDT
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
@@ -166,6 +166,7 @@ Table 4. Class axes
 | `array_length` | `fixed`, `variable` | `non-scalar` | `rows` | Analysis |
 | `trace_quantum` | `q1`, `qn`, `infinite` | `trace` | `cell` | Analysis |
 | `trace_shape` | `flat`, `step`, `rectangle`, `triangle`, `oscillation`, `irregular` | `trace` | `cell` | Analysis |
+| `trace_sequence` | `stable`, `varying` | `trace` | `rows` | Analysis |
 
 `Applies to` 는 그 axis 가 어느 열에 적용되는지를 적고, `Basis` 는 그 axis 를 판정할 때 무엇을 보는지를 적는다. `cell` 은 cell 하나 안만 보므로 다른 행에 무엇이 들어 있든 답이 같다. `rows` 는 그 열의 행을 서로 견준다. `rows or entities` 는 행끼리 견줄 수도 있고 `row_key` 로 묶은 entity 끼리 견줄 수도 있다는 뜻이다.
 
@@ -300,7 +301,22 @@ Table 10. Trace shape labels
 
 `irregular` 는 앞의 다섯이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
 
-### 4.8 File Format
+### 4.8 Trace Sequence
+
+Trace sequence 는 값을 방문하는 순서가 cell 마다 같은지를 나눈다. 방문 순서는 같은 값이 이어지는 구간을 그 값 하나로 줄여 얻으므로, 한 값에 머문 표본 수가 cell 마다 달라도 순서가 같으면 같은 방문 순서이다.
+
+Table 11. Trace sequence labels
+
+| Label | Rule |
+|-------|------|
+| `stable` | Every cell visits its values in the same order |
+| `varying` | The order in which values are visited differs from cell to cell |
+
+이 axis 는 앞의 둘과 달리 cell 하나만 보아서는 판정할 수 없다. 순서가 되풀이되는지는 cell 을 서로 견주어야 나오므로, 이 axis 의 basis 는 `rows` 이다.
+
+`stable` 은 그 열이 무엇을 재기보다 정해진 각본을 되풀이한다는 뜻이다. Recipe step 번호처럼 공정이 정한 순서를 그대로 적는 열이 여기에 온다. 반면 잡음이 실린 아날로그 신호는 두 cell 이 같은 순서를 낼 수 없으므로 `varying` 이며, 이것이 정상이다. 규칙이 값의 완전한 일치를 요구하므로 `stable` 은 사실상 `q1` 과 `qn` 에서만 나온다.
+
+### 4.9 File Format
 
 `column-class.json` 은 project 사이에서 함께 참조하는 file 이다. Dataset 하나에 매이지 않을 뿐 아니라 project 하나에도 매이지 않으므로, project 마다 복사해 고치지 않고 하나를 두고 같이 읽는다. 복사해 고치기 시작하면 같은 label 이 project 마다 다른 규칙으로 판정되어, 열의 class 를 project 를 넘어 비교할 수 없게 된다. `version` 이 dataset 이 아니라 이 어휘에 붙어 있는 이유도 같다.
 
@@ -356,7 +372,7 @@ Table 10. Trace shape labels
 
 Column profile 은 데이터를 읽어 판정한 결과를 담는다. 최상위 key 는 dataset 의 object key 이고, 그 아래는 key 셋으로 갈린다. 가르는 기준은 그 값을 누가 정했는가이다.
 
-Table 11. Column profile keys
+Table 12. Column profile keys
 
 | Key | Purpose |
 |-----|---------|
@@ -390,7 +406,7 @@ Table 11. Column profile keys
 
 여기의 규칙은 manifest 자체의 형식 검사가 아니라, manifest 를 데이터에 적용할 때 성립해야 하는 조건이다. 아래 넷은 앞의 절들이 세운 설계에서 바로 따라 나오는 최소한의 예시이며, 검사 규칙의 전부를 이 문서에서 정하지 않는다.
 
-Table 12. Integrity rules
+Table 13. Integrity rules
 
 | Rule | Condition | Catches |
 |------|-----------|---------|
@@ -426,7 +442,7 @@ Table 12. Integrity rules
 
 4.4 절 Table 7 의 label 마다 cell 하나에 무엇이 담기는지를 wafer 한 행을 두고 보인다.
 
-Table 13. Structure examples
+Table 14. Structure examples
 
 | Cell label | Feature | Cell value | Cell axes |
 |------------|---------|------------|-----------|
@@ -440,7 +456,7 @@ Table 13. Structure examples
 
 `scalar` 만 cell 에 축이 없고 나머지 넷은 cell 안에 축을 갖는다. `vector` 와 `trace` 는 축이 하나여서 값의 나열로 보이지만 그 축이 site 인지 시각인지가 다르고, `matrix` 는 축이 둘이어서 배열이 한 겹 더 중첩되며, `tensor` 는 축이 셋이어서 두 겹 더 중첩된다.
 
-Table 13 의 `trace` 경우의 실제 데이터는 `[wafer, feature, trace]` 이며 예시는 아래이다.
+Table 14 의 `trace` 경우의 실제 데이터는 `[wafer, feature, trace]` 이며 예시는 아래이다.
 
 ```python
 # array axis 0 is wafer, 1 is feature, 2 is trace
@@ -457,7 +473,7 @@ table = [
 ]
 ```
 
-Table 13 의 `matrix` 경우의 실제 데이터는 `[wafer, feature, die_x, die_y]` 이며 예시는 아래이다.
+Table 14 의 `matrix` 경우의 실제 데이터는 `[wafer, feature, die_x, die_y]` 이며 예시는 아래이다.
 
 ```python
 # array axis 0 is wafer, 1 is feature, 2 is die_x, 3 is die_y
