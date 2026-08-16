@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 21 | Created: 2026-8-1 | Updated: 2026-8-14 21:20 CDT
+Rev. 22 | Created: 2026-8-1 | Updated: 2026-8-16 01:15 CDT
 
 ## 1. Terminology
 
@@ -95,7 +95,7 @@ result = [x * 2 for x in range(10)]
 
 + 모든 figure 에는 Fig 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
 + 복수 panel figure 에는 전부 panel labels를 (a), (b), (c) ... 처럼 붙일 것. 단 Matrix chart는 예외로 panel labels를 붙이지 말 것.
-+ Figure image는 md 파일과 같은 위치의 `<md file stem>_fig` folder에 두고, 본문에서는 그 folder 기준 상대 경로로 참조한다.
++ Figure image는 CLI로 특정 folder를 지정하지 않는 경우에, md 파일과 같은 위치의 `<md file stem>_fig` folder에 두고, 본문에서는 그 folder 기준 상대 경로로 참조한다.
     - `foo.md` 의 image는 `foo_fig/` 아래에 두고 `![Fig 1](foo_fig/fig1.png)` 로 쓴다.
     - 절대 경로나 외부 URL로 참조하지 않는다. 저장소를 clone하거나 folder를 옮겨도 그림이 그대로 보여야 한다.
 

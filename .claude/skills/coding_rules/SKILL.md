@@ -4,7 +4,7 @@ description: 코드를 쓰거나 고칠 때 반드시 지킬 규칙. Edit/Write 
 ---
 # Coding Rules
 
-Rev. 24 | Created: 2026-8-1 | Updated: 2026-8-14 15:30 CDT
+Rev. 25 | Created: 2026-8-1 | Updated: 2026-8-16 16:10 CDT
 
 
 ## 적용 방법
@@ -76,11 +76,6 @@ Rev. 24 | Created: 2026-8-1 | Updated: 2026-8-14 15:30 CDT
 - 테스트가 실패하면 기대값이 틀린 건지 코드가 틀린 건지 **먼저 가려라.**
 - 기존 동작을 바꿨으면 기존 사용처가 안 깨졌는지부터 확인하라.
 
-### 1.5. 남의 코드를 고칠 땐 계약을 지켜라
-
-- 반환 타입/시그니처를 바꾸면 호출자를 전부 찾아 고쳐라.
-- 기존 데이터·저장 포맷과의 호환을 깨는 변경은 먼저 알리고 승인받아라.
-- 기능 추가는 기존 경로를 건드리지 않는 방향으로 설계하라.
 
 ## 2. 공통
 
@@ -91,8 +86,8 @@ Rev. 24 | Created: 2026-8-1 | Updated: 2026-8-14 15:30 CDT
 
 ### 2.2. Versioning
 
-- versioning marker는 날짜가 있는 `__version__` `Major.Minor.Patch.Date(YYYY.M.D)` 형식이
-  default이고, 날짜가 없는 `Major.Minor.Patch` 형식도 있다.
+- versioning marker는 날짜가 있는 `__version__` `Major.Minor.Patch.Date(YYYY.M.D)` 형식이 default이고, 날짜가 없는 `Major.Minor.Patch` 형식도 있다.
+- initial release에는 `0.0.0.<YYYY.M.D>` 를 둔다.
 - `py`, `ps1`, `sh`, `yml` 파일 머리에 아래처럼 versioning marker를 기입하고, 없으면 추가할 것:
 
   ```python
@@ -102,9 +97,11 @@ Rev. 24 | Created: 2026-8-1 | Updated: 2026-8-14 15:30 CDT
 - 날짜가 있는 형식이면 change 발생 시:
   - **patch bump** + 날짜를 오늘로
   - 기능 추가면 **minor bump**, patch는 0
-  - docstring changelog에 한 줄 추가
-- 날짜가 없는 형식 (예: `__version__ = "0.0.0"`) 이면 change 발생 시 **patch bump**만 할 것
-  (날짜 없음).
+  - 날짜가 없는 형식 (예: `__version__ = "0.0.0"`) 이면 change 발생 시 **patch bump**만 할 것  (날짜 없음).
+
+### 2.3. Changelog
+
+- Major or Minor change시에만 docstring 의 changelog에 변경 내용을 한 줄로 추가한다.
 
 
 ## 3. 반면교사: 실제 사고 기록
