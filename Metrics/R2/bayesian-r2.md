@@ -1,51 +1,58 @@
-# Bayesian R² — R² 를 점이 아니라 분포로 얻는 방법
-Rev. 0 | Created: 2026-08-16 | Updated: 2026-08-16 18:15 CDT
+# Bayesian R² — Obtaining R² as a Distribution Instead of a Point
+Rev. 1 | Created: 2026-05-31 | Updated: 2026-08-16 18:20 CDT
 
-> 사후표본마다 R² 를 하나씩 계산해 R² 의 분포를 얻는 방법을 정의, 계산 절차,
-> 해석, 적용 조건의 순서로 정리한 문서.
+> A note on computing one R² per posterior draw to obtain R² as a distribution,
+> organized as definition, computation, interpretation, and applicability.
 
 ## 1. Motivation
 
-표준 R² 는 숫자 하나만 준다. `R² = 0.87` 이라는 값이 나왔을 때, 그 값이 데이터를
-조금만 바꿔도 0.60 으로 떨어지는 값인지 아니면 0.85 근처에서 단단하게 유지되는
-값인지를 그 숫자 자체는 말해주지 않는다. 설명력의 크기와 설명력에 대한 확신은
-서로 다른 정보인데, 표준 R² 는 앞의 하나만 담는다.
+Standard R² returns a single number. When a fit reports `R² = 0.87`, that number
+alone does not say whether the value would collapse to 0.60 under a slightly
+different sample or hold firmly near 0.85. The magnitude of explanatory power and
+the confidence in that magnitude are two different pieces of information, and
+standard R² carries only the first.
 
-Bayesian R² 는 모델의 예측 불확실성을 R² 자체로 전파해서, R² 를 점이 아니라
-분포로 얻는다. 결과가 `0.87 [0.81, 0.91]` 형태로 나오는 이유가 이것이다.
+Bayesian R² propagates the predictive uncertainty of the model into R² itself, so
+that R² arrives as a distribution rather than a point. This is why the result takes
+the form `0.87 [0.81, 0.91]`.
 
 **Table 1. Standard R² vs Bayesian R²**
 
 | Aspect | Standard R² | Bayesian R² |
 |---|---|---|
-| Output | 스칼라 하나 | S 개 표본으로 이루어진 분포 |
-| Uncertainty | 없음 | 구간으로 표현 |
-| Range | 음수 가능, 1 초과 불가 | 항상 [0, 1] |
-| Input required | 예측값 1 벌 | 사후표본 S 벌 |
-| Failure mode | 값이 흔들려도 알 수 없음 | 표본을 못 뽑으면 계산 자체가 불가 |
+| Output | A single scalar | A distribution over S draws |
+| Uncertainty | Absent | Expressed as an interval |
+| Range | Can be negative, never exceeds 1 | Always within [0, 1] |
+| Input required | One set of predictions | S sets of posterior draws |
+| Failure mode | Instability stays invisible | Without draws the metric cannot be computed at all |
 
 ## 2. Core Idea
 
-사후분포에서 뽑은 표본 s 마다 R² 를 하나씩 계산한다. 표본이 S 개면 R² 도 S 개가
-나오고, 그 S 개의 집합이 곧 R² 의 사후분포다. 모델 파라미터가 불확실하면 예측값이
-표본마다 달라지고, 예측값이 달라지면 설명된 변동의 크기도 달라진다. Bayesian R² 는
-그 흔들림을 지우지 않고 그대로 출력으로 내보낸다.
+For each draw s taken from the posterior distribution, one R² is computed. With S
+draws there are S values of R², and that collection is the posterior distribution
+of R². When the model parameters are uncertain, the predictions differ from draw to
+draw, and when the predictions differ, so does the amount of variation the model
+explains. Bayesian R² does not erase that movement; it reports it.
 
 ## 3. Definition
 
 ### 3.1. Divergence Problem of the Standard Form
 
-표준 정의 `R² = 1 − SS_res / SS_tot` 를 사후표본에 그대로 적용하면 값이 [0, 1] 을
-벗어난다. 최소제곱 적합에서는 잔차제곱합이 전체제곱합을 넘을 수 없지만, 사후표본
-하나하나는 그 데이터에 대한 최소제곱해가 아니다. 사전분포나 계층모델의 shrinkage 가
-예측값을 데이터에서 끌어당기면 개별 표본의 잔차제곱합이 전체제곱합을 넘어설 수
-있고, 그 표본의 R² 는 음수가 된다. 표본별로 부호가 뒤집히는 값들을 모아 놓으면
-분포의 중앙값도 구간도 해석할 수 없다.
+Applying the standard definition `R² = 1 − SS_res / SS_tot` to individual posterior
+draws produces values outside [0, 1]. Under a least-squares fit the residual sum of
+squares cannot exceed the total sum of squares, but an individual posterior draw is
+not the least-squares solution for that data. When a prior or the shrinkage of a
+hierarchical model pulls predictions away from the data, the residual sum of squares
+of a single draw can exceed the total sum of squares, and the R² of that draw turns
+negative. A collection of values whose sign flips from draw to draw yields neither an
+interpretable median nor an interpretable interval. A concrete instance appears in
+[Appendix B. Worked Example](#appendix-b-worked-example).
 
 ### 3.2. Gelman Formulation
 
-Gelman et al. (2019) 의 해법은 분모를 "두 양의 합" 으로 바꾸는 것이다. 뺄셈을
-없애면 발산할 자리가 사라진다.
+The remedy proposed by Gelman et al. (2019) is to replace the denominator with a sum
+of two non-negative quantities. Removing the subtraction removes the place where the
+value could diverge.
 
 ```text
              Var_fit^(s)                    explained variation
@@ -53,32 +60,33 @@ R2^(s) = ───────────────────────�
          Var_fit^(s) + Var_res^(s)      explained variation + residual variation
 ```
 
-- `Var_fit` — 표본 s 의 예측값 `y_hat_i^(s)` 들이 데이터 포인트 i 를 따라 갖는 분산이며, 모델이 설명한 변동에 해당한다.
-- `Var_res` — 표본 s 가 설명하지 못하고 남긴 변동이다.
+- `Var_fit` — the variance of the predictions `y_hat_i^(s)` of draw s taken across the data points i, which is the variation the model explains.
+- `Var_res` — the variation that draw s leaves unexplained.
 
-두 항 모두 분산이므로 항상 0 이상이고, 분모가 두 양의 합이라 비율은 구조적으로
-[0, 1] 안에 갇힌다. 분자가 0 이면 R² 는 0 이고, `Var_res` 가 0 으로 가면 R² 는 1 로
-간다. 표준 R² 와 달리 어떤 사후표본에서도 정의를 벗어나지 않는다.
+Both terms are variances and therefore non-negative, and because the denominator is
+their sum, the ratio is structurally confined to [0, 1]. The value is 0 when the
+numerator vanishes and approaches 1 as `Var_res` approaches 0. Unlike the standard
+form, no posterior draw can push it outside its definition.
 
-`Var` 는 데이터 포인트 i = 1 ... n 에 대한 표본분산이다.
+Here `Var` denotes the sample variance taken over the data points i = 1 ... n.
 
 $$\mathrm{Var}(z) = \frac{1}{n-1}\sum_{i=1}^{n}\left(z_i - \bar{z}\right)^2$$
 
 ### 3.3. Choice of Residual Variance
 
-`Var_res` 를 잡는 방법은 두 가지이고, 어느 쪽을 쓰는지에 따라 R² 의 의미가 달라진다.
+There are two ways to define `Var_res`, and the choice changes what R² means.
 
 **Table 2. Two choices of residual variance**
 
 | Variant | Definition | Meaning | Note |
 |---|---|---|---|
-| Empirical | `Var(y_i − y_hat_i^(s))` | 실제로 남은 잔차의 분산 | 관측치 y 가 필요하며 모델 종류를 가리지 않는다 |
-| Model-based | `(sigma^(s))^2` | 모델이 스스로 주장하는 noise 분산 | Gaussian likelihood 계열에 쓰며 y 없이 계산된다 |
+| Empirical | `Var(y_i − y_hat_i^(s))` | The variance of the residuals actually left over | Requires the observations y and works for any model family |
+| Model-based | `(sigma^(s))^2` | The noise variance the model claims for itself | Used with Gaussian likelihoods and computed without y |
 
-두 값은 모델이 잘 맞을 때 비슷해지고, 어긋나면 그 차이 자체가 진단 신호다.
-model-based 쪽이 눈에 띄게 작으면 모델이 자기 noise 를 과소평가하고 있다는 뜻이며,
-이때 model-based R² 는 실제보다 높게 나온다. 두 변형을 한 문서 안에서 섞어 쓰지 않고
-어느 쪽인지 명시한다.
+The two values agree when the model fits well, and any gap between them is itself a
+diagnostic. A model-based value that is visibly smaller means the model underestimates
+its own noise, and the model-based R² then reads higher than the empirical one. The
+two variants should not be mixed within one document, and the choice should be stated.
 
 ## 4. Computation
 
@@ -95,10 +103,11 @@ model-based 쪽이 눈에 띄게 작으면 모델이 자기 noise 를 과소평�
      quantiles-> credible interval
 ```
 
-입력은 `(S, n)` 모양의 행렬 하나다. 행이 사후표본, 열이 데이터 포인트다. 분산은
-열 방향으로, 즉 데이터 포인트를 따라 계산하며 표본을 따라 계산하지 않는다. 축을
-바꿔 잡으면 "예측값이 표본마다 얼마나 흔들리는가" 를 재게 되어 R² 가 아닌 다른
-양이 나온다.
+The input is a single matrix of shape `(S, n)` whose rows are posterior draws and
+whose columns are data points. The variances run along the column direction, that is
+across data points, never across draws. Taking the other axis measures how much the
+prediction for one point moves from draw to draw, which is a different quantity
+altogether and not R².
 
 ### 4.2. Implementation
 
@@ -141,34 +150,37 @@ point = np.median(r2_draws)
 lower, upper = np.quantile(r2_draws, [0.05, 0.95])      # 90% credible interval
 ```
 
-계산 자체는 분산 두 개와 나눗셈 한 번이며, 비용은 사후표본을 얻는 단계에 있다.
+The arithmetic is two variances and one division; the cost of the method sits entirely
+in obtaining the posterior draws.
 
 ## 5. Interpretation
 
 ### 5.1. Point Estimate and Credible Interval
 
-R² 의 사후분포는 대칭이 아니다. R² 가 1 에 가까울수록 위쪽이 1 이라는 벽에 막혀
-왼쪽으로 긴 꼬리가 생긴다. 이런 분포에서 평균은 꼬리에 끌려가므로 점추정에는
-중앙값을 쓰고, 구간은 분위수로 잡는다.
+The posterior distribution of R² is not symmetric. The closer R² comes to 1, the more
+the upper side is blocked by the ceiling at 1, which leaves a long tail on the left.
+In such a distribution the mean is dragged toward the tail, so the median serves as
+the point estimate and quantiles define the interval.
 
-구간의 폭이 곧 설명력에 대한 확신의 정도다. `0.87 [0.85, 0.89]` 와
-`0.87 [0.61, 0.95]` 는 점추정이 같아도 완전히 다른 결과이며, 뒤쪽은 R² 를 근거로
-모델을 채택하기에는 데이터가 부족하다는 뜻이다.
+The width of that interval is the confidence in the explanatory power.
+`0.87 [0.85, 0.89]` and `0.87 [0.61, 0.95]` share a point estimate but are entirely
+different results, and the latter means the data are too thin to accept a model on the
+strength of R².
 
-이 구간은 credible interval 이지 confidence interval 이 아니다. "R² 가 이 구간에 있을
-확률이 90% 다" 로 직접 읽을 수 있는 것이 credible interval 의 성질이다.
-정의는 [Appendix A. Terminology](#appendix-a-terminology) 를 참조한다.
+This interval is a credible interval, not a confidence interval. Reading it directly as
+"R² lies in this interval with probability 90%" is the property that distinguishes a
+credible interval, defined in [Appendix A. Terminology](#appendix-a-terminology).
 
 ### 5.2. Uncertainty Decomposition
 
-한 결과 안에 두 종류의 불확실성이 분리되어 들어 있다.
+A single result carries two separable kinds of uncertainty.
 
-- R² 분포의 폭 — 파라미터를 특정하지 못해 생기는 불확실성이며, 데이터를 더 모으면 줄어든다.
-- `Var_res` 의 크기 — 데이터 자체에 있는 noise 이며, 데이터를 더 모아도 줄지 않는다.
+- The width of the R² distribution — uncertainty from not having pinned down the parameters, which shrinks as more data arrive.
+- The magnitude of `Var_res` — noise inherent in the data, which does not shrink with more data.
 
-따라서 구간이 넓으면 표본을 늘리는 것이 답이고, 구간은 좁은데 R² 자체가 낮으면
-입력 변수나 모델 구조를 바꿔야 한다. 표준 R² 는 이 둘을 구분하지 못해 두 상황에
-같은 숫자를 준다.
+A wide interval therefore calls for a larger sample, whereas a narrow interval around a
+low R² calls for different input variables or a different model structure. Standard R²
+cannot separate the two and returns the same number in both situations.
 
 ## 6. Tools
 
@@ -176,18 +188,19 @@ R² 의 사후분포는 대칭이 아니다. R² 가 1 에 가까울수록 위�
 
 | Environment | Interface | Note |
 |---|---|---|
-| R | `bayes_R2(fit)` — rstanarm, brms | 논문 저자가 관리하는 구현이며 기준 구현으로 삼는다 |
-| R | `loo_R2(fit)` — rstanarm, brms | out-of-sample 보정을 적용한 변형 |
-| Python | `az.r2_score()` — ArviZ | 예측 표본과 관측치를 받아 요약을 반환한다 |
-| Any | 직접 구현 | 분산 두 개와 나눗셈이므로 이식 부담이 작다 |
+| R | `bayes_R2(fit)` — rstanarm, brms | Maintained by the authors of the paper and taken as the reference implementation |
+| R | `loo_R2(fit)` — rstanarm, brms | The variant carrying an out-of-sample correction |
+| Python | `az.r2_score()` — ArviZ | Takes predictive samples and observations and returns a summary |
+| Any | Custom implementation | Two variances and a division, so it ports with little effort |
 
-직접 구현할 때는 기준 구현과 같은 데이터로 값을 맞춰 보고 시작한다. 값이 어긋나면
-대개 3.3 의 변형 선택이나 4.1 의 축 방향이 원인이다.
+A custom implementation should first be reconciled against the reference implementation
+on the same data. A mismatch usually traces back to the variant chosen in 3.3 or to the
+axis direction described in 4.1.
 
 ## 7. Prerequisites
 
-가장 중요한 제약은 정의가 아니라 적용 조건에 있다. Bayesian R² 는 진짜 사후표본을
-뽑을 수 있어야 쓴다.
+The binding constraint lies in applicability rather than in the definition. Bayesian R²
+requires genuine posterior draws.
 
 ### 7.1. Applicable Models
 
@@ -195,23 +208,25 @@ R² 의 사후분포는 대칭이 아니다. R² 가 1 에 가까울수록 위�
 
 | Model type | Applicable | Reason |
 |---|---|---|
-| Stan, PyMC, brms 등 Bayesian model | Yes | MCMC 가 사후표본을 직접 준다 |
-| Deep ensemble | Yes | member 하나가 표본 하나 역할을 한다 |
-| MC dropout | Yes | forward pass 를 반복해 표본을 만든다 |
-| Bootstrap ensemble | Yes | 재표본마다 적합해 표본을 만든다 |
-| 단일 Gaussian head (mu, sigma 한 벌) | No | 표본이 없어 분포를 만들 수 없다 |
-| 점추정만 내는 model (일반 GBM, 단일 신경망) | No | 예측값이 한 벌뿐이다 |
+| Bayesian models such as Stan, PyMC, brms | Yes | MCMC supplies posterior draws directly |
+| Deep ensemble | Yes | Each member plays the role of one draw |
+| MC dropout | Yes | Repeated forward passes generate the draws |
+| Bootstrap ensemble | Yes | Each resample is refitted to produce a draw |
+| Single Gaussian head emitting one mu and one sigma | No | Without draws no distribution can be formed |
+| Point-estimate models such as a plain GBM or a single network | No | Only one set of predictions exists |
 
-Deep ensemble 과 MC dropout 은 엄밀한 의미의 사후표본은 아니지만 예측 분포의 표본
-역할을 하므로 같은 계산이 성립한다. 다만 member 수가 5 개 정도로 적으면 분위수가
-불안정하므로 구간을 좁게 읽지 않는다.
+Deep ensembles and MC dropout do not yield posterior draws in the strict sense, but they
+act as samples from the predictive distribution, so the same computation holds. When the
+member count is as low as five, however, the quantiles are unstable and the interval
+should not be read narrowly.
 
 ### 7.2. Inapplicable Models
 
-`mu` 와 `sigma` 를 한 벌만 내놓는 모델은 예측 분포는 있어도 사후 "표본" 이 없다.
-`sigma` 로 aleatoric 불확실성은 표현되지만, R² 를 흔들 재료인 파라미터 불확실성이
-없으므로 R² 는 어차피 값 하나로 고정된다. 이 경우에는 8. Comparison 에서 다루는
-CRPS Skill Score 처럼 표본을 요구하지 않는 지표를 쓴다.
+A model that emits a single `mu` and a single `sigma` has a predictive distribution but
+no posterior draws. The `sigma` expresses aleatoric uncertainty, yet the parameter
+uncertainty that would make R² move is absent, so R² is fixed at one value regardless.
+Such a case calls for a metric that does not demand draws, such as the CRPS Skill Score
+discussed in 8. Comparison.
 
 ## 8. Comparison
 
@@ -219,15 +234,15 @@ CRPS Skill Score 처럼 표본을 요구하지 않는 지표를 쓴다.
 
 | Aspect | Bayesian R² | CRPS Skill Score |
 |---|---|---|
-| Output | 점추정 + 구간 | 점수 하나 |
-| Interval | 있음 | 없음 |
-| Sample requirement | 사후표본 S 벌 필요 | 예측 분포만 있으면 됨 |
-| Question answered | 설명력이 얼마이고 얼마나 확실한가 | 예측 분포가 얼마나 잘 맞았는가 |
-| Baseline | 데이터의 전체 변동 | 명시적으로 지정한 baseline model |
+| Output | Point estimate and interval | A single score |
+| Interval | Present | Absent |
+| Sample requirement | S posterior draws | Only a predictive distribution |
+| Question answered | How large is the explanatory power and how certain is it | How well did the predictive distribution match |
+| Baseline | The total variation of the data | An explicitly designated baseline model |
 
-두 지표는 경쟁 관계가 아니라 적용 조건이 다르다. 사후표본을 뽑을 수 있으면
-Bayesian R² 가 구간까지 주므로 더 많은 정보를 담고, 표본을 뽑을 수 없으면 CRPS
-Skill Score 가 남는 선택지다.
+The two metrics are not competitors; their applicability differs. Where posterior draws
+can be obtained, Bayesian R² carries more information because it also supplies an
+interval, and where they cannot, the CRPS Skill Score is what remains.
 
 ## 9. Pitfalls
 
@@ -235,39 +250,148 @@ Skill Score 가 남는 선택지다.
 
 | Mistake | Consequence | Fix |
 |---|---|---|
-| 사후예측표본을 `Var_fit` 에 사용 | noise 가 분자에 섞여 R² 가 부풀려짐 | 예측 평균의 사후표본을 쓴다 |
-| 분산을 표본 축으로 계산 | R² 가 아닌 다른 양이 나옴 | 데이터 포인트 축으로 계산한다 |
-| 평균으로 점추정 | 왜도에 끌려 값이 낮게 나옴 | 중앙값을 쓴다 |
-| 학습 데이터로 계산한 값을 일반화 성능으로 보고 | 낙관적으로 편향됨 | out-of-sample 데이터를 쓰거나 loo 변형을 쓴다 |
-| S 가 작은 상태에서 좁은 구간 보고 | 구간 자체가 불안정 | 표본 수를 늘리고 수렴을 먼저 확인한다 |
-| 두 변형을 섞어 비교 | 모델 간 비교가 무의미해짐 | 한 변형으로 고정하고 명시한다 |
+| Feeding posterior predictive samples into `Var_fit` | Noise enters the numerator and inflates R² | Use posterior draws of the predictive mean |
+| Taking the variance along the draw axis | The result is a different quantity, not R² | Take it along the data-point axis |
+| Using the mean as the point estimate | Skewness drags the value downward | Use the median |
+| Reporting a training-data value as generalization performance | The value is optimistically biased | Use out-of-sample data or the loo variant |
+| Reporting a narrow interval computed from few draws | The interval itself is unstable | Increase the draw count and confirm convergence first |
+| Mixing the two variants when comparing | Model-to-model comparison loses meaning | Fix one variant and state it |
 
-첫 번째 항목이 가장 자주 나온다. 대부분의 도구는 예측 평균의 사후표본과 관측
-noise 까지 더한 사후예측표본을 모두 제공하는데, `Var_fit` 에 들어갈 것은 앞쪽이다.
-뒤쪽을 넣으면 설명하지 못한 변동이 설명된 변동으로 옮겨 가서 R² 가 실제보다 높게
-나온다.
+The first row is the most frequent. Most tools expose both the posterior draws of the
+predictive mean and the posterior predictive samples that add observation noise on top,
+and `Var_fit` takes the former. Supplying the latter moves unexplained variation into
+the explained term, so R² reads higher than it is.
 
 ## 10. Summary
 
-Bayesian R² 는 사후표본 s 마다 `Var_fit / (Var_fit + Var_res)` 를 계산해 R² 를 분포로
-얻는 방법이다. 분모가 두 양의 합이라 표준 R² 의 발산 문제가 구조적으로 사라지고,
-점추정과 credible interval 을 함께 얻는다. 대신 사후표본을 뽑을 수 있는 Bayesian
-model 이나 ensemble 계열에서만 쓸 수 있다.
+Bayesian R² computes `Var_fit / (Var_fit + Var_res)` for each posterior draw s and thereby
+obtains R² as a distribution. Because the denominator is a sum of two non-negative terms,
+the divergence problem of standard R² disappears structurally, and the method yields a
+point estimate together with a credible interval. In exchange, it applies only to Bayesian
+models and ensemble-style models from which draws can be taken.
 
 ---
 
 ## Appendix A. Terminology
 
-- **aleatoric uncertainty** — 데이터 자체의 noise 에서 오는 불확실성이며, 데이터를 더 모아도 줄지 않는다.
-- **credible interval** — 사후분포의 분위수로 정의한 구간이며, 파라미터가 그 구간에 있을 확률로 직접 해석한다.
-- **CRPS** — Continuous Ranked Probability Score. 예측 분포 전체와 관측값 하나를 비교하는 점수이며, 값이 작을수록 좋다.
-- **CRPS Skill Score** — CRPS 를 baseline model 의 CRPS 로 정규화해 `1 − CRPS_model / CRPS_baseline` 형태로 만든 지표이며, 값이 클수록 좋다.
-- **deep ensemble** — 초기값이나 데이터 순서를 달리해 독립적으로 학습시킨 신경망 여러 개를 모아 예측 분포를 만드는 방법이다.
-- **epistemic uncertainty** — 모델과 파라미터를 특정하지 못해 생기는 불확실성이며, 데이터를 더 모으면 줄어든다.
-- **LOO** — Leave-One-Out cross-validation. 관측치 하나씩을 빼고 평가해 out-of-sample 성능을 추정하는 방법이다.
-- **MC dropout** — 추론 단계에서도 dropout 을 켠 채 forward pass 를 반복해 예측 표본을 얻는 방법이다.
-- **MCMC** — Markov Chain Monte Carlo. 사후분포에서 표본을 뽑는 표준 알고리즘 계열이다.
-- **posterior distribution** — 데이터를 관측한 뒤의 파라미터 분포이며, 사후분포로 표기한다.
-- **posterior draw** — 사후분포에서 뽑은 표본 하나이며, 사후표본으로 표기한다.
-- **posterior predictive sample** — 사후표본에 관측 noise 까지 더해 생성한 관측값 수준의 표본이다.
-- **shrinkage** — 사전분포나 계층 구조가 추정값을 전체 평균 쪽으로 끌어당기는 효과다.
+- **aleatoric uncertainty** — Uncertainty originating in the noise of the data itself, which does not shrink as more data arrive.
+- **credible interval** — An interval defined by quantiles of the posterior distribution, read directly as the probability that the parameter lies within it.
+- **CRPS** — Continuous Ranked Probability Score. A score comparing an entire predictive distribution against a single observation, where smaller is better.
+- **CRPS Skill Score** — CRPS normalized by the CRPS of a baseline model into the form `1 − CRPS_model / CRPS_baseline`, where larger is better.
+- **deep ensemble** — A predictive distribution built from several networks trained independently under different initializations or data orderings.
+- **epistemic uncertainty** — Uncertainty arising from not having identified the model and its parameters, which shrinks as more data arrive.
+- **LOO** — Leave-One-Out cross-validation. Estimating out-of-sample performance by holding out one observation at a time.
+- **MC dropout** — Obtaining predictive samples by repeating forward passes with dropout left active at inference time.
+- **MCMC** — Markov Chain Monte Carlo. The standard family of algorithms for drawing samples from a posterior distribution.
+- **OLS** — Ordinary Least Squares. The fit minimizing the sum of squared residuals.
+- **Pearson R²** — The square of the Pearson correlation coefficient between the observations and the predictions.
+- **posterior distribution** — The distribution of the parameters after the data have been observed.
+- **posterior draw** — One sample taken from the posterior distribution.
+- **posterior predictive sample** — A sample at the scale of an observation, generated by adding observation noise on top of a posterior draw.
+- **shrinkage** — The pull a prior or a hierarchical structure exerts on estimates toward a common center.
+
+## Appendix B. Worked Example
+
+This appendix computes both metrics by hand on one small dataset so that the difference
+between them is visible in numbers rather than in argument.
+
+### B.1. Data and Reference Fit
+
+The dataset has n = 8 points. The OLS fit gives an intercept of −0.018 and a slope of
+2.051, and the residuals are the values the model failed to reproduce.
+
+**Table 7. Worked example data and OLS fit**
+
+| i | x | y | y_hat (OLS) | Residual |
+|---|---|---|---|---|
+| 1 | 1 | 1.8 | 2.033 | −0.233 |
+| 2 | 2 | 4.9 | 4.085 | 0.815 |
+| 3 | 3 | 5.2 | 6.136 | −0.936 |
+| 4 | 4 | 8.9 | 8.187 | 0.713 |
+| 5 | 5 | 9.4 | 10.238 | −0.838 |
+| 6 | 6 | 13.6 | 12.289 | 1.311 |
+| 7 | 7 | 12.8 | 14.340 | −1.540 |
+| 8 | 8 | 17.1 | 16.392 | 0.708 |
+
+The observations have a mean of 9.213 and a sample variance of 26.301. On this fit the
+Pearson R² is 0.9598, and the standard R² is also 0.9598. The two coincide here because
+an OLS fit with an intercept forces them to agree, which is exactly why they are so often
+treated as the same quantity.
+
+### B.2. Bayesian R² over Posterior Draws
+
+Five posterior draws of the intercept a, the slope b, and the noise scale sigma are
+listed below. Each row is a complete model, so each row produces its own R². The
+empirical variant of 3.3 is used, meaning `Var_res` is the variance of the residuals of
+that draw.
+
+**Table 8. Per-draw computation**
+
+| s | a | b | sigma | Var_fit | Var_res | Bayesian R² | Pearson R² |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.10 | 2.05 | 1.05 | 25.215 | 1.057 | 0.9598 | 0.9598 |
+| 2 | 0.60 | 1.92 | 1.20 | 22.118 | 1.160 | 0.9502 | 0.9598 |
+| 3 | −0.40 | 2.14 | 0.95 | 27.478 | 1.104 | 0.9614 | 0.9598 |
+| 4 | 1.10 | 1.83 | 1.40 | 20.093 | 1.351 | 0.9370 | 0.9598 |
+| 5 | 4.60 | 1.05 | 2.60 | 6.615 | 7.071 | 0.4833 | 0.9598 |
+
+Draw 1 is worked through explicitly. Its predictions are `0.10 + 2.05 x`, whose variance
+across the eight points is 25.215; its residuals have variance 1.057; the ratio
+`25.215 / (25.215 + 1.057)` gives 0.9598.
+
+Sorting the five values gives 0.4833, 0.9370, 0.9502, 0.9598, 0.9614, so the median is
+0.9502 and the values span 0.4833 to 0.9614. Five draws are far too few to quote a
+quantile-based interval, as noted in 7.1 and in Table 6; the spread is shown here only to
+make the distribution visible.
+
+Switching to the model-based variant, which divides by `sigma^2` instead of the residual
+variance, moves the same five draws to 0.9581, 0.9389, 0.9682, 0.9111, and 0.4946. The
+values shift in both directions and the median moves from 0.9502 to 0.9389, so a figure
+produced under one variant cannot be set against a figure produced under the other.
+
+### B.3. Why Pearson R² Cannot See the Difference
+
+The Pearson R² column is constant at 0.9598 across every draw, including the badly
+calibrated draw 5. This is not a coincidence. The Pearson correlation is invariant under
+an affine transformation of the predictions, and every draw here is an affine function of
+the same x, so all of them are affine transformations of one another and share a single
+correlation with y.
+
+The consequence is that Pearson R² measures only whether the predictions move in step
+with the observations. It is blind to bias and to scale. Draw 5 predicts 5.65 where the
+observation is 1.8 and predicts 13.0 where the observation is 17.1, yet Pearson R² still
+reports 0.9598 while Bayesian R² reports 0.4833.
+
+### B.4. A Draw That Breaks the Standard Formula
+
+The claim in 3.1 becomes concrete with a heavily shrunk draw. Suppose a prior pulls the
+fit toward a center of roughly 12.9 and nearly flattens the slope, giving a = 12.00 and
+b = 0.20.
+
+**Table 9. Three definitions on a heavily shrunk draw**
+
+| Metric | Value | Reading |
+|---|---|---|
+| Pearson R² | 0.9598 | Unchanged, since the predictions remain affine in x |
+| Standard R² | −0.4128 | Below 0, outside the range the metric is supposed to occupy |
+| Bayesian R² | 0.0110 | Near 0 and still inside [0, 1] |
+
+The predictions of this draw are worse than simply reporting the mean of y, which is what
+drives the standard form negative. The Gelman form registers the same failure as a value
+near 0 without leaving its range, which is the property that makes the values poolable
+across draws. Pearson R² records no failure at all.
+
+### B.5. Summary of the Comparison
+
+**Table 10. What each metric reports on this dataset**
+
+| Metric | Value | What it answers |
+|---|---|---|
+| Pearson R² on any draw | 0.9598 | Do predictions and observations move together |
+| Standard R² on the OLS fit | 0.9598 | How much variation does the single best fit explain |
+| Bayesian R², median | 0.9502 | How much variation does a typical posterior draw explain |
+| Bayesian R², spread | 0.4833 to 0.9614 | How much does that explanatory power depend on which draw is taken |
+
+Pearson R² and standard R² agree on the OLS fit and diverge everywhere else. Bayesian R²
+is the only entry that reports a spread, and on this dataset that spread is the finding:
+a single number near 0.96 would have hidden the presence of draw 5 entirely.
