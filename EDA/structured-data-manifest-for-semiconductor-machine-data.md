@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 69 | Created: 2026-08-07 | Updated: 2026-08-12 11:51 CDT
+Rev. 70 | Created: 2026-08-07 | Updated: 2026-08-15 21:26 CDT
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 
@@ -216,6 +216,8 @@ Table 6. Value type labels
 
 `category` 는 사람이 정한다. 판정은 고유값이 몇 개인지까지만 알 수 있고, 그 값들이 이름인지 크기인지는 데이터에 들어 있지 않다. `bin_code` 의 값 `1` 과 `2` 는 두 종류의 불량을 가리키는 이름이지 크기가 아니지만, 데이터만 보아서는 그것을 알 수 없다.
 
+`category` 로 판정된 열은 관측된 값의 목록을 column profile 에 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
+
 ### 4.4 Cell Structure
 
 Cell structure 는 행 (wafer) 와 열 (feature) 로 특정된 cell 하나가 값 하나를 담는지 배열을 담는지를 나눈다. 판정이 보는 것이 cell 하나이므로 이 axis 의 label 은 cell 의 label 이다.
@@ -292,6 +294,8 @@ Table 10. Trace shape labels
 | `oscillation` | The autocorrelation shows a peak of at least `acf_peak` at a regular interval |
 | `irregular` | None of the five rules above is satisfied |
 
+`step_min` 은 무차원이 아니라 센서 분해능의 배수로 적는다. `3.0` 은 분해능의 3 배라는 뜻이며, `dwell_ratio` 와 `acf_peak` 처럼 그 자체가 비인 값과 달리 이 단서가 없으면 숫자를 읽을 수 없다.
+
 `flat` 과 `trace_quantum` 의 `q1` 은 같은 사실을 두 관점에서 적는다. Level 이 하나뿐인 trace 는 값이 변할 곳이 없으므로 언제나 평탄하다. 따라서 한쪽만 붙어 있는 열은 판정에 오류가 있다는 신호이며, 두 axis 를 맞대어 보는 것으로 확인된다.
 
 `irregular` 는 앞의 다섯이 받지 못한 trace 를 받아, 모든 trace 가 이 axis 에서 label 하나를 갖게 한다. 다른 label 과 성격이 다른 점은 그 뜻이 자기 규칙이 아니라 앞의 다섯 규칙에 매여 있다는 것이다. 임계값을 조정하면 `irregular` 로 판정되는 열의 수가 함께 움직이므로, `thresholds` 를 보지 않고 `irregular` 만 읽으면 그 열이 어떤 trace 인지 알 수 없다.
@@ -350,74 +354,33 @@ Table 10. Trace shape labels
 
 ## 5. Column Profile
 
-Column profile 은 데이터를 읽어 판정한 결과를 담는다. 열마다 최종 class label 과, 그 판정을 뒷받침하는 관측값을 함께 둔다.
+Column profile 은 데이터를 읽어 판정한 결과를 담는다. 최상위 key 는 dataset 의 object key 이고, 그 아래는 key 셋으로 갈린다. 가르는 기준은 그 값을 누가 정했는가이다.
 
 Table 11. Column profile keys
 
-| Key | Description |
-|-----|-------------|
-| `profiled_at` | 판정을 수행한 시각을 적는다 |
-| `class_version` | 판정에 쓴 `column-class.json` 의 version 을 적는다 |
-| `activity_basis` | Activity 를 `row` 와 `entity` 중 어느 비교로 판정했는지 적는다 |
-| `thresholds` | 판정에 쓴 임계값과 window 를 적는다 |
-| `columns` | 열마다 최종 class 와 관측값을 적는다. `class` 외의 key 는 정해 두지 않는다 |
+| Key | Purpose |
+|-----|---------|
+| `metadata` | 아무도 고르지 않았고 실행이 남긴 사실을 적는다. 판정을 수행한 시각 `profiled_at` 과 판정에 쓴 `column-class.json` 의 version `class_version` 이 여기에 든다 |
+| `thresholds` | 사람이 고른 판정 configuration 을 전부 적는다. Activity 를 무엇끼리 비교할지를 정하는 `activity_basis`, 어느 열까지 판정할지를 정하는 `active_only`, 판정 구간을 정하는 `window`, 그리고 4 절의 규칙들이 읽는 임계값이 여기에 든다 |
+| `columns` | 열마다 최종 class 와 그 판정을 뒷받침하는 관측값을 적는다. 정해진 key 는 `class` 하나이고 나머지는 열어 둔다 |
+
+`metadata` 와 `thresholds` 를 가르는 이유는 둘을 읽는 목적이 다르기 때문이다. `thresholds` 는 판정을 되짚거나 다시 돌리기 위해 읽으며, 그 안의 값 하나만 바뀌어도 같은 데이터에서 다른 label 이 나온다. `metadata` 는 그 판정이 언제 어떤 어휘로 이루어졌는지를 말할 뿐 판정을 바꾸지 않는다.
 
 `columns` 는 전수이다. Column config 를 적용하고 난 table 의 모든 열이 여기에 있어야 하고, 버린 열은 그 table 에 없으므로 여기에도 없다. 열이 빠져 있으면 그 열이 판정되지 않은 것인지 대상이 아닌 것인지 가릴 수 없으므로, 빠진 열은 판정이 끝나지 않았다는 뜻이다.
-
-`class_version` 과 `activity_basis` 와 `thresholds` 는 모두 같은 이유로 있다. 어휘에는 label 이 늘 수 있고, activity 는 무엇과 무엇을 비교하느냐에 따라 답이 갈리며, 4 절의 판정 규칙 여러 개가 임계값을 필요로 한다. 셋 중 하나라도 바뀌면 같은 데이터에서 다른 label 이 나오므로, 이 셋이 없는 profile 은 어떤 규칙으로 판정된 것인지 되짚을 수 없다.
-
-`thresholds` 에는 window 도 함께 둔다. Trace 전체를 보았으면 `full` 이고, 구간을 좁혔으면 그 시작과 끝을 적는다. Window 는 임계값이 아니다. 그러나 바꾸면 같은 trace 가 다른 label 을 받는다는 점은 임계값과 같으므로, 판정 configuration 을 한자리에 모아 둔다.
-
-`step_min` 은 무차원이 아니라 센서 분해능의 배수로 적는다. 예시의 `3.0` 은 분해능의 3 배라는 뜻이며, `dwell_ratio` 와 `acf_peak` 처럼 그 자체가 비인 값과 달리 이 단서가 없으면 숫자를 읽을 수 없다.
-
-`category` 로 판정된 열은 관측된 값의 목록을 함께 남긴다. 사람은 그 열이 `category` 라는 사실만 알고 어떤 값이 들어오는지는 모르므로, 이 목록이 사람과 판정의 역할이 갈리는 지점이다.
-
-열 항목에서 정해진 key 는 `class` 하나이다. 나머지는 열어 두어, 판정이 근거로 남기고 싶은 관측값을 자유롭게 더한다. 예시의 `missing_rate` 와 `levels` 가 그렇게 더해진 것이다.
 
 ```json
 // column-profile.json
 {
-  "Ultah/AlPVDPoC/SilverData/#0/V0": {
-    "profiled_at": "2026-08-07T09:12:00+09:00",
-    "class_version": 3,
-    "activity_basis": "row",
+  "<OBJECT_KEY>": {
+    "metadata": {
+      "profiled_at": "<TIMESTAMP>",
+      "class_version": 3
+    },
     "thresholds": {
-      "window": "full",
-      "dwell_ratio": 5.0,
-      "step_min": 3.0,
-      "acf_peak": 0.6
+      // activity_basis, active_only, window, and the thresholds the section 4 rules read
     },
     "columns": {
-      "LOT_ID": {
-        "class": ["active", "category", "scalar"],
-        "missing_rate": 0.0
-      },
-      "WAFER_ID": {
-        "class": ["active", "category", "scalar"],
-        "missing_rate": 0.0
-      },
-      "STEP_ID": {
-        "class": ["active", "ordinal", "scalar"],
-        "levels": [10, 20, 30, 40],
-        "missing_rate": 0.0
-      },
-      "rf_fwd_pwr_w": {
-        "class": ["active", "numeric", "trace", "fixed", "qn", "rectangle"],
-        "missing_rate": 0.003
-      },
-      "chamber_pressure": {
-        "class": ["active", "numeric", "trace", "fixed", "infinite", "step"],
-        "missing_rate": 0.0
-      },
-      "site_thickness": {
-        "class": ["active", "numeric", "vector", "fixed"],
-        "missing_rate": 0.0
-      },
-      "bin_code": {
-        "class": ["active", "category", "scalar"],
-        "levels": [1, 2, 3, 4, 5, 6, 7, 8],
-        "missing_rate": 0.0
-      }
+      // one entry per column of the table, keyed by column name
     }
   }
 }
