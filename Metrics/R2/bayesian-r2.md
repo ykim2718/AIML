@@ -1,5 +1,5 @@
 # Bayesian R² — Obtaining R² as a Distribution Instead of a Point
-Rev. 3 | Created: 2026-05-31 | Updated: 2026-08-16 19:58 CDT
+Rev. 4 | Created: 2026-05-31 | Updated: 2026-08-16 20:02 CDT
 
 > A note on computing one R² per posterior draw to obtain R² as a distribution,
 > organized as definition, computation, interpretation, and applicability.
@@ -313,9 +313,9 @@ The dataset has n = 8 points. The OLS fit gives an intercept of −0.018 and a s
 | 7 | 7 | 12.8 | 14.340 | −1.540 |
 | 8 | 8 | 17.1 | 16.392 | 0.708 |
 
-The observations have a mean of 9.213 and a sample variance of 26.301. On this fit the
-Pearson R² and the standard R² are both 0.9598, as they must be for an OLS fit with an
-intercept.
+The observations have a mean of 9.213 and a sample variance of 26.301, and the standard R²
+of this fit is 0.9598. That single number is the reference the rest of the appendix is
+measured against.
 
 ### B.2. Posterior Draws
 
@@ -326,13 +326,13 @@ produces its own R²; the first five are shown in full.
 
 **Table 8. First five posterior draws and their empirical-variant R²**
 
-| s | a | b | sigma | Var_fit | Var_res | Bayesian R² | Pearson R² |
-|---|---|---|---|---|---|---|---|
-| 1 | 0.369 | 1.903 | 1.826 | 21.740 | 1.188 | 0.9482 | 0.9598 |
-| 2 | 0.556 | 1.952 | 0.922 | 22.857 | 1.116 | 0.9534 | 0.9598 |
-| 3 | 0.754 | 1.757 | 1.142 | 18.524 | 1.576 | 0.9216 | 0.9598 |
-| 4 | 1.151 | 1.866 | 0.743 | 20.900 | 1.262 | 0.9431 | 0.9598 |
-| 5 | 0.266 | 2.007 | 0.844 | 24.164 | 1.069 | 0.9576 | 0.9598 |
+| s | a | b | sigma | Var_fit | Var_res | Bayesian R² |
+|---|---|---|---|---|---|---|
+| 1 | 0.369 | 1.903 | 1.826 | 21.740 | 1.188 | 0.9482 |
+| 2 | 0.556 | 1.952 | 0.922 | 22.857 | 1.116 | 0.9534 |
+| 3 | 0.754 | 1.757 | 1.142 | 18.524 | 1.576 | 0.9216 |
+| 4 | 1.151 | 1.866 | 0.743 | 20.900 | 1.262 | 0.9431 |
+| 5 | 0.266 | 2.007 | 0.844 | 24.164 | 1.069 | 0.9576 |
 
 Draw 1 is worked through explicitly. Its predictions are `0.369 + 1.903 x`, whose variance
 across the eight points is 21.740; its residuals have variance 1.188; the ratio
@@ -374,30 +374,30 @@ right-skewed and its median, 1.387, sits above the median empirical residual var
 1.152, so here the model claims more noise than the residuals show rather than less. A
 figure produced under one variant cannot be set against a figure produced under the other.
 
-### B.4. What Pearson R² and Standard R² Do Instead
+### B.4. Constructed Predictors and the Range Boundary
 
 Four predictors are constructed by hand, ranging from well calibrated to collapsed. These
 are not posterior draws; they are chosen to move bias and scale on purpose.
 
-**Table 10. Three metrics on hand-constructed predictors**
+**Table 10. Two definitions on hand-constructed predictors**
 
-| Predictor | a | b | Pearson R² | Standard R² | Bayesian R² |
-|---|---|---|---|---|---|
-| Well calibrated | 0.10 | 2.05 | 0.9598 | 0.9593 | 0.9598 |
-| Mildly shrunk | 1.10 | 1.83 | 0.9598 | 0.9480 | 0.9370 |
-| Strongly shrunk | 4.60 | 1.05 | 0.9598 | 0.7306 | 0.4833 |
-| Collapsed to a wrong center | 12.00 | 0.20 | 0.9598 | −0.4128 | 0.0110 |
+| Predictor | a | b | Standard R² | Bayesian R² |
+|---|---|---|---|---|
+| Well calibrated | 0.10 | 2.05 | 0.9593 | 0.9598 |
+| Mildly shrunk | 1.10 | 1.83 | 0.9480 | 0.9370 |
+| Strongly shrunk | 4.60 | 1.05 | 0.7306 | 0.4833 |
+| Collapsed to a wrong center | 12.00 | 0.20 | −0.4128 | 0.0110 |
 
-The Pearson column never moves. All four predictors are affine in the same x, so they are
-affine transforms of one another, and an affine change is precisely what Pearson R² cannot
-see ([Appendix A. Terminology](#appendix-a-terminology)). The last predictor puts 12.2
-where the observation is 1.8 and still scores 0.9598.
+Across the two shrunk rows the Gelman form falls faster than the standard form. Shrinking a
+predictor drains variance out of the numerator and adds it to the denominator, so Bayesian R²
+responds through two channels, whereas the standard form holds `SS_tot` fixed and responds
+only through a growing `SS_res`.
 
-The last row is also where the standard form leaves its own range. Those predictions are
-worse than simply reporting the mean of y, which drives `SS_res` above `SS_tot` and the
-value to −0.4128. This is the failure described in 3.1, and it is why the values of a
-standard R² computed per draw cannot be pooled into a distribution. The Gelman form records
-the same failure as 0.0110, near the bottom of a range it never leaves.
+The last row is where the standard form leaves its own range. Those predictions are worse
+than simply reporting the mean of y, which drives `SS_res` above `SS_tot` and the value to
+−0.4128. This is the failure described in 3.1, and it is why values of a standard R²
+computed per draw cannot be pooled into a distribution. The Gelman form records the same
+failure as 0.0110, near the bottom of a range it never leaves.
 
 ### B.5. Summary of the Comparison
 
@@ -405,12 +405,11 @@ the same failure as 0.0110, near the bottom of a range it never leaves.
 
 | Metric | Value | What it answers |
 |---|---|---|
-| Pearson R² on any predictor | 0.9598 | Do predictions and observations move together |
 | Standard R² on the OLS fit | 0.9598 | How much variation does the single best fit explain |
 | Bayesian R², median | 0.9571 | How much variation does a typical posterior draw explain |
 | Bayesian R², 90% credible interval | [0.9112, 0.9613] | How far can that explanatory power be from its median |
 
-The three agree on a well-calibrated fit and separate as soon as the predictions are biased
-or shrunk. Bayesian R² is the only entry carrying an interval, and on this dataset that
+The two definitions agree on a well-calibrated predictor and separate as soon as the
+predictions are biased or shrunk. Only Bayesian R² carries an interval, and on this dataset that
 interval is the finding: eight points support a median of 0.957 but not the precision that
 the bare number 0.9598 appears to promise.
