@@ -1,16 +1,18 @@
 # Bayesian R² — Obtaining R² as a Distribution Instead of a Point
-Rev. 1 | Created: 2026-05-31 | Updated: 2026-08-16 18:20 CDT
+Rev. 2 | Created: 2026-05-31 | Updated: 2026-08-16 18:45 CDT
 
 > A note on computing one R² per posterior draw to obtain R² as a distribution,
 > organized as definition, computation, interpretation, and applicability.
 
 ## 1. Motivation
 
-Standard R² returns a single number. When a fit reports `R² = 0.87`, that number
-alone does not say whether the value would collapse to 0.60 under a slightly
-different sample or hold firmly near 0.85. The magnitude of explanatory power and
-the confidence in that magnitude are two different pieces of information, and
-standard R² carries only the first.
+Standard R² is the coefficient of determination `1 − SS_res / SS_tot`, where `SS_res`
+is the sum of squared residuals and `SS_tot` is the sum of squared deviations of the
+observations from their own mean. It is computed from one single set of predictions and
+therefore returns a single number. When a fit reports `R² = 0.87`, that number alone
+does not say whether the value would collapse to 0.60 under a slightly different sample
+or hold firmly near 0.85. The magnitude of explanatory power and the confidence in that
+magnitude are two different pieces of information, and standard R² carries only the first.
 
 Bayesian R² propagates the predictive uncertainty of the model into R² itself, so
 that R² arrives as a distribution rather than a point. This is why the result takes
@@ -116,42 +118,37 @@ altogether and not R².
 import numpy as np
 
 
-def bayesian_r2(y_pred_draws: np.ndarray,
-                y_true: np.ndarray = None,
-                sigma_draws: np.ndarray = None) -> np.ndarray:
-    """Compute the posterior distribution of Bayesian R2.
+def bayesian_r2_empirical(y_pred_draws: np.ndarray = None, y_true: np.ndarray = None) -> np.ndarray:
+    """Bayesian R2 using the variance of the residuals actually left over.
 
     Args:
-        y_pred_draws: posterior draws of the fitted mean, shape (S, n).
-        y_true: observed values, shape (n,). Selects the empirical variant.
-        sigma_draws: posterior draws of the noise scale, shape (S,).
-                     Selects the model-based variant.
+        y_pred_draws: posterior draws of the predictive mean, shape (S, n).
+        y_true: observations, shape (n,).
 
     Returns:
         R2 draws of shape (S,), every element inside [0, 1].
     """
-    if (y_true is None) == (sigma_draws is None):
-        raise ValueError("y_true and sigma_draws are mutually exclusive; pass exactly one.")
-    if y_pred_draws.ndim != 2:
-        raise ValueError(f"y_pred_draws must be 2-D (S, n), got {y_pred_draws.shape}.")
-
-    var_fit = y_pred_draws.var(axis=1, ddof=1)          # variance over data points
-    if y_true is not None:
-        var_res = (y_true[None, :] - y_pred_draws).var(axis=1, ddof=1)
-    else:
-        var_res = sigma_draws ** 2
-
+    var_fit = y_pred_draws.var(axis=1, ddof=1)           # variance over data points
+    var_res = (y_true[None, :] - y_pred_draws).var(axis=1, ddof=1)
     return var_fit / (var_fit + var_res)
 
 
+def bayesian_r2_model_based(y_pred_draws: np.ndarray = None, sigma_draws: np.ndarray = None) -> np.ndarray:
+    """Bayesian R2 using the noise variance the model claims for itself."""
+    var_fit = y_pred_draws.var(axis=1, ddof=1)
+    return var_fit / (var_fit + sigma_draws ** 2)
+
+
 # posterior_mean_draws: shape (S, n), y_observed: shape (n,)
-r2_draws = bayesian_r2(y_pred_draws=posterior_mean_draws, y_true=y_observed)
+r2_draws = bayesian_r2_empirical(y_pred_draws=posterior_mean_draws, y_true=y_observed)
 point = np.median(r2_draws)
-lower, upper = np.quantile(r2_draws, [0.05, 0.95])      # 90% credible interval
+lower, upper = np.quantile(r2_draws, [0.05, 0.95])       # 90% credible interval
 ```
 
 The arithmetic is two variances and one division; the cost of the method sits entirely
-in obtaining the posterior draws.
+in obtaining the posterior draws. The two variants of 3.3 are two separate functions
+rather than one function with a switch, so a caller cannot silently supply the inputs of
+one variant and receive the other.
 
 ## 5. Interpretation
 
@@ -275,6 +272,7 @@ models and ensemble-style models from which draws can be taken.
 ## Appendix A. Terminology
 
 - **aleatoric uncertainty** — Uncertainty originating in the noise of the data itself, which does not shrink as more data arrive.
+- **conjugate posterior** — A posterior that stays in the same distribution family as the prior, so it has a closed form and can be sampled directly without MCMC.
 - **credible interval** — An interval defined by quantiles of the posterior distribution, read directly as the probability that the parameter lies within it.
 - **CRPS** — Continuous Ranked Probability Score. A score comparing an entire predictive distribution against a single observation, where smaller is better.
 - **CRPS Skill Score** — CRPS normalized by the CRPS of a baseline model into the form `1 − CRPS_model / CRPS_baseline`, where larger is better.
@@ -288,12 +286,14 @@ models and ensemble-style models from which draws can be taken.
 - **posterior distribution** — The distribution of the parameters after the data have been observed.
 - **posterior draw** — One sample taken from the posterior distribution.
 - **posterior predictive sample** — A sample at the scale of an observation, generated by adding observation noise on top of a posterior draw.
+- **reference prior** — A prior chosen to carry as little information as possible, so the posterior is driven by the data rather than by the prior.
 - **shrinkage** — The pull a prior or a hierarchical structure exerts on estimates toward a common center.
 
 ## Appendix B. Worked Example
 
-This appendix computes both metrics by hand on one small dataset so that the difference
-between them is visible in numbers rather than in argument.
+Every number in this appendix is produced by `bayesian_r2_example.py`, invoked as
+`python3 bayesian_r2_example.py --draws 4000`. The seed is fixed inside the script, so the
+values reproduce exactly.
 
 ### B.1. Data and Reference Fit
 
@@ -318,80 +318,102 @@ Pearson R² is 0.9598, and the standard R² is also 0.9598. The two coincide her
 an OLS fit with an intercept forces them to agree, which is exactly why they are so often
 treated as the same quantity.
 
-### B.2. Bayesian R² over Posterior Draws
+### B.2. Posterior Draws
 
-Five posterior draws of the intercept a, the slope b, and the noise scale sigma are
-listed below. Each row is a complete model, so each row produces its own R². The
-empirical variant of 3.3 is used, meaning `Var_res` is the variance of the residuals of
-that draw.
+The posterior is the conjugate posterior of the linear model under the reference prior
+`p(beta, sigma^2)` proportional to `1 / sigma^2`, which has a closed form and can be sampled
+exactly without MCMC. Four thousand draws are taken. Each draw is a complete model, so each
+produces its own R²; the first five are shown in full.
 
-**Table 8. Per-draw computation**
+**Table 8. First five posterior draws and their empirical-variant R²**
 
 | s | a | b | sigma | Var_fit | Var_res | Bayesian R² | Pearson R² |
 |---|---|---|---|---|---|---|---|
-| 1 | 0.10 | 2.05 | 1.05 | 25.215 | 1.057 | 0.9598 | 0.9598 |
-| 2 | 0.60 | 1.92 | 1.20 | 22.118 | 1.160 | 0.9502 | 0.9598 |
-| 3 | −0.40 | 2.14 | 0.95 | 27.478 | 1.104 | 0.9614 | 0.9598 |
-| 4 | 1.10 | 1.83 | 1.40 | 20.093 | 1.351 | 0.9370 | 0.9598 |
-| 5 | 4.60 | 1.05 | 2.60 | 6.615 | 7.071 | 0.4833 | 0.9598 |
+| 1 | 0.369 | 1.903 | 1.826 | 21.740 | 1.188 | 0.9482 | 0.9598 |
+| 2 | 0.556 | 1.952 | 0.922 | 22.857 | 1.116 | 0.9534 | 0.9598 |
+| 3 | 0.754 | 1.757 | 1.142 | 18.524 | 1.576 | 0.9216 | 0.9598 |
+| 4 | 1.151 | 1.866 | 0.743 | 20.900 | 1.262 | 0.9431 | 0.9598 |
+| 5 | 0.266 | 2.007 | 0.844 | 24.164 | 1.069 | 0.9576 | 0.9598 |
 
-Draw 1 is worked through explicitly. Its predictions are `0.10 + 2.05 x`, whose variance
-across the eight points is 25.215; its residuals have variance 1.057; the ratio
-`25.215 / (25.215 + 1.057)` gives 0.9598.
+Draw 1 is worked through explicitly. Its predictions are `0.369 + 1.903 x`, whose variance
+across the eight points is 21.740; its residuals have variance 1.188; the ratio
+`21.740 / (21.740 + 1.188)` gives 0.9482.
 
-Sorting the five values gives 0.4833, 0.9370, 0.9502, 0.9598, 0.9614, so the median is
-0.9502 and the values span 0.4833 to 0.9614. Five draws are far too few to quote a
-quantile-based interval, as noted in 7.1 and in Table 6; the spread is shown here only to
-make the distribution visible.
+### B.3. Credible Interval
 
-Switching to the model-based variant, which divides by `sigma^2` instead of the residual
-variance, moves the same five draws to 0.9581, 0.9389, 0.9682, 0.9111, and 0.4946. The
-values shift in both directions and the median moves from 0.9502 to 0.9389, so a figure
-produced under one variant cannot be set against a figure produced under the other.
+The point of the method is the interval, so the summary over all 4,000 draws is the result
+that matters. None of the draws left [0, 1].
 
-### B.3. Why Pearson R² Cannot See the Difference
+**Table 9. Bayesian R² over 4,000 posterior draws**
 
-The Pearson R² column is constant at 0.9598 across every draw, including the badly
-calibrated draw 5. This is not a coincidence. The Pearson correlation is invariant under
-an affine transformation of the predictions, and every draw here is an affine function of
-the same x, so all of them are affine transformations of one another and share a single
-correlation with y.
+| Variant | Median | 90% credible interval | Full range of draws |
+|---|---|---|---|
+| Empirical | 0.9571 | [0.9112, 0.9613] | [0.0983, 0.9614] |
+| Model-based | 0.9482 | [0.8294, 0.9780] | [0.0771, 0.9893] |
 
-The consequence is that Pearson R² measures only whether the predictions move in step
-with the observations. It is blind to bias and to scale. Draw 5 predicts 5.65 where the
-observation is 1.8 and predicts 13.0 where the observation is 17.1, yet Pearson R² still
-reports 0.9598 while Bayesian R² reports 0.4833.
+The reported result for this dataset is therefore `0.9571 [0.9112, 0.9613]` under the
+empirical variant. The interval is what standard R² cannot supply: the single OLS number
+0.9598 gives no indication that a posterior draw consistent with these eight points can
+explain as little as 91% of the variation, or that the extreme tail reaches 0.10.
 
-### B.4. A Draw That Breaks the Standard Formula
+![Fig 1](bayesian-r2_fig/bayesian_r2_posterior.png)
 
-The claim in 3.1 becomes concrete with a heavily shrunk draw. Suppose a prior pulls the
-fit toward a center of roughly 12.9 and nearly flattens the slope, giving a = 12.00 and
-b = 0.20.
+**Fig 1. Posterior fits and the resulting distribution of Bayesian R²**
 
-**Table 9. Three definitions on a heavily shrunk draw**
+Panel (a) overlays 200 posterior fits on the data, and the fan of slopes is the source of
+the spread. Panel (b) is the distribution those fits produce. Its shape confirms the claim
+of 5.1: the mass piles against a ceiling near 0.961 and trails away to the left, so the mean
+sits below the median and the median is the honest point estimate. The interval is strongly
+asymmetric for the same reason, with the lower bound 0.046 away from the median and the
+upper bound only 0.004 away.
 
-| Metric | Value | Reading |
-|---|---|---|
-| Pearson R² | 0.9598 | Unchanged, since the predictions remain affine in x |
-| Standard R² | −0.4128 | Below 0, outside the range the metric is supposed to occupy |
-| Bayesian R² | 0.0110 | Near 0 and still inside [0, 1] |
+The two variants disagree by more than rounding. The model-based median is 0.9482 against
+0.9571, and its interval is roughly three times wider, because `sigma` is itself uncertain
+and that uncertainty enters the denominator directly. The direction of the gap is the
+reverse of the case sketched in 3.3: with only eight points the posterior of `sigma^2` is
+right-skewed and its median, 1.387, sits above the median empirical residual variance of
+1.152, so here the model claims more noise than the residuals show rather than less. A
+figure produced under one variant cannot be set against a figure produced under the other.
 
-The predictions of this draw are worse than simply reporting the mean of y, which is what
-drives the standard form negative. The Gelman form registers the same failure as a value
-near 0 without leaving its range, which is the property that makes the values poolable
-across draws. Pearson R² records no failure at all.
+### B.4. What Pearson R² and Standard R² Do Instead
+
+Four predictors are constructed by hand, ranging from well calibrated to collapsed. These
+are not posterior draws; they are chosen to move bias and scale on purpose.
+
+**Table 10. Three metrics on hand-constructed predictors**
+
+| Predictor | a | b | Pearson R² | Standard R² | Bayesian R² |
+|---|---|---|---|---|---|
+| Well calibrated | 0.10 | 2.05 | 0.9598 | 0.9593 | 0.9598 |
+| Mildly shrunk | 1.10 | 1.83 | 0.9598 | 0.9480 | 0.9370 |
+| Strongly shrunk | 4.60 | 1.05 | 0.9598 | 0.7306 | 0.4833 |
+| Collapsed to a wrong center | 12.00 | 0.20 | 0.9598 | −0.4128 | 0.0110 |
+
+The Pearson column never moves. This is not a coincidence: the Pearson correlation is
+invariant under any affine transform of the predictions with a non-zero slope, and all four
+predictors are affine in the same x, so they are affine transforms of one another and share
+one correlation with y. Pearson R² measures only whether the predictions move in step with
+the observations, and it is blind to bias and to scale. The last predictor puts 12.2 where
+the observation is 1.8, and Pearson R² still reports 0.9598.
+
+The last row is also where the standard form leaves its own range. Those predictions are
+worse than simply reporting the mean of y, which drives `SS_res` above `SS_tot` and the
+value to −0.4128. This is the failure described in 3.1, and it is why the values of a
+standard R² computed per draw cannot be pooled into a distribution. The Gelman form records
+the same failure as 0.0110, near the bottom of a range it never leaves.
 
 ### B.5. Summary of the Comparison
 
-**Table 10. What each metric reports on this dataset**
+**Table 11. What each metric reports on this dataset**
 
 | Metric | Value | What it answers |
 |---|---|---|
-| Pearson R² on any draw | 0.9598 | Do predictions and observations move together |
+| Pearson R² on any predictor | 0.9598 | Do predictions and observations move together |
 | Standard R² on the OLS fit | 0.9598 | How much variation does the single best fit explain |
-| Bayesian R², median | 0.9502 | How much variation does a typical posterior draw explain |
-| Bayesian R², spread | 0.4833 to 0.9614 | How much does that explanatory power depend on which draw is taken |
+| Bayesian R², median | 0.9571 | How much variation does a typical posterior draw explain |
+| Bayesian R², 90% credible interval | [0.9112, 0.9613] | How far can that explanatory power be from its median |
 
-Pearson R² and standard R² agree on the OLS fit and diverge everywhere else. Bayesian R²
-is the only entry that reports a spread, and on this dataset that spread is the finding:
-a single number near 0.96 would have hidden the presence of draw 5 entirely.
+The three agree on a well-calibrated fit and separate as soon as the predictions are biased
+or shrunk. Bayesian R² is the only entry carrying an interval, and on this dataset that
+interval is the finding: eight points support a median of 0.957 but not the precision that
+the bare number 0.9598 appears to promise.
