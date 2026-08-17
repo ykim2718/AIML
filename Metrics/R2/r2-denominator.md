@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 8 | Created: 2026-08-15 | Updated: 2026-08-17 00:05 CDT
+Rev. 9 | Created: 2026-08-15 | Updated: 2026-08-17 00:20 CDT
 
 > 표준 R² 의 분모를 데이터에서 계산하지 않고 지정한 기준으로 바꿀 수 있는지,
 > 바꾸면 그 값이 물리적으로 무엇을 뜻하게 되는지 정리한 문서.
@@ -215,21 +215,16 @@ baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터�
 
 ## Appendix B. Reference Implementation
 
-3.1, 3.2, 3.3 에서 각각 정의한 세 지표를 함수 하나씩으로 옮긴 것이다. 세 함수는 모두
-관측값 `y_true` 와 예측값 `y_pred` 를 받아 하나의 skill 값을 돌려주며, 서로 다른 곳은
-분모를 어디서 얻느냐 한 군데뿐이다. 분자인 `SS_res` 는 셋이 똑같이 쓰므로 `_ss_res` 로
-따로 빼서 shape 검사와 빈 배열 검사를 한곳에서 하게 했다.
+3 에서 정의한 세 지표를 함수 하나씩으로 옮긴 것이다. 3.1 의 `R2_oos` 는 `r2_oos` 가,
+3.2 의 `R2_frd` 는 `r2_frd` 가, 3.3 의 `R2_base` 는 `r2_base` 가 맡는다.
 
-**Table 3. What each function implements**
-
-| Function | Section | Symbol | What supplies the denominator |
-|---|---|---|---|
-| `r2_oos` | 3.1 | `R2_oos` | `y_train_bar` 인자로 받은 학습 평균 |
-| `r2_frd` | 3.2 | `R2_frd` | `sigma_ref` 인자로 받은 참조 산포 |
-| `r2_base` | 3.3 | `R2_base` | `y_base` 인자로 받은 baseline 예측 vector |
-
-세 함수 모두 분모의 기준을 인자로 받을 뿐 `y_true` 에서 끌어내지 않는다. 이것이 이
-구현의 전부이자, 2 에서 말한 "baseline 을 명시적으로 고른다" 를 코드로 옮긴 모습이다.
+세 함수는 모두 관측값 `y_true` 와 예측값 `y_pred` 를 받아 skill 값 하나를 돌려주며,
+서로 다른 곳은 분모를 어디서 얻느냐 한 군데뿐이다. `r2_oos` 는 학습 평균 `y_train_bar`
+를, `r2_frd` 는 참조 산포 `sigma_ref` 를, `r2_base` 는 baseline 예측 vector `y_base` 를
+인자로 받아 그것으로 분모를 만든다. 셋 다 분모의 기준을 밖에서 받을 뿐 `y_true` 에서
+끌어내지 않으며, 이것이 2 에서 말한 "baseline 을 명시적으로 고른다" 를 코드로 옮긴
+모습이다. 분자인 `SS_res` 는 셋이 똑같이 쓰므로 `_ss_res` 로 따로 빼서 shape 검사와
+빈 배열 검사를 한곳에서 하게 했다.
 
 `r2_base` 를 먼저 두고 `r2_oos` 가 그것을 호출하는 것은 3.3 의 마지막 문단을 코드로
 옮긴 것이다. 반면 `r2_frd` 의 분모는 어떤 예측 vector 의 잔차도 아니어서 `r2_base` 로
