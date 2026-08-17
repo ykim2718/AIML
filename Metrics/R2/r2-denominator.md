@@ -1,5 +1,5 @@
 # Referenced R² — Specifying the Dispersion in the R² Denominator
-Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-16 20:30 CDT
+Rev. 2 | Created: 2026-08-15 | Updated: 2026-08-16 20:45 CDT
 
 > 표준 R² 의 분모를 데이터에서 계산하지 않고 지정한 기준으로 바꿀 수 있는지,
 > 바꾸면 그 값이 물리적으로 무엇을 뜻하게 되는지 정리한 문서.
@@ -18,9 +18,10 @@ $$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\s
 다만 분모를 바꾸는 순간 지표의 의미가 함께 바뀌므로, 무엇으로 바꿨는지를 반드시
 같이 보고해야 한다.
 
-이렇게 분모를 지정해서 만든 지표를 이 문서에서는 **Referenced R²** 라 부르고, 본문에서는
-`Ref_R2`, 수식에서는 Ref R² 로 표기한다. 분모를 무엇으로 지정했는지를 늘 함께 적어야
-하므로, 이름 자체에 "기준이 있다" 는 사실을 박아 둔 것이다.
+이렇게 분모를 지정해서 만든 지표를 통칭해 이 문서에서는 **Referenced R²** 라 부르고
+`Ref_R2` 로 표기한다. 개별 변형은 3 에서 `R2_oos`, `R2_ref`, `R2_base` 로 구분한다.
+`Ref_R2` 는 세 변형을 아우르는 이름이고 `R2_ref` 는 그중 하나이므로, 표기가 비슷한
+이 둘을 섞어 쓰지 않는다.
 
 ## 2. Structure
 
@@ -38,7 +39,7 @@ skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 �
 것이며, 그 이상도 이하도 아니다.** 이것이 이 문서의 나머지 내용을 지배하는 사실이다.
 
 따라서 `Ref_R2` 는 새로운 계산이 아니라 baseline 을 명시적으로 고른 R² 이고, 표준 R² 는
-그 baseline 을 데이터의 평균으로 암묵적으로 정해 둔 `Ref_R2` 의 한 사례다.
+그 baseline 을 데이터의 평균으로 암묵적으로 정해 둔 사례다.
 
 분자와 분모가 모두 y 의 제곱 단위이므로 비율은 무차원이고, `Ref_R2` 는 "baseline 이
 감수해야 했던 오차 중 몇 %를 모델이 없앴는가" 로 읽힌다. Baseline 을 무엇으로 잡든 이
@@ -48,19 +49,19 @@ skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 �
 
 **Table 1. Ways to fix the denominator**
 
-| Variant | Denominator | Baseline it encodes | Typical use |
+| Symbol | Denominator | Baseline it encodes | Typical use |
 |---|---|---|---|
-| Standard | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 |
-| Fixed reference point | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 |
-| Fixed reference dispersion | `N · sigma_ref²` | 외부에서 정한 산포 | Lot, batch, 기간 간 비교 |
-| Baseline model | `Σ(y_i − y_base_i)²` | 임의의 기준 모델 | 시계열, 기존 운영 모델 대비 |
+| `R²` | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 |
+| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 |
+| `R2_ref` | `N · sigma_ref²` | 규격이 허용하는 산포 | Lot, batch, 기간 간 비교 |
+| `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 |
 
 ### 3.1. Fixed Reference Point
 
 가장 흔한 경우다. Test set 을 평가할 때 분모의 기준을 test 데이터의 평균이 아니라
 학습 데이터의 평균 `y_train_bar` 로 고정한다.
 
-$$\mathrm{Ref}\,R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2}$$
+$$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2}$$
 
 두 가지 이유로 이 형태가 옳다. 첫째, test 데이터의 평균은 평가 시점에 알 수 없는
 값이므로 그것을 baseline 에 쓰면 미래 정보를 끌어다 쓰는 셈이 된다. 둘째, test set 을
@@ -68,33 +69,48 @@ $$\mathrm{Ref}\,R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y
 "훈련 때 알던 평균만 계속 내놓는 모델 대비 얼마나 개선했는가" 라는 질문이 되어,
 데이터를 어떻게 잘랐든 같은 잣대가 유지된다.
 
-이 형태는 밖에서 out-of-sample R² 로 통하므로, 외부 보고에서는 `Ref_R2` 대신 그 이름을
-쓴다.
+이 형태는 밖에서 out-of-sample R² 로 통하므로, 외부 보고에서는 그 이름을 쓴다.
 
 ### 3.2. Fixed Reference Dispersion
 
 분모를 데이터에서 계산하지 않고 알려진 참조 분산으로 대체한다.
 
-$$\mathrm{Ref}\,R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
+$$R^2_{ref} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
 
 `sigma_ref` 로는 공정 규격의 허용 산포, 과거 누적 데이터의 분산, 계측 시스템의 기준
 분산 같은 도메인 기준을 쓴다. 두께 예측이라면 해당 layer 의 관리 규격 산포를 분모에
 넣어, 고정된 잣대 대비 모델의 성능을 재는 지표가 된다.
 
+분모가 상수이므로 식이 한 단계 더 줄어든다.
+
+$$R^2_{ref} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2$$
+
+이것이 이 변형의 물리적 의미다. `R2_ref` 는 **모델의 오차가 규격 산포의 몇 배인지**를
+재서 1 에서 뺀 값이다. 오차가 규격의 절반이면 0.75, 규격과 같으면 0, 규격을 넘으면
+음수가 된다. Baseline 의 말로 옮기면 "규격이 허용하는 만큼의 오차를 정확히 내는 가상의
+모델" 을 기준으로 삼은 것이며, 그 가상의 모델을 이겼는지를 묻는 것이다.
+
+계측 분야에는 오차와 규격의 비를 R² 로 포장하지 않고 그대로 보고하는 관행이 있다.
+읽는 쪽이 공정·계측 담당이면 `RMSE / sigma_ref` 를 그대로 주는 편이 잘 통하고, 다른
+지표와 한 표에 나란히 놓아야 하면 `R2_ref` 로 바꿔 0 과 1 의 잣대에 태우는 편이 낫다.
+두 값은 위 식으로 서로 옮겨갈 수 있으므로 정보량은 같다.
+
 ### 3.3. Baseline Model
 
-분모를 특정 모델의 오차제곱합으로 두면 가장 일반적인 형태가 된다.
+3.1 과 3.2 의 baseline 은 모든 i 에 대해 같은 값을 내놓는다. Baseline 이 sample 마다
+다른 값을 내놓아야 하는 경우는 그 둘로 표현되지 않는다.
 
-$$\mathrm{Ref}\,R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2}$$
+$$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2}$$
 
-시계열에서 baseline 을 직전값으로 두는 persistence baseline, 계절 평균으로 두는 형태,
-현재 운영 중인 모델로 두어 교체 가치를 재는 형태가 모두 여기에 속한다. 3.1 은 이 식에서
-`y_base_i` 를 상수 `y_train_bar` 로 둔 경우다. 3.2 는 baseline 의 예측값을 정하는 대신
-그 baseline 이 낼 오차의 크기를 `N · sigma_ref²` 로 직접 못 박은 형태이므로, 예측값을
-경유하지 않는다는 점에서 나머지 둘과 다르다.
+시계열의 persistence baseline 이 대표적이다. 직전 시점의 값을 다음 시점의 예측으로
+쓰므로 `y_base_i` 가 i 마다 달라지고, 어떤 상수로도 같은 분모를 만들 수 없다. 계절
+평균을 baseline 으로 둘 때, 현재 운영 중인 모델을 baseline 으로 두어 교체 가치를 잴
+때도 마찬가지다.
 
-세 절의 좌변이 모두 같은 것은 오기가 아니다. 세 변형은 `Ref_R2` 의 분모를 무엇으로
-지정했느냐만 다르며, 이것이 2 에서 말한 사실의 표기상 결과다.
+`y_base_i` 를 상수 `y_train_bar` 로 두면 3.1 이 되므로 3.1 은 이 형태의 특수한 경우다.
+그래도 절을 나눠 두는 이유는 두 형태가 답하는 질문이 다르기 때문이다. 3.1 은 "평균보다
+나은가" 를 묻고 3.3 은 "이미 쓰고 있는 것보다 나은가" 를 묻는다. 앞의 질문은 모델이
+쓸모가 있는지를, 뒤의 질문은 모델을 교체할 값어치가 있는지를 결정한다.
 
 ## 4. Physical Meaning
 
@@ -106,7 +122,7 @@ $$\mathrm{Ref}\,R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{bas
 
 **Table 2. The same model on three lots, RMSE fixed at 0.5 nm**
 
-| Lot | Lot dispersion (nm) | Standard R² | `Ref_R2` against a spec of 1.0 nm |
+| Lot | Lot dispersion (nm) | Standard R² | `R2_ref` against a spec of 1.0 nm |
 |---|---|---|---|
 | A | 2.0 | 0.9375 | 0.7500 |
 | B | 1.2 | 0.8264 | 0.7500 |
@@ -122,23 +138,24 @@ lot 을 줄 세우면 모델이 아니라 lot 의 산포를 줄 세우게 된다
 바꿔 말하면 두 지표는 서로 다른 질문에 답한다.
 
 - 표준 R² — 이 데이터셋 안에서 모델이 평균 대비 얼마나 나은가. 데이터셋마다 잣대가 다르다.
-- `Ref_R2` — 정해진 잣대 대비 모델이 얼마나 나은가. 데이터셋을 가로질러 비교할 수 있다.
+- `R2_ref` — 정해진 잣대 대비 모델이 얼마나 나은가. 데이터셋을 가로질러 비교할 수 있다.
 
 어느 쪽이 옳은지는 질문에 달렸다. "이 lot 을 얼마나 설명했는가" 를 묻는다면 표준 R² 가
-맞고, "이 모델을 라인 전체에 깔아도 되는가" 를 묻는다면 `Ref_R2` 가 맞다.
+맞고, "이 모델을 라인 전체에 깔아도 되는가" 를 묻는다면 `R2_ref` 가 맞다.
 
 ## 5. Reporting
 
 분모를 바꾸면 그 값은 더 이상 "이 데이터셋 안에서 설명된 분산의 비율" 이 아니다.
 지정한 baseline 대비 상대 성능으로 의미가 바뀌므로 아래를 지킨다.
 
-- `Ref_R2` 라는 이름을 쓰고 `R²` 기호를 그대로 쓰지 않는다. 같은 기호를 쓰면 읽는 쪽이 표준 R² 로 오해한다.
-- 이름만으로는 부족하므로 분모의 기준을 값과 출처까지 함께 적는다. `Ref_R2 = 0.75 (reference: spec tolerance sigma = 1.0 nm)` 처럼 쓰고, 숫자만 적지 않는다.
+- 변형에 맞는 기호를 쓰고 `R²` 를 그대로 쓰지 않는다. 같은 기호를 쓰면 읽는 쪽이 표준 R² 로 오해한다.
+- 기호만으로는 부족하므로 분모의 기준을 값과 출처까지 함께 적는다. `R2_ref = 0.75 (reference: spec tolerance sigma = 1.0 nm)` 처럼 쓰고, 숫자만 적지 않는다.
 - 표준 R² 를 함께 보고한다. 두 값의 차이가 곧 그 데이터셋의 산포가 규격 대비 어느 쪽으로 치우쳤는지를 알려준다.
 - `sigma_ref` 를 고른 근거를 남긴다. 근거 없이 고른 분모는 지표 전체를 자의적으로 만든다.
 
-`Ref_R2` 는 이 문서에서 정한 이름이므로 문서 밖에서는 통하지 않는다. 외부에 낼 때는 이름
-뒤에 정의식을 한 줄 붙이거나, 3.1 처럼 통용되는 이름이 있으면 그쪽을 쓴다.
+`Ref_R2` 와 `R2_ref`, `R2_base` 는 이 문서에서 정한 이름이므로 문서 밖에서는 통하지
+않는다. 외부에 낼 때는 기호 뒤에 정의식을 한 줄 붙이거나, 3.1 처럼 통용되는 이름이 있으면
+그쪽을 쓴다.
 
 일반적인 library 함수는 분모를 관측값에서 계산하므로 그대로 쓸 수 없고, 직접 구현해야
 한다. 계산 자체는 나눗셈 한 번이다.
@@ -148,9 +165,9 @@ lot 을 줄 세우면 모델이 아니라 lot 의 산포를 줄 세우게 된다
 import numpy as np
 
 
-def referenced_r2(y_true: np.ndarray = None, y_pred: np.ndarray = None,
-                  sigma_ref: float = None) -> float:
-    """Ref_R2 measured against a fixed reference dispersion instead of the data spread.
+def r2_ref(y_true: np.ndarray = None, y_pred: np.ndarray = None,
+           sigma_ref: float = None) -> float:
+    """R2 measured against a fixed reference dispersion instead of the data spread.
 
     Args:
         y_true: observations, shape (n,).
@@ -182,9 +199,9 @@ R² 의 분모는 baseline 의 오차이고, 표준 R² 는 그 baseline 을 데
 특수한 경우다. 분모를 학습 평균, 규격 산포, 기존 운영 모델의 오차로 바꾸는 것은 모두
 baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터셋 안에서의 설명력" 에서
 "지정한 기준 대비 상대 성능" 으로 의미가 옮겨간다. 이렇게 baseline 을 명시적으로 고른
-형태를 이 문서는 `Ref_R2` 로 부른다. 이 교체의 실익은 데이터셋마다 달라지던 잣대가
-고정되어 lot 과 기간을 가로질러 비교할 수 있게 되는 데 있고, 대가는 표준 R² 로서의
-해석을 잃는 것과 기준 선정의 책임을 지는 것이다.
+형태를 이 문서는 `Ref_R2` 로 통칭하고 `R2_oos`, `R2_ref`, `R2_base` 로 나눈다. 이 교체의
+실익은 데이터셋마다 달라지던 잣대가 고정되어 lot 과 기간을 가로질러 비교할 수 있게 되는
+데 있고, 대가는 표준 R² 로서의 해석을 잃는 것과 기준 선정의 책임을 지는 것이다.
 
 ---
 
@@ -193,7 +210,7 @@ baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터�
 - **baseline model** — 비교의 기준이 되는 모델이며, R² 의 분모는 이 모델의 오차제곱합이다.
 - **out-of-sample** — 학습에 쓰이지 않은 데이터에서의 평가를 뜻한다.
 - **persistence baseline** — 직전 시점의 값을 그대로 다음 시점의 예측으로 쓰는 시계열 baseline 이다.
-- **Referenced R² (`Ref_R2`)** — 분모의 baseline 을 밖에서 지정해 계산한 R² 이며, 이 문서에서 정한 이름이다.
+- **Referenced R² (`Ref_R2`)** — 분모의 baseline 을 밖에서 지정해 계산한 R² 를 통칭하며, 이 문서에서 정한 이름이다.
 - **skill score** — `1 − 모델오차 / baseline오차` 형태의 지표를 통칭하며, R² 는 baseline 을 평균으로 둔 사례다.
 - **spec tolerance** — 공정 규격이 허용하는 산포이며, 고정 분모로 자주 쓰인다.
 - **SS_res** — 잔차제곱합 `Σ(y_i − y_hat_i)²` 이다.
