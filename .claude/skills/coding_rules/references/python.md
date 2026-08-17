@@ -6,7 +6,7 @@ note#1: 규칙마다 괄호안에 이유를 추가 함.
 
 ---
 
-Rev. 8 | Created: 2026-8-13 | Updated: 2026-8-15 15:30 CDT
+Rev. 9 | Created: 2026-8-13 | Updated: 2026-8-17 08:20 CDT
 
 
 ## 1. Grammar & Type Safety
@@ -15,8 +15,6 @@ Rev. 8 | Created: 2026-8-13 | Updated: 2026-8-15 15:30 CDT
 
 - `from typing import Union` 등을 사용해서 annotation을 표시할 것.
 - function annotation에서 `array: list = None`의 형식을 사용할 것.
-
-
 
 
 ## 2. Module & Dependencies
@@ -98,6 +96,16 @@ Rev. 8 | Created: 2026-8-13 | Updated: 2026-8-15 15:30 CDT
 
 - **`click`** 사용 시, 복수의 option이 배타적일 때는 `MutuallyExclusiveOption(click.Option)`을 `cls`로 걸어서 parsing 단계에서 막을 것.
 
+### Chart Data
+
+- 분포를 그리는 chart (violin, box, histogram, KDE) 는 그림이 받은 표본을 file 로 남길 것.
+  (요약값만으로는 분포의 모양이 복원되지 않아 그림을 다시 그릴 수 없다.)
+- 저장 단위는 표본 하나가 한 행이며, mean·median·min·max 같은 요약값은 저장하지 말 것.
+  (요약값은 표본에서 언제든 계산되고, 두 벌로 두면 서로 어긋난다.)
+- 표시용으로 값을 자른 경우 (clipping), file 에는 자르지 않은 값을 쓸 것.
+  (그림은 읽기 편하려고 자르지만, 자료는 사실이어야 한다.)
+- 문서가 인용하는 수치는 그 file 에서 계산할 것. 그림에서 눈으로 읽어 옮기지 말 것.
+  (그림에서 옮긴 수는 검증할 수 없고, 그림이 바뀌면 조용히 틀린 값이 된다.)
 
 ## 4. Error Handling & Robustness
 

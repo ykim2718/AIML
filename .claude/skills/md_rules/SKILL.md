@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 23 | Created: 2026-8-1 | Updated: 2026-8-17 00:02 CDT
+Rev. 23 | Created: 2026-8-1 | Updated: 2026-8-17 00:05 CDT
 
 ## 1. Terminology
 
@@ -24,7 +24,7 @@ Rev. 23 | Created: 2026-8-1 | Updated: 2026-8-17 00:02 CDT
 ## 3. Headings
 
 + H2 제목은 명사형으로 작성한다.
-+ H2 제목에는 1., 2., ... 순서로 번호를 매긴다. References 꼭지는 예외이며 14 를 따른다.
++ H2 제목에는 1., 2., ... 순서로 번호를 매긴다.   References 꼭지는 예외로 section 14 를 따른다.
 + H3 제목에는 1.1, 1.2, ..., 2.1, ... 순서로 번호를 매긴다.
 + H4 제목에는 번호를 매기지 않는다.
 
@@ -115,7 +115,7 @@ result = [x * 2 for x in range(10)]
 + `[N]` 을 bullet 자리에 쓰면 그 줄은 markdown list 가 아니라 문단이 되므로, 항목 사이에 빈 줄을 둔다. 빈 줄이 없으면 모든 항목이 한 문단으로 합쳐진다.
 + 항목 앞에 `<a id="ref-N"></a>` 를 두어, 본문에서 `[1](#ref-1)` 로 그 항목에 바로 닿게 한다.
 + 서지 사항의 제목은 DOI 로 연결한다. DOI 가 없는 간행물은 발행처의 공식 page 와 ISBN 을 적는다.
-
++ 
 ## 15. Appendix
 
 - Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
@@ -123,6 +123,7 @@ result = [x * 2 for x in range(10)]
 - 본문과 첫 Appendix 사이에 `---` 을 한 줄 두어 경계를 표시한다. Appendix 사이에는 두지 않는다.
     + `---` 의 위아래에 빈 줄을 둔다. 위에 빈 줄이 없으면 앞 줄이 setext heading으로 해석된다.
     + 빈 줄을 여러 개 넣는 방법은 쓰지 않는다. GitHub이 연속된 빈 줄을 하나로 합치므로 렌더링에서는 여백이 생기지 않는다.
+
 
 ## 16. Review (required — do not finish the task before completing this step)
 
