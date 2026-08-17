@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 4 | Created: 2026-08-15 | Updated: 2026-08-16 23:28 CDT
+Rev. 5 | Created: 2026-08-15 | Updated: 2026-08-16 23:52 CDT
 
 > 표준 R² 의 분모를 데이터에서 계산하지 않고 지정한 기준으로 바꿀 수 있는지,
 > 바꾸면 그 값이 물리적으로 무엇을 뜻하게 되는지 정리한 문서.
@@ -51,13 +51,13 @@ skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 �
 
 | Symbol | Denominator | Baseline it encodes | Typical use | Reference |
 |---|---|---|---|---|
-| `R²` | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 | [1](#appendix-b-references) |
-| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 | [2](#appendix-b-references) |
-| `R2_frd` | `N · sigma_ref²` | 규격이 허용하는 산포 | Lot, batch, 기간 간 비교 | [3](#appendix-b-references), [4](#appendix-b-references) |
-| `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 | [5](#appendix-b-references) |
+| `R²` | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 | [1](#ref-1) |
+| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 | [2](#ref-2) |
+| `R2_frd` | `N · sigma_ref²` | 규격이 허용하는 산포 | Lot, batch, 기간 간 비교 | [3](#ref-3), [4](#ref-4) |
+| `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 | [5](#ref-5) |
 
 Reference 열은 각 형태가 실제로 쓰이고 있는 자리를 가리키며, 서지 사항은
-[Appendix B](#appendix-b-references) 에 있다. 네 형태 모두 이 문서가 지어낸 계산이 아니라
+[8. References](#8-references) 에 있다. 네 형태 모두 이 문서가 지어낸 계산이 아니라
 각 분야에서 이미 표준으로 자리 잡은 지표다. 이 문서가 붙인 것은 계산이 아니라 기호뿐이고,
 그 사정은 5 에서 다시 다룬다.
 
@@ -173,33 +173,8 @@ lot 을 줄 세우면 모델이 아니라 lot 의 산포를 줄 세우게 된다
 그쪽을 쓴다.
 
 일반적인 library 함수는 분모를 관측값에서 계산하므로 그대로 쓸 수 없고, 직접 구현해야
-한다. 계산 자체는 나눗셈 한 번이다.
-
-```python
-# Python
-import numpy as np
-
-
-def r2_frd(y_true: np.ndarray = None, y_pred: np.ndarray = None,
-           sigma_ref: float = None) -> float:
-    """R2 measured against a fixed reference dispersion instead of the data spread.
-
-    Args:
-        y_true: observations, shape (n,).
-        y_pred: predictions, shape (n,).
-        sigma_ref: reference dispersion in the unit of y, strictly positive.
-
-    Returns:
-        The skill relative to a baseline whose error scale is sigma_ref.
-        Negative when the model is worse than that baseline.
-    """
-    if sigma_ref is None or sigma_ref <= 0.0:
-        raise ValueError(f"sigma_ref must be a positive dispersion, got {sigma_ref}.")
-
-    ss_res = float(np.sum((y_true - y_pred) ** 2))
-    ss_ref = float(y_true.shape[0]) * sigma_ref ** 2
-    return 1.0 - ss_res / ss_ref
-```
+한다. 계산 자체는 나눗셈 한 번이며, 3 의 세 형태를 모두 담은 구현을
+[Appendix B](#appendix-b-reference-implementation) 에 두었다.
 
 ## 6. Cautions
 
@@ -218,6 +193,14 @@ baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터�
 실익은 데이터셋마다 달라지던 잣대가 고정되어 lot 과 기간을 가로질러 비교할 수 있게 되는
 데 있고, 대가는 표준 R² 로서의 해석을 잃는 것과 기준 선정의 책임을 지는 것이다.
 
+## 8. References
+
+- <a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. 분모가 데이터의 평균에 묶여 있어서 생기는 표준 R² 의 해석상 한계를 정리한 글이며, 3 의 변형들이 필요한 이유를 준다.
+- <a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균으로 고정한 out-of-sample R² 를 평가 지표로 쓴다. 3.1 이 말하는 형태가 그대로 쓰인 사례다.
+- <a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. 평균제곱오차를 기준 오차로 나눈 skill score 를 정식화하고, 그 기준을 과거 평균 같은 외부 값으로 둘 수 있음을 보인다. 2 가 말하는 구조의 근거다.
+- <a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. 계측 오차를 규격 공차로 나눈 precision-to-tolerance ratio 를 계측 시스템의 합부 판정 기준으로 규정한다. 3.2 의 `RMSE / sigma_ref` 가 계측 분야에서 쓰이는 형태다.
+- <a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나눠 서로 다른 계열을 같은 잣대에 태우는 방법을 정리한다. 3.3 이 다루는 sample 마다 달라지는 baseline 의 표준적인 예다.
+
 ---
 
 ## Appendix A. Terminology
@@ -232,10 +215,84 @@ baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터�
 - **SS_res** — 잔차제곱합 `Σ(y_i − y_hat_i)²` 이다.
 - **SS_tot** — 총제곱합 `Σ(y_i − y_bar)²` 이며, 표준 R² 의 분모다.
 
-## Appendix B. References
+## Appendix B. Reference Implementation
 
-- [1] Kvålseth, T. O. (1985). "Cautionary Note about R²." *The American Statistician*, 39(4), 279–285. 분모가 데이터의 평균에 묶여 있어서 생기는 표준 R² 의 해석상 한계를 정리한 글이며, 3 의 변형들이 필요한 이유를 준다.
-- [2] Campbell, J. Y., & Thompson, S. B. (2008). "Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?" *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균으로 고정한 out-of-sample R² 를 평가 지표로 쓴다. 3.1 이 말하는 형태가 그대로 쓰인 사례다.
-- [3] Murphy, A. H. (1988). "Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient." *Monthly Weather Review*, 116(12), 2417–2424. 평균제곱오차를 기준 오차로 나눈 skill score 를 정식화하고, 그 기준을 과거 평균 같은 외부 값으로 둘 수 있음을 보인다. 2 가 말하는 구조의 근거다.
-- [4] Automotive Industry Action Group (2010). *Measurement Systems Analysis Reference Manual*, 4th ed. 계측 오차를 규격 공차로 나눈 precision-to-tolerance ratio 를 계측 시스템의 합부 판정 기준으로 규정한다. 3.2 의 `RMSE / sigma_ref` 가 계측 분야에서 쓰이는 형태다.
-- [5] Hyndman, R. J., & Koehler, A. B. (2006). "Another Look at Measures of Forecast Accuracy." *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나눠 서로 다른 계열을 같은 잣대에 태우는 방법을 정리한다. 3.3 이 다루는 sample 마다 달라지는 baseline 의 표준적인 예다.
+3 의 세 형태를 그대로 옮긴 구현이다. 세 함수가 분모를 어디서 얻는지만 다르고 분자는
+모두 같다.
+
+`r2_base` 를 먼저 두고 `r2_oos` 가 그것을 호출하는 것은 3.3 의 마지막 문단을 코드로
+옮긴 것이다. 반면 `r2_frd` 의 분모는 어떤 예측 vector 의 잔차도 아니어서 `r2_base` 로
+표현되지 않으므로 따로 계산한다.
+
+```python
+# Python
+import numpy as np
+
+
+def _ss_res(y_true: np.ndarray = None, y_pred: np.ndarray = None) -> float:
+    """Residual sum of squares, shared by the numerator and by baseline denominators."""
+    if y_true.shape != y_pred.shape:
+        raise ValueError(f"shapes must match, got y_true {y_true.shape} and y_pred {y_pred.shape}.")
+    if y_true.size == 0:
+        raise ValueError("y_true is empty; a skill score needs at least one observation.")
+
+    return float(np.sum((y_true - y_pred) ** 2))
+
+
+def r2_base(y_true: np.ndarray = None, y_pred: np.ndarray = None, y_base: np.ndarray = None) -> float:
+    """Section 3.3 — skill against a baseline that answers per sample.
+
+    Args:
+        y_true: observations, shape (n,).
+        y_pred: predictions, shape (n,).
+        y_base: baseline predictions, shape (n,), one value per sample.
+
+    Returns:
+        The skill relative to y_base. Negative when the baseline is the better predictor.
+    """
+    ss_base = _ss_res(y_true=y_true, y_pred=y_base)
+    if ss_base == 0.0:
+        raise ValueError("the baseline reproduces y_true exactly, so there is no error to improve on.")
+
+    return 1.0 - _ss_res(y_true=y_true, y_pred=y_pred) / ss_base
+
+
+def r2_oos(y_true: np.ndarray = None, y_pred: np.ndarray = None, y_train_bar: float = None) -> float:
+    """Section 3.1 — skill against the mean that was known at training time.
+
+    Args:
+        y_true: observations, shape (n,).
+        y_pred: predictions, shape (n,).
+        y_train_bar: mean of the training targets. Never derived from y_true, which would
+            put the test mean into the baseline and leak the evaluation set.
+
+    Returns:
+        The skill relative to always predicting y_train_bar.
+    """
+    if y_train_bar is None:
+        raise ValueError("y_train_bar is required; taking the mean of y_true would leak the test set.")
+
+    y_base = np.full(shape=y_true.shape, fill_value=float(y_train_bar))
+    return r2_base(y_true=y_true, y_pred=y_pred, y_base=y_base)
+
+
+def r2_frd(y_true: np.ndarray = None, y_pred: np.ndarray = None, sigma_ref: float = None) -> float:
+    """Section 3.2 — skill against a fixed reference dispersion instead of the data spread.
+
+    Args:
+        y_true: observations, shape (n,).
+        y_pred: predictions, shape (n,).
+        sigma_ref: reference dispersion in the unit of y, strictly positive.
+
+    Returns:
+        The skill relative to a baseline whose error scale is sigma_ref.
+        Equal to 1 - (RMSE / sigma_ref) ** 2.
+    """
+    if sigma_ref is None or sigma_ref <= 0.0:
+        raise ValueError(f"sigma_ref must be a positive dispersion, got {sigma_ref}.")
+
+    # The denominator is a stated error scale, not the residual of any prediction vector,
+    # so it cannot be routed through r2_base.
+    ss_ref = float(y_true.size) * sigma_ref ** 2
+    return 1.0 - _ss_res(y_true=y_true, y_pred=y_pred) / ss_ref
+```
