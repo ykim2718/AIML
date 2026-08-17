@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 3 | Created: 2026-08-15 | Updated: 2026-08-16 20:55 CDT
+Rev. 4 | Created: 2026-08-15 | Updated: 2026-08-16 23:28 CDT
 
 > 표준 R² 의 분모를 데이터에서 계산하지 않고 지정한 기준으로 바꿀 수 있는지,
 > 바꾸면 그 값이 물리적으로 무엇을 뜻하게 되는지 정리한 문서.
@@ -49,12 +49,17 @@ skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 �
 
 **Table 1. Ways to choose the baseline**
 
-| Symbol | Denominator | Baseline it encodes | Typical use |
-|---|---|---|---|
-| `R²` | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 |
-| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 |
-| `R2_frd` | `N · sigma_ref²` | 규격이 허용하는 산포 | Lot, batch, 기간 간 비교 |
-| `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 |
+| Symbol | Denominator | Baseline it encodes | Typical use | Reference |
+|---|---|---|---|---|
+| `R²` | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 | [1](#appendix-b-references) |
+| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 | [2](#appendix-b-references) |
+| `R2_frd` | `N · sigma_ref²` | 규격이 허용하는 산포 | Lot, batch, 기간 간 비교 | [3](#appendix-b-references), [4](#appendix-b-references) |
+| `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 | [5](#appendix-b-references) |
+
+Reference 열은 각 형태가 실제로 쓰이고 있는 자리를 가리키며, 서지 사항은
+[Appendix B](#appendix-b-references) 에 있다. 네 형태 모두 이 문서가 지어낸 계산이 아니라
+각 분야에서 이미 표준으로 자리 잡은 지표다. 이 문서가 붙인 것은 계산이 아니라 기호뿐이고,
+그 사정은 5 에서 다시 다룬다.
 
 ### 3.1. Fixed Reference Point
 
@@ -81,7 +86,13 @@ $$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
 분산 같은 도메인 기준을 쓴다. 두께 예측이라면 해당 layer 의 관리 규격 산포를 분모에
 넣어, 고정된 잣대 대비 모델의 성능을 재는 지표가 된다.
 
-분모가 상수이므로 식이 한 단계 더 줄어든다.
+분모가 상수이므로 식이 한 단계 더 줄어든다. 분자의 `SS_res` 를 표본 수 `N` 으로 나눈 뒤
+제곱근을 취한 값이 root mean squared error, 곧 RMSE 다.
+
+$$\mathrm{RMSE} = \sqrt{\frac{SS_{res}}{N}}$$
+
+RMSE 는 오차를 y 와 같은 단위로 되돌린 값이므로 `sigma_ref` 와 직접 나눌 수 있다.
+`SS_res` 를 `N · RMSE²` 으로 바꿔 넣으면 `N` 이 약분되어 아래만 남는다.
 
 $$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2$$
 
@@ -97,8 +108,12 @@ $$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2$$
 
 ### 3.3. Baseline Model
 
-3.1 과 3.2 의 baseline 은 모든 i 에 대해 같은 값을 내놓는다. Baseline 이 sample 마다
-다른 값을 내놓아야 하는 경우는 그 둘로 표현되지 않는다.
+3.1 의 baseline 은 어떤 sample 을 만나든 `y_train_bar` 라는 숫자 하나를 답으로 내놓고,
+3.2 의 baseline 은 어떤 sample 을 만나든 `sigma_ref` 만큼의 오차를 낸다. 둘 다 기준이
+sample 에 따라 달라지지 않는 상수 baseline 이다.
+
+기준 자체가 sample 마다 달라져야 하는 경우는 이 형태로 적을 수 없다. 이때는 baseline 이
+i 마다 자기 값 `y_base_i` 를 갖는다.
 
 $$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2}$$
 
@@ -211,7 +226,16 @@ baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터�
 - **out-of-sample** — 학습에 쓰이지 않은 데이터에서의 평가를 뜻한다.
 - **persistence baseline** — 직전 시점의 값을 그대로 다음 시점의 예측으로 쓰는 시계열 baseline 이다.
 - **Referenced R² (`Ref_R2`)** — 분모의 baseline 을 밖에서 지정해 계산한 R² 를 통칭하며, 이 문서에서 정한 이름이다.
+- **RMSE** — root mean squared error 이며 `sqrt(SS_res / N)` 로 계산한다. 오차를 y 와 같은 단위로 되돌린 값이라 규격 산포와 직접 견줄 수 있다.
 - **skill score** — `1 − 모델오차 / baseline오차` 형태의 지표를 통칭하며, R² 는 baseline 을 평균으로 둔 사례다.
 - **spec tolerance** — 공정 규격이 허용하는 산포이며, 고정 분모로 자주 쓰인다.
 - **SS_res** — 잔차제곱합 `Σ(y_i − y_hat_i)²` 이다.
 - **SS_tot** — 총제곱합 `Σ(y_i − y_bar)²` 이며, 표준 R² 의 분모다.
+
+## Appendix B. References
+
+- [1] Kvålseth, T. O. (1985). "Cautionary Note about R²." *The American Statistician*, 39(4), 279–285. 분모가 데이터의 평균에 묶여 있어서 생기는 표준 R² 의 해석상 한계를 정리한 글이며, 3 의 변형들이 필요한 이유를 준다.
+- [2] Campbell, J. Y., & Thompson, S. B. (2008). "Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?" *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균으로 고정한 out-of-sample R² 를 평가 지표로 쓴다. 3.1 이 말하는 형태가 그대로 쓰인 사례다.
+- [3] Murphy, A. H. (1988). "Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient." *Monthly Weather Review*, 116(12), 2417–2424. 평균제곱오차를 기준 오차로 나눈 skill score 를 정식화하고, 그 기준을 과거 평균 같은 외부 값으로 둘 수 있음을 보인다. 2 가 말하는 구조의 근거다.
+- [4] Automotive Industry Action Group (2010). *Measurement Systems Analysis Reference Manual*, 4th ed. 계측 오차를 규격 공차로 나눈 precision-to-tolerance ratio 를 계측 시스템의 합부 판정 기준으로 규정한다. 3.2 의 `RMSE / sigma_ref` 가 계측 분야에서 쓰이는 형태다.
+- [5] Hyndman, R. J., & Koehler, A. B. (2006). "Another Look at Measures of Forecast Accuracy." *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나눠 서로 다른 계열을 같은 잣대에 태우는 방법을 정리한다. 3.3 이 다루는 sample 마다 달라지는 baseline 의 표준적인 예다.
