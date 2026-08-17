@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 6 | Created: 2026-08-15 | Updated: 2026-08-17 00:14 CDT
+Rev. 7 | Created: 2026-08-15 | Updated: 2026-08-16 23:50 CDT
 
 > 표준 R² 의 분모를 데이터에서 계산하지 않고 지정한 기준으로 바꿀 수 있는지,
 > 바꾸면 그 값이 물리적으로 무엇을 뜻하게 되는지 정리한 문서.
@@ -57,7 +57,7 @@ skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 �
 | `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 | [5](#ref-5) |
 
 Reference 열은 각 형태가 실제로 쓰이고 있는 자리를 가리키며, 서지 사항은
-[7. References](#7-references) 에 있다. 네 형태 모두 이 문서가 지어낸 계산이 아니라
+[References](#references) 에 있다. 네 형태 모두 이 문서가 지어낸 계산이 아니라
 각 분야에서 이미 표준으로 자리 잡은 지표다. 이 문서가 붙인 것은 계산이 아니라 기호뿐이고,
 그 사정은 4 에서 다시 다룬다.
 
@@ -129,7 +129,7 @@ $$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2
 
 ## 4. Meaning and Reporting
 
-분모를 고정하는 진짜 이유는 편의가 아니라 **표준 R² 가 데이터셋 간 비교에 쓸 수 없는
+💡 분모를 고정하는 진짜 이유는 편의가 아니라 **표준 R² 가 데이터셋 간 비교에 쓸 수 없는
 지표**라는 데 있다. 분모가 데이터마다 다시 계산되므로 잣대가 데이터마다 바뀐다.
 
 같은 모델을 세 lot 에 적용해 RMSE 가 세 곳 모두 0.5 nm 로 동일하게 나온 경우를 보면
@@ -191,13 +191,17 @@ baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터�
 실익은 데이터셋마다 달라지던 잣대가 고정되어 lot 과 기간을 가로질러 비교할 수 있게 되는
 데 있고, 대가는 표준 R² 로서의 해석을 잃는 것과 기준 선정의 책임을 지는 것이다.
 
-## 7. References
+## References
 
-- <a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. 분모가 데이터의 평균에 묶여 있어서 생기는 표준 R² 의 해석상 한계를 정리한 글이며, 3 의 변형들이 필요한 이유를 준다.
-- <a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균으로 고정한 out-of-sample R² 를 평가 지표로 쓴다. 3.1 이 말하는 형태가 그대로 쓰인 사례다.
-- <a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. 평균제곱오차를 기준 오차로 나눈 skill score 를 정식화하고, 그 기준을 과거 평균 같은 외부 값으로 둘 수 있음을 보인다. 2 가 말하는 구조의 근거다.
-- <a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. 계측 오차를 규격 공차로 나눈 precision-to-tolerance ratio 를 계측 시스템의 합부 판정 기준으로 규정한다. 3.2 의 `RMSE / sigma_ref` 가 계측 분야에서 쓰이는 형태다.
-- <a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나눠 서로 다른 계열을 같은 잣대에 태우는 방법을 정리한다. 3.3 이 다루는 sample 마다 달라지는 baseline 의 표준적인 예다.
+<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. 분모가 데이터의 평균에 묶여 있어서 생기는 표준 R² 의 해석상 한계를 정리한 글이며, 3 의 변형들이 필요한 이유를 준다.
+
+<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균으로 고정한 out-of-sample R² 를 평가 지표로 쓴다. 3.1 이 말하는 형태가 그대로 쓰인 사례다.
+
+<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. 평균제곱오차를 기준 오차로 나눈 skill score 를 정식화하고, 그 기준을 과거 평균 같은 외부 값으로 둘 수 있음을 보인다. 2 가 말하는 구조의 근거다.
+
+<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. 계측 오차를 규격 공차로 나눈 precision-to-tolerance ratio 를 계측 시스템의 합부 판정 기준으로 규정한다. 3.2 의 `RMSE / sigma_ref` 가 계측 분야에서 쓰이는 형태다.
+
+<a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나눠 서로 다른 계열을 같은 잣대에 태우는 방법을 정리한다. 3.3 이 다루는 sample 마다 달라지는 baseline 의 표준적인 예다.
 
 ---
 
