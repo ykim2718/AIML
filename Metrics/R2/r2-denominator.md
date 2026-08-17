@@ -1,32 +1,36 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 9 | Created: 2026-08-15 | Updated: 2026-08-17 00:20 CDT
+Rev. 10 | Created: 2026-08-15 | Updated: 2026-08-17 00:01 CDT
 
-> 표준 R² 의 분모를 데이터에서 계산하지 않고 지정한 기준으로 바꿀 수 있는지,
-> 바꾸면 그 값이 물리적으로 무엇을 뜻하게 되는지 정리한 문서.
+> This document asks whether the denominator of the standard R² can be replaced
+> by a reference stated from outside rather than computed from the data, and
+> what the number comes to mean once it is.
 
 ## 1. Question
 
-표준 R² 는 아래와 같이 정의된다.
+The standard R² is defined as follows.
 
 $$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}$$
 
-분모 `SS_tot` 는 데이터 자체의 평균 `y_bar` 를 기준으로 한 총제곱합이며, 이것이
-"데이터의 전체 산포" 로 불리는 양이다. 이 분모를 데이터에서 계산하지 않고 밖에서
-지정한 값으로 바꿀 수 있는가 하는 것이 이 문서의 질문이다.
+The denominator `SS_tot` is the total sum of squares taken about the mean
+`y_bar` of the data itself, and it is the quantity usually called the total
+spread of the data. Whether that denominator can be replaced by a value stated
+from outside instead of computed from the data is the question of this document.
 
-답은 가능하다는 것이다. 원리상 자연스러울 뿐 아니라 이미 확립된 형태가 여럿 있다.
-다만 분모를 바꾸는 순간 지표의 의미가 함께 바뀌므로, 무엇으로 바꿨는지를 반드시
-같이 보고해야 한다.
+The answer is that it can. Not only is it natural in principle, several
+established forms already exist. But the meaning of the metric changes the
+moment the denominator does, so what it was replaced by must always be reported
+with it.
 
-이렇게 분모를 지정해서 만든 지표를 통칭해 이 문서에서는 **Referenced R²** 라 부르고
-`Ref_R2` 로 표기한다. 개별 변형은 분모에 무엇을 넣었는지를 따라 3 에서 `R2_oos`
-(out-of-sample), `R2_frd` (fixed reference dispersion), `R2_base` (baseline model) 로
-나눈다.
+A metric built by stating the denominator this way is called a **Referenced R²**
+in this document and written `Ref_R2`. Section 3 divides the individual variants
+by what goes into the denominator: `R2_oos` (out-of-sample), `R2_frd` (fixed
+reference dispersion), and `R2_base` (baseline model).
 
 ## 2. Structure
 
-분모를 왜 바꿔도 되는지는 R² 를 다시 읽으면 드러난다. `SS_tot` 는 "항상 `y_bar` 를
-예측하는 모델" 의 오차제곱합과 정확히 같다. 즉 R² 는 처음부터 아래 형태였다.
+Why the denominator may be changed becomes clear on rereading R². `SS_tot` is
+exactly the sum of squared errors of a model that always predicts `y_bar`. That
+is, R² had the form below from the start.
 
 ```text
                 error left by the model
@@ -34,16 +38,19 @@ R2 = 1 -  ───────────────────────�
             error left by a chosen baseline
 ```
 
-표준 R² 는 baseline 을 "평균만 내놓는 모델" 로 고정한 특수한 경우이고, 이 구조는
-skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 것은 baseline 을 바꾸는
-것이며, 그 이상도 이하도 아니다.** 이것이 이 문서의 나머지 내용을 지배하는 사실이다.
+The standard R² is the special case that fixes the baseline to a model which
+only ever returns the mean, and this structure is widely used under the name
+skill score. **Stating the denominator is changing the baseline, no more and no
+less.** This fact governs the rest of the document.
 
-따라서 `Ref_R2` 는 새로운 계산이 아니라 baseline 을 명시적으로 고른 R² 이고, 표준 R² 는
-그 baseline 을 데이터의 평균으로 암묵적으로 정해 둔 사례다.
+`Ref_R2` is therefore not a new calculation but an R² whose baseline was chosen
+explicitly, and the standard R² is the case that left that baseline implicitly
+at the mean of the data.
 
-분자와 분모가 모두 y 의 제곱 단위이므로 비율은 무차원이고, `Ref_R2` 는 "baseline 이
-감수해야 했던 오차 중 몇 %를 모델이 없앴는가" 로 읽힌다. Baseline 을 무엇으로 잡든 이
-해석은 유지된다.
+Numerator and denominator are both in units of y squared, so the ratio is
+dimensionless, and `Ref_R2` reads as what percentage of the error the baseline
+had to accept was removed by the model. That reading holds whatever the baseline
+is.
 
 ## 3. Variants
 
@@ -51,89 +58,108 @@ skill score 라는 이름으로 널리 쓰인다. **분모를 지정한다는 �
 
 | Symbol | Denominator | Baseline it encodes | Typical use | Reference |
 |---|---|---|---|---|
-| `R²` | `Σ(y_i − y_bar)²` | 이 데이터셋의 평균 | 단일 데이터셋 안에서의 적합도 | [1](#ref-1) |
-| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 때 알던 평균 | Test set 평가 | [2](#ref-2) |
-| `R2_frd` | `N · sigma_ref²` | 규격이 허용하는 산포 | Lot, batch, 기간 간 비교 | [3](#ref-3), [4](#ref-4) |
-| `R2_base` | `Σ(y_i − y_base_i)²` | Sample 마다 값이 다른 기준 모델 | 시계열, 기존 운영 모델 대비 | [5](#ref-5) |
+| `R²` | `Σ(y_i − y_bar)²` | The mean of this dataset | Goodness of fit within one dataset | [1](#ref-1) |
+| `R2_oos` | `Σ(y_i − y_train_bar)²` | The mean known at training time | Test set evaluation | [2](#ref-2) |
+| `R2_frd` | `N · sigma_ref²` | The spread the spec allows | Comparison across lots, batches, periods | [3](#ref-3), [4](#ref-4) |
+| `R2_base` | `Σ(y_i − y_base_i)²` | A reference model answering per sample | Time series, comparison against a model in production | [5](#ref-5) |
 
-Reference 열은 각 형태가 실제로 쓰이고 있는 자리를 가리키며, 서지 사항은
-[References](#references) 에 있다. 네 형태 모두 이 문서가 지어낸 계산이 아니라
-각 분야에서 이미 표준으로 자리 잡은 지표다. 이 문서가 붙인 것은 계산이 아니라 기호뿐이고,
-그 사정은 4 에서 다시 다룬다.
+The Reference column points at where each form is actually in use, and the
+bibliography is in [References](#references). None of the four is a calculation
+this document invented; each is already standard in its own field. What this
+document added is notation rather than arithmetic, and section 4 returns to
+that.
 
 ### 3.1. Fixed Reference Point
 
-가장 흔한 경우다. Test set 을 평가할 때 분모의 기준을 test 데이터의 평균이 아니라
-학습 데이터의 평균 `y_train_bar` 로 고정한다.
+This is the most common case. When a test set is evaluated, the reference in the
+denominator is anchored to the mean of the training data, `y_train_bar`, rather
+than to the mean of the test data.
 
 $$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2}$$
 
-두 가지 이유로 이 형태가 옳다. 첫째, test 데이터의 평균은 평가 시점에 알 수 없는
-값이므로 그것을 baseline 에 쓰면 미래 정보를 끌어다 쓰는 셈이 된다. 둘째, test set 을
-어떻게 자르느냐에 따라 분모가 달라져 잣대 자체가 흔들린다. 학습 평균으로 고정하면
-"훈련 때 알던 평균만 계속 내놓는 모델 대비 얼마나 개선했는가" 라는 질문이 되어,
-데이터를 어떻게 잘랐든 같은 잣대가 유지된다.
+Two reasons make this the right form. First, the mean of the test data is not
+knowable at evaluation time, so putting it in the baseline amounts to borrowing
+information from the future. Second, the denominator moves with how the test set
+was cut, which leaves the yardstick itself unsteady. Anchoring to the training
+mean turns the metric into the question of how much the model improved on one
+that keeps returning the mean it knew during training, and the yardstick then
+holds however the data was split.
 
-이 형태는 밖에서 out-of-sample R² 로 통하므로, 외부 보고에서는 그 이름을 쓴다.
+This form is known outside as the out-of-sample R², so external reports use that
+name.
 
 ### 3.2. Fixed Reference Dispersion
 
-분모를 데이터에서 계산하지 않고 알려진 참조 분산으로 대체한다.
+The denominator is replaced by a known reference variance instead of being
+computed from the data.
 
 $$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
 
-`sigma_ref` 로는 공정 규격의 허용 산포, 과거 누적 데이터의 분산, 계측 시스템의 기준
-분산 같은 도메인 기준을 쓴다. 두께 예측이라면 해당 layer 의 관리 규격 산포를 분모에
-넣어, 고정된 잣대 대비 모델의 성능을 재는 지표가 된다.
+For `sigma_ref` one uses a domain reference such as the spread a process spec
+allows, the variance of accumulated historical data, or the reference variance
+of a metrology system. For a thickness prediction, putting the control spec
+spread of the layer in question into the denominator turns the metric into a
+measure of the model against a fixed yardstick.
 
-분모가 상수이므로 식이 한 단계 더 줄어든다. 분자의 `SS_res` 를 표본 수 `N` 으로 나눈 뒤
-제곱근을 취한 값이 root mean squared error, 곧 RMSE 다.
+Because the denominator is a constant, the expression reduces one step further.
+The square root of the numerator `SS_res` divided by the sample count `N` is the
+root mean squared error, RMSE.
 
 $$\mathrm{RMSE} = \sqrt{\frac{SS_{res}}{N}}$$
 
-RMSE 는 오차를 y 와 같은 단위로 되돌린 값이므로 `sigma_ref` 와 직접 나눌 수 있다.
-`SS_res` 를 `N · RMSE²` 으로 바꿔 넣으면 `N` 이 약분되어 아래만 남는다.
+RMSE returns the error to the same unit as y, so it can be divided by
+`sigma_ref` directly. Substituting `N · RMSE²` for `SS_res` cancels `N` and leaves only the
+following.
 
 $$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2$$
 
-이것이 이 변형의 물리적 의미다. `R2_frd` 는 **모델의 오차가 규격 산포의 몇 배인지**를
-재서 1 에서 뺀 값이다. 오차가 규격의 절반이면 0.75, 규격과 같으면 0, 규격을 넘으면
-음수가 된다. Baseline 의 말로 옮기면 "규격이 허용하는 만큼의 오차를 정확히 내는 가상의
-모델" 을 기준으로 삼은 것이며, 그 가상의 모델을 이겼는지를 묻는 것이다.
+This is the physical meaning of the variant. `R2_frd` **measures how many times
+the spec spread the model error is** and subtracts that from 1. Half the spec
+gives 0.75, error equal to the spec gives 0, and error beyond the spec gives a
+negative value. Put in the language of baselines, the reference is an imaginary
+model whose error is exactly what the spec allows, and the question is whether
+the model beat it.
 
-계측 분야에는 오차와 규격의 비를 R² 로 포장하지 않고 그대로 보고하는 관행이 있다.
-읽는 쪽이 공정·계측 담당이면 `RMSE / sigma_ref` 를 그대로 주는 편이 잘 통하고, 다른
-지표와 한 표에 나란히 놓아야 하면 `R2_frd` 로 바꿔 0 과 1 의 잣대에 태우는 편이 낫다.
-두 값은 위 식으로 서로 옮겨갈 수 있으므로 정보량은 같다.
+Metrology has a practice of reporting the ratio of error to spec as it is rather
+than dressing it up as an R². When the reader is a process or metrology
+engineer, handing over `RMSE / sigma_ref` unchanged communicates better; when
+the number has to sit in one table beside other metrics, converting it to
+`R2_frd` puts it on the 0-to-1 scale. The two convert to each other by the
+expression above, so they carry the same information.
 
 ### 3.3. Baseline Model
 
-3.1 의 baseline 은 어떤 sample 을 만나든 `y_train_bar` 라는 숫자 하나를 답으로 내놓고,
-3.2 의 baseline 은 어떤 sample 을 만나든 `sigma_ref` 만큼의 오차를 낸다. 둘 다 기준이
-sample 에 따라 달라지지 않는 상수 baseline 이다.
+The baseline in section 3.1 answers with one number, `y_train_bar`, whatever
+sample it meets, and the baseline in section 3.2 makes an error of `sigma_ref`
+whatever sample it meets. Both are constant baselines whose reference does not
+vary with the sample.
 
-기준 자체가 sample 마다 달라져야 하는 경우는 이 형태로 적을 수 없다. 이때는 baseline 이
-i 마다 자기 값 `y_base_i` 를 갖는다.
+A case where the reference itself has to vary per sample cannot be written in
+that form. There the baseline holds its own value `y_base_i` for each i.
 
 $$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2}$$
 
-시계열의 persistence baseline 이 대표적이다. 직전 시점의 값을 다음 시점의 예측으로
-쓰므로 `y_base_i` 가 i 마다 달라지고, 어떤 상수로도 같은 분모를 만들 수 없다. 계절
-평균을 baseline 으로 둘 때, 현재 운영 중인 모델을 baseline 으로 두어 교체 가치를 잴
-때도 마찬가지다.
+The persistence baseline of a time series is the representative case. It uses
+the value at the previous step as the prediction for the next, so `y_base_i`
+differs for each i and no constant can produce the same denominator. The same
+holds when a seasonal mean serves as the baseline, and when a model currently in
+production serves as the baseline to measure the value of replacing it.
 
-`y_base_i` 를 상수 `y_train_bar` 로 두면 3.1 이 되므로 3.1 은 이 형태의 특수한 경우다.
-그래도 절을 나눠 두는 이유는 두 형태가 답하는 질문이 다르기 때문이다. 3.1 은 "평균보다
-나은가" 를 묻고 3.3 은 "이미 쓰고 있는 것보다 나은가" 를 묻는다. 앞의 질문은 모델이
-쓸모가 있는지를, 뒤의 질문은 모델을 교체할 값어치가 있는지를 결정한다.
+Setting `y_base_i` to the constant `y_train_bar` reduces this to section 3.1, so
+that section is a special case of this one. They are kept apart because the two
+answer different questions. Section 3.1 asks whether the model beats the mean;
+section 3.3 asks whether it beats what is already in use. The first question
+decides whether a model is worth anything, the second whether it is worth a
+replacement.
 
 ## 4. Meaning and Reporting
 
-💡 분모를 고정하는 진짜 이유는 편의가 아니라 **표준 R² 가 데이터셋 간 비교에 쓸 수 없는
-지표**라는 데 있다. 분모가 데이터마다 다시 계산되므로 잣대가 데이터마다 바뀐다.
+💡 The real reason for fixing the denominator is not convenience but that **the
+standard R² cannot be used to compare across datasets**. The denominator is
+recomputed for every dataset, so the yardstick changes with the dataset.
 
-같은 모델을 세 lot 에 적용해 RMSE 가 세 곳 모두 0.5 nm 로 동일하게 나온 경우를 보면
-문제가 분명해진다.
+The problem is plain in a case where one model applied to three lots gives the
+same RMSE of 0.5 nm in all three.
 
 **Table 2. The same model on three lots, RMSE fixed at 0.5 nm**
 
@@ -143,92 +169,105 @@ $$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2
 | B | 1.2 | 0.8264 | 0.7500 |
 | C | 0.6 | 0.3056 | 0.7500 |
 
-모델의 예측 오차는 세 lot 에서 완전히 같은데 표준 R² 는 0.94 에서 0.31 까지 벌어진다.
-변한 것은 모델이 아니라 분모다. 산포가 큰 lot 은 baseline 이 원래 못 맞히던 lot 이라
-같은 성능이 좋아 보이고, 산포가 작은 lot 은 baseline 도 이미 잘 맞히던 lot 이라 같은
-성능이 나빠 보인다. 표준 R² 는 이 사실을 정직하게 반영하고 있을 뿐이며, 이 값으로
-lot 을 줄 세우면 모델이 아니라 lot 의 산포를 줄 세우게 된다.
+The prediction error of the model is identical across the three lots, yet the
+standard R² spreads from 0.94 down to 0.31. What changed is the denominator, not
+the model. A lot with a large spread is one the baseline was already failing on,
+so the same performance looks good; a lot with a small spread is one the
+baseline was already handling, so the same performance looks bad. The standard
+R² is only reporting this honestly, and ranking lots by this value ranks the
+spread of the lots rather than the model.
 
-분모를 1.0 nm 로 고정하면 세 lot 모두 0.75 가 되어, 지표가 모델의 성능만 반영한다.
-바꿔 말하면 두 지표는 서로 다른 질문에 답한다.
+Fixing the denominator at 1.0 nm gives 0.75 for all three, and the metric then
+reflects the performance of the model alone. Put differently, the two metrics
+answer different questions.
 
-- 표준 R² — 이 데이터셋 안에서 모델이 평균 대비 얼마나 나은가. 데이터셋마다 잣대가 다르다.
-- `R2_frd` — 정해진 잣대 대비 모델이 얼마나 나은가. 데이터셋을 가로질러 비교할 수 있다.
+- Standard R² — how much better than the mean the model is within this dataset. The yardstick differs per dataset.
+- `R2_frd` — how much better than a stated yardstick the model is. It can be compared across datasets.
 
-어느 쪽이 옳은지는 질문에 달렸다. "이 lot 을 얼마나 설명했는가" 를 묻는다면 표준 R² 가
-맞고, "이 모델을 라인 전체에 깔아도 되는가" 를 묻는다면 `R2_frd` 가 맞다.
+Which one is right depends on the question. Asking how much of this lot was
+explained calls for the standard R²; asking whether the model can be deployed
+across the line calls for `R2_frd`.
 
-그래서 값 하나만 건네서는 안 된다. 두 질문의 답이 같은 자리에 같은 모양으로 찍히므로,
-받는 쪽은 무엇을 본 것인지 알 수 없다. 보고할 때는 아래를 지킨다.
+A single value handed over on its own is therefore not enough. The answers to
+both questions land in the same place in the same shape, so the recipient cannot
+tell which one was seen. Reporting follows the rules below.
 
-- 변형에 맞는 기호를 쓰고 `R²` 를 그대로 쓰지 않는다. 같은 기호를 쓰면 읽는 쪽이 표준 R² 로 오해한다.
-- 기호만으로는 부족하므로 분모의 기준을 값과 출처까지 함께 적는다. `R2_frd = 0.75 (reference: spec tolerance sigma = 1.0 nm)` 처럼 쓰고, 숫자만 적지 않는다.
-- 표준 R² 를 함께 보고한다. 두 값의 차이가 곧 그 데이터셋의 산포가 규격 대비 어느 쪽으로 치우쳤는지를 알려준다.
-- `sigma_ref` 를 고른 근거를 남긴다. 근거 없이 고른 분모는 지표 전체를 자의적으로 만든다.
+- Use the symbol that matches the variant rather than `R²` itself. The same symbol invites the reader to take it for the standard R².
+- The symbol alone does not carry enough, so record the reference of the denominator together with its value and its source. Write `R2_frd = 0.75 (reference: spec tolerance sigma = 1.0 nm)` rather than the number alone.
+- Report the standard R² alongside. The gap between the two is what tells the reader which way the spread of that dataset leans against the spec.
+- Leave the grounds for the choice of `sigma_ref`. A denominator chosen without grounds makes the whole metric arbitrary.
 
-`Ref_R2` 와 `R2_frd`, `R2_base` 는 이 문서에서 정한 이름이므로 문서 밖에서는 통하지
-않는다. 외부에 낼 때는 기호 뒤에 정의식을 한 줄 붙이거나, 3.1 처럼 통용되는 이름이 있으면
-그쪽을 쓴다.
+`Ref_R2`, `R2_frd`, and `R2_base` are names set by this document and do not
+carry outside it. When sending them out, attach a one-line definition after the
+symbol, or use the established name where one exists, as in section 3.1.
 
 ## 5. Cautions
 
-- **음수가 나온다.** 모델이 baseline 보다 못하면 `SS_res` 가 분모를 넘어 값이 0 아래로 간다. 규격 1.0 nm 에 대해 RMSE 가 1.3 nm 이면 −0.69 다. 이는 오류가 아니라 "이 모델을 쓰느니 baseline 을 쓰는 편이 낫다" 는 정상적인 신호이며, out-of-sample 평가에서는 흔히 나온다.
-- **분모가 작으면 값이 폭발한다.** 규격 산포가 매우 작은 항목에 이 지표를 쓰면 작은 오차에도 큰 음수가 나온다. 그런 항목은 R² 계열 대신 오차의 절대 크기로 관리하는 편이 낫다.
-- **상한은 여전히 1 이다.** 분모를 바꿔도 `SS_res` 는 0 아래로 갈 수 없으므로 값이 1 을 넘지 않는다. 1 에 가까운 값은 모델이 완벽하다는 뜻이 아니라 지정한 baseline 을 압도했다는 뜻이다.
-- **분모를 사후에 고르지 않는다.** 결과를 본 뒤 보기 좋은 `sigma_ref` 를 고르면 지표가 아니라 수사가 된다. 기준은 평가 전에 정하고 문서에 남긴다.
+- **Negative values occur.** When the model is worse than the baseline, `SS_res` exceeds the denominator and the value drops below 0. Against a spec of 1.0 nm, an RMSE of 1.3 nm gives −0.69. This is not an error but the normal signal that the baseline is the better thing to use, and it is common in out-of-sample evaluation.
+- **A small denominator makes the value explode.** Applying this metric to an item whose spec spread is very small produces a large negative value from a small error. Such items are better managed by the absolute size of the error than by anything in the R² family.
+- **The upper bound is still 1.** Changing the denominator cannot push `SS_res` below 0, so the value never exceeds 1. A value near 1 does not mean the model is perfect; it means the stated baseline was overwhelmed.
+- **The denominator is not chosen after the fact.** Picking a flattering `sigma_ref` after seeing the results turns the metric into rhetoric. Fix the reference before the evaluation and record it.
 
 ## 6. Summary
 
-R² 의 분모는 baseline 의 오차이고, 표준 R² 는 그 baseline 을 데이터의 평균으로 고정한
-특수한 경우다. 분모를 학습 평균, 규격 산포, 기존 운영 모델의 오차로 바꾸는 것은 모두
-baseline 을 바꾸는 같은 조작이며, 그 결과 지표는 "이 데이터셋 안에서의 설명력" 에서
-"지정한 기준 대비 상대 성능" 으로 의미가 옮겨간다. 이렇게 baseline 을 명시적으로 고른
-형태를 이 문서는 `Ref_R2` 로 통칭하고 `R2_oos`, `R2_frd`, `R2_base` 로 나눈다. 이 교체의
-실익은 데이터셋마다 달라지던 잣대가 고정되어 lot 과 기간을 가로질러 비교할 수 있게 되는
-데 있고, 대가는 표준 R² 로서의 해석을 잃는 것과 기준 선정의 책임을 지는 것이다.
+The denominator of R² is the error of a baseline, and the standard R² is the
+special case that fixes that baseline to the mean of the data. Replacing the
+denominator with the training mean, with a spec spread, or with the error of a
+model in production are all the same operation of changing the baseline, and the
+metric shifts in meaning from explanatory power within this dataset to
+performance relative to a stated reference. This document calls the forms whose
+baseline is chosen explicitly `Ref_R2` and divides them into `R2_oos`, `R2_frd`,
+and `R2_base`. What the exchange buys is a yardstick that stops moving with the
+dataset, so lots and periods become comparable; what it costs is the
+interpretation the standard R² carried and the responsibility for choosing the
+reference.
 
 ## References
 
-<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. 분모가 데이터의 평균에 묶여 있어서 생기는 표준 R² 의 해석상 한계를 정리한 글이며, 3 의 변형들이 필요한 이유를 준다.
+<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. Sets out the interpretive limits the standard R² inherits from having its denominator tied to the mean of the data, which is what makes the variants in section 3 necessary.
 
-<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균으로 고정한 out-of-sample R² 를 평가 지표로 쓴다. 3.1 이 말하는 형태가 그대로 쓰인 사례다.
+<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. Uses an out-of-sample R² whose denominator is fixed to the mean of the training window as its evaluation metric. It is the form section 3.1 describes, used as is.
 
-<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. 평균제곱오차를 기준 오차로 나눈 skill score 를 정식화하고, 그 기준을 과거 평균 같은 외부 값으로 둘 수 있음을 보인다. 2 가 말하는 구조의 근거다.
+<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. Formalizes the skill score as mean squared error divided by a reference error, and shows the reference may be an external value such as a historical mean. It is the basis for the structure section 2 describes.
 
-<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. 계측 오차를 규격 공차로 나눈 precision-to-tolerance ratio 를 계측 시스템의 합부 판정 기준으로 규정한다. 3.2 의 `RMSE / sigma_ref` 가 계측 분야에서 쓰이는 형태다.
+<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. Defines the precision-to-tolerance ratio, measurement error divided by the spec tolerance, as the acceptance criterion for a measurement system. It is the `RMSE / sigma_ref` of section 3.2 as metrology uses it.
 
-<a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나눠 서로 다른 계열을 같은 잣대에 태우는 방법을 정리한다. 3.3 이 다루는 sample 마다 달라지는 baseline 의 표준적인 예다.
+<a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. Sets out how dividing forecast error by the error of a persistence baseline puts different series on one scale. It is the standard example of the per-sample baseline section 3.3 covers.
 
 ---
 
 ## Appendix A. Terminology
 
-- **baseline model** — 비교의 기준이 되는 모델이며, R² 의 분모는 이 모델의 오차제곱합이다.
-- **out-of-sample** — 학습에 쓰이지 않은 데이터에서의 평가를 뜻한다.
-- **persistence baseline** — 직전 시점의 값을 그대로 다음 시점의 예측으로 쓰는 시계열 baseline 이다.
-- **Referenced R² (`Ref_R2`)** — 분모의 baseline 을 밖에서 지정해 계산한 R² 를 통칭하며, 이 문서에서 정한 이름이다.
-- **RMSE** — root mean squared error 이며 `sqrt(SS_res / N)` 로 계산한다. 오차를 y 와 같은 단위로 되돌린 값이라 규격 산포와 직접 견줄 수 있다.
-- **skill score** — `1 − 모델오차 / baseline오차` 형태의 지표를 통칭하며, R² 는 baseline 을 평균으로 둔 사례다.
-- **spec tolerance** — 공정 규격이 허용하는 산포이며, 고정 분모로 자주 쓰인다.
-- **SS_res** — 잔차제곱합 `Σ(y_i − y_hat_i)²` 이다.
-- **SS_tot** — 총제곱합 `Σ(y_i − y_bar)²` 이며, 표준 R² 의 분모다.
+- **baseline model** — the model that serves as the reference for comparison. The denominator of R² is its sum of squared errors.
+- **out-of-sample** — evaluation on data that was not used for training.
+- **persistence baseline** — a time series baseline that uses the value at the previous step as the prediction for the next.
+- **Referenced R² (`Ref_R2`)** — the collective name, set by this document, for an R² computed with the baseline in its denominator stated from outside.
+- **RMSE** — root mean squared error, computed as `sqrt(SS_res / N)`. It returns the error to the same unit as y, so it can be set against a spec spread directly.
+- **skill score** — the collective name for metrics of the form `1 − model error / baseline error`. R² is the case whose baseline is the mean.
+- **spec tolerance** — the spread a process spec allows. It is often used as a fixed denominator.
+- **SS_res** — the residual sum of squares, `Σ(y_i − y_hat_i)²`.
+- **SS_tot** — the total sum of squares, `Σ(y_i − y_bar)²`, which is the denominator of the standard R².
 
 ## Appendix B. Reference Implementation
 
-3 에서 정의한 세 지표를 함수 하나씩으로 옮긴 것이다. 3.1 의 `R2_oos` 는 `r2_oos` 가,
-3.2 의 `R2_frd` 는 `r2_frd` 가, 3.3 의 `R2_base` 는 `r2_base` 가 맡는다.
+Each of the three metrics defined in section 3 is carried into one function.
+`r2_oos` takes `R2_oos` from 3.1, `r2_frd` takes `R2_frd` from 3.2, and
+`r2_base` takes `R2_base` from 3.3.
 
-세 함수는 모두 관측값 `y_true` 와 예측값 `y_pred` 를 받아 skill 값 하나를 돌려주며,
-서로 다른 곳은 분모를 어디서 얻느냐 한 군데뿐이다. `r2_oos` 는 학습 평균 `y_train_bar`
-를, `r2_frd` 는 참조 산포 `sigma_ref` 를, `r2_base` 는 baseline 예측 vector `y_base` 를
-인자로 받아 그것으로 분모를 만든다. 셋 다 분모의 기준을 밖에서 받을 뿐 `y_true` 에서
-끌어내지 않으며, 이것이 2 에서 말한 "baseline 을 명시적으로 고른다" 를 코드로 옮긴
-모습이다. 분자인 `SS_res` 는 셋이 똑같이 쓰므로 `_ss_res` 로 따로 빼서 shape 검사와
-빈 배열 검사를 한곳에서 하게 했다.
+All three receive the observations `y_true` and the predictions `y_pred` and
+return one skill value; the single place they differ is where the denominator
+comes from. `r2_oos` receives the training mean `y_train_bar`, `r2_frd` the
+reference dispersion `sigma_ref`, and `r2_base` the baseline prediction vector
+`y_base`, each as an argument, and each builds its denominator from it. None of
+the three derives the reference from `y_true`; all take it from outside, which
+is what section 2 called choosing the baseline explicitly, carried into code. The
+numerator `SS_res` is identical for all three, so it is pulled out into
+`_ss_res`, which keeps the shape check and the empty-array check in one place.
 
-`r2_base` 를 먼저 두고 `r2_oos` 가 그것을 호출하는 것은 3.3 의 마지막 문단을 코드로
-옮긴 것이다. 반면 `r2_frd` 의 분모는 어떤 예측 vector 의 잔차도 아니어서 `r2_base` 로
-표현되지 않으므로 따로 계산한다.
+Defining `r2_base` first and having `r2_oos` call it carries the last paragraph
+of section 3.3 into code. The denominator of `r2_frd`, by contrast, is not the
+residual of any prediction vector and so cannot be expressed through `r2_base`;
+it is computed separately.
 
 ```python
 # Python
