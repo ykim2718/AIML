@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 27 | Created: 2026-08-17 | Updated: 2026-08-18 06:58 CDT
+Rev. 28 | Created: 2026-08-17 | Updated: 2026-08-18 08:12 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -157,10 +157,25 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 The implementation is `hampel_identifier.py`, in the folder of this document. The block below is
 an excerpt: the docstrings are abridged to their opening paragraph, and the tabulation,
 reporting and command line parts of the file are omitted. It is otherwise the file as written and
-runs as printed.
+runs as printed. `__all__` is the export list of the whole file, so it names `score_frame`,
+`report` and `load_sample`, which the excerpt leaves out.
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
+
+# The names `from hampel_identifier import *` exports. parse_args is left out on purpose: it reads
+# the argv of whatever program imports it, which is never what an importing module wants.
+__all__ = [
+    'NORMAL_QUARTILE',
+    'DEFAULT_THRESHOLD',
+    'median_absolute_deviation',
+    'hampel_score',
+    'retained_interval',
+    'score_frame',
+    'report',
+    'load_sample',
+]
+
 import numpy as np
 from scipy import stats
 
@@ -328,13 +343,44 @@ distribution; the size of the departure does not rest on that approximation.
 
 ## Appendix D. Ceiling of the Classical Score
 
-The self-reference of section 3.2 bounds the classical score. For a sample of size $n$ the largest
-absolute z-score that can occur is fixed by $n$ alone, whatever the data are.
+Write $\bar{x}$ for the mean of the sample, $s$ for its standard deviation, and
+$z_i = (x_i - \bar{x}) / s$ for the classical score of section 1.
+
+That score divides a deviation by a standard deviation the same observation helped compute.
+Section 3.2 uses that to explain why the ratio grows slowly; it also puts a ceiling on the ratio.
+For a sample of size $n$ the largest absolute z-score that can occur is fixed by $n$ alone,
+whatever the data are.
 
 $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 
 The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
 holds for every sample of that size.
+
+The derivation needs two identities. Deviations from the mean sum to zero, and the sample
+standard deviation is defined from their squares.
+
+$$\sum_{j=1}^{n} \left( x_j - \bar{x} \right) = 0, \qquad \sum_{j=1}^{n} \left( x_j - \bar{x} \right)^2 = (n-1)s^2$$
+
+Fix one observation and write $d = x_i - \bar{x}$. The first identity says the other $n-1$
+deviations sum to $-d$. By the Cauchy-Schwarz inequality, $n-1$ numbers whose sum is $-d$ have a
+sum of squares of at least $d^2 / (n-1)$, and they reach it when they are all equal. Splitting the
+second identity at observation $i$ and applying that lower bound gives the result in one line.
+
+$$(n-1)s^2 = d^2 + \sum_{j \ne i} \left( x_j - \bar{x} \right)^2 \ \ge \ d^2 + \frac{d^2}{n-1} \ = \ \frac{n}{n-1} d^2$$
+
+Rearranging leaves $d^2 \le (n-1)^2 s^2 / n$, and dividing by $s$ leaves the bound. Equality holds
+when the other $n-1$ deviations are all equal, which is one observation set apart from $n-1$ tied
+ones, so the ceiling is attained rather than merely approached.
+
+Only the second identity involves $s$, so it is the one that carries the fact section 3.2 rests
+on: the observation sits inside its own denominator. That identity alone already bounds the score
+— drop the sum over $j \ne i$ from the display and $d^2 \le (n-1)s^2$ remains. The self-reference
+is therefore what makes the score bounded at all, and the zero sum of the deviations is what
+sharpens the constant to $(n-1)/\sqrt{n}$.
+
+The constant is written for the sample standard deviation, which divides the sum of squares by
+$n-1$. Dividing by $n$ instead makes $s$ smaller and raises the sharp bound to $\sqrt{n-1}$, so a
+figure computed with `numpy.std` at its default `ddof=0` is measured against a different ceiling.
 
 **Table 5. The bound at several sample sizes**
 

@@ -7,6 +7,7 @@ the modified z-score of every observation and takes no threshold, and the caller
 absolute score against one.
 
 Changelog:
+    0.7.0 - Declare __all__ so `from hampel_identifier import *` exports only the documented surface.
     0.6.0 - Make the scale private as _hampel_scale; callers use the score or the interval.
     0.5.0 - Drop classical_z_scores and max_attainable_z, and the column they fed.
     0.4.0 - Replace HampelResult with hampel_score, hampel_scale and retained_interval.
@@ -17,7 +18,20 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.6.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.7.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+
+# The names `from hampel_identifier import *` exports. parse_args is left out on purpose: it reads
+# the argv of whatever program imports it, which is never what an importing module wants.
+__all__ = [
+    'NORMAL_QUARTILE',
+    'DEFAULT_THRESHOLD',
+    'median_absolute_deviation',
+    'hampel_score',
+    'retained_interval',
+    'score_frame',
+    'report',
+    'load_sample',
+]
 
 import argparse
 import pathlib
