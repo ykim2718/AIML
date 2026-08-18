@@ -1,176 +1,141 @@
-# Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 13 | Created: 2026-08-17 | Updated: 2026-08-18 01:03 CDT
+# Hampel Identifier — Finding Outliers with the Median and the MAD
+Rev. 14 | Created: 2026-08-17 | Updated: 2026-08-18 01:12 CDT
 
-> A note on the modified z-score built from the median and the median absolute deviation,
-> organized as principle, procedure, parameters, treatment, and limits.
+> A rule that flags an observation sitting more than 3.5 robust scales away from the median.
+> The procedure comes first and the reasoning behind it comes last.
 
-## 1. Scope
+## 1. Procedure
 
-The classical way to call an observation extreme is to divide its deviation from the mean by
-the standard deviation and compare the result against a threshold. Both the centre and the scale
-in that ratio are computed from the same sample the observation belongs to, so an outlier
-inflates the quantity it is being measured against.
+The whole method is five steps.
 
-The Hampel identifier replaces the pair with the median and the median absolute deviation, the
-MAD. Those two are unmoved by a minority of contaminating observations, so the scale stays a description of
-the bulk of the sample rather than of the observation under test.
+```text
+1. Take the median of the sample.
+2. Take the distance of every observation from that median.
+3. The MAD is the median of those distances.
+4. The scale is the MAD divided by 0.674490.
+5. Flag any observation further than 3.5 scales from the median.
+```
 
-## 2. Principle
+Appendix C runs those steps on a sample of fifteen measurements. They give the following.
 
-### 2.1. Contaminated Scale
+**Table 1. The five steps on the worked example**
 
-A sample standard deviation is a mean of squared deviations, so a single distant observation
-enters it quadratically. The larger the outlier, the larger the denominator it is divided by,
-and the two effects work against each other.
+| Step | Result |
+|---|---|
+| Median | 0.023200 |
+| MAD | 0.007300 |
+| Scale, which is MAD / 0.674490 | 0.010823 |
+| Half-width, which is 3.5 x scale | 0.037880 |
+| Retained interval | [−0.014680, 0.061080] |
 
-The median absolute deviation is a median of absolute deviations. Moving one observation
-arbitrarily far changes which value sits at the middle of that list by at most one position, and
-if the sample is large enough it does not change it at all.
+One observation of the fifteen lies outside that interval. It is 0.6532, and it is flagged. The
+other fourteen lie between 0.0134 and 0.0403, and they are retained.
 
-That self-reference also puts a ceiling on the classical score which no sample can exceed, worked
-out in [Appendix D. Ceiling of the Classical Score](#appendix-d-ceiling-of-the-classical-score).
-
-### 2.2. Breakdown Point
-
-The mean and the standard deviation break down at one observation. The median and the MAD break
-down only when more than half the sample is corrupted.
-
-An estimate breaks down when it stops describing the sample and describes the corrupted
-observations instead. It does not stop computing. Setting one observation of the worked example
-to a billion takes the mean past 66 million while the median stays at 0.0232, and a mean of 66
-million says nothing about fifteen observations that otherwise sit near 0.02.
-
-The breakdown point is the fraction of the sample that has to be corrupted for that to happen.
-
-**Table 1. Breakdown point of the two pairs**
-
-| Estimator | Breakdown point | What it takes to break it |
-|---|---|---|
-| Mean and standard deviation | 0% | One observation, moved far enough |
-| Median and MAD | 50% | Eight of the fifteen; seven leave the median at 0.0403, a real observation |
-
-This is the whole of the method. Everything below is the arithmetic of putting the robust pair
-on a scale that a threshold can be read against.
-
-## 3. Procedure
-
-### 3.1. Assumptions
-
-The sample is univariate. Contamination is a minority: fewer than half the observations are
-outliers, which is the condition section 2.2 buys and not one that can be dispensed with.
-
-Normality is not assumed for the detection to be meaningful, and this is the difference from the
-normal-theory tests. Normality enters only in the calibration of section 4.2, which is what makes the
-number 3.5 interpretable. On a sample that is not normal the identifier still measures how far
-an observation sits from the bulk in units of the bulk's own spread; what is lost is the
-reading of the threshold as a false-positive rate.
-
-### 3.2. Statistic
-
-Let $\tilde{x}$ be the median of the sample.
+Written out, with $\tilde{x}$ standing for the median:
 
 $$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)$$
 
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
-Here $\Phi^{-1}(0.75) = 0.674490$ is the third quartile of the standard normal distribution, and
-the denominator as a whole is the robust scale. The quantity $M_i$ is the modified z-score.
+An observation is flagged when $\left| M_i \right| \gt 3.5$. The score $M_i$ is called the
+modified z-score, and the constant $\Phi^{-1}(0.75) = 0.674490$ is explained in section 3.1.
 
-### 3.3. Decision Rule
+Every observation is scored once, against one centre and one scale. Nothing is removed part-way
+and the calculation is not repeated.
 
-An observation is flagged when its modified z-score exceeds the threshold $k$ in absolute value.
+### 1.1. What a Flag Means
 
-$$\left| M_i \right| \gt k$$
+A flag says that an observation sits far from the bulk of the sample. It does not say that the
+observation is wrong. Those are separate questions and the rule settles only the first.
 
-The threshold $k$ is 3.5 by convention.
+- Look for a cause before acting. A flag traced to a recording error, an instrument fault, or a documented disturbance can be corrected or removed on that evidence.
+- Keep a flag that has no assignable cause. The value may be a genuine part of the process, and removing it throws away what it carries.
+- Report what was removed, which threshold was used, and how the removal changed the estimates.
+- When flags keep appearing, limit the influence of extreme values rather than deleting them. This is called accommodation, and the median and the MAD already do it.
 
-Equivalently, the retained interval is $\tilde{x} \pm k \cdot \mathrm{MAD} / \Phi^{-1}(0.75)$.
+Running the rule again on what is left is not a treatment. The second pass computes a fresh
+centre and a fresh scale from cleaned data, so it answers a different question from the first.
 
-Every observation is scored once, against a centre and a scale computed once. There is no
-iteration and no removal, because the estimates the scores are built on were never contaminated
-in the first place.
+## 2. Failure Modes
 
-## 4. Parameters
+**Table 2. Conditions under which the rule cannot be used**
 
-### 4.1. Threshold
+| Condition | What goes wrong | What to use instead |
+|---|---|---|
+| More than half the sample takes one value | The MAD is 0, so the score divides by zero and is undefined | A scale estimator that tolerates ties, such as Sn or Qn |
+| Half the sample or more is contaminated | The median and the MAD describe the contamination rather than the sample | Nothing recovers this. The sample needs a separate source of truth |
+| Several variables at once | The score reads one variable at a time | A distance that accounts for covariance, such as Mahalanobis distance |
+| Observations correlated in sequence | Neighbouring values are not exchangeable | Model the correlation, or score the residuals |
+| The sample is not normal | The threshold stops reading as a false-positive rate, though the scores still rank correctly | Report the score and its margin instead of a nominal rate |
 
-The threshold $k$ is a cut-off on the score of section 3.2, not on the observation itself. An
-observation is flagged when $\left| M_i \right|$ exceeds it, so $k$ is read in units of the robust
-scale: at 3.5 an observation is flagged once it lies more than 3.5 robust scales away from the
-median, on either side.
+The first row is a hard failure rather than a loss of accuracy. The score is undefined, and an
+implementation that returns zeros instead of raising an error reports a clean sample on data it
+cannot read. Coarse measurement resolution pushes a sample toward that row. The worked example
+has five tied observations out of fifteen, and the MAD reaches zero at eight.
 
-What that works out to in the units of the data is not fixed, because the robust scale is computed
-from the sample. Two samples with the same threshold have different boundaries, and C.1 works one
-of them out.
+The last row limits how a result may be read rather than the result itself. On a sample that is
+not normal the score still measures how far an observation sits from the bulk, in units of the
+spread of that bulk. What is lost is the reading of 3.5 as a false-positive rate.
 
-**Table 2. What the threshold costs on genuinely normal data**
+## 3. Threshold
 
-| Threshold k | Probability one observation is flagged | Expected false flags in n = 15 |
+The threshold applies to the score and not to the observation. An observation is flagged when
+$\left| M_i \right|$ exceeds 3.5, so the cut-off is counted in scales rather than in the units of
+the data. The boundary this places on the data itself moves from sample to sample, because the
+scale is computed from the sample. Table 1 works one boundary out.
+
+**Table 3. What the threshold costs on genuinely normal data**
+
+| Threshold | Probability that one observation is flagged | Expected false flags in fifteen observations |
 |---|---|---|
 | 2.5 | 0.012419 | 0.186 |
 | 3.0 | 0.002700 | 0.041 |
 | 3.5 | 0.000465 | 0.007 |
 
-The value 3.5 is the recommendation of Iglewicz and Hoaglin (1993). It is conservative by
-construction: a sample of 100 normal observations produces one spurious flag about once in
-twenty samples. A threshold of 3.0 is also seen and is roughly six times looser.
+The value 3.5 comes from Iglewicz and Hoaglin (1993). It is deliberately conservative: a hundred
+normal observations produce one false flag about once in twenty samples. A threshold of 3.0 is
+also used, and it is roughly six times looser.
 
-The threshold is a choice and should be fixed before the data are seen. Its influence on a given
-result is worth reporting, since a verdict that changes between 3.0 and 3.5 rests on the choice
-rather than on the data.
+Fix the threshold before looking at the data. A verdict that changes between 3.0 and 3.5 rests on
+that choice rather than on the sample, and the report should say so.
 
-### 4.2. Consistency Constant
+### 3.1. The Constant 0.674490
 
-For a normal sample the MAD converges to $\Phi^{-1}(0.75)\,\sigma$ rather than to $\sigma$, so
-the raw MAD understates the spread by about a third. Dividing by $\Phi^{-1}(0.75)$, equivalently
-multiplying by 1.482602, removes that bias and is what makes the modified score comparable to a
-classical z-score.
+Step 4 divides the MAD by 0.674490 rather than using it directly. On a normal sample the MAD
+converges to 0.674490 times the standard deviation, so the raw MAD understates the spread by
+about a third. Dividing by the constant removes that bias and puts the modified z-score on the
+same footing as an ordinary z-score. The factor is called the consistency constant.
 
-The constant is the only place normality enters the method, and it is a calibration rather than
-an assumption: changing it rescales every score by the same factor and reorders nothing. Its
-purpose is to let the threshold of section 4.1 be read as a false-positive rate.
+This is the only place where normality enters the method, and it is a calibration rather than an
+assumption. Changing the constant multiplies every score by the same factor and reorders nothing.
+Its purpose is to let the numbers in Table 3 mean what they say.
 
-## 5. Treatment
+## 4. Breakdown Point
 
-The identifier settles whether an observation is far from the bulk. It does not settle whether
-the observation is wrong, and the two questions should not be merged.
+The mean and the standard deviation become unusable as soon as one observation is corrupted. The
+median and the MAD keep working until more than half the sample is corrupted. The breakdown point
+is the fraction of a sample that has to be corrupted for a statistic to become unusable.
 
-- Investigate the cause before acting. A flag traced to a recording error, an instrument fault, or a documented disturbance can be corrected or removed on that evidence.
-- Retain a flag with no assignable cause, because a value that is genuinely part of the process carries information that removing it destroys.
-- Report what was removed, the threshold used, and the change removal made to the estimates.
-- Prefer accommodation to deletion when flags recur. A robust estimator limits the influence of extreme observations without discarding them, and the median and MAD used here are already such estimators.
+Set one of the fifteen observations to a billion. The mean rises past 66 million while the median
+stays at 0.023200. The mean still returns a number, but that number describes the one corrupted
+value rather than the fourteen observations near 0.02. Corrupt seven of the fifteen and the median
+is 0.0403, which is still one of the real observations. Corrupt eight and the median becomes the
+corrupted value.
 
-Re-running the identifier on the sample left after removal is not a treatment. The centre and the
-scale are recomputed on cleaned data, so the second pass measures a different thing from the
-first.
+**Table 4. Breakdown point of the two pairs**
 
-## 6. Limits
-
-**Table 3. Conditions that limit the identifier**
-
-| Condition | Consequence | What to do instead |
+| Estimator | Breakdown point | Corrupted observations needed, out of fifteen |
 |---|---|---|
-| More than half the sample takes one value | The MAD is 0 and the score is undefined | Use a scale estimator that tolerates ties, such as Sn or Qn |
-| Contamination at or above half the sample | The median and the MAD describe the contamination | No detection rule recovers this; the sample needs a different source of truth |
-| Multivariate data | The score is defined on one variable at a time | Use a distance-based method such as Mahalanobis distance |
-| Serial correlation | Neighbouring observations are not exchangeable | Model the correlation, or score the residuals |
-| A threshold read as a false-positive rate on non-normal data | The rate does not hold | Report the score and the margin rather than a nominal rate |
+| Mean and standard deviation | 0% | One |
+| Median and MAD | 50% | Eight |
 
-The first row is the failure this method has and the normal-theory tests do not, and it is
-common in data recorded at coarse resolution. It is a hard failure rather than a degradation:
-the score is undefined, not merely inaccurate, and an implementation that returns zero scores
-in that case reports a clean sample when it should report that it cannot answer.
+This is why the procedure of section 1 needs no iteration. A rule built on the mean and the
+standard deviation has to remove outliers one at a time, because every outlier it has not yet
+removed is still inflating the scale that the next one is measured against. The median and the
+MAD were never inflated, so a single pass is enough.
 
-## 7. Summary
-
-The Hampel identifier scores each observation as its distance from the median divided by the
-rescaled MAD, and flags the observation when that score exceeds 3.5 in absolute value. The
-robust pair has a breakdown point of 50% against 0% for the mean and standard deviation, which
-is why the method needs no iteration and why it is unaffected by the ceiling of Appendix D that
-bounds every classical z-score at $(n-1)/\sqrt{n}$. It assumes contamination is a minority rather than
-assuming normality, it fails outright when more than half the sample takes one value, and like
-every detection rule it answers how far an observation sits from the bulk and not what should be
-done about it.
+The same self-reference caps the classical z-score at a value that no sample can exceed. Appendix
+D works that cap out.
 
 ## References
 
@@ -198,9 +163,9 @@ done about it.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
 - **exchangeable** — A property of observations whose joint distribution is unchanged by reordering them, which serial correlation breaks.
-- **MAD** — Median absolute deviation; see that entry.
+- **MAD** — The abbreviation used throughout for the median absolute deviation.
 - **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
-- **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 4.2 divides it by that constant before using it as a scale.
+- **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 3.1 divides it by that constant.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
 - **Qn** — A robust scale estimator taking an order statistic of the pairwise distances between observations, with a 50% breakdown point and better behaviour than the MAD under ties.
 - **Sn** — A robust scale estimator built from a median of medians of pairwise distances, with a 50% breakdown point and no assumption of symmetry.
@@ -309,13 +274,13 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
 ### B.2. Design Notes
 
 The consistency constant is computed from `scipy.stats` rather than written as 0.674490, so the
-calibration of section 4.2 cannot drift from the value the code actually applies.
+calibration of section 3.1 cannot drift from the value the code actually applies.
 
 `HampelResult` carries the centre and the scale alongside the scores rather than discarding them,
 because a score on its own cannot be checked against anything. Its omitted `to_frame` method
 tabulates the sample against both scores, which is what the worked example prints.
 
-The zero-MAD branch is the one that matters. It is the failure of section 6, and the alternative
+The zero-MAD branch is the one that matters. It is the failure of section 2, and the alternative
 to raising is to divide by zero or to return scores of zero, either of which reports a clean
 sample on data the method cannot read. The message names the count of tied observations so the
 caller can see why.
@@ -341,14 +306,14 @@ Every number in this appendix is produced by `hampel_sample_outliers.py`, invoke
 `python3 hampel_sample_outliers.py --threshold 3.5`. The sample is fixed inside the script and
 the points behind the figure are written beside it as CSV.
 
-Two rules are applied to the same data throughout. **The identifier** is the method of section 3,
+Two rules are applied to the same data throughout. **The identifier** is the method of section 1,
 which scores an observation against the median and the MAD. **The classical rule** scores it
 against the mean and the standard deviation instead, and flags at the same threshold of 3.5. The
-scores they produce are the modified z of section 3.2 and the ordinary z-score.
+scores they produce are the modified z of section 1 and the ordinary z-score.
 
 ### C.1. Sample
 
-**Table 4. Every observation with its score under each rule**
+**Table 5. Every observation with its score under each rule**
 
 | Observation | Value | Value − median | Modified z | Classical z | Flagged |
 |---|---|---|---|---|---|
@@ -368,20 +333,20 @@ scores they produce are the modified z of section 3.2 and the ordinary z-score.
 | 14 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
 | 15 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
 
-The flag is the decision rule of section 3.3 applied to the modified z beside it: an observation
+The flag is the decision rule of section 1 applied to the modified z beside it: an observation
 is flagged when the absolute value of that score exceeds the threshold of 3.5. Only observation 7
 does, at 58.2094. The next largest is 1.5800 at observation 8, less than half the threshold.
 
-The two middle columns lay out the arithmetic of section 3.2, so the flag can be checked rather
+The two middle columns lay out the arithmetic of section 1, so the flag can be checked rather
 than taken. The deviation column is the numerator of the modified z, and the modified z is that
-deviation divided by the scale of 0.010823 that Table 5 works out. Observation 7 reads
+deviation divided by the scale of 0.010823 that Table 6 works out. Observation 7 reads
 0.6300 / 0.010823 = 58.2094, which is 16.6 times the threshold it has to clear.
 
 The classical z is carried alongside for contrast and takes no part in the flag. It is negative
 at all fourteen retained observations, because the mean has been pulled above every one of them
 by the fifteenth.
 
-**Table 5. The centre and the scale each rule computes**
+**Table 6. The centre and the scale each rule computes**
 
 | Quantity | Classical rule | Identifier |
 |---|---|---|
@@ -393,7 +358,7 @@ by the fifteenth.
 The MAD is the median of the absolute deviations from 0.023200. Sorted, those 15 deviations are
 0 five times, then 0.0012, 0.0061, 0.0073, 0.0098 five times, 0.0171 and 0.6300. The eighth of
 fifteen is 0.0073, which is the MAD, and it comes from the observation 0.0159. Dividing it by
-0.674490 as section 4.2 requires gives the 0.010823 the score divides by.
+0.674490 as section 3.1 requires gives the 0.010823 the score divides by.
 
 The two scales differ by a factor of 15.1, and the whole of that gap is the single observation
 0.6532 entering the standard deviation. The scale of the identifier describes the other 14
@@ -401,10 +366,9 @@ observations; the classical scale describes the outlier.
 
 ### C.2. Normality
 
-Section 3.1 states that the identifier does not need normality for its detection to be
-meaningful, and section 4.2 states that normality is what makes the threshold readable as a
-false-positive rate. This sample is the case where the distinction matters, because it is not
-normal.
+The last row of Table 2 says that the identifier still works on a sample that is not normal,
+and that what normality buys is the reading of the threshold as a false-positive rate. This
+sample is where that distinction matters, because it is not normal.
 
 ![Fig 1](hampel-identifier_fig/hampel_normality.png)
 
@@ -414,7 +378,7 @@ The reference line runs through the first and third quartiles rather than being 
 squares, so the extreme observation cannot rotate it and flatten the departure the panel is drawn
 to show.
 
-**Table 6. Normality under three views of the sample**
+**Table 7. Normality under three views of the sample**
 
 | View | Count | Skewness | Shapiro-Wilk p |
 |---|---|---|---|
@@ -442,15 +406,15 @@ distribution; the size of the departure does not rest on that approximation.
 
 ## Appendix D. Ceiling of the Classical Score
 
-The self-reference of section 2.1 has a consequence that is easy to miss. For a sample of size $n$ the
-largest attainable absolute z-score is bounded, whatever the data are.
+For a sample of size $n$ the largest absolute classical z-score that can occur is bounded,
+whatever the data are.
 
 $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 
 The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
 holds for every sample of that size.
 
-**Table 7. The bound at several sample sizes**
+**Table 8. The bound at several sample sizes**
 
 | Sample size n | Largest attainable absolute z | A threshold of 3.5 |
 |---|---|---|
@@ -461,5 +425,5 @@ holds for every sample of that size.
 | 54 | 7.2124 | Reachable |
 
 For $n \le 14$ a rule that flags an observation when its classical z-score exceeds 3.5 cannot
-flag anything, no matter how extreme the sample is. The modified score of section 3.2 carries no such
-bound, because its denominator stops responding to the observation in the numerator.
+flag anything, no matter how extreme the sample is. The modified z-score of section 1 has no
+such bound, because its denominator stops responding to the observation in the numerator.
