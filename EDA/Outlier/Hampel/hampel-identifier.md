@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 2 | Created: 2026-08-17 | Updated: 2026-08-17 23:50 CDT
+Rev. 3 | Created: 2026-08-17 | Updated: 2026-08-18 00:02 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -108,8 +108,7 @@ Equivalently, the retained interval is $\tilde{x} \pm k \cdot \mathrm{MAD} / \Ph
 
 Every observation is scored once, against a centre and a scale computed once. There is no
 iteration and no removal, because the estimates the scores are built on were never contaminated
-in the first place. This is the structural difference from the generalized ESD procedure, which
-needs r steps precisely because its estimates are.
+in the first place.
 
 ## 4. Parameters
 
@@ -173,28 +172,7 @@ common in data recorded at coarse resolution. It is a hard failure rather than a
 the score is undefined, not merely inaccurate, and an implementation that returns zero scores
 in that case reports a clean sample when it should report that it cannot answer.
 
-## 7. Comparison
-
-**Table 5. The identifier against the generalized ESD procedure**
-
-| Aspect | Hampel identifier | Generalized ESD |
-|---|---|---|
-| Centre and scale | Median and MAD | Mean and standard deviation |
-| Breakdown point | 50% | 0% |
-| Normality | Needed only to read the threshold as a rate | Needed for the critical values themselves |
-| Structure | One pass, every observation scored once | r steps, one observation removed per step |
-| Input needed | The sample and a threshold | The sample, an upper bound r, and a significance level |
-| Reported quantity | A score per observation | A count of outliers |
-| Standardized in | ISO 13528 uses the same rescaled MAD as a starting estimate | ISO 16269-4, Annex A |
-| Hard failure | The MAD is 0 under heavy ties | Contamination heavy enough to define the centre |
-
-The two answer different questions. The generalized ESD procedure reports how many outliers a
-sample carries and controls the error rate of that count; the identifier reports how far each
-observation sits from the bulk and leaves the count to the threshold. Where normality holds, the
-procedure is the stronger statement. Where it does not, its critical values lose their basis
-while the identifier keeps its meaning.
-
-## 8. Summary
+## 7. Summary
 
 The Hampel identifier scores each observation as its distance from the median divided by the
 rescaled MAD, and flags the observation when that score exceeds 3.5 in absolute value. The
@@ -233,7 +211,6 @@ done about it.
 - **breakdown point** — The smallest fraction of a sample that has to be corrupted before an estimator can be driven to an arbitrary value.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
-- **discordant observation** — An observation that is inconsistent with the model assumed for the rest of the sample. It is a statistical verdict and carries no claim that the value is erroneous.
 - **exchangeable** — A property of observations whose joint distribution is unchanged by reordering them, which serial correlation breaks.
 - **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
 - **median absolute deviation** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
@@ -377,15 +354,12 @@ Every number in this appendix is produced by `hampel_sample_outliers.py`, invoke
 `python3 hampel_sample_outliers.py --threshold 3.5`. The sample is fixed inside the script and
 the points behind the figures are written beside them as CSV.
 
-The sample is the one used in Appendix D of the generalized ESD document, so the two methods can
-be read against each other on identical data.
-
 ### C.1. Sample
 
 The sample is 15 measurements taking only 7 distinct values, with 0.0134 and 0.0232 each
 appearing 5 times. Its median is 0.0232 and the values run from 0.0134 to 0.6532.
 
-**Table 6. The two pairs on this sample**
+**Table 5. The two pairs on this sample**
 
 | Quantity | Classical | Robust |
 |---|---|---|
@@ -399,7 +373,7 @@ the classical scale describes the outlier.
 
 ### C.2. Scores
 
-**Table 7. The two scores on the extreme observation**
+**Table 6. The two scores on the extreme observation**
 
 | Score | 0.6532 | Largest among the other 14 | Margin over the threshold 3.5 |
 |---|---|---|---|
@@ -465,9 +439,10 @@ The verdict does not depend on the threshold anywhere in a band spanning a facto
 not depend on normality, and it is not near a ceiling.
 
 The sample does not satisfy normality, with or without 0.6532. That is what makes the identifier
-the appropriate rule here rather than merely the more comfortable one: the normal-theory critical
-values of the generalized ESD procedure lose their basis on this data, while the identifier only
-loses the reading of 3.5 as a false-positive rate, which is not what the verdict rests on.
+the appropriate rule here rather than merely the more comfortable one: a test whose critical
+values are derived from the normal distribution loses its basis on this data, while the
+identifier only loses the reading of 3.5 as a false-positive rate, which is not what the verdict
+rests on.
 
 The margin of safety against the failure of section 6 is smaller than it looks. The largest tie is 5
 observations of 15; the MAD becomes 0 at 8, so three more tied observations would leave the
