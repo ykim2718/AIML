@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 8 | Created: 2026-08-12 | Updated: 2026-08-12 19:04 CDT
+Rev. 9 | Created: 2026-08-12 | Updated: 2026-08-18 15:59 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -31,35 +31,35 @@ CLTS (Continuous Learning for Time Series)
 
 Fig 1에 표기된 세 상위 명칭의 핵심 개념은 다음과 같다.
 
-+ Recursive Retraining / Rolling Retraining: 시계열의 rolling window나 expanding window 기법을 활용하여, 새로운 데이터가 들어올 때마다 모델을 주기적으로 갱신하는 시계열 특화 방식이다.
-+ Online Learning / Streaming Learning: 데이터가 실시간 streaming 형태로 들어올 때, 전체 데이터를 저장하지 않고 새 샘플 단위 (또는 mini-batch) 로 가중치를 즉시 업데이트하는 방식이다.
-+ Incremental Learning / Continual Learning: 기존에 학습한 지식을 잊어버리지 않고 (catastrophic forgetting 방지), 새로 들어오는 데이터의 특성을 계속해서 누적 축적하는 학습 방식이다.
+- Recursive Retraining / Rolling Retraining: 시계열의 rolling window나 expanding window 기법을 활용하여, 새로운 데이터가 들어올 때마다 모델을 주기적으로 갱신하는 시계열 특화 방식이다.
+- Online Learning / Streaming Learning: 데이터가 실시간 streaming 형태로 들어올 때, 전체 데이터를 저장하지 않고 새 샘플 단위 (또는 mini-batch) 로 가중치를 즉시 업데이트하는 방식이다.
+- Incremental Learning / Continual Learning: 기존에 학습한 지식을 잊어버리지 않고 (catastrophic forgetting 방지), 새로 들어오는 데이터의 특성을 계속해서 누적 축적하는 학습 방식이다.
 
 세 명칭은 관점의 차이일 뿐 서로 배타적이지 않다.
 
 ## 2. Key Strategies
 
-시계열 예측 성능을 지속적으로 개선하기 위해 실제로 사용하는 주요 기술적 방법은 다음 3가지이다.
+Fig 1의 How to update 축 4가지 중, 시계열 예측에서 실제로 가장 널리 쓰이는 3가지를 설명한다. 네 번째 가지인 learned / self-adaptation (Meta-Learning, Test-Time Adaptation) 은 아직 연구 단계라 제외한다.
 
 ### 2.1 Sliding / Rolling Window Retraining
 
-고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다는 장점이 있다. Window를 늘려 가며 전체 이력을 유지하는 expanding window 방식은 장기 패턴 보존에 유리하지만, 데이터가 커질수록 재학습 비용이 증가한다.
+Fig 1의 full retraining on a window에 해당한다. 고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다는 장점이 있다. Window를 늘려 가며 전체 이력을 유지하는 expanding window 방식은 장기 패턴 보존에 유리하지만, 데이터가 커질수록 재학습 비용이 증가한다.
 
 ### 2.2 Kalman Filter and State Space Models
 
-새로운 관측값이 들어올 때마다 수학적 상태 방정식을 통해 현재 상태의 확률 분포 (평균, 분산) 를 실시간으로 업데이트하는 전통적이고 강력한 시계열 기법이다. 계산량이 적고 실시간 예측 업데이트에 매우 효율적이라는 장점이 있다. Kalman filter 외에도 recursive least squares 같은 adaptive filter가 streaming 데이터 위에서 선형 모델을 갱신하는 고전적 방법으로 함께 쓰인다.
+Fig 1의 native sequential update에 해당한다. 새로운 관측값이 들어올 때마다 수학적 상태 방정식을 통해 현재 상태의 확률 분포 (평균, 분산) 를 실시간으로 업데이트하는 전통적이고 강력한 시계열 기법이다. 계산량이 적고 실시간 예측 업데이트에 매우 효율적이라는 장점이 있다. Kalman filter 외에도 recursive least squares 같은 adaptive filter가 streaming 데이터 위에서 선형 모델을 갱신하는 고전적 방법으로 함께 쓰인다.
 
 ### 2.3 Fine-Tuning / Warm Start
 
-기존 데이터를 기반으로 사전 학습된 (pre-trained) 딥러닝/머신러닝 모델의 가중치를 파라미터 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
+Fig 1의 fine-tuning of a pre-trained model에 해당한다. 기존 데이터를 기반으로 사전 학습된 (pre-trained) 딥러닝/머신러닝 모델의 가중치를 파라미터 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
 
 ## 3. Challenges
 
 시계열에 대한 continual learning은 일반적인 continual learning과 구별되는 어려움을 가진다.
 
-+ Concept drift: 입력 변수와 목표값 사이의 관계가 시간에 따라 변한다. 정적 과거 데이터로 학습한 offline 모델은 빠르게 낡은 모델이 된다.
-+ Catastrophic forgetting: 새 데이터에만 맞춰 갱신하면 과거에 학습한 패턴 (예: 재발하는 계절성) 을 잊어버린다. 많은 online continual learning 방법이 이를 완화하기 위해 과거 샘플을 다시 학습에 섞는 replay를 사용한다.
-+ Delayed feedback: 예측 시점에는 실제 미래 값을 알 수 없고, forecast horizon이 지나야 정답을 얻는다. 이 지연 동안 concept drift가 진행되면 모델이 이미 낡은 개념에 적응하는 문제가 생긴다.
+- Concept drift: 입력 변수와 목표값 사이의 관계가 시간에 따라 변한다. 정적 과거 데이터로 학습한 offline 모델은 빠르게 낡은 모델이 된다.
+- Catastrophic forgetting: 새 데이터에만 맞춰 갱신하면 과거에 학습한 패턴 (예: 재발하는 계절성) 을 잊어버린다. 많은 online continual learning 방법이 이를 완화하기 위해 과거 샘플을 다시 학습에 섞는 replay를 사용한다.
+- Delayed feedback: 예측 시점에는 실제 미래 값을 알 수 없고, forecast horizon이 지나야 정답을 얻는다. 이 지연 동안 concept drift가 진행되면 모델이 이미 낡은 개념에 적응하는 문제가 생긴다.
 
 ## 4. Deep Learning Approaches
 
@@ -81,46 +81,59 @@ Table 1. Python tools for continual time series learning
 
 Table 1 도구의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
 
-## 6. References
+## References
 
-+ [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)
-+ [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)
-+ [Continuous Evolution Pool: Taming Recurring Concept Drift in Online Time Series Forecasting](https://arxiv.org/html/2506.14790)
-+ [Online Continual Learning for Time Series: a Natural Score-driven Approach](https://arxiv.org/html/2601.12931)
-+ [pySmooth: Kalman filters and online ARIMA in Python](https://github.com/kenluck2001/pySmooth)
-+ [Kalman Filter for Time Series Forecasting in Python](https://forecastegy.com/posts/kalman-filter-for-time-series-forecasting-in-python/)
+<a id="ref-1"></a>
+[1] [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)
+
+<a id="ref-2"></a>
+[2] [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)
+
+<a id="ref-3"></a>
+[3] [Continuous Evolution Pool: Taming Recurring Concept Drift in Online Time Series Forecasting](https://arxiv.org/html/2506.14790)
+
+<a id="ref-4"></a>
+[4] [Online Continual Learning for Time Series: a Natural Score-driven Approach](https://arxiv.org/html/2601.12931)
+
+<a id="ref-5"></a>
+[5] [pySmooth: Kalman filters and online ARIMA in Python](https://github.com/kenluck2001/pySmooth)
+
+<a id="ref-6"></a>
+[6] [Kalman Filter for Time Series Forecasting in Python](https://forecastegy.com/posts/kalman-filter-for-time-series-forecasting-in-python/)
+
+---
 
 ## Appendix A. Terminology
 
-+ adaptive filter: 새 관측값이 들어올 때마다 계수를 실시간으로 갱신하는 filter이다.
-+ ARIMA: Autoregressive Integrated Moving Average. 자기회귀와 이동평균을 결합한 고전적 시계열 예측 모델이다.
-+ Avalanche: PyTorch 기반의 continual learning 라이브러리로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
-+ booster: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
-+ concept drift: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
-+ data stream mining: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
-+ EWC: Elastic Weight Consolidation. 이전 과제에 중요한 가중치의 변화에 벌점을 주어 forgetting을 줄이는 regularization 기법이다.
-+ expanding window: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
-+ experience: Avalanche에서 continual learning stream을 구성하는 학습 단위로, 한 번에 도착하는 데이터 묶음이다.
-+ forecast horizon: 예측 시점부터 예측 대상 시점까지의 시간 간격이다.
-+ FSNet: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
-+ gradient boosting: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
-+ lifelong learning: 하나의 모델이 이어지는 여러 과제를 계속 학습하는 패러다임으로, continual learning과 거의 같은 뜻으로 쓰인다.
-+ LightGBM: gradient boosting 기반의 오픈소스 머신러닝 framework이다.
-+ local level model: 관측값을 서서히 변하는 수준 성분과 관측 노이즈로 분해하는 가장 단순한 state space 모델이다.
-+ MAE: Mean Absolute Error. 예측 오차 절대값의 평균이다.
-+ meta-learning: 새로운 과제에 빠르게 적응하는 방법 자체를 학습하는 기법이다.
-+ OneNet: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
-+ parameter isolation: 과제별로 서로 다른 파라미터 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
-+ progressive validation: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
-+ PyTorch: Meta가 주도하는 오픈소스 딥러닝 framework이다.
-+ recursive least squares (RLS): 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
-+ regularization: 모델의 복잡도나 파라미터 변화에 벌점을 주어 과적합과 forgetting을 억제하는 기법이다.
-+ replay: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
-+ rolling window: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
-+ SGD: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
-+ TensorFlow: Google이 주도하는 오픈소스 딥러닝 framework이다.
-+ test-time adaptation: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
-+ transfer learning: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
+- adaptive filter: 새 관측값이 들어올 때마다 계수를 실시간으로 갱신하는 filter이다.
+- ARIMA: Autoregressive Integrated Moving Average. 자기회귀와 이동평균을 결합한 고전적 시계열 예측 모델이다.
+- Avalanche: PyTorch 기반의 continual learning 라이브러리로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
+- booster: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
+- concept drift: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
+- data stream mining: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
+- EWC: Elastic Weight Consolidation. 이전 과제에 중요한 가중치의 변화에 벌점을 주어 forgetting을 줄이는 regularization 기법이다.
+- expanding window: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
+- experience: Avalanche에서 continual learning stream을 구성하는 학습 단위로, 한 번에 도착하는 데이터 묶음이다.
+- forecast horizon: 예측 시점부터 예측 대상 시점까지의 시간 간격이다.
+- FSNet: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
+- gradient boosting: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
+- lifelong learning: 하나의 모델이 이어지는 여러 과제를 계속 학습하는 패러다임으로, continual learning과 거의 같은 뜻으로 쓰인다.
+- LightGBM: gradient boosting 기반의 오픈소스 머신러닝 framework이다.
+- local level model: 관측값을 서서히 변하는 수준 성분과 관측 노이즈로 분해하는 가장 단순한 state space 모델이다.
+- MAE: Mean Absolute Error. 예측 오차 절대값의 평균이다.
+- meta-learning: 새로운 과제에 빠르게 적응하는 방법 자체를 학습하는 기법이다.
+- OneNet: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
+- parameter isolation: 과제별로 서로 다른 파라미터 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
+- progressive validation: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
+- PyTorch: Meta가 주도하는 오픈소스 딥러닝 framework이다.
+- recursive least squares (RLS): 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
+- regularization: 모델의 복잡도나 파라미터 변화에 벌점을 주어 과적합과 forgetting을 억제하는 기법이다.
+- replay: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
+- rolling window: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
+- SGD: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
+- TensorFlow: Google이 주도하는 오픈소스 딥러닝 framework이다.
+- test-time adaptation: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
+- transfer learning: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
 
 ## Appendix B. Python Examples
 
