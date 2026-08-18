@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 28 | Created: 2026-08-17 | Updated: 2026-08-18 08:12 CDT
+Rev. 29 | Created: 2026-08-17 | Updated: 2026-08-18 08:34 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -157,8 +157,9 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 The implementation is `hampel_identifier.py`, in the folder of this document. The block below is
 an excerpt: the docstrings are abridged to their opening paragraph, and the tabulation,
 reporting and command line parts of the file are omitted. It is otherwise the file as written and
-runs as printed. `__all__` is the export list of the whole file, so it names `score_frame`,
-`report` and `load_sample`, which the excerpt leaves out.
+runs as printed. `__all__` is reproduced verbatim, so it names `score_frame`, `report` and
+`load_sample`, which live in the omitted part. The excerpt therefore executes as printed but does
+not answer `from hampel_identifier import *` on its own; the file it is taken from does.
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
