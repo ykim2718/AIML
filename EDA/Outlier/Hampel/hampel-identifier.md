@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 10 | Created: 2026-08-17 | Updated: 2026-08-18 00:45 CDT
+Rev. 11 | Created: 2026-08-17 | Updated: 2026-08-18 00:52 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -14,12 +14,6 @@ inflates the quantity it is being measured against.
 The Hampel identifier replaces the pair with the median and the median absolute deviation, the
 MAD. Those two are unmoved by a minority of contaminating observations, so the scale stays a description of
 the bulk of the sample rather than of the observation under test.
-
-This document describes that identifier and the threshold of 3.5 conventionally used with it.
-The method is not part of ISO 16269-4; that standard specifies normal-theory tests and modified
-box plots, and its robust material concerns accommodation rather than detection. Where the
-scale of a robust estimator is standardized, it is in ISO 13528 for proficiency testing, whose
-Algorithm A starts from the same rescaled MAD used here.
 
 ## 2. Principle
 
@@ -187,9 +181,6 @@ done about it.
 
 <a id="ref-5"></a>
 [5] Leys, C., Ley, C., Klein, O., Bernard, P., & Licata, L. (2013). [Detecting outliers: Do not use standard deviation around the mean, use absolute deviation around the median](https://doi.org/10.1016/j.jesp.2013.03.013). *Journal of Experimental Social Psychology*, 49(4), 764–766.
-
-<a id="ref-6"></a>
-[6] ISO 13528:2022, *Statistical methods for use in proficiency testing by interlaboratory comparison*. International Organization for Standardization. [https://www.iso.org/standard/78879.html](https://www.iso.org/standard/78879.html)
 
 ---
 
