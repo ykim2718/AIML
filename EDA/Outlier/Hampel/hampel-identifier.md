@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 18 | Created: 2026-08-17 | Updated: 2026-08-18 01:32 CDT
+Rev. 19 | Created: 2026-08-17 | Updated: 2026-08-18 01:35 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score, its robustness, and the treatment of what it flags.
@@ -79,6 +79,12 @@ sample, so two samples tested at the same threshold have different intervals.
 The sample is univariate. Contamination is a minority: fewer than half the observations are
 outliers.
 
+No value may be taken by more than half the sample. If one is, the MAD is 0, the score divides by
+zero, and it is undefined. This is a hard failure rather than a loss of accuracy, and an
+implementation that returns zeros instead of raising an error reports a clean sample on data it
+cannot read. A sample that fails this way needs a scale estimator that tolerates ties, such as Sn
+or Qn.
+
 ### 3.2. Contaminated Scale
 
 A sample standard deviation is a mean of squared deviations, so a single distant observation
@@ -130,34 +136,6 @@ Re-running the identifier on the sample left after removal is not a treatment. T
 scale are recomputed on cleaned data, so the second pass measures a different thing from the
 first.
 
-## 5. Limits
-
-**Table 2. Conditions that limit the identifier**
-
-| Condition | Consequence | What to do instead |
-|---|---|---|
-| More than half the sample takes one value | The MAD is 0 and the score is undefined | Use a scale estimator that tolerates ties, such as Sn or Qn |
-| Contamination at or above half the sample | The median and the MAD describe the contamination | No detection rule recovers this; the sample needs a different source of truth |
-| Multivariate data | The score is defined on one variable at a time | Use a distance-based method such as Mahalanobis distance |
-| Serial correlation | Neighbouring observations are not exchangeable | Model the correlation, or score the residuals |
-| A threshold read as a false-positive rate on non-normal data | The rate does not hold | Report the score and the margin rather than a nominal rate |
-
-The first row is the failure this method has and the normal-theory tests do not, and it is
-common in data recorded at coarse resolution. It is a hard failure rather than a degradation:
-the score is undefined, not merely inaccurate, and an implementation that returns zero scores
-in that case reports a clean sample when it should report that it cannot answer.
-
-## 6. Summary
-
-The Hampel identifier scores each observation as its distance from the median divided by the
-rescaled MAD, and flags the observation when that score exceeds 3.5 in absolute value. The
-robust pair has a breakdown point of 50% against 0% for the mean and standard deviation, which
-is why the method needs no iteration and why it is unaffected by the ceiling of Appendix D that
-bounds every classical z-score at $(n-1)/\sqrt{n}$. It assumes contamination is a minority rather than
-assuming normality, it fails outright when more than half the sample takes one value, and like
-every detection rule it answers how far an observation sits from the bulk and not what should be
-done about it.
-
 ## References
 
 <a id="ref-1"></a>
@@ -183,9 +161,7 @@ done about it.
 - **breakdown point** — The fraction of a sample that has to be corrupted before a statistic becomes unusable. The mean has a breakdown point of 0%, because one corrupted observation is enough to take it anywhere. The median has 50%, because more than half the sample has to be corrupted before it leaves the uncontaminated data.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
-- **exchangeable** — A property of observations whose joint distribution is unchanged by reordering them, which serial correlation breaks.
 - **MAD** — Median absolute deviation; see that entry.
-- **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 2.2 divides it by that constant before using it as a scale.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
 - **Qn** — A robust scale estimator taking an order statistic of the pairwise distances between observations, with a 50% breakdown point and better behaviour than the MAD under ties.
@@ -301,7 +277,7 @@ calibration of section 2.2 cannot drift from the value the code actually applies
 because a score on its own cannot be checked against anything. Its omitted `to_frame` method
 tabulates the sample against both scores, which is what the worked example prints.
 
-The zero-MAD branch is the one that matters. It is the failure of section 5, and the alternative
+The zero-MAD branch is the one that matters. It is the failure of section 3.1, and the alternative
 to raising is to divide by zero or to return scores of zero, either of which reports a clean
 sample on data the method cannot read. The message names the count of tied observations so the
 caller can see why.
@@ -334,7 +310,7 @@ scores they produce are the modified z of section 2.1 and the ordinary z-score.
 
 ### C.1. Sample
 
-**Table 3. Every observation with its score under each rule**
+**Table 2. Every observation with its score under each rule**
 
 | Observation | Value | Value − median | Modified z | Classical z | Flagged |
 |---|---|---|---|---|---|
@@ -360,14 +336,14 @@ does, at 58.2094. The next largest is 1.5800 at observation 8, less than half th
 
 The two middle columns lay out the arithmetic of section 2.1, so the flag can be checked rather
 than taken. The deviation column is the numerator of the modified z, and the modified z is that
-deviation divided by the scale of 0.010823 that Table 4 works out. Observation 7 reads
+deviation divided by the scale of 0.010823 that Table 3 works out. Observation 7 reads
 0.6300 / 0.010823 = 58.2094, which is 16.6 times the threshold it has to clear.
 
 The classical z is carried alongside for contrast and takes no part in the flag. It is negative
 at all fourteen retained observations, because the mean has been pulled above every one of them
 by the fifteenth.
 
-**Table 4. The centre and the scale each rule computes**
+**Table 3. The centre and the scale each rule computes**
 
 | Quantity | Classical rule | Identifier |
 |---|---|---|
@@ -399,7 +375,7 @@ The reference line runs through the first and third quartiles rather than being 
 squares, so the extreme observation cannot rotate it and flatten the departure the panel is drawn
 to show.
 
-**Table 5. Normality under three views of the sample**
+**Table 4. Normality under three views of the sample**
 
 | View | Count | Skewness | Shapiro-Wilk p |
 |---|---|---|---|
@@ -435,7 +411,7 @@ $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
 holds for every sample of that size.
 
-**Table 6. The bound at several sample sizes**
+**Table 5. The bound at several sample sizes**
 
 | Sample size n | Largest attainable absolute z | A threshold of 3.5 |
 |---|---|---|
