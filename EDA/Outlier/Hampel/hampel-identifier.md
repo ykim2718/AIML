@@ -1,8 +1,9 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 16 | Created: 2026-08-17 | Updated: 2026-08-18 01:24 CDT
+Rev. 17 | Created: 2026-08-17 | Updated: 2026-08-18 01:27 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
-> organized as principle, procedure, parameters, treatment, and limits.
+> organized as the score, its robustness, its assumptions, the threshold, and the treatment
+> of what it flags.
 
 ## 1. Scope
 
@@ -68,11 +69,9 @@ An observation inside that interval is retained and an observation outside it is
 interval is therefore where the rule draws its boundary on the measurement scale itself.
 
 The interval is not fixed by the method. The median and the scale are both computed from the
-sample, so two samples tested at the same threshold have different intervals. C.1 works this one
-out and gets [−0.014680, 0.061080]. Its lower end lies below zero, and every observation in that
-sample is positive, so on this sample the rule can only flag on the high side.
+sample, so two samples tested at the same threshold have different intervals.
 
-## 3. Principle
+## 3. Robustness
 
 ### 3.1. Contaminated Scale
 
