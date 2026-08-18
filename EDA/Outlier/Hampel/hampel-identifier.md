@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 15 | Created: 2026-08-17 | Updated: 2026-08-18 01:22 CDT
+Rev. 16 | Created: 2026-08-17 | Updated: 2026-08-18 01:24 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -41,32 +41,36 @@ The constant is the only place normality enters the method, and it is a calibrat
 an assumption: changing it rescales every score by the same factor and reorders nothing. Its
 purpose is to let the threshold of section 5 be read as a false-positive rate.
 
-### 2.3. Decision Rule
+### 2.3. Outlier Flag
 
-An observation is flagged when its modified z-score exceeds the threshold $k$ in absolute value.
+An observation is flagged as an outlier when its modified z-score exceeds the threshold $k$ in
+absolute value.
 
 $$\left| M_i \right| \gt k$$
 
 The threshold $k$ is 3.5 by convention. The value comes from Iglewicz and Hoaglin (1993), who set
-it high enough that a sample which really is normal almost never produces a flag: the expected
+it high enough that a sample which really is normal almost never produces a flag. The expected
 number of false flags in fifteen observations is 0.007. Section 5 gives that calculation and the
 cost of the other thresholds in common use.
+
+Every observation is scored once, against one centre and one scale. There is no iteration and
+nothing is removed part-way, because the estimates the scores are built on were never
+contaminated in the first place.
+
+### 2.4. Retained Interval
 
 The same rule can be written in the units of the data rather than in scales. Multiplying the
 inequality through by the robust scale turns it into an interval around the median.
 
 $$\tilde{x} - k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)} \; \le \; x_i \; \le \; \tilde{x} + k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)}$$
 
-This is the retained interval. An observation inside it is retained and an observation outside it
-is flagged, so the interval is where the rule draws its boundary on the measurement scale itself.
-It is not fixed by the method, because the median and the scale are both computed from the sample;
-two samples tested at the same threshold have different intervals. C.1 works this one out and
-gets [−0.014680, 0.061080], whose lower end lies below zero. Every observation in that sample is
-positive, so on this sample the rule can only flag on the high side.
+An observation inside that interval is retained and an observation outside it is flagged. The
+interval is therefore where the rule draws its boundary on the measurement scale itself.
 
-Every observation is scored once, against a centre and a scale computed once. There is no
-iteration and no removal, because the estimates the scores are built on were never contaminated
-in the first place.
+The interval is not fixed by the method. The median and the scale are both computed from the
+sample, so two samples tested at the same threshold have different intervals. C.1 works this one
+out and gets [−0.014680, 0.061080]. Its lower end lies below zero, and every observation in that
+sample is positive, so on this sample the rule can only flag on the high side.
 
 ## 3. Principle
 
@@ -383,7 +387,7 @@ scores they produce are the modified z of section 2.1 and the ordinary z-score.
 | 14 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
 | 15 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
 
-The flag is the decision rule of section 2.3 applied to the modified z beside it: an observation
+The flag is the rule of section 2.3 applied to the modified z beside it: an observation
 is flagged when the absolute value of that score exceeds the threshold of 3.5. Only observation 7
 does, at 58.2094. The next largest is 1.5800 at observation 8, less than half the threshold.
 
