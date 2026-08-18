@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 4 | Created: 2026-08-17 | Updated: 2026-08-18 00:16 CDT
+Rev. 5 | Created: 2026-08-17 | Updated: 2026-08-18 00:24 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -11,8 +11,8 @@ the standard deviation and compare the result against a threshold. Both the cent
 in that ratio are computed from the same sample the observation belongs to, so an outlier
 inflates the quantity it is being measured against.
 
-The Hampel identifier replaces the pair with the median and the median absolute deviation. Those
-two are unmoved by a minority of contaminating observations, so the scale stays a description of
+The Hampel identifier replaces the pair with the median and the median absolute deviation, the
+MAD. Those two are unmoved by a minority of contaminating observations, so the scale stays a description of
 the bulk of the sample rather than of the observation under test.
 
 This document describes that identifier and the threshold of 3.5 conventionally used with it.
@@ -114,9 +114,18 @@ in the first place.
 
 ### 4.1. Threshold
 
+The threshold $k$ is a cut-off on the score of section 3.2, not on the observation itself. An
+observation is flagged when $\left| M_i \right|$ exceeds it, so $k$ is read in units of the robust
+scale: at 3.5 an observation is flagged once it lies more than 3.5 robust scales away from the
+median, on either side.
+
+What that works out to in the units of the data is not fixed, because the robust scale is computed
+from the sample. Two samples with the same threshold have different boundaries, and C.1 works one
+of them out.
+
 **Table 3. What the threshold costs on genuinely normal data**
 
-| Threshold | Probability one observation is flagged | Expected false flags in n = 15 |
+| Threshold k | Probability one observation is flagged | Expected false flags in n = 15 |
 |---|---|---|
 | 2.5 | 0.012419 | 0.186 |
 | 3.0 | 0.002700 | 0.041 |
@@ -213,7 +222,7 @@ done about it.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
 - **exchangeable** — A property of observations whose joint distribution is unchanged by reordering them, which serial correlation breaks.
 - **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
-- **median absolute deviation** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
+- **median absolute deviation (MAD)** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
 - **Qn** — A robust scale estimator taking an order statistic of the pairwise distances between observations, with a 50% breakdown point and better behaviour than the MAD under ties.
 - **Sn** — A robust scale estimator built from a median of medians of pairwise distances, with a 50% breakdown point and no assumption of symmetry.
@@ -393,9 +402,9 @@ mean has been pulled above every one of them by the fifteenth.
 | Quantity | Classical rule | Identifier |
 |---|---|---|
 | Centre | mean = 0.062913 | median = 0.023200 |
-| Raw scale | sd = 0.163469 | MAD = 0.007300 |
-| Scale used in the score | sd = 0.163469 | MAD / 0.674490 = 0.010823 |
-| Upper boundary at 3.5 | mean + 3.5 sd = 0.635053 | median + 3.5 (MAD / 0.674490) = 0.061080 |
+| Raw scale | standard deviation = 0.163469 | MAD = 0.007300 |
+| Scale used in the score | standard deviation = 0.163469 | MAD / 0.674490 = 0.010823 |
+| Upper boundary at 3.5 | mean + 3.5 x standard deviation = 0.635053 | median + 3.5 x (MAD / 0.674490) = 0.061080 |
 
 The MAD is the median of the absolute deviations from 0.023200. Sorted, those 15 deviations are
 0 five times, then 0.0012, 0.0061, 0.0073, 0.0098 five times, 0.0171 and 0.6300. The eighth of
@@ -447,7 +456,7 @@ does not rest on that approximation.
 | Score | 0.6532 | Largest among the other 14 | Margin over the threshold 3.5 |
 |---|---|---|---|
 | Modified z, from the median and the MAD | 58.2094 | 1.5800 | 54.7094 |
-| Classical z, from the mean and the sd | 3.6110 | 0.3029 | 0.1110 |
+| Classical z, from the mean and the standard deviation | 3.6110 | 0.3029 | 0.1110 |
 
 Both rules flag 0.6532 at a threshold of 3.5, so on this sample they agree. They do not agree on
 how strongly.
