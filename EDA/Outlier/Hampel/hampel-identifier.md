@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 13 | Created: 2026-08-17 | Updated: 2026-08-18 01:03 CDT
+Rev. 14 | Created: 2026-08-17 | Updated: 2026-08-18 01:15 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -65,7 +65,7 @@ number 3.5 interpretable. On a sample that is not normal the identifier still me
 an observation sits from the bulk in units of the bulk's own spread; what is lost is the
 reading of the threshold as a false-positive rate.
 
-### 3.2. Statistic
+### 3.2. Modified z-score
 
 Let $\tilde{x}$ be the median of the sample.
 
@@ -74,7 +74,9 @@ $$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
 Here $\Phi^{-1}(0.75) = 0.674490$ is the third quartile of the standard normal distribution, and
-the denominator as a whole is the robust scale. The quantity $M_i$ is the modified z-score.
+the denominator as a whole is the robust scale. The score $M_i$ is an ordinary z-score with the
+median put in place of the mean and the robust scale in place of the standard deviation, which is
+why it is called the modified z-score.
 
 ### 3.3. Decision Rule
 
@@ -82,9 +84,22 @@ An observation is flagged when its modified z-score exceeds the threshold $k$ in
 
 $$\left| M_i \right| \gt k$$
 
-The threshold $k$ is 3.5 by convention.
+The threshold $k$ is 3.5 by convention. The value comes from Iglewicz and Hoaglin (1993), who set
+it high enough that a sample which really is normal almost never produces a flag: the expected
+number of false flags in fifteen observations is 0.007. Section 4.1 gives that calculation and the
+cost of the other thresholds in common use.
 
-Equivalently, the retained interval is $\tilde{x} \pm k \cdot \mathrm{MAD} / \Phi^{-1}(0.75)$.
+The same rule can be written in the units of the data rather than in scales. Multiplying the
+inequality through by the robust scale turns it into an interval around the median.
+
+$$\tilde{x} - k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)} \; \le \; x_i \; \le \; \tilde{x} + k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)}$$
+
+This is the retained interval. An observation inside it is retained and an observation outside it
+is flagged, so the interval is where the rule draws its boundary on the measurement scale itself.
+It is not fixed by the method, because the median and the scale are both computed from the sample;
+two samples tested at the same threshold have different intervals. C.1 works this one out and
+gets [−0.014680, 0.061080], whose lower end lies below zero. Every observation in that sample is
+positive, so on this sample the rule can only flag on the high side.
 
 Every observation is scored once, against a centre and a scale computed once. There is no
 iteration and no removal, because the estimates the scores are built on were never contaminated
