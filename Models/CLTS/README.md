@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 14 | Created: 2026-08-12 | Updated: 2026-08-18 16:10 CDT
+Rev. 15 | Created: 2026-08-12 | Updated: 2026-08-18 16:14 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -18,7 +18,9 @@ CLTS (Continuous Learning for Time Series)
 |   +-- On drift alarm ............................ Concept Drift Detection / Adaptation
 |
 +-- How to update (mechanism)
-|   +-- Full retraining on a window ............... rolling / expanding window
+|   +-- Full retraining on a window
+|   |   +-- Rolling window ........................ fixed-size window, keeps the latest trend
+|   |   +-- Expanding window ...................... retrain on the full history from the start
 |   +-- Native sequential update .................. SGD, Adaptive Filtering (Kalman filter, RLS)
 |   +-- Fine-tuning of a pre-trained model ........ Transfer Learning, warm start
 |   +-- Learned / self-adaptation ................. Meta-Learning, Test-Time Adaptation
@@ -74,7 +76,7 @@ Table 1. Python tools for continual time series learning
 | PyTorch / TensorFlow | Fine-Tuning | 사전 학습 모델의 가중치를 유지한 채 새 데이터로 소량 추가 학습하는 warm start 패턴을 지원한다. |
 | Avalanche | Continual Learning | PyTorch 기반으로 replay·EWC·parameter isolation 등 forgetting 완화 strategy를 제공한다. |
 
-Table 1 도구의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
+Table 1 도구의 구현 예시는 [Appendix C](#appendix-c-python-examples) 에 있다.
 
 ## References
 
@@ -130,7 +132,39 @@ Table 1 도구의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에
 - test-time adaptation: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
 - transfer learning: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
 
-## Appendix B. Python Examples
+## Appendix B. Taxonomy with Python Libraries
+
+Fig 1의 How to update 축과 What to preserve 축을 각 분류별 대표 Python library와 연결하면 Fig 2와 같다. Fig 2에 등장하는 library의 실행 예시는 [Appendix C](#appendix-c-python-examples) 에 있다.
+
+Fig 2. Classifications of Fig 1 extended with representative Python libraries
+
+```
+How to update (mechanism)
+|
++-- Full retraining on a window
+|   +-- scikit-learn ........... refit any estimator on each window
+|   +-- statsmodels ............ refit ARIMA / state space models per window
+|   +-- LightGBM ............... periodic retraining of boosting models
+|
++-- Native sequential update (per sample or mini-batch)
+|   +-- River .................. predict_one / learn_one streaming pipeline
+|   +-- scikit-learn ........... partial_fit (SGDRegressor, MLPRegressor)
+|   +-- statsmodels ............ Kalman filter state update via append
+|   +-- pySmooth ............... online ARIMA, Kalman filter variants
+|
++-- Fine-tuning of a pre-trained model (warm start)
+    +-- scikit-learn ........... warm_start=True (GradientBoostingRegressor)
+    +-- LightGBM ............... continued training via init_model
+    +-- PyTorch / TensorFlow ... load pre-trained weights and fine-tune
+
+What to preserve (forgetting mitigation)
+|
++-- Replay-based ............... Avalanche (replay plugin), custom replay buffer
++-- Regularization-based ....... Avalanche (EWC plugin)
++-- Architecture-based ......... Avalanche (parameter isolation strategies)
+```
+
+## Appendix C. Python Examples
 
 아래 예시는 모두 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. 각 예시가 Fig 1의 어느 가지에 속하는지는 Fig 2에 정리되어 있다.
 
@@ -379,36 +413,4 @@ strategy = EWC(
 for experience in benchmark.train_stream:
     strategy.train(experience)
     strategy.eval(benchmark.test_stream)
-```
-
-## Appendix C. Taxonomy with Python Libraries
-
-Fig 1의 How to update 축과 What to preserve 축을 각 분류별 대표 Python library와 연결하면 Fig 2와 같다. Fig 2에 등장하는 library의 실행 예시는 [Appendix B](#appendix-b-python-examples) 에 있다.
-
-Fig 2. Classifications of Fig 1 extended with representative Python libraries
-
-```
-How to update (mechanism)
-|
-+-- Full retraining on a window
-|   +-- scikit-learn ........... refit any estimator on each window
-|   +-- statsmodels ............ refit ARIMA / state space models per window
-|   +-- LightGBM ............... periodic retraining of boosting models
-|
-+-- Native sequential update (per sample or mini-batch)
-|   +-- River .................. predict_one / learn_one streaming pipeline
-|   +-- scikit-learn ........... partial_fit (SGDRegressor, MLPRegressor)
-|   +-- statsmodels ............ Kalman filter state update via append
-|   +-- pySmooth ............... online ARIMA, Kalman filter variants
-|
-+-- Fine-tuning of a pre-trained model (warm start)
-    +-- scikit-learn ........... warm_start=True (GradientBoostingRegressor)
-    +-- LightGBM ............... continued training via init_model
-    +-- PyTorch / TensorFlow ... load pre-trained weights and fine-tune
-
-What to preserve (forgetting mitigation)
-|
-+-- Replay-based ............... Avalanche (replay plugin), custom replay buffer
-+-- Regularization-based ....... Avalanche (EWC plugin)
-+-- Architecture-based ......... Avalanche (parameter isolation strategies)
 ```
