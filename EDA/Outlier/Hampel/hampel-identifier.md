@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 21 | Created: 2026-08-17 | Updated: 2026-08-18 01:38 CDT
+Rev. 22 | Created: 2026-08-17 | Updated: 2026-08-18 01:40 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score, its robustness, and the treatment of what it flags.
@@ -198,7 +198,7 @@ class HampelResult:
     centre: float
     mad: float
     scale: float
-    modified_z: np.ndarray
+    modified_z_scores: np.ndarray
     threshold: float
     positions: np.ndarray
 
@@ -261,9 +261,10 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
                          f"ties, such as Sn or Qn, or report that the sample cannot support the test.")
 
     scale = mad / quartile
-    modified_z = (values - centre) / scale
-    return HampelResult(values=values, centre=centre, mad=mad, scale=scale, modified_z=modified_z,
-                        threshold=threshold, positions=np.flatnonzero(np.abs(modified_z) > threshold))
+    modified_z_scores = (values - centre) / scale
+    return HampelResult(values=values, centre=centre, mad=mad, scale=scale,
+                        modified_z_scores=modified_z_scores, threshold=threshold,
+                        positions=np.flatnonzero(np.abs(modified_z_scores) > threshold))
 ```
 
 ## Appendix C. Worked Example

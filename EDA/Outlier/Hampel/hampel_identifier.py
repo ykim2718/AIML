@@ -7,13 +7,14 @@ a threshold. The classical z-score is provided alongside so the two can be compa
 sample, which is what the accompanying document does.
 
 Changelog:
+    0.3.0 - Rename the HampelResult field modified_z to modified_z_scores.
     0.2.0 - Rename the HampelResult field scores to modified_z.
     0.1.0 - Drop threshold_sweep; the figure it fed is no longer part of the document.
     0.0.0 - Initial release.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.2.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.3.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -42,7 +43,7 @@ class HampelResult:
         centre: the median of the sample.
         mad: the median absolute deviation, before any rescaling.
         scale: mad divided by NORMAL_QUARTILE, which estimates sigma for a normal sample.
-        modified_z: the modified z-score of each observation, shape (n,).
+        modified_z_scores: the modified z-score of each observation, shape (n,).
         threshold: the cut-off the absolute modified z-scores were compared against.
         positions: positions of the flagged observations, sorted ascending.
     """
@@ -51,7 +52,7 @@ class HampelResult:
     centre: float
     mad: float
     scale: float
-    modified_z: np.ndarray
+    modified_z_scores: np.ndarray
     threshold: float
     positions: np.ndarray
 
@@ -73,7 +74,7 @@ class HampelResult:
         """
         flagged = np.zeros(self.values.size, dtype=bool)
         flagged[self.positions] = True
-        return pd.DataFrame({'value': self.values, 'modified_z': self.modified_z,
+        return pd.DataFrame({'value': self.values, 'modified_z': self.modified_z_scores,
                              'classical_z': classical_z_scores(data=self.values), 'flagged': flagged},
                             index=pd.Index(np.arange(self.values.size), name='position'))
 
@@ -164,9 +165,10 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
                          f"ties, such as Sn or Qn, or report that the sample cannot support the test.")
 
     scale = mad / quartile
-    modified_z = (values - centre) / scale
-    return HampelResult(values=values, centre=centre, mad=mad, scale=scale, modified_z=modified_z,
-                        threshold=threshold, positions=np.flatnonzero(np.abs(modified_z) > threshold))
+    modified_z_scores = (values - centre) / scale
+    return HampelResult(values=values, centre=centre, mad=mad, scale=scale,
+                        modified_z_scores=modified_z_scores, threshold=threshold,
+                        positions=np.flatnonzero(np.abs(modified_z_scores) > threshold))
 
 
 def report(result: HampelResult = None) -> None:
