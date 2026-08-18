@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 12 | Created: 2026-08-17 | Updated: 2026-08-18 00:57 CDT
+Rev. 13 | Created: 2026-08-17 | Updated: 2026-08-18 01:03 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -194,7 +194,7 @@ done about it.
 ## Appendix A. Terminology
 
 - **accommodation** — Handling an outlier by limiting its influence on the estimates rather than by removing it.
-- **breakdown point** — The smallest fraction of a sample that has to be corrupted before an estimator can be driven to an arbitrary value.
+- **breakdown point** — The fraction of a sample that has to be corrupted before a statistic becomes unusable. The mean has a breakdown point of 0%, because one corrupted observation is enough to take it anywhere. The median has 50%, because more than half the sample has to be corrupted before it leaves the uncontaminated data.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
 - **exchangeable** — A property of observations whose joint distribution is unchanged by reordering them, which serial correlation breaks.
