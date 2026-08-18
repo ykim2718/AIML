@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 29 | Created: 2026-08-17 | Updated: 2026-08-18 08:34 CDT
+Rev. 30 | Created: 2026-08-17 | Updated: 2026-08-18 08:47 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -157,24 +157,21 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 The implementation is `hampel_identifier.py`, in the folder of this document. The block below is
 an excerpt: the docstrings are abridged to their opening paragraph, and the tabulation,
 reporting and command line parts of the file are omitted. It is otherwise the file as written and
-runs as printed. `__all__` is reproduced verbatim, so it names `score_frame`, `report` and
-`load_sample`, which live in the omitted part. The excerpt therefore executes as printed but does
-not answer `from hampel_identifier import *` on its own; the file it is taken from does.
+runs as printed. `__all__` holds the scoring surface, which is exactly what the block defines, so
+the excerpt answers `from hampel_identifier import *` as printed.
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
 
-# The names `from hampel_identifier import *` exports. parse_args is left out on purpose: it reads
-# the argv of whatever program imports it, which is never what an importing module wants.
+# The names `from hampel_identifier import *` exports, kept to the scoring surface. The
+# tabulation, reporting, loading and command line helpers are reachable by naming them in an
+# import, but a star import of this module brings in the method and nothing else.
 __all__ = [
     'NORMAL_QUARTILE',
     'DEFAULT_THRESHOLD',
     'median_absolute_deviation',
     'hampel_score',
     'retained_interval',
-    'score_frame',
-    'report',
-    'load_sample',
 ]
 
 import numpy as np
