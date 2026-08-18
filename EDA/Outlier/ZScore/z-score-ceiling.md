@@ -1,5 +1,5 @@
 # Ceiling of the Classical z-Score
-Rev. 0 | Created: 2026-08-18 | Updated: 2026-08-18 11:20 CDT
+Rev. 1 | Created: 2026-08-18 | Updated: 2026-08-18 12:14 CDT
 
 > A note on the largest absolute z-score a sample of a given size can produce, the derivation of
 > that bound, and what it costs a rule that flags observations by comparing a z-score against a
@@ -12,12 +12,12 @@ the standard deviation and compare the result against a cut-off. Both the centre
 in that ratio come from the same sample the observation belongs to, so the observation under test
 sits inside its own denominator.
 
-That self-reference has a consequence that is easy to miss. The ratio cannot grow without limit,
-and its limit depends on the sample size alone. For a small enough sample the limit falls below
-the cut-off, and the rule then flags nothing, whatever the data are.
+That self-reference has a consequence that is easy to miss. The ratio has a ceiling, and the
+ceiling is fixed by the sample size alone. For a small enough sample it falls below the cut-off,
+and the rule then flags nothing, whatever the data are.
 
-This document states that bound, derives it, and shows what it does to a rule at a fixed cut-off.
-It is about the arithmetic of the score, not about whether an outlier should be removed once one
+This document gives that ceiling, derives it, and shows what it costs a rule at a fixed cut-off.
+It is about the arithmetic of the score, not about what should be done with an outlier once one
 is found.
 
 ## 2. Bound
@@ -29,8 +29,8 @@ and $z_i = (x_i - \bar{x}) / s$ for the classical score of observation $i$.
 
 $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 
-The bound is due to Shiffler (1988). It does not describe the data. It is arithmetic, and it
-holds for every sample of size $n$ whatever the values in it are.
+The bound is due to Shiffler (1988). It is arithmetic rather than a property of any sample, and
+it holds for every set of $n$ numbers.
 
 ### 2.2. Derivation
 
@@ -41,12 +41,12 @@ $$\sum_{j=1}^{n} \left( x_j - \bar{x} \right) = 0, \qquad \sum_{j=1}^{n} \left( 
 
 Fix one observation and write $d = x_i - \bar{x}$. The first identity says the other $n-1$
 deviations sum to $-d$. By the Cauchy-Schwarz inequality, $n-1$ numbers whose sum is $-d$ have a
-sum of squares of at least $d^2 / (n-1)$, and they reach it when they are all equal. Splitting the
-second identity at observation $i$ and applying that lower bound gives the result in one line.
+sum of squares of at least $d^2 / (n-1)$. Splitting the second identity at observation $i$ and
+applying that lower bound gives the result in one line.
 
 $$(n-1)s^2 = d^2 + \sum_{j \ne i} \left( x_j - \bar{x} \right)^2 \ \ge \ d^2 + \frac{d^2}{n-1} \ = \ \frac{n}{n-1} d^2$$
 
-Rearranging leaves $d^2 \le (n-1)^2 s^2 / n$, and dividing by $s$ leaves the bound.
+Rearranging gives $d^2 \le (n-1)^2 s^2 / n$, and dividing by $s$ leaves the bound.
 
 Only the second identity involves $s$, so it is the one that carries the self-reference of
 section 1. That identity alone already bounds the score: drop the sum over $j \ne i$ from the
@@ -56,16 +56,16 @@ $(n-1)/\sqrt{n}$.
 
 ### 2.3. Equality
 
-The Cauchy-Schwarz step is an equality when the $n-1$ deviations other than $d$ are all equal to
-one another. A sample of that shape is one observation set apart from $n-1$ tied ones, and it
-reaches the bound exactly.
+The Cauchy-Schwarz step is an equality when the $n-1$ deviations other than $d$ are all equal. A
+sample of that shape is one observation set apart from $n-1$ tied ones, and it reaches the bound
+exactly.
 
-The ceiling is therefore attained rather than merely approached, which is what makes it worth
-stating. A bound no sample comes near would say little about the rules built on the score.
+The ceiling is therefore attained rather than approached, which is what makes it worth stating. A
+bound no sample comes near would say little about the rules built on the score.
 
 ## 3. Consequence
 
-### 3.1. Thresholds a Small Sample Cannot Reach
+### 3.1. Cut-offs a Small Sample Cannot Reach
 
 A rule that flags an observation when $\left| z_i \right| \gt k$ can only fire in a sample whose
 ceiling sits above $k$. In any smaller sample the rule is inert.
@@ -81,11 +81,11 @@ ceiling sits above $k$. In any smaller sample the rule is inert.
 | 54 | 7.2124 | Can fire |
 
 The smallest sample a rule can fire in follows from its cut-off. A cut-off of 3 needs at least 11
-observations, and a cut-off of 3.5 needs at least 15. A sample of fourteen tested at 3.5 comes
-back clean because a clean verdict was the only verdict available to it.
+observations, and a cut-off of 3.5 needs at least 15. Test fourteen observations at 3.5 and the
+answer is settled before the data are read.
 
-That is what makes the inertness dangerous: it is silent. Nothing in the output distinguishes a
-sample carrying no extreme observation from a sample too small for the rule to say so.
+The danger is that nothing says so. No part of the output distinguishes a sample carrying no
+extreme observation from a sample too small for the rule to report one.
 
 ### 3.2. Divisor of the Scale
 
@@ -214,11 +214,11 @@ Every number in this appendix is produced by `z_score_worked_example.py`, invoke
 as CSV.
 
 The sample is fifteen current measurements. Fourteen of them sit near 0.02 and one is 0.6532,
-which is the shape section 2.3 describes: one observation set apart from a tight group. It is
-therefore close to the configuration that attains the ceiling, and it shows what the bound costs
-in practice rather than in principle.
+which is the shape section 2.3 describes: one observation set apart from a tight group. It
+therefore sits close to the configuration that attains the ceiling, which here is nothing
+distant: it stands a few thousandths above the largest score in the sample.
 
-**Table 2. The sample against the ceiling its size allows**
+**Table 2. The sample against its ceiling, and the ceiling one observation lower**
 
 | Quantity | Value |
 |---|---|
@@ -230,20 +230,18 @@ in practice rather than in principle.
 | Share of the ceiling reached | 99.90% |
 | Ceiling at n = 14 | 3.474396 |
 
-The largest score in the sample is 3.611012 against a ceiling of 3.614784, so it uses 99.90% of
-what its size permits. A rule at 3.5 flags it, but the margin it clears the cut-off by is 0.111,
-while the margin left between the score and the ceiling is 0.004. The verdict rests on the
-sample size almost as much as on the measurement.
+A rule at 3.5 flags that largest score, but it clears the cut-off by 0.111 while sitting only
+0.004 below the ceiling. The verdict rests on the sample size almost as much as on the
+measurement.
 
-Dropping one observation makes the point sharper. At fourteen observations the ceiling is
-3.474396, below the cut-off, so the same measurement in a sample one smaller could not be flagged
-at 3.5 at all.
+Removing one observation makes that plain. At fourteen the ceiling is 3.474396, below the
+cut-off, so the same measurement in a sample one smaller could not be flagged at 3.5 at all.
 
 ![Fig 1](z-score-ceiling_fig/z_score_ceiling.png)
 
 **Fig 1. The ceiling against sample size, and the scores this sample reaches under it**
 
 Panel (a) draws $(n-1)/\sqrt{n}$ against $n$ and marks where it crosses 3.5, which is the first
-sample size at which a rule at that cut-off is capable of firing. Panel (b) puts the fifteen
-absolute scores of the sample under the ceiling for their own size: fourteen of them lie below
-0.31, and the one that is flagged sits just under the line it cannot cross.
+sample size at which a rule at that cut-off can fire. Panel (b) draws the fifteen absolute scores
+against the ceiling for a sample of fifteen: fourteen of them lie below 0.31, and the flagged one
+sits just under the line it cannot cross.
