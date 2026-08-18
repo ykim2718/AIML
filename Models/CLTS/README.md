@@ -1,11 +1,11 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 12 | Created: 2026-08-12 | Updated: 2026-08-18 16:08 CDT
+Rev. 13 | Created: 2026-08-12 | Updated: 2026-08-18 16:09 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
 ## 1. Taxonomy
 
-명칭을 나열하는 방식으로는 transfer learning, meta-learning 같은 인접 개념과의 경계가 모호해진다. 그래서 관련 개념 전체를 세 가지 질문 — 언제 갱신하는가 (When to update), 어떻게 갱신하는가 (How to update), 무엇을 보존하는가 (What to preserve) — 으로 나눈 하나의 통합 체계로 정리하면 Fig 1과 같다. 각 항목의 오른쪽에는 그 분류로 불리는 대표 명칭이나 기법을 표기한다.
+세 가지 질문 — 언제 갱신하는가 (When to update), 어떻게 갱신하는가 (How to update), 무엇을 보존하는가 (What to preserve) — 으로 나눈 하나의 통합 체계로 정리하면 Fig 1과 같다. 각 항목의 오른쪽에는 그 분류로 불리는 대표 명칭이나 기법을 표기한다.
 
 Fig 1. Unified taxonomy of continual learning for time series
 
