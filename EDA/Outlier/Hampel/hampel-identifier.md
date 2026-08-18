@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 19 | Created: 2026-08-17 | Updated: 2026-08-18 01:35 CDT
+Rev. 20 | Created: 2026-08-17 | Updated: 2026-08-18 01:36 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score, its robustness, and the treatment of what it flags.
@@ -175,8 +175,6 @@ an excerpt: the docstrings are abridged to their opening paragraph, and the tabu
 reporting and command line parts of the file are omitted. It is otherwise the file as written and
 runs as printed.
 
-### B.1. Implementation
-
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
 from dataclasses import dataclass
@@ -267,35 +265,6 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
     return HampelResult(values=values, centre=centre, mad=mad, scale=scale, scores=scores,
                         threshold=threshold, positions=np.flatnonzero(np.abs(scores) > threshold))
 ```
-
-### B.2. Design Notes
-
-The consistency constant is computed from `scipy.stats` rather than written as 0.674490, so the
-calibration of section 2.2 cannot drift from the value the code actually applies.
-
-`HampelResult` carries the centre and the scale alongside the scores rather than discarding them,
-because a score on its own cannot be checked against anything. Its omitted `to_frame` method
-tabulates the sample against both scores, which is what the worked example prints.
-
-The zero-MAD branch is the one that matters. It is the failure of section 3.1, and the alternative
-to raising is to divide by zero or to return scores of zero, either of which reports a clean
-sample on data the method cannot read. The message names the count of tied observations so the
-caller can see why.
-
-`classical_z_scores` and `max_attainable_z` exist for the comparison rather than for the method.
-Carrying the bound as a function rather than as a number in the document keeps Appendix D
-checkable: the claim about any sample size can be evaluated instead of trusted.
-
-### B.3. Invocation
-
-```bash
-python3 hampel_identifier.py --input-csv <PATH> --column value --threshold 3.5
-python3 hampel_sample_outliers.py --threshold 3.5
-```
-
-Running either with no option prints the usage. The first tests a column of a file; the second
-reproduces Appendix C exactly and writes the figure with the samples behind it to
-`hampel-identifier_fig/`.
 
 ## Appendix C. Worked Example
 
