@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 11 | Created: 2026-08-17 | Updated: 2026-08-18 00:52 CDT
+Rev. 12 | Created: 2026-08-17 | Updated: 2026-08-18 00:57 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -32,15 +32,22 @@ out in [Appendix D. Ceiling of the Classical Score](#appendix-d-ceiling-of-the-c
 
 ### 2.2. Breakdown Point
 
-The breakdown point of an estimator is the fraction of the sample that has to be corrupted
-before the estimate can be driven anywhere at all.
+The mean and the standard deviation break down at one observation. The median and the MAD break
+down only when more than half the sample is corrupted.
+
+An estimate breaks down when it stops describing the sample and describes the corrupted
+observations instead. It does not stop computing. Setting one observation of the worked example
+to a billion takes the mean past 66 million while the median stays at 0.0232, and a mean of 66
+million says nothing about fifteen observations that otherwise sit near 0.02.
+
+The breakdown point is the fraction of the sample that has to be corrupted for that to happen.
 
 **Table 1. Breakdown point of the two pairs**
 
-| Estimator | Breakdown point | Consequence |
+| Estimator | Breakdown point | What it takes to break it |
 |---|---|---|
-| Mean and standard deviation | 0% | One observation moved far enough drags both without limit |
-| Median and MAD | 50% | Nothing short of half the sample can move either |
+| Mean and standard deviation | 0% | One observation, moved far enough |
+| Median and MAD | 50% | Eight of the fifteen; seven leave the median at 0.0403, a real observation |
 
 This is the whole of the method. Everything below is the arithmetic of putting the robust pair
 on a scale that a threshold can be read against.
