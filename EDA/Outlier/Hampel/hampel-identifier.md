@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 5 | Created: 2026-08-17 | Updated: 2026-08-18 00:24 CDT
+Rev. 6 | Created: 2026-08-17 | Updated: 2026-08-18 00:26 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -221,8 +221,9 @@ done about it.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
 - **exchangeable** — A property of observations whose joint distribution is unchanged by reordering them, which serial correlation breaks.
+- **MAD** — Median absolute deviation; see that entry.
 - **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
-- **median absolute deviation (MAD)** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
+- **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 4.2 divides it by that constant before using it as a scale.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
 - **Qn** — A robust scale estimator taking an order statistic of the pairwise distances between observations, with a 50% breakdown point and better behaviour than the MAD under ties.
 - **Sn** — A robust scale estimator built from a median of medians of pairwise distances, with a 50% breakdown point and no assumption of symmetry.

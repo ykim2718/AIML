@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 6 | Created: 2026-08-17 | Updated: 2026-08-17 23:50 CDT
+Rev. 7 | Created: 2026-08-17 | Updated: 2026-08-18 00:26 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -235,9 +235,10 @@ them.
 - **extreme studentized deviate** — The largest absolute deviation from the sample mean, divided by the sample standard deviation.
 - **Grubbs test** — A single-outlier test that compares the extreme studentized deviate against a critical value derived from the t distribution.
 - **interquartile range** — The distance between the first and third quartiles, covering the middle half of a sample.
+- **MAD** — Median absolute deviation; see that entry.
 - **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
 - **masking** — The failure in which several outliers jointly inflate the standard deviation so that none of them is individually detected.
-- **median absolute deviation** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
+- **median absolute deviation (MAD)** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
 - **normal quantile plot** — A plot of ordered observations against the quantiles a normal distribution would produce, on which a normal sample falls near a straight line.
 - **Shapiro-Wilk test** — A test of the null hypothesis that a sample is drawn from a normal distribution, whose statistic compares the ordered observations against the order statistics a normal sample would produce.
 - **skewness** — A measure of the asymmetry of a distribution, zero for a symmetric one and positive when the longer tail lies on the right.
