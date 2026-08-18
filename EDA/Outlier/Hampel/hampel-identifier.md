@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 25 | Created: 2026-08-17 | Updated: 2026-08-18 01:48 CDT
+Rev. 26 | Created: 2026-08-17 | Updated: 2026-08-18 01:52 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score, its robustness, and the treatment of what it flags.
@@ -192,7 +192,7 @@ def median_absolute_deviation(data: np.ndarray = None) -> float:
     return float(np.median(np.abs(values - np.median(values))))
 
 
-def hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> float:
+def _hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> float:
     """Robust scale of the sample, which is the MAD divided by the consistency constant."""
     values = _as_sample(data=data)
     if quartile <= 0.0:
@@ -212,7 +212,7 @@ def hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> 
 def hampel_score(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> np.ndarray:
     """Modified z-score of every observation, which is its distance from the median in robust scales."""
     values = _as_sample(data=data)
-    return (values - np.median(values)) / hampel_scale(data=values, quartile=quartile)
+    return (values - np.median(values)) / _hampel_scale(data=values, quartile=quartile)
 
 
 def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
@@ -222,7 +222,7 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
     if threshold <= 0.0:
         raise ValueError(f"threshold must be positive, got {threshold}.")
     centre = float(np.median(values))
-    half_width = threshold * hampel_scale(data=values, quartile=quartile)
+    half_width = threshold * _hampel_scale(data=values, quartile=quartile)
     return centre - half_width, centre + half_width
 ```
 

@@ -7,6 +7,7 @@ the modified z-score of every observation and takes no threshold, and the caller
 absolute score against one.
 
 Changelog:
+    0.6.0 - Make the scale private as _hampel_scale; callers use the score or the interval.
     0.5.0 - Drop classical_z_scores and max_attainable_z, and the column they fed.
     0.4.0 - Replace HampelResult with hampel_score, hampel_scale and retained_interval.
     0.3.0 - Rename the HampelResult field modified_z to modified_z_scores.
@@ -16,7 +17,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.5.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.6.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -61,7 +62,7 @@ def median_absolute_deviation(data: np.ndarray = None) -> float:
     return float(np.median(np.abs(values - np.median(values))))
 
 
-def hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> float:
+def _hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> float:
     """Robust scale of the sample, which is the MAD divided by the consistency constant.
 
     Args:
@@ -95,13 +96,13 @@ def hampel_score(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> 
 
     Args:
         data: the sample, shape (n,).
-        quartile: the constant the MAD is divided by, as in hampel_scale.
+        quartile: the constant the MAD is divided by, as in median_absolute_deviation.
 
     Returns:
         The modified z-scores, shape (n,).
     """
     values = _as_sample(data=data)
-    return (values - np.median(values)) / hampel_scale(data=values, quartile=quartile)
+    return (values - np.median(values)) / _hampel_scale(data=values, quartile=quartile)
 
 
 def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
@@ -113,7 +114,7 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
     Args:
         data: the sample, shape (n,).
         threshold: the cut-off on the absolute modified z-score.
-        quartile: the constant the MAD is divided by, as in hampel_scale.
+        quartile: the constant the MAD is divided by, as in median_absolute_deviation.
 
     Returns:
         The lower and the upper end of the interval.
@@ -122,7 +123,7 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
     if threshold <= 0.0:
         raise ValueError(f"threshold must be positive, got {threshold}.")
     centre = float(np.median(values))
-    half_width = threshold * hampel_scale(data=values, quartile=quartile)
+    half_width = threshold * _hampel_scale(data=values, quartile=quartile)
     return centre - half_width, centre + half_width
 
 
@@ -147,7 +148,7 @@ def score_frame(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -
 def report(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> None:
     """Print the centre, the scale, the interval, and every flagged observation."""
     values = _as_sample(data=data)
-    scale = hampel_scale(data=values)
+    scale = _hampel_scale(data=values)
     lower, upper = retained_interval(data=values, threshold=threshold)
     frame = score_frame(data=values, threshold=threshold)
     flagged = frame.index[frame['flagged']]

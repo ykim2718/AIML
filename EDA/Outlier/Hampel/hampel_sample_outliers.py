@@ -5,6 +5,7 @@ normal with or without it. One figure is drawn, the normal quantile panels behin
 claim, and the sample is written out with the score each observation receives.
 
 Changelog:
+    0.3.1 - Follow the scale becoming private; the printed scale is built from public names.
     0.3.0 - Follow the split of hampel_test into hampel_score, hampel_scale and score_frame.
     0.2.0 - Drop the boundary, sensitivity and breakdown figures; keep the quantile panels.
     0.1.1 - Draw only the untransformed views; the log view stays in the statistics.
@@ -13,7 +14,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.3.1.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -24,7 +25,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from hampel_identifier import (DEFAULT_THRESHOLD, hampel_scale, hampel_score,
+from hampel_identifier import (DEFAULT_THRESHOLD, NORMAL_QUARTILE, hampel_score,
                                median_absolute_deviation, score_frame)
 
 matplotlib.use('Agg')
@@ -182,7 +183,8 @@ if __name__ == '__main__':
     flagged = SAMPLE[np.abs(hampel_score(data=SAMPLE)) > options.threshold]
     print(f"[1] Flagged {flagged.size}: {np.sort(flagged).tolist()}   "
           f"median = {np.median(SAMPLE):.4f}, MAD = {median_absolute_deviation(data=SAMPLE):.4f}, "
-          f"scale = {hampel_scale(data=SAMPLE):.6f}, sd = {SAMPLE.std(ddof=1):.6f}")
+          f"scale = {median_absolute_deviation(data=SAMPLE) / NORMAL_QUARTILE:.6f}, "
+          f"sd = {SAMPLE.std(ddof=1):.6f}")
 
     if options.save_figure:
         normality = normality_frame(data=SAMPLE)
