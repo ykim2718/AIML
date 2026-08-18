@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 24 | Created: 2026-08-17 | Updated: 2026-08-18 01:46 CDT
+Rev. 25 | Created: 2026-08-17 | Updated: 2026-08-18 01:48 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score, its robustness, and the treatment of what it flags.
@@ -122,20 +122,6 @@ The breakdown point is the fraction of the sample that has to be corrupted for t
 This is the whole of the reason the method works. Section 2 is the arithmetic of putting the
 robust pair on a scale that a threshold can be read against.
 
-## 4. Treatment
-
-The identifier settles whether an observation is far from the bulk. It does not settle whether
-the observation is wrong, and the two questions should not be merged.
-
-- Investigate the cause before acting. A flag traced to a recording error, an instrument fault, or a documented disturbance can be corrected or removed on that evidence.
-- Retain a flag with no assignable cause, because a value that is genuinely part of the process carries information that removing it destroys.
-- Report what was removed, the threshold used, and the change removal made to the estimates.
-- Prefer accommodation to deletion when flags recur. A robust estimator limits the influence of extreme observations without discarding them, and the median and MAD used here are already such estimators.
-
-Re-running the identifier on the sample left after removal is not a treatment. The centre and the
-scale are recomputed on cleaned data, so the second pass measures a different thing from the
-first.
-
 ## References
 
 <a id="ref-1"></a>
@@ -157,7 +143,6 @@ first.
 
 ## Appendix A. Terminology
 
-- **accommodation** — Handling an outlier by limiting its influence on the estimates rather than by removing it.
 - **breakdown point** — The fraction of a sample that has to be corrupted before a statistic becomes unusable. The mean has a breakdown point of 0%, because one corrupted observation is enough to take it anywhere. The median has 50%, because more than half the sample has to be corrupted before it leaves the uncontaminated data.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
