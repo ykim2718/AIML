@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 0 | Created: 2026-08-17 | Updated: 2026-08-17 15:20 CDT
+Rev. 1 | Created: 2026-08-17 | Updated: 2026-08-17 22:40 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -46,7 +46,7 @@ Masking is what makes an early stop unsafe. The statistic of the first step can 
 critical value while the statistic of a later step, computed after the worst offenders have
 been set aside, exceeds it. A procedure that halts at the first non-significant step never
 reaches that later step and returns zero. The worked example in
-[Appendix C. Worked Example](#appendix-c-worked-example) is exactly this case.
+[Appendix C. Worked Example of Masking](#appendix-c-worked-example-of-masking) is exactly this case.
 
 ### 2.3. Design Consequence
 
@@ -131,7 +131,7 @@ of $n$.
 Within the bound the reported count is stable. Raising $r$ from 5 to 10 does not change the
 answer unless a step between 6 and 10 turns out to be significant, and in that case the
 smaller bound was wrong. Panel (b) of Fig 2 in
-[Appendix C. Worked Example](#appendix-c-worked-example) shows this: the count moves once, as
+[Appendix C. Worked Example of Masking](#appendix-c-worked-example-of-masking) shows this: the count moves once, as
 $r$ crosses the true number of outliers, and is flat thereafter.
 
 ### 4.2. Significance Level
@@ -234,11 +234,14 @@ them.
 - **Dixon test** — A single-outlier test based on the ratio of the gap between the two most extreme observations to the range of the sample.
 - **extreme studentized deviate** — The largest absolute deviation from the sample mean, divided by the sample standard deviation.
 - **Grubbs test** — A single-outlier test that compares the extreme studentized deviate against a critical value derived from the t distribution.
+- **interquartile range** — The distance between the first and third quartiles, covering the middle half of a sample.
 - **Mahalanobis distance** — A distance from the centre of a multivariate sample that accounts for the covariance among the variables.
 - **masking** — The failure in which several outliers jointly inflate the standard deviation so that none of them is individually detected.
+- **median absolute deviation** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
 - **normal quantile plot** — A plot of ordered observations against the quantiles a normal distribution would produce, on which a normal sample falls near a straight line.
 - **studentize** — To divide a deviation by an estimate of the standard deviation computed from the same sample.
 - **swamping** — The failure in which an extreme outlier shifts the mean far enough that a sound observation is flagged.
+- **Tukey fence** — A boundary placed 1.5 interquartile ranges beyond the first and third quartiles, outside which an observation is conventionally called an outlier.
 - **type I error** — Declaring an observation an outlier when it is not.
 
 ## Appendix B. Reference Implementation
@@ -356,11 +359,11 @@ python3 gesd_outlier_detection.py --max-outliers 10 --alpha 0.05
 ```
 
 Running with no option prints the usage. The `--input-csv` and `--column` options test a
-column of a file instead of the built-in sample; without them the worked example of Appendix C
-is reproduced exactly. The figures and the samples behind them are written to
+column of a file instead of the built-in sample; without them the worked example of
+Appendix C is reproduced exactly. The figures and the samples behind them are written to
 `generalized-esd-outlier-detection_fig/`.
 
-## Appendix C. Worked Example
+## Appendix C. Worked Example of Masking
 
 Every number in this appendix is produced by `gesd_outlier_detection.py`, invoked as
 `python3 gesd_outlier_detection.py --max-outliers 10 --alpha 0.05`. The sample is fixed inside
@@ -463,3 +466,114 @@ near miss is what a repeated Grubbs test would have reported as a clean sample. 
 treatment guidance of section 5 the three values are candidates for investigation, not for automatic
 deletion; the table records what would change if they were removed, which is the information
 that belongs in the report either way.
+
+## Appendix D. Worked Example of a Borderline Flag
+
+Every number in this appendix is produced by `gesd_sample_outliers.py`, invoked as
+`python3 gesd_sample_outliers.py --alpha 0.05 --strict-alpha 0.01 --max-outliers 5`. The sample
+is fixed inside the script and is written next to the figure as `gesd_sample_outliers.csv`.
+
+Appendix C showed the procedure recovering outliers that a single-outlier test could not reach.
+This appendix is the complement: the procedure returns two flags, and only one of them survives
+inspection. The interesting case is the second.
+
+### D.1. Sample
+
+The sample is 15 measurements, with a mean of 0.062913 and a standard deviation of 0.163469.
+The median is 0.0232 and the values run from 0.0134 to 0.6532, so the largest observation is
+28.2 times the median.
+
+Two properties matter before any test is run.
+
+- Only 7 distinct values occur among the 15 observations. The value 0.0134 appears 5 times and 0.0232 appears 5 times, so half the sample sits on two points.
+- The distribution is therefore closer to a step function than to the normal one that section 3.1 assumes.
+
+The procedure is run with an upper bound of r = 5 at α = 0.05, and a second time at α = 0.01.
+Only steps 1 and 2 ever exceed a critical value, so the count is stable for every r of 2 or
+more; this is the behaviour section 4.1 describes.
+
+### D.2. Decision at Two Levels
+
+**Table 6. The five steps at both significance levels**
+
+| Step | Removed value | Mean | Std deviation | Statistic | Critical value at 0.05 | Critical value at 0.01 |
+|---|---|---|---|---|---|---|
+| 1 | 0.6532 | 0.0629 | 0.1635 | 3.6110 | **2.5483** | **2.8061** |
+| 2 | 0.0403 | 0.0208 | 0.0077 | 2.5231 | **2.5073** | 2.7554 |
+| 3 | 0.0293 | 0.0192 | 0.0055 | 1.8133 | 2.4620 | 2.6990 |
+| 4 | 0.0134 | 0.0184 | 0.0049 | 1.0313 | 2.4116 | 2.6357 |
+| 5 | 0.0134 | 0.0189 | 0.0048 | 1.1342 | 2.3547 | 2.5641 |
+
+A critical value in bold is one the statistic of that row exceeds. At α = 0.05 the count is 2
+and at α = 0.01 it is 1, and the whole difference is step 2.
+
+The two flags are not comparable in strength.
+
+- Step 1 clears its critical value by 1.0627, and it clears the stricter one as well. Nothing about the choice of level touches this verdict.
+- Step 2 clears its critical value by 0.0157, which is 0.6% of the critical value, and fails the stricter one by 0.2323. The verdict rests entirely on a level chosen before the data were seen.
+
+### D.3. Scale Collapse
+
+The reason step 2 is close is visible in the standard deviation column. Removing 0.6532 drops
+it from 0.163469 to 0.007749, a factor of 21.1. Every step after the first is measured against
+the scatter of the remaining observations, and those observations are nearly all ties.
+
+On a sample this tight the studentized deviate becomes very sensitive: 0.0403 is only 1.7 times
+the median in absolute terms, yet it reaches 2.5231 because the denominator has almost nothing
+left in it. This is not the masking of section 2.2, where removal reveals a genuine outlier that
+was hidden. It is the opposite risk, and it is a consequence of the assumption in section 3.1
+not holding rather than of any defect in the procedure.
+
+![Fig 3](generalized-esd-outlier-detection_fig/gesd_sample_outliers.png)
+
+**Fig 3. A sample with one certain outlier and one borderline flag**
+
+Panel (a) needs a log axis because 0.6532 is 48.7 times the smallest observation; on a linear
+axis the other 14 points collapse onto one line. Panel (b) removes that
+value so the rest of the sample becomes readable, and the Tukey upper fence is drawn as an
+independent reference rather than as part of the procedure. Panel (c) is the decision, and it
+is where the two flags separate: at step 1 the statistic stands far above both critical curves,
+while at step 2 it sits between them.
+
+### D.4. Independent Checks
+
+The same sample was put through two further rules that do not assume normality, the median
+absolute deviation and the Tukey fence. Neither is part of ISO 16269-4; both are used here only
+to see whether the two flags hold up outside the normal model.
+
+**Table 7. Four verdicts from three rules**
+
+| Rule | 0.6532 | 0.0403 | Basis |
+|---|---|---|---|
+| Generalized ESD at 0.05 | Flagged | Flagged | Mean and standard deviation, normal model |
+| Generalized ESD at 0.01 | Flagged | Not flagged | Same, stricter level |
+| Median absolute deviation | z = 58.21 | z = 1.58 | Median and MAD, no distributional assumption |
+| Tukey fence at 1.5 IQR | Above 0.0379 | Above 0.0379 | Quartiles, no distributional assumption |
+
+The rules agree on 0.6532 and split on 0.0403. The median absolute deviation is the most
+informative disagreement: measured against the median of 0.0232 and a MAD of 0.0073, the value
+0.0403 is 1.58 deviations out, which no convention treats as discordant. The Tukey fence flags
+it only because the interquartile range of this sample is 0.0098, and an interquartile range
+that small is itself a symptom of the ties described in D.1.
+
+### D.5. Reading
+
+**Table 8. What removal would change**
+
+| Quantity | Full sample | Less 0.6532 | Less both |
+|---|---|---|---|
+| Count | 15 | 14 | 13 |
+| Mean | 0.062913 | 0.020750 | 0.019246 |
+| Standard deviation | 0.163469 | 0.007749 | 0.005545 |
+
+The first column against the second is the finding. Dropping one observation in fifteen moves
+the mean by 67% and the standard deviation by 95%, so any estimate computed from this sample
+without addressing 0.6532 describes that single value rather than the process.
+
+Under the treatment guidance of section 5 the two flags call for different handling. The value
+0.6532 is a candidate for investigation on strong evidence, and its size relative to the rest
+makes a recording or unit error worth ruling out first. The value 0.0403 has no such support:
+it is flagged by one rule at one level, by a margin of 0.6%, on a sample that does not satisfy
+the assumption the rule is built on. Section 5 covers exactly this position: a flag with no
+assignable cause is retained, because a threshold reached by 0.6% is not a finding that
+anything is wrong with the observation.
