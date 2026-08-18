@@ -1,15 +1,16 @@
 """Worked example of the Hampel identifier on a 15-observation measurement sample.
 
-The sample is the one the generalized ESD document also uses, so the two methods can be compared
-on identical data. Two figures are drawn: the sample under both rules with the threshold swept,
-and the breakdown behaviour that separates them as one observation is pushed further out.
+The sample carries one value nearly fifty times the smallest, on a distribution that is not
+normal with or without it. Two figures are drawn: the sample under the robust and the classical
+rule with the threshold swept, and the breakdown behaviour that separates the two rules as one
+observation is pushed further out.
 
 Changelog:
     0.0.0 - Initial release.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.1.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.2.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -26,7 +27,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
-# The measurement sample under test, shared with the generalized ESD document.
+# The measurement sample under test. Only seven distinct values occur among the fifteen
+# observations, and the largest tie is five, against the eight at which the MAD would be 0.
 SAMPLE = np.array([0.0232, 0.0232, 0.0232, 0.0220, 0.0232, 0.0232, 0.6532, 0.0403,
                    0.0293, 0.0159, 0.0134, 0.0134, 0.0134, 0.0134, 0.0134])
 
