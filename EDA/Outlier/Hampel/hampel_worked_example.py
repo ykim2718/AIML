@@ -5,6 +5,7 @@ normal with or without it. One figure is drawn, the normal quantile panels behin
 claim, and the sample is written out with the score each observation receives.
 
 Changelog:
+    0.5.0 - Take over score_frame, which only this script uses.
     0.4.0 - Rename the file to hampel_worked_example.py and put the observation on the x axis.
     0.3.1 - Follow the scale becoming private; the printed scale is built from public names.
     0.3.0 - Follow the split of hampel_test into hampel_score, hampel_scale and score_frame.
@@ -15,7 +16,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.4.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.5.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -27,7 +28,7 @@ import pandas as pd
 from scipy import stats
 
 from hampel_identifier import (DEFAULT_THRESHOLD, NORMAL_QUARTILE, hampel_score,
-                               median_absolute_deviation, score_frame)
+                               median_absolute_deviation)
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -148,6 +149,24 @@ def plot_normality(data: np.ndarray = None, statistics: pd.DataFrame = None,
     plt.close(figure)
     print(f"[2] Figure written to {output_path}")
     return pd.concat(rows, ignore_index=True)
+
+
+def score_frame(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> pd.DataFrame:
+    """Tabulate the sample against its modified z-scores and the flag each one earns.
+
+    Args:
+        data: the sample, shape (n,).
+        threshold: the cut-off on the absolute modified z-score.
+
+    Returns:
+        A pd.DataFrame indexed by 'position' (counted from 0), with columns 'value', 'modified_z'
+        and 'flagged'.
+    """
+    values = np.asarray(data, dtype=float)
+    modified = hampel_score(data=values)
+    return pd.DataFrame({'value': values, 'modified_z': modified,
+                         'flagged': np.abs(modified) > threshold},
+                        index=pd.Index(np.arange(values.size), name='position'))
 
 
 def parse_args() -> argparse.Namespace:

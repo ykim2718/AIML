@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 32 | Created: 2026-08-17 | Updated: 2026-08-18 09:24 CDT
+Rev. 33 | Created: 2026-08-17 | Updated: 2026-08-18 09:58 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -157,18 +157,15 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 The block below is `hampel_identifier.py`, in the folder of this document. It is that file as
 written, without the module docstring and the `if __name__ == '__main__':` guard.
 
-The method of section 2 is the first five definitions, ending at `retained_interval`. What follows
-them tabulates the scores, prints them, and reads a sample from a CSV, so that the file can be run
-from a shell as well as imported.
+The file holds the method of section 2 and nothing else. It scores a sample and reports the
+interval; tabulating, printing and reading the scores are left to whatever calls it.
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
 __author__ = 'yRocket'
-__version__ = "0.8.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.9.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
-# The names `from hampel_identifier import *` exports, kept to the scoring surface. The
-# tabulation, reporting, loading and command line helpers are reachable by naming them in an
-# import, but a star import of this module brings in the method and nothing else.
+# Everything this module offers. The names beginning with an underscore are internal.
 __all__ = [
     'NORMAL_QUARTILE',
     'DEFAULT_THRESHOLD',
@@ -177,13 +174,7 @@ __all__ = [
     'retained_interval',
 ]
 
-import argparse
-import pathlib
-import sys
-from typing import Union
-
 import numpy as np
-import pandas as pd
 from scipy import stats
 
 # The MAD of a normal sample converges to this multiple of sigma, so dividing by it puts the
@@ -283,78 +274,6 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
     centre = float(np.median(values))
     half_width = threshold * _hampel_scale(data=values, quartile=quartile)
     return centre - half_width, centre + half_width
-
-
-def score_frame(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> pd.DataFrame:
-    """Tabulate the sample against both scores and the flag.
-
-    Args:
-        data: the sample, shape (n,).
-        threshold: the cut-off on the absolute modified z-score.
-
-    Returns:
-        A pd.DataFrame indexed by 'position' (counted from 0), with columns 'value', 'modified_z'
-        and 'flagged'.
-    """
-    values = _as_sample(data=data)
-    modified = hampel_score(data=values)
-    return pd.DataFrame({'value': values, 'modified_z': modified,
-                         'flagged': np.abs(modified) > threshold},
-                        index=pd.Index(np.arange(values.size), name='position'))
-
-
-def report(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> None:
-    """Print the centre, the scale, the interval, and every flagged observation."""
-    values = _as_sample(data=data)
-    scale = _hampel_scale(data=values)
-    lower, upper = retained_interval(data=values, threshold=threshold)
-    frame = score_frame(data=values, threshold=threshold)
-    flagged = frame.index[frame['flagged']]
-
-    print(f"[1] Sample: n = {values.size}, median = {np.median(values):.6f}, "
-          f"MAD = {median_absolute_deviation(data=values):.6f}, scale = {scale:.6f}")
-    print(f"[2] Rule: |modified z| > {threshold}, so the retained interval is [{lower:.6f}, {upper:.6f}]")
-    print(f"[3] Classical scale for comparison: sd = {values.std(ddof=1):.6f}, "
-          f"which is {values.std(ddof=1) / scale:.1f} times the robust scale\n")
-    with pd.option_context('display.float_format', '{:.4f}'.format, 'display.width', 120):
-        print(frame.to_string())
-    if flagged.empty:
-        print(f"\n[5] No observation exceeded the threshold.")
-        return
-    print(f"\n[5] Flagged: {flagged.size} at positions {flagged.tolist()}, "
-          f"values {np.sort(values[flagged]).tolist()}")
-
-
-def parse_args() -> argparse.Namespace:
-    """Parse and validate the command line options."""
-    parser = argparse.ArgumentParser(
-        description='Score a sample with the Hampel identifier, built on the median and the MAD.')
-    parser.add_argument('--input-csv', type=pathlib.Path, required=True,
-                        help='CSV holding the sample; the column named by --column is scored')
-    parser.add_argument('--column', type=str, default='value',
-                        help='column of --input-csv to score (default: %(default)s)')
-    parser.add_argument('--threshold', type=float, default=DEFAULT_THRESHOLD,
-                        help='cut-off on the absolute modified z-score (default: %(default)s)')
-
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(0)
-
-    args = parser.parse_args()
-    if not args.input_csv.is_file():
-        parser.error(f"--input-csv is not a file: {args.input_csv}")
-    if args.threshold <= 0.0:
-        parser.error(f"--threshold must be positive, got {args.threshold}.")
-
-    return args
-
-
-def load_sample(input_csv: Union[pathlib.Path, None] = None, column: str = None) -> np.ndarray:
-    """Read the column to score from a CSV."""
-    frame = pd.read_csv(input_csv)
-    if column not in frame.columns:
-        raise ValueError(f"column '{column}' is absent from {input_csv}; available: {list(frame.columns)}")
-    return frame[column].to_numpy(dtype=float)
 ```
 
 ## Appendix C. Worked Example
