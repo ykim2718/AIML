@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 1 | Created: 2026-08-17 | Updated: 2026-08-17 23:44 CDT
+Rev. 2 | Created: 2026-08-17 | Updated: 2026-08-17 23:50 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -244,13 +244,12 @@ done about it.
 
 ## Appendix B. Reference Implementation
 
-The implementation is `hampel_identifier.py`, in the folder of this document. The blocks below
-are excerpts, with docstrings abridged to their opening paragraph; the file itself is the
-authority.
+The implementation is `hampel_identifier.py`, in the folder of this document. The block below is
+an excerpt: the docstrings are abridged to their opening paragraph, and the tabulation, sweep,
+reporting and command line parts of the file are omitted. It is otherwise the file as written and
+runs as printed.
 
-### B.1. Module Header
-
-The blocks that follow use these names, so they are listed first rather than left implicit.
+### B.1. Implementation
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
@@ -267,19 +266,6 @@ NORMAL_QUARTILE = float(stats.norm.ppf(0.75))
 DEFAULT_THRESHOLD = 3.5
 
 
-def median_absolute_deviation(data: np.ndarray = None) -> float:
-    """Median of the absolute deviations from the sample median."""
-    values = np.asarray(data, dtype=float)
-    return float(np.median(np.abs(values - np.median(values))))
-```
-
-The constant is computed from `scipy.stats` rather than written as 0.674490, so the calibration
-of section 4.2 cannot drift from the value the code actually applies.
-
-### B.2. Result Carrier
-
-```python
-# EDA/Outlier/Hampel/hampel_identifier.py
 @dataclass
 class HampelResult:
     """Outcome of the Hampel identifier on one sample."""
@@ -300,18 +286,30 @@ class HampelResult:
     def bounds(self) -> tuple[float, float]:
         """The interval outside which an observation is flagged."""
         return self.centre - self.threshold * self.scale, self.centre + self.threshold * self.scale
-```
 
-The centre and the scale are carried alongside the scores rather than discarded, because a score
-on its own cannot be checked. The `to_frame` method, which tabulates the sample against both
-scores, is omitted here.
 
-### B.3. Statistic and Decision
+def median_absolute_deviation(data: np.ndarray = None) -> float:
+    """Median of the absolute deviations from the sample median."""
+    values = np.asarray(data, dtype=float)
+    return float(np.median(np.abs(values - np.median(values))))
 
-The names of B.1 and B.2 are in scope for this block.
 
-```python
-# EDA/Outlier/Hampel/hampel_identifier.py
+def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
+    """Deviation from the mean divided by the sample standard deviation, with ddof = 1."""
+    values = np.asarray(data, dtype=float)
+    deviation = values.std(ddof=1)
+    if deviation == 0.0:
+        raise ValueError(f"all {values.size} observations are equal, so the classical z-score is undefined.")
+    return (values - values.mean()) / deviation
+
+
+def max_attainable_z(sample_size: int = None) -> float:
+    """Largest absolute classical z-score a sample of this size can produce."""
+    if sample_size < 2:
+        raise ValueError(f"a z-score needs at least 2 observations, got {sample_size}.")
+    return (sample_size - 1) / np.sqrt(sample_size)
+
+
 def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
                 quartile: float = NORMAL_QUARTILE) -> HampelResult:
     """Flag observations whose modified z-score exceeds the threshold in absolute value."""
@@ -344,39 +342,25 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
                         threshold=threshold, positions=np.flatnonzero(np.abs(scores) > threshold))
 ```
 
+### B.2. Design Notes
+
+The consistency constant is computed from `scipy.stats` rather than written as 0.674490, so the
+calibration of section 4.2 cannot drift from the value the code actually applies.
+
+`HampelResult` carries the centre and the scale alongside the scores rather than discarding them,
+because a score on its own cannot be checked against anything. Its omitted `to_frame` method
+tabulates the sample against both scores, which is what the worked example prints.
+
 The zero-MAD branch is the one that matters. It is the failure of section 6, and the alternative
 to raising is to divide by zero or to return scores of zero, either of which reports a clean
 sample on data the method cannot read. The message names the count of tied observations so the
 caller can see why.
 
-### B.4. The Classical Score and Its Bound
+`classical_z_scores` and `max_attainable_z` exist for the comparison rather than for the method.
+Carrying the bound as a function rather than as a number in the document keeps section 2.3
+checkable: the claim about any sample size can be evaluated instead of trusted.
 
-```python
-# EDA/Outlier/Hampel/hampel_identifier.py
-import numpy as np
-
-
-def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
-    """Deviation from the mean divided by the sample standard deviation, with ddof = 1."""
-    values = np.asarray(data, dtype=float)
-    deviation = values.std(ddof=1)
-    if deviation == 0.0:
-        raise ValueError(f"all {values.size} observations are equal, so the classical z-score is undefined.")
-    return (values - values.mean()) / deviation
-
-
-def max_attainable_z(sample_size: int = None) -> float:
-    """Largest absolute classical z-score a sample of this size can produce."""
-    if sample_size < 2:
-        raise ValueError(f"a z-score needs at least 2 observations, got {sample_size}.")
-    return (sample_size - 1) / np.sqrt(sample_size)
-```
-
-These two exist for the comparison rather than for the method. Carrying the bound as a function
-rather than as a number in the document keeps section 2.3 checkable: the claim about any sample
-size can be evaluated instead of trusted.
-
-### B.5. Invocation
+### B.3. Invocation
 
 ```bash
 python3 hampel_identifier.py --input-csv <PATH> --column value --threshold 3.5
