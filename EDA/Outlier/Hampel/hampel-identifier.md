@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 34 | Created: 2026-08-17 | Updated: 2026-08-18 10:26 CDT
+Rev. 35 | Created: 2026-08-17 | Updated: 2026-08-18 12:52 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -82,8 +82,10 @@ outliers.
 No value may be taken by more than half the sample. If one is, the MAD is 0, the score divides by
 zero, and it is undefined. This is a hard failure rather than a loss of accuracy, and an
 implementation that returns zeros instead of raising an error reports a clean sample on data it
-cannot read. A sample that fails this way needs a scale estimator that tolerates ties, such as Sn
-or Qn.
+cannot read. Reaching for a different robust estimator does not help: Sn and Qn have the same 50%
+breakdown point and return 0 on exactly the same samples. A positive scale can only come from an
+estimator that does not rest on a median of the deviations, such as the interquartile range,
+which buys the scale by dropping to a 25% breakdown point.
 
 ### 3.2. Contaminated Scale
 
@@ -149,8 +151,8 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 - **MAD** — The abbreviation used throughout for the median absolute deviation.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 2.2 divides it by that constant before using it as a scale.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
-- **Qn** — A robust scale estimator taking an order statistic of the pairwise distances between observations, with a 50% breakdown point and better behaviour than the MAD under ties.
-- **Sn** — A robust scale estimator built from a median of medians of pairwise distances, with a 50% breakdown point and no assumption of symmetry.
+- **Qn** — A robust scale estimator of Rousseeuw and Croux (1993), taking an order statistic of the pairwise distances between observations. It shares the 50% breakdown point of the MAD and needs no centre to measure from, and it is far more efficient on a normal sample, at 82% against 37%.
+- **Sn** — A robust scale estimator of Rousseeuw and Croux (1993), built from a median of medians of pairwise distances. It shares the 50% breakdown point of the MAD and assumes no symmetry, and it reaches 58% efficiency on a normal sample against the 37% of the MAD.
 - **z-score** — The deviation from the mean divided by the sample standard deviation.
 
 ## Appendix B. Reference Implementation
@@ -164,7 +166,7 @@ interval; tabulating, printing and reading the scores are left to whatever calls
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
 __author__ = 'yRocket'
-__version__ = "0.9.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.9.1.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 # Everything this module offers. The names beginning with an underscore are internal.
 __all__ = [
@@ -233,8 +235,9 @@ def _hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) ->
         centre = float(np.median(values))
         repeated = int((values == centre).sum())
         raise ValueError(f"the MAD is 0 because {repeated} of {values.size} observations equal the median "
-                         f"{centre}; the robust scale is undefined. Use a scale estimator that tolerates "
-                         f"ties, such as Sn or Qn, or report that the sample cannot support the method.")
+                         f"{centre}; the robust scale is undefined. Every 50% breakdown estimator returns 0 "
+                         f"here, Sn and Qn included, so report that the sample cannot support the method or "
+                         f"take a scale that does not rest on a median of the deviations.")
     return mad / quartile
 
 

@@ -21,7 +21,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.9.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.9.1.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 # Everything this module offers. The names beginning with an underscore are internal.
 __all__ = [
@@ -90,8 +90,9 @@ def _hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) ->
         centre = float(np.median(values))
         repeated = int((values == centre).sum())
         raise ValueError(f"the MAD is 0 because {repeated} of {values.size} observations equal the median "
-                         f"{centre}; the robust scale is undefined. Use a scale estimator that tolerates "
-                         f"ties, such as Sn or Qn, or report that the sample cannot support the method.")
+                         f"{centre}; the robust scale is undefined. Every 50% breakdown estimator returns 0 "
+                         f"here, Sn and Qn included, so report that the sample cannot support the method or "
+                         f"take a scale that does not rest on a median of the deviations.")
     return mad / quartile
 
 
