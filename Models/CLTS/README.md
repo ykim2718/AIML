@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 10 | Created: 2026-08-12 | Updated: 2026-08-18 16:00 CDT
+Rev. 11 | Created: 2026-08-12 | Updated: 2026-08-18 16:06 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -41,17 +41,17 @@ Fig 1에 표기된 세 상위 명칭의 핵심 개념은 다음과 같다.
 
 Fig 1의 How to update 축 4가지 중, 시계열 예측에서 실제로 가장 널리 쓰이는 3가지를 설명한다. 네 번째 가지인 Learned / self-adaptation (Meta-Learning, Test-Time Adaptation) 은 아직 연구 단계라 제외한다.
 
-### 2.1 Sliding / Rolling Window Retraining
+### 2.1 Full retraining on a window
 
-Fig 1의 Full retraining on a window에 해당한다. 고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다는 장점이 있다. Window를 늘려 가며 전체 이력을 유지하는 expanding window 방식은 장기 패턴 보존에 유리하지만, 데이터가 커질수록 재학습 비용이 증가한다.
+고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다는 장점이 있다. Window를 늘려 가며 전체 이력을 유지하는 expanding window 방식은 장기 패턴 보존에 유리하지만, 데이터가 커질수록 재학습 비용이 증가한다.
 
-### 2.2 Kalman Filter and State Space Models
+### 2.2 Native sequential update
 
-Fig 1의 Native sequential update에 해당한다. 새로운 관측값이 들어올 때마다 수학적 상태 방정식을 통해 현재 상태의 확률 분포 (평균, 분산) 를 실시간으로 업데이트하는 전통적이고 강력한 시계열 기법이다. 계산량이 적고 실시간 예측 업데이트에 매우 효율적이라는 장점이 있다. Kalman filter 외에도 recursive least squares 같은 adaptive filter가 streaming 데이터 위에서 선형 모델을 갱신하는 고전적 방법으로 함께 쓰인다.
+Kalman filter와 state space 모델이 대표적이며, 새로운 관측값이 들어올 때마다 수학적 상태 방정식을 통해 현재 상태의 확률 분포 (평균, 분산) 를 실시간으로 업데이트하는 전통적이고 강력한 시계열 기법이다. 계산량이 적고 실시간 예측 업데이트에 매우 효율적이라는 장점이 있다. Kalman filter 외에도 recursive least squares 같은 adaptive filter가 streaming 데이터 위에서 선형 모델을 갱신하는 고전적 방법으로 함께 쓰인다.
 
-### 2.3 Fine-Tuning / Warm Start
+### 2.3 Fine-tuning of a pre-trained model
 
-Fig 1의 Fine-tuning of a pre-trained model에 해당한다. 기존 데이터를 기반으로 사전 학습된 (pre-trained) 딥러닝/머신러닝 모델의 가중치를 파라미터 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
+기존 데이터를 기반으로 사전 학습된 (pre-trained) 딥러닝/머신러닝 모델의 가중치를 파라미터 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
 
 ## 3. Challenges
 
