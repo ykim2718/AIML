@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 4 | Created: 2026-08-17 | Updated: 2026-08-17 23:06 CDT
+Rev. 5 | Created: 2026-08-17 | Updated: 2026-08-17 23:44 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -256,10 +256,52 @@ early.
 The blocks below are excerpts. The docstrings are abridged to their opening paragraph, and the
 plotting and command line parts of the file are omitted; the file itself is the authority.
 
-### B.1. Core Routine
+### B.1. Result Carrier
 
 ```python
 # EDA/Outlier/GESD/gesd_outlier_detection.py
+from dataclasses import dataclass
+
+import numpy as np
+
+
+@dataclass
+class GesdStep:
+    """One iteration of the procedure, before the number of outliers has been decided."""
+
+    step: int
+    position: int
+    value: float
+    mean: float
+    deviation: float
+    statistic: float
+    critical: float
+
+
+@dataclass
+class GesdResult:
+    """Outcome of the procedure over all r iterations."""
+
+    steps: list[GesdStep]
+    count: int
+    positions: np.ndarray
+    alpha: float
+```
+
+Every step is retained rather than only the significant ones, because the sequence of
+$R_i$ against $\lambda_i$ is the diagnostic. A result that reported only the count would not
+let a reader see how close the decision was, and panel (b) of Fig 1 could not be drawn from it.
+
+### B.2. Core Routine
+
+The two routines use these names, on top of the carriers of B.1.
+
+```python
+# EDA/Outlier/GESD/gesd_outlier_detection.py
+import numpy as np
+from scipy import stats
+
+
 def gesd_critical_value(sample_size: int = None, step: int = None, alpha: float = None) -> float:
     """Critical value lambda_i of one iteration of the generalized ESD procedure.
 
@@ -322,37 +364,6 @@ leave no degrees of freedom, and the zero-deviation check, which refuses a sampl
 statistic is undefined instead of emitting a division by zero. The loop keeps `survivors` as
 positions in the original array rather than as values, so a flagged observation can be reported
 at the place it came from even after several removals.
-
-### B.2. Result Carrier
-
-```python
-# EDA/Outlier/GESD/gesd_outlier_detection.py
-@dataclass
-class GesdStep:
-    """One iteration of the procedure, before the number of outliers has been decided."""
-
-    step: int
-    position: int
-    value: float
-    mean: float
-    deviation: float
-    statistic: float
-    critical: float
-
-
-@dataclass
-class GesdResult:
-    """Outcome of the procedure over all r iterations."""
-
-    steps: list[GesdStep]
-    count: int
-    positions: np.ndarray
-    alpha: float
-```
-
-Every step is retained rather than only the significant ones, because the sequence of
-$R_i$ against $\lambda_i$ is the diagnostic. A result that reported only the count would not
-let a reader see how close the decision was, and panel (b) of Fig 1 could not be drawn from it.
 
 ### B.3. Invocation
 

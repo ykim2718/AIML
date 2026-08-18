@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 0 | Created: 2026-08-17 | Updated: 2026-08-17 23:34 CDT
+Rev. 1 | Created: 2026-08-17 | Updated: 2026-08-17 23:44 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -248,7 +248,67 @@ The implementation is `hampel_identifier.py`, in the folder of this document. Th
 are excerpts, with docstrings abridged to their opening paragraph; the file itself is the
 authority.
 
-### B.1. Statistic and Decision
+### B.1. Module Header
+
+The blocks that follow use these names, so they are listed first rather than left implicit.
+
+```python
+# EDA/Outlier/Hampel/hampel_identifier.py
+from dataclasses import dataclass
+
+import numpy as np
+from scipy import stats
+
+# The MAD of a normal sample converges to this multiple of sigma, so dividing by it puts the
+# modified score on the same scale as a classical z-score. It is the third quartile of N(0, 1).
+NORMAL_QUARTILE = float(stats.norm.ppf(0.75))
+
+# The cut-off recommended by Iglewicz and Hoaglin for the modified z-score.
+DEFAULT_THRESHOLD = 3.5
+
+
+def median_absolute_deviation(data: np.ndarray = None) -> float:
+    """Median of the absolute deviations from the sample median."""
+    values = np.asarray(data, dtype=float)
+    return float(np.median(np.abs(values - np.median(values))))
+```
+
+The constant is computed from `scipy.stats` rather than written as 0.674490, so the calibration
+of section 4.2 cannot drift from the value the code actually applies.
+
+### B.2. Result Carrier
+
+```python
+# EDA/Outlier/Hampel/hampel_identifier.py
+@dataclass
+class HampelResult:
+    """Outcome of the Hampel identifier on one sample."""
+
+    values: np.ndarray
+    centre: float
+    mad: float
+    scale: float
+    scores: np.ndarray
+    threshold: float
+    positions: np.ndarray
+
+    @property
+    def count(self) -> int:
+        """Number of flagged observations."""
+        return int(self.positions.size)
+
+    def bounds(self) -> tuple[float, float]:
+        """The interval outside which an observation is flagged."""
+        return self.centre - self.threshold * self.scale, self.centre + self.threshold * self.scale
+```
+
+The centre and the scale are carried alongside the scores rather than discarded, because a score
+on its own cannot be checked. The `to_frame` method, which tabulates the sample against both
+scores, is omitted here.
+
+### B.3. Statistic and Decision
+
+The names of B.1 and B.2 are in scope for this block.
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
@@ -284,15 +344,18 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
                         threshold=threshold, positions=np.flatnonzero(np.abs(scores) > threshold))
 ```
 
-The zero-MAD branch is the one that matters. It is the failure of section 6, and the alternative to
-raising is to divide by zero or to return scores of zero, either of which reports a clean sample
-on data the method cannot read. The message names the count of tied observations so the caller
-can see why.
+The zero-MAD branch is the one that matters. It is the failure of section 6, and the alternative
+to raising is to divide by zero or to return scores of zero, either of which reports a clean
+sample on data the method cannot read. The message names the count of tied observations so the
+caller can see why.
 
-### B.2. The Classical Score and Its Bound
+### B.4. The Classical Score and Its Bound
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
+import numpy as np
+
+
 def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
     """Deviation from the mean divided by the sample standard deviation, with ddof = 1."""
     values = np.asarray(data, dtype=float)
@@ -310,10 +373,10 @@ def max_attainable_z(sample_size: int = None) -> float:
 ```
 
 These two exist for the comparison rather than for the method. Carrying the bound as a function
-rather than as a number in the document keeps 2.3 checkable: the claim about any sample size can
-be evaluated instead of trusted.
+rather than as a number in the document keeps section 2.3 checkable: the claim about any sample
+size can be evaluated instead of trusted.
 
-### B.3. Invocation
+### B.5. Invocation
 
 ```bash
 python3 hampel_identifier.py --input-csv <PATH> --column value --threshold 3.5
