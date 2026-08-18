@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 9 | Created: 2026-08-17 | Updated: 2026-08-18 00:38 CDT
+Rev. 10 | Created: 2026-08-17 | Updated: 2026-08-18 00:45 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -350,32 +350,38 @@ scores they produce are the modified z of section 3.2 and the ordinary z-score.
 
 ### C.1. Sample
 
-The sample is 15 measurements taking only 7 distinct values, with 0.0134 and 0.0232 each
-appearing 5 times. Its median is 0.0232 and the values run from 0.0134 to 0.6532.
-
 **Table 4. Every observation with its score under each rule**
 
-| Observation | Value | Modified z | Classical z | Flagged |
-|---|---|---|---|---|
-| 1 | 0.0232 | 0.0000 | −0.2429 | No |
-| 2 | 0.0232 | 0.0000 | −0.2429 | No |
-| 3 | 0.0232 | 0.0000 | −0.2429 | No |
-| 4 | 0.0220 | −0.1109 | −0.2503 | No |
-| 5 | 0.0232 | 0.0000 | −0.2429 | No |
-| 6 | 0.0232 | 0.0000 | −0.2429 | No |
-| 7 | **0.6532** | **58.2094** | **3.6110** | **Yes** |
-| 8 | 0.0403 | 1.5800 | −0.1383 | No |
-| 9 | 0.0293 | 0.5636 | −0.2056 | No |
-| 10 | 0.0159 | −0.6745 | −0.2876 | No |
-| 11 | 0.0134 | −0.9055 | −0.3029 | No |
-| 12 | 0.0134 | −0.9055 | −0.3029 | No |
-| 13 | 0.0134 | −0.9055 | −0.3029 | No |
-| 14 | 0.0134 | −0.9055 | −0.3029 | No |
-| 15 | 0.0134 | −0.9055 | −0.3029 | No |
+| Observation | Value | Value − median | Modified z | Classical z | Flagged |
+|---|---|---|---|---|---|
+| 1 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
+| 2 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
+| 3 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
+| 4 | 0.0220 | −0.0012 | −0.1109 | −0.2503 | No |
+| 5 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
+| 6 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
+| 7 | **0.6532** | **+0.6300** | **58.2094** | 3.6110 | **Yes** |
+| 8 | 0.0403 | +0.0171 | 1.5800 | −0.1383 | No |
+| 9 | 0.0293 | +0.0061 | 0.5636 | −0.2056 | No |
+| 10 | 0.0159 | −0.0073 | −0.6745 | −0.2876 | No |
+| 11 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
+| 12 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
+| 13 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
+| 14 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
+| 15 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
 
-The modified z is 0 at the five observations equal to the median, which is what a deviation from
-the median gives. The classical z is negative at all fourteen retained observations, because the
-mean has been pulled above every one of them by the fifteenth.
+The flag is the decision rule of section 3.3 applied to the modified z beside it: an observation
+is flagged when the absolute value of that score exceeds the threshold of 3.5. Only observation 7
+does, at 58.2094. The next largest is 1.5800 at observation 8, less than half the threshold.
+
+The two middle columns lay out the arithmetic of section 3.2, so the flag can be checked rather
+than taken. The deviation column is the numerator of the modified z, and the modified z is that
+deviation divided by the scale of 0.010823 that Table 5 works out. Observation 7 reads
+0.6300 / 0.010823 = 58.2094, which is 16.6 times the threshold it has to clear.
+
+The classical z is carried alongside for contrast and takes no part in the flag. It is negative
+at all fourteen retained observations, because the mean has been pulled above every one of them
+by the fifteenth.
 
 **Table 5. The centre and the scale each rule computes**
 
