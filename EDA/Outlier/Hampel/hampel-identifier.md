@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 31 | Created: 2026-08-17 | Updated: 2026-08-18 09:06 CDT
+Rev. 32 | Created: 2026-08-17 | Updated: 2026-08-18 09:24 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -154,8 +154,8 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 
 ## Appendix B. Reference Implementation
 
-The block below is `hampel_identifier.py`, in the folder of this document, printed in full. The
-first line of the block is the path; the rest is the file byte for byte.
+The block below is `hampel_identifier.py`, in the folder of this document. It is that file as
+written, without the module docstring and the `if __name__ == '__main__':` guard.
 
 The method of section 2 is the first five definitions, ending at `retained_interval`. What follows
 them tabulates the scores, prints them, and reads a sample from a CSV, so that the file can be run
@@ -163,26 +163,6 @@ from a shell as well as imported.
 
 ```python
 # EDA/Outlier/Hampel/hampel_identifier.py
-"""Hampel identifier: outlier scoring from the median and the median absolute deviation.
-
-The classical z-score divides a deviation from the mean by the standard deviation, and an outlier
-contaminates both. This module replaces the pair with the median and the MAD, which a minority of
-contaminating observations cannot move. Scoring and deciding are separate: hampel_score computes
-the modified z-score of every observation and takes no threshold, and the caller compares the
-absolute score against one.
-
-Changelog:
-    0.8.0 - Keep __all__ to the scoring surface so every exported name is defined beside it.
-    0.7.0 - Declare __all__ so `from hampel_identifier import *` exports only the documented surface.
-    0.6.0 - Make the scale private as _hampel_scale; callers use the score or the interval.
-    0.5.0 - Drop classical_z_scores and max_attainable_z, and the column they fed.
-    0.4.0 - Replace HampelResult with hampel_score, hampel_scale and retained_interval.
-    0.3.0 - Rename the HampelResult field modified_z to modified_z_scores.
-    0.2.0 - Rename the HampelResult field scores to modified_z.
-    0.1.0 - Drop threshold_sweep; the figure it fed is no longer part of the document.
-    0.0.0 - Initial release.
-"""
-
 __author__ = 'yRocket'
 __version__ = "0.8.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
@@ -375,12 +355,6 @@ def load_sample(input_csv: Union[pathlib.Path, None] = None, column: str = None)
     if column not in frame.columns:
         raise ValueError(f"column '{column}' is absent from {input_csv}; available: {list(frame.columns)}")
     return frame[column].to_numpy(dtype=float)
-
-
-if __name__ == '__main__':
-    options = parse_args()
-
-    report(data=load_sample(input_csv=options.input_csv, column=options.column), threshold=options.threshold)
 ```
 
 ## Appendix C. Worked Example

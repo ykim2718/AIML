@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 23 | Created: 2026-8-1 | Updated: 2026-8-17 00:05 CDT
+Rev. 24 | Created: 2026-8-1 | Updated: 2026-8-18 09:20 CDT
 
 ## 1. Terminology
 
@@ -64,6 +64,8 @@ Rev. 23 | Created: 2026-8-1 | Updated: 2026-8-17 00:05 CDT
 + Code block 내부의 inline comment는 모두 영어로 작성한다. 주석 기호는 해당 언어의 문법을 따른다 (예: Python `#`, JavaScript `//`, SQL `--`).
 + Code block의 첫 줄에 파일명, 실행 환경 또는 언어를 주석으로 명기한다. 실제 파일이 있으면 파일명 주석이 우선하고, 출력·로그처럼 실행 대상이 아닌 block만 예외로 한다.  JSON의 경우 실제 파일에서 주석이 있으면 동작하지 않지만, md에서만 예외로 첫 줄 주석을 //를 써서 허용한다.
 + 실제 파일이 있는 코드는 block 첫 줄에 주석으로 파일명을 표시한다. 프로젝트 루트 기준의 상대 경로로 적어 위치를 알 수 있게 한다.
++ 파일명을 붙인 block 은 그 파일과 동일해야 한다. 발췌하거나 줄여서 싣지 않는다. 파일명은 그 block 이 그 파일이라는 뜻이므로, 줄여 실으면 문서와 파일이 어긋나고 독자는 문서에 없는 것을 파일에서 만난다.
+    - module docstring 과 `if __name__ == '__main__':` block 은 제외한다. 앞은 block 이 놓인 꼭지가 이미 하는 말이고, 뒤는 module 이 제공하는 것이 아니라 그것을 실행하는 방법이다.
 ```python
 # src/utils/parser.py
 def parse(text: str) -> dict:
