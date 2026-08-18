@@ -1,8 +1,8 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 26 | Created: 2026-08-17 | Updated: 2026-08-18 01:52 CDT
+Rev. 27 | Created: 2026-08-17 | Updated: 2026-08-18 06:58 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
-> organized as the score, its robustness, and the treatment of what it flags.
+> organized as the score and then the robustness that the score rests on.
 
 ## 1. Scope
 
@@ -12,8 +12,8 @@ in that ratio are computed from the same sample the observation belongs to, so a
 inflates the quantity it is being measured against.
 
 The Hampel identifier replaces the pair with the median and the median absolute deviation, the
-MAD. Those two are unmoved by a minority of contaminating observations, so the scale stays a description of
-the bulk of the sample rather than of the observation under test.
+MAD. A minority of contaminating observations cannot move either, so the scale keeps describing
+the bulk of the sample rather than the observation under test.
 
 ## 2. Modified z-score
 
@@ -25,10 +25,10 @@ $$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \
 
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
-Here $\Phi^{-1}(0.75) = 0.674490$ is the third quartile of the standard normal distribution, and
-the denominator as a whole is the robust scale. The score $M_i$ is an ordinary z-score with the
-median put in place of the mean and the robust scale in place of the standard deviation, which is
-why it is called the modified z-score.
+The denominator is the robust scale, and the constant $\Phi^{-1}(0.75) = 0.674490$ that builds it
+is the subject of section 2.2. The score $M_i$ is an ordinary z-score with the median put in place
+of the mean and the robust scale in place of the standard deviation, which is why it is called the
+modified z-score.
 
 ### 2.2. Consistency Constant
 
@@ -88,12 +88,11 @@ or Qn.
 ### 3.2. Contaminated Scale
 
 A sample standard deviation is a mean of squared deviations, so a single distant observation
-enters it quadratically. The larger the outlier, the larger the denominator it is divided by,
-and the two effects work against each other.
+enters it quadratically. Pushing that observation further out enlarges its own deviation and the
+standard deviation together, so the ratio of the two grows far more slowly than the distance does.
 
 The median absolute deviation is a median of absolute deviations. Moving one observation
-arbitrarily far changes which value sits at the middle of that list by at most one position, and
-if the sample is large enough it does not change it at all.
+arbitrarily far moves the middle of that list by at most one position, however far it is moved.
 
 The same self-reference, an observation inflating the scale that it is measured against, also
 caps the classical score at a value no sample can exceed.
@@ -102,13 +101,13 @@ that cap out.
 
 ### 3.3. Breakdown Point
 
-The mean and the standard deviation break down at one observation. The median and the MAD break
-down only when more than half the sample is corrupted.
+One corrupted observation is enough to break the mean and the standard deviation. Breaking the
+median or the MAD takes more than half the sample.
 
 An estimate breaks down when it stops describing the sample and describes the corrupted
-observations instead. It does not stop computing. Setting one observation of the worked example
-to a billion takes the mean past 66 million while the median stays at 0.0232, and a mean of 66
-million says nothing about fifteen observations that otherwise sit near 0.02.
+observations instead. The calculation still returns a number. Setting one observation of the
+worked example to a billion takes the mean past 66 million while the median stays at 0.0232, and
+a mean of 66 million says nothing about the fourteen observations that still sit near 0.02.
 
 The breakdown point is the fraction of the sample that has to be corrupted for that to happen.
 
@@ -116,11 +115,11 @@ The breakdown point is the fraction of the sample that has to be corrupted for t
 
 | Estimator | Breakdown point | What it takes to break it |
 |---|---|---|
-| Mean and standard deviation | 0% | One observation, moved far enough |
-| Median and MAD | 50% | Eight of the fifteen; seven leave the median at 0.0403, a real observation |
+| Mean and standard deviation | 0% | One observation is enough, if it is moved far enough. |
+| Median and MAD | 50% | Eight of the fifteen are needed. Seven leave the median at 0.0403, which is still one of the real observations. |
 
-This is the whole of the reason the method works. Section 2 is the arithmetic of putting the
-robust pair on a scale that a threshold can be read against.
+The breakdown point is the whole reason the method works. Section 2 is nothing more than the
+arithmetic that puts the robust pair on a scale a threshold can be read against.
 
 ## References
 
@@ -146,7 +145,7 @@ robust pair on a scale that a threshold can be read against.
 - **breakdown point** — The fraction of a sample that has to be corrupted before a statistic becomes unusable. The mean has a breakdown point of 0%, because one corrupted observation is enough to take it anywhere. The median has 50%, because more than half the sample has to be corrupted before it leaves the uncontaminated data.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
-- **MAD** — Median absolute deviation; see that entry.
+- **MAD** — The abbreviation used throughout for the median absolute deviation.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 2.2 divides it by that constant before using it as a scale.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
 - **Qn** — A robust scale estimator taking an order statistic of the pairwise distances between observations, with a 50% breakdown point and better behaviour than the MAD under ties.
@@ -228,14 +227,14 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
 
 ## Appendix C. Worked Example
 
-Every number in this appendix is produced by `hampel_sample_outliers.py`, invoked as
-`python3 hampel_sample_outliers.py --threshold 3.5`. The sample is fixed inside the script and
+Every number in this appendix is produced by `hampel_worked_example.py`, invoked as
+`python3 hampel_worked_example.py --threshold 3.5`. The sample is fixed inside the script and
 the points behind the figure are written beside it as CSV.
 
-Two rules are applied to the same data throughout. **The identifier** is the method of section 2,
-which scores an observation against the median and the MAD. **The classical rule** scores it
-against the mean and the standard deviation instead, and flags at the same threshold of 3.5. The
-scores they produce are the modified z of section 2.1 and the ordinary z-score.
+Two rules are set against each other in C.1. **The identifier** is the method of section 2, which
+measures an observation against the median and the MAD. **The classical rule** measures it against
+the mean and the standard deviation instead. Table 3 puts the centre and the scale each one
+computes side by side.
 
 ### C.1. Sample
 
@@ -288,17 +287,18 @@ observations; the classical scale describes the outlier.
 
 ### C.2. Normality
 
-The identifier does not need normality for its detection to be meaningful, and section 2.2 says
-that normality is what makes the threshold readable as a false-positive rate. This sample is the
-case where that distinction matters, because it is not normal.
+Normality enters the method only through the constant of section 2.2, which is what lets the
+threshold be read as a false-positive rate. The detection itself does not need it. This sample is
+where that distinction matters, because it is not normal.
 
 ![Fig 1](hampel-identifier_fig/hampel_normality.png)
 
 **Fig 1. Normal quantile plots of the sample and of the sample without its extreme value**
 
-The reference line runs through the first and third quartiles rather than being fitted by least
-squares, so the extreme observation cannot rotate it and flatten the departure the panel is drawn
-to show.
+The observation is on the horizontal axis and the quantile a normal sample would put there is on
+the vertical one, so a normal sample would fall along the line. The line runs through the first
+and third quartiles rather than being fitted by least squares, which keeps the extreme
+observation from rotating it toward itself and hiding the departure the panel is drawn to show.
 
 **Table 4. Normality under three views of the sample**
 
@@ -314,11 +314,11 @@ if that hypothesis were true, so a p-value below the chosen level says the obser
 unlikely under normality to be put down to sampling variation, and the hypothesis is rejected.
 
 All three p-values fall below 0.05, and all three fall below 0.01 as well, though the middle row
-falls below the stricter level by only 0.0001 and should not be read as decisive there. What puts each
-view below the level is a different feature of the data.
+falls below the stricter level by only 0.0001 and should not be read as decisive there. What puts
+each view below the level is a different feature of the data.
 
-- The full sample fails because of one observation. The value 0.6532 is 28 times the median, and panel (a) shows it far off the line while the other 14 lie almost flat against it. The skewness of 3.462 is that one point.
-- The sample without it fails because the data are discrete. The remaining 14 observations take only 6 distinct values, with 5 tied at 0.0134 and 5 at 0.0232, so panel (b) rises in steps rather than along the line. A normal distribution is continuous and produces no ties at all, so a sample with ten of them cannot look normal however the extremes are treated.
+- The full sample fails because of one observation. The value 0.6532 is 28 times the median, so panel (a) compresses the other 14 into a narrow column on the left and strands that one point far to the right of the line. The skewness of 3.462 is that point.
+- The sample without it fails because the data are discrete. The remaining 14 observations take only 6 distinct values, with 5 tied at 0.0134 and 5 at 0.0232, so panel (b) stacks those ties into vertical columns instead of following the line. A normal distribution is continuous and produces no ties at all, so a sample carrying ten of them cannot look normal however its extremes are treated.
 - The log view, computed but not plotted, fails for the same reason as the first. A logarithm compresses ratios, but 0.6532 remains 48.7 times the smallest observation afterwards, so it stays isolated and the skewness falls only from 3.462 to 2.780.
 
 The second row is the one that matters for this document, because it is the reason the sample
@@ -328,8 +328,8 @@ distribution; the size of the departure does not rest on that approximation.
 
 ## Appendix D. Ceiling of the Classical Score
 
-The self-reference of section 3.2 has a consequence that is easy to miss. For a sample of size $n$ the
-largest attainable absolute z-score is bounded, whatever the data are.
+The self-reference of section 3.2 bounds the classical score. For a sample of size $n$ the largest
+absolute z-score that can occur is fixed by $n$ alone, whatever the data are.
 
 $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 
@@ -346,6 +346,6 @@ holds for every sample of that size.
 | 20 | 4.2485 | Reachable |
 | 54 | 7.2124 | Reachable |
 
-For $n \le 14$ a rule that flags an observation when its classical z-score exceeds 3.5 cannot
-flag anything, no matter how extreme the sample is. The modified score of section 2.1 carries no such
-bound, because its denominator stops responding to the observation in the numerator.
+For $n \le 14$ a rule that flags an observation when its classical z-score exceeds 3.5 cannot flag
+anything, no matter how extreme the sample is. The modified z-score of section 2.1 has no such
+bound, because its denominator stops responding to the observation in its numerator.

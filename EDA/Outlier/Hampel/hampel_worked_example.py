@@ -5,6 +5,7 @@ normal with or without it. One figure is drawn, the normal quantile panels behin
 claim, and the sample is written out with the score each observation receives.
 
 Changelog:
+    0.4.0 - Rename the file to hampel_worked_example.py and put the observation on the x axis.
     0.3.1 - Follow the scale becoming private; the printed scale is built from public names.
     0.3.0 - Follow the split of hampel_test into hampel_score, hampel_scale and score_frame.
     0.2.0 - Drop the boundary, sensitivity and breakdown figures; keep the quantile panels.
@@ -14,7 +15,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.1.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.4.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -115,26 +116,27 @@ def plot_normality(data: np.ndarray = None, statistics: pd.DataFrame = None,
     views = {name: available[name] for name in drawn}
     titles = {'full': f"(a) All {data.size} observations", 'without_extreme': f"(b) Without {data.max():g}",
               'log10': f"(c) All {data.size} observations, log10"}
-    labels = {'full': 'ordered value', 'without_extreme': 'ordered value', 'log10': 'ordered log10(value)'}
+    labels = {'full': 'observed value', 'without_extreme': 'observed value',
+              'log10': 'observed log10(value)'}
     figure, axes = plt.subplots(1, len(views), figsize=(11.5, 5.4))
     rows = []
     for axis, (name, values) in zip(axes, views.items()):
         ordered = np.sort(values)
         quantiles = normal_quantiles(count=ordered.size)
         extreme = np.isclose(ordered, ordered.max()) & (name != 'without_extreme')
-        axis.scatter(quantiles[~extreme], ordered[~extreme], s=52, color=COLOR_POINT,
+        axis.scatter(ordered[~extreme], quantiles[~extreme], s=52, color=COLOR_POINT,
                      edgecolors='white', linewidths=0.8, zorder=3, label='observation')
         if extreme.any():
-            axis.scatter(quantiles[extreme], ordered[extreme], s=130, color=COLOR_FLAGGED, marker='D',
+            axis.scatter(ordered[extreme], quantiles[extreme], s=130, color=COLOR_FLAGGED, marker='D',
                          edgecolors='white', linewidths=0.8, zorder=4, label='flagged observation')
         intercept, slope = quartile_line(values=ordered)
         grid = np.linspace(quantiles.min() - 0.4, quantiles.max() + 0.4, 50)
-        axis.plot(grid, intercept + slope * grid, color=COLOR_REFERENCE, linewidth=1.5,
+        axis.plot(intercept + slope * grid, grid, color=COLOR_REFERENCE, linewidth=1.5,
                   label='line through the quartiles')
         axis.plot([], [], ' ', label=f"Shapiro-Wilk p = {statistics.loc[name, 'shapiro_p']:.2e}")
         axis.plot([], [], ' ', label=f"skewness = {statistics.loc[name, 'skewness']:.3f}")
-        axis.set_xlabel('theoretical normal quantile')
-        axis.set_ylabel(labels[name])
+        axis.set_xlabel(labels[name])
+        axis.set_ylabel('theoretical normal quantile')
         axis.set_title(titles[name])
         axis.legend(loc='upper left', frameon=False, fontsize=9)
         axis.grid(alpha=0.25, linewidth=0.6)
