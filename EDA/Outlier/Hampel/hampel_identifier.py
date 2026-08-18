@@ -4,10 +4,10 @@ The classical z-score divides a deviation from the mean by the standard deviatio
 contaminates both. This module replaces the pair with the median and the MAD, which a minority of
 contaminating observations cannot move. Scoring and deciding are separate: hampel_score computes
 the modified z-score of every observation and takes no threshold, and the caller compares the
-absolute score against one. The classical z-score is provided alongside so the two can be
-compared on the same sample, which is what the accompanying document does.
+absolute score against one.
 
 Changelog:
+    0.5.0 - Drop classical_z_scores and max_attainable_z, and the column they fed.
     0.4.0 - Replace HampelResult with hampel_score, hampel_scale and retained_interval.
     0.3.0 - Rename the HampelResult field modified_z to modified_z_scores.
     0.2.0 - Rename the HampelResult field scores to modified_z.
@@ -16,7 +16,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.4.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.5.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -126,42 +126,6 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
     return centre - half_width, centre + half_width
 
 
-def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
-    """Deviation from the mean divided by the sample standard deviation, with ddof = 1.
-
-    The result of this function cannot exceed max_attainable_z for the sample size, whatever the
-    data are, because the extreme observation enters both the mean and the standard deviation.
-
-    Args:
-        data: the sample, shape (n,).
-
-    Returns:
-        The scores, shape (n,).
-    """
-    values = _as_sample(data=data)
-    deviation = values.std(ddof=1)
-    if deviation == 0.0:
-        raise ValueError(f"all {values.size} observations are equal, so the classical z-score is undefined.")
-    return (values - values.mean()) / deviation
-
-
-def max_attainable_z(sample_size: int = None) -> float:
-    """Largest absolute classical z-score a sample of this size can produce.
-
-    The bound is (n - 1) / sqrt(n). A rule that compares the classical z-score against a threshold
-    at or above this value can never flag anything, no matter how extreme an observation is.
-
-    Args:
-        sample_size: n.
-
-    Returns:
-        The bound.
-    """
-    if sample_size < 2:
-        raise ValueError(f"a z-score needs at least 2 observations, got {sample_size}.")
-    return (sample_size - 1) / np.sqrt(sample_size)
-
-
 def score_frame(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> pd.DataFrame:
     """Tabulate the sample against both scores and the flag.
 
@@ -170,13 +134,12 @@ def score_frame(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -
         threshold: the cut-off on the absolute modified z-score.
 
     Returns:
-        A pd.DataFrame indexed by 'position' (counted from 0), with columns 'value', 'modified_z',
-        'classical_z' and 'flagged'.
+        A pd.DataFrame indexed by 'position' (counted from 0), with columns 'value', 'modified_z'
+        and 'flagged'.
     """
     values = _as_sample(data=data)
     modified = hampel_score(data=values)
     return pd.DataFrame({'value': values, 'modified_z': modified,
-                         'classical_z': classical_z_scores(data=values),
                          'flagged': np.abs(modified) > threshold},
                         index=pd.Index(np.arange(values.size), name='position'))
 
@@ -193,9 +156,7 @@ def report(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> Non
           f"MAD = {median_absolute_deviation(data=values):.6f}, scale = {scale:.6f}")
     print(f"[2] Rule: |modified z| > {threshold}, so the retained interval is [{lower:.6f}, {upper:.6f}]")
     print(f"[3] Classical scale for comparison: sd = {values.std(ddof=1):.6f}, "
-          f"which is {values.std(ddof=1) / scale:.1f} times the robust scale")
-    print(f"[4] The classical z-score of this sample cannot exceed "
-          f"{max_attainable_z(sample_size=values.size):.4f}\n")
+          f"which is {values.std(ddof=1) / scale:.1f} times the robust scale\n")
     with pd.option_context('display.float_format', '{:.4f}'.format, 'display.width', 120):
         print(frame.to_string())
     if flagged.empty:

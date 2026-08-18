@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 23 | Created: 2026-08-17 | Updated: 2026-08-18 01:45 CDT
+Rev. 24 | Created: 2026-08-17 | Updated: 2026-08-18 01:46 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score, its robustness, and the treatment of what it flags.
@@ -239,22 +239,6 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
     centre = float(np.median(values))
     half_width = threshold * hampel_scale(data=values, quartile=quartile)
     return centre - half_width, centre + half_width
-
-
-def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
-    """Deviation from the mean divided by the sample standard deviation, with ddof = 1."""
-    values = _as_sample(data=data)
-    deviation = values.std(ddof=1)
-    if deviation == 0.0:
-        raise ValueError(f"all {values.size} observations are equal, so the classical z-score is undefined.")
-    return (values - values.mean()) / deviation
-
-
-def max_attainable_z(sample_size: int = None) -> float:
-    """Largest absolute classical z-score a sample of this size can produce."""
-    if sample_size < 2:
-        raise ValueError(f"a z-score needs at least 2 observations, got {sample_size}.")
-    return (sample_size - 1) / np.sqrt(sample_size)
 ```
 
 ## Appendix C. Worked Example
@@ -270,25 +254,25 @@ scores they produce are the modified z of section 2.1 and the ordinary z-score.
 
 ### C.1. Sample
 
-**Table 2. Every observation with its score under each rule**
+**Table 2. Every observation with its score and its verdict**
 
-| Observation | Value | Value − median | Modified z | Classical z | Flagged |
-|---|---|---|---|---|---|
-| 1 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
-| 2 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
-| 3 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
-| 4 | 0.0220 | −0.0012 | −0.1109 | −0.2503 | No |
-| 5 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
-| 6 | 0.0232 | 0.0000 | 0.0000 | −0.2429 | No |
-| 7 | **0.6532** | **+0.6300** | **58.2094** | 3.6110 | **Yes** |
-| 8 | 0.0403 | +0.0171 | 1.5800 | −0.1383 | No |
-| 9 | 0.0293 | +0.0061 | 0.5636 | −0.2056 | No |
-| 10 | 0.0159 | −0.0073 | −0.6745 | −0.2876 | No |
-| 11 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
-| 12 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
-| 13 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
-| 14 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
-| 15 | 0.0134 | −0.0098 | −0.9055 | −0.3029 | No |
+| Observation | Value | Value − median | Modified z | Flagged |
+|---|---|---|---|---|
+| 1 | 0.0232 | 0.0000 | 0.0000 | No |
+| 2 | 0.0232 | 0.0000 | 0.0000 | No |
+| 3 | 0.0232 | 0.0000 | 0.0000 | No |
+| 4 | 0.0220 | −0.0012 | −0.1109 | No |
+| 5 | 0.0232 | 0.0000 | 0.0000 | No |
+| 6 | 0.0232 | 0.0000 | 0.0000 | No |
+| 7 | **0.6532** | **+0.6300** | **58.2094** | **Yes** |
+| 8 | 0.0403 | +0.0171 | 1.5800 | No |
+| 9 | 0.0293 | +0.0061 | 0.5636 | No |
+| 10 | 0.0159 | −0.0073 | −0.6745 | No |
+| 11 | 0.0134 | −0.0098 | −0.9055 | No |
+| 12 | 0.0134 | −0.0098 | −0.9055 | No |
+| 13 | 0.0134 | −0.0098 | −0.9055 | No |
+| 14 | 0.0134 | −0.0098 | −0.9055 | No |
+| 15 | 0.0134 | −0.0098 | −0.9055 | No |
 
 The flag is the rule of section 2.3 applied to the modified z beside it: an observation
 is flagged when the absolute value of that score exceeds the threshold of 3.5. Only observation 7
@@ -298,10 +282,6 @@ The two middle columns lay out the arithmetic of section 2.1, so the flag can be
 than taken. The deviation column is the numerator of the modified z, and the modified z is that
 deviation divided by the scale of 0.010823 that Table 3 works out. Observation 7 reads
 0.6300 / 0.010823 = 58.2094, which is 16.6 times the threshold it has to clear.
-
-The classical z is carried alongside for contrast and takes no part in the flag. It is negative
-at all fourteen retained observations, because the mean has been pulled above every one of them
-by the fifteenth.
 
 **Table 3. The centre and the scale each rule computes**
 
