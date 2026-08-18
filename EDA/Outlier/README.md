@@ -1,5 +1,5 @@
 # Outlier Detection
-Rev. 1 | Created: 2026-08-17 | Updated: 2026-08-17 23:38 CDT
+Rev. 2 | Created: 2026-08-17 | Updated: 2026-08-18 11:38 CDT
 
 > This folder covers the detection of observations that are discordant with the model the rest of a sample follows.
 > Each method keeps its own subfolder, holding the document that fixes the method and the scripts that run it.
@@ -18,6 +18,7 @@ Table 1. Methods in this folder
 |--------|-------------|---------------------|
 | [GESD](GESD/) | [GESD/generalized-esd.md](GESD/generalized-esd.md) | How many outliers does an approximately normal sample carry, when the number is not known in advance? It is the many-outlier procedure of ISO 16269-4, and it reaches outliers that hide one another from a single-outlier test. |
 | [Hampel](Hampel/) | [Hampel/hampel-identifier.md](Hampel/hampel-identifier.md) | How far does each observation sit from the bulk, when the sample is not normal? It scores every observation against the median and the MAD, which contamination cannot move, and needs no iteration. It is not part of ISO 16269-4. |
+| [ZScore](ZScore/) | [ZScore/z-score-ceiling.md](ZScore/z-score-ceiling.md) | What is the largest z-score a sample of a given size can produce at all? The classical score is bounded by (n-1)/sqrt(n), so a rule at a fixed cut-off is inert below a certain size and returns a clean verdict it could not have avoided. |
 
 ## 3. Order Of Use
 
@@ -31,5 +32,6 @@ Table 1. Methods in this folder
 ## 4. Conventions
 
 - Each method gets a subfolder named after it, holding one document and the scripts that reproduce every number in it.
+- Samples that more than one document quotes live in `data/`, so that the documents and their scripts read the same file rather than each carrying its own copy.
 - Figures live in the folder named after their document, so a document and its images move together.
 - A script writes the samples behind its charts beside them as CSV, so a figure can be redrawn and the numbers a document quotes can be recomputed rather than read off the picture.

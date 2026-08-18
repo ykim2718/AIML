@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 33 | Created: 2026-08-17 | Updated: 2026-08-18 09:58 CDT
+Rev. 34 | Created: 2026-08-17 | Updated: 2026-08-18 10:26 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -94,10 +94,11 @@ standard deviation together, so the ratio of the two grows far more slowly than 
 The median absolute deviation is a median of absolute deviations. Moving one observation
 arbitrarily far moves the middle of that list by at most one position, however far it is moved.
 
-The same self-reference, an observation inflating the scale that it is measured against, also
-caps the classical score at a value no sample can exceed.
-[Appendix D. Ceiling of the Classical Score](#appendix-d-ceiling-of-the-classical-score) works
-that cap out.
+The same self-reference, an observation inflating the scale that it is measured against, caps the
+classical score outright: in a sample of size $n$ no absolute z-score can exceed $(n-1)/\sqrt{n}$,
+whatever the data are, a bound due to Shiffler (1988). The modified score has no such ceiling,
+because its denominator stops responding to the observation in its numerator once that
+observation is far enough out.
 
 ### 3.3. Breakdown Point
 
@@ -279,8 +280,9 @@ def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESH
 ## Appendix C. Worked Example
 
 Every number in this appendix is produced by `hampel_worked_example.py`, invoked as
-`python3 hampel_worked_example.py --threshold 3.5`. The sample is fixed inside the script and
-the points behind the figure are written beside it as CSV.
+`python3 hampel_worked_example.py --threshold 3.5`. The script reads the sample from
+`EDA/Outlier/data/1d_esc_current.csv` and writes the points behind the figure beside the figure
+as CSV.
 
 Two rules are set against each other in C.1. **The identifier** is the method of section 2, which
 measures an observation against the median and the MAD. **The classical rule** measures it against
@@ -376,58 +378,3 @@ The second row is the one that matters for this document, because it is the reas
 cannot be rescued by treating 0.6532. The p-values are also approximate rather than exact here,
 since two thirds of the observations are tied and the Shapiro-Wilk statistic assumes a continuous
 distribution; the size of the departure does not rest on that approximation.
-
-## Appendix D. Ceiling of the Classical Score
-
-Write $\bar{x}$ for the mean of the sample, $s$ for its standard deviation, and
-$z_i = (x_i - \bar{x}) / s$ for the classical score of section 1.
-
-That score divides a deviation by a standard deviation the same observation helped compute.
-Section 3.2 uses that to explain why the ratio grows slowly; it also puts a ceiling on the ratio.
-For a sample of size $n$ the largest absolute z-score that can occur is fixed by $n$ alone,
-whatever the data are.
-
-$$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
-
-The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
-holds for every sample of that size.
-
-The derivation needs two identities. Deviations from the mean sum to zero, and the sample
-standard deviation is defined from their squares.
-
-$$\sum_{j=1}^{n} \left( x_j - \bar{x} \right) = 0, \qquad \sum_{j=1}^{n} \left( x_j - \bar{x} \right)^2 = (n-1)s^2$$
-
-Fix one observation and write $d = x_i - \bar{x}$. The first identity says the other $n-1$
-deviations sum to $-d$. By the Cauchy-Schwarz inequality, $n-1$ numbers whose sum is $-d$ have a
-sum of squares of at least $d^2 / (n-1)$, and they reach it when they are all equal. Splitting the
-second identity at observation $i$ and applying that lower bound gives the result in one line.
-
-$$(n-1)s^2 = d^2 + \sum_{j \ne i} \left( x_j - \bar{x} \right)^2 \ \ge \ d^2 + \frac{d^2}{n-1} \ = \ \frac{n}{n-1} d^2$$
-
-Rearranging leaves $d^2 \le (n-1)^2 s^2 / n$, and dividing by $s$ leaves the bound. Equality holds
-when the other $n-1$ deviations are all equal, which is one observation set apart from $n-1$ tied
-ones, so the ceiling is attained rather than merely approached.
-
-Only the second identity involves $s$, so it is the one that carries the fact section 3.2 rests
-on: the observation sits inside its own denominator. That identity alone already bounds the score
-— drop the sum over $j \ne i$ from the display and $d^2 \le (n-1)s^2$ remains. The self-reference
-is therefore what makes the score bounded at all, and the zero sum of the deviations is what
-sharpens the constant to $(n-1)/\sqrt{n}$.
-
-The constant is written for the sample standard deviation, which divides the sum of squares by
-$n-1$. Dividing by $n$ instead makes $s$ smaller and raises the sharp bound to $\sqrt{n-1}$, so a
-figure computed with `numpy.std` at its default `ddof=0` is measured against a different ceiling.
-
-**Table 5. The bound at several sample sizes**
-
-| Sample size n | Largest attainable absolute z | A threshold of 3.5 |
-|---|---|---|
-| 10 | 2.8460 | Can never be reached |
-| 14 | 3.4744 | Can never be reached |
-| 15 | 3.6148 | Reachable, barely |
-| 20 | 4.2485 | Reachable |
-| 54 | 7.2124 | Reachable |
-
-For $n \le 14$ a rule that flags an observation when its classical z-score exceeds 3.5 cannot flag
-anything, no matter how extreme the sample is. The modified z-score of section 2.1 has no such
-bound, because its denominator stops responding to the observation in its numerator.

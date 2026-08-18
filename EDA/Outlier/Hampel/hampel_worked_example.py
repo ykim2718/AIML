@@ -1,10 +1,12 @@
 """Worked example of the Hampel identifier on a 15-observation measurement sample.
 
-The sample carries one value nearly fifty times the smallest, on a distribution that is not
-normal with or without it. One figure is drawn, the normal quantile panels behind the normality
-claim, and the sample is written out with the score each observation receives.
+The sample is read from a CSV rather than held here, so that the document and any other script
+work from the same file. It carries one value nearly fifty times the smallest, on a distribution
+that is not normal with or without it. One figure is drawn, the normal quantile panels behind the
+normality claim, and the sample is written out with the score each observation receives.
 
 Changelog:
+    0.6.0 - Read the sample from a CSV instead of holding it in the script.
     0.5.0 - Take over score_frame, which only this script uses.
     0.4.0 - Rename the file to hampel_worked_example.py and put the observation on the x axis.
     0.3.1 - Follow the scale becoming private; the printed scale is built from public names.
@@ -16,7 +18,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.5.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.6.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -34,10 +36,29 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
-# The measurement sample under test. Only seven distinct values occur among the fifteen
-# observations, and the largest tie is five, against the eight at which the MAD would be 0.
-SAMPLE = np.array([0.0232, 0.0232, 0.0232, 0.0220, 0.0232, 0.0232, 0.6532, 0.0403,
-                   0.0293, 0.0159, 0.0134, 0.0134, 0.0134, 0.0134, 0.0134])
+# The measurement sample under test lives beside the documents that quote it. Only seven distinct
+# values occur among the fifteen observations, and the largest tie is five, against the eight at
+# which the MAD would be 0.
+DEFAULT_SAMPLE_CSV = pathlib.Path(__file__).resolve().parents[1] / 'data' / '1d_esc_current.csv'
+
+
+def load_sample(input_csv: pathlib.Path = None, column: str = None) -> np.ndarray:
+    """Read the column to score from a CSV.
+
+    Args:
+        input_csv: the CSV holding the sample.
+        column: the column to read.
+
+    Returns:
+        The sample, shape (n,).
+    """
+    frame = pd.read_csv(input_csv)
+    if column not in frame.columns:
+        raise ValueError(f"column '{column}' is absent from {input_csv}; available: {list(frame.columns)}")
+    values = frame[column].to_numpy(dtype=float)
+    if values.size == 0:
+        raise ValueError(f"column '{column}' of {input_csv} is empty.")
+    return values
 
 COLOR_POINT = TABLEAU_COLORS['tab:blue']
 COLOR_FLAGGED = TABLEAU_COLORS['tab:red']
@@ -173,6 +194,10 @@ def parse_args() -> argparse.Namespace:
     """Parse and validate the command line options."""
     parser = argparse.ArgumentParser(
         description='Reproduce the worked example of the Hampel identifier document.')
+    parser.add_argument('--input-csv', type=pathlib.Path, default=DEFAULT_SAMPLE_CSV,
+                        help='CSV holding the sample (default: %(default)s)')
+    parser.add_argument('--column', type=str, default='value',
+                        help='column of --input-csv to read (default: %(default)s)')
     parser.add_argument('--threshold', type=float, default=DEFAULT_THRESHOLD,
                         help='cut-off on the absolute modified z-score (default: %(default)s)')
     parser.add_argument('--save-figure', choices=['true', 'false'], default='true',
@@ -186,6 +211,8 @@ def parse_args() -> argparse.Namespace:
 
     args = parser.parse_args()
     args.save_figure = args.save_figure == 'true'
+    if not args.input_csv.is_file():
+        parser.error(f"--input-csv is not a file: {args.input_csv}")
     if args.output_folder is None:
         # The figure is referenced from hampel-identifier.md, whose images live in that folder.
         args.output_folder = pathlib.Path(__file__).resolve().parent / 'hampel-identifier_fig'
@@ -200,20 +227,21 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     options = parse_args()
+    sample = load_sample(input_csv=options.input_csv, column=options.column)
 
-    flagged = SAMPLE[np.abs(hampel_score(data=SAMPLE)) > options.threshold]
+    flagged = sample[np.abs(hampel_score(data=sample)) > options.threshold]
     print(f"[1] Flagged {flagged.size}: {np.sort(flagged).tolist()}   "
-          f"median = {np.median(SAMPLE):.4f}, MAD = {median_absolute_deviation(data=SAMPLE):.4f}, "
-          f"scale = {median_absolute_deviation(data=SAMPLE) / NORMAL_QUARTILE:.6f}, "
-          f"sd = {SAMPLE.std(ddof=1):.6f}")
+          f"median = {np.median(sample):.4f}, MAD = {median_absolute_deviation(data=sample):.4f}, "
+          f"scale = {median_absolute_deviation(data=sample) / NORMAL_QUARTILE:.6f}, "
+          f"sd = {sample.std(ddof=1):.6f}")
 
     if options.save_figure:
-        normality = normality_frame(data=SAMPLE)
-        quantile_points = plot_normality(data=SAMPLE, statistics=normality,
+        normality = normality_frame(data=sample)
+        quantile_points = plot_normality(data=sample, statistics=normality,
                                          output_path=options.output_folder / 'hampel_normality.png')
         # One observation per row for the sample and for the plotted points, one view per row for
         # the statistics.
-        score_frame(data=SAMPLE, threshold=options.threshold).to_csv(
+        score_frame(data=sample, threshold=options.threshold).to_csv(
             options.output_folder / 'hampel_sample.csv')
         normality.to_csv(options.output_folder / 'hampel_normality.csv')
         quantile_points.to_csv(options.output_folder / 'hampel_quantiles.csv', index=False)
