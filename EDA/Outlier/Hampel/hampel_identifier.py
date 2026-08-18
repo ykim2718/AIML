@@ -7,11 +7,12 @@ a threshold. The classical z-score is provided alongside so the two can be compa
 sample, which is what the accompanying document does.
 
 Changelog:
+    0.1.0 - Drop threshold_sweep; the figure it fed is no longer part of the document.
     0.0.0 - Initial release.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -165,24 +166,6 @@ def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
     scores = (values - centre) / scale
     return HampelResult(values=values, centre=centre, mad=mad, scale=scale, scores=scores,
                         threshold=threshold, positions=np.flatnonzero(np.abs(scores) > threshold))
-
-
-def threshold_sweep(data: np.ndarray = None, thresholds: np.ndarray = None) -> pd.DataFrame:
-    """Number of observations each rule flags as the threshold moves.
-
-    Args:
-        data: the sample, shape (n,).
-        thresholds: the cut-offs to sweep, shape (m,).
-
-    Returns:
-        A pd.DataFrame indexed by 'threshold', with columns 'hampel' and 'classical' holding the
-        count each rule reports at that cut-off.
-    """
-    modified = hampel_test(data=data, threshold=float(thresholds[0])).scores
-    classical = classical_z_scores(data=data)
-    return pd.DataFrame({'hampel': [int((np.abs(modified) > t).sum()) for t in thresholds],
-                         'classical': [int((np.abs(classical) > t).sum()) for t in thresholds]},
-                        index=pd.Index(thresholds, name='threshold'))
 
 
 def report(result: HampelResult = None) -> None:

@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 8 | Created: 2026-08-17 | Updated: 2026-08-18 00:36 CDT
+Rev. 9 | Created: 2026-08-17 | Updated: 2026-08-18 00:38 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -211,7 +211,7 @@ done about it.
 ## Appendix B. Reference Implementation
 
 The implementation is `hampel_identifier.py`, in the folder of this document. The block below is
-an excerpt: the docstrings are abridged to their opening paragraph, and the tabulation, sweep,
+an excerpt: the docstrings are abridged to their opening paragraph, and the tabulation,
 reporting and command line parts of the file are omitted. It is otherwise the file as written and
 runs as printed.
 
@@ -334,14 +334,14 @@ python3 hampel_sample_outliers.py --threshold 3.5
 ```
 
 Running either with no option prints the usage. The first tests a column of a file; the second
-reproduces Appendix C exactly and writes both figures with the samples behind them to
+reproduces Appendix C exactly and writes the figure with the samples behind it to
 `hampel-identifier_fig/`.
 
 ## Appendix C. Worked Example
 
 Every number in this appendix is produced by `hampel_sample_outliers.py`, invoked as
 `python3 hampel_sample_outliers.py --threshold 3.5`. The sample is fixed inside the script and
-the points behind the figures are written beside them as CSV.
+the points behind the figure are written beside it as CSV.
 
 Two rules are applied to the same data throughout. **The identifier** is the method of section 3,
 which scores an observation against the median and the MAD. **The classical rule** scores it
