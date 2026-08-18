@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 6 | Created: 2026-08-17 | Updated: 2026-08-18 00:26 CDT
+Rev. 7 | Created: 2026-08-17 | Updated: 2026-08-18 00:31 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -425,13 +425,13 @@ normal.
 
 ![Fig 1](hampel-identifier_fig/hampel_normality.png)
 
-**Fig 1. Normal quantile plots of the sample, of the sample without its extreme value, and of the sample on a log scale**
+**Fig 1. Normal quantile plots of the sample and of the sample without its extreme value**
 
 The reference line runs through the first and third quartiles rather than being fitted by least
 squares, so the extreme observation cannot rotate it and flatten the departure the panel is drawn
 to show.
 
-**Table 7. Normality of the three views**
+**Table 7. Normality under three views of the sample**
 
 | View | Count | Skewness | Shapiro-Wilk p |
 |---|---|---|---|
@@ -439,18 +439,28 @@ to show.
 | Without 0.6532 | 14 | 1.042 | 9.91e-03 |
 | All observations, log10 | 15 | 2.780 | 1.97e-05 |
 
-Every view is rejected at α = 0.05, and every view is rejected at α = 0.01 as well, though the
-middle row falls below the stricter level by only 0.0001 and should not be read as decisive
-there. Panel (b) shows why removing the extreme value does not rescue the sample: the remaining
-14 observations take only 6 distinct values, so the plot rises in steps rather than along the
-line. Panel (c) shows that a log transform does not rescue it either, with skewness falling only
-from 3.462 to 2.780.
+The Shapiro-Wilk test takes as its null hypothesis that the sample was drawn from a normal
+distribution. Its p-value is the probability of a departure at least as large as the one observed
+if that hypothesis were true, so a p-value below the chosen level says the observed shape is too
+unlikely under normality to be put down to sampling variation, and the hypothesis is rejected.
 
-The p-values are approximate rather than exact here, because two thirds of the observations are
-tied and the Shapiro-Wilk statistic assumes a continuous distribution. The size of the departure
-does not rest on that approximation.
+All three p-values fall below 0.05, and all three fall below 0.01 as well, though the middle row
+falls below the stricter level by only 0.0001 and should not be read as decisive there. What puts each
+view below the level is a different feature of the data.
+
+- The full sample fails because of one observation. The value 0.6532 is 28 times the median, and panel (a) shows it far off the line while the other 14 lie almost flat against it. The skewness of 3.462 is that one point.
+- The sample without it fails because the data are discrete. The remaining 14 observations take only 6 distinct values, with 5 tied at 0.0134 and 5 at 0.0232, so panel (b) rises in steps rather than along the line. A normal distribution is continuous and produces no ties at all, so a sample with ten of them cannot look normal however the extremes are treated.
+- The log view, computed but not plotted, fails for the same reason as the first. A logarithm compresses ratios, but 0.6532 remains 48.7 times the smallest observation afterwards, so it stays isolated and the skewness falls only from 3.462 to 2.780.
+
+The second row is the one that matters for this document, because it is the reason the sample
+cannot be rescued by treating 0.6532. The p-values are also approximate rather than exact here,
+since two thirds of the observations are tied and the Shapiro-Wilk statistic assumes a continuous
+distribution; the size of the departure does not rest on that approximation.
 
 ### C.3. Scores
+
+Both rules are now applied to the sample. The question is not whether they agree, since both flag
+0.6532 at a threshold of 3.5, but whether the agreement rests on the same footing on each side.
 
 **Table 8. The two scores on the extreme observation**
 
@@ -459,11 +469,8 @@ does not rest on that approximation.
 | Modified z, from the median and the MAD | 58.2094 | 1.5800 | 54.7094 |
 | Classical z, from the mean and the standard deviation | 3.6110 | 0.3029 | 0.1110 |
 
-Both rules flag 0.6532 at a threshold of 3.5, so on this sample they agree. They do not agree on
-how strongly.
-
-The classical z reaches 3.6110 against a ceiling of 3.6148 for n = 15, which is 99.9% of the
-largest value the arithmetic permits. It flags the observation with 0.1110 to spare, and it does
+They do not agree on how strongly. The classical z reaches 3.6110 against a ceiling of 3.6148
+for n = 15, which is 99.9% of the largest value the arithmetic permits. It flags the observation with 0.1110 to spare, and it does
 so only because n = 15 puts the ceiling just above the threshold; at n = 14 the same rule on the
 same kind of data could not have flagged anything at all. The modified z reaches 58.2094 and
 clears the threshold by 54.7094.
@@ -489,8 +496,10 @@ flipping the answer.
 
 ### C.4. Breakdown in Motion
 
-The 14 retained observations are held fixed and a fifteenth is inserted, then pushed outward.
-Each rule is asked how extreme that inserted observation is.
+Because the two rules reach the same verdict in C.3, this sample on its own does not show what
+separates them. This subsection changes the sample until it does. The 14 retained observations
+are held fixed and a fifteenth is inserted, then pushed outward, and each rule is asked how
+extreme that inserted observation is.
 
 ![Fig 3](hampel-identifier_fig/hampel_breakdown.png)
 

@@ -6,12 +6,13 @@ rule with the threshold swept, and the breakdown behaviour that separates the tw
 observation is pushed further out.
 
 Changelog:
+    0.1.1 - Draw only the untransformed views; the log view stays in the statistics.
     0.1.0 - Add the normal quantile panel and the normality statistics behind it.
     0.0.0 - Initial release.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.1.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.1.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -46,6 +47,10 @@ BLOM_OFFSET = 0.375
 
 # The quartiles the quantile reference line is anchored on.
 QUARTILE_PROBABILITIES = (0.25, 0.75)
+
+# Views drawn as quantile panels. The log view is reported in the statistics but not plotted,
+# because the transform does not change the verdict and the panel repeats the first one.
+PLOTTED_VIEWS = ('full', 'without_extreme')
 
 # Sample sizes the ceiling panel walks over, and the range of contamination the sweep applies.
 CEILING_SIZES = np.arange(3, 61)
@@ -122,18 +127,22 @@ def quartile_line(values: np.ndarray = None) -> tuple[float, float]:
 
 
 def plot_normality(data: np.ndarray = None, statistics: pd.DataFrame = None,
-                   output_path: pathlib.Path = None) -> pd.DataFrame:
-    """Draw a normal quantile panel for each view of the sample.
+                   drawn: tuple = PLOTTED_VIEWS, output_path: pathlib.Path = None) -> pd.DataFrame:
+    """Draw a normal quantile panel for each view named in drawn.
 
     Returns:
         A pd.DataFrame with columns 'view', 'order', 'theoretical_quantile' and 'value', holding
         one row per plotted observation.
     """
-    views = normality_views(data=data)
+    available = normality_views(data=data)
+    missing = [name for name in drawn if name not in available]
+    if missing:
+        raise ValueError(f"no such view: {missing}; available views are {sorted(available)}.")
+    views = {name: available[name] for name in drawn}
     titles = {'full': f"(a) All {data.size} observations", 'without_extreme': f"(b) Without {data.max():g}",
               'log10': f"(c) All {data.size} observations, log10"}
     labels = {'full': 'ordered value', 'without_extreme': 'ordered value', 'log10': 'ordered log10(value)'}
-    figure, axes = plt.subplots(1, len(views), figsize=(17, 5.4))
+    figure, axes = plt.subplots(1, len(views), figsize=(11.5, 5.4))
     rows = []
     for axis, (name, values) in zip(axes, views.items()):
         ordered = np.sort(values)
