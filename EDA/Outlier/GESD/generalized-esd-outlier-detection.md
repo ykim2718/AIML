@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 2 | Created: 2026-08-17 | Updated: 2026-08-17 22:57 CDT
+Rev. 3 | Created: 2026-08-17 | Updated: 2026-08-17 23:00 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -259,7 +259,7 @@ plotting and command line parts of the file are omitted; the file itself is the 
 ### B.1. Core Routine
 
 ```python
-# EDA/Outlier/gesd_outlier_detection.py
+# EDA/Outlier/GESD/gesd_outlier_detection.py
 def gesd_critical_value(sample_size: int = None, step: int = None, alpha: float = None) -> float:
     """Critical value lambda_i of one iteration of the generalized ESD procedure.
 
@@ -326,7 +326,7 @@ at the place it came from even after several removals.
 ### B.2. Result Carrier
 
 ```python
-# EDA/Outlier/gesd_outlier_detection.py
+# EDA/Outlier/GESD/gesd_outlier_detection.py
 @dataclass
 class GesdStep:
     """One iteration of the procedure, before the number of outliers has been decided."""
