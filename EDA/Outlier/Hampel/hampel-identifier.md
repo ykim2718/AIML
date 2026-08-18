@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 7 | Created: 2026-08-17 | Updated: 2026-08-18 00:31 CDT
+Rev. 8 | Created: 2026-08-17 | Updated: 2026-08-18 00:36 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as principle, procedure, parameters, treatment, and limits.
@@ -33,6 +33,9 @@ The median absolute deviation is a median of absolute deviations. Moving one obs
 arbitrarily far changes which value sits at the middle of that list by at most one position, and
 if the sample is large enough it does not change it at all.
 
+That self-reference also puts a ceiling on the classical score which no sample can exceed, worked
+out in [Appendix D. Ceiling of the Classical Score](#appendix-d-ceiling-of-the-classical-score).
+
 ### 2.2. Breakdown Point
 
 The breakdown point of an estimator is the fraction of the sample that has to be corrupted
@@ -47,30 +50,6 @@ before the estimate can be driven anywhere at all.
 
 This is the whole of the method. Everything below is the arithmetic of putting the robust pair
 on a scale that a threshold can be read against.
-
-### 2.3. Ceiling of the Classical Score
-
-The self-reference of section 2.1 has a consequence that is easy to miss. For a sample of size $n$ the
-largest attainable absolute z-score is bounded, whatever the data are.
-
-$$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
-
-The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
-holds for every sample of that size.
-
-**Table 2. The bound at several sample sizes**
-
-| Sample size n | Largest attainable absolute z | A threshold of 3.5 |
-|---|---|---|
-| 10 | 2.8460 | Can never be reached |
-| 14 | 3.4744 | Can never be reached |
-| 15 | 3.6148 | Reachable, barely |
-| 20 | 4.2485 | Reachable |
-| 54 | 7.2124 | Reachable |
-
-For $n \le 14$ a rule that flags an observation when its classical z-score exceeds 3.5 cannot
-flag anything, no matter how extreme the sample is. The modified score of section 3.2 carries no such
-bound, because its denominator stops responding to the observation in the numerator.
 
 ## 3. Procedure
 
@@ -123,7 +102,7 @@ What that works out to in the units of the data is not fixed, because the robust
 from the sample. Two samples with the same threshold have different boundaries, and C.1 works one
 of them out.
 
-**Table 3. What the threshold costs on genuinely normal data**
+**Table 2. What the threshold costs on genuinely normal data**
 
 | Threshold k | Probability one observation is flagged | Expected false flags in n = 15 |
 |---|---|---|
@@ -166,7 +145,7 @@ first.
 
 ## 6. Limits
 
-**Table 4. Conditions that limit the identifier**
+**Table 3. Conditions that limit the identifier**
 
 | Condition | Consequence | What to do instead |
 |---|---|---|
@@ -186,8 +165,8 @@ in that case reports a clean sample when it should report that it cannot answer.
 The Hampel identifier scores each observation as its distance from the median divided by the
 rescaled MAD, and flags the observation when that score exceeds 3.5 in absolute value. The
 robust pair has a breakdown point of 50% against 0% for the mean and standard deviation, which
-is why the method needs no iteration and why it is unaffected by the ceiling that bounds every
-classical z-score at $(n-1)/\sqrt{n}$. It assumes contamination is a minority rather than
+is why the method needs no iteration and why it is unaffected by the ceiling of Appendix D that
+bounds every classical z-score at $(n-1)/\sqrt{n}$. It assumes contamination is a minority rather than
 assuming normality, it fails outright when more than half the sample takes one value, and like
 every detection rule it answers how far an observation sits from the bulk and not what should be
 done about it.
@@ -344,7 +323,7 @@ sample on data the method cannot read. The message names the count of tied obser
 caller can see why.
 
 `classical_z_scores` and `max_attainable_z` exist for the comparison rather than for the method.
-Carrying the bound as a function rather than as a number in the document keeps section 2.3
+Carrying the bound as a function rather than as a number in the document keeps Appendix D
 checkable: the claim about any sample size can be evaluated instead of trusted.
 
 ### B.3. Invocation
@@ -374,7 +353,7 @@ scores they produce are the modified z of section 3.2 and the ordinary z-score.
 The sample is 15 measurements taking only 7 distinct values, with 0.0134 and 0.0232 each
 appearing 5 times. Its median is 0.0232 and the values run from 0.0134 to 0.6532.
 
-**Table 5. Every observation with its score under each rule**
+**Table 4. Every observation with its score under each rule**
 
 | Observation | Value | Modified z | Classical z | Flagged |
 |---|---|---|---|---|
@@ -398,7 +377,7 @@ The modified z is 0 at the five observations equal to the median, which is what 
 the median gives. The classical z is negative at all fourteen retained observations, because the
 mean has been pulled above every one of them by the fifteenth.
 
-**Table 6. The centre and the scale each rule computes**
+**Table 5. The centre and the scale each rule computes**
 
 | Quantity | Classical rule | Identifier |
 |---|---|---|
@@ -431,7 +410,7 @@ The reference line runs through the first and third quartiles rather than being 
 squares, so the extreme observation cannot rotate it and flatten the departure the panel is drawn
 to show.
 
-**Table 7. Normality under three views of the sample**
+**Table 6. Normality under three views of the sample**
 
 | View | Count | Skewness | Shapiro-Wilk p |
 |---|---|---|---|
@@ -457,83 +436,26 @@ cannot be rescued by treating 0.6532. The p-values are also approximate rather t
 since two thirds of the observations are tied and the Shapiro-Wilk statistic assumes a continuous
 distribution; the size of the departure does not rest on that approximation.
 
-### C.3. Scores
+## Appendix D. Ceiling of the Classical Score
 
-Both rules are now applied to the sample. The question is not whether they agree, since both flag
-0.6532 at a threshold of 3.5, but whether the agreement rests on the same footing on each side.
+The self-reference of section 2.1 has a consequence that is easy to miss. For a sample of size $n$ the
+largest attainable absolute z-score is bounded, whatever the data are.
 
-**Table 8. The two scores on the extreme observation**
+$$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 
-| Score | 0.6532 | Largest among the other 14 | Margin over the threshold 3.5 |
-|---|---|---|---|
-| Modified z, from the median and the MAD | 58.2094 | 1.5800 | 54.7094 |
-| Classical z, from the mean and the standard deviation | 3.6110 | 0.3029 | 0.1110 |
+The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
+holds for every sample of that size.
 
-They do not agree on how strongly. The classical z reaches 3.6110 against a ceiling of 3.6148
-for n = 15, which is 99.9% of the largest value the arithmetic permits. It flags the observation with 0.1110 to spare, and it does
-so only because n = 15 puts the ceiling just above the threshold; at n = 14 the same rule on the
-same kind of data could not have flagged anything at all. The modified z reaches 58.2094 and
-clears the threshold by 54.7094.
+**Table 7. The bound at several sample sizes**
 
-![Fig 2](hampel-identifier_fig/hampel_sample.png)
+| Sample size n | Largest attainable absolute z | A threshold of 3.5 |
+|---|---|---|
+| 10 | 2.8460 | Can never be reached |
+| 14 | 3.4744 | Can never be reached |
+| 15 | 3.6148 | Reachable, barely |
+| 20 | 4.2485 | Reachable |
+| 54 | 7.2124 | Reachable |
 
-**Fig 2. The sample under the identifier and the classical rule, with the threshold swept**
-
-Panel (a) draws the two boundaries of Table 6 against the data on a log axis. The boundary of the
-identifier sits at 0.0611, above every retained observation and well below 0.6532. The classical
-boundary sits at 0.6351, which is above 14 of the 15 observations because the outlier pushed it
-there; the flagged point clears it by a margin too small to see at this scale.
-
-Panel (b) scores every observation under both rules, which is Table 5 drawn. The ceiling and the
-threshold appear as two nearly coincident lines, the visual form of the previous paragraph: for
-this sample size the classical rule has almost no room between the threshold it must clear and the
-largest value it can produce.
-
-Panel (c) sweeps the threshold. The modified z reports exactly one outlier for every threshold
-from 1.58 to 58.21, a band spanning a factor of 37 that the conventional 3.5 sits well inside. The
-classical z reports one only up to 3.61 and none above it, so a threshold of 3.5 sits 0.11 from
-flipping the answer.
-
-### C.4. Breakdown in Motion
-
-Because the two rules reach the same verdict in C.3, this sample on its own does not show what
-separates them. This subsection changes the sample until it does. The 14 retained observations
-are held fixed and a fifteenth is inserted, then pushed outward, and each rule is asked how
-extreme that inserted observation is.
-
-![Fig 3](hampel-identifier_fig/hampel_breakdown.png)
-
-**Fig 3. What each rule reports as one observation is pushed outward**
-
-Panel (a) is the breakdown point of section 2.2 made visible. The modified z grows without limit,
-reaching 1845.8 when the contaminant is 20. The classical z rises at first, then flattens
-against the ceiling of 3.6148 and stays there however far the observation is pushed. Past that
-point the classical rule cannot distinguish an observation ten times too large from one a
-thousand times too large, because the contaminant is inflating its own denominator as fast as
-its numerator.
-
-The crossing near the left of panel (a) is worth noting. The classical z passes 3.5 when the
-contaminant reaches 0.1385 and the modified z passes it at 0.0645, so the robust rule reacts
-at less than half the distance and then keeps going while the other saturates.
-
-Panel (b) plots the ceiling against the sample size. The shaded region marks $n \le 14$, where a
-threshold of 3.5 on the classical z can never be reached. The sample of this appendix sits at
-n = 15, just past that edge, which is the accident that let the classical rule work here at all.
-
-### C.5. Reading
-
-On this sample the two rules give the same verdict and the identifier gives it far more securely.
-The verdict does not depend on the threshold anywhere in a band spanning a factor of 37, it does
-not depend on normality, and it is not near a ceiling.
-
-The sample does not satisfy normality, with or without 0.6532, as C.2 shows. That is what makes
-the identifier the appropriate rule here rather than merely the more comfortable
-one: a test whose critical
-values are derived from the normal distribution loses its basis on this data, while the
-identifier only loses the reading of 3.5 as a false-positive rate, which is not what the verdict
-rests on.
-
-The margin of safety against the failure of section 6 is smaller than it looks. The largest tie is 5
-observations of 15; the MAD becomes 0 at 8, so three more tied observations would leave the
-method unable to answer. Coarse measurement resolution moves a sample toward that boundary, and
-it is worth checking the tie count before relying on this rule.
+For $n \le 14$ a rule that flags an observation when its classical z-score exceeds 3.5 cannot
+flag anything, no matter how extreme the sample is. The modified score of section 3.2 carries no such
+bound, because its denominator stops responding to the observation in the numerator.
