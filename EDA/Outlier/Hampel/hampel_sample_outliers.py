@@ -5,6 +5,7 @@ normal with or without it. One figure is drawn, the normal quantile panels behin
 claim, and the sample is written out with the score each observation receives.
 
 Changelog:
+    0.3.0 - Follow the split of hampel_test into hampel_score, hampel_scale and score_frame.
     0.2.0 - Drop the boundary, sensitivity and breakdown figures; keep the quantile panels.
     0.1.1 - Draw only the untransformed views; the log view stays in the statistics.
     0.1.0 - Add the normal quantile panel and the normality statistics behind it.
@@ -12,7 +13,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.2.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.3.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -23,7 +24,8 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from hampel_identifier import DEFAULT_THRESHOLD, hampel_test
+from hampel_identifier import (DEFAULT_THRESHOLD, hampel_scale, hampel_score,
+                               median_absolute_deviation, score_frame)
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -177,10 +179,10 @@ def parse_args() -> argparse.Namespace:
 if __name__ == '__main__':
     options = parse_args()
 
-    outcome = hampel_test(data=SAMPLE, threshold=options.threshold)
-    print(f"[1] Flagged {outcome.count}: {np.sort(SAMPLE[outcome.positions]).tolist()}   "
-          f"median = {outcome.centre:.4f}, MAD = {outcome.mad:.4f}, scale = {outcome.scale:.6f}, "
-          f"sd = {SAMPLE.std(ddof=1):.6f}")
+    flagged = SAMPLE[np.abs(hampel_score(data=SAMPLE)) > options.threshold]
+    print(f"[1] Flagged {flagged.size}: {np.sort(flagged).tolist()}   "
+          f"median = {np.median(SAMPLE):.4f}, MAD = {median_absolute_deviation(data=SAMPLE):.4f}, "
+          f"scale = {hampel_scale(data=SAMPLE):.6f}, sd = {SAMPLE.std(ddof=1):.6f}")
 
     if options.save_figure:
         normality = normality_frame(data=SAMPLE)
@@ -188,7 +190,8 @@ if __name__ == '__main__':
                                          output_path=options.output_folder / 'hampel_normality.png')
         # One observation per row for the sample and for the plotted points, one view per row for
         # the statistics.
-        outcome.to_frame().to_csv(options.output_folder / 'hampel_sample.csv')
+        score_frame(data=SAMPLE, threshold=options.threshold).to_csv(
+            options.output_folder / 'hampel_sample.csv')
         normality.to_csv(options.output_folder / 'hampel_normality.csv')
         quantile_points.to_csv(options.output_folder / 'hampel_quantiles.csv', index=False)
         print(f"[3] Chart data written to {options.output_folder}")

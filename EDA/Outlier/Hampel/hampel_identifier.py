@@ -1,12 +1,14 @@
-"""Hampel identifier: outlier detection from the median and the median absolute deviation.
+"""Hampel identifier: outlier scoring from the median and the median absolute deviation.
 
 The classical z-score divides a deviation from the mean by the standard deviation, and an outlier
 contaminates both. This module replaces the pair with the median and the MAD, which a minority of
-contaminating observations cannot move, and flags an observation whose rescaled deviation exceeds
-a threshold. The classical z-score is provided alongside so the two can be compared on the same
-sample, which is what the accompanying document does.
+contaminating observations cannot move. Scoring and deciding are separate: hampel_score computes
+the modified z-score of every observation and takes no threshold, and the caller compares the
+absolute score against one. The classical z-score is provided alongside so the two can be
+compared on the same sample, which is what the accompanying document does.
 
 Changelog:
+    0.4.0 - Replace HampelResult with hampel_score, hampel_scale and retained_interval.
     0.3.0 - Rename the HampelResult field modified_z to modified_z_scores.
     0.2.0 - Rename the HampelResult field scores to modified_z.
     0.1.0 - Drop threshold_sweep; the figure it fed is no longer part of the document.
@@ -14,12 +16,11 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.4.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
 import sys
-from dataclasses import dataclass
 from typing import Union
 
 import numpy as np
@@ -34,49 +35,17 @@ NORMAL_QUARTILE = float(stats.norm.ppf(0.75))
 DEFAULT_THRESHOLD = 3.5
 
 
-@dataclass
-class HampelResult:
-    """Outcome of the Hampel identifier on one sample.
-
-    Attributes:
-        values: the sample, shape (n,).
-        centre: the median of the sample.
-        mad: the median absolute deviation, before any rescaling.
-        scale: mad divided by NORMAL_QUARTILE, which estimates sigma for a normal sample.
-        modified_z_scores: the modified z-score of each observation, shape (n,).
-        threshold: the cut-off the absolute modified z-scores were compared against.
-        positions: positions of the flagged observations, sorted ascending.
-    """
-
-    values: np.ndarray
-    centre: float
-    mad: float
-    scale: float
-    modified_z_scores: np.ndarray
-    threshold: float
-    positions: np.ndarray
-
-    @property
-    def count(self) -> int:
-        """Number of flagged observations."""
-        return int(self.positions.size)
-
-    def bounds(self) -> tuple[float, float]:
-        """The interval outside which an observation is flagged."""
-        return self.centre - self.threshold * self.scale, self.centre + self.threshold * self.scale
-
-    def to_frame(self) -> pd.DataFrame:
-        """Tabulate the sample with its scores.
-
-        Returns:
-            A pd.DataFrame indexed by 'position' (counted from 0), with columns 'value',
-            'modified_z', 'classical_z' and 'flagged'.
-        """
-        flagged = np.zeros(self.values.size, dtype=bool)
-        flagged[self.positions] = True
-        return pd.DataFrame({'value': self.values, 'modified_z': self.modified_z_scores,
-                             'classical_z': classical_z_scores(data=self.values), 'flagged': flagged},
-                            index=pd.Index(np.arange(self.values.size), name='position'))
+def _as_sample(data: np.ndarray = None) -> np.ndarray:
+    """Return the sample as a 1-D float array, refusing input the identifier cannot read."""
+    values = np.asarray(data, dtype=float)
+    if values.ndim != 1:
+        raise ValueError(f"data must be 1-D, got shape {values.shape}.")
+    if values.size < 3:
+        raise ValueError(f"the identifier needs at least 3 observations to have a usable median, got {values.size}.")
+    if not np.all(np.isfinite(values)):
+        raise ValueError(f"data carries {int((~np.isfinite(values)).sum())} non-finite values; "
+                         f"remove or impute them before scoring.")
+    return values
 
 
 def median_absolute_deviation(data: np.ndarray = None) -> float:
@@ -86,10 +55,75 @@ def median_absolute_deviation(data: np.ndarray = None) -> float:
         data: the sample, shape (n,).
 
     Returns:
-        The MAD, unscaled.
+        The MAD, before any rescaling.
     """
     values = np.asarray(data, dtype=float)
     return float(np.median(np.abs(values - np.median(values))))
+
+
+def hampel_scale(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> float:
+    """Robust scale of the sample, which is the MAD divided by the consistency constant.
+
+    Args:
+        data: the sample, shape (n,).
+        quartile: the constant the MAD is divided by; the default makes the scale estimate the
+            standard deviation on a normal sample.
+
+    Returns:
+        The robust scale.
+    """
+    values = _as_sample(data=data)
+    if quartile <= 0.0:
+        raise ValueError(f"quartile must be positive, got {quartile}.")
+    mad = median_absolute_deviation(data=values)
+    if mad == 0.0:
+        # More than half the sample sits on one value, so the MAD carries no scale at all.
+        # Returning zero here would make every score infinite or undefined further down.
+        centre = float(np.median(values))
+        repeated = int((values == centre).sum())
+        raise ValueError(f"the MAD is 0 because {repeated} of {values.size} observations equal the median "
+                         f"{centre}; the robust scale is undefined. Use a scale estimator that tolerates "
+                         f"ties, such as Sn or Qn, or report that the sample cannot support the method.")
+    return mad / quartile
+
+
+def hampel_score(data: np.ndarray = None, quartile: float = NORMAL_QUARTILE) -> np.ndarray:
+    """Modified z-score of every observation, which is its distance from the median in robust scales.
+
+    No threshold is taken, because the score does not depend on one. A caller decides by comparing
+    the absolute score against a cut-off, 3.5 by convention.
+
+    Args:
+        data: the sample, shape (n,).
+        quartile: the constant the MAD is divided by, as in hampel_scale.
+
+    Returns:
+        The modified z-scores, shape (n,).
+    """
+    values = _as_sample(data=data)
+    return (values - np.median(values)) / hampel_scale(data=values, quartile=quartile)
+
+
+def retained_interval(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
+                      quartile: float = NORMAL_QUARTILE) -> tuple[float, float]:
+    """The decision rule written in the units of the data rather than in scales.
+
+    An observation inside the interval is retained and an observation outside it is flagged.
+
+    Args:
+        data: the sample, shape (n,).
+        threshold: the cut-off on the absolute modified z-score.
+        quartile: the constant the MAD is divided by, as in hampel_scale.
+
+    Returns:
+        The lower and the upper end of the interval.
+    """
+    values = _as_sample(data=data)
+    if threshold <= 0.0:
+        raise ValueError(f"threshold must be positive, got {threshold}.")
+    centre = float(np.median(values))
+    half_width = threshold * hampel_scale(data=values, quartile=quartile)
+    return centre - half_width, centre + half_width
 
 
 def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
@@ -104,7 +138,7 @@ def classical_z_scores(data: np.ndarray = None) -> np.ndarray:
     Returns:
         The scores, shape (n,).
     """
-    values = np.asarray(data, dtype=float)
+    values = _as_sample(data=data)
     deviation = values.std(ddof=1)
     if deviation == 0.0:
         raise ValueError(f"all {values.size} observations are equal, so the classical z-score is undefined.")
@@ -128,78 +162,57 @@ def max_attainable_z(sample_size: int = None) -> float:
     return (sample_size - 1) / np.sqrt(sample_size)
 
 
-def hampel_test(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD,
-                quartile: float = NORMAL_QUARTILE) -> HampelResult:
-    """Flag observations whose modified z-score exceeds the threshold in absolute value.
+def score_frame(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> pd.DataFrame:
+    """Tabulate the sample against both scores and the flag.
 
     Args:
         data: the sample, shape (n,).
-        threshold: the cut-off, 3.5 by convention.
-        quartile: the constant the MAD is divided by to estimate sigma; the default makes the
-            score agree with a classical z-score on normal data.
+        threshold: the cut-off on the absolute modified z-score.
 
     Returns:
-        A HampelResult holding the centre, the scale, every score, and the flagged positions.
+        A pd.DataFrame indexed by 'position' (counted from 0), with columns 'value', 'modified_z',
+        'classical_z' and 'flagged'.
     """
-    values = np.asarray(data, dtype=float)
-    if values.ndim != 1:
-        raise ValueError(f"data must be 1-D, got shape {values.shape}.")
-    if values.size < 3:
-        raise ValueError(f"the identifier needs at least 3 observations to have a usable median, got {values.size}.")
-    if not np.all(np.isfinite(values)):
-        raise ValueError(f"data carries {int((~np.isfinite(values)).sum())} non-finite values; "
-                         f"remove or impute them before testing.")
-    if threshold <= 0.0:
-        raise ValueError(f"threshold must be positive, got {threshold}.")
-    if quartile <= 0.0:
-        raise ValueError(f"quartile must be positive, got {quartile}.")
-
-    centre = float(np.median(values))
-    mad = median_absolute_deviation(data=values)
-    if mad == 0.0:
-        # More than half the sample sits on one value, so the MAD carries no scale at all.
-        # Returning zeros here would report a clean sample, which is the opposite of the truth.
-        repeated = int((values == centre).sum())
-        raise ValueError(f"the MAD is 0 because {repeated} of {values.size} observations equal the median "
-                         f"{centre}; the modified z-score is undefined. Use a scale estimator that tolerates "
-                         f"ties, such as Sn or Qn, or report that the sample cannot support the test.")
-
-    scale = mad / quartile
-    modified_z_scores = (values - centre) / scale
-    return HampelResult(values=values, centre=centre, mad=mad, scale=scale,
-                        modified_z_scores=modified_z_scores, threshold=threshold,
-                        positions=np.flatnonzero(np.abs(modified_z_scores) > threshold))
+    values = _as_sample(data=data)
+    modified = hampel_score(data=values)
+    return pd.DataFrame({'value': values, 'modified_z': modified,
+                         'classical_z': classical_z_scores(data=values),
+                         'flagged': np.abs(modified) > threshold},
+                        index=pd.Index(np.arange(values.size), name='position'))
 
 
-def report(result: HampelResult = None) -> None:
-    """Print the centre, the scale, and every flagged observation."""
-    lower, upper = result.bounds()
-    size = result.values.size
-    print(f"[1] Sample: n = {size}, median = {result.centre:.6f}, MAD = {result.mad:.6f}, "
-          f"scale = {result.scale:.6f}")
-    print(f"[2] Rule: |modified z| > {result.threshold}, so the retained interval is "
-          f"[{lower:.6f}, {upper:.6f}]")
-    print(f"[3] Classical scale for comparison: sd = {result.values.std(ddof=1):.6f}, "
-          f"which is {result.values.std(ddof=1) / result.scale:.1f} times the robust scale")
-    print(f"[4] The classical z-score of this sample cannot exceed {max_attainable_z(sample_size=size):.4f}\n")
-    frame = result.to_frame()
+def report(data: np.ndarray = None, threshold: float = DEFAULT_THRESHOLD) -> None:
+    """Print the centre, the scale, the interval, and every flagged observation."""
+    values = _as_sample(data=data)
+    scale = hampel_scale(data=values)
+    lower, upper = retained_interval(data=values, threshold=threshold)
+    frame = score_frame(data=values, threshold=threshold)
+    flagged = frame.index[frame['flagged']]
+
+    print(f"[1] Sample: n = {values.size}, median = {np.median(values):.6f}, "
+          f"MAD = {median_absolute_deviation(data=values):.6f}, scale = {scale:.6f}")
+    print(f"[2] Rule: |modified z| > {threshold}, so the retained interval is [{lower:.6f}, {upper:.6f}]")
+    print(f"[3] Classical scale for comparison: sd = {values.std(ddof=1):.6f}, "
+          f"which is {values.std(ddof=1) / scale:.1f} times the robust scale")
+    print(f"[4] The classical z-score of this sample cannot exceed "
+          f"{max_attainable_z(sample_size=values.size):.4f}\n")
     with pd.option_context('display.float_format', '{:.4f}'.format, 'display.width', 120):
         print(frame.to_string())
-    if result.count == 0:
+    if flagged.empty:
         print(f"\n[5] No observation exceeded the threshold.")
         return
-    print(f"\n[5] Flagged: {result.count} at positions {result.positions.tolist()}, "
-          f"values {np.sort(result.values[result.positions]).tolist()}")
+    print(f"\n[5] Flagged: {flagged.size} at positions {flagged.tolist()}, "
+          f"values {np.sort(values[flagged]).tolist()}")
 
 
 def parse_args() -> argparse.Namespace:
     """Parse and validate the command line options."""
     parser = argparse.ArgumentParser(
-        description='Flag outliers with the Hampel identifier, built on the median and the MAD.')
+        description='Score a sample with the Hampel identifier, built on the median and the MAD.')
     parser.add_argument('--input-csv', type=pathlib.Path, required=True,
-                        help='CSV holding the sample; the column named by --column is tested')
+                        help='CSV holding the sample; the column named by --column is scored')
     parser.add_argument('--column', type=str, default='value',
-                        help='column of --input-csv to test (default: %(default)s)')
+                        help='column of --input-csv to score (default: %(default)s)')
     parser.add_argument('--threshold', type=float, default=DEFAULT_THRESHOLD,
                         help='cut-off on the absolute modified z-score (default: %(default)s)')
 
@@ -217,7 +230,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_sample(input_csv: Union[pathlib.Path, None] = None, column: str = None) -> np.ndarray:
-    """Read the column to test from a CSV."""
+    """Read the column to score from a CSV."""
     frame = pd.read_csv(input_csv)
     if column not in frame.columns:
         raise ValueError(f"column '{column}' is absent from {input_csv}; available: {list(frame.columns)}")
@@ -227,5 +240,4 @@ def load_sample(input_csv: Union[pathlib.Path, None] = None, column: str = None)
 if __name__ == '__main__':
     options = parse_args()
 
-    sample = load_sample(input_csv=options.input_csv, column=options.column)
-    report(result=hampel_test(data=sample, threshold=options.threshold))
+    report(data=load_sample(input_csv=options.input_csv, column=options.column), threshold=options.threshold)
