@@ -1,9 +1,8 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 17 | Created: 2026-08-17 | Updated: 2026-08-18 01:27 CDT
+Rev. 18 | Created: 2026-08-17 | Updated: 2026-08-18 01:32 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
-> organized as the score, its robustness, its assumptions, the threshold, and the treatment
-> of what it flags.
+> organized as the score, its robustness, and the treatment of what it flags.
 
 ## 1. Scope
 
@@ -40,7 +39,7 @@ classical z-score.
 
 The constant is the only place normality enters the method, and it is a calibration rather than
 an assumption: changing it rescales every score by the same factor and reorders nothing. Its
-purpose is to let the threshold of section 5 be read as a false-positive rate.
+purpose is to let the threshold of section 2.3 be read as a false-positive rate.
 
 ### 2.3. Outlier Flag
 
@@ -50,9 +49,11 @@ absolute value.
 $$\left| M_i \right| \gt k$$
 
 The threshold $k$ is 3.5 by convention. The value comes from Iglewicz and Hoaglin (1993), who set
-it high enough that a sample which really is normal almost never produces a flag. The expected
-number of false flags in fifteen observations is 0.007. Section 5 gives that calculation and the
-cost of the other thresholds in common use.
+it high enough that a sample which really is normal almost never produces a flag. On such a
+sample the expected number of false flags in fifteen observations is 0.007. A threshold of 3.0
+is also used and is roughly six times looser. Fix the threshold before looking at the data, and
+report it, because a verdict that changes between 3.0 and 3.5 rests on the choice rather than on
+the sample.
 
 Every observation is scored once, against one centre and one scale. There is no iteration and
 nothing is removed part-way, because the estimates the scores are built on were never
@@ -73,7 +74,12 @@ sample, so two samples tested at the same threshold have different intervals.
 
 ## 3. Robustness
 
-### 3.1. Contaminated Scale
+### 3.1. Assumptions
+
+The sample is univariate. Contamination is a minority: fewer than half the observations are
+outliers.
+
+### 3.2. Contaminated Scale
 
 A sample standard deviation is a mean of squared deviations, so a single distant observation
 enters it quadratically. The larger the outlier, the larger the denominator it is divided by,
@@ -88,7 +94,7 @@ caps the classical score at a value no sample can exceed.
 [Appendix D. Ceiling of the Classical Score](#appendix-d-ceiling-of-the-classical-score) works
 that cap out.
 
-### 3.2. Breakdown Point
+### 3.3. Breakdown Point
 
 The mean and the standard deviation break down at one observation. The median and the MAD break
 down only when more than half the sample is corrupted.
@@ -110,45 +116,7 @@ The breakdown point is the fraction of the sample that has to be corrupted for t
 This is the whole of the reason the method works. Section 2 is the arithmetic of putting the
 robust pair on a scale that a threshold can be read against.
 
-## 4. Assumptions
-
-The sample is univariate. Contamination is a minority: fewer than half the observations are
-outliers, which is the condition section 3.2 buys and not one that can be dispensed with.
-
-Normality is not assumed for the detection to be meaningful, and this is the difference from the
-normal-theory tests. Normality enters only in the calibration of section 2.2, which is what makes the
-number 3.5 interpretable. On a sample that is not normal the identifier still measures how far
-an observation sits from the bulk in units of the bulk's own spread; what is lost is the
-reading of the threshold as a false-positive rate.
-
-## 5. Threshold
-
-The threshold $k$ is a cut-off on the score of section 2.1, not on the observation itself. An
-observation is flagged when $\left| M_i \right|$ exceeds it, so $k$ is read in units of the robust
-scale: at 3.5 an observation is flagged once it lies more than 3.5 robust scales away from the
-median, on either side.
-
-What that works out to in the units of the data is not fixed, because the robust scale is computed
-from the sample. Two samples with the same threshold have different boundaries, and C.1 works one
-of them out.
-
-**Table 2. What the threshold costs on genuinely normal data**
-
-| Threshold k | Probability one observation is flagged | Expected false flags in n = 15 |
-|---|---|---|
-| 2.5 | 0.012419 | 0.186 |
-| 3.0 | 0.002700 | 0.041 |
-| 3.5 | 0.000465 | 0.007 |
-
-The value 3.5 is the recommendation of Iglewicz and Hoaglin (1993). It is conservative by
-construction: a sample of 100 normal observations produces one spurious flag about once in
-twenty samples. A threshold of 3.0 is also seen and is roughly six times looser.
-
-The threshold is a choice and should be fixed before the data are seen. Its influence on a given
-result is worth reporting, since a verdict that changes between 3.0 and 3.5 rests on the choice
-rather than on the data.
-
-## 6. Treatment
+## 4. Treatment
 
 The identifier settles whether an observation is far from the bulk. It does not settle whether
 the observation is wrong, and the two questions should not be merged.
@@ -162,9 +130,9 @@ Re-running the identifier on the sample left after removal is not a treatment. T
 scale are recomputed on cleaned data, so the second pass measures a different thing from the
 first.
 
-## 7. Limits
+## 5. Limits
 
-**Table 3. Conditions that limit the identifier**
+**Table 2. Conditions that limit the identifier**
 
 | Condition | Consequence | What to do instead |
 |---|---|---|
@@ -179,7 +147,7 @@ common in data recorded at coarse resolution. It is a hard failure rather than a
 the score is undefined, not merely inaccurate, and an implementation that returns zero scores
 in that case reports a clean sample when it should report that it cannot answer.
 
-## 8. Summary
+## 6. Summary
 
 The Hampel identifier scores each observation as its distance from the median divided by the
 rescaled MAD, and flags the observation when that score exceeds 3.5 in absolute value. The
@@ -333,7 +301,7 @@ calibration of section 2.2 cannot drift from the value the code actually applies
 because a score on its own cannot be checked against anything. Its omitted `to_frame` method
 tabulates the sample against both scores, which is what the worked example prints.
 
-The zero-MAD branch is the one that matters. It is the failure of section 7, and the alternative
+The zero-MAD branch is the one that matters. It is the failure of section 5, and the alternative
 to raising is to divide by zero or to return scores of zero, either of which reports a clean
 sample on data the method cannot read. The message names the count of tied observations so the
 caller can see why.
@@ -366,7 +334,7 @@ scores they produce are the modified z of section 2.1 and the ordinary z-score.
 
 ### C.1. Sample
 
-**Table 4. Every observation with its score under each rule**
+**Table 3. Every observation with its score under each rule**
 
 | Observation | Value | Value − median | Modified z | Classical z | Flagged |
 |---|---|---|---|---|---|
@@ -392,14 +360,14 @@ does, at 58.2094. The next largest is 1.5800 at observation 8, less than half th
 
 The two middle columns lay out the arithmetic of section 2.1, so the flag can be checked rather
 than taken. The deviation column is the numerator of the modified z, and the modified z is that
-deviation divided by the scale of 0.010823 that Table 5 works out. Observation 7 reads
+deviation divided by the scale of 0.010823 that Table 4 works out. Observation 7 reads
 0.6300 / 0.010823 = 58.2094, which is 16.6 times the threshold it has to clear.
 
 The classical z is carried alongside for contrast and takes no part in the flag. It is negative
 at all fourteen retained observations, because the mean has been pulled above every one of them
 by the fifteenth.
 
-**Table 5. The centre and the scale each rule computes**
+**Table 4. The centre and the scale each rule computes**
 
 | Quantity | Classical rule | Identifier |
 |---|---|---|
@@ -419,10 +387,9 @@ observations; the classical scale describes the outlier.
 
 ### C.2. Normality
 
-Section 4 states that the identifier does not need normality for its detection to be
-meaningful, and section 2.2 states that normality is what makes the threshold readable as a
-false-positive rate. This sample is the case where the distinction matters, because it is not
-normal.
+The identifier does not need normality for its detection to be meaningful, and section 2.2 says
+that normality is what makes the threshold readable as a false-positive rate. This sample is the
+case where that distinction matters, because it is not normal.
 
 ![Fig 1](hampel-identifier_fig/hampel_normality.png)
 
@@ -432,7 +399,7 @@ The reference line runs through the first and third quartiles rather than being 
 squares, so the extreme observation cannot rotate it and flatten the departure the panel is drawn
 to show.
 
-**Table 6. Normality under three views of the sample**
+**Table 5. Normality under three views of the sample**
 
 | View | Count | Skewness | Shapiro-Wilk p |
 |---|---|---|---|
@@ -460,7 +427,7 @@ distribution; the size of the departure does not rest on that approximation.
 
 ## Appendix D. Ceiling of the Classical Score
 
-The self-reference of section 3.1 has a consequence that is easy to miss. For a sample of size $n$ the
+The self-reference of section 3.2 has a consequence that is easy to miss. For a sample of size $n$ the
 largest attainable absolute z-score is bounded, whatever the data are.
 
 $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
@@ -468,7 +435,7 @@ $$\max_i \left| z_i \right| \le \frac{n-1}{\sqrt{n}}$$
 The bound is due to Shiffler (1988). It does not describe the data; it is arithmetic, and it
 holds for every sample of that size.
 
-**Table 7. The bound at several sample sizes**
+**Table 6. The bound at several sample sizes**
 
 | Sample size n | Largest attainable absolute z | A threshold of 3.5 |
 |---|---|---|
