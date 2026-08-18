@@ -1,5 +1,5 @@
 # Outlier Detection
-Rev. 0 | Created: 2026-08-17 | Updated: 2026-08-17 23:06 CDT
+Rev. 1 | Created: 2026-08-17 | Updated: 2026-08-17 23:38 CDT
 
 > This folder covers the detection of observations that are discordant with the model the rest of a sample follows.
 > Each method keeps its own subfolder, holding the document that fixes the method and the scripts that run it.
@@ -17,14 +17,16 @@ Table 1. Methods in this folder
 | Method | Document | Question it answers |
 |--------|-------------|---------------------|
 | [GESD](GESD/) | [GESD/generalized-esd.md](GESD/generalized-esd.md) | How many outliers does an approximately normal sample carry, when the number is not known in advance? It is the many-outlier procedure of ISO 16269-4, and it reaches outliers that hide one another from a single-outlier test. |
+| [Hampel](Hampel/) | [Hampel/hampel-identifier.md](Hampel/hampel-identifier.md) | How far does each observation sit from the bulk, when the sample is not normal? It scores every observation against the median and the MAD, which contamination cannot move, and needs no iteration. It is not part of ISO 16269-4. |
 
 ## 3. Order Of Use
 
 1. Inspect the distribution before choosing a test. Every method here assumes a shape, and a sample that violates that shape produces flags recording the violation rather than any discordance.
 2. Decide what is known about the number of outliers. A test built for exactly one is not applied repeatedly to find several, because the significance level does not survive the repetition.
-3. Fix the significance level before the data are seen, so that the threshold is not chosen to produce a preferred answer.
-4. Read the margin, not only the verdict. A statistic that exceeds its critical value by a hair and one that exceeds it by a wide gap are different findings, and only the second is robust to the choices made in the first three steps.
-5. Investigate a flag before removing it, and report what was removed together with the change it made to the estimates.
+3. Choose the method by which assumption the data can carry. The normal-theory tests state a controlled error rate but forfeit it when normality fails; the robust identifier keeps its meaning without normality but reports a score rather than a count.
+4. Fix the significance level before the data are seen, so that the threshold is not chosen to produce a preferred answer.
+5. Read the margin, not only the verdict. A statistic that exceeds its critical value by a hair and one that exceeds it by a wide gap are different findings, and only the second is robust to the choices made in the first three steps.
+6. Investigate a flag before removing it, and report what was removed together with the change it made to the estimates.
 
 ## 4. Conventions
 
