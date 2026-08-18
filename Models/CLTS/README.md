@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 13 | Created: 2026-08-12 | Updated: 2026-08-18 16:09 CDT
+Rev. 14 | Created: 2026-08-12 | Updated: 2026-08-18 16:10 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -35,7 +35,10 @@ Fig 1의 How to update 축 4가지 중, 시계열 예측에서 실제로 가장 
 
 ### 2.1 Full retraining on a window
 
-고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다는 장점이 있다. Window를 늘려 가며 전체 이력을 유지하는 expanding window 방식은 장기 패턴 보존에 유리하지만, 데이터가 커질수록 재학습 비용이 증가한다.
+Window를 잡는 방식에 따라 두 가지로 나뉜다.
+
+- Rolling window: 고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다.
+- Expanding window: 시작점을 고정하고, 새로운 데이터가 들어올 때마다 증가분을 포함한 전체 이력으로 모델을 처음부터 다시 학습시킨다. 장기 패턴 보존에 유리하고 구현이 가장 단순하지만, 데이터가 커질수록 재학습 비용이 증가한다.
 
 ### 2.2 Native sequential update
 
@@ -129,7 +132,7 @@ Table 1 도구의 구현 예시는 [Appendix B](#appendix-b-python-examples) 에
 
 ## Appendix B. Python Examples
 
-아래 예시는 모두 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다.
+아래 예시는 모두 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. 각 예시가 Fig 1의 어느 가지에 속하는지는 Fig 2에 정리되어 있다.
 
 #### Incremental learning with scikit-learn partial_fit
 
@@ -257,6 +260,25 @@ preds = []
 for t in range(WINDOW, len(X)):
     # keep only the latest WINDOW samples and retrain
     model = LinearRegression().fit(X[t - WINDOW:t], y[t - WINDOW:t])
+    preds.append(model.predict(X[t:t + 1])[0])
+```
+
+#### Expanding window retraining
+
+새 데이터가 들어올 때마다 증가분을 포함한 전체 이력으로 모델을 처음부터 다시 학습시킨다. 구현이 가장 단순한 대신 재학습 비용이 데이터 크기에 비례해 늘어난다.
+
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(0)
+X, y = rng.random((120, 3)), rng.random(120)
+
+START = 30
+preds = []
+for t in range(START, len(X)):
+    # retrain from scratch on the full history seen so far
+    model = LinearRegression().fit(X[:t], y[:t])
     preds.append(model.predict(X[t:t + 1])[0])
 ```
 
