@@ -10,7 +10,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -163,7 +163,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--save-figure', choices=['true', 'false'], default='true',
                         help='write the figure and the points behind it (default: %(default)s)')
     parser.add_argument('--output-folder', type=pathlib.Path, default=None,
-                        help='folder for the figure (default: generalized-esd-outlier-detection_fig '
+                        help='folder for the figure (default: generalized-esd_fig '
                              'next to this script)')
 
     if len(sys.argv) == 1:
@@ -175,7 +175,7 @@ def parse_args() -> argparse.Namespace:
     if args.output_folder is None:
         # The figure belongs with the document that discusses this sample.
         args.output_folder = (pathlib.Path(__file__).resolve().parent
-                              / 'generalized-esd-outlier-detection_fig')
+                              / 'generalized-esd_fig')
     if args.save_figure:
         args.output_folder.mkdir(parents=True, exist_ok=True)
 

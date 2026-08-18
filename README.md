@@ -1,5 +1,5 @@
 # AIML
-Rev. 15 | Created: 2026-08-07 | Updated: 2026-08-17 23:00 CDT
+Rev. 16 | Created: 2026-08-07 | Updated: 2026-08-17 23:06 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -46,7 +46,8 @@ Table 3. EDA documents
 | [EDA/data-modality-taxonomy.md](EDA/data-modality-taxonomy.md) | It classifies data by the form the information takes, then extends the axes to the semiconductor domain and works through wafer process data as a case study. |
 | [EDA/semiconductor-machine-signal-parameterization-continuous.md](EDA/semiconductor-machine-signal-parameterization-continuous.md) | It is the continuous half of the parameterization pair, reducing a smoothly varying machine waveform to a parameter row across the small-signal regime, the large-signal regime, and the decomposition of a record that contains both. |
 | [EDA/semiconductor-machine-signal-parameterization-quantized.md](EDA/semiconductor-machine-signal-parameterization-quantized.md) | It is the quantized half of the same pair, for a signal that rests on a ladder of discrete levels, built so that the row width never depends on the level count and so that the waveform can be rebuilt from the row. |
-| [EDA/Outlier/GESD/generalized-esd-outlier-detection.md](EDA/Outlier/GESD/generalized-esd-outlier-detection.md) | It covers the generalized ESD procedure of ISO 16269-4, which finds an unknown number of outliers in one pass, and explains the decision rule that keeps several outliers from hiding one another. Two worked examples show a masked sample and a flag that does not survive inspection. |
+| [EDA/Outlier/README.md](EDA/Outlier/README.md) | It indexes the outlier folder, which keeps one detection method to a subfolder, and sets out the order in which a test is chosen, read, and acted on. |
+| [EDA/Outlier/GESD/generalized-esd.md](EDA/Outlier/GESD/generalized-esd.md) | It covers the generalized ESD procedure of ISO 16269-4, which finds an unknown number of outliers in one pass, and explains the decision rule that keeps several outliers from hiding one another. Two worked examples show a masked sample and a flag that does not survive inspection. |
 
 ### 3.2 Feature Engineering
 

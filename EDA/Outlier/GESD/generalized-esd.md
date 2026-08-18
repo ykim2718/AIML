@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 3 | Created: 2026-08-17 | Updated: 2026-08-17 23:00 CDT
+Rev. 4 | Created: 2026-08-17 | Updated: 2026-08-17 23:06 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -363,7 +363,7 @@ python3 gesd_outlier_detection.py --max-outliers 10 --alpha 0.05
 Running with no option prints the usage. The `--input-csv` and `--column` options test a
 column of a file instead of the built-in sample; without them the worked example of
 Appendix C is reproduced exactly. The figures and the samples behind them are written to
-`generalized-esd-outlier-detection_fig/`.
+`generalized-esd_fig/`.
 
 ## Appendix C. Worked Example of Masking
 
@@ -416,7 +416,7 @@ were being tested against, and only after two of them were set aside did the thi
 visible. A procedure that had stopped at step 1, or even at step 2, would have returned zero
 outliers on a sample that contains three.
 
-![Fig 1](generalized-esd-outlier-detection_fig/gesd_procedure.png)
+![Fig 1](generalized-esd_fig/gesd_procedure.png)
 
 **Fig 1. The sample and the decision at each step**
 
@@ -432,7 +432,7 @@ Removing the three flagged values leaves 51 observations with a mean of 2.1284 a
 deviation of 0.8937. The mean falls by 0.19 and the standard deviation by 24%, so the three
 observations were carrying a quarter of the apparent scatter of the sample.
 
-![Fig 2](generalized-esd-outlier-detection_fig/gesd_diagnostics.png)
+![Fig 2](generalized-esd_fig/gesd_diagnostics.png)
 
 **Fig 2. Distributional check and parameter sensitivity**
 
@@ -530,7 +530,7 @@ left in it. This is not the masking of section 2.2, where removal reveals a genu
 was hidden. It is the opposite risk, and it is a consequence of the assumption in section 3.1
 not holding rather than of any defect in the procedure.
 
-![Fig 3](generalized-esd-outlier-detection_fig/gesd_sample_outliers.png)
+![Fig 3](generalized-esd_fig/gesd_sample_outliers.png)
 
 **Fig 3. A sample with one certain outlier and one borderline flag**
 
@@ -546,7 +546,7 @@ while at step 2 it sits between them.
 Section 3.1 requires approximate normality, and D.1 asserted that this sample does not have it.
 Fig 4 checks that assertion.
 
-![Fig 4](generalized-esd-outlier-detection_fig/gesd_sample_qq.png)
+![Fig 4](generalized-esd_fig/gesd_sample_qq.png)
 
 **Fig 4. Normal quantile plots of the sample, of the sample without its extreme value, and of the sample on a log scale**
 

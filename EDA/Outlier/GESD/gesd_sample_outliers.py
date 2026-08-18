@@ -10,7 +10,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.1.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.2.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -160,7 +160,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--save-figure', choices=['true', 'false'], default='true',
                         help='write the figure and the sample behind it (default: %(default)s)')
     parser.add_argument('--output-folder', type=pathlib.Path, default=None,
-                        help='folder for the figure (default: generalized-esd-outlier-detection_fig next to this script)')
+                        help='folder for the figure (default: generalized-esd_fig next to this script)')
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -169,10 +169,10 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     args.save_figure = args.save_figure == 'true'
     if args.output_folder is None:
-        # The figure is referenced from generalized-esd-outlier-detection.md, whose images live
+        # The figure is referenced from generalized-esd.md, whose images live
         # in the folder named after that document.
         args.output_folder = (pathlib.Path(__file__).resolve().parent
-                              / 'generalized-esd-outlier-detection_fig')
+                              / 'generalized-esd_fig')
 
     for name, level in (('--alpha', args.alpha), ('--strict-alpha', args.strict_alpha)):
         if not 0.0 < level < 1.0:

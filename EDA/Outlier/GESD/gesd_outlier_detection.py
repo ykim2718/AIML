@@ -11,7 +11,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.8.17"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -316,7 +316,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--save-figure', choices=['true', 'false'], default='true',
                         help='write the two figures and the samples behind them (default: %(default)s)')
     parser.add_argument('--output-folder', type=pathlib.Path, default=None,
-                        help='folder for the figures (default: generalized-esd-outlier-detection_fig '
+                        help='folder for the figures (default: generalized-esd_fig '
                              'next to this script)')
 
     if len(sys.argv) == 1:
@@ -326,7 +326,7 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     args.save_figure = args.save_figure == 'true'
     if args.output_folder is None:
-        args.output_folder = pathlib.Path(__file__).resolve().parent / 'generalized-esd-outlier-detection_fig'
+        args.output_folder = pathlib.Path(__file__).resolve().parent / 'generalized-esd_fig'
 
     if args.input_csv is not None and not args.input_csv.is_file():
         parser.error(f"--input-csv is not a file: {args.input_csv}")
