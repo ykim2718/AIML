@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 1 | Created: 2026-08-17 | Updated: 2026-08-17 22:40 CDT
+Rev. 2 | Created: 2026-08-17 | Updated: 2026-08-17 22:57 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -239,6 +239,8 @@ them.
 - **masking** — The failure in which several outliers jointly inflate the standard deviation so that none of them is individually detected.
 - **median absolute deviation** — The median of the absolute deviations from the sample median, used as a scale estimate that a few extreme observations cannot inflate.
 - **normal quantile plot** — A plot of ordered observations against the quantiles a normal distribution would produce, on which a normal sample falls near a straight line.
+- **Shapiro-Wilk test** — A test of the null hypothesis that a sample is drawn from a normal distribution, whose statistic compares the ordered observations against the order statistics a normal sample would produce.
+- **skewness** — A measure of the asymmetry of a distribution, zero for a symmetric one and positive when the longer tail lies on the right.
 - **studentize** — To divide a deviation by an estimate of the standard deviation computed from the same sample.
 - **swamping** — The failure in which an extreme outlier shifts the mean far enough that a sound observation is flagged.
 - **Tukey fence** — A boundary placed 1.5 interquartile ranges beyond the first and third quartiles, outside which an observation is conventionally called an outlier.
@@ -469,9 +471,11 @@ that belongs in the report either way.
 
 ## Appendix D. Worked Example of a Borderline Flag
 
-Every number in this appendix is produced by `gesd_sample_outliers.py`, invoked as
-`python3 gesd_sample_outliers.py --alpha 0.05 --strict-alpha 0.01 --max-outliers 5`. The sample
-is fixed inside the script and is written next to the figure as `gesd_sample_outliers.csv`.
+The numbers in this appendix come from two scripts in the folder of this document.
+`gesd_sample_outliers.py`, invoked as `python3 gesd_sample_outliers.py --alpha 0.05
+--strict-alpha 0.01 --max-outliers 5`, runs the procedure and draws Fig 3; `gesd_sample_qq.py`
+draws Fig 4 and reports the normality results of D.4. The sample is defined once, in the first
+script, and the second imports it. Both write the points behind their figures beside them as CSV.
 
 Appendix C showed the procedure recovering outliers that a single-outlier test could not reach.
 This appendix is the complement: the procedure returns two flags, and only one of them survives
@@ -487,6 +491,8 @@ Two properties matter before any test is run.
 
 - Only 7 distinct values occur among the 15 observations. The value 0.0134 appears 5 times and 0.0232 appears 5 times, so half the sample sits on two points.
 - The distribution is therefore closer to a step function than to the normal one that section 3.1 assumes.
+
+Both properties are checked against a normal quantile plot in D.4.
 
 The procedure is run with an upper bound of r = 5 at α = 0.05, and a second time at α = 0.01.
 Only steps 1 and 2 ever exceed a critical value, so the count is stable for every r of 2 or
@@ -535,13 +541,54 @@ independent reference rather than as part of the procedure. Panel (c) is the dec
 is where the two flags separate: at step 1 the statistic stands far above both critical curves,
 while at step 2 it sits between them.
 
-### D.4. Independent Checks
+### D.4. Normality of the Sample
+
+Section 3.1 requires approximate normality, and D.1 asserted that this sample does not have it.
+Fig 4 checks that assertion.
+
+![Fig 4](generalized-esd-outlier-detection_fig/gesd_sample_qq.png)
+
+**Fig 4. Normal quantile plots of the sample, of the sample without its extreme value, and of the sample on a log scale**
+
+The reference line runs through the first and third quartiles rather than being fitted by least
+squares, so the extreme value cannot rotate the line and flatten the very departure the chart is
+drawn to show. Panel (a) puts 0.6532 far above the line while the other 14 observations sit
+almost flat along it. Panel (b) removes it. Panel (c) applies a log transform, which is the remedy
+section 3.1 names.
+
+**Table 7. Normality of the three views**
+
+| View | Count | Skewness | Shapiro-Wilk p |
+|---|---|---|---|
+| All observations | 15 | 3.462 | 1.70e-07 |
+| Without 0.6532 | 14 | 1.042 | 9.91e-03 |
+| All observations, log10 | 15 | 2.780 | 1.97e-05 |
+
+Every view is rejected at α = 0.05, and every view is rejected at α = 0.01 as well, though the
+middle row falls below the stricter level by only 0.0001 and should not be read as decisive there. Two of
+the three results carry more than the rejection itself.
+
+- Panel (b) shows that the extreme value is not the whole departure. The 14 observations left take only 6 distinct values, 5 of them tied at 0.0134 and 5 at 0.0232, so the plot rises in steps rather than along the line and its left tail sits above it. What survives the removal is a discrete sample with a floor, not a normal one.
+- Panel (c) shows that the transformation section 3.1 suggests does not rescue this sample. Skewness falls from 3.462 to 2.780 and the p-value stays near 2e-05, because 0.6532 is 48.7 times the smallest observation and remains isolated after the logarithm.
+
+The p-values are approximate rather than exact here, because two thirds of the observations are
+tied and the Shapiro-Wilk statistic assumes a continuous distribution. The size of the departure
+does not rest on that approximation.
+
+The three panels bear on the two flags of D.2 differently, and the distance of each flag from the
+reference line measures it. In panel (a) the value 0.6532 sits 0.6223 above the line, which is
+48 times the largest departure among the other 14 observations. In panel (b) the value 0.0403
+sits 0.0096 above the line, the largest departure of that panel but only 1.28 times the next
+one, which is a tied observation at the floor. The first value separates from the sample under
+any reading of it; the second is the far end of a departure the whole sample shares.
+
+### D.5. Independent Checks
 
 The same sample was put through two further rules that do not assume normality, the median
 absolute deviation and the Tukey fence. Neither is part of ISO 16269-4; both are used here only
 to see whether the two flags hold up outside the normal model.
 
-**Table 7. Four verdicts from three rules**
+**Table 8. Four verdicts from three rules**
 
 | Rule | 0.6532 | 0.0403 | Basis |
 |---|---|---|---|
@@ -556,9 +603,9 @@ informative disagreement: measured against the median of 0.0232 and a MAD of 0.0
 it only because the interquartile range of this sample is 0.0098, and an interquartile range
 that small is itself a symptom of the ties described in D.1.
 
-### D.5. Reading
+### D.6. Reading
 
-**Table 8. What removal would change**
+**Table 9. What removal would change**
 
 | Quantity | Full sample | Less 0.6532 | Less both |
 |---|---|---|---|
