@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 16 | Created: 2026-08-12 | Updated: 2026-08-18 16:19 CDT
+Rev. 17 | Created: 2026-08-12 | Updated: 2026-08-19 10:50 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -41,6 +41,14 @@ Window를 잡는 방식에 따라 두 가지로 나뉜다.
 
 - Rolling window: 고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다.
 - Expanding window 🌳: 시작점을 고정하고, 새로운 데이터가 들어올 때마다 증가분을 포함한 전체 이력으로 모델을 처음부터 다시 학습시킨다. 장기 패턴 보존에 유리하고 구현이 가장 단순하지만, 데이터가 커질수록 재학습 비용이 증가한다.
+
+실시간 stream 환경에서 expanding window 방식을 운용할 때는 delayed evaluation (지연 평가) 구조가 필요하다. 핵심 동작은 다음 세 단계이다.
+
+- Delayed evaluation: $t$ 시점에 학습한 모델 $M_t$ 는 즉시 평가할 수 없으므로, $t+1$ 부터 $t+H$ 까지 forecast horizon $H$ 개 (예: $H=5$) 의 실제값이 수집될 때까지 대기 queue에 둔다.
+- 평가: $t+H$ 시점에 validation 실제값이 모두 모이면 $M_t$ 의 예측값과 실제값 간의 오차 (MSE, MAE 등) 를 계산한다.
+- Best model 교체: $M_t$ 의 validation 점수가 기존 best model보다 우수하면 best model을 $M_t$ 로 갱신한다.
+
+주의 — data leakage: $M_t$ 의 평가에는 학습 시점 $t$ 이후에 도착한 실제값만 사용해야 한다. 학습에 쓴 구간을 평가에 다시 쓰거나 validation 구간의 실제값이 학습 데이터에 섞이면 성능이 과대평가된다. 구현 예시는 [Appendix C](#appendix-c-python-examples) 에 있다.
 
 ### 2.2 Native sequential update
 
@@ -107,7 +115,9 @@ Table 1 도구의 구현 예시는 [Appendix C](#appendix-c-python-examples) 에
 - Avalanche: PyTorch 기반의 continual learning 라이브러리로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
 - booster: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
 - concept drift: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
+- data leakage: 학습 시점에 알 수 없어야 할 정보가 학습이나 평가에 섞여 성능이 과대평가되는 문제다.
 - data stream mining: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
+- delayed evaluation: 모델을 학습 시점에 평가하지 않고, forecast horizon만큼의 실제값이 도착한 뒤에 평가하는 방식이다.
 - EWC: Elastic Weight Consolidation. 이전 과제에 중요한 가중치의 변화에 벌점을 주어 forgetting을 줄이는 regularization 기법이다.
 - expanding window: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
 - experience: Avalanche에서 continual learning stream을 구성하는 학습 단위로, 한 번에 도착하는 데이터 묶음이다.
@@ -119,6 +129,7 @@ Table 1 도구의 구현 예시는 [Appendix C](#appendix-c-python-examples) 에
 - local level model: 관측값을 서서히 변하는 수준 성분과 관측 노이즈로 분해하는 가장 단순한 state space 모델이다.
 - MAE: Mean Absolute Error. 예측 오차 절대값의 평균이다.
 - meta-learning: 새로운 과제에 빠르게 적응하는 방법 자체를 학습하는 기법이다.
+- MSE: Mean Squared Error. 예측 오차 제곱의 평균이다.
 - OneNet: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
 - parameter isolation: 과제별로 서로 다른 파라미터 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
 - progressive validation: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
@@ -314,6 +325,72 @@ for t in range(START, len(X)):
     # retrain from scratch on the full history seen so far
     model = LinearRegression().fit(X[:t], y[:t])
     preds.append(model.predict(X[t:t + 1])[0])
+```
+
+#### Expanding window with delayed evaluation
+
+2.1의 delayed evaluation 구조를 구현한 pipeline이다. 매 시점 expanding window로 재학습한 모델을 `collections.deque` 대기 queue에 넣고, forecast horizon (여기서는 5) 만큼의 실제값이 도착하면 MSE로 평가해 best model을 갱신한다. 평가에는 학습 시점 이후에 도착한 실제값만 사용하므로 data leakage가 없다. `fit_model` 의 LinearRegression 자리에 어떤 모델 라이브러리를 넣어도 같은 구조가 동작한다.
+
+```python
+from collections import deque
+
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+
+class ExpandingWindowEvaluator:
+    def __init__(self, val_horizon=5, min_train=10):
+        self.val_horizon = val_horizon
+        self.min_train = min_train
+        self.history_x = []
+        self.history_y = []
+        self.pending_models = deque()  # models waiting for delayed evaluation
+        self.best_model = None
+        self.best_score = float("inf")  # lower is better (MSE)
+
+    def fit_model(self, X_train, y_train):
+        # plug in any model library here (scikit-learn, XGBoost, ...)
+        return LinearRegression().fit(X_train, y_train)
+
+    def process_new_data(self, new_x, new_y):
+        self.history_x.append(new_x)
+        self.history_y.append(new_y)
+        current_step = len(self.history_y) - 1
+
+        # 1. every queued model predicts the sample that just arrived
+        for item in self.pending_models:
+            pred = item["model"].predict(np.array([new_x]))[0]
+            item["preds"].append(float(pred))
+
+        # 2. score models whose val_horizon actuals are complete; keep the best
+        while (self.pending_models
+               and len(self.pending_models[0]["preds"]) == self.val_horizon):
+            done = self.pending_models.popleft()
+            t = done["train_step"]
+            # only actuals that arrived after the training step, no data leakage
+            actual = self.history_y[t + 1 : t + 1 + self.val_horizon]
+            score = float(np.mean((np.array(actual) - np.array(done["preds"])) ** 2))
+            if score < self.best_score:
+                self.best_score = score
+                self.best_model = done["model"]
+
+        # 3. expanding window: retrain from scratch on the full history
+        if len(self.history_y) < self.min_train:
+            return
+        model = self.fit_model(np.array(self.history_x), np.array(self.history_y))
+
+        # 4. queue the new model for its own delayed evaluation
+        self.pending_models.append(
+            {"train_step": current_step, "model": model, "preds": []}
+        )
+
+
+rng = np.random.default_rng(0)
+evaluator = ExpandingWindowEvaluator(val_horizon=5)
+for _ in range(100):
+    x = rng.random(3)
+    y = 2 * x[0] - x[1] + 0.1 * rng.normal()
+    evaluator.process_new_data(x, y)
 ```
 
 #### Online ARIMA with pySmooth
