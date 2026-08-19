@@ -1,5 +1,5 @@
 # AIML
-Rev. 18 | Created: 2026-08-07 | Updated: 2026-08-18 11:38 CDT
+Rev. 19 | Created: 2026-08-07 | Updated: 2026-08-19 04:41 UTC
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -29,7 +29,7 @@ Table 2. Folders and what they hold
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds regression recipes, with an emphasis on step-like and piecewise responses that a single global fit handles badly. |
-| [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, and a cointegration example on daily price series. |
+| [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, a cointegration example on daily price series, and the ceiling that bounds the classical z-score under `ZScore/`. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
 | [.claude](.claude/) | It carries the settings that make those rules load in this repository, together with the setup and verification notes behind them. |
 
@@ -49,7 +49,6 @@ Table 3. EDA documents
 | [EDA/Outlier/README.md](EDA/Outlier/README.md) | It indexes the outlier folder, which keeps one detection method to a subfolder, and sets out the order in which a test is chosen, read, and acted on. |
 | [EDA/Outlier/GESD/generalized-esd.md](EDA/Outlier/GESD/generalized-esd.md) | It covers the generalized ESD procedure of ISO 16269-4, which finds an unknown number of outliers in one pass, and explains the decision rule that keeps several outliers from hiding one another. Two worked examples show a masked sample and a flag that does not survive inspection. |
 | [EDA/Outlier/Hampel/hampel-identifier.md](EDA/Outlier/Hampel/hampel-identifier.md) | It covers the modified z-score built from the median and the median absolute deviation, which needs no normality and no iteration because the pair it is built on cannot be moved by a minority of outliers. |
-| [EDA/Outlier/ZScore/z-score-ceiling.md](EDA/Outlier/ZScore/z-score-ceiling.md) | It derives the ceiling that bounds every classical z-score at (n-1)/sqrt(n), shows that the bound is attained rather than approached, and works out the sample sizes at which a rule set at a fixed cut-off can no longer flag anything. |
 
 ### 3.2 Feature Engineering
 
@@ -82,6 +81,14 @@ Table 6. Automation documents
 | [AI Assistant/Claude/automatic-rule-loading.md](AI%20Assistant/Claude/automatic-rule-loading.md) | It describes managing rules in one repository and loading them into every project through a plugin marketplace, so that skills, hooks, commands, and agents are shared between the desktop and the web interface. |
 | [.claude/README.md](.claude/README.md) | It explains the two files that wire this repository to that marketplace, the catalog and the settings that enable the plugin. |
 | [.claude/plugin-setup.md](.claude/plugin-setup.md) | It records the setup that lets a fresh container fetch the plugin from the remote on its first session, including the authentication failure that broke the earlier attempt and the fix for it. |
+
+### 3.5 Applied Statistics
+
+Table 7. Applied statistics documents
+
+| Document | Description |
+|----------|-------------|
+| [Applied-Statistics/ZScore/z-score-ceiling.md](Applied-Statistics/ZScore/z-score-ceiling.md) | It derives the ceiling that bounds every classical z-score at (n-1)/sqrt(n), shows that the bound is attained rather than approached, and works out the sample sizes at which a rule set at a fixed cut-off can no longer flag anything. |
 
 ## 4. Order Of Use
 

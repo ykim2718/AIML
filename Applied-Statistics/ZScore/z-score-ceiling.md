@@ -1,5 +1,5 @@
 # Ceiling of the Classical z-Score
-Rev. 1 | Created: 2026-08-18 | Updated: 2026-08-18 12:14 CDT
+Rev. 2 | Created: 2026-08-18 | Updated: 2026-08-19 04:41 UTC
 
 > A note on the largest absolute z-score a sample of a given size can produce, the derivation of
 > that bound, and what it costs a rule that flags observations by comparing a z-score against a
@@ -123,7 +123,7 @@ The file holds the score and its ceiling and nothing else. Tabulating them and d
 left to whatever calls it.
 
 ```python
-# EDA/Outlier/ZScore/z_score_ceiling.py
+# Applied-Statistics/ZScore/z_score_ceiling.py
 __author__ = 'yRocket'
 __version__ = "0.0.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 

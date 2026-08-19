@@ -1,5 +1,5 @@
 # Outlier Detection
-Rev. 2 | Created: 2026-08-17 | Updated: 2026-08-18 11:38 CDT
+Rev. 3 | Created: 2026-08-17 | Updated: 2026-08-19 04:41 UTC
 
 > This folder covers the detection of observations that are discordant with the model the rest of a sample follows.
 > Each method keeps its own subfolder, holding the document that fixes the method and the scripts that run it.
@@ -12,13 +12,13 @@ The methods collected here work on univariate numeric data. Detecting an observa
 
 ## 2. Methods
 
-Table 1. Methods in this folder
+Table 1. Methods and the document that fixes each
 
 | Method | Document | Question it answers |
 |--------|-------------|---------------------|
 | [GESD](GESD/) | [GESD/generalized-esd.md](GESD/generalized-esd.md) | How many outliers does an approximately normal sample carry, when the number is not known in advance? It is the many-outlier procedure of ISO 16269-4, and it reaches outliers that hide one another from a single-outlier test. |
 | [Hampel](Hampel/) | [Hampel/hampel-identifier.md](Hampel/hampel-identifier.md) | How far does each observation sit from the bulk, when the sample is not normal? It scores every observation against the median and the MAD, which contamination cannot move, and needs no iteration. It is not part of ISO 16269-4. |
-| [ZScore](ZScore/) | [ZScore/z-score-ceiling.md](ZScore/z-score-ceiling.md) | What is the largest z-score a sample of a given size can produce at all? The classical score is bounded by (n-1)/sqrt(n), so a rule at a fixed cut-off is inert below a certain size and returns a clean verdict it could not have avoided. |
+| [ZScore](../../Applied-Statistics/ZScore/) | [Applied-Statistics/ZScore/z-score-ceiling.md](../../Applied-Statistics/ZScore/z-score-ceiling.md) | What is the largest z-score a sample of a given size can produce at all? The classical score is bounded by (n-1)/sqrt(n), so a rule at a fixed cut-off is inert below a certain size and returns a clean verdict it could not have avoided. It is kept under `Applied-Statistics/` because the bound is arithmetic rather than a detection procedure. |
 
 ## 3. Order Of Use
 

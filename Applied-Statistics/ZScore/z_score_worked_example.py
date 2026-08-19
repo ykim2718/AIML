@@ -27,8 +27,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
-# The measurement sample under test lives beside the documents that quote it.
-DEFAULT_SAMPLE_CSV = pathlib.Path(__file__).resolve().parents[1] / 'data' / '1d_esc_current.csv'
+# The measurement sample under test is shared with the outlier documents that also quote it.
+DEFAULT_SAMPLE_CSV = (pathlib.Path(__file__).resolve().parents[2]
+                      / 'EDA' / 'Outlier' / 'data' / '1d_esc_current.csv')
 
 # The cut-off conventionally used with a z-score rule, and the sizes the document tabulates.
 CONVENTIONAL_THRESHOLD = 3.5
