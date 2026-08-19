@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 21 | Created: 2026-08-12 | Updated: 2026-08-19 11:58 CDT
+Rev. 22 | Created: 2026-08-12 | Updated: 2026-08-19 12:03 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -489,7 +489,7 @@ for experience in benchmark.train_stream:
 
 ## Appendix F. Python Examples: Model Selection
 
-Fig 1의 Model selection 축 중 Delayed evaluation 가지에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다.
+Fig 1의 Model selection 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다.
 
 #### Expanding window with delayed evaluation
 
@@ -555,4 +555,32 @@ for _ in range(100):
     x = rng.random(3)
     y = 2 * x[0] - x[1] + 0.1 * rng.normal()
     evaluator.process_new_data(x, y)
+```
+
+#### Online ensemble with River EWARegressor
+
+Fig 1의 Online ensemble 가지에 해당한다. Best 하나를 고르는 delayed evaluation과 달리, EWARegressor는 base 모델 전체를 유지하면서 각 모델의 손실에 따라 가중치를 실시간으로 조정해 예측을 결합한다.
+
+```python
+import numpy as np
+from river import ensemble, linear_model, metrics, preprocessing
+
+rng = np.random.default_rng(0)
+
+# three base learners with different learning rates, combined by online weights
+models = [
+    preprocessing.StandardScaler() | linear_model.LinearRegression(intercept_lr=lr)
+    for lr in (0.001, 0.01, 0.1)
+]
+model = ensemble.EWARegressor(models, learning_rate=0.5)
+metric = metrics.MAE()
+
+for _ in range(300):
+    x = {"x1": rng.random(), "x2": rng.random()}
+    y = 2 * x["x1"] - x["x2"]
+
+    # predict first, then learn; the ensemble reweights models by their loss
+    y_pred = model.predict_one(x)
+    metric.update(y, y_pred)
+    model.learn_one(x, y)
 ```
