@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 19 | Created: 2026-08-12 | Updated: 2026-08-19 11:14 CDT
+Rev. 20 | Created: 2026-08-12 | Updated: 2026-08-19 11:28 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -12,12 +12,12 @@ Fig 1. Unified taxonomy of continual learning for time series
 ```
 CLTS (Continuous Learning for Time Series)
 |
-+-- When to update (trigger)
++-- When to update (update schedule)
 |   +-- Periodic (per day / week / month) ......... Recursive / Rolling Retraining
 |   +-- Continuous (per sample or mini-batch) ..... Online / Streaming Learning, Data Stream Mining
 |   +-- On drift alarm ............................ Concept Drift Detection / Adaptation
 |
-+-- How to update (mechanism)
++-- How to update (adaptation method)
 |   +-- Full retraining on a window
 |   |   +-- Rolling window ........................ fixed-size window, keeps the latest trend
 |   |   +-- Expanding window ...................... retrain on the full history from the start
@@ -36,7 +36,7 @@ CLTS (Continuous Learning for Time Series)
     +-- Replace ................................... keep the best-scoring model
 ```
 
-## 2. Mechanism: How to Update
+## 2. Adaptation Method: How to Update
 
 Fig 1의 How to update 축 4가지 중, 시계열 예측에서 실제로 가장 널리 쓰이는 3가지를 설명한다. 네 번째 가지인 Learned / self-adaptation (Meta-Learning, Test-Time Adaptation) 은 아직 연구 단계라 제외한다.
 
@@ -158,12 +158,12 @@ Fig 1의 네 축을 각 분류별 대표 Python library와 연결하면 Fig 2와
 Fig 2. Classifications of Fig 1 extended with representative Python libraries
 
 ```
-When to update (trigger)
+When to update (update schedule)
 |
 +-- Periodic ................... any library, a retraining loop per step / day / week
 +-- On drift alarm ............. River (drift.ADWIN, drift.PageHinkley)
 
-How to update (mechanism)
+How to update (adaptation method)
 |
 +-- Full retraining on a window
 |   +-- scikit-learn ........... refit any estimator on each window
@@ -194,7 +194,7 @@ When to evaluate (delayed evaluation)
 
 ## Appendix C. Python Examples: When to Update
 
-Fig 1의 When to update 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. 주기적 (periodic) trigger는 [Appendix D](#appendix-d-python-examples-how-to-update) 의 rolling·expanding window 예시가 매 시점 재학습하는 loop 구조로 구현한다.
+Fig 1의 When to update 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. Periodic 가지는 [Appendix D](#appendix-d-python-examples-how-to-update) 의 rolling·expanding window 예시가 매 시점 재학습하는 loop 구조로 구현한다.
 
 #### Drift-triggered retraining with River ADWIN
 
