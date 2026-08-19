@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 22 | Created: 2026-08-12 | Updated: 2026-08-19 12:03 CDT
+Rev. 23 | Created: 2026-08-12 | Updated: 2026-08-19 12:05 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -59,15 +59,21 @@ Kalman filter와 state space 모델이 대표적이며, 새로운 관측값이 �
 
 ## 3. Model Selection: Which Model to Serve
 
-실시간 stream 환경에서 delayed evaluation (지연 평가) 구조가 필요하다. 핵심 동작은 Fig 1의 Model selection 축 중 Delayed evaluation 가지와 같은 세 단계이다.
+학습된 여러 모델 가운데 배포에 사용할 모델을 정하는 축이며, Fig 1의 두 가지를 차례로 설명한다. 구현 예시는 [Appendix F](#appendix-f-python-examples-model-selection) 에 있다.
+
+### 3.1 Delayed evaluation
+
+실시간 stream 환경에서 delayed evaluation (지연 평가) 구조가 필요하다. 핵심 동작은 다음 세 단계이다.
 
 - Queue: $t$ 시점에 학습한 모델 $M_t$ 는 즉시 평가할 수 없으므로, $t+1$ 부터 $t+H$ 까지 forecast horizon $H$ 개 (예: $H=5$) 의 실제값이 수집될 때까지 대기 queue에 둔다.
 - Score: $t+H$ 시점에 validation 실제값이 모두 모이면 $M_t$ 의 예측값과 실제값 간의 오차 (MSE, MAE 등) 를 계산한다.
 - Replace: $M_t$ 의 validation 점수가 기존 best model보다 우수하면 best model을 $M_t$ 로 갱신한다.
 
-주의 — data leakage: $M_t$ 의 평가에는 학습 시점 $t$ 이후에 도착한 실제값만 사용해야 한다. 학습에 쓴 구간을 평가에 다시 쓰거나 validation 구간의 실제값이 학습 데이터에 섞이면 성능이 과대평가된다. 구현 예시는 [Appendix F](#appendix-f-python-examples-model-selection) 에 있다.
+주의 — data leakage: $M_t$ 의 평가에는 학습 시점 $t$ 이후에 도착한 실제값만 사용해야 한다. 학습에 쓴 구간을 평가에 다시 쓰거나 validation 구간의 실제값이 학습 데이터에 섞이면 성능이 과대평가된다.
 
-Best model 하나를 유지하는 대신 점수 상위 K개 모델의 예측을 결합하면 Fig 1의 Online ensemble 가지가 된다. River의 `model_selection`·`ensemble` module이 두 방식을 모두 지원한다.
+### 3.2 Online ensemble
+
+Best model 하나를 유지하는 대신, 여러 모델의 예측을 실시간 성능에 따라 가중 결합하는 방식이다. River의 `model_selection`·`ensemble` module이 selection과 ensemble을 모두 지원한다.
 
 ## 4. Challenges
 
