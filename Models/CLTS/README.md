@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 23 | Created: 2026-08-12 | Updated: 2026-08-19 12:05 CDT
+Rev. 24 | Created: 2026-08-12 | Updated: 2026-08-19 12:11 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -63,7 +63,7 @@ Kalman filter와 state space 모델이 대표적이며, 새로운 관측값이 �
 
 ### 3.1 Delayed evaluation
 
-실시간 stream 환경에서 delayed evaluation (지연 평가) 구조가 필요하다. 핵심 동작은 다음 세 단계이다.
+실시간 stream 환경에서는 학습 직후에 정답이 아직 없으므로 delayed evaluation (지연 평가) 구조가 필요하다. 핵심 동작은 다음 세 단계이다.
 
 - Queue: $t$ 시점에 학습한 모델 $M_t$ 는 즉시 평가할 수 없으므로, $t+1$ 부터 $t+H$ 까지 forecast horizon $H$ 개 (예: $H=5$) 의 실제값이 수집될 때까지 대기 queue에 둔다.
 - Score: $t+H$ 시점에 validation 실제값이 모두 모이면 $M_t$ 의 예측값과 실제값 간의 오차 (MSE, MAE 등) 를 계산한다.
@@ -93,7 +93,7 @@ Table 1. Python tools for continual time series learning
 
 | Tool | Approach | Note |
 |------|----------|------|
-| River | Online Learning | Creme와 scikit-multiflow가 병합된 streaming 학습 라이브러리로, 샘플 단위 회귀·분류·이상 탐지와 progressive validation을 지원한다. |
+| River | Online Learning | Creme와 scikit-multiflow가 병합된 streaming 학습 라이브러리로, 샘플 단위 회귀·분류·이상 탐지와 progressive validation, drift detection, online ensemble을 지원한다. |
 | scikit-learn | Incremental Learning / Warm Start | `partial_fit` 을 제공하는 estimator는 mini-batch 단위 갱신을 지원하고, `warm_start=True` 는 이전 학습 결과에서 이어서 학습한다. |
 | statsmodels | State Space Models | Kalman filter 기반 state space 모델로 새 관측값에 대한 상태 갱신을 지원한다. |
 | pySmooth | Kalman Filter / Online ARIMA | 이산·확장·unscented Kalman filter와 online ARIMA를 제공한다. |
@@ -207,7 +207,7 @@ Model selection (Which model to serve)
 
 ## Appendix C. Python Examples: Learning Schedule
 
-Fig 1의 Learning schedule 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. Periodic 가지는 [Appendix D](#appendix-d-python-examples-learning-method) 의 rolling·expanding window 예시가 매 시점 재학습하는 loop 구조로 구현한다.
+Fig 1의 Learning schedule 축에 해당하는 예시이다. Appendix C–F의 모든 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. Periodic 가지는 [Appendix D](#appendix-d-python-examples-learning-method) 의 rolling·expanding window 예시가 매 시점 재학습하는 loop 구조로, Continuous 가지는 같은 appendix의 partial_fit·River 예시가 샘플 단위 갱신으로 구현한다.
 
 #### Drift-triggered retraining with River ADWIN
 
@@ -240,7 +240,7 @@ for t in range(TRAIN, len(y)):
 
 ## Appendix D. Python Examples: Learning Method
 
-Fig 1의 Learning method 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다. Fig 2의 분류 순서 (Full retraining on a window, Native sequential update, Fine-tuning of a pre-trained model) 를 따른다.
+Fig 1의 Learning method 축에 해당하는 예시이다. Fig 2의 분류 순서 (Full retraining on a window, Native sequential update, Fine-tuning of a pre-trained model) 를 따른다.
 
 #### Rolling window retraining
 
@@ -451,7 +451,7 @@ for _ in range(50):
 
 ## Appendix E. Python Examples: Knowledge Retention
 
-Fig 1의 Knowledge retention 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다.
+Fig 1의 Knowledge retention 축에 해당하는 예시이다.
 
 #### Continual learning with Avalanche EWC
 
@@ -495,11 +495,11 @@ for experience in benchmark.train_stream:
 
 ## Appendix F. Python Examples: Model Selection
 
-Fig 1의 Model selection 축에 해당하는 예시이다. 아래 예시는 난수 데이터를 사용한 최소 실행 예시이며, 실제 적용 시 데이터 준비와 hyperparameter만 바꾸면 된다.
+Fig 1의 Model selection 축에 해당하는 예시이다.
 
-#### Expanding window with delayed evaluation
+#### Delayed evaluation pipeline
 
-2.1의 delayed evaluation 구조를 구현한 pipeline이다. 매 시점 expanding window로 재학습한 모델을 `collections.deque` 대기 queue에 넣고, forecast horizon (여기서는 5) 만큼의 실제값이 도착하면 MSE로 평가해 best model을 갱신한다. 평가에는 학습 시점 이후에 도착한 실제값만 사용하므로 data leakage가 없다. `fit_model` 의 LinearRegression 자리에 어떤 모델 라이브러리를 넣어도 같은 구조가 동작한다.
+3.1의 delayed evaluation 구조를 구현한 pipeline이다. 매 시점 expanding window로 재학습한 모델을 `collections.deque` 대기 queue에 넣고, forecast horizon (여기서는 5) 만큼의 실제값이 도착하면 MSE로 평가해 best model을 갱신한다. 평가에는 학습 시점 이후에 도착한 실제값만 사용하므로 data leakage가 없다. `fit_model` 의 LinearRegression 자리에 어떤 모델 라이브러리를 넣어도 같은 구조가 동작한다.
 
 ```python
 from collections import deque
