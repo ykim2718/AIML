@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Quantized Signals
-Rev. 4 | Created: 2026-08-01 | Updated: 2026-08-10 22:02 CDT
+Rev. 5 | Created: 2026-08-01 | Updated: 2026-08-20 01:11 CDT
 
 > A quantized signal does not vary continuously. It rests on a ladder of discrete levels and jumps between them, and the number of levels is usually not known in advance.
 > This document defines the parameter row for that case, built so that the row width never depends on the level count and so that the original waveform can be rebuilt from what the row stores.
@@ -308,6 +308,8 @@ Table 11. Industry practice by field
 | Symbolic dynamics | Lempel–Ziv complexity and permutation entropy | Single-number complexity measures on the index sequence that are invariant to the level count |
 
 Learned quantization, meaning vector quantization, product quantization, and VQ-VAE codebooks, solves a related problem and is deliberately out of scope. Those methods learn a codebook across a corpus in order to compress many signals jointly, and they need far more data than a per-record parameterization has. They also produce a code whose dimensions have no physical meaning, which forfeits the auditability that every parameter above was chosen to keep. Reach for them only when the corpus is large, the reconstruction target is perceptual rather than metrological, and no one will need to explain an individual column.
+
+---
 
 ## Appendix A. Terminology
 

@@ -1,5 +1,5 @@
 # Data Modality Taxonomy and Semiconductor Data
-Rev. 7 | Created: 2026-07-29 | Updated: 2026-08-10 22:02 CDT
+Rev. 8 | Created: 2026-07-29 | Updated: 2026-08-20 01:11 CDT
 
 > Data modality is the classification that splits data by "in what form the information is represented".
 > This document first establishes a general taxonomy, then extends the axes to fit the semiconductor domain.
@@ -233,6 +233,8 @@ Wafer process data
 ### 3.5 Conclusion
 
 For data without die spatial coordinates, the panel form of a multi-scale multivariate time-series is the most accurate name. The word 3D is reserved for when a spatial axis actually enters, as in a wafer map.
+
+---
 
 ## Appendix A. Terminology
 

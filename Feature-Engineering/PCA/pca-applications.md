@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 11 | Created: 2026-08-11 | Updated: 2026-08-13 01:55 CDT
+Rev. 12 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -162,6 +162,8 @@ Is the column a trace?
 The `Cell` column says what one cell of the table holds, in the vocabulary of scalar, vector, matrix, and trace. The first four rows are chosen by that shape alone, and the rest apply whatever the shape is. Two rows carry no direction: a fixed prediction target and a tool effect are not limitations of the data but purposes of the analysis, and the four directions of §1 were drawn from limitations.
 
 **The table failing to pick exactly one row is the normal case.** Data that is a trace, carries outliers, and spans several tools at once is common. Apply the matching rows from the top in order, one at a time, and after each one check whether the reconstruction error and the readability of the components improved. Adding two at once leaves no way to tell which of them worked.
+
+---
 
 ## Appendix A. Terminology
 

@@ -1,5 +1,5 @@
 # PCA Algorithm
-Rev. 6 | Created: 2026-08-11 | Updated: 2026-08-13 01:55 CDT
+Rev. 7 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
 
 > The other documents in this folder say which variant to reach for. This one says what the plain procedure actually does.
 > It fixes the notation, walks the steps in order, states what each step produces, and lists the conventions that decide whether two implementations agree.
@@ -121,6 +121,8 @@ Table 5. Details that decide whether two implementations agree
 | Missing values | The decomposition has no notion of a missing entry, so it must be imputed first or a probabilistic variant used instead |
 
 The sign convention matters more than it appears. Two runs that differ only in sign produce loading plots that look mirrored and scores that flip about zero, which reads as a change in the data when it is nothing of the kind.
+
+---
 
 ## Appendix A. Terminology
 

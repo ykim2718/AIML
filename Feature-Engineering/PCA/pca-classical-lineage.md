@@ -1,5 +1,5 @@
 # PCA Classical Lineage
-Rev. 3 | Created: 2026-08-11 | Updated: 2026-08-11 14:52 CDT
+Rev. 4 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
 
 > PCA is not one technique but a lineage that branched from a single root.
 > This document arranges those branches along one axis — which assumption of the original PCA each of them relaxed — and records what every branch gains and what it gives up.
@@ -190,6 +190,8 @@ Table 12. Computing without gathering the data
 | Differentially Private PCA | No individual sample may be revealed | Noise is added to the covariance or the components |
 
 Data that cannot cross between fabs, or between customers, is where this branch is needed. How much accuracy has to be surrendered is the price of honouring that constraint.
+
+---
 
 ## Appendix A. Terminology
 

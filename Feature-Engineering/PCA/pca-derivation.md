@@ -1,5 +1,5 @@
 # PCA Derivation
-Rev. 5 | Created: 2026-08-11 | Updated: 2026-08-13 01:55 CDT
+Rev. 6 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
 
 > The procedure can be followed without knowing why its answer is right, and most uses never need to ask.
 > This document is for when the question comes up: it derives, from the requirement of keeping as much variance as possible, that the axes PCA returns must be eigenvectors of the covariance matrix.
@@ -158,6 +158,8 @@ Table 2. The claims checked against the example
 | The discarded $\lambda$ equals the reconstruction error (§6) | Keeping only $u_1$, the residuals are the coordinates along $u_2$, namely $\sqrt{2}, 0, -\sqrt{2}$, with mean square $(2 + 0 + 2) / 2$ | $2 = \lambda_2$ |
 
 The explained variance ratio of the first component is $6 / 8 = 0.75$, and the example is small enough that all of these numbers survive being recomputed on paper. [Appendix B](#appendix-b-the-worked-example-drawn) draws the same numbers in both coordinate systems.
+
+---
 
 ## Appendix A. Terminology
 

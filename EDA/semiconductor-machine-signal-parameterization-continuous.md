@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Continuous Signals
-Rev. 7 | Created: 2026-07-31 | Updated: 2026-08-10 22:02 CDT
+Rev. 8 | Created: 2026-07-31 | Updated: 2026-08-20 01:11 CDT
 
 > A raw machine waveform cannot enter a model as it is. It must first be reduced to a fixed-width row of numbers.
 > This document defines that reduction for the small-signal regime, for the large-signal regime, and for the case where both regimes occupy the same record.
@@ -275,6 +275,8 @@ Table 15. Handling for each mixture of regimes
 | Large-signal events are rare | Model the small signal continuously and treat large-signal occurrence as a separate event-detection target |
 
 Record the regime label produced by section 5 as a column in every case. It is needed to interpret the model afterward, and a feature table that cannot say which regime a row came from cannot explain its own predictions.
+
+---
 
 ## Appendix A. Terminology
 
