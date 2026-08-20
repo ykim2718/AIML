@@ -1,9 +1,19 @@
 # Noise Color Taxonomy
-Rev. 0 | Created: 2026-08-20 | Updated: 2026-08-20 01:11 CDT
+Rev. 1 | Created: 2026-08-20 | Updated: 2026-08-20 01:33 CDT
 
-노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
+노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
-## 1. Spectral Slope
+## 1. Waveform
+
+네 색을 같은 길이와 같은 세로 눈금으로 그리면 차이가 바로 드러난다.
+
+![Fig 1](noise-color-taxonomy_fig/fig1_waveform.png)
+
+Fig 1. Waveform of each noise color
+
+Red 는 값이 천천히 오르내려 선이 매끄럽고, Blue 는 이웃한 표본끼리 값이 자주 뒤집혀 선이 가장 촘촘하다. White 는 그 둘 사이에 있고, Pink 는 White 같은 잔 움직임 위에 Red 같은 느린 흔들림이 얹혀 있다. 네 신호는 모두 표준편차를 1 로 맞추었으므로, 다른 것은 세로 폭이 아니라 값이 변하는 빠르기이다.
+
+## 2. Spectral Slope
 
 색을 가르는 기준은 octave 마다 에너지가 몇 dB 변하는지이다. Octave 는 주파수가 두 배가 되는 구간이므로, 이 기울기 하나가 전 대역의 에너지 분포를 정한다.
 
@@ -18,7 +28,15 @@ Table 1. Spectral slope by noise color
 
 Red 는 brown noise 라고도 부른다. 기울기가 -6, -3, 0, +3 으로 이어지므로 네 색은 하나의 축 위에 놓이고, White 의 0 이 나머지 셋을 재는 기준이 된다.
 
-## 2. Auditory Character
+![Fig 2](noise-color-taxonomy_fig/fig2_psd.png)
+
+Fig 2. Power spectral density of each noise color
+
+가로와 세로가 모두 로그 눈금이므로 주파수의 거듭제곱은 직선으로 나타나고, 그 직선의 기울기가 Table 1 의 값이다. White 만 수평이고 Pink 와 Red 는 내려가며 Blue 는 올라간다. 1 절에서 Red 의 선이 매끄럽고 Blue 의 선이 촘촘했던 것이 여기서는 두 곡선이 서로 반대 방향으로 기우는 것으로 나타난다.
+
+가장 낮은 몇 Hz 에서 Pink 와 Blue 의 곡선이 수평 쪽으로 눕는데, 이는 그 구간에서 평균할 표본이 적어 추정이 거칠어진 것이지 기울기가 달라진 것이 아니다.
+
+## 3. Auditory Character
 
 White 는 TV 의 무신호 화면에서 나는 찌직 소리에 가깝다. 대역마다 에너지가 같아도 사람의 귀는 높은 대역을 더 크게 듣기 때문에, 평탄한 신호인데도 고음이 강조되어 들린다.
 
@@ -28,7 +46,7 @@ Red 는 묵직한 폭포 소리나 둥둥거리는 천둥 소리에 가깝다. �
 
 Blue 는 쌕 하는 고음역 위주의 날카로운 소리이다. Red 와 정반대로 에너지가 고주파에 몰려 있다.
 
-## 3. Spatial Pattern
+## 4. Spatial Pattern
 
 같은 기울기를 소리가 아니라 점의 배치에 적용하면 색마다 다른 무늬가 나온다.
 
@@ -38,7 +56,7 @@ Pink 는 저주파 성분이 살아 있어 뭉침이 남고, Red 는 저주파�
 
 Blue 는 저주파 성분이 없으므로 뭉침이 생기지 않는다. 점들이 서로 밀어내는 것처럼 고르게 흩어진다.
 
-## 4. Application
+## 5. Application
 
 Table 2. Application by noise color
 
