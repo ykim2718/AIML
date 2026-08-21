@@ -1,6 +1,7 @@
-"""Generate the waveform and power spectral density figures for the noise color taxonomy.
+"""Generate the waveform, power spectral density and point pattern figures for the noise color taxonomy.
 
 Changelog:
+    0.1.0.2026.8.21 Add the point pattern figure that contrasts white and blue noise sampling.
     0.0.0.2026.8.20 Initial release.
 """
 
@@ -8,17 +9,17 @@ import argparse
 import enum
 import pathlib
 import sys
-from typing import Union
 
 import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 from scipy import signal
+from scipy.spatial import distance
 from tqdm import tqdm
 
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.8.20"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.0.2026.8.21"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 matplotlib.use('Agg')
 
@@ -109,8 +110,50 @@ def plot_psd(signals: dict = None, sample_rate: float = None, out_path: pathlib.
     plt.close(fig)
 
 
+def generate_uniform_points(n_points: int = None, rng: np.random.Generator = None) -> np.ndarray:
+    """Place points independently and uniformly, which is the two dimensional form of white noise."""
+    return rng.random(size=(n_points, 2))
+
+
+def generate_blue_noise_points(n_points: int = None, n_candidates: int = None,
+                               rng: np.random.Generator = None) -> np.ndarray:
+    """Place points with Mitchell best candidate sampling, which suppresses the low frequency clumping.
+
+    Every new point is chosen from n_candidates uniform draws, keeping the one whose nearest accepted point is
+    farthest away. Rejecting the candidates that land close to an accepted point is what removes the clumps.
+    """
+    points = np.empty(shape=(n_points, 2))
+    points[0] = rng.random(size=2)
+
+    for index in range(1, n_points):
+        candidates = rng.random(size=(n_candidates, 2))
+        nearest = distance.cdist(candidates, points[:index]).min(axis=1)
+        points[index] = candidates[int(np.argmax(nearest))]
+
+    return points
+
+
+def plot_point_patterns(patterns: dict = None, out_path: pathlib.Path = None, dpi: int = None) -> None:
+    """Draw one square panel per pattern so that the clumping can be compared at the same point count."""
+    fig, axes = plt.subplots(nrows=1, ncols=len(patterns), figsize=(9.0, 4.8))
+
+    for axis, label, (color, points) in zip(axes, PANEL_LABEL, patterns.items()):
+        axis.scatter(points[:, 0], points[:, 1], s=6.0, color=PLOT_COLOR[color])
+        axis.set_title(f"{label} {color.value} noise", loc='left', fontsize=10)
+        axis.set_xlim(0.0, 1.0)
+        axis.set_ylim(0.0, 1.0)
+        axis.set_aspect('equal')
+        axis.set_xticks([])
+        axis.set_yticks([])
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=dpi)
+    plt.close(fig)
+
+
 def build_figures(out_folder: pathlib.Path = None, n_samples: int = None, n_wave_samples: int = None,
-                  sample_rate: float = None, seed: int = None, dpi: int = None) -> None:
+                  sample_rate: float = None, n_points: int = None, n_candidates: int = None,
+                  seed: int = None, dpi: int = None) -> None:
     """Generate the signals for both figures and write the figures into the output folder.
 
     The two figures need different signal lengths. The density needs a long signal so that Welch can average many
@@ -127,8 +170,14 @@ def build_figures(out_folder: pathlib.Path = None, n_samples: int = None, n_wave
         wave_signals[color] = generate_noise(color=color, n_samples=n_wave_samples, rng=rng)
         psd_signals[color] = generate_noise(color=color, n_samples=n_samples, rng=rng)
 
+    patterns: dict = {
+        NoiseColor.WHITE: generate_uniform_points(n_points=n_points, rng=rng),
+        NoiseColor.BLUE: generate_blue_noise_points(n_points=n_points, n_candidates=n_candidates, rng=rng),
+    }
+
     plot_waveforms(signals=wave_signals, sample_rate=sample_rate, out_path=out_folder / 'fig1_waveform.png', dpi=dpi)
     plot_psd(signals=psd_signals, sample_rate=sample_rate, out_path=out_folder / 'fig2_psd.png', dpi=dpi)
+    plot_point_patterns(patterns=patterns, out_path=out_folder / 'fig3_point_pattern.png', dpi=dpi)
 
 
 def parse_args() -> argparse.Namespace:
@@ -142,6 +191,10 @@ def parse_args() -> argparse.Namespace:
                         help="number of samples in the signal the waveform figure draws")
     parser.add_argument('--sample-rate', type=float, default=8000.0,
                         help="sample rate in Hz used for the time and frequency axes")
+    parser.add_argument('--n-points', type=int, default=800,
+                        help="number of points drawn in each panel of the point pattern figure")
+    parser.add_argument('--n-candidates', type=int, default=12,
+                        help="candidates drawn per accepted point in blue noise sampling; larger is more even")
     parser.add_argument('--seed', type=int, default=0,
                         help="seed of the random generator, so the figures are reproducible")
     parser.add_argument('--dpi', type=int, default=300,
@@ -167,6 +220,10 @@ def parse_args() -> argparse.Namespace:
         parser.error(f"--dpi must be positive: {args.dpi}")
     if args.n_wave_samples < 16:
         parser.error(f"--n-wave-samples must be at least 16 to show a waveform: {args.n_wave_samples}")
+    if args.n_points < 2:
+        parser.error(f"--n-points must be at least 2: {args.n_points}")
+    if args.n_candidates < 2:
+        parser.error(f"--n-candidates must be at least 2, otherwise the sampling is uniform: {args.n_candidates}")
 
     return args
 
@@ -174,4 +231,5 @@ def parse_args() -> argparse.Namespace:
 if __name__ == '__main__':
     cli = parse_args()
     build_figures(out_folder=cli.out_folder, n_samples=cli.n_samples, n_wave_samples=cli.n_wave_samples,
-                  sample_rate=cli.sample_rate, seed=cli.seed, dpi=cli.dpi)
+                  sample_rate=cli.sample_rate, n_points=cli.n_points, n_candidates=cli.n_candidates,
+                  seed=cli.seed, dpi=cli.dpi)
