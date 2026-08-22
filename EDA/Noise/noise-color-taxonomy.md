@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 2 | Created: 2026-08-20 | Updated: 2026-08-21 15:07 CDT
+Rev. 3 | Created: 2026-08-20 | Updated: 2026-08-22 04:52 UTC
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
@@ -11,7 +11,7 @@ Rev. 2 | Created: 2026-08-20 | Updated: 2026-08-21 15:07 CDT
 
 Fig 1. Waveform of each noise color
 
-Red 는 값이 천천히 오르내려 선이 매끄럽고, Blue 는 이웃한 표본끼리 값이 자주 뒤집혀 선이 가장 촘촘하다. White 는 그 둘 사이에 있고, Pink 는 White 같은 잔 움직임 위에 Red 같은 느린 흔들림이 얹혀 있다. 네 신호는 모두 표준편차를 1 로 맞추었으므로, 다른 것은 세로 폭이 아니라 값이 변하는 빠르기이다.
+Red 는 값이 천천히 오르내려 선이 매끄럽고, Blue 는 이웃한 표본끼리 값이 자주 뒤집혀 선이 가장 촘촘하다. White 는 그 둘 사이에 있고, Pink 는 White 같은 잔 움직임 위에 Red 같은 느린 흔들림이 얹혀 있다. 네 신호는 모두 표준편차를 1 로 맞추었으므로, 다른 것은 세로 폭이 아니라 값이 변하는 빠르기이다. 각 panel 제목에 함께 적은 기울기가 그 빠르기를 한 수로 줄인 값이며, 그 수가 어디서 나오는지는 2 절에서 다룬다.
 
 ## 2. Spectral Slope
 
@@ -19,26 +19,30 @@ Power spectral density 는 신호가 가진 power 를 주파수 축에 나누어
 
 1 절의 네 신호는 표준편차가 서로 같으므로 이 면적의 총합도 서로 같다. 그러므로 색이 다르다는 것은 크기가 다르다는 뜻이 아니라, 같은 크기의 면적을 주파수 축 위에 서로 다르게 나누어 가졌다는 뜻이다.
 
-색을 가르는 기준은 그 나누어진 모양을 한 수로 줄인 값, 곧 octave 마다 에너지가 몇 dB 변하는지이다. Octave 는 주파수가 두 배가 되는 구간이므로, 이 기울기 하나가 전 대역의 에너지 분포를 정한다.
+색을 가르는 기준은 그 나누어진 모양을 한 수로 줄인 값, 곧 octave 마다 에너지가 몇 dB 변하는지이다. Octave 가 주파수 축을 일정한 배수로 훑으므로, 이 기울기 하나가 전 대역의 에너지 분포를 정한다. dB 와 octave 의 정의는 [Appendix A](#appendix-a-terminology) 에 있고, dB 를 power 와 전압에 각각 적용하는 방법은 [Appendix B](#appendix-b-decibel-and-ratio) 에서 다룬다.
 
 Table 1. Spectral slope by noise color
 
-| Color | Slope | Power spectral density | Energy distribution |
-|-------|-------|------------------------|---------------------|
-| White | 0 dB/octave | `1/f^0` | 모든 대역이 같은 에너지를 갖는다 |
-| Pink | -3 dB/octave | `1/f` | 주파수에 반비례해 줄어든다 |
-| Red | -6 dB/octave | `1/f^2` | 고주파가 급격히 줄어든다 |
-| Blue | +3 dB/octave | `f` | 주파수에 비례해 늘어난다 |
+| Color | Slope | Slope range | Power spectral density | Energy distribution |
+|-------|-------|-------------|------------------------|---------------------|
+| White | 0 dB/octave | -1.5 ~ +1.5 dB/octave | `1/f^0` | 모든 대역이 같은 에너지를 갖는다 |
+| Pink | -3 dB/octave | -4.5 ~ -1.5 dB/octave | `1/f` | 주파수에 반비례해 줄어든다 |
+| Red | -6 dB/octave | -7.5 ~ -4.5 dB/octave | `1/f^2` | 고주파가 급격히 줄어든다 |
+| Blue | +3 dB/octave | +1.5 ~ +4.5 dB/octave | `f` | 주파수에 비례해 늘어난다 |
 
 Red 는 brown noise 라고도 부른다. 기울기가 -6, -3, 0, +3 으로 이어지므로 네 색은 하나의 축 위에 놓이고, White 의 0 이 나머지 셋을 재는 기준이 된다.
 
+Slope 열은 색마다 붙은 이름값이고, Slope range 열은 잰 기울기가 얼마나 벗어나도 그 색으로 부르는지를 적은 것이다. 네 색이 3 dB/octave 간격으로 놓여 있으므로 이웃한 두 색의 한가운데인 ±1.5 dB/octave 까지가 한 색의 몫이 된다. 이 범위는 규격이 정한 허용치가 아니라 간격을 반으로 나눈 구획이다. 실제로 잰 신호의 기울기는 네 값 사이 아무 곳에나 놓이므로, 범위가 없으면 -4 dB/octave 인 신호를 어느 색으로 부를지 정할 수 없다.
+
+네 값이 모두 같은 무게를 갖지는 않는다. Pink 는 음향 기기 측정에 쓰는 시험 신호로 IEC 60268-1 에 -3 dB/octave 로 올라 있다 [1](#ref-1). White, Pink, Blue 라는 이름 자체는 Federal Standard 1037C 의 통신 용어집에 항목으로 실려 있으나, 그 용어집은 이름을 풀이할 뿐 기울기 값을 정하지는 않는다 [2](#ref-2). Red 의 -6 은 Brownian motion 의 스펙트럼에서 나온 관례일 뿐 그 값을 정하는 규격 문서가 없다. 거듭제곱 잡음을 규격으로 다루는 IEEE Std 1139 는 같은 기울기들을 색 이름 대신 white, flicker, random walk 로 부른다 [3](#ref-3). 그러므로 네 값은 널리 쓰이는 관례이고, 그중 Pink 만 측정 규격이 값까지 정해 둔다.
+
 ![Fig 2](noise-color-taxonomy_fig/fig2_psd.png)
 
-Fig 2. Power spectral density of each noise color
+Fig 2. Power spectral density and fitted slope of each noise color
 
-가로와 세로가 모두 로그 눈금이므로 주파수의 거듭제곱은 직선으로 나타나고, 그 직선의 기울기가 Table 1 의 값이다. White 만 수평이고 Pink 와 Red 는 내려가며 Blue 는 올라간다. 1 절에서 Red 의 선이 매끄럽고 Blue 의 선이 촘촘했던 것이 여기서는 두 곡선이 서로 반대 방향으로 기우는 것으로 나타난다.
+가로와 세로가 모두 로그 눈금이므로 주파수의 거듭제곱은 직선으로 나타나고, 그 직선의 기울기가 Table 1 의 값이다. 회색 띠는 기울기를 잰 구간이고, 검은 점선은 그 구간의 점에 최소제곱으로 맞춘 직선이다. 범례에는 색마다 Table 1 의 값과 잰 값을 나란히 적었으며, 네 색 모두 잰 값이 Table 1 의 값에서 0.02 dB/octave 안에 든다. White 만 수평이고 Pink 와 Red 는 내려가며 Blue 는 올라간다. 1 절에서 Red 의 선이 매끄럽고 Blue 의 선이 촘촘했던 것이 여기서는 두 곡선이 서로 반대 방향으로 기우는 것으로 나타난다.
 
-가장 낮은 몇 Hz 에서 Pink 와 Blue 의 곡선이 수평 쪽으로 눕는데, 이는 그 구간에서 평균할 표본이 적어 추정이 거칠어진 것이지 기울기가 달라진 것이 아니다.
+가장 낮은 몇 Hz 에서 Pink 와 Blue 의 곡선이 수평 쪽으로 눕는데, 이는 그 구간에서 평균할 표본이 적어 추정이 거칠어진 것이지 기울기가 달라진 것이 아니다. 잰 구간이 그 아래를 비우고 시작하는 이유도 여기에 있다.
 
 ## 3. Auditory Character
 
@@ -79,10 +83,43 @@ Table 2. Application by noise color
 
 앞의 셋은 소리로 쓰이고 Blue 만 점의 배치로 쓰인다. Blue 를 쓰는 세 분야가 모두 표본이나 점을 고르게 흩어 놓아야 하는 일이기 때문이다.
 
+## References
+
+<a id="ref-1"></a>[1] International Electrotechnical Commission. [IEC 60268-1:1985, Sound system equipment - Part 1: General](https://webstore.iec.ch/en/publication/1204). 1985.
+
+<a id="ref-2"></a>[2] General Services Administration. [Federal Standard 1037C, Telecommunications: Glossary of Telecommunication Terms](https://its.ntia.gov/about/resources/federal-standard-1037c/). 1996.
+
+<a id="ref-3"></a>[3] Institute of Electrical and Electronics Engineers. [IEEE Std 1139-2008, IEEE Standard Definitions of Physical Quantities for Fundamental Frequency and Time Metrology - Random Instabilities](https://doi.org/10.1109/IEEESTD.2008.4797525). 2008.
+
+<a id="ref-4"></a>[4] International Electrotechnical Commission. [IEC 61260-1:2014, Electroacoustics - Octave-band and fractional-octave-band filters - Part 1: Specifications](https://webstore.iec.ch/en/publication/5063). 2014.
+
 ---
 
 ## Appendix A. Terminology
 
+- **Decibel (dB)** 은 두 양의 비를 로그로 옮긴 값이다. Power 를 기준으로 하면 $10 \log_{10}(P_2 / P_1)$ 이며, 전압에 쓸 때 달라지는 점은 [Appendix B](#appendix-b-decibel-and-ratio) 에 있다.
 - **Dithering** 은 색이나 밝기의 단계를 줄일 때 생기는 띠를 없애려고 의도적으로 노이즈를 더하는 기법이다.
 - **Halftoning** 은 농담을 점의 밀도로 바꾸어 두 색만으로 중간 밝기를 표현하는 기법이다.
+- **Octave** 는 주파수가 두 배가 되는 구간이다. 20 Hz 에서 40 Hz 까지와 1 kHz 에서 2 kHz 까지가 모두 한 octave 이며, 이 구간을 나누는 filter 의 규격은 IEC 61260-1 에 있다 [4](#ref-4).
 - **Tinnitus** 는 외부에 소리가 없는데도 귀에서 소리가 들리는 증상이다.
+
+## Appendix B. Decibel and Ratio
+
+dB 는 그 자체로 크기를 갖는 단위가 아니라 두 양의 비를 로그로 옮긴 값이다. 그러므로 무엇의 비인지에 따라 로그 앞에 붙는 수가 달라진다.
+
+Power 를 기준으로 잴 때는 $10 \log_{10}(P_2 / P_1)$ 을 쓴다. +10 dB 는 power 가 10 배, +20 dB 는 100 배가 되었다는 뜻이다.
+
+전압이나 음압처럼 제곱해야 power 가 되는 양은 $20 \log_{10}(V_2 / V_1)$ 을 쓴다. 앞의 수가 20 인 것은 $P \propto V^2$ 이어서 $10 \log_{10}(V^2) = 20 \log_{10}(V)$ 이기 때문이다. 그러므로 10 과 20 은 서로 다른 두 종류의 dB 가 아니라 같은 dB 를 서로 다른 양에 적용한 것이며, 같은 물리적 변화라면 두 식은 같은 값을 준다.
+
+이 때문에 전압에서는 +10 dB 가 10 배가 아니라 약 3.16 배가 된다. 배수 $x$ 는 $10 = 20 \log_{10}(x)$ 를 풀어서 얻는다. 양변을 20 으로 나누면 $\log_{10}(x) = 0.5$ 이고, 이를 지수로 옮기면 $x = 10^{0.5} = \sqrt{10} \approx 3.1623$ 이다. 곧 3.16 은 10 의 제곱근이다.
+
+Table 3. Decibel and ratio
+
+| Decibel | Power ratio | Voltage ratio |
+|---------|-------------|---------------|
+| +3 dB | 2.00 | 1.41 |
+| +6 dB | 3.98 | 2.00 |
+| +10 dB | 10.00 | 3.16 |
+| +20 dB | 100.00 | 10.00 |
+
+이 문서의 기울기는 power spectral density 를 dB 로 옮긴 값이므로 $10 \log_{10}$ 을 쓴 쪽이다. Pink 의 -3 dB/octave 는 주파수가 두 배가 될 때 밀도가 절반이 된다는 뜻이고, 그 사이 octave 의 폭도 두 배가 되므로 한 octave 가 담는 power 는 그대로 남는다.

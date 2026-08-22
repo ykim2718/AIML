@@ -1,0 +1,5 @@
+color,nominal_exponent,fitted_exponent,nominal_slope_db_per_octave,fitted_slope_db_per_octave,slope_stderr_db_per_octave,fit_low_hz,fit_high_hz,n_fit_points
+white,0.0,-0.0010,0.0000,-0.0031,0.0097,10.0000,2000.0000,1019
+pink,-1.0,-0.9988,-3.0103,-3.0067,0.0094,10.0000,2000.0000,1019
+red,-2.0,-1.9943,-6.0206,-6.0036,0.0092,10.0000,2000.0000,1019
+blue,1.0,1.0054,3.0103,3.0267,0.0091,10.0000,2000.0000,1019
