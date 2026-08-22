@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 5 | Created: 2026-08-20 | Updated: 2026-08-22 04:41 UTC
+Rev. 6 | Created: 2026-08-20 | Updated: 2026-08-22 20:32 UTC
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
@@ -19,7 +19,7 @@ Power spectral density 는 신호가 가진 power 를 주파수 축에 나누어
 
 1 절의 네 신호는 표준편차가 서로 같으므로 이 면적의 총합도 서로 같다. 그러므로 색이 다르다는 것은 크기가 다르다는 뜻이 아니라, 같은 크기의 면적을 주파수 축 위에 서로 다르게 나누어 가졌다는 뜻이다.
 
-색을 가르는 기준은 그 나누어진 모양을 한 수로 줄인 값, 곧 octave 마다 에너지가 몇 dB 변하는지이다. Octave 가 주파수 축을 일정한 배수로 훑으므로, 이 기울기 하나가 전 대역의 에너지 분포를 정한다. dB 와 octave 의 정의는 [Appendix A](#appendix-a-terminology) 에 있고, dB 를 power 와 전압에 각각 적용하는 방법은 [Appendix B](#appendix-b-decibel-and-ratio) 에서 다룬다.
+색을 가르는 기준은 그 나누어진 모양을 한 수로 줄인 값, 곧 octave 마다 에너지가 몇 dB 변하는지이다. Octave 가 주파수 축을 일정한 배수로 훑으므로, 이 기울기 하나가 전 대역의 에너지 분포를 정한다. 이 기울기는 두 축이 모두 로그인 곳에서 잰 것이며, 오디오 feature 추출에서 같은 spectral slope 라는 이름으로 부르는 값이 선형 주파수 축에 스펙트럼의 크기를 회귀한 것이라 서로 다르다 [4](#ref-4). dB 와 octave 의 정의는 [Appendix A](#appendix-a-terminology) 에 있고, dB 를 power 와 전압에 각각 적용하는 방법은 [Appendix B](#appendix-b-decibel-and-ratio) 에서 다룬다.
 
 Table 1. Spectral slope by noise color
 
@@ -91,7 +91,9 @@ Table 2. Application by noise color
 
 <a id="ref-3"></a>[3] Institute of Electrical and Electronics Engineers. [IEEE Std 1139-2008, IEEE Standard Definitions of Physical Quantities for Fundamental Frequency and Time Metrology - Random Instabilities](https://doi.org/10.1109/IEEESTD.2008.4797525). 2008.
 
-<a id="ref-4"></a>[4] International Electrotechnical Commission. [IEC 61260-1:2014, Electroacoustics - Octave-band and fractional-octave-band filters - Part 1: Specifications](https://webstore.iec.ch/en/publication/5063). 2014.
+<a id="ref-4"></a>[4] MathWorks. [spectralSlope - Spectral slope for audio signals and auditory spectrograms](https://www.mathworks.com/help/audio/ref/spectralslope.html).
+
+<a id="ref-5"></a>[5] International Electrotechnical Commission. [IEC 61260-1:2014, Electroacoustics - Octave-band and fractional-octave-band filters - Part 1: Specifications](https://webstore.iec.ch/en/publication/5063). 2014.
 
 ---
 
@@ -100,7 +102,7 @@ Table 2. Application by noise color
 - **Decibel (dB)** 은 두 양의 비를 로그로 옮긴 값이다. Power 를 기준으로 하면 $10 \log_{10}(P_2 / P_1)$ 이며, 전압에 쓸 때 달라지는 점은 [Appendix B](#appendix-b-decibel-and-ratio) 에 있다.
 - **Dithering** 은 색이나 밝기의 단계를 줄일 때 생기는 띠를 없애려고 의도적으로 노이즈를 더하는 기법이다.
 - **Halftoning** 은 농담을 점의 밀도로 바꾸어 두 색만으로 중간 밝기를 표현하는 기법이다.
-- **Octave** 는 주파수가 두 배가 되는 구간이다. 20 Hz 에서 40 Hz 까지와 1 kHz 에서 2 kHz 까지가 모두 한 octave 이며, 이 구간을 나누는 filter 의 규격은 IEC 61260-1 에 있다 [4](#ref-4).
+- **Octave** 는 주파수가 두 배가 되는 구간이다. 20 Hz 에서 40 Hz 까지와 1 kHz 에서 2 kHz 까지가 모두 한 octave 이며, 이 구간을 나누는 filter 의 규격은 IEC 61260-1 에 있다 [5](#ref-5).
 - **Tinnitus** 는 외부에 소리가 없는데도 귀에서 소리가 들리는 증상이다.
 
 ## Appendix B. Decibel and Ratio
