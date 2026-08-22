@@ -1,5 +1,5 @@
 # Noise in LSB
-Rev. 3 | Created: 2026-08-22 | Updated: 2026-08-22 20:39 UTC
+Rev. 4 | Created: 2026-08-22 | Updated: 2026-08-22 20:42 UTC
 
 신호의 표준편차를 LSB 하나의 크기로 나눈 값은 ADC 와 DAC 를 다루는 분야에서 noise in LSB 또는 LSB rms noise 라고 부른다. 잡음을 volt 로 적으면 장치마다 입력 범위와 비트 수가 달라 서로 견줄 수 없지만, 이 값은 잡음을 그 장치의 분해능으로 잰 것이므로 장치가 달라도 같은 뜻으로 읽힌다. 이 문서는 이 값의 정의, 물리적 의미, 값에 따른 해석을 정리한다.
 
@@ -61,7 +61,7 @@ Table 2. Interpretation by noise level
 
 $$\sigma_{total} = \sqrt{\sigma_{quant}^2 + \sigma_{input}^2}$$
 
-여기서 $\sigma_{quant}$ 는 quantization noise 이고 $\sigma_{input}$ 은 input-referred noise 이다. $\sigma_{quant}$ 가 0.289 LSB 로 고정되어 있으므로, $\sigma_{total}$ 이 0.29 근처에 머물려면 $\sigma_{input}$ 이 그보다 훨씬 작아야 한다. $\sigma_{input}$ 이 0.1 LSB 여도 $\sigma_{total}$ 은 0.306 LSB 여서 quantization noise 만 있을 때와 거의 구분되지 않는다. 곧 센서, 기준 전압, 증폭기, 배선에서 들어온 잡음을 모두 합쳐도 LSB 한 칸의 몇 분의 일에 그쳐, 출력에서 보이는 흔들림이 ADC 가 값을 자르며 생긴 것뿐인 상태이다.
+여기서 $\sigma_{quant}$ 는 quantization noise 이고 $\sigma_{input}$ 은 input-referred noise 이다. $\sigma_{quant}$ 가 0.289 LSB 로 고정되어 있으므로, $\sigma_{total}$ 이 0.29 근처에 머물려면 $\sigma_{input}$ 이 그보다 훨씬 작아야 한다. $\sigma_{input}$ 이 0.1 LSB 여도 $\sigma_{total}$ 은 0.306 LSB 여서 quantization noise 만 있을 때와 거의 구분되지 않는다. 곧 sensor, 기준 전압, 증폭기, 배선이 얹은 잡음에 ADC 자신이 만든 잡음까지 더해도 LSB 한 칸의 몇 분의 일에 그쳐, 출력에서 보이는 흔들림이 ADC 가 값을 자르며 생긴 것뿐인 상태이다.
 
 이 상태에서는 입력이 조용하면 출력 코드가 하나에 머문다. 대신 여러 번 변환해 평균해도 분해능이 더 좋아지지 않는데, 평균이 효과를 내려면 값을 이웃 코드로 넘겨 줄 잡음이 있어야 하기 때문이다. 잡음이 1 LSB 를 넘는 쪽에서는 반대로 $M$ 번 평균해 잡음을 $\sqrt{M}$ 만큼 줄일 수 있고, 이때 얻은 0.29 보다 낮은 값은 장치가 더 조용해진 것이 아니라 표본을 늘려 얻은 결과이다.
 
@@ -79,10 +79,10 @@ $$\sigma_{total} = \sqrt{\sigma_{quant}^2 + \sigma_{input}^2}$$
 
 - **ADC (Analog-to-Digital Converter)** 는 연속인 아날로그 신호를 정해진 비트 수의 디지털 코드로 바꾸는 장치이다.
 - **DAC (Digital-to-Analog Converter)** 는 디지털 코드를 아날로그 신호로 되돌리는 장치이다.
-- **DAQ (Data Acquisition)** 는 센서 신호를 받아 디지털로 바꾸어 기록하는 장치나 시스템을 가리킨다.
+- **DAQ (Data Acquisition)** 는 sensor 신호를 받아 디지털로 바꾸어 기록하는 장치나 시스템을 가리킨다.
 - **ENOB (Effective Number of Bits)** 는 잡음과 왜곡을 셈에 넣었을 때 실제로 쓸 수 있는 비트 수이다.
 - **FDC (Fault Detection and Classification)** 는 장비가 남긴 sensor 기록의 통계를 감시해 이상을 찾아내고 그 종류를 가르는 체계이다.
-- **Input-referred noise** 는 ADC 앞단이 얹은 잡음을 ADC 입력 자리에서 본 값이다. 입력을 정지시킨 채 출력 코드의 분포를 재어 얻으며, code transition noise 라고도 부른다 [1](#ref-1).
+- **Input-referred noise** 는 quantization 을 뺀 나머지 잡음을 모두 모아 ADC 입력 자리에서 본 값이며, 입력을 정지시킨 채 출력 코드의 분포를 재어 얻는다. 잡음이 입력으로 들어온다는 뜻이 아니라 회로 안에서 생긴 잡음을 입력에 놓인 잡음원으로 바꾸어 적은 것이며, 이렇게 적으면 이득과 무관해져 입력 신호와 같은 자리에서 견줄 수 있다. Code transition noise 라고도 부른다 [1](#ref-1).
 - **LSB (Least Significant Bit)** 는 디지털 코드의 최하위 비트이며, 그 비트 하나가 나타내는 신호 크기를 뜻하기도 한다. 이 문서에서는 뒤의 뜻으로 쓴다.
 - **Quantization noise** 는 연속인 값을 정해진 코드로 자를 때 남는 오차이며, 그 크기는 LSB 하나가 정한다. 자르기 전의 값과 자른 뒤의 값의 차이를 quantization error 라고 한다.
 - **RMS (Root Mean Square)** 는 값을 제곱해 평균한 뒤 제곱근을 취한 값이다. 평균이 0 인 잡음에서는 표준편차와 같다.
