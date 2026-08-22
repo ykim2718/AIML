@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 4 | Created: 2026-08-20 | Updated: 2026-08-22 04:35 UTC
+Rev. 5 | Created: 2026-08-20 | Updated: 2026-08-22 04:41 UTC
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
@@ -126,7 +126,7 @@ Table 3. Decibel and ratio
 
 ## Appendix C. Slope in Decibel per Decade
 
-Table 1 은 오디오 관례를 따라 octave 를 눈금으로 삼는다. 반도체 장비의 제어 loop 는 Bode plot 으로 이득과 위상을 읽으므로 같은 기울기를 decade 로 적는다. Decade 는 주파수가 열 배가 되는 구간이므로 한 decade 는 $\log_2(10) \approx 3.3219$ octave 이며, dB/octave 값을 $\log_{10} 2$ 로 나누면 dB/decade 값이 된다.
+Table 1 은 오디오 관례를 따라 octave 를 눈금으로 삼는다. 반도체 장비의 제어 loop 는 [Bode plot](https://en.wikipedia.org/wiki/Bode_plot) 으로 이득과 위상을 읽으므로 같은 기울기를 decade 로 적는다. Decade 는 주파수가 열 배가 되는 구간이므로 한 decade 는 $\log_2(10) \approx 3.3219$ octave 이며, dB/octave 값을 $\log_{10} 2$ 로 나누면 dB/decade 값이 된다.
 
 Table 4. Spectral slope by noise color in decibel per decade
 
