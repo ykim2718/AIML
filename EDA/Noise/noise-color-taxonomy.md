@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 3 | Created: 2026-08-20 | Updated: 2026-08-22 04:52 UTC
+Rev. 4 | Created: 2026-08-20 | Updated: 2026-08-22 04:35 UTC
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
@@ -32,7 +32,7 @@ Table 1. Spectral slope by noise color
 
 Red 는 brown noise 라고도 부른다. 기울기가 -6, -3, 0, +3 으로 이어지므로 네 색은 하나의 축 위에 놓이고, White 의 0 이 나머지 셋을 재는 기준이 된다.
 
-Slope 열은 색마다 붙은 이름값이고, Slope range 열은 잰 기울기가 얼마나 벗어나도 그 색으로 부르는지를 적은 것이다. 네 색이 3 dB/octave 간격으로 놓여 있으므로 이웃한 두 색의 한가운데인 ±1.5 dB/octave 까지가 한 색의 몫이 된다. 이 범위는 규격이 정한 허용치가 아니라 간격을 반으로 나눈 구획이다. 실제로 잰 신호의 기울기는 네 값 사이 아무 곳에나 놓이므로, 범위가 없으면 -4 dB/octave 인 신호를 어느 색으로 부를지 정할 수 없다.
+Slope 열은 색마다 붙은 이름값이고, Slope range 열은 잰 기울기가 얼마나 벗어나도 그 색으로 부르는지를 적은 것이다. 네 색이 3 dB/octave 간격으로 놓여 있으므로 이웃한 두 색의 한가운데인 ±1.5 dB/octave 까지가 한 색의 몫이 된다. 이 범위는 규격이 정한 허용치가 아니라 간격을 반으로 나눈 구획이다. 실제로 잰 신호의 기울기는 네 값 사이 아무 곳에나 놓이므로, 범위가 없으면 -4 dB/octave 인 신호를 어느 색으로 부를지 정할 수 없다. 같은 표를 제어 분야의 눈금으로 옮긴 것은 [Appendix C](#appendix-c-slope-in-decibel-per-decade) 에 있다.
 
 네 값이 모두 같은 무게를 갖지는 않는다. Pink 는 음향 기기 측정에 쓰는 시험 신호로 IEC 60268-1 에 -3 dB/octave 로 올라 있다 [1](#ref-1). White, Pink, Blue 라는 이름 자체는 Federal Standard 1037C 의 통신 용어집에 항목으로 실려 있으나, 그 용어집은 이름을 풀이할 뿐 기울기 값을 정하지는 않는다 [2](#ref-2). Red 의 -6 은 Brownian motion 의 스펙트럼에서 나온 관례일 뿐 그 값을 정하는 규격 문서가 없다. 거듭제곱 잡음을 규격으로 다루는 IEEE Std 1139 는 같은 기울기들을 색 이름 대신 white, flicker, random walk 로 부른다 [3](#ref-3). 그러므로 네 값은 널리 쓰이는 관례이고, 그중 Pink 만 측정 규격이 값까지 정해 둔다.
 
@@ -123,3 +123,20 @@ Table 3. Decibel and ratio
 | +20 dB | 100.00 | 10.00 |
 
 이 문서의 기울기는 power spectral density 를 dB 로 옮긴 값이므로 $10 \log_{10}$ 을 쓴 쪽이다. Pink 의 -3 dB/octave 는 주파수가 두 배가 될 때 밀도가 절반이 된다는 뜻이고, 그 사이 octave 의 폭도 두 배가 되므로 한 octave 가 담는 power 는 그대로 남는다.
+
+## Appendix C. Slope in Decibel per Decade
+
+Table 1 은 오디오 관례를 따라 octave 를 눈금으로 삼는다. 반도체 장비의 제어 loop 는 Bode plot 으로 이득과 위상을 읽으므로 같은 기울기를 decade 로 적는다. Decade 는 주파수가 열 배가 되는 구간이므로 한 decade 는 $\log_2(10) \approx 3.3219$ octave 이며, dB/octave 값을 $\log_{10} 2$ 로 나누면 dB/decade 값이 된다.
+
+Table 4. Spectral slope by noise color in decibel per decade
+
+| Color | Slope | Slope range | Power spectral density |
+|-------|-------|-------------|------------------------|
+| White | 0 dB/decade | -5 ~ +5 dB/decade | `1/f^0` |
+| Pink | -10 dB/decade | -15 ~ -5 dB/decade | `1/f` |
+| Red | -20 dB/decade | -25 ~ -15 dB/decade | `1/f^2` |
+| Blue | +10 dB/decade | +5 ~ +15 dB/decade | `f` |
+
+이 눈금에서는 값이 반올림 없이 떨어진다. Table 1 의 -3 과 -6 은 반올림한 값이고 정확히는 -3.0103 과 -6.0206 이며, 간격의 정확한 절반도 ±1.5 가 아니라 ±1.5052 이다. 이를 decade 로 옮기면 각각 -10, -20, ±5 가 되어 제어 쪽 표기가 오히려 정수로 맞는다. 네 색이 10 dB/decade 간격으로 놓이므로 이웃과의 한가운데도 ±5 dB/decade 로 떨어진다.
+
+-20 dB/decade 는 극점 하나짜리 filter 가 차단 주파수 위에서 내려가는 기울기와 같다. 그러므로 Red 는 White 를 그런 filter 에 통과시킨 것과 같은 모양이고, Pink 는 그 절반에 해당하는 기울기이다.
