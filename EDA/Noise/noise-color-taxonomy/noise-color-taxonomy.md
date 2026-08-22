@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 8 | Created: 2026-08-20 | Updated: 2026-08-22 21:02 UTC
+Rev. 9 | Created: 2026-08-20 | Updated: 2026-08-22 21:38 UTC
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
@@ -70,9 +70,25 @@ Fig 3. Point pattern of white and blue noise sampling
 
 두 panel 은 같은 넓이에 같은 개수의 점을 놓은 것이다. (a) 는 점마다 자리를 독립으로 뽑았고, (b) 는 후보를 여럿 뽑아 이미 놓인 점에서 가장 먼 것을 고르는 방식으로 놓았다. 개수가 같은데도 (a) 에는 점이 겹친 곳과 빈 곳이 함께 보이고 (b) 에는 그런 곳이 없다. Pink 와 Red 는 (a) 와 같은 방향이되 뭉침이 더 크고 굵을 뿐이므로 따로 싣지 않았다.
 
-## 5. Application
+## 5. Naming
 
-Table 2. Application by noise color
+Table 1 이 Pink 라고 부른 기울기에는 분야마다 다른 이름이 붙어 있다. 세 이름이 가리키는 층위가 서로 달라서, 셋을 같은 것으로 놓으면 범위가 어긋난다.
+
+Table 2. Name for the same slope by field
+
+| Name | What it names | Field |
+|------|---------------|-------|
+| 1/f noise | 스펙트럼의 모양 | 분야를 가리지 않는다 |
+| Flicker noise | 소자에서 그 모양을 만드는 현상 | 전자, 반도체 |
+| Pink noise | 같은 기울기의 소리에 붙은 색 이름 | 오디오 |
+
+곧 flicker noise 는 1/f noise 에 속한다. 심박 간격이나 뇌파의 1/f 변동을 flicker noise 라고 부르지는 않는데, 소자에서 나온 것이 아니기 때문이다. 반대로 MOSFET 의 저주파 잡음은 1/f noise 라고도 flicker noise 라고도 부른다.
+
+전자 분야에서는 1/f noise 와 flicker noise 를 사실상 같은 뜻으로 쓴다. 그러므로 1/f noise 라고 부르는 것이 전자 분야에서는 대개 flicker noise 라는 말은 맞지만, 1/f noise 가 곧 flicker noise 라는 말은 범위가 넓어져 어긋난다.
+
+## 6. Application
+
+Table 3. Application by noise color
 
 | Color | Field | Purpose |
 |-------|-------|---------|
@@ -102,7 +118,7 @@ Table 2. Application by noise color
 - **Allan deviation** 은 이웃한 두 평균값의 차이로 재는 흔들림의 크기이다. 평균 구간을 늘려 가며 그리면 잡음의 종류마다 다른 기울기가 나온다.
 - **Decibel (dB)** 은 두 양의 비를 로그로 옮긴 값이다. Power 를 기준으로 하면 $10 \log_{10}(P_2 / P_1)$ 이며, 전압에 쓸 때 달라지는 점은 [Appendix B](#appendix-b-decibel-and-ratio) 에 있다.
 - **Dithering** 은 색이나 밝기의 단계를 줄일 때 생기는 띠를 없애려고 의도적으로 노이즈를 더하는 기법이다.
-- **Flicker noise** 는 소자에서 나오는 저주파 잡음이며, 밀도가 대체로 주파수에 반비례한다. 전자 분야에서 1/f noise 라고 부르는 것이 대개 이것이다. IEEE Std 1139 에서는 원인과 무관하게 기울기 -1 을 가리키는 이름으로 쓴다 [3](#ref-3).
+- **Flicker noise** 는 소자에서 나오는 저주파 잡음이며, 밀도가 대체로 주파수에 반비례한다. IEEE Std 1139 에서는 원인과 무관하게 기울기 -1 을 가리키는 이름으로 쓴다 [3](#ref-3).
 - **Halftoning** 은 농담을 점의 밀도로 바꾸어 두 색만으로 중간 밝기를 표현하는 기법이다.
 - **Octave** 는 주파수가 두 배가 되는 구간이다. 20 Hz 에서 40 Hz 까지와 1 kHz 에서 2 kHz 까지가 모두 한 octave 이며, 이 구간을 나누는 filter 의 규격은 IEC 61260-1 에 있다 [5](#ref-5).
 - **Random walk** 은 값이 이전 값에서 무작위로 한 걸음씩 옮겨 가는 과정이다. 처음 값에서 멀어진 거리의 분산이 지난 시간에 비례한다.
@@ -118,7 +134,7 @@ Power 를 기준으로 잴 때는 $10 \log_{10}(P_2 / P_1)$ 을 쓴다. +10 dB �
 
 이 때문에 전압에서는 +10 dB 가 10 배가 아니라 약 3.16 배가 된다. 배수 $x$ 는 $10 = 20 \log_{10}(x)$ 를 풀어서 얻는다. 양변을 20 으로 나누면 $\log_{10}(x) = 0.5$ 이고, 이를 지수로 옮기면 $x = 10^{0.5} = \sqrt{10} \approx 3.1623$ 이다. 곧 3.16 은 10 의 제곱근이다.
 
-Table 3. Decibel and ratio
+Table 4. Decibel and ratio
 
 | Decibel | Power ratio | Voltage ratio |
 |---------|-------------|---------------|
@@ -133,7 +149,7 @@ Table 3. Decibel and ratio
 
 Table 1 은 오디오 관례를 따라 octave 를 눈금으로 삼는다. 반도체 장비의 제어 loop 는 [Bode plot](https://en.wikipedia.org/wiki/Bode_plot) 으로 이득과 위상을 읽으므로 같은 기울기를 decade 로 적는다. Decade 는 주파수가 열 배가 되는 구간이므로 한 decade 는 $\log_2(10) \approx 3.3219$ octave 이며, dB/octave 값을 $\log_{10} 2$ 로 나누면 dB/decade 값이 된다.
 
-Table 4. Spectral slope by noise color in decibel per decade
+Table 5. Spectral slope by noise color in decibel per decade
 
 | Color | Slope | Slope range | Power spectral density |
 |-------|-------|-------------|------------------------|
@@ -150,7 +166,7 @@ Table 4. Spectral slope by noise color in decibel per decade
 
 반도체 제조장비가 남긴 sensor 기록에서 표준편차 하나만 보면 신호가 얼마나 흔들리는지는 알 수 있어도 왜 흔들리는지는 알 수 없다. 크기가 같은 흔들림이라도 기울기가 다르면 원인이 다르고 조치도 달라진다. 이 문서가 가른 네 색이 그 구분을 준다.
 
-Table 5. Noise color and its source on an equipment signal
+Table 6. Noise color and its source on an equipment signal
 
 | Color | Likely source | Behavior over averaging |
 |-------|---------------|-------------------------|
@@ -165,4 +181,4 @@ Red 의 물리적 의미는 random walk 이다. 값이 이전 값에서 무작�
 
 기울기가 양수로 나오면 신호 자체보다 그 앞의 처리를 먼저 의심해야 한다. 이웃한 두 값을 빼는 차분은 저주파를 깎아 기울기에 +6 dB/octave 를 더하므로, White 를 한 번 차분한 것만으로도 Blue 보다 가파른 기울기가 나온다.
 
-색을 가르는 방법은 평균 구간을 늘려 가며 흔들림이 어떻게 변하는지 보는 것이며, 그 결과가 Table 5 의 마지막 열이다. 주파수 계측에서 Allan deviation 으로 잡음의 종류를 가르는 방법이 이것이며 [3](#ref-3), 같은 방법을 장비 신호에 그대로 쓸 수 있다.
+색을 가르는 방법은 평균 구간을 늘려 가며 흔들림이 어떻게 변하는지 보는 것이며, 그 결과가 Table 6 의 마지막 열이다. 주파수 계측에서 Allan deviation 으로 잡음의 종류를 가르는 방법이 이것이며 [3](#ref-3), 같은 방법을 장비 신호에 그대로 쓸 수 있다.

@@ -1,5 +1,5 @@
 # Noise in LSB
-Rev. 4 | Created: 2026-08-22 | Updated: 2026-08-22 20:42 UTC
+Rev. 5 | Created: 2026-08-22 | Updated: 2026-08-22 21:38 UTC
 
 신호의 표준편차를 LSB 하나의 크기로 나눈 값은 ADC 와 DAC 를 다루는 분야에서 noise in LSB 또는 LSB rms noise 라고 부른다. 잡음을 volt 로 적으면 장치마다 입력 범위와 비트 수가 달라 서로 견줄 수 없지만, 이 값은 잡음을 그 장치의 분해능으로 잰 것이므로 장치가 달라도 같은 뜻으로 읽힌다. 이 문서는 이 값의 정의, 물리적 의미, 값에 따른 해석을 정리한다.
 
@@ -82,6 +82,7 @@ $$\sigma_{total} = \sqrt{\sigma_{quant}^2 + \sigma_{input}^2}$$
 - **DAQ (Data Acquisition)** 는 sensor 신호를 받아 디지털로 바꾸어 기록하는 장치나 시스템을 가리킨다.
 - **ENOB (Effective Number of Bits)** 는 잡음과 왜곡을 셈에 넣었을 때 실제로 쓸 수 있는 비트 수이다.
 - **FDC (Fault Detection and Classification)** 는 장비가 남긴 sensor 기록의 통계를 감시해 이상을 찾아내고 그 종류를 가르는 체계이다.
+- **Flicker noise** 는 소자에서 나오는 저주파 잡음이며, 밀도가 대체로 주파수에 반비례한다. 전자 분야에서 1/f noise 라고 부르는 것이 대개 이것이고, input-referred noise 를 이루는 성분의 하나이다.
 - **Input-referred noise** 는 quantization 을 뺀 나머지 잡음을 모두 모아 ADC 입력 자리에서 본 값이며, 입력을 정지시킨 채 출력 코드의 분포를 재어 얻는다. 잡음이 입력으로 들어온다는 뜻이 아니라 회로 안에서 생긴 잡음을 입력에 놓인 잡음원으로 바꾸어 적은 것이며, 이렇게 적으면 이득과 무관해져 입력 신호와 같은 자리에서 견줄 수 있다. Code transition noise 라고도 부른다 [1](#ref-1).
 - **LSB (Least Significant Bit)** 는 디지털 코드의 최하위 비트이며, 그 비트 하나가 나타내는 신호 크기를 뜻하기도 한다. 이 문서에서는 뒤의 뜻으로 쓴다.
 - **Quantization noise** 는 연속인 값을 정해진 코드로 자를 때 남는 오차이며, 그 크기는 LSB 하나가 정한다. 자르기 전의 값과 자른 뒤의 값의 차이를 quantization error 라고 한다.
