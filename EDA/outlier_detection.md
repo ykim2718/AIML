@@ -1,5 +1,5 @@
 # Outlier Detection
-Rev. 1 | Created: 2026-08-25 | Updated: 2026-08-25 17:18 CDT
+Rev. 2 | Created: 2026-08-25 | Updated: 2026-08-25 17:52 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -35,9 +35,9 @@ The z-score divides the deviation of an observation from the sample mean by the 
 deviation, and an absolute value above 3 is the conventional flag. The rule assumes normality,
 under which about 0.27% of observations exceed 3 by chance alone.
 
-Two properties limit it. The mean and the standard deviation are both computed from the sample
-under test, so an outlier inflates the scale it is measured against and masks itself. That
-self-reference also caps the score: in a sample of size $n$ no absolute z-score can exceed
+One property limits it in two ways. The mean and the standard deviation are both computed from
+the sample under test, so an outlier inflates the scale it is measured against and masks itself.
+That same self-reference caps the score: in a sample of size $n$ no absolute z-score can exceed
 $(n-1)/\sqrt{n}$, a bound due to Shiffler (1988), which means a rule at 3 cannot fire below 11
 observations and a rule at 3.5 cannot fire below 15.
 
@@ -48,16 +48,16 @@ an observation below $Q_1 - 1.5 \cdot IQR$ or above $Q_3 + 1.5 \cdot IQR$, which
 drawn by the whiskers of a box plot.
 
 Quartiles are order statistics, so the rule needs no distributional assumption and carries a
-breakdown point of 25%, where the z-score has none at all. Against a normal sample the range
+breakdown point of 25% against the 0% of the z-score. Against a normal sample the range
 itself is $1.349\sigma$, so the fences sit near $\pm 2.7\sigma$ and admit roughly 0.7% of
 observations. The rule is therefore comparable in strictness to a z-score at 3, while surviving
 contamination that would defeat that score.
 
 ### 2.3. Hampel Identifier
 
-The Hampel identifier keeps the shape of the z-score and replaces both of its estimates. The
-median stands in for the mean, and the median absolute deviation, rescaled so that it estimates
-the standard deviation on a normal sample, stands in for the standard deviation.
+The Hampel identifier keeps the form of the z-score and replaces both of its estimates. The
+median takes the place of the mean, and the median absolute deviation takes the place of the
+standard deviation, rescaled so that it estimates the same quantity on a normal sample.
 
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}, \qquad \Phi^{-1}(0.75) = 0.674490$$
 
@@ -66,8 +66,9 @@ Hoaglin (1993). Because neither the median nor the MAD can be moved by a minorit
 reaches the outliers that mask themselves in section 2.1, and it needs no iteration: every
 observation is scored once, against estimates that were never contaminated.
 
-The failure mode is a tie rather than a shape. If more than half the sample takes one value the
-MAD is 0 and no score is defined, and no estimator at the same 50% breakdown point escapes it.
+The failure mode is a tie rather than a distribution. If more than half the sample takes one
+value the MAD is 0 and no score is defined, and no estimator at the same 50% breakdown point
+escapes it.
 
 ### 2.4. Generalized ESD
 
@@ -103,7 +104,7 @@ contaminated.
 
 ## 3. Machine Learning Methods
 
-These drop the distributional assumption and learn the shape of the normal region from unlabelled
+These drop the distributional assumption and learn the extent of the normal region from unlabelled
 data. They handle several variables at once and make no claim about an error rate, so their output
 is a score to be ranked rather than a test to be passed.
 
@@ -146,9 +147,9 @@ fitting anything. It builds the empirical cumulative distribution of each variab
 reads off the left and right tail probability of every observation, and aggregates those
 probabilities across variables into one score.
 
-It is the entry with no hyperparameter to set, which matters more than it sounds: every other
-method in this section has a neighbourhood size, a kernel, or a contamination rate that changes
-the answer, and none of them can be tuned against labels that do not exist. It is also linear in
+It is the entry with no hyperparameter to set. Every other method in this section has a
+neighbourhood size, a kernel, or a contamination rate that changes the answer, and none of those
+can be tuned against labels that do not exist. It is also linear in
 both the sample size and the variable count, and the per-variable tail probabilities say which
 variables made an observation extreme.
 
@@ -160,7 +161,7 @@ departure that exists only in the combination of variables. That is the case sec
 These learn a representation of normal data and read the departure off the failure to reproduce
 it. They are for data whose structure defeats a distance in the raw coordinates, such as audio,
 long time series, machine traces and above all images, and they need enough clean data to train
-on. Images have their own established shape, which is section 4.3.
+on. Images are the case with an established recipe of its own, which is section 4.3.
 
 ### 4.1. Autoencoder
 
@@ -179,7 +180,7 @@ Scoring a new observation means finding the generated sample closest to it and r
 residual: a normal observation lies on the manifold the generator learned and is matched closely,
 while an anomalous one is not.
 
-AnoGAN, the first method of this shape, combines that residual with a discriminator feature term.
+AnoGAN, the first method of this kind, combines that residual with a discriminator feature term.
 Its cost is that scoring a single observation requires an iterative search in the latent space
 rather than one forward pass, which is what later variants set out to remove.
 
@@ -189,12 +190,11 @@ on tabular benchmarks, at a training and inference cost higher again than the ad
 
 ### 4.3. Industrial Image Inspection
 
-Visual defect inspection is the case where deep methods clearly win, and it has converged on a
-shape of its own: run a pretrained network over the image, keep the patch features of defect-free
-examples, and score a new patch by its distance to that memory. PatchCore established the shape
-and reports up to 99.1% detection AUROC on the MVTec AD benchmark, and EfficientAD reaches
-95.4% detection AUROC across 32 datasets at 2.2 ms per image, which is what makes inline
-inspection possible.
+Visual defect inspection has converged on one recipe: run a pretrained network over the image,
+keep the patch features of defect-free examples, and score a new patch by its distance to that
+memory. PatchCore established the recipe and reports up to 99.1% detection AUROC on the MVTec AD
+benchmark, and EfficientAD reaches 95.4% detection AUROC across 32 datasets at 2.2 ms per image,
+which is the latency that makes inline inspection possible.
 
 Those figures belong to the benchmark rather than to a factory. On the harder MVTec AD 2 set,
 built to carry the lighting and defect variation of real inspection, no published method exceeds
@@ -204,15 +204,16 @@ cleanly is not thereby ready for a line.
 ## 5. Semiconductor Practice
 
 The methods a fab actually runs are not the newest ones. They are the ones a standard names, an
-auditor can check, and a technician can act on, and two of them cover most of the ground.
+auditor can check, and a technician can act on. Two of them are worth setting beside the sections
+above, because both turn out to be constructions already covered there.
 
 ### 5.1. Part Average Testing
 
 Part average testing removes parts whose measured parameters are abnormal for their own lot, even
 when every measurement passes its specification limit. AEC-Q001 defines it for automotive
-components, and it is a robust rule of the same shape as section 2.3: the robust mean is the
-median, and the robust sigma is the interquartile range divided by 1.35. The limits a part has to
-fall inside are then the pair below, with $k$ set to 6 by convention.
+components, and it is built exactly as section 2.3 is: the robust mean is the median, and the
+robust sigma is the interquartile range divided by 1.35. A part is retained when it falls inside
+the interval below, where $k$ is 6 by convention.
 
 $$\tilde{x} \pm k \cdot \frac{IQR}{1.35}$$
 
@@ -273,8 +274,8 @@ are consistently among the better performers without dominating, and several dee
 for tabular data fall below them. Newer is therefore not by itself a reason to switch, and the
 cheap methods of sections 2 and 3 remain the honest default on tabular data.
 
-The exception is the case where the raw coordinates carry no usable distance. Images are the clear
-one, and section 4.3 is where the deep methods earn their cost.
+The exception is the case where the raw coordinates carry no usable distance. That is where the
+deep methods earn their cost, and images are the clearest instance of it.
 
 ### 6.3. Two Habits
 
@@ -341,15 +342,18 @@ findings and only the second survives a change in the choices above.
 ## Appendix A. Terminology
 
 - **anomaly score** — A number ranking observations by how far they depart from the normal pattern, without a stated error rate attached to any particular value of it.
+- **AU-PRO** — Area under the per-region overlap curve, which scores how well a method localizes a defect rather than whether it detects one.
+- **AUROC** — Area under the receiver operating characteristic curve, the probability that a randomly chosen anomaly is scored above a randomly chosen normal observation.
 - **breakdown point** — The fraction of a sample that has to be corrupted before an estimate stops describing the rest of the data. The mean has 0% and the median has 50%.
-- **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution. It is 0.674490 for the MAD and 1.35 for the interquartile range.
+- **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution. It is 0.674490 for the MAD and 1.349 for the interquartile range, which AEC-Q001 rounds to 1.35.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
+- **extreme studentized deviate** — The largest absolute deviation from the sample mean, divided by the sample standard deviation. It is the statistic each stage of the generalized ESD procedure computes.
 - **Hotelling's T-squared** — The multivariate analogue of a squared z-score, measuring the distance of an observation from the centre inside the structure a model has fitted.
 - **kernel** — The function that fixes the geometry a support vector method works in, and with it the shapes a learned boundary is allowed to take.
 - **latent space** — The compressed coordinates a generative model maps to and from, in which a point stands for a whole reconstructed observation.
 - **masking** — The effect by which an outlier inflates the centre or the scale it is measured against far enough that it, or a second outlier, no longer looks extreme.
-- **minimum covariance determinant** — A robust estimate of a multivariate centre and covariance, taken from the subset of observations whose covariance matrix has the smallest determinant.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate.
+- **minimum covariance determinant** — A robust estimate of a multivariate centre and covariance, taken from the subset of observations whose covariance matrix has the smallest determinant.
 - **outlier** — An observation inconsistent with the distribution the rest of the sample follows. The label concerns consistency with a model and does not by itself establish that the observation is wrong.
 - **reconstruction error** — The distance between an input and the output a model produces when it compresses and rebuilds that input.
 - **squared prediction error (Q statistic)** — The part of an observation that a fitted model does not explain, measured as the squared distance from the observation to its reconstruction in the model's space.
