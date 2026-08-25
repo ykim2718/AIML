@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 7 | Created: 2026-08-25 | Updated: 2026-08-25 19:41 CDT
+Rev. 8 | Created: 2026-08-25 | Updated: 2026-08-25 20:06 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -66,22 +66,25 @@ $$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \r
 Quartiles are order statistics, so the rule needs no distributional assumption and carries a
 breakdown point of 25% against the 0% of the z-score. On a normal sample of standard deviation
 $\sigma$ the range itself is $1.349\,\sigma$, which puts the fences at $\pm 2.7\,\sigma$ and admits
-roughly 0.7% of observations. The rule is therefore as strict as a z-score at 3, while surviving
-contamination that would defeat that score.
+roughly 0.7% of observations, which is 2.6 times as many as a z-score at 3 admits. The rule is
+therefore the looser of the two on clean data, and what it buys with that is fences contamination
+cannot move.
 
 ### 2.3. Hampel Identifier
 
 The Hampel identifier keeps the form of the z-score and replaces both of its estimates. The
-median takes the place of the mean, and a rescaled median absolute deviation takes the place of
-the standard deviation.
+median takes the place of the mean, and the median of the deviations from it, rescaled, takes the
+place of the standard deviation.
+
+$$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)$$
 
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
+- $x_1, \ldots, x_n$ — the sample, and $x_i$ its $i$-th observation, as in section 2.1.
+- $\tilde{x}$ — the median of the sample, which the deviations are taken from and which the score is centred on.
+- $\mathrm{MAD}$ — the median of those absolute deviations, which is the raw robust scale before any rescaling.
+- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution. The MAD is divided by it so that the denominator estimates $s$ on a normal sample.
 - $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 2.1.
-- $x_i$ — the observation itself, as in section 2.1.
-- $\tilde{x}$ — the median of the sample.
-- $\mathrm{MAD}$ — the median of the absolute deviations from $\tilde{x}$.
-- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by so that the denominator estimates $s$ on a normal sample.
 
 An absolute score above 3.5 is the conventional flag, the value recommended by Iglewicz and
 Hoaglin (1993). Because neither the median nor the MAD can be moved by a minority, the identifier
