@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 10 | Created: 2026-08-25 | Updated: 2026-08-25 21:02 CDT
+Rev. 11 | Created: 2026-08-25 | Updated: 2026-08-25 21:26 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -22,7 +22,7 @@ against what a method needs.
 - **Structure.** Whether the departure is defined against the whole sample or against a neighbourhood.
 
 Sections 2 to 4 take the three families in turn and section 5 puts the choice in one table.
-[Appendix B. Semiconductor Practice](#appendix-c-semiconductor-practice) then reads two standard
+[Appendix B. Semiconductor Practice](#appendix-d-semiconductor-practice) then reads two standard
 industrial rules against them.
 
 ## 2. Statistical Methods
@@ -91,7 +91,9 @@ That divisor is a consistency constant, and it is there because the raw MAD is n
 $s$. On a normal sample the MAD converges to $0.674490\,\sigma$ rather than to $\sigma$, so it
 understates the spread by about a third, and a score built on it would sit on a scale of its own.
 Dividing by the constant, which is the same as multiplying by 1.482602, puts $M_i$ on the scale
-$z_i$ is read on. Without it the
+$z_i$ is read on.
+[Appendix C. Consistency Constant of the MAD](#appendix-c-consistency-constant-of-the-mad) derives
+the number and shows what a short sample does to it. Without it the
 threshold could not be carried between the two rules or read as a false positive rate.
 
 The constant is a calibration rather than an assumption, and it is the only place normality
@@ -269,8 +271,8 @@ cleanly is not thereby ready for a line.
 | A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
 | Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
 | Images of a repeated product | Patch feature memory of section 4.3 | The pretrained features already carry what a defect looks like, and scoring is fast enough to run inline. |
-| Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
-| Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
+| Parts within a production lot | [Part average testing](#appendix-d-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
+| Equipment sensor traces | [Multivariate control chart](#appendix-d-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
 ### 5.2. What the Benchmarks Report
 
@@ -363,6 +365,7 @@ findings and only the second survives a change in the choices above.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution. It is 0.674490 for the MAD and 1.349 for the interquartile range, which AEC-Q001 rounds to 1.35.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
 - **critical value** — The value a test statistic has to exceed to be called significant. It follows from the significance level and the sample size rather than from the data under test.
+- **cumulative distribution function** — The function giving, for each value, the probability of falling at or below it. The standard normal one is written $\Phi$, and its inverse turns a probability back into a number of standard deviations.
 - **degrees of freedom** — The number of independent quantities a statistic is free to vary over. It fixes which chi-square distribution a squared distance is read against, one per variable here.
 - **discriminator** — The network trained alongside a generator to tell generated samples from real ones. Its internal features can be reused to compare an observation against what the generator produced.
 - **ECOD** — Empirical-cumulative-distribution-based outlier detection, the method of section 3.4.
@@ -461,13 +464,90 @@ On the same lognormal sample the medcouple is 0.3264, and the adjusted fences fl
 0.42% below in place of 6.22% and nothing. The rule still flags more than a normal sample would
 give, but it no longer reports the shape of the distribution as a list of outliers.
 
-## Appendix C. Semiconductor Practice
+## Appendix C. Consistency Constant of the MAD
+
+Section 2.3 divides the MAD by 0.674490 and says the raw MAD converges to that multiple of
+$\sigma$ on a normal sample. This appendix derives the number, says how well a small sample
+reaches it, and shows that it belongs to the normal distribution rather than to the MAD.
+
+### C.1. Derivation
+
+Take $X$ from a normal distribution with mean $\mu$ and standard deviation $\sigma$. Its median is
+$\mu$, so the population MAD is the number $m$ with half the probability lying within $m$ of the
+centre.
+
+$$P\left( \left| X - \mu \right| \le m \right) = \frac{1}{2}$$
+
+The normal is symmetric about $\mu$, so the probability inside that band is what lies below
+$\mu + m$ less what lies below $\mu - m$, and the two are mirror images.
+
+$$\Phi\left( \frac{m}{\sigma} \right) - \Phi\left( -\frac{m}{\sigma} \right) = 2\,\Phi\left( \frac{m}{\sigma} \right) - 1 = \frac{1}{2}$$
+
+- $\Phi$ (capital phi) — the cumulative distribution function of the standard normal, so $\Phi(u)$ is the probability of falling below $u$ standard deviations.
+- $m$ — the population MAD, the half-width of the band holding half the probability.
+
+Rearranging leaves $\Phi(m/\sigma) = 3/4$, and inverting it leaves the constant.
+
+$$m = \Phi^{-1}(0.75)\,\sigma = 0.674490\,\sigma$$
+
+That is where the third quartile comes from, and it is worth saying plainly: **half the
+probability inside $\pm m$ is the same statement as three quarters of it below $+m$.** The quartile
+is not chosen for the MAD, it is what the MAD turns out to be.
+
+Doubling the same number gives the constant of section 2.2, since the interquartile range is the
+band from the first quartile to the third and each sits $0.674490\,\sigma$ from the centre.
+
+$$\mathrm{IQR} = 2 \cdot 0.674490\,\sigma = 1.348980\,\sigma$$
+
+The two rescalings of sections 2.2 and 2.3 are therefore the same constant, used once and twice.
+
+### C.2. Finite Samples
+
+The derivation is a statement about the distribution, not about a sample drawn from it. The sample
+MAD converges to $m$, but in a small sample it lands low: the median of a short list of deviations
+sits below the population median more often than above it, and rescaling does not repair that.
+
+**Table 3. Mean of the rescaled MAD over 60,000 normal samples, true $\sigma = 1$**
+
+| Sample size n | Mean of MAD / 0.674490 | Bias |
+|---|---|---|
+| 10 | 0.9129 | −8.7% |
+| 15 | 0.9459 | −5.4% |
+| 30 | 0.9739 | −2.6% |
+| 100 | 0.9920 | −0.8% |
+| 1000 | 0.9992 | −0.1% |
+
+The bias runs one way, so the robust scale of a short sample is too small and every modified
+z-score built on it is too large. At the fifteen observations a measurement run often supplies the
+scale is understated by about 5%, which moves a score of 3.3 to 3.5 without anything having
+happened to the data.
+
+### C.3. Other Distributions
+
+The constant is a property of the normal distribution and nothing else. Repeating the derivation
+under another shape gives another number, and using 0.674490 there would rescale the MAD to
+something that is not the standard deviation of anything.
+
+**Table 4. The ratio of the population MAD to the standard deviation**
+
+| Distribution | MAD / $\sigma$ | Value |
+|---|---|---|
+| Normal | $\Phi^{-1}(0.75)$ | 0.674490 |
+| Laplace | $\ln 2 / \sqrt{2}$ | 0.490129 |
+| Uniform | $\sqrt{3} / 2$ | 0.866025 |
+
+This is the sense in which section 2.3 calls the constant the one place normality enters the
+method. Detection itself does not need it, because the constant scales every score by the same
+factor and reorders nothing. What needs it is reading a threshold as a false positive rate, and
+that reading is only as good as the shape assumed here.
+
+## Appendix D. Semiconductor Practice
 
 The methods a fab actually runs are not the newest ones. They are the ones a standard names, an
 auditor can check, and a technician can act on. Two of them are worth setting beside sections 2
 to 4, because both turn out to be constructions already covered there.
 
-### C.1. Part Average Testing
+### D.1. Part Average Testing
 
 Part average testing removes parts whose measured parameters are abnormal for their own lot, even
 when every measurement passes its specification limit. AEC-Q001 defines it for automotive
@@ -491,7 +571,7 @@ recomputed from each lot, which is what catches a lot that is uniformly shifted 
 tight, and it requires a minimum sample per lot, 30 parts in the standard, before the quartiles
 mean anything.
 
-### C.2. Fault Detection and Classification
+### D.2. Fault Detection and Classification
 
 Equipment sensors report pressure, flow, power and temperature throughout a process step. Fault
 detection and classification reduces each trace to summary parameters per wafer, then monitors
