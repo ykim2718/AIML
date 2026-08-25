@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 6 | Created: 2026-08-25 | Updated: 2026-08-25 19:24 CDT
+Rev. 7 | Created: 2026-08-25 | Updated: 2026-08-25 19:41 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -343,11 +343,15 @@ findings and only the second survives a change in the choices above.
 - **critical value** — The value a test statistic has to exceed to be called significant. It follows from the significance level and the sample size rather than from the data under test.
 - **degrees of freedom** — The number of independent quantities a statistic is free to vary over. It fixes which chi-square distribution a squared distance is read against, one per variable here.
 - **discriminator** — The network trained alongside a generator to tell generated samples from real ones. Its internal features can be reused to compare an observation against what the generator produced.
+- **ECOD** — Empirical-cumulative-distribution-based outlier detection, the method of section 3.4.
+- **ESD** — Extreme studentized deviate, abbreviated in the name of the generalized ESD procedure of section 2.4.
 - **extreme studentized deviate** — The largest absolute deviation from the sample mean, divided by the sample standard deviation. It is the statistic each stage of the generalized ESD procedure computes.
 - **false positive rate** — The fraction of normal observations that a rule flags. It is the price paid for whatever detection rate the rule reaches.
 - **generator** — The network trained to produce samples a discriminator cannot tell from the training data. Once trained it stands in for the distribution the normal data came from.
 - **Hotelling's T-squared** — The multivariate analogue of a squared z-score, measuring the distance of an observation from the centre inside the structure a model has fitted.
 - **hyperparameter** — A setting fixed before a method runs rather than estimated from the data, such as a neighbourhood size or a kernel bandwidth. Without labels there is nothing to tune one against.
+- **interquartile range** — The distance from the first quartile to the third, which is the spread of the middle half of a sample. On a normal sample it is 1.349 standard deviations.
+- **IQR** — The abbreviation used throughout for the interquartile range.
 - **kernel** — The function that fixes the geometry a one-class SVM works in, and with it the shapes its learned boundary is allowed to take.
 - **latent space** — The compressed coordinates a generative model maps to and from, in which a point stands for a whole reconstructed observation.
 - **loading** — The weight a principal component gives to one original variable, which is what lets a flag raised in component space be traced back to a sensor.
@@ -356,6 +360,7 @@ findings and only the second survives a change in the choices above.
 - **masking** — The effect by which an outlier inflates the centre or the scale it is measured against far enough that it, or a second outlier, no longer looks extreme.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate.
 - **minimum covariance determinant** — A robust estimate of a multivariate centre and covariance, taken from the subset of observations whose covariance matrix has the smallest determinant.
+- **MVTec AD** — A public benchmark of photographs of manufactured objects, defect-free for training and defective for testing, with the defective region marked. MVTec AD 2 is a later set built to be harder.
 - **order statistic** — An observation identified by its rank in the sorted sample rather than by its value, such as the median or a quartile. Moving an extreme observation further out does not move it.
 - **outlier** — An observation inconsistent with the distribution the rest of the sample follows. The label concerns consistency with a model and does not by itself establish that the observation is wrong.
 - **pretrained network** — A network fitted on a large general dataset and then used without further training, for the features its intermediate layers produce rather than for its own output.
@@ -365,6 +370,7 @@ findings and only the second survives a change in the choices above.
 - **significance level** — The probability of flagging an observation when the sample is in fact clean, fixed before the data are seen. Repeating a test without accounting for the repetition raises it above the value chosen.
 - **specification limit** — The boundary a measured parameter must stay inside for a part to be sold, set from the design rather than from the sample. A part can pass it and still be an outlier within its lot.
 - **squared prediction error (Q statistic)** — The part of an observation that a fitted model does not explain, measured as the squared distance from the observation to its reconstruction in the model's space.
+- **SVM** — Support vector machine, a classifier that separates classes by the widest margin available in the geometry a kernel fixes. The one-class variant of section 3.2 has no second class and encloses the one it has instead.
 
 ## Appendix B. Semiconductor Practice
 
