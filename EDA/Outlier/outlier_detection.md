@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 12 | Created: 2026-08-25 | Updated: 2026-08-25 22:04 CDT
+Rev. 13 | Created: 2026-08-25 | Updated: 2026-08-25 23:08 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -22,7 +22,7 @@ against what a method needs.
 - **Structure.** Whether the departure is defined against the whole sample or against a neighbourhood.
 
 Sections 2 to 4 take the three families in turn and section 5 puts the choice in one table.
-[Appendix B. Semiconductor Practice](#appendix-c-semiconductor-practice) then reads two standard
+[Appendix C. Semiconductor Practice](#appendix-c-semiconductor-practice) then reads two standard
 industrial rules against them.
 
 ## 2. Statistical Methods
@@ -89,10 +89,10 @@ $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
 That divisor is a consistency constant, and it is there because the raw MAD is not an estimate of
 $s$. On a normal sample the MAD converges to $0.674490\,\sigma$ rather than to $\sigma$, so it
-understates the spread by about a third, and a score built on it would sit on a scale of its own.
-Dividing by the constant, which is the same as multiplying by 1.482602, puts $M_i$ on the scale
-$z_i$ is read on. Without it the
-threshold could not be carried between the two rules or read as a false positive rate.
+understates the spread by about a third. Dividing by the constant, which is the same as
+multiplying by 1.482602, puts $M_i$ on the scale $z_i$ is read on. Without that step the score
+would sit on a scale of its own, and no threshold could be carried between the two rules or read
+as a false positive rate.
 
 The constant is a calibration rather than an assumption, and it is the only place normality
 enters the method. Changing it rescales every score by the same factor and reorders nothing, so
@@ -139,11 +139,11 @@ $$d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)$$
 - $\Sigma$ — the covariance matrix of the variables, and $\Sigma^{-1}$ its inverse.
 - $d^2(x)$ — the squared distance, which reduces to $z_i^2$ of section 2.1 when there is one variable.
 
-The covariance term is what makes it more than a per-variable check: an observation ordinary in
+The covariance term lifts it above a per-variable check: an observation ordinary in
 every single variable can still be implausible in their combination, and only a method reading the
 correlation structure will see it. Under multivariate normality, and with the centre and the
 covariance known rather than estimated from the sample, $d^2$ follows a chi-square distribution
-with as many degrees of freedom as there are variables, which is what supplies the cut-off.
+with as many degrees of freedom as there are variables, and the cut-off comes from there.
 
 The same self-reference returns, and more severely. Both $\mu$ and $\Sigma$ are estimated from the
 contaminated sample, and a cluster of outliers inflates $\Sigma$ in exactly the direction that
@@ -163,9 +163,9 @@ Isolation Forest builds trees by splitting on a random variable at a random thre
 how many splits an observation needs before it sits alone. An observation in a sparse region is
 separated by few splits, so a short average path length across the forest is the anomaly score.
 
-It isolates rather than profiles, which is what makes it fast: it never estimates a density or a
-distance, runs in time linear in the sample size, and works on subsamples. That also makes it the
-usual first choice when the data are large or have many variables.
+It isolates rather than profiles, and that is where the speed comes from: it never estimates a
+density or a distance, runs in time linear in the sample size, and works on subsamples. That also
+makes it the usual first choice when the data are large or have many variables.
 
 ### 3.2. One-Class SVM
 
@@ -178,7 +178,7 @@ new observation belongs to a known region. It costs more than the alternatives: 
 quadratic or worse in the sample size, and the answer depends on the kernel, its bandwidth, and
 the scaling of the variables, none of which the data choose on their own.
 
-### 3.3. Local Outlier Factor
+### 3.3. LOF (Local Outlier Factor)
 
 Local Outlier Factor compares the density around an observation with the density around each of
 its $k$ nearest neighbours. A factor near 1 means the observation is as densely surrounded as its
@@ -189,18 +189,18 @@ whole sample yet clearly apart from the group it belongs to. That is the case no
 reaches, and it is the reason to pay for the neighbour search when the data hold clusters of
 genuinely different densities.
 
-### 3.4. Empirical Cumulative Distribution
+### 3.4. ECOD (Empirical Cumulative Distribution)
 
 ECOD takes the view that an outlier is a rare event in a tail, and measures tail rarity without
 fitting anything. It builds the empirical cumulative distribution of each variable separately,
 reads off the left and right tail probability of every observation, and aggregates those
 probabilities across variables into one score.
 
-It is the entry with no hyperparameter to set. Every other method in this section has a
+It is the one method here with no hyperparameter to set. Every other method in this section has a
 neighbourhood size, a kernel, or a contamination rate that changes the answer, and none of those
-can be tuned against labels that do not exist. It is also linear in
-both the sample size and the variable count, and the per-variable tail probabilities say which
-variables made an observation extreme.
+can be tuned against labels that do not exist. It is also linear in both the sample size and the
+variable count, and the per-variable tail probabilities say which variables made an observation
+extreme.
 
 The cost of reading each variable on its own is that ECOD, like a per-variable check, cannot see a
 departure that exists only in the combination of variables. That is the case section 2.5 covers.
@@ -210,7 +210,7 @@ departure that exists only in the combination of variables. That is the case sec
 These learn a representation of normal data and read the departure off the failure to reproduce
 it. They are for data whose structure defeats a distance in the raw coordinates, such as audio,
 long time series, machine traces and above all images, and they need enough clean data to train
-on. Images are the case with an established recipe of its own, which is section 4.3.
+on. Images have an established recipe of their own, set out in section 4.3.
 
 ### 4.1. Autoencoder
 
@@ -231,7 +231,7 @@ while an anomalous one is not.
 
 AnoGAN, the first method of this kind, combines that residual with a discriminator feature term.
 Its cost is that scoring a single observation requires an iterative search in the latent space
-rather than one forward pass, which is what later variants set out to remove.
+rather than one forward pass, a cost later variants set out to remove.
 
 Diffusion models have since taken the same role, learning to denoise normal data and scoring an
 observation by how far the denoising has to move it. They report gains over autoencoder baselines
@@ -268,7 +268,7 @@ cleanly is not thereby ready for a line.
 | Clusters of differing density | Local Outlier Factor | It compares an observation against its neighbourhood rather than the whole sample. |
 | A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
 | Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
-| Images of a repeated product | Patch feature memory of section 4.3 | The pretrained features already carry what a defect looks like, and scoring is fast enough to run inline. |
+| Images of a repeated product | Patch feature memory | The pretrained features of section 4.3 already carry what a defect looks like, and scoring is fast enough to run inline. |
 | Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
 | Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
@@ -377,7 +377,7 @@ findings and only the second survives a change in the choices above.
 - **IQR** — The abbreviation used throughout for the interquartile range.
 - **kernel** — The function that fixes the geometry a one-class SVM works in, and with it the shapes its learned boundary is allowed to take.
 - **latent space** — The compressed coordinates a generative model maps to and from, in which a point stands for a whole reconstructed observation.
-- **loading** — The weight a principal component gives to one original variable, which is what lets a flag raised in component space be traced back to a sensor.
+- **loading** — The weight a principal component gives to one original variable, by which a flag raised in component space is traced back to a sensor.
 - **lot** — A batch of parts processed together and carried through manufacturing as one unit. It is the group that part average testing judges a part against.
 - **manifold** — The lower-dimensional surface inside the full space that the data actually occupy. A generative model that has learned it reproduces points on it and not points off it.
 - **masking** — The effect by which an outlier inflates the centre or the scale it is measured against far enough that it, or a second outlier, no longer looks extreme.
@@ -488,9 +488,8 @@ the quartiles rather than the MAD and picks 6 rather than 3.5, but it is the sam
 a robust centre, a robust scale rescaled to normal units, and a multiple of that scale.
 
 Static limits are computed once from historical data and applied to every lot. Dynamic limits are
-recomputed from each lot, which is what catches a lot that is uniformly shifted yet internally
-tight, and it requires a minimum sample per lot, 30 parts in the standard, before the quartiles
-mean anything.
+recomputed from each lot, catching a lot that is uniformly shifted yet internally tight. They need
+a minimum sample per lot, 30 parts in the standard, before the quartiles mean anything.
 
 ### C.2. Fault Detection and Classification
 
