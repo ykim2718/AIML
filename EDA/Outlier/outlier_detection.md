@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 3 | Created: 2026-08-25 | Updated: 2026-08-25 18:06 CDT
+Rev. 4 | Created: 2026-08-25 | Updated: 2026-08-25 18:34 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -32,8 +32,17 @@ and easiest to defend, and they are the right default whenever their assumption 
 ### 2.1. Z-Score
 
 The z-score divides the deviation of an observation from the sample mean by the sample standard
-deviation, and an absolute value above 3 is the conventional flag. The rule assumes normality,
-under which about 0.27% of observations exceed 3 by chance alone.
+deviation.
+
+$$z_i = \frac{x_i - \bar{x}}{s}$$
+
+- $z_i$ — the z-score of observation $i$.
+- $x_i$ — the $i$-th observation of a sample of $n$ values.
+- $\bar{x}$ — the mean of that sample.
+- $s$ — its standard deviation, formed by dividing the sum of squared deviations by $n-1$.
+
+An absolute score above 3 is the conventional flag. The rule assumes normality, under which about
+0.27% of observations exceed 3 by chance alone.
 
 One property limits it in two ways. The mean and the standard deviation are both computed from
 the sample under test, so an outlier inflates the scale it is measured against and masks itself.
@@ -43,23 +52,35 @@ observations and a rule at 3.5 cannot fire below 15.
 
 ### 2.2. Interquartile Range
 
-The interquartile range is the distance from the first quartile to the third. Tukey's rule flags
-an observation below $Q_1 - 1.5 \cdot IQR$ or above $Q_3 + 1.5 \cdot IQR$, which is the fence
-drawn by the whiskers of a box plot.
+The interquartile range is the distance from the first quartile to the third. Tukey's rule
+retains an observation that falls inside the interval below and flags one that falls outside it.
+The two ends are the fences drawn by the whiskers of a box plot.
+
+$$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1$$
+
+- $Q_1$ — the first quartile, the value a quarter of the sample falls below.
+- $Q_3$ — the third quartile, the value three quarters of the sample falls below.
+- $\mathrm{IQR}$ — the distance between them, which is the spread of the middle half.
 
 Quartiles are order statistics, so the rule needs no distributional assumption and carries a
-breakdown point of 25% against the 0% of the z-score. Against a normal sample the range
-itself is $1.349\sigma$, so the fences sit near $\pm 2.7\sigma$ and admit roughly 0.7% of
-observations. The rule is therefore comparable in strictness to a z-score at 3, while surviving
+breakdown point of 25% against the 0% of the z-score. On a normal sample of standard deviation
+$\sigma$ the range itself is $1.349\,\sigma$, which puts the fences at $\pm 2.7\,\sigma$ and admits
+roughly 0.7% of observations. The rule is therefore as strict as a z-score at 3, while surviving
 contamination that would defeat that score.
 
 ### 2.3. Hampel Identifier
 
 The Hampel identifier keeps the form of the z-score and replaces both of its estimates. The
-median takes the place of the mean, and the median absolute deviation takes the place of the
-standard deviation, rescaled so that it estimates the same quantity on a normal sample.
+median takes the place of the mean, and a rescaled median absolute deviation takes the place of
+the standard deviation.
 
-$$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}, \qquad \Phi^{-1}(0.75) = 0.674490$$
+$$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
+
+- $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 2.1.
+- $x_i$ — the observation itself, as in section 2.1.
+- $\tilde{x}$ — the median of the sample.
+- $\mathrm{MAD}$ — the median of the absolute deviations from $\tilde{x}$.
+- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by so that the denominator estimates $s$ on a normal sample.
 
 An absolute score above 3.5 is the conventional flag, the value recommended by Iglewicz and
 Hoaglin (1993). Because neither the median nor the MAD can be moved by a minority, the identifier
@@ -73,13 +94,20 @@ escapes it.
 ### 2.4. Generalized ESD
 
 Testing a sample for one outlier and then repeating the test on what is left does not hold its
-significance level. The generalized extreme studentized deviate procedure fixes the problem by
-declaring an upper bound $r$ on the number of outliers first, computing the extreme studentized
-deviate $R_i$ after removing $i-1$ observations for $i = 1 \ldots r$, and comparing each against a
-critical value derived for that stage, tabulated by Rosner (1983).
+significance level. The generalized extreme studentized deviate procedure fixes that by declaring
+an upper bound $r$ on the number of outliers first, then running $r$ stages of the same statistic.
 
-The count of outliers is the **largest** $i$ whose $R_i$ exceeds its critical value, not the first.
-Reading it that way is what defeats masking: a stage can fail while a later stage, with the
+$$R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r$$
+
+- $R_i$ — the extreme studentized deviate at stage $i$.
+- $x_j$ — an observation of the sample, indexed by $j$ to keep it apart from the stage number.
+- $\bar{x}_i$ and $s_i$ — the mean and the standard deviation of what remains of the sample once the $i-1$ observations removed at earlier stages are gone.
+- $\max_j$ — a maximum over the observations still remaining. The one attaining it is removed before stage $i+1$.
+- $r$ — the declared upper bound on the number of outliers, fixed before the data are read.
+
+Each $R_i$ is compared against a critical value $\lambda_i$ derived for that stage and tabulated by
+Rosner (1983). The count of outliers is the **largest** $i$ for which $R_i \gt \lambda_i$, not the
+first. Reading it that way is what defeats masking: a stage can fail while a later stage, with the
 masking observation already removed, succeeds. The procedure is the many-outlier method of
 ISO 16269-4, and it assumes the uncontaminated part of the sample is approximately normal.
 
@@ -89,6 +117,11 @@ For multivariate data the Mahalanobis distance measures how far an observation l
 centre in units that account for the covariance between variables.
 
 $$d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)$$
+
+- $x$ — one observation, written as a vector with one entry per variable.
+- $\mu$ — the centre of the sample, the vector of per-variable means.
+- $\Sigma$ — the covariance matrix of the variables, and $\Sigma^{-1}$ its inverse.
+- $d^2(x)$ — the squared distance, which reduces to $z_i^2$ of section 2.1 when there is one variable.
 
 The covariance term is what makes it more than a per-variable check: an observation ordinary in
 every single variable can still be implausible in their combination, and only a method reading the
@@ -215,7 +248,7 @@ components, and it is built exactly as section 2.3 is: the robust mean is the me
 robust sigma is the interquartile range divided by 1.35. A part is retained when it falls inside
 the interval below, where $k$ is 6 by convention.
 
-$$\tilde{x} \pm k \cdot \frac{IQR}{1.35}$$
+$$\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}$$
 
 That divisor is the $1.349\sigma$ of section 2.2, rounded. Dividing by it turns a quartile spread
 back into a standard deviation, exactly as $\Phi^{-1}(0.75)$ does for the MAD. The standard picks
