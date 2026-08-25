@@ -1,5 +1,5 @@
 # AIML
-Rev. 20 | Created: 2026-08-07 | Updated: 2026-08-25 16:31 CDT
+Rev. 21 | Created: 2026-08-07 | Updated: 2026-08-25 17:31 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -46,7 +46,7 @@ Table 3. EDA documents
 | [EDA/data-modality-taxonomy.md](EDA/data-modality-taxonomy.md) | It classifies data by the form the information takes, then extends the axes to the semiconductor domain and works through wafer process data as a case study. |
 | [EDA/semiconductor-machine-signal-parameterization-continuous.md](EDA/semiconductor-machine-signal-parameterization-continuous.md) | It is the continuous half of the parameterization pair, reducing a smoothly varying machine waveform to a parameter row across the small-signal regime, the large-signal regime, and the decomposition of a record that contains both. |
 | [EDA/semiconductor-machine-signal-parameterization-quantized.md](EDA/semiconductor-machine-signal-parameterization-quantized.md) | It is the quantized half of the same pair, for a signal that rests on a ladder of discrete levels, built so that the row width never depends on the level count and so that the waveform can be rebuilt from the row. |
-| [EDA/outlier_detection.md](EDA/outlier_detection.md) | It surveys outlier detection across the statistical, machine learning and deep learning families, from the z-score and Tukey fences through Isolation Forest, one-class SVM and the local outlier factor to autoencoders, and picks among them by what each one assumes about the data. |
+| [EDA/outlier_detection.md](EDA/outlier_detection.md) | It surveys outlier detection across the statistical, machine learning and deep learning families, from the z-score and Tukey fences through Isolation Forest, ECOD and the local outlier factor to autoencoders and patch feature memories, records what a semiconductor line runs as part average testing and fault detection, and picks among them by what each one assumes. |
 | [EDA/Outlier/README.md](EDA/Outlier/README.md) | It indexes the outlier folder, which keeps one detection method to a subfolder, and sets out the order in which a test is chosen, read, and acted on. |
 | [EDA/Outlier/GESD/generalized-esd.md](EDA/Outlier/GESD/generalized-esd.md) | It covers the generalized ESD procedure of ISO 16269-4, which finds an unknown number of outliers in one pass, and explains the decision rule that keeps several outliers from hiding one another. Two worked examples show a masked sample and a flag that does not survive inspection. |
 | [EDA/Outlier/Hampel/hampel-identifier.md](EDA/Outlier/Hampel/hampel-identifier.md) | It covers the modified z-score built from the median and the median absolute deviation, which needs no normality and no iteration because the pair it is built on cannot be moved by a minority of outliers. |

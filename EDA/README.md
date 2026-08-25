@@ -1,5 +1,5 @@
 # EDA (Exploratory Data Analysis)
-Rev. 22 | Created: 2026-07-29 | Updated: 2026-08-25 16:31 CDT
+Rev. 23 | Created: 2026-07-29 | Updated: 2026-08-25 17:31 CDT
 
 > This folder covers the stage that establishes the structure and the properties of the data before a model is built.
 > Its documents answer what to check first when new data arrives and what to call the thing that arrives.
@@ -19,7 +19,7 @@ Table 1. Documents in this folder
 | [semiconductor-machine-signal-parameterization-continuous.md](semiconductor-machine-signal-parameterization-continuous.md) | It is the continuous half of the parameterization pair, reducing a machine waveform that varies smoothly into parameters for ML input, split into the small-signal regime, the large-signal regime, and the decomposition of the two. |
 | [semiconductor-machine-signal-parameterization-quantized.md](semiconductor-machine-signal-parameterization-quantized.md) | It is the quantized half of the same pair, for a signal that rests on a ladder of discrete levels, built so that the row width does not depend on the level count and so that the waveform can be rebuilt from the row. |
 | [semiconductor-machine-signal-parameterization-shape-taxonomy.md](semiconductor-machine-signal-parameterization-shape-taxonomy.md) | It classifies a trace by the geometry of its waveform alone, with no domain knowledge, and fixes the reconstruction parameters each shape carries. Those parameters are the minimal vector the two documents above reduce a signal to. |
-| [outlier_detection.md](outlier_detection.md) | It surveys the methods that find observations departing from the pattern the rest of the data follows, across statistical, machine learning and deep learning families, and selects among them by what each one assumes. The univariate tests it names are worked out in full under `Outlier/`. |
+| [outlier_detection.md](outlier_detection.md) | It surveys outlier detection across the statistical, machine learning and deep learning families, adds what a semiconductor line actually runs under part average testing and fault detection, and selects among them by what each one assumes. The GESD and Hampel tests it summarizes are worked out in full under `Outlier/`. |
 
 ## 3. Order Of Use
 
