@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 35 | Created: 2026-08-17 | Updated: 2026-08-18 12:52 CDT
+Rev. 36 | Created: 2026-08-17 | Updated: 2026-08-25 22:04 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -19,23 +19,29 @@ the bulk of the sample rather than the observation under test.
 
 ### 2.1. Definition
 
-Let $\tilde{x}$ be the median of the sample.
-
 $$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)$$
 
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
-The denominator is the robust scale, and the constant $\Phi^{-1}(0.75) = 0.674490$ that builds it
-is the subject of section 2.2. The score $M_i$ is an ordinary z-score with the median put in place
-of the mean and the robust scale in place of the standard deviation, which is why it is called the
-modified z-score.
+- $x_1, \ldots, x_n$ — the sample, and $x_i$ its $i$-th observation.
+- $\tilde{x}$ (x tilde) — the median of the sample, which the deviations are taken from and which the score is centred on.
+- $\mathrm{MAD}$ — the median of those absolute deviations, which is the raw robust scale before any rescaling.
+- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by. It is the subject of section 2.2.
+- $M_i$ — the modified z-score of observation $i$.
+
+The denominator is the robust scale. The score $M_i$ is an ordinary z-score with the median put in
+place of the mean and the robust scale in place of the standard deviation, which is why it is
+called the modified z-score.
 
 ### 2.2. Consistency Constant
 
 For a normal sample the MAD converges to $\Phi^{-1}(0.75)\,\sigma$ rather than to $\sigma$, so
 the raw MAD understates the spread by about a third. Dividing by $\Phi^{-1}(0.75)$, equivalently
 multiplying by 1.482602, removes that bias and is what makes the modified score comparable to a
-classical z-score.
+classical z-score. Without it the score would sit on a scale of its own and no threshold could be
+carried over from the classical rule.
+[Appendix D. Consistency Constant of the MAD](#appendix-d-consistency-constant-of-the-mad) derives
+the number and shows what a short sample does to it.
 
 The constant is the only place normality enters the method, and it is a calibration rather than
 an assumption: changing it rescales every score by the same factor and reorders nothing. Its
@@ -148,6 +154,7 @@ arithmetic that puts the robust pair on a scale a threshold can be read against.
 - **breakdown point** — The fraction of a sample that has to be corrupted before a statistic becomes unusable. The mean has a breakdown point of 0%, because one corrupted observation is enough to take it anywhere. The median has 50%, because more than half the sample has to be corrupted before it leaves the uncontaminated data.
 - **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
+- **cumulative distribution function** — The function giving, for each value, the probability of falling at or below it. The standard normal one is written $\Phi$, and its inverse turns a probability back into a number of standard deviations.
 - **MAD** — The abbreviation used throughout for the median absolute deviation.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate. On a normal sample it converges to 0.674490 times the standard deviation rather than to the standard deviation itself, which is why section 2.2 divides it by that constant before using it as a scale.
 - **modified z-score** — The deviation from the median divided by the rescaled MAD.
@@ -381,3 +388,81 @@ The second row is the one that matters for this document, because it is the reas
 cannot be rescued by treating 0.6532. The p-values are also approximate rather than exact here,
 since two thirds of the observations are tied and the Shapiro-Wilk statistic assumes a continuous
 distribution; the size of the departure does not rest on that approximation.
+
+## Appendix D. Consistency Constant of the MAD
+
+Section 2.2 divides the MAD by 0.674490 and says the raw MAD converges to that multiple of
+$\sigma$ on a normal sample. This appendix derives the number, says how well a small sample
+reaches it, and shows that it belongs to the normal distribution rather than to the MAD.
+
+### D.1. Derivation
+
+Take $X$ from a normal distribution with mean $\mu$ and standard deviation $\sigma$. Its median is
+$\mu$, so the population MAD is the number $m$ with half the probability lying within $m$ of the
+centre.
+
+$$P\left( \left| X - \mu \right| \le m \right) = \frac{1}{2}$$
+
+The normal is symmetric about $\mu$, so the probability inside that band is what lies below
+$\mu + m$ less what lies below $\mu - m$, and the two are mirror images.
+
+$$\Phi\left( \frac{m}{\sigma} \right) - \Phi\left( -\frac{m}{\sigma} \right) = 2\,\Phi\left( \frac{m}{\sigma} \right) - 1 = \frac{1}{2}$$
+
+- $\Phi$ (capital phi) — the cumulative distribution function of the standard normal, so $\Phi(u)$ is the probability of falling below $u$ standard deviations.
+- $m$ — the population MAD, the half-width of the band holding half the probability.
+
+Rearranging leaves $\Phi(m/\sigma) = 3/4$, and inverting it leaves the constant.
+
+$$m = \Phi^{-1}(0.75)\,\sigma = 0.674490\,\sigma$$
+
+That is where the third quartile comes from, and it is worth saying plainly: **half the
+probability inside $\pm m$ is the same statement as three quarters of it below $+m$.** The quartile
+is not chosen for the MAD, it is what the MAD turns out to be.
+
+The same number placed twice gives the interquartile range, since the first and the third quartile
+each sit $0.674490\,\sigma$ from the centre.
+
+$$\mathrm{IQR} = 2 \cdot 0.674490\,\sigma = 1.348980\,\sigma$$
+
+A rule built on the interquartile range therefore rescales by the same constant this one does,
+taken twice rather than once.
+
+### D.2. Finite Samples
+
+The derivation is a statement about the distribution, not about a sample drawn from it. The sample
+MAD converges to $m$, but in a small sample it lands low: the median of a short list of deviations
+sits below the population median more often than above it, and rescaling does not repair that.
+
+**Table 5. Mean of the rescaled MAD over 60,000 normal samples, true $\sigma = 1$**
+
+| Sample size n | Mean of MAD / 0.674490 | Bias |
+|---|---|---|
+| 10 | 0.9129 | −8.7% |
+| 15 | 0.9459 | −5.4% |
+| 30 | 0.9739 | −2.6% |
+| 100 | 0.9920 | −0.8% |
+| 1000 | 0.9992 | −0.1% |
+
+The bias runs one way, so the robust scale of a short sample is too small and every modified
+z-score built on it is too large. At the fifteen observations a measurement run often supplies the
+scale is understated by about 5%, which moves a score of 3.3 to 3.5 without anything having
+happened to the data.
+
+### D.3. Other Distributions
+
+The constant is a property of the normal distribution and nothing else. Repeating the derivation
+under another shape gives another number, and using 0.674490 there would rescale the MAD to
+something that is not the standard deviation of anything.
+
+**Table 6. The ratio of the population MAD to the standard deviation**
+
+| Distribution | MAD / $\sigma$ | Value |
+|---|---|---|
+| Normal | $\Phi^{-1}(0.75)$ | 0.674490 |
+| Laplace | $\ln 2 / \sqrt{2}$ | 0.490129 |
+| Uniform | $\sqrt{3} / 2$ | 0.866025 |
+
+This is the sense in which section 2.2 calls the constant the one place normality enters the
+method. Detection itself does not need it, because the constant scales every score by the same
+factor and reorders nothing. What needs it is reading a threshold as a false positive rate, and
+that reading is only as good as the shape assumed here.
