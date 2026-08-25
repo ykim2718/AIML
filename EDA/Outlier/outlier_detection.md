@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 4 | Created: 2026-08-25 | Updated: 2026-08-25 18:34 CDT
+Rev. 5 | Created: 2026-08-25 | Updated: 2026-08-25 19:02 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -21,8 +21,9 @@ against what a method needs.
 - **Labels.** Whether labelled examples of the departure exist. They rarely do, which is why every method below learns from unlabelled data.
 - **Structure.** Whether the departure is defined against the whole sample or against a neighbourhood.
 
-Sections 2 to 4 take the three families in turn, section 5 turns to what a semiconductor line
-actually runs, and section 6 puts the choice in one table.
+Sections 2 to 4 take the three families in turn and section 5 puts the choice in one table.
+[Appendix B. Semiconductor Practice](#appendix-b-semiconductor-practice) then reads two standard
+industrial rules against them.
 
 ## 2. Statistical Methods
 
@@ -234,52 +235,9 @@ built to carry the lighting and defect variation of real inspection, no publishe
 31% localization AU-PRO at a 5% false positive rate. A method that separates the benchmark
 cleanly is not thereby ready for a line.
 
-## 5. Semiconductor Practice
+## 5. Selection
 
-The methods a fab actually runs are not the newest ones. They are the ones a standard names, an
-auditor can check, and a technician can act on. Two of them are worth setting beside the sections
-above, because both turn out to be constructions already covered there.
-
-### 5.1. Part Average Testing
-
-Part average testing removes parts whose measured parameters are abnormal for their own lot, even
-when every measurement passes its specification limit. AEC-Q001 defines it for automotive
-components, and it is built exactly as section 2.3 is: the robust mean is the median, and the
-robust sigma is the interquartile range divided by 1.35. A part is retained when it falls inside
-the interval below, where $k$ is 6 by convention.
-
-$$\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}$$
-
-That divisor is the $1.349\sigma$ of section 2.2, rounded. Dividing by it turns a quartile spread
-back into a standard deviation, exactly as $\Phi^{-1}(0.75)$ does for the MAD. The standard picks
-the quartiles rather than the MAD and picks 6 rather than 3.5, but it is the same construction:
-a robust centre, a robust scale rescaled to normal units, and a multiple of that scale.
-
-Static limits are computed once from historical data and applied to every lot. Dynamic limits are
-recomputed from each lot, which is what catches a lot that is uniformly shifted yet internally
-tight, and it requires a minimum sample per lot, 30 parts in the standard, before the quartiles
-mean anything.
-
-### 5.2. Fault Detection and Classification
-
-Equipment sensors report pressure, flow, power and temperature throughout a process step. Fault
-detection and classification reduces each trace to summary parameters per wafer, then monitors
-those parameters together rather than one at a time, because the variables move together and a
-per-variable limit misses a departure that only the combination shows.
-
-The standard construction is the multivariate control chart of section 2.5 in a reduced space.
-Principal components are fitted on normal production, an observation is scored by Hotelling's
-$T^2$ inside that space, and by the squared prediction error, the $Q$ statistic, for the part of it
-the components do not explain. The two answer different questions: $T^2$ says the process moved
-within the structure it normally has, and $Q$ says it left that structure.
-
-Splitting the score that way is what makes the flag actionable. The loading that contributes most
-to a $T^2$ or a $Q$ names the sensor to look at, which is the difference between a chart that
-stops a tool and a chart that also says why.
-
-## 6. Selection
-
-### 6.1. By the Shape of the Data
+### 5.1. By the Shape of the Data
 
 **Table 1. Method by the shape of the data**
 
@@ -296,10 +254,10 @@ stops a tool and a chart that also says why.
 | A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
 | Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
 | Images of a repeated product | Patch feature memory of section 4.3 | The pretrained features already carry what a defect looks like, and scoring is fast enough to run inline. |
-| Parts within a production lot | Part average testing | A standard names the rule, so the limit can be audited rather than argued. |
-| Equipment sensor traces | Multivariate control chart | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
+| Parts within a production lot | [Part average testing](#appendix-b-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
+| Equipment sensor traces | [Multivariate control chart](#appendix-b-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
-### 6.2. What the Benchmarks Report
+### 5.2. What the Benchmarks Report
 
 The published comparisons do not name a winner. Across the 30 algorithms and 57 datasets of
 ADBench, no unsupervised method is statistically superior to the rest. Isolation Forest and ECOD
@@ -310,7 +268,7 @@ cheap methods of sections 2 and 3 remain the honest default on tabular data.
 The exception is the case where the raw coordinates carry no usable distance. That is where the
 deep methods earn their cost, and images are the clearest instance of it.
 
-### 6.3. Two Habits
+### 5.3. Two Habits
 
 Two habits matter more than the choice itself. Fix the threshold before the data are seen, so that
 it is not tuned to produce a preferred answer. Then read the margin rather than the verdict, since
@@ -390,3 +348,50 @@ findings and only the second survives a change in the choices above.
 - **outlier** — An observation inconsistent with the distribution the rest of the sample follows. The label concerns consistency with a model and does not by itself establish that the observation is wrong.
 - **reconstruction error** — The distance between an input and the output a model produces when it compresses and rebuilds that input.
 - **squared prediction error (Q statistic)** — The part of an observation that a fitted model does not explain, measured as the squared distance from the observation to its reconstruction in the model's space.
+
+## Appendix B. Semiconductor Practice
+
+The methods a fab actually runs are not the newest ones. They are the ones a standard names, an
+auditor can check, and a technician can act on. Two of them are worth setting beside sections 2
+to 4, because both turn out to be constructions already covered there.
+
+### B.1. Part Average Testing
+
+Part average testing removes parts whose measured parameters are abnormal for their own lot, even
+when every measurement passes its specification limit. AEC-Q001 defines it for automotive
+components, and it is built on the plan of section 2.3: the robust mean is the median, and the
+robust sigma is the interquartile range divided by 1.35. A part is retained when it falls inside
+the interval below.
+
+$$\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}$$
+
+- $\tilde{x}$ — the median of the parameter across the parts being judged, which the standard calls the robust mean.
+- $\mathrm{IQR}$ — their interquartile range, and $\mathrm{IQR}/1.35$ is what the standard calls the robust sigma.
+- $k$ — the multiple of that sigma the limits are set at, 6 by convention.
+
+That divisor is the $1.349\sigma$ of section 2.2, rounded. Dividing by it turns a quartile spread
+back into a standard deviation, exactly as $\Phi^{-1}(0.75)$ does for the MAD. The standard picks
+the quartiles rather than the MAD and picks 6 rather than 3.5, but it is the same construction:
+a robust centre, a robust scale rescaled to normal units, and a multiple of that scale.
+
+Static limits are computed once from historical data and applied to every lot. Dynamic limits are
+recomputed from each lot, which is what catches a lot that is uniformly shifted yet internally
+tight, and it requires a minimum sample per lot, 30 parts in the standard, before the quartiles
+mean anything.
+
+### B.2. Fault Detection and Classification
+
+Equipment sensors report pressure, flow, power and temperature throughout a process step. Fault
+detection and classification reduces each trace to summary parameters per wafer, then monitors
+those parameters together rather than one at a time, because the variables move together and a
+per-variable limit misses a departure that only the combination shows.
+
+The standard construction is the multivariate control chart of section 2.5 in a reduced space.
+Principal components are fitted on normal production, an observation is scored by Hotelling's
+$T^2$ inside that space, and by the squared prediction error, the $Q$ statistic, for the part of it
+the components do not explain. The two answer different questions: $T^2$ says the process moved
+within the structure it normally has, and $Q$ says it left that structure.
+
+Splitting the score that way is what makes the flag actionable. The loading that contributes most
+to a $T^2$ or a $Q$ names the sensor to look at, which is the difference between a chart that
+stops a tool and a chart that also says why.
