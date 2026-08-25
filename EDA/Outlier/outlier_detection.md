@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 9 | Created: 2026-08-25 | Updated: 2026-08-25 20:38 CDT
+Rev. 10 | Created: 2026-08-25 | Updated: 2026-08-25 21:02 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -39,7 +39,7 @@ $$z_i = \frac{x_i - \bar{x}}{s}$$
 
 - $z_i$ — the z-score of observation $i$.
 - $x_i$ — the $i$-th observation of a sample of $n$ values.
-- $\bar{x}$ — the mean of that sample.
+- $\bar{x}$ (x bar) — the mean of that sample.
 - $s$ — its standard deviation, formed by dividing the sum of squared deviations by $n-1$.
 
 An absolute score above 3 is the conventional flag. The rule assumes normality, under which about
@@ -82,10 +82,21 @@ $$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \
 $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
 - $x_1, \ldots, x_n$ — the sample, and $x_i$ its $i$-th observation, as in section 2.1.
-- $\tilde{x}$ — the median of the sample, which the deviations are taken from and which the score is centred on.
+- $\tilde{x}$ (x tilde) — the median of the sample, which the deviations are taken from and which the score is centred on.
 - $\mathrm{MAD}$ — the median of those absolute deviations, which is the raw robust scale before any rescaling.
-- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution. The MAD is divided by it so that the denominator estimates $s$ on a normal sample.
+- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by.
 - $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 2.1.
+
+That divisor is a consistency constant, and it is there because the raw MAD is not an estimate of
+$s$. On a normal sample the MAD converges to $0.674490\,\sigma$ rather than to $\sigma$, so it
+understates the spread by about a third, and a score built on it would sit on a scale of its own.
+Dividing by the constant, which is the same as multiplying by 1.482602, puts $M_i$ on the scale
+$z_i$ is read on. Without it the
+threshold could not be carried between the two rules or read as a false positive rate.
+
+The constant is a calibration rather than an assumption, and it is the only place normality
+enters the method. Changing it rescales every score by the same factor and reorders nothing, so
+what it fixes is where a threshold sits, not which observations are extreme.
 
 An absolute score above 3.5 is the conventional flag, the value recommended by Iglewicz and
 Hoaglin (1993). Because neither the median nor the MAD can be moved by a minority, the identifier
