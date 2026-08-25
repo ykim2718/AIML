@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 8 | Created: 2026-08-25 | Updated: 2026-08-25 20:06 CDT
+Rev. 9 | Created: 2026-08-25 | Updated: 2026-08-25 20:38 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -22,7 +22,7 @@ against what a method needs.
 - **Structure.** Whether the departure is defined against the whole sample or against a neighbourhood.
 
 Sections 2 to 4 take the three families in turn and section 5 puts the choice in one table.
-[Appendix B. Semiconductor Practice](#appendix-b-semiconductor-practice) then reads two standard
+[Appendix B. Semiconductor Practice](#appendix-c-semiconductor-practice) then reads two standard
 industrial rules against them.
 
 ## 2. Statistical Methods
@@ -66,9 +66,10 @@ $$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \r
 Quartiles are order statistics, so the rule needs no distributional assumption and carries a
 breakdown point of 25% against the 0% of the z-score. On a normal sample of standard deviation
 $\sigma$ the range itself is $1.349\,\sigma$, which puts the fences at $\pm 2.7\,\sigma$ and admits
-roughly 0.7% of observations, which is 2.6 times as many as a z-score at 3 admits. The rule is
-therefore the looser of the two on clean data, and what it buys with that is fences contamination
-cannot move.
+roughly 0.7% of observations. The rule is therefore comparable in strictness to a z-score at 3,
+while surviving contamination that would defeat that score.
+[Appendix B. Tukey's Rule](#appendix-b-tukeys-rule) works the comparison out and gives the second
+fence the rule is usually drawn with.
 
 ### 2.3. Hampel Identifier
 
@@ -257,8 +258,8 @@ cleanly is not thereby ready for a line.
 | A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
 | Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
 | Images of a repeated product | Patch feature memory of section 4.3 | The pretrained features already carry what a defect looks like, and scoring is fast enough to run inline. |
-| Parts within a production lot | [Part average testing](#appendix-b-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
-| Equipment sensor traces | [Multivariate control chart](#appendix-b-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
+| Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
+| Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
 ### 5.2. What the Benchmarks Report
 
@@ -284,57 +285,64 @@ findings and only the second survives a change in the choices above.
 [1] Tukey, J. W. (1977). *Exploratory Data Analysis*. Addison-Wesley, Reading. [https://www.pearson.com](https://www.pearson.com). ISBN 978-0-201-07616-5.
 
 <a id="ref-2"></a>
-[2] Mahalanobis, P. C. (1936). On the Generalised Distance in Statistics. *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55. [https://www.insa.nic.in](https://www.insa.nic.in).
+[2] Brys, G., Hubert, M., & Struyf, A. (2004). [A Robust Measure of Skewness](https://doi.org/10.1198/106186004X12632). *Journal of Computational and Graphical Statistics*, 13(4), 996–1017.
 
 <a id="ref-3"></a>
-[3] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.
+[3] Hubert, M., & Vandervieren, E. (2008). [An Adjusted Boxplot for Skewed Distributions](https://doi.org/10.1016/j.csda.2007.11.008). *Computational Statistics and Data Analysis*, 52(12), 5186–5201.
 
 <a id="ref-4"></a>
-[4] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.
+[4] Mahalanobis, P. C. (1936). On the Generalised Distance in Statistics. *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55. [https://www.insa.nic.in](https://www.insa.nic.in).
 
 <a id="ref-5"></a>
-[5] Iglewicz, B., & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers*. The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. [https://asq.org/quality-press](https://asq.org/quality-press). ISBN 978-0-87389-247-6.
+[5] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.
 
 <a id="ref-6"></a>
-[6] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)
+[6] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.
 
 <a id="ref-7"></a>
-[7] Rousseeuw, P. J., & Van Driessen, K. (1999). [A Fast Algorithm for the Minimum Covariance Determinant Estimator](https://doi.org/10.1080/00401706.1999.10485670). *Technometrics*, 41(3), 212–223.
+[7] Iglewicz, B., & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers*. The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. [https://asq.org/quality-press](https://asq.org/quality-press). ISBN 978-0-87389-247-6.
 
 <a id="ref-8"></a>
-[8] Breunig, M. M., Kriegel, H.-P., Ng, R. T., & Sander, J. (2000). [LOF: Identifying Density-Based Local Outliers](https://doi.org/10.1145/335191.335388). *ACM SIGMOD Record*, 29(2), 93–104.
+[8] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)
 
 <a id="ref-9"></a>
-[9] Schölkopf, B., Platt, J. C., Shawe-Taylor, J., Smola, A. J., & Williamson, R. C. (2001). [Estimating the Support of a High-Dimensional Distribution](https://doi.org/10.1162/089976601750264965). *Neural Computation*, 13(7), 1443–1471.
+[9] Rousseeuw, P. J., & Van Driessen, K. (1999). [A Fast Algorithm for the Minimum Covariance Determinant Estimator](https://doi.org/10.1080/00401706.1999.10485670). *Technometrics*, 41(3), 212–223.
 
 <a id="ref-10"></a>
-[10] Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). [Isolation Forest](https://doi.org/10.1109/ICDM.2008.17). *Proceedings of the Eighth IEEE International Conference on Data Mining*, 413–422.
+[10] Breunig, M. M., Kriegel, H.-P., Ng, R. T., & Sander, J. (2000). [LOF: Identifying Density-Based Local Outliers](https://doi.org/10.1145/335191.335388). *ACM SIGMOD Record*, 29(2), 93–104.
 
 <a id="ref-11"></a>
-[11] Schlegl, T., Seeböck, P., Waldstein, S. M., Schmidt-Erfurth, U., & Langs, G. (2017). [Unsupervised Anomaly Detection with Generative Adversarial Networks to Guide Marker Discovery](https://doi.org/10.1007/978-3-319-59050-9_12). *Information Processing in Medical Imaging*, Lecture Notes in Computer Science 10265, 146–157.
+[11] Schölkopf, B., Platt, J. C., Shawe-Taylor, J., Smola, A. J., & Williamson, R. C. (2001). [Estimating the Support of a High-Dimensional Distribution](https://doi.org/10.1162/089976601750264965). *Neural Computation*, 13(7), 1443–1471.
 
 <a id="ref-12"></a>
-[12] Li, Z., Zhao, Y., Hu, X., Botta, N., Ionescu, C., & Chen, G. H. (2022). [ECOD: Unsupervised Outlier Detection Using Empirical Cumulative Distribution Functions](https://doi.org/10.1109/TKDE.2022.3159580). *IEEE Transactions on Knowledge and Data Engineering*, 35(12), 12181–12193.
+[12] Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). [Isolation Forest](https://doi.org/10.1109/ICDM.2008.17). *Proceedings of the Eighth IEEE International Conference on Data Mining*, 413–422.
 
 <a id="ref-13"></a>
-[13] Han, S., Hu, X., Huang, H., Jiang, M., & Zhao, Y. (2022). [ADBench: Anomaly Detection Benchmark](https://arxiv.org/abs/2206.09426). *Advances in Neural Information Processing Systems 35, Datasets and Benchmarks Track*.
+[13] Schlegl, T., Seeböck, P., Waldstein, S. M., Schmidt-Erfurth, U., & Langs, G. (2017). [Unsupervised Anomaly Detection with Generative Adversarial Networks to Guide Marker Discovery](https://doi.org/10.1007/978-3-319-59050-9_12). *Information Processing in Medical Imaging*, Lecture Notes in Computer Science 10265, 146–157.
 
 <a id="ref-14"></a>
-[14] Roth, K., Pemula, L., Zepeda, J., Schölkopf, B., Brox, T., & Gehler, P. (2022). [Towards Total Recall in Industrial Anomaly Detection](https://arxiv.org/abs/2106.08265). *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*, 14318–14328.
+[14] Li, Z., Zhao, Y., Hu, X., Botta, N., Ionescu, C., & Chen, G. H. (2022). [ECOD: Unsupervised Outlier Detection Using Empirical Cumulative Distribution Functions](https://doi.org/10.1109/TKDE.2022.3159580). *IEEE Transactions on Knowledge and Data Engineering*, 35(12), 12181–12193.
 
 <a id="ref-15"></a>
-[15] Batzner, K., Heckler, L., & König, R. (2024). [EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies](https://arxiv.org/abs/2303.14535). *Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision*, 128–138.
+[15] Han, S., Hu, X., Huang, H., Jiang, M., & Zhao, Y. (2022). [ADBench: Anomaly Detection Benchmark](https://arxiv.org/abs/2206.09426). *Advances in Neural Information Processing Systems 35, Datasets and Benchmarks Track*.
 
 <a id="ref-16"></a>
-[16] AEC-Q001 Rev-D (2011), *Guidelines for Part Average Testing*. Automotive Electronics Council. [http://www.aecouncil.com/AECDocuments.html](http://www.aecouncil.com/AECDocuments.html)
+[16] Roth, K., Pemula, L., Zepeda, J., Schölkopf, B., Brox, T., & Gehler, P. (2022). [Towards Total Recall in Industrial Anomaly Detection](https://arxiv.org/abs/2106.08265). *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*, 14318–14328.
 
 <a id="ref-17"></a>
-[17] Hsu, C.-Y., Chien, C.-F., & Lin, K.-Y. (2012). [Semiconductor Fault Detection and Classification for Yield Enhancement and Manufacturing Intelligence](https://doi.org/10.1007/s10696-012-9161-4). *Flexible Services and Manufacturing Journal*, 24(3), 358–378.
+[17] Batzner, K., Heckler, L., & König, R. (2024). [EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies](https://arxiv.org/abs/2303.14535). *Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision*, 128–138.
+
+<a id="ref-18"></a>
+[18] AEC-Q001 Rev-D (2011), *Guidelines for Part Average Testing*. Automotive Electronics Council. [http://www.aecouncil.com/AECDocuments.html](http://www.aecouncil.com/AECDocuments.html)
+
+<a id="ref-19"></a>
+[19] Hsu, C.-Y., Chien, C.-F., & Lin, K.-Y. (2012). [Semiconductor Fault Detection and Classification for Yield Enhancement and Manufacturing Intelligence](https://doi.org/10.1007/s10696-012-9161-4). *Flexible Services and Manufacturing Journal*, 24(3), 358–378.
 
 ---
 
 ## Appendix A. Terminology
 
+- **adjusted boxplot** — A box plot whose fences are moved by the skewness of the sample, so that a long tail is not read as a stream of outliers.
 - **anomaly score** — A number ranking observations by how far they depart from the normal pattern, without a stated error rate attached to any particular value of it.
 - **AU-PRO** — Area under the per-region overlap curve, which scores how well a method localizes a defect rather than whether it detects one.
 - **AUROC** — Area under the receiver operating characteristic curve, the probability that a randomly chosen anomaly is scored above a randomly chosen normal observation.
@@ -361,6 +369,7 @@ findings and only the second survives a change in the choices above.
 - **lot** — A batch of parts processed together and carried through manufacturing as one unit. It is the group that part average testing judges a part against.
 - **manifold** — The lower-dimensional surface inside the full space that the data actually occupy. A generative model that has learned it reproduces points on it and not points off it.
 - **masking** — The effect by which an outlier inflates the centre or the scale it is measured against far enough that it, or a second outlier, no longer looks extreme.
+- **medcouple** — A robust measure of skewness, between minus one and one and zero for a symmetric sample, built from a median of comparisons between observations on either side of the median.
 - **median absolute deviation (MAD)** — The median of the absolute deviations of the observations from the sample median, used as a scale estimate that a minority of extreme observations cannot inflate.
 - **minimum covariance determinant** — A robust estimate of a multivariate centre and covariance, taken from the subset of observations whose covariance matrix has the smallest determinant.
 - **MVTec AD** — A public benchmark of photographs of manufactured objects, defect-free for training and defective for testing, with the defective region marked. MVTec AD 2 is a later set built to be harder.
@@ -375,13 +384,79 @@ findings and only the second survives a change in the choices above.
 - **squared prediction error (Q statistic)** — The part of an observation that a fitted model does not explain, measured as the squared distance from the observation to its reconstruction in the model's space.
 - **SVM** — Support vector machine, a classifier that separates classes by the widest margin available in the geometry a kernel fixes. The one-class variant of section 3.2 has no second class and encloses the one it has instead.
 
-## Appendix B. Semiconductor Practice
+## Appendix B. Tukey's Rule
+
+Section 2.2 states the rule in one line. This appendix records where the multiple of 1.5 comes
+from, what it costs against a z-score, and where the rule stops working.
+
+### B.1. Inner and Outer Fences
+
+Tukey (1977) drew two pairs of fences rather than one. The inner pair is the rule of section 2.2,
+and the outer pair sits at three interquartile ranges instead of one and a half.
+
+$$Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}$$
+
+- $c$ — the multiple that places the fences, 1.5 for the inner pair and 3 for the outer pair.
+- $Q_1$, $Q_3$, $\mathrm{IQR}$ — as in section 2.2.
+
+An observation past an inner fence Tukey called **outside**, and one past an outer fence **far
+out**. The box plot draws its whiskers to the last observation inside the inner fences, so
+everything the plot shows as a separate point is at least outside.
+
+The two fences are meant to be read together. Outside says the observation deserves a look, and
+far out says it is extreme by any reading, which is a distinction a single cut-off cannot make.
+
+### B.2. What the Multiple Costs
+
+The multiple of 1.5 was chosen for convenience, not derived. What it does on a normal sample is
+worth stating exactly, because section 2.2 calls the rule comparable to a z-score at 3 and the two
+are not identical.
+
+**Table 2. Where each fence sits on a normal sample**
+
+| Rule | Position | Share of a normal sample flagged |
+|---|---|---|
+| Inner fence, $c = 1.5$ | 2.6980 $\sigma$ | 0.6977% |
+| Outer fence, $c = 3$ | 4.7214 $\sigma$ | 0.0002% |
+| Classical rule at 3 | 3.0000 $\sigma$ | 0.2700% |
+
+The inner fence is therefore the looser of the two by a factor of 2.6, and a multiple of 1.724
+rather than 1.5 would put it exactly where a z-score at 3 sits. The outer fence is stricter than
+either by three orders of magnitude, which is why far out is a strong statement.
+
+Comparable is the right word for the inner fence rather than equal. Both rules flag a fraction of
+a percent where a rule at two standard deviations would flag five, and the choice between them
+turns on contamination rather than on the fraction.
+
+### B.3. Skewed Samples
+
+The fences are placed symmetrically, at the same multiple below $Q_1$ as above $Q_3$. On a skewed
+sample that is the wrong shape: the long tail is a property of the distribution, and the rule
+reads it as a stream of outliers while flagging nothing on the short side.
+
+A lognormal sample makes the size of the effect plain. With 200,000 draws the standard fences flag
+6.22% of the sample above the upper fence and nothing at all below the lower one, on data with no
+contamination in it whatever.
+
+The adjusted boxplot of Hubert and Vandervieren (2008) repairs this by moving each fence according
+to how skewed the sample is, measured by the medcouple of Brys, Hubert and Struyf (2004).
+
+$$\left[ \ Q_1 - 1.5 \, e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \, e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]$$
+
+- $\mathrm{MC}$ — the medcouple, a robust skewness measure between $-1$ and $1$ that is 0 for a symmetric sample.
+- $a$, $b$ — $-4$ and $3$ when $\mathrm{MC} \ge 0$, and $-3$ and $4$ when it is negative, so the fence on the long side moves out and the one on the short side moves in.
+
+On the same lognormal sample the medcouple is 0.3264, and the adjusted fences flag 1.10% above and
+0.42% below in place of 6.22% and nothing. The rule still flags more than a normal sample would
+give, but it no longer reports the shape of the distribution as a list of outliers.
+
+## Appendix C. Semiconductor Practice
 
 The methods a fab actually runs are not the newest ones. They are the ones a standard names, an
 auditor can check, and a technician can act on. Two of them are worth setting beside sections 2
 to 4, because both turn out to be constructions already covered there.
 
-### B.1. Part Average Testing
+### C.1. Part Average Testing
 
 Part average testing removes parts whose measured parameters are abnormal for their own lot, even
 when every measurement passes its specification limit. AEC-Q001 defines it for automotive
@@ -405,7 +480,7 @@ recomputed from each lot, which is what catches a lot that is uniformly shifted 
 tight, and it requires a minimum sample per lot, 30 parts in the standard, before the quartiles
 mean anything.
 
-### B.2. Fault Detection and Classification
+### C.2. Fault Detection and Classification
 
 Equipment sensors report pressure, flow, power and temperature throughout a process step. Fault
 detection and classification reduces each trace to summary parameters per wafer, then monitors
