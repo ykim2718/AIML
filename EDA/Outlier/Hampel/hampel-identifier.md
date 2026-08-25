@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 36 | Created: 2026-08-17 | Updated: 2026-08-25 22:04 CDT
+Rev. 37 | Created: 2026-08-17 | Updated: 2026-08-25 22:36 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -37,9 +37,10 @@ called the modified z-score.
 
 For a normal sample the MAD converges to $\Phi^{-1}(0.75)\,\sigma$ rather than to $\sigma$, so
 the raw MAD understates the spread by about a third. Dividing by $\Phi^{-1}(0.75)$, equivalently
-multiplying by 1.482602, removes that bias and is what makes the modified score comparable to a
-classical z-score. Without it the score would sit on a scale of its own and no threshold could be
-carried over from the classical rule.
+multiplying by 1.482602, removes that bias in the limit and makes the modified score comparable
+to a classical z-score. Without it the score would sit on a scale of its own and no threshold
+could be carried over from the classical rule. A short sample still lands below the limit, which
+is the second thing the appendix works out.
 [Appendix D. Consistency Constant of the MAD](#appendix-d-consistency-constant-of-the-mad) derives
 the number and shows what a short sample does to it.
 
@@ -99,8 +100,8 @@ A sample standard deviation is a mean of squared deviations, so a single distant
 enters it quadratically. Pushing that observation further out enlarges its own deviation and the
 standard deviation together, so the ratio of the two grows far more slowly than the distance does.
 
-The median absolute deviation is a median of absolute deviations. Moving one observation
-arbitrarily far moves the middle of that list by at most one position, however far it is moved.
+The median absolute deviation is a median of absolute deviations. Sending one observation off to
+infinity moves the middle of that list by one position and no further.
 
 The same self-reference, an observation inflating the scale that it is measured against, caps the
 classical score outright: in a sample of size $n$ no absolute z-score can exceed $(n-1)/\sqrt{n}$,
@@ -296,8 +297,7 @@ as CSV.
 
 Two rules are set against each other in C.1. **The identifier** is the method of section 2, which
 measures an observation against the median and the MAD. **The classical rule** measures it against
-the mean and the standard deviation instead. Table 3 puts the centre and the scale each one
-computes side by side.
+the mean and the standard deviation instead.
 
 ### C.1. Sample
 
@@ -350,9 +350,8 @@ observations; the classical scale describes the outlier.
 
 ### C.2. Normality
 
-Normality enters the method only through the constant of section 2.2, which is what lets the
-threshold be read as a false-positive rate. The detection itself does not need it. This sample is
-where that distinction matters, because it is not normal.
+Normality enters the method only through the constant of section 2.2, and detection itself does
+not need it. This sample is where that distinction matters, because it is not normal.
 
 ![Fig 1](hampel-identifier_fig/hampel_normality.png)
 
@@ -403,8 +402,9 @@ centre.
 
 $$P\left( \left| X - \mu \right| \le m \right) = \frac{1}{2}$$
 
-The normal is symmetric about $\mu$, so the probability inside that band is what lies below
-$\mu + m$ less what lies below $\mu - m$, and the two are mirror images.
+The probability inside that band is what lies below $\mu + m$ less what lies below $\mu - m$.
+Symmetry about $\mu$ is what then collapses the two terms into one, since the lower tail is the
+mirror of the upper.
 
 $$\Phi\left( \frac{m}{\sigma} \right) - \Phi\left( -\frac{m}{\sigma} \right) = 2\,\Phi\left( \frac{m}{\sigma} \right) - 1 = \frac{1}{2}$$
 
@@ -415,9 +415,9 @@ Rearranging leaves $\Phi(m/\sigma) = 3/4$, and inverting it leaves the constant.
 
 $$m = \Phi^{-1}(0.75)\,\sigma = 0.674490\,\sigma$$
 
-That is where the third quartile comes from, and it is worth saying plainly: **half the
-probability inside $\pm m$ is the same statement as three quarters of it below $+m$.** The quartile
-is not chosen for the MAD, it is what the MAD turns out to be.
+That is where the third quartile comes from: **half the probability inside $\pm m$ is the same
+statement as three quarters of it below $+m$.** The quartile is not chosen for the MAD. It is what
+the MAD turns out to be.
 
 The same number placed twice gives the interquartile range, since the first and the third quartile
 each sit $0.674490\,\sigma$ from the centre.
@@ -444,9 +444,9 @@ sits below the population median more often than above it, and rescaling does no
 | 1000 | 0.9992 | −0.1% |
 
 The bias runs one way, so the robust scale of a short sample is too small and every modified
-z-score built on it is too large. At the fifteen observations a measurement run often supplies the
-scale is understated by about 5%, which moves a score of 3.3 to 3.5 without anything having
-happened to the data.
+z-score built on it is too large. Fifteen observations is a common size for a measurement run, and
+at that size the scale is understated by about 5%, which lifts a score of 3.3 to 3.5 with nothing
+having happened to the data.
 
 ### D.3. Other Distributions
 
@@ -463,6 +463,6 @@ something that is not the standard deviation of anything.
 | Uniform | $\sqrt{3} / 2$ | 0.866025 |
 
 This is the sense in which section 2.2 calls the constant the one place normality enters the
-method. Detection itself does not need it, because the constant scales every score by the same
-factor and reorders nothing. What needs it is reading a threshold as a false positive rate, and
-that reading is only as good as the shape assumed here.
+method. Detection does not need it, since scaling every score by one factor leaves the order
+alone. Reading a threshold as a false-positive rate does need it, and that reading is only as
+good as the shape assumed here.
