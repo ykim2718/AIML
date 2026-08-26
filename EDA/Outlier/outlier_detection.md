@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 14 | Created: 2026-08-25 | Updated: 2026-08-26 12:29 CDT
+Rev. 15 | Created: 2026-08-25 | Updated: 2026-08-26 13:06 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -33,12 +33,13 @@ eight categories: an observation has a position on every one of them at once. A 
 can be a point outlier, local rather than global, caused by a recording error, discordant without
 being a contaminant, and a high-leverage point in the regression it belongs to.
 
-The axes are worth separating because a method is chosen against one of them. Section 4.3 exists
-for the second axis, section 3.4 for the seventh, and neither answers the question the other asks.
+The axes are worth separating because a method is chosen against one of them, and a method that
+answers one axis is silent on the others. Section 6.2 places every method in this document on the
+axes below.
 
 ### 2.1. Form
 
-Chandola, Banerjee and Kumar (2009) split anomalies by the form they take in the data, and this
+[Chandola, Banerjee and Kumar (2009)](#ref-8) split anomalies by the form they take in the data, and this
 is the split most often quoted.
 
 - **Point.** One observation is extreme on its own. A temperature of minus 100 degrees in a record of ordinary weather.
@@ -58,8 +59,9 @@ neighbourhood.
 - **Local.** Ordinary against the whole sample, extreme against the group it sits in.
 
 This axis is independent of section 2.1, which is why pairing point with global as one label is a
-mistake. A local point outlier is exactly what Breunig, Kriegel, Ng and Sander (2000) built the
-local outlier factor to find, and it is the case section 4.3 covers.
+mistake. A local point outlier is exactly what
+[Breunig, Kriegel, Ng and Sander (2000)](#ref-17) built the local outlier factor to find, and it
+is the case section 4.3 covers.
 
 ### 2.3. Cause
 
@@ -74,7 +76,7 @@ looking at the record behind it, which is why this document keeps detection and 
 
 ### 2.4. Discordancy and Contamination
 
-Barnett and Lewis (1994) draw a distinction that is easy to lose. A **contaminant** is an
+[Barnett and Lewis (1994)](#ref-2) draw a distinction that is easy to lose. A **contaminant** is an
 observation that came from a different distribution. A **discordant observation** is one that
 looks statistically inconsistent with the rest.
 
@@ -89,11 +91,12 @@ When a model is fitted rather than a distribution, one axis becomes three, and t
 
 - **Residual outlier.** Far from the fitted surface in the response.
 - **Leverage point.** Extreme in the predictors, which gives the observation the power to move the fit whether or not it does.
-- **Influential observation.** Removing it changes the fit materially, which Cook (1977) measured with the distance that carries his name.
+- **Influential observation.** Removing it changes the fit materially, which [Cook (1977)](#ref-4) measured with the distance that carries his name.
 
 High leverage without influence is common: a distant predictor value that happens to fall on the
 line pulls it nowhere. So is influence without a large residual, when the point has dragged the
-line onto itself. Belsley, Kuh and Welsch (1980) collect the diagnostics that separate them.
+line onto itself. [Belsley, Kuh and Welsch (1980)](#ref-6) collect the diagnostics that separate
+them.
 
 ### 2.6. Labels
 
@@ -116,14 +119,14 @@ How many outliers are expected changes the procedure, not just the threshold.
 
 Masking is one outlier inflating the centre or scale so that a second no longer looks extreme.
 Swamping is the reverse, an outlier distorting the estimates so far that clean observations are
-flagged with it. Hawkins (1980) treats the many-outlier problem, and section 3.4 is the procedure
-built for it.
+flagged with it. [Hawkins (1980)](#ref-5) treats the many-outlier problem, and section 3.4 is the
+procedure built for it.
 
 ### 2.8. Time Series Type
 
 When the data are ordered, the form axis of section 2.1 refines into how the departure enters the
-series. Fox (1972) introduced the first two and Chen and Liu (1993) settled the four that are
-standard.
+series. [Fox (1972)](#ref-3) introduced the first two, and [Chen and Liu (1993)](#ref-7) settled
+the four that are standard.
 
 - **Additive.** One reading is displaced and the series returns immediately.
 - **Innovational.** A shock enters the process, so the displacement propagates through the readings that follow.
@@ -157,7 +160,7 @@ An absolute score above 3 is the conventional flag. The rule assumes normality, 
 One property limits it in two ways. The mean and the standard deviation are both computed from
 the sample under test, so an outlier inflates the scale it is measured against and masks itself.
 That same self-reference caps the score: in a sample of size $n$ no absolute z-score can exceed
-$(n-1)/\sqrt{n}$, a bound due to Shiffler (1988), which means a rule at 3 cannot fire below 11
+$(n-1)/\sqrt{n}$, a bound due to [Shiffler (1988)](#ref-12), so a rule at 3 cannot fire below 11
 observations and a rule at 3.5 cannot fire below 15.
 
 ### 3.2. Interquartile Range
@@ -207,8 +210,8 @@ The constant is a calibration rather than an assumption, and it is the only plac
 enters the method. Changing it rescales every score by the same factor and reorders nothing, so
 what it fixes is where a threshold sits, not which observations are extreme.
 
-An absolute score above 3.5 is the conventional flag, the value recommended by Iglewicz and
-Hoaglin (1993). Because neither the median nor the MAD can be moved by a minority, the identifier
+An absolute score above 3.5 is the conventional flag, the value recommended by
+[Iglewicz and Hoaglin (1993)](#ref-14). Because neither the median nor the MAD can be moved by a minority, the identifier
 reaches the outliers that mask themselves in section 3.1, and it needs no iteration: every
 observation is scored once, against estimates that were never contaminated.
 
@@ -231,15 +234,15 @@ $$R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots,
 - $r$ — the declared upper bound on the number of outliers, fixed before the data are read.
 
 Each $R_i$ is compared against a critical value $\lambda_i$ derived for that stage and tabulated by
-Rosner (1983). The count of outliers is the **largest** $i$ for which $R_i \gt \lambda_i$, not the
+[Rosner (1983)](#ref-13). The count of outliers is the **largest** $i$ for which $R_i \gt \lambda_i$, not the
 first. Reading it that way is what defeats masking: a stage can fail while a later stage, with the
 masking observation already removed, succeeds. The procedure is the many-outlier method of
-ISO 16269-4, and it assumes the uncontaminated part of the sample is approximately normal.
+[ISO 16269-4](#ref-15), and it assumes the uncontaminated part of the sample is approximately normal.
 
 ### 3.5. Mahalanobis Distance
 
-For multivariate data the Mahalanobis distance measures how far an observation lies from the
-centre in units that account for the covariance between variables.
+For multivariate data the [Mahalanobis distance](#ref-11) measures how far an observation lies
+from the centre in units that account for the covariance between variables.
 
 $$d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)$$
 
@@ -257,8 +260,8 @@ with as many degrees of freedom as there are variables, and the cut-off comes fr
 The same self-reference returns, and more severely. Both $\mu$ and $\Sigma$ are estimated from the
 contaminated sample, and a cluster of outliers inflates $\Sigma$ in exactly the direction that
 hides them. A robust estimate of the pair, such as the minimum covariance determinant of
-Rousseeuw and Van Driessen (1999), makes the distance usable on data that may already be
-contaminated.
+[Rousseeuw and Van Driessen (1999)](#ref-16), makes the distance usable on data that may already
+be contaminated.
 
 ## 4. Machine Learning Methods
 
@@ -266,7 +269,7 @@ These drop the distributional assumption and learn the extent of the normal regi
 data. They handle several variables at once and make no claim about an error rate, so their output
 is a score to be ranked rather than a test to be passed.
 
-### 4.1. Isolation Forest
+### 4.1. [Isolation Forest](#ref-19)
 
 Isolation Forest builds trees by splitting on a random variable at a random threshold, and records
 how many splits an observation needs before it sits alone. An observation in a sparse region is
@@ -276,7 +279,7 @@ It isolates rather than profiles, and that is where the speed comes from: it nev
 density or a distance, runs in time linear in the sample size, and works on subsamples. That also
 makes it the usual first choice when the data are large or have many variables.
 
-### 4.2. One-Class SVM
+### 4.2. [One-Class SVM](#ref-18)
 
 One-Class SVM learns a boundary enclosing the region the training data occupy, and calls anything
 outside that boundary an outlier. The kernel decides how the boundary may bend, and the parameter
@@ -298,7 +301,7 @@ whole sample yet clearly apart from the group it belongs to. That is the case no
 reaches, and it is the reason to pay for the neighbour search when the data hold clusters of
 genuinely different densities.
 
-### 4.4. ECOD (Empirical Cumulative Distribution)
+### 4.4. [ECOD](#ref-21) (Empirical Cumulative Distribution)
 
 ECOD takes the view that an outlier is a rare event in a tail, and measures tail rarity without
 fitting anything. It builds the empirical cumulative distribution of each variable separately,
@@ -338,7 +341,7 @@ Scoring a new observation means finding the generated sample closest to it and r
 residual: a normal observation lies on the manifold the generator learned and is matched closely,
 while an anomalous one is not.
 
-AnoGAN, the first method of this kind, combines that residual with a discriminator feature term.
+[AnoGAN](#ref-20), the first method of this kind, combines that residual with a discriminator feature term.
 Its cost is that scoring a single observation requires an iterative search in the latent space
 rather than one forward pass, a cost later variants set out to remove.
 
@@ -350,9 +353,9 @@ on tabular benchmarks, at a training and inference cost higher again than the ad
 
 Visual defect inspection has converged on one recipe: run a pretrained network over the image,
 keep the patch features of defect-free examples, and score a new patch by its distance to that
-memory. PatchCore established the recipe and reports up to 99.1% detection AUROC on the MVTec AD
-benchmark, and EfficientAD reaches 95.4% detection AUROC across 32 datasets at 2.2 ms per image,
-which is the latency that makes inline inspection possible.
+memory. [PatchCore](#ref-23) established the recipe and reports up to 99.1% detection AUROC on
+the MVTec AD benchmark, and [EfficientAD](#ref-24) reaches 95.4% detection AUROC across 32
+datasets at 2.2 ms per image, the latency that makes inline inspection possible.
 
 Those figures belong to the benchmark rather than to a factory. On the harder MVTec AD 2 set,
 built to carry the lighting and defect variation of real inspection, no published method exceeds
@@ -381,10 +384,53 @@ cleanly is not thereby ready for a line.
 | Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
 | Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
-### 6.2. What the Benchmarks Report
+### 6.2. By the Axis Answered
+
+Table 1 picks a method from a description of the data. Table 2 reads the other way, and says
+which of the questions of section 2 each method actually answers.
+
+**Table 2. Where each method sits on the axes of section 2**
+
+| Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
+|---|---|---|---|---|
+| Z-Score | Point | Global | Unsupervised | Single |
+| Interquartile Range | Point | Global | Unsupervised | Uncontrolled |
+| Hampel Identifier | Point | Global | Unsupervised | Uncontrolled, but masking cannot occur |
+| Generalized ESD | Point | Global | Unsupervised | **Multiple, at a stated level** |
+| Mahalanobis Distance | Point | Global | Unsupervised | Single |
+| Isolation Forest | Point | Global | Unsupervised | Uncontrolled |
+| One-Class SVM | Point | Global | Semi-supervised | Uncontrolled |
+| Local Outlier Factor | Point | **Local** | Unsupervised | Uncontrolled |
+| ECOD | Point | Global | Unsupervised | Uncontrolled |
+| Autoencoder | Point or collective | Global | Semi-supervised | Uncontrolled |
+| Adversarial and diffusion | Point or collective | Global | Semi-supervised | Uncontrolled |
+| Patch feature memory | Collective in space | Global | Semi-supervised | Uncontrolled |
+
+The two bold cells are the whole of the variation in those columns. The local outlier factor is
+the only method that changes the reference set, and the generalized ESD is the only one that
+controls how many outliers it looks for. Every other method sits where its neighbours sit, which
+is why those two earn separate entries.
+
+The deep methods reach a collective anomaly by changing the data rather than the method. A window
+over a series, or a patch of an image, becomes one vector, and the collective anomaly of section
+2.1 becomes a point anomaly in that vector. Nothing in section 5 scores a run of observations
+directly.
+
+Four axes are missing from the table, three because no method here answers them and one because
+every method answers it the same way.
+
+- **Cause (2.3).** No statistic separates an error from a rare event, which that section says outright.
+- **Discordancy and contamination (2.4).** Every method here tests discordancy and none judges contamination, so the axis sorts how a result is read rather than which method produces it.
+- **Position in a regression (2.5).** Leverage and influence need a fitted model, and this document fits distributions and regions instead.
+- **Time series type (2.8).** A windowed method can flag a level shift, but nothing here tells a level shift from a temporary change.
+
+A contextual anomaly is out of reach on the form axis for a matching reason. It needs a context
+variable to be measured against, and no method here takes one.
+
+### 6.3. What the Benchmarks Report
 
 The published comparisons do not name a winner. Across the 30 algorithms and 57 datasets of
-ADBench, no unsupervised method is statistically superior to the rest. Isolation Forest and ECOD
+[ADBench](#ref-22), no unsupervised method is statistically superior to the rest. Isolation Forest and ECOD
 are consistently among the better performers without dominating, and several deep methods built
 for tabular data fall below them. Newer is therefore not by itself a reason to switch, and the
 cheap methods of sections 3 and 4 remain the honest default on tabular data.
@@ -392,7 +438,7 @@ cheap methods of sections 3 and 4 remain the honest default on tabular data.
 The exception is the case where the raw coordinates carry no usable distance. That is where the
 deep methods earn their cost, and images are the clearest instance of it.
 
-### 6.3. Two Habits
+### 6.4. Two Habits
 
 Two habits matter more than the choice itself. Fix the threshold before the data are seen, so that
 it is not tuned to produce a preferred answer. Then read the margin rather than the verdict, since
@@ -405,76 +451,79 @@ findings and only the second survives a change in the choices above.
 [1] Tukey, J. W. (1977). *Exploratory Data Analysis*. Addison-Wesley, Reading. [https://www.pearson.com](https://www.pearson.com). ISBN 978-0-201-07616-5.
 
 <a id="ref-2"></a>
-[2] Fox, A. J. (1972). [Outliers in Time Series](https://doi.org/10.1111/j.2517-6161.1972.tb00912.x). *Journal of the Royal Statistical Society: Series B*, 34(3), 350–363.
+[2] Barnett, V., & Lewis, T. (1994). *Outliers in Statistical Data*, 3rd edition. Wiley, Chichester. [https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945](https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945). ISBN 978-0-471-93094-5.
 
 <a id="ref-3"></a>
-[3] Cook, R. D. (1977). [Detection of Influential Observation in Linear Regression](https://doi.org/10.1080/00401706.1977.10489493). *Technometrics*, 19(1), 15–18.
+[3] Fox, A. J. (1972). [Outliers in Time Series](https://doi.org/10.1111/j.2517-6161.1972.tb00912.x). *Journal of the Royal Statistical Society: Series B*, 34(3), 350–363.
 
 <a id="ref-4"></a>
-[4] Hawkins, D. M. (1980). [Identification of Outliers](https://doi.org/10.1007/978-94-015-3994-4). Monographs on Applied Probability and Statistics. Chapman and Hall, London. ISBN 978-94-015-3996-8.
+[4] Cook, R. D. (1977). [Detection of Influential Observation in Linear Regression](https://doi.org/10.1080/00401706.1977.10489493). *Technometrics*, 19(1), 15–18.
 
 <a id="ref-5"></a>
-[5] Belsley, D. A., Kuh, E., & Welsch, R. E. (1980). [Regression Diagnostics: Identifying Influential Data and Sources of Collinearity](https://doi.org/10.1002/0471725153). Wiley, New York. ISBN 978-0-471-05856-4.
+[5] Hawkins, D. M. (1980). [Identification of Outliers](https://doi.org/10.1007/978-94-015-3994-4). Monographs on Applied Probability and Statistics. Chapman and Hall, London. ISBN 978-94-015-3996-8.
 
 <a id="ref-6"></a>
-[6] Chen, C., & Liu, L.-M. (1993). [Joint Estimation of Model Parameters and Outlier Effects in Time Series](https://doi.org/10.1080/01621459.1993.10594321). *Journal of the American Statistical Association*, 88(421), 284–297.
+[6] Belsley, D. A., Kuh, E., & Welsch, R. E. (1980). [Regression Diagnostics: Identifying Influential Data and Sources of Collinearity](https://doi.org/10.1002/0471725153). Wiley, New York. ISBN 978-0-471-05856-4.
 
 <a id="ref-7"></a>
-[7] Chandola, V., Banerjee, A., & Kumar, V. (2009). [Anomaly Detection: A Survey](https://doi.org/10.1145/1541880.1541882). *ACM Computing Surveys*, 41(3), Article 15.
+[7] Chen, C., & Liu, L.-M. (1993). [Joint Estimation of Model Parameters and Outlier Effects in Time Series](https://doi.org/10.1080/01621459.1993.10594321). *Journal of the American Statistical Association*, 88(421), 284–297.
 
 <a id="ref-8"></a>
-[8] Brys, G., Hubert, M., & Struyf, A. (2004). [A Robust Measure of Skewness](https://doi.org/10.1198/106186004X12632). *Journal of Computational and Graphical Statistics*, 13(4), 996–1017.
+[8] Chandola, V., Banerjee, A., & Kumar, V. (2009). [Anomaly Detection: A Survey](https://doi.org/10.1145/1541880.1541882). *ACM Computing Surveys*, 41(3), Article 15.
 
 <a id="ref-9"></a>
-[9] Hubert, M., & Vandervieren, E. (2008). [An Adjusted Boxplot for Skewed Distributions](https://doi.org/10.1016/j.csda.2007.11.008). *Computational Statistics and Data Analysis*, 52(12), 5186–5201.
+[9] Brys, G., Hubert, M., & Struyf, A. (2004). [A Robust Measure of Skewness](https://doi.org/10.1198/106186004X12632). *Journal of Computational and Graphical Statistics*, 13(4), 996–1017.
 
 <a id="ref-10"></a>
-[10] Mahalanobis, P. C. (1936). On the Generalised Distance in Statistics. *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55. [https://www.insa.nic.in](https://www.insa.nic.in).
+[10] Hubert, M., & Vandervieren, E. (2008). [An Adjusted Boxplot for Skewed Distributions](https://doi.org/10.1016/j.csda.2007.11.008). *Computational Statistics and Data Analysis*, 52(12), 5186–5201.
 
 <a id="ref-11"></a>
-[11] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.
+[11] Mahalanobis, P. C. (1936). On the Generalised Distance in Statistics. *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55. [https://www.insa.nic.in](https://www.insa.nic.in).
 
 <a id="ref-12"></a>
-[12] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.
+[12] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.
 
 <a id="ref-13"></a>
-[13] Iglewicz, B., & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers*. The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. [https://asq.org/quality-press](https://asq.org/quality-press). ISBN 978-0-87389-247-6.
+[13] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.
 
 <a id="ref-14"></a>
-[14] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)
+[14] Iglewicz, B., & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers*. The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. [https://asq.org/quality-press](https://asq.org/quality-press). ISBN 978-0-87389-247-6.
 
 <a id="ref-15"></a>
-[15] Rousseeuw, P. J., & Van Driessen, K. (1999). [A Fast Algorithm for the Minimum Covariance Determinant Estimator](https://doi.org/10.1080/00401706.1999.10485670). *Technometrics*, 41(3), 212–223.
+[15] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)
 
 <a id="ref-16"></a>
-[16] Breunig, M. M., Kriegel, H.-P., Ng, R. T., & Sander, J. (2000). [LOF: Identifying Density-Based Local Outliers](https://doi.org/10.1145/335191.335388). *ACM SIGMOD Record*, 29(2), 93–104.
+[16] Rousseeuw, P. J., & Van Driessen, K. (1999). [A Fast Algorithm for the Minimum Covariance Determinant Estimator](https://doi.org/10.1080/00401706.1999.10485670). *Technometrics*, 41(3), 212–223.
 
 <a id="ref-17"></a>
-[17] Schölkopf, B., Platt, J. C., Shawe-Taylor, J., Smola, A. J., & Williamson, R. C. (2001). [Estimating the Support of a High-Dimensional Distribution](https://doi.org/10.1162/089976601750264965). *Neural Computation*, 13(7), 1443–1471.
+[17] Breunig, M. M., Kriegel, H.-P., Ng, R. T., & Sander, J. (2000). [LOF: Identifying Density-Based Local Outliers](https://doi.org/10.1145/335191.335388). *ACM SIGMOD Record*, 29(2), 93–104.
 
 <a id="ref-18"></a>
-[18] Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). [Isolation Forest](https://doi.org/10.1109/ICDM.2008.17). *Proceedings of the Eighth IEEE International Conference on Data Mining*, 413–422.
+[18] Schölkopf, B., Platt, J. C., Shawe-Taylor, J., Smola, A. J., & Williamson, R. C. (2001). [Estimating the Support of a High-Dimensional Distribution](https://doi.org/10.1162/089976601750264965). *Neural Computation*, 13(7), 1443–1471.
 
 <a id="ref-19"></a>
-[19] Schlegl, T., Seeböck, P., Waldstein, S. M., Schmidt-Erfurth, U., & Langs, G. (2017). [Unsupervised Anomaly Detection with Generative Adversarial Networks to Guide Marker Discovery](https://doi.org/10.1007/978-3-319-59050-9_12). *Information Processing in Medical Imaging*, Lecture Notes in Computer Science 10265, 146–157.
+[19] Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). [Isolation Forest](https://doi.org/10.1109/ICDM.2008.17). *Proceedings of the Eighth IEEE International Conference on Data Mining*, 413–422.
 
 <a id="ref-20"></a>
-[20] Li, Z., Zhao, Y., Hu, X., Botta, N., Ionescu, C., & Chen, G. H. (2022). [ECOD: Unsupervised Outlier Detection Using Empirical Cumulative Distribution Functions](https://doi.org/10.1109/TKDE.2022.3159580). *IEEE Transactions on Knowledge and Data Engineering*, 35(12), 12181–12193.
+[20] Schlegl, T., Seeböck, P., Waldstein, S. M., Schmidt-Erfurth, U., & Langs, G. (2017). [Unsupervised Anomaly Detection with Generative Adversarial Networks to Guide Marker Discovery](https://doi.org/10.1007/978-3-319-59050-9_12). *Information Processing in Medical Imaging*, Lecture Notes in Computer Science 10265, 146–157.
 
 <a id="ref-21"></a>
-[21] Han, S., Hu, X., Huang, H., Jiang, M., & Zhao, Y. (2022). [ADBench: Anomaly Detection Benchmark](https://arxiv.org/abs/2206.09426). *Advances in Neural Information Processing Systems 35, Datasets and Benchmarks Track*.
+[21] Li, Z., Zhao, Y., Hu, X., Botta, N., Ionescu, C., & Chen, G. H. (2022). [ECOD: Unsupervised Outlier Detection Using Empirical Cumulative Distribution Functions](https://doi.org/10.1109/TKDE.2022.3159580). *IEEE Transactions on Knowledge and Data Engineering*, 35(12), 12181–12193.
 
 <a id="ref-22"></a>
-[22] Roth, K., Pemula, L., Zepeda, J., Schölkopf, B., Brox, T., & Gehler, P. (2022). [Towards Total Recall in Industrial Anomaly Detection](https://arxiv.org/abs/2106.08265). *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*, 14318–14328.
+[22] Han, S., Hu, X., Huang, H., Jiang, M., & Zhao, Y. (2022). [ADBench: Anomaly Detection Benchmark](https://arxiv.org/abs/2206.09426). *Advances in Neural Information Processing Systems 35, Datasets and Benchmarks Track*.
 
 <a id="ref-23"></a>
-[23] Batzner, K., Heckler, L., & König, R. (2024). [EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies](https://arxiv.org/abs/2303.14535). *Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision*, 128–138.
+[23] Roth, K., Pemula, L., Zepeda, J., Schölkopf, B., Brox, T., & Gehler, P. (2022). [Towards Total Recall in Industrial Anomaly Detection](https://arxiv.org/abs/2106.08265). *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*, 14318–14328.
 
 <a id="ref-24"></a>
-[24] AEC-Q001 Rev-D (2011), *Guidelines for Part Average Testing*. Automotive Electronics Council. [http://www.aecouncil.com/AECDocuments.html](http://www.aecouncil.com/AECDocuments.html)
+[24] Batzner, K., Heckler, L., & König, R. (2024). [EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies](https://arxiv.org/abs/2303.14535). *Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision*, 128–138.
 
 <a id="ref-25"></a>
-[25] Hsu, C.-Y., Chien, C.-F., & Lin, K.-Y. (2012). [Semiconductor Fault Detection and Classification for Yield Enhancement and Manufacturing Intelligence](https://doi.org/10.1007/s10696-012-9161-4). *Flexible Services and Manufacturing Journal*, 24(3), 358–378.
+[25] AEC-Q001 Rev-D (2011), *Guidelines for Part Average Testing*. Automotive Electronics Council. [http://www.aecouncil.com/AECDocuments.html](http://www.aecouncil.com/AECDocuments.html)
+
+<a id="ref-26"></a>
+[26] Hsu, C.-Y., Chien, C.-F., & Lin, K.-Y. (2012). [Semiconductor Fault Detection and Classification for Yield Enhancement and Manufacturing Intelligence](https://doi.org/10.1007/s10696-012-9161-4). *Flexible Services and Manufacturing Journal*, 24(3), 358–378.
 
 ---
 
@@ -487,7 +536,7 @@ findings and only the second survives a change in the choices above.
 - **box plot** — A summary drawing in which a box spans the interquartile range and lines called whiskers reach the most extreme observation still within one and a half interquartile ranges of the box, with anything past that drawn as a separate point.
 - **breakdown point** — The fraction of a sample that has to be corrupted before an estimate stops describing the rest of the data. The mean has 0% and the median has 50%.
 - **chi-square distribution** — The distribution of a sum of squared independent standard normal variables, carrying one degree of freedom per term. It is what turns a squared distance into a probability.
-- **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution. It is 0.674490 for the MAD and 1.349 for the interquartile range, which AEC-Q001 rounds to 1.35.
+- **consistency constant** — A factor applied to a robust scale estimate so that it converges to the standard deviation under an assumed distribution. It is 0.674490 for the MAD and 1.349 for the interquartile range, which [AEC-Q001](#ref-25) rounds to 1.35.
 - **contaminant** — An observation that came from a distribution other than the one the rest of the sample follows, as opposed to one that merely looks inconsistent with it.
 - **contamination** — The fraction of a sample that does not come from the assumed distribution.
 - **critical value** — The value a test statistic has to exceed to be called significant. It follows from the significance level and the sample size rather than from the data under test.
@@ -536,7 +585,7 @@ from, what it costs against a z-score, and where the rule stops working.
 
 ### B.1. Inner and Outer Fences
 
-Tukey (1977) drew two pairs of fences rather than one. The inner pair is the rule of section 3.2,
+[Tukey (1977)](#ref-1) drew two pairs of fences rather than one. The inner pair is the rule of section 3.2,
 and the outer pair sits at three interquartile ranges instead of one and a half.
 
 $$Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}$$
@@ -557,7 +606,7 @@ The multiple of 1.5 was chosen for convenience, not derived. What it does on a n
 worth stating exactly, because section 3.2 calls the rule comparable to a z-score at 3 and the two
 are not identical.
 
-**Table 2. Where each fence sits on a normal sample**
+**Table 3. Where each fence sits on a normal sample**
 
 | Rule | Position | Share of a normal sample flagged |
 |---|---|---|
@@ -583,8 +632,9 @@ A lognormal sample makes the size of the effect plain. With 200,000 draws the st
 6.22% of the sample above the upper fence and nothing at all below the lower one, on data with no
 contamination in it whatever.
 
-The adjusted boxplot of Hubert and Vandervieren (2008) repairs this by moving each fence according
-to how skewed the sample is, measured by the medcouple of Brys, Hubert and Struyf (2004).
+The adjusted boxplot of [Hubert and Vandervieren (2008)](#ref-10) repairs this by moving each
+fence according to how skewed the sample is, measured by the medcouple of
+[Brys, Hubert and Struyf (2004)](#ref-9).
 
 $$\left[ \ Q_1 - 1.5 \, e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \, e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]$$
 
@@ -626,10 +676,10 @@ a minimum sample per lot, 30 parts in the standard, before the quartiles mean an
 
 ### C.2. Fault Detection and Classification
 
-Equipment sensors report pressure, flow, power and temperature throughout a process step. Fault
-detection and classification reduces each trace to summary parameters per wafer, then monitors
-those parameters together rather than one at a time, because the variables move together and a
-per-variable limit misses a departure that only the combination shows.
+Equipment sensors report pressure, flow, power and temperature throughout a process step.
+[Fault detection and classification](#ref-26) reduces each trace to summary parameters per wafer,
+then monitors those parameters together rather than one at a time, because the variables move
+together and a per-variable limit misses a departure that only the combination shows.
 
 The standard construction is the multivariate control chart of section 3.5 in a reduced space.
 Principal components are fitted on normal production, an observation is scored by Hotelling's
