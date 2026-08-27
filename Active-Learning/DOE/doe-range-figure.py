@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
 __author__ = 'yRocket'
-__version__ = "0.1.1.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.2.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 matplotlib.use('Agg')
 
@@ -151,7 +151,7 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
     curve = true_response(parameter=grid, center=center, half_width=half_width, sharpness=sharpness)
 
     font_size = BASE_FONT_SIZE * font_scale
-    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=(9.5, 6.4))
+    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=(9.0, 6.0))
 
     axis.axvspan(lower, upper, color=TABLEAU_COLORS['tab:green'], alpha=0.15, label='process window')
     axis.axvspan(cliff_low, lower, color=TABLEAU_COLORS['tab:orange'], alpha=0.20, label='process cliff')
