@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
 __author__ = 'yRocket'
-__version__ = "0.1.2.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.3.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 matplotlib.use('Agg')
 
@@ -45,6 +45,12 @@ INSET_RECT: list = [0.37, 0.25, 0.26, 0.24]
 # Figure margins. Left and right are kept symmetric so that the axes box sits on the center line of the canvas,
 # and the bottom leaves room for the legend that is placed below the axes.
 MARGIN: dict = {'left': 0.08, 'right': 0.92, 'top': 0.97, 'bottom': 0.24}
+
+# Figure size in inches, and the width the base text size is calibrated for. Text is scaled by the ratio of the
+# two, so that changing the figure size keeps the picture in the same proportions rather than resizing the text
+# against a fixed canvas.
+FIGSIZE: tuple = (6.0, 4.0)
+REFERENCE_WIDTH: float = 9.0
 
 # Text size before the scale option is applied. One size is used throughout, since the axes carry no ticks.
 BASE_FONT_SIZE: float = 9.0
@@ -150,8 +156,8 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
     grid = np.linspace(axis_low, axis_high, 2000)
     curve = true_response(parameter=grid, center=center, half_width=half_width, sharpness=sharpness)
 
-    font_size = BASE_FONT_SIZE * font_scale
-    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=(9.0, 6.0))
+    font_size = BASE_FONT_SIZE * font_scale * FIGSIZE[0] / REFERENCE_WIDTH
+    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=FIGSIZE)
 
     axis.axvspan(lower, upper, color=TABLEAU_COLORS['tab:green'], alpha=0.15, label='process window')
     axis.axvspan(cliff_low, lower, color=TABLEAU_COLORS['tab:orange'], alpha=0.20, label='process cliff')
