@@ -1,5 +1,5 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 7 | Created: 2026-08-27 | Updated: 2026-08-27 21:15 UTC
+Rev. 8 | Created: 2026-08-27 | Updated: 2026-08-27 22:04 UTC
 
 반도체 공정에 machine learning 을 쓸 때 model 이 무엇을 배우는지는 DOE 가 덮은 범위가 정한다. 범위를 넓게 잡은 DOE 와 양산 조건 가까이에서 좁게 잡은 DOE 는 쓰임이 다르다. 이 문서는 이 둘을 학습과 추론에 어떻게 나누어 쓰는지를 명제에서 출발해 정리한다. DOE 자체가 machine learning 의 어디에 속하는지는 [Appendix B](#appendix-b-position-in-machine-learning) 에 따로 두었다.
 
@@ -29,7 +29,7 @@ Table 1. Wide DOE and narrow DOE
 | Inference | 정상 가동에서는 드물다 | 추론의 대부분을 차지한다 |
 | When it runs | 장비와 공정을 들일 때 | 양산이 도는 동안 |
 
-![Fig 1](wide-and-narrow-doe-for-semiconductor_fig/fig1_doe_range.png)
+<img src="wide-and-narrow-doe-for-semiconductor_fig/fig1_doe_range.png" width="600" alt="Fig 1">
 
 Fig 1. Process window, process cliff and the two DOE designs
 
