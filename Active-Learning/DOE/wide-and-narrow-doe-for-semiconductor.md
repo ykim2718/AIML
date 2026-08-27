@@ -1,5 +1,5 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 3 | Created: 2026-08-27 | Updated: 2026-08-27 20:20 UTC
+Rev. 4 | Created: 2026-08-27 | Updated: 2026-08-27 20:51 UTC
 
 반도체 공정에 machine learning 을 쓸 때 model 이 무엇을 배우는지는 DOE 가 덮은 범위가 정한다. 범위를 넓게 잡은 DOE 와 양산 조건 가까이에서 좁게 잡은 DOE 는 쓰임이 다르다. 이 문서는 이 둘을 학습과 추론에 어떻게 나누어 쓰는지를 명제에서 출발해 정리한다. DOE 자체가 machine learning 의 어디에 속하는지는 [Appendix B](#appendix-b-position-in-machine-learning) 에 따로 두었다.
 
@@ -8,7 +8,7 @@ Rev. 3 | Created: 2026-08-27 | Updated: 2026-08-27 20:20 UTC
 두 명제를 두고 시작한다.
 
 - Process cliff 를 찾으려는 wide DOE 의 data 는 학습에 쓰고 추론 입력으로는 쓰지 않는다.
-- Process centering 을 따라가려는 narrow DOE 의 data 는 학습과 추론 입력에 모두 쓴다.
+- Process window centering 을 따라가려는 narrow DOE 의 data 는 학습과 추론 입력에 모두 쓴다.
 
 주어를 data 로 못 박으면 두 명제 모두 맞다. 어긋나는 것은 명제가 아니라 그것을 읽는 방식이다. 추론 입력으로 쓰지 않는다는 말이 추론과 무관하다는 뜻으로 읽히면 틀린다. Wide DOE 의 data 는 model 에 입력으로 들어가는 일이 없지만, 그 data 로 학습한 model 은 양산 영역의 모든 추론에 관여하며 그 정확도를 정한다. 3 절이 그 정확도를 다루고, 4 절이 추론이 어디에서 일어나는지를 다룬다.
 
@@ -27,6 +27,14 @@ Table 1. Wide DOE and narrow DOE
 | Inference | 정상 가동에서는 드물다 | 추론의 대부분을 차지한다 |
 | When it runs | 장비와 공정을 들일 때 | 양산이 도는 동안 |
 
+![Fig 1](wide-and-narrow-doe-for-semiconductor_fig/fig1_doe_range.png)
+
+Fig 1. Process window, process cliff and the two DOE designs
+
+가로축은 공정 parameter 하나이고 세로축은 그 조건에서 나오는 결과이다. 앞 문단이 갈라 놓은 두 경계가 그림에서는 서로 다른 자리에 걸린다. 녹색 띠의 가장자리는 가로 점선인 spec 이 곡선을 자르는 높이에서 정해지고, 주황색 띠는 곡선이 꺾여 내려가는 어깨에 걸린다. 그러므로 spec 을 올리면 녹색 띠만 좁아지고 주황색 띠는 자리를 지킨다.
+
+Narrow DOE 의 점 아홉 개는 모두 center 에서 2 안에 몰려 있어 하나처럼 보인다. Wide DOE 의 점 아홉 개는 같은 개수로 cliff 를 지나 그 바깥까지 놓인다. 앞의 것은 곡선의 꼭대기를 촘촘히 재고, 뒤의 것은 그 꼭대기가 어디에서 끝나는지를 잰다.
+
 ## 3. Training
 
 Wide DOE 를 학습시키는 목적은 그 극단 영역을 예측하려는 것이 아니다. 좁은 영역의 예측을 떠받치려는 것이다.
@@ -43,7 +51,7 @@ Model 이 학습한 적 없는 영역에서 내는 값은 extrapolation 이고, 
 
 ## 4. Inference
 
-추론은 대부분 narrow 영역에서 일어난다. 양산 중에 장비를 극단 조건으로 돌리지 않기 때문만은 아니다. APC 가 run 마다 결과를 되먹여 공정 parameter 를 목표치로 끌어당기므로, 양산 data 는 스스로 center 근처의 좁은 구간에 쌓인다. 이 되먹임이 곧 process centering 이다. Model 이 만나는 입력의 분포가 narrow DOE 가 덮은 범위와 거의 겹치는 것은 그 제어의 결과이다.
+추론은 대부분 narrow 영역에서 일어난다. 양산 중에 장비를 극단 조건으로 돌리지 않기 때문만은 아니다. APC 가 run 마다 결과를 되먹여 공정 parameter 를 목표치로 끌어당기므로, 양산 data 는 스스로 center 근처의 좁은 구간에 쌓인다. 이 되먹임이 곧 process window centering, 줄여서 PWC 이다. Cliff 가 어디인지를 찾는 것이 wide DOE 의 목적이라면, 그 안쪽 window 의 한가운데에 공정을 붙들어 두는 것이 PWC 이다. Model 이 만나는 입력의 분포가 narrow DOE 가 덮은 범위와 거의 겹치는 것은 그 제어의 결과이다.
 
 Wide DOE 가 덮은 구간은 process cliff 이다. 그 구간에서는 수율이 급격히 무너지고 defect 가 몰려 나오므로 양산을 그곳에서 돌릴 이유가 없다. 그러므로 양산 중에 그 구간의 값이 들어온다는 것은 공정 제어가 실패했다는 뜻이며, 정상 가동만 놓고 보면 wide 영역을 추론할 일이 없다는 말이 맞다.
 
@@ -80,9 +88,9 @@ Wide DOE 가 값을 하는 자리는 Detection 아래의 두 줄이다. 벗어�
 - **Interlock** 은 정해진 조건을 벗어났을 때 장비를 멈추어 더 나아가지 못하게 막는 장치이다.
 - **Interpolation** 은 학습한 범위 안의 값을 내는 것이다. 양옆의 자료가 그 값을 떠받친다.
 - **POR (Process of Record)** 는 양산에서 쓰기로 고정해 둔 공정 조건이며, 바꾸려면 별도의 승인을 거친다.
-- **Process centering** 은 공정을 process window 의 가장자리가 아니라 한가운데에 두는 것이며, APC 가 하는 일이 이것이다.
 - **Process cliff** 는 공정 parameter 가 조금 더 벗어나면 결과가 급격히 무너지는 자리이다. 응답의 모양이 그 자리를 정하므로 spec 이 바뀌어도 움직이지 않는다.
 - **Process window** 는 결과가 spec 을 만족하는 공정 parameter 의 범위이다. Spec 이 그 경계를 정하므로 spec 이 바뀌면 함께 움직이며, 보통 cliff 보다 안쪽에 여유를 두고 놓인다.
+- **PWC (Process Window Centering)** 는 공정을 process window 의 가장자리가 아니라 한가운데에 두는 것이며, APC 가 하는 일이 이것이다.
 - **Virtual metrology** 는 실제로 재지 않은 계측값을 장비의 sensor 기록으로부터 model 이 대신 내주는 것이다.
 
 
