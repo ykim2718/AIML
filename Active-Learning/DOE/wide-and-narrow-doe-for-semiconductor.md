@@ -1,20 +1,20 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 1 | Created: 2026-08-27 | Updated: 2026-08-27 19:58 UTC
+Rev. 2 | Created: 2026-08-27 | Updated: 2026-08-27 20:11 UTC
 
-반도체 공정에 machine learning 을 쓸 때 model 이 무엇을 배우는지는 DOE 가 덮은 범위가 정한다. 범위를 넓게 잡은 DOE 와 양산 조건 가까이에서 좁게 잡은 DOE 는 쓰임이 다르다. 이 문서는 이 둘을 학습과 추론에 어떻게 나누어 쓰는지를 명제에서 출발해 정리한다.
+반도체 공정에 machine learning 을 쓸 때 model 이 무엇을 배우는지는 DOE 가 덮은 범위가 정한다. 범위를 넓게 잡은 DOE 와 양산 조건 가까이에서 좁게 잡은 DOE 는 쓰임이 다르다. 이 문서는 이 둘을 학습과 추론에 어떻게 나누어 쓰는지를 명제에서 출발해 정리한다. DOE 자체가 machine learning 의 어디에 속하는지는 [Appendix B](#appendix-b-position-in-machine-learning) 에 따로 두었다.
 
 ## 1. Proposition
 
 두 명제를 두고 시작한다.
 
-- Wide DOE 는 학습에 쓰고 추론하지 않는다.
-- Narrow DOE 는 학습과 추론에 모두 쓴다.
+- Process cliff 와 process window 를 찾으려는 wide DOE 는 학습에 쓰고 추론하지 않는다.
+- Process centering 을 따라가려는 narrow DOE 는 학습과 추론에 모두 쓴다.
 
 뒤의 명제는 맞다. 앞의 명제는 절반만 맞다. 학습에 쓴다는 것과 양산 중에 그 범위의 값이 잘 들어오지 않는다는 것은 맞지만, 두 가지가 어긋난다. 첫째로 wide DOE 로 학습한 model 자체는 추론에 그대로 쓰인다. 둘째로 wide 범위의 값이 들어오는 일이 아예 없지는 않으며, 그 값을 받는 것이 곧 제 일인 model 이 따로 있다.
 
 ## 2. Range
 
-Wide DOE 는 온도, 압력, gas 비율 같은 공정 parameter 를 정상 범위 밖의 극단까지 일부러 흔들어 얻는다. Narrow DOE 는 실제로 제품이 나오는 POR 근처의 좁은 변동 안에서 얻는다.
+Wide DOE 는 온도, 압력, gas 비율 같은 공정 parameter 를 정상 범위 밖의 극단까지 일부러 흔들어 얻는다. 그렇게 흔드는 것은 규격을 만족하는 process window 가 어디에서 끝나고 process cliff 가 어디에서 시작하는지를 찾기 위해서이다. Narrow DOE 는 실제로 제품이 나오는 POR 근처의 좁은 변동 안에서 얻는다.
 
 Table 1. Wide DOE and narrow DOE
 
@@ -43,7 +43,7 @@ Model 이 학습한 적 없는 영역에서 내는 값은 extrapolation 이고, 
 
 ## 4. Inference
 
-추론은 대부분 narrow 영역에서 일어난다. 양산 중에 장비를 극단 조건으로 돌리지 않기 때문만은 아니다. APC 가 run 마다 결과를 되먹여 공정 parameter 를 목표치로 끌어당기므로, 양산 data 는 스스로 center 근처의 좁은 구간에 쌓인다. Model 이 만나는 입력의 분포가 narrow DOE 가 덮은 범위와 거의 겹치는 것은 그 제어의 결과이다.
+추론은 대부분 narrow 영역에서 일어난다. 양산 중에 장비를 극단 조건으로 돌리지 않기 때문만은 아니다. APC 가 run 마다 결과를 되먹여 공정 parameter 를 목표치로 끌어당기므로, 양산 data 는 스스로 center 근처의 좁은 구간에 쌓인다. 이 되먹임이 곧 process centering 이다. Model 이 만나는 입력의 분포가 narrow DOE 가 덮은 범위와 거의 겹치는 것은 그 제어의 결과이다.
 
 Wide DOE 가 덮은 구간은 process cliff 이다. 그 구간에서는 수율이 급격히 무너지고 defect 가 몰려 나오므로 양산을 그곳에서 돌릴 이유가 없다. 그러므로 양산 중에 그 구간의 값이 들어온다는 것은 공정 제어가 실패했다는 뜻이며, 정상 가동만 놓고 보면 wide 영역을 추론할 일이 없다는 말이 맞다.
 
@@ -59,22 +59,6 @@ Table 2. Inference in the wide range by model
 Sensor 가 고장 나거나 부품이 닳아 공정이 cliff 로 튕겨 나가면, FDC model 은 바로 그 값을 받아 지금 어디에 들어섰는지 판정해야 한다. Narrow 범위만 학습한 model 은 그 순간 extrapolation 을 하게 되어, 가장 필요한 때에 가장 못 미덥다. Wide DOE 가 값을 하는 자리가 여기다.
 
 그러므로 앞의 명제는 이렇게 고쳐 읽어야 한다. Wide DOE 는 두 가지 일을 한다. 하나는 narrow 영역의 추론을 떠받치는 배경이고, 다른 하나는 이상을 가리는 model 이 실제로 추론하는 영역이다. 양산이 정상으로 도는 동안 그 구간의 값이 들어오지 않는다는 것은 맞지만, 그것이 그 구간을 학습할 필요가 없다는 뜻은 아니다.
-
-## 5. Position in Machine Learning
-
-DOE 는 machine learning 안의 algorithm 이나 model 구조가 아니다. Model 에 넣을 data 를 설계하고 모으는 방법론이며, workflow 에서는 data 수집 전략에 속한다. 통계에서 온 이 방법론이 machine learning 과 만나는 자리는 셋으로 나뉜다.
-
-Table 3. DOE in the machine learning workflow
-
-| Field | What it chooses | Relation to DOE |
-|-------|-----------------|-------------------|
-| Active learning | 다음에 label 을 붙일 표본 | Model 의 오차를 가장 빨리 줄이는 점을 고른다 [1](#ref-1) |
-| Bayesian optimization | 다음에 시험할 공정 조건 | 대리 model 과 acquisition function 으로 최적점을 찾는다 [2](#ref-2) |
-| Data-centric AI | Data 자체의 구성 | 공간을 치우침 없이 덮어 일반화를 얻는다 |
-
-Active learning 과 Bayesian optimization 을 같은 것으로 보지 않아야 한다. 둘은 대리 model 과 acquisition function 이라는 같은 장치를 쓰지만 무엇을 얻으려는지가 다르다. Active learning 은 model 을 잘 만들려고 점을 고르고, Bayesian optimization 은 최적점을 찾으려고 점을 고른다. 그러므로 어느 쪽을 쓸지는 다음 실험으로 model 을 고치려는지 공정을 고치려는지가 정한다.
-
-세 자리가 모두 실험 한 번의 값이 비싼 분야에서 쓰인다. 반도체에서 wafer 한 장을 파괴 검사하는 값이 그렇고, 신약과 신소재에서도 같은 이유로 쓰인다. DOE 가 machine learning 과 만나는 이유가 여기에 있다.
 
 ## References
 
@@ -95,5 +79,24 @@ Active learning 과 Bayesian optimization 을 같은 것으로 보지 않아야 
 - **Interlock** 은 정해진 조건을 벗어났을 때 장비를 멈추어 더 나아가지 못하게 막는 장치이다.
 - **Interpolation** 은 학습한 범위 안의 값을 내는 것이다. 양옆의 자료가 그 값을 떠받친다.
 - **POR (Process of Record)** 는 양산에서 쓰기로 고정해 둔 공정 조건이며, 바꾸려면 별도의 승인을 거친다.
-- **Process cliff** 는 공정 parameter 가 조금 더 벗어나면 수율이 급격히 무너지는 구간이다.
+- **Process centering** 은 공정을 process window 의 가장자리가 아니라 한가운데에 두는 것이며, APC 가 하는 일이 이것이다.
+- **Process cliff** 는 공정 parameter 가 조금 더 벗어나면 수율이 급격히 무너지는 구간이며, process window 의 바깥 가장자리이다.
+- **Process window** 는 결과가 규격을 만족하는 공정 parameter 의 범위이다.
 - **Virtual metrology** 는 실제로 재지 않은 계측값을 장비의 sensor 기록으로부터 model 이 대신 내주는 것이다.
+
+
+## Appendix B. Position in Machine Learning
+
+DOE 는 machine learning 안의 algorithm 이나 model 구조가 아니다. Model 에 넣을 data 를 설계하고 모으는 방법론이며, workflow 에서는 data 수집 전략에 속한다. 통계에서 온 이 방법론이 machine learning 과 만나는 자리는 셋으로 나뉜다.
+
+Table 3. DOE in the machine learning workflow
+
+| Field | What it chooses | Relation to DOE |
+|-------|-----------------|-------------------|
+| Active learning | 다음에 label 을 붙일 표본 | Model 의 오차를 가장 빨리 줄이는 점을 고른다 [1](#ref-1) |
+| Bayesian optimization | 다음에 시험할 공정 조건 | 대리 model 과 acquisition function 으로 최적점을 찾는다 [2](#ref-2) |
+| Data-centric AI | Data 자체의 구성 | 공간을 치우침 없이 덮어 일반화를 얻는다 |
+
+Active learning 과 Bayesian optimization 을 같은 것으로 보지 않아야 한다. 둘은 대리 model 과 acquisition function 이라는 같은 장치를 쓰지만 무엇을 얻으려는지가 다르다. Active learning 은 model 을 잘 만들려고 점을 고르고, Bayesian optimization 은 최적점을 찾으려고 점을 고른다. 그러므로 어느 쪽을 쓸지는 다음 실험으로 model 을 고치려는지 공정을 고치려는지가 정한다.
+
+세 자리가 모두 실험 한 번의 값이 비싼 분야에서 쓰인다. 반도체에서 wafer 한 장을 파괴 검사하는 값이 그렇고, 신약과 신소재에서도 같은 이유로 쓰인다. DOE 가 machine learning 과 만나는 이유가 여기에 있다.
