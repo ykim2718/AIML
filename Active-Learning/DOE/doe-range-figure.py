@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
 __author__ = 'yRocket'
-__version__ = "0.1.0.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.1.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 matplotlib.use('Agg')
 
@@ -38,6 +38,13 @@ MARKER: dict = {
     Design.WIDE: 'o',
     Design.NARROW: 's',
 }
+
+# Inset placement inside the parent axes, as [left, bottom, width, height] in axes fraction.
+INSET_RECT: list = [0.37, 0.25, 0.26, 0.24]
+
+# Figure margins. Left and right are kept symmetric so that the axes box sits on the center line of the canvas,
+# and the bottom leaves room for the legend that is placed below the axes.
+MARGIN: dict = {'left': 0.08, 'right': 0.92, 'top': 0.97, 'bottom': 0.24}
 
 # Text size before the scale option is applied. One size is used throughout, since the axes carry no ticks.
 BASE_FONT_SIZE: float = 9.0
@@ -107,7 +114,7 @@ def add_narrow_inset(axis: plt.Axes = None, points: dict = None, center: float =
     if zoom_span <= 0.0:
         raise ValueError("the narrow design has no span, so there is nothing for the inset to magnify")
 
-    inset = axis.inset_axes([0.33, 0.22, 0.34, 0.30])
+    inset = axis.inset_axes(INSET_RECT)
     grid = np.linspace(center - zoom_span, center + zoom_span, 400)
     inset.plot(grid, true_response(parameter=grid, center=center, half_width=half_width, sharpness=sharpness),
                color=TABLEAU_COLORS['tab:gray'], linewidth=1.6)
@@ -167,12 +174,13 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
     axis.annotate('narrow DOE piles up at the center', xy=(center, points[Design.NARROW][1].max()),
                   xytext=(center - 98.0, 118.0), fontsize=font_size,
                   arrowprops={'arrowstyle': '->', 'color': 'black', 'linewidth': 0.9})
+    text_right = axis_high - 0.02 * (axis_high - axis_low)
     axis.annotate('window edge is set by the specification', xy=(upper, specification),
-                  xytext=(upper + 6.0, specification + 16.0), fontsize=font_size,
+                  xytext=(text_right, specification + 16.0), fontsize=font_size, horizontalalignment='right',
                   arrowprops={'arrowstyle': '->', 'color': 'black', 'linewidth': 0.9})
     axis.annotate('cliff is set by the response', xy=(upper + 20.0, true_response(
         parameter=np.array([upper + 20.0]), center=center, half_width=half_width, sharpness=sharpness)[0]),
-        xytext=(upper + 24.0, 55.0), fontsize=font_size,
+        xytext=(text_right, 55.0), fontsize=font_size, horizontalalignment='right',
         arrowprops={'arrowstyle': '->', 'color': 'black', 'linewidth': 0.9})
 
     axis.set_xlabel('Process parameter', fontsize=font_size)
@@ -181,10 +189,10 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
     axis.set_ylim(-6.0, 132.0)
     axis.set_xticks([])
     axis.set_yticks([])
-    axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.10), fontsize=font_size, ncol=3,
+    axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.11), fontsize=font_size, ncol=3,
                 frameon=False)
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=dpi, bbox_inches='tight')
+    fig.subplots_adjust(**MARGIN)
+    fig.savefig(out_path, dpi=dpi)
     plt.close(fig)
 
     return lower, upper
