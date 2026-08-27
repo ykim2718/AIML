@@ -6,7 +6,7 @@ note#1: 규칙마다 괄호안에 이유를 추가 함.
 
 ---
 
-Rev. 9 | Created: 2026-8-13 | Updated: 2026-8-17 08:20 CDT
+Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 22:27 UTC
 
 
 ## 1. Grammar & Type Safety
@@ -35,6 +35,16 @@ Rev. 9 | Created: 2026-8-13 | Updated: 2026-8-17 08:20 CDT
 + `import matplotlib` 또는 `plt`를 사용하는 모든 코드에 적용.
 - matrix chart를 fig.savefig()로 저장할 경우 `dpi=300` 을 지정한다.
 - 색상은 `TABLEAU_COLORS`를 사용할 것.
+- `figsize` 와 `dpi` 는 그림의 비례와 해상도만 정한다. 문서에서 차지할 크기는 문서 쪽이 정하므로, 그것을 줄이려고 `figsize` 나 `dpi` 를 낮추지 않는다.
+- `figsize` 가 문서의 렌더 크기에 영향을 주는 유일한 경우는 종횡비를 바꿀 때이다. 세로를 줄이려면 가로 대비 세로를 납작하게 잡는다.
+- Figure 안의 text 크기는 `figsize` 에 비례하도록 잡는다. Point 로 고정하면 `figsize` 를 줄일 때 글자만 커져 배치가 무너진다.
+
+  ```python
+  FIGSIZE: tuple = (6.0, 4.0)
+  REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
+  BASE_FONT_SIZE: float = 9.0
+  font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
+  ```
 
 ### tqdm
 

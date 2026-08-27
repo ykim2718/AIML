@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 25 | Created: 2026-8-1 | Updated: 2026-8-18 09:38 CDT
+Rev. 26 | Created: 2026-8-1 | Updated: 2026-08-27 22:27 UTC
 
 ## 1. Terminology
 
@@ -101,6 +101,10 @@ result = [x * 2 for x in range(10)]
 + Figure image는 CLI로 특정 folder를 지정하지 않는 경우에, md 파일과 같은 위치의 `<md file stem>_fig` folder에 두고, 본문에서는 그 folder 기준 상대 경로로 참조한다.
     - `foo.md` 의 image는 `foo_fig/` 아래에 두고 `![Fig 1](foo_fig/fig1.png)` 로 쓴다.
     - 절대 경로나 외부 URL로 참조하지 않는다. 저장소를 clone하거나 folder를 옮겨도 그림이 그대로 보여야 한다.
++ 문서에서 그림이 차지할 폭을 정해야 하면 `<img>` 로 참조하고 `width` 와 `max-width` 를 함께 준다. Markdown image 문법에는 크기 인자가 없어, image 가 본문 폭보다 넓으면 언제나 본문 폭까지 늘어난다.
+    - `<img src="foo_fig/fig1.png" width="800" style="max-width: 100%;" alt="Fig 1">` 로 쓴다.
+    - `width` 는 기본 렌더 폭이고, `max-width` 는 화면이 그보다 좁을 때 가로 scroll 대신 그림이 줄어들게 한다. GitHub 은 자체 stylesheet 로 같은 일을 하지만 다른 renderer 를 위해 함께 적는다.
+    - 그림을 만든 code 의 figure 크기를 줄여서 렌더 폭을 줄이려 하지 않는다. 종횡비가 같으면 image 가 본문보다 넓은 한 렌더 크기는 그대로이다.
 
 ## 13. Lists
 
