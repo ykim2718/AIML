@@ -1,6 +1,7 @@
 """Draw the process response against one parameter, marking the window, the cliff and the two DOE designs.
 
 Changelog:
+    0.1.0.2026.8.27 Magnify the narrow design in an inset, since its points overlap at full scale.
     0.0.0.2026.8.27 Initial release.
 """
 
@@ -16,7 +17,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
 __author__ = 'yRocket'
-__version__ = "0.0.1.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.1.0.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 matplotlib.use('Agg')
 
@@ -93,9 +94,40 @@ def write_points(points: dict = None, out_path: pathlib.Path = None) -> None:
                 })
 
 
+def add_narrow_inset(axis: plt.Axes = None, points: dict = None, center: float = None,
+                     half_width: float = None, sharpness: float = None, zoom_factor: float = None,
+                     font_size: float = None) -> None:
+    """Magnify the narrow design, whose points land on top of one another at the scale of the wide one.
+
+    The inset keeps the same response curve and the same center line, so the reader sees that the whole inset
+    is the single mark the parent axes shows, rather than a second and unrelated picture.
+    """
+    parameter, response = points[Design.NARROW]
+    zoom_span = zoom_factor * 0.5 * (parameter.max() - parameter.min())
+    if zoom_span <= 0.0:
+        raise ValueError("the narrow design has no span, so there is nothing for the inset to magnify")
+
+    inset = axis.inset_axes([0.33, 0.22, 0.34, 0.30])
+    grid = np.linspace(center - zoom_span, center + zoom_span, 400)
+    inset.plot(grid, true_response(parameter=grid, center=center, half_width=half_width, sharpness=sharpness),
+               color=TABLEAU_COLORS['tab:gray'], linewidth=1.6)
+    inset.axvline(center, color=TABLEAU_COLORS['tab:purple'], linestyle=':', linewidth=1.4)
+    inset.plot(parameter, response, linestyle='none', marker=MARKER[Design.NARROW], markersize=8.0,
+               color=PLOT_COLOR[Design.NARROW], markeredgecolor='black', markeredgewidth=0.6)
+
+    spread = response.max() - response.min()
+    inset.set_xlim(center - zoom_span, center + zoom_span)
+    inset.set_ylim(response.min() - 0.7 * spread, response.max() + 0.7 * spread)
+    inset.set_xticks([])
+    inset.set_yticks([])
+    inset.set_title('narrow DOE magnified', fontsize=font_size)
+
+    axis.indicate_inset_zoom(inset, edgecolor='black', linewidth=1.0, alpha=0.8)
+
+
 def plot_range(points: dict = None, center: float = None, half_width: float = None, sharpness: float = None,
-               specification: float = None, collapse: float = None, font_scale: float = None,
-               out_path: pathlib.Path = None, dpi: int = None) -> tuple:
+               specification: float = None, collapse: float = None, zoom_factor: float = None,
+               font_scale: float = None, out_path: pathlib.Path = None, dpi: int = None) -> tuple:
     """Draw the response curve with the window shaded, the cliff shaded beside it and both designs overlaid.
 
     The cliff is shaded only over the steep shoulder, between the window edge and the parameter at which the
@@ -125,8 +157,12 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
                  label='POR center')
 
     for design, (parameter, response) in points.items():
-        axis.plot(parameter, response, linestyle='none', marker=MARKER[design], markersize=6.5,
-                  color=PLOT_COLOR[design], label=f"{design.value} DOE  ({parameter.size} points)")
+        axis.plot(parameter, response, linestyle='none', marker=MARKER[design], markersize=7.5,
+                  color=PLOT_COLOR[design], markeredgecolor='black', markeredgewidth=0.6,
+                  label=f"{design.value} DOE  ({parameter.size} points)")
+
+    add_narrow_inset(axis=axis, points=points, center=center, half_width=half_width, sharpness=sharpness,
+                     zoom_factor=zoom_factor, font_size=font_size)
 
     axis.annotate('narrow DOE piles up at the center', xy=(center, points[Design.NARROW][1].max()),
                   xytext=(center - 98.0, 118.0), fontsize=font_size,
@@ -158,7 +194,7 @@ def build_figure(out_folder: pathlib.Path = None, center: float = None, half_wid
                  sharpness: float = None, specification: float = None, collapse: float = None,
                  wide_span: float = None,
                  narrow_span: float = None, n_wide: int = None, n_narrow: int = None, noise: float = None,
-                 font_scale: float = None, seed: int = None, dpi: int = None) -> None:
+                 zoom_factor: float = None, font_scale: float = None, seed: int = None, dpi: int = None) -> None:
     """Sample both designs from the same response and write the figure and the sampled points."""
     rng = np.random.default_rng(seed)
     response_kwargs = {'half_width': half_width, 'sharpness': sharpness}
@@ -171,7 +207,8 @@ def build_figure(out_folder: pathlib.Path = None, center: float = None, half_wid
     }
 
     lower, upper = plot_range(points=points, center=center, half_width=half_width, sharpness=sharpness,
-                              specification=specification, collapse=collapse, font_scale=font_scale,
+                              specification=specification, collapse=collapse, zoom_factor=zoom_factor,
+                              font_scale=font_scale,
                               out_path=out_folder / 'fig1_doe_range.png', dpi=dpi)
     write_points(points=points, out_path=out_folder / 'fig1_doe_range_points.csv')
 
@@ -203,6 +240,8 @@ def parse_args() -> argparse.Namespace:
                         help="number of points in the narrow design")
     parser.add_argument('--noise', type=float, default=1.2,
                         help="standard deviation of the measurement noise added to the response")
+    parser.add_argument('--zoom-factor', type=float, default=3.0,
+                        help="how many narrow half spans the magnified inset reaches on each side of the center")
     parser.add_argument('--font-scale', type=float, default=1.5,
                         help="multiplier applied to every text size in the figure")
     parser.add_argument('--seed', type=int, default=0,
@@ -238,6 +277,8 @@ def parse_args() -> argparse.Namespace:
         parser.error(f"each design needs at least 3 points: {args.n_wide}, {args.n_narrow}")
     if args.noise < 0.0:
         parser.error(f"--noise must not be negative: {args.noise}")
+    if args.zoom_factor <= 1.0:
+        parser.error(f"--zoom-factor must exceed 1, otherwise the inset cuts the design off: {args.zoom_factor}")
     if args.font_scale <= 0.0:
         parser.error(f"--font-scale must be positive: {args.font_scale}")
     if args.dpi <= 0:
@@ -252,4 +293,4 @@ if __name__ == '__main__':
                  sharpness=cli.sharpness, specification=cli.specification, collapse=cli.collapse,
                  wide_span=cli.wide_span,
                  narrow_span=cli.narrow_span, n_wide=cli.n_wide, n_narrow=cli.n_narrow, noise=cli.noise,
-                 font_scale=cli.font_scale, seed=cli.seed, dpi=cli.dpi)
+                 zoom_factor=cli.zoom_factor, font_scale=cli.font_scale, seed=cli.seed, dpi=cli.dpi)
