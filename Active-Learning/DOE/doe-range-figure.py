@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.8.27"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 matplotlib.use('Agg')
 
@@ -37,6 +37,9 @@ MARKER: dict = {
     Design.WIDE: 'o',
     Design.NARROW: 's',
 }
+
+# Text size before the scale option is applied. One size is used throughout, since the axes carry no ticks.
+BASE_FONT_SIZE: float = 9.0
 
 # Header of the file that keeps the sampled points, so the numbers quoted elsewhere can be recomputed.
 POINT_FIELD: list = ['design', 'parameter', 'response']
@@ -91,8 +94,8 @@ def write_points(points: dict = None, out_path: pathlib.Path = None) -> None:
 
 
 def plot_range(points: dict = None, center: float = None, half_width: float = None, sharpness: float = None,
-               specification: float = None, collapse: float = None, out_path: pathlib.Path = None,
-               dpi: int = None) -> tuple:
+               specification: float = None, collapse: float = None, font_scale: float = None,
+               out_path: pathlib.Path = None, dpi: int = None) -> tuple:
     """Draw the response curve with the window shaded, the cliff shaded beside it and both designs overlaid.
 
     The cliff is shaded only over the steep shoulder, between the window edge and the parameter at which the
@@ -108,7 +111,8 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
     grid = np.linspace(axis_low, axis_high, 2000)
     curve = true_response(parameter=grid, center=center, half_width=half_width, sharpness=sharpness)
 
-    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=(9.5, 6.0))
+    font_size = BASE_FONT_SIZE * font_scale
+    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=(9.5, 6.4))
 
     axis.axvspan(lower, upper, color=TABLEAU_COLORS['tab:green'], alpha=0.15, label='process window')
     axis.axvspan(cliff_low, lower, color=TABLEAU_COLORS['tab:orange'], alpha=0.20, label='process cliff')
@@ -116,35 +120,35 @@ def plot_range(points: dict = None, center: float = None, half_width: float = No
 
     axis.plot(grid, curve, color=TABLEAU_COLORS['tab:gray'], linewidth=1.8, label='true response')
     axis.axhline(specification, color=TABLEAU_COLORS['tab:gray'], linestyle='--', linewidth=1.1,
-                 label=f"specification {specification:g}")
+                 label='specification')
     axis.axvline(center, color=TABLEAU_COLORS['tab:purple'], linestyle=':', linewidth=1.4,
-                 label=f"POR center {center:g}")
+                 label='POR center')
 
     for design, (parameter, response) in points.items():
         axis.plot(parameter, response, linestyle='none', marker=MARKER[design], markersize=6.5,
                   color=PLOT_COLOR[design], label=f"{design.value} DOE  ({parameter.size} points)")
 
-    narrow_parameter = points[Design.NARROW][0]
-    axis.annotate(f"narrow DOE piles up within "
-                  f"{0.5 * (narrow_parameter.max() - narrow_parameter.min()):.0f} of the center",
-                  xy=(center, points[Design.NARROW][1].max()), xytext=(center - 92.0, 118.0), fontsize=9,
+    axis.annotate('narrow DOE piles up at the center', xy=(center, points[Design.NARROW][1].max()),
+                  xytext=(center - 98.0, 118.0), fontsize=font_size,
                   arrowprops={'arrowstyle': '->', 'color': 'black', 'linewidth': 0.9})
     axis.annotate('window edge is set by the specification', xy=(upper, specification),
-                  xytext=(upper + 12.0, specification + 14.0), fontsize=9,
+                  xytext=(upper + 6.0, specification + 16.0), fontsize=font_size,
                   arrowprops={'arrowstyle': '->', 'color': 'black', 'linewidth': 0.9})
     axis.annotate('cliff is set by the response', xy=(upper + 20.0, true_response(
         parameter=np.array([upper + 20.0]), center=center, half_width=half_width, sharpness=sharpness)[0]),
-        xytext=(upper + 26.0, 55.0), fontsize=9,
+        xytext=(upper + 24.0, 55.0), fontsize=font_size,
         arrowprops={'arrowstyle': '->', 'color': 'black', 'linewidth': 0.9})
 
-    axis.set_xlabel('Process parameter')
-    axis.set_ylabel('Response')
+    axis.set_xlabel('Process parameter', fontsize=font_size)
+    axis.set_ylabel('Response', fontsize=font_size)
     axis.set_xlim(axis_low, axis_high)
     axis.set_ylim(-6.0, 132.0)
-    axis.grid(visible=True, alpha=0.3)
-    axis.legend(loc='lower left', fontsize=9, ncol=2)
+    axis.set_xticks([])
+    axis.set_yticks([])
+    axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.10), fontsize=font_size, ncol=3,
+                frameon=False)
     fig.tight_layout()
-    fig.savefig(out_path, dpi=dpi)
+    fig.savefig(out_path, dpi=dpi, bbox_inches='tight')
     plt.close(fig)
 
     return lower, upper
@@ -154,7 +158,7 @@ def build_figure(out_folder: pathlib.Path = None, center: float = None, half_wid
                  sharpness: float = None, specification: float = None, collapse: float = None,
                  wide_span: float = None,
                  narrow_span: float = None, n_wide: int = None, n_narrow: int = None, noise: float = None,
-                 seed: int = None, dpi: int = None) -> None:
+                 font_scale: float = None, seed: int = None, dpi: int = None) -> None:
     """Sample both designs from the same response and write the figure and the sampled points."""
     rng = np.random.default_rng(seed)
     response_kwargs = {'half_width': half_width, 'sharpness': sharpness}
@@ -167,7 +171,7 @@ def build_figure(out_folder: pathlib.Path = None, center: float = None, half_wid
     }
 
     lower, upper = plot_range(points=points, center=center, half_width=half_width, sharpness=sharpness,
-                              specification=specification, collapse=collapse,
+                              specification=specification, collapse=collapse, font_scale=font_scale,
                               out_path=out_folder / 'fig1_doe_range.png', dpi=dpi)
     write_points(points=points, out_path=out_folder / 'fig1_doe_range_points.csv')
 
@@ -199,6 +203,8 @@ def parse_args() -> argparse.Namespace:
                         help="number of points in the narrow design")
     parser.add_argument('--noise', type=float, default=1.2,
                         help="standard deviation of the measurement noise added to the response")
+    parser.add_argument('--font-scale', type=float, default=1.5,
+                        help="multiplier applied to every text size in the figure")
     parser.add_argument('--seed', type=int, default=0,
                         help="seed of the random generator, so the figure is reproducible")
     parser.add_argument('--dpi', type=int, default=300,
@@ -232,6 +238,8 @@ def parse_args() -> argparse.Namespace:
         parser.error(f"each design needs at least 3 points: {args.n_wide}, {args.n_narrow}")
     if args.noise < 0.0:
         parser.error(f"--noise must not be negative: {args.noise}")
+    if args.font_scale <= 0.0:
+        parser.error(f"--font-scale must be positive: {args.font_scale}")
     if args.dpi <= 0:
         parser.error(f"--dpi must be positive: {args.dpi}")
 
@@ -244,4 +252,4 @@ if __name__ == '__main__':
                  sharpness=cli.sharpness, specification=cli.specification, collapse=cli.collapse,
                  wide_span=cli.wide_span,
                  narrow_span=cli.narrow_span, n_wide=cli.n_wide, n_narrow=cli.n_narrow, noise=cli.noise,
-                 seed=cli.seed, dpi=cli.dpi)
+                 font_scale=cli.font_scale, seed=cli.seed, dpi=cli.dpi)
