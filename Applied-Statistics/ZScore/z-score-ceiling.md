@@ -1,5 +1,6 @@
 # Ceiling of the Classical z-Score
 Rev. 2 | Created: 2026-08-18 | Updated: 2026-08-18 23:41 CDT
+
 > A note on the largest absolute z-score a sample of a given size can produce, the derivation of
 > that bound, and what it costs a rule that flags observations by comparing a z-score against a
 > fixed cut-off.

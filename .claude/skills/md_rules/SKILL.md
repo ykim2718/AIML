@@ -5,6 +5,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 
 # Documentation Conventions
 Rev. 26 | Created: 2026-8-1 | Updated: 2026-08-27 17:27 CDT
+
 ## 1. Terminology
 
 + 정의되지 않은 용어는 사용하지 않는다.

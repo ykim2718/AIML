@@ -1,5 +1,6 @@
 # Active-Learning
 Rev. 2 | Created: 2026-08-27 | Updated: 2026-08-27 15:12 CDT
+
 > This folder covers how to decide which experiment to run next when one label costs a wafer, a tool hour or a destructive test.
 > Its documents answer what range those experiments should cover and what a model trained on that range is allowed to predict.
 
