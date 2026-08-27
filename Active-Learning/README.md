@@ -1,5 +1,5 @@
 # Active-Learning
-Rev. 0 | Created: 2026-08-27 | Updated: 2026-08-27 19:57 UTC
+Rev. 1 | Created: 2026-08-27 | Updated: 2026-08-27 20:08 UTC
 
 > This folder covers how to decide which experiment to run next when one label costs a wafer, a tool hour or a destructive test.
 > Its documents answer what range those experiments should cover and what a model trained on that range is allowed to predict.
@@ -14,7 +14,8 @@ Table 1. Documents in this folder
 
 | Document | Description |
 |----------|-------------|
-| [DOE/wide-and-narrow-doe.md](DOE/wide-and-narrow-doe.md) | It separates what a wide experiment range and a narrow one around the production condition each contribute to training and to inference, works out why the production data never leaves the narrow range on its own, and places the method within the machine learning workflow. |
+| [DOE/wide-and-narrow-doe-for-semiconductor.md](DOE/wide-and-narrow-doe-for-semiconductor.md) | It separates what a wide experiment range and a narrow one around the production condition each contribute to training and to inference, works out why the production data never leaves the narrow range on its own, and places the method within the machine learning workflow. |
+| [Bayesian-Optimization/bayesian-optimization-for-semiconductor.md](Bayesian-Optimization/bayesian-optimization-for-semiconductor.md) | It covers the loop that picks the next process condition from a surrogate rather than from a fixed design, compares it with classical DOE, and sets out the five constraints a fab adds to it, of which the batch and the safety limit depart furthest from the textbook. |
 
 ## 3. Order Of Use
 
