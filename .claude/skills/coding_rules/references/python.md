@@ -6,9 +6,7 @@ note#1: 규칙마다 괄호안에 이유를 추가 함.
 
 ---
 
-Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 22:27 UTC
-
-
+Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 17:27 CDT
 ## 1. Grammar & Type Safety
 
 ### Annotation
