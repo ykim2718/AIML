@@ -1,5 +1,5 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 2 | Created: 2026-08-27 | Updated: 2026-08-27 20:11 UTC
+Rev. 3 | Created: 2026-08-27 | Updated: 2026-08-27 20:20 UTC
 
 반도체 공정에 machine learning 을 쓸 때 model 이 무엇을 배우는지는 DOE 가 덮은 범위가 정한다. 범위를 넓게 잡은 DOE 와 양산 조건 가까이에서 좁게 잡은 DOE 는 쓰임이 다르다. 이 문서는 이 둘을 학습과 추론에 어떻게 나누어 쓰는지를 명제에서 출발해 정리한다. DOE 자체가 machine learning 의 어디에 속하는지는 [Appendix B](#appendix-b-position-in-machine-learning) 에 따로 두었다.
 
@@ -7,14 +7,14 @@ Rev. 2 | Created: 2026-08-27 | Updated: 2026-08-27 20:11 UTC
 
 두 명제를 두고 시작한다.
 
-- Process cliff 와 process window 를 찾으려는 wide DOE 는 학습에 쓰고 추론하지 않는다.
-- Process centering 을 따라가려는 narrow DOE 는 학습과 추론에 모두 쓴다.
+- Process cliff 를 찾으려는 wide DOE 의 data 는 학습에 쓰고 추론 입력으로는 쓰지 않는다.
+- Process centering 을 따라가려는 narrow DOE 의 data 는 학습과 추론 입력에 모두 쓴다.
 
-뒤의 명제는 맞다. 앞의 명제는 절반만 맞다. 학습에 쓴다는 것과 양산 중에 그 범위의 값이 잘 들어오지 않는다는 것은 맞지만, 두 가지가 어긋난다. 첫째로 wide DOE 로 학습한 model 자체는 추론에 그대로 쓰인다. 둘째로 wide 범위의 값이 들어오는 일이 아예 없지는 않으며, 그 값을 받는 것이 곧 제 일인 model 이 따로 있다.
+주어를 data 로 못 박으면 두 명제 모두 맞다. 어긋나는 것은 명제가 아니라 그것을 읽는 방식이다. 추론 입력으로 쓰지 않는다는 말이 추론과 무관하다는 뜻으로 읽히면 틀린다. Wide DOE 의 data 는 model 에 입력으로 들어가는 일이 없지만, 그 data 로 학습한 model 은 양산 영역의 모든 추론에 관여하며 그 정확도를 정한다. 3 절이 그 정확도를 다루고, 4 절이 추론이 어디에서 일어나는지를 다룬다.
 
 ## 2. Range
 
-Wide DOE 는 온도, 압력, gas 비율 같은 공정 parameter 를 정상 범위 밖의 극단까지 일부러 흔들어 얻는다. 그렇게 흔드는 것은 규격을 만족하는 process window 가 어디에서 끝나고 process cliff 가 어디에서 시작하는지를 찾기 위해서이다. Narrow DOE 는 실제로 제품이 나오는 POR 근처의 좁은 변동 안에서 얻는다.
+Wide DOE 는 온도, 압력, gas 비율 같은 공정 parameter 를 정상 범위 밖의 극단까지 일부러 흔들어 얻는다. 그렇게 흔드는 것은 process cliff 가 어디에서 시작하는지를 찾기 위해서이다. Process window 를 찾는 것과는 다르다. Window 는 결과가 spec 을 만족하는 범위이므로 spec 이 바뀌면 함께 바뀌고, 좁은 범위에서 잰 것만으로도 model 로 미루어 그릴 수 있다. Cliff 는 응답이 무너지는 자리라 spec 과 무관하게 그 자리에 있고, 그 밖까지 실제로 흔들어 보지 않으면 어디인지 알 수 없다. 범위를 넓혀야 하는 이유는 window 가 아니라 cliff 쪽에 있다. Narrow DOE 는 실제로 제품이 나오는 POR 근처의 좁은 변동 안에서 얻는다.
 
 Table 1. Wide DOE and narrow DOE
 
@@ -47,18 +47,19 @@ Model 이 학습한 적 없는 영역에서 내는 값은 extrapolation 이고, 
 
 Wide DOE 가 덮은 구간은 process cliff 이다. 그 구간에서는 수율이 급격히 무너지고 defect 가 몰려 나오므로 양산을 그곳에서 돌릴 이유가 없다. 그러므로 양산 중에 그 구간의 값이 들어온다는 것은 공정 제어가 실패했다는 뜻이며, 정상 가동만 놓고 보면 wide 영역을 추론할 일이 없다는 말이 맞다.
 
-다만 그 말이 어느 model 에나 같게 적용되지는 않는다.
+이상을 가려내는 일이 cliff 의 data 로 이루어진다고 생각하기 쉬우나 그렇지 않다. 정상의 모양을 배워 두고 거기서 벗어난 것을 이상이라 부르는 것이므로, 그 판정에 필요한 것은 정상 data 이지 cliff data 가 아니다. 애초에 cliff data 는 실제 양산에서 거의 생기지 않으므로 그것을 모아 배우는 방법은 쓸 수도 없다. 그러니 벗어났는지 아닌지를 가리는 데까지는 narrow 범위만으로 선다.
 
-Table 2. Inference in the wide range by model
+Table 2. What each task learns from
 
-| Model | Wide range inference | What it means |
-|-------|----------------------|---------------|
-| Virtual metrology | 거의 없다 | 그 구간에 들어간 wafer 는 예측이 아니라 처분의 대상이다 |
-| FDC | 그것이 맡은 일이다 | Cliff 로 들어선 것을 알아보고 interlock 을 건다 |
+| Task | What it needs | Where it comes from |
+|------|---------------|---------------------|
+| Detection | 정상의 모양 | Narrow DOE 와 정상 양산 data 만으로 선다 |
+| Classification | 이상마다의 본보기 | 일부러 고장을 넣어 얻는 wide DOE |
+| Prediction | 그 범위에서 입력과 결과의 관계 | Wide DOE. 없으면 extrapolation 이 된다 |
 
-Sensor 가 고장 나거나 부품이 닳아 공정이 cliff 로 튕겨 나가면, FDC model 은 바로 그 값을 받아 지금 어디에 들어섰는지 판정해야 한다. Narrow 범위만 학습한 model 은 그 순간 extrapolation 을 하게 되어, 가장 필요한 때에 가장 못 미덥다. Wide DOE 가 값을 하는 자리가 여기다.
+Wide DOE 가 값을 하는 자리는 Detection 아래의 두 줄이다. 벗어났다는 것까지는 정상 data 로 알 수 있어도, 어느 쪽으로 얼마나 벗어났고 그것이 어떤 고장인지는 그 범위를 본 적이 있어야 말할 수 있다. 이상의 종류를 가르려면 그 이상의 본보기가 있어야 하고, 본보기는 양산을 기다려 얻는 것이 아니라 일부러 고장을 넣어 만든다. Cliff 가 어디인지 알아야 control limit 을 통계가 아니라 물리 위에 놓을 수 있다는 것도 같은 이야기이다.
 
-그러므로 앞의 명제는 이렇게 고쳐 읽어야 한다. Wide DOE 는 두 가지 일을 한다. 하나는 narrow 영역의 추론을 떠받치는 배경이고, 다른 하나는 이상을 가리는 model 이 실제로 추론하는 영역이다. 양산이 정상으로 도는 동안 그 구간의 값이 들어오지 않는다는 것은 맞지만, 그것이 그 구간을 학습할 필요가 없다는 뜻은 아니다.
+그러므로 명제는 그대로 두되 그 뜻을 좁혀 읽어야 한다. Wide DOE 의 data 가 추론 입력이 아니라는 것은 맞다. 그 data 의 값어치는 입력이 아닌 다른 셋에 있다. 양산 영역 예측의 정확도, 이상의 종류를 가르는 능력, 그리고 경계를 어디에 그을지의 근거이다.
 
 ## References
 
@@ -80,8 +81,8 @@ Sensor 가 고장 나거나 부품이 닳아 공정이 cliff 로 튕겨 나가�
 - **Interpolation** 은 학습한 범위 안의 값을 내는 것이다. 양옆의 자료가 그 값을 떠받친다.
 - **POR (Process of Record)** 는 양산에서 쓰기로 고정해 둔 공정 조건이며, 바꾸려면 별도의 승인을 거친다.
 - **Process centering** 은 공정을 process window 의 가장자리가 아니라 한가운데에 두는 것이며, APC 가 하는 일이 이것이다.
-- **Process cliff** 는 공정 parameter 가 조금 더 벗어나면 수율이 급격히 무너지는 구간이며, process window 의 바깥 가장자리이다.
-- **Process window** 는 결과가 규격을 만족하는 공정 parameter 의 범위이다.
+- **Process cliff** 는 공정 parameter 가 조금 더 벗어나면 결과가 급격히 무너지는 자리이다. 응답의 모양이 그 자리를 정하므로 spec 이 바뀌어도 움직이지 않는다.
+- **Process window** 는 결과가 spec 을 만족하는 공정 parameter 의 범위이다. Spec 이 그 경계를 정하므로 spec 이 바뀌면 함께 움직이며, 보통 cliff 보다 안쪽에 여유를 두고 놓인다.
 - **Virtual metrology** 는 실제로 재지 않은 계측값을 장비의 sensor 기록으로부터 model 이 대신 내주는 것이다.
 
 
