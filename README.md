@@ -1,5 +1,5 @@
 # AIML
-Rev. 22 | Created: 2026-08-07 | Updated: 2026-08-25 18:06 CDT
+Rev. 23 | Created: 2026-08-07 | Updated: 2026-08-28 00:48 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -29,6 +29,7 @@ Table 2. Folders and what they hold
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds regression recipes, with an emphasis on step-like and piecewise responses that a single global fit handles badly. |
+| [Serving](Serving/) | It covers what happens after a model is fitted — how a forecast or an anomaly flag is produced while the series keeps arriving, and which servers, pre-trained models, streaming engines, and managed services do that work. |
 | [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, a cointegration example on daily price series, and the ceiling that bounds the classical z-score under `ZScore/`. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
 | [.claude](.claude/) | It carries the settings that make those rules load in this repository, together with the setup and verification notes behind them. |
@@ -83,9 +84,17 @@ Table 6. Automation documents
 | [.claude/README.md](.claude/README.md) | It explains the two files that wire this repository to that marketplace, the catalog and the settings that enable the plugin. |
 | [.claude/plugin-setup.md](.claude/plugin-setup.md) | It records the setup that lets a fresh container fetch the plugin from the remote on its first session, including the authentication failure that broke the earlier attempt and the fix for it. |
 
-### 3.5 Applied Statistics
+### 3.5 Serving
 
-Table 7. Applied statistics documents
+Table 7. Serving documents
+
+| Document | Description |
+|----------|-------------|
+| [Serving/time-series-inference-server.md](Serving/time-series-inference-server.md) | It sets out what a time series inference server has to do that a stateless model server does not — context assembly, per-series state, and evaluation that arrives a horizon late — and surveys the model servers, pre-trained time series models, streaming engines, and managed services that supply those capabilities. |
+
+### 3.6 Applied Statistics
+
+Table 8. Applied statistics documents
 
 | Document | Description |
 |----------|-------------|
@@ -99,6 +108,7 @@ Table 7. Applied statistics documents
 4. Apply the feature engineering that suits the fixed modality, cross-sectional or sequential or wide.
 5. Fit a model, choosing a piecewise form when the response is step-like.
 6. Score it with a metric that matches the question, since agreement, correlation, and error are three different questions.
+7. Serve it, deciding first whether the answer is produced on a schedule, on request, or on each arriving event.
 
 ## 5. Conventions
 

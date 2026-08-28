@@ -1,0 +1,266 @@
+# Time Series Inference Server
+Rev. 0 | Created: 2026-08-28 | Updated: 2026-08-28 00:44 CDT
+
+A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do and which products already do it.
+
+## 1. Scope
+
+The document covers the serving side only, from the moment a trained model or a pre-trained checkpoint exists to the moment a forecast or an anomaly flag is consumed. Training procedures, model families, and feature construction are outside it. The two questions asked of a time series in production are treated together, because a server answers both from the same context and the same model registry.
+
+- Forecast: given the history of a series up to now, what are the next `H` values and how uncertain are they.
+- Anomaly: given the same history, is the value that just arrived consistent with what the model expected.
+
+The exposition assumes many series rather than one. A single series can be served by a scheduled job that writes a table, and it needs none of what follows. The cost of the capabilities below is paid when the count of series reaches the thousands and the answers are read by something that acts on them.
+
+## 2. Divergence From A Stateless Model Server
+
+A general model server treats a request as self-contained. It receives a feature vector, runs a forward pass, and returns a scalar or a class probability. Each of those assumptions breaks for a series, and the breakage is what every time-series-specific capability exists to repair.
+
+Table 1. Serving a row against serving a series
+
+| Aspect | Stateless model server | Time series inference server |
+|--------|------------------------|------------------------------|
+| Request payload | The payload holds every feature the model consumes. | The payload holds a key and a timestamp, and the recent history has to be found or carried alongside it. |
+| Output shape | The output is one value per request. | The output is a matrix of horizon steps by quantiles, each step tied to a future timestamp. |
+| State | The server is stateless, so any replica can answer any request. | Recursive models carry per-series state, so the replica that answers has to hold or restore that state. |
+| Correctness | Correctness is a property of the code path. | Correctness also depends on the cut-off, because a context assembled with a value the model could not have seen is silently wrong. |
+| Evaluation | The label arrives with the event. | The label arrives `H` steps later, so the forecast has to be stored to be scored at all. |
+| Cold start | An unseen row is ordinary. | A new series has no history, so it needs either a global model or a fallback. |
+
+## 3. Core Capabilities
+
+Table 2 lists what the server owes its caller. The three capabilities that have no counterpart in ordinary model serving are then explained in their own subsections.
+
+Table 2. Core capabilities and the requirement each one carries
+
+| Capability | Requirement |
+|------------|-------------|
+| Context assembly | The server resolves the last `L` observations of the requested key as of the request cut-off, from the payload or from a store, and refuses the request when the window is too sparse to be used. |
+| Horizon and uncertainty | The server returns every step of the horizon with quantiles or an interval, not a point alone, because a forecast without a spread cannot be acted on. |
+| Covariate handling | The server accepts past covariates, future known covariates such as a calendar or a planned setpoint, and static attributes, and it rejects a future covariate that is not actually known in advance. |
+| Timestamp discipline | The server fixes one frequency, one timezone, and one convention for gaps and for duplicate timestamps, and it applies them identically at training time and at serving time. |
+| Series fan-out | The server answers for many keys in one call, groups them into batches that fill the accelerator, and resolves which model version serves which key. |
+| State and recovery | The server keeps the per-series state that recursive models need, checkpoints it, and restores it after a restart without replaying the whole history. |
+| Freshness and drift | The server exposes the age of the newest observation behind each answer, and it emits the signal that triggers retraining when residuals move. |
+| Delayed evaluation | The server persists every answer with the context and the model version that produced it, so that accuracy can be computed when the actuals land. |
+| Throughput and latency | The server meets its latency budget through dynamic batching, a compiled or quantized runtime, and autoscaling, and it degrades to a cheaper model rather than to a timeout. |
+| Reproducibility | The server can replay any past request and return the same answer, which requires the model version, the context, and the code path to be pinned together. |
+
+### 3.1 Context Assembly
+
+The defining work of the server happens before the forward pass. A forecast request names a series and a time, and the server has to turn that into the window the model was trained to consume. There are two ways to do it, and each one buys what the other gives up. Carrying the window in the request payload keeps the server stateless and makes the answer trivially reproducible, at the cost of a large payload and of pushing the assembly work onto every caller. Fetching the window from an online store keeps the payload small and centralizes the assembly rule, at the cost of a read on the critical path and of a dependency that can serve stale or partially written data.
+
+Whichever path is taken, the assembly has to be point-in-time correct. The window must contain only what was observable at the cut-off, which is not the same as what carries a timestamp earlier than the cut-off, because a late-arriving measurement can be written into a past slot after a forecast for that slot has already been produced. A store that overwrites in place therefore makes the training set and the serving path disagree, and the disagreement favors the training set, so the model looks better offline than it can ever be online.
+
+The assembly also decides what happens when the window is imperfect. A missing sample can be interpolated, carried forward, or left as a gap for a model that accepts one, and the choice belongs to the server rather than to the caller, because it has to match what the model saw while it was fitted. A window that is shorter than the model's context is the common case for a new key, and the honest responses are to fall back to a model that tolerates a short context or to decline, never to pad the window with zeros.
+
+### 3.2 State And Recovery
+
+Models split into two groups by what they do with the past. A window model such as a gradient boosted regressor over lag features, or a pre-trained transformer, is a pure function of the assembled context, so replicas are interchangeable and scaling is ordinary. A recursive model such as a Kalman filter, an exponential smoother, or an online learner carries a state that summarizes everything it has seen, and that state is updated by each observation in order.
+
+Serving the second group turns the server into a stateful system. Requests for one key have to reach the replica that holds that key's state, or the state has to live in an external store that is read and written on every update. The state has to be checkpointed, because rebuilding it means replaying the series from its beginning. Out-of-order arrivals have to be either rejected or handled by a state that can be rolled back to a watermark, since applying yesterday's sample after today's corrupts the state permanently rather than for one request.
+
+This is why streaming engines appear in a serving discussion at all. Keyed state, checkpointing, watermarks, and event-time ordering are exactly the machinery that a recursive model needs, and a request-response server has none of it.
+
+### 3.3 Delayed Evaluation
+
+A classifier can be scored as soon as the outcome is known, which is often within the same session. A forecast for `t+H` cannot be scored until `t+H` has passed, so the server that produced it has usually forgotten it. Nothing else in the monitoring stack will recover it either, because the input alone does not determine the answer once models are versioned and contexts are assembled dynamically.
+
+The consequence is that persisting predictions is a serving requirement rather than an analytics convenience. Each answer is written with its cut-off, its horizon step, its quantiles, the model version, and a hash or a copy of the context. A scheduled job then joins those rows against the actuals as they arrive and produces the error series per key and per horizon step. That error series is the only honest input to the two decisions the platform has to make continuously, which are whether a model should be retrained and which of several candidate models should be the one that serves.
+
+## 4. Deployment Patterns
+
+Fig 1 shows the path a value takes from the equipment or the application that produced it to the consumer of an answer. Not every deployment contains every box, and the pattern is chosen by which boxes can be dropped.
+
+Fig 1. Serving path from ingestion to consumption
+
+```text
+Producers                Ingest / Transport          Context
++-----------+            +------------------+        +---------------------+
+| sensors   |            |                  |        | online store        |  <- last L points, per key
+| equipment | ---------> | broker / stream  | -----> | key-value or a time |
+| apps      |            |                  |        | series database     |
++-----------+            +------------------+        +---------------------+
+                                  |                           |
+                                  |                           v
+                                  |                  +---------------------+
+                                  |                  | inference server    |
+                                  +----------------> | - context assembly  |
+                                   (push path)       | - batching          |
+                                                     | - model resolution  |
+                                                     +---------------------+
+                                                          |          |
+                                     model registry <-----+          v
+                                     (versions,               +---------------------+
+                                      per-key routing)        | prediction store    |  <- scored later
+                                                              +---------------------+
+                                                                       |
+                                                                       v
+                                                              dashboards, alarms,
+                                                              control actions
+```
+
+Table 3. Deployment patterns and what each one fits
+
+| Pattern | Description |
+|---------|-------------|
+| Scheduled batch | A job forecasts every key on a fixed cadence and writes the horizon into a table that consumers read, which is the cheapest pattern and the right one whenever the consumer reads far less often than the model could run. |
+| Online request-response | An endpoint answers one key at a time inside a latency budget, which is required when the horizon depends on a parameter supplied by the caller, such as a proposed setpoint or a what-if quantity. |
+| Streaming push | The engine holds keyed state, updates it on each event, and emits a forecast or an anomaly flag without being asked, which is the only pattern that keeps recursive models correct at high event rates. |
+| Edge or on-premises | A compiled model runs next to the source, on the tool controller or a nearby host, which is chosen when the round trip to a data center exceeds the control loop or when the raw trace may not leave the site. |
+
+## 5. Key Solutions and Platforms
+
+### 5.1 General Purpose Model Servers
+
+These serve any model behind an HTTP or gRPC endpoint and know nothing about time. They supply batching, versioning, and autoscaling, and leave context assembly to the caller or to a wrapper written around them.
+
+Table 4. General purpose model servers
+
+| Platform | Description |
+|----------|-------------|
+| NVIDIA Triton Inference Server | It serves several framework runtimes in one process with dynamic batching and model ensembles, and its sequence batching routes requests that carry the same correlation identifier to the same model instance, which is the one feature in this class that directly supports a recursive model. |
+| KServe | It is the Cloud Native Computing Foundation (CNCF) standard for Kubernetes serving, defining an InferenceService resource with Knative autoscaling and scale-to-zero, and it can front another runtime rather than replacing it. |
+| BentoML | It packages Python inference code and its dependencies into a container with adaptive batching, which suits classical forecasting code that is an ordinary Python object rather than a tensor graph. |
+| Ray Serve | It composes several models into one deployment graph and multiplexes many models across a shared pool of replicas, which matches the per-key model resolution that a large series population produces. |
+| MLflow model serving | It wraps a model as a `pyfunc` and serves it, which is the usual path for statistical models whose inference is a library call rather than a forward pass. |
+| Seldon Core | It deploys models on Kubernetes through a runtime that also exposes an inference protocol compatible with the KServe one. |
+| TensorFlow Serving | It remains a stable choice for saved TensorFlow graphs and offers little for anything else. |
+| TorchServe | It is under limited maintenance with no planned updates, bug fixes, or security patches, so it should not be chosen for a new deployment. |
+
+### 5.2 Time Series Foundation Models
+
+A pre-trained model that forecasts an unseen series without being fitted to it changes what the server has to hold, because one checkpoint replaces a population of per-key models. The zero-shot route is production-viable as of 2026, and the practical differences between the families are the shape of the input they accept and the cost of a forward pass.
+
+Table 5. Pre-trained time series models and how they are served
+
+| Model | Description |
+|-------|-------------|
+| TimeGPT (Nixtla) | It is offered as a hosted REST endpoint with an API key, and also as a self-hosted container or Python wheel for sites that cannot send data out, and it covers anomaly detection in addition to forecasting. |
+| Chronos-2 (Amazon) | It is an open-weight encoder-only model of about 120M parameters that handles univariate, multivariate, and covariate-informed inputs in one architecture and emits multi-step quantile forecasts in a single pass, which removes the sampling loop that made earlier Chronos versions expensive to serve. |
+| TimesFM (Google) | It is an open-weight decoder-only model whose 2.x releases extend the context length, and it is the family that has been embedded into a warehouse rather than only into a server. |
+| Moirai (Salesforce) | It is an open-weight patch-based encoder built for any number of variates, which fits sensor data whose channel count differs from one deployment to the next. |
+| Granite TTM (IBM) | It is a deliberately tiny model, on the order of a million parameters, so it can be served on CPU and embedded inside a stream processor instead of behind an accelerator. |
+| Toto (Datadog) | It is trained for observability metrics and released as a family of sizes with quantile outputs, which targets the high-cardinality monitoring case rather than the business forecasting one. |
+
+Published leaderboards move between releases, so a benchmark rank is a reason to shortlist a model rather than to adopt one. The evaluation that decides is the one run on the target series, against the naive baseline that the horizon and the frequency imply.
+
+### 5.3 Forecasting Frameworks
+
+The frameworks below produce the models that the servers in Table 4 carry, and several of them also expose a batch inference entry point that is enough on its own for the scheduled pattern.
+
+Table 6. Frameworks that supply models and batch inference
+
+| Framework | Description |
+|-----------|-------------|
+| AutoGluon-TimeSeries | It fits and ensembles statistical models, gradient boosted trees, deep models, and pre-trained checkpoints under one interface, and returns quantiles by default. |
+| Nixtla `statsforecast`, `mlforecast`, `neuralforecast` | They cover the classical, the feature-based, and the neural routes with a common data contract, and they are built to fit and predict a large series population in one call. |
+| GluonTS | It provides probabilistic model implementations and the evaluation harness that goes with them. |
+| Darts | It presents statistical and deep models behind one API with backtesting utilities. |
+| sktime | It supplies a scikit-learn compatible interface for forecasting and classification pipelines over series. |
+
+### 5.4 Streaming Engines And Online Stores
+
+This layer answers the state and the context requirements of section 3, and in the push pattern it is the serving layer rather than a dependency of one.
+
+Table 7. Streaming and storage components
+
+| Component | Description |
+|-----------|-------------|
+| Apache Kafka | It is the transport that decouples producers from the server and lets the same events feed the online path and the offline store, and it is also where predictions are published for downstream consumers. |
+| Apache Flink | It holds keyed state with checkpointing and event-time watermarks, and it can either call a remote model or run a small one inline. Confluent has moved built-in forecasting and anomaly detection into this layer using time series models including Granite and TimesFM. |
+| Spark Structured Streaming | It applies the same batch code to a stream in micro-batches, which suits minute-scale cadences rather than millisecond ones. |
+| Online store (Redis, DynamoDB, and equivalents) | It serves the last `L` points and the static attributes of a key within a millisecond budget, which is the read that section 3.1 puts on the critical path. |
+| Feature store (Feast, Tecton) | It defines a feature once and materializes it into both an offline table and an online store, which is the standard mechanism for keeping the training window and the serving window identical. |
+| Time series database (InfluxDB, TimescaleDB, ClickHouse, Prometheus) | It stores the history that backfills and backtests read, and its downsampling and retention rules decide what a long context can still contain. |
+
+### 5.5 Managed And Warehouse-Native Services
+
+Table 8. Managed services and in-database forecasting
+
+| Service | Description |
+|---------|-------------|
+| Amazon SageMaker AI | It offers real-time, serverless, asynchronous, and batch transform endpoints for a model that the user brings, and its AutoML path covers time series directly. Amazon Forecast, the earlier dedicated service, has been closed to new customers since 2024-07-29, so new work starts on SageMaker instead. |
+| Google BigQuery ML | Its `AI.FORECAST` function forecasts directly in SQL against a built-in TimesFM model with `HORIZON` and `CONTEXT_WINDOW` as arguments, which removes the server entirely for the scheduled pattern when the data already lives in the warehouse. |
+| Vertex AI, Azure Machine Learning, Databricks | They provide managed endpoints, model registries, and monitoring around a model the user trains, and the time-series-specific work in section 3 still has to be built on top. |
+
+### 5.6 Edge Runtimes
+
+When the answer has to be produced next to the source, the model is exported to a portable format and executed by a small runtime rather than by a server. ONNX Runtime, OpenVINO, and TensorFlow Lite fill that role, and the export step is what limits model choice, since a model whose inference is a Python control flow rather than a graph does not survive it. The operational cost moves from scaling to distribution, because every host now carries a model version that has to be rolled forward and rolled back.
+
+## 6. Selection
+
+Table 9. Constraint and the choice it forces
+
+| Constraint | Choice |
+|------------|--------|
+| Consumers read forecasts far less often than the data updates. | Run the scheduled batch pattern and write a table, and add an endpoint only when a caller needs an answer that depends on its own input. |
+| The model is recursive and events arrive continuously. | Put the model in a streaming engine with keyed state rather than behind a request-response endpoint. |
+| The series population is large and each key has little history. | Serve one pre-trained or global model for all keys, since per-key models cannot be fitted or maintained at that count. |
+| Raw data may not leave the site. | Take the self-hosted or open-weight route, which rules out a hosted forecasting API regardless of its accuracy. |
+| The loop that consumes the answer is faster than a network round trip. | Export the model and run it at the edge, and accept the narrower model choice that the export imposes. |
+| The data is already in a warehouse and the cadence is daily. | Use the in-database forecasting function before building anything. |
+
+## 7. Operational Pitfalls
+
+The failures below are the ones that recur, and each is a capability from section 3 that was left to the caller.
+
+- A covariate that is not known in advance is fed as a future covariate, so the backtest is excellent and the live forecast is not. Only a value that is decided rather than observed, such as a calendar field or a planned setpoint, belongs in that slot.
+- The serving window is built by a different code path than the training window, and the two disagree about resampling, gaps, or timezone. The disagreement is invisible in both test suites, because each path is self-consistent.
+- A late-arriving sample overwrites a slot after a forecast for that slot was issued, and the stored prediction is then scored against a history that no longer matches the one it was produced from.
+- A new key with a short history is padded to the model's context length, and the model reads the padding as a real regime.
+- The unit or the scaling of a channel changes upstream, and nothing rejects it because the value stays inside the range the schema allows.
+- Retraining is triggered on a residual window shorter than the horizon, so the trigger fires on forecasts that have not yet been fully scored.
+
+## References
+
+<a id="ref-1"></a>
+[1] NVIDIA. [Triton Inference Server documentation](https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/index.html). NVIDIA Corporation.
+
+<a id="ref-2"></a>
+[2] KServe authors. [KServe documentation](https://kserve.github.io/website/). Cloud Native Computing Foundation.
+
+<a id="ref-3"></a>
+[3] PyTorch. [TorchServe: notice of limited maintenance](https://docs.pytorch.org/serve/). The Linux Foundation.
+
+<a id="ref-4"></a>
+[4] Nixtla. [TimeGPT documentation](https://www.nixtla.io/). Nixtla.
+
+<a id="ref-5"></a>
+[5] Amazon Science. [Introducing Chronos-2: from univariate to universal forecasting](https://www.amazon.science/blog/introducing-chronos-2-from-univariate-to-universal-forecasting). Amazon.
+
+<a id="ref-6"></a>
+[6] Google Cloud. [The AI.FORECAST function](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-ai-forecast). Google.
+
+<a id="ref-7"></a>
+[7] Amazon Web Services. [Transition your Amazon Forecast usage to Amazon SageMaker Canvas](https://aws.amazon.com/blogs/machine-learning/transition-your-amazon-forecast-usage-to-amazon-sagemaker-canvas/). Amazon.
+
+<a id="ref-8"></a>
+[8] Confluent. [Evolving the data streaming platform for AI, scale, and control](https://www.confluent.io/blog/2026-q3-confluent-intelligence-ai-update/). Confluent.
+
+<a id="ref-9"></a>
+[9] Apache Flink. [Working with state](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/fault-tolerance/state/). The Apache Software Foundation.
+
+<a id="ref-10"></a>
+[10] AutoGluon. [AutoGluon-TimeSeries documentation](https://auto.gluon.ai/stable/tutorials/timeseries/index.html). The AutoGluon community.
+
+---
+
+## Appendix A. Terminology
+
+- Backfill: the recomputation of forecasts for past cut-offs through the serving path, used to produce a history that a newly deployed model would have generated.
+- Concept drift: a change in the relationship the model encodes, which makes a model that was correct at fit time incorrect later even though the input schema is unchanged.
+- Context: the window of past observations a model consumes to produce an answer, whose length is fixed by the model.
+- Covariate: a variable other than the target that the model reads, past when it is only observed and future known when its value at a future timestamp is decided in advance.
+- Cut-off: the timestamp that separates what the model is allowed to see from what it is asked to predict.
+- Dynamic batching: the server-side collection of independently arriving requests into one forward pass, which raises accelerator utilization at the cost of a bounded queueing delay.
+- Foundation model: a model pre-trained on many series that forecasts a series it was never fitted to, so that one checkpoint serves a whole population of keys.
+- Horizon: the number of steps ahead a forecast covers, written `H`.
+- Keyed state: state that a stream processor holds separately for each key and restores from a checkpoint after a failure.
+- Model registry: the catalog that holds model versions and the rule that decides which version serves which key.
+- Naive baseline: the reference forecast that repeats the last observation, or the observation one season earlier, against which any model has to be shown to be better.
+- Point-in-time correctness: the property that every value in an assembled context was observable at the cut-off, not merely stamped before it.
+- Quantile forecast: an answer that reports several quantiles of the predictive distribution per horizon step rather than a single value.
+- Scale-to-zero: the removal of every replica of an idle endpoint, which eliminates its cost and adds a cold start to the next request.
+- Watermark: the event-time bound a stream processor uses to decide that no earlier event will arrive, after which a window can be closed.
+- Zero-shot forecasting: producing a forecast for a series with a pre-trained model that was never fitted to that series.
