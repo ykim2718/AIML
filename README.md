@@ -1,5 +1,5 @@
 # AIML
-Rev. 28 | Created: 2026-08-07 | Updated: 2026-08-28 09:55 CDT
+Rev. 29 | Created: 2026-08-07 | Updated: 2026-08-28 13:05 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -114,7 +114,7 @@ Table 8. Applied statistics documents
 
 - The repository uses the `main` branch only. Work is committed to `main` directly, without feature branches and without pull requests.
 - Markdown conventions — the version header, heading numbers, table and figure captions, terminology — are defined by the `md_rules` skill under `.claude/skills/`, and are deliberately not restated here.
-- Documents are written in prose rather than in bullet fragments, and tables describe an item with a full sentence.
+- Prose paragraphs are written in full sentences, while list items and table cells may be shortened to noun phrases, one point to an item.
 - Some of the older documents and script comments are written in Korean. Newer documents are written in English.
 - These rules are recorded in [CLAUDE.md](CLAUDE.md) so that an assistant working in the repository follows them without being told, and the shared rules that apply across projects arrive automatically through the plugin declared in [.claude/settings.json](.claude/settings.json).
 

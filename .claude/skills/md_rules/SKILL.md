@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 27 | Created: 2026-8-1 | Updated: 2026-08-28 10:45 CDT
+Rev. 28 | Created: 2026-8-1 | Updated: 2026-08-28 13:05 CDT
 
 ## 1. Terminology
 
@@ -30,7 +30,11 @@ Rev. 27 | Created: 2026-8-1 | Updated: 2026-08-28 10:45 CDT
 
 ## 4. Body Text
 
-+ 본문은 명사형 종결 대신 완전한 문장으로 작성한다.
++ 줄글로 쓰는 문단은 완전한 문장으로 작성한다.
++ 목록 항목과 표의 칸은 명사형 단문으로 줄여 쓸 수 있다. 주어와 계사를 생략하고 한 항목에 한 가지만 담는다.
+    - 나쁨: `The server resolves the last L observations of the key as of the cut-off, and it refuses the request when the window is too sparse to be used.`
+    - 좋음: `Last L observations of the key, as of the cut-off. A window too sparse to use, refused.`
++ 한 문서 안에서 두 방식을 섞지 않는다. 목록과 표를 명사형으로 쓰기로 했으면 그 문서의 목록과 표는 모두 그렇게 쓴다.
 
 ## 5. Formatting
 
