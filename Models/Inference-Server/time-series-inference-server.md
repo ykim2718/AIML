@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 12 | Created: 2026-08-28 | Updated: 2026-08-28 13:45 CDT
+Rev. 13 | Created: 2026-08-28 | Updated: 2026-08-28 14:00 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -462,9 +462,9 @@ Fig 3. The model inside the server, and the operations around it
 - Nothing about time crossing into the model. Every decision about timestamps, gaps, and the cut-off already made before the forward pass, and beyond its repair.
 - The arrow leaving the model, not the answer. Shaping, stamping, and the write stand between the numbers and something anyone can score.
 
-## Appendix C. Case: What A Server Makes Possible On A Production Line
+## Appendix C. Case: What A Server Makes Possible On A Semiconductor Production Line
 
-Fault detection and classification is the case where most of the questions of Table 1 are asked of one stream at once.
+FDC (Fault detection and classification) is the case where most of the questions of Table 1 are asked of one stream at once.
 
 Table 13. Functions an inference server puts on a production line running FDC
 
