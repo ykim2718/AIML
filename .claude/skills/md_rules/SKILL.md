@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 26 | Created: 2026-8-1 | Updated: 2026-08-27 17:27 CDT
+Rev. 27 | Created: 2026-8-1 | Updated: 2026-08-28 10:45 CDT
 
 ## 1. Terminology
 
@@ -120,9 +120,10 @@ result = [x * 2 for x in range(10)]
 + 위치는 본문 마지막 꼭지 뒤, Appendix 경계를 표시하는 `---` 앞이다.
 + 항목의 bullet 은 `-` 대신 `[1]`, `[2]`, ... 를 쓴다. 본문에서 인용할 때 쓰는 번호와 목록의 표시가 같아야 서로 찾아진다.
 + `[N]` 을 bullet 자리에 쓰면 그 줄은 markdown list 가 아니라 문단이 되므로, 항목 사이에 빈 줄을 둔다. 빈 줄이 없으면 모든 항목이 한 문단으로 합쳐진다.
-+ 항목 앞에 `<a id="ref-N"></a>` 를 두어, 본문에서 `[1](#ref-1)` 로 그 항목에 바로 닿게 한다.
++ 항목 앞에 `<a id="ref-N"></a>` 를 두어, 본문에서 그 항목에 바로 닿게 한다.
++ 본문의 인용은 `[\[1\]](#ref-1)` 로 적어 화면에 `[1]` 로 보이게 한다. `[1](#ref-1)` 로 적으면 대괄호가 link 문법에 먹혀 본문에 숫자만 남고, 목록의 `[1]` 과 표시가 달라져 서로 찾아지지 않는다.
 + 서지 사항의 제목은 DOI 로 연결한다. DOI 가 없는 간행물은 발행처의 공식 page 와 ISBN 을 적는다.
-+ 
+
 ## 15. Appendix
 
 - Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
