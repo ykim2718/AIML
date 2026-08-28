@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 13 | Created: 2026-08-28 | Updated: 2026-08-28 14:00 CDT
+Rev. 14 | Created: 2026-08-28 | Updated: 2026-08-28 14:40 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -86,7 +86,7 @@ The three capabilities with no counterpart in ordinary model serving follow.
 - The defining work, done before the forward pass: a key and a time turned into the window the model was trained on.
 - Window in the payload: a stateless server, at the cost of a large payload and assembly work in every caller.
 - Window from an online store: a small payload, at the cost of a read on the critical path and a dependency that can serve stale data.
-- Only what was observable at the cut-off, which is not the same as what carries an earlier timestamp.
+- Point-in-time correctness: only what was observable at the cut-off, which is not the same as what carries an earlier timestamp.
 - A store that overwrites in place: training set and serving path in disagreement, and the disagreement flatters the training set.
 - A gap interpolated, carried forward, or left as a gap. The server's choice, since it has to match what the model saw while it was fitted.
 - A window shorter than the context: a model that tolerates it, or a refusal. Never padding with zeros.
@@ -206,7 +206,6 @@ Table 6. Feedback a caller may send back
 - An endpoint that lets one caller change the serving model changes every other caller's answers, and ends reproducibility.
 - The shape that survives: a feedback store keyed by series, timestamp, and source, plus a governed job that decides what changes.
 - Every submission carrying who sent it and which answer it refers to, since a correction becomes a label and a label may have to be withdrawn.
-- Corrections kept apart from observations, or the model learns to reproduce the adjustment made to its own output.
 - A per-call adaptation argument as a training cost billed as a serving call, needing a budget, a cache, and a quota per caller.
 
 ## 6. Key Solutions and Platforms
@@ -224,7 +223,6 @@ Table 7. General purpose model servers
 | BentoML | Python inference code packaged into a container with adaptive batching. Suits forecasting code that is an ordinary object. |
 | Ray Serve | Models composed into a graph, many multiplexed across shared replicas. Matches per-key model resolution. |
 | MLflow model serving | A model served as a `pyfunc`. The usual path for statistical models whose inference is a library call. |
-| Seldon Core | Kubernetes deployment behind an inference protocol compatible with the KServe one. |
 | TensorFlow Serving | Stable for saved TensorFlow graphs, and little else. |
 | TorchServe | Limited maintenance, with no planned updates, fixes, or security patches [\[5\]](#ref-5). Not a choice for new work. |
 
@@ -259,9 +257,7 @@ Table 9. Frameworks that supply models and batch inference
 |-----------|-------------|
 | AutoGluon-TimeSeries | Classical, machine learning, and pre-trained models searched and ensembled, targeting probabilistic forecasts [\[11\]](#ref-11). |
 | Nixtla `statsforecast`, `mlforecast`, `neuralforecast` | The classical, feature-based, and neural routes on one data contract. Built for large populations in one call. |
-| GluonTS | Probabilistic model implementations, and the evaluation harness for them. |
-| Darts | Statistical and deep models behind one API, with backtesting. |
-| sktime | A scikit-learn compatible interface for forecasting and classification over series. |
+| GluonTS, Darts, sktime | Probabilistic implementations with an evaluation harness, statistical and deep models behind one API with backtesting, and a scikit-learn compatible interface, in that order. |
 | STUMPY, tslearn | Matrix profiles and elastic distances. Retrieval and change point questions answered by shape alone. |
 
 ### 6.4 Streaming Engines And Stores
@@ -313,12 +309,9 @@ Table 12. Constraint and the choice it forces
 
 ## 8. Operational Pitfalls
 
-Each is a capability of section 3 left to the caller.
+Failures that section 3 does not already forbid, and that no test catches.
 
-- A covariate not known in advance, fed as a future covariate: an excellent backtest and a poor live forecast.
-- Serving window and training window built by different code, disagreeing about resampling, gaps, or timezone.
-- A late sample overwriting a slot after an answer for it was issued: a stored answer scored against a history it never saw.
-- A new key with a short history, padded: padding read as a regime.
+- Serving window and training window built by different code, each self-consistent, disagreeing about resampling, gaps, or timezone.
 - A channel's unit changed upstream, and nothing rejecting it because the value stays inside the schema's range.
 - Retraining triggered on a residual window shorter than the horizon, firing on answers not yet fully scored.
 
@@ -377,7 +370,6 @@ Each is a capability of section 3 left to the caller.
 - Foundation model: a model pre-trained on many series, serving a series it was never fitted to.
 - Governed job: a job outside any request, and the only thing allowed to change what the server serves.
 - Horizon: the number of steps ahead an answer covers, written `H`.
-- Idempotency: a repeated submission leaving the store as one submission would have.
 - Keyed state: state a stream processor holds per key and restores from a checkpoint.
 - Lot: the group of wafers moving through the process together.
 - Metrology: the measurement step reporting what a process produced, performed after it rather than during it.
@@ -385,7 +377,7 @@ Each is a capability of section 3 left to the caller.
 - Naive baseline: the last observation repeated, or the one a season earlier, which any model has to beat.
 - Point-in-time correctness: every value in a context observable at the cut-off, not merely stamped before it.
 - Production line: the sequence of process steps and tools a lot moves through, and the scope one FDC deployment serves.
-- Quantile forecast: several quantiles of the predictive distribution per horizon step, rather than one value.
+- Quantiles: several points of the predictive distribution per horizon step, rather than one value.
 - Recipe and step: the program a tool executes for a product, and one segment of that program.
 - Remaining useful life: the time or number of runs before a component crosses a limit.
 - Retrieval: which past segments resemble the one in hand, answered from a segment index.
@@ -457,7 +449,7 @@ Fig 3. The model inside the server, and the operations around it
 - (2) context assembly, (3) the refusal that goes with it.
 - (5) and (6) what makes an answer scorable, (7) what delayed evaluation later reads.
 - A recursive model's state advancing at the model call itself, not at one of these operations. Section 3.2 says what the server owes that state.
-- The stores holding what the model does not. The last column of Table 1 says which of them a question adds.
+- Which of the stores a question adds: the last column of Table 1.
 - Operations (8) to (11) never inside a request, which is what the No against a model fitted on demand means.
 - Nothing about time crossing into the model. Every decision about timestamps, gaps, and the cut-off already made before the forward pass, and beyond its repair.
 - The arrow leaving the model, not the answer. Shaping, stamping, and the write stand between the numbers and something anyone can score.
@@ -466,7 +458,7 @@ Fig 3. The model inside the server, and the operations around it
 
 FDC (Fault detection and classification) is the case where most of the questions of Table 1 are asked of one stream at once.
 
-Table 13. Functions an inference server puts on a production line running FDC
+Table 13. Functions an inference server puts on a semiconductor production line
 
 | Class | Function | Description |
 |-------|----------|-------------|
