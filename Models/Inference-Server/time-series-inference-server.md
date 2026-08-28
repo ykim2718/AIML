@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 11 | Created: 2026-08-28 | Updated: 2026-08-28 13:20 CDT
+Rev. 12 | Created: 2026-08-28 | Updated: 2026-08-28 13:45 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -384,6 +384,7 @@ Each is a capability of section 3 left to the caller.
 - Model registry: the catalog of versions, and the rule deciding which version serves which key.
 - Naive baseline: the last observation repeated, or the one a season earlier, which any model has to beat.
 - Point-in-time correctness: every value in a context observable at the cut-off, not merely stamped before it.
+- Production line: the sequence of process steps and tools a lot moves through, and the scope one FDC deployment serves.
 - Quantile forecast: several quantiles of the predictive distribution per horizon step, rather than one value.
 - Recipe and step: the program a tool executes for a product, and one segment of that program.
 - Remaining useful life: the time or number of runs before a component crosses a limit.
@@ -461,11 +462,11 @@ Fig 3. The model inside the server, and the operations around it
 - Nothing about time crossing into the model. Every decision about timestamps, gaps, and the cut-off already made before the forward pass, and beyond its repair.
 - The arrow leaving the model, not the answer. Shaping, stamping, and the write stand between the numbers and something anyone can score.
 
-## Appendix C. Case: What A Server Makes Possible On A Line
+## Appendix C. Case: What A Server Makes Possible On A Production Line
 
 Fault detection and classification is the case where most of the questions of Table 1 are asked of one stream at once.
 
-Table 13. Functions an inference server puts on an FDC line
+Table 13. Functions an inference server puts on a production line running FDC
 
 | Class | Function | Description |
 |-------|----------|-------------|
