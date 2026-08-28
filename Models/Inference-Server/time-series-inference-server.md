@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 4 | Created: 2026-08-28 | Updated: 2026-08-28 08:25 CDT
+Rev. 5 | Created: 2026-08-28 | Updated: 2026-08-28 09:05 CDT
 
 A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do, what a caller may ask of it, and which products already do that work.
 
@@ -78,7 +78,7 @@ Models split into two groups by what they do with the past. A window model such 
 
 Serving the second group turns the server into a stateful system. Requests for one key have to reach the replica that holds that key's state, or the state has to live in an external store that is read and written on every update. The state has to be checkpointed, because rebuilding it means replaying the series from its beginning. Out-of-order arrivals have to be either rejected or handled by a state that can be rolled back to a watermark, since applying yesterday's sample after today's corrupts the state permanently rather than for one request.
 
-This is why streaming engines appear in a serving discussion at all. Keyed state, checkpointing, watermarks, and event-time ordering are exactly the machinery that a recursive model needs [1](#ref-1), and a request-response server has none of it.
+This is why streaming engines appear in a serving discussion at all. Keyed state that survives a failure [1](#ref-1), together with watermarks and event-time ordering, is exactly the machinery a recursive model needs, and a request-response server has none of it.
 
 ### 3.3 Delayed Evaluation
 
@@ -161,7 +161,7 @@ Table 5. Options a caller may set on a request
 | Context length | The caller may shorten the window to make the answer follow a recent regime, and the server ignores or truncates anything beyond the length the model was trained on. |
 | Covariate path | The caller supplies future values of the known covariates, which is how a what-if is asked, and the server echoes that path back with the answer so the two cannot be separated later. |
 | Model version | The caller pins a version to reproduce an earlier answer or to take part in a comparison, and omits it to get whatever the registry currently routes to that key. |
-| Adaptation depth | Some hosted models accept fine-tuning arguments on the call itself, as TimeGPT does with `finetune_steps`, `finetune_depth`, and `finetune_loss` [2](#ref-2), which trades latency and cost for a closer fit to the caller's own series. |
+| Adaptation depth | Some hosted models accept fine-tuning arguments on the call itself, as TimeGPT does [2](#ref-2), which trades latency and cost for a closer fit to the caller's own series. |
 | Fallback policy | The caller states what it prefers when the context is short or stale, which is to decline, to fall back to a global model, or to answer with a flag that says the answer is degraded. |
 | Level of detail | The caller asks for a point, for quantiles, for decomposed components, or for an attribution, and always for the identifiers that let the answer be scored later. |
 
@@ -196,8 +196,8 @@ Table 7. General purpose model servers
 
 | Platform | Description |
 |----------|-------------|
-| NVIDIA Triton Inference Server | It serves several framework runtimes in one process with dynamic batching and model ensembles, and its sequence batcher routes every request carrying the same correlation identifier to the same model instance [3](#ref-3), which is the one feature in this class that directly supports a recursive model. |
-| KServe | It is the Cloud Native Computing Foundation (CNCF) standard for Kubernetes serving, defining an InferenceService resource with Knative autoscaling and scale-to-zero [4](#ref-4), and it can front another runtime rather than replacing it. |
+| NVIDIA Triton Inference Server | It serves several framework runtimes in one process with dynamic batching and model ensembles, and its sequence batcher routes every request of one sequence to the same model instance [3](#ref-3), which is the one feature in this class that directly supports a recursive model. |
+| KServe | It is a Cloud Native Computing Foundation (CNCF) incubating project for Kubernetes serving, defining an InferenceService resource with request-based autoscaling and scale-to-zero [4](#ref-4), and it can front another runtime rather than replacing it. |
 | BentoML | It packages Python inference code and its dependencies into a container with adaptive batching, which suits classical forecasting code that is an ordinary Python object rather than a tensor graph. |
 | Ray Serve | It composes several models into one deployment graph and multiplexes many models across a shared pool of replicas, which matches the per-key model resolution that a large series population produces. |
 | MLflow model serving | It wraps a model as a `pyfunc` and serves it, which is the usual path for statistical models whose inference is a library call rather than a forward pass. |
@@ -215,14 +215,14 @@ Table 8. Pre-trained time series models and how they are served
 
 | Model | Description |
 |-------|-------------|
-| TimeGPT (Nixtla) | It is offered as a hosted REST endpoint with an API key, and also as a self-hosted container or Python wheel for sites that cannot send data out, and it covers anomaly detection in addition to forecasting [6](#ref-6). |
-| Chronos-2 (Amazon) | It is an open-weight encoder-only model of about 120M parameters that handles univariate, multivariate, and covariate-informed inputs in one architecture and emits multi-step quantile forecasts in a single pass [7](#ref-7), which removes the sampling loop that made earlier Chronos versions expensive to serve. |
-| TimesFM (Google) | It is an open-weight decoder-only model whose 2.5 release carries 200M parameters and a context of up to 16k points, with quantiles from an optional head [8](#ref-8), and it is the family that has been embedded into a warehouse rather than only into a server. |
-| Moirai (Salesforce) | Its 2.0 release is an open-weight decoder-only model that emits quantiles and predicts several tokens at a time, replacing the masked encoder of the 1.x line [9](#ref-9), and it is served through the `uni2ts` library rather than through an endpoint of its own. |
-| Granite TTM (IBM) | It is a deliberately tiny family whose smallest members start near a million parameters and which avoids self-attention altogether [10](#ref-10), so it can be served on CPU and embedded inside a stream processor instead of behind an accelerator. |
-| Toto (Datadog) | It is trained for observability metrics and released as a family of sizes with a quantile head and attention that alternates between time and variates [11](#ref-11), which targets the high-cardinality monitoring case rather than the business forecasting one. |
+| TimeGPT (Nixtla) | It is offered as a hosted endpoint reached with an API key, and it covers anomaly detection in addition to forecasting [2](#ref-2). Nixtla also offers a self-hosted deployment, which is what a site that cannot send data out has to ask for. |
+| Chronos-2 (Amazon) | It is an open-weight model of about 120M parameters with zero-shot support for univariate, multivariate, and covariate-informed forecasting, and it generates quantile forecasts directly [6](#ref-6) rather than by the sampling loop that made the earlier Chronos versions expensive to serve. |
+| TimesFM (Google) | It is an open-weight decoder-only model whose 2.5 release carries 200M parameters, a context of up to 16k points, and quantiles from an optional head [7](#ref-7), and it is the family that has been embedded into a warehouse rather than only into a server. |
+| Moirai (Salesforce) | Its 2.0 release is open-weight and is served through the `uni2ts` library rather than through an endpoint of its own [8](#ref-8), so the deployment carries the library and the weights instead of a vendor dependency. |
+| Granite TTM (IBM) | It is IBM's TinyTimeMixer family, published with its own library and benchmarks [9](#ref-9), and it is deliberately small enough to be embedded inside a stream processor instead of being placed behind an accelerator. |
+| Toto (Datadog) | It is trained for observability metrics and released as a family that runs from a few million parameters to a few billion, with quantile output and attention that alternates between time and variates [10](#ref-10), which targets the high-cardinality monitoring case rather than the business forecasting one. |
 
-The same checkpoints also answer the retrieval question, because the encoder that produces a forecast produces an embedding of the segment on the way, and that embedding is what a segment index stores. Serving retrieval from an open-weight encoder therefore costs one forward pass per new segment at write time and no forward pass at all at read time.
+The same checkpoints also answer the retrieval question, because a model that produces a forecast forms a representation of the segment on the way, and that representation is what a segment index stores. Serving retrieval from open weights therefore costs one forward pass per new segment at write time and none at all at read time.
 
 Published leaderboards move between releases, so a benchmark rank is a reason to shortlist a model rather than to adopt one. The evaluation that decides is the one run on the target series, against the naive baseline that the horizon and the frequency imply.
 
@@ -234,7 +234,7 @@ Table 9. Frameworks that supply models and batch inference
 
 | Framework | Description |
 |-----------|-------------|
-| AutoGluon-TimeSeries | It fits and ensembles statistical models, gradient boosted trees, deep models, and pre-trained checkpoints under one interface, and returns quantiles by default [12](#ref-12). |
+| AutoGluon-TimeSeries | It searches over classical models, machine learning models, and pre-trained ones and ensembles what wins, under a single predictor whose stated target is probabilistic forecasting [11](#ref-11). |
 | Nixtla `statsforecast`, `mlforecast`, `neuralforecast` | They cover the classical, the feature-based, and the neural routes with a common data contract, and they are built to fit and predict a large series population in one call. |
 | GluonTS | It provides probabilistic model implementations and the evaluation harness that goes with them. |
 | Darts | It presents statistical and deep models behind one API with backtesting utilities. |
@@ -250,7 +250,7 @@ Table 10. Streaming and storage components
 | Component | Description |
 |-----------|-------------|
 | Apache Kafka | It is the transport that decouples producers from the server and lets the same events feed the online path and the offline store, and it is also where predictions are published for downstream consumers. |
-| Apache Flink | It holds keyed state with checkpointing and event-time watermarks, and it can either call a remote model or run a small one inline. Confluent has moved built-in forecasting and anomaly detection into this layer using time series models including Granite and TimesFM [13](#ref-13). |
+| Apache Flink | It holds keyed state with checkpointing and event-time watermarks, and it can either call a remote model or run a small one inline, which is why a recursive model belongs here rather than behind an endpoint. |
 | Spark Structured Streaming | It applies the same batch code to a stream in micro-batches, which suits minute-scale cadences rather than millisecond ones. |
 | Online store (Redis, DynamoDB, and equivalents) | It serves the last `L` points and the static attributes of a key within a millisecond budget, which is the read that section 3.1 puts on the critical path. |
 | Feature store (Feast, Tecton) | It defines a feature once and materializes it into both an offline table and an online store, which is the standard mechanism for keeping the training window and the serving window identical. |
@@ -263,8 +263,8 @@ Table 11. Managed services and in-database forecasting
 
 | Service | Description |
 |---------|-------------|
-| Amazon SageMaker AI | It offers real-time, serverless, asynchronous, and batch transform endpoints for a model that the user brings, and its AutoML path covers time series directly. Amazon Forecast, the earlier dedicated service, has been closed to new customers since 2024-07-29 [14](#ref-14), so new work starts on SageMaker instead. |
-| Google BigQuery ML | Its `AI.FORECAST` function forecasts directly in SQL against a built-in TimesFM model with `HORIZON` and `CONTEXT_WINDOW` as arguments [15](#ref-15), which removes the server entirely for the scheduled pattern when the data already lives in the warehouse. |
+| Amazon SageMaker AI | It offers real-time, serverless, asynchronous, and batch transform endpoints for a model that the user brings, and its AutoML path covers time series directly. Amazon Forecast, the earlier dedicated service, has been closed to new customers since 2024-07-29, so new work starts on SageMaker instead. |
+| Google BigQuery ML | Its `AI.FORECAST` function forecasts directly in SQL against a built-in TimesFM model, taking the horizon and the context window as arguments, which removes the server entirely for the scheduled pattern when the data already lives in the warehouse. |
 | Vertex AI, Azure Machine Learning, Databricks | They provide managed endpoints, model registries, and monitoring around a model the user trains, and the time-series-specific work in section 3 still has to be built on top. |
 
 ### 6.6 Edge Runtimes
@@ -300,49 +300,37 @@ The failures below are the ones that recur, and each is a capability from sectio
 ## References
 
 <a id="ref-1"></a>
-[1] Apache Flink. [Working with state](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/fault-tolerance/state/). The Apache Software Foundation.
+[1] Apache Flink. [Working with state](https://github.com/apache/flink/blob/master/docs/content/docs/dev/datastream/fault-tolerance/state.md). The Apache Software Foundation.
 
 <a id="ref-2"></a>
-[2] Nixtla. [Fine-tuning](https://nixtlaverse.nixtla.io/nixtla/docs/capabilities/forecast/finetuning.html). Nixtla.
+[2] Nixtla. [TimeGPT](https://github.com/Nixtla/nixtla). Nixtla.
 
 <a id="ref-3"></a>
-[3] NVIDIA. [Batchers](https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/batcher.html). NVIDIA Corporation.
+[3] NVIDIA. [Batchers](https://github.com/triton-inference-server/server/blob/main/docs/user_guide/batcher.md). NVIDIA Corporation.
 
 <a id="ref-4"></a>
-[4] KServe authors. [KServe documentation](https://kserve.github.io/website/). Cloud Native Computing Foundation.
+[4] KServe authors. [KServe](https://github.com/kserve/kserve). Cloud Native Computing Foundation.
 
 <a id="ref-5"></a>
-[5] PyTorch. [Notice: limited maintenance](https://docs.pytorch.org/serve/). The Linux Foundation.
+[5] PyTorch. [TorchServe](https://github.com/pytorch/serve). The Linux Foundation.
 
 <a id="ref-6"></a>
-[6] Nixtla. [TimeGPT](https://www.nixtla.io/). Nixtla.
+[6] Amazon Science. [Chronos: pretrained models for time series forecasting](https://github.com/amazon-science/chronos-forecasting). Amazon.
 
 <a id="ref-7"></a>
-[7] Amazon Science. [Introducing Chronos-2: from univariate to universal forecasting](https://www.amazon.science/blog/introducing-chronos-2-from-univariate-to-universal-forecasting). Amazon.
+[7] Google Research. [TimesFM](https://github.com/google-research/timesfm). Google.
 
 <a id="ref-8"></a>
-[8] Google Research. [TimesFM](https://github.com/google-research/timesfm). Google.
+[8] Salesforce AI Research. [uni2ts: unified training of universal time series forecasting transformers](https://github.com/SalesforceAIResearch/uni2ts). Salesforce.
 
 <a id="ref-9"></a>
-[9] Salesforce AI Research. [uni2ts: unified training of universal time series forecasting transformers](https://github.com/SalesforceAIResearch/uni2ts). Salesforce.
+[9] IBM Granite. [granite-tsfm](https://github.com/ibm-granite/granite-tsfm). IBM.
 
 <a id="ref-10"></a>
-[10] IBM Granite. [granite-timeseries-ttm-r3](https://huggingface.co/ibm-granite/granite-timeseries-ttm-r3). IBM.
+[10] Datadog. [Toto: time-series-optimized transformer for observability](https://github.com/DataDog/toto). Datadog.
 
 <a id="ref-11"></a>
-[11] Datadog. [Toto: time-series-optimized transformer for observability](https://github.com/DataDog/toto). Datadog.
-
-<a id="ref-12"></a>
-[12] AutoGluon. [AutoGluon-TimeSeries documentation](https://auto.gluon.ai/stable/tutorials/timeseries/index.html). The AutoGluon community.
-
-<a id="ref-13"></a>
-[13] Confluent. [Evolving the data streaming platform for AI, scale, and control](https://www.confluent.io/blog/2026-q3-confluent-intelligence-ai-update/). Confluent.
-
-<a id="ref-14"></a>
-[14] Amazon Web Services. [Transition your Amazon Forecast usage to Amazon SageMaker Canvas](https://aws.amazon.com/blogs/machine-learning/transition-your-amazon-forecast-usage-to-amazon-sagemaker-canvas/). Amazon.
-
-<a id="ref-15"></a>
-[15] Google Cloud. [The AI.FORECAST function](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-ai-forecast). Google.
+[11] AutoGluon. [AutoGluon](https://github.com/autogluon/autogluon). The AutoGluon community.
 
 ---
 
@@ -358,7 +346,7 @@ The failures below are the ones that recur, and each is a capability from sectio
 - Covariate: a variable other than the target that the model reads, past when it is only observed and future known when its value at a future timestamp is decided in advance.
 - Cut-off: the timestamp that separates what the model is allowed to see from what it is asked to predict.
 - Dynamic batching: the server-side collection of independently arriving requests into one forward pass, which raises accelerator utilization at the cost of a bounded queueing delay.
-- Embedding: the fixed-length vector an encoder produces for a segment, which stands in for the segment when segments are compared or indexed.
+- Embedding: the fixed-length vector a model produces for a segment, which stands in for the segment when segments are compared or indexed.
 - Fab: the factory in which wafers are processed, and the boundary that decides what data may leave and what has to be answered on site.
 - Fault detection and classification (FDC): the practice of judging, from the sensor trace of a process run, whether the equipment behaved as intended, so that a suspect run is held before more material is committed to it.
 - Feedback store: the append-only store that holds what callers send back, which is the actuals, the verdicts, the corrections, and the event marks, and which is where labels come from.
