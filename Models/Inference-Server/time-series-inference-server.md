@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 2 | Created: 2026-08-28 | Updated: 2026-08-28 02:18 CDT
+Rev. 3 | Created: 2026-08-28 | Updated: 2026-08-28 02:55 CDT
 
 A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do, what a caller may ask of it, and which products already do that work.
 
@@ -7,26 +7,28 @@ A model that has been fitted on a time series is not finished until something an
 
 The document covers the serving side only, from the moment a trained model or a pre-trained checkpoint exists to the moment an answer is consumed. Training procedures, model families, and feature construction are outside it.
 
-Forecasting is the question a serving discussion usually opens with, but it is one of several that the same context and the same model registry can answer. Table 1 lists the range, because the choice of platform in section 6 follows from what has to be held rather than from the algorithm.
+Everything that follows rests on the difference between a model and a server. A model is a fitted function. It takes an array of the shape it was trained on, returns numbers, and knows nothing about which key was asked, what time it is, or what it answered an hour ago. A server is what surrounds that function to make the numbers usable. It turns a key and a cut-off into the array the model expects, and it decides what to do when what it assembles is not good enough to answer from. It also keeps everything the model does not keep, which is the history, the per-series state, the answers already given, and whatever index or labels the question needs, and it attaches to each answer the identifiers that let the answer be scored later. A question is therefore servable when the model supplies the numbers and the server can supply that remainder, and the last column of Table 1 names the remainder for each question.
 
-Table 1. Questions asked of a series and what answering one requires
+Table 1. Questions a served series can be asked
 
-| Question | Answer | What the server holds beyond a model |
-|----------|--------|--------------------------------------|
-| Forecast | The next `H` values with their quantiles, each tied to a future timestamp. | Nothing. This is the case every platform is built for. |
-| Anomaly detection | A score for the newest point or segment, cut into a flag by a threshold that lives outside the model. | A baseline of normal behavior, which is either the model's own forecast or a fitted distribution over residuals. |
-| Retrieval | The `k` past segments most similar to the one in hand, with their distances and their identifiers. | An index over past segments, rebuilt as history grows, since no forward pass answers this. |
-| Classification | A class over a segment, such as a fault type, a regime, or a product. | A store of labeled segments, because the label does not come from the series itself. |
-| Change point detection | The timestamps at which the behavior of the series changed. | Nothing extra, but the request carries a whole segment rather than a fixed window. |
-| Imputation | Values for a gap, or for a channel that dropped out while its siblings kept reporting. | The sibling channels of the same key, so the request is multivariate even when the answer is not. |
-| Virtual metrology | An estimate, from the record available now, of a quantity that is measured later and only on a sample. | The join between that record and the measurement, which is the same delayed path that evaluation uses. |
-| Remaining useful life | The time or the number of runs until a limit is crossed. | An event history of failures and replacements, which is far scarcer than the series itself. |
-| What-if | The horizon under a covariate path that the caller proposes rather than observes. | Nothing extra, but the answer exists only for that proposal, so it cannot be precomputed. |
-| Attribution | Which channel, step, or lag moved the answer. | The explanation computed while the answer is produced and stored with it, because it cannot be recovered afterward. |
+| Question | Servable | Deliverable | What the server must add |
+|----------|----------|-------------|--------------------------|
+| Forecast | Yes | `H` rows of timestamp and value at each requested quantile, per key, carrying the cut-off and the model version. | Nothing. This is the case every platform of section 6 is built for. |
+| Anomaly detection | Yes | One row per point or segment, holding the timestamp, the score, the threshold applied, and the resulting flag. | The baseline the score is measured against, and the threshold, which is a rule the server owns rather than a part of the model. |
+| Retrieval | Yes | `k` rows of segment identifier, distance, key, and time range, ordered by distance. | An index over past segments and the job that rebuilds it, since no forward pass answers this. |
+| Classification | Yes | One row per segment, holding the class and a probability for every class. | A store of labeled segments, because the label never comes from the series itself. |
+| Change point detection | Yes | A list of timestamps, each with a score for how sharply the behavior changed there. | Nothing, but the request carries a whole segment rather than a fixed-length window. |
+| Imputation | Yes | The filled values for the gap, each marked as imputed rather than observed. | The sibling channels of the same key, so the request is multivariate even when the answer is not. |
+| Virtual metrology | Yes | One estimate with an interval per run, available before the measurement exists. | The join between the record served now and the measurement that arrives later, which is the delayed path of section 3.3. |
+| Remaining useful life | Yes | The remaining runs or hours with an interval, per component. | An event history of failures and replacements, which is far scarcer than the series itself. |
+| What-if | Yes | The forecast deliverable, plus the covariate path it is conditional on, echoed back so that the two cannot be separated. | Nothing, but the answer exists only for that proposal, so it cannot be precomputed. |
+| Attribution | Yes | A contribution per channel, lag, or step, summing to the deviation being explained. | The explanation computed while the answer is produced and stored with it, because it cannot be recovered afterward. |
+| Cause | No | An attribution is what comes back instead, and it names what moved together with the answer rather than what made it move. | Nothing supplies it. A cause is established by an intervention or a designed experiment, neither of which is a request. |
+| Fitting on demand | No | A bounded per-call adaptation is what comes back instead, as section 5.1 describes. | Nothing supplies it inside a request. A new fit changes what every other caller receives, so it belongs to a governed job. |
 
-What the third column names is what the deployment has to grow, and there are four answers. Forecast, change point detection, and what-if need a model alone. Retrieval needs an index, which adds a batch job that maintains it as history accumulates. Classification, virtual metrology, and remaining useful life need labels, which cannot be manufactured and which therefore make the feedback path of section 5 a precondition rather than an improvement. Anomaly detection, imputation, and attribution need neither, but each widens what one request carries or what one answer stores. Adding a question is never free, and the price is a store or a job rather than a model.
+The ten servable rows differ by what that last column asks for, and the difference decides the shape of the deployment rather than the choice of algorithm. Forecast, change point detection, and what-if ask for nothing, so a model and a context are the whole deployment. Retrieval asks for an index, which adds a job that maintains it as history accumulates. Classification, virtual metrology, and remaining useful life ask for labels, which cannot be manufactured and which make the feedback path of section 5 a precondition rather than an improvement. Anomaly detection, imputation, and attribution ask for neither, but each widens what one request carries or what one answer stores. The two rows answered No mark the boundary of the whole document, because a server that is asked to establish a cause or to fit a model has stopped serving and started training with nobody governing it.
 
-The capabilities of section 3 are written for all ten questions, though several are stated in forecasting terms because that is where each one bites hardest. The exposition also assumes many series rather than one. A single series can be served by a scheduled job that writes a table, and it needs none of what follows. The cost of these capabilities is paid when the count of series reaches the thousands and the answers are read by something that acts on them.
+The capabilities of section 3 are written for all ten servable questions, though several are stated in forecasting terms because that is where each one bites hardest. The exposition also assumes many series rather than one. A single series can be served by a scheduled job that writes a table, and it needs none of what follows. The cost of these capabilities is paid when the count of series reaches the thousands and the answers are read by something that acts on them.
 
 ## 2. Divergence From A Stateless Model Server
 

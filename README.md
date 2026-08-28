@@ -1,5 +1,5 @@
 # AIML
-Rev. 25 | Created: 2026-08-07 | Updated: 2026-08-28 02:20 CDT
+Rev. 26 | Created: 2026-08-07 | Updated: 2026-08-28 02:50 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -28,8 +28,7 @@ Table 2. Folders and what they hold
 | [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, the reduction of machine waveforms into fixed-width parameter rows, and the detection of outliers under `Outlier/`, one method to a subfolder. |
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
-| [Models](Models/) | It holds regression recipes, with an emphasis on step-like and piecewise responses that a single global fit handles badly. |
-| [Serving](Serving/) | It covers what happens after a model is fitted — how an answer is produced while the series keeps arriving, what a caller may ask of the server and send back to it, and which servers, pre-trained models, indexes, streaming engines, and managed services do that work. |
+| [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
 | [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, a cointegration example on daily price series, and the ceiling that bounds the classical z-score under `ZScore/`. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
 | [.claude](.claude/) | It carries the settings that make those rules load in this repository, together with the setup and verification notes behind them. |
@@ -84,13 +83,14 @@ Table 6. Automation documents
 | [.claude/README.md](.claude/README.md) | It explains the two files that wire this repository to that marketplace, the catalog and the settings that enable the plugin. |
 | [.claude/plugin-setup.md](.claude/plugin-setup.md) | It records the setup that lets a fresh container fetch the plugin from the remote on its first session, including the authentication failure that broke the earlier attempt and the fix for it. |
 
-### 3.5 Serving
+### 3.5 Models
 
-Table 7. Serving documents
+Table 7. Model documents
 
 | Document | Description |
 |----------|-------------|
-| [Serving/time-series-inference-server.md](Serving/time-series-inference-server.md) | It sets out the questions a served series is asked and what each one costs beyond a model, the capabilities a stateless model server does not supply — context assembly, per-series state, and evaluation that arrives a horizon late — and the two-way interface through which a caller sets options and sends back the actuals, verdicts, and event marks that a model is improved from. It then surveys the platforms that supply those capabilities and works fault detection and classification through them as a case. |
+| [Models/CLTS/README.md](Models/CLTS/README.md) | It classifies continual learning for time series by when the model learns, how it learns, what it preserves, and which of several candidates is the one that serves, and it works through the delayed evaluation that a horizon forces on that last decision. |
+| [Models/Inference-Server/time-series-inference-server.md](Models/Inference-Server/time-series-inference-server.md) | It separates the model from the server around it, lists the questions a served series can be asked with the deliverable and the store each one needs, sets out the capabilities a stateless model server does not supply — context assembly, per-series state, and evaluation that arrives a horizon late — and describes the two-way interface through which a caller sets options and sends back the actuals, verdicts, and event marks a model is improved from. It then surveys the platforms that supply those capabilities and works fault detection and classification through them as a case. |
 
 ### 3.6 Applied Statistics
 
