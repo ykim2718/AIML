@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 7 | Created: 2026-08-28 | Updated: 2026-08-28 10:20 CDT
+Rev. 8 | Created: 2026-08-28 | Updated: 2026-08-28 11:05 CDT
 
 A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do, what a caller may ask of it, and which products already do that work.
 
@@ -14,10 +14,10 @@ Table 1. Questions a served series can be asked
 | Question | Servable | Deliverable | What the server must add |
 |----------|----------|-------------|--------------------------|
 | Forecast | Yes | `H` rows of timestamp and value at each requested quantile, per key, carrying the cut-off and the model version. | Nothing. This is the case every platform of section 6 is built for. |
-| Anomaly detection | Yes | One row per point or segment, holding the timestamp, the score, the threshold applied, and the resulting flag. | The baseline the score is measured against, and the threshold, which is a rule the server owns rather than a part of the model. |
+| Anomaly detection | Yes | One row per point or segment, holding the timestamp, the deviation score, the threshold applied, and the resulting flag. | The baseline the deviation score is measured against, and the threshold, which is a rule the server owns rather than a part of the model. |
 | Retrieval | Yes | `k` rows of segment identifier, distance, key, and time range, ordered by distance. | A segment index and the job that rebuilds it, since no forward pass answers this. |
 | Classification | Yes | One row per segment, holding the class and a probability for every class. | Labeled segments in the feedback store, because the label never comes from the series itself. |
-| Change point detection | Yes | A list of timestamps, each with a score for how sharply the behavior changed there. | Nothing, but the request carries a whole segment rather than a fixed-length window. |
+| Change point detection | Yes | A list of timestamps, each with a measure of how sharply the behavior changed there. | Nothing, but the request carries a whole segment rather than a fixed-length window. |
 | Imputation | Yes | The filled values for the gap, each marked as imputed rather than observed. | The sibling channels of the same key, so the request is multivariate even when the answer is not. |
 | Virtual metrology | Yes | One estimate with an interval per run, available before the measurement exists. | The join between the record served now and the measurement that arrives later, which is the delayed path of section 3.3. |
 | Remaining useful life | Yes | The remaining runs or hours with an interval, per component. | An event history of failures and replacements, which is far scarcer than the series itself. |
@@ -26,7 +26,7 @@ Table 1. Questions a served series can be asked
 | Cause | No | An attribution is what comes back instead, and it names what moved together with the answer rather than what made it move. | Nothing supplies it. A cause is established by an intervention or a designed experiment, neither of which is a request. |
 | Fitting on demand | No | A bounded per-call adaptation is what comes back instead, as section 5.1 describes. | Nothing supplies it inside a request. A new fit changes what every other caller receives, so it belongs to a governed job. |
 
-The ten servable rows differ by what that last column asks for, and the difference decides the shape of the deployment rather than the choice of algorithm. Forecast, change point detection, and what-if ask for nothing, so a model and a context are the whole deployment. Retrieval asks for a segment index, which adds a job that maintains it as history accumulates. Classification, virtual metrology, and remaining useful life ask for labels, which cannot be manufactured and which make the feedback path of section 5.2 a precondition rather than an improvement. Anomaly detection asks for a baseline and for the threshold rule that cuts the score. Imputation and attribution ask for neither, but each widens what one request carries or what one answer stores. The two rows answered No mark the boundary of the whole document, because a server that is asked to establish a cause or to fit a model has stopped serving and started training with nobody governing it.
+The ten servable rows differ by what that last column asks for, and the difference decides the shape of the deployment rather than the choice of algorithm. Forecast, change point detection, and what-if ask for nothing, so a model and a context are the whole deployment. Retrieval asks for a segment index, which adds a job that maintains it as history accumulates. Classification, virtual metrology, and remaining useful life ask for labels, which cannot be manufactured and which make the feedback path of section 5.2 a precondition rather than an improvement. Anomaly detection asks for a baseline and for the threshold rule that cuts the deviation score. Imputation and attribution ask for neither, but each widens what one request carries or what one answer stores. The two rows answered No mark the boundary of the whole document, because a server that is asked to establish a cause or to fit a model has stopped serving and started training with nobody governing it.
 
 The capabilities of section 3 are written for all ten servable questions, though several are stated in forecasting terms because that is where each one bites hardest. The exposition also assumes many series rather than one. A single series can be served by a scheduled job that writes a table, and it needs none of what follows. The cost of these capabilities is paid when the count of series reaches the thousands and the answers are read by something that acts on them.
 
@@ -344,6 +344,7 @@ The failures below are the ones that recur, and each is a capability from sectio
 - Context: the window of past observations a model consumes to produce an answer, whose length is fixed by the model.
 - Covariate: a variable other than the target that the model reads, past when it is only observed and future known when its value at a future timestamp is decided in advance.
 - Cut-off: the timestamp that separates what the model is allowed to see from what it is asked to predict.
+- Deviation score: the number a model produces for how far an observation or a segment lies from what it expected, measured against a baseline and carrying no decision of its own until a threshold cuts it. To score an answer means the other thing, which is to compare it with the actual that arrived later.
 - Drift: a change in the relationship the model encodes, which makes a model that was correct at fit time incorrect later even though the input schema is unchanged.
 - Dynamic batching: the server-side collection of independently arriving requests into one forward pass, which raises accelerator utilization at the cost of a bounded queueing delay.
 - Embedding: the fixed-length vector a model produces for a segment, which stands in for the segment when segments are compared or indexed.
@@ -440,8 +441,8 @@ Table 13. Functions an inference server puts on an FDC line
 
 | Class | Function | Description |
 |-------|----------|-------------|
-| Detection | Step scoring | Every step of a finished run is scored against the behavior the model expects for that recipe and that step, and the score is published before the following run ends. |
-| Detection | Hold decision | The score is cut into a hold by a rule kept outside the model, so a critical layer can run a tight limit and a tolerant one a loose limit without either of them needing a separate model. |
+| Detection | Step deviation score | Every step of a finished run is measured against the behavior the model expects for that recipe and that step, and the resulting deviation score is published before the following run ends. |
+| Detection | Hold decision | The deviation score is cut into a hold by a rule kept outside the model, so a critical layer can run a tight limit and a tolerant one a loose limit without either of them needing a separate model. |
 | Diagnosis | Channel attribution | The alarm carries the ranked per-channel contribution that produced it, so the first place to look is named rather than searched for in the trace list. |
 | Diagnosis | Nearest run search | The step in hand is compared against the stored steps of the same recipe, and the closest past runs come back with their distances and with what was decided about them, which turns whether this has happened before into a lookup. |
 | Diagnosis | Fault classification | Where past runs carry an engineer's verdict, a flag arrives as a named class with a probability instead of as an unexplained deviation. |
@@ -450,7 +451,7 @@ Table 13. Functions an inference server puts on an FDC line
 | Planning | Setpoint evaluation | A proposed setpoint or recipe change is answered as a forecast conditional on that proposal, before it is applied, and the proposal is stored with the answer it produced. |
 | Planning | Sampling nomination | Keys are ranked by the uncertainty of the answers already given, and the metrology plan can take the top of that ranking instead of a fixed rule. |
 | Coverage | Cold-start routing | A chamber or a recipe with no history of its own is routed to a global or pre-trained model, so it is covered from its first run rather than after a campaign of data collection. |
-| Coverage | Fleet comparison | The same key structure is served for every tool and chamber, so one chamber can be scored against the population of its peers rather than only against its own past. |
+| Coverage | Fleet comparison | The same key structure is served for every tool and chamber, so one chamber can be compared with the population of its peers rather than only with its own past. |
 
 Three effects come from the set rather than from any one row. The first is that the questions share one assembly. The run is segmented once, and every function above reads that same segment, so a line that adds the fault class or the measurement estimate later is adding a consumer rather than a second pipeline. The second is that the answers become a record. Each one is stored with its context and the model version that produced it, which means the accuracy of last quarter can be computed now, a change of model can be argued from what it would have said, and a held lot can be explained after the fact. The third is that the loop closes. The verdict on a held run and the measurement that arrives days later both come back through the same path, so the model that serves next month is fitted on what this month actually decided.
 
