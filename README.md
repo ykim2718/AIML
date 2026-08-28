@@ -1,5 +1,5 @@
 # AIML
-Rev. 23 | Created: 2026-08-07 | Updated: 2026-08-28 00:48 CDT
+Rev. 24 | Created: 2026-08-07 | Updated: 2026-08-28 01:12 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -90,7 +90,7 @@ Table 7. Serving documents
 
 | Document | Description |
 |----------|-------------|
-| [Serving/time-series-inference-server.md](Serving/time-series-inference-server.md) | It sets out what a time series inference server has to do that a stateless model server does not — context assembly, per-series state, and evaluation that arrives a horizon late — and surveys the model servers, pre-trained time series models, streaming engines, and managed services that supply those capabilities. |
+| [Serving/time-series-inference-server.md](Serving/time-series-inference-server.md) | It sets out what a time series inference server has to do that a stateless model server does not — context assembly, per-series state, and evaluation that arrives a horizon late — surveys the model servers, pre-trained time series models, streaming engines, and managed services that supply those capabilities, and works through fault detection and classification as the case that binds all of them tightest. |
 
 ### 3.6 Applied Statistics
 
