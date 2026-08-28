@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 6 | Created: 2026-08-28 | Updated: 2026-08-28 09:50 CDT
+Rev. 7 | Created: 2026-08-28 | Updated: 2026-08-28 10:20 CDT
 
 A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do, what a caller may ask of it, and which products already do that work.
 
@@ -78,7 +78,7 @@ Models split into two groups by what they do with the past. A window model such 
 
 Serving the second group turns the server into a stateful system. Requests for one key have to reach the replica that holds that key's state, or the state has to live in an external store that is read and written on every update. The state has to be checkpointed, because rebuilding it means replaying the series from its beginning. Out-of-order arrivals have to be either rejected or handled by a state that can be rolled back to a watermark, since applying yesterday's sample after today's corrupts the state permanently rather than for one request.
 
-This is why streaming engines appear in a serving discussion at all. Keyed state that survives a failure [1](#ref-1), together with watermarks and event-time ordering, is exactly the machinery a recursive model needs, and a request-response server has none of it.
+This is why streaming engines appear in a serving discussion at all. Keyed state that survives a failure [\[1\]](#ref-1), together with watermarks and event-time ordering, is exactly the machinery a recursive model needs, and a request-response server has none of it.
 
 ### 3.3 Delayed Evaluation
 
@@ -161,7 +161,7 @@ Table 5. Options a caller may set on a request
 | Context length | The caller may shorten the window to make the answer follow a recent regime, and the server ignores or truncates anything beyond the length the model was trained on. |
 | Covariate path | The caller supplies future values of the known covariates, which is how a what-if is asked, and the server echoes that path back with the answer so the two cannot be separated later. |
 | Model version | The caller pins a version to reproduce an earlier answer or to take part in a comparison, and omits it to get whatever the registry currently routes to that key. |
-| Adaptation depth | Some hosted models accept fine-tuning arguments on the call itself, as TimeGPT does [2](#ref-2), which trades latency and cost for a closer fit to the caller's own series. |
+| Adaptation depth | Some hosted models accept fine-tuning arguments on the call itself, as TimeGPT does [\[2\]](#ref-2), which trades latency and cost for a closer fit to the caller's own series. |
 | Fallback policy | The caller states what it prefers when the context is short or stale, which is to decline, to fall back to a global model, or to answer with a flag that says the answer is degraded. |
 | Level of detail | The caller asks for a point, for quantiles, for decomposed components, or for an attribution, and always for the identifiers that let the answer be scored later. |
 
@@ -196,14 +196,14 @@ Table 7. General purpose model servers
 
 | Platform | Description |
 |----------|-------------|
-| NVIDIA Triton Inference Server | It serves several framework runtimes in one process with dynamic batching and model ensembles, and its sequence batcher routes every request of one sequence to the same model instance [3](#ref-3), which is the one feature in this class that directly supports a recursive model. |
-| KServe | It is a Cloud Native Computing Foundation (CNCF) incubating project for Kubernetes serving, defining an InferenceService resource with request-based autoscaling and scale-to-zero [4](#ref-4), and it can front another runtime rather than replacing it. |
+| NVIDIA Triton Inference Server | It serves several framework runtimes in one process with dynamic batching and model ensembles, and its sequence batcher routes every request of one sequence to the same model instance [\[3\]](#ref-3), which is the one feature in this class that directly supports a recursive model. |
+| KServe | It is a Cloud Native Computing Foundation (CNCF) incubating project for Kubernetes serving, defining an InferenceService resource with request-based autoscaling and scale-to-zero [\[4\]](#ref-4), and it can front another runtime rather than replacing it. |
 | BentoML | It packages Python inference code and its dependencies into a container with adaptive batching, which suits classical forecasting code that is an ordinary Python object rather than a tensor graph. |
 | Ray Serve | It composes several models into one deployment graph and multiplexes many models across a shared pool of replicas, which matches the per-key model resolution that a large series population produces. |
 | MLflow model serving | It wraps a model as a `pyfunc` and serves it, which is the usual path for statistical models whose inference is a library call rather than a forward pass. |
 | Seldon Core | It deploys models on Kubernetes through a runtime that also exposes an inference protocol compatible with the KServe one. |
 | TensorFlow Serving | It remains a stable choice for saved TensorFlow graphs and offers little for anything else. |
-| TorchServe | It is under limited maintenance with no planned updates, bug fixes, or security patches [5](#ref-5), so it should not be chosen for a new deployment. |
+| TorchServe | It is under limited maintenance with no planned updates, bug fixes, or security patches [\[5\]](#ref-5), so it should not be chosen for a new deployment. |
 
 None of them supplies the feedback path of section 5.2. What they offer toward it is payload logging, which captures requests and answers so that a store can be built behind them, and that capture is worth turning on from the first day because it cannot be reconstructed later.
 
@@ -215,12 +215,12 @@ Table 8. Pre-trained time series models and how they are served
 
 | Model | Description |
 |-------|-------------|
-| TimeGPT (Nixtla) | It is offered as a hosted endpoint reached with an API key, and it covers anomaly detection in addition to forecasting [2](#ref-2). Nixtla also offers a self-hosted deployment, which is what a site that cannot send data out has to ask for. |
-| Chronos-2 (Amazon) | It is an open-weight model of about 120M parameters with zero-shot support for univariate, multivariate, and covariate-informed forecasting, and it generates quantile forecasts directly [6](#ref-6) rather than by the sampling loop that made the earlier Chronos versions expensive to serve. |
-| TimesFM (Google) | It is an open-weight decoder-only model whose 2.5 release carries 200M parameters, a context of up to 16k points, and quantiles from an optional head [7](#ref-7), and it is the family that has been embedded into a warehouse rather than only into a server. |
-| Moirai (Salesforce) | Its 2.0 release is open-weight and is served through the `uni2ts` library rather than through an endpoint of its own [8](#ref-8), so the deployment carries the library and the weights instead of a vendor dependency. |
-| Granite TTM (IBM) | It is IBM's TinyTimeMixer family, published with its own library and benchmarks [9](#ref-9), and it is deliberately small enough to be embedded inside a stream processor instead of being placed behind an accelerator. |
-| Toto (Datadog) | It is trained for observability metrics and released as a family that runs from a few million parameters to a few billion, with quantile output and attention that alternates between time and variates [10](#ref-10), which targets the high-cardinality monitoring case rather than the business forecasting one. |
+| TimeGPT (Nixtla) | It is offered as a hosted endpoint reached with an API key, and it covers anomaly detection in addition to forecasting [\[2\]](#ref-2). Nixtla also offers a self-hosted deployment, which is what a site that cannot send data out has to ask for. |
+| Chronos-2 (Amazon) | It is an open-weight model of about 120M parameters with zero-shot support for univariate, multivariate, and covariate-informed forecasting, and it generates quantile forecasts directly [\[6\]](#ref-6) rather than by the sampling loop that made the earlier Chronos versions expensive to serve. |
+| TimesFM (Google) | It is an open-weight decoder-only model whose 2.5 release carries 200M parameters, a context of up to 16k points, and quantiles from an optional head [\[7\]](#ref-7), and it is the family that has been embedded into a warehouse rather than only into a server. |
+| Moirai (Salesforce) | Its 2.0 release is open-weight and is served through the `uni2ts` library rather than through an endpoint of its own [\[8\]](#ref-8), so the deployment carries the library and the weights instead of a vendor dependency. |
+| Granite TTM (IBM) | It is IBM's TinyTimeMixer family, published with its own library and benchmarks [\[9\]](#ref-9), and it is deliberately small enough to be embedded inside a stream processor instead of being placed behind an accelerator. |
+| Toto (Datadog) | It is trained for observability metrics and released as a family that runs from a few million parameters to a few billion, with quantile output and attention that alternates between time and variates [\[10\]](#ref-10), which targets the high-cardinality monitoring case rather than the business forecasting one. |
 
 The same checkpoints also answer the retrieval question, because a model that produces a forecast forms a representation of the segment on the way, and that representation is what a segment index stores. Serving retrieval from open weights therefore costs one forward pass per new segment at write time and none at all at read time.
 
@@ -234,7 +234,7 @@ Table 9. Frameworks that supply models and batch inference
 
 | Framework | Description |
 |-----------|-------------|
-| AutoGluon-TimeSeries | It searches over classical models, machine learning models, and pre-trained ones and ensembles what wins, under a single predictor whose stated target is probabilistic forecasting [11](#ref-11). |
+| AutoGluon-TimeSeries | It searches over classical models, machine learning models, and pre-trained ones and ensembles what wins, under a single predictor whose stated target is probabilistic forecasting [\[11\]](#ref-11). |
 | Nixtla `statsforecast`, `mlforecast`, `neuralforecast` | They cover the classical, the feature-based, and the neural routes with a common data contract, and they are built to fit and predict a large series population in one call. |
 | GluonTS | It provides probabilistic model implementations and the evaluation harness that goes with them. |
 | Darts | It presents statistical and deep models behind one API with backtesting utilities. |
@@ -434,22 +434,24 @@ Two boundaries are worth reading off the figure. The first is that nothing about
 
 ## Appendix C. Case: What A Server Makes Possible On A Line
 
-Fault detection and classification, abbreviated FDC, is the case where most of the questions of Table 1 are asked of one stream at once. Sensors on a process tool are sampled through each run, and what the line wants from them is not one answer but a set of them, asked of the same window at the same moment. A server is what makes that set available, because the window it assembles once is read by every question rather than by one, and the answers it stores become the record the line did not have before.
+Fault detection and classification, abbreviated FDC, is the case where most of the questions of Table 1 are asked of one stream at once. Sensors on a process tool are sampled through each run, and what the line wants from them is not one answer but a set of them, asked of the same window at the same moment. A server is what makes that set available, because the window it assembles once is read by all of them rather than by one, and the answers it stores become the record the line did not have before. Table 13 sets out the functions that follow, grouped by what each group is for.
 
-Table 13. What an inference server makes possible on an FDC line
+Table 13. Functions an inference server puts on an FDC line
 
-| What becomes possible | Asked as | What the server contributes |
-|-----------------------|----------|-----------------------------|
-| A suspect run is held before the next lot starts, rather than found after a week of material has gone through. | Anomaly detection | It assembles the step window and answers inside the interval between runs. |
-| The run in hand is matched against every past run of the same recipe and step, so a deviation is tied to the occasion it resembles instead of to somebody's memory of it. | Retrieval | It keeps a segment index over past runs and searches it in place of a forward pass. |
-| A flag arrives already named, as a known fault class rather than as a number over a threshold. | Classification | It turns the verdicts engineers have already given into the labeled segments the class model is fitted on. |
-| Every run carries an estimate of the measurement, not only the fraction of wafers that metrology reaches. | Virtual metrology | It joins the record served at run time to the measurement that arrives later, and produces the estimate before that measurement exists. |
-| A part is changed when its condition says so rather than when the calendar does. | Remaining useful life | It reads the event history of failures and replacements alongside the series, which no single trace contains. |
-| A proposed setpoint is tried before it is applied. | What-if | It answers conditional on a covariate path the caller supplies, and returns that path with the answer. |
-| An alarm says which channel moved it, so the engineer starts where the deviation is rather than at the top of the trace list. | Attribution | It computes the contribution while the answer is produced and stores it with the answer. |
-| The next wafer measured is the one the model is least sure about. | The measurement request of Table 6 | It reports the uncertainty of its own answers, which the sampling plan can then follow. |
-| A new chamber or a new recipe is covered from its first run. | Forecast, anomaly detection | It routes that key to a global or pre-trained model until the key has a history of its own. |
+| Class | Function | Description |
+|-------|----------|-------------|
+| Detection | Step scoring | Every step of a finished run is scored against the behavior the model expects for that recipe and that step, and the score is published before the following run ends. |
+| Detection | Hold decision | The score is cut into a hold by a rule kept outside the model, so a critical layer can run a tight limit and a tolerant one a loose limit without either of them needing a separate model. |
+| Diagnosis | Channel attribution | The alarm carries the ranked per-channel contribution that produced it, so the first place to look is named rather than searched for in the trace list. |
+| Diagnosis | Nearest run search | The step in hand is compared against the stored steps of the same recipe, and the closest past runs come back with their distances and with what was decided about them, which turns whether this has happened before into a lookup. |
+| Diagnosis | Fault classification | Where past runs carry an engineer's verdict, a flag arrives as a named class with a probability instead of as an unexplained deviation. |
+| Estimation | Virtual metrology | Every run receives an estimate, with an interval, of the quantity that metrology will measure later on a sample, so the unmeasured wafers stop being blind. |
+| Estimation | Remaining useful life | The condition of a part or a consumable is projected to the limit it will cross, in runs or in hours, from the event history the server keeps beside the traces. |
+| Planning | Setpoint evaluation | A proposed setpoint or recipe change is answered as a forecast conditional on that proposal, before it is applied, and the proposal is stored with the answer it produced. |
+| Planning | Sampling nomination | Keys are ranked by the uncertainty of the answers already given, and the metrology plan can take the top of that ranking instead of a fixed rule. |
+| Coverage | Cold-start routing | A chamber or a recipe with no history of its own is routed to a global or pre-trained model, so it is covered from its first run rather than after a campaign of data collection. |
+| Coverage | Fleet comparison | The same key structure is served for every tool and chamber, so one chamber can be scored against the population of its peers rather than only against its own past. |
 
-Three effects come from the set rather than from any one row. The first is that the questions share one assembly. The run is segmented once, and every question above reads that same segment, so a line that adds the fault class or the measurement estimate later is adding a consumer rather than a second pipeline. The second is that the answers become a record. Each one is stored with its context and the model version that produced it, which means the accuracy of last quarter can be computed now, a change of model can be argued from what it would have said, and a held lot can be explained after the fact. The third is that the loop closes. The verdict on a held run and the measurement that arrives days later both come back through the same path, so the model that serves next month is fitted on what this month actually decided.
+Three effects come from the set rather than from any one row. The first is that the questions share one assembly. The run is segmented once, and every function above reads that same segment, so a line that adds the fault class or the measurement estimate later is adding a consumer rather than a second pipeline. The second is that the answers become a record. Each one is stored with its context and the model version that produced it, which means the accuracy of last quarter can be computed now, a change of model can be argued from what it would have said, and a held lot can be explained after the fact. The third is that the loop closes. The verdict on a held run and the measurement that arrives days later both come back through the same path, so the model that serves next month is fitted on what this month actually decided.
 
-One thing has to be true for any of it, which is that the run is segmented into recipe steps on the way in, since that segment is what every question above is asked of.
+One thing has to be true for any of it, which is that the run is segmented into recipe steps on the way in, since that segment is what every function above reads.
