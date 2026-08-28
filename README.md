@@ -1,5 +1,5 @@
 # AIML
-Rev. 26 | Created: 2026-08-07 | Updated: 2026-08-28 02:50 CDT
+Rev. 27 | Created: 2026-08-07 | Updated: 2026-08-28 07:53 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -108,7 +108,7 @@ Table 8. Applied statistics documents
 4. Apply the feature engineering that suits the fixed modality, cross-sectional or sequential or wide.
 5. Fit a model, choosing a piecewise form when the response is step-like.
 6. Score it with a metric that matches the question, since agreement, correlation, and error are three different questions.
-7. Serve it, deciding first whether the answer is produced on a schedule, on request, or on each arriving event.
+7. Put the fitted model behind a server, fixing first which question is being asked of the series, what the answer to it has to contain, and what the server has to hold that the model does not.
 
 ## 5. Conventions
 
