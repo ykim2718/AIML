@@ -1,5 +1,5 @@
 # AIML
-Rev. 27 | Created: 2026-08-07 | Updated: 2026-08-28 07:53 CDT
+Rev. 28 | Created: 2026-08-07 | Updated: 2026-08-28 09:55 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -90,7 +90,7 @@ Table 7. Model documents
 | Document | Description |
 |----------|-------------|
 | [Models/CLTS/README.md](Models/CLTS/README.md) | It classifies continual learning for time series by when the model learns, how it learns, what it preserves, and which of several candidates is the one that serves, and it works through the delayed evaluation that a horizon forces on that last decision. |
-| [Models/Inference-Server/time-series-inference-server.md](Models/Inference-Server/time-series-inference-server.md) | It separates the model from the server around it, lists the questions a served series can be asked with the deliverable and the store each one needs, sets out the capabilities a stateless model server does not supply — context assembly, per-series state, and evaluation that arrives a horizon late — and describes the two-way interface through which a caller sets options and sends back the actuals, verdicts, and event marks a model is improved from. It then surveys the platforms that supply those capabilities and works fault detection and classification through them as a case. |
+| [Models/Inference-Server/time-series-inference-server.md](Models/Inference-Server/time-series-inference-server.md) | It separates the model from the server around it, lists the questions a served series can be asked with the deliverable and the store each one needs, sets out the capabilities a stateless model server does not supply — context assembly, per-series state, and evaluation that arrives a horizon late — and describes the two-way interface through which a caller sets options and sends back the actuals, verdicts, and event marks a model is improved from. It then surveys the platforms that supply those capabilities and closes on fault detection and classification, where the case is put as what a line can do once a server holds the context, the index, and the feedback. |
 
 ### 3.6 Applied Statistics
 

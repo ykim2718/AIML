@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 5 | Created: 2026-08-28 | Updated: 2026-08-28 09:05 CDT
+Rev. 6 | Created: 2026-08-28 | Updated: 2026-08-28 09:50 CDT
 
 A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do, what a caller may ask of it, and which products already do that work.
 
@@ -173,7 +173,7 @@ Table 6. Feedback a caller may send back
 
 | Feedback | Description |
 |----------|-------------|
-| Actuals | The caller submits the observed values for a cut-off that was already answered, which is the input to scoring, and the submission is keyed by series and timestamp so that a repeat cannot be counted twice. |
+| Actuals | The caller submits the observed values for a cut-off that was already answered, which is the input to scoring, and the submission is keyed by series and timestamp so that it is idempotent and a repeat cannot be counted twice. |
 | Verdict on a flag | A person marks a flag as a true or a false alarm, which is often the only label the deployment will ever receive, since nothing else says what the anomaly score should have been. |
 | Correction | The caller records the number it substituted for the served answer, kept as a series of its own rather than mixed into the observations, so that the model is never trained on its own adjusted output. |
 | Event marks | The caller reports the maintenance, the cleaning, the recipe change, or the product switch that made the series jump, which the drift detector reads as a deliberate discontinuity rather than as drift. |
@@ -341,13 +341,12 @@ The failures below are the ones that recur, and each is a capability from sectio
 - Backfill: the recomputation of forecasts for past cut-offs through the serving path, used to produce a history that a newly deployed model would have generated.
 - Chamber: the enclosure of a process tool in which one wafer or one batch is processed, and the grain at which most FDC series are keyed, since two chambers of one tool do not behave identically.
 - Change point: a timestamp at which the behavior of a series changes, separating one regime from the next.
-- Concept drift: a change in the relationship the model encodes, which makes a model that was correct at fit time incorrect later even though the input schema is unchanged.
 - Context: the window of past observations a model consumes to produce an answer, whose length is fixed by the model.
 - Covariate: a variable other than the target that the model reads, past when it is only observed and future known when its value at a future timestamp is decided in advance.
 - Cut-off: the timestamp that separates what the model is allowed to see from what it is asked to predict.
+- Drift: a change in the relationship the model encodes, which makes a model that was correct at fit time incorrect later even though the input schema is unchanged.
 - Dynamic batching: the server-side collection of independently arriving requests into one forward pass, which raises accelerator utilization at the cost of a bounded queueing delay.
 - Embedding: the fixed-length vector a model produces for a segment, which stands in for the segment when segments are compared or indexed.
-- Fab: the factory in which wafers are processed, and the boundary that decides what data may leave and what has to be answered on site.
 - Fault detection and classification (FDC): the practice of judging, from the sensor trace of a process run, whether the equipment behaved as intended, so that a suspect run is held before more material is committed to it.
 - Feedback store: the append-only store that holds what callers send back, which is the actuals, the verdicts, the corrections, and the event marks, and which is where labels come from.
 - Foundation model: a model pre-trained on many series that forecasts a series it was never fitted to, so that one checkpoint serves a whole population of keys.
@@ -359,9 +358,7 @@ The failures below are the ones that recur, and each is a capability from sectio
 - Metrology: the measurement step that reports what a process actually produced, performed after the process rather than during it.
 - Model registry: the catalog that holds model versions and the rule that decides which version serves which key.
 - Naive baseline: the reference forecast that repeats the last observation, or the observation one season earlier, against which any model has to be shown to be better.
-- Parameter row: the fixed-width record of summary values reduced from a trace, which is what a server consumes when the trace itself is too large or too restricted to ship.
 - Point-in-time correctness: the property that every value in an assembled context was observable at the cut-off, not merely stamped before it.
-- Preventive maintenance: the scheduled servicing of a tool, which resets the condition the model had learned and so marks a deliberate discontinuity in every series that tool produces.
 - Quantile forecast: an answer that reports several quantiles of the predictive distribution per horizon step rather than a single value.
 - Recipe and step: the ordered program a tool executes for a product, and one segment of that program, which together bound the window an FDC model reads.
 - Remaining useful life: the time or the number of runs a component is expected to last before it crosses a limit.
@@ -374,7 +371,7 @@ The failures below are the ones that recur, and each is a capability from sectio
 - Virtual metrology: the estimation of a quantity that metrology measures, from data available before that measurement exists.
 - Wafer: the substrate that carries the product through the process and that metrology measures.
 - Watermark: the event-time bound a stream processor uses to decide that no earlier event will arrive, after which a window can be closed.
-- Zero-shot forecasting: producing a forecast for a series with a pre-trained model that was never fitted to that series.
+- Zero-shot: answering for a series with a pre-trained model that was never fitted to that series.
 
 ## Appendix B. The Model And The Server
 
@@ -435,26 +432,24 @@ The figure separates three things the document treats apart. Operations (1) to (
 
 Two boundaries are worth reading off the figure. The first is that nothing about time crosses into the model. The model receives an array, so every decision about which timestamps belong in it, what to do about a gap, and where the cut-off was has already been made before the forward pass starts and cannot be repaired by it. The second is that the arrow leaving the model is not the answer. Between the numbers and the answer sit the shaping, the stamping, and the write, and an implementation that skips those three returns something a caller can plot but nobody can score.
 
-## Appendix C. Case: Fault Detection And Classification
+## Appendix C. Case: What A Server Makes Possible On A Line
 
-Fault detection and classification, abbreviated FDC, is the semiconductor line's own instance of the streaming push pattern, and every capability of section 3 binds tighter there than in a business forecasting deployment. Sensors on a process tool are sampled through a run, a model decides whether the run behaved as the recipe says it should, and the answer is useful only if it arrives before the next lot is processed. The case is worked through here because its constraints change which platform from section 6 can be used at all, not merely how it is configured.
+Fault detection and classification, abbreviated FDC, is the case where most of the questions of Table 1 are asked of one stream at once. Sensors on a process tool are sampled through each run, and what the line wants from them is not one answer but a set of them, asked of the same window at the same moment. A server is what makes that set available, because the window it assembles once is read by every question rather than by one, and the answers it stores become the record the line did not have before.
 
-Table 13. What the FDC case forces on each capability
+Table 13. What an inference server makes possible on an FDC line
 
-| Capability | What the case forces |
-|------------|----------------------|
-| Context assembly | The window is a recipe step rather than a count of samples, so the serving path has to segment the run before it can slice a context, and a step that ran longer or shorter than nominal still has to yield a comparable window. |
-| Series fan-out | The key is the tuple of tool, chamber, recipe, step, and sensor, which multiplies into tens of thousands of series in one fab, so model resolution has to be a lookup inside one deployment rather than a deployment per key. |
-| Cold start | A new recipe, a converted chamber, or a tool returning from maintenance has no history under its key, so serving falls back to a global or pre-trained model until enough runs accumulate. |
-| State and drift | Preventive maintenance, a chamber clean, and a part swap are deliberate discontinuities, so a recursive model's state is reset at those events and the drift detector is told they happened; otherwise every maintenance action raises an alarm of its own. |
-| Retrieval | Comparison against a reference run is the working method on the line, so the segment index that holds past segments per recipe and step is not an extension but part of the first deployment. |
-| Feedback | The engineer's verdict on a held run is the only label the deployment receives at run grain, so an FDC deployment without the write path of section 5.3 never learns anything from its own alarms. |
-| Delayed evaluation | The label from metrology returns hours or days later at lot or site grain while the answer was produced at run grain, so scoring is a grain conversion rather than a join on a timestamp. |
-| Residency and volume | The raw trace is sampled too fast to ship and often may not leave the site, so what reaches the server is the parameter row reduced from the trace, and the reduction runs upstream of the server. |
-| Latency | The budget is the interval between runs, because an answer that arrives after the next lot has started cannot hold it, and that budget rather than the model decides between an edge runtime and a remote endpoint. |
+| What becomes possible | Asked as | What the server contributes |
+|-----------------------|----------|-----------------------------|
+| A suspect run is held before the next lot starts, rather than found after a week of material has gone through. | Anomaly detection | It assembles the step window and answers inside the interval between runs. |
+| The run in hand is matched against every past run of the same recipe and step, so a deviation is tied to the occasion it resembles instead of to somebody's memory of it. | Retrieval | It keeps a segment index over past runs and searches it in place of a forward pass. |
+| A flag arrives already named, as a known fault class rather than as a number over a threshold. | Classification | It turns the verdicts engineers have already given into the labeled segments the class model is fitted on. |
+| Every run carries an estimate of the measurement, not only the fraction of wafers that metrology reaches. | Virtual metrology | It joins the record served at run time to the measurement that arrives later, and produces the estimate before that measurement exists. |
+| A part is changed when its condition says so rather than when the calendar does. | Remaining useful life | It reads the event history of failures and replacements alongside the series, which no single trace contains. |
+| A proposed setpoint is tried before it is applied. | What-if | It answers conditional on a covariate path the caller supplies, and returns that path with the answer. |
+| An alarm says which channel moved it, so the engineer starts where the deviation is rather than at the top of the trace list. | Attribution | It computes the contribution while the answer is produced and stores it with the answer. |
+| The next wafer measured is the one the model is least sure about. | The measurement request of Table 6 | It reports the uncertainty of its own answers, which the sampling plan can then follow. |
+| A new chamber or a new recipe is covered from its first run. | Forecast, anomaly detection | It routes that key to a global or pre-trained model until the key has a history of its own. |
 
-Three consequences deserve more than a table row. The first is that the window comes from the process and not from the clock. A server designed for a regularly sampled series expects a key and a timestamp and returns the last `L` points behind it, but an FDC context is the segment of one run between two step transitions, whose length varies with the recipe and with the run itself. Segmentation therefore belongs on the ingest path rather than inside the server, and the identity of the segment, which is the tool, the recipe, the step, and the run, becomes the request key. What the server receives is then a per-run object rather than a slice of a continuous stream, which is why the scheduled batch pattern survives for the slower loops such as chamber health, while the per-run decision goes to the push path.
+Three effects come from the set rather than from any one row. The first is that the questions share one assembly. The run is segmented once, and every question above reads that same segment, so a line that adds the fault class or the measurement estimate later is adding a consumer rather than a second pipeline. The second is that the answers become a record. Each one is stored with its context and the model version that produced it, which means the accuracy of last quarter can be computed now, a change of model can be argued from what it would have said, and a held lot can be explained after the fact. The third is that the loop closes. The verdict on a held run and the measurement that arrives days later both come back through the same path, so the model that serves next month is fitted on what this month actually decided.
 
-The second consequence concerns evaluation, because the scored subset is not the served population. Metrology is applied under a sampling plan, so only a fraction of runs ever acquires a label, and that fraction is chosen by a rule rather than at random. The error series computed from those labels describes the measured wafers, and a retraining trigger driven by it inherits the same bias. The honest reading is to treat the accuracy of an FDC model as an estimate over the sampled population and to keep the served population's drift under a separate unlabeled statistic, such as a shift in the residual distribution. The measurement request of Table 6 is the lever that acts on this, since letting the model nominate what to measure next is what makes the sampled population depend on where the uncertainty actually is.
-
-The third puts the threshold outside the model. Holding a lot that was fine and releasing a lot that was not are failures of very different cost, and the ratio between them changes with the product, the layer, and how full the line is. The server should therefore emit a quantile or a score and leave the cut to a rule outside the model, so that the operating point can be moved without redeploying anything and so that the same served answer can support a tight rule for one product and a loose one for another.
+One thing has to be true for any of it, which is that the run is segmented into recipe steps on the way in, since that segment is what every question above is asked of.
