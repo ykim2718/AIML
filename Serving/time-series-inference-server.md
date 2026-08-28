@@ -1,22 +1,38 @@
 # Time Series Inference Server
-Rev. 1 | Created: 2026-08-28 | Updated: 2026-08-28 01:12 CDT
+Rev. 2 | Created: 2026-08-28 | Updated: 2026-08-28 02:18 CDT
 
-A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do and which products already do it.
+A model that has been fitted on a time series is not finished until something answers questions about the series while it keeps arriving. That something is an inference server, and serving a series is not the same job as serving a table row. The request rarely carries everything the model needs, the answer is a horizon rather than a number, and the truth that would score the answer does not exist yet. This document fixes what such a server has to do, what a caller may ask of it, and which products already do that work.
 
 ## 1. Scope
 
-The document covers the serving side only, from the moment a trained model or a pre-trained checkpoint exists to the moment a forecast or an anomaly flag is consumed. Training procedures, model families, and feature construction are outside it. The two questions asked of a time series in production are treated together, because a server answers both from the same context and the same model registry.
+The document covers the serving side only, from the moment a trained model or a pre-trained checkpoint exists to the moment an answer is consumed. Training procedures, model families, and feature construction are outside it.
 
-- Forecast: given the history of a series up to now, what are the next `H` values and how uncertain are they.
-- Anomaly: given the same history, is the value that just arrived consistent with what the model expected.
+Forecasting is the question a serving discussion usually opens with, but it is one of several that the same context and the same model registry can answer. Table 1 lists the range, because the choice of platform in section 6 follows from what has to be held rather than from the algorithm.
 
-The exposition assumes many series rather than one. A single series can be served by a scheduled job that writes a table, and it needs none of what follows. The cost of the capabilities below is paid when the count of series reaches the thousands and the answers are read by something that acts on them.
+Table 1. Questions asked of a series and what answering one requires
+
+| Question | Answer | What the server holds beyond a model |
+|----------|--------|--------------------------------------|
+| Forecast | The next `H` values with their quantiles, each tied to a future timestamp. | Nothing. This is the case every platform is built for. |
+| Anomaly detection | A score for the newest point or segment, cut into a flag by a threshold that lives outside the model. | A baseline of normal behavior, which is either the model's own forecast or a fitted distribution over residuals. |
+| Retrieval | The `k` past segments most similar to the one in hand, with their distances and their identifiers. | An index over past segments, rebuilt as history grows, since no forward pass answers this. |
+| Classification | A class over a segment, such as a fault type, a regime, or a product. | A store of labeled segments, because the label does not come from the series itself. |
+| Change point detection | The timestamps at which the behavior of the series changed. | Nothing extra, but the request carries a whole segment rather than a fixed window. |
+| Imputation | Values for a gap, or for a channel that dropped out while its siblings kept reporting. | The sibling channels of the same key, so the request is multivariate even when the answer is not. |
+| Virtual metrology | An estimate, from the record available now, of a quantity that is measured later and only on a sample. | The join between that record and the measurement, which is the same delayed path that evaluation uses. |
+| Remaining useful life | The time or the number of runs until a limit is crossed. | An event history of failures and replacements, which is far scarcer than the series itself. |
+| What-if | The horizon under a covariate path that the caller proposes rather than observes. | Nothing extra, but the answer exists only for that proposal, so it cannot be precomputed. |
+| Attribution | Which channel, step, or lag moved the answer. | The explanation computed while the answer is produced and stored with it, because it cannot be recovered afterward. |
+
+What the third column names is what the deployment has to grow, and there are four answers. Forecast, change point detection, and what-if need a model alone. Retrieval needs an index, which adds a batch job that maintains it as history accumulates. Classification, virtual metrology, and remaining useful life need labels, which cannot be manufactured and which therefore make the feedback path of section 5 a precondition rather than an improvement. Anomaly detection, imputation, and attribution need neither, but each widens what one request carries or what one answer stores. Adding a question is never free, and the price is a store or a job rather than a model.
+
+The capabilities of section 3 are written for all ten questions, though several are stated in forecasting terms because that is where each one bites hardest. The exposition also assumes many series rather than one. A single series can be served by a scheduled job that writes a table, and it needs none of what follows. The cost of these capabilities is paid when the count of series reaches the thousands and the answers are read by something that acts on them.
 
 ## 2. Divergence From A Stateless Model Server
 
 A general model server treats a request as self-contained. It receives a feature vector, runs a forward pass, and returns a scalar or a class probability. Each of those assumptions breaks for a series, and the breakage is what every time-series-specific capability exists to repair.
 
-Table 1. Serving a row against serving a series
+Table 2. Serving a row against serving a series
 
 | Aspect | Stateless model server | Time series inference server |
 |--------|------------------------|------------------------------|
@@ -29,9 +45,9 @@ Table 1. Serving a row against serving a series
 
 ## 3. Core Capabilities
 
-Table 2 lists what the server owes its caller. The three capabilities that have no counterpart in ordinary model serving are then explained in their own subsections.
+Table 3 lists what the server owes its caller. The three capabilities that have no counterpart in ordinary model serving are then explained in their own subsections.
 
-Table 2. Core capabilities and the requirement each one carries
+Table 3. Core capabilities and the requirement each one carries
 
 | Capability | Requirement |
 |------------|-------------|
@@ -84,10 +100,10 @@ Producers                Ingest / Transport          Context
                                   |                           |
                                   |                           v
                                   |                  +---------------------+
-                                  |                  | inference server    |
-                                  +----------------> | - context assembly  |
-                                   (push path)       | - batching          |
-                                                     | - model resolution  |
+                                  |                  | inference server    |     +-----------------+
+                                  +----------------> | - context assembly  | <-> | segment index   |
+                                   (push path)       | - batching          |     | (retrieval)     |
+                                                     | - model resolution  |     +-----------------+
                                                      +---------------------+
                                                           |          |
                                      model registry <-----+          v
@@ -100,7 +116,7 @@ Producers                Ingest / Transport          Context
                                                               control actions
 ```
 
-Table 3. Deployment patterns and what each one fits
+Table 4. Deployment patterns and what each one fits
 
 | Pattern | Description |
 |---------|-------------|
@@ -109,13 +125,68 @@ Table 3. Deployment patterns and what each one fits
 | Streaming push | The engine holds keyed state, updates it on each event, and emits a forecast or an anomaly flag without being asked, which is the only pattern that keeps recursive models correct at high event rates. |
 | Edge or on-premises | A compiled model runs next to the source, on the tool controller or a nearby host, which is chosen when the round trip to a data center exceeds the control loop or when the raw trace may not leave the site. |
 
-## 5. Key Solutions and Platforms
+## 5. The Caller's Interface
 
-### 5.1 General Purpose Model Servers
+A server that only hands back answers is easier to build and worth less than it looks. The caller holds two things the platform cannot obtain on its own, which are the intent behind the request and the truth about the answer, and the interface exists to collect both. Fig 2 shows the two directions, and they differ in cost rather than in shape, because an option is a read and a piece of feedback is a write.
+
+Fig 2. The two directions of the interface
+
+```text
+  caller ---- request + options ----> inference server ---- answer + identifiers ----> caller
+                                          ^        |
+                                          |        v
+                                 model registry   prediction store
+                                          ^        |
+                                          |        v
+                                    retrain job <- feedback store <---- actuals, verdicts,
+                                    (governed)                          overrides, event marks
+```
+
+### 5.1 Options That Change The Answer
+
+These are set per request and change nothing about the model. A server that hides them forces every caller to accept one operating point, and the callers of a forecast rarely agree on one.
+
+Table 5. Options a caller may set on a request
+
+| Option | Description |
+|--------|-------------|
+| Horizon | The caller asks for the number of steps it can act on, and the server clamps the request to the longest horizon the model was fitted for rather than extrapolating past it. |
+| Quantile levels | The caller names the quantiles it needs, which costs nothing for a model that emits quantiles directly and costs sampling passes for one that does not. |
+| Context length | The caller may shorten the window to make the answer follow a recent regime, and the server ignores or truncates anything beyond the length the model was trained on. |
+| Covariate path | The caller supplies future values of the known covariates, which is how a what-if is asked, and the server echoes that path back with the answer so the two cannot be separated later. |
+| Model version | The caller pins a version to reproduce an earlier answer or to take part in a comparison, and omits it to get whatever the registry currently routes to that key. |
+| Adaptation depth | Some hosted models accept fine-tuning arguments on the call itself, as TimeGPT does with `finetune_steps`, `finetune_depth`, and `finetune_loss`, which trades latency and cost for a closer fit to the caller's own series. |
+| Fallback policy | The caller states what it prefers when the context is short or stale, which is to decline, to fall back to a global model, or to answer with a flag that says the answer is degraded. |
+| Level of detail | The caller asks for a point, for quantiles, for decomposed components, or for an attribution, and always for the identifiers that let the answer be scored later. |
+
+### 5.2 The Feedback Path
+
+These are submitted after the fact and are the only way the platform learns whether it was right. Classification, virtual metrology, and remaining useful life cannot be served at all without them, because the labels those questions need arrive through this path or not at all.
+
+Table 6. Feedback a caller may send back
+
+| Feedback | Description |
+|----------|-------------|
+| Actuals | The caller submits the observed values for a cut-off that was already answered, which is the input to scoring, and the submission is keyed by series and timestamp so that a repeat cannot be counted twice. |
+| Verdict on a flag | A person marks a flag as a true or a false alarm, which is often the only label the platform will ever receive, since nothing else says what the anomaly score should have been. |
+| Correction | The caller records the number it substituted for the served answer, kept as a series of its own rather than mixed into the observations, so that the model is never trained on its own adjusted output. |
+| Event marks | The caller reports the maintenance, the cleaning, the recipe change, or the product switch that made the series jump, which the drift detector reads as a deliberate discontinuity rather than as drift. |
+| Measurement request | The caller asks which keys to measure next and the server answers from the uncertainty of its own predictions, which is active learning applied to a sampling plan and is what stops the plan from being independent of what the model does not know. |
+| Retrain or promote | The caller asks that a model be refitted or that a candidate be promoted, and the request is queued for a governed job rather than executed by the endpoint. |
+
+### 5.3 Rules For The Write Path
+
+Feedback is appended, never applied in place. An endpoint that lets a caller change the serving model directly gives every caller the power to change every other caller's answers, and it ends reproducibility, because the answer to an identical request now depends on when it was asked and on who called before. The shape that survives is a feedback store keyed by series, timestamp, and source, plus a scheduled job that decides what any of it changes. Every submission carries who sent it and which answer it refers to, since a correction is a label the moment it is used for fitting, and an unattributable label cannot be withdrawn when it turns out to be wrong.
+
+Two failure modes follow the path rather than the model. The first is the closed loop, in which corrections are fed back as if they were observations, so that the model learns to reproduce the adjustment a person made to its own output and the two drift together with nothing outside to check them. Keeping the corrected series separate from the observed series is what prevents it. The second is the cost that hides in a per-call adaptation argument, which is a training cost billed as a serving call, and which lets one caller turn an endpoint into a training cluster unless the server holds a budget, a cache of what was already fitted, and a quota per caller.
+
+## 6. Key Solutions and Platforms
+
+### 6.1 General Purpose Model Servers
 
 These serve any model behind an HTTP or gRPC endpoint and know nothing about time. They supply batching, versioning, and autoscaling, and leave context assembly to the caller or to a wrapper written around them.
 
-Table 4. General purpose model servers
+Table 7. General purpose model servers
 
 | Platform | Description |
 |----------|-------------|
@@ -128,11 +199,13 @@ Table 4. General purpose model servers
 | TensorFlow Serving | It remains a stable choice for saved TensorFlow graphs and offers little for anything else. |
 | TorchServe | It is under limited maintenance with no planned updates, bug fixes, or security patches, so it should not be chosen for a new deployment. |
 
-### 5.2 Time Series Foundation Models
+None of them supplies the feedback path of section 5. What they offer toward it is payload logging, which captures requests and answers so that a store can be built behind them, and that capture is worth turning on from the first day because it cannot be reconstructed later.
+
+### 6.2 Time Series Foundation Models
 
 A pre-trained model that forecasts an unseen series without being fitted to it changes what the server has to hold, because one checkpoint replaces a population of per-key models. The zero-shot route is production-viable as of 2026, and the practical differences between the families are the shape of the input they accept and the cost of a forward pass.
 
-Table 5. Pre-trained time series models and how they are served
+Table 8. Pre-trained time series models and how they are served
 
 | Model | Description |
 |-------|-------------|
@@ -143,13 +216,15 @@ Table 5. Pre-trained time series models and how they are served
 | Granite TTM (IBM) | It is a deliberately tiny model, on the order of a million parameters, so it can be served on CPU and embedded inside a stream processor instead of behind an accelerator. |
 | Toto (Datadog) | It is trained for observability metrics and released as a family of sizes with quantile outputs, which targets the high-cardinality monitoring case rather than the business forecasting one. |
 
+The same checkpoints also answer the retrieval question, because the encoder that produces a forecast produces an embedding of the segment on the way, and that embedding is what an index stores. Serving retrieval from an open-weight encoder therefore costs one forward pass per new segment at write time and no forward pass at all at read time.
+
 Published leaderboards move between releases, so a benchmark rank is a reason to shortlist a model rather than to adopt one. The evaluation that decides is the one run on the target series, against the naive baseline that the horizon and the frequency imply.
 
-### 5.3 Forecasting Frameworks
+### 6.3 Forecasting Frameworks
 
-The frameworks below produce the models that the servers in Table 4 carry, and several of them also expose a batch inference entry point that is enough on its own for the scheduled pattern.
+The frameworks below produce the models that the servers in Table 7 carry, and several of them also expose a batch inference entry point that is enough on its own for the scheduled pattern.
 
-Table 6. Frameworks that supply models and batch inference
+Table 9. Frameworks that supply models and batch inference
 
 | Framework | Description |
 |-----------|-------------|
@@ -158,12 +233,13 @@ Table 6. Frameworks that supply models and batch inference
 | GluonTS | It provides probabilistic model implementations and the evaluation harness that goes with them. |
 | Darts | It presents statistical and deep models behind one API with backtesting utilities. |
 | sktime | It supplies a scikit-learn compatible interface for forecasting and classification pipelines over series. |
+| STUMPY, tslearn | They compute the matrix profile and the elastic distances that answer retrieval and change point questions by comparing shapes directly, without an embedding and without a fitted model. |
 
-### 5.4 Streaming Engines And Online Stores
+### 6.4 Streaming Engines And Stores
 
 This layer answers the state and the context requirements of section 3, and in the push pattern it is the serving layer rather than a dependency of one.
 
-Table 7. Streaming and storage components
+Table 10. Streaming and storage components
 
 | Component | Description |
 |-----------|-------------|
@@ -173,10 +249,11 @@ Table 7. Streaming and storage components
 | Online store (Redis, DynamoDB, and equivalents) | It serves the last `L` points and the static attributes of a key within a millisecond budget, which is the read that section 3.1 puts on the critical path. |
 | Feature store (Feast, Tecton) | It defines a feature once and materializes it into both an offline table and an online store, which is the standard mechanism for keeping the training window and the serving window identical. |
 | Time series database (InfluxDB, TimescaleDB, ClickHouse, Prometheus) | It stores the history that backfills and backtests read, and its downsampling and retention rules decide what a long context can still contain. |
+| Vector index (FAISS, pgvector, Milvus) | It holds one embedding per past segment together with the attributes a comparison has to filter on, and it answers the retrieval question in place of a model, which makes its rebuild schedule part of the serving design. |
 
-### 5.5 Managed And Warehouse-Native Services
+### 6.5 Managed And Warehouse-Native Services
 
-Table 8. Managed services and in-database forecasting
+Table 11. Managed services and in-database forecasting
 
 | Service | Description |
 |---------|-------------|
@@ -184,44 +261,24 @@ Table 8. Managed services and in-database forecasting
 | Google BigQuery ML | Its `AI.FORECAST` function forecasts directly in SQL against a built-in TimesFM model with `HORIZON` and `CONTEXT_WINDOW` as arguments, which removes the server entirely for the scheduled pattern when the data already lives in the warehouse. |
 | Vertex AI, Azure Machine Learning, Databricks | They provide managed endpoints, model registries, and monitoring around a model the user trains, and the time-series-specific work in section 3 still has to be built on top. |
 
-### 5.6 Edge Runtimes
+### 6.6 Edge Runtimes
 
 When the answer has to be produced next to the source, the model is exported to a portable format and executed by a small runtime rather than by a server. ONNX Runtime, OpenVINO, and TensorFlow Lite fill that role, and the export step is what limits model choice, since a model whose inference is a Python control flow rather than a graph does not survive it. The operational cost moves from scaling to distribution, because every host now carries a model version that has to be rolled forward and rolled back.
 
-## 6. Selection
+## 7. Selection
 
-Table 9. Constraint and the choice it forces
+Table 12. Constraint and the choice it forces
 
 | Constraint | Choice |
 |------------|--------|
 | Consumers read forecasts far less often than the data updates. | Run the scheduled batch pattern and write a table, and add an endpoint only when a caller needs an answer that depends on its own input. |
 | The model is recursive and events arrive continuously. | Put the model in a streaming engine with keyed state rather than behind a request-response endpoint. |
 | The series population is large and each key has little history. | Serve one pre-trained or global model for all keys, since per-key models cannot be fitted or maintained at that count. |
+| The question is which past segment this one resembles. | Build and schedule an index rather than a model, because no forecasting endpoint answers it and the index, not the forward pass, is what has to be maintained. |
+| The answer has to be judged by a person before it is worth anything. | Build the feedback path first, since the verdict is the only label that will ever arrive and it is lost if nothing collects it. |
 | Raw data may not leave the site. | Take the self-hosted or open-weight route, which rules out a hosted forecasting API regardless of its accuracy. |
 | The loop that consumes the answer is faster than a network round trip. | Export the model and run it at the edge, and accept the narrower model choice that the export imposes. |
 | The data is already in a warehouse and the cadence is daily. | Use the in-database forecasting function before building anything. |
-
-## 7. Case: Fault Detection And Classification
-
-Fault detection and classification, abbreviated FDC, is the semiconductor line's own instance of the streaming push pattern, and every capability of section 3 binds tighter there than in a business forecasting deployment. Sensors on a process tool are sampled through a run, a model decides whether the run behaved as the recipe says it should, and the answer is useful only if it arrives before the next lot is processed. The section is included because the constraints below change which platform from section 5 can be used at all, not merely how it is configured.
-
-Table 10. What the FDC case forces on each capability
-
-| Capability | What the case forces |
-|------------|----------------------|
-| Context assembly | The window is a recipe step rather than a count of samples, so the serving path has to segment the run before it can slice a context, and a step that ran longer or shorter than nominal still has to yield a comparable window. |
-| Series fan-out | The key is the tuple of tool, chamber, recipe, step, and sensor, which multiplies into tens of thousands of series in one fab, so model resolution has to be a lookup inside one deployment rather than a deployment per key. |
-| Cold start | A new recipe, a converted chamber, or a tool returning from maintenance has no history under its key, so serving falls back to a global or pre-trained model until enough runs accumulate. |
-| State and drift | Preventive maintenance, a chamber clean, and a part swap are deliberate discontinuities, so a recursive model's state is reset at those events and the drift detector is told they happened; otherwise every maintenance action raises an alarm of its own. |
-| Delayed evaluation | The label is metrology that returns hours or days later at lot or site grain while the answer was produced at run grain, so scoring is a grain conversion rather than a join on a timestamp. |
-| Residency and volume | The raw trace is sampled too fast to ship and often may not leave the site, so what reaches the server is the parameter row reduced from the trace, and the reduction runs upstream of the server. |
-| Latency | The budget is the interval between runs, because an answer that arrives after the next lot has started cannot hold it, and that budget rather than the model decides between an edge runtime and a remote endpoint. |
-
-Three consequences deserve more than a table row. The first is that the window comes from the process and not from the clock. A server designed for a regularly sampled series expects a key and a timestamp and returns the last `L` points behind it, but an FDC context is the segment of one run between two step transitions, whose length varies with the recipe and with the run itself. Segmentation therefore belongs on the ingest path rather than inside the server, and the identity of the segment, which is the tool, the recipe, the step, and the run, becomes the request key. What the server receives is then a per-run object rather than a slice of a continuous stream, which is why the scheduled batch pattern survives for the slower loops such as chamber health, while the per-run decision goes to the push path.
-
-The second consequence concerns evaluation, because the scored subset is not the served population. Metrology is applied under a sampling plan, so only a fraction of runs ever acquires a label, and that fraction is chosen by a rule rather than at random. The error series computed from those labels describes the measured wafers, and a retraining trigger driven by it inherits the same bias. The honest reading is to treat the accuracy of an FDC model as an estimate over the sampled population and to keep the served population's drift under a separate unlabeled statistic, such as a shift in the residual distribution.
-
-The third puts the threshold outside the model. Holding a lot that was fine and releasing a lot that was not are failures of very different cost, and the ratio between them changes with the product, the layer, and how full the line is. The server should therefore emit a quantile or a score and leave the cut to a rule outside the model, so that the operating point can be moved without redeploying anything and so that the same served answer can support a tight rule for one product and a loose one for another.
 
 ## 8. Operational Pitfalls
 
@@ -246,7 +303,7 @@ The failures below are the ones that recur, and each is a capability from sectio
 [3] PyTorch. [TorchServe: notice of limited maintenance](https://docs.pytorch.org/serve/). The Linux Foundation.
 
 <a id="ref-4"></a>
-[4] Nixtla. [TimeGPT documentation](https://www.nixtla.io/). Nixtla.
+[4] Nixtla. [Fine-tuning with TimeGPT](https://nixtlaverse.nixtla.io/nixtla/docs/capabilities/forecast/finetuning.html). Nixtla.
 
 <a id="ref-5"></a>
 [5] Amazon Science. [Introducing Chronos-2: from univariate to universal forecasting](https://www.amazon.science/blog/introducing-chronos-2-from-univariate-to-universal-forecasting). Amazon.
@@ -270,17 +327,22 @@ The failures below are the ones that recur, and each is a capability from sectio
 
 ## Appendix A. Terminology
 
+- Active learning: the practice of choosing which samples to label next by what the model is least certain about, rather than by a fixed plan.
+- Attribution: the account of which channel, step, or lag moved a particular answer, computed while that answer is produced.
 - Backfill: the recomputation of forecasts for past cut-offs through the serving path, used to produce a history that a newly deployed model would have generated.
 - Chamber: the enclosure of a process tool in which one wafer or one batch is processed, and the grain at which most FDC series are keyed, since two chambers of one tool do not behave identically.
+- Change point: a timestamp at which the behavior of a series changes, separating one regime from the next.
 - Concept drift: a change in the relationship the model encodes, which makes a model that was correct at fit time incorrect later even though the input schema is unchanged.
 - Context: the window of past observations a model consumes to produce an answer, whose length is fixed by the model.
 - Covariate: a variable other than the target that the model reads, past when it is only observed and future known when its value at a future timestamp is decided in advance.
 - Cut-off: the timestamp that separates what the model is allowed to see from what it is asked to predict.
 - Dynamic batching: the server-side collection of independently arriving requests into one forward pass, which raises accelerator utilization at the cost of a bounded queueing delay.
+- Embedding: the fixed-length vector an encoder produces for a segment, which stands in for the segment when segments are compared or indexed.
 - Fab: the factory in which wafers are processed, and the boundary that decides what data may leave and what has to be answered on site.
 - Fault detection and classification (FDC): the practice of judging, from the sensor trace of a process run, whether the equipment behaved as intended, so that a suspect run is held before more material is committed to it.
 - Foundation model: a model pre-trained on many series that forecasts a series it was never fitted to, so that one checkpoint serves a whole population of keys.
 - Horizon: the number of steps ahead a forecast covers, written `H`.
+- Idempotency: the property that submitting the same feedback twice leaves the store in the state one submission would have left it in.
 - Keyed state: state that a stream processor holds separately for each key and restores from a checkpoint after a failure.
 - Lot: the group of wafers that moves through the process together and that metrology reports against.
 - Metrology: the measurement step that reports what a process actually produced, performed after the process rather than during it.
@@ -291,9 +353,37 @@ The failures below are the ones that recur, and each is a capability from sectio
 - Preventive maintenance: the scheduled servicing of a tool, which resets the condition the model had learned and so marks a deliberate discontinuity in every series that tool produces.
 - Quantile forecast: an answer that reports several quantiles of the predictive distribution per horizon step rather than a single value.
 - Recipe and step: the ordered program a tool executes for a product, and one segment of that program, which together bound the window an FDC model reads.
+- Remaining useful life: the time or the number of runs a component is expected to last before it crosses a limit.
+- Retrieval: the question of which past segments most resemble the one in hand, answered from an index rather than from a forward pass.
 - Run: one execution of a recipe on one wafer or one batch, which is the unit an FDC answer is produced for.
 - Scale-to-zero: the removal of every replica of an idle endpoint, which eliminates its cost and adds a cold start to the next request.
+- Segment: a bounded stretch of one series, delimited either by a fixed length or by an event such as a step transition.
 - Trace: the sampled record of one sensor through one run, which is the raw form the parameter row is reduced from.
+- Virtual metrology: the estimation of a quantity that metrology measures, from data available before that measurement exists.
 - Wafer: the substrate that carries the product through the process and that metrology measures.
 - Watermark: the event-time bound a stream processor uses to decide that no earlier event will arrive, after which a window can be closed.
 - Zero-shot forecasting: producing a forecast for a series with a pre-trained model that was never fitted to that series.
+
+## Appendix B. Case: Fault Detection And Classification
+
+Fault detection and classification, abbreviated FDC, is the semiconductor line's own instance of the streaming push pattern, and every capability of section 3 binds tighter there than in a business forecasting deployment. Sensors on a process tool are sampled through a run, a model decides whether the run behaved as the recipe says it should, and the answer is useful only if it arrives before the next lot is processed. The case is worked through here because its constraints change which platform from section 6 can be used at all, not merely how it is configured.
+
+Table 13. What the FDC case forces on each capability
+
+| Capability | What the case forces |
+|------------|----------------------|
+| Context assembly | The window is a recipe step rather than a count of samples, so the serving path has to segment the run before it can slice a context, and a step that ran longer or shorter than nominal still has to yield a comparable window. |
+| Series fan-out | The key is the tuple of tool, chamber, recipe, step, and sensor, which multiplies into tens of thousands of series in one fab, so model resolution has to be a lookup inside one deployment rather than a deployment per key. |
+| Cold start | A new recipe, a converted chamber, or a tool returning from maintenance has no history under its key, so serving falls back to a global or pre-trained model until enough runs accumulate. |
+| State and drift | Preventive maintenance, a chamber clean, and a part swap are deliberate discontinuities, so a recursive model's state is reset at those events and the drift detector is told they happened; otherwise every maintenance action raises an alarm of its own. |
+| Retrieval | Comparison against a reference run is the working method of the floor, so the index that holds past segments per recipe and step is not an extension but part of the first deployment. |
+| Feedback | The engineer's verdict on a held run is the only label the platform receives at run grain, so an FDC deployment without the write path of section 5 never learns anything from its own alarms. |
+| Delayed evaluation | The label from metrology returns hours or days later at lot or site grain while the answer was produced at run grain, so scoring is a grain conversion rather than a join on a timestamp. |
+| Residency and volume | The raw trace is sampled too fast to ship and often may not leave the site, so what reaches the server is the parameter row reduced from the trace, and the reduction runs upstream of the server. |
+| Latency | The budget is the interval between runs, because an answer that arrives after the next lot has started cannot hold it, and that budget rather than the model decides between an edge runtime and a remote endpoint. |
+
+Three consequences deserve more than a table row. The first is that the window comes from the process and not from the clock. A server designed for a regularly sampled series expects a key and a timestamp and returns the last `L` points behind it, but an FDC context is the segment of one run between two step transitions, whose length varies with the recipe and with the run itself. Segmentation therefore belongs on the ingest path rather than inside the server, and the identity of the segment, which is the tool, the recipe, the step, and the run, becomes the request key. What the server receives is then a per-run object rather than a slice of a continuous stream, which is why the scheduled batch pattern survives for the slower loops such as chamber health, while the per-run decision goes to the push path.
+
+The second consequence concerns evaluation, because the scored subset is not the served population. Metrology is applied under a sampling plan, so only a fraction of runs ever acquires a label, and that fraction is chosen by a rule rather than at random. The error series computed from those labels describes the measured wafers, and a retraining trigger driven by it inherits the same bias. The honest reading is to treat the accuracy of an FDC model as an estimate over the sampled population and to keep the served population's drift under a separate unlabeled statistic, such as a shift in the residual distribution. The measurement request of Table 6 is the lever that acts on this, since letting the model nominate what to measure next is what makes the sampled population depend on where the uncertainty actually is.
+
+The third puts the threshold outside the model. Holding a lot that was fine and releasing a lot that was not are failures of very different cost, and the ratio between them changes with the product, the layer, and how full the line is. The server should therefore emit a quantile or a score and leave the cut to a rule outside the model, so that the operating point can be moved without redeploying anything and so that the same served answer can support a tight rule for one product and a loose one for another.
