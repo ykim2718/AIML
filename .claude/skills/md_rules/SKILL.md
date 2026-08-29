@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 31 | Created: 2026-8-1 | Updated: 2026-08-29 00:15 CDT
+Rev. 32 | Created: 2026-8-1 | Updated: 2026-08-29 01:31 CDT
 
 ## 1. Terminology
 
@@ -107,6 +107,9 @@ result = [x * 2 for x in range(10)]
 + 모든 figure 에는 Fig 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
 + 제목은 그림 **아래**에 둔다. 그림은 한눈에 들어오므로, 제목은 본 것을 확인해 주는 자리에 있어야 한다.
 + 복수 panel figure 에는 전부 panel labels를 (a), (b), (c) ... 처럼 붙일 것. 단 Matrix chart는 예외로 panel labels를 붙이지 말 것.
++ Panel label 은 그 panel 의 chart **아래**, 축 label 보다 더 아래에 둔다. Chart 위의 title 자리에 두지 않는다. Figure 제목을 그림 아래에 두는 것과 같은 이유이며, 위에 두면 그림보다 글이 먼저 읽힌다.
+    - Label 은 그 panel 의 가로 중앙에 맞추고, 한 figure 안의 label 은 모두 같은 높이에 둔다. Panel 마다 chart 의 아래 끝이 다르므로 chart 기준으로 두면 높이가 어긋난다.
+    - Label 이 들어갈 여백을 그림 아래에 미리 확보하여, 저장할 때 잘려 나가지 않게 한다.
 + Figure image는 CLI로 특정 folder를 지정하지 않는 경우에, md 파일과 같은 위치의 `<md file stem>_fig` folder에 두고, 본문에서는 그 folder 기준 상대 경로로 참조한다.
     - `foo.md` 의 image는 `foo_fig/` 아래에 두고 `![Fig 1](foo_fig/fig1.png)` 로 쓴다.
     - 절대 경로나 외부 URL로 참조하지 않는다. 저장소를 clone하거나 folder를 옮겨도 그림이 그대로 보여야 한다.
