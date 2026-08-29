@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 20 | Created: 2026-08-28 | Updated: 2026-08-29 10:05 CDT
+Rev. 21 | Created: 2026-08-28 | Updated: 2026-08-29 10:35 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 정한다.
 
@@ -85,7 +85,7 @@ Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 �
 - 뒤쪽은 server 를 stateful 하게 만듦. 한 key 의 요청이 그 state 를 든 replica 에 닿거나, state 가 외부 store 에 있어야 함.
 - state 는 checkpoint. 다시 만드는 일은 계열을 처음부터 재생하는 일이므로.
 - 순서를 벗어난 도착은 거절하거나 watermark 까지 되감음. 어제 표본을 오늘 표본 뒤에 적용하면 state 가 영구히 망가짐.
-- 장애를 견디는 keyed state [\[1\]](#ref-1), 거기에 watermark 와 event-time 순서: 서빙 이야기에 streaming engine 이 등장하는 이유.
+- 장애를 견디는 keyed state [[1](#ref-1)], 거기에 watermark 와 event-time 순서: 서빙 이야기에 streaming engine 이 등장하는 이유.
 
 ### 2.3 Delayed Evaluation
 
@@ -168,7 +168,7 @@ Table 4. Caller 가 요청에 지정할 수 있는 option
 | 3 | Context length | 최근 국면을 따라가도록 줄인 window. 학습 길이를 넘는 부분은 잘림. |
 | 4 | Covariate path | caller 가 주는 future covariate 값. what-if 를 묻는 방법이며, 답과 함께 되돌려 줌. |
 | 5 | Model version | 지난 답을 재현하거나 비교를 돌리려고 고정한 version. 생략하면 registry 가 routing 하는 것. |
-| 6 | Adaptation depth | 호출 자체에 붙는 fine-tuning 인자. TimeGPT 가 받는 방식 [\[2\]](#ref-2). 지연과 비용을 주고 더 맞는 fit 을 얻음. |
+| 6 | Adaptation depth | 호출 자체에 붙는 fine-tuning 인자. TimeGPT 가 받는 방식 [[2](#ref-2)]. 지연과 비용을 주고 더 맞는 fit 을 얻음. |
 | 7 | Fallback policy | context 가 짧거나 낡았을 때 caller 가 원하는 것: 거절, fallback, 또는 degraded 표시가 붙은 답. |
 | 8 | Level of detail | 점, quantile, 성분 분해, attribution 중 무엇을 받을지. 그리고 언제나 채점을 가능하게 하는 식별자. |
 
@@ -205,13 +205,13 @@ Table 6. 범용 model server
 
 | # | Platform | Description |
 |---|----------|-------------|
-| 1 | NVIDIA Triton Inference Server | 여러 framework runtime 을 dynamic batching 과 함께. sequence batcher 가 한 sequence 를 한 model instance 로 routing [\[3\]](#ref-3). 이 부류에서 recursive model 을 직접 받쳐 주는 유일한 기능. |
-| 2 | KServe | InferenceService 를 정의하는 CNCF incubating project. 요청 기반 autoscaling 과 scale-to-zero [\[4\]](#ref-4). 다른 runtime 을 앞에서 감쌀 수 있음. |
+| 1 | NVIDIA Triton Inference Server | 여러 framework runtime 을 dynamic batching 과 함께. sequence batcher 가 한 sequence 를 한 model instance 로 routing [[3](#ref-3)]. 이 부류에서 recursive model 을 직접 받쳐 주는 유일한 기능. |
+| 2 | KServe | InferenceService 를 정의하는 CNCF incubating project. 요청 기반 autoscaling 과 scale-to-zero [[4](#ref-4)]. 다른 runtime 을 앞에서 감쌀 수 있음. |
 | 3 | BentoML | Python 추론 code 를 adaptive batching 과 함께 container 로 포장. 평범한 객체 형태의 forecasting code 에 맞음. |
 | 4 | Ray Serve | model 을 graph 로 조합하고, 여러 model 을 공유 replica 위에 multiplexing. key 별 model 해소와 맞음. |
 | 5 | MLflow model serving | model 을 `pyfunc` 으로 서빙. 추론이 library 호출인 통계 model 의 통상 경로. |
 | 6 | TensorFlow Serving | 저장된 TensorFlow graph 에는 안정적이고, 그 밖에는 별 것 없음. |
-| 7 | TorchServe | 제한 유지보수. 예정된 갱신도, 수정도, 보안 patch 도 없음 [\[5\]](#ref-5). 새 작업의 선택지가 아님. |
+| 7 | TorchServe | 제한 유지보수. 예정된 갱신도, 수정도, 보안 patch 도 없음 [[5](#ref-5)]. 새 작업의 선택지가 아님. |
 
 어느 것도 section 4.2 의 feedback path 를 주지 않는다. 그쪽으로 내놓는 것은 payload logging 뿐인데, 나중에 복원할 수 없으므로 첫날부터 켜 둘 값어치가 있다.
 
@@ -223,12 +223,12 @@ Table 7. Pre-trained model 과 서빙 방식
 
 | # | Model | Description |
 |---|-------|-------------|
-| 1 | TimeGPT (Nixtla) | API key 로 접근하는 hosted endpoint. forecasting 과 함께 anomaly detection 을 다룸 [\[2\]](#ref-2). 데이터를 내보낼 수 없는 곳을 위한 self-hosted 배포도 있음. |
-| 2 | Chronos-2 (Amazon) | Open-weight, 약 120M parameter. 단변량·다변량·covariate 입력에 zero-shot 이며 quantile 을 직접 생성 [\[6\]](#ref-6). |
-| 3 | TimesFM (Google) | Open-weight, decoder-only. 2.5 release 는 200M parameter, 16k context, 선택적 quantile head [\[7\]](#ref-7). |
-| 4 | Moirai (Salesforce) | 2.0 에서 open-weight 이며 `uni2ts` library 를 통해 서빙 [\[8\]](#ref-8). 공급사 의존 대신 library 를 배포에 싣는 형태. |
-| 5 | Granite TTM (IBM) | IBM 의 TinyTimeMixer 계열. 자체 library 와 benchmark 를 갖춤 [\[9\]](#ref-9). stream processor 안에 넣을 만큼 작음. |
-| 6 | Toto (Datadog) | 관측 지표를 위해 학습. 수백만에서 수십억 parameter 까지의 계열이며, quantile 출력과 시간·변량 교대 attention [\[10\]](#ref-10). |
+| 1 | TimeGPT (Nixtla) | API key 로 접근하는 hosted endpoint. forecasting 과 함께 anomaly detection 을 다룸 [[2](#ref-2)]. 데이터를 내보낼 수 없는 곳을 위한 self-hosted 배포도 있음. |
+| 2 | Chronos-2 (Amazon) | Open-weight, 약 120M parameter. 단변량·다변량·covariate 입력에 zero-shot 이며 quantile 을 직접 생성 [[6](#ref-6)]. |
+| 3 | TimesFM (Google) | Open-weight, decoder-only. 2.5 release 는 200M parameter, 16k context, 선택적 quantile head [[7](#ref-7)]. |
+| 4 | Moirai (Salesforce) | 2.0 에서 open-weight 이며 `uni2ts` library 를 통해 서빙 [[8](#ref-8)]. 공급사 의존 대신 library 를 배포에 싣는 형태. |
+| 5 | Granite TTM (IBM) | IBM 의 TinyTimeMixer 계열. 자체 library 와 benchmark 를 갖춤 [[9](#ref-9)]. stream processor 안에 넣을 만큼 작음. |
+| 6 | Toto (Datadog) | 관측 지표를 위해 학습. 수백만에서 수십억 parameter 까지의 계열이며, quantile 출력과 시간·변량 교대 attention [[10](#ref-10)]. |
 
 - retrieval 에도 같은 checkpoint. forecast 로 가는 길에 만들어지는 표현이 곧 segment index 가 저장하는 것이므로.
 - open weight 로 retrieval 을 서빙하는 비용: 새 segment 당 쓰기 시점 forward pass 한 번, 읽기 시점은 없음.
@@ -242,7 +242,7 @@ Table 8. Model 과 batch inference 를 공급하는 framework
 
 | # | Framework | Description |
 |---|-----------|-------------|
-| 1 | AutoGluon-TimeSeries | 고전 model, machine learning model, pre-trained model 을 탐색하고 이긴 것을 ensemble. 확률 예측을 목표로 명시 [\[11\]](#ref-11). |
+| 1 | AutoGluon-TimeSeries | 고전 model, machine learning model, pre-trained model 을 탐색하고 이긴 것을 ensemble. 확률 예측을 목표로 명시 [[11](#ref-11)]. |
 | 2 | Nixtla `statsforecast`, `mlforecast`, `neuralforecast` | 고전·feature 기반·neural 경로를 하나의 data contract 위에서. 큰 계열 무리를 한 번의 호출로 다루도록 설계. |
 | 3 | GluonTS, Darts, sktime | 각각 확률 model 구현과 평가 harness, 하나의 API 뒤의 통계·deep model 과 backtesting, scikit-learn 호환 interface. |
 | 4 | STUMPY, tslearn | matrix profile 과 elastic distance. retrieval 과 change point 질문을 모양만으로 답함. |
@@ -341,44 +341,44 @@ Section 2 가 이미 금지하지 않는, 그리고 어떤 test 에도 걸리지
 
 ## Appendix A. Terminology
 
-- Active learning: model 이 가장 자신 없어 하는 것을 기준으로 다음에 label 할 대상을 고르는 방식.
-- Attribution: 어느 channel, step, lag 이 그 답을 움직였는지에 대한 설명. 답을 만드는 동안 함께 계산됨.
-- Backfill: 과거 cut-off 에 대해 서빙 경로로 답을 다시 계산하는 일. 새 model 이 만들었을 history 를 얻기 위함.
-- Chamber: 한 wafer 나 batch 가 처리되는 process tool 의 내부 공간. 대부분의 FDC 계열이 keying 되는 단위.
-- Change point: 계열의 거동이 바뀌는 timestamp.
-- Context: model 이 소비하는 과거 관측의 window. 그 길이는 model 이 정함.
-- Covariate: target 이 아니면서 model 이 읽는 변수. 관측될 뿐이면 past, 미래 시점의 값이 미리 정해지면 future known.
-- Cut-off: model 이 볼 수 있는 것과 예측해야 할 것을 가르는 timestamp.
-- Deviation score: 관측이 model 의 기대에서 얼마나 떨어져 있는지. baseline 에 대해 재며, threshold 가 자르기 전까지는 어떤 판정도 담지 않음.
-- Drift: model 이 담은 관계의 변화. 한때 옳던 model 을 나중에 그르게 만듦.
-- Dynamic batching: 따로 도착한 요청을 한 번의 forward pass 로 모으는 것. 유계의 대기 지연을 값으로 치름.
-- Embedding: segment 를 비교하거나 index 할 때 그 segment 를 대신하는 고정 길이 vector.
-- Fault detection and classification (FDC): run 의 sensor trace 로부터 장비가 의도대로 거동했는지 판단하는 일.
-- Foundation model: 여러 계열로 pre-train 되어, 한 번도 적합된 적 없는 계열을 서빙하는 model.
-- Governed job: 어떤 요청 밖에서 도는 job. server 가 서빙하는 것을 바꿀 수 있는 유일한 주체.
-- Horizon: 답이 덮는 앞으로의 step 수. `H` 로 씀.
-- Keyed state: stream processor 가 key 별로 들고 checkpoint 에서 복구하는 state.
-- Lot: 공정을 함께 지나가는 wafer 무리.
-- Metrology: 공정이 무엇을 만들었는지 보고하는 측정 단계. 공정 중이 아니라 공정 뒤에 수행.
-- Model registry: version 의 catalog, 그리고 어느 version 이 어느 key 를 서빙할지 정하는 규칙.
-- Naive baseline: 마지막 관측이나 한 계절 전 관측을 그대로 되풀이하는 예측. 어떤 model 이든 이겨야 하는 기준.
-- Point-in-time correctness: context 안의 모든 값이 cut-off 시점에 관측 가능했다는 성질. timestamp 가 그보다 이르다는 것만으로는 부족함.
-- Production line: lot 이 지나가는 공정 단계와 tool 의 연쇄. 하나의 FDC deployment 가 맡는 범위.
-- Quantiles: horizon step 마다 예측 분포의 여러 지점. 값 하나가 아님.
-- Recipe and step: tool 이 한 제품을 위해 실행하는 program, 그리고 그 program 의 한 구간.
-- Remaining useful life: 부품이 한계를 넘기까지 남은 시간이나 run 수.
-- Retrieval: 지금 것과 닮은 과거 segment 가 무엇인가 하는 질문. segment index 로 답함.
-- Run: 한 wafer 나 batch 에 대한 recipe 한 번의 실행.
-- Scale-to-zero: 놀고 있는 endpoint 의 replica 를 모두 없애는 것. 비용 대신 cold start 를 치름.
-- Scoring: 나중에 도착한 실측과 답을 맞춰 보는 일.
-- Segment: 한 계열의 경계 지어진 구간. 길이로 정하거나 step transition 같은 사건으로 정함.
-- Segment index: 과거 segment 마다 embedding 하나를 담아, forward pass 없이 retrieval 에 답하는 store.
-- Trace: 한 run 동안 한 sensor 를 표본으로 기록한 것.
-- Trace tensor: `[sequence, feature, trace]` 모양의 array. 한 축은 run 의 순서, 다른 한 축은 run 안의 시간.
-- Virtual metrology: metrology 가 재는 값을, 그 측정이 존재하기 전의 데이터로 추정하는 일.
-- Wafer: 공정을 지나가며 metrology 가 측정하는 기판.
-- Watermark: 그보다 이른 사건은 오지 않는다고 보는 event-time 경계.
-- Zero-shot: 한 번도 적합된 적 없는 model 로 그 계열에 답하는 것.
+- **Active learning**: model 이 가장 자신 없어 하는 것을 기준으로 다음에 label 할 대상을 고르는 방식.
+- **Attribution**: 어느 channel, step, lag 이 그 답을 움직였는지에 대한 설명. 답을 만드는 동안 함께 계산됨.
+- **Backfill**: 과거 cut-off 에 대해 서빙 경로로 답을 다시 계산하는 일. 새 model 이 만들었을 history 를 얻기 위함.
+- **Chamber**: 한 wafer 나 batch 가 처리되는 process tool 의 내부 공간. 대부분의 FDC 계열이 keying 되는 단위.
+- **Change point**: 계열의 거동이 바뀌는 timestamp.
+- **Context**: model 이 소비하는 과거 관측의 window. 그 길이는 model 이 정함.
+- **Covariate**: target 이 아니면서 model 이 읽는 변수. 관측될 뿐이면 past, 미래 시점의 값이 미리 정해지면 future known.
+- **Cut-off**: model 이 볼 수 있는 것과 예측해야 할 것을 가르는 timestamp.
+- **Deviation score**: 관측이 model 의 기대에서 얼마나 떨어져 있는지. baseline 에 대해 재며, threshold 가 자르기 전까지는 어떤 판정도 담지 않음.
+- **Drift**: model 이 담은 관계의 변화. 한때 옳던 model 을 나중에 그르게 만듦.
+- **Dynamic batching**: 따로 도착한 요청을 한 번의 forward pass 로 모으는 것. 유계의 대기 지연을 값으로 치름.
+- **Embedding**: segment 를 비교하거나 index 할 때 그 segment 를 대신하는 고정 길이 vector.
+- **Fault detection and classification (FDC)**: run 의 sensor trace 로부터 장비가 의도대로 거동했는지 판단하는 일.
+- **Foundation model**: 여러 계열로 pre-train 되어, 한 번도 적합된 적 없는 계열을 서빙하는 model.
+- **Governed job**: 어떤 요청 밖에서 도는 job. server 가 서빙하는 것을 바꿀 수 있는 유일한 주체.
+- **Horizon**: 답이 덮는 앞으로의 step 수. `H` 로 씀.
+- **Keyed state**: stream processor 가 key 별로 들고 checkpoint 에서 복구하는 state.
+- **Lot**: 공정을 함께 지나가는 wafer 무리.
+- **Metrology**: 공정이 무엇을 만들었는지 보고하는 측정 단계. 공정 중이 아니라 공정 뒤에 수행.
+- **Model registry**: version 의 catalog, 그리고 어느 version 이 어느 key 를 서빙할지 정하는 규칙.
+- **Naive baseline**: 마지막 관측이나 한 계절 전 관측을 그대로 되풀이하는 예측. 어떤 model 이든 이겨야 하는 기준.
+- **Point-in-time correctness**: context 안의 모든 값이 cut-off 시점에 관측 가능했다는 성질. timestamp 가 그보다 이르다는 것만으로는 부족함.
+- **Production line**: lot 이 지나가는 공정 단계와 tool 의 연쇄. 하나의 FDC deployment 가 맡는 범위.
+- **Quantiles**: horizon step 마다 예측 분포의 여러 지점. 값 하나가 아님.
+- **Recipe and step**: tool 이 한 제품을 위해 실행하는 program, 그리고 그 program 의 한 구간.
+- **Remaining useful life**: 부품이 한계를 넘기까지 남은 시간이나 run 수.
+- **Retrieval**: 지금 것과 닮은 과거 segment 가 무엇인가 하는 질문. segment index 로 답함.
+- **Run**: 한 wafer 나 batch 에 대한 recipe 한 번의 실행.
+- **Scale-to-zero**: 놀고 있는 endpoint 의 replica 를 모두 없애는 것. 비용 대신 cold start 를 치름.
+- **Scoring**: 나중에 도착한 실측과 답을 맞춰 보는 일.
+- **Segment**: 한 계열의 경계 지어진 구간. 길이로 정하거나 step transition 같은 사건으로 정함.
+- **Segment index**: 과거 segment 마다 embedding 하나를 담아, forward pass 없이 retrieval 에 답하는 store.
+- **Trace**: 한 run 동안 한 sensor 를 표본으로 기록한 것.
+- **Trace tensor**: `[sequence, feature, trace]` 모양의 array. 한 축은 run 의 순서, 다른 한 축은 run 안의 시간.
+- **Virtual metrology**: metrology 가 재는 값을, 그 측정이 존재하기 전의 데이터로 추정하는 일.
+- **Wafer**: 공정을 지나가며 metrology 가 측정하는 기판.
+- **Watermark**: 그보다 이른 사건은 오지 않는다고 보는 event-time 경계.
+- **Zero-shot**: 한 번도 적합된 적 없는 model 로 그 계열에 답하는 것.
 
 ## Appendix B. The Model And The Server
 
