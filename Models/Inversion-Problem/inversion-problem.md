@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 22 | Created: 2026-08-28 | Updated: 2026-08-29 02:24 CDT
+Rev. 23 | Created: 2026-08-28 | Updated: 2026-08-29 02:28 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -281,44 +281,44 @@ Table 3. Libraries for model inversion
 
 ## Appendix A. Terminology
 
-- Acquisition function: 예측값과 불확실성을 함께 담아 다음에 시험할 입력을 고르는 함수이다.
-- Activation maximization: 학습된 network 의 특정 출력이 최대가 되는 입력을 입력에 대한 역전파로 찾는 방법이다.
-- Bayesian optimization: 사후분포를 가진 surrogate model 과 acquisition function 으로 blackbox 함수의 최적점을 반복 탐색하는 방법이다.
-- cINN: 조건을 입력으로 받는 invertible neural network 이며, 조건부 사후분포에서 표본을 뽑는다.
-- CMA-ES: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
-- Derivative-free optimization: 목적 함수의 gradient 없이 함수값만으로 해를 찾는 최적화이다.
-- Design space: 품질 규격을 만족하는 것으로 확인된 입력 영역이다.
-- Forward problem: 입력에서 출력을 계산하는 문제이다.
-- GBM: 잔차를 순차적으로 학습하는 tree 를 더해 만드는 model 이며 gradient boosting machine 의 약자이다.
-- GP: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
-- Hotelling $T^{2}$: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
-- Ill-posed problem: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
-- Inverse design: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
-- Joint-Y PLS: 여러 site 의 데이터를 공통 출력으로 묶어 하나의 latent space 에서 다루는 PLS 확장이다.
-- Latent variable: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
-- Loading: Latent 변수와 관측 변수를 잇는 계수이며, score 에서 입력을 복원할 때 쓰인다.
-- Mahalanobis distance: 각 방향의 산포로 나누어 재는 거리이며, 중심에서 표준편차 몇 배만큼 떨어졌는지를 나타낸다.
-- MCMC: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
-- Minimum-norm solution: 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다.
-- Model inversion: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
-- Normalizing flow: 가역 변환의 합성으로 분포를 다른 분포로 옮기는 생성 model 이다.
-- Null space: 예측 출력을 바꾸지 않는 입력 또는 score 의 방향이 이루는 부분공간이다.
-- Null space direction: null space 의 기저 벡터 하나이며, 그 방향으로 score 를 움직여도 예측 출력이 바뀌지 않는다.
-- OLS: 잔차 제곱합을 최소화하는 회귀이며 ordinary least squares 의 약자이다.
-- PCA: 분산이 큰 방향으로 좌표를 다시 잡아 차원을 줄이는 방법이며 principal component analysis 의 약자이다.
-- PCR: 주성분으로 축소한 뒤 회귀하는 model 이며 principal component regression 의 약자이다.
-- PLS: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 뽑는 회귀 model 이며 partial least squares 의 약자이다.
-- Posterior sampling: 사후분포에서 표본을 뽑아 해의 집합을 얻는 방법이다.
-- Pre-image problem: 특징 공간의 한 점에 대응하는 입력 공간의 점을 찾는 문제이다.
-- Pseudo-inverse: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
-- Regularization: 해의 크기나 형태에 벌점을 주어 ill-posed problem 을 안정화하는 방법이다.
-- Score: 관측을 latent 좌표계로 투영한 값이다.
-- SPE: 관측이 model 평면에서 벗어난 거리의 제곱이며 squared prediction error 의 약자이다.
-- Surrogate model: 비싼 계산이나 실험을 대신하는 값싼 근사 model 이다.
-- TreeSHAP: Tree model 에서 각 입력의 기여도를 다항 시간에 정확히 계산하는 방법이다.
-- VAE: Latent 변수의 분포를 학습하는 생성 model 이며 variational autoencoder 의 약자이다.
-- Validity domain: model 이 학습 데이터로 뒷받침되는 입력 영역이다.
-- Well-posed problem: 해가 존재하고 유일하며 데이터에 연속적으로 의존하는 문제이다.
+- **Acquisition function**: 예측값과 불확실성을 함께 담아 다음에 시험할 입력을 고르는 함수이다.
+- **Activation maximization**: 학습된 network 의 특정 출력이 최대가 되는 입력을 입력에 대한 역전파로 찾는 방법이다.
+- **Bayesian optimization**: 사후분포를 가진 surrogate model 과 acquisition function 으로 blackbox 함수의 최적점을 반복 탐색하는 방법이다.
+- **cINN**: 조건을 입력으로 받는 invertible neural network 이며, 조건부 사후분포에서 표본을 뽑는다.
+- **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
+- **Derivative-free optimization**: 목적 함수의 gradient 없이 함수값만으로 해를 찾는 최적화이다.
+- **Design space**: 품질 규격을 만족하는 것으로 확인된 입력 영역이다.
+- **Forward problem**: 입력에서 출력을 계산하는 문제이다.
+- **GBM**: 잔차를 순차적으로 학습하는 tree 를 더해 만드는 model 이며 gradient boosting machine 의 약자이다.
+- **GP**: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
+- **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
+- **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
+- **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
+- **Joint-Y PLS**: 여러 site 의 데이터를 공통 출력으로 묶어 하나의 latent space 에서 다루는 PLS 확장이다.
+- **Latent variable**: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
+- **Loading**: Latent 변수와 관측 변수를 잇는 계수이며, score 에서 입력을 복원할 때 쓰인다.
+- **Mahalanobis distance**: 각 방향의 산포로 나누어 재는 거리이며, 중심에서 표준편차 몇 배만큼 떨어졌는지를 나타낸다.
+- **MCMC**: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
+- **Minimum-norm solution**: 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다.
+- **Model inversion**: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
+- **Normalizing flow**: 가역 변환의 합성으로 분포를 다른 분포로 옮기는 생성 model 이다.
+- **Null space**: 예측 출력을 바꾸지 않는 입력 또는 score 의 방향이 이루는 부분공간이다.
+- **Null space direction**: null space 의 기저 벡터 하나이며, 그 방향으로 score 를 움직여도 예측 출력이 바뀌지 않는다.
+- **OLS**: 잔차 제곱합을 최소화하는 회귀이며 ordinary least squares 의 약자이다.
+- **PCA**: 분산이 큰 방향으로 좌표를 다시 잡아 차원을 줄이는 방법이며 principal component analysis 의 약자이다.
+- **PCR**: 주성분으로 축소한 뒤 회귀하는 model 이며 principal component regression 의 약자이다.
+- **PLS**: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 뽑는 회귀 model 이며 partial least squares 의 약자이다.
+- **Posterior sampling**: 사후분포에서 표본을 뽑아 해의 집합을 얻는 방법이다.
+- **Pre-image problem**: 특징 공간의 한 점에 대응하는 입력 공간의 점을 찾는 문제이다.
+- **Pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
+- **Regularization**: 해의 크기나 형태에 벌점을 주어 ill-posed problem 을 안정화하는 방법이다.
+- **Score**: 관측을 latent 좌표계로 투영한 값이다.
+- **SPE**: 관측이 model 평면에서 벗어난 거리의 제곱이며 squared prediction error 의 약자이다.
+- **Surrogate model**: 비싼 계산이나 실험을 대신하는 값싼 근사 model 이다.
+- **TreeSHAP**: Tree model 에서 각 입력의 기여도를 다항 시간에 정확히 계산하는 방법이다.
+- **VAE**: Latent 변수의 분포를 학습하는 생성 model 이며 variational autoencoder 의 약자이다.
+- **Validity domain**: model 이 학습 데이터로 뒷받침되는 입력 영역이다.
+- **Well-posed problem**: 해가 존재하고 유일하며 데이터에 연속적으로 의존하는 문제이다.
 
 ## Appendix B. Python Example: PLS Model Inversion
 

@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 33 | Created: 2026-8-1 | Updated: 2026-08-29 02:24 CDT
+Rev. 34 | Created: 2026-8-1 | Updated: 2026-08-29 02:28 CDT
 
 ## 1. Terminology
 
@@ -140,6 +140,7 @@ result = [x * 2 for x in range(10)]
 ## 15. Appendix
 
 - Appendix A. Terminology를 두어, 문서에서 사용한 미정의 용어에 대한 정의를 리스트 형식으로 정리한다. 리스트 꼭지에 용어를 두고, 정렬한다.
+- 용어는 `- **term**: 정의` 처럼 굵은 글씨로 쓴다. 목록을 훑을 때 눈이 용어만 따라가게 하려는 것이며, 정의는 보통 글씨로 둔다.
 - 본문에서 Appendix를 언급한 경우, 본문에 anchor link를 둔다.
 - 본문과 첫 Appendix 사이에 `---` 을 한 줄 두어 경계를 표시한다. Appendix 사이에는 두지 않는다.
     + `---` 의 위아래에 빈 줄을 둔다. 위에 빈 줄이 없으면 앞 줄이 setext heading으로 해석된다.
