@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.3.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.4.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -61,14 +61,25 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     r2 = 1.0 - float(np.sum(residual ** 2) / np.sum((y_data - y_data.mean()) ** 2))
     rmse = float(np.sqrt(np.mean(residual ** 2)))
 
-    fig = plt.figure(figsize=(9.0, 4.2))
-    outer = fig.add_gridspec(1, 2, wspace=0.32)
-    left = outer[0].subgridspec(2, 2, width_ratios=[4, 1], height_ratios=[1, 4],
-                                hspace=0.06, wspace=0.06)
-    ax_main = fig.add_subplot(left[1, 0])
-    ax_top = fig.add_subplot(left[0, 0], sharex=ax_main)
-    ax_right = fig.add_subplot(left[1, 1], sharey=ax_main)
-    ax_parity = fig.add_subplot(outer[1])
+    fig = plt.figure(figsize=(13.0, 4.2))
+    outer = fig.add_gridspec(1, 3, wspace=0.30)
+    ax_series = fig.add_subplot(outer[0])
+    middle = outer[1].subgridspec(2, 2, width_ratios=[4, 1], height_ratios=[1, 4],
+                                  hspace=0.06, wspace=0.06)
+    ax_main = fig.add_subplot(middle[1, 0])
+    ax_top = fig.add_subplot(middle[0, 0], sharex=ax_main)
+    ax_right = fig.add_subplot(middle[1, 1], sharey=ax_main)
+    ax_parity = fig.add_subplot(outer[2])
+
+    # the measured value in the order the samples arrive
+    ax_series.plot(np.arange(len(y_data)), y_data, color=COLORS[0], linewidth=1.0,
+                   marker='o', markersize=3, label='measured value y')
+    ax_series.axhline(2.0, color=COLORS[3], linestyle=':', linewidth=1.2,
+                      label='inversion target 2.0')
+    ax_series.set_xlabel('sample order', fontsize=font_size())
+    ax_series.set_ylabel('measured value y', fontsize=font_size())
+    ax_series.tick_params(labelsize=font_size(0.9))
+    ax_series.legend(fontsize=font_size(0.8), loc='upper left')
 
     # Mahalanobis distance from the sample centre, in units of standard deviation
     grid_x, grid_y = np.mgrid[x_data[:, 0].min() - 0.6:x_data[:, 0].max() + 0.6:200j,
@@ -103,9 +114,10 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     ax_parity.legend(fontsize=font_size(0.8), loc='upper left')
 
     fig.subplots_adjust(bottom=0.20)
+    sub_caption(fig, [ax_series], '(a) the measured value in sample order')
     sub_caption(fig, [ax_main, ax_top, ax_right],
-                '(a) the two sampled inputs, contoured by Mahalanobis distance')
-    sub_caption(fig, [ax_parity], f'(b) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
+                '(b) the two sampled inputs, contoured by Mahalanobis distance')
+    sub_caption(fig, [ax_parity], f'(c) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
 
     out_path = out_folder / 'appendix-b-parity.png'
     out_folder.mkdir(parents=True, exist_ok=True)
