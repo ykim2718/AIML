@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 28 | Created: 2026-8-1 | Updated: 2026-08-28 13:05 CDT
+Rev. 29 | Created: 2026-8-1 | Updated: 2026-08-28 21:42 CDT
 
 ## 1. Terminology
 
@@ -127,6 +127,7 @@ result = [x * 2 for x in range(10)]
 + 항목 앞에 `<a id="ref-N"></a>` 를 두어, 본문에서 그 항목에 바로 닿게 한다.
 + 본문의 인용은 `[\[1\]](#ref-1)` 로 적어 화면에 `[1]` 로 보이게 한다. `[1](#ref-1)` 로 적으면 대괄호가 link 문법에 먹혀 본문에 숫자만 남고, 목록의 `[1]` 과 표시가 달라져 서로 찾아지지 않는다.
 + 서지 사항의 제목은 DOI 로 연결한다. DOI 가 없는 간행물은 발행처의 공식 page 와 ISBN 을 적는다.
++ Reference 의 외부 link 는 반드시 access 하여, 웹page 의 존재와 문서와의 연관성을 확인하여 등록한다.
 
 ## 15. Appendix
 

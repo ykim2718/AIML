@@ -4,7 +4,7 @@ description: 사용자가 python code에 대한 markdown document의 생성을 �
 ---
 # Python Documentation Conventions
 
-Rev. 4 | Created: 2026-8-11 | Updated: 2026-8-14 11:15 CDT
+Rev. 5 | Created: 2026-8-11 | Updated: 2026-8-18 08:15 CDT
 
 
 이 컨벤션의 목적은 **독자가 코드를 읽지 않고도 "무엇을 왜, 어떤 데이터로, 어떻게 돌려서, 무엇을 얻었는지"를 순서대로 재구성할 수 있게** 하는 것이다. 각 장은 그 재구성 과정의 한 단계를 담당하며, 순서를 바꾸면 독자가 앞 장의 결과를 모르는 상태에서 뒷 장을 읽게 되므로 순서는 고정한다.
@@ -101,6 +101,15 @@ Pipeline은 다이어그램을 쓰더라도 **텍스트 목록을 함께** 둔�
 
 - **Appendix A. Terminology** — 도메인 약어와 사내 용어. 본문에서 처음 쓸 때 풀어쓰고, 여기서 정의한다. 알파벳순.
 - **Appendix B. CLI (Command Line Options)** — 옵션명, 타입, 기본값, 설명, 필수 여부. 표로 작성하고 대표 실행 예시 명령을 1–2개 붙인다.
+
+## Embedded Python script
+
+- 파일명을 붙인 block 은 그 파일과 동일해야 한다. 발췌하거나 줄여서 싣지 않는다.
+  파일명은 그 block 이 그 파일이라는 뜻이므로, 줄여 실으면 문서와 파일이 어긋나고
+  독자는 문서에 없는 것을 파일에서 만난다.
+    - module docstring은 제외한다
+    - `if __name__ == '__main__':` block 은 제외한다.
+       module 이 제공하는 것이 아니라 그것을 실행하는 방법이다.
 
 ## Before finishing
 

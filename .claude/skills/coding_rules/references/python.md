@@ -6,7 +6,8 @@ note#1: 규칙마다 괄호안에 이유를 추가 함.
 
 ---
 
-Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 17:27 CDT
+Rev. 12 | Created: 2026-8-23 | Updated: 2026-8-27 17:30 CDT
+
 
 ## 1. Grammar & Type Safety
 
@@ -14,6 +15,11 @@ Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 17:27 CDT
 
 - `from typing import Union` 등을 사용해서 annotation을 표시할 것.
 - function annotation에서 `array: list = None`의 형식을 사용할 것.
+
+
+### `__all__`
+
+- all__을 사용해서 모듈에서 from 모듈 import *로 가져올 수 있는 공개 함수, 클래스, 변수의 목록을 문자열 리스트로 지정한다.
 
 
 ## 2. Module & Dependencies
@@ -39,12 +45,11 @@ Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 17:27 CDT
 - Figure 안의 text 크기는 `figsize` 에 비례하도록 잡는다. Point 로 고정하면 `figsize` 를 줄일 때 글자만 커져 배치가 무너진다.
 
   ```python
-  FIGSIZE: tuple = (6.0, 4.0)
+  FIGSIZE: tuple = (9.0, 6.0)
   REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
   BASE_FONT_SIZE: float = 9.0
   font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
   ```
-
 ### tqdm
 
 - `from tqdm import tqdm`을 아래처럼 사용할 것.
@@ -102,6 +107,8 @@ Rev. 10 | Created: 2026-8-13 | Updated: 2026-08-27 17:27 CDT
   - `argparse.ArgumentParser`의 choices 옵션을 필요시 사용할 것.
   - CLI option에서 choices로 검증된 변수를 함수의 argument로 사용할 때는
   `from typing import Literal`을 사용해서 표시할 것.
+
+- `--ouput-folder` option으로 모든 output root 가 되어 다른 산출물들이 이 폴더 밑으로 들어간다.
 
 - **`click`** 사용 시, 복수의 option이 배타적일 때는 `MutuallyExclusiveOption(click.Option)`을 `cls`로 걸어서 parsing 단계에서 막을 것.
 

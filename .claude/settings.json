@@ -12,5 +12,29 @@
   },
   "env": {
     "TZ": "America/Chicago"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"$CLAUDE_PROJECT_DIR/.claude/hooks/conversation_rules.md\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/skill_loading_rules.md\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/update-plugins.sh\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
   }
 }

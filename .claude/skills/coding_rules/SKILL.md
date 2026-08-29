@@ -4,7 +4,7 @@ description: 코드를 쓰거나 고칠 때 반드시 지킬 규칙. Edit/Write 
 ---
 # Coding Rules
 
-Rev. 25 | Created: 2026-8-1 | Updated: 2026-8-16 16:10 CDT
+Rev. 27 | Created: 2026-8-26 | Updated: 2026-8-26 14:30 CDT
 
 
 ## 적용 방법
@@ -84,7 +84,10 @@ Rev. 25 | Created: 2026-8-1 | Updated: 2026-8-16 16:10 CDT
 - author는 **yRocket**을 사용할 것.
     + python: `__author__ = 'yRocket'` 의 형식으로 파일 위에 둘 것
 
-### 2.2. Versioning
+### 2.2. Changelog
+
+- Major or Minor change시에만 docstring 의 changelog에 변경 내용을 한 줄로 추가한다.
+### 2.3. Versioning
 
 - versioning marker는 날짜가 있는 `__version__` `Major.Minor.Patch.Date(YYYY.M.D)` 형식이 default이고, 날짜가 없는 `Major.Minor.Patch` 형식도 있다.
 - initial release에는 `0.0.0.<YYYY.M.D>` 를 둔다.
@@ -99,10 +102,11 @@ Rev. 25 | Created: 2026-8-1 | Updated: 2026-8-16 16:10 CDT
   - 기능 추가면 **minor bump**, patch는 0
   - 날짜가 없는 형식 (예: `__version__ = "0.0.0"`) 이면 change 발생 시 **patch bump**만 할 것  (날짜 없음).
 
-### 2.3. Changelog
+### 2.4. CLI (Command Line Interface)
 
-- Major or Minor change시에만 docstring 의 changelog에 변경 내용을 한 줄로 추가한다.
-
+- `-h`, `--help` 를 추가해서 usage stdout을 보이게 한다.
+- `-v`, `--version`을 추가해서 `__version__` 을 보이게 한다.
+- usage stdout에는 script name과  `__version__`을 맨 위에서 보이게 한다.
 
 ## 3. 반면교사: 실제 사고 기록
 
