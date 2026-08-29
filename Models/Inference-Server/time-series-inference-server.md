@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 29 | Created: 2026-08-28 | Updated: 2026-08-29 14:05 CDT
+Rev. 30 | Created: 2026-08-28 | Updated: 2026-08-29 14:25 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
@@ -13,7 +13,7 @@ Rev. 29 | Created: 2026-08-28 | Updated: 2026-08-29 14:05 CDT
 
 이 표는 serving 할 수 있는 질문과 없는 질문을 한자리에 모은 목록이다. 각 행은 그 질문이 돌려주는 deliverable 과, 그것을 답으로 만들기 위해 server 가 model 위에 더 들어야 하는 것을 적는다. 무엇을 더 들어야 하는지는 어떤 model 을 고르는가가 아니라 그 마지막 열이 정한다.
 
-Table 1. Questions
+Table 1. Q&A
 
 | # | Question | Servable | Deliverable | What the server must add |
 |---|----------|----------|-------------|--------------------------|
@@ -89,6 +89,8 @@ Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 �
 
 ## 3. Deployment Patterns
 
+Fig 1 은 값이 producer 에서 소비자까지 지나는 경로이다. 그 경로의 어디에 답을 만드는 자리를 두느냐가 Table 3 의 네 pattern 을 가른다.
+
 ```text
 Producers                Ingest / Transport          Context
 +-----------+            +------------------+        +---------------------+
@@ -117,7 +119,7 @@ Producers                Ingest / Transport          Context
 
 Fig 1. 수집에서 소비까지의 serving 경로
 
-Table 3. 배포 pattern 과 각각이 맞는 자리
+Table 3. deployment pattern 과 각각이 맞는 자리
 
 | # | Pattern | Description |
 |---|---------|-------------|
