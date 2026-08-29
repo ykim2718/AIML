@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.2.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.2.1.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -149,7 +149,7 @@ def draw_null_space(out_folder: pathlib.Path) -> pathlib.Path:
     ax.plot(x_alt[:, 0], x_alt[:, 1], color=COLORS[0], linewidth=1.2, zorder=2)
     ax.scatter(x_alt[:, 0], x_alt[:, 1], s=22, color=COLORS[0], zorder=3,
                label='37 inputs that all predict 2.000')
-    ax.scatter([x_star[0]], [x_star[1]], s=110, marker='*', color=COLORS[2], zorder=4,
+    ax.scatter([x_star[0]], [x_star[1]], s=110, marker='*', color=COLORS[1], zorder=4,
                label='minimum-norm solution')
     ax.set_xlabel('x1', fontsize=font_size())
     ax.set_ylabel('x2', fontsize=font_size())
