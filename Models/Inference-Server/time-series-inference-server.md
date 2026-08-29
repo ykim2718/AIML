@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 24 | Created: 2026-08-28 | Updated: 2026-08-29 12:00 CDT
+Rev. 25 | Created: 2026-08-28 | Updated: 2026-08-29 12:30 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
@@ -9,16 +9,9 @@ Rev. 24 | Created: 2026-08-28 | Updated: 2026-08-29 12:00 CDT
 - 범위 밖: 학습 절차, model family, feature 구성.
 - 시계열이 수천 개인 경우를 전제. 계열 하나면 scheduled job 하나로 끝나고 이 문서의 어느 것도 필요 없음.
 
-### 1.1 The Test For A Servable Question
+### 1.1 Questions A Served Series Can Be Asked
 
-Servable question 은 이 문서가 다루는 질문의 범위이다. 답이 model 이 내는 숫자와 server 가 대는 나머지의 합으로 완성되는 질문을 말하며, 그 둘을 나누는 선은 아래와 같다.
-
-- Model: 적합된 함수. 정해진 한 가지 모양의 array 를 받아 숫자를 냄.
-- Model 이 모르는 것: 지금 다루는 계열을 가리키는 식별자인 key, 지금 시각, 직전에 자기가 낸 답.
-- Server: 그 함수를 둘러싼 전부. key 와 cut-off 를 array 로 바꾸고, model 이 들지 않는 history 와 state 와 지난 답을 전달하고, 돌려주는 것에 식별자를 찍음.
-- 판정: model 이 숫자를 낼 수 없거나 server 가 나머지를 마련할 수 없으면 serving 대상이 아님.
-
-### 1.2 Questions A Served Series Can Be Asked
+이 표는 serving 할 수 있는 질문과 없는 질문을 한자리에 모은 목록이다. 각 행은 그 질문이 돌려주는 deliverable 과, 그것을 답으로 만들기 위해 server 가 model 위에 더 들어야 하는 것을 적는다. algorithm 이 아니라 그 마지막 열이 deployment 의 모양을 정한다.
 
 Table 1. 질문, deliverable, 그리고 각 질문이 deployment 에 더하는 것
 
@@ -37,8 +30,6 @@ Table 1. 질문, deliverable, 그리고 각 질문이 deployment 에 더하는 �
 | 11 | Attribution | Yes | channel, lag, step 별 기여. 설명 대상 편차에 합이 맞도록. | 답과 함께 저장되는 설명. |
 | 12 | Cause | No | 대신 attribution 이 돌아옴. 답과 함께 움직인 것이지, 답을 움직인 것이 아님. | 없음. 개입이나 설계된 실험의 몫이고, 둘 다 요청이 아님. |
 | 13 | A model fitted on demand | No | 대신 호출 한정 adaptation, recursive model 이면 section 2.2 의 state 갱신. | 없음. 새 적합은 모든 caller 의 답을 바꾸므로 governed job 의 몫. |
-
-algorithm 이 아니라 마지막 열이 deployment 의 모양을 정한다.
 
 - model 과 context 만으로 충분: forecast, change point detection, what-if.
 - segment index 와 그것을 유지하는 job: retrieval.
@@ -350,6 +341,7 @@ Section 2 가 이미 금지하지 않는, 그리고 어떤 test 에도 걸리지
 - **Context**: model 이 소비하는 과거 관측의 window. 그 길이는 model 이 정함.
 - **Covariate**: target 이 아니면서 model 이 읽는 변수. 관측될 뿐이면 past, 미래 시점의 값이 미리 정해지면 future known.
 - **Cut-off**: model 이 볼 수 있는 것과 예측해야 할 것을 가르는 timestamp.
+- **Deliverable**: 한 질문에 대해 server 가 돌려주는 것. 행의 구성과 각 행에 담기는 값까지 포함.
 - **Deviation score**: 관측이 model 의 기대에서 얼마나 떨어져 있는지. baseline 에 대해 재며, threshold 가 자르기 전까지는 어떤 판정도 담지 않음.
 - **Drift**: model 이 담은 관계의 변화. 한때 옳던 model 을 나중에 그르게 만듦.
 - **Dynamic batching**: 따로 도착한 요청을 한 번의 forward pass 로 모으는 것. 유계의 대기 지연을 값으로 치름.
