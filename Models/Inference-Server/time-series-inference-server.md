@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 28 | Created: 2026-08-28 | Updated: 2026-08-29 13:45 CDT
+Rev. 29 | Created: 2026-08-28 | Updated: 2026-08-29 14:05 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
@@ -13,7 +13,7 @@ Rev. 28 | Created: 2026-08-28 | Updated: 2026-08-29 13:45 CDT
 
 이 표는 serving 할 수 있는 질문과 없는 질문을 한자리에 모은 목록이다. 각 행은 그 질문이 돌려주는 deliverable 과, 그것을 답으로 만들기 위해 server 가 model 위에 더 들어야 하는 것을 적는다. 무엇을 더 들어야 하는지는 어떤 model 을 고르는가가 아니라 그 마지막 열이 정한다.
 
-Table 1. 질문, deliverable, 그리고 각 질문에서 server 가 더 들어야 하는 것
+Table 1. Questions
 
 | # | Question | Servable | Deliverable | What the server must add |
 |---|----------|----------|-------------|--------------------------|
