@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 2 | Created: 2026-08-28 | Updated: 2026-08-28 21:52 CDT
+Rev. 3 | Created: 2026-08-28 | Updated: 2026-08-28 23:38 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -7,18 +7,18 @@ Rev. 2 | Created: 2026-08-28 | Updated: 2026-08-28 21:52 CDT
 
 ### 1.1 Forward problem and inverse problem
 
-Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{y} \in \mathbb{R}^M$ 을 계산하는 문제이며, 물리 model 이든 데이터로 학습한 model 이든 $\mathbf{y} = f(\mathbf{x})$ 로 쓴다. Inverse problem 은 그 반대 방향으로, 관측되었거나 목표로 정한 $\mathbf{y}^{*}$ 가 주어졌을 때 그것을 만들어 내는 $\mathbf{x}$ 를 찾는 문제이다.
+Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{y} \in \mathbb{R}^M$ 을 계산하는 문제이며, 물리 model 이든 데이터로 학습한 model 이든 $\mathbf{y} = f(\mathbf{x})$ 로 쓴다. Inverse problem 은 그 반대 방향으로, 관측되었거나 목표로 정한 $\mathbf{y}^{\ast}$ 가 주어졌을 때 그것을 만들어 내는 $\mathbf{x}$ 를 찾는 문제이다.
 
 두 문제는 방향만 다른 것이 아니라 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
 
-- 관측형 inverse problem 은 측정된 $\mathbf{y}^{*}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
-- 설계형 inverse problem 은 목표 품질 $\mathbf{y}^{*}$ 를 먼저 정하고 그 품질을 내는 조건을 찾는다. Product design 과 inverse design 이 여기에 속한다.
+- 관측형 inverse problem 은 측정된 $\mathbf{y}^{\ast}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
+- 설계형 inverse problem 은 목표 품질 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 품질을 내는 조건을 찾는다. Product design 과 inverse design 이 여기에 속한다.
 
 ### 1.2 Ill-posedness
 
 Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [\[1\]](#ref-1).
 
-- 존재성은 $\mathbf{y}^{*}$ 가 $f$ 의 상 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
+- 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 상 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
 - 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 이 자유도를 어떻게 쓸지가 설계형 문제의 핵심이 된다.
 - 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [\[1\]](#ref-1).
 
@@ -78,11 +78,11 @@ Inverse problem (given a target y*, find the input x)
 
 Deterministic 정식화는 잔차를 최소화하는 제약 최적화로 문제를 적는다.
 
-$$\hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{*} \rVert^{2} + \lambda R(\mathbf{x})$$
+$$\hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2} + \lambda R(\mathbf{x})$$
 
 여기서 $R$ 은 regularization 항이고 $\lambda$ 는 그 세기이다. Bayesian 정식화는 하나의 해 대신 사후분포를 구한다.
 
-$$p(\mathbf{x} \mid \mathbf{y}^{*}) \propto p(\mathbf{y}^{*} \mid \mathbf{x})\, p(\mathbf{x})$$
+$$p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x})\, p(\mathbf{x})$$
 
 두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [\[3\]](#ref-3). Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 다중해와 불확실성을 그대로 보여 준다.
 
@@ -115,11 +115,11 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 
 $$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F}$$
 
-목표 품질 $\mathbf{y}^{*}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{*}$ 를 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
+목표 품질 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
 
-$$\mathbf{t}^{*} = \mathbf{Q}^{+}\mathbf{y}^{*}, \qquad \mathbf{x}^{*} = \mathbf{P}\mathbf{t}^{*}$$
+$$\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$$
 
-$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{*}$ 는 최소 노름 해이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 방향이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
+$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 최소 노름 해이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 방향이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
 
 - Null space 는 품질을 바꾸지 않고 움직일 수 있는 운전 자유도이다. 원가, 처리량, 에너지 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [\[5\]](#ref-5).
@@ -175,7 +175,7 @@ Table 2. Inversion method by model family
 | Autoencoder / VAE | Latent space 탐색 후 디코딩 | 생성 model 방식의 역설계이며 제조 분야로 확산 중이다 |
 | Invertible NN / Normalizing flow | 구조적으로 양방향 | cINN 은 사후분포를 한 번의 forward 로 준다 |
 | Diffusion model | 사후 sampling | 잡음이 있는 비선형 문제에서 다중해를 표본으로 얻는다 |
-| Model-agnostic | 수치 최적화 $\min \lVert f(\mathbf{x}) - \mathbf{y}^{*} \rVert^{2}$ 와 제약 | 어떤 $f$ 에도 적용되어 가장 범용이다 |
+| Model-agnostic | 수치 최적화 $\min \lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ 와 제약 | 어떤 $f$ 에도 적용되어 가장 범용이다 |
 
 ### 4.1 Linear projection models
 
@@ -191,7 +191,7 @@ Random forest 와 gradient boosting 은 조각별 상수 함수이므로 입력�
 
 ### 4.4 Neural networks
 
-미분 가능한 network 는 가장 직접적으로 뒤집힌다. 가중치를 고정한 채 입력을 변수로 두고 $\lVert f(\mathbf{x}) - \mathbf{y}^{*} \rVert^{2}$ 를 입력에 대해 역전파하면 된다. 출력 하나를 최대화하는 형태로 쓰면 activation maximization 이고, 작은 변화로 출력을 바꾸는 형태로 쓰면 adversarial 예제 생성과 계산이 같다 [\[14\]](#ref-14). 쓰임이 다를 뿐 계산이 같으므로 위험도 그대로 따라온다. 제약 없이 최적화하면 목표 출력을 완벽히 맞추면서도 데이터 분포에서 한참 떨어진 입력이 나오므로, 입력 범위 제한이나 사전 분포 항이 반드시 필요하다.
+미분 가능한 network 는 가장 직접적으로 뒤집힌다. 가중치를 고정한 채 입력을 변수로 두고 $\lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ 를 입력에 대해 역전파하면 된다. 출력 하나를 최대화하는 형태로 쓰면 activation maximization 이고, 작은 변화로 출력을 바꾸는 형태로 쓰면 adversarial 예제 생성과 계산이 같다 [\[14\]](#ref-14). 쓰임이 다를 뿐 계산이 같으므로 위험도 그대로 따라온다. 제약 없이 최적화하면 목표 출력을 완벽히 맞추면서도 데이터 분포에서 한참 떨어진 입력이 나오므로, 입력 범위 제한이나 사전 분포 항이 반드시 필요하다.
 
 ### 4.5 Generative and invertible models
 
@@ -360,7 +360,7 @@ print("distance       :", round(float(np.linalg.norm(x_star - x_alt)), 3))
 
 두 입력은 서로 다르지만 예측 품질은 같다. 어느 쪽을 쓸지는 품질이 아니라 원가나 운전 여유 같은 다른 기준이 정한다.
 
-Fig 3 는 이 결과를 그린 것이다. 왼쪽은 최소 노름 해에서 첫 null space 방향으로 걸어가며 잰 값으로, 입력이 $\lVert \mathbf{x} - \mathbf{x}^{*} \rVert$ 만큼 멀어지는 동안에도 예측 품질은 목표에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
+Fig 3 는 이 결과를 그린 것이다. 왼쪽은 최소 노름 해에서 첫 null space 방향으로 걸어가며 잰 값으로, 입력이 $\lVert \mathbf{x} - \mathbf{x}^{\ast} \rVert$ 만큼 멀어지는 동안에도 예측 품질은 목표에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
 
 Fig 3. Predicted quality and inputs along the null space
 
