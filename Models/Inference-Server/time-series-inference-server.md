@@ -1,21 +1,21 @@
 # Time Series Inference Server
-Rev. 21 | Created: 2026-08-28 | Updated: 2026-08-29 10:35 CDT
+Rev. 22 | Created: 2026-08-28 | Updated: 2026-08-29 11:20 CDT
 
-적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 정한다.
+적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
 ## 1. Scope
 
-- 서빙만 다룸. 적합된 model 이나 pre-trained checkpoint 에서 시작해 답이 소비되는 지점까지.
+- serving 만 다룸. 적합된 model 이나 pre-trained checkpoint 에서 시작해 답이 소비되는 지점까지.
 - 범위 밖: 학습 절차, model family, feature 구성.
-- 계열이 수천 개인 경우를 전제. 계열 하나면 scheduled job 하나로 끝나고 이 문서의 어느 것도 필요 없음.
+- 계열: 한 대상이 시간 순서로 쌓아 가는 관측의 나열. 예를 들어 tool, chamber, sensor 의 조합마다 하나씩.
+- 그런 계열이 수천 개인 경우를 전제. 계열 하나면 scheduled job 하나로 끝나고 이 문서의 어느 것도 필요 없음.
 
 ### 1.1 The Test For A Servable Question
 
-- Model: 적합된 함수. 정해진 한 가지 모양의 array 를 받아 숫자를 냄. key 도 시계도 없고, 직전에 무엇을 답했는지도 모름.
-- Server: 그 함수를 둘러싼 전부. key 와 cut-off 를 array 로 바꾸고, model 이 들지 않는 history 와 state 와 지난 답을 들고, 돌려주는 것에 식별자를 찍음.
-- Servable question: 숫자는 model 이 대고, 나머지 전부는 server 가 댈 수 있는 질문.
-- Table 1 의 `Servable` 열이 적용하는 판정이자, 그 마지막 열이 재는 것.
-- [Appendix B](#appendix-b-the-model-and-the-server): 같은 구분을 operation 이름과 함께 그린 그림.
+- Model: 적합된 함수. 정해진 한 가지 모양의 array 를 받아 숫자를 냄.
+- Model 이 모르는 것: 지금 다루는 계열을 가리키는 식별자인 key, 지금 시각, 직전에 자기가 낸 답.
+- Server: 그 함수를 둘러싼 전부. key 와 cut-off 를 array 로 바꾸고, model 이 들지 않는 history 와 state 와 지난 답을 전달하고, 돌려주는 것에 식별자를 찍음.
+- Servable question: model 이 숫자를 낼 수 있고, 그 숫자를 답으로 만드는 데 필요한 나머지를 server 가 마련할 수 있는 질문. 둘 중 하나가 없으면 serving 대상이 아님.
 
 ### 1.2 Questions A Served Series Can Be Asked
 
@@ -44,7 +44,7 @@ algorithm 이 아니라 마지막 열이 deployment 의 모양을 정한다.
 - label, 그래서 section 4.2 의 feedback path 가 먼저: classification, virtual metrology, remaining useful life.
 - baseline 과 threshold 규칙: anomaly detection.
 - 더 넓은 요청이나 더 넓은 저장: imputation, attribution, trace tensor 로부터의 sequence target.
-- 경계를 긋는 No 두 행. 원인을 규명하라거나 model 을 적합하라고 요구받은 server 는 서빙을 그만둔 것.
+- 경계를 긋는 No 두 행. 원인을 규명하라거나 model 을 적합하라고 요구받은 server 는 serving 을 그만둔 것.
 
 ## 2. Core Capabilities
 
@@ -57,13 +57,13 @@ Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 �
 | 1 | Context assembly | payload 가 model 이 쓸 feature 를 전부 담고 있음. | cut-off 기준으로 그 key 의 마지막 `L` 관측. 쓰기에 너무 성긴 window 는 거절. |
 | 2 | Horizon and uncertainty | 요청마다 값 하나. | horizon 의 모든 step 을 quantile 이나 구간과 함께. 각각 미래 timestamp 에 묶어서. |
 | 3 | Covariate handling | 모든 입력이 그저 같은 feature. | past covariate, future known covariate, static attribute. 미리 알 수 없는 future covariate 는 거절. |
-| 4 | Timestamp discipline | 시계 자체가 없음. | 하나의 frequency, 하나의 timezone, 결측과 중복에 대한 하나의 규약. 학습 때와 서빙 때가 동일. |
+| 4 | Timestamp discipline | 시계 자체가 없음. | 하나의 frequency, 하나의 timezone, 결측과 중복에 대한 하나의 규약. 학습 때와 serving 때가 동일. |
 | 5 | Series fan-out | 요청 하나에 행 하나. | 한 번의 호출로 여러 key. accelerator 를 채우도록 batch 로 묶고, 각각 자기 version 으로 routing. |
 | 6 | State and recovery | 무상태이므로 어느 replica 나 어느 요청이나 답함. | 계열별 state 를 들고 checkpoint. history 재생 없이 복구. |
 | 7 | Cold start | 처음 보는 행은 흔한 일. | 이력 없는 key 는 global 이나 pre-trained model 로 routing, 아니면 거절. |
 | 8 | Freshness and drift | 입력의 신선도는 caller 가 만든 만큼. | 답 뒤에 놓인 최신 관측의 나이, 그리고 재학습을 부르는 신호. |
 | 9 | Delayed evaluation | label 이 사건과 함께 도착. | 모든 답을 context 와 version 과 함께 보존. label 은 `H` step 뒤에 도착하므로. |
-| 10 | Throughput and latency | 독립된 요청을 마음대로 batch. | batching, 컴파일된 runtime, autoscaling 으로 예산을 지킴. timeout 이 아니라 더 싼 model 로 강등. |
+| 10 | Throughput and latency | 독립된 요청을 마음대로 batch. | batching, compile 된 runtime, autoscaling 으로 예산을 지킴. timeout 이 아니라 더 싼 model 로 강등. |
 | 11 | Reproducibility | 같은 입력이면 같은 답. | 지난 요청을 같은 답으로 재생. version, context, code path 를 함께 고정. |
 
 일반적인 model serving 에 대응물이 없는 세 가지를 아래에 적는다.
@@ -74,7 +74,7 @@ Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 �
 - payload 에 window 를 싣기: server 는 무상태가 되지만, payload 가 커지고 조립 부담이 모든 caller 에게 감.
 - online store 에서 window 를 읽기: payload 는 작아지지만, 임계 경로에 read 가 하나 늘고 낡은 데이터를 줄 의존이 생김.
 - Point-in-time correctness: cut-off 시점에 관측 가능했던 것만. timestamp 가 그보다 이르다는 것과 같은 말이 아님.
-- 제자리에서 덮어쓰는 store: 학습 집합과 서빙 경로가 어긋나고, 그 어긋남은 언제나 학습 집합에 유리함.
+- 제자리에서 덮어쓰는 store: 학습 집합과 serving 경로가 어긋나고, 그 어긋남은 언제나 학습 집합에 유리함.
 - 결측은 보간하거나, 앞 값을 끌고 가거나, 결측인 채로 둠. model 이 적합될 때 본 것과 맞춰야 하므로 server 의 선택.
 - context 보다 짧은 window: 짧아도 되는 model 로 넘기거나 거절. 0 으로 채우는 일은 없음.
 
@@ -85,7 +85,7 @@ Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 �
 - 뒤쪽은 server 를 stateful 하게 만듦. 한 key 의 요청이 그 state 를 든 replica 에 닿거나, state 가 외부 store 에 있어야 함.
 - state 는 checkpoint. 다시 만드는 일은 계열을 처음부터 재생하는 일이므로.
 - 순서를 벗어난 도착은 거절하거나 watermark 까지 되감음. 어제 표본을 오늘 표본 뒤에 적용하면 state 가 영구히 망가짐.
-- 장애를 견디는 keyed state [[1](#ref-1)], 거기에 watermark 와 event-time 순서: 서빙 이야기에 streaming engine 이 등장하는 이유.
+- 장애를 견디는 keyed state [[1](#ref-1)], 거기에 watermark 와 event-time 순서: serving 이야기에 streaming engine 이 등장하는 이유.
 
 ### 2.3 Delayed Evaluation
 
@@ -93,7 +93,7 @@ Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 �
 - version 과 context 가 달라지는 순간, 입력만으로는 복원 불가.
 - 그래서 모든 답을 cut-off, horizon step, quantile, model version, context 와 함께 기록.
 - scheduled job 이 그 행들을 실측과 결합해 key 별·horizon step 별 오차 계열을 만듦.
-- 그 오차 계열이 상시 두 결정의 유일하게 정직한 입력: 재학습 여부와, 어느 후보를 서빙할지.
+- 그 오차 계열이 상시 두 결정의 유일하게 정직한 입력: 재학습 여부와, 어느 후보를 serving 할지.
 
 ## 3. Deployment Patterns
 
@@ -123,7 +123,7 @@ Producers                Ingest / Transport          Context
                                                               control actions
 ```
 
-Fig 1. 수집에서 소비까지의 서빙 경로
+Fig 1. 수집에서 소비까지의 serving 경로
 
 Table 3. 배포 pattern 과 각각이 맞는 자리
 
@@ -132,7 +132,7 @@ Table 3. 배포 pattern 과 각각이 맞는 자리
 | 1 | Scheduled batch | 정해진 주기로 모든 key 를 예측해 table 에 기록. 가장 싸고, 소비자가 드물게 읽을 때 맞는 방식. |
 | 2 | Online request-response | 지연 예산 안에서 key 하나에 답함. 답이 caller 가 주는 인자에 달렸을 때 필수. |
 | 3 | Streaming push | 사건마다 keyed state 를 갱신하고 묻지 않아도 답을 냄. 높은 사건율에서 recursive model 을 온전히 유지하는 유일한 방식. |
-| 4 | Edge or on-premises | 컴파일된 model 을 발생지 옆에서 실행. 왕복이 제어 주기를 넘거나 raw trace 가 현장을 떠날 수 없을 때. |
+| 4 | Edge or on-premises | compile 된 model 을 발생지 옆에서 실행. 왕복이 제어 주기를 넘거나 raw trace 가 현장을 떠날 수 없을 때. |
 
 ## 4. The Caller's Interface
 
@@ -174,7 +174,7 @@ Table 4. Caller 가 요청에 지정할 수 있는 option
 
 ### 4.2 The Feedback Path
 
-사후에 제출된다. Classification, virtual metrology, remaining useful life 는 이 경로 없이는 서빙 자체가 성립하지 않는데, 그 label 이 여기로 오거나 아예 오지 않기 때문이다.
+사후에 제출된다. Classification, virtual metrology, remaining useful life 는 이 경로 없이는 serving 자체가 성립하지 않는데, 그 label 이 여기로 오거나 아예 오지 않기 때문이다.
 
 Table 5. Caller 가 되돌려 보낼 수 있는 feedback
 
@@ -182,7 +182,7 @@ Table 5. Caller 가 되돌려 보낼 수 있는 feedback
 |---|----------|-------------|
 | 1 | Actuals | 이미 답한 cut-off 의 관측값. 계열과 timestamp 로 keying 하여 중복 제출이 두 번 세어지지 않게. |
 | 2 | Verdict on a flag | 사람이 매긴 오탐·진탐 판정. deployment 가 받게 될 유일한 label 인 경우가 많음. |
-| 3 | Correction | caller 가 서빙된 답 대신 쓴 값. 별도 계열로 보관하여, model 이 자기가 보정된 출력 위에서 적합되지 않게. |
+| 3 | Correction | caller 가 serving 된 답 대신 쓴 값. 별도 계열로 보관하여, model 이 자기가 보정된 출력 위에서 적합되지 않게. |
 | 4 | Event marks | 계열을 뛰게 만든 정비, 세정, recipe 변경, 제품 전환. drift detector 가 의도된 불연속으로 읽음. |
 | 5 | Measurement request | 다음에 무엇을 측정할지. server 자신의 불확실성으로 답함. sampling plan 에 적용한 active learning. |
 | 6 | Retrain or promote | 재적합이나 후보 승격 요청. governed job 의 대기열로 감. |
@@ -190,16 +190,16 @@ Table 5. Caller 가 되돌려 보낼 수 있는 feedback
 ### 4.3 Rules For The Write Path
 
 - Feedback 은 append 만. 제자리 적용은 없음.
-- 한 caller 가 서빙 중인 model 을 바꾸게 하는 endpoint 는 다른 모든 caller 의 답을 바꾸고, 재현성을 끝냄.
+- 한 caller 가 serving 중인 model 을 바꾸게 하는 endpoint 는 다른 모든 caller 의 답을 바꾸고, 재현성을 끝냄.
 - 살아남는 형태: 계열·timestamp·출처로 keying 된 feedback store, 그리고 무엇을 바꿀지 정하는 governed job.
 - 모든 제출은 보낸 주체와 어느 답에 대한 것인지를 지님. correction 은 쓰이는 순간 label 이 되고, label 은 철회해야 할 수 있으므로.
-- 호출당 adaptation 인자는 서빙 요금으로 청구되는 학습 비용. 예산과 cache 와 caller 별 quota 가 필요.
+- 호출당 adaptation 인자는 serving 요금으로 청구되는 학습 비용. 예산과 cache 와 caller 별 quota 가 필요.
 
 ## 5. Key Solutions and Platforms
 
 ### 5.1 General Purpose Model Servers
 
-Endpoint 뒤의 어떤 model 이든 서빙하되 시간에 대해서는 아무것도 모른다. Context assembly 는 caller 나 그 위에 쓴 wrapper 의 몫으로 남는다.
+Endpoint 뒤의 어떤 model 이든 serving 하되 시간에 대해서는 아무것도 모른다. Context assembly 는 caller 나 그 위에 쓴 wrapper 의 몫으로 남는다.
 
 Table 6. 범용 model server
 
@@ -209,7 +209,7 @@ Table 6. 범용 model server
 | 2 | KServe | InferenceService 를 정의하는 CNCF incubating project. 요청 기반 autoscaling 과 scale-to-zero [[4](#ref-4)]. 다른 runtime 을 앞에서 감쌀 수 있음. |
 | 3 | BentoML | Python 추론 code 를 adaptive batching 과 함께 container 로 포장. 평범한 객체 형태의 forecasting code 에 맞음. |
 | 4 | Ray Serve | model 을 graph 로 조합하고, 여러 model 을 공유 replica 위에 multiplexing. key 별 model 해소와 맞음. |
-| 5 | MLflow model serving | model 을 `pyfunc` 으로 서빙. 추론이 library 호출인 통계 model 의 통상 경로. |
+| 5 | MLflow model serving | model 을 `pyfunc` 으로 serving. 추론이 library 호출인 통계 model 의 통상 경로. |
 | 6 | TensorFlow Serving | 저장된 TensorFlow graph 에는 안정적이고, 그 밖에는 별 것 없음. |
 | 7 | TorchServe | 제한 유지보수. 예정된 갱신도, 수정도, 보안 patch 도 없음 [[5](#ref-5)]. 새 작업의 선택지가 아님. |
 
@@ -219,19 +219,19 @@ Table 6. 범용 model server
 
 Key 마다 하나씩 두던 model 무리를 checkpoint 하나가 대신한다. 계열 간 차이는 받아들이는 입력의 모양, quantile 이 한 번의 pass 에서 나오는지 sampling 에서 나오는지, 그리고 forward pass 의 크기다.
 
-Table 7. Pre-trained model 과 서빙 방식
+Table 7. Pre-trained model 과 serving 방식
 
 | # | Model | Description |
 |---|-------|-------------|
 | 1 | TimeGPT (Nixtla) | API key 로 접근하는 hosted endpoint. forecasting 과 함께 anomaly detection 을 다룸 [[2](#ref-2)]. 데이터를 내보낼 수 없는 곳을 위한 self-hosted 배포도 있음. |
 | 2 | Chronos-2 (Amazon) | Open-weight, 약 120M parameter. 단변량·다변량·covariate 입력에 zero-shot 이며 quantile 을 직접 생성 [[6](#ref-6)]. |
 | 3 | TimesFM (Google) | Open-weight, decoder-only. 2.5 release 는 200M parameter, 16k context, 선택적 quantile head [[7](#ref-7)]. |
-| 4 | Moirai (Salesforce) | 2.0 에서 open-weight 이며 `uni2ts` library 를 통해 서빙 [[8](#ref-8)]. 공급사 의존 대신 library 를 배포에 싣는 형태. |
+| 4 | Moirai (Salesforce) | 2.0 에서 open-weight 이며 `uni2ts` library 를 통해 serving [[8](#ref-8)]. 공급사 의존 대신 library 를 배포에 싣는 형태. |
 | 5 | Granite TTM (IBM) | IBM 의 TinyTimeMixer 계열. 자체 library 와 benchmark 를 갖춤 [[9](#ref-9)]. stream processor 안에 넣을 만큼 작음. |
 | 6 | Toto (Datadog) | 관측 지표를 위해 학습. 수백만에서 수십억 parameter 까지의 계열이며, quantile 출력과 시간·변량 교대 attention [[10](#ref-10)]. |
 
 - retrieval 에도 같은 checkpoint. forecast 로 가는 길에 만들어지는 표현이 곧 segment index 가 저장하는 것이므로.
-- open weight 로 retrieval 을 서빙하는 비용: 새 segment 당 쓰기 시점 forward pass 한 번, 읽기 시점은 없음.
+- open weight 로 retrieval 을 serving 하는 비용: 새 segment 당 쓰기 시점 forward pass 한 번, 읽기 시점은 없음.
 - leaderboard 순위는 후보를 추리는 근거이지 채택의 근거가 아님. 결정하는 평가는 대상 계열 위에서 naive baseline 과 겨루는 것.
 
 ### 5.3 Forecasting Frameworks
@@ -249,7 +249,7 @@ Table 8. Model 과 batch inference 를 공급하는 framework
 
 ### 5.4 Streaming Engines And Stores
 
-Section 2 의 state 와 context 요구를 받는 층이다. Push pattern 에서는 이 층 자체가 서빙 층이다.
+Section 2 의 state 와 context 요구를 받는 층이다. Push pattern 에서는 이 층 자체가 serving 층이다.
 
 Table 9. Streaming 과 저장 구성 요소
 
@@ -259,9 +259,9 @@ Table 9. Streaming 과 저장 구성 요소
 | 2 | Apache Flink | checkpoint 와 watermark 를 갖춘 keyed state. 원격 model 을 호출하거나 작은 model 을 직접 실행. recursive model 이 있을 자리. |
 | 3 | Spark Structured Streaming | micro-batch 위의 batch code. 밀리초가 아니라 분 단위 주기에 맞음. |
 | 4 | Online store (Redis, DynamoDB) | 마지막 `L` 점과 key 의 static attribute 를 밀리초 예산 안에. section 2.1 이 임계 경로에 두는 read. |
-| 5 | Feature store (Feast, Tecton) | feature 정의 하나를 offline 과 online 양쪽에 materialize. 학습 window 와 서빙 window 를 같게 유지. |
+| 5 | Feature store (Feast, Tecton) | feature 정의 하나를 offline 과 online 양쪽에 materialize. 학습 window 와 serving window 를 같게 유지. |
 | 6 | Time series database (InfluxDB, TimescaleDB, ClickHouse, Prometheus) | backfill 과 backtest 가 읽는 history. 보존 규칙이 긴 context 에 무엇이 남는지를 정함. |
-| 7 | Segment index (FAISS, pgvector, Milvus) | 과거 segment 마다 embedding 하나와, 비교가 걸러야 할 attribute. 그 재구축 일정이 서빙 설계의 일부. |
+| 7 | Segment index (FAISS, pgvector, Milvus) | 과거 segment 마다 embedding 하나와, 비교가 걸러야 할 attribute. 그 재구축 일정이 serving 설계의 일부. |
 
 ### 5.5 Managed And Warehouse-Native Services
 
@@ -298,7 +298,7 @@ Table 11. 제약과 그것이 강제하는 선택
 
 Section 2 가 이미 금지하지 않는, 그리고 어떤 test 에도 걸리지 않는 실패들.
 
-- 서빙 window 와 학습 window 를 서로 다른 code 가 만들어, 각자 일관된 채로 resampling·결측·timezone 에서 어긋남.
+- serving window 와 학습 window 를 서로 다른 code 가 만들어, 각자 일관된 채로 resampling·결측·timezone 에서 어긋남.
 - 상류에서 channel 의 단위가 바뀌었는데, 값이 schema 범위 안이라 아무도 거르지 않음.
 - 재학습 trigger 를 horizon 보다 짧은 잔차 window 로 걸어, 아직 다 채점되지 않은 답 위에서 발동.
 
@@ -343,7 +343,7 @@ Section 2 가 이미 금지하지 않는, 그리고 어떤 test 에도 걸리지
 
 - **Active learning**: model 이 가장 자신 없어 하는 것을 기준으로 다음에 label 할 대상을 고르는 방식.
 - **Attribution**: 어느 channel, step, lag 이 그 답을 움직였는지에 대한 설명. 답을 만드는 동안 함께 계산됨.
-- **Backfill**: 과거 cut-off 에 대해 서빙 경로로 답을 다시 계산하는 일. 새 model 이 만들었을 history 를 얻기 위함.
+- **Backfill**: 과거 cut-off 에 대해 serving 경로로 답을 다시 계산하는 일. 새 model 이 만들었을 history 를 얻기 위함.
 - **Chamber**: 한 wafer 나 batch 가 처리되는 process tool 의 내부 공간. 대부분의 FDC 계열이 keying 되는 단위.
 - **Change point**: 계열의 거동이 바뀌는 timestamp.
 - **Context**: model 이 소비하는 과거 관측의 window. 그 길이는 model 이 정함.
@@ -354,13 +354,13 @@ Section 2 가 이미 금지하지 않는, 그리고 어떤 test 에도 걸리지
 - **Dynamic batching**: 따로 도착한 요청을 한 번의 forward pass 로 모으는 것. 유계의 대기 지연을 값으로 치름.
 - **Embedding**: segment 를 비교하거나 index 할 때 그 segment 를 대신하는 고정 길이 vector.
 - **Fault detection and classification (FDC)**: run 의 sensor trace 로부터 장비가 의도대로 거동했는지 판단하는 일.
-- **Foundation model**: 여러 계열로 pre-train 되어, 한 번도 적합된 적 없는 계열을 서빙하는 model.
-- **Governed job**: 어떤 요청 밖에서 도는 job. server 가 서빙하는 것을 바꿀 수 있는 유일한 주체.
+- **Foundation model**: 여러 계열로 pre-train 되어, 한 번도 적합된 적 없는 계열을 serving 하는 model.
+- **Governed job**: 어떤 요청 밖에서 도는 job. server 가 serving 하는 것을 바꿀 수 있는 유일한 주체.
 - **Horizon**: 답이 덮는 앞으로의 step 수. `H` 로 씀.
 - **Keyed state**: stream processor 가 key 별로 들고 checkpoint 에서 복구하는 state.
 - **Lot**: 공정을 함께 지나가는 wafer 무리.
 - **Metrology**: 공정이 무엇을 만들었는지 보고하는 측정 단계. 공정 중이 아니라 공정 뒤에 수행.
-- **Model registry**: version 의 catalog, 그리고 어느 version 이 어느 key 를 서빙할지 정하는 규칙.
+- **Model registry**: version 의 catalog, 그리고 어느 version 이 어느 key 를 serving 할지 정하는 규칙.
 - **Naive baseline**: 마지막 관측이나 한 계절 전 관측을 그대로 되풀이하는 예측. 어떤 model 이든 이겨야 하는 기준.
 - **Point-in-time correctness**: context 안의 모든 값이 cut-off 시점에 관측 가능했다는 성질. timestamp 가 그보다 이르다는 것만으로는 부족함.
 - **Production line**: lot 이 지나가는 공정 단계와 tool 의 연쇄. 하나의 FDC deployment 가 맡는 범위.
@@ -460,12 +460,12 @@ Table 12. Inference server 가 반도체 production line 에 올리는 기능
 | 8 | Planning | Setpoint evaluation | 제안된 setpoint 를 적용 전에 조건부 forecast 로 답함. 그 제안을 답과 함께 저장. |
 | 9 | Planning | Sampling nomination | 이미 준 답의 불확실성으로 key 를 순위 매김. metrology 계획이 그 순위를 따를 수 있음. |
 | 10 | Coverage | Cold-start routing | 이력이 없는 chamber 나 recipe 를 global 이나 pre-trained model 로 routing. 첫 run 부터 덮임. |
-| 11 | Coverage | Fleet comparison | 모든 tool 에 같은 key 구조를 서빙. 한 chamber 를 자기 과거뿐 아니라 동료 집단과 비교. |
+| 11 | Coverage | Fleet comparison | 모든 tool 에 같은 key 구조를 serving. 한 chamber 를 자기 과거뿐 아니라 동료 집단과 비교. |
 
 어느 한 행이 아니라 이 묶음에서 나오는 효과가 셋 있다.
 
 - 기능들이 하나의 조립을 공유. 나중에 fault class 나 측정 추정을 더하는 일은 두 번째 pipeline 이 아니라 소비자 하나를 더하는 일.
 - 답이 기록이 됨. 각각 context 와 version 과 함께 저장되므로 지난 분기의 정확도를 지금 계산할 수 있음.
-- Loop 가 닫힘. 판정과 뒤늦은 측정이 같은 경로로 돌아와 다음 달에 서빙할 model 을 적합함.
+- Loop 가 닫힘. 판정과 뒤늦은 측정이 같은 경로로 돌아와 다음 달에 serving 할 model 을 적합함.
 
 이 모든 것 뒤에 조건 하나가 서 있는데, run 이 들어오는 길에 recipe step 으로 분절되어 있어야 한다는 것이다.
