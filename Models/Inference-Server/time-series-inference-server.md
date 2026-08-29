@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 22 | Created: 2026-08-28 | Updated: 2026-08-29 11:20 CDT
+Rev. 23 | Created: 2026-08-28 | Updated: 2026-08-29 11:40 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
@@ -7,8 +7,7 @@ Rev. 22 | Created: 2026-08-28 | Updated: 2026-08-29 11:20 CDT
 
 - serving 만 다룸. 적합된 model 이나 pre-trained checkpoint 에서 시작해 답이 소비되는 지점까지.
 - 범위 밖: 학습 절차, model family, feature 구성.
-- 계열: 한 대상이 시간 순서로 쌓아 가는 관측의 나열. 예를 들어 tool, chamber, sensor 의 조합마다 하나씩.
-- 그런 계열이 수천 개인 경우를 전제. 계열 하나면 scheduled job 하나로 끝나고 이 문서의 어느 것도 필요 없음.
+- 시계열이 수천 개인 경우를 전제. 계열 하나면 scheduled job 하나로 끝나고 이 문서의 어느 것도 필요 없음.
 
 ### 1.1 The Test For A Servable Question
 
