@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 16 | Created: 2026-08-28 | Updated: 2026-08-28 15:40 CDT
+Rev. 17 | Created: 2026-08-28 | Updated: 2026-08-29 08:15 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -30,6 +30,7 @@ Table 1. Questions, deliverables, and what each one adds to the deployment
 | Change point detection | Yes | Timestamps, each with a measure of how sharply behavior changed. | Nothing, but a whole segment in the request. |
 | Imputation | Yes | Filled values, each marked imputed rather than observed. | The sibling channels of the same key. |
 | Virtual metrology | Yes | One estimate with an interval per run, before the measurement exists. | The join to the measurement that arrives later. |
+| Sequence target from a trace tensor | Yes | The forecast or the estimate deliverable, one row per key and sequence step, from a `[sequence, feature, trace]` input. | The trace axis reduced to summary values on the way in, or a model that takes the tensor whole. Segment bounds from the ingest path either way. |
 | Remaining useful life | Yes | Remaining runs or hours, with an interval, per component. | An event history of failures and replacements. |
 | What-if | Yes | The forecast deliverable, plus the covariate path it is conditional on. | Nothing, but no precomputing it. |
 | Attribution | Yes | A contribution per channel, lag, or step, summing to the deviation explained. | The explanation, stored with the answer. |
@@ -42,7 +43,7 @@ The last column, not the algorithm, decides the shape of the deployment.
 - A segment index and the job that maintains it: retrieval.
 - Labels, so the feedback path of section 4.2 comes first: classification, virtual metrology, remaining useful life.
 - A baseline and a threshold rule: anomaly detection.
-- A wider request or a wider stored answer: imputation, attribution.
+- A wider request or a wider stored answer: imputation, attribution, the sequence target from a trace tensor.
 - The two No rows as the boundary. A server asked to establish a cause or to fit a model has stopped serving.
 
 ## 2. Core Capabilities
@@ -373,6 +374,7 @@ Failures that section 2 does not already forbid, and that no test catches.
 - Segment: a bounded stretch of one series, delimited by a length or by an event such as a step transition.
 - Segment index: the store holding one embedding per past segment, answering retrieval without a forward pass.
 - Trace: the sampled record of one sensor through one run.
+- Trace tensor: a `[sequence, feature, trace]` array, with run order on one axis and within-run time on another.
 - Virtual metrology: what metrology measures, estimated from data available before that measurement exists.
 - Wafer: the substrate carried through the process and measured by metrology.
 - Watermark: the event-time bound after which no earlier event is expected.
