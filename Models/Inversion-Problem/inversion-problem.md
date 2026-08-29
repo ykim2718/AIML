@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 21 | Created: 2026-08-28 | Updated: 2026-08-29 02:01 CDT
+Rev. 22 | Created: 2026-08-28 | Updated: 2026-08-29 02:24 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -16,15 +16,15 @@ Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{
 
 ### 1.2 Ill-posedness
 
-Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [\[1\]](#ref-1).
+Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
 
 - 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 상 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
 - 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 이 자유도를 어떻게 쓸지가 설계형 문제의 핵심이 된다.
-- 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [\[1\]](#ref-1).
+- 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
 
 ### 1.3 Model inversion
 
-Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. 공정의 historical data 로 세운 latent variable model 을 뒤집어, 원하는 품질을 낼 수 있는 운전 조건의 창을 얻는 방법이 이 용어의 출발점이다 [\[2\]](#ref-2). 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
+Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. 공정의 historical data 로 세운 latent variable model 을 뒤집어, 원하는 품질을 낼 수 있는 운전 조건의 창을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
 비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
 
@@ -84,7 +84,7 @@ $$\hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{\a
 
 $$p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x})\, p(\mathbf{x})$$
 
-두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [\[3\]](#ref-3). Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 다중해와 불확실성을 그대로 보여 준다.
+두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [[3](#ref-3)]. Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 다중해와 불확실성을 그대로 보여 준다.
 
 ### 2.2 Search space (Where to search)
 
@@ -94,7 +94,7 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 
 - Analytical inverse 는 선형 model 에서 pseudo-inverse 로 해를 닫힌 형태로 준다. 가장 싸지만 비선형 model 에는 쓸 수 없다.
 - Numerical optimization 은 $f$ 를 그대로 두고 잔차를 줄인다. 미분이 되면 gradient 를, 안 되면 derivative-free 탐색을 쓴다.
-- Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 따로 학습한다. 추론이 한 번의 forward 로 끝나지만, 다중해를 평균으로 뭉개면 어느 쪽도 아닌 답을 낸다 [\[4\]](#ref-4).
+- Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 따로 학습한다. 추론이 한 번의 forward 로 끝나지만, 다중해를 평균으로 뭉개면 어느 쪽도 아닌 답을 낸다 [[4](#ref-4)].
 - Posterior sampling 은 해를 표본으로 뽑아 다중해를 그대로 드러낸다. 비용이 가장 크다.
 
 ### 2.4 Ambiguity handling (What fixes the answer)
@@ -107,7 +107,7 @@ Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여
 
 ## 3. Latent Variable Model Inversion
 
-PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 오래된 산업 사례이며, 이후의 방법들이 되풀이하는 골격을 이미 갖추고 있다. 차원을 줄여 자유도를 정리하고, 줄인 공간에서 역해를 구하고, 유효 영역 제약으로 외삽을 막는 세 단계가 그것이다 [\[2\]](#ref-2), [\[5\]](#ref-5).
+PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 오래된 산업 사례이며, 이후의 방법들이 되풀이하는 골격을 이미 갖추고 있다. 차원을 줄여 자유도를 정리하고, 줄인 공간에서 역해를 구하고, 유효 영역 제약으로 외삽을 막는 세 단계가 그것이다 [[2](#ref-2)], [[5](#ref-5)].
 
 ### 3.1 PLS inversion and the null space
 
@@ -119,10 +119,10 @@ $$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \ma
 
 $$\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$$
 
-$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
+$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
 
 - Null space 는 품질을 바꾸지 않고 움직일 수 있는 운전 자유도이다. 원가, 처리량, 에너지 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
-- Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [\[5\]](#ref-5).
+- Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [[5](#ref-5)].
 
 $$T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2}$$
 
@@ -152,10 +152,10 @@ Fig 2. Null space and the validity region in the score plane
 
 같은 골격이 산업 문제로 확장되면서 다음 결과들이 쌓였다.
 
-- 두 site 의 데이터를 하나의 latent space 로 묶는 Joint-Y PLS 는, 한 site 에서 검증된 조건을 다른 site 의 조건으로 옮기는 product transfer 를 inversion 문제로 만든다 [\[6\]](#ref-6).
-- Model parameter 의 불확실성을 해에 전파하면 규격을 만족하는 영역이 좁아진다. 이 보수적인 영역이 pharmaceutical 공정에서 말하는 design space 이다 [\[7\]](#ref-7).
-- 규격이 등식이 아니라 상하한으로 주어지거나, 일부 입력이 고정되거나, 목표가 여러 개인 경우가 모두 하나의 제약 최적화로 통합되었다 [\[8\]](#ref-8).
-- 최근 정식화는 score 공간에서 풀 것인가 입력 공간에서 풀 것인가를 문제의 제약 구조로 결정하고, null space 를 유지한 채 $T^{2}$ 와 SPE 제약을 함께 넣는다 [\[9\]](#ref-9), [\[10\]](#ref-10).
+- 두 site 의 데이터를 하나의 latent space 로 묶는 Joint-Y PLS 는, 한 site 에서 검증된 조건을 다른 site 의 조건으로 옮기는 product transfer 를 inversion 문제로 만든다 [[6](#ref-6)].
+- Model parameter 의 불확실성을 해에 전파하면 규격을 만족하는 영역이 좁아진다. 이 보수적인 영역이 pharmaceutical 공정에서 말하는 design space 이다 [[7](#ref-7)].
+- 규격이 등식이 아니라 상하한으로 주어지거나, 일부 입력이 고정되거나, 목표가 여러 개인 경우가 모두 하나의 제약 최적화로 통합되었다 [[8](#ref-8)].
+- 최근 정식화는 score 공간에서 풀 것인가 입력 공간에서 풀 것인가를 문제의 제약 구조로 결정하고, null space 를 유지한 채 $T^{2}$ 와 SPE 제약을 함께 넣는다 [[9](#ref-9)], [[10](#ref-10)].
 
 ## 4. Model-Specific Inversion Methods
 
@@ -183,19 +183,19 @@ PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. OLS 와 Ridge 도 pseudo-inverse
 
 ### 4.2 Kernel and Gaussian process models
 
-Kernel 계열은 특징 공간에서는 선형이지만 그 공간의 점에 대응하는 입력이 일반적으로 존재하지 않는다. 그래서 특징 공간의 해를 입력 공간으로 되돌리는 pre-image 를 반복 최적화나 고정점 방법으로 근사한다 [\[11\]](#ref-11). Gaussian process 는 예측과 함께 분산을 주므로 사정이 다르다. 목표에서 벗어난 정도와 불확실성을 함께 담은 acquisition function 을 세우고 그것을 최적화하면, 다음에 시험할 입력을 정하는 Bayesian optimization 이 된다 [\[12\]](#ref-12). 해를 한 번에 구하지 않고 실험을 반복하며 좁혀 간다는 점에서 앞의 방법들과 성격이 다르다.
+Kernel 계열은 특징 공간에서는 선형이지만 그 공간의 점에 대응하는 입력이 일반적으로 존재하지 않는다. 그래서 특징 공간의 해를 입력 공간으로 되돌리는 pre-image 를 반복 최적화나 고정점 방법으로 근사한다 [[11](#ref-11)]. Gaussian process 는 예측과 함께 분산을 주므로 사정이 다르다. 목표에서 벗어난 정도와 불확실성을 함께 담은 acquisition function 을 세우고 그것을 최적화하면, 다음에 시험할 입력을 정하는 Bayesian optimization 이 된다 [[12](#ref-12)]. 해를 한 번에 구하지 않고 실험을 반복하며 좁혀 간다는 점에서 앞의 방법들과 성격이 다르다.
 
 ### 4.3 Tree ensembles
 
-Random forest 와 gradient boosting 은 조각별 상수 함수이므로 입력에 대한 gradient 가 0 이거나 정의되지 않는다. 따라서 gradient 대신 탐색을 쓴다. 격자 탐색, genetic algorithm, CMA-ES 같은 derivative-free 방법이 그대로 쓰이며, 학습된 tree 자체를 빠른 surrogate 로 두고 그 위에서 탐색을 돌린다. TreeSHAP 은 한 점 주변에서 각 입력의 기여도를 정확히 계산하므로, 국소 선형 근사를 얻어 탐색의 방향을 정하는 데 쓸 수 있다 [\[13\]](#ref-13).
+Random forest 와 gradient boosting 은 조각별 상수 함수이므로 입력에 대한 gradient 가 0 이거나 정의되지 않는다. 따라서 gradient 대신 탐색을 쓴다. 격자 탐색, genetic algorithm, CMA-ES 같은 derivative-free 방법이 그대로 쓰이며, 학습된 tree 자체를 빠른 surrogate 로 두고 그 위에서 탐색을 돌린다. TreeSHAP 은 한 점 주변에서 각 입력의 기여도를 정확히 계산하므로, 국소 선형 근사를 얻어 탐색의 방향을 정하는 데 쓸 수 있다 [[13](#ref-13)].
 
 ### 4.4 Neural networks
 
-미분 가능한 network 는 가장 직접적으로 뒤집힌다. 가중치를 고정한 채 입력을 변수로 두고 $\lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ 를 입력에 대해 역전파하면 된다. 출력 하나를 최대화하는 형태로 쓰면 activation maximization 이고, 작은 변화로 출력을 바꾸는 형태로 쓰면 adversarial 예제 생성과 계산이 같다 [\[14\]](#ref-14). 쓰임이 다를 뿐 계산이 같으므로 위험도 그대로 따라온다. 제약 없이 최적화하면 목표 출력을 완벽히 맞추면서도 데이터 분포에서 한참 떨어진 입력이 나오므로, 입력 범위 제한이나 사전 분포 항이 반드시 필요하다.
+미분 가능한 network 는 가장 직접적으로 뒤집힌다. 가중치를 고정한 채 입력을 변수로 두고 $\lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ 를 입력에 대해 역전파하면 된다. 출력 하나를 최대화하는 형태로 쓰면 activation maximization 이고, 작은 변화로 출력을 바꾸는 형태로 쓰면 adversarial 예제 생성과 계산이 같다 [[14](#ref-14)]. 쓰임이 다를 뿐 계산이 같으므로 위험도 그대로 따라온다. 제약 없이 최적화하면 목표 출력을 완벽히 맞추면서도 데이터 분포에서 한참 떨어진 입력이 나오므로, 입력 범위 제한이나 사전 분포 항이 반드시 필요하다.
 
 ### 4.5 Generative and invertible models
 
-생성 model 은 데이터 분포를 학습하므로 그 자체가 강한 prior 이다. Autoencoder 와 VAE 는 latent 공간에서 탐색한 뒤 디코딩하며, 디코더가 만들어 낼 수 있는 것만 후보가 되므로 비현실적인 해가 걸러진다. 분자 설계에서 이 방식이 자리 잡은 것도 같은 이유이다 [\[15\]](#ref-15). Invertible neural network 와 normalizing flow 는 한 걸음 더 나아가 구조적으로 양방향이다. Forward 를 학습하면 inverse 가 함께 정의되고, 조건부 형태인 cINN 은 목표를 조건으로 준 사후분포에서 표본을 직접 뽑는다 [\[16\]](#ref-16). Diffusion model 은 학습된 score 에 관측 우도의 gradient 를 더해 사후분포를 표본화하며, 잡음이 섞인 비선형 문제에서 최근의 표준으로 쓰인다 [\[17\]](#ref-17).
+생성 model 은 데이터 분포를 학습하므로 그 자체가 강한 prior 이다. Autoencoder 와 VAE 는 latent 공간에서 탐색한 뒤 디코딩하며, 디코더가 만들어 낼 수 있는 것만 후보가 되므로 비현실적인 해가 걸러진다. 분자 설계에서 이 방식이 자리 잡은 것도 같은 이유이다 [[15](#ref-15)]. Invertible neural network 와 normalizing flow 는 한 걸음 더 나아가 구조적으로 양방향이다. Forward 를 학습하면 inverse 가 함께 정의되고, 조건부 형태인 cINN 은 목표를 조건으로 준 사후분포에서 표본을 직접 뽑는다 [[16](#ref-16)]. Diffusion model 은 학습된 score 에 관측 우도의 gradient 를 더해 사후분포를 표본화하며, 잡음이 섞인 비선형 문제에서 최근의 표준으로 쓰인다 [[17](#ref-17)].
 
 ### 4.6 Model-agnostic numerical optimization
 
@@ -207,7 +207,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래의 제안이며, �
 
 - 외삽: model 은 historical data 가 덮은 영역에서만 신뢰할 수 있다. $T^{2}$ 는 그 영역 안에서 중심으로부터 얼마나 멀리 있는지를, SPE 는 영역이 이루는 면에서 얼마나 떨어졌는지를 잰다. 둘 중 하나만 보면 상관 구조가 깨진 해를 놓친다.
 - 다중해: 답이 하나가 아니면 하나만 골라 보고하지 않는다. Null space 구간이나 사후분포처럼 답의 집합을 보여 주는 편이 판단에 도움이 된다.
-- 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 규격을 만족할 확률로 해를 평가할 수 있다 [\[3\]](#ref-3). 점 추정만 주는 model 은 이 판단이 불가능하므로 별도의 검증이 필요하다.
+- 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 규격을 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 이 판단이 불가능하므로 별도의 검증이 필요하다.
 - 검증과 갱신: 얻은 입력은 실험이나 시뮬레이션으로 확인하고, 그 결과를 데이터에 더해 model 을 다시 학습하는 폐루프를 둔다. 이 되먹임이 없으면 model 의 오차가 그대로 설계 오차가 된다.
 
 ## 6. Tools and Libraries
