@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 15 | Created: 2026-08-28 | Updated: 2026-08-29 01:35 CDT
+Rev. 16 | Created: 2026-08-28 | Updated: 2026-08-29 01:38 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -295,9 +295,9 @@ Table 3. Libraries for model inversion
 - Ill-posed problem: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
 - Inverse design: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
 - Joint-Y PLS: 여러 site 의 데이터를 공통 출력으로 묶어 하나의 latent space 에서 다루는 PLS 확장이다.
-- Kernel density estimate: 표본 하나하나에 좁은 종 모양 함수를 얹어 더함으로써 분포의 밀도를 추정하는 방법이다.
 - Latent variable: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
 - Loading: Latent 변수와 관측 변수를 잇는 계수이며, score 에서 입력을 복원할 때 쓰인다.
+- Mahalanobis distance: 각 방향의 산포로 나누어 재는 거리이며, 중심에서 표준편차 몇 배만큼 떨어졌는지를 나타낸다.
 - MCMC: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
 - Minimum-norm solution: 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다.
 - Model inversion: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
@@ -367,7 +367,7 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 학습에 쓴 100 개 표본의 두 process input 을 그린 것이다. 등고선은 두 입력이 함께 이루는 밀도이고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 구름이 가로로 늘어난 타원을 이룬다. 이 구름이 곧 model 이 배운 영역이다.
 
-등고선은 지형도의 등고선과 같은 뜻이다. 100 개 표본에서 kernel density estimate 로 밀도를 추정한 뒤, 그 값이 같은 점들을 이은 선이다. 안쪽 선일수록 밀도가 높아 표본이 몰린 곳이고, 바깥으로 갈수록 표본이 드물어진다. 선의 값은 밀도의 최대와 최소 사이를 같은 간격으로 자른 것이므로, 한 선이 확률 몇 % 를 담는다는 뜻은 아니다. 이 그림에서 등고선이 세로보다 가로로 넓은 것이 $x_1$ 의 산포가 더 크다는 사실을 그대로 보여 준다.
+등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 3.1 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix C 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
 
 Fig 3 (b) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 

@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.2.1.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.3.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 from scipy.linalg import null_space
 from scipy.optimize import minimize
-from scipy.stats import chi2, gaussian_kde
+from scipy.stats import chi2
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
@@ -70,11 +70,16 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     ax_right = fig.add_subplot(left[1, 1], sharey=ax_main)
     ax_parity = fig.add_subplot(outer[1])
 
-    # joint density of the two sampled inputs
-    grid_x, grid_y = np.mgrid[x_data[:, 0].min() - 0.6:x_data[:, 0].max() + 0.6:120j,
-                              x_data[:, 1].min() - 0.6:x_data[:, 1].max() + 0.6:120j]
-    density = gaussian_kde(x_data.T)(np.vstack([grid_x.ravel(), grid_y.ravel()])).reshape(grid_x.shape)
-    ax_main.contour(grid_x, grid_y, density, levels=6, colors=COLORS[0], linewidths=1.0)
+    # Mahalanobis distance from the sample centre, in units of standard deviation
+    grid_x, grid_y = np.mgrid[x_data[:, 0].min() - 0.6:x_data[:, 0].max() + 0.6:200j,
+                              x_data[:, 1].min() - 0.6:x_data[:, 1].max() + 0.6:200j]
+    centre = x_data.mean(axis=0)
+    cov_inv = np.linalg.inv(np.cov(x_data, rowvar=False))
+    offset = np.stack([grid_x - centre[0], grid_y - centre[1]], axis=-1)
+    distance = np.sqrt(np.einsum('...i,ij,...j->...', offset, cov_inv, offset))
+    lines = ax_main.contour(grid_x, grid_y, distance, levels=[1.0, 2.0, 3.0],
+                            colors=COLORS[0], linewidths=1.0)
+    ax_main.clabel(lines, fmt='%.0f', fontsize=font_size(0.8))
     ax_main.scatter(x_data[:, 0], x_data[:, 1], s=14, color='0.45', label='100 samples')
     ax_main.set_xlabel('x1', fontsize=font_size())
     ax_main.set_ylabel('x2', fontsize=font_size())
@@ -98,7 +103,8 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     ax_parity.legend(fontsize=font_size(0.8), loc='upper left')
 
     fig.subplots_adjust(bottom=0.20)
-    sub_caption(fig, [ax_main, ax_top, ax_right], '(a) the two sampled inputs and their distributions')
+    sub_caption(fig, [ax_main, ax_top, ax_right],
+                '(a) the two sampled inputs, contoured by Mahalanobis distance')
     sub_caption(fig, [ax_parity], f'(b) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
 
     out_path = out_folder / 'appendix-b-parity.png'
@@ -106,7 +112,7 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
     plt.close(fig)
 
-    # the samples the histograms, the density and the parity plot received
+    # the samples the histograms, the contours and the parity plot received
     sample_path = out_folder / 'appendix-b-samples.csv'
     np.savetxt(sample_path, np.column_stack([x_data, y_data, y_pred]), delimiter=',',
                header='x1,x2,y,y_pred', comments='', fmt='%.6f')
