@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 25 | Created: 2026-08-28 | Updated: 2026-08-29 02:47 CDT
+Rev. 26 | Created: 2026-08-28 | Updated: 2026-08-29 02:53 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -30,14 +30,14 @@ Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 
 
 Table 1. Terms adjacent to model inversion
 
-| Term | Question it answers | Difference from model inversion |
-| --- | --- | --- |
-| Model inversion | 목표 출력을 내는 입력은 무엇인가 | 기준이 되는 문제이다 |
-| Inverse design | 목표 성능을 갖는 설계안은 무엇인가 | 문제의 이름이며, model inversion 은 그 해법 중 하나이다 |
-| Calibration | 관측을 설명하는 model parameter 는 무엇인가 | 되찾는 대상이 입력이 아니라 model parameter 이다 |
-| Optimization | 목적 함수를 가장 좋게 하는 입력은 무엇인가 | 목표값 추종이 아니라 극값 탐색이며, 잔차를 목적 함수로 두면 inversion 을 포함한다 |
-| Attribution | 출력이 어느 입력에 얼마나 반응하는가 | 국소 기여도를 설명할 뿐 목표를 만족하는 입력을 제시하지 않는다 |
-| Model inversion attack | 학습 데이터에 무엇이 있었는가 | 목적이 설계가 아니라 privacy 침해이며, 복원 대상이 학습 표본이다 |
+| # | Term | Question it answers | Difference from model inversion |
+| --- | --- | --- | --- |
+| 1 | Model inversion | 목표 출력을 내는 입력은 무엇인가 | 기준이 되는 문제이다 |
+| 2 | Inverse design | 목표 성능을 갖는 설계안은 무엇인가 | 문제의 이름이며, model inversion 은 그 해법 중 하나이다 |
+| 3 | Calibration | 관측을 설명하는 model parameter 는 무엇인가 | 되찾는 대상이 입력이 아니라 model parameter 이다 |
+| 4 | Optimization | 목적 함수를 가장 좋게 하는 입력은 무엇인가 | 목표값 추종이 아니라 극값 탐색이며, 잔차를 목적 함수로 두면 inversion 을 포함한다 |
+| 5 | Attribution | 출력이 어느 입력에 얼마나 반응하는가 | 국소 기여도를 설명할 뿐 목표를 만족하는 입력을 제시하지 않는다 |
+| 6 | Model inversion attack | 학습 데이터에 무엇이 있었는가 | 목적이 설계가 아니라 privacy 침해이며, 복원 대상이 학습 표본이다 |
 
 ## 2. Taxonomy
 
@@ -469,10 +469,22 @@ print("SPE         :", round(spe(x_sol), 3), "limit", round(spe_limit, 3))
 print("x_sol       :", np.round(x_sol, 3))
 ```
 
+뒤집기 전에 이 예시의 데이터도 같은 방식으로 본다.
+
+<img src="inversion-problem_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 5">
+
+Fig 5. Appendix C measured values in sample order, the correlated inputs `x1` and `x3`, and the parity plot of the forward model
+
+Fig 5 (a) 는 400 개 표본의 측정값을 순서대로 그린 것이다. Appendix B 와 달리 순서를 따르는 추세가 없어, 값이 목표 1.0 을 가운데 두고 고르게 흩어져 있다.
+
+Fig 5 (b) 는 상관이 있는 두 입력 `x1` 과 `x3` 의 평면이다. `x3` 이 `x1` 을 0.9 배로 따라가므로 등고선이 대각선으로 길게 눌린 타원이 되며, 이 좁은 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
+
+Fig 5 (c) 는 gradient boosting model 의 parity plot 이다. $R^{2} = 0.998$, RMSE 0.05 로 학습 데이터를 거의 그대로 맞추므로, Appendix B 와 달리 뒤집기에 앞서 model 을 의심할 이유가 없다.
+
 SPE 제약을 빼면 목표값은 그대로 맞추면서 `x3` 와 `x4` 가 `x1`, `x2` 와의 상관을 깨는 해가 나온다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
 
-<img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 5">
+<img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 6">
 
-Fig 5. Constrained solution against the validity limits
+Fig 6. Constrained solution against the validity limits
 
-Fig 5 가 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
+Fig 6 이 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.

@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.6.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.7.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -17,7 +17,8 @@ from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
-__all__ = ['build_appendix_b_model', 'panel_caption', 'fig_3', 'fig_4', 'fig_5']
+__all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'panel_caption',
+           'fig_3', 'fig_4', 'fig_5', 'fig_6']
 
 matplotlib.use('Agg')
 
@@ -193,8 +194,11 @@ def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 5: the constrained solution hits the target inside the validity domain."""
+def build_appendix_c_model() -> tuple:
+    """Rebuild the Appendix C data, forward model and validity domain.
+
+    Returns (x_data, y_data, forward, pca, t2_limit, spe_limit).
+    """
     rng = np.random.default_rng(0)
     n = 400
     z = rng.normal(size=(n, 2))
@@ -208,6 +212,96 @@ def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
     t2_limit = chi2.ppf(0.95, df=2)
     spe_train = np.sum((x_data - pca.inverse_transform(pca.transform(x_data))) ** 2, axis=1)
     spe_limit = float(np.quantile(spe_train, 0.95))
+    return x_data, y_data, forward, pca, t2_limit, spe_limit
+
+
+def mahalanobis_contour(ax, points: np.ndarray) -> None:
+    """Draw the 1, 2 and 3 standard deviation contours of a two column sample."""
+    grid_x, grid_y = np.mgrid[points[:, 0].min() - 0.6:points[:, 0].max() + 0.6:200j,
+                              points[:, 1].min() - 0.6:points[:, 1].max() + 0.6:200j]
+    centre = points.mean(axis=0)
+    cov_inv = np.linalg.inv(np.cov(points, rowvar=False))
+    offset = np.stack([grid_x - centre[0], grid_y - centre[1]], axis=-1)
+    distance = np.sqrt(np.einsum('...i,ij,...j->...', offset, cov_inv, offset))
+    lines = ax.contour(grid_x, grid_y, distance, levels=[1.0, 2.0, 3.0],
+                       colors=COLORS[0], linewidths=1.0)
+    ax.clabel(lines, fmt='%.0f', fontsize=font_size(0.8))
+
+
+def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 5: the measured values, the correlated inputs and the parity plot of Appendix C."""
+    x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
+    y_pred = forward.predict(x_data)
+    residual = y_data - y_pred
+    r2 = 1.0 - float(np.sum(residual ** 2) / np.sum((y_data - y_data.mean()) ** 2))
+    rmse = float(np.sqrt(np.mean(residual ** 2)))
+
+    fig = plt.figure(figsize=(13.0, 4.2))
+    outer = fig.add_gridspec(1, 3, wspace=0.30)
+    ax_series = fig.add_subplot(outer[0])
+    middle = outer[1].subgridspec(2, 2, width_ratios=[4, 1], height_ratios=[1, 4],
+                                  hspace=0.06, wspace=0.06)
+    ax_main = fig.add_subplot(middle[1, 0])
+    ax_top = fig.add_subplot(middle[0, 0], sharex=ax_main)
+    ax_right = fig.add_subplot(middle[1, 1], sharey=ax_main)
+    ax_parity = fig.add_subplot(outer[2])
+
+    order = np.arange(len(y_data))
+    ax_series.plot(order, y_data, color=COLORS[0], linewidth=0.6, marker='o', markersize=2,
+                   label='measured value y')
+    ax_series.axhline(1.0, color=COLORS[3], linestyle=':', linewidth=1.2,
+                      label='inversion target 1.0')
+    ax_series.set_xlabel('sample order', fontsize=font_size())
+    ax_series.set_ylabel('measured value y', fontsize=font_size())
+    ax_series.tick_params(labelsize=font_size(0.9))
+    ax_series.legend(fontsize=font_size(0.8), loc='upper left')
+
+    pair = x_data[:, [0, 2]]
+    mahalanobis_contour(ax_main, pair)
+    ax_main.scatter(pair[:, 0], pair[:, 1], s=8, color='0.45', label='400 samples')
+    ax_main.set_xlabel('x1', fontsize=font_size())
+    ax_main.set_ylabel('x3', fontsize=font_size())
+    ax_main.tick_params(labelsize=font_size(0.9))
+    ax_main.legend(fontsize=font_size(0.8), loc='upper left')
+    ax_top.hist(pair[:, 0], bins=16, color=COLORS[0])
+    ax_top.tick_params(labelbottom=False, labelsize=font_size(0.8))
+    ax_right.hist(pair[:, 1], bins=16, orientation='horizontal', color=COLORS[0])
+    ax_right.tick_params(labelleft=False, labelsize=font_size(0.8))
+
+    span = [min(y_data.min(), y_pred.min()) - 0.2, max(y_data.max(), y_pred.max()) + 0.2]
+    ax_parity.plot(span, span, color='0.5', linestyle='--', linewidth=1.0, label='1:1 line')
+    ax_parity.scatter(y_data, y_pred, s=10, color=COLORS[0], label='400 samples')
+    ax_parity.axhline(1.0, color=COLORS[3], linestyle=':', linewidth=1.2, label='inversion target 1.0')
+    ax_parity.set_xlim(span)
+    ax_parity.set_ylim(span)
+    ax_parity.set_xlabel('measured value y', fontsize=font_size())
+    ax_parity.set_ylabel('predicted value', fontsize=font_size())
+    ax_parity.tick_params(labelsize=font_size(0.9))
+    ax_parity.legend(fontsize=font_size(0.8), loc='upper left')
+
+    fig.subplots_adjust(bottom=0.20)
+    panel_caption(fig, [ax_series], '(a) the measured value in sample order')
+    panel_caption(fig, [ax_main, ax_top, ax_right],
+                  '(b) two correlated inputs, contoured by Mahalanobis distance')
+    panel_caption(fig, [ax_parity], f'(c) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
+
+    out_path = out_folder / 'appendix-c-data.png'
+    out_folder.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
+    plt.close(fig)
+
+    # the samples the histograms, the contours and the parity plot received
+    sample_path = out_folder / 'appendix-c-samples.csv'
+    np.savetxt(sample_path, np.column_stack([x_data, y_data, y_pred]), delimiter=',',
+               header='x1,x2,x3,x4,y,y_pred', comments='', fmt='%.6f')
+    print(f'wrote {out_path}, R2={r2:.4f}, RMSE={rmse:.4f}')
+    print(f'wrote {sample_path}')
+    return out_path
+
+
+def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 6: the constrained solution hits the target inside the validity domain."""
+    x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
 
     def t2(x_vec: np.ndarray) -> float:
         return float(np.sum(pca.transform(x_vec[None, :])[0] ** 2 / pca.explained_variance_))
@@ -302,3 +396,4 @@ if __name__ == '__main__':
     fig_3(out_folder=arguments.output_folder)
     fig_4(out_folder=arguments.output_folder)
     fig_5(out_folder=arguments.output_folder)
+    fig_6(out_folder=arguments.output_folder)
