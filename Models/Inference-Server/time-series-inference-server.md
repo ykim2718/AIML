@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 23 | Created: 2026-08-28 | Updated: 2026-08-29 11:40 CDT
+Rev. 24 | Created: 2026-08-28 | Updated: 2026-08-29 12:00 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
@@ -11,10 +11,12 @@ Rev. 23 | Created: 2026-08-28 | Updated: 2026-08-29 11:40 CDT
 
 ### 1.1 The Test For A Servable Question
 
+Servable question 은 이 문서가 다루는 질문의 범위이다. 답이 model 이 내는 숫자와 server 가 대는 나머지의 합으로 완성되는 질문을 말하며, 그 둘을 나누는 선은 아래와 같다.
+
 - Model: 적합된 함수. 정해진 한 가지 모양의 array 를 받아 숫자를 냄.
 - Model 이 모르는 것: 지금 다루는 계열을 가리키는 식별자인 key, 지금 시각, 직전에 자기가 낸 답.
 - Server: 그 함수를 둘러싼 전부. key 와 cut-off 를 array 로 바꾸고, model 이 들지 않는 history 와 state 와 지난 답을 전달하고, 돌려주는 것에 식별자를 찍음.
-- Servable question: model 이 숫자를 낼 수 있고, 그 숫자를 답으로 만드는 데 필요한 나머지를 server 가 마련할 수 있는 질문. 둘 중 하나가 없으면 serving 대상이 아님.
+- 판정: model 이 숫자를 낼 수 없거나 server 가 나머지를 마련할 수 없으면 serving 대상이 아님.
 
 ### 1.2 Questions A Served Series Can Be Asked
 
