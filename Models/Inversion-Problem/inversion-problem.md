@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 19 | Created: 2026-08-28 | Updated: 2026-08-29 01:53 CDT
+Rev. 20 | Created: 2026-08-28 | Updated: 2026-08-29 01:58 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -119,7 +119,7 @@ $$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \ma
 
 $$\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$$
 
-$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 방향이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
+$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
 
 - Null space 는 품질을 바꾸지 않고 움직일 수 있는 운전 자유도이다. 원가, 처리량, 에너지 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [\[5\]](#ref-5).
@@ -366,7 +366,13 @@ print("prediction max :", round(preds.max(), 6))
 print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 ```
 
-뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
+뒤집기 전에 뒤집을 model 부터 본다.
+
+<img src="inversion-problem_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 3">
+
+Fig 3. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
+
+Fig 3 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
 
 Fig 3 (b) 는 같은 표본의 두 process input 을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 구름이 가로로 늘어난 타원을 이룬다. 이 구름이 곧 model 이 배운 영역이다.
 
@@ -376,25 +382,23 @@ Fig 3 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 
 
 이 예시의 model 은 $R^{2} = 0.518$, RMSE 1.38 로 잘 맞는 편이 아니다. 잔차의 큰 몫은 (a) 의 추세이며, model 이 보지 못하는 변수가 있으면 이렇게 남는다. 목표 2.0 은 표본이 덮는 $-4.1$ 에서 $6.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
-<img src="inversion-problem_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 3">
-
-Fig 3. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
-
 Code 가 만든 `x_alt` 37 개는 두 성분이 모두 다른 입력이지만 예측값은 전부 2.000 이다.
-
-Fig 4 는 이 결과를 그린 것이다. 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 왼쪽의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이며, 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표에 붙어 있다. 오른쪽은 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, minimum-norm solution 은 그 직선 위의 한 점일 뿐이다.
 
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Predicted value and inputs along the null space
 
+Fig 4 는 이 결과를 그린 것이다. 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 왼쪽의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이며, 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표에 붙어 있다. 오른쪽은 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, minimum-norm solution 은 그 직선 위의 한 점일 뿐이다.
+
 Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
 
 공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 특별히 좋은 해라서가 아니라 유일하게 정해지는 기준점이라 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 4 처럼 null space 를 따라 옮겨 간다.
 
-Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 $\mathbf{t}_{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 4 오른쪽의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
+Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 4 오른쪽의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
 해가 직선을 이루는 것은 model 이 입력에 대해 선형이기 때문이다. 예측은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다.
+
+Fig 3 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 인데, 그 예측에는 sample order 가 들어 있지 않기 때문이다. 추세는 잔차로 남아 Fig 3 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
 
 입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix B 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
 
@@ -467,8 +471,8 @@ print("x_sol       :", np.round(x_sol, 3))
 
 SPE 제약을 빼면 목표값은 그대로 맞추면서 `x3` 와 `x4` 가 `x1`, `x2` 와의 상관을 깨는 해가 나온다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
 
-Fig 5 가 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
-
 <img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 5">
 
 Fig 5. Constrained solution against the validity limits
+
+Fig 5 가 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
