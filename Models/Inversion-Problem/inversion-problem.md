@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 4 | Created: 2026-08-28 | Updated: 2026-08-28 23:49 CDT
+Rev. 5 | Created: 2026-08-28 | Updated: 2026-08-29 00:21 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -43,8 +43,6 @@ Table 1. Terms adjacent to model inversion
 
 Inverse problem 의 해법은 Fig 1 의 다섯 축으로 나뉜다. 한 방법은 각 축에서 하나씩 고른 조합이며, 축은 서로 배타적이지 않다.
 
-Fig 1. Taxonomy of inverse problem solution approaches
-
 ```
 Inverse problem (given a target y*, find the input x)
 |
@@ -73,6 +71,8 @@ Inverse problem (given a target y*, find the input x)
     +-- Region ................................ design space, null space segment
     +-- Distribution .......................... posterior with uncertainty
 ```
+
+Fig 1. Taxonomy of inverse problem solution approaches
 
 ### 2.1 Formulation (How to pose)
 
@@ -126,8 +126,6 @@ $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 최소 노
 
 $$T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2}$$
 
-Fig 2. Null space and the validity region in the score plane
-
 ```
         t2
          ^
@@ -145,6 +143,8 @@ Fig 2. Null space and the validity region in the score plane
   the A--B segment is the null space direction;
   only the part inside the ellipse is supported by past data
 ```
+
+Fig 2. Null space and the validity region in the score plane
 
 이 절차를 그대로 실행하는 예시는 [Appendix B](#appendix-b-python-example-pls-model-inversion) 에 있다.
 
@@ -360,17 +360,17 @@ print("distance       :", round(float(np.linalg.norm(x_star - x_alt)), 3))
 
 뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 측정 품질과 예측 품질을 맞댄 parity plot 이다. 점들이 1:1 선에 붙어 있고 ($R^{2} = 0.9992$, RMSE 0.053) 목표 2.0 이 표본이 덮는 범위 안에 있으므로, 이 model 을 뒤집어 얻은 조건은 외삽이 아니다.
 
-Fig 3. Parity plot of the Appendix B forward model
-
 <img src="inversion-problem_fig/appendix-b-parity.png" width="520" style="max-width: 100%;" alt="Fig 3">
+
+Fig 3. Parity plot of the Appendix B forward model
 
 두 입력은 서로 다르지만 예측 품질은 같다. 어느 쪽을 쓸지는 품질이 아니라 원가나 운전 여유 같은 다른 기준이 정한다.
 
 Fig 4 는 이 결과를 그린 것이다. 왼쪽의 가로축은 최소 노름 해에서 잰 입력 공간의 거리 $\lVert \mathbf{x} - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력에 대한 예측 품질이며, 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 품질은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
 
-Fig 4. Predicted quality and inputs along the null space
-
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
+
+Fig 4. Predicted quality and inputs along the null space
 
 ## Appendix C. Python Example: Constrained Numerical Inversion
 
@@ -443,6 +443,6 @@ SPE 제약을 빼면 목표 품질은 그대로 맞추면서 `x3` 와 `x4` 가 `
 
 Fig 5 가 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
 
-Fig 5. Constrained solution against the validity limits
-
 <img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="900" style="max-width: 100%;" alt="Fig 5">
+
+Fig 5. Constrained solution against the validity limits
