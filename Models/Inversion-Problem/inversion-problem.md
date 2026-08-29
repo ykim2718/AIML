@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 11 | Created: 2026-08-28 | Updated: 2026-08-29 01:15 CDT
+Rev. 12 | Created: 2026-08-28 | Updated: 2026-08-29 01:25 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -363,13 +363,15 @@ print("prediction max :", round(preds.max(), 6))
 print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 ```
 
-뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
+뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 학습에 쓴 60 개 표본의 두 process input 을 그린 것이다. 등고선은 두 입력이 함께 이루는 밀도이고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력을 모두 표준정규분포에서 뽑았으므로 막대는 중심이 높고 양끝이 낮은 모양이며, 이 구름이 곧 model 이 배운 영역이다.
+
+Fig 3 (b) 는 같은 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
 이 예시의 model 은 $R^{2} = 0.700$, RMSE 1.05 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-4.9$ 에서 $3.7$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
-<img src="inversion-problem_fig/appendix-b-parity.png" width="520" style="max-width: 100%;" alt="Fig 3">
+<img src="inversion-problem_fig/appendix-b-parity.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-Fig 3. Parity plot of the Appendix B forward model
+Fig 3. Sampled inputs and the parity plot of the Appendix B forward model
 
 Code 가 만든 `x_alt` 37 개는 두 성분이 모두 다른 입력이지만 예측값은 전부 2.000 이다.
 
