@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 30 | Created: 2026-8-1 | Updated: 2026-08-28 23:39 CDT
+Rev. 31 | Created: 2026-8-1 | Updated: 2026-08-29 00:15 CDT
 
 ## 1. Terminology
 
@@ -99,11 +99,13 @@ result = [x * 2 for x in range(10)]
 
 ## 11. Table
 + 모든 table 에는 Table 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
++ 제목은 표 **위**에 둔다. 표는 첫 행부터 차례로 읽어 내려가므로, 무엇을 읽는 중인지 먼저 알려야 한다.
 + Table의 열 제목은 영어로 한다.
 
 ## 12. Figure
 
 + 모든 figure 에는 Fig 1. title의 형식으로 제목을 붙이고, 문서에서 순서대로 번호를 매긴다.
++ 제목은 그림 **아래**에 둔다. 그림은 한눈에 들어오므로, 제목은 본 것을 확인해 주는 자리에 있어야 한다.
 + 복수 panel figure 에는 전부 panel labels를 (a), (b), (c) ... 처럼 붙일 것. 단 Matrix chart는 예외로 panel labels를 붙이지 말 것.
 + Figure image는 CLI로 특정 folder를 지정하지 않는 경우에, md 파일과 같은 위치의 `<md file stem>_fig` folder에 두고, 본문에서는 그 folder 기준 상대 경로로 참조한다.
     - `foo.md` 의 image는 `foo_fig/` 아래에 두고 `![Fig 1](foo_fig/fig1.png)` 로 쓴다.
