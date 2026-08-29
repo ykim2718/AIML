@@ -1,13 +1,11 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 24 | Created: 2026-08-12 | Updated: 2026-08-19 12:11 CDT
+Rev. 25 | Created: 2026-08-12 | Updated: 2026-08-29 00:40 CDT
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
 ## 1. Taxonomy
 
 네 가지 축 — learning schedule (언제 학습하는가), learning method (어떻게 학습하는가), knowledge retention (무엇을 보존하는가), model selection (어느 모델을 쓰는가) — 으로 나눈 하나의 통합 체계로 정리하면 Fig 1과 같다. 각 항목의 오른쪽에는 그 분류로 불리는 대표 명칭이나 기법을 표기한다.
-
-Fig 1. Unified taxonomy of continual learning for time series
 
 ```
 CLTS (Continuous Learning for Time Series)
@@ -37,6 +35,8 @@ CLTS (Continuous Learning for Time Series)
     |   +-- Replace ............................... keep the best-scoring model
     +-- Online ensemble ........................... combine top-K models instead of keeping one
 ```
+
+Fig 1. Unified taxonomy of continual learning for time series
 
 ## 2. Learning Method: How to Learn
 
@@ -167,8 +167,6 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 
 Fig 1의 네 축을 각 분류별 대표 Python library와 연결하면 Fig 2와 같다. Fig 2에 등장하는 library의 실행 예시는 축별로 [Appendix C](#appendix-c-python-examples-learning-schedule), [Appendix D](#appendix-d-python-examples-learning-method), [Appendix E](#appendix-e-python-examples-knowledge-retention), [Appendix F](#appendix-f-python-examples-model-selection) 에 있다.
 
-Fig 2. Classifications of Fig 1 extended with representative Python libraries
-
 ```
 Learning schedule (When to learn)
 |
@@ -204,6 +202,8 @@ Model selection (Which model to serve)
 +-- Delayed evaluation ......... collections.deque + NumPy, with any model library
 +-- Online ensemble ............ River (ensemble, model_selection modules)
 ```
+
+Fig 2. Classifications of Fig 1 extended with representative Python libraries
 
 ## Appendix C. Python Examples: Learning Schedule
 
