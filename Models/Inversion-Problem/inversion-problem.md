@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 5 | Created: 2026-08-28 | Updated: 2026-08-29 00:21 CDT
+Rev. 6 | Created: 2026-08-28 | Updated: 2026-08-29 00:24 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -331,7 +331,7 @@ rng = np.random.default_rng(0)
 # historical plant data: 6 process inputs, 1 quality output
 n, k, n_comp = 60, 6, 3
 X = rng.normal(size=(n, k))
-y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + 0.3 * X[:, 2] + rng.normal(0, 0.05, n)
+y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + 0.3 * X[:, 2] + rng.normal(0, 1.3, n)
 
 x_mean, y_mean = X.mean(axis=0), y.mean()
 pls = PLSRegression(n_components=n_comp, scale=False).fit(X - x_mean, y - y_mean)
@@ -358,7 +358,9 @@ print("pred(x_alt)    :", round(predict(x_alt), 6))
 print("distance       :", round(float(np.linalg.norm(x_star - x_alt)), 3))
 ```
 
-뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 측정 품질과 예측 품질을 맞댄 parity plot 이다. 점들이 1:1 선에 붙어 있고 ($R^{2} = 0.9992$, RMSE 0.053) 목표 2.0 이 표본이 덮는 범위 안에 있으므로, 이 model 을 뒤집어 얻은 조건은 외삽이 아니다.
+뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정 품질 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
+
+이 예시의 model 은 $R^{2} = 0.704$, RMSE 1.21 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-5.7$ 에서 $4.3$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 품질은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
 <img src="inversion-problem_fig/appendix-b-parity.png" width="520" style="max-width: 100%;" alt="Fig 3">
 
@@ -366,7 +368,7 @@ Fig 3. Parity plot of the Appendix B forward model
 
 두 입력은 서로 다르지만 예측 품질은 같다. 어느 쪽을 쓸지는 품질이 아니라 원가나 운전 여유 같은 다른 기준이 정한다.
 
-Fig 4 는 이 결과를 그린 것이다. 왼쪽의 가로축은 최소 노름 해에서 잰 입력 공간의 거리 $\lVert \mathbf{x} - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력에 대한 예측 품질이며, 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 품질은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
+Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 가로축은 그 입력이 최소 노름 해에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고, 세로축은 그 입력을 model 에 넣어 얻은 예측 품질이다. 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 품질은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
 
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
 
