@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 14 | Created: 2026-08-28 | Updated: 2026-08-28 14:40 CDT
+Rev. 15 | Created: 2026-08-28 | Updated: 2026-08-28 15:05 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -9,14 +9,12 @@ A fitted model returns numbers. Turning those numbers into an answer that someth
 - Outside it: training procedures, model families, feature construction.
 - Thousands of series assumed. One series needs a scheduled job and none of what follows.
 
-### 1.1 Model And Server
+### 1.1 The Test For A Servable Question
 
-- Model: a fitted function. One input shape in, numbers out.
-- No key, no clock, no memory of what it answered before.
-- Server: key and cut-off turned into that array. A window too poor to answer from, refused.
-- Server holds what the model does not — the history, the per-series state, the past answers, any index or labels a question needs.
-- Every answer stamped with the identifiers that make it scorable later.
-- Servable question: numbers from the model, remainder from the server.
+- Model: a fitted function. One array shape in, numbers out. No key, no clock, no memory of its last answer.
+- Server: everything around that function. The key and cut-off turned into the array, the history and state and past answers the model does not hold, the identifiers stamped on what comes back.
+- Servable question: numbers from the model, the whole remainder from the server.
+- That test is what the `Servable` column of Table 1 applies, and what its last column measures.
 - [Appendix B](#appendix-b-the-model-and-the-server): the same split, with the operations named.
 
 ### 1.2 Questions A Served Series Can Be Asked
