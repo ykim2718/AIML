@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 29 | Created: 2026-8-1 | Updated: 2026-08-28 21:42 CDT
+Rev. 30 | Created: 2026-8-1 | Updated: 2026-08-28 23:39 CDT
 
 ## 1. Terminology
 
@@ -62,6 +62,9 @@ Rev. 29 | Created: 2026-8-1 | Updated: 2026-08-28 21:42 CDT
 + GitHub web page rendering을 위해서, 수식 안에 \text{} 로 code 식별자를 쓰지 않는다. GitHub이 \_ 의 backslash를 떼어내 맨 _ 를 text mode로 넘기는 바람에 "_ allowed only in math mode" 오류가 난다. underscore가 든 식별자는 수식 밖 code span으로 적고, 수식에는 값과 연산자만 남긴다.
     - 나쁨: $\mathrm{corr}(\text{max\_delta},\ \text{sigma\_st})$
     - 좋음: corr(`max_delta`, `sigma_st`)
++ 수식 안의 별표는 MathJax 매크로 \ast 로 쓴다. GitHub 은 markdown 을 먼저 읽으므로, 한 줄에 * 가 두 번 나오면 그 사이를 강조로 보아 두 별표를 지우고 `<em>` 으로 바꾼다. 그러면 수식에 `^{}` 같은 빈 첨자가 남아 "Extra close brace or missing open brace" 오류가 난다.
+    - 나쁨: $\mathbf{t}^{*} = \mathbf{Q}^{+}\mathbf{y}^{*}$
+    - 좋음: $\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}$
 
 ## 10. Code Block
 
