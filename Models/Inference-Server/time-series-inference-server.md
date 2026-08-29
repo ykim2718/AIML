@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 15 | Created: 2026-08-28 | Updated: 2026-08-28 15:05 CDT
+Rev. 16 | Created: 2026-08-28 | Updated: 2026-08-28 15:40 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -34,52 +34,40 @@ Table 1. Questions, deliverables, and what each one adds to the deployment
 | What-if | Yes | The forecast deliverable, plus the covariate path it is conditional on. | Nothing, but no precomputing it. |
 | Attribution | Yes | A contribution per channel, lag, or step, summing to the deviation explained. | The explanation, stored with the answer. |
 | Cause | No | An attribution instead: what moved with the answer, not what moved it. | Nothing. An intervention or a designed experiment, neither of them a request. |
-| A model fitted on demand | No | A per-call adaptation instead, and for a recursive model the state update of section 3.2. | Nothing. A new fit changes every caller's answer, so a governed job owns it. |
+| A model fitted on demand | No | A per-call adaptation instead, and for a recursive model the state update of section 2.2. | Nothing. A new fit changes every caller's answer, so a governed job owns it. |
 
 The last column, not the algorithm, decides the shape of the deployment.
 
 - A model and a context, nothing more: forecast, change point detection, what-if.
 - A segment index and the job that maintains it: retrieval.
-- Labels, so the feedback path of section 5.2 comes first: classification, virtual metrology, remaining useful life.
+- Labels, so the feedback path of section 4.2 comes first: classification, virtual metrology, remaining useful life.
 - A baseline and a threshold rule: anomaly detection.
 - A wider request or a wider stored answer: imputation, attribution.
 - The two No rows as the boundary. A server asked to establish a cause or to fit a model has stopped serving.
 
-## 2. Divergence From A Stateless Model Server
+## 2. Core Capabilities
 
-A general model server assumes a self-contained request, and every one of those assumptions breaks for a series.
+The middle column is what a general model server assumes, and it is where the products of section 5.1 stop.
 
-Table 2. Serving a row against serving a series
+Table 2. What the server owes its caller, against what a stateless model server assumes
 
-| Aspect | Stateless model server | Time series inference server |
-|--------|------------------------|------------------------------|
-| Request payload | Every feature the model consumes. | A key and a timestamp. The history, to be found. |
-| Output shape | One value per request. | Horizon steps by quantiles, each tied to a future timestamp. |
-| State | None. Any replica answers any request. | Per-series state, held or restored by the replica that answers. |
-| Correctness | A property of the code path. | Also of the cut-off. A context holding what the model could not have seen is silently wrong. |
-| Evaluation | Label with the event. | Label `H` steps later, so the answer has to be stored to be scored. |
-| Cold start | An unseen row, ordinary. | A new series with no history, needing a global model or a fallback. |
-
-## 3. Core Capabilities
-
-Table 3. What the server owes its caller
-
-| Capability | Requirement |
-|------------|-------------|
-| Context assembly | The last `L` observations of the key, as of the cut-off. A window too sparse to use, refused. |
-| Horizon and uncertainty | Every horizon step with quantiles or an interval. Never a point alone. |
-| Covariate handling | Past covariates, future known covariates, static attributes. A future covariate not known in advance, rejected. |
-| Timestamp discipline | One frequency, one timezone, one convention for gaps and duplicates. Identical at fit time and at serving time. |
-| Series fan-out | Many keys in one call, batched to fill the accelerator, each routed to its version. |
-| State and recovery | Per-series state held and checkpointed. Recovery without replaying the history. |
-| Freshness and drift | The age of the newest observation behind each answer, and the signal that triggers retraining. |
-| Delayed evaluation | Every answer persisted with its context and version, so accuracy can be computed when the actuals land. |
-| Throughput and latency | The budget met by batching, a compiled runtime, and autoscaling. Degradation to a cheaper model, not to a timeout. |
-| Reproducibility | A past request replayed to the same answer, with version, context, and code path pinned together. |
+| Capability | Stateless assumption | Owed by a time series server |
+|------------|----------------------|------------------------------|
+| Context assembly | The payload holds every feature the model consumes. | The last `L` observations of the key, as of the cut-off. A window too sparse to use, refused. |
+| Horizon and uncertainty | One value per request. | Every horizon step with quantiles or an interval, each tied to a future timestamp. |
+| Covariate handling | Every input is a feature like any other. | Past covariates, future known covariates, static attributes. A future covariate not known in advance, rejected. |
+| Timestamp discipline | No clock at all. | One frequency, one timezone, one convention for gaps and duplicates. Identical at fit time and at serving time. |
+| Series fan-out | One request, one row. | Many keys in one call, batched to fill the accelerator, each routed to its version. |
+| State and recovery | Statelessness, so any replica answers any request. | Per-series state held and checkpointed. Recovery without replaying the history. |
+| Cold start | An unseen row, ordinary. | A key with no history routed to a global or pre-trained model, or refused. |
+| Freshness and drift | Inputs as fresh as the caller made them. | The age of the newest observation behind each answer, and the signal that triggers retraining. |
+| Delayed evaluation | The label arrives with the event. | Every answer persisted with its context and version, since the label lands `H` steps later. |
+| Throughput and latency | Independent requests, batched at will. | The budget met by batching, a compiled runtime, and autoscaling. Degradation to a cheaper model, not to a timeout. |
+| Reproducibility | The same input, the same answer. | A past request replayed to the same answer, with version, context, and code path pinned together. |
 
 The three capabilities with no counterpart in ordinary model serving follow.
 
-### 3.1 Context Assembly
+### 2.1 Context Assembly
 
 - The defining work, done before the forward pass: a key and a time turned into the window the model was trained on.
 - Window in the payload: a stateless server, at the cost of a large payload and assembly work in every caller.
@@ -89,7 +77,7 @@ The three capabilities with no counterpart in ordinary model serving follow.
 - A gap interpolated, carried forward, or left as a gap. The server's choice, since it has to match what the model saw while it was fitted.
 - A window shorter than the context: a model that tolerates it, or a refusal. Never padding with zeros.
 
-### 3.2 State And Recovery
+### 2.2 State And Recovery
 
 - Window model, such as a boosted regressor over lags or a pre-trained transformer: a pure function of the context, replicas interchangeable.
 - Recursive model, such as a Kalman filter, an exponential smoother, or an online learner: a state that each observation updates in order.
@@ -98,7 +86,7 @@ The three capabilities with no counterpart in ordinary model serving follow.
 - Out-of-order arrivals rejected, or rolled back to a watermark. Yesterday's sample applied after today's corrupts the state permanently.
 - Keyed state that survives a failure [\[1\]](#ref-1), with watermarks and event-time ordering: why streaming engines appear in a serving discussion at all.
 
-### 3.3 Delayed Evaluation
+### 2.3 Delayed Evaluation
 
 - A forecast for `t+H`, unscorable until `t+H` has passed, by which time the server has forgotten it.
 - No recovery from the input alone, once versions and contexts vary.
@@ -106,7 +94,7 @@ The three capabilities with no counterpart in ordinary model serving follow.
 - A scheduled job joining those rows to the actuals, producing the error series per key and per horizon step.
 - That error series as the only honest input to the two standing decisions: whether to retrain, and which candidate should serve.
 
-## 4. Deployment Patterns
+## 3. Deployment Patterns
 
 Fig 1. Serving path from ingestion to consumption
 
@@ -136,7 +124,7 @@ Producers                Ingest / Transport          Context
                                                               control actions
 ```
 
-Table 4. Deployment patterns and what each one fits
+Table 3. Deployment patterns and what each one fits
 
 | Pattern | Description |
 |---------|-------------|
@@ -145,7 +133,7 @@ Table 4. Deployment patterns and what each one fits
 | Streaming push | Keyed state updated on each event, an answer emitted unasked. The only pattern that keeps recursive models correct at high rates. |
 | Edge or on-premises | A compiled model next to the source. Chosen when the round trip exceeds the control loop, or the raw trace may not leave the site. |
 
-## 5. The Caller's Interface
+## 4. The Caller's Interface
 
 The caller holds two things the deployment cannot obtain on its own, which are the intent behind a request and the truth about an answer.
 
@@ -166,11 +154,11 @@ Fig 2. The two directions of the interface
                                                               from that point onward
 ```
 
-### 5.1 Options That Change The Answer
+### 4.1 Options That Change The Answer
 
 Set per request. All but the adaptation depth leave the model untouched.
 
-Table 5. Options a caller may set on a request
+Table 4. Options a caller may set on a request
 
 | Option | Description |
 |--------|-------------|
@@ -183,11 +171,11 @@ Table 5. Options a caller may set on a request
 | Fallback policy | What the caller wants from a short or stale context: a refusal, a fallback, or an answer flagged degraded. |
 | Level of detail | A point, quantiles, components, or an attribution. Always the identifiers that make the answer scorable. |
 
-### 5.2 The Feedback Path
+### 4.2 The Feedback Path
 
 Submitted after the fact. Classification, virtual metrology, and remaining useful life cannot be served without this path, since their labels arrive through it or not at all.
 
-Table 6. Feedback a caller may send back
+Table 5. Feedback a caller may send back
 
 | Feedback | Description |
 |----------|-------------|
@@ -198,7 +186,7 @@ Table 6. Feedback a caller may send back
 | Measurement request | What to measure next, answered from the server's own uncertainty. Active learning applied to a sampling plan. |
 | Retrain or promote | A request to refit or to promote a candidate. Queued for a governed job. |
 
-### 5.3 Rules For The Write Path
+### 4.3 Rules For The Write Path
 
 - Feedback appended, never applied in place.
 - An endpoint that lets one caller change the serving model changes every other caller's answers, and ends reproducibility.
@@ -206,13 +194,13 @@ Table 6. Feedback a caller may send back
 - Every submission carrying who sent it and which answer it refers to, since a correction becomes a label and a label may have to be withdrawn.
 - A per-call adaptation argument as a training cost billed as a serving call, needing a budget, a cache, and a quota per caller.
 
-## 6. Key Solutions and Platforms
+## 5. Key Solutions and Platforms
 
-### 6.1 General Purpose Model Servers
+### 5.1 General Purpose Model Servers
 
 Any model behind an endpoint, and no knowledge of time. Context assembly left to the caller or to a wrapper.
 
-Table 7. General purpose model servers
+Table 6. General purpose model servers
 
 | Platform | Description |
 |----------|-------------|
@@ -224,13 +212,13 @@ Table 7. General purpose model servers
 | TensorFlow Serving | Stable for saved TensorFlow graphs, and little else. |
 | TorchServe | Limited maintenance, with no planned updates, fixes, or security patches [\[5\]](#ref-5). Not a choice for new work. |
 
-None of them supplies the feedback path of section 5.2. What they offer toward it is payload logging, worth turning on from the first day because it cannot be reconstructed later.
+None of them supplies the feedback path of section 4.2. What they offer toward it is payload logging, worth turning on from the first day because it cannot be reconstructed later.
 
-### 6.2 Time Series Foundation Models
+### 5.2 Time Series Foundation Models
 
 One checkpoint in place of a population of per-key models. The families differ in the input they accept, in whether quantiles come from one pass or from sampling, and in the size of a forward pass.
 
-Table 8. Pre-trained models and how they are served
+Table 7. Pre-trained models and how they are served
 
 | Model | Description |
 |-------|-------------|
@@ -245,11 +233,11 @@ Table 8. Pre-trained models and how they are served
 - Retrieval from open weights: one forward pass per new segment at write time, none at read time.
 - A leaderboard rank as a reason to shortlist, not to adopt. The deciding evaluation is the one run on the target series against a naive baseline.
 
-### 6.3 Forecasting Frameworks
+### 5.3 Forecasting Frameworks
 
-The models the servers of Table 7 carry. Most also expose a batch entry point, enough on its own for the scheduled pattern.
+The models the servers of Table 6 carry. Most also expose a batch entry point, enough on its own for the scheduled pattern.
 
-Table 9. Frameworks that supply models and batch inference
+Table 8. Frameworks that supply models and batch inference
 
 | Framework | Description |
 |-----------|-------------|
@@ -258,41 +246,41 @@ Table 9. Frameworks that supply models and batch inference
 | GluonTS, Darts, sktime | Probabilistic implementations with an evaluation harness, statistical and deep models behind one API with backtesting, and a scikit-learn compatible interface, in that order. |
 | STUMPY, tslearn | Matrix profiles and elastic distances. Retrieval and change point questions answered by shape alone. |
 
-### 6.4 Streaming Engines And Stores
+### 5.4 Streaming Engines And Stores
 
-The state and context requirements of section 3. In the push pattern, the serving layer itself.
+The state and context requirements of section 2. In the push pattern, the serving layer itself.
 
-Table 10. Streaming and storage components
+Table 9. Streaming and storage components
 
 | Component | Description |
 |-----------|-------------|
 | Apache Kafka | Producers decoupled from the server, online and offline paths fed from the same events, answers published back. |
 | Apache Flink | Keyed state with checkpointing and watermarks, and a remote model called or a small one run inline. Where a recursive model belongs. |
 | Spark Structured Streaming | Batch code over micro-batches. Minute-scale cadences rather than millisecond ones. |
-| Online store (Redis, DynamoDB) | The last `L` points and the static attributes within a millisecond budget. The read section 3.1 puts on the critical path. |
+| Online store (Redis, DynamoDB) | The last `L` points and the static attributes within a millisecond budget. The read section 2.1 puts on the critical path. |
 | Feature store (Feast, Tecton) | One feature definition materialized offline and online. Keeps the training window and the serving window identical. |
 | Time series database (InfluxDB, TimescaleDB, ClickHouse, Prometheus) | The history backfills and backtests read. Its retention rules decide what a long context can contain. |
 | Segment index (FAISS, pgvector, Milvus) | One embedding per past segment, with the attributes a comparison filters on. Its rebuild schedule is part of the serving design. |
 
-### 6.5 Managed And Warehouse-Native Services
+### 5.5 Managed And Warehouse-Native Services
 
-Table 11. Managed services and in-database forecasting
+Table 10. Managed services and in-database forecasting
 
 | Service | Description |
 |---------|-------------|
 | Amazon SageMaker AI | Real-time, serverless, asynchronous, and batch endpoints, with an AutoML path over time series. Amazon Forecast closed to new customers since 2024-07-29. |
 | Google BigQuery ML | `AI.FORECAST` in SQL against a built-in TimesFM model, taking the horizon and the context window as arguments. No server at all for the scheduled pattern. |
-| Vertex AI, Azure Machine Learning, Databricks | Endpoints, registries, and monitoring around a model the user trains. The work of section 3 still to be built on top. |
+| Vertex AI, Azure Machine Learning, Databricks | Endpoints, registries, and monitoring around a model the user trains. The work of section 2 still to be built on top. |
 
-### 6.6 Edge Runtimes
+### 5.6 Edge Runtimes
 
 - ONNX Runtime, OpenVINO, TensorFlow Lite: an exported model executed next to the source.
 - Model choice limited by the export, since inference written as Python control flow does not survive it.
 - Operational cost moved from scaling to distribution, with a version on every host to roll forward and back.
 
-## 7. Selection
+## 6. Selection
 
-Table 12. Constraint and the choice it forces
+Table 11. Constraint and the choice it forces
 
 | Constraint | Choice |
 |------------|--------|
@@ -305,9 +293,9 @@ Table 12. Constraint and the choice it forces
 | A consuming loop faster than a network round trip. | Export to the edge, and the narrower model choice that comes with it. |
 | Data already in a warehouse, at a daily cadence. | The in-database forecasting function, before building anything. |
 
-## 8. Operational Pitfalls
+## 7. Operational Pitfalls
 
-Failures that section 3 does not already forbid, and that no test catches.
+Failures that section 2 does not already forbid, and that no test catches.
 
 - Serving window and training window built by different code, each self-consistent, disagreeing about resampling, gaps, or timezone.
 - A channel's unit changed upstream, and nothing rejecting it because the value stays inside the schema's range.
@@ -443,7 +431,7 @@ Fig 3. The model inside the server, and the operations around it
              +--------------------------------------------------+
 ```
 
-- Operations (1) to (7): the request path, and the core capabilities of section 3.
+- Operations (1) to (7): the request path, and the core capabilities of section 2.
 - (2) context assembly, (3) the refusal that goes with it.
 - (5) and (6) what makes an answer scorable, (7) what delayed evaluation later reads.
 - A recursive model's state advancing at the model call itself, not at one of these operations. Section 3.2 says what the server owes that state.
@@ -456,7 +444,7 @@ Fig 3. The model inside the server, and the operations around it
 
 FDC (Fault detection and classification) is the case where most of the questions of Table 1 are asked of one stream at once.
 
-Table 13. Functions an inference server puts on a semiconductor production line
+Table 12. Functions an inference server puts on a semiconductor production line
 
 | Class | Function | Description |
 |-------|----------|-------------|
