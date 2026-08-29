@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 17 | Created: 2026-08-28 | Updated: 2026-08-29 08:15 CDT
+Rev. 18 | Created: 2026-08-28 | Updated: 2026-08-29 08:35 CDT
 
 A fitted model returns numbers. Turning those numbers into an answer that something can act on, while the series keeps arriving, is the work of an inference server. This document fixes what that work is, what a caller may ask of it, and which products already do it.
 
@@ -97,8 +97,6 @@ The three capabilities with no counterpart in ordinary model serving follow.
 
 ## 3. Deployment Patterns
 
-Fig 1. Serving path from ingestion to consumption
-
 ```text
 Producers                Ingest / Transport          Context
 +-----------+            +------------------+        +---------------------+
@@ -125,6 +123,8 @@ Producers                Ingest / Transport          Context
                                                               control actions
 ```
 
+Fig 1. Serving path from ingestion to consumption
+
 Table 3. Deployment patterns and what each one fits
 
 | Pattern | Description |
@@ -137,8 +137,6 @@ Table 3. Deployment patterns and what each one fits
 ## 4. The Caller's Interface
 
 The caller holds two things the deployment cannot obtain on its own, which are the intent behind a request and the truth about an answer.
-
-Fig 2. The two directions of the interface
 
 ```text
 (a) options in, answer out, inside one round trip
@@ -154,6 +152,8 @@ Fig 2. The two directions of the interface
                                                               the version (a) answers from,
                                                               from that point onward
 ```
+
+Fig 2. The two directions of the interface
 
 ### 4.1 Options That Change The Answer
 
@@ -382,8 +382,6 @@ Failures that section 2 does not already forbid, and that no test catches.
 
 ## Appendix B. The Model And The Server
 
-Fig 3. The model inside the server, and the operations around it
-
 ```text
 +---------------------------------------------------------------------------+
 | SERVER   it knows the key, the clock, the history, the versions           |
@@ -432,6 +430,8 @@ Fig 3. The model inside the server, and the operations around it
              |   (11) promote   candidate -> the served version  |
              +--------------------------------------------------+
 ```
+
+Fig 3. The model inside the server, and the operations around it
 
 - Operations (1) to (7): the request path, and the core capabilities of section 2.
 - (2) context assembly, (3) the refusal that goes with it.
