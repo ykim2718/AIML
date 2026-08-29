@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 6 | Created: 2026-08-28 | Updated: 2026-08-29 00:24 CDT
+Rev. 7 | Created: 2026-08-28 | Updated: 2026-08-29 00:57 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -298,6 +298,7 @@ Table 3. Libraries for model inversion
 - Latent variable: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
 - Loading: Latent 변수와 관측 변수를 잇는 계수이며, score 에서 입력을 복원할 때 쓰인다.
 - MCMC: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
+- Minimum-norm solution: 목표를 똑같이 만족하는 해가 여럿일 때 그중 노름이 가장 작은 해이다.
 - Model inversion: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
 - Normalizing flow: 가역 변환의 합성으로 분포를 다른 분포로 옮기는 생성 model 이다.
 - Null space: 예측 출력을 바꾸지 않는 입력 또는 score 의 방향이 이루는 부분공간이다.
@@ -373,6 +374,10 @@ Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null s
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Predicted quality and inputs along the null space
+
+Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 크기 (노름) 가 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
+
+공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 특별히 좋은 해라서가 아니라 유일하게 정해지는 기준점이라 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 4 처럼 null space 를 따라 옮겨 간다.
 
 ## Appendix C. Python Example: Constrained Numerical Inversion
 
