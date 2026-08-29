@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 12 | Created: 2026-08-28 | Updated: 2026-08-29 01:25 CDT
+Rev. 13 | Created: 2026-08-28 | Updated: 2026-08-29 01:30 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -331,13 +331,14 @@ from sklearn.cross_decomposition import PLSRegression
 rng = np.random.default_rng(0)
 
 # historical plant data: 2 process inputs, 1 quality output
-n, k, n_comp = 60, 2, 2
-X = rng.normal(size=(n, k))
-y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + rng.normal(0, 1.1, n)
+# both inputs are centred at 0, x1 spread twice as wide as x2
+n, n_comp = 100, 2
+X = np.column_stack([rng.normal(0.0, 1.0, n), rng.normal(0.0, 0.5, n)])
+y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + rng.normal(0, 0.85, n)
 
 x_mean, y_mean = X.mean(axis=0), y.mean()
 pls = PLSRegression(n_components=n_comp, scale=False).fit(X - x_mean, y - y_mean)
-P = pls.x_loadings_          # (k, n_comp)
+P = pls.x_loadings_          # (2, n_comp)
 Q = pls.y_loadings_          # (1, n_comp)
 
 # 1. direct inversion: minimum-norm scores that hit the target value
@@ -363,15 +364,15 @@ print("prediction max :", round(preds.max(), 6))
 print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 ```
 
-뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 학습에 쓴 60 개 표본의 두 process input 을 그린 것이다. 등고선은 두 입력이 함께 이루는 밀도이고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력을 모두 표준정규분포에서 뽑았으므로 막대는 중심이 높고 양끝이 낮은 모양이며, 이 구름이 곧 model 이 배운 영역이다.
+뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 학습에 쓴 100 개 표본의 두 process input 을 그린 것이다. 등고선은 두 입력이 함께 이루는 밀도이고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 구름이 가로로 늘어난 타원을 이룬다. 이 구름이 곧 model 이 배운 영역이다.
 
-Fig 3 (b) 는 같은 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
+Fig 3 (b) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
-이 예시의 model 은 $R^{2} = 0.700$, RMSE 1.05 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-4.9$ 에서 $3.7$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
+이 예시의 model 은 $R^{2} = 0.701$, RMSE 0.95 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-4.4$ 에서 $5.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
 <img src="inversion-problem_fig/appendix-b-parity.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-Fig 3. Sampled inputs and the parity plot of the Appendix B forward model
+Fig 3. Appendix B inputs, $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
 Code 가 만든 `x_alt` 37 개는 두 성분이 모두 다른 입력이지만 예측값은 전부 2.000 이다.
 

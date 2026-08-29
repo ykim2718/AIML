@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.1.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.2.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -33,12 +33,20 @@ def font_size(scale: float = 1.0) -> float:
     return BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH * scale
 
 
+def sub_caption(fig, axes_group: list, text: str, y: float = 0.02) -> None:
+    """Put the panel label below the chart, centred on the axes the panel is made of."""
+    boxes = [ax.get_position() for ax in axes_group]
+    x = (min(box.x0 for box in boxes) + max(box.x1 for box in boxes)) / 2
+    fig.text(x, y, text, ha='center', va='bottom', fontsize=font_size(1.05))
+
+
 def build_appendix_b_model() -> tuple:
     """Rebuild the Appendix B data and PLS model. Returns (x_data, y_data, x_mean, y_mean, pls)."""
     rng = np.random.default_rng(0)
-    n, k, n_comp = 60, 2, 2
-    x_data = rng.normal(size=(n, k))
-    y_data = 1.5 * x_data[:, 0] - 0.8 * x_data[:, 1] + rng.normal(0, 1.1, n)
+    n, n_comp = 100, 2
+    # both inputs are centred at 0, x1 spread twice as wide as x2
+    x_data = np.column_stack([rng.normal(0.0, 1.0, n), rng.normal(0.0, 0.5, n)])
+    y_data = 1.5 * x_data[:, 0] - 0.8 * x_data[:, 1] + rng.normal(0, 0.85, n)
 
     x_mean, y_mean = x_data.mean(axis=0), y_data.mean()
     pls = PLSRegression(n_components=n_comp, scale=False).fit(x_data - x_mean, y_data - y_mean)
@@ -67,7 +75,7 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
                               x_data[:, 1].min() - 0.6:x_data[:, 1].max() + 0.6:120j]
     density = gaussian_kde(x_data.T)(np.vstack([grid_x.ravel(), grid_y.ravel()])).reshape(grid_x.shape)
     ax_main.contour(grid_x, grid_y, density, levels=6, colors=COLORS[0], linewidths=1.0)
-    ax_main.scatter(x_data[:, 0], x_data[:, 1], s=14, color='0.45', label='60 samples')
+    ax_main.scatter(x_data[:, 0], x_data[:, 1], s=14, color='0.45', label='100 samples')
     ax_main.set_xlabel('x1', fontsize=font_size())
     ax_main.set_ylabel('x2', fontsize=font_size())
     ax_main.tick_params(labelsize=font_size(0.9))
@@ -75,14 +83,12 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
 
     ax_top.hist(x_data[:, 0], bins=12, color=COLORS[0])
     ax_top.tick_params(labelbottom=False, labelsize=font_size(0.8))
-    ax_top.set_title('(a) the two inputs, drawn from a normal distribution',
-                     fontsize=font_size(1.05))
     ax_right.hist(x_data[:, 1], bins=12, orientation='horizontal', color=COLORS[0])
     ax_right.tick_params(labelleft=False, labelsize=font_size(0.8))
 
     span = [min(y_data.min(), y_pred.min()) - 0.2, max(y_data.max(), y_pred.max()) + 0.2]
     ax_parity.plot(span, span, color='0.5', linestyle='--', linewidth=1.0, label='1:1 line')
-    ax_parity.scatter(y_data, y_pred, s=18, color=COLORS[0], label='60 samples')
+    ax_parity.scatter(y_data, y_pred, s=18, color=COLORS[0], label='100 samples')
     ax_parity.axhline(2.0, color=COLORS[3], linestyle=':', linewidth=1.2, label='inversion target 2.0')
     ax_parity.set_xlim(span)
     ax_parity.set_ylim(span)
@@ -90,7 +96,10 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     ax_parity.set_ylabel('predicted value', fontsize=font_size())
     ax_parity.tick_params(labelsize=font_size(0.9))
     ax_parity.legend(fontsize=font_size(0.8), loc='upper left')
-    ax_parity.set_title(f'(b) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}', fontsize=font_size(1.05))
+
+    fig.subplots_adjust(bottom=0.20)
+    sub_caption(fig, [ax_main, ax_top, ax_right], '(a) the two sampled inputs and their distributions')
+    sub_caption(fig, [ax_parity], f'(b) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
 
     out_path = out_folder / 'appendix-b-parity.png'
     out_folder.mkdir(parents=True, exist_ok=True)
@@ -134,7 +143,6 @@ def draw_null_space(out_folder: pathlib.Path) -> pathlib.Path:
     ax.set_ylabel('predicted value', fontsize=font_size())
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.85), loc='upper left')
-    ax.set_title('(a) the inputs move, the value does not', fontsize=font_size(1.1))
 
     ax = axes[1]
     ax.scatter(x_data[:, 0], x_data[:, 1], s=14, color='0.75', label='historical data')
@@ -147,12 +155,13 @@ def draw_null_space(out_folder: pathlib.Path) -> pathlib.Path:
     ax.set_ylabel('x2', fontsize=font_size())
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.85), loc='upper left')
-    ax.set_title('(b) the solutions form a line in the input plane', fontsize=font_size(1.1))
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
+    sub_caption(fig, [axes[0]], '(a) the inputs move, the value does not')
+    sub_caption(fig, [axes[1]], '(b) the solutions form a line in the input plane')
     out_path = out_folder / 'appendix-b-null-space.png'
     out_folder.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=DPI)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
     plt.close(fig)
     print(f'wrote {out_path}, predictions in [{preds.min():.4f}, {preds.max():.4f}], '
           f'distance up to {distances.max():.3f}')
@@ -208,7 +217,6 @@ def draw_constrained_inversion(out_folder: pathlib.Path) -> pathlib.Path:
     ax.set_ylabel('x3', fontsize=font_size())
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.85), loc='upper left')
-    ax.set_title('(a) the constrained solution keeps the input correlation', fontsize=font_size(1.05))
 
     ax = axes[1]
     labels = ['T2', 'SPE']
@@ -229,12 +237,13 @@ def draw_constrained_inversion(out_folder: pathlib.Path) -> pathlib.Path:
     ax.set_ylabel('value / limit', fontsize=font_size())
     ax.tick_params(axis='y', labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.85))
-    ax.set_title(f'(b) both hit the target {y_des:.1f}, only one stays valid', fontsize=font_size(1.05))
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
+    sub_caption(fig, [axes[0]], '(a) the constrained solution keeps the input correlation')
+    sub_caption(fig, [axes[1]], f'(b) both hit the target {y_des:.1f}, only one stays valid')
     out_path = out_folder / 'appendix-c-constrained-inversion.png'
     out_folder.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=DPI)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
     plt.close(fig)
     print(f'wrote {out_path}')
     print(f'  with SPE : pred={forward.predict(x_sol[None, :])[0]:.4f} '
