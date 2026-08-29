@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 9 | Created: 2026-08-28 | Updated: 2026-08-29 01:02 CDT
+Rev. 10 | Created: 2026-08-28 | Updated: 2026-08-29 01:05 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -119,7 +119,7 @@ $$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \ma
 
 $$\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$$
 
-$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 최소 노름 해이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 방향이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
+$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 방향이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [\[2\]](#ref-2).
 
 - Null space 는 품질을 바꾸지 않고 움직일 수 있는 운전 자유도이다. 원가, 처리량, 에너지 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [\[5\]](#ref-5).
@@ -165,7 +165,7 @@ Table 2. Inversion method by model family
 
 | Model | Inversion method | Characteristics |
 | --- | --- | --- |
-| PLS / PCR | 해석적 역해와 null space | 선형이고 해가 유일하지 않으므로 최소 노름 해 또는 제약 최적화로 고른다 |
+| PLS / PCR | 해석적 역해와 null space | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다 |
 | OLS / Ridge | Pseudo-inverse | 잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다 |
 | PCA | Pre-image problem | 출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다 |
 | Kernel PLS | Latent space 역해와 pre-image | 비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다 |
@@ -298,7 +298,7 @@ Table 3. Libraries for model inversion
 - Latent variable: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
 - Loading: Latent 변수와 관측 변수를 잇는 계수이며, score 에서 입력을 복원할 때 쓰인다.
 - MCMC: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
-- Minimum-norm solution: 목표를 똑같이 만족하는 해가 여럿일 때 그중 노름이 가장 작은 해이다.
+- Minimum-norm solution: 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다.
 - Model inversion: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
 - Normalizing flow: 가역 변환의 합성으로 분포를 다른 분포로 옮기는 생성 model 이다.
 - Null space: 예측 출력을 바꾸지 않는 입력 또는 score 의 방향이 이루는 부분공간이다.
@@ -309,7 +309,7 @@ Table 3. Libraries for model inversion
 - PLS: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 뽑는 회귀 model 이며 partial least squares 의 약자이다.
 - Posterior sampling: 사후분포에서 표본을 뽑아 해의 집합을 얻는 방법이다.
 - Pre-image problem: 특징 공간의 한 점에 대응하는 입력 공간의 점을 찾는 문제이다.
-- Pseudo-inverse: 정방이 아니거나 특이한 행렬에 대해 최소 노름 최소제곱 해를 주는 일반화 역행렬이다.
+- Pseudo-inverse: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
 - Regularization: 해의 크기나 형태에 벌점을 주어 ill-posed problem 을 안정화하는 방법이다.
 - Score: 관측을 latent 좌표계로 투영한 값이다.
 - SPE: 관측이 model 평면에서 벗어난 거리의 제곱이며 squared prediction error 의 약자이다.
@@ -321,7 +321,7 @@ Table 3. Libraries for model inversion
 
 ## Appendix B. Python Example: PLS Model Inversion
 
-3.1 의 절차를 그대로 실행한다. 최소 노름 해를 구한 뒤 null space 방향으로 움직여도 예측 품질이 같은지 확인한다. Appendix B 와 Appendix C 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 만 있으면 그대로 돌아간다.
+3.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix B 와 Appendix C 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 만 있으면 그대로 돌아간다.
 
 ```python
 import numpy as np
@@ -340,7 +340,7 @@ pls = PLSRegression(n_components=n_comp, scale=False).fit(X - x_mean, y - y_mean
 P = pls.x_loadings_          # (k, n_comp)
 Q = pls.y_loadings_          # (1, n_comp)
 
-# 1. direct inversion: minimum-norm scores that hit the target quality
+# 1. direct inversion: minimum-norm scores that hit the target value
 y_des = 2.0
 t_star = np.linalg.pinv(Q) @ np.array([y_des - y_mean])
 x_star = P @ t_star + x_mean
@@ -368,15 +368,15 @@ print("distance       :", round(float(np.linalg.norm(x_star - x_alt)), 3))
 
 Fig 3. Parity plot of the Appendix B forward model
 
-Code 가 만든 `x_star` 와 `x_alt` 는 여섯 성분이 모두 다른 입력이지만 예측값은 둘 다 2.000 이다. 예측값만으로는 둘을 가릴 수 없으므로, 실제 공정이라면 원료비나 설비 한계까지 남는 여유 같은 다른 기준으로 고른다.
+Code 가 만든 `x_star` 와 `x_alt` 는 여섯 성분이 모두 다른 입력이지만 예측값은 둘 다 2.000 이다.
 
-Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 가로축은 그 입력이 최소 노름 해에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고, 세로축은 그 입력을 model 에 넣어 얻은 예측값이다. 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 예측값은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
+Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고, 세로축은 그 입력을 model 에 넣어 얻은 예측값이다. 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 예측값은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 minimum-norm solution 과 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
 
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Predicted value and inputs along the null space
 
-Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 크기 (노름) 가 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
+Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
 
 공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 특별히 좋은 해라서가 아니라 유일하게 정해지는 기준점이라 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 4 처럼 null space 를 따라 옮겨 간다.
 
