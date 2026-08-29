@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.5.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.6.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -41,21 +41,26 @@ def panel_caption(fig, axes_group: list, text: str, y: float = 0.02) -> None:
 
 
 def build_appendix_b_model() -> tuple:
-    """Rebuild the Appendix B data and PLS model. Returns (x_data, y_data, x_mean, y_mean, pls)."""
+    """Rebuild the Appendix B data and PLS model.
+
+    Returns (x_data, y_data, drift, x_mean, y_mean, pls). drift is the part of y that follows
+    the sample order, which the model never sees.
+    """
     rng = np.random.default_rng(0)
     n, n_comp = 100, 2
     # both inputs are centred at 0, x1 spread twice as wide as x2
     x_data = np.column_stack([rng.normal(0.0, 1.0, n), rng.normal(0.0, 0.5, n)])
-    y_data = 1.5 * x_data[:, 0] - 0.8 * x_data[:, 1] + rng.normal(0, 0.85, n)
+    drift = 2.0 * (np.arange(n) / 80.0) ** 3          # reaches the target 2.0 at sample 80
+    y_data = 1.5 * x_data[:, 0] - 0.8 * x_data[:, 1] + drift + rng.normal(0, 0.85, n)
 
     x_mean, y_mean = x_data.mean(axis=0), y_data.mean()
     pls = PLSRegression(n_components=n_comp, scale=False).fit(x_data - x_mean, y_data - y_mean)
-    return x_data, y_data, x_mean, y_mean, pls
+    return x_data, y_data, drift, x_mean, y_mean, pls
 
 
 def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
     """Fig 3: the measured values, the sampled inputs and the parity plot of the forward model."""
-    x_data, y_data, x_mean, y_mean, pls = build_appendix_b_model()
+    x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     y_pred = pls.predict(x_data - x_mean).ravel() + y_mean
     residual = y_data - y_pred
     r2 = 1.0 - float(np.sum(residual ** 2) / np.sum((y_data - y_data.mean()) ** 2))
@@ -72,8 +77,10 @@ def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
     ax_parity = fig.add_subplot(outer[2])
 
     # the measured value in the order the samples arrive
-    ax_series.plot(np.arange(len(y_data)), y_data, color=COLORS[0], linewidth=1.0,
-                   marker='o', markersize=3, label='measured value y')
+    order = np.arange(len(y_data))
+    ax_series.plot(order, y_data, color=COLORS[0], linewidth=0.8, marker='o', markersize=3,
+                   label='measured value y')
+    ax_series.plot(order, drift, color=COLORS[1], linewidth=2.0, label='sample-order trend')
     ax_series.axhline(2.0, color=COLORS[3], linestyle=':', linewidth=1.2,
                       label='inversion target 2.0')
     ax_series.set_xlabel('sample order', fontsize=font_size())
@@ -136,7 +143,7 @@ def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
 
 def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
     """Fig 4: scores moved along the null space keep the predicted value."""
-    x_data, y_data, x_mean, y_mean, pls = build_appendix_b_model()
+    x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     loadings, y_loadings = pls.x_loadings_, pls.y_loadings_
 
     y_des = 2.0

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 18 | Created: 2026-08-28 | Updated: 2026-08-29 01:47 CDT
+Rev. 19 | Created: 2026-08-28 | Updated: 2026-08-29 01:53 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -335,7 +335,8 @@ rng = np.random.default_rng(0)
 # both inputs are centred at 0, x1 spread twice as wide as x2
 n, n_comp = 100, 2
 X = np.column_stack([rng.normal(0.0, 1.0, n), rng.normal(0.0, 0.5, n)])
-y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + rng.normal(0, 0.85, n)
+drift = 2.0 * (np.arange(n) / 80.0) ** 3     # the sample order the model never sees
+y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + drift + rng.normal(0, 0.85, n)
 
 x_mean, y_mean = X.mean(axis=0), y.mean()
 pls = PLSRegression(n_components=n_comp, scale=False).fit(X - x_mean, y - y_mean)
@@ -365,7 +366,7 @@ print("prediction max :", round(preds.max(), 6))
 print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 ```
 
-뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 100 개 표본을 서로 독립으로 뽑았으므로 추세나 주기가 없고 값이 흩어져 있을 뿐이며, 목표 2.0 을 넘는 표본이 여럿 보이는 것이 그 목표가 데이터 안에 있다는 첫 확인이다.
+뒤집기 전에 뒤집을 model 부터 본다. Fig 3 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
 
 Fig 3 (b) 는 같은 표본의 두 process input 을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 구름이 가로로 늘어난 타원을 이룬다. 이 구름이 곧 model 이 배운 영역이다.
 
@@ -373,7 +374,7 @@ Fig 3 (b) 는 같은 표본의 두 process input 을 그린 것이다. 등고선
 
 Fig 3 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
-이 예시의 model 은 $R^{2} = 0.701$, RMSE 0.95 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-4.4$ 에서 $5.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
+이 예시의 model 은 $R^{2} = 0.518$, RMSE 1.38 로 잘 맞는 편이 아니다. 잔차의 큰 몫은 (a) 의 추세이며, model 이 보지 못하는 변수가 있으면 이렇게 남는다. 목표 2.0 은 표본이 덮는 $-4.1$ 에서 $6.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
 <img src="inversion-problem_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 3">
 
@@ -383,7 +384,7 @@ Code 가 만든 `x_alt` 37 개는 두 성분이 모두 다른 입력이지만 �
 
 Fig 4 는 이 결과를 그린 것이다. 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 왼쪽의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이며, 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표에 붙어 있다. 오른쪽은 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, minimum-norm solution 은 그 직선 위의 한 점일 뿐이다.
 
-<img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
+<img src="inversion-problem_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Predicted value and inputs along the null space
 
@@ -468,6 +469,6 @@ SPE 제약을 빼면 목표값은 그대로 맞추면서 `x3` 와 `x4` 가 `x1`,
 
 Fig 5 가 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
 
-<img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="900" style="max-width: 100%;" alt="Fig 5">
+<img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 5">
 
 Fig 5. Constrained solution against the validity limits
