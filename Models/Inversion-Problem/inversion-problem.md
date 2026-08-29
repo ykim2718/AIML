@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 7 | Created: 2026-08-28 | Updated: 2026-08-29 00:57 CDT
+Rev. 8 | Created: 2026-08-28 | Updated: 2026-08-29 01:00 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -359,17 +359,17 @@ print("pred(x_alt)    :", round(predict(x_alt), 6))
 print("distance       :", round(float(np.linalg.norm(x_star - x_alt)), 3))
 ```
 
-뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정 품질 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
+뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
-이 예시의 model 은 $R^{2} = 0.704$, RMSE 1.21 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-5.7$ 에서 $4.3$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 품질은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
+이 예시의 model 은 $R^{2} = 0.704$, RMSE 1.21 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-5.7$ 에서 $4.3$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
 <img src="inversion-problem_fig/appendix-b-parity.png" width="520" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Parity plot of the Appendix B forward model
 
-두 입력은 서로 다르지만 예측 품질은 같다. 어느 쪽을 쓸지는 품질이 아니라 원가나 운전 여유 같은 다른 기준이 정한다.
+두 입력은 서로 다르지만 예측값은 같다. 어느 쪽을 쓸지는 예측값이 아니라 원가나 운전 여유 같은 다른 기준이 정한다.
 
-Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 가로축은 그 입력이 최소 노름 해에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고, 세로축은 그 입력을 model 에 넣어 얻은 예측 품질이다. 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 품질은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
+Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 가로축은 그 입력이 최소 노름 해에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고, 세로축은 그 입력을 model 에 넣어 얻은 예측값이다. 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 예측값은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 최소 노름 해와 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
 
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
 
@@ -446,7 +446,7 @@ print("SPE         :", round(spe(x_sol), 3), "limit", round(spe_limit, 3))
 print("x_sol       :", np.round(x_sol, 3))
 ```
 
-SPE 제약을 빼면 목표 품질은 그대로 맞추면서 `x3` 와 `x4` 가 `x1`, `x2` 와의 상관을 깨는 해가 나온다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
+SPE 제약을 빼면 목표값은 그대로 맞추면서 `x3` 와 `x4` 가 `x1`, `x2` 와의 상관을 깨는 해가 나온다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
 
 Fig 5 가 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
 
