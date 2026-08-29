@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.4.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.5.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -17,7 +17,7 @@ from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
-__all__ = ['build_appendix_b_model', 'draw_parity', 'draw_null_space', 'draw_constrained_inversion']
+__all__ = ['build_appendix_b_model', 'panel_caption', 'fig_3', 'fig_4', 'fig_5']
 
 matplotlib.use('Agg')
 
@@ -33,7 +33,7 @@ def font_size(scale: float = 1.0) -> float:
     return BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH * scale
 
 
-def sub_caption(fig, axes_group: list, text: str, y: float = 0.02) -> None:
+def panel_caption(fig, axes_group: list, text: str, y: float = 0.02) -> None:
     """Put the panel label below the chart, centred on the axes the panel is made of."""
     boxes = [ax.get_position() for ax in axes_group]
     x = (min(box.x0 for box in boxes) + max(box.x1 for box in boxes)) / 2
@@ -53,8 +53,8 @@ def build_appendix_b_model() -> tuple:
     return x_data, y_data, x_mean, y_mean, pls
 
 
-def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
-    """Appendix B: the sampled inputs and the forward model that the inversion runs backwards."""
+def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 3: the measured values, the sampled inputs and the parity plot of the forward model."""
     x_data, y_data, x_mean, y_mean, pls = build_appendix_b_model()
     y_pred = pls.predict(x_data - x_mean).ravel() + y_mean
     residual = y_data - y_pred
@@ -114,10 +114,10 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     ax_parity.legend(fontsize=font_size(0.8), loc='upper left')
 
     fig.subplots_adjust(bottom=0.20)
-    sub_caption(fig, [ax_series], '(a) the measured value in sample order')
-    sub_caption(fig, [ax_main, ax_top, ax_right],
+    panel_caption(fig, [ax_series], '(a) the measured value in sample order')
+    panel_caption(fig, [ax_main, ax_top, ax_right],
                 '(b) the two sampled inputs, contoured by Mahalanobis distance')
-    sub_caption(fig, [ax_parity], f'(c) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
+    panel_caption(fig, [ax_parity], f'(c) parity plot, R2 = {r2:.3f}, RMSE = {rmse:.2f}')
 
     out_path = out_folder / 'appendix-b-parity.png'
     out_folder.mkdir(parents=True, exist_ok=True)
@@ -134,8 +134,8 @@ def draw_parity(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def draw_null_space(out_folder: pathlib.Path) -> pathlib.Path:
-    """Appendix B: scores moved along the null space keep the predicted value."""
+def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 4: scores moved along the null space keep the predicted value."""
     x_data, y_data, x_mean, y_mean, pls = build_appendix_b_model()
     loadings, y_loadings = pls.x_loadings_, pls.y_loadings_
 
@@ -175,8 +175,8 @@ def draw_null_space(out_folder: pathlib.Path) -> pathlib.Path:
     ax.legend(fontsize=font_size(0.85), loc='upper left')
 
     fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
-    sub_caption(fig, [axes[0]], '(a) the inputs move, the value does not')
-    sub_caption(fig, [axes[1]], '(b) the solutions form a line in the input plane')
+    panel_caption(fig, [axes[0]], '(a) the inputs move, the value does not')
+    panel_caption(fig, [axes[1]], '(b) the solutions form a line in the input plane')
     out_path = out_folder / 'appendix-b-null-space.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
@@ -186,8 +186,8 @@ def draw_null_space(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def draw_constrained_inversion(out_folder: pathlib.Path) -> pathlib.Path:
-    """Appendix C: the constrained solution hits the target inside the validity domain."""
+def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 5: the constrained solution hits the target inside the validity domain."""
     rng = np.random.default_rng(0)
     n = 400
     z = rng.normal(size=(n, 2))
@@ -257,8 +257,8 @@ def draw_constrained_inversion(out_folder: pathlib.Path) -> pathlib.Path:
     ax.legend(fontsize=font_size(0.85))
 
     fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
-    sub_caption(fig, [axes[0]], '(a) the constrained solution keeps the input correlation')
-    sub_caption(fig, [axes[1]], f'(b) both hit the target {y_des:.1f}, only one stays valid')
+    panel_caption(fig, [axes[0]], '(a) the constrained solution keeps the input correlation')
+    panel_caption(fig, [axes[1]], f'(b) both hit the target {y_des:.1f}, only one stays valid')
     out_path = out_folder / 'appendix-c-constrained-inversion.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
@@ -292,6 +292,6 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     arguments = parse_args()
-    draw_parity(out_folder=arguments.output_folder)
-    draw_null_space(out_folder=arguments.output_folder)
-    draw_constrained_inversion(out_folder=arguments.output_folder)
+    fig_3(out_folder=arguments.output_folder)
+    fig_4(out_folder=arguments.output_folder)
+    fig_5(out_folder=arguments.output_folder)

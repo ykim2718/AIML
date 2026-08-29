@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 17 | Created: 2026-08-28 | Updated: 2026-08-29 01:40 CDT
+Rev. 18 | Created: 2026-08-28 | Updated: 2026-08-29 01:47 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -375,7 +375,7 @@ Fig 3 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 
 
 이 예시의 model 은 $R^{2} = 0.701$, RMSE 0.95 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-4.4$ 에서 $5.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
-<img src="inversion-problem_fig/appendix-b-parity.png" width="900" style="max-width: 100%;" alt="Fig 3">
+<img src="inversion-problem_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
