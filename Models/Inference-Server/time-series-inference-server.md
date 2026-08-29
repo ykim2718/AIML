@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 26 | Created: 2026-08-28 | Updated: 2026-08-29 13:00 CDT
+Rev. 27 | Created: 2026-08-28 | Updated: 2026-08-29 13:25 CDT
 
 적합된 model 은 숫자를 돌려준다. 계열이 계속 도착하는 동안 그 숫자를 무언가가 행동으로 옮길 수 있는 답으로 바꾸는 일이 inference server 의 몫이다. 이 문서는 그 일이 무엇인지, caller 가 무엇을 요구할 수 있는지, 그리고 어떤 제품이 이미 그 일을 하고 있는지를 설명한다.
 
@@ -40,7 +40,7 @@ Table 1. 질문, deliverable, 그리고 각 질문에서 server 가 더 들어�
 
 ## 2. Core Capabilities
 
-가운데 열은 범용 model server 가 전제하는 것이며, section 5.1 의 제품들이 멈추는 지점이다.
+이 표는 server 가 caller 에게 지는 의무를 모은 목록이다. 가운데 열은 시간을 모르는 stateless model server 가 그 자리에서 대신 전제하는 것이고, 오른쪽 열이 시계열을 다루는 server 가 실제로 져야 하는 몫이다.
 
 Table 2. server 가 caller 에게 지는 의무와, stateless model server 의 전제
 
@@ -366,6 +366,7 @@ Section 2 가 이미 금지하지 않는, 그리고 어떤 test 에도 걸리지
 - **Scoring**: 나중에 도착한 실측과 답을 맞춰 보는 일.
 - **Segment**: 한 계열의 경계 지어진 구간. 길이로 정하거나 step transition 같은 사건으로 정함.
 - **Segment index**: 과거 segment 마다 embedding 하나를 담아, forward pass 없이 retrieval 에 답하는 store.
+- **Stateless model server**: 요청 하나가 필요한 것을 모두 담고 있다고 보고 답하는 일반 model server. 계열도 시각도 기억하지 않음.
 - **Trace**: 한 run 동안 한 sensor 를 표본으로 기록한 것.
 - **Trace tensor**: `[sequence, feature, trace]` 모양의 array. 한 축은 run 의 순서, 다른 한 축은 run 안의 시간.
 - **Virtual metrology**: metrology 가 재는 값을, 그 측정이 존재하기 전의 데이터로 추정하는 일.
