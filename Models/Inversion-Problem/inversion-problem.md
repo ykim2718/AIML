@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 10 | Created: 2026-08-28 | Updated: 2026-08-29 01:05 CDT
+Rev. 11 | Created: 2026-08-28 | Updated: 2026-08-29 01:15 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -330,10 +330,10 @@ from sklearn.cross_decomposition import PLSRegression
 
 rng = np.random.default_rng(0)
 
-# historical plant data: 6 process inputs, 1 quality output
-n, k, n_comp = 60, 6, 3
+# historical plant data: 2 process inputs, 1 quality output
+n, k, n_comp = 60, 2, 2
 X = rng.normal(size=(n, k))
-y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + 0.3 * X[:, 2] + rng.normal(0, 1.3, n)
+y = 1.5 * X[:, 0] - 0.8 * X[:, 1] + rng.normal(0, 1.1, n)
 
 x_mean, y_mean = X.mean(axis=0), y.mean()
 pls = PLSRegression(n_components=n_comp, scale=False).fit(X - x_mean, y - y_mean)
@@ -345,32 +345,35 @@ y_des = 2.0
 t_star = np.linalg.pinv(Q) @ np.array([y_des - y_mean])
 x_star = P @ t_star + x_mean
 
-# 2. null space: score directions that leave the predicted quality unchanged
+# 2. null space: 37 inputs along the direction that leaves the prediction unchanged
 N = null_space(Q)            # (n_comp, n_comp - 1)
-x_alt = P @ (t_star + N @ np.array([0.7, -0.4])) + x_mean
+alphas = np.linspace(-2.0, 2.0, 37)
+x_alt = np.array([P @ (t_star + N @ np.array([a])) + x_mean for a in alphas])
 
 
 def predict(x):
     return float(pls.predict((x - x_mean)[None, :]).ravel()[0]) + y_mean
 
 
+preds = np.array([predict(x) for x in x_alt])
 print("null space dim :", N.shape[1])
-print("pred(x_star)   :", round(predict(x_star), 6))
-print("pred(x_alt)    :", round(predict(x_alt), 6))
-print("distance       :", round(float(np.linalg.norm(x_star - x_alt)), 3))
+print("solutions      :", len(x_alt))
+print("prediction min :", round(preds.min(), 6))
+print("prediction max :", round(preds.max(), 6))
+print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 ```
 
 뒤집기 전에 뒤집을 model 부터 본다. Fig 3 은 학습에 쓴 60 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
-이 예시의 model 은 $R^{2} = 0.704$, RMSE 1.21 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-5.7$ 에서 $4.3$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
+이 예시의 model 은 $R^{2} = 0.700$, RMSE 1.05 로 잘 맞는 편이 아니다. 목표 2.0 은 표본이 덮는 $-4.9$ 에서 $3.7$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
 <img src="inversion-problem_fig/appendix-b-parity.png" width="520" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Parity plot of the Appendix B forward model
 
-Code 가 만든 `x_star` 와 `x_alt` 는 여섯 성분이 모두 다른 입력이지만 예측값은 둘 다 2.000 이다.
+Code 가 만든 `x_alt` 37 개는 두 성분이 모두 다른 입력이지만 예측값은 전부 2.000 이다.
 
-Fig 4 는 이 결과를 그린 것이다. 왼쪽 곡선 위의 한 점은 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고, 세로축은 그 입력을 model 에 넣어 얻은 예측값이다. 두 null space 방향 어느 쪽으로 걸어도 입력만 멀어질 뿐 예측값은 목표 2.0 에 붙어 있다. 오른쪽은 그 걸음의 한 지점인 `x_alt` 를 minimum-norm solution 과 나란히 놓은 것이며, 여섯 입력의 값이 모두 다른데도 예측은 같은 2.000 이다.
+Fig 4 는 이 결과를 그린 것이다. 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 왼쪽의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이며, 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표에 붙어 있다. 오른쪽은 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, minimum-norm solution 은 그 직선 위의 한 점일 뿐이다.
 
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="900" style="max-width: 100%;" alt="Fig 4">
 
@@ -380,7 +383,7 @@ Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 
 
 공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 특별히 좋은 해라서가 아니라 유일하게 정해지는 기준점이라 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 4 처럼 null space 를 따라 옮겨 간다.
 
-Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 $\mathbf{t}_{n}$ 이 그것이다. Latent 변수가 $A = 3$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 2$ 개 남으며, `null_space(Q)` 가 그 둘을 정규직교 기저로 돌려준다. Fig 4 (a) 의 두 곡선은 각각 그중 한 방향을 따라 걸은 것이고, `x_alt` 는 두 방향을 각각 0.7 과 −0.4 만큼 섞어 만든 한 지점이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
+Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{t}_{n} = \mathbf{0}$ 을 만족하는 $\mathbf{t}_{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 4 오른쪽의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
 ## Appendix C. Python Example: Constrained Numerical Inversion
 
