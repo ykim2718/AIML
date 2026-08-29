@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.7.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.8.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -200,12 +200,15 @@ def build_appendix_c_model() -> tuple:
     Returns (x_data, y_data, forward, pca, t2_limit, spe_limit).
     """
     rng = np.random.default_rng(0)
-    n = 400
-    z = rng.normal(size=(n, 2))
-    x_data = np.column_stack([z[:, 0], z[:, 1],
-                              0.9 * z[:, 0] + 0.1 * rng.normal(size=n),
-                              -0.7 * z[:, 1] + 0.1 * rng.normal(size=n)])
-    y_data = np.sin(x_data[:, 0]) + 0.5 * x_data[:, 1] ** 2 + 0.2 * x_data[:, 2]
+    n = 100
+    x1 = rng.normal(0.0, 1.0, n)
+    x2 = rng.normal(0.0, 0.5, n)
+    drift = 2.0 * (np.arange(n) / 80.0) ** 3
+    y_data = 1.5 * x1 - 0.8 * x2 + drift + rng.normal(0, 0.85, n)   # the Appendix B value
+    # two more inputs that follow the first two, so the four are not free of each other
+    x_data = np.column_stack([x1, x2,
+                              0.9 * x1 + 0.1 * rng.normal(size=n),
+                              -0.7 * x2 + 0.1 * rng.normal(size=n)])
 
     forward = GradientBoostingRegressor(random_state=0).fit(x_data, y_data)
     pca = PCA(n_components=2).fit(x_data)
@@ -256,11 +259,11 @@ def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
     ax_series.tick_params(labelsize=font_size(0.9))
     ax_series.legend(fontsize=font_size(0.8), loc='upper left')
 
-    pair = x_data[:, [0, 2]]
+    pair = x_data[:, [1, 3]]
     mahalanobis_contour(ax_main, pair)
-    ax_main.scatter(pair[:, 0], pair[:, 1], s=8, color='0.45', label='400 samples')
-    ax_main.set_xlabel('x1', fontsize=font_size())
-    ax_main.set_ylabel('x3', fontsize=font_size())
+    ax_main.scatter(pair[:, 0], pair[:, 1], s=8, color='0.45', label='100 samples')
+    ax_main.set_xlabel('x2', fontsize=font_size())
+    ax_main.set_ylabel('x4', fontsize=font_size())
     ax_main.tick_params(labelsize=font_size(0.9))
     ax_main.legend(fontsize=font_size(0.8), loc='upper left')
     ax_top.hist(pair[:, 0], bins=16, color=COLORS[0])
@@ -270,7 +273,7 @@ def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
 
     span = [min(y_data.min(), y_pred.min()) - 0.2, max(y_data.max(), y_pred.max()) + 0.2]
     ax_parity.plot(span, span, color='0.5', linestyle='--', linewidth=1.0, label='1:1 line')
-    ax_parity.scatter(y_data, y_pred, s=10, color=COLORS[0], label='400 samples')
+    ax_parity.scatter(y_data, y_pred, s=10, color=COLORS[0], label='100 samples')
     ax_parity.axhline(1.0, color=COLORS[3], linestyle=':', linewidth=1.2, label='inversion target 1.0')
     ax_parity.set_xlim(span)
     ax_parity.set_ylim(span)
@@ -327,13 +330,13 @@ def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
 
     fig, axes = plt.subplots(1, 2, figsize=FIGSIZE)
     ax = axes[0]
-    ax.scatter(x_data[:, 0], x_data[:, 2], s=8, color='0.75', label='historical data')
-    ax.scatter([x_sol[0]], [x_sol[2]], s=90, marker='*', color=COLORS[2],
-               label='solution with T2 and SPE')
-    ax.scatter([x_loose[0]], [x_loose[2]], s=70, marker='X', color=COLORS[3],
-               label='solution with T2 only')
-    ax.set_xlabel('x1', fontsize=font_size())
-    ax.set_ylabel('x3', fontsize=font_size())
+    ax.scatter(x_data[:, 1], x_data[:, 3], s=8, color='0.75', label='historical data')
+    ax.scatter([x_sol[1]], [x_sol[3]], s=90, marker='*', color=COLORS[2],
+               label=f'T2 and SPE: y = {forward.predict(x_sol[None, :])[0]:.2f}')
+    ax.scatter([x_loose[1]], [x_loose[3]], s=70, marker='X', color=COLORS[3],
+               label=f'T2 only: y = {forward.predict(x_loose[None, :])[0]:.2f}')
+    ax.set_xlabel('x2', fontsize=font_size())
+    ax.set_ylabel('x4', fontsize=font_size())
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.85), loc='upper left')
 
@@ -346,7 +349,7 @@ def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
     bars_loose = ax.bar(idx + 0.2, ratios_loose, width=0.4, color=COLORS[3], label='T2 only')
     ax.axhline(1.0, color=COLORS[4], linestyle='--', linewidth=1.2, label='limit')
     ax.set_yscale('log')                       # the loose SPE is two orders above the others
-    ax.set_ylim(0.01, 300.0)
+    ax.set_ylim(0.001, 300.0)
     for bars, ratios in ((bars_sol, ratios_sol), (bars_loose, ratios_loose)):
         for bar, ratio in zip(bars, ratios):
             ax.text(bar.get_x() + bar.get_width() / 2, ratio * 1.15, f'{ratio:.2f}',
@@ -359,7 +362,7 @@ def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
 
     fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
     panel_caption(fig, [axes[0]], '(a) the constrained solution keeps the input correlation')
-    panel_caption(fig, [axes[1]], f'(b) both hit the target {y_des:.1f}, only one stays valid')
+    panel_caption(fig, [axes[1]], '(b) only the constrained search stays inside both limits')
     out_path = out_folder / 'appendix-c-constrained-inversion.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 26 | Created: 2026-08-28 | Updated: 2026-08-29 02:53 CDT
+Rev. 27 | Created: 2026-08-28 | Updated: 2026-08-29 03:11 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -415,13 +415,17 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 rng = np.random.default_rng(0)
 
-# correlated process data: x3 and x4 are driven by x1 and x2
-n = 400
-z = rng.normal(size=(n, 2))
-X = np.column_stack([z[:, 0], z[:, 1],
-                     0.9 * z[:, 0] + 0.1 * rng.normal(size=n),
-                     -0.7 * z[:, 1] + 0.1 * rng.normal(size=n)])
-y = np.sin(X[:, 0]) + 0.5 * X[:, 1] ** 2 + 0.2 * X[:, 2]
+# the same 100 samples and the same value as Appendix B
+n = 100
+x1 = rng.normal(0.0, 1.0, n)
+x2 = rng.normal(0.0, 0.5, n)
+drift = 2.0 * (np.arange(n) / 80.0) ** 3
+y = 1.5 * x1 - 0.8 * x2 + drift + rng.normal(0, 0.85, n)
+
+# x3 and x4 follow x1 and x2, so the four inputs are not free of each other
+X = np.column_stack([x1, x2,
+                     0.9 * x1 + 0.1 * rng.normal(size=n),
+                     -0.7 * x2 + 0.1 * rng.normal(size=n)])
 
 forward = GradientBoostingRegressor(random_state=0).fit(X, y)
 
@@ -473,18 +477,18 @@ print("x_sol       :", np.round(x_sol, 3))
 
 <img src="inversion-problem_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 5">
 
-Fig 5. Appendix C measured values in sample order, the correlated inputs `x1` and `x3`, and the parity plot of the forward model
+Fig 5. Appendix C measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
-Fig 5 (a) 는 400 개 표본의 측정값을 순서대로 그린 것이다. Appendix B 와 달리 순서를 따르는 추세가 없어, 값이 목표 1.0 을 가운데 두고 고르게 흩어져 있다.
+Fig 5 (a) 는 측정값을 순서대로 그린 것이다. Appendix B 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
 
-Fig 5 (b) 는 상관이 있는 두 입력 `x1` 과 `x3` 의 평면이다. `x3` 이 `x1` 을 0.9 배로 따라가므로 등고선이 대각선으로 길게 눌린 타원이 되며, 이 좁은 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
+Fig 5 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
 
-Fig 5 (c) 는 gradient boosting model 의 parity plot 이다. $R^{2} = 0.998$, RMSE 0.05 로 학습 데이터를 거의 그대로 맞추므로, Appendix B 와 달리 뒤집기에 앞서 model 을 의심할 이유가 없다.
+Fig 5 (c) 는 gradient boosting model 의 parity plot 이다. $R^{2} = 0.951$, RMSE 0.44 로 Appendix B 의 PLS 보다 훨씬 잘 맞는데, 같은 값을 tree 가 학습 표본에 맞춰 잘게 나누어 담기 때문이다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 이보다 낮다.
 
-SPE 제약을 빼면 목표값은 그대로 맞추면서 `x3` 와 `x4` 가 `x1`, `x2` 와의 상관을 깨는 해가 나온다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
+SPE 제약을 빼면 탐색이 입력들의 상관을 깨는 쪽으로 빠져나간다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
 
 <img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 6">
 
 Fig 6. Constrained solution against the validity limits
 
-Fig 6 이 그 차이를 보인다. 왼쪽의 `x1`–`x3` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉지만, $T^{2}$ 만 건 해는 목표를 맞추고도 띠에서 벗어나 있다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 60 배에 이른다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다.
+Fig 6 이 그 차이를 보인다. 왼쪽의 `x2`–`x4` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉아 목표 1.0 을 맞추지만, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 서고 값도 0.65 에 그친다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
