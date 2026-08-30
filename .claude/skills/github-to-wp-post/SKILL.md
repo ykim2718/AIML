@@ -4,7 +4,7 @@ description: GitHub 의 markdown file 을 가리키는 WordPress post 를 새로
 ---
 
 # GitHub To WordPress Post
-Rev. 8 | Created: 2026-08-21 | Updated: 2026-08-28 19:00 UTC
+Rev. 10 | Created: 2026-08-21 | Updated: 2026-08-30 05:34 UTC
 
 ## 1. 작업대상
 
@@ -17,8 +17,8 @@ Rev. 8 | Created: 2026-08-21 | Updated: 2026-08-28 19:00 UTC
 ```
 
 - `<IMAGE_URL>` 은 `https://github.com/<OWNER>/<REPO>/blob/main/<PATH>?raw=true` 형태로 쓴다.
-  `raw.githubusercontent.com` 주소도 그림 자체는 보이지만, 사이트가 featured image 를 만들어
-  주는 것은 앞의 형태에서 확인되었다. 2 를 본다.
+  이 site 의 다른 post 가 모두 이 형태이다. `raw.githubusercontent.com` 주소도 그림은 똑같이
+  보인다.
 - `<CATEGORIES>` 는 comma separated string 이다. 예: `Data Science, EDA`
 - `<AUTHOR>` 는 login, slug, 이름, email 또는 id 다. 주지 않으면 application password 의 주인이
   저자가 된다.
@@ -56,9 +56,7 @@ GitHub markdown을 WordPress post로 등록해줘
 함께 알려줄 것.
 
 - `<IMAGE_URL>` 은 `https://github.com/<OWNER>/<REPO>/blob/main/<PATH>?raw=true` 형태로 준다.
-  **`raw.githubusercontent.com` 주소를 주면 featured image 가 만들어지지 않는 일이 있다.** 본문의
-  그림은 어느 쪽이든 보이지만, featured image 가 없으면 목록 page, archive, 공유 카드의
-  thumbnail 이 빈다. 이미 그 주소로 만든 post 는 4.1 을 본다.
+  이 site 의 다른 post 가 모두 이 형태이다. 어느 형태든 본문의 그림은 똑같이 보인다.
 - `<CATEGORIES>` 는 comma separated string 이다. 예: `Data Science, EDA`. 등록되지 않은 이름은
   생략되며 새 category 를 만들지 않는다.
 - `<AUTHOR>` 는 login, slug, 이름, email 또는 id 로 준다. 주지 않으면 application password 의
@@ -126,9 +124,7 @@ python3 "$WPGP"/wp_create.py whoami
    받지 못하면 멈추고 알린다. 없는 문서로 post 를 만들지 않는다.
 2. `<IMAGE_URL>` 이 200 과 `image/*` 를 돌려주는지 확인한다. 형태가
    `https://github.com/<OWNER>/<REPO>/blob/main/<PATH>?raw=true` 가 아니면 그 형태로 바꾸어
-   쓰고 사용자에게 알린다. `raw.githubusercontent.com` 주소로 만든 post 는 featured image 가
-   비어 있을 수 있으므로, 5 절에서 `featured_media` 를 확인하고 비어 있으면 image block 의
-   src 를 이 형태로 고쳐 저장한다. 저장하면 사이트가 featured image 를 만든다.
+   쓰고 사용자에게 알린다.
 3. `<MD_URL>` 에서 shortcode 에 넣을 값을 뽑는다.
 
    ```bash
@@ -138,6 +134,12 @@ python3 "$WPGP"/wp_create.py whoami
    `https://github.com/ykim2718/AIML/blob/main/EDA/Noise/noise-color-taxonomy.md` 이면
    `repo` 는 `AIML`, `file_path` 는 `EDA/Noise/noise-color-taxonomy.md`, `raw_url` 은
    그 문서를 내려받을 주소다.
+
+   URL 은 branch 이름과 경로를 슬래시 하나로 이어 붙여 쓰기 때문에
+   `blob/claude/abc/Stock/x.md` 는 branch 가 `claude` 인지 `claude/abc` 인지 URL 만으로는
+   가려지지 않는다. `parse` 가 `git ls-remote` 로 그 저장소의 branch 와 tag 를 받아 가장 긴
+   것으로 맞춘다. 저장소에 닿지 못하면 첫 마디를 branch 로 본다. 결과의 `branch` 와
+   `file_path` 가 맞는지 확인하고, `raw_url` 이 200 이 아니면 멈춘다.
 
 ### 4.2 Step 2 — Title 과 Category
 
@@ -167,6 +169,8 @@ python3 "$WPGP"/wp_create.py whoami
 <!-- /wp:shortcode -->
 ```
 
+- shortcode 의 `branch` 는 기본값이 `main` 이다. branch 가 `main` 이 아니면 script 가
+  `repo` 와 `file` 사이에 `branch='<BRANCH>'` 를 넣는다. `main` 이면 넣지 않는다.
 - image 는 media library 에 올리지 않는다. `<IMAGE_URL>` 을 그대로 media URL 로 쓴다.
 - height 는 500px 로 고정하고 width 는 `auto` 로 둔다.
 
@@ -188,9 +192,10 @@ python3 "$WPGP"/wp_create.py create \
 - `--author` 는 login, slug, 이름, email 또는 id 로 받는다. **주지 않으면 application password
   의 주인이 저자가 된다.** 저자는 자격증명의 성질이지 선택이 아니므로, 글을 올리는 계정과 저자가
   다르면 반드시 준다. 맞는 사용자가 없거나 여럿이면 만들지 않고 멈춘다.
-- `--author` 를 준 경우, 사이트가 본문 image 로 featured image 를 만들어 붙이면 그것의 author 와
-  slug 도 같이 맞춘다. featured image 가 생기지 않는 것은 오류가 아니다. 이 skill 은 image 를
-  media library 에 올리지 않는다.
+- `--author` 를 준 경우, featured image 까지 script 가 맡는다. 사이트는 그것을 첫 저장이 아니라
+  그 다음 저장에서 만들므로, script 가 비어 있는 것을 보면 본문을 그대로 한 번 더 저장한 뒤
+  생긴 image 의 author 와 slug 를 맞춘다. 그래도 생기지 않는 것은 오류가 아니다. 이 skill 은
+  image 를 media library 에 올리지 않는다.
 - 본문 두 block 은 script 가 위 형식 그대로 만든다. 직접 조립하지 않는다.
 - tag 는 `github-hosted` 하나가 붙는다. term 이 없으면 만들어 붙인다.
   (WordPress tag 이름에 `#` 은 쓰지 않는다.)
@@ -203,9 +208,18 @@ python3 "$WPGP"/wp_create.py create \
    - `[github_file` 문자열이 **보이지 않아야** 한다. 보이면 shortcode 가 실행되지 않은 것이다.
    - markdown 의 heading 이 보여야 한다.
    - `height:500px` 가 있어야 한다.
-2. `featured_media` 가 0 이 아닌지 본다. 0 이면 4.1 의 2 대로 image block 의 src 를
-   `?raw=true` 형태로 고쳐 저장한 뒤 다시 본다. 이 site 의 다른 post 는 모두 featured image 를
-   가지고 있다.
+2. `featured_media` 가 0 이 아닌지 본다. 이 site 의 다른 post 는 모두 featured image 를 가지고
+   있고, 없으면 목록 page, archive, 공유 카드의 thumbnail 이 빈다.
+
+   **0 이면 본문을 그대로 한 번 더 저장한다.** 이 site 는 featured image 를 처음 만들 때가 아니라
+   그 다음 저장에서 만든다. 내용을 바꿀 필요가 없으므로 읽은 `content` 를 그대로 돌려보낸다.
+   image 의 URL 형태와는 무관하다.
+
+   ```bash
+   python3 "$WPGP"/wp_create.py resave <ID>
+   ```
+
+   그래도 0 이면 사용자에게 알린다. 이 skill 은 image 를 media library 에 올리지 않는다.
 3. post id, permalink, 적용된 category, author, featured image, excerpt 단어 수를 보고한다.
 
 ## 6. Scope Rules

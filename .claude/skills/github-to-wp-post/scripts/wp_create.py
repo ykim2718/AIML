@@ -12,6 +12,7 @@ import argparse
 import base64
 import json
 import os
+import subprocess
 import sys
 import time
 import urllib.error
@@ -101,13 +102,53 @@ def cmd_whoami(args) -> None:
         sys.exit('이 계정은 publish_posts 권한이 없어 post 를 만들 수 없습니다.')
 
 
+def github_ref_names(owner: str = None, repo: str = None) -> set:
+    """List the repository's branch and tag names, asking git rather than the API.
+
+    ls-remote reuses whatever credentials git is already configured with, so it
+    reaches private repositories without a separate token. An unreachable
+    repository yields an empty set, which leaves the caller on its one-segment
+    guess instead of stopping the run.
+    """
+    try:
+        done = subprocess.run(['git', 'ls-remote', '--heads', '--tags',
+                               f'https://github.com/{owner}/{repo}'],
+                              capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return set()
+    if done.returncode != 0:
+        return set()
+    names = set()
+    for line in done.stdout.splitlines():
+        _, _, ref = line.partition('\t')
+        for prefix in ('refs/heads/', 'refs/tags/'):
+            if ref.startswith(prefix):
+                names.add(ref[len(prefix):].removesuffix('^{}'))
+    return names
+
+
+def split_ref_path(owner: str = None, repo: str = None, rest: list = None) -> tuple:
+    """Find where the branch name ends and the file path begins.
+
+    A blob URL runs the two together, so blob/claude/abc/Stock/x.md is either
+    branch 'claude' or branch 'claude/abc'. Nothing in the URL says which; only
+    the repository knows, so ask it and take the longest name that matches.
+    A commit SHA is one segment and falls through to the same answer as before.
+    """
+    names = github_ref_names(owner, repo) if len(rest) > 2 else set()
+    for cut in range(len(rest) - 1, 1, -1):
+        if '/'.join(rest[:cut]) in names:
+            return '/'.join(rest[:cut]), '/'.join(rest[cut:])
+    return rest[0], '/'.join(rest[1:])
+
+
 def parse_md_url(md_url: str = None) -> dict:
     """Split a GitHub blob URL into the values the shortcode and the raw fetch need."""
     parts = urllib.parse.urlparse(md_url).path.strip('/').split('/')
     if len(parts) < 5 or parts[2] not in ('blob', 'raw'):
         sys.exit(f"not a GitHub file URL: {md_url}")
-    owner, repo, _, branch = parts[0], parts[1], parts[2], parts[3]
-    file_path = '/'.join(parts[4:])
+    owner, repo = parts[0], parts[1]
+    branch, file_path = split_ref_path(owner, repo, parts[3:])
     return {'owner': owner, 'repo': repo, 'branch': branch, 'file_path': file_path,
             'raw_url': f'https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{file_path}'}
 
@@ -177,13 +218,30 @@ def resolve_author(value: str = None) -> int:
     return hits[0]['id']
 
 
+def resave_post(post_id: int = None) -> None:
+    """Write the post's own content back to it, changing nothing.
+
+    The site builds the featured image from the body image on a save after the
+    first one, so a post is left without one until it is written a second time.
+    """
+    post, _ = call(f'posts/{post_id}', {'context': 'edit', '_fields': 'content'})
+    call(f'posts/{post_id}', {'_fields': 'id'}, {'content': post['content']['raw']})
+
+
+def cmd_resave(args) -> None:
+    """Save a post again so the site fills in a missing featured image."""
+    resave_post(args.post_id)
+    post, _ = call(f'posts/{args.post_id}', {'_fields': 'id,featured_media,modified'})
+    print(json.dumps(post, ensure_ascii=False, indent=2))
+
+
 def align_featured_media(post_id: int = None, author_id: int = None,
-                         tries: int = 5) -> dict:
+                         tries: int = 4) -> dict:
     """Give the post's featured image the same author, once one exists.
 
-    The site generates it from the body image after the post is written, so it is
-    not there yet when the create call returns. Absence is not an error: the skill
-    never uploads one itself.
+    The site does not build it during the create call, so the first empty read is
+    answered with one plain re-save rather than more waiting. Absence after that
+    is not an error: the skill never uploads an image itself.
     """
     for attempt in range(tries):
         post, _ = call(f'posts/{post_id}', {'_fields': 'featured_media'})
@@ -198,7 +256,9 @@ def align_featured_media(post_id: int = None, author_id: int = None,
             if body:
                 media, _ = call(f'media/{media_id}', {'_fields': 'id,author,slug'}, body)
             return {'id': media['id'], 'author': media['author'], 'slug': media['slug']}
-        if attempt < tries - 1:
+        if attempt == 0:
+            resave_post(post_id)
+        elif attempt < tries - 1:
             time.sleep(1)
     return {}
 
@@ -228,6 +288,9 @@ def cmd_create(args) -> None:
                  + json.dumps([{'id': p['id'], 'link': p['link']} for p in duplicate],
                               ensure_ascii=False))
 
+    # The shortcode already defaults to main, so name the branch only when it
+    # is something else; the posts published so far carry no branch attribute.
+    branch_attr = '' if ref['branch'] == 'main' else f" branch='{ref['branch']}'"
     content = (
         '<!-- wp:image {"width":"auto","height":"500px","sizeSlug":"large"} -->\n'
         '<figure class="wp-block-image size-large is-resized">'
@@ -235,7 +298,8 @@ def cmd_create(args) -> None:
         '<!-- /wp:image -->\n'
         '\n'
         '<!-- wp:shortcode -->\n'
-        f"[github_file user='{ref['owner']}' repo='{ref['repo']}' file='{ref['file_path']}']\n"
+        f"[github_file user='{ref['owner']}' repo='{ref['repo']}'{branch_attr}"
+        f" file='{ref['file_path']}']\n"
         '<!-- /wp:shortcode -->')
 
     categories = resolve_categories(args.categories)
@@ -257,6 +321,7 @@ def cmd_create(args) -> None:
         'excerpt_words': len(post['excerpt']['raw'].split()),
         'categories_applied': categories['matched'],
         'categories_skipped': categories['skipped'],
+        'shortcode_branch': ref['branch'],
         'shortcode_file': ref['file_path'],
     }
     if author_id:
@@ -288,6 +353,11 @@ def main() -> None:
     create.add_argument('--status', default='draft', choices=('draft', 'publish'))
     create.add_argument('--allow-duplicate', action='store_true')
     create.set_defaults(func=cmd_create)
+
+    resave = sub.add_parser('resave', help='save a post again to fill in a missing '
+                                           'featured image; the content is unchanged')
+    resave.add_argument('post_id', type=int)
+    resave.set_defaults(func=cmd_resave)
 
     args = parser.parse_args()
     args.func(args)
