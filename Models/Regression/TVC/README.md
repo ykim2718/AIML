@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 23 | Created: 2026-08-30 | Updated: 2026-08-31 03:11 CDT
+Rev. 24 | Created: 2026-08-30 | Updated: 2026-08-31 03:16 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -82,6 +82,10 @@ Table 2. Terms of the state-space form
 | $Q$ | Variance of the state noise, how fast the coefficient may move |
 
 $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
+
+두 잡음에 Gaussian 을 두는 이유는 셋이다. 첫째, Gaussian 은 이 model 이 하는 연산에 닫혀 있어, 선형 결합을 거치고 Gaussian 이 더해져도 Gaussian 으로 남는다. 그래서 $\beta_t$ 의 분포 전체가 평균과 분산 두 값으로 요약되고, 4.2 의 loop 이 시점마다 그 두 값만 옮기면 된다. 둘째, 그 가정 아래에서 filter 의 추정치가 conditional mean 과 같아져 mean squared error 를 최소로 한다. 셋째, prediction error 도 Gaussian 이 되어 likelihood 가 닫힌 식으로 적힌다.
+
+가정이 틀렸을 때의 손실은 크지 않다. Gaussian 이 아니어도 filter 는 linear estimator 가운데에서는 여전히 최선이므로, 최적성이 선형 범위로 좁아질 뿐이다. 평균을 0 으로 둔 것은 별개의 가정으로, 잡음에 계통적 치우침이 없다는 뜻이다. 치우침이 있다면 그것은 잡음이 아니라 model 에 넣어야 할 항이다.
 
 $Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 prediction error $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 likelihood 를 적을 수 있다. 그 likelihood 를 가장 크게 하는 값이 추정치이다.
 
@@ -190,6 +194,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 - **Cox proportional hazards model**: hazard ratio 가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
 - **forgetting factor**: 오래된 자료의 가중치를 지수적으로 줄이는 계수.
 - **GAM**: Generalized Additive Model. 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model.
+- **Gaussian**: 평균과 분산 두 값으로 정해지는 분포. normal distribution 이라고도 한다.
 - **hazard ratio**: 두 집단의 순간 위험률의 비.
 - **Kalman filter**: observation noise 가 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
 - **Kalman gain**: 갱신 단계에서 prediction error 를 얼마나 반영할지 정하는 가중치.
