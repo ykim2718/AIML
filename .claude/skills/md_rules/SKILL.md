@@ -4,7 +4,7 @@ description: markdown document(.md, README, CHANGELOG)를 쓰거나 고치거나
 ---
 
 # Documentation Conventions
-Rev. 34 | Created: 2026-8-1 | Updated: 2026-08-29 02:28 CDT
+Rev. 35 | Created: 2026-8-1 | Updated: 2026-08-31 01:58 CDT
 
 ## 1. Terminology
 
@@ -95,6 +95,7 @@ result = [x * 2 for x in range(10)]
 }
 ```
 + 언어를 특정할 수 없는 터미널 출력·로그·설정값 등은 fence에 언어를 지정하지 않거나 `text`/`bash`를 사용하고, 파일명·언어 주석은 붙이지 않는다.
++ Pseudocode block 은 그 규칙의 예외로, fence 는 `text` 로 두되 첫 줄에 `# Pseudocode` 를 적는다. 언어가 없어 fence 만으로는 실행할 수 있는 code 와 구분되지 않으므로, 독자가 그대로 실행해 보려 하는 것을 첫 줄에서 막는다.
 + 값을 치환해야 하는 자리표시자는 `<UPPER_CASE>` 형태로 통일하고, 실제 값과 혼동되지 않게 한다 (예: `Authorization: Bearer <API_KEY>`).
 
 ## 11. Table
