@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 15 | Created: 2026-08-30 | Updated: 2026-08-31 02:47 CDT
+Rev. 16 | Created: 2026-08-30 | Updated: 2026-08-31 02:50 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -178,6 +178,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 
 - **basis function**: 곡선을 몇 개의 정해진 함수의 가중합으로 적을 때 그 정해진 함수 하나. 기저함수.
 - **Cox proportional hazards model**: 위험비가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
+- **forgetting factor**: 오래된 자료의 가중치를 지수적으로 줄이는 계수.
 - **GAM**: Generalized Additive Model. 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model.
 - **hazard ratio**: 두 집단의 순간 위험률의 비. 위험비.
 - **Kalman filter**: 관측 잡음이 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
@@ -208,14 +209,16 @@ Table 5. Two ways to make a PLS model time-varying
 
 앞의 것이 기본 선택이다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
 
+#### TVP on the scores
+
 이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. Table 6 이 그 구분이며, 이름의 time-varying 은 아래쪽 행을 가리킨다.
 
 Table 6. What stays fixed and what varies with time
 
-| Quantity | Fitted on | Moves with time |
-|----------|-----------|-----------------|
-| Projection weights of the PLS model | The early segment, once | No |
-| Coefficient from the scores to $y$ | The whole series, by the filter | Yes |
+| # | Quantity | Fitted on | Moves with time |
+|---|----------|-----------|-----------------|
+| 1 | Projection weights of the PLS model | The early segment, once | No |
+| 2 | Coefficient from the scores to $y$ | The whole series, by the filter | Yes |
 
 Score 에서 $y$ 로 가는 계수가 이 model 에서 시간에 따라 변하는 유일한 대상이며, 관측이 도착할 때마다 4.2 의 loop 이 그것을 갱신한다. 자료가 늘어나도 다시 적합하지 않는 쪽은 투영 가중치이다.
 
@@ -263,6 +266,14 @@ beta = result.smoothed_state.T          # one coefficient trajectory per column
 $Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
 
 이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 5 의 두 번째 방법으로 옮겨야 한다.
+
+#### Adaptive PLS
+
+두 번째 방법은 계수가 아니라 투영 가중치를 새 자료로 갱신한다. 갱신하는 방식은 둘이다. 최근 관측만 남긴 window 로 PLS 를 매번 다시 적합하거나, 이전 적합의 결과를 가중해 새 자료와 함께 다시 분해한다. 뒤엣것에 forgetting factor 를 두면 오래된 자료의 가중치가 지수적으로 줄어든다.
+
+이 방법이 필요한 경우는 앞 절이 말한 제약이 실제로 나타났을 때이다. 고정된 투영이 새 자료를 더 이상 대표하지 못하면 score 자체가 잘못된 좌표이므로, 그 위의 계수를 아무리 잘 추적해도 예측이 회복되지 않는다.
+
+대가는 계수의 궤적이다. 투영이 시점마다 달라지면 앞에 적은 이유로 $\beta_t$ 의 궤적이 해석을 잃으므로, 이 방법에서는 궤적 대신 예측 오차로 model 을 판단한다. 두 방법을 겹쳐 쓰는 구성도 가능하다. 투영은 드물게 다시 적합하고 그 사이에서 계수만 filter 로 갱신하면, 좌표계가 유지되는 구간 안에서는 궤적의 해석이 살아 있다.
 
 ## Appendix C. Where It Is Used
 
