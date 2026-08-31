@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient)
-Rev. 3 | Created: 2026-08-30 | Updated: 2026-08-31 01:48 CDT
+Rev. 4 | Created: 2026-08-30 | Updated: 2026-08-31 01:53 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -77,26 +77,31 @@ $Q$ 가 이 model 의 조절 손잡이이다. $Q$ 가 0 이면 계수는 움직�
 
 ### 4.2 The Loop
 
-Kalman filter 는 시점마다 예측과 갱신 두 단계를 반복하여 $\beta_t$ 의 추정치와 그 불확실성을 함께 갱신한다 [[2](#ref-2)]. Fig 1 이 그 한 바퀴이다.
+Kalman filter 는 시점마다 예측과 갱신 두 단계를 반복하여 $\beta_t$ 의 추정치와 그 불확실성을 함께 갱신한다 [[2](#ref-2)]. Fig 1 이 그 절차이다.
 
 ```text
-   [ estimate at t-1 ]
-            |
-            v
-   +--------------------+   beta_hat(t|t-1) = beta_hat(t-1|t-1)
-   | 1. Predict         |   P(t|t-1)        = P(t-1|t-1) + Q
-   +--------------------+
-            |
-            v   y_t arrives
-   +--------------------+   e_t = y_t - X_t beta_hat(t|t-1)
-   | 2. Update          |   K_t = P(t|t-1) X_t' / (X_t P(t|t-1) X_t' + R)
-   +--------------------+   beta_hat(t|t) = beta_hat(t|t-1) + K_t e_t
-            |               P(t|t)        = (I - K_t X_t) P(t|t-1)
-            v
-   [ estimate at t ] --> next step
+input  y[1..T], X[1..T], R, Q
+output beta_hat[1..T], P[1..T]
+
+beta_hat[0] = initial guess of the coefficient
+P[0]        = initial uncertainty of that guess
+
+for t = 1 .. T:
+
+    # 1. predict: carry the estimate forward, widen its uncertainty by Q
+    beta_prior = beta_hat[t-1]
+    P_prior    = P[t-1] + Q
+
+    # 2. update: correct the prediction with the observation that just arrived
+    e = y[t] - X[t] beta_prior              # innovation
+    S = X[t] P_prior X[t]' + R              # its variance
+    K = P_prior X[t]' / S                   # Kalman gain
+
+    beta_hat[t] = beta_prior + K e
+    P[t]        = (I - K X[t]) P_prior
 ```
 
-Fig 1. One step of the Kalman filter
+Fig 1. The Kalman filter loop
 
 예측 단계는 직전 추정치를 그대로 옮기고, 그 추정치의 분산 $P$ 에만 $Q$ 를 더한다. 계수가 무작위 보행을 한다고 두었으므로 다음 값에 대한 최선의 추측은 직전 값이며, 다만 그동안 움직였을 수 있으니 확신은 줄어든다.
 
