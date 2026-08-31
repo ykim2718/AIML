@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 22 | Created: 2026-08-30 | Updated: 2026-08-31 03:08 CDT
+Rev. 23 | Created: 2026-08-30 | Updated: 2026-08-31 03:11 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -19,11 +19,11 @@ $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
 Table 1. Patterns of a moving coefficient
 
-| Pattern | Example | Shape of $\beta(t)$ |
-|---------|---------|---------------------|
-| Decay | Advertising effect right after a launch | Large at first, monotonically shrinking |
-| Delayed and inverted | Transplant surgery, hazardous early and protective later | Sign reversal after a crossing point |
-| Structural change | Interest rate effect on growth across market regimes | Level shifts at regime boundaries |
+| # | Pattern | Example | Shape of $\beta(t)$ |
+|---|---------|---------|---------------------|
+| 1 | Decay | Advertising effect right after a launch | Large at first, monotonically shrinking |
+| 2 | Delayed and inverted | Transplant surgery, hazardous early and protective later | Sign reversal after a crossing point |
+| 3 | Structural change | Interest rate effect on growth across market regimes | Level shifts at regime boundaries |
 
 계수를 상수로 두면 이 형태들이 지워진다. decay 를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
 
