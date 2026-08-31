@@ -1,5 +1,5 @@
 # Feature Importance
-Rev. 1 | Created: 2026-08-31 | Updated: 2026-08-31 17:18 CDT
+Rev. 2 | Created: 2026-08-31 | Updated: 2026-08-31 18:01 CDT
 
 > A survey of the methods that put a number on a feature, arranged by what the number is computed
 > from, so that a method is chosen from the question being asked rather than from whichever library
@@ -516,6 +516,7 @@ families.
 ## Appendix A. Terminology
 
 - **ALE**: Accumulated local effects, a curve built from local differences within a neighborhood instead of an average of the model over the marginal distribution.
+- **Family**: One of the seven top-level groups of Fig 1, holding the methods whose number is computed from the same source. Used here because the literature names the axes rather than the groups, and has no settled word for this level.
 - **FAST**: Fourier amplitude sensitivity test, an estimator of the Sobol indices based on frequency analysis of the model output.
 - **FDR**: False discovery rate, the expected fraction of the selected set that is spurious.
 - **HSIC**: Hilbert-Schmidt independence criterion, a dependence measure computed in a kernel feature space.
