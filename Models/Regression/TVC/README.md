@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient)
-Rev. 2 | Created: 2026-08-30 | Updated: 2026-08-31 01:47 CDT
+Rev. 3 | Created: 2026-08-30 | Updated: 2026-08-31 01:48 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -49,13 +49,15 @@ $B_k$ 는 spline 기저이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에
 
 ### 3.3 Random Walk In A State Space
 
-시간이 이산적이고 관측이 순서대로 도착한다면, 계수를 함수로 적는 대신 시점마다 하나씩 두고 그것들이 서서히 움직인다고 두는 방법이 있다. 이때 $\beta_t$ 는 관측되지 않는 상태 변수가 되고, model 은 상태공간 형태를 얻는다. 4 장이 이 형태와 그 추정을 다룬다.
+시간이 이산적이고 관측이 순서대로 도착한다면, 계수를 함수로 적는 대신 시점마다 하나씩 두고 그것들이 서서히 움직인다고 두는 방법이 있다. 이때 model 은 상태공간 형태를 얻는다. 4 장이 이 형태와 그 추정을 다룬다.
 
 ## 4. Estimation By Kalman Filter
 
 ### 4.1 State-Space Form
 
-TVP model 은 두 방정식으로 정의된다. 하나는 볼 수 있는 것들의 관계이고, 다른 하나는 볼 수 없는 계수가 어떻게 움직이는지이다.
+TVP model 은 두 방정식으로 정의된다. 둘을 가르는 기준은 그 값이 자료에 적혀 있는지이다. $y_t$ 와 $X_t$ 는 자료를 열면 숫자로 그대로 읽히지만, 계수 $\beta_t$ 는 어디에도 적혀 있지 않아 그 둘로부터 추정할 수밖에 없다. 그래서 앞의 것들을 잇는 아래 첫 식을 관측 방정식이라 하고, 뒤엣것이 시간에 따라 어떻게 움직이는지를 적은 둘째 식을 상태 방정식이라 하며, 추정 대상인 $\beta_t$ 가 이 상태공간의 상태 변수이다.
+
+상수 계수 회귀에서도 계수는 자료에 적혀 있지 않다. 다만 미지수가 하나뿐이라 전체 자료로 한 번 추정하면 끝나므로 굳이 상태라 부르지 않는다. TVP 는 시점마다 다른 $\beta_t$ 를 두어 미지수를 시점 수만큼 만들고, 그것을 관측이 도착할 때마다 따라가며 추정해야 할 대상으로 삼는다.
 
 $$y_t = X_t \beta_t + \epsilon_t, \qquad \epsilon_t \sim N(0, R)$$
 
@@ -67,7 +69,7 @@ Table 2. Terms of the state-space form
 |------|------|
 | $y_t$ | Observed response at time $t$ |
 | $X_t$ | Observed covariates at time $t$ |
-| $\beta_t$ | Unobserved coefficient, the state |
+| $\beta_t$ | Coefficient at time $t$, the state variable |
 | $R$ | Observation noise variance |
 | $Q$ | State noise variance, how fast the coefficient may move |
 
