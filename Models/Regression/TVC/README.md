@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 13 | Created: 2026-08-30 | Updated: 2026-08-31 02:32 CDT
+Rev. 14 | Created: 2026-08-30 | Updated: 2026-08-31 02:39 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -70,8 +70,10 @@ Table 2. Terms of the state-space form
 | $y_t$ | Observed response at time $t$ |
 | $X_t$ | Observed covariates at time $t$ |
 | $\beta_t$ | Coefficient at time $t$, the state variable |
-| $R$ | Observation noise variance |
-| $Q$ | State noise variance, how fast the coefficient may move |
+| $\epsilon_t$ | Observation noise at time $t$ |
+| $R$ | Variance of the observation noise |
+| $v_t$ | State noise at time $t$, the shock that moves the coefficient |
+| $Q$ | Variance of the state noise, how fast the coefficient may move |
 
 $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
@@ -80,8 +82,6 @@ $Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을
 $$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
 
 $e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $R$ 에 대한 닫힌 해를 주지 않는다. 후보 값마다 filter 를 한 번 돌려 위 합을 계산하고 그 값을 수치적으로 최대화한다.
-
-$\hat{Q}$ 와 $\hat{R}$ 을 얻으면 그 값을 상태공간에 넣고 filter 를 한 번 더 돌린다. 그 pass 가 시점마다 내놓는 추정치가 찾던 계수의 궤적이고, 함께 나오는 분산 $P$ 로 그 궤적에 신뢰구간을 붙인다. 지나간 구간을 다시 그릴 때는 같은 값으로 smoother 를 돌린다 (4.3). 이후 새 관측이 도착해도 $\hat{Q}$ 와 $\hat{R}$ 은 그대로 두고 filter 만 한 걸음 더 진행하며, 자료가 크게 늘거나 공정이 달라졌을 때만 다시 추정한다. $\hat{Q}/\hat{R}$ 은 5 장에서 이 model 이 실제로 몇 개의 계수를 쓰는지를 정하는 값이기도 하다.
 
 ### 4.2 The Loop
 
