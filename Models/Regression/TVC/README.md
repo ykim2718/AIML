@@ -1,7 +1,7 @@
-# TVC (Time-Varying Coefficient)
-Rev. 7 | Created: 2026-08-30 | Updated: 2026-08-31 01:58 CDT
+# Time-Varying Coefficient Regression
+Rev. 8 | Created: 2026-08-30 | Updated: 2026-08-31 02:04 CDT
 
-보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
+보통의 회귀는 계수를 상수 하나로 고정한다. 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 을 TVC (Time-Varying Coefficient) 라 하며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
