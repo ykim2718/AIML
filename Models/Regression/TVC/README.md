@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 11 | Created: 2026-08-30 | Updated: 2026-08-31 02:26 CDT
+Rev. 12 | Created: 2026-08-30 | Updated: 2026-08-31 02:29 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -75,7 +75,7 @@ Table 2. Terms of the state-space form
 
 $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
-$Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 예측 오차 $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 가능도를 적을 수 있다. 그 가능도를 가장 크게 하는 값이 추정치이다.
+$Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 예측 오차 $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 likelihood 를 적을 수 있다. 그 likelihood 를 가장 크게 하는 값이 추정치이다.
 
 $$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
 
@@ -180,6 +180,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 - **hazard ratio**: 두 집단의 순간 위험률의 비. 위험비.
 - **Kalman filter**: 관측 잡음이 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
 - **Kalman gain**: 갱신 단계에서 예측 오차를 얼마나 반영할지 정하는 가중치.
+- **likelihood**: 어떤 parameter 값에서 관측된 자료가 나올 확률을 그 parameter 의 함수로 본 것. 그 값을 가장 크게 하는 parameter 를 고르는 추정법을 maximum likelihood 라 한다.
 - **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
 - **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. 비례위험 가정의 검정에 쓰인다.
 - **score**: 관측을 PLS 성분 방향으로 투영한 값.
@@ -255,7 +256,7 @@ result = TVPRegression(y, design).fit(disp=False)
 beta = result.smoothed_state.T          # one coefficient trajectory per column
 ```
 
-$Q$ 를 최대가능도로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
+$Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
 
 이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 5 의 두 번째 방법으로 옮겨야 한다.
 
