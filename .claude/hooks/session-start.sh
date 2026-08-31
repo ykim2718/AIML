@@ -18,11 +18,28 @@ command -v claude >/dev/null 2>&1 || exit 0
 
 MARKETPLACE='ykim2718/Claude-Configuration'
 PLUGIN='yrocket-rules@claude-configuration'
+REPO_URL='https://github.com/ykim2718/Claude-Configuration.git'
 LOG="$HOME/.claude/plugin-bootstrap.log"
 
 mkdir -p "$(dirname "$LOG")"
 {
   date '+=== session start %Y-%m-%d %H:%M:%S'
+  # The marketplace repository is private, so git needs a credential before the
+  # clone. PLUGIN_REPO_TOKEN is a read-only token injected as a container
+  # environment variable, never committed here. The name is deliberate: GH_TOKEN
+  # is already taken by other tooling in some containers, and writing that
+  # value into the rewrite replaces a working credential with one that is not a
+  # GitHub token at all. The rewrite is scoped to this one URL, because a
+  # host-wide rewrite would override the credential every other github.com
+  # operation uses. Without the token the clone still runs and fails on
+  # authentication, which the log then names.
+  if [ -n "${PLUGIN_REPO_TOKEN:-}" ]; then
+    git config --global \
+      url."https://x-access-token:${PLUGIN_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
+      "$REPO_URL" || echo 'credential rewrite FAILED'
+  else
+    echo 'PLUGIN_REPO_TOKEN not set; the clone will fail unless the session already carries a credential'
+  fi
   # Both are idempotent: re-adding a marketplace and re-installing a plugin
   # that are already present succeed and change nothing.
   claude plugin marketplace add "$MARKETPLACE" || echo 'marketplace add FAILED'
