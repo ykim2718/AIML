@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient)
-Rev. 0 | Created: 2026-08-30 | Updated: 2026-08-30 21:16 CDT
+Rev. 1 | Created: 2026-08-30 | Updated: 2026-08-30 22:10 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -135,9 +135,22 @@ Table 4. Two ways to make a PLS model time-varying
 | Approach | What moves | When it fits |
 |----------|------------|--------------|
 | TVP on the scores | The regression from scores to $y$ | Latent directions stable, only their effect drifting |
-| Adaptive PLS | The projection itself, refitted or updated | Correlation structure of $X$ itself changing |
+| Adaptive PLS | The projection itself, refitted or updated | New $X$ no longer looking like the old $X$ |
 
 앞의 것을 권한다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
+
+이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. Table 5 가 그 구분이며, 이름의 time-varying 은 아래쪽 행을 가리킨다.
+
+Table 5. What stays fixed and what varies with time
+
+| Quantity | Fitted on | Moves with time |
+|----------|-----------|-----------------|
+| Projection weights of the PLS model | The early segment, once | No |
+| Coefficient from the scores to $y$ | The whole series, by the filter | Yes |
+
+Score 에서 $y$ 로 가는 계수가 이 model 에서 시간에 따라 변하는 유일한 대상이며, 관측이 도착할 때마다 4.2 의 loop 이 그것을 갱신한다. 자료가 아무리 쌓여도 다시 적합하지 않는 쪽은 투영 가중치이다.
+
+투영 가중치까지 함께 갱신하지 않는 데에는 이유가 있다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽겠다는 목적 자체가 사라진다.
 
 구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 상태공간 model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 상태공간을 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
 
@@ -180,7 +193,7 @@ beta = result.smoothed_state.T          # one coefficient trajectory per column
 
 $Q$ 를 최대가능도로 추정하게 두면 자료가 계수의 이동 속도를 스스로 정한다. 추정된 $Q$ 가 0 에 가깝게 나오면 그것 자체가 답이다. 계수가 움직인다는 증거가 자료에 없다는 뜻이므로, 상수 계수 PLS 를 그대로 쓰면 된다.
 
-한 가지 주의가 있다. 투영을 초기 구간으로 고정했으므로, $X$ 의 상관 구조 자체가 변하면 score 의 의미가 시간에 따라 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
+한 가지 주의가 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
 
 ## References
 
