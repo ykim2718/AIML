@@ -1,11 +1,11 @@
 # TVC (Time-Varying Coefficient)
-Rev. 1 | Created: 2026-08-30 | Updated: 2026-08-30 22:10 CDT
+Rev. 2 | Created: 2026-08-30 | Updated: 2026-08-31 01:47 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
-이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹을 수 있는지를 차례로 정리한다.
+이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에 둔다.
 
 ## 1. Scope
 
@@ -126,7 +126,37 @@ Table 3. What the model gains and what it costs
 
 세 가지 비용은 모두 같은 뿌리를 가진다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. Spline 이라면 벌점의 세기, 상태공간이라면 $Q$ 가 그 묶는 장치이며, 둘 중 어느 쪽이든 그 값을 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
 
-## 7. Applying TVP To A PLS Model
+## References
+
+<a id="ref-1"></a>[1] Hastie, T. and Tibshirani, R., "[Varying-Coefficient Models](https://doi.org/10.1111/j.2517-6161.1993.tb01939.x)", Journal of the Royal Statistical Society: Series B (Methodological), 55(4), 757-779, 1993.
+
+<a id="ref-2"></a>[2] Kalman, R. E., "[A New Approach to Linear Filtering and Prediction Problems](https://doi.org/10.1115/1.3662552)", Journal of Basic Engineering, 82(1), 35-45, 1960.
+
+<a id="ref-3"></a>[3] Grambsch, P. M. and Therneau, T. M., "[Proportional hazards tests and diagnostics based on weighted residuals](https://doi.org/10.1093/biomet/81.3.515)", Biometrika, 81(3), 515-526, 1994.
+
+<a id="ref-4"></a>[4] Primiceri, G. E., "[Time Varying Structural Vector Autoregressions and Monetary Policy](https://doi.org/10.1111/j.1467-937X.2005.00353.x)", The Review of Economic Studies, 72(3), 821-852, 2005.
+
+---
+
+## Appendix A. Terminology
+
+- **basis function**: 곡선을 몇 개의 정해진 함수의 가중합으로 적을 때 그 정해진 함수 하나. 기저함수.
+- **Cox proportional hazards model**: 위험비가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
+- **GAM**: Generalized Additive Model. 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model.
+- **hazard ratio**: 두 집단의 순간 위험률의 비. 위험비.
+- **Kalman filter**: 관측 잡음이 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
+- **Kalman gain**: 갱신 단계에서 예측 오차를 얼마나 반영할지 정하는 가중치.
+- **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
+- **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. 비례위험 가정의 검정에 쓰인다.
+- **score**: 관측을 PLS 성분 방향으로 투영한 값.
+- **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
+- **spline**: 구간마다 다항식을 잇되 이음매에서 매끄럽게 맞춘 곡선.
+- **state space model**: 관측 방정식과 상태 방정식의 쌍으로 자료를 정의하는 model.
+- **TVC**: Time-Varying Coefficient. 회귀계수를 시간의 함수로 둔 model.
+- **TVP**: Time-Varying Parameter. 계수를 상태공간의 상태 변수로 둔 TVC 의 이산 시간 형태.
+- **VAR**: Vector Autoregression. 여러 계열이 서로의 과거에 회귀하는 model.
+
+## Appendix B. Applying TVP To A PLS Model
 
 TVP 를 PLS 위에 얹을 수 있는가 — 얹을 수 있고, 방법은 둘이다.
 
@@ -194,33 +224,3 @@ beta = result.smoothed_state.T          # one coefficient trajectory per column
 $Q$ 를 최대가능도로 추정하게 두면 자료가 계수의 이동 속도를 스스로 정한다. 추정된 $Q$ 가 0 에 가깝게 나오면 그것 자체가 답이다. 계수가 움직인다는 증거가 자료에 없다는 뜻이므로, 상수 계수 PLS 를 그대로 쓰면 된다.
 
 한 가지 주의가 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
-
-## References
-
-<a id="ref-1"></a>[1] Hastie, T. and Tibshirani, R., "[Varying-Coefficient Models](https://doi.org/10.1111/j.2517-6161.1993.tb01939.x)", Journal of the Royal Statistical Society: Series B (Methodological), 55(4), 757-779, 1993.
-
-<a id="ref-2"></a>[2] Kalman, R. E., "[A New Approach to Linear Filtering and Prediction Problems](https://doi.org/10.1115/1.3662552)", Journal of Basic Engineering, 82(1), 35-45, 1960.
-
-<a id="ref-3"></a>[3] Grambsch, P. M. and Therneau, T. M., "[Proportional hazards tests and diagnostics based on weighted residuals](https://doi.org/10.1093/biomet/81.3.515)", Biometrika, 81(3), 515-526, 1994.
-
-<a id="ref-4"></a>[4] Primiceri, G. E., "[Time Varying Structural Vector Autoregressions and Monetary Policy](https://doi.org/10.1111/j.1467-937X.2005.00353.x)", The Review of Economic Studies, 72(3), 821-852, 2005.
-
----
-
-## Appendix A. Terminology
-
-- **basis function**: 곡선을 몇 개의 정해진 함수의 가중합으로 적을 때 그 정해진 함수 하나. 기저함수.
-- **Cox proportional hazards model**: 위험비가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
-- **GAM**: Generalized Additive Model. 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model.
-- **hazard ratio**: 두 집단의 순간 위험률의 비. 위험비.
-- **Kalman filter**: 관측 잡음이 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
-- **Kalman gain**: 갱신 단계에서 예측 오차를 얼마나 반영할지 정하는 가중치.
-- **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
-- **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. 비례위험 가정의 검정에 쓰인다.
-- **score**: 관측을 PLS 성분 방향으로 투영한 값.
-- **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
-- **spline**: 구간마다 다항식을 잇되 이음매에서 매끄럽게 맞춘 곡선.
-- **state space model**: 관측 방정식과 상태 방정식의 쌍으로 자료를 정의하는 model.
-- **TVC**: Time-Varying Coefficient. 회귀계수를 시간의 함수로 둔 model.
-- **TVP**: Time-Varying Parameter. 계수를 상태공간의 상태 변수로 둔 TVC 의 이산 시간 형태.
-- **VAR**: Vector Autoregression. 여러 계열이 서로의 과거에 회귀하는 model.
