@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 19 | Created: 2026-08-30 | Updated: 2026-08-31 02:56 CDT
+Rev. 20 | Created: 2026-08-30 | Updated: 2026-08-31 02:55 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -140,9 +140,9 @@ Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실
 
 #### Extra Coefficients
 
-시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 자유도는 $n$ 이 아니다. 벌점이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 평활자 $S$ 의 대각합으로 정의되는 유효 자유도 $\mathrm{edf} = \mathrm{tr}(S)$ 이고, 상수 계수 model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
+시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 자유도는 $n$ 이 아니다. 벌점이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 유효 자유도 $\mathrm{edf} = \mathrm{tr}(S)$ 이고, 상수 계수 model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
 
-Spline 의 평활자는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 일반화 고유분해하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
+Spline 의 smoother matrix 는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 일반화 고유분해하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
 
 $$\mathrm{edf}(\lambda) = \sum_{j=1}^{K} \frac{1}{1 + \lambda \gamma_j}$$
 
@@ -193,6 +193,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 - **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. 비례위험 가정의 검정에 쓰인다.
 - **score**: 관측을 PLS 성분 방향으로 투영한 값.
 - **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
+- **smoother matrix**: 관측 vector 를 적합값 vector 로 보내는 행렬. 그 대각합이 유효 자유도이다.
 - **spline**: 구간마다 다항식을 잇되 이음매에서 매끄럽게 맞춘 곡선.
 - **state equation**: 상태가 시간에 따라 어떻게 움직이는지를 적은 식. transition equation 이라고도 한다.
 - **state space model**: observation equation 과 state equation 의 쌍으로 자료를 정의하는 model.
