@@ -1,7 +1,7 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 27 | Created: 2026-08-30 | Updated: 2026-08-31 03:41 CDT
+Rev. 28 | Created: 2026-08-30 | Updated: 2026-08-31 03:52 CDT
 
-보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
+Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
@@ -25,7 +25,7 @@ Table 1. Patterns of a moving coefficient
 | 2 | Delayed and inverted | Transplant surgery, hazardous early and protective later | Sign reversal after a crossing point |
 | 3 | Structural change | Interest rate effect on growth across market regimes | Level shifts at regime boundaries |
 
-계수를 상수로 두면 이 형태들이 지워진다. decay 를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
+계수를 상수로 두면 이 형태들이 지워진다. Decay 를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
 
 ## 3. Forms Of The Coefficient
 
@@ -45,7 +45,7 @@ $$\beta(t) = \beta_0 + \beta_1 t \qquad \text{or} \qquad \beta(t) = \beta_0 + \b
 
 $$\beta(t) = \sum_{k=1}^{K} \gamma_k B_k(t)$$
 
-$B_k$ 는 spline basis 이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 smoothness penalty 를 함께 두면 $K$ 를 넉넉히 잡아도 overfitting 이 통제된다 [[1](#ref-1)]. sign reversal 이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
+$B_k$ 는 spline basis 이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 smoothness penalty 를 함께 두면 $K$ 를 넉넉히 잡아도 overfitting 이 통제된다 [[1](#ref-1)]. Sign reversal 이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
 
 ### 3.3 Random Walk In A State Space
 
@@ -81,7 +81,7 @@ Table 2. Terms of the state-space form
 | $v_t$ | State noise at time $t$, the shock that moves the coefficient |
 | $Q$ | Variance of the state noise, how fast the coefficient may move |
 
-$Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
+$Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 constant-coefficient regression 으로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
 두 잡음에 Gaussian 을 두는 이유는 셋이다. 첫째, Gaussian 은 이 model 이 하는 연산에 닫혀 있어, 선형 결합을 거치고 Gaussian 이 더해져도 Gaussian 으로 남는다. 그래서 $\beta_t$ 의 분포 전체가 평균과 분산 두 값으로 요약되고, 4.2 의 loop 이 시점마다 그 두 값만 옮기면 된다. 둘째, 그 가정 아래에서 filter 의 추정치가 conditional mean 과 같아져 mean squared error 를 최소로 한다. 셋째, prediction error 도 Gaussian 이 되어 likelihood 가 closed form 으로 적힌다.
 
@@ -91,7 +91,7 @@ $Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을
 
 $$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
 
-$e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $R$ 에 대한 닫힌 해를 주지 않는다. 후보 값마다 filter 를 한 번 돌려 위 합을 계산하고 그 값을 수치적으로 최대화한다.
+$e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $R$ 에 대한 closed form 해를 주지 않는다. 후보 값마다 filter 를 한 번 돌려 위 합을 계산하고 그 값을 수치적으로 최대화한다.
 
 ### 4.2 The Loop
 
@@ -146,19 +146,19 @@ Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실
 - 한 문장으로 요약되지 않는 유연한 곡선.
 - 충분히 긴 추적 기간과 자료량의 요구.
 
-세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 degrees of freedom 가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다.
+세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 degrees of freedom 이 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다.
 
 #### Extra Coefficients
 
-시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 degrees of freedom 는 $n$ 이 아니다. penalty 이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 effective degrees of freedom $\mathrm{edf} = \mathrm{tr}(S)$ 이고, constant-coefficient model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
+시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 degrees of freedom 은 $n$ 이 아니다. penalty 나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 effective degrees of freedom $\mathrm{edf} = \mathrm{tr}(S)$ 이고, constant-coefficient model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
 
 Spline 의 smoother matrix 는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 generalized eigendecomposition 하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
 
 $$\mathrm{edf}(\lambda) = \sum_{j=1}^{K} \frac{1}{1 + \lambda \gamma_j}$$
 
-$\lambda$ 가 0 이면 edf 는 basis function 의 수 $K$ 이고, $\lambda$ 를 키우면 penalty 이 걸리지 않는 방향 ($\gamma_j = 0$) 의 수로 줄어든다. 1 차 차분에 penalty 을 걸면 그 방향은 상수 하나뿐이므로 edf 는 1 로 수렴한다. 곧 spline 에서 추가 계수의 상한은 basis function 의 수이고, 그 값은 $\lambda$ 하나로 조절된다.
+$\lambda$ 가 0 이면 edf 는 basis function 의 수 $K$ 이고, $\lambda$ 를 키우면 penalty 가 걸리지 않는 방향 ($\gamma_j = 0$) 의 수로 줄어든다. 1 차 차분에 penalty 를 걸면 그 방향은 상수 하나뿐이므로 edf 는 1 로 수렴한다. 곧 spline 에서 추가 계수의 상한은 basis function 의 수이고, 그 값은 $\lambda$ 하나로 조절된다.
 
-state space 에서는 계수가 시점마다 하나씩 있어 명목상 $n$ 개이지만, random walk 가정이 1 차 차분에 penalty 을 건 것과 같은 역할을 한다. 그 penalty 의 세기가 $\lambda = R/Q$ 이므로, signal-to-noise ratio $q = Q/R$ 로 쓰면 edf 가 닫힌 식으로 나온다.
+State space 에서는 계수가 시점마다 하나씩 있어 명목상 $n$ 개이지만, random walk 가정이 1 차 차분에 penalty 를 건 것과 같은 역할을 한다. 그 penalty 의 세기가 $\lambda = R/Q$ 이므로, signal-to-noise ratio $q = Q/R$ 로 쓰면 edf 가 closed form 으로 나온다.
 
 $$\mathrm{edf}(q) = \sum_{j=0}^{n-1} \frac{1}{1 + 4 q^{-1} \sin^2 \left( \frac{\pi j}{2n} \right)}$$
 
@@ -178,7 +178,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 
 #### Data Leakage
 
-Filter 는 $t$ 시점의 추정에 $t$ 까지의 관측만 쓰므로 그 자체로는 data leakage 가 없다. 새어 들어올 자리는 그 둘레에 셋 있다.
+Filter 자체에는 data leakage 가 없다. 4.3 이 적은 대로 $t$ 까지의 관측만 쓰기 때문이다. 새어 들어올 자리는 그 둘레에 셋 있다.
 
 - **Smoother 의 추정치**: $t$ 이후의 관측까지 반영한 값. 지나간 궤적을 그리는 데는 맞으나 예측과 그 시점의 성능 평가에는 부적합. 그 자리에는 filter 의 추정치.
 - **$Q$ 와 $R$ 의 추정**: 전체 표본의 likelihood 로 정하면 검증 구간의 정보가 두 값을 통해 학습으로 유입. 학습 구간만으로 추정한 뒤 검증 구간에 적용.
@@ -243,7 +243,7 @@ Table 4. Two ways to make a PLS model time-varying
 - **Projection weights of the PLS model**: 초기 구간으로 한 번 적합한 뒤 고정. 자료가 늘어나도 재적합 없음.
 - **Coefficient from the scores to $y$**: 관측이 도착할 때마다 4.2 의 loop 이 갱신. 이 model 에서 시간에 따라 변하는 유일한 대상.
 
-projection weights 를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
+Projection weights 를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
 
 구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 state space model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 state space 를 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
 
@@ -284,7 +284,7 @@ result = TVPRegression(y, design).fit(disp=False)
 beta = result.smoothed_state.T          # one coefficient trajectory per column
 ```
 
-$Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 constant-coefficient PLS 로 충분하다.
+$Q$ 와 $R$ 을 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 constant-coefficient PLS 로 충분하다.
 
 이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
 
@@ -304,7 +304,7 @@ Cox proportional hazards model 은 hazard ratio 가 시간에 무관하게 일�
 
 ## Appendix D. How Much Noise The Filter Removes
 
-4.2 의 filter 가 잡음을 얼마나 걷어 내는지를 하나의 예로 보인다. 자료는 4.1 의 state space 에서 $X_t = 1$ 로 둔 형태이다. 상태가 random walk 로 움직이고 관측은 그 상태에 Gaussian 잡음이 더해진 값이며, 시점은 200 개이다. $Q$ 와 $R$ 은 참값을 넣지 않고 maximum likelihood 로 추정했다.
+4.2 의 filter 가 잡음을 얼마나 걷어 내는지를 하나의 예로 보인다. 자료는 4.1 의 state space 에서 $X_t = 1$ 로 둔 형태이다. 상태가 random walk 로 움직이고 관측은 그 상태에 Gaussian observation noise 가 더해진 값이며, 시점은 200 개이다. $Q$ 와 $R$ 은 참값을 넣지 않고 maximum likelihood 로 추정했다.
 
 ![Fig 2](README_fig/kalman-denoising.png)
 
