@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 21 | Created: 2026-08-30 | Updated: 2026-08-31 03:02 CDT
+Rev. 22 | Created: 2026-08-30 | Updated: 2026-08-31 03:08 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -59,11 +59,15 @@ TVP model 은 두 방정식으로 정의된다. 둘을 가르는 기준은 그 �
 
 constant-coefficient regression 에서도 계수는 자료에 적혀 있지 않다. 다만 미지수가 하나뿐이라 전체 자료로 한 번 추정하면 끝나므로 굳이 상태라 부르지 않는다. TVP 는 시점마다 다른 $\beta_t$ 를 두어 미지수를 시점 수만큼 만들고, 그것을 관측이 도착할 때마다 따라가며 추정해야 할 대상으로 삼는다.
 
+**Observation equation**
+
 $$y_t = X_t \beta_t + \epsilon_t, \qquad \epsilon_t \sim N(0, R)$$
+
+**State equation**
 
 $$\beta_t = \beta_{t-1} + v_t, \qquad v_t \sim N(0, Q)$$
 
-Table 2 는 두 식에 나오는 기호와 각각이 맡는 역할이다.
+Table 2 는 그 두 식에 나오는 기호와 각각이 맡는 역할이다.
 
 Table 2. Terms of the state-space form
 
