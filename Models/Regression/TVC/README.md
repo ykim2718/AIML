@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 14 | Created: 2026-08-30 | Updated: 2026-08-31 02:39 CDT
+Rev. 15 | Created: 2026-08-30 | Updated: 2026-08-31 02:47 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -201,10 +201,10 @@ TVP 는 PLS model 위에 얹을 수 있으며, 방법은 둘이다.
 
 Table 5. Two ways to make a PLS model time-varying
 
-| Approach | What moves | When it fits |
-|----------|------------|--------------|
-| TVP on the scores | The regression from scores to $y$ | Latent directions stable, only their effect drifting |
-| Adaptive PLS | The projection itself, refitted or updated | New $X$ no longer looking like the old $X$ |
+| # | Approach | What moves | When it fits |
+|---|----------|------------|--------------|
+| 1 | TVP on the scores | The regression from scores to $y$ | Latent directions stable, only their effect drifting |
+| 2 | Adaptive PLS | The projection itself, refitted or updated | New $X$ no longer looking like the old $X$ |
 
 앞의 것이 기본 선택이다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
 
