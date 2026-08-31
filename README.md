@@ -1,5 +1,5 @@
 # AIML
-Rev. 33 | Created: 2026-08-07 | Updated: 2026-08-30 21:22 CDT
+Rev. 34 | Created: 2026-08-07 | Updated: 2026-08-31 17:18 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -26,7 +26,7 @@ Table 2. Folders and what they hold
 | Folder | Description |
 |--------|-------------|
 | [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, the reduction of machine waveforms into fixed-width parameter rows, and the detection of outliers under `Outlier/`, one method to a subfolder. |
-| [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
+| [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, a survey of feature importance methods under `Feature-Importance/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, temporal partial least squares under `Regression/TPLS/`, time-varying coefficients under `Regression/TVC/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
 | [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, a cointegration example on daily price series, and the ceiling that bounds the classical z-score under `ZScore/`. |
@@ -60,6 +60,7 @@ Table 4. Feature engineering documents
 | [Feature-Engineering/fe-cs.md](Feature-Engineering/fe-cs.md) | It maps feature engineering for cross-sectional data, where rows are independent and row order carries no information. |
 | [Feature-Engineering/fe-sq.md](Feature-Engineering/fe-sq.md) | It maps feature engineering for sequences, where time order is itself the information, covering univariate and multivariate series. |
 | [Feature-Engineering/wts.md](Feature-Engineering/wts.md) | It consolidates techniques for wide time series where features far outnumber samples, grounded in FDC, DOE, and metrology practice. |
+| [Feature-Engineering/Feature-Importance/feature-importance.md](Feature-Engineering/Feature-Importance/feature-importance.md) | It surveys the methods that put a number on a feature, arranged into seven families by where the number comes from — association in the data, structure of the fitted model, perturbation and removal, gradients, Shapley attribution, variance decomposition, and selection with a controlled error rate — sets out the seven axes on which any two of them are comparable, marks each method as standard or recent, and closes on the failure modes the families share. |
 | [Feature-Engineering/PCA/README.md](Feature-Engineering/PCA/README.md) | It indexes the PCA folder, which treats PCA as a lineage of variants — the classical branches, their selection for semiconductor data, and the modern reinterpretation in representation learning. |
 | [Feature-Engineering/Wide-Data/README.md](Feature-Engineering/Wide-Data/README.md) | It indexes the Wide-Data folder, which surveys how the (wafer, feature, trace) sensor tensor is compressed into a narrow per-wafer table while preserving information. |
 
