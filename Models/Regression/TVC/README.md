@@ -1,11 +1,11 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 9 | Created: 2026-08-30 | Updated: 2026-08-31 02:09 CDT
+Rev. 10 | Created: 2026-08-30 | Updated: 2026-08-31 02:20 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
-이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에 둔다.
+이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에 둔다.
 
 ## 1. Scope
 
@@ -114,17 +114,7 @@ Fig 1. The Kalman filter loop
 
 Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실시간 판단에 쓴다. 자료를 모두 모은 뒤 지나간 계수의 궤적을 그릴 때는 전체 표본을 쓰는 smoother 를 쓴다. 같은 시점의 추정이라도 뒤의 관측까지 반영하므로 궤적의 변동이 작다.
 
-## 5. Where It Is Used
-
-### 5.1 Non-Proportional Hazards
-
-Cox 비례위험 model 은 위험비가 시간에 무관하게 일정하다는 가정 위에 서 있다. 어떤 변수가 이 가정을 위반하면, 즉 위험비가 추적 기간 동안 변하면, 그 변수의 계수를 $\beta(t)$ 로 확장하여 왜곡을 막는다. 가정 위반은 Schoenfeld 잔차를 시간에 대해 회귀하여 검정하며, 그 잔차의 기울기가 곧 $\beta(t)$ 가 어느 방향으로 움직이는지를 알려 준다 [[3](#ref-3)].
-
-### 5.2 TVP-VAR
-
-거시경제 자료에서는 변수들 사이의 관계 자체가 시대에 따라 달라진다. TVP-VAR 은 VAR 의 계수를 4.1 의 상태공간 형태로 두어, 정책 기조나 시장 구조가 바뀔 때 계수가 어떻게 이동했는지를 추정한다 [[4](#ref-4)]. 계수뿐 아니라 충격의 분산까지 함께 시변으로 두는 것이 보통이며, 그래야 계수의 변화와 잡음 크기의 변화가 서로 섞이지 않는다.
-
-## 6. Strengths And Limits
+## 5. Strengths And Limits
 
 Table 3. What the model gains and what it costs
 
@@ -135,6 +125,26 @@ Table 3. What the model gains and what it costs
 | A basis for timing an intervention | A need for long enough follow-up and enough data |
 
 세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. Spline 이라면 벌점의 세기, 상태공간이라면 $Q$ 가 그 묶는 장치이며, 둘 중 어느 쪽이든 그 값을 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
+
+시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 자유도는 $n$ 이 아니다. 벌점이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 평활자 $S$ 의 대각합으로 정의되는 유효 자유도 $\mathrm{edf} = \mathrm{tr}(S)$ 이고, 상수 계수 model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다.
+
+Spline 은 평활자가 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이므로 벌점의 세기 $\lambda$ 가 곧 edf 를 정한다. 무작위 보행 상태공간은 1 차 차분에 벌점을 건 것과 같고 그 세기가 $\lambda = R/Q$ 이므로, 신호대잡음비 $q = Q/R$ 로 쓰면 두 경우가 하나의 식이 된다.
+
+$$\mathrm{edf}(q) = \sum_{j=0}^{n-1} \frac{1}{1 + 4 q^{-1} \sin^2 \left( \frac{\pi j}{2n} \right)}$$
+
+큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Table 4 는 $n = 200$ 에서 그 값이다.
+
+Table 4. Effective degrees of freedom for one time-varying coefficient at n = 200
+
+| $q = Q/R$ | Penalty $\lambda = R/Q$ | edf | Extra coefficients |
+|-----------|--------------------------|------|--------------------|
+| 0.0001 | 10000 | 1.54 | 0.54 |
+| 0.001 | 1000 | 3.66 | 2.66 |
+| 0.01 | 100 | 10.49 | 9.49 |
+| 0.1 | 10 | 31.72 | 30.72 |
+| 1 | 1 | 89.84 | 88.84 |
+
+$q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 개이고, $q = 1$ 이면 표본의 절반에 가깝다. 계수를 여럿 시변으로 두면 각 계수의 edf 가 더해지므로, 시변으로 둘 계수를 고르는 일이 곧 이 값을 정하는 일이다.
 
 ## References
 
@@ -170,7 +180,7 @@ Table 3. What the model gains and what it costs
 
 TVP 는 PLS model 위에 얹을 수 있으며, 방법은 둘이다.
 
-Table 4. Two ways to make a PLS model time-varying
+Table 5. Two ways to make a PLS model time-varying
 
 | Approach | What moves | When it fits |
 |----------|------------|--------------|
@@ -179,9 +189,9 @@ Table 4. Two ways to make a PLS model time-varying
 
 앞의 것이 기본 선택이다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
 
-이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. Table 5 가 그 구분이며, 이름의 time-varying 은 아래쪽 행을 가리킨다.
+이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. Table 6 이 그 구분이며, 이름의 time-varying 은 아래쪽 행을 가리킨다.
 
-Table 5. What stays fixed and what varies with time
+Table 6. What stays fixed and what varies with time
 
 | Quantity | Fitted on | Moves with time |
 |----------|-----------|-----------------|
@@ -233,4 +243,10 @@ beta = result.smoothed_state.T          # one coefficient trajectory per column
 
 $Q$ 를 최대가능도로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
 
-이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
+이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 5 의 두 번째 방법으로 옮겨야 한다.
+
+## Appendix C. Where It Is Used
+
+Cox 비례위험 model 은 위험비가 시간에 무관하게 일정하다는 가정 위에 서 있다. 어떤 변수가 이 가정을 위반하면, 즉 위험비가 추적 기간 동안 변하면, 그 변수의 계수를 $\beta(t)$ 로 확장하여 왜곡을 막는다. 가정 위반은 Schoenfeld 잔차를 시간에 대해 회귀하여 검정하며, 그 잔차의 기울기가 곧 $\beta(t)$ 가 어느 방향으로 움직이는지를 알려 준다 [[3](#ref-3)].
+
+거시경제 자료에서는 변수들 사이의 관계 자체가 시대에 따라 달라진다. TVP-VAR 은 VAR 의 계수를 4.1 의 상태공간 형태로 두어, 정책 기조나 시장 구조가 바뀔 때 계수가 어떻게 이동했는지를 추정한다 [[4](#ref-4)]. 계수뿐 아니라 충격의 분산까지 함께 시변으로 두는 것이 보통이며, 그래야 계수의 변화와 잡음 크기의 변화가 서로 섞이지 않는다.
