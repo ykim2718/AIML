@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 26 | Created: 2026-08-30 | Updated: 2026-08-31 03:35 CDT
+Rev. 27 | Created: 2026-08-30 | Updated: 2026-08-31 03:41 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -146,7 +146,7 @@ Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실
 - 한 문장으로 요약되지 않는 유연한 곡선.
 - 충분히 긴 추적 기간과 자료량의 요구.
 
-세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 degrees of freedom 가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. 묶는 세기를 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
+세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 degrees of freedom 가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다.
 
 #### Extra Coefficients
 
@@ -176,6 +176,14 @@ Table 3. Effective degrees of freedom of one random-walk coefficient at n = 200
 
 $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 개이고, $q = 1$ 이면 표본의 절반에 가깝다. 계수를 여럿 시변으로 두면 각 계수의 edf 가 더해지므로, 시변으로 둘 계수를 고르는 일이 곧 이 값을 정하는 일이다.
 
+#### Data Leakage
+
+Filter 는 $t$ 시점의 추정에 $t$ 까지의 관측만 쓰므로 그 자체로는 data leakage 가 없다. 새어 들어올 자리는 그 둘레에 셋 있다.
+
+- **Smoother 의 추정치**: $t$ 이후의 관측까지 반영한 값. 지나간 궤적을 그리는 데는 맞으나 예측과 그 시점의 성능 평가에는 부적합. 그 자리에는 filter 의 추정치.
+- **$Q$ 와 $R$ 의 추정**: 전체 표본의 likelihood 로 정하면 검증 구간의 정보가 두 값을 통해 학습으로 유입. 학습 구간만으로 추정한 뒤 검증 구간에 적용.
+- **전처리와 초기값**: 중심과 척도, 계수의 초기 추측과 그 분산을 전체 자료로 정할 때 같은 경로로 유입. 셋 모두 학습 구간에서 결정.
+
 ## References
 
 <a id="ref-1"></a>[1] Hastie, T. and Tibshirani, R., "[Varying-Coefficient Models](https://doi.org/10.1111/j.2517-6161.1993.tb01939.x)", Journal of the Royal Statistical Society: Series B (Methodological), 55(4), 757-779, 1993.
@@ -193,6 +201,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 - **basis function**: 곡선을 몇 개의 정해진 함수의 가중합으로 적을 때 그 정해진 함수 하나.
 - **closed form**: 적분이나 반복 계산 없이 유한한 수의 기본 연산과 함수로 값이 적히는 식.
 - **Cox proportional hazards model**: hazard ratio 가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
+- **data leakage**: 학습 시점에 알 수 없는 정보가 model 이나 그 평가에 섞여 들어가는 일.
 - **forgetting factor**: 오래된 자료의 가중치를 지수적으로 줄이는 계수.
 - **GAM**: Generalized Additive Model. 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model.
 - **Gaussian**: 평균과 분산 두 값으로 정해지는 분포. normal distribution 이라고도 한다.
