@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 20 | Created: 2026-08-30 | Updated: 2026-08-31 02:55 CDT
+Rev. 21 | Created: 2026-08-30 | Updated: 2026-08-31 03:02 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -9,8 +9,8 @@ $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
 ## 1. Scope
 
-- 다루는 범위: $\beta(t)$ 의 함수 형태, 상태공간 표현과 Kalman filter 추정, 생존분석과 거시경제에서의 용례, PLS score 위에서의 적용.
-- 다루지 않는 범위: 상수 계수 회귀의 추정 이론, Bayesian sampling 기반 추정, 비선형 filter.
+- 다루는 범위: $\beta(t)$ 의 함수 형태, state space 표현과 Kalman filter 추정, survival analysis 와 거시경제에서의 용례, PLS score 위에서의 적용.
+- 다루지 않는 범위: constant-coefficient regression 의 추정 이론, Bayesian sampling 기반 추정, 비선형 filter.
 - 전제: 관측에 시간 순서가 있고, 그 순서가 정보를 담고 있는 자료.
 
 ## 2. Why The Coefficient Moves
@@ -25,7 +25,7 @@ Table 1. Patterns of a moving coefficient
 | Delayed and inverted | Transplant surgery, hazardous early and protective later | Sign reversal after a crossing point |
 | Structural change | Interest rate effect on growth across market regimes | Level shifts at regime boundaries |
 
-계수를 상수로 두면 이 형태들이 지워진다. 감쇄를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
+계수를 상수로 두면 이 형태들이 지워진다. decay 를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
 
 ## 3. Forms Of The Coefficient
 
@@ -37,31 +37,33 @@ $\beta(t)$ 를 어떤 형태로 두느냐가 곧 model 의 유연성과 추정 �
 
 $$\beta(t) = \beta_0 + \beta_1 t \qquad \text{or} \qquad \beta(t) = \beta_0 + \beta_1 \ln t$$
 
-앞의 것은 영향력이 일정한 속도로 늘거나 줄어드는 경우, 뒤의 것은 초기에 빠르게 변하다 완만해지는 감쇄에 맞는다. 추정할 parameter 가 둘뿐이라 표본이 적어도 안정적이고, 계수의 해석도 상수 회귀만큼 직관적이다. 대신 가정한 모양이 틀리면 그 틀림이 그대로 결론이 된다.
+앞의 것은 영향력이 일정한 속도로 늘거나 줄어드는 경우, 뒤의 것은 초기에 빠르게 변하다 완만해지는 decay 에 맞는다. 추정할 parameter 가 둘뿐이라 표본이 적어도 안정적이고, 계수의 해석도 constant-coefficient regression 만큼 직관적이다. 대신 가정한 모양이 틀리면 그 틀림이 그대로 결론이 된다.
 
 ### 3.2 Spline And GAM
 
-모양이 알려져 있지 않으면 $\beta(t)$ 를 기저함수의 합으로 두어 곡선의 선택을 자료에 맡긴다.
+모양이 알려져 있지 않으면 $\beta(t)$ 를 basis function 의 합으로 두어 곡선의 선택을 자료에 맡긴다.
 
 $$\beta(t) = \sum_{k=1}^{K} \gamma_k B_k(t)$$
 
-$B_k$ 는 spline 기저이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 매끄러움 벌점을 함께 두면 $K$ 를 넉넉히 잡아도 과적합이 통제된다 [[1](#ref-1)]. 부호 반전이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
+$B_k$ 는 spline basis 이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 smoothness penalty 를 함께 두면 $K$ 를 넉넉히 잡아도 overfitting 이 통제된다 [[1](#ref-1)]. sign reversal 이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
 
 ### 3.3 Random Walk In A State Space
 
-시간이 이산적이고 관측이 순서대로 도착한다면, 계수를 함수로 적는 대신 시점마다 하나씩 두고 그것들이 서서히 움직인다고 두는 방법이 있다. 이때 model 은 상태공간 형태를 얻는다. 4 장이 이 형태와 그 추정을 다룬다.
+시간이 이산적이고 관측이 순서대로 도착한다면, 계수를 함수로 적는 대신 시점마다 하나씩 두고 그것들이 서서히 움직인다고 두는 방법이 있다. 이때 model 은 state space 형태를 얻는다. 4 장이 이 형태와 그 추정을 다룬다.
 
 ## 4. Estimation By Kalman Filter
 
 ### 4.1 State-Space Form
 
-TVP model 은 두 방정식으로 정의된다. 둘을 가르는 기준은 그 값이 자료에 적혀 있는지이다. $y_t$ 와 $X_t$ 는 자료를 열면 숫자로 그대로 읽히지만, 계수 $\beta_t$ 는 어디에도 적혀 있지 않아 그 둘로부터 추정할 수밖에 없다. 그래서 앞의 것들을 잇는 아래 첫 식을 observation equation 이라 하고, 뒤엣것이 시간에 따라 어떻게 움직이는지를 적은 둘째 식을 state equation 이라 하며, 추정 대상인 $\beta_t$ 가 이 상태공간의 상태 변수이다.
+TVP model 은 두 방정식으로 정의된다. 둘을 가르는 기준은 그 값이 자료에 적혀 있는지이다. $y_t$ 와 $X_t$ 는 자료를 열면 숫자로 그대로 읽히지만, 계수 $\beta_t$ 는 어디에도 적혀 있지 않아 그 둘로부터 추정할 수밖에 없다. 그래서 앞의 것들을 잇는 아래 첫 식을 observation equation 이라 하고, 뒤엣것이 시간에 따라 어떻게 움직이는지를 적은 둘째 식을 state equation 이라 하며, 추정 대상인 $\beta_t$ 가 이 state space 의 state variable 이다.
 
-상수 계수 회귀에서도 계수는 자료에 적혀 있지 않다. 다만 미지수가 하나뿐이라 전체 자료로 한 번 추정하면 끝나므로 굳이 상태라 부르지 않는다. TVP 는 시점마다 다른 $\beta_t$ 를 두어 미지수를 시점 수만큼 만들고, 그것을 관측이 도착할 때마다 따라가며 추정해야 할 대상으로 삼는다.
+constant-coefficient regression 에서도 계수는 자료에 적혀 있지 않다. 다만 미지수가 하나뿐이라 전체 자료로 한 번 추정하면 끝나므로 굳이 상태라 부르지 않는다. TVP 는 시점마다 다른 $\beta_t$ 를 두어 미지수를 시점 수만큼 만들고, 그것을 관측이 도착할 때마다 따라가며 추정해야 할 대상으로 삼는다.
 
 $$y_t = X_t \beta_t + \epsilon_t, \qquad \epsilon_t \sim N(0, R)$$
 
 $$\beta_t = \beta_{t-1} + v_t, \qquad v_t \sim N(0, Q)$$
+
+Table 2 는 두 식에 나오는 기호와 각각이 맡는 역할이다.
 
 Table 2. Terms of the state-space form
 
@@ -77,7 +79,7 @@ Table 2. Terms of the state-space form
 
 $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
-$Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 예측 오차 $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 likelihood 를 적을 수 있다. 그 likelihood 를 가장 크게 하는 값이 추정치이다.
+$Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 prediction error $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 likelihood 를 적을 수 있다. 그 likelihood 를 가장 크게 하는 값이 추정치이다.
 
 $$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
 
@@ -85,7 +87,7 @@ $e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $
 
 ### 4.2 The Loop
 
-4.1 은 두 방정식을 세울 뿐 상태 $\beta_t$ 의 값을 주지 않으므로, 그 값을 자료에서 뽑아내는 절차가 따로 필요하다. 그 절차가 Kalman filter 이며, R. E. Kalman 이 1960 년에 발표한 추정 방법의 이름을 그대로 쓴 것이다 [[2](#ref-2)]. Filter 라 부르는 것은 신호처리에서 잡음이 섞인 신호로부터 원 신호만 걸러내는 장치를 filter 라 하기 때문이며, 여기서 걸러 낼 원 신호는 상태 $\beta_t$ 이고 걸러 낼 잡음은 관측 잡음 $\epsilon_t$ 이다.
+4.1 은 두 방정식을 세울 뿐 상태 $\beta_t$ 의 값을 주지 않으므로, 그 값을 자료에서 뽑아내는 절차가 따로 필요하다. 그 절차가 Kalman filter 이며, R. E. Kalman 이 1960 년에 발표한 추정 방법의 이름을 그대로 쓴 것이다 [[2](#ref-2)]. Filter 라 부르는 것은 신호처리에서 잡음이 섞인 신호로부터 원 신호만 걸러내는 장치를 filter 라 하기 때문이며, 여기서 걸러 낼 원 신호는 상태 $\beta_t$ 이고 걸러 낼 잡음은 observation noise $\epsilon_t$ 이다.
 
 이 filter 는 자료를 한꺼번에 놓고 푸는 대신 시점마다 예측과 갱신 두 단계를 반복하여 $\beta_t$ 의 추정치와 그 분산을 함께 갱신한다. Fig 1 이 그 절차이다.
 
@@ -104,7 +106,7 @@ for t = 1 .. T:
     P_prior    = P[t-1] + Q
 
     # 2. update: correct the prediction with the observation that just arrived
-    e = y[t] - X[t] beta_prior              # innovation
+    e = y[t] - X[t] beta_prior              # prediction error
     S = X[t] P_prior X[t]' + R              # its variance
     K = P_prior X[t]' / S                   # Kalman gain
 
@@ -114,9 +116,9 @@ for t = 1 .. T:
 
 Fig 1. The Kalman filter loop
 
-예측 단계는 직전 추정치를 그대로 옮기고, 그 추정치의 분산 $P$ 에만 $Q$ 를 더한다. 계수가 무작위 보행을 한다고 두었으므로 다음 값의 최선의 추정은 직전 값이고, 그 사이에 계수가 움직였을 수 있으므로 분산은 커진다.
+예측 단계는 직전 추정치를 그대로 옮기고, 그 추정치의 분산 $P$ 에만 $Q$ 를 더한다. 계수가 random walk 를 한다고 두었으므로 다음 값의 최선의 추정은 직전 값이고, 그 사이에 계수가 움직였을 수 있으므로 분산은 커진다.
 
-갱신 단계는 실제 관측 $y_t$ 가 도착한 뒤 예측 오차 $e_t$ 를 계산하고, 그 오차를 얼마나 반영할지를 Kalman gain $K_t$ 로 정한다. $K_t$ 는 두 불확실성의 비율이다. 관측 잡음 $R$ 이 크면 $K_t$ 가 작아져 새 관측의 반영이 줄고, 추정치의 분산 $P$ 가 크면 $K_t$ 가 커져 새 관측이 크게 반영된다.
+갱신 단계는 실제 관측 $y_t$ 가 도착한 뒤 prediction error $e_t$ 를 계산하고, 그 오차를 얼마나 반영할지를 Kalman gain $K_t$ 로 정한다. $K_t$ 는 두 불확실성의 비율이다. observation noise $R$ 이 크면 $K_t$ 가 작아져 새 관측의 반영이 줄고, 추정치의 분산 $P$ 가 크면 $K_t$ 가 커져 새 관측이 크게 반영된다.
 
 ### 4.3 Filtering And Smoothing
 
@@ -127,32 +129,32 @@ Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실
 얻는 것은 셋이다.
 
 - 궤적에서 바로 읽히는 효과의 시간적 변화.
-- 비례위험 가정이 깨진 자료에 대한 우회로.
+- proportional hazards assumption 이 깨진 자료에 대한 우회로.
 - 개입 시점을 정할 근거.
 
 치르는 것도 셋이다.
 
-- 늘어난 parameter 와 그만큼 높아진 과적합 위험.
+- 늘어난 parameter 와 그만큼 높아진 overfitting 위험.
 - 한 문장으로 요약되지 않는 유연한 곡선.
 - 충분히 긴 추적 기간과 자료량의 요구.
 
-세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. 묶는 세기를 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
+세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 degrees of freedom 가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. 묶는 세기를 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
 
 #### Extra Coefficients
 
-시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 자유도는 $n$ 이 아니다. 벌점이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 유효 자유도 $\mathrm{edf} = \mathrm{tr}(S)$ 이고, 상수 계수 model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
+시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 degrees of freedom 는 $n$ 이 아니다. penalty 이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 effective degrees of freedom $\mathrm{edf} = \mathrm{tr}(S)$ 이고, constant-coefficient model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
 
-Spline 의 smoother matrix 는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 일반화 고유분해하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
+Spline 의 smoother matrix 는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 generalized eigendecomposition 하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
 
 $$\mathrm{edf}(\lambda) = \sum_{j=1}^{K} \frac{1}{1 + \lambda \gamma_j}$$
 
-$\lambda$ 가 0 이면 edf 는 기저의 수 $K$ 이고, $\lambda$ 를 키우면 벌점이 걸리지 않는 방향 ($\gamma_j = 0$) 의 수로 줄어든다. 1 차 차분에 벌점을 걸면 그 방향은 상수 하나뿐이므로 edf 는 1 로 수렴한다. 곧 spline 에서 추가 계수의 상한은 기저의 수이고, 그 값은 $\lambda$ 하나로 조절된다.
+$\lambda$ 가 0 이면 edf 는 basis function 의 수 $K$ 이고, $\lambda$ 를 키우면 penalty 이 걸리지 않는 방향 ($\gamma_j = 0$) 의 수로 줄어든다. 1 차 차분에 penalty 을 걸면 그 방향은 상수 하나뿐이므로 edf 는 1 로 수렴한다. 곧 spline 에서 추가 계수의 상한은 basis function 의 수이고, 그 값은 $\lambda$ 하나로 조절된다.
 
-상태공간에서는 계수가 시점마다 하나씩 있어 명목상 $n$ 개이지만, 무작위 보행 가정이 1 차 차분에 벌점을 건 것과 같은 역할을 한다. 그 벌점의 세기가 $\lambda = R/Q$ 이므로, 신호대잡음비 $q = Q/R$ 로 쓰면 edf 가 닫힌 식으로 나온다.
+state space 에서는 계수가 시점마다 하나씩 있어 명목상 $n$ 개이지만, random walk 가정이 1 차 차분에 penalty 을 건 것과 같은 역할을 한다. 그 penalty 의 세기가 $\lambda = R/Q$ 이므로, signal-to-noise ratio $q = Q/R$ 로 쓰면 edf 가 닫힌 식으로 나온다.
 
 $$\mathrm{edf}(q) = \sum_{j=0}^{n-1} \frac{1}{1 + 4 q^{-1} \sin^2 \left( \frac{\pi j}{2n} \right)}$$
 
-큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Spline 과 달리 상한은 기저의 수가 아니라 관측의 수 $n$ 이다. Table 3 은 그 값을 $n = 200$ 에서 계산한 것이다.
+큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Spline 과 달리 상한은 basis function 의 수가 아니라 관측의 수 $n$ 이다. Table 3 은 그 값을 $n = 200$ 에서 계산한 것이다.
 
 Table 3. Effective degrees of freedom of one random-walk coefficient at n = 200
 
@@ -180,25 +182,25 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 
 ## Appendix A. Terminology
 
-- **basis function**: 곡선을 몇 개의 정해진 함수의 가중합으로 적을 때 그 정해진 함수 하나. 기저함수.
-- **Cox proportional hazards model**: 위험비가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
+- **basis function**: 곡선을 몇 개의 정해진 함수의 가중합으로 적을 때 그 정해진 함수 하나.
+- **Cox proportional hazards model**: hazard ratio 가 시간에 무관하게 일정하다고 두고 생존 시간을 설명하는 회귀 model.
 - **forgetting factor**: 오래된 자료의 가중치를 지수적으로 줄이는 계수.
 - **GAM**: Generalized Additive Model. 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model.
-- **hazard ratio**: 두 집단의 순간 위험률의 비. 위험비.
-- **Kalman filter**: 관측 잡음이 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
-- **Kalman gain**: 갱신 단계에서 예측 오차를 얼마나 반영할지 정하는 가중치.
+- **hazard ratio**: 두 집단의 순간 위험률의 비.
+- **Kalman filter**: observation noise 가 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
+- **Kalman gain**: 갱신 단계에서 prediction error 를 얼마나 반영할지 정하는 가중치.
 - **likelihood**: 어떤 parameter 값에서 관측된 자료가 나올 확률을 그 parameter 의 함수로 본 것. 그 값을 가장 크게 하는 parameter 를 고르는 추정법을 maximum likelihood 라 한다.
-- **observation equation**: 관측된 응답을 상태와 관측 잡음으로 적은 식. measurement equation 이라고도 한다.
+- **observation equation**: 관측된 응답을 상태와 observation noise 로 적은 식. measurement equation 이라고도 한다.
 - **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
-- **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. 비례위험 가정의 검정에 쓰인다.
+- **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. proportional hazards assumption 의 검정에 쓰인다.
 - **score**: 관측을 PLS 성분 방향으로 투영한 값.
 - **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
-- **smoother matrix**: 관측 vector 를 적합값 vector 로 보내는 행렬. 그 대각합이 유효 자유도이다.
+- **smoother matrix**: 관측 vector 를 적합값 vector 로 보내는 행렬. 그 대각합이 effective degrees of freedom 이다.
 - **spline**: 구간마다 다항식을 잇되 이음매에서 매끄럽게 맞춘 곡선.
 - **state equation**: 상태가 시간에 따라 어떻게 움직이는지를 적은 식. transition equation 이라고도 한다.
 - **state space model**: observation equation 과 state equation 의 쌍으로 자료를 정의하는 model.
 - **TVC**: Time-Varying Coefficient. 회귀계수를 시간의 함수로 둔 model.
-- **TVP**: Time-Varying Parameter. 계수를 상태공간의 상태 변수로 둔 TVC 의 이산 시간 형태.
+- **TVP**: Time-Varying Parameter. 계수를 state space 의 state variable 로 둔 TVC 의 이산 시간 형태.
 - **VAR**: Vector Autoregression. 여러 계열이 서로의 과거에 회귀하는 model.
 
 ## Appendix B. Applying TVP To A PLS Model
@@ -223,7 +225,7 @@ Table 4. Two ways to make a PLS model time-varying
 
 projection weights 를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
 
-구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 상태공간 model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 상태공간을 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
+구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 state space model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 state space 를 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
 
 ```python
 # Python
@@ -262,7 +264,7 @@ result = TVPRegression(y, design).fit(disp=False)
 beta = result.smoothed_state.T          # one coefficient trajectory per column
 ```
 
-$Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
+$Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 constant-coefficient PLS 로 충분하다.
 
 이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
 
@@ -272,10 +274,10 @@ $Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로
 
 이 방법이 필요한 경우는 앞 절이 말한 제약이 실제로 나타났을 때이다. 고정된 투영이 새 자료를 더 이상 대표하지 못하면 score 자체가 잘못된 좌표이므로, 그 위의 계수를 아무리 잘 추적해도 예측이 회복되지 않는다.
 
-대가는 계수의 궤적이다. 투영이 시점마다 달라지면 앞에 적은 이유로 $\beta_t$ 의 궤적이 해석을 잃으므로, 이 방법에서는 궤적 대신 예측 오차로 model 을 판단한다. 두 방법을 겹쳐 쓰는 구성도 가능하다. 투영은 드물게 다시 적합하고 그 사이에서 계수만 filter 로 갱신하면, 좌표계가 유지되는 구간 안에서는 궤적의 해석이 살아 있다.
+대가는 계수의 궤적이다. 투영이 시점마다 달라지면 앞에 적은 이유로 $\beta_t$ 의 궤적이 해석을 잃으므로, 이 방법에서는 궤적 대신 prediction error 로 model 을 판단한다. 두 방법을 겹쳐 쓰는 구성도 가능하다. 투영은 드물게 다시 적합하고 그 사이에서 계수만 filter 로 갱신하면, 좌표계가 유지되는 구간 안에서는 궤적의 해석이 살아 있다.
 
 ## Appendix C. Where It Is Used
 
-Cox 비례위험 model 은 위험비가 시간에 무관하게 일정하다는 가정 위에 서 있다. 어떤 변수가 이 가정을 위반하면, 즉 위험비가 추적 기간 동안 변하면, 그 변수의 계수를 $\beta(t)$ 로 확장하여 왜곡을 막는다. 가정 위반은 Schoenfeld 잔차를 시간에 대해 회귀하여 검정하며, 그 잔차의 기울기가 곧 $\beta(t)$ 가 어느 방향으로 움직이는지를 알려 준다 [[3](#ref-3)].
+Cox proportional hazards model 은 hazard ratio 가 시간에 무관하게 일정하다는 가정 위에 서 있다. 어떤 변수가 이 가정을 위반하면, 즉 hazard ratio 가 추적 기간 동안 변하면, 그 변수의 계수를 $\beta(t)$ 로 확장하여 왜곡을 막는다. 가정 위반은 Schoenfeld residual 을 시간에 대해 회귀하여 검정하며, 그 잔차의 기울기가 곧 $\beta(t)$ 가 어느 방향으로 움직이는지를 알려 준다 [[3](#ref-3)].
 
-거시경제 자료에서는 변수들 사이의 관계 자체가 시대에 따라 달라진다. TVP-VAR 은 VAR 의 계수를 4.1 의 상태공간 형태로 두어, 정책 기조나 시장 구조가 바뀔 때 계수가 어떻게 이동했는지를 추정한다 [[4](#ref-4)]. 계수뿐 아니라 충격의 분산까지 함께 시변으로 두는 것이 보통이며, 그래야 계수의 변화와 잡음 크기의 변화가 서로 섞이지 않는다.
+거시경제 자료에서는 변수들 사이의 관계 자체가 시대에 따라 달라진다. TVP-VAR 은 VAR 의 계수를 4.1 의 state space 형태로 두어, 정책 기조나 시장 구조가 바뀔 때 계수가 어떻게 이동했는지를 추정한다 [[4](#ref-4)]. 계수뿐 아니라 충격의 분산까지 함께 시변으로 두는 것이 보통이며, 그래야 계수의 변화와 잡음 크기의 변화가 서로 섞이지 않는다.
