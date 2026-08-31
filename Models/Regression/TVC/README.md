@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 17 | Created: 2026-08-30 | Updated: 2026-08-31 02:51 CDT
+Rev. 19 | Created: 2026-08-30 | Updated: 2026-08-31 02:56 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -124,13 +124,17 @@ Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실
 
 ## 5. Strengths And Limits
 
-Table 3. What the model gains and what it costs
+얻는 것은 셋이다.
 
-| Gain | Cost |
-|------|------|
-| Temporal change of the effect, read directly off the trajectory | More parameters, so a higher risk of overfitting |
-| A way past a violated proportional hazards assumption | A flexible curve that resists a one-sentence interpretation |
-| A basis for timing an intervention | A need for long enough follow-up and enough data |
+- 궤적에서 바로 읽히는 효과의 시간적 변화.
+- 비례위험 가정이 깨진 자료에 대한 우회로.
+- 개입 시점을 정할 근거.
+
+치르는 것도 셋이다.
+
+- 늘어난 parameter 와 그만큼 높아진 과적합 위험.
+- 한 문장으로 요약되지 않는 유연한 곡선.
+- 충분히 긴 추적 기간과 자료량의 요구.
 
 세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. 묶는 세기를 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
 
@@ -148,9 +152,9 @@ $\lambda$ 가 0 이면 edf 는 기저의 수 $K$ 이고, $\lambda$ 를 키우면
 
 $$\mathrm{edf}(q) = \sum_{j=0}^{n-1} \frac{1}{1 + 4 q^{-1} \sin^2 \left( \frac{\pi j}{2n} \right)}$$
 
-큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Spline 과 달리 상한은 기저의 수가 아니라 관측의 수 $n$ 이다.
+큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Spline 과 달리 상한은 기저의 수가 아니라 관측의 수 $n$ 이다. Table 3 은 그 값을 $n = 200$ 에서 계산한 것이다.
 
-Table 4. Effective degrees of freedom of one random-walk coefficient at n = 200
+Table 3. Effective degrees of freedom of one random-walk coefficient at n = 200
 
 | $q = Q/R$ | Penalty $\lambda = R/Q$ | edf | Extra coefficients |
 |-----------|--------------------------|------|--------------------|
@@ -200,7 +204,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 
 TVP 는 PLS model 위에 얹을 수 있으며, 방법은 둘이다.
 
-Table 5. Two ways to make a PLS model time-varying
+Table 4. Two ways to make a PLS model time-varying
 
 | # | Approach | What moves | When it fits |
 |---|----------|------------|--------------|
@@ -216,7 +220,7 @@ Table 5. Two ways to make a PLS model time-varying
 - **Projection weights of the PLS model**: 초기 구간으로 한 번 적합한 뒤 고정. 자료가 늘어나도 재적합 없음.
 - **Coefficient from the scores to $y$**: 관측이 도착할 때마다 4.2 의 loop 이 갱신. 이 model 에서 시간에 따라 변하는 유일한 대상.
 
-투영 가중치를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
+projection weights 를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
 
 구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 상태공간 model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 상태공간을 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
 
@@ -259,11 +263,11 @@ beta = result.smoothed_state.T          # one coefficient trajectory per column
 
 $Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
 
-이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 5 의 두 번째 방법으로 옮겨야 한다.
+이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
 
 #### Adaptive PLS
 
-두 번째 방법은 계수가 아니라 투영 가중치를 새 자료로 갱신한다. 갱신하는 방식은 둘이다. 최근 관측만 남긴 window 로 PLS 를 매번 다시 적합하거나, 이전 적합의 결과를 가중해 새 자료와 함께 다시 분해한다. 뒤엣것에 forgetting factor 를 두면 오래된 자료의 가중치가 지수적으로 줄어든다.
+두 번째 방법은 계수가 아니라 projection weights 를 새 자료로 갱신한다. 갱신하는 방식은 둘이다. 최근 관측만 남긴 window 로 PLS 를 매번 다시 적합하거나, 이전 적합의 결과를 가중해 새 자료와 함께 다시 분해한다. 뒤엣것에 forgetting factor 를 두면 오래된 자료의 가중치가 지수적으로 줄어든다.
 
 이 방법이 필요한 경우는 앞 절이 말한 제약이 실제로 나타났을 때이다. 고정된 투영이 새 자료를 더 이상 대표하지 못하면 score 자체가 잘못된 좌표이므로, 그 위의 계수를 아무리 잘 추적해도 예측이 회복되지 않는다.
 
