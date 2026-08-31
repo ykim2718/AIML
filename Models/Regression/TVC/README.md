@@ -1,11 +1,11 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 24 | Created: 2026-08-30 | Updated: 2026-08-31 03:16 CDT
+Rev. 25 | Created: 2026-08-30 | Updated: 2026-08-31 03:29 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
-이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에 둔다.
+이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에, filter 가 잡음을 걷어 내는 예는 [Appendix D](#appendix-d-how-much-noise-the-filter-removes) 에 둔다.
 
 ## 1. Scope
 
@@ -201,6 +201,7 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 - **likelihood**: 어떤 parameter 값에서 관측된 자료가 나올 확률을 그 parameter 의 함수로 본 것. 그 값을 가장 크게 하는 parameter 를 고르는 추정법을 maximum likelihood 라 한다.
 - **observation equation**: 관측된 응답을 상태와 observation noise 로 적은 식. measurement equation 이라고도 한다.
 - **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
+- **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
 - **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. proportional hazards assumption 의 검정에 쓰인다.
 - **score**: 관측을 PLS 성분 방향으로 투영한 값.
 - **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
@@ -290,3 +291,15 @@ $Q$ 를 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로
 Cox proportional hazards model 은 hazard ratio 가 시간에 무관하게 일정하다는 가정 위에 서 있다. 어떤 변수가 이 가정을 위반하면, 즉 hazard ratio 가 추적 기간 동안 변하면, 그 변수의 계수를 $\beta(t)$ 로 확장하여 왜곡을 막는다. 가정 위반은 Schoenfeld residual 을 시간에 대해 회귀하여 검정하며, 그 잔차의 기울기가 곧 $\beta(t)$ 가 어느 방향으로 움직이는지를 알려 준다 [[3](#ref-3)].
 
 거시경제 자료에서는 변수들 사이의 관계 자체가 시대에 따라 달라진다. TVP-VAR 은 VAR 의 계수를 4.1 의 state space 형태로 두어, 정책 기조나 시장 구조가 바뀔 때 계수가 어떻게 이동했는지를 추정한다 [[4](#ref-4)]. 계수뿐 아니라 충격의 분산까지 함께 시변으로 두는 것이 보통이며, 그래야 계수의 변화와 잡음 크기의 변화가 서로 섞이지 않는다.
+
+## Appendix D. How Much Noise The Filter Removes
+
+4.2 의 filter 가 잡음을 얼마나 걷어 내는지를 하나의 예로 보인다. 자료는 4.1 의 state space 에서 $X_t = 1$ 로 둔 형태이다. 상태가 random walk 로 움직이고 관측은 그 상태에 Gaussian 잡음이 더해진 값이며, 시점은 200 개이다. $Q$ 와 $R$ 은 참값을 넣지 않고 maximum likelihood 로 추정했다.
+
+![Fig 2](README_fig/kalman-denoising.png)
+
+Fig 2. Observation noise removed by the filter and by the smoother
+
+(a) 는 참 상태, 관측, filter 의 추정, smoother 의 추정을 함께 그린 것이다. 관측은 참 상태 둘레에 넓게 흩어져 있으나 두 추정은 그 안을 지나며 상태의 모양을 따라간다. (b) 는 세 계열이 참 상태로부터 벗어난 정도를 RMSE 로 잰 것이며, 값은 관측 1.03, filter 0.35, smoother 0.23 이다.
+
+Filter 는 관측이 지닌 오차의 약 3 분의 1 만 남기고, 지나간 구간을 다시 보는 smoother 는 그보다 더 줄인다. Filter 가 그 차이를 만드는 것은 관측 하나하나를 그대로 믿는 대신 직전까지의 추정과 새 관측을 $K_t$ 로 가중해 섞기 때문이며, 그 가중이 4.2 의 loop 이 하는 일 전부이다.
