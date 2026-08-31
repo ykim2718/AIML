@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 12 | Created: 2026-08-30 | Updated: 2026-08-31 02:29 CDT
+Rev. 13 | Created: 2026-08-30 | Updated: 2026-08-31 02:32 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -55,7 +55,7 @@ $B_k$ 는 spline 기저이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에
 
 ### 4.1 State-Space Form
 
-TVP model 은 두 방정식으로 정의된다. 둘을 가르는 기준은 그 값이 자료에 적혀 있는지이다. $y_t$ 와 $X_t$ 는 자료를 열면 숫자로 그대로 읽히지만, 계수 $\beta_t$ 는 어디에도 적혀 있지 않아 그 둘로부터 추정할 수밖에 없다. 그래서 앞의 것들을 잇는 아래 첫 식을 관측 방정식이라 하고, 뒤엣것이 시간에 따라 어떻게 움직이는지를 적은 둘째 식을 상태 방정식이라 하며, 추정 대상인 $\beta_t$ 가 이 상태공간의 상태 변수이다.
+TVP model 은 두 방정식으로 정의된다. 둘을 가르는 기준은 그 값이 자료에 적혀 있는지이다. $y_t$ 와 $X_t$ 는 자료를 열면 숫자로 그대로 읽히지만, 계수 $\beta_t$ 는 어디에도 적혀 있지 않아 그 둘로부터 추정할 수밖에 없다. 그래서 앞의 것들을 잇는 아래 첫 식을 observation equation 이라 하고, 뒤엣것이 시간에 따라 어떻게 움직이는지를 적은 둘째 식을 state equation 이라 하며, 추정 대상인 $\beta_t$ 가 이 상태공간의 상태 변수이다.
 
 상수 계수 회귀에서도 계수는 자료에 적혀 있지 않다. 다만 미지수가 하나뿐이라 전체 자료로 한 번 추정하면 끝나므로 굳이 상태라 부르지 않는다. TVP 는 시점마다 다른 $\beta_t$ 를 두어 미지수를 시점 수만큼 만들고, 그것을 관측이 도착할 때마다 따라가며 추정해야 할 대상으로 삼는다.
 
@@ -80,6 +80,8 @@ $Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을
 $$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
 
 $e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $R$ 에 대한 닫힌 해를 주지 않는다. 후보 값마다 filter 를 한 번 돌려 위 합을 계산하고 그 값을 수치적으로 최대화한다.
+
+$\hat{Q}$ 와 $\hat{R}$ 을 얻으면 그 값을 상태공간에 넣고 filter 를 한 번 더 돌린다. 그 pass 가 시점마다 내놓는 추정치가 찾던 계수의 궤적이고, 함께 나오는 분산 $P$ 로 그 궤적에 신뢰구간을 붙인다. 지나간 구간을 다시 그릴 때는 같은 값으로 smoother 를 돌린다 (4.3). 이후 새 관측이 도착해도 $\hat{Q}$ 와 $\hat{R}$ 은 그대로 두고 filter 만 한 걸음 더 진행하며, 자료가 크게 늘거나 공정이 달라졌을 때만 다시 추정한다. $\hat{Q}/\hat{R}$ 은 5 장에서 이 model 이 실제로 몇 개의 계수를 쓰는지를 정하는 값이기도 하다.
 
 ### 4.2 The Loop
 
@@ -181,12 +183,14 @@ $q = 0.01$ 이면 계수 하나를 시변으로 두는 값이 parameter 약 9.5 
 - **Kalman filter**: 관측 잡음이 있는 자료에서 관측되지 않는 상태를 예측과 갱신의 반복으로 추정하는 알고리즘.
 - **Kalman gain**: 갱신 단계에서 예측 오차를 얼마나 반영할지 정하는 가중치.
 - **likelihood**: 어떤 parameter 값에서 관측된 자료가 나올 확률을 그 parameter 의 함수로 본 것. 그 값을 가장 크게 하는 parameter 를 고르는 추정법을 maximum likelihood 라 한다.
+- **observation equation**: 관측된 응답을 상태와 관측 잡음으로 적은 식. measurement equation 이라고도 한다.
 - **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
 - **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. 비례위험 가정의 검정에 쓰인다.
 - **score**: 관측을 PLS 성분 방향으로 투영한 값.
 - **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
 - **spline**: 구간마다 다항식을 잇되 이음매에서 매끄럽게 맞춘 곡선.
-- **state space model**: 관측 방정식과 상태 방정식의 쌍으로 자료를 정의하는 model.
+- **state equation**: 상태가 시간에 따라 어떻게 움직이는지를 적은 식. transition equation 이라고도 한다.
+- **state space model**: observation equation 과 state equation 의 쌍으로 자료를 정의하는 model.
 - **TVC**: Time-Varying Coefficient. 회귀계수를 시간의 함수로 둔 model.
 - **TVP**: Time-Varying Parameter. 계수를 상태공간의 상태 변수로 둔 TVC 의 이산 시간 형태.
 - **VAR**: Vector Autoregression. 여러 계열이 서로의 과거에 회귀하는 model.
