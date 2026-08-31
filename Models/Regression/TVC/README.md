@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 16 | Created: 2026-08-30 | Updated: 2026-08-31 02:50 CDT
+Rev. 17 | Created: 2026-08-30 | Updated: 2026-08-31 02:51 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -211,16 +211,10 @@ Table 5. Two ways to make a PLS model time-varying
 
 #### TVP on the scores
 
-이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. Table 6 이 그 구분이며, 이름의 time-varying 은 아래쪽 행을 가리킨다.
+이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. 이름의 time-varying 은 뒤엣것을 가리킨다.
 
-Table 6. What stays fixed and what varies with time
-
-| # | Quantity | Fitted on | Moves with time |
-|---|----------|-----------|-----------------|
-| 1 | Projection weights of the PLS model | The early segment, once | No |
-| 2 | Coefficient from the scores to $y$ | The whole series, by the filter | Yes |
-
-Score 에서 $y$ 로 가는 계수가 이 model 에서 시간에 따라 변하는 유일한 대상이며, 관측이 도착할 때마다 4.2 의 loop 이 그것을 갱신한다. 자료가 늘어나도 다시 적합하지 않는 쪽은 투영 가중치이다.
+- **Projection weights of the PLS model**: 초기 구간으로 한 번 적합한 뒤 고정. 자료가 늘어나도 재적합 없음.
+- **Coefficient from the scores to $y$**: 관측이 도착할 때마다 4.2 의 loop 이 갱신. 이 model 에서 시간에 따라 변하는 유일한 대상.
 
 투영 가중치를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
 
