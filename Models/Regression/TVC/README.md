@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient)
-Rev. 4 | Created: 2026-08-30 | Updated: 2026-08-31 01:53 CDT
+Rev. 5 | Created: 2026-08-30 | Updated: 2026-08-31 02:05 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -25,7 +25,7 @@ Table 1. Patterns of a moving coefficient
 | Delayed and inverted | Transplant surgery, hazardous early and protective later | Sign reversal after a crossing point |
 | Structural change | Interest rate effect on growth across market regimes | Level shifts at regime boundaries |
 
-세 형태는 계수를 상수로 두었을 때 무엇을 잃는지도 함께 말해 준다. 감쇄를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
+계수를 상수로 두면 이 형태들이 지워진다. 감쇄를 상수로 적합하면 전 구간의 평균 효과가 나와 초기의 큰 효과도 후기의 작은 효과도 모두 틀리고, 부호가 뒤집히는 경우에는 두 구간이 상쇄되어 효과가 없다는 결론까지 나온다.
 
 ## 3. Forms Of The Coefficient
 
@@ -33,7 +33,7 @@ $\beta(t)$ 를 어떤 형태로 두느냐가 곧 model 의 유연성과 추정 �
 
 ### 3.1 Parametric Form
 
-변화의 모양을 안다면 그것을 직접 적는 것이 가장 단순하다.
+변화의 모양이 알려져 있으면 그 모양을 함수로 직접 적는다.
 
 $$\beta(t) = \beta_0 + \beta_1 t \qquad \text{or} \qquad \beta(t) = \beta_0 + \beta_1 \ln t$$
 
@@ -41,11 +41,11 @@ $$\beta(t) = \beta_0 + \beta_1 t \qquad \text{or} \qquad \beta(t) = \beta_0 + \b
 
 ### 3.2 Spline And GAM
 
-모양을 모른다면 기저함수의 합으로 두고 자료가 곡선을 고르게 한다.
+모양이 알려져 있지 않으면 $\beta(t)$ 를 기저함수의 합으로 두어 곡선의 선택을 자료에 맡긴다.
 
 $$\beta(t) = \sum_{k=1}^{K} \gamma_k B_k(t)$$
 
-$B_k$ 는 spline 기저이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 매끄러움 벌점을 함께 두면 $K$ 를 넉넉히 잡아도 과적합이 통제된다 [[1](#ref-1)]. 부호 반전이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우가 이 방법의 자리이다.
+$B_k$ 는 spline 기저이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 매끄러움 벌점을 함께 두면 $K$ 를 넉넉히 잡아도 과적합이 통제된다 [[1](#ref-1)]. 부호 반전이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
 
 ### 3.3 Random Walk In A State Space
 
@@ -73,7 +73,7 @@ Table 2. Terms of the state-space form
 | $R$ | Observation noise variance |
 | $Q$ | State noise variance, how fast the coefficient may move |
 
-$Q$ 가 이 model 의 조절 손잡이이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
+$Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
 ### 4.2 The Loop
 
@@ -103,13 +103,13 @@ for t = 1 .. T:
 
 Fig 1. The Kalman filter loop
 
-예측 단계는 직전 추정치를 그대로 옮기고, 그 추정치의 분산 $P$ 에만 $Q$ 를 더한다. 계수가 무작위 보행을 한다고 두었으므로 다음 값에 대한 최선의 추측은 직전 값이며, 다만 그동안 움직였을 수 있으니 확신은 줄어든다.
+예측 단계는 직전 추정치를 그대로 옮기고, 그 추정치의 분산 $P$ 에만 $Q$ 를 더한다. 계수가 무작위 보행을 한다고 두었으므로 다음 값의 최선의 추정은 직전 값이고, 그 사이에 계수가 움직였을 수 있으므로 분산은 커진다.
 
-갱신 단계는 실제 관측 $y_t$ 가 도착한 뒤 예측 오차 $e_t$ 를 계산하고, 그 오차를 얼마나 반영할지를 Kalman gain $K_t$ 로 정한다. $K_t$ 는 두 불확실성의 비율이다. 관측 잡음 $R$ 이 크면 $K_t$ 가 작아져 새 관측을 덜 믿고 기존 예측을 지키며, 추정치의 분산 $P$ 가 크면 $K_t$ 가 커져 새 관측을 적극 반영한다.
+갱신 단계는 실제 관측 $y_t$ 가 도착한 뒤 예측 오차 $e_t$ 를 계산하고, 그 오차를 얼마나 반영할지를 Kalman gain $K_t$ 로 정한다. $K_t$ 는 두 불확실성의 비율이다. 관측 잡음 $R$ 이 크면 $K_t$ 가 작아져 새 관측의 반영이 줄고, 추정치의 분산 $P$ 가 크면 $K_t$ 가 커져 새 관측이 크게 반영된다.
 
 ### 4.3 Filtering And Smoothing
 
-Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정한다. 실시간으로 판단해야 하는 자리에는 이것이 맞지만, 자료를 모두 모아 놓고 지나간 계수의 궤적을 그리는 자리에서는 전체 표본을 쓰는 smoother 를 쓴다. 같은 시점의 추정이라도 뒤의 관측까지 반영하므로 궤적이 덜 흔들린다.
+Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실시간 판단에 쓴다. 자료를 모두 모은 뒤 지나간 계수의 궤적을 그릴 때는 전체 표본을 쓰는 smoother 를 쓴다. 같은 시점의 추정이라도 뒤의 관측까지 반영하므로 궤적의 변동이 작다.
 
 ## 5. Where It Is Used
 
@@ -131,7 +131,7 @@ Table 3. What the model gains and what it costs
 | A way past a violated proportional hazards assumption | A flexible curve that resists a one-sentence interpretation |
 | A basis for timing an intervention | A need for long enough follow-up and enough data |
 
-세 가지 비용은 모두 같은 뿌리를 가진다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. Spline 이라면 벌점의 세기, 상태공간이라면 $Q$ 가 그 묶는 장치이며, 둘 중 어느 쪽이든 그 값을 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
+세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. Spline 이라면 벌점의 세기, 상태공간이라면 $Q$ 가 그 묶는 장치이며, 둘 중 어느 쪽이든 그 값을 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
 
 ## References
 
@@ -165,7 +165,7 @@ Table 3. What the model gains and what it costs
 
 ## Appendix B. Applying TVP To A PLS Model
 
-TVP 를 PLS 위에 얹을 수 있는가 — 얹을 수 있고, 방법은 둘이다.
+TVP 는 PLS model 위에 얹을 수 있으며, 방법은 둘이다.
 
 Table 4. Two ways to make a PLS model time-varying
 
@@ -174,7 +174,7 @@ Table 4. Two ways to make a PLS model time-varying
 | TVP on the scores | The regression from scores to $y$ | Latent directions stable, only their effect drifting |
 | Adaptive PLS | The projection itself, refitted or updated | New $X$ no longer looking like the old $X$ |
 
-앞의 것을 권한다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
+앞의 것이 기본 선택이다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
 
 이 구성에는 성격이 다른 parameter 가 두 벌 있고, 둘의 취급이 정반대이다. Table 5 가 그 구분이며, 이름의 time-varying 은 아래쪽 행을 가리킨다.
 
@@ -185,9 +185,9 @@ Table 5. What stays fixed and what varies with time
 | Projection weights of the PLS model | The early segment, once | No |
 | Coefficient from the scores to $y$ | The whole series, by the filter | Yes |
 
-Score 에서 $y$ 로 가는 계수가 이 model 에서 시간에 따라 변하는 유일한 대상이며, 관측이 도착할 때마다 4.2 의 loop 이 그것을 갱신한다. 자료가 아무리 쌓여도 다시 적합하지 않는 쪽은 투영 가중치이다.
+Score 에서 $y$ 로 가는 계수가 이 model 에서 시간에 따라 변하는 유일한 대상이며, 관측이 도착할 때마다 4.2 의 loop 이 그것을 갱신한다. 자료가 늘어나도 다시 적합하지 않는 쪽은 투영 가중치이다.
 
-투영 가중치까지 함께 갱신하지 않는 데에는 이유가 있다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽겠다는 목적 자체가 사라진다.
+투영 가중치를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
 
 구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 상태공간 model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 상태공간을 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
 
@@ -228,6 +228,6 @@ result = TVPRegression(y, design).fit(disp=False)
 beta = result.smoothed_state.T          # one coefficient trajectory per column
 ```
 
-$Q$ 를 최대가능도로 추정하게 두면 자료가 계수의 이동 속도를 스스로 정한다. 추정된 $Q$ 가 0 에 가깝게 나오면 그것 자체가 답이다. 계수가 움직인다는 증거가 자료에 없다는 뜻이므로, 상수 계수 PLS 를 그대로 쓰면 된다.
+$Q$ 를 최대가능도로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 상수 계수 PLS 로 충분하다.
 
-한 가지 주의가 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
+이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
