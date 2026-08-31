@@ -1,14 +1,14 @@
 {
   "extraKnownMarketplaces": {
-    "yrocket-marketplace": {
+    "claude-configuration": {
       "source": {
         "source": "github",
-        "repo": "ykim2718/AIML"
+        "repo": "ykim2718/Claude-Configuration"
       }
     }
   },
   "enabledPlugins": {
-    "yrocket-plugins@yrocket-marketplace": true
+    "yrocket-rules@claude-configuration": true
   },
   "env": {
     "TZ": "America/Chicago"
@@ -25,6 +25,15 @@
       }
     ],
     "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh",
+            "timeout": 180
+          }
+        ]
+      },
       {
         "matcher": "startup",
         "hooks": [
