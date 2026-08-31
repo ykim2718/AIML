@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient)
-Rev. 5 | Created: 2026-08-30 | Updated: 2026-08-31 02:05 CDT
+Rev. 6 | Created: 2026-08-30 | Updated: 2026-08-31 02:14 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -80,6 +80,7 @@ $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 
 Kalman filter 는 시점마다 예측과 갱신 두 단계를 반복하여 $\beta_t$ 의 추정치와 그 불확실성을 함께 갱신한다 [[2](#ref-2)]. Fig 1 이 그 절차이다.
 
 ```text
+# Pseudocode
 input  y[1..T], X[1..T], R, Q
 output beta_hat[1..T], P[1..T]
 
