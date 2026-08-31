@@ -1,5 +1,5 @@
 # Plugin Setup And Verification
-Rev. 3 | Created: 2026-08-04 | Updated: 2026-08-10 22:02 CDT
+Rev. 4 | Created: 2026-08-04 | Updated: 2026-08-31 18:23 CDT
 
 이 문서는 새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 6 장에 남긴다.
 
@@ -99,14 +99,16 @@ git config --global \
 set -uo pipefail
 
 git config --global \
-  url."https://x-access-token:${GH_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
+  url."https://x-access-token:${PLUGIN_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
   "https://github.com/ykim2718/Claude-Configuration.git" || true
 
 claude plugin marketplace add ykim2718/AIML || true
 claude plugin install yrocket-plugins@yrocket-marketplace || true
 ```
 
-`GH_TOKEN` 은 container 의 환경 변수로 넘긴다. 이 값은 그 환경을 쓰는 사람이 모두 읽을 수 있으므로, 읽기 권한만 가진 token 을 쓴다.
+`PLUGIN_REPO_TOKEN` 은 container 의 환경 변수로 넘긴다. 이 값은 그 환경을 쓰는 사람이 모두 읽을 수 있으므로, 읽기 권한만 가진 token 을 쓴다.
+
+이름을 `GH_TOKEN` 으로 두지 않는다. 어떤 container 는 그 이름을 이미 다른 도구가 쓰고 있고, 그 값은 GitHub token 이 아니므로 rewrite 에 넣으면 멀쩡히 동작하던 자격 증명을 못 쓰는 값으로 덮어쓴다.
 
 ## 5. Verification
 
