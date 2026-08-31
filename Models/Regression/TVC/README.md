@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 10 | Created: 2026-08-30 | Updated: 2026-08-31 02:20 CDT
+Rev. 11 | Created: 2026-08-30 | Updated: 2026-08-31 02:26 CDT
 
 보통의 회귀는 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -75,6 +75,12 @@ Table 2. Terms of the state-space form
 
 $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 보통의 회귀로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
+$Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 예측 오차 $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 가능도를 적을 수 있다. 그 가능도를 가장 크게 하는 값이 추정치이다.
+
+$$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
+
+$e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $R$ 에 대한 닫힌 해를 주지 않는다. 후보 값마다 filter 를 한 번 돌려 위 합을 계산하고 그 값을 수치적으로 최대화한다.
+
 ### 4.2 The Loop
 
 4.1 은 두 방정식을 세울 뿐 상태 $\beta_t$ 의 값을 주지 않으므로, 그 값을 자료에서 뽑아내는 절차가 따로 필요하다. 그 절차가 Kalman filter 이며, R. E. Kalman 이 1960 년에 발표한 추정 방법의 이름을 그대로 쓴 것이다 [[2](#ref-2)]. Filter 라 부르는 것은 신호처리에서 잡음이 섞인 신호로부터 원 신호만 걸러내는 장치를 filter 라 하기 때문이며, 여기서 걸러 낼 원 신호는 상태 $\beta_t$ 이고 걸러 낼 잡음은 관측 잡음 $\epsilon_t$ 이다.
@@ -124,17 +130,25 @@ Table 3. What the model gains and what it costs
 | A way past a violated proportional hazards assumption | A flexible curve that resists a one-sentence interpretation |
 | A basis for timing an intervention | A need for long enough follow-up and enough data |
 
-세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. Spline 이라면 벌점의 세기, 상태공간이라면 $Q$ 가 그 묶는 장치이며, 둘 중 어느 쪽이든 그 값을 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
+세 가지 비용의 원인은 하나이다. 계수를 시점마다 두면 자유도가 표본 크기만큼 늘어나므로, 그것을 무엇으로 묶어 둘지가 이 model 의 실제 설계 문제이다. 묶는 세기를 자료로 정할 때는 검증 구간이 학습 시점 이후에 있어야 한다.
 
-시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 자유도는 $n$ 이 아니다. 벌점이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 평활자 $S$ 의 대각합으로 정의되는 유효 자유도 $\mathrm{edf} = \mathrm{tr}(S)$ 이고, 상수 계수 model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다.
+#### Extra Coefficients
 
-Spline 은 평활자가 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이므로 벌점의 세기 $\lambda$ 가 곧 edf 를 정한다. 무작위 보행 상태공간은 1 차 차분에 벌점을 건 것과 같고 그 세기가 $\lambda = R/Q$ 이므로, 신호대잡음비 $q = Q/R$ 로 쓰면 두 경우가 하나의 식이 된다.
+시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 자유도는 $n$ 이 아니다. 벌점이나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 평활자 $S$ 의 대각합으로 정의되는 유효 자유도 $\mathrm{edf} = \mathrm{tr}(S)$ 이고, 상수 계수 model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
+
+Spline 의 평활자는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 일반화 고유분해하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
+
+$$\mathrm{edf}(\lambda) = \sum_{j=1}^{K} \frac{1}{1 + \lambda \gamma_j}$$
+
+$\lambda$ 가 0 이면 edf 는 기저의 수 $K$ 이고, $\lambda$ 를 키우면 벌점이 걸리지 않는 방향 ($\gamma_j = 0$) 의 수로 줄어든다. 1 차 차분에 벌점을 걸면 그 방향은 상수 하나뿐이므로 edf 는 1 로 수렴한다. 곧 spline 에서 추가 계수의 상한은 기저의 수이고, 그 값은 $\lambda$ 하나로 조절된다.
+
+상태공간에서는 계수가 시점마다 하나씩 있어 명목상 $n$ 개이지만, 무작위 보행 가정이 1 차 차분에 벌점을 건 것과 같은 역할을 한다. 그 벌점의 세기가 $\lambda = R/Q$ 이므로, 신호대잡음비 $q = Q/R$ 로 쓰면 edf 가 닫힌 식으로 나온다.
 
 $$\mathrm{edf}(q) = \sum_{j=0}^{n-1} \frac{1}{1 + 4 q^{-1} \sin^2 \left( \frac{\pi j}{2n} \right)}$$
 
-큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Table 4 는 $n = 200$ 에서 그 값이다.
+큰 $n$ 에서 이 합은 $n \sqrt{q / (q+4)}$ 에 가까워지고, $q$ 가 작으면 $(n/2)\sqrt{q}$ 이다. 추가로 쓰는 계수의 수가 $q$ 의 제곱근에 비례한다는 뜻이며, $q$ 를 100 배 키워야 그 수가 10 배가 된다. Spline 과 달리 상한은 기저의 수가 아니라 관측의 수 $n$ 이다.
 
-Table 4. Effective degrees of freedom for one time-varying coefficient at n = 200
+Table 4. Effective degrees of freedom of one random-walk coefficient at n = 200
 
 | $q = Q/R$ | Penalty $\lambda = R/Q$ | edf | Extra coefficients |
 |-----------|--------------------------|------|--------------------|
