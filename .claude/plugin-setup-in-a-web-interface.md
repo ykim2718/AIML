@@ -1,5 +1,5 @@
 # Plugin Setup In The Web Interface
-Rev. 7 | Created: 2026-08-04 | Updated: 2026-08-31 22:23 CDT
+Rev. 8 | Created: 2026-08-04 | Updated: 2026-08-31 22:25 CDT
 
 이 문서는 Claude Code 의 web interface 전용이다. 그 환경은 세션마다 container 를 새로 받으므로 설치가 남지 않는다. 설치가 disk 에 남는 desktop interface 는 한 번 설치하고 나면 여기의 절차가 필요 없다.
 
@@ -115,12 +115,15 @@ claude plugin install yrocket-rules@claude-configuration || true
 
 ```
 첨부 zip 의 `.claude/settings.json` 과 `.claude/hooks/session-start.sh` 를
-이 repo 의 `.claude/` 에 넣고 commit·push 할 것.
+이 repo 의 `.claude/` 에 넣고, 이 repo 의 origin 기본 branch 에 commit·push 할 것.
 기존 `settings.json` 이 있으면 덮어쓰지 말고 병합할 것.
 설치는 다음 세션에서 `session-start.sh` 가 하므로 지금 실행하지 말 것.
-전제: 환경 변수 `PLUGIN_REPO_TOKEN` 에 `ykim2718/Claude-Configuration` 을
-읽을 수 있는 read-only PAT 가 들어 있어야 한다. 없으면 clone 이 인증에서 실패한다.
+전제: 이 repo 를 여는 environment 의 설정에 환경 변수 `PLUGIN_REPO_TOKEN` 이
+`ykim2718/Claude-Configuration` 을 읽을 수 있는 read-only PAT 로 지정되어 있어야 한다.
+없으면 clone 이 인증에서 실패한다.
 ```
+
+Token 을 넣는 자리는 web 의 environment 설정이며, 그 environment 로 열리는 세션의 container 마다 값이 실린다. Repo 에는 두지 않는다. 한 번 commit 되면 이력에 남아, 뒤늦게 지워도 그 commit 을 아는 사람은 계속 읽을 수 있기 때문이다. 값을 넣는 것은 사람이 하는 일이며, 세션 안의 Claude 는 자기 환경 변수를 바꿀 수 없다.
 
 ## 6. Verification
 
@@ -166,6 +169,7 @@ Table 2. What each condition produced
 - **catalog**: plugin 의 이름과 위치를 나열한 `marketplace.json` 파일이다.
 - **container**: 세션이 실행되는 격리된 실행 환경이다.
 - **credential helper**: git 이 remote 인증 정보를 얻을 때 호출하는 외부 program 이다.
+- **environment**: web interface 가 세션을 여는 설정 묶음이며, 어떤 repo 를 붙일지와 어떤 환경 변수를 container 에 넘길지를 담는다.
 - **hook**: 정해진 시점에 Claude Code 가 실행하는 command 이다. UserPromptSubmit hook 의 출력은 prompt 마다 context 에 주입된다.
 - **marketplace**: catalog 를 통해 plugin 을 배포하는 단위이다.
 - **namespace**: skill 이름 앞에 붙어 소속 plugin 을 나타내는 접두사이다.
