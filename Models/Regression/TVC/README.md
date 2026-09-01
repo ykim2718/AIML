@@ -1,11 +1,11 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 30 | Created: 2026-08-30 | Updated: 2026-09-01 13:18 CDT
+Rev. 31 | Created: 2026-08-30 | Updated: 2026-09-01 13:39 CDT
 
 Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
-이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에, filter 가 잡음을 걷어 내는 예는 [Appendix D](#appendix-d-how-much-noise-the-kalman-filter-removes) 에 둔다.
+이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에, filter 가 잡음 (noise) 을 걷어 내는 예는 [Appendix D](#appendix-d-how-much-noise-the-kalman-filter-removes) 에 둔다.
 
 ## 1. Scope
 
@@ -83,7 +83,7 @@ Table 2. Terms of the state-space form
 
 $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 계수는 움직이지 않아 constant-coefficient regression 으로 되돌아가고, $Q$ 가 크면 계수가 관측을 그대로 따라가 잡음까지 계수의 변화로 읽는다.
 
-두 잡음에 Gaussian 을 두는 이유는 셋이다. 첫째, Gaussian 은 이 model 이 하는 연산에 닫혀 있어, 선형 결합을 거치고 Gaussian 이 더해져도 Gaussian 으로 남는다. 그래서 $\beta_t$ 의 분포 전체가 평균과 분산 두 값으로 요약되고, 4.2 의 loop 이 시점마다 그 두 값만 옮기면 된다. 둘째, 그 가정 아래에서 filter 의 추정치가 conditional mean 과 같아져 mean squared error 를 최소로 한다. 셋째, prediction error 도 Gaussian 이 되어 likelihood 가 closed form 으로 적힌다.
+두 잡음에 Gaussian 을 두는 이유는 셋이다. 첫째, Gaussian 은 이 model 이 하는 연산에 닫혀 있어, 선형 결합을 거치고 Gaussian 이 더해져도 Gaussian 으로 남는다. 그래서 $\beta_t$ 의 분포 전체가 평균과 분산 (variance) 두 값으로 요약되고, 4.2 의 loop 이 시점마다 그 두 값만 옮기면 된다. 둘째, 그 가정 아래에서 filter 의 추정치가 conditional mean 과 같아져 mean squared error 를 최소로 한다. 셋째, prediction error 도 Gaussian 이 되어 likelihood 가 closed form 으로 적힌다.
 
 가정이 틀렸을 때의 손실은 크지 않다. Gaussian 이 아니어도 filter 는 linear estimator 가운데에서는 여전히 최선이므로, 최적성이 선형 범위로 좁아질 뿐이다. 평균을 0 으로 둔 것은 별개의 가정으로, 잡음에 계통적 치우침이 없다는 뜻이다. 치우침이 있다면 그것은 잡음이 아니라 model 에 넣어야 할 항이다.
 
@@ -130,7 +130,7 @@ Fig 1. The Kalman filter loop
 
 ### 4.3 Filtering And Smoothing
 
-Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실시간 판단에 쓴다. 자료를 모두 모은 뒤 지나간 계수의 궤적을 그릴 때는 전체 표본을 쓰는 smoother 를 쓴다. 같은 시점의 추정이라도 뒤의 관측까지 반영하므로 궤적의 변동이 작다.
+Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실시간 판단에 쓴다. 자료를 모두 모은 뒤 지나간 계수의 궤적 (trajectory) 을 그릴 때는 전체 표본을 쓰는 smoother 를 쓴다. 같은 시점의 추정이라도 뒤의 관측까지 반영하므로 궤적의 변동이 작다.
 
 ## 5. Strengths And Limits
 
@@ -210,10 +210,10 @@ Filter 자체에는 data leakage 가 없다. 4.3 이 적은 대로 $t$ 까지의
 - **Kalman gain**: 갱신 단계에서 prediction error 를 얼마나 반영할지 정하는 가중치.
 - **likelihood**: 어떤 parameter 값에서 관측된 자료가 나올 확률을 그 parameter 의 함수로 본 것. 그 값을 가장 크게 하는 parameter 를 고르는 추정법을 maximum likelihood 라 한다.
 - **observation equation**: 관측된 응답을 상태와 observation noise 로 적은 식. measurement equation 이라고도 한다.
-- **PLS**: Partial Least Squares. 응답과의 공분산이 큰 방향으로 투영하는 지도 학습형 축약.
+- **PLS**: Partial Least Squares. 응답과의 공분산 (covariance) 이 큰 방향으로 투영 (projection) 하는 지도 학습형 축약.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
-- **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량과 그 기대값의 차이. proportional hazards assumption 의 검정에 쓰인다.
-- **score**: 관측을 PLS 성분 방향으로 투영한 값.
+- **Schoenfeld residual**: Cox model 에서 사건 시점마다 관측된 공변량 (covariate) 과 그 기대값의 차이. proportional hazards assumption 의 검정에 쓰인다.
+- **score**: 관측을 PLS 성분 (component) 방향으로 투영한 값.
 - **smoother**: 전체 표본을 모두 쓴 뒤 각 시점의 상태를 다시 추정하는 절차.
 - **smoother matrix**: 관측 vector 를 적합값 vector 로 보내는 행렬. 그 대각합이 effective degrees of freedom 이다.
 - **spline**: 구간마다 다항식을 잇되 이음매에서 매끄럽게 맞춘 곡선.
@@ -234,7 +234,7 @@ Table 4. Two ways to make a PLS model time-varying
 | 1 | TVP on the scores | The regression from scores to $y$ | Latent directions stable, only their effect drifting |
 | 2 | Adaptive PLS | The projection itself, refitted or updated | New $X$ no longer looking like the old $X$ |
 
-앞의 것이 기본 선택이다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
+앞의 것이 기본 선택이다. PLS 는 $X$ 를 응답과의 공분산이 큰 방향으로 투영하여 성분 수만큼의 score 로 줄이는데, TVP 를 그 score 위에 얹으면 추정할 상태가 성분 수에 절편 (intercept) 하나를 더한 개수로 묶인다. 원래 변수 위에 바로 얹으면 상태가 변수 수만큼 필요하고, 변수들이 서로 강하게 상관된 자료에서 그 상태들은 개별적으로 식별되지 않는다. 즉 PLS 가 차원을 줄이는 일을, TVP 가 그 줄어든 공간에서 시간을 다루는 일을 맡는 분담이다.
 
 #### TVP on the scores
 
@@ -243,7 +243,7 @@ Table 4. Two ways to make a PLS model time-varying
 - **Projection weights of the PLS model**: 초기 구간으로 한 번 적합한 뒤 고정. 자료가 늘어나도 재적합 없음.
 - **Coefficient from the scores to $y$**: 관측이 도착할 때마다 4.2 의 loop 이 갱신. 이 model 에서 시간에 따라 변하는 유일한 대상.
 
-Projection weights 를 함께 갱신하지 않는 이유는 식별성이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
+Projection weights 를 함께 갱신하지 않는 이유는 식별성 (identifiability) 이다. 예측이 score 와 계수의 곱이므로, 둘을 동시에 움직이면 투영을 두 배로 키우고 계수를 절반으로 줄인 것이 원래 것과 똑같은 예측을 낸다. 그러면 계수의 궤적이 효과가 변한 것인지 투영이 돌아간 것인지 구분되지 않아, 시변 계수를 읽는다는 목적 자체가 사라진다.
 
 구성은 세 단계이다. 초기 구간으로 PLS 를 적합하여 투영을 고정하고, 전체 구간을 그 투영으로 score 로 바꾸고, score 를 설명변수로 하는 state space model 을 Kalman filter 로 추정한다. 아래는 `statsmodels` 의 `MLEModel` 로 그 state space 를 정의하고 PLS score 에 적용한 예이며, `obs_cov` 와 `state_cov` 를 제곱으로 두어 분산이 음수가 되지 않게 한다.
 
@@ -286,7 +286,7 @@ beta = result.smoothed_state.T          # one coefficient trajectory per column
 
 $Q$ 와 $R$ 을 maximum likelihood 로 추정하면 계수의 이동 속도가 자료로 정해진다. 추정된 $Q$ 가 0 에 가까우면 계수가 움직인다는 증거가 자료에 없다는 뜻이며, 이때는 constant-coefficient PLS 로 충분하다.
 
-이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
+이 구성에는 제약이 하나 있다. 투영을 초기 구간으로 고정했으므로, 새로 들어온 $X$ 가 이전 $X$ 와 다르게 생기면 score 의 의미가 달라지고 그 위의 $\beta_t$ 는 해석을 잃는다. Score 의 분산이나 잔차 (residual) 가 후반부에서 체계적으로 커지는지를 확인하고, 커진다면 Table 4 의 두 번째 방법으로 옮겨야 한다.
 
 #### Adaptive PLS
 
