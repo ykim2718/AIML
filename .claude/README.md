@@ -1,5 +1,5 @@
 # Claude Rules Setup
-Rev. 7 | Created: 2026-08-03 | Updated: 2026-08-31 22:19 CDT
+Rev. 8 | Created: 2026-08-03 | Updated: 2026-08-31 22:31 CDT
 
 이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-rules` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과 그것을 설치하는 hook 을 가진다.
 
@@ -12,7 +12,6 @@ Table 1. Files and their roles
 | `.claude/settings.json` | marketplace 를 등록하고 plugin 을 활성화하며, hook 을 걸고, container 의 time zone 을 저자의 지역 시간대로 맞춘다. |
 | `.claude/hooks/session-start.sh` | 새 container 에서 marketplace 를 붙이고 plugin 을 설치한다. |
 | `.claude/hooks/update-plugins.sh` | 이미 설치된 plugin 을 세션 시작 때 갱신한다. |
-| `.claude/skills/` | plugin 이 담은 skill 의 사본이다. |
 
 Catalog 는 이 repo 에 없다. `.claude-plugin/marketplace.json` 은 plugin 과 같은 repo 인 `ykim2718/Claude-Configuration` 의 최상위에 있으며, Claude Code 가 그 경로에서 catalog 를 찾는다.
 
@@ -65,7 +64,7 @@ plugin 의 내용이 바뀌면 `/plugin marketplace update` 로 catalog 를 갱�
 
 대화 규칙을 주입하던 UserPromptSubmit hook 은 이 repo 의 설정에서 지웠다. Plugin 이 같은 일을 하는 자기 hook 을 갖고 있어, plugin 이 실리는 세션에서 규칙이 두 번 주입되었기 때문이다.
 
-그 hook 이 읽던 규칙 문서 두 개도 함께 지웠다. 남은 사본은 `.claude/skills` 뿐이며, plugin 이 실리면 같은 skill 이 두 벌로 잡힌다. 지울지 남길지는 아직 정해져 있지 않다.
+그 hook 이 읽던 규칙 문서 두 개와 `.claude/skills` 의 skill 사본도 함께 지웠다. 이제 규칙은 plugin 한 곳에서만 오며, 두 벌이 어긋날 자리가 없다. 대신 plugin 이 실리지 않는 세션에는 규칙이 하나도 실리지 않는다.
 
 ## Appendix A. Terminology
 
