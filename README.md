@@ -1,5 +1,5 @@
 # AIML
-Rev. 38 | Created: 2026-08-07 | Updated: 2026-08-31 22:31 CDT
+Rev. 39 | Created: 2026-08-07 | Updated: 2026-08-31 23:20 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -31,7 +31,7 @@ Table 2. Folders and what they hold
 | [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, temporal partial least squares under `Regression/TPLS/`, time-varying coefficients under `Regression/TVC/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
 | [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, a cointegration example on daily price series, and the ceiling that bounds the classical z-score under `ZScore/`. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
-| [.claude](.claude/) | It carries the settings that make those rules load in this repository, together with the setup and verification notes behind them. |
+| [.claude](.claude/) | It carries the settings that make those rules load in this repository and the hook that installs them, with the note behind that setup kept in the repository the plugin comes from. |
 
 ## 3. Documents
 
@@ -83,7 +83,6 @@ Table 6. Automation documents
 |----------|-------------|
 | [AI Assistant/Claude/automatic-rule-loading.md](AI%20Assistant/Claude/automatic-rule-loading.md) | It describes managing rules in one repository and loading them into every project through a plugin marketplace, so that skills, hooks, commands, and agents are shared between the desktop and the web interface. |
 | [.claude/README.md](.claude/README.md) | It explains the two files that wire this repository to that marketplace, the catalog and the settings that enable the plugin. |
-| [.claude/plugin-setup-in-a-web-interface.md](.claude/plugin-setup-in-a-web-interface.md) | It is for the web interface alone, where every session gets a new container, and records the setup that lets that container fetch the plugin from the remote on its first session, the authentication failure that broke the earlier attempt and the fix for it, and the prompt to give when planting the same setup in another repository. A desktop install survives between runs and needs none of it. |
 
 ### 3.5 Models
 
