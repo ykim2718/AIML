@@ -25,20 +25,21 @@ mkdir -p "$(dirname "$LOG")"
 {
   date '+=== session start %Y-%m-%d %H:%M:%S'
   # The marketplace repository is private, so git needs a credential before the
-  # clone. PLUGIN_REPO_TOKEN is a read-only token injected as a container
-  # environment variable, never committed here. The name is deliberate: GH_TOKEN
-  # is already taken by other tooling in some containers, and writing that
-  # value into the rewrite replaces a working credential with one that is not a
-  # GitHub token at all. The rewrite is scoped to this one URL, because a
-  # host-wide rewrite would override the credential every other github.com
-  # operation uses. Without the token the clone still runs and fails on
-  # authentication, which the log then names.
-  if [ -n "${PLUGIN_REPO_TOKEN:-}" ]; then
+  # clone. CLAUDE_CONFIGURATION_REPO_TOKEN is a read-only token for that one
+  # repository, injected as a container environment variable and never committed
+  # here. The name says which repository it opens, and it is not GH_TOKEN: that
+  # name is already taken by other tooling in some containers, whose value is
+  # not a GitHub token, and writing it into the rewrite replaces a working
+  # credential with one that cannot authenticate. The rewrite is scoped to this
+  # one URL, because a host-wide rewrite would override the credential every
+  # other github.com operation uses. Without the token the clone still runs and
+  # fails on authentication, which the log then names.
+  if [ -n "${CLAUDE_CONFIGURATION_REPO_TOKEN:-}" ]; then
     git config --global \
-      url."https://x-access-token:${PLUGIN_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
+      url."https://x-access-token:${CLAUDE_CONFIGURATION_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
       "$REPO_URL" || echo 'credential rewrite FAILED'
   else
-    echo 'PLUGIN_REPO_TOKEN not set; the clone will fail unless the session already carries a credential'
+    echo 'CLAUDE_CONFIGURATION_REPO_TOKEN not set; the clone will fail unless the session already carries a credential'
   fi
   # Both are idempotent: re-adding a marketplace and re-installing a plugin
   # that are already present succeed and change nothing.

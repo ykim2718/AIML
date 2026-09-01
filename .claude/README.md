@@ -1,5 +1,5 @@
 # Claude Rules Setup
-Rev. 8 | Created: 2026-08-03 | Updated: 2026-08-31 22:31 CDT
+Rev. 9 | Created: 2026-08-03 | Updated: 2026-08-31 22:49 CDT
 
 이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-rules` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과 그것을 설치하는 hook 을 가진다.
 
@@ -41,7 +41,7 @@ Catalog 는 이 repo 에 없다. `.claude-plugin/marketplace.json` 은 plugin �
 
 선언은 설치가 아니다. Web 세션은 설치된 plugin 이 하나도 없는 container 를 받으므로, `enabledPlugins` 만으로는 plugin 이 실리지 않는다. `session-start.sh` 가 그 자리를 메워 `claude plugin marketplace add` 와 `claude plugin install` 을 실행한다. 둘 다 idempotent 이므로 이미 있는 것을 다시 실행해도 달라지는 것이 없다.
 
-`Claude-Configuration` 이 private 이므로 그 clone 에는 자격 증명이 필요하다. 읽기 권한만 가진 token 을 `PLUGIN_REPO_TOKEN` 환경 변수로 container 에 넘기면, hook 이 그 값으로 URL rewrite 를 걸고 clone 한다. Token 이 없으면 clone 이 인증에서 실패하고 plugin 은 실리지 않는다.
+`Claude-Configuration` 이 private 이므로 그 clone 에는 자격 증명이 필요하다. 읽기 권한만 가진 token 을 `CLAUDE_CONFIGURATION_REPO_TOKEN` 환경 변수로 container 에 넘기면, hook 이 그 값으로 URL rewrite 를 걸고 clone 한다. Token 이 없으면 clone 이 인증에서 실패하고 plugin 은 실리지 않는다.
 
 ## 4. Setup For Another Repository
 

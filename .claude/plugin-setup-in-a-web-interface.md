@@ -1,5 +1,5 @@
 # Plugin Setup In The Web Interface
-Rev. 9 | Created: 2026-08-04 | Updated: 2026-08-31 22:37 CDT
+Rev. 10 | Created: 2026-08-04 | Updated: 2026-08-31 22:49 CDT
 
 이 문서는 Claude Code 의 web interface 전용이다. 그 환경은 세션마다 container 를 새로 받으므로 설치가 남지 않는다. 설치가 disk 에 남는 desktop interface 는 한 번 설치하고 나면 여기의 절차가 필요 없다.
 
@@ -98,16 +98,16 @@ git config --global \
 set -uo pipefail
 
 git config --global \
-  url."https://x-access-token:${PLUGIN_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
+  url."https://x-access-token:${CLAUDE_CONFIGURATION_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
   "https://github.com/ykim2718/Claude-Configuration.git" || true
 
 claude plugin marketplace add ykim2718/Claude-Configuration || true
 claude plugin install yrocket-rules@claude-configuration || true
 ```
 
-`PLUGIN_REPO_TOKEN` 은 container 의 환경 변수로 넘긴다. 이 값은 그 환경을 쓰는 사람이 모두 읽을 수 있으므로, 읽기 권한만 가진 token 을 쓴다.
+`CLAUDE_CONFIGURATION_REPO_TOKEN` 은 container 의 환경 변수로 넘긴다. 이 값은 그 환경을 쓰는 사람이 모두 읽을 수 있으므로, 읽기 권한만 가진 token 을 쓴다.
 
-이름을 `GH_TOKEN` 으로 두지 않는다. 어떤 container 는 그 이름을 이미 다른 도구가 쓰고 있고, 그 값은 GitHub token 이 아니므로 rewrite 에 넣으면 멀쩡히 동작하던 자격 증명을 못 쓰는 값으로 덮어쓴다.
+이름은 그 token 이 여는 repo 를 그대로 담는다. `GH_TOKEN` 으로 두지 않는 까닭은 어떤 container 가 그 이름을 이미 다른 도구에 쓰고 있고, 그 값은 GitHub token 이 아니므로 rewrite 에 넣으면 멀쩡히 동작하던 자격 증명을 못 쓰는 값으로 덮어쓰기 때문이다.
 
 ## 5. Prompt For A New Repository
 
@@ -118,7 +118,7 @@ claude plugin install yrocket-rules@claude-configuration || true
 이 repo 의 `.claude/` 에 넣고, 이 repo 의 origin 기본 branch 에 commit·push 할 것.
 기존 `settings.json` 이 있으면 덮어쓰지 말고 병합할 것.
 설치는 다음 세션에서 `session-start.sh` 가 하므로 지금 실행하지 말 것.
-전제: 이 repo 를 여는 environment 의 설정에 환경 변수 `PLUGIN_REPO_TOKEN` 이
+전제: 이 repo 를 여는 environment 의 설정에 환경 변수 `CLAUDE_CONFIGURATION_REPO_TOKEN` 이
 `ykim2718/Claude-Configuration` 을 읽을 수 있는 read-only PAT 로 지정되어 있어야 한다.
 없으면 clone 이 인증에서 실패한다.
 ```
@@ -135,7 +135,7 @@ Token 을 넣는 자리는 web 의 environment 설정이며, 그 environment 로
 4. **Save changes** 를 누른다.
 
 ```
-PLUGIN_REPO_TOKEN=<READ_ONLY_PAT>
+CLAUDE_CONFIGURATION_REPO_TOKEN=<READ_ONLY_PAT>
 ```
 
 값은 세션이 시작할 때 한 번 복사되므로, 지금 돌고 있는 세션은 그대로이고 다음 세션부터 실린다. 그리고 그 environment 를 쓰는 사람은 누구나 이 값을 읽을 수 있으므로, `ykim2718/Claude-Configuration` 을 읽는 것 말고는 아무 권한도 없는 token 을 쓴다.
