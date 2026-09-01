@@ -1,11 +1,11 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 29 | Created: 2026-08-30 | Updated: 2026-09-01 13:10 CDT
+Rev. 30 | Created: 2026-08-30 | Updated: 2026-09-01 13:18 CDT
 
 Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
 $$Y(t) = \beta_0(t) + \beta_1(t) X + \epsilon(t)$$
 
-이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에, filter 가 잡음을 걷어 내는 예는 [Appendix D](#appendix-d-how-much-noise-the-filter-removes) 에 둔다.
+이 문서는 계수가 왜 움직이는지, $\beta(t)$ 를 어떤 형태로 두는지, 그것을 Kalman filter 로 어떻게 추정하는지, 그리고 그 추정을 PLS model 위에 얹는 방법을 차례로 정리한다. 마지막 것은 [Appendix B](#appendix-b-applying-tvp-to-a-pls-model) 에, 이 model 이 실제로 쓰이는 자리는 [Appendix C](#appendix-c-where-it-is-used) 에, filter 가 잡음을 걷어 내는 예는 [Appendix D](#appendix-d-how-much-noise-the-kalman-filter-removes) 에 둔다.
 
 ## 1. Scope
 
@@ -302,7 +302,7 @@ Cox proportional hazards model 은 hazard ratio 가 시간에 무관하게 일�
 
 거시경제 자료에서는 변수들 사이의 관계 자체가 시대에 따라 달라진다. TVP-VAR 은 VAR 의 계수를 4.1 의 state space 형태로 두어, 정책 기조나 시장 구조가 바뀔 때 계수가 어떻게 이동했는지를 추정한다 [[4](#ref-4)]. 계수뿐 아니라 충격의 분산까지 함께 시변으로 두는 것이 보통이며, 그래야 계수의 변화와 잡음 크기의 변화가 서로 섞이지 않는다.
 
-## Appendix D. How Much Noise The Filter Removes
+## Appendix D. How Much Noise The Kalman Filter Removes
 
 4.2 의 filter 가 잡음을 얼마나 걷어 내는지를 하나의 예로 보인다. 자료는 4.1 의 state space 에서 $X_t = 1$ 로 둔 형태이다. 상태가 random walk 로 움직이고 관측은 그 상태에 Gaussian observation noise 가 더해진 값이며, 시점은 200 개이다. $Q$ 와 $R$ 은 참값을 넣지 않고 maximum likelihood 로 추정했다.
 
