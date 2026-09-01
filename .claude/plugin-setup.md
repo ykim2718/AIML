@@ -1,5 +1,5 @@
 # Plugin Setup And Verification
-Rev. 4 | Created: 2026-08-04 | Updated: 2026-08-31 18:23 CDT
+Rev. 5 | Created: 2026-08-04 | Updated: 2026-08-31 19:01 CDT
 
 이 문서는 새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 6 장에 남긴다.
 
@@ -12,40 +12,37 @@ Claude Code 는 세션을 시작할 때 repo 의 `.claude/settings.json` 을 읽
 - 해당 folder 가 trust 된 상태여야 한다. trust 가 없으면 설치 단계 전체를 건너뛴다.
 - catalog 와 plugin 의 source 를 모두 network 로 읽을 수 있어야 한다. 읽기에 인증이 필요한 source 라면 git 이 그 인증을 얻을 수 있어야 한다.
 
-두 번째 전제가 이 setup 의 실패 지점이었다. catalog 는 붙지만 plugin 의 source 를 clone 하는 단계에서 git 이 인증을 얻지 못해 아래 오류로 끝난다.
+두 번째 전제가 이 setup 의 실패 지점이다. catalog 가 private repo 에 있으므로, 그것을 clone 하는 첫 단계에서 git 이 인증을 얻지 못해 아래 오류로 끝나고, plugin 설치는 시작되지도 않는다.
 
 ```
-Failed to clone repository for git-subdir source:
+Failed to add marketplace: Failed to clone marketplace repository: HTTPS authentication failed.
 fatal: could not read Username for 'https://github.com': terminal prompts disabled
 ```
 
-## 2. Files In The Repository
+## 2. Catalog And Settings
 
 Table 1. Files this setup requires
 
 | Path | Role |
 |---|---|
-| `.claude-plugin/marketplace.json` | plugin 의 이름과 위치를 적은 catalog 이다. |
-| `.claude/settings.json` | catalog 를 등록하고 plugin 을 활성화한다. |
+| `.claude-plugin/marketplace.json` | plugin 의 이름과 위치를 적은 catalog 이며, `ykim2718/Claude-Configuration` 에 있다. |
+| `.claude/settings.json` | catalog 를 등록하고 plugin 을 활성화하며, plugin 을 쓰는 repo 마다 있다. |
 
-`.claude-plugin/marketplace.json` 은 `git-subdir` source 로 원본 repo 의 한 folder 만 sparse clone 한다.
+Catalog 는 plugin 과 같은 repo 에 있으므로, source 를 그 repo 안의 상대 경로로 적는다.
 
 ```json
 {
-  "name": "yrocket-marketplace",
+  "name": "claude-configuration",
   "owner": {
-    "name": "yrocket",
+    "name": "yRocket",
     "email": "ykim2718@gmail.com"
   },
+  "description": "yRocket 공용 Claude Code 설정 marketplace (skill/hook 공유).",
   "plugins": [
     {
-      "name": "yrocket-plugins",
-      "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/ykim2718/Claude-Configuration.git",
-        "path": "plugins/yrocket-plugins",
-        "ref": "main"
-      }
+      "name": "yrocket-rules",
+      "source": "./plugins/yrocket-plugins",
+      "description": "코드/문서 작성 공용 규칙 skill(coding_rules, md_rules), WordPress post 변환 skill(wp-post-to-github), 대화/필수-로딩 hook."
     }
   ]
 }
@@ -56,20 +53,20 @@ Table 1. Files this setup requires
 ```json
 {
   "extraKnownMarketplaces": {
-    "yrocket-marketplace": {
+    "claude-configuration": {
       "source": {
         "source": "github",
-        "repo": "ykim2718/AIML"
+        "repo": "ykim2718/Claude-Configuration"
       }
     }
   },
   "enabledPlugins": {
-    "yrocket-plugins@yrocket-marketplace": true
+    "yrocket-rules@claude-configuration": true
   }
 }
 ```
 
-## 3. Credential For The Plugin Source
+## 3. Credential For The Private Repository
 
 git 에 인증을 주는 방법은 global URL rewrite 이다. rewrite 는 remote 주소 자체에 자격 증명을 넣으므로, credential helper 를 쓰지 않는 경로에서도 적용된다.
 
@@ -102,8 +99,8 @@ git config --global \
   url."https://x-access-token:${PLUGIN_REPO_TOKEN}@github.com/ykim2718/Claude-Configuration.git".insteadOf \
   "https://github.com/ykim2718/Claude-Configuration.git" || true
 
-claude plugin marketplace add ykim2718/AIML || true
-claude plugin install yrocket-plugins@yrocket-marketplace || true
+claude plugin marketplace add ykim2718/Claude-Configuration || true
+claude plugin install yrocket-rules@claude-configuration || true
 ```
 
 `PLUGIN_REPO_TOKEN` 은 container 의 환경 변수로 넘긴다. 이 값은 그 환경을 쓰는 사람이 모두 읽을 수 있으므로, 읽기 권한만 가진 token 을 쓴다.
@@ -131,7 +128,7 @@ Skill 의 정식 이름에는 plugin 이름이 namespace 로 붙어 `yrocket-rul
 
 ## 6. Experiment Record
 
-빈 HOME 을 만들어 새 container 를 흉내내고, 조건을 하나씩 바꾸며 확인한 결과이다.
+빈 HOME 을 만들어 새 container 를 흉내내고, 조건을 하나씩 바꾸며 확인한 결과이다. 이 기록은 catalog 가 public repo 에 있고 plugin 의 source 만 private 이던 때의 것이므로, 다섯째 줄에서 catalog 가 붙는다. Catalog 까지 private 으로 옮긴 지금은 그 줄에서도 인증이 먼저 걸리며, 원인과 해법은 같다.
 
 Table 2. What each condition produced
 
