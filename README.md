@@ -1,5 +1,5 @@
 # AIML
-Rev. 35 | Created: 2026-08-07 | Updated: 2026-08-31 18:08 CDT
+Rev. 36 | Created: 2026-08-07 | Updated: 2026-08-31 22:24 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -83,7 +83,7 @@ Table 6. Automation documents
 |----------|-------------|
 | [AI Assistant/Claude/automatic-rule-loading.md](AI%20Assistant/Claude/automatic-rule-loading.md) | It describes managing rules in one repository and loading them into every project through a plugin marketplace, so that skills, hooks, commands, and agents are shared between the desktop and the web interface. |
 | [.claude/README.md](.claude/README.md) | It explains the two files that wire this repository to that marketplace, the catalog and the settings that enable the plugin. |
-| [.claude/plugin-setup.md](.claude/plugin-setup.md) | It records the setup that lets a fresh container fetch the plugin from the remote on its first session, including the authentication failure that broke the earlier attempt and the fix for it. |
+| [.claude/plugin-setup-in-a-fresh-container.md](.claude/plugin-setup-in-a-fresh-container.md) | It records the setup that lets a container that is new each session fetch the plugin from the remote on its first session, including the authentication failure that broke the earlier attempt and the fix for it. A desktop install survives between runs and needs none of it. |
 
 ### 3.5 Models
 
