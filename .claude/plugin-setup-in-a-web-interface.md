@@ -1,9 +1,9 @@
-# Plugin Setup In A Fresh Container
-Rev. 6 | Created: 2026-08-04 | Updated: 2026-08-31 22:12 CDT
+# Plugin Setup In The Web Interface
+Rev. 7 | Created: 2026-08-04 | Updated: 2026-08-31 22:23 CDT
 
-이 문서는 새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 6 장에 남긴다.
+이 문서는 Claude Code 의 web interface 전용이다. 그 환경은 세션마다 container 를 새로 받으므로 설치가 남지 않는다. 설치가 disk 에 남는 desktop interface 는 한 번 설치하고 나면 여기의 절차가 필요 없다.
 
-대상은 세션마다 container 를 새로 받는 환경이다. 설치가 disk 에 남는 desktop 은 그 설치를 한 번 하고 나면 여기의 절차가 필요 없다.
+새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 7 장에 남긴다.
 
 ## 1. Mechanism
 
@@ -109,7 +109,20 @@ claude plugin install yrocket-rules@claude-configuration || true
 
 이름을 `GH_TOKEN` 으로 두지 않는다. 어떤 container 는 그 이름을 이미 다른 도구가 쓰고 있고, 그 값은 GitHub token 이 아니므로 rewrite 에 넣으면 멀쩡히 동작하던 자격 증명을 못 쓰는 값으로 덮어쓴다.
 
-## 5. Verification
+## 5. Prompt For A New Repository
+
+다른 repo 에 이 setup 을 심을 때는 zip 을 올리고 아래를 그대로 지시한다. 설치를 그 자리에서 실행시키지 않는 것이 요점이다. Plugin 은 세션이 시작될 때 실려서, 지금 설치해도 이 세션에는 잡히지 않는다.
+
+```
+첨부 zip 의 `.claude/settings.json` 과 `.claude/hooks/session-start.sh` 를
+이 repo 의 `.claude/` 에 넣고 commit·push 할 것.
+기존 `settings.json` 이 있으면 덮어쓰지 말고 병합할 것.
+설치는 다음 세션에서 `session-start.sh` 가 하므로 지금 실행하지 말 것.
+전제: 환경 변수 `PLUGIN_REPO_TOKEN` 에 `ykim2718/Claude-Configuration` 을
+읽을 수 있는 read-only PAT 가 들어 있어야 한다. 없으면 clone 이 인증에서 실패한다.
+```
+
+## 6. Verification
 
 새 세션에서 `/md_rules` 를 호출한다.
 
@@ -128,7 +141,7 @@ claude -p "/md_rules" < /dev/null
 
 Skill 의 정식 이름에는 plugin 이름이 namespace 로 붙어 `yrocket-rules:md_rules` 가 된다. 이 namespace 는 catalog 의 entry 이름이 아니라 plugin 자신의 `plugin.json` 에 적힌 이름에서 온다. 이름이 겹치지 않으면 `/md_rules` 처럼 짧게 불러도 같은 skill 이 실린다.
 
-## 6. Experiment Record
+## 7. Experiment Record
 
 빈 HOME 을 만들어 새 container 를 흉내내고, 조건을 하나씩 바꾸며 확인한 결과이다. 이 기록은 catalog 가 public repo 에 있고 plugin 의 source 만 private 이던 때의 것이므로, 다섯째 줄에서 catalog 가 붙는다. Catalog 까지 private 으로 옮긴 지금은 그 줄에서도 인증이 먼저 걸리며, 원인과 해법은 같다.
 
@@ -156,6 +169,7 @@ Table 2. What each condition produced
 - **hook**: 정해진 시점에 Claude Code 가 실행하는 command 이다. UserPromptSubmit hook 의 출력은 prompt 마다 context 에 주입된다.
 - **marketplace**: catalog 를 통해 plugin 을 배포하는 단위이다.
 - **namespace**: skill 이름 앞에 붙어 소속 plugin 을 나타내는 접두사이다.
+- **PAT**: personal access token 이며, GitHub 이 발급하는 개인용 접근 자격 증명이다.
 - **plugin**: skill, hook 등을 묶어 배포하는 단위이다.
 - **skill**: `SKILL.md` 한 개로 정의하는 지시문 묶음이다.
 - **trust**: 그 folder 의 설정을 실행해도 되는지에 대한 승인이다.
