@@ -1,4 +1,5 @@
 #!/bin/bash
+# .claude/hooks/session-start.sh
 # Install the yrocket-rules plugin so its skills load in a web session.
 #
 # .claude/settings.json names the marketplace and enables the plugin, but a
