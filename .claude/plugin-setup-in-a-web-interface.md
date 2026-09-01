@@ -1,5 +1,5 @@
 # Plugin Setup In The Web Interface
-Rev. 8 | Created: 2026-08-04 | Updated: 2026-08-31 22:25 CDT
+Rev. 9 | Created: 2026-08-04 | Updated: 2026-08-31 22:37 CDT
 
 이 문서는 Claude Code 의 web interface 전용이다. 그 환경은 세션마다 container 를 새로 받으므로 설치가 남지 않는다. 설치가 disk 에 남는 desktop interface 는 한 번 설치하고 나면 여기의 절차가 필요 없다.
 
@@ -124,6 +124,21 @@ claude plugin install yrocket-rules@claude-configuration || true
 ```
 
 Token 을 넣는 자리는 web 의 environment 설정이며, 그 environment 로 열리는 세션의 container 마다 값이 실린다. Repo 에는 두지 않는다. 한 번 commit 되면 이력에 남아, 뒤늦게 지워도 그 commit 을 아는 사람은 계속 읽을 수 있기 때문이다. 값을 넣는 것은 사람이 하는 일이며, 세션 안의 Claude 는 자기 환경 변수를 바꿀 수 없다.
+
+### 5.1. Setting The Token
+
+값을 넣는 절차는 아래와 같다. Environment 를 여는 별도의 설정 page 나 직접 URL 은 없고, 선택기를 거쳐야 한다.
+
+1. claude.ai/code 에서 message box 바로 위 줄의 cloud icon 을 누른다. 그 icon 에는 지금 쓰는 environment 이름이 적혀 있다.
+2. 목록에서 이 repo 를 여는 environment 에 마우스를 올리고, 오른쪽에 나타나는 설정 icon 을 누른다.
+3. 열린 dialog 의 **Environment variables** 칸에 `.env` 형식으로 한 줄을 적는다.
+4. **Save changes** 를 누른다.
+
+```
+PLUGIN_REPO_TOKEN=<READ_ONLY_PAT>
+```
+
+값은 세션이 시작할 때 한 번 복사되므로, 지금 돌고 있는 세션은 그대로이고 다음 세션부터 실린다. 그리고 그 environment 를 쓰는 사람은 누구나 이 값을 읽을 수 있으므로, `ykim2718/Claude-Configuration` 을 읽는 것 말고는 아무 권한도 없는 token 을 쓴다.
 
 ## 6. Verification
 
