@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 28 | Created: 2026-08-30 | Updated: 2026-08-31 03:52 CDT
+Rev. 29 | Created: 2026-08-30 | Updated: 2026-09-01 13:10 CDT
 
 Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -45,11 +45,11 @@ $$\beta(t) = \beta_0 + \beta_1 t \qquad \text{or} \qquad \beta(t) = \beta_0 + \b
 
 $$\beta(t) = \sum_{k=1}^{K} \gamma_k B_k(t)$$
 
-$B_k$ 는 spline basis 이고 $\gamma_k$ 는 추정 대상이다. GAM 의 틀에서 smoothness penalty 를 함께 두면 $K$ 를 넉넉히 잡아도 overfitting 이 통제된다 [[1](#ref-1)]. Sign reversal 이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
+$B_k$ 는 spline basis 이고 $\gamma_k$ 는 추정 대상이다. GAM (Generalized Additive Model) 은 각 설명변수의 효과를 매끄러운 함수로 두고 그 합으로 응답을 설명하는 model 이다. 그 틀에서 smoothness penalty 를 함께 두면 $K$ 를 넉넉히 잡아도 overfitting 이 통제된다 [[1](#ref-1)]. Sign reversal 이나 여러 번의 굴곡처럼 모양을 미리 적기 어려운 경우에 이 방법이 쓰인다.
 
 ### 3.3 Random Walk In A State Space
 
-시간이 이산적이고 관측이 순서대로 도착한다면, 계수를 함수로 적는 대신 시점마다 하나씩 두고 그것들이 서서히 움직인다고 두는 방법이 있다. 이때 model 은 state space 형태를 얻는다. 4 장이 이 형태와 그 추정을 다룬다.
+시간이 이산적이고 관측이 순서대로 도착한다면, 계수를 함수로 적는 대신 시점마다 하나씩 두고 그것들이 서서히 움직인다고 두는 방법이 있다. 이때 model 은 state space 형태를 얻으며, 이렇게 둔 계수를 TVP (Time-Varying Parameter) 라 한다. 4 장이 이 형태와 그 추정을 다룬다.
 
 ## 4. Estimation By Kalman Filter
 
