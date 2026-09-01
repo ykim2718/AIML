@@ -1,7 +1,7 @@
 # Claude Rules Setup
-Rev. 5 | Created: 2026-08-03 | Updated: 2026-08-31 19:06 CDT
+Rev. 6 | Created: 2026-08-03 | Updated: 2026-08-31 22:12 CDT
 
-이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-rules` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과, plugin 이 실리지 않았을 때 같은 규칙을 대신 싣는 사본을 가진다.
+이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-rules` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과 그것을 설치하는 hook 을 가지며, 규칙의 사본도 아직 남아 있다.
 
 ## 1. Layout
 
@@ -12,8 +12,8 @@ Table 1. Files and their roles
 | `.claude/settings.json` | marketplace 를 등록하고 plugin 을 활성화하며, hook 을 걸고, container 의 time zone 을 저자의 지역 시간대로 맞춘다. |
 | `.claude/hooks/session-start.sh` | 새 container 에서 marketplace 를 붙이고 plugin 을 설치한다. |
 | `.claude/hooks/update-plugins.sh` | 이미 설치된 plugin 을 세션 시작 때 갱신한다. |
-| `.claude/hooks/conversation_rules.md` | 대화 규칙의 사본이며, UserPromptSubmit hook 이 prompt 마다 주입한다. |
-| `.claude/hooks/skill_loading_rules.md` | 필수 skill 로딩 규칙의 사본이며, 같은 hook 이 함께 주입한다. |
+| `.claude/hooks/conversation_rules.md` | 대화 규칙의 사본이며, 지금은 어떤 hook 도 읽지 않는다. |
+| `.claude/hooks/skill_loading_rules.md` | 필수 skill 로딩 규칙의 사본이며, 마찬가지로 읽는 곳이 없다. |
 | `.claude/skills/` | plugin 이 담은 skill 의 사본이다. |
 
 Catalog 는 이 repo 에 없다. `.claude-plugin/marketplace.json` 은 plugin 과 같은 repo 인 `ykim2718/Claude-Configuration` 의 최상위에 있으며, Claude Code 가 그 경로에서 catalog 를 찾는다.
@@ -65,7 +65,9 @@ plugin 의 내용이 바뀌면 `/plugin marketplace update` 로 catalog 를 갱�
 
 ## 6. Caution
 
-이 repo 는 `.claude/skills` 와 `.claude/hooks` 에 같은 규칙의 사본을 둔다. Plugin 이 실리지 않는 세션에서도 규칙이 적용되게 하려는 것이지만, plugin 이 실리는 세션에서는 skill 이 두 벌 잡히고 대화 규칙이 두 번 주입된다. 둘 중 하나만 남기는 것이 옳으며, 사본을 지울지 plugin 을 끌지는 아직 정해져 있지 않다.
+대화 규칙을 주입하던 UserPromptSubmit hook 은 이 repo 의 설정에서 지웠다. Plugin 이 같은 일을 하는 자기 hook 을 갖고 있어, plugin 이 실리는 세션에서 규칙이 두 번 주입되었기 때문이다.
+
+남은 사본은 `.claude/hooks` 의 규칙 문서 두 개와 `.claude/skills` 이다. 읽는 hook 이 없어진 앞의 둘은 이제 아무 데도 쓰이지 않고, `.claude/skills` 는 plugin 이 실리면 같은 skill 을 두 벌로 만든다. 지울지 남길지는 아직 정해져 있지 않다.
 
 ## Appendix A. Terminology
 

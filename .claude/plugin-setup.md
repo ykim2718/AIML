@@ -1,7 +1,9 @@
-# Plugin Setup And Verification
-Rev. 5 | Created: 2026-08-04 | Updated: 2026-08-31 19:01 CDT
+# Plugin Setup In A Fresh Container
+Rev. 6 | Created: 2026-08-04 | Updated: 2026-08-31 22:12 CDT
 
 이 문서는 새로 만들어진 container 가 remote 에서 plugin 을 내려받아 첫 세션부터 규칙을 싣게 하는 방법을 정리한다. 절차와 실패 원인은 모두 Claude Code 2.1.221 에서 실행하여 확인했으며, 확인 과정은 6 장에 남긴다.
+
+대상은 세션마다 container 를 새로 받는 환경이다. 설치가 disk 에 남는 desktop 은 그 설치를 한 번 하고 나면 여기의 절차가 필요 없다.
 
 ## 1. Mechanism
 
@@ -156,6 +158,5 @@ Table 2. What each condition produced
 - **namespace**: skill 이름 앞에 붙어 소속 plugin 을 나타내는 접두사이다.
 - **plugin**: skill, hook 등을 묶어 배포하는 단위이다.
 - **skill**: `SKILL.md` 한 개로 정의하는 지시문 묶음이다.
-- **sparse clone**: repo 의 일부 folder 만 내려받는 clone 방식이다.
 - **trust**: 그 folder 의 설정을 실행해도 되는지에 대한 승인이다.
 - **URL rewrite**: git 이 특정 주소를 다른 주소로 바꿔 접속하게 하는 설정이다.
