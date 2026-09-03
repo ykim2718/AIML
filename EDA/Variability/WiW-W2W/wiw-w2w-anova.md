@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 31 | Created: 2026-09-01 | Updated: 2026-09-03 14:39 CDT
+Rev. 32 | Created: 2026-09-01 | Updated: 2026-09-03 14:42 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -134,11 +134,13 @@ Fig 2 는 식 (9) 의 두 항을 함께 보인다. 식 (9) 자체를 그리면 $
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (9), each computed from the first n wafers only
+Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (9) and the w2w detection point, each computed from the first n wafers only
 
-두 항의 크기가 뒤집히는 곳이 $`n = 5`$ 이며, 그 앞뒤의 뜻이 다르다. $`n \le 4`$ 에서는 오른쪽 항이 왼쪽 항과 같은 크기 (n = 4 에서 2.18 대 1.97) 이고 $`n = 3`$ 에서는 관측값이 왼쪽 항보다도 작아 아예 정의되지 않는다. 즉 이 구간에서 본 wafer 평균의 흔들림은 site 오차가 평균에 남긴 몫만으로 설명되며, wafer 사이에 진짜 차이가 있는지 없는지 가릴 수 없다. $`n = 5`$ 부터는 오른쪽 항이 10.95 로 왼쪽 항 2.02 의 5.4 배가 되고 $`n = 6`$ 에서 10 배를 넘어, 이후 관측 곡선은 사실상 wafer 고유 수준의 산포 그 자체이다.
+식 (9) 의 두 항은 서로 다른 것을 잰다. 왼쪽 항 $`\sigma_{within}(1..n)/\sqrt{N}`$ 은 site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. 오른쪽 항 $`s_{\mu}(1..n)`$ 은 wafer 마다 다른 고유 수준의 산포, 곧 공정이 wafer 단위로 만든 진짜 차이다. 관측되는 wafer 평균의 산포는 이 둘의 제곱합의 제곱근이므로, 둘 중 어느 쪽이 큰가가 그 산포를 무엇으로 읽을지를 정한다.
 
-공정 관리로 옮기면 이 경계는 판단에 필요한 최소 표본이다. 4 장 이하로 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 5 장을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 $`n \le 4`$ 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 site 오차뿐이기 때문이다.
+Fig 2 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). 그 앞의 $`n \le 4`$ 에서는 오른쪽 항이 왼쪽 항과 같은 크기 ($`n = 4`$ 에서 2.18 대 1.97) 이고 $`n = 3`$ 에서는 관측값이 왼쪽 항보다도 작아 아예 정의되지 않으니, 그 구간의 흔들림은 측정 잡음만으로 설명되고 wafer 사이에 진짜 차이가 있는지 가릴 수 없다. $`n = 5`$ 부터는 오른쪽 항이 10.95 로 왼쪽 항 2.02 의 5.4 배가 되고 $`n = 6`$ 에서 10 배를 넘어, 이후 관측 곡선은 사실상 wafer 고유 수준의 산포 그 자체이다.
+
+공정 관리로 옮기면 w2w detection point 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
 
 ## 5. Wafers with Inflated Within-Wafer Spread
 
@@ -177,6 +179,7 @@ Fig 3. Wafer means with the 18 wafers whose within-wafer variance is inflated
 - **site**: 한 wafer 위의 측정 지점. 열 `S1`~`S13` 에 해당.
 - **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
+- **w2w detection point**: 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 
 ## Appendix B. Limits of the Decomposition Coefficients

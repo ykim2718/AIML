@@ -5,10 +5,11 @@ one-way ANOVA and the variance components, and draws the three figures the docum
 
 Changelog:
 - 0.0.0: initial release.
+- 0.1.0: mark the w2w detection point on the cumulative figure.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.9.3"
+__version__ = "0.1.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -27,6 +28,7 @@ __all__ = [
     'read_measurements',
     'variance_components',
     'flag_inflated_wafers',
+    'w2w_detection_point',
     'draw_site_value_violin',
     'draw_cumulative_stdev',
     'draw_flagged_wafer_means',
@@ -36,6 +38,7 @@ WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
 BIN_SIZE: int = 15                       # wafers per violin
 MOVING_WINDOW: int = 15                  # wafers per moving average
+DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
 FIGSIZE: tuple = (12.0, 5.4)
 REFERENCE_WIDTH: float = 12.0            # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
@@ -117,6 +120,19 @@ def flag_inflated_wafers(values: np.ndarray, alpha: float = 0.05) -> pd.DataFram
         'p_value': p_value,
         'flagged': p_value < alpha / wafer_count,
     })
+
+
+def w2w_detection_point(observed: np.ndarray, right_term: np.ndarray, ratio: float = DETECTION_RATIO) -> int:
+    """Return the first n from which the wafer-level term carries the whole spread of the wafer means.
+
+    Below that n the site error still accounts for a visible share of the observed spread, so the
+    wafer-to-wafer part cannot be told apart from it.
+    """
+    share = right_term / observed
+    reached = np.flatnonzero(np.nan_to_num(share) >= ratio)
+    if reached.size == 0:
+        raise ValueError(f"the wafer-level term never reaches {ratio:.0%} of the observed spread")
+    return int(reached[0]) + 1
 
 
 def _style_axes(axes: plt.Axes, title: str, xlabel: str, ylabel: str, font_size: float) -> None:
@@ -207,6 +223,11 @@ def draw_cumulative_stdev(frame: pd.DataFrame, figure_path: pathlib.Path) -> Non
               zorder=3, label=r"$\sigma_{total}(1..n)/\sqrt{Nn}$")
     axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
                  label=r"$\sigma_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
+    detection = w2w_detection_point(observed=observed, right_term=right_term)
+    axes.axvline(detection, color=COLOR_FLAGGED, lw=1.6, ls=(0, (4, 3)), zorder=7,
+                 label=f"w2w detection point (n = {detection})")
+    axes.annotate(f"n = {detection}", (detection, observed[detection - 1]), textcoords="offset points",
+                  xytext=(8, -4), fontsize=font_size, color=COLOR_FLAGGED)
     axes.set_xscale('log')
     axes.set_yscale('log')
     axes.set_xlim(2.5, wafer_count * 1.25)
