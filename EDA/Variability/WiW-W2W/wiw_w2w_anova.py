@@ -9,10 +9,11 @@ Changelog:
 - 0.2.0: drop the flagged-wafer figure and move the cumulative legend to the lower right.
 - 0.3.0: hold the measurement table in a class and derive every quantity from it.
 - 0.4.0: give the w2w detection point its own class.
+- 0.5.0: draw the site value figure one violin per wafer.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.4.0.2026.9.3"
+__version__ = "0.5.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -32,7 +33,7 @@ __all__ = ['VarianceComponents', 'W2WDetectionPoint', 'WaferMeasurements']
 
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
-BIN_SIZE: int = 15                       # wafers per violin
+VIOLIN_WIDTH: float = 1.6                # width of one wafer's violin in wafer index units
 DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
 ALPHA: float = 0.05                      # family-wise error rate of the within-wafer variance test
 FIGSIZE: tuple = (12.0, 5.4)
@@ -212,36 +213,29 @@ class WaferMeasurements:
             text.set_color(COLOR_INK)
 
     def draw_site_value_violin(self, figure_path: pathlib.Path, sample_path: pathlib.Path) -> None:
-        """Draw the site values in bins of consecutive wafers, with the trend of the wafer means over them."""
-        starts = range(0, self.wafer_count, BIN_SIZE)
-        bins = [self.values[start:start + BIN_SIZE].ravel() for start in starts]
-        labels = [f"{start + 1}-{min(start + BIN_SIZE, self.wafer_count)}" for start in starts]
-        pd.DataFrame({'bin': np.repeat(labels, [len(one) for one in bins]),
-                      'site_value': np.concatenate(bins)}).to_csv(sample_path, index=False)
+        """Draw one violin per wafer over run order, with the site values on it and the wafer-mean trend."""
+        samples = self.frame.stack().rename('site_value').reset_index()
+        samples.columns = [WAFER_ID_COLUMN, 'site', 'site_value']
+        samples.to_csv(sample_path, index=False)                  # the samples the violins were drawn from
         slope, intercept, r_value, _, _ = stats.linregress(self.order, self.wafer_mean)
 
         font_size = self._font_size()
         figure, axes = plt.subplots(figsize=FIGSIZE)
-        parts = axes.violinplot(bins, positions=np.arange(len(bins)), widths=0.85,
-                                showextrema=False, showmedians=True)
+        parts = axes.violinplot([row for row in self.values], positions=self.order, widths=VIOLIN_WIDTH,
+                                showextrema=False, showmedians=False)
         for body in parts['bodies']:
             body.set_facecolor(COLOR_OBSERVED)
-            body.set_alpha(0.40)
-            body.set_edgecolor(COLOR_OBSERVED)
-            body.set_linewidth(1.2)
-        parts['cmedians'].set_color(COLOR_INK)
-        parts['cmedians'].set_linewidth(2)
-        axes.plot([], [], color=COLOR_OBSERVED, lw=6, alpha=0.40, label="site values in the bin (violin)")
-        axes.plot([], [], color=COLOR_INK, lw=2, label="bin median")
-        axes.plot((self.order - (BIN_SIZE + 1) / 2) / BIN_SIZE, intercept + slope * self.order, color=COLOR_TREND,
-                  lw=2.4, zorder=6, label=f"wafer-mean trend {slope:+.3f}/wafer (r$^2$={r_value ** 2:.2f})")
-        axes.set_xticks(np.arange(len(bins)))
-        axes.set_xticklabels(labels, rotation=45, ha='right', fontsize=font_size * 0.95, color=COLOR_INK)
-        axes.set_xlim(-0.8, len(bins) - 0.2)
+            body.set_alpha(0.35)
+            body.set_linewidth(0)
+        axes.scatter(np.repeat(self.order, self.site_count), self.values.ravel(), s=1.5, color=COLOR_INK,
+                     alpha=0.55, zorder=4, label=f"site values ({self.site_count} per wafer)")
+        axes.plot([], [], color=COLOR_OBSERVED, lw=6, alpha=0.35, label="per-wafer violin")
+        axes.plot(self.order, intercept + slope * self.order, color=COLOR_TREND, lw=2.4, zorder=6,
+                  label=f"wafer-mean trend {slope:+.3f}/wafer (r$^2$={r_value ** 2:.2f})")
+        axes.set_xlim(0, self.wafer_count + 1)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
-        self._finish(axes=axes, title="Distribution of site values along run order",
-                     xlabel=f"wafer index range (run order, {BIN_SIZE} wafers per bin)",
-                     ylabel="site value", legend_location='lower right')
+        self._finish(axes=axes, title="Distribution of site values on each wafer along run order",
+                     xlabel="wafer index (run order)", ylabel="site value", legend_location='lower right')
         figure.tight_layout()
         figure.savefig(figure_path, dpi=SAVE_DPI)
         plt.close(figure)
