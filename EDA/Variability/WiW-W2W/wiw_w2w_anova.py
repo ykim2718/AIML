@@ -15,10 +15,11 @@ Changelog:
 - 0.8.0: scale the rolling figure's right axis as uniformity.
 - 0.9.0: draw the per-wafer uniformity on the right axis instead of rescaling the left one.
 - 0.10.0: take the components over an expanding window instead of a sliding one.
+- 0.11.0: screen each wafer against the expanding within-wafer component of the wafers before it.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.10.0.2026.9.3"
+__version__ = "0.11.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -41,6 +42,8 @@ SITE_COLUMN_PATTERN: str = r'^S\d+$'
 VIOLIN_WIDTH: float = 1.6                # width of one wafer's violin in wafer index units
 DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
 ALPHA: float = 0.05                      # family-wise error rate of the within-wafer variance test
+SCREEN_CONFIDENCE: float = 0.999         # confidence of the chi-square limit a wafer is screened against
+SCREEN_WARMUP: int = 20                  # wafers the running baseline is built on before any wafer is judged
 FIGSIZE: tuple = (12.0, 5.4)
 REFERENCE_WIDTH: float = 12.0            # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
@@ -191,6 +194,27 @@ class WaferMeasurements:
             between.append(np.sqrt(max((ms_between - ms_within) / self.site_count, 0.0)))
         return pd.DataFrame({'sigma_within': within, 'sigma_between': between},
                             index=pd.Index(right_edge, name='n'))
+
+    def running_screen(self, confidence: float = SCREEN_CONFIDENCE, warmup: int = SCREEN_WARMUP) -> pd.DataFrame:
+        """Flag each wafer whose site standard deviation exceeds the limit set by the wafers before it.
+
+        The baseline at wafer n is the expanding window's within-wafer component over wafers 1..n-1, so a
+        wafer is judged neither against itself nor against anything measured after it, and the limit is that
+        baseline times the chi-square factor of the site count. Returns a pd.DataFrame indexed by the table's
+        wafer id with columns `sd_within`, `baseline`, `limit` and `exceeded`; the baseline and the limit are
+        NaN over the warm-up wafers, which are left unjudged because their baseline rests on too few wafers.
+        """
+        if not 0.0 < confidence < 1.0:
+            raise ValueError(f"confidence {confidence} is outside (0, 1)")
+        if not 2 <= warmup < self.wafer_count:
+            raise ValueError(f"warmup {warmup} is outside [2, {self.wafer_count})")
+        expanding = self.expanding_components()['sigma_within'].to_numpy()      # indexed by n = 2 .. K
+        baseline = np.full(self.wafer_count, np.nan)
+        baseline[warmup:] = expanding[warmup - 2:-1]                            # wafer n against wafers 1..n-1
+        limit = baseline * np.sqrt(stats.chi2.ppf(confidence, self.site_count - 1) / (self.site_count - 1))
+        sd_within = self.values.std(axis=1, ddof=1)
+        return pd.DataFrame({'sd_within': sd_within, 'baseline': baseline, 'limit': limit,
+                             'exceeded': sd_within > limit}, index=self.frame.index)
 
     def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
         """Return the wafer count at the w2w detection point of this table."""
@@ -375,6 +399,10 @@ if __name__ == '__main__':
     report.to_csv(args.output_folder / 'wafer_report.csv')
     print(f"wafers with inflated within-wafer variance: {int(report['flagged'].sum())}")
     print(f"w2w detection point: n = {measurements.detection_point()}")
+    screen = measurements.running_screen()
+    screen.to_csv(args.output_folder / 'running_screen.csv')
+    judged = int(screen['limit'].notna().sum())
+    print(f"wafers over the running limit: {int(screen['exceeded'].sum())} of {judged} judged")
     measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
                                         sample_path=args.output_folder / 'site_value_violin_samples.csv')
     measurements.wafer_uniformity().to_csv(args.output_folder / 'wafer_uniformity.csv')
