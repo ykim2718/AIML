@@ -11,10 +11,11 @@ Changelog:
 - 0.4.0: give the w2w detection point its own class.
 - 0.5.0: draw the site value figure one violin per wafer.
 - 0.6.0: add the rolling components and the figure that draws them over run order.
+- 0.7.0: trace the wafer means on the site value figure instead of their linear trend.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.6.0.2026.9.3"
+__version__ = "0.7.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -240,7 +241,6 @@ class WaferMeasurements:
         samples = self.frame.stack().rename('site_value').reset_index()
         samples.columns = [WAFER_ID_COLUMN, 'site', 'site_value']
         samples.to_csv(sample_path, index=False)                  # the samples the violins were drawn from
-        slope, intercept, r_value, _, _ = stats.linregress(self.order, self.wafer_mean)
 
         font_size = self._font_size()
         figure, axes = plt.subplots(figsize=FIGSIZE)
@@ -253,8 +253,7 @@ class WaferMeasurements:
         axes.scatter(np.repeat(self.order, self.site_count), self.values.ravel(), s=1.5, color=COLOR_INK,
                      alpha=0.55, zorder=4, label=f"site values ({self.site_count} per wafer)")
         axes.plot([], [], color=COLOR_OBSERVED, lw=6, alpha=0.35, label="per-wafer violin")
-        axes.plot(self.order, intercept + slope * self.order, color=COLOR_TREND, lw=2.4, zorder=6,
-                  label=f"wafer-mean trend {slope:+.3f}/wafer (r$^2$={r_value ** 2:.2f})")
+        axes.plot(self.order, self.wafer_mean, color=COLOR_TREND, lw=1.2, zorder=6, label="wafer mean")
         axes.set_xlim(0, self.wafer_count + 1)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
         self._finish(axes=axes, title="Distribution of site values on each wafer along run order",
