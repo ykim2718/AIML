@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 19 | Created: 2026-09-01 | Updated: 2026-09-03 13:43 CDT
+Rev. 20 | Created: 2026-09-01 | Updated: 2026-09-03 13:44 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -153,6 +153,7 @@ Fig 3. Wafer means with the 18 wafers whose within-wafer variance is inflated
 - **ICC**: intraclass correlation. 전체 분산 중 group 간 분산이 차지하는 비율. 같은 group 에서 뽑은 두 관측치가 얼마나 닮았는지를 0 에서 1 사이로 나타내며, 이 문서의 group 은 wafer 이다.
 - **run order**: 자료 파일의 행 순서. 측정 순서를 따르므로 시간 축으로 사용.
 - **site**: 한 wafer 위의 측정 지점. 열 `S1`~`S13` 에 해당.
+- **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 
