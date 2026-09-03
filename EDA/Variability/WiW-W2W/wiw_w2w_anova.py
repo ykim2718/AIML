@@ -14,10 +14,11 @@ Changelog:
 - 0.7.0: trace the wafer means on the site value figure instead of their linear trend.
 - 0.8.0: scale the rolling figure's right axis as uniformity.
 - 0.9.0: draw the per-wafer uniformity on the right axis instead of rescaling the left one.
+- 0.10.0: take the components over an expanding window instead of a sliding one.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.9.1.2026.9.3"
+__version__ = "0.10.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -38,7 +39,6 @@ __all__ = ['VarianceComponents', 'W2WDetectionPoint', 'WaferMeasurements']
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
 VIOLIN_WIDTH: float = 1.6                # width of one wafer's violin in wafer index units
-ROLLING_WINDOW: int = 15                 # wafers per window of the rolling components
 DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
 ALPHA: float = 0.05                      # family-wise error rate of the within-wafer variance test
 FIGSIZE: tuple = (12.0, 5.4)
@@ -175,26 +175,22 @@ class WaferMeasurements:
         return pd.Series(100 * self.values.std(axis=1, ddof=1) / self.wafer_mean, index=self.frame.index,
                          name='uniformity_percent')
 
-    def rolling_components(self, window: int = ROLLING_WINDOW) -> pd.DataFrame:
-        """Return the two components computed over a window of consecutive wafers, stepped along run order.
+    def expanding_components(self) -> pd.DataFrame:
+        """Return the two components over an expanding window: the first wafer to the wafer at each step.
 
-        Returns a pd.DataFrame indexed by the wafer index at the centre of the window with columns
-        `sigma_within` and `sigma_between`; a single wafer carries no wafer-to-wafer part, so the window is
-        what makes the second one measurable.
+        Returns a pd.DataFrame indexed by `n`, the wafer at the right edge, with columns `sigma_within` and
+        `sigma_between`; a single wafer carries no wafer-to-wafer part, so the window starts at two wafers.
         """
-        if not 2 <= window <= self.wafer_count:
-            raise ValueError(f"window {window} is outside [2, {self.wafer_count}]")
         site_variance = self.values.var(axis=1, ddof=1)
-        centre, within, between = [], [], []
-        for start in range(0, self.wafer_count - window + 1):
-            stop = start + window
-            ms_within = site_variance[start:stop].mean()
-            ms_between = self.site_count * self.wafer_mean[start:stop].var(ddof=1)
-            centre.append(start + (window + 1) / 2)
+        right_edge, within, between = [], [], []
+        for stop in range(2, self.wafer_count + 1):
+            ms_within = site_variance[:stop].mean()
+            ms_between = self.site_count * self.wafer_mean[:stop].var(ddof=1)
+            right_edge.append(stop)
             within.append(np.sqrt(ms_within))
             between.append(np.sqrt(max((ms_between - ms_within) / self.site_count, 0.0)))
         return pd.DataFrame({'sigma_within': within, 'sigma_between': between},
-                            index=pd.Index(centre, name='wafer_index'))
+                            index=pd.Index(right_edge, name='n'))
 
     def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
         """Return the wafer count at the w2w detection point of this table."""
@@ -269,23 +265,20 @@ class WaferMeasurements:
         figure.savefig(figure_path, dpi=SAVE_DPI)
         plt.close(figure)
 
-    def draw_rolling_components(self, figure_path: pathlib.Path, window: int = ROLLING_WINDOW) -> None:
-        """Draw the two components over run order, each from a window of consecutive wafers."""
-        rolling = self.rolling_components(window=window)
+    def draw_expanding_components(self, figure_path: pathlib.Path) -> None:
+        """Draw the two components over an expanding window, with the per-wafer uniformity on the right axis."""
+        expanding = self.expanding_components()
         whole = self.components()
 
         figure, axes = plt.subplots(figsize=FIGSIZE)
-        axes.plot(rolling.index, rolling['sigma_between'], color=COLOR_RIGHT_TERM, lw=1.0, zorder=5,
-                  label=r"w2w  $\sigma_{between}$")
-        axes.plot(rolling.index, rolling['sigma_within'], color=COLOR_LEFT_TERM, lw=2.2, zorder=4,
-                  label=r"WiW  $\sigma_{within}$")
+        axes.plot(expanding.index, expanding['sigma_between'], color=COLOR_RIGHT_TERM, lw=1.0, zorder=5,
+                  label=r"w2w  $\sigma_{between}$(1..n)")
+        axes.plot(expanding.index, expanding['sigma_within'], color=COLOR_LEFT_TERM, lw=2.2, zorder=4,
+                  label=r"WiW  $\sigma_{within}$(1..n)")
         axes.axhline(whole.sigma_between, color=COLOR_RIGHT_TERM, lw=1.4, ls=(0, (2, 3)), zorder=3,
                      label=r"w2w over all wafers = %.2f" % whole.sigma_between)
         axes.axhline(whole.sigma_within, color=COLOR_LEFT_TERM, lw=1.4, ls=(0, (2, 3)), zorder=3,
                      label=r"WiW over all wafers = %.2f" % whole.sigma_within)
-        axes.set_xlim(0, self.wafer_count + 1)
-        axes.set_ylim(bottom=0)
-        axes.grid(axis='y', color='#ebeae5', lw=0.9)
         # uniformity is each wafer's own spread over its own mean, so it carries the right axis of its own
         uniformity = self.wafer_uniformity()
         right = axes.twinx()
@@ -298,10 +291,14 @@ class WaferMeasurements:
             right.spines[side].set_visible(False)
         right.spines['right'].set_color('#d9d8d2')
         axes.plot([], [], color=COLOR_TREND, lw=2.4, label=r"per-wafer uniformity  $s_i / \mu_i$")
-        self._finish(axes=axes,
-                     title=f"Within-wafer and wafer-to-wafer stdev over run order, from a {window}-wafer window",
-                     xlabel="wafer index at the centre of the window (run order)",
-                     ylabel="standard deviation", legend_location='upper left')
+        axes.set_xlim(0, self.wafer_count + 1)
+        axes.set_ylim(bottom=0)
+        axes.grid(axis='y', color='#ebeae5', lw=0.9)
+        axes.text(0.015, 0.96, "expanding window: wafer 1 to wafer n", transform=axes.transAxes,
+                  fontsize=self._font_size(), color=COLOR_INK, va='top')
+        self._finish(axes=axes, title="Within-wafer and wafer-to-wafer stdev over an expanding window",
+                     xlabel="n  (wafer at the right edge of the window, run order)",
+                     ylabel="standard deviation", legend_location='upper right')
         figure.tight_layout()
         figure.savefig(figure_path, dpi=SAVE_DPI)
         plt.close(figure)
@@ -381,6 +378,6 @@ if __name__ == '__main__':
     measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
                                         sample_path=args.output_folder / 'site_value_violin_samples.csv')
     measurements.wafer_uniformity().to_csv(args.output_folder / 'wafer_uniformity.csv')
-    measurements.draw_rolling_components(figure_path=args.output_folder / 'rolling_components.png')
+    measurements.draw_expanding_components(figure_path=args.output_folder / 'expanding_components.png')
     measurements.draw_cumulative_stdev(figure_path=args.output_folder / 'cum_stdev.png')
     print(f"figures written to {args.output_folder}")

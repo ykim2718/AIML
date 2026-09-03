@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 43 | Created: 2026-09-01 | Updated: 2026-09-03 18:06 CDT
+Rev. 44 | Created: 2026-09-01 | Updated: 2026-09-03 18:11 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -94,11 +94,13 @@ Table 2. Variance components
 
 ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 804.1 / 1056.1 = 0.761 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.761 은 site 한 점의 산포 중 76.1% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 
-Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, run order 를 따라 15 장 창을 한 장씩 밀며 창마다 두 성분을 다시 구하면 그 값이 공정과 함께 어떻게 움직였는지 보인다. Within-wafer 는 8.29 에서 24.71 사이 (평균 15.21) 로 완만히 오르내리는 데 그치지만, wafer-to-wafer 는 5.07 에서 50.20 사이 (평균 22.00) 로 열 배 가까이 흔들리며 wafer 130~145 와 230~240 구간에서 50 근처까지 치솟는다. 오른쪽 축에는 wafer 한 장의 uniformity $`s_i / \mu_i`$ 를 함께 그렸다. 창을 쓰는 두 성분과 달리 이것은 wafer 마다 제 site 표준편차를 제 평균으로 나눈 값이라 wafer 단위로 튀며, 중앙값 1.81%, 최소 0.87% (wf0033), 최대 8.62% (wf0011) 이다. 두 성분의 크기가 뒤바뀌는 구간도 있어서, wafer 50~120 에서는 71 개 창 중 48 개에서 wafer-to-wafer 가 within-wafer 아래로 내려간다 — 그 구간만 보면 산포의 주범이 wafer 단위 조건이 아니라 site 균일도였다는 뜻이다.
+Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, 창의 왼쪽 끝을 첫 wafer 에 고정하고 오른쪽 끝만 한 장씩 늘리며 (expanding window) 창마다 두 성분을 다시 구하면 그 값이 몇 장째에 자리를 잡는지 보인다. 두 성분 모두 앞쪽 몇십 장에서 크게 흔들리다가 (w2w 는 $`n = 14`$ 에서 36.55 까지 치솟는다) 표본이 쌓이면서 잦아들어, $`n = 261`$ 에서 각각 28.36 과 15.87 로 Table 2 의 값에 닿는다. $`n \ge 100`$ 에서 WiW 는 12.78~15.88 안에 머물러 일찍 안정되지만, w2w 는 18.28 에서 28.36 으로 계속 올라간다 — 뒤쪽 wafer 가 앞쪽과 다른 수준에 있었다는 뜻이며, 그래서 wafer 간 산포는 표본을 더 모을수록 커진다.
 
-<img src="wiw-w2w-anova_fig/rolling_components.png" width="900" style="max-width: 100%;" alt="Fig 2">
+오른쪽 축에는 wafer 한 장의 uniformity $`s_i / \mu_i`$ 를 함께 그렸다. 창을 쓰는 두 성분과 달리 이것은 wafer 마다 제 site 표준편차를 제 평균으로 나눈 값이라 wafer 단위로 튀며, 중앙값 1.81%, 최소 0.87% (wf0033), 최대 8.62% (wf0011) 이다.
 
-Fig 2. Within-wafer and wafer-to-wafer standard deviation over run order, each from a 15-wafer window, and the per-wafer uniformity on the right axis
+<img src="wiw-w2w-anova_fig/expanding_components.png" width="900" style="max-width: 100%;" alt="Fig 2">
+
+Fig 2. Within-wafer and wafer-to-wafer standard deviation over an expanding window, with the per-wafer uniformity on the right axis
 
 ## 4. Cumulative Standard Deviation of the Wafer Means
 
