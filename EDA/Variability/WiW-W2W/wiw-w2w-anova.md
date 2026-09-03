@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 4 | Created: 2026-09-01 | Updated: 2026-09-03 13:02 CDT
+Rev. 5 | Created: 2026-09-01 | Updated: 2026-09-03 13:04 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -37,7 +37,7 @@ $$\overline{S_{\mathrm{within}}^2} = \frac{1}{K} \sum_{i=1}^{K} S_i^2, \qquad S_
 
 $$S_{\mathrm{total}}^2 = \frac{K(N-1)}{M-1} \overline{S_{\mathrm{within}}^2} + \frac{N(K-1)}{M-1} S_{\mathrm{between}}^2$$
 
-두 계수는 $K$ 와 $N$ 이 커질수록 1 에 가까워지므로, 흔히 쓰는 형태는 계수를 떼어낸 아래 근사식이다.
+두 계수는 $K$ 와 $N$ 이 커질수록 1 에 가까워지므로, 흔히 쓰는 형태는 계수를 떼어낸 아래 근사식이다. 계수가 1 로 가는 과정은 [Appendix B](#appendix-b-limits-of-the-decomposition-coefficients) 에 적었다.
 
 $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2}$$
 
@@ -55,11 +55,11 @@ $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm
 - Wafer 평균: 최소 452.9, 최대 705.0, 표준편차 28.70.
 - Within-wafer range: 평균 41.32, 최대 123.46.
 
-Wafer 를 run order 로 15 장씩 묶어 그 안의 site 값 분포를 violin 으로 그리면, 분포의 위치와 폭이 함께 움직이는 것이 보인다. 앞쪽 구간의 중앙값은 610 대에 머물다가 뒤쪽 구간에서 650 근처까지 올라가고, 아래로 길게 뻗은 꼬리는 그 구간에 값이 크게 낮은 wafer 가 섞여 있다는 뜻이다.
+Wafer 를 run order 로 15 장씩 묶어 그 안의 site 값 분포를 violin 으로 그리면, 분포의 위치와 폭이 함께 움직이는 것이 보인다. 앞쪽 구간의 중앙값은 610 대에 머물다가 뒤쪽 구간에서 650 근처까지 올라가고, 아래로 길게 뻗은 꼬리는 그 구간에 값이 크게 낮은 wafer 가 섞여 있다는 뜻이다. 겹쳐 그린 wafer 평균의 선형 추세선은 같은 상승을 한 줄로 요약한다.
 
 <img src="wiw-w2w-anova_fig/site_value_violin.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
-Fig 1. Distribution of site values in bins of 15 consecutive wafers along run order
+Fig 1. Distribution of site values in bins of 15 consecutive wafers along run order, with the linear trend of the wafer means
 
 ## 3. Variance Decomposition
 
@@ -157,3 +157,27 @@ Fig 4. Wafer means with the 18 wafers whose within-wafer variance is inflated
 - **site**: 한 wafer 위의 측정 지점. 열 `S1`~`S13` 에 해당.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
+
+## Appendix B. Limits of the Decomposition Coefficients
+
+Section 1.2 의 두 계수를 $a$ 와 $b$ 로 두면 아래와 같다.
+
+$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1}$$
+
+분자와 분모가 모두 $KN$ 에서 시작하므로, 1 에서 얼마나 모자라는지를 보는 편이 빠르다.
+
+$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1}$$
+
+두 결손항은 각각 한쪽 크기에만 매인다. $1-a$ 의 분자와 분모를 $K$ 로, $1-b$ 의 분자와 분모를 $N$ 으로 나누면 아래 꼴이 된다.
+
+$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N}$$
+
+$K$ 를 아무리 키워도 $1-a$ 는 $1/N$ 에서 멈추고, $N$ 을 아무리 키워도 $1-b$ 는 $1/K$ 에서 멈춘다.
+
+$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K}$$
+
+따라서 $a$ 를 1 로 보내는 것은 wafer 당 site 수 $N$ 이고, $b$ 를 1 로 보내는 것은 wafer 수 $K$ 이며, 둘이 함께 커져야 두 계수가 같이 1 이 된다.
+
+$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2$$
+
+이 문서의 $K = 261$, $N = 13$ 에서는 $1 - a = 260/3392 = 0.0767$ 로 $1/N = 0.0769$ 에 거의 같고, $1 - b = 12/3392 = 0.0035$ 로 $1/K = 0.0038$ 에 거의 같다. 즉 $b$ 는 이미 1 로 보아도 되지만 $a$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $\overline{S_{\mathrm{within}}^2} = 251.98$ 과 $S_{\mathrm{between}}^2 = 823.46$ 을 그냥 더하면 $S_{\mathrm{total}} = 32.79$ 가 되어 관측값 32.45 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
