@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 35 | Created: 2026-09-01 | Updated: 2026-09-03 14:48 CDT
+Rev. 36 | Created: 2026-09-01 | Updated: 2026-09-03 14:51 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -98,7 +98,7 @@ ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하
 
 ### 4.1 Formula and Its Closed Forms
 
-처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차를 $`\sigma_{\mu_n}`$ 이라고 하자.<br> Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
+처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. 측정값을 wafer 가 만든 몫과 site 가 만든 몫으로 갈라 놓으면 그 값이 따라 나온다.<br> Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
 
 $$X_{ij} = \mu_i + e_{ij}, \qquad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (6)$$
 
