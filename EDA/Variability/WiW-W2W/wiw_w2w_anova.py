@@ -7,14 +7,16 @@ Changelog:
 - 0.0.0: initial release.
 - 0.1.0: mark the w2w detection point on the cumulative figure.
 - 0.2.0: drop the flagged-wafer figure and move the cumulative legend to the lower right.
+- 0.3.0: hold the measurement table in a class and derive every quantity from it.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.2.0.2026.9.3"
+__version__ = "0.3.0.2026.9.3"
 
 import argparse
 import pathlib
 import re
+from dataclasses import dataclass
 
 import matplotlib
 matplotlib.use("Agg")
@@ -25,20 +27,13 @@ from matplotlib.colors import TABLEAU_COLORS
 from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
 from scipy import stats
 
-__all__ = [
-    'read_measurements',
-    'variance_components',
-    'flag_inflated_wafers',
-    'w2w_detection_point',
-    'draw_site_value_violin',
-    'draw_cumulative_stdev',
-]
+__all__ = ['VarianceComponents', 'WaferMeasurements']
 
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
 BIN_SIZE: int = 15                       # wafers per violin
-MOVING_WINDOW: int = 15                  # wafers per moving average
 DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
+ALPHA: float = 0.05                      # family-wise error rate of the within-wafer variance test
 FIGSIZE: tuple = (12.0, 5.4)
 REFERENCE_WIDTH: float = 12.0            # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
@@ -48,206 +43,229 @@ COLOR = list(TABLEAU_COLORS.values())
 COLOR_OBSERVED: str = COLOR[0]           # tab:blue
 COLOR_TREND: str = COLOR[1]              # tab:orange
 COLOR_LEFT_TERM: str = COLOR[2]          # tab:green
-COLOR_FLAGGED: str = COLOR[3]            # tab:red
+COLOR_MARK: str = COLOR[3]               # tab:red
 COLOR_RIGHT_TERM: str = COLOR[4]         # tab:purple
 COLOR_INK: str = COLOR[7]                # tab:gray
 
 
-def read_measurements(csv_path: pathlib.Path) -> pd.DataFrame:
-    """Read the measurement table.
+@dataclass(frozen=True)
+class VarianceComponents:
+    """The one-way ANOVA of a wafer measurement table and the components it splits the variance into."""
 
-    Returns a pd.DataFrame indexed by `wafer_id` whose columns are the site columns (`S1`, `S2`, ...)
-    in file order.
+    wafer_count: int
+    site_count: int
+    ms_within: float
+    ms_between: float
+    f_statistic: float
+    p_value: float
+    sigma_within: float
+    sigma_between: float
+    sigma_total: float
+
+    @property
+    def icc(self) -> float:
+        """Share of the variance of a single site value that the wafer it sits on accounts for."""
+        return self.sigma_between ** 2 / (self.sigma_between ** 2 + self.sigma_within ** 2)
+
+
+class WaferMeasurements:
+    """A measurement table whose rows are wafers and whose columns are sites, with what it decomposes into.
+
+    The table is injected once; every quantity and every figure is derived from that one table.
     """
-    frame = pd.read_csv(csv_path)
-    if WAFER_ID_COLUMN not in frame.columns:
-        raise ValueError(f"{csv_path} has no '{WAFER_ID_COLUMN}' column; columns are {list(frame.columns)}")
-    site_columns = [name for name in frame.columns if re.match(SITE_COLUMN_PATTERN, name)]
-    if not site_columns:
-        raise ValueError(f"{csv_path} has no site column matching {SITE_COLUMN_PATTERN}")
-    frame = frame.set_index(WAFER_ID_COLUMN)[site_columns]
-    missing = int(frame.isna().sum().sum())
-    if missing:
-        raise ValueError(f"{csv_path} has {missing} missing values; the decomposition needs a complete table")
-    return frame
 
+    def __init__(self, frame: pd.DataFrame) -> None:
+        if frame.empty:
+            raise ValueError("the measurement table is empty")
+        missing = int(frame.isna().sum().sum())
+        if missing:
+            raise ValueError(f"the measurement table has {missing} missing values; the decomposition needs all of them")
+        self.frame = frame
+        self.values = frame.to_numpy(dtype=float)
+        self.wafer_count, self.site_count = self.values.shape
+        self.wafer_mean = self.values.mean(axis=1)
+        self.order = np.arange(1, self.wafer_count + 1)
 
-def variance_components(values: np.ndarray) -> dict:
-    """Split the variance of the measurements into a within-wafer and a wafer-to-wafer component.
+    @classmethod
+    def from_csv(cls, csv_path: pathlib.Path) -> 'WaferMeasurements':
+        """Read the table from a CSV with a wafer_id column and one column per site."""
+        frame = pd.read_csv(csv_path)
+        if WAFER_ID_COLUMN not in frame.columns:
+            raise ValueError(f"{csv_path} has no '{WAFER_ID_COLUMN}' column; columns are {list(frame.columns)}")
+        site_columns = [name for name in frame.columns if re.match(SITE_COLUMN_PATTERN, name)]
+        if not site_columns:
+            raise ValueError(f"{csv_path} has no site column matching {SITE_COLUMN_PATTERN}")
+        return cls(frame=frame.set_index(WAFER_ID_COLUMN)[site_columns])
 
-    `values` has one row per wafer and one column per site.
-    """
-    wafer_count, site_count = values.shape
-    wafer_mean = values.mean(axis=1)
-    ms_within = ((values - wafer_mean[:, None]) ** 2).sum() / (wafer_count * (site_count - 1))
-    ms_between = site_count * ((wafer_mean - values.mean()) ** 2).sum() / (wafer_count - 1)
-    f_statistic = ms_between / ms_within
-    var_wafer = max((ms_between - ms_within) / site_count, 0.0)
-    return {
-        'wafer_count': wafer_count,
-        'site_count': site_count,
-        'ms_within': ms_within,
-        'ms_between': ms_between,
-        'f_statistic': f_statistic,
-        'p_value': stats.f.sf(f_statistic, wafer_count - 1, wafer_count * (site_count - 1)),
-        'sigma_within': np.sqrt(ms_within),
-        'sigma_between': np.sqrt(var_wafer),
-        'icc': var_wafer / (var_wafer + ms_within),
-        'sigma_total': values.std(ddof=1),
-    }
+    def components(self) -> VarianceComponents:
+        """Split the variance into a within-wafer and a wafer-to-wafer component."""
+        ms_within = ((self.values - self.wafer_mean[:, None]) ** 2).sum() / (self.wafer_count * (self.site_count - 1))
+        ms_between = self.site_count * ((self.wafer_mean - self.values.mean()) ** 2).sum() / (self.wafer_count - 1)
+        f_statistic = ms_between / ms_within
+        var_between = max((ms_between - ms_within) / self.site_count, 0.0)
+        return VarianceComponents(
+            wafer_count=self.wafer_count,
+            site_count=self.site_count,
+            ms_within=ms_within,
+            ms_between=ms_between,
+            f_statistic=f_statistic,
+            p_value=stats.f.sf(f_statistic, self.wafer_count - 1, self.wafer_count * (self.site_count - 1)),
+            sigma_within=np.sqrt(ms_within),
+            sigma_between=np.sqrt(var_between),
+            sigma_total=self.values.std(ddof=1),
+        )
 
+    def cumulative_terms(self) -> pd.DataFrame:
+        """Return the cumulative curves of the wafer means, each step using the first n wafers only.
 
-def flag_inflated_wafers(values: np.ndarray, alpha: float = 0.05) -> pd.DataFrame:
-    """Flag the wafers whose within-wafer variance exceeds the pooled one.
+        Returns a pd.DataFrame indexed by `n` with columns `observed` (the standard deviation of the first n
+        wafer means), `left_term` and `right_term` (the two terms of the formula that observed is built from)
+        and `sigma_total`; the first two rows are NaN because a standard deviation needs three wafers.
+        """
+        sigma_within = np.sqrt(np.cumsum(self.values.var(axis=1, ddof=1)) / self.order)
+        left_term = sigma_within / np.sqrt(self.site_count)
+        head = [np.nan, np.nan]
+        observed = np.array(head + [self.wafer_mean[:i].std(ddof=1) for i in range(3, self.wafer_count + 1)])
+        sigma_total = np.array(head + [self.values[:i].std(ddof=1) for i in range(3, self.wafer_count + 1)])
+        gap = observed ** 2 - left_term ** 2
+        # the right term is undefined where the observed value sits below the left term
+        right_term = np.where(gap > 0, np.sqrt(np.abs(gap)), np.nan)
+        return pd.DataFrame({'observed': observed, 'left_term': left_term, 'right_term': right_term,
+                             'sigma_total': sigma_total}, index=pd.Index(self.order, name='n'))
 
-    Returns a pd.DataFrame indexed by wafer position (0-based) with columns `mean`, `sd_within`,
-    `standard_error`, `worst_site`, `shift_drop_worst`, `p_value` and `flagged`; the test is a chi-square
-    against the pooled mean square with a Bonferroni correction over the wafers.
-    """
-    wafer_count, site_count = values.shape
-    wafer_mean = values.mean(axis=1)
-    sd_within = values.std(axis=1, ddof=1)
-    ms_within = ((values - wafer_mean[:, None]) ** 2).sum() / (wafer_count * (site_count - 1))
-    worst = np.abs(values - wafer_mean[:, None]).argmax(axis=1)
-    trimmed = np.array([np.delete(values[i], worst[i]).mean() for i in range(wafer_count)])
-    p_value = stats.chi2.sf(sd_within ** 2 * (site_count - 1) / ms_within, site_count - 1)
-    return pd.DataFrame({
-        'mean': wafer_mean,
-        'sd_within': sd_within,
-        'standard_error': sd_within / np.sqrt(site_count),
-        'worst_site': worst + 1,
-        'shift_drop_worst': wafer_mean - trimmed,
-        'p_value': p_value,
-        'flagged': p_value < alpha / wafer_count,
-    })
+    def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
+        """Return the first n from which the right term carries the whole spread of the wafer means.
 
+        Below that n the site error still accounts for a visible share of the observed spread, so the
+        wafer-to-wafer part cannot be told apart from it.
+        """
+        terms = self.cumulative_terms()
+        share = (terms['right_term'] / terms['observed']).to_numpy()
+        reached = np.flatnonzero(np.nan_to_num(share) >= ratio)
+        if reached.size == 0:
+            raise ValueError(f"the right term never reaches {ratio:.0%} of the observed spread")
+        return int(terms.index[reached[0]])
 
-def w2w_detection_point(observed: np.ndarray, right_term: np.ndarray, ratio: float = DETECTION_RATIO) -> int:
-    """Return the first n from which the wafer-level term carries the whole spread of the wafer means.
+    def wafer_report(self, alpha: float = ALPHA) -> pd.DataFrame:
+        """Report each wafer and flag the ones whose within-wafer variance exceeds the pooled one.
 
-    Below that n the site error still accounts for a visible share of the observed spread, so the
-    wafer-to-wafer part cannot be told apart from it.
-    """
-    share = right_term / observed
-    reached = np.flatnonzero(np.nan_to_num(share) >= ratio)
-    if reached.size == 0:
-        raise ValueError(f"the wafer-level term never reaches {ratio:.0%} of the observed spread")
-    return int(reached[0]) + 1
+        Returns a pd.DataFrame indexed by the table's wafer id with columns `mean`, `sd_within`,
+        `standard_error`, `worst_site`, `shift_drop_worst`, `p_value` and `flagged`; the test is a chi-square
+        against the pooled mean square with a Bonferroni correction over the wafers.
+        """
+        sd_within = self.values.std(axis=1, ddof=1)
+        worst = np.abs(self.values - self.wafer_mean[:, None]).argmax(axis=1)
+        trimmed = np.array([np.delete(self.values[i], worst[i]).mean() for i in range(self.wafer_count)])
+        chi_square = sd_within ** 2 * (self.site_count - 1) / self.components().ms_within
+        p_value = stats.chi2.sf(chi_square, self.site_count - 1)
+        return pd.DataFrame({
+            'mean': self.wafer_mean,
+            'sd_within': sd_within,
+            'standard_error': sd_within / np.sqrt(self.site_count),
+            'worst_site': worst + 1,
+            'shift_drop_worst': self.wafer_mean - trimmed,
+            'p_value': p_value,
+            'flagged': p_value < alpha / self.wafer_count,
+        }, index=self.frame.index)
 
+    @staticmethod
+    def _font_size() -> float:
+        """Scale the text with the figure so that the layout holds when FIGSIZE changes."""
+        return BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
 
-def _style_axes(axes: plt.Axes, title: str, xlabel: str, ylabel: str, font_size: float) -> None:
-    """Apply the shared look: no top or right spine, a recessive horizontal grid, muted tick labels."""
-    axes.set_title(title, fontsize=font_size * 1.4, color='black', pad=12, loc='left')
-    axes.set_xlabel(xlabel, fontsize=font_size * 1.1, color=COLOR_INK)
-    axes.set_ylabel(ylabel, fontsize=font_size * 1.1, color=COLOR_INK)
-    for side in ('top', 'right'):
-        axes.spines[side].set_visible(False)
-    for side in ('left', 'bottom'):
-        axes.spines[side].set_color('#d9d8d2')
-    axes.grid(axis='y', color='#ebeae5', lw=0.9)
-    axes.set_axisbelow(True)
-    axes.tick_params(colors=COLOR_INK, labelsize=font_size)
+    def _finish(self, axes: plt.Axes, title: str, xlabel: str, ylabel: str, legend_location: str) -> None:
+        """Apply the shared look: no top or right spine, a recessive grid, muted tick and legend text."""
+        font_size = self._font_size()
+        axes.set_title(title, fontsize=font_size * 1.4, color='black', pad=12, loc='left')
+        axes.set_xlabel(xlabel, fontsize=font_size * 1.1, color=COLOR_INK)
+        axes.set_ylabel(ylabel, fontsize=font_size * 1.1, color=COLOR_INK)
+        for side in ('top', 'right'):
+            axes.spines[side].set_visible(False)
+        for side in ('left', 'bottom'):
+            axes.spines[side].set_color('#d9d8d2')
+        axes.set_axisbelow(True)
+        axes.tick_params(colors=COLOR_INK, labelsize=font_size)
+        legend = axes.legend(loc=legend_location, frameon=True, fontsize=font_size, edgecolor='#e3e2dd')
+        for text in legend.get_texts():
+            text.set_color(COLOR_INK)
 
+    def draw_site_value_violin(self, figure_path: pathlib.Path, sample_path: pathlib.Path) -> None:
+        """Draw the site values in bins of consecutive wafers, with the trend of the wafer means over them."""
+        starts = range(0, self.wafer_count, BIN_SIZE)
+        bins = [self.values[start:start + BIN_SIZE].ravel() for start in starts]
+        labels = [f"{start + 1}-{min(start + BIN_SIZE, self.wafer_count)}" for start in starts]
+        pd.DataFrame({'bin': np.repeat(labels, [len(one) for one in bins]),
+                      'site_value': np.concatenate(bins)}).to_csv(sample_path, index=False)
+        slope, intercept, r_value, _, _ = stats.linregress(self.order, self.wafer_mean)
 
-def draw_site_value_violin(frame: pd.DataFrame, figure_path: pathlib.Path, sample_path: pathlib.Path) -> None:
-    """Draw the distribution of the site values in bins of consecutive wafers, with the wafer-mean trend."""
-    values = frame.to_numpy(dtype=float)
-    wafer_count = values.shape[0]
-    wafer_mean = values.mean(axis=1)
-    order = np.arange(1, wafer_count + 1)
-    starts = range(0, wafer_count, BIN_SIZE)
-    bins = [values[start:start + BIN_SIZE].ravel() for start in starts]
-    labels = [f"{start + 1}-{min(start + BIN_SIZE, wafer_count)}" for start in starts]
-    samples = pd.DataFrame({
-        'bin': np.repeat(labels, [len(one) for one in bins]),
-        'site_value': np.concatenate(bins),
-    })
-    samples.to_csv(sample_path, index=False)                      # the samples the violins were drawn from
-    slope, intercept, r_value, _, _ = stats.linregress(order, wafer_mean)
+        font_size = self._font_size()
+        figure, axes = plt.subplots(figsize=FIGSIZE)
+        parts = axes.violinplot(bins, positions=np.arange(len(bins)), widths=0.85,
+                                showextrema=False, showmedians=True)
+        for body in parts['bodies']:
+            body.set_facecolor(COLOR_OBSERVED)
+            body.set_alpha(0.40)
+            body.set_edgecolor(COLOR_OBSERVED)
+            body.set_linewidth(1.2)
+        parts['cmedians'].set_color(COLOR_INK)
+        parts['cmedians'].set_linewidth(2)
+        axes.plot([], [], color=COLOR_OBSERVED, lw=6, alpha=0.40, label="site values in the bin (violin)")
+        axes.plot([], [], color=COLOR_INK, lw=2, label="bin median")
+        axes.plot((self.order - (BIN_SIZE + 1) / 2) / BIN_SIZE, intercept + slope * self.order, color=COLOR_TREND,
+                  lw=2.4, zorder=6, label=f"wafer-mean trend {slope:+.3f}/wafer (r$^2$={r_value ** 2:.2f})")
+        axes.set_xticks(np.arange(len(bins)))
+        axes.set_xticklabels(labels, rotation=45, ha='right', fontsize=font_size * 0.95, color=COLOR_INK)
+        axes.set_xlim(-0.8, len(bins) - 0.2)
+        axes.grid(axis='y', color='#ebeae5', lw=0.9)
+        self._finish(axes=axes, title="Distribution of site values along run order",
+                     xlabel=f"wafer index range (run order, {BIN_SIZE} wafers per bin)",
+                     ylabel="site value", legend_location='lower right')
+        figure.tight_layout()
+        figure.savefig(figure_path, dpi=SAVE_DPI)
+        plt.close(figure)
 
-    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
-    figure, axes = plt.subplots(figsize=FIGSIZE)
-    parts = axes.violinplot(bins, positions=np.arange(len(bins)), widths=0.85,
-                            showextrema=False, showmedians=True)
-    for body in parts['bodies']:
-        body.set_facecolor(COLOR_OBSERVED)
-        body.set_alpha(0.40)
-        body.set_edgecolor(COLOR_OBSERVED)
-        body.set_linewidth(1.2)
-    parts['cmedians'].set_color(COLOR_INK)
-    parts['cmedians'].set_linewidth(2)
-    axes.plot([], [], color=COLOR_OBSERVED, lw=6, alpha=0.40, label="site values in the bin (violin)")
-    axes.plot([], [], color=COLOR_INK, lw=2, label="bin median")
-    axes.plot((order - (BIN_SIZE + 1) / 2) / BIN_SIZE, intercept + slope * order, color=COLOR_TREND, lw=2.4,
-              zorder=6, label=f"wafer-mean trend {slope:+.3f}/wafer (r$^2$={r_value ** 2:.2f})")
-    axes.set_xticks(np.arange(len(bins)))
-    axes.set_xticklabels(labels, rotation=45, ha='right', fontsize=font_size * 0.95, color=COLOR_INK)
-    axes.set_xlim(-0.8, len(bins) - 0.2)
-    _style_axes(axes=axes, title="Distribution of site values along run order",
-                xlabel=f"wafer index range (run order, {BIN_SIZE} wafers per bin)",
-                ylabel="site value", font_size=font_size)
-    legend = axes.legend(loc='lower right', frameon=True, fontsize=font_size, edgecolor='#e3e2dd')
-    for text in legend.get_texts():
-        text.set_color(COLOR_INK)
-    figure.tight_layout()
-    figure.savefig(figure_path, dpi=SAVE_DPI)
-    plt.close(figure)
+    def draw_cumulative_stdev(self, figure_path: pathlib.Path) -> None:
+        """Draw the cumulative standard deviation of the wafer means beside the two terms it is built from."""
+        terms = self.cumulative_terms()
+        observed = terms['observed'].to_numpy()
+        left_term = terms['left_term'].to_numpy()
+        detection = self.detection_point()
 
-
-def draw_cumulative_stdev(frame: pd.DataFrame, figure_path: pathlib.Path) -> None:
-    """Draw the cumulative standard deviation of the wafer means beside the two terms it is built from.
-
-    Every curve at step n uses the first n wafers only, so no step reads a wafer it has not reached yet.
-    """
-    values = frame.to_numpy(dtype=float)
-    wafer_count, site_count = values.shape
-    wafer_mean = values.mean(axis=1)
-    order = np.arange(1, wafer_count + 1)
-    sigma_within = np.sqrt(np.cumsum(values.var(axis=1, ddof=1)) / order)
-    left_term = sigma_within / np.sqrt(site_count)
-    observed = np.array([np.nan, np.nan] + [wafer_mean[:i].std(ddof=1) for i in range(3, wafer_count + 1)])
-    sigma_total = np.array([np.nan, np.nan] + [values[:i].std(ddof=1) for i in range(3, wafer_count + 1)])
-    gap = observed ** 2 - left_term ** 2
-    # the right term is undefined where the observed value sits below the left term
-    right_term = np.where(gap > 0, np.sqrt(np.abs(gap)), np.nan)
-
-    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
-    figure, axes = plt.subplots(figsize=FIGSIZE)
-    axes.plot(order, observed, color=COLOR_OBSERVED, lw=3.0, zorder=4,
-              label=r"observed  $\sigma_{\mu_n}$  (stdev of wafer means 1..n)")
-    axes.plot(order, right_term, color=COLOR_RIGHT_TERM, lw=1.6, ls=(0, (5, 3)), zorder=6,
-              label=r"eq (9) right term:  $\sqrt{s_\mu^2(1..n)}$")
-    axes.plot(order, left_term, color=COLOR_LEFT_TERM, lw=2.2, ls=(0, (6, 4)), zorder=5,
-              label=r"eq (9) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
-    axes.plot(order, sigma_total / np.sqrt(site_count * order), color=COLOR_TREND, lw=2.0, ls=(0, (6, 4)),
-              zorder=3, label=r"$\sigma_{total}(1..n)/\sqrt{Nn}$")
-    axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
-                 label=r"$\sigma_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
-    detection = w2w_detection_point(observed=observed, right_term=right_term)
-    axes.axvline(detection, color=COLOR_FLAGGED, lw=1.6, ls=(0, (4, 3)), zorder=7,
-                 label=f"w2w detection point (n = {detection})")
-    axes.annotate(f"n = {detection}", (detection, observed[detection - 1]), textcoords="offset points",
-                  xytext=(8, -4), fontsize=font_size, color=COLOR_FLAGGED)
-    axes.set_xscale('log')
-    axes.set_yscale('log')
-    axes.set_xlim(2.5, wafer_count * 1.25)
-    axes.set_ylim(0.4, 45)
-    axes.xaxis.set_major_locator(FixedLocator([3, 5, 10, 20, 50, 100, wafer_count]))
-    axes.yaxis.set_major_locator(FixedLocator([0.5, 1, 2, round(left_term[-1], 1), 10, 20, round(observed[-1], 1)]))
-    for axis in (axes.xaxis, axes.yaxis):
-        axis.set_major_formatter(ScalarFormatter())
-        axis.set_minor_formatter(NullFormatter())
-    _style_axes(axes=axes,
-                title="Cumulative stdev of the wafer means and the two terms of eq (9), each from the first n wafers",
-                xlabel="n  (cumulative wafer count, run order) - log",
-                ylabel="standard deviation - log", font_size=font_size)
-    axes.grid(which='both', axis='both', color='#ebeae5', lw=0.9)
-    legend = axes.legend(loc='lower right', frameon=True, fontsize=font_size, edgecolor='#e3e2dd')
-    for text in legend.get_texts():
-        text.set_color(COLOR_INK)
-    figure.tight_layout()
-    figure.savefig(figure_path, dpi=SAVE_DPI)
-    plt.close(figure)
+        font_size = self._font_size()
+        figure, axes = plt.subplots(figsize=FIGSIZE)
+        axes.plot(self.order, observed, color=COLOR_OBSERVED, lw=3.0, zorder=4,
+                  label=r"observed  $\sigma_{\mu_n}$  (stdev of wafer means 1..n)")
+        axes.plot(self.order, terms['right_term'], color=COLOR_RIGHT_TERM, lw=1.6, ls=(0, (5, 3)), zorder=6,
+                  label=r"eq (9) right term:  $\sqrt{s_\mu^2(1..n)}$")
+        axes.plot(self.order, left_term, color=COLOR_LEFT_TERM, lw=2.2, ls=(0, (6, 4)), zorder=5,
+                  label=r"eq (9) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
+        axes.plot(self.order, terms['sigma_total'] / np.sqrt(self.site_count * self.order), color=COLOR_TREND,
+                  lw=2.0, ls=(0, (6, 4)), zorder=3, label=r"$\sigma_{total}(1..n)/\sqrt{Nn}$")
+        axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
+                     label=r"$\sigma_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
+        axes.axvline(detection, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
+                     label=f"w2w detection point (n = {detection})")
+        axes.annotate(f"n = {detection}", (detection, observed[detection - 1]), textcoords="offset points",
+                      xytext=(8, -4), fontsize=font_size, color=COLOR_MARK)
+        axes.set_xscale('log')
+        axes.set_yscale('log')
+        axes.set_xlim(2.5, self.wafer_count * 1.25)
+        axes.set_ylim(0.4, 45)
+        axes.xaxis.set_major_locator(FixedLocator([3, 5, 10, 20, 50, 100, self.wafer_count]))
+        axes.yaxis.set_major_locator(
+            FixedLocator([0.5, 1, 2, round(left_term[-1], 1), 10, 20, round(observed[-1], 1)]))
+        for axis in (axes.xaxis, axes.yaxis):
+            axis.set_major_formatter(ScalarFormatter())
+            axis.set_minor_formatter(NullFormatter())
+        axes.grid(which='both', color='#ebeae5', lw=0.9)
+        self._finish(
+            axes=axes,
+            title="Cumulative stdev of the wafer means and the two terms of eq (9), each from the first n wafers",
+            xlabel="n  (cumulative wafer count, run order) - log",
+            ylabel="standard deviation - log", legend_location='lower right')
+        figure.tight_layout()
+        figure.savefig(figure_path, dpi=SAVE_DPI)
+        plt.close(figure)
 
 
 def parse_args() -> argparse.Namespace:
@@ -268,19 +286,17 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     args = parse_args()
-    measurements = read_measurements(csv_path=args.input_csv)
-    measured = measurements.to_numpy(dtype=float)
-    components = variance_components(values=measured)
-    print(f"wafers {components['wafer_count']}, sites {components['site_count']}")
-    print(f"F = {components['f_statistic']:.2f}, p = {components['p_value']:.3e}")
-    print(f"sigma_within = {components['sigma_within']:.3f}, sigma_between = {components['sigma_between']:.3f}, "
-          f"sigma_total = {components['sigma_total']:.3f}, ICC = {components['icc']:.3f}")
-    wafer_report = flag_inflated_wafers(values=measured)
-    wafer_report.index = measurements.index
-    wafer_report.to_csv(args.output_folder / 'wafer_report.csv')
-    print(f"wafers with inflated within-wafer variance: {int(wafer_report['flagged'].sum())}")
-    draw_site_value_violin(frame=measurements,
-                           figure_path=args.output_folder / 'site_value_violin.png',
-                           sample_path=args.output_folder / 'site_value_violin_samples.csv')
-    draw_cumulative_stdev(frame=measurements, figure_path=args.output_folder / 'cum_stdev.png')
+    measurements = WaferMeasurements.from_csv(csv_path=args.input_csv)
+    components = measurements.components()
+    print(f"wafers {components.wafer_count}, sites {components.site_count}")
+    print(f"F = {components.f_statistic:.2f}, p = {components.p_value:.3e}")
+    print(f"sigma_within = {components.sigma_within:.3f}, sigma_between = {components.sigma_between:.3f}, "
+          f"sigma_total = {components.sigma_total:.3f}, ICC = {components.icc:.3f}")
+    report = measurements.wafer_report()
+    report.to_csv(args.output_folder / 'wafer_report.csv')
+    print(f"wafers with inflated within-wafer variance: {int(report['flagged'].sum())}")
+    print(f"w2w detection point: n = {measurements.detection_point()}")
+    measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
+                                        sample_path=args.output_folder / 'site_value_violin_samples.csv')
+    measurements.draw_cumulative_stdev(figure_path=args.output_folder / 'cum_stdev.png')
     print(f"figures written to {args.output_folder}")
