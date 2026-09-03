@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 28 | Created: 2026-09-01 | Updated: 2026-09-03 14:23 CDT
+Rev. 29 | Created: 2026-09-01 | Updated: 2026-09-03 14:32 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -116,9 +116,15 @@ $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{
 
 $$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (10)$$
 
-Table 2 의 wafer-to-wafer 성분, 곧 section 3 의 `sigma_wafer` 를 $`\sigma_{between}`$ 으로 두면 $`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$ 이므로, 같은 식을 within 대신 between 으로도 적을 수 있다고, 그 과정은 [Appendix C](#appendix-c-derivation-of-the-between-component-form) 에 적었다.
+Table 2 의 wafer-to-wafer 성분, 곧 section 3 의 `sigma_wafer` 를 $`\sigma_{between}`$ 으로 두면 $`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$ 이므로, 같은 식을 within 대신 between 으로도 적을 수 있고, 그 과정은 [Appendix C](#appendix-c-derivation-of-the-between-component-form) 에 적었다.
 
 $$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (11)$$
+
+Wafer 평균이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (11) 의 둘째 항이 사라져 wafer 평균의 산포는 표준오차만 남는다.
+
+$$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (12)$$
+
+이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이며, 이 자료에서는 32.50/√13 = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
 
 $`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 두 식 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
@@ -173,27 +179,27 @@ Fig 3. Wafer means with the 18 wafers whose within-wafer variance is inflated
 
 Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래와 같다.
 
-$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (12)$$
+$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (13)$$
 
 분자와 분모가 모두 $`KN`$ 에서 시작하므로, 1 에서 얼마나 모자라는지를 보는 편이 빠르다.
 
-$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (13)$$
+$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (14)$$
 
 두 결손항은 각각 한쪽 크기에만 매인다. $`1-a`$ 의 분자와 분모를 $`K`$ 로, $`1-b`$ 의 분자와 분모를 $`N`$ 으로 나누면 아래 꼴이 된다.
 
-$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (14)$$
+$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (15)$$
 
 $`K`$ 를 아무리 키워도 $`1-a`$ 는 $`1/N`$ 에서 멈추고, $`N`$ 을 아무리 키워도 $`1-b`$ 는 $`1/K`$ 에서 멈춘다.
 
-$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (15)$$
+$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (16)$$
 
 곧 한쪽만 키운 극한에서 계수는 1 이 아니라 아래 값에 멈춘다.
 
-$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (16)$$
+$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (17)$$
 
 따라서 $`a`$ 를 1 로 보내는 것은 wafer 당 site 수 $`N`$ 이고, $`b`$ 를 1 로 보내는 것은 wafer 수 $`K`$ 이며, 둘이 함께 커져야 두 계수가 같이 1 이 된다.
 
-$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (17)$$
+$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (18)$$
 
 이 문서의 $`K = 261`$, $`N = 13`$ 에서는 $`1 - a = 260/3392 = 0.0767`$ 로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/3392 = 0.0035`$ 로 $`1/K = 0.0038`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 251.98`$ 과 $`S_{\mathrm{between}}^2 = 823.46`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 32.79`$ 가 되어 관측값 32.45 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
 
@@ -201,18 +207,18 @@ $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N
 
 식 (10) 은 within 성분으로 적혀 있다.
 
-$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (18)$$
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (19)$$
 
 성분 분해에서 $`S_{\mathrm{total}}^2 = \sigma_{within}^2 + \sigma_{between}^2`$ 이므로 within 성분을 나머지 둘로 바꿀 수 있다.
 
-$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (19)$$
+$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (20)$$
 
 이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래와 같다.
 
-$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (20)$$
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (21)$$
 
 ICC 의 정의 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 를 넣어 $`\sigma_{between}^2`$ 을 지우면 두 번째 형태가 나오고, 제곱근을 취한 것이 식 (11) 이다.
 
-$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (21)$$
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (22)$$
 
 $`N = 1`$ 이면 두 형태 모두 $`\sigma_{\mu_K} = S_{\mathrm{total}}`$ 이 되고, $`N`$ 이 커지면 $`\sigma_{\mu_K}`$ 는 $`\sigma_{between}`$ 으로 수렴한다. site 를 많이 잴수록 wafer 평균에서 within 성분이 지워진다는 뜻이다.
