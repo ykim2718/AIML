@@ -13,10 +13,11 @@ Changelog:
 - 0.6.0: add the rolling components and the figure that draws them over run order.
 - 0.7.0: trace the wafer means on the site value figure instead of their linear trend.
 - 0.8.0: scale the rolling figure's right axis as uniformity.
+- 0.9.0: draw the per-wafer uniformity on the right axis instead of rescaling the left one.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.8.0.2026.9.3"
+__version__ = "0.9.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -169,6 +170,11 @@ class WaferMeasurements:
         return pd.DataFrame({'observed': observed, 'left_term': left_term, 'right_term': right_term,
                              'sigma_total': sigma_total}, index=pd.Index(self.order, name='n'))
 
+    def wafer_uniformity(self) -> pd.Series:
+        """Return each wafer's uniformity, its own site standard deviation over its own mean, in percent."""
+        return pd.Series(100 * self.values.std(axis=1, ddof=1) / self.wafer_mean, index=self.frame.index,
+                         name='uniformity_percent')
+
     def rolling_components(self, window: int = ROLLING_WINDOW) -> pd.DataFrame:
         """Return the two components computed over a window of consecutive wafers, stepped along run order.
 
@@ -280,15 +286,18 @@ class WaferMeasurements:
         axes.set_xlim(0, self.wafer_count + 1)
         axes.set_ylim(bottom=0)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
-        # the right axis is the same curves read as uniformity, so it rescales the left one by the grand mean
-        grand_mean = self.values.mean()
-        uniformity = axes.secondary_yaxis('right', functions=(lambda sigma: 100 * sigma / grand_mean,
-                                                              lambda percent: percent * grand_mean / 100))
-        uniformity.set_ylabel(r"uniformity  $1\sigma / \mu$  [%%]  ($\mu$ = %.1f)" % grand_mean,
-                              fontsize=self._font_size() * 1.1, color=COLOR_INK)
-        uniformity.tick_params(colors=COLOR_INK, labelsize=self._font_size())
+        # uniformity is each wafer's own spread over its own mean, so it carries the right axis of its own
+        uniformity = self.wafer_uniformity()
+        right = axes.twinx()
+        right.plot(self.order, uniformity.to_numpy(), color=COLOR_OBSERVED, lw=1.0, alpha=0.75, zorder=2,
+                   label=r"per-wafer uniformity  $s_i / \mu_i$")
+        right.set_ylabel(r"uniformity  $s_i / \mu_i$  [%]", fontsize=self._font_size() * 1.1, color=COLOR_INK)
+        right.set_ylim(bottom=0)
+        right.tick_params(colors=COLOR_INK, labelsize=self._font_size())
         for side in ('top', 'left', 'bottom'):
-            uniformity.spines[side].set_visible(False)
+            right.spines[side].set_visible(False)
+        right.spines['right'].set_color('#d9d8d2')
+        axes.plot([], [], color=COLOR_OBSERVED, lw=1.0, alpha=0.75, label=r"per-wafer uniformity  $s_i / \mu_i$")
         self._finish(axes=axes,
                      title=f"Within-wafer and wafer-to-wafer stdev over run order, from a {window}-wafer window",
                      xlabel="wafer index at the centre of the window (run order)",
@@ -371,6 +380,7 @@ if __name__ == '__main__':
     print(f"w2w detection point: n = {measurements.detection_point()}")
     measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
                                         sample_path=args.output_folder / 'site_value_violin_samples.csv')
+    measurements.wafer_uniformity().to_csv(args.output_folder / 'wafer_uniformity.csv')
     measurements.draw_rolling_components(figure_path=args.output_folder / 'rolling_components.png')
     measurements.draw_cumulative_stdev(figure_path=args.output_folder / 'cum_stdev.png')
     print(f"figures written to {args.output_folder}")
