@@ -1,5 +1,5 @@
 # AIML
-Rev. 39 | Created: 2026-08-07 | Updated: 2026-08-31 23:20 CDT
+Rev. 40 | Created: 2026-08-07 | Updated: 2026-09-03 12:38 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -25,7 +25,7 @@ Table 2. Folders and what they hold
 
 | Folder | Description |
 |--------|-------------|
-| [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, the reduction of machine waveforms into fixed-width parameter rows, and the detection of outliers under `Outlier/`, one method to a subfolder. |
+| [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, the reduction of machine waveforms into fixed-width parameter rows, the detection of outliers under `Outlier/`, one method to a subfolder, and the separation of measurement variability into its within-part and part-to-part components under `Variability/`. |
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, a survey of feature importance methods under `Feature-Importance/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, temporal partial least squares under `Regression/TPLS/`, time-varying coefficients under `Regression/TVC/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
@@ -50,6 +50,7 @@ Table 3. EDA documents
 | [EDA/Outlier/outlier_detection.md](EDA/Outlier/outlier_detection.md) | It surveys outlier detection across the statistical, machine learning and deep learning families, from the z-score and Tukey fences through Isolation Forest, ECOD and the local outlier factor to autoencoders and patch feature memories, records what a semiconductor line runs as part average testing and fault detection, and picks among them by what each one assumes. |
 | [EDA/Outlier/GESD/generalized-esd.md](EDA/Outlier/GESD/generalized-esd.md) | It covers the generalized ESD procedure of ISO 16269-4, which finds an unknown number of outliers in one pass, and explains the decision rule that keeps several outliers from hiding one another. Two worked examples show a masked sample and a flag that does not survive inspection. |
 | [EDA/Outlier/Hampel/hampel-identifier.md](EDA/Outlier/Hampel/hampel-identifier.md) | It covers the modified z-score built from the median and the median absolute deviation, which needs no normality and no iteration because the pair it is built on cannot be moved by a minority of outliers. |
+| [EDA/Variability/WiW-W2W/wiw-w2w-anova.md](EDA/Variability/WiW-W2W/wiw-w2w-anova.md) | It splits the variance of a 261-wafer, 13-site measurement set into within-wafer, wafer-to-wafer, and lot-to-lot components by one-way and nested ANOVA, tracks the drift of the wafer means over run order, tests the cumulative standard deviation of those means against the sigma over root n law it is often assumed to follow, and selects the wafers whose within-wafer spread moves their own mean. |
 
 ### 3.2 Feature Engineering
 
