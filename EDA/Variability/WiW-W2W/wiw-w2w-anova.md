@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 25 | Created: 2026-09-01 | Updated: 2026-09-03 14:09 CDT
+Rev. 26 | Created: 2026-09-01 | Updated: 2026-09-03 14:14 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -112,7 +112,7 @@ $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{wi
 
 $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (9)$$
 
-전체 wafer 를 다 쓴 $`n = K`$ 에서는 $`s_{\mu}^2(1..K) = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 이므로, 식 (9) 를 전체 표준편차만으로 다시 쓸 수 있다.
+식 (9) 의 $`s_{\mu}(1..n)`$ 이 전체 wafer-to-wafer 성분과 같을 때, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 일 때는 식 (9) 를 전체 표준편차만으로 다시 쓸 수 있다. 처음 $`n`$ 장이 전체를 대표하면 성립하며, $`n = K`$ 는 정의상 그 조건을 만족한다.
 
 $$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (10)$$
 
@@ -120,7 +120,7 @@ Table 2 의 wafer-to-wafer 성분, 곧 section 3 의 `sigma_wafer` 를 $`\sigma_
 
 $$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (11)$$
 
-$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 두 식 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 중간의 $`n`$ 에서는 $`s_{\mu}(1..n)`$ 이 전체 표준편차로 정해지지 않으므로 이렇게 쓸 수 없다.
+$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 두 식 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
 이 자료는 $`N = 13`$ 이므로 첫 항 `sigma_within`²/13 = 19.38 은 site 평균화로도 없앨 수 없는 바닥이며, 그 제곱근 4.40 이 Fig 2 의 아래쪽 기준선이다. n = 261 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_wafer` 와 일치한다. 따라서 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_wafer`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
