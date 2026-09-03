@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 5 | Created: 2026-09-01 | Updated: 2026-09-03 13:04 CDT
+Rev. 6 | Created: 2026-09-01 | Updated: 2026-09-03 13:11 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -175,6 +175,10 @@ $$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N}$$
 $K$ 를 아무리 키워도 $1-a$ 는 $1/N$ 에서 멈추고, $N$ 을 아무리 키워도 $1-b$ 는 $1/K$ 에서 멈춘다.
 
 $$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K}$$
+
+곧 한쪽만 키운 극한에서 계수는 1 이 아니라 아래 값에 멈춘다.
+
+$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K}$$
 
 따라서 $a$ 를 1 로 보내는 것은 wafer 당 site 수 $N$ 이고, $b$ 를 1 로 보내는 것은 wafer 수 $K$ 이며, 둘이 함께 커져야 두 계수가 같이 1 이 된다.
 
