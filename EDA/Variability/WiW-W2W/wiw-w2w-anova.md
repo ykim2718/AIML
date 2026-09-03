@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 39 | Created: 2026-09-01 | Updated: 2026-09-03 15:02 CDT
+Rev. 39 | Created: 2026-09-01 | Updated: 2026-09-03 17:13 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -55,7 +55,7 @@ $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm
 - Wafer 평균: 최소 452.9, 최대 705.0, 표준편차 28.70.
 - Within-wafer range: 평균 41.32, 최대 123.46.
 
-Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 610 대에 모여 있다가 뒤쪽에서 650 근처까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠므로 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 wafer 평균의 선형 추세선은 같은 상승을 한 줄로 요약한다.
+Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 610 대에 모여 있다가 뒤쪽에서 650 근처까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 wafer 평균의 선형 추세선은 같은 상승을 한 줄로 요약한다.
 
 <img src="wiw-w2w-anova_fig/site_value_violin.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
