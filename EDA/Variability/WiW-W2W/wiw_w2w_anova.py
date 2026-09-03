@@ -1,15 +1,16 @@
 """Variance decomposition of a wafer measurement table into within-wafer and wafer-to-wafer parts.
 
 The script reads a table whose rows are wafers and whose columns are measurement sites, reports the
-one-way ANOVA and the variance components, and draws the three figures the document carries.
+one-way ANOVA and the variance components, and draws the two figures the document carries.
 
 Changelog:
 - 0.0.0: initial release.
 - 0.1.0: mark the w2w detection point on the cumulative figure.
+- 0.2.0: drop the flagged-wafer figure and move the cumulative legend to the lower right.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.1.0.2026.9.3"
+__version__ = "0.2.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -31,7 +32,6 @@ __all__ = [
     'w2w_detection_point',
     'draw_site_value_violin',
     'draw_cumulative_stdev',
-    'draw_flagged_wafer_means',
 ]
 
 WAFER_ID_COLUMN: str = 'wafer_id'
@@ -242,42 +242,7 @@ def draw_cumulative_stdev(frame: pd.DataFrame, figure_path: pathlib.Path) -> Non
                 xlabel="n  (cumulative wafer count, run order) - log",
                 ylabel="standard deviation - log", font_size=font_size)
     axes.grid(which='both', axis='both', color='#ebeae5', lw=0.9)
-    legend = axes.legend(loc='lower left', frameon=True, fontsize=font_size, edgecolor='#e3e2dd')
-    for text in legend.get_texts():
-        text.set_color(COLOR_INK)
-    figure.tight_layout()
-    figure.savefig(figure_path, dpi=SAVE_DPI)
-    plt.close(figure)
-
-
-def draw_flagged_wafer_means(frame: pd.DataFrame, report: pd.DataFrame, figure_path: pathlib.Path) -> None:
-    """Draw the wafer means over run order, marking the wafers whose within-wafer spread drives the mean."""
-    values = frame.to_numpy(dtype=float)
-    wafer_count = values.shape[0]
-    order = np.arange(1, wafer_count + 1)
-    wafer_mean = report['mean'].to_numpy()
-    sd_within = report['sd_within'].to_numpy()
-    flagged = report['flagged'].to_numpy()
-    moving = pd.Series(wafer_mean).rolling(MOVING_WINDOW, center=True, min_periods=MOVING_WINDOW // 3).mean()
-
-    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
-    figure, axes = plt.subplots(figsize=FIGSIZE)
-    axes.errorbar(order[~flagged], wafer_mean[~flagged], yerr=sd_within[~flagged], fmt='none',
-                  ecolor=COLOR_OBSERVED, elinewidth=1.4, alpha=0.35, zorder=1)
-    axes.errorbar(order[flagged], wafer_mean[flagged], yerr=sd_within[flagged], fmt='none',
-                  ecolor=COLOR_FLAGGED, elinewidth=1.8, alpha=0.35, zorder=2)
-    axes.plot(order, wafer_mean, color=COLOR_OBSERVED, lw=1.1, alpha=0.35, zorder=2)
-    axes.scatter(order[~flagged], wafer_mean[~flagged], s=20, color=COLOR_OBSERVED, edgecolor='white',
-                 linewidth=0.8, zorder=3, label=r"wafer mean $\pm 1\sigma$ (within)")
-    axes.scatter(order[flagged], wafer_mean[flagged], s=60, marker='D', color=COLOR_FLAGGED, edgecolor='white',
-                 linewidth=1.0, zorder=6, label=f"within-wafer variance inflated: {int(flagged.sum())} wafers")
-    axes.plot(order, moving, color=COLOR_TREND, lw=2.2, zorder=4, label=f"{MOVING_WINDOW}-wafer moving average")
-    for position in np.argsort(-sd_within)[:4]:
-        axes.annotate(frame.index[position], (order[position], wafer_mean[position]), textcoords="offset points",
-                      xytext=(6, 10), fontsize=font_size * 0.85, color=COLOR_FLAGGED)
-    _style_axes(axes=axes, title="Wafers whose within-wafer spread drives the mean",
-                xlabel="wafer index (run order)", ylabel="wafer mean", font_size=font_size)
-    legend = axes.legend(loc='lower right', frameon=True, fontsize=font_size * 0.95, edgecolor='#e3e2dd')
+    legend = axes.legend(loc='lower right', frameon=True, fontsize=font_size, edgecolor='#e3e2dd')
     for text in legend.get_texts():
         text.set_color(COLOR_INK)
     figure.tight_layout()
@@ -318,6 +283,4 @@ if __name__ == '__main__':
                            figure_path=args.output_folder / 'site_value_violin.png',
                            sample_path=args.output_folder / 'site_value_violin_samples.csv')
     draw_cumulative_stdev(frame=measurements, figure_path=args.output_folder / 'cum_stdev.png')
-    draw_flagged_wafer_means(frame=measurements, report=wafer_report,
-                             figure_path=args.output_folder / 'wafer_mean_flagged.png')
     print(f"figures written to {args.output_folder}")

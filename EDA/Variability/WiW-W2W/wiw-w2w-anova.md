@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 32 | Created: 2026-09-01 | Updated: 2026-09-03 14:42 CDT
+Rev. 33 | Created: 2026-09-01 | Updated: 2026-09-03 14:44 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -142,27 +142,7 @@ Fig 2 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며
 
 공정 관리로 옮기면 w2w detection point 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
 
-## 5. Wafers with Inflated Within-Wafer Spread
-
-각 wafer 의 `s_i`² 를 pooled MS within = 251.98 과 χ² (df = 12) 로 비교해, Bonferroni 보정으로 (기준 p 값 1.9e-04) 유의한 wafer 18 장을 골랐다. 이들의 표준오차 `s_i`/√13 은 7.9 에서 15.3 으로 전체 중앙값 3.18 의 2.5 배에서 5 배이다.
-
-Table 3. Top five wafers by within-wafer standard error
-
-| Wafer | Mean | Sd within | SE | Worst site | Shift when the worst site is dropped |
-|---|---:|---:|---:|---|---:|
-| wf0011 | 638.9 | 55.04 | 15.27 | S1 | 6.52 |
-| wf0041 | 636.4 | 49.52 | 13.73 | S1 | 6.35 |
-| wf0125 | 651.8 | 42.39 | 11.76 | S1 | 5.48 |
-| wf0207 | 654.7 | 41.36 | 11.47 | S1 | 5.35 |
-| wf0244 | 674.5 | 41.12 | 11.41 | S1 | 5.01 |
-
-Table 3 의 다섯 장은 모두 S1 이 원인이고, 18 장 전체로는 S1 또는 S2 한 점이 원인이다. 그 site 를 빼면 wafer 평균이 4 에서 6.5 만큼 움직인다. 이 이동폭은 `sigma_wafer` = 28.36 에 비하면 작으므로, 이 wafer 들을 빼도 wafer-to-wafer 가 지배하는 구조는 바뀌지 않는다.
-
-<img src="wiw-w2w-anova_fig/wafer_mean_flagged.png" width="900" style="max-width: 100%;" alt="Fig 3">
-
-Fig 3. Wafer means with the 18 wafers whose within-wafer variance is inflated
-
-## 6. Conclusion
+## 5. Conclusion
 
 - Site 한 점 기준 분산 배분: wafer-to-wafer 76.1%, within-wafer 23.9%, ICC 0.761.
 - Wafer 평균 분산 28.70² = 823.5 중 28.36² = 804.1 (97.6%) 이 wafer 고유 수준, 19.38 (2.4%) 이 site 평균화 후 남는 within 기여.
