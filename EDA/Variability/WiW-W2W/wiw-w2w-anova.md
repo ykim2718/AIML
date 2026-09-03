@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 2 | Created: 2026-09-01 | Updated: 2026-09-03 12:49 CDT
+Rev. 3 | Created: 2026-09-01 | Updated: 2026-09-03 13:00 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -21,9 +21,17 @@ Wafer $K$ 장을 장당 $N$ 개 site 에서 재면 관측치는 $M = K N$ 개이
 
 전체 제곱합은 wafer 안의 편차와 wafer 평균의 편차로 남김없이 갈라진다. 이것이 ANOVA 가 딛는 항등식이다.
 
+$$\mathrm{SST} = \mathrm{SSW} + \mathrm{SSB}$$
+
+- SST: total sum of squares. 전체 변동. 모든 관측치가 총평균에서 벗어난 정도.
+- SSW: within-group sum of squares. wafer 내 변동. 각 site 값이 제 wafer 평균에서 벗어난 정도. 모형이 설명하지 못하고 남은 몫이므로 SSE (error sum of squares) 로도 쓴다.
+- SSB: between-group sum of squares. wafer 간 변동. 각 wafer 평균이 총평균에서 벗어난 정도. 인자가 설명하는 몫이므로 SSA (factor sum of squares) 로도 쓴다.
+
+세 제곱합을 풀어쓰면 아래와 같다.
+
 $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2 + N \sum_{i} (\bar{X}_i - \bar{X})^2$$
 
-우변의 두 항을 각각 within-wafer 분산의 평균과 wafer 평균의 분산으로 바꾸면 아래와 같다.
+각 제곱합을 제 자유도로 나누면 평균제곱 (mean square, MS) 이 되고, 그것이 곧 분산이다. 우변의 두 항을 각각 within-wafer 분산의 평균과 wafer 평균의 분산으로 바꾸면 아래와 같다.
 
 $$\overline{S_{\mathrm{within}}^2} = \frac{1}{K} \sum_{i=1}^{K} S_i^2, \qquad S_{\mathrm{between}}^2 = \frac{1}{K-1} \sum_{i=1}^{K} (\bar{X}_i - \bar{X})^2$$
 
@@ -66,7 +74,7 @@ Table 1. One-way ANOVA with wafer as the factor
 
 표의 각 열이 뜻하는 바는 아래와 같다.
 
-- SS: sum of squares. 해당 성분이 만든 편차의 제곱합. Between wafer 는 wafer 평균이 전체 평균에서 벗어난 정도, within wafer 는 site 값이 제 wafer 평균에서 벗어난 정도.
+- SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 3,572,492 가 된다.
 - df: degrees of freedom. 그 제곱합이 담은 독립한 정보의 개수. Wafer 261 장이므로 between 은 260, wafer 마다 site 13 개에서 평균 하나를 뺀 12 를 261 배 하여 within 은 3132.
 - MS: mean square. SS 를 df 로 나눈 값이며 분산의 추정치. Within 의 252.0 은 site 한 점의 산포, between 의 10,705.0 은 wafer 평균의 산포에 site 산포가 얹힌 크기.
 - F: 두 MS 의 비. 여기서는 10,705.0 / 252.0 = 42.48. wafer 사이에 차이가 없다면 1 근처에 머무는 값.
