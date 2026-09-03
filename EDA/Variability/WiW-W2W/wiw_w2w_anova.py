@@ -16,10 +16,11 @@ Changelog:
 - 0.9.0: draw the per-wafer uniformity on the right axis instead of rescaling the left one.
 - 0.10.0: take the components over an expanding window instead of a sliding one.
 - 0.11.0: screen each wafer against the expanding within-wafer component of the wafers before it.
+- 0.12.0: keep the flagged wafers out of the running baseline and draw the screen instead of the components.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.11.0.2026.9.3"
+__version__ = "0.12.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -198,23 +199,29 @@ class WaferMeasurements:
     def running_screen(self, confidence: float = SCREEN_CONFIDENCE, warmup: int = SCREEN_WARMUP) -> pd.DataFrame:
         """Flag each wafer whose site standard deviation exceeds the limit set by the wafers before it.
 
-        The baseline at wafer n is the expanding window's within-wafer component over wafers 1..n-1, so a
-        wafer is judged neither against itself nor against anything measured after it, and the limit is that
-        baseline times the chi-square factor of the site count. Returns a pd.DataFrame indexed by the table's
-        wafer id with columns `sd_within`, `baseline`, `limit` and `exceeded`; the baseline and the limit are
-        NaN over the warm-up wafers, which are left unjudged because their baseline rests on too few wafers.
+        The baseline at wafer n is the within-wafer component of the wafers before it that were not flagged,
+        so a wafer is judged neither against itself nor against anything measured after it, and an excursion
+        does not raise the baseline the wafers after it are judged against. The limit is that baseline times
+        the chi-square factor of the site count. Returns a pd.DataFrame indexed by the table's wafer id with
+        columns `sd_within`, `baseline`, `limit` and `exceeded`; the baseline and the limit are NaN over the
+        warm-up wafers, which are left unjudged because their baseline rests on too few wafers.
         """
         if not 0.0 < confidence < 1.0:
             raise ValueError(f"confidence {confidence} is outside (0, 1)")
         if not 2 <= warmup < self.wafer_count:
             raise ValueError(f"warmup {warmup} is outside [2, {self.wafer_count})")
-        expanding = self.expanding_components()['sigma_within'].to_numpy()      # indexed by n = 2 .. K
+        site_variance = self.values.var(axis=1, ddof=1)
+        factor = np.sqrt(stats.chi2.ppf(confidence, self.site_count - 1) / (self.site_count - 1))
+        accepted = list(site_variance[:warmup])
         baseline = np.full(self.wafer_count, np.nan)
-        baseline[warmup:] = expanding[warmup - 2:-1]                            # wafer n against wafers 1..n-1
-        limit = baseline * np.sqrt(stats.chi2.ppf(confidence, self.site_count - 1) / (self.site_count - 1))
-        sd_within = self.values.std(axis=1, ddof=1)
-        return pd.DataFrame({'sd_within': sd_within, 'baseline': baseline, 'limit': limit,
-                             'exceeded': sd_within > limit}, index=self.frame.index)
+        exceeded = np.zeros(self.wafer_count, dtype=bool)
+        for index in range(warmup, self.wafer_count):
+            baseline[index] = np.sqrt(np.mean(accepted))
+            exceeded[index] = np.sqrt(site_variance[index]) > baseline[index] * factor
+            if not exceeded[index]:
+                accepted.append(site_variance[index])
+        return pd.DataFrame({'sd_within': np.sqrt(site_variance), 'baseline': baseline,
+                             'limit': baseline * factor, 'exceeded': exceeded}, index=self.frame.index)
 
     def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
         """Return the wafer count at the w2w detection point of this table."""
@@ -289,40 +296,34 @@ class WaferMeasurements:
         figure.savefig(figure_path, dpi=SAVE_DPI)
         plt.close(figure)
 
-    def draw_expanding_components(self, figure_path: pathlib.Path) -> None:
-        """Draw the two components over an expanding window, with the per-wafer uniformity on the right axis."""
-        expanding = self.expanding_components()
-        whole = self.components()
+    def draw_screening(self, figure_path: pathlib.Path, confidence: float = SCREEN_CONFIDENCE) -> None:
+        """Draw each wafer's site spread against the running baseline and the limit that judges it."""
+        screen = self.running_screen(confidence=confidence)
+        warmup = int(screen['limit'].isna().sum())
+        exceeded = screen['exceeded'].to_numpy()
 
+        font_size = self._font_size()
         figure, axes = plt.subplots(figsize=FIGSIZE)
-        axes.plot(expanding.index, expanding['sigma_between'], color=COLOR_RIGHT_TERM, lw=1.0, zorder=5,
-                  label=r"w2w  $\sigma_{between}$(1..n)")
-        axes.plot(expanding.index, expanding['sigma_within'], color=COLOR_LEFT_TERM, lw=2.2, zorder=4,
-                  label=r"WiW  $\sigma_{within}$(1..n)")
-        axes.axhline(whole.sigma_between, color=COLOR_RIGHT_TERM, lw=1.4, ls=(0, (2, 3)), zorder=3,
-                     label=r"w2w over all wafers = %.2f" % whole.sigma_between)
-        axes.axhline(whole.sigma_within, color=COLOR_LEFT_TERM, lw=1.4, ls=(0, (2, 3)), zorder=3,
-                     label=r"WiW over all wafers = %.2f" % whole.sigma_within)
-        # uniformity is each wafer's own spread over its own mean, so it carries the right axis of its own
-        uniformity = self.wafer_uniformity()
-        right = axes.twinx()
-        right.plot(self.order, uniformity.to_numpy(), color=COLOR_TREND, lw=2.4, zorder=2,
-                   label=r"per-wafer uniformity  $s_i / \mu_i$")
-        right.set_ylabel(r"uniformity  $s_i / \mu_i$  [%]", fontsize=self._font_size() * 1.1, color=COLOR_INK)
-        right.set_ylim(bottom=0)
-        right.tick_params(colors=COLOR_INK, labelsize=self._font_size())
-        for side in ('top', 'left', 'bottom'):
-            right.spines[side].set_visible(False)
-        right.spines['right'].set_color('#d9d8d2')
-        axes.plot([], [], color=COLOR_TREND, lw=2.4, label=r"per-wafer uniformity  $s_i / \mu_i$")
+        axes.vlines(self.order, 0, screen['sd_within'], color=COLOR_INK, lw=0.8, alpha=0.45, zorder=2)
+        axes.scatter(self.order[~exceeded], screen['sd_within'][~exceeded], s=9, color=COLOR_INK, zorder=4,
+                     label=r"wafer spread  $s_i$  (within the limit)")
+        axes.scatter(self.order[exceeded], screen['sd_within'][exceeded], s=26, color=COLOR_MARK, zorder=6,
+                     label=f"WiW excursion ({int(exceeded.sum())} wafers)")
+        axes.plot(self.order, screen['limit'], color=COLOR_MARK, lw=1.8, zorder=5,
+                  label=r"eq (13) limit  $\sigma_{within}(1..i-1)\,\sqrt{\chi^2_{p,N-1}/(N-1)}$"
+                        f"  at p = {confidence}")
+        axes.plot(self.order, screen['baseline'], color=COLOR_LEFT_TERM, lw=2.4, zorder=5,
+                  label=r"running baseline  $\sigma_{within}$(1..i-1), excursions left out")
+        axes.axvspan(0, warmup + 0.5, color=COLOR_INK, alpha=0.07, zorder=1)
+        axes.text(0.42, 0.96, f"shaded: warm-up over wafer 1 to {warmup}, baseline only", va='top',
+                  transform=axes.transAxes, fontsize=font_size, color=COLOR_INK)
         axes.set_xlim(0, self.wafer_count + 1)
-        axes.set_ylim(bottom=0)
+        # leave the top of the axes to the legend so that it never sits on a spike
+        axes.set_ylim(0, screen['sd_within'].max() * 1.35)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
-        axes.text(0.015, 0.96, "expanding window: wafer 1 to wafer n", transform=axes.transAxes,
-                  fontsize=self._font_size(), color=COLOR_INK, va='top')
-        self._finish(axes=axes, title="Within-wafer and wafer-to-wafer stdev over an expanding window",
-                     xlabel="n  (wafer at the right edge of the window, run order)",
-                     ylabel="standard deviation", legend_location='upper right')
+        self._finish(axes=axes, title="Per-wafer spread against the running within-wafer limit of eq (13)",
+                     xlabel="i  (wafer index, run order)", ylabel=r"standard deviation of the site values",
+                     legend_location='upper left')
         figure.tight_layout()
         figure.savefig(figure_path, dpi=SAVE_DPI)
         plt.close(figure)
@@ -406,6 +407,7 @@ if __name__ == '__main__':
     measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
                                         sample_path=args.output_folder / 'site_value_violin_samples.csv')
     measurements.wafer_uniformity().to_csv(args.output_folder / 'wafer_uniformity.csv')
-    measurements.draw_expanding_components(figure_path=args.output_folder / 'expanding_components.png')
+    measurements.expanding_components().to_csv(args.output_folder / 'expanding_components.csv')
+    measurements.draw_screening(figure_path=args.output_folder / 'wafer_screening.png')
     measurements.draw_cumulative_stdev(figure_path=args.output_folder / 'cum_stdev.png')
     print(f"figures written to {args.output_folder}")
