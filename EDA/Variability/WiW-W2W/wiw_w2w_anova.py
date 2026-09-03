@@ -8,10 +8,11 @@ Changelog:
 - 0.1.0: mark the w2w detection point on the cumulative figure.
 - 0.2.0: drop the flagged-wafer figure and move the cumulative legend to the lower right.
 - 0.3.0: hold the measurement table in a class and derive every quantity from it.
+- 0.4.0: give the w2w detection point its own class.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.0.2026.9.3"
+__version__ = "0.4.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -27,7 +28,7 @@ from matplotlib.colors import TABLEAU_COLORS
 from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
 from scipy import stats
 
-__all__ = ['VarianceComponents', 'WaferMeasurements']
+__all__ = ['VarianceComponents', 'W2WDetectionPoint', 'WaferMeasurements']
 
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
@@ -66,6 +67,36 @@ class VarianceComponents:
     def icc(self) -> float:
         """Share of the variance of a single site value that the wafer it sits on accounts for."""
         return self.sigma_between ** 2 / (self.sigma_between ** 2 + self.sigma_within ** 2)
+
+
+class W2WDetectionPoint:
+    """The first n from which the wafer-level term carries the whole spread of the wafer means.
+
+    Below that n the site error still accounts for a visible share of the observed spread, so the
+    wafer-to-wafer part cannot be told apart from it. The cumulative terms are injected once.
+    """
+
+    def __init__(self, terms: pd.DataFrame, ratio: float = DETECTION_RATIO) -> None:
+        for column in ('observed', 'right_term'):
+            if column not in terms.columns:
+                raise ValueError(f"the cumulative terms have no '{column}' column; columns are {list(terms.columns)}")
+        if not 0.0 < ratio <= 1.0:
+            raise ValueError(f"ratio {ratio} is outside (0, 1]")
+        self.terms = terms
+        self.ratio = ratio
+
+    @property
+    def share(self) -> pd.Series:
+        """Share of the observed spread that the right term carries, at each n."""
+        return self.terms['right_term'] / self.terms['observed']
+
+    @property
+    def n(self) -> int:
+        """The wafer count at the detection point."""
+        reached = np.flatnonzero(np.nan_to_num(self.share.to_numpy()) >= self.ratio)
+        if reached.size == 0:
+            raise ValueError(f"the right term never reaches {self.ratio:.0%} of the observed spread")
+        return int(self.terms.index[reached[0]])
 
 
 class WaferMeasurements:
@@ -134,17 +165,8 @@ class WaferMeasurements:
                              'sigma_total': sigma_total}, index=pd.Index(self.order, name='n'))
 
     def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
-        """Return the first n from which the right term carries the whole spread of the wafer means.
-
-        Below that n the site error still accounts for a visible share of the observed spread, so the
-        wafer-to-wafer part cannot be told apart from it.
-        """
-        terms = self.cumulative_terms()
-        share = (terms['right_term'] / terms['observed']).to_numpy()
-        reached = np.flatnonzero(np.nan_to_num(share) >= ratio)
-        if reached.size == 0:
-            raise ValueError(f"the right term never reaches {ratio:.0%} of the observed spread")
-        return int(terms.index[reached[0]])
+        """Return the wafer count at the w2w detection point of this table."""
+        return W2WDetectionPoint(terms=self.cumulative_terms(), ratio=ratio).n
 
     def wafer_report(self, alpha: float = ALPHA) -> pd.DataFrame:
         """Report each wafer and flag the ones whose within-wafer variance exceeds the pooled one.

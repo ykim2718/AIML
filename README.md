@@ -1,5 +1,5 @@
 # AIML
-Rev. 44 | Created: 2026-08-07 | Updated: 2026-09-03 14:46 CDT
+Rev. 45 | Created: 2026-08-07 | Updated: 2026-09-03 14:58 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -103,6 +103,14 @@ Table 8. Applied statistics documents
 | Document | Description |
 |----------|-------------|
 | [Applied-Statistics/ZScore/z-score-ceiling.md](Applied-Statistics/ZScore/z-score-ceiling.md) | It derives the ceiling that bounds every classical z-score at (n-1)/sqrt(n), shows that the bound is attained rather than approached, and works out the sample sizes at which a rule set at a fixed cut-off can no longer flag anything. |
+
+### 3.7 Scripts
+
+Table 9. Scripts
+
+| Script | Description |
+|--------|-------------|
+| [EDA/Variability/WiW-W2W/wiw_w2w_anova.py](EDA/Variability/WiW-W2W/wiw_w2w_anova.py) | It produces every number and figure of the within-wafer and wafer-to-wafer document from one measurement table — the one-way ANOVA and its variance components, the cumulative curves in which each step uses only the wafers reached so far, the wafer count from which the wafer-level spread carries the whole scatter of the wafer means, and a per-wafer report of the within-wafer spread. |
 
 ## 4. Order Of Use
 
