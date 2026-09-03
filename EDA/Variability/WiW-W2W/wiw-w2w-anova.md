@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 6 | Created: 2026-09-01 | Updated: 2026-09-03 13:11 CDT
+Rev. 7 | Created: 2026-09-01 | Updated: 2026-09-03 13:14 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -94,15 +94,7 @@ Table 2. Variance components
 
 ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 804.1 / 1056.1 = 0.761 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.761 은 site 한 점의 산포 중 76.1% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 
-## 4. Drift of Wafer Means
-
-Wafer 평균을 run order 로 늘어놓으면 앞쪽의 약 608 에서 뒤쪽의 약 640 까지 오른다. 선형 추세는 wafer 당 +0.128 이고 261 장 누적 +33.2 이며, r² = 0.11, p = 2.7e-08 이다. 추세는 유의하지만 wafer 평균 변동의 11% 만 설명하며, 이동평균을 보면 단조 상승이 아니라 중간의 급락과 뒤쪽의 봉우리 같은 계단이 겹쳐 있다.
-
-<img src="wiw-w2w-anova_fig/wafer_mean_drift.png" width="900" style="max-width: 100%;" alt="Fig 2">
-
-Fig 2. Wafer means over run order with a 15-wafer moving average and a linear trend
-
-## 5. Cumulative Standard Deviation Check
+## 4. Cumulative Standard Deviation Check
 
 처음 n 장의 wafer 평균으로 계산한 표준편차 `stdev_n` 을 n = 3 부터 261 까지 구해, 이것이 `sigma_total`/√13 = 9.01 을 따르는 구간이 있는지 확인했다. 그런 구간은 없다. `stdev_n` 은 n = 5 에서 이미 11.13 이고 그것이 n ≥ 5 구간의 최솟값이며, 이후 18.6 에서 28.7 사이에 머문다.
 
@@ -112,15 +104,15 @@ Fig 2. Wafer means over run order with a 15-wafer moving average and a linear tr
 
 $$\mathrm{stdev}_n = \sqrt{\frac{\sigma_{within}^2}{13} + s_{\mu}^2(1..n)}$$
 
-첫 항 `sigma_within`²/13 = 19.38 은 site 평균화로도 없앨 수 없는 바닥이며, 그 제곱근 4.40 이 Fig 3 의 아래쪽 기준선이다. n = 261 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_wafer` 와 일치한다. 따라서 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_wafer`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
+첫 항 `sigma_within`²/13 = 19.38 은 site 평균화로도 없앨 수 없는 바닥이며, 그 제곱근 4.40 이 Fig 2 의 아래쪽 기준선이다. n = 261 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_wafer` 와 일치한다. 따라서 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_wafer`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
 n 만의 매끄러운 함수로는 설명되지 않는다. n ≥ 10 구간에서 상수 모형의 R² 는 0, random walk 모형의 R² 는 0.02, 선형 drift 모형의 R² 는 0.11 이며, 실제 오르내림은 연속한 wafer 묶음이 만드는 계단에서 온다.
 
-<img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 3">
+<img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-Fig 3. Cumulative standard deviation of wafer means against the floor, the asymptote, and the 1/√(13n) curve
+Fig 2. Cumulative standard deviation of wafer means against the floor, the asymptote, and the 1/√(13n) curve
 
-## 6. Wafers with Inflated Within-Wafer Spread
+## 5. Wafers with Inflated Within-Wafer Spread
 
 각 wafer 의 `s_i`² 를 pooled MS within = 251.98 과 χ² (df = 12) 로 비교해, Bonferroni 보정으로 (기준 p 값 1.9e-04) 유의한 wafer 18 장을 골랐다. 이들의 표준오차 `s_i`/√13 은 7.9 에서 15.3 으로 전체 중앙값 3.18 의 2.5 배에서 5 배이다.
 
@@ -136,11 +128,11 @@ Table 3. Top five wafers by within-wafer standard error
 
 Table 3 의 다섯 장은 모두 S1 이 원인이고, 18 장 전체로는 S1 또는 S2 한 점이 원인이다. 그 site 를 빼면 wafer 평균이 4 에서 6.5 만큼 움직인다. 이 이동폭은 `sigma_wafer` = 28.36 에 비하면 작으므로, 이 wafer 들을 빼도 wafer-to-wafer 가 지배하는 구조는 바뀌지 않는다.
 
-<img src="wiw-w2w-anova_fig/wafer_mean_flagged.png" width="900" style="max-width: 100%;" alt="Fig 4">
+<img src="wiw-w2w-anova_fig/wafer_mean_flagged.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-Fig 4. Wafer means with the 18 wafers whose within-wafer variance is inflated
+Fig 3. Wafer means with the 18 wafers whose within-wafer variance is inflated
 
-## 7. Conclusion
+## 6. Conclusion
 
 - Site 한 점 기준 분산 배분: wafer-to-wafer 76.1%, within-wafer 23.9%, ICC 0.761.
 - Wafer 평균 분산 28.70² = 823.5 중 28.36² = 804.1 (97.6%) 이 wafer 고유 수준, 19.38 (2.4%) 이 site 평균화 후 남는 within 기여.

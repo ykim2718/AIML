@@ -1,5 +1,5 @@
 # AIML
-Rev. 41 | Created: 2026-08-07 | Updated: 2026-09-03 12:58 CDT
+Rev. 42 | Created: 2026-08-07 | Updated: 2026-09-03 13:14 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -50,7 +50,7 @@ Table 3. EDA documents
 | [EDA/Outlier/outlier_detection.md](EDA/Outlier/outlier_detection.md) | It surveys outlier detection across the statistical, machine learning and deep learning families, from the z-score and Tukey fences through Isolation Forest, ECOD and the local outlier factor to autoencoders and patch feature memories, records what a semiconductor line runs as part average testing and fault detection, and picks among them by what each one assumes. |
 | [EDA/Outlier/GESD/generalized-esd.md](EDA/Outlier/GESD/generalized-esd.md) | It covers the generalized ESD procedure of ISO 16269-4, which finds an unknown number of outliers in one pass, and explains the decision rule that keeps several outliers from hiding one another. Two worked examples show a masked sample and a flag that does not survive inspection. |
 | [EDA/Outlier/Hampel/hampel-identifier.md](EDA/Outlier/Hampel/hampel-identifier.md) | It covers the modified z-score built from the median and the median absolute deviation, which needs no normality and no iteration because the pair it is built on cannot be moved by a minority of outliers. |
-| [EDA/Variability/WiW-W2W/wiw-w2w-anova.md](EDA/Variability/WiW-W2W/wiw-w2w-anova.md) | It states the sum-of-squares identity behind ANOVA and the exact weighted relation between a total variance and its within-group and between-group parts, together with the approximation in common use, then applies it to a 261-wafer, 13-site measurement set — splitting the variance into within-wafer and wafer-to-wafer components with their ICC, tracking the drift of the wafer means over run order, testing the cumulative standard deviation of those means against the sigma over root n law it is often assumed to follow, and selecting the wafers whose within-wafer spread moves their own mean. |
+| [EDA/Variability/WiW-W2W/wiw-w2w-anova.md](EDA/Variability/WiW-W2W/wiw-w2w-anova.md) | It states the sum-of-squares identity behind ANOVA and the exact weighted relation between a total variance and its within-group and between-group parts, together with the approximation in common use, then applies it to a 261-wafer, 13-site measurement set — splitting the variance into within-wafer and wafer-to-wafer components with their ICC, testing the cumulative standard deviation of those means against the sigma over root n law it is often assumed to follow, and selecting the wafers whose within-wafer spread moves their own mean. |
 
 ### 3.2 Feature Engineering
 
