@@ -17,7 +17,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.9.0.2026.9.3"
+__version__ = "0.9.1.2026.9.3"
 
 import argparse
 import pathlib
@@ -275,7 +275,7 @@ class WaferMeasurements:
         whole = self.components()
 
         figure, axes = plt.subplots(figsize=FIGSIZE)
-        axes.plot(rolling.index, rolling['sigma_between'], color=COLOR_RIGHT_TERM, lw=2.2, zorder=5,
+        axes.plot(rolling.index, rolling['sigma_between'], color=COLOR_RIGHT_TERM, lw=1.0, zorder=5,
                   label=r"w2w  $\sigma_{between}$")
         axes.plot(rolling.index, rolling['sigma_within'], color=COLOR_LEFT_TERM, lw=2.2, zorder=4,
                   label=r"WiW  $\sigma_{within}$")
@@ -289,7 +289,7 @@ class WaferMeasurements:
         # uniformity is each wafer's own spread over its own mean, so it carries the right axis of its own
         uniformity = self.wafer_uniformity()
         right = axes.twinx()
-        right.plot(self.order, uniformity.to_numpy(), color=COLOR_OBSERVED, lw=1.0, alpha=0.75, zorder=2,
+        right.plot(self.order, uniformity.to_numpy(), color=COLOR_TREND, lw=2.4, zorder=2,
                    label=r"per-wafer uniformity  $s_i / \mu_i$")
         right.set_ylabel(r"uniformity  $s_i / \mu_i$  [%]", fontsize=self._font_size() * 1.1, color=COLOR_INK)
         right.set_ylim(bottom=0)
@@ -297,7 +297,7 @@ class WaferMeasurements:
         for side in ('top', 'left', 'bottom'):
             right.spines[side].set_visible(False)
         right.spines['right'].set_color('#d9d8d2')
-        axes.plot([], [], color=COLOR_OBSERVED, lw=1.0, alpha=0.75, label=r"per-wafer uniformity  $s_i / \mu_i$")
+        axes.plot([], [], color=COLOR_TREND, lw=2.4, label=r"per-wafer uniformity  $s_i / \mu_i$")
         self._finish(axes=axes,
                      title=f"Within-wafer and wafer-to-wafer stdev over run order, from a {window}-wafer window",
                      xlabel="wafer index at the centre of the window (run order)",
