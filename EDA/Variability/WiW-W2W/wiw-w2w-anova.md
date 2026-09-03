@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 39 | Created: 2026-09-01 | Updated: 2026-09-03 17:13 CDT
+Rev. 40 | Created: 2026-09-01 | Updated: 2026-09-03 17:31 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -94,6 +94,12 @@ Table 2. Variance components
 
 ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 804.1 / 1056.1 = 0.761 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.761 은 site 한 점의 산포 중 76.1% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 
+Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, run order 를 따라 15 장 창을 한 장씩 밀며 창마다 두 성분을 다시 구하면 그 값이 공정과 함께 어떻게 움직였는지 보인다. Within-wafer 는 8.29 에서 24.71 사이 (평균 15.21) 로 완만히 오르내리는 데 그치지만, wafer-to-wafer 는 5.07 에서 50.20 사이 (평균 22.00) 로 열 배 가까이 흔들리며 wafer 130~145 와 230~240 구간에서 50 근처까지 치솟는다. 두 성분의 크기가 뒤바뀌는 구간도 있어서, wafer 50~120 에서는 wafer-to-wafer 가 within-wafer 아래로 내려간다 — 그 구간만 보면 산포의 주범이 wafer 단위 조건이 아니라 site 균일도였다는 뜻이다.
+
+<img src="wiw-w2w-anova_fig/rolling_components.png" width="900" style="max-width: 100%;" alt="Fig 2">
+
+Fig 2. Within-wafer and wafer-to-wafer standard deviation over run order, each from a 15-wafer window
+
 ## 4. Cumulative Standard Deviation of the Wafer Means
 
 ### 4.1 Formula and Its Closed Forms
@@ -134,15 +140,15 @@ $$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (12)$$
 
 $`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 식 (10) 과 식 (11) 이 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
-Fig 2 는 식 (9) 의 두 항을 함께 보인다. 식 (9) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 모든 곡선은 각 $`n`$ 에서 처음 $`n`$ 장만으로 계산했다. $`n`$ 뒤의 wafer 를 끌어다 쓰면 그 $`n`$ 에서 아직 알 수 없는 값을 쓰는 것이 되기 때문이며, 그래서 왼쪽 항도 상수가 아니라 곡선이다. $`\sigma_{within}(1..n)`$ 은 처음 5 장에서 7.28 로 낮았다가 $`n = 50`$ 에서 15.75, $`n = K`$ 에서 15.87 로 자리를 잡는다.
+Fig 3 은 식 (9) 의 두 항을 함께 보인다. 식 (9) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 모든 곡선은 각 $`n`$ 에서 처음 $`n`$ 장만으로 계산했다. $`n`$ 뒤의 wafer 를 끌어다 쓰면 그 $`n`$ 에서 아직 알 수 없는 값을 쓰는 것이 되기 때문이며, 그래서 왼쪽 항도 상수가 아니라 곡선이다. $`\sigma_{within}(1..n)`$ 은 처음 5 장에서 7.28 로 낮았다가 $`n = 50`$ 에서 15.75, $`n = K`$ 에서 15.87 로 자리를 잡는다.
 
 이 자료는 $`N = 13`$ 이므로 왼쪽 항의 제곱은 `sigma_within`²/13 = 19.38 로 수렴하고, 그 제곱근 4.40 이 Fig 2 에서 왼쪽 항이 다다르는 값이다. $`n = 261`$ 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_between` 과 일치한다. 따라서 관측 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_between`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
-<img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (9) and the w2w detection point, each computed from the first n wafers only
+Fig 3. Cumulative standard deviation of the wafer means with the two terms of equation (9) and the w2w detection point, each computed from the first n wafers only
 
-Fig 2 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). 그 앞의 $`n \le 4`$ 에서는 오른쪽 항이 왼쪽 항과 같은 크기 ($`n = 4`$ 에서 2.18 대 1.97) 이고 $`n = 3`$ 에서는 관측값이 왼쪽 항보다도 작아 아예 정의되지 않으니, 그 구간의 흔들림은 측정 잡음만으로 설명되고 wafer 사이에 진짜 차이가 있는지 가릴 수 없다. $`n = 5`$ 부터는 오른쪽 항이 10.95 로 왼쪽 항 2.02 의 5.4 배가 되고 $`n = 6`$ 에서 10 배를 넘어, 이후 관측 곡선은 사실상 wafer 고유 수준의 산포 그 자체이다.
+Fig 3 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). 그 앞의 $`n \le 4`$ 에서는 오른쪽 항이 왼쪽 항과 같은 크기 ($`n = 4`$ 에서 2.18 대 1.97) 이고 $`n = 3`$ 에서는 관측값이 왼쪽 항보다도 작아 아예 정의되지 않으니, 그 구간의 흔들림은 측정 잡음만으로 설명되고 wafer 사이에 진짜 차이가 있는지 가릴 수 없다. $`n = 5`$ 부터는 오른쪽 항이 10.95 로 왼쪽 항 2.02 의 5.4 배가 되고 $`n = 6`$ 에서 10 배를 넘어, 이후 관측 곡선은 사실상 wafer 고유 수준의 산포 그 자체이다.
 
 공정 관리로 옮기면 w2w detection point 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
 

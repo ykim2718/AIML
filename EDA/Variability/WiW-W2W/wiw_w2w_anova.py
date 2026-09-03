@@ -1,7 +1,7 @@
 """Variance decomposition of a wafer measurement table into within-wafer and wafer-to-wafer parts.
 
 The script reads a table whose rows are wafers and whose columns are measurement sites, reports the
-one-way ANOVA and the variance components, and draws the two figures the document carries.
+one-way ANOVA and the variance components, and draws the three figures the document carries.
 
 Changelog:
 - 0.0.0: initial release.
@@ -10,10 +10,11 @@ Changelog:
 - 0.3.0: hold the measurement table in a class and derive every quantity from it.
 - 0.4.0: give the w2w detection point its own class.
 - 0.5.0: draw the site value figure one violin per wafer.
+- 0.6.0: add the rolling components and the figure that draws them over run order.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.5.0.2026.9.3"
+__version__ = "0.6.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -34,6 +35,7 @@ __all__ = ['VarianceComponents', 'W2WDetectionPoint', 'WaferMeasurements']
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
 VIOLIN_WIDTH: float = 1.6                # width of one wafer's violin in wafer index units
+ROLLING_WINDOW: int = 15                 # wafers per window of the rolling components
 DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
 ALPHA: float = 0.05                      # family-wise error rate of the within-wafer variance test
 FIGSIZE: tuple = (12.0, 5.4)
@@ -165,6 +167,27 @@ class WaferMeasurements:
         return pd.DataFrame({'observed': observed, 'left_term': left_term, 'right_term': right_term,
                              'sigma_total': sigma_total}, index=pd.Index(self.order, name='n'))
 
+    def rolling_components(self, window: int = ROLLING_WINDOW) -> pd.DataFrame:
+        """Return the two components computed over a window of consecutive wafers, stepped along run order.
+
+        Returns a pd.DataFrame indexed by the wafer index at the centre of the window with columns
+        `sigma_within` and `sigma_between`; a single wafer carries no wafer-to-wafer part, so the window is
+        what makes the second one measurable.
+        """
+        if not 2 <= window <= self.wafer_count:
+            raise ValueError(f"window {window} is outside [2, {self.wafer_count}]")
+        site_variance = self.values.var(axis=1, ddof=1)
+        centre, within, between = [], [], []
+        for start in range(0, self.wafer_count - window + 1):
+            stop = start + window
+            ms_within = site_variance[start:stop].mean()
+            ms_between = self.site_count * self.wafer_mean[start:stop].var(ddof=1)
+            centre.append(start + (window + 1) / 2)
+            within.append(np.sqrt(ms_within))
+            between.append(np.sqrt(max((ms_between - ms_within) / self.site_count, 0.0)))
+        return pd.DataFrame({'sigma_within': within, 'sigma_between': between},
+                            index=pd.Index(centre, name='wafer_index'))
+
     def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
         """Return the wafer count at the w2w detection point of this table."""
         return W2WDetectionPoint(terms=self.cumulative_terms(), ratio=ratio).n
@@ -236,6 +259,31 @@ class WaferMeasurements:
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
         self._finish(axes=axes, title="Distribution of site values on each wafer along run order",
                      xlabel="wafer index (run order)", ylabel="site value", legend_location='lower right')
+        figure.tight_layout()
+        figure.savefig(figure_path, dpi=SAVE_DPI)
+        plt.close(figure)
+
+    def draw_rolling_components(self, figure_path: pathlib.Path, window: int = ROLLING_WINDOW) -> None:
+        """Draw the two components over run order, each from a window of consecutive wafers."""
+        rolling = self.rolling_components(window=window)
+        whole = self.components()
+
+        figure, axes = plt.subplots(figsize=FIGSIZE)
+        axes.plot(rolling.index, rolling['sigma_between'], color=COLOR_RIGHT_TERM, lw=2.2, zorder=5,
+                  label=r"w2w  $\sigma_{between}$")
+        axes.plot(rolling.index, rolling['sigma_within'], color=COLOR_LEFT_TERM, lw=2.2, zorder=4,
+                  label=r"WiW  $\sigma_{within}$")
+        axes.axhline(whole.sigma_between, color=COLOR_RIGHT_TERM, lw=1.4, ls=(0, (2, 3)), zorder=3,
+                     label=r"w2w over all wafers = %.2f" % whole.sigma_between)
+        axes.axhline(whole.sigma_within, color=COLOR_LEFT_TERM, lw=1.4, ls=(0, (2, 3)), zorder=3,
+                     label=r"WiW over all wafers = %.2f" % whole.sigma_within)
+        axes.set_xlim(0, self.wafer_count + 1)
+        axes.set_ylim(bottom=0)
+        axes.grid(axis='y', color='#ebeae5', lw=0.9)
+        self._finish(axes=axes,
+                     title=f"Within-wafer and wafer-to-wafer stdev over run order, from a {window}-wafer window",
+                     xlabel="wafer index at the centre of the window (run order)",
+                     ylabel="standard deviation", legend_location='upper left')
         figure.tight_layout()
         figure.savefig(figure_path, dpi=SAVE_DPI)
         plt.close(figure)
@@ -314,5 +362,6 @@ if __name__ == '__main__':
     print(f"w2w detection point: n = {measurements.detection_point()}")
     measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
                                         sample_path=args.output_folder / 'site_value_violin_samples.csv')
+    measurements.draw_rolling_components(figure_path=args.output_folder / 'rolling_components.png')
     measurements.draw_cumulative_stdev(figure_path=args.output_folder / 'cum_stdev.png')
     print(f"figures written to {args.output_folder}")
