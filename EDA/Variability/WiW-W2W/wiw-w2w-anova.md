@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 26 | Created: 2026-09-01 | Updated: 2026-09-03 14:14 CDT
+Rev. 27 | Created: 2026-09-01 | Updated: 2026-09-03 14:17 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -122,11 +122,13 @@ $$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{
 
 $`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 두 식 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
+Fig 2 는 식 (9) 의 두 항을 함께 보인다. 식 (9) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 두 항의 크기 차가 커서 wafer 수준 항은 $`n \ge 5`$ 에서 관측 곡선에 거의 붙는다.
+
 이 자료는 $`N = 13`$ 이므로 첫 항 `sigma_within`²/13 = 19.38 은 site 평균화로도 없앨 수 없는 바닥이며, 그 제곱근 4.40 이 Fig 2 의 아래쪽 기준선이다. n = 261 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_wafer` 와 일치한다. 따라서 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_wafer`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. Cumulative standard deviation of wafer means against the floor, the asymptote, and the 1/√(13n) curve
+Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (9), the asymptote, and the 1/√(13n) curve
 
 ## 5. Wafers with Inflated Within-Wafer Spread
 
