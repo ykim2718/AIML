@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 24 | Created: 2026-09-01 | Updated: 2026-09-03 14:02 CDT
+Rev. 25 | Created: 2026-09-01 | Updated: 2026-09-03 14:09 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -96,7 +96,7 @@ ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하
 
 ## 4. Cumulative Standard Deviation of the Wafer Means
 
-처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차를 $`\sigma_n`$ 이라고 하자.<br> Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
+처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차를 $`\sigma_{\mu_n}`$ 이라고 하자.<br> Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
 
 $$X_{ij} = \mu_i + e_{ij}, \qquad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (6)$$
 
@@ -110,17 +110,17 @@ $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{wi
 
 제곱근을 취하면 관측값을 설명하는 식이 된다.
 
-$$\sigma_n = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (9)$$
+$$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (9)$$
 
 전체 wafer 를 다 쓴 $`n = K`$ 에서는 $`s_{\mu}^2(1..K) = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 이므로, 식 (9) 를 전체 표준편차만으로 다시 쓸 수 있다.
 
-$$\sigma_K = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (10)$$
+$$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (10)$$
 
-Table 2 의 wafer-to-wafer 성분, 곧 section 3 의 `sigma_wafer` 를 $`\sigma_{between}`$ 으로 두면 $`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$ 이므로, 같은 식을 within 대신 between 으로도 적을 수 있다.
+Table 2 의 wafer-to-wafer 성분, 곧 section 3 의 `sigma_wafer` 를 $`\sigma_{between}`$ 으로 두면 $`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$ 이므로, 같은 식을 within 대신 between 으로도 적을 수 있다고, 그 과정은 [Appendix C](#appendix-c-derivation-of-the-between-component-form) 에 적었다.
 
-$$\sigma_K = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (11)$$
+$$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (11)$$
 
-$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 두 식 모두 28.70 으로, 관측한 $`\sigma_{261}`$ 과 같다. 중간의 $`n`$ 에서는 $`s_{\mu}(1..n)`$ 이 전체 표준편차로 정해지지 않으므로 이렇게 쓸 수 없다.
+$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 두 식 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 중간의 $`n`$ 에서는 $`s_{\mu}(1..n)`$ 이 전체 표준편차로 정해지지 않으므로 이렇게 쓸 수 없다.
 
 이 자료는 $`N = 13`$ 이므로 첫 항 `sigma_within`²/13 = 19.38 은 site 평균화로도 없앨 수 없는 바닥이며, 그 제곱근 4.40 이 Fig 2 의 아래쪽 기준선이다. n = 261 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_wafer` 와 일치한다. 따라서 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_wafer`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
@@ -194,3 +194,23 @@ $$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \f
 $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (17)$$
 
 이 문서의 $`K = 261`$, $`N = 13`$ 에서는 $`1 - a = 260/3392 = 0.0767`$ 로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/3392 = 0.0035`$ 로 $`1/K = 0.0038`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 251.98`$ 과 $`S_{\mathrm{between}}^2 = 823.46`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 32.79`$ 가 되어 관측값 32.45 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
+
+## Appendix C. Derivation of the Between-Component Form
+
+식 (10) 은 within 성분으로 적혀 있다.
+
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (18)$$
+
+성분 분해에서 $`S_{\mathrm{total}}^2 = \sigma_{within}^2 + \sigma_{between}^2`$ 이므로 within 성분을 나머지 둘로 바꿀 수 있다.
+
+$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (19)$$
+
+이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래와 같다.
+
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (20)$$
+
+ICC 의 정의 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 를 넣어 $`\sigma_{between}^2`$ 을 지우면 두 번째 형태가 나오고, 제곱근을 취한 것이 식 (11) 이다.
+
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (21)$$
+
+$`N = 1`$ 이면 두 형태 모두 $`\sigma_{\mu_K} = S_{\mathrm{total}}`$ 이 되고, $`N`$ 이 커지면 $`\sigma_{\mu_K}`$ 는 $`\sigma_{between}`$ 으로 수렴한다. site 를 많이 잴수록 wafer 평균에서 within 성분이 지워진다는 뜻이다.
