@@ -12,10 +12,11 @@ Changelog:
 - 0.5.0: draw the site value figure one violin per wafer.
 - 0.6.0: add the rolling components and the figure that draws them over run order.
 - 0.7.0: trace the wafer means on the site value figure instead of their linear trend.
+- 0.8.0: scale the rolling figure's right axis as uniformity.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.7.0.2026.9.3"
+__version__ = "0.8.0.2026.9.3"
 
 import argparse
 import pathlib
@@ -279,6 +280,15 @@ class WaferMeasurements:
         axes.set_xlim(0, self.wafer_count + 1)
         axes.set_ylim(bottom=0)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
+        # the right axis is the same curves read as uniformity, so it rescales the left one by the grand mean
+        grand_mean = self.values.mean()
+        uniformity = axes.secondary_yaxis('right', functions=(lambda sigma: 100 * sigma / grand_mean,
+                                                              lambda percent: percent * grand_mean / 100))
+        uniformity.set_ylabel(r"uniformity  $1\sigma / \mu$  [%%]  ($\mu$ = %.1f)" % grand_mean,
+                              fontsize=self._font_size() * 1.1, color=COLOR_INK)
+        uniformity.tick_params(colors=COLOR_INK, labelsize=self._font_size())
+        for side in ('top', 'left', 'bottom'):
+            uniformity.spines[side].set_visible(False)
         self._finish(axes=axes,
                      title=f"Within-wafer and wafer-to-wafer stdev over run order, from a {window}-wafer window",
                      xlabel="wafer index at the centre of the window (run order)",

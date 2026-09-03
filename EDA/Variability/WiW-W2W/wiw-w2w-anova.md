@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 41 | Created: 2026-09-01 | Updated: 2026-09-03 17:35 CDT
+Rev. 42 | Created: 2026-09-01 | Updated: 2026-09-03 18:04 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -94,11 +94,11 @@ Table 2. Variance components
 
 ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 804.1 / 1056.1 = 0.761 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.761 은 site 한 점의 산포 중 76.1% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 
-Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, run order 를 따라 15 장 창을 한 장씩 밀며 창마다 두 성분을 다시 구하면 그 값이 공정과 함께 어떻게 움직였는지 보인다. Within-wafer 는 8.29 에서 24.71 사이 (평균 15.21) 로 완만히 오르내리는 데 그치지만, wafer-to-wafer 는 5.07 에서 50.20 사이 (평균 22.00) 로 열 배 가까이 흔들리며 wafer 130~145 와 230~240 구간에서 50 근처까지 치솟는다. 두 성분의 크기가 뒤바뀌는 구간도 있어서, wafer 50~120 에서는 71 개 창 중 48 개에서 wafer-to-wafer 가 within-wafer 아래로 내려간다 — 그 구간만 보면 산포의 주범이 wafer 단위 조건이 아니라 site 균일도였다는 뜻이다.
+Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, run order 를 따라 15 장 창을 한 장씩 밀며 창마다 두 성분을 다시 구하면 그 값이 공정과 함께 어떻게 움직였는지 보인다. Within-wafer 는 8.29 에서 24.71 사이 (평균 15.21) 로 완만히 오르내리는 데 그치지만, wafer-to-wafer 는 5.07 에서 50.20 사이 (평균 22.00) 로 열 배 가까이 흔들리며 wafer 130~145 와 230~240 구간에서 50 근처까지 치솟는다. 오른쪽 축은 같은 곡선을 전체 평균 623.3 으로 나눈 uniformity $`1\sigma / \mu`$ 이며, 전체로 보면 within-wafer 가 2.55%, wafer-to-wafer 가 4.55% 이고 창 단위로는 각각 1.33~3.97%, 0.81~8.05% 를 오간다. 두 성분의 크기가 뒤바뀌는 구간도 있어서, wafer 50~120 에서는 71 개 창 중 48 개에서 wafer-to-wafer 가 within-wafer 아래로 내려간다 — 그 구간만 보면 산포의 주범이 wafer 단위 조건이 아니라 site 균일도였다는 뜻이다.
 
 <img src="wiw-w2w-anova_fig/rolling_components.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. Within-wafer and wafer-to-wafer standard deviation over run order, each from a 15-wafer window
+Fig 2. Within-wafer and wafer-to-wafer standard deviation over run order, each from a 15-wafer window, with the right axis reading the same curves as uniformity
 
 ## 4. Cumulative Standard Deviation of the Wafer Means
 
