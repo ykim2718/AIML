@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution
-Rev. 2 | Created: 2026-09-03 | Updated: 2026-09-04 08:04 CDT
+Rev. 3 | Created: 2026-09-03 | Updated: 2026-09-04 08:15 CDT
 
 > A note on the distribution of a sum of squared standard normal variables: how it is built, what
 > its density and moments are, how it relates to the other sampling distributions, and why it turns
@@ -15,7 +15,8 @@ approximately standard normal, and that sum is what the distribution describes.
 
 This document defines the distribution, gives its density and moments, sets out its relations to
 the normal, gamma, t and F distributions, and shows the two settings above. The derivations are in
-[Appendix B](#appendix-b-derivations).
+[Appendix B](#appendix-b-derivations) and the calls that evaluate the distribution are in
+[Appendix C](#appendix-c-computation).
 
 ## 2. Definition
 
@@ -213,52 +214,6 @@ A two-by-two table with rows 38, 62 and 51, 49 has every expected count equal to
 statistic of 3.421 on 1 degree of freedom, and an upper-tail probability of 0.064. Against the 3.841
 of Table 2 the difference between the two rows is not significant at the 5 percent level.
 
-## 7. Computation
-
-The distribution and its inverse come from `scipy.stats.chi2`. The survival function `sf` gives the
-upper tail directly and is preferred over `1 - cdf`, which loses precision far out in the tail,
-while `isf` inverts it and produces the entries of Table 2.
-
-```python
-# Python
-from scipy import stats
-
-print(stats.chi2.isf(0.05, df=5))       # upper 5 percent point
-print(stats.chi2.sf(5.16, df=5))        # upper tail probability of an observed statistic
-print(stats.chi2.stats(df=5, moments='mv'))
-```
-
-```text
-11.070497693516355
-0.3966674666097388
-(np.float64(5.0), np.float64(10.0))
-```
-
-The two tests of section 6 are each one call, and both return the statistic with its upper-tail
-probability.
-
-```python
-# Python
-import numpy as np
-from scipy import stats
-
-print(stats.chisquare(f_obs=np.array([43, 52, 54, 61, 48, 42])))
-statistic, p_value, degrees, expected = stats.chi2_contingency(np.array([[38, 62], [51, 49]]),
-                                                               correction=False)
-print(round(statistic, 4), degrees, round(p_value, 4))
-```
-
-```text
-Power_divergenceResult(statistic=np.float64(5.16), pvalue=np.float64(0.3966674666097388))
-3.4214 1 0.0644
-```
-
-Two defaults are worth knowing. `stats.chisquare` assumes equal expected counts unless `f_exp` is
-given, and it takes the degrees of freedom as $m - 1$ unless `ddof` says how many parameters were
-estimated. `stats.chi2_contingency` applies Yates's continuity correction by default on a
-two-by-two table, so reproducing the uncorrected statistic of section 6.2 needs
-`correction=False`.
-
 ## References
 
 <a id="ref-1"></a>
@@ -374,3 +329,49 @@ $\chi^2_n$. The last term is $\left( (\bar{x}-\mu)/(\sigma/\sqrt{n}) \right)^2$,
 standard normal, and so is $\chi^2_1$. Cochran's theorem [[2](#ref-2)] says that the two terms on
 the right are independent and each chi-squared, so the degrees of freedom subtract and the first
 term is $\chi^2_{n-1}$. That first term is $(n-1)s^2/\sigma^2$, which is equation (7).
+
+## Appendix C. Computation
+
+The distribution and its inverse come from `scipy.stats.chi2`. The survival function `sf` gives the
+upper tail directly and is preferred over `1 - cdf`, which loses precision far out in the tail,
+while `isf` inverts it and produces the entries of Table 2.
+
+```python
+# Python
+from scipy import stats
+
+print(stats.chi2.isf(0.05, df=5))       # upper 5 percent point
+print(stats.chi2.sf(5.16, df=5))        # upper tail probability of an observed statistic
+print(stats.chi2.stats(df=5, moments='mv'))
+```
+
+```text
+11.070497693516355
+0.3966674666097388
+(np.float64(5.0), np.float64(10.0))
+```
+
+The two tests of section 6 are each one call, and both return the statistic with its upper-tail
+probability.
+
+```python
+# Python
+import numpy as np
+from scipy import stats
+
+print(stats.chisquare(f_obs=np.array([43, 52, 54, 61, 48, 42])))
+statistic, p_value, degrees, expected = stats.chi2_contingency(np.array([[38, 62], [51, 49]]),
+                                                               correction=False)
+print(round(statistic, 4), degrees, round(p_value, 4))
+```
+
+```text
+Power_divergenceResult(statistic=np.float64(5.16), pvalue=np.float64(0.3966674666097388))
+3.4214 1 0.0644
+```
+
+Two defaults are worth knowing. `stats.chisquare` assumes equal expected counts unless `f_exp` is
+given, and it takes the degrees of freedom as $m - 1$ unless `ddof` says how many parameters were
+estimated. `stats.chi2_contingency` applies Yates's continuity correction by default on a
+two-by-two table, so reproducing the uncorrected statistic of section 6.2 needs
+`correction=False`.
