@@ -1,5 +1,5 @@
 # The Shewhart Control Chart
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 11:05 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
 
 > 공정의 변동을 우연원인과 이상원인으로 갈라내기 위한 관리도에 대한 기록. 관리한계가 어떻게 정해지고
 > 왜 3 sigma 인지, 어떤 종류가 있고 이상을 얼마나 빨리 잡아내는지를 다룬다.
@@ -155,12 +155,10 @@ Table 2 가 관리도의 성격을 요약한다. 큰 변화는 거의 즉시 잡
 
 <a id="ref-1"></a>
 [1] Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
-ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
-
+ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.<br>
 <a id="ref-2"></a>
 [2] Western Electric Company (1956). *Statistical Quality Control Handbook*. Western Electric,
-Indianapolis.
-
+Indianapolis.<br>
 <a id="ref-3"></a>
 [3] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.
 ISBN 978-1-119-72309-7.

@@ -1,5 +1,5 @@
 # The Wafer Uniformity Index (Korean)
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 14:40 CDT
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
 
 > 반도체 공정 관리에서 층이 웨이퍼 위에서 얼마나 변하는지를 하나의 수로 요약하는 지표에 대한 기록.
 > 표준 산출 방식 두 가지, 그 수가 담는 것과 담지 못하는 것, 그리고 증착·식각·CMP 에서의 쓰임을 다룬다.
@@ -190,12 +190,10 @@ lot 사이의 흐름이 그것이다. 이 지표는 필요한 통계량이지 �
 <a id="ref-1"></a>
 [1] Davis, J. C., Sherer, J. M., Poole, S. J., & Loewenstein, L. M. (1996). [A Robust Metric for
 Measuring Within-Wafer Uniformity](https://doi.org/10.1109/3476.558556). *IEEE Transactions on Components, Packaging, and Manufacturing
-Technology — Part C*, 19(4), 283–289.
-
+Technology — Part C*, 19(4), 283–289.<br>
 <a id="ref-2"></a>
 [2] [A Study of Within-Wafer Non-Uniformity Metrics](https://ieeexplore.ieee.org/document/773193).
-*1999 4th International Workshop on Statistical Metrology*.
-
+*1999 4th International Workshop on Statistical Metrology*.<br>
 <a id="ref-3"></a>
 [3] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.
 ISBN 978-1-119-72309-7.

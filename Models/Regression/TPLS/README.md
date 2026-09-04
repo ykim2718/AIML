@@ -1,5 +1,5 @@
 # TPLS (Temporal Partial Least Squares)
-Rev. 1 | Created: 2026-08-30 | Updated: 2026-09-04 16:10 CDT
+Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
 
 PLS 는 예측변수 $X$ 를 응답 $y$ 와의 공분산이 큰 방향으로 투영하여, 변수 수가 관측 수를 넘는 자료에서도 회귀와 축약을 한 번에 끝내는 방법이다 [[1](#ref-1)]. 이 문서가 다루는 temporal PLS 는 그 자료에 시간이 개입할 때 무엇이 달라지는지를 정리한 것이다. 시간은 세 가지 서로 다른 자리로 들어오며, 어느 자리인지에 따라 쓰는 방법도 검증 방식도 갈리므로, 방법을 고르기 전에 그 자리를 먼저 정해야 한다.
 
@@ -153,18 +153,12 @@ Table 3. Method by question
 
 ## References
 
-<a id="ref-1"></a>[1] Wold, S., Sjöström, M. and Eriksson, L., "[PLS-regression: a basic tool of chemometrics](https://doi.org/10.1016/S0169-7439(01)00155-1)", Chemometrics and Intelligent Laboratory Systems, 58(2), 109-130, 2001.
-
-<a id="ref-2"></a>[2] Kaspar, M. H. and Ray, W. H., "[Dynamic PLS modelling for process control](https://doi.org/10.1016/0009-2509(93)85001-6)", Chemical Engineering Science, 48(20), 3447-3461, 1993.
-
-<a id="ref-3"></a>[3] Dong, Y. and Qin, S. J., "[Dynamic-Inner Partial Least Squares for Dynamic Data Modeling](https://doi.org/10.1016/j.ifacol.2015.08.167)", IFAC-PapersOnLine, 48(8), 117-122, 2015.
-
-<a id="ref-4"></a>[4] Nomikos, P. and MacGregor, J. F., "[Multi-way partial least squares in monitoring batch processes](https://doi.org/10.1016/0169-7439(95)00043-7)", Chemometrics and Intelligent Laboratory Systems, 30(1), 97-108, 1995.
-
-<a id="ref-5"></a>[5] Wold, S., Kettaneh, N., Fridén, H. and Holmberg, A., "[Modelling and diagnostics of batch processes and analogous kinetic experiments](https://doi.org/10.1016/S0169-7439(98)00162-2)", Chemometrics and Intelligent Laboratory Systems, 44(1-2), 331-340, 1998.
-
-<a id="ref-6"></a>[6] Bro, R., "[Multiway calibration. Multilinear PLS](https://doi.org/10.1002/%28SICI%291099-128X%28199601%2910%3A1%3C47%3A%3AAID-CEM400%3E3.0.CO%3B2-C)", Journal of Chemometrics, 10(1), 47-61, 1996.
-
+<a id="ref-1"></a>[1] Wold, S., Sjöström, M. and Eriksson, L., "[PLS-regression: a basic tool of chemometrics](https://doi.org/10.1016/S0169-7439(01)00155-1)", Chemometrics and Intelligent Laboratory Systems, 58(2), 109-130, 2001.<br>
+<a id="ref-2"></a>[2] Kaspar, M. H. and Ray, W. H., "[Dynamic PLS modelling for process control](https://doi.org/10.1016/0009-2509(93)85001-6)", Chemical Engineering Science, 48(20), 3447-3461, 1993.<br>
+<a id="ref-3"></a>[3] Dong, Y. and Qin, S. J., "[Dynamic-Inner Partial Least Squares for Dynamic Data Modeling](https://doi.org/10.1016/j.ifacol.2015.08.167)", IFAC-PapersOnLine, 48(8), 117-122, 2015.<br>
+<a id="ref-4"></a>[4] Nomikos, P. and MacGregor, J. F., "[Multi-way partial least squares in monitoring batch processes](https://doi.org/10.1016/0169-7439(95)00043-7)", Chemometrics and Intelligent Laboratory Systems, 30(1), 97-108, 1995.<br>
+<a id="ref-5"></a>[5] Wold, S., Kettaneh, N., Fridén, H. and Holmberg, A., "[Modelling and diagnostics of batch processes and analogous kinetic experiments](https://doi.org/10.1016/S0169-7439(98)00162-2)", Chemometrics and Intelligent Laboratory Systems, 44(1-2), 331-340, 1998.<br>
+<a id="ref-6"></a>[6] Bro, R., "[Multiway calibration. Multilinear PLS](https://doi.org/10.1002/%28SICI%291099-128X%28199601%2910%3A1%3C47%3A%3AAID-CEM400%3E3.0.CO%3B2-C)", Journal of Chemometrics, 10(1), 47-61, 1996.<br>
 <a id="ref-7"></a>[7] Qin, S. J., "[Recursive PLS algorithms for adaptive data modeling](https://doi.org/10.1016/S0098-1354(97)00262-7)", Computers & Chemical Engineering, 22(4-5), 503-514, 1998.
 
 ---

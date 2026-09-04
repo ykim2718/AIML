@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 19:26 UTC
+Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -96,8 +96,7 @@ not.
 
 <a id="ref-1"></a>
 [1] Casella, G., & Berger, R. L. (2002). *Statistical Inference* (2nd ed.). Duxbury.
-ISBN 978-0-534-24312-8.
-
+ISBN 978-0-534-24312-8.<br>
 <a id="ref-2"></a>
 [2] Cochran, W. G. (1977). [*Sampling Techniques*](https://www.wiley.com/en-us/Sampling+Techniques,+3rd+Edition-p-9780471162407) (3rd ed.). Wiley. ISBN 978-0-471-16240-7.
 

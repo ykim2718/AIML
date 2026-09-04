@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 28 | Created: 2026-08-28 | Updated: 2026-09-04 16:10 CDT
+Rev. 29 | Created: 2026-08-28 | Updated: 2026-09-04 20:10 UTC
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -227,53 +227,37 @@ Table 3. Libraries for model inversion
 ## References
 
 <a id="ref-1"></a>
-[1] Kaipio, J., Somersalo, E. (2005). [Statistical and Computational Inverse Problems](https://doi.org/10.1007/b138659). Springer, Applied Mathematical Sciences 160.
-
+[1] Kaipio, J., Somersalo, E. (2005). [Statistical and Computational Inverse Problems](https://doi.org/10.1007/b138659). Springer, Applied Mathematical Sciences 160.<br>
 <a id="ref-2"></a>
-[2] Jaeckle, C. M., MacGregor, J. F. (1998). [Product design through multivariate statistical analysis of process data](https://doi.org/10.1002/aic.690440509). AIChE Journal, 44(5), 1105–1118.
-
+[2] Jaeckle, C. M., MacGregor, J. F. (1998). [Product design through multivariate statistical analysis of process data](https://doi.org/10.1002/aic.690440509). AIChE Journal, 44(5), 1105–1118.<br>
 <a id="ref-3"></a>
-[3] Stuart, A. M. (2010). [Inverse problems: a Bayesian perspective](https://doi.org/10.1017/S0962492910000061). Acta Numerica, 19, 451–559.
-
+[3] Stuart, A. M. (2010). [Inverse problems: a Bayesian perspective](https://doi.org/10.1017/S0962492910000061). Acta Numerica, 19, 451–559.<br>
 <a id="ref-4"></a>
-[4] Ongie, G., Jalal, A., Metzler, C. A., Baraniuk, R. G., Dimakis, A. G., Willett, R. (2020). [Deep learning techniques for inverse problems in imaging](https://doi.org/10.1109/JSAIT.2020.2991563). IEEE Journal on Selected Areas in Information Theory, 1(1), 39–56.
-
+[4] Ongie, G., Jalal, A., Metzler, C. A., Baraniuk, R. G., Dimakis, A. G., Willett, R. (2020). [Deep learning techniques for inverse problems in imaging](https://doi.org/10.1109/JSAIT.2020.2991563). IEEE Journal on Selected Areas in Information Theory, 1(1), 39–56.<br>
 <a id="ref-5"></a>
-[5] Jaeckle, C. M., MacGregor, J. F. (2000). [Industrial applications of product design through the inversion of latent variable models](https://doi.org/10.1016/S0169-7439(99)00058-1). Chemometrics and Intelligent Laboratory Systems, 50(2), 199–210.
-
+[5] Jaeckle, C. M., MacGregor, J. F. (2000). [Industrial applications of product design through the inversion of latent variable models](https://doi.org/10.1016/S0169-7439(99)00058-1). Chemometrics and Intelligent Laboratory Systems, 50(2), 199–210.<br>
 <a id="ref-6"></a>
-[6] García-Muñoz, S., MacGregor, J. F., Kourti, T. (2005). [Product transfer between sites using Joint-Y PLS](https://doi.org/10.1016/j.chemolab.2005.04.009). Chemometrics and Intelligent Laboratory Systems, 79(1–2), 101–114.
-
+[6] García-Muñoz, S., MacGregor, J. F., Kourti, T. (2005). [Product transfer between sites using Joint-Y PLS](https://doi.org/10.1016/j.chemolab.2005.04.009). Chemometrics and Intelligent Laboratory Systems, 79(1–2), 101–114.<br>
 <a id="ref-7"></a>
-[7] García-Muñoz, S., Dolph, S., Ward, H. W. (2010). [Handling uncertainty in the establishment of a design space for the manufacture of a pharmaceutical product](https://doi.org/10.1016/j.compchemeng.2010.02.027). Computers & Chemical Engineering, 34(7), 1098–1107.
-
+[7] García-Muñoz, S., Dolph, S., Ward, H. W. (2010). [Handling uncertainty in the establishment of a design space for the manufacture of a pharmaceutical product](https://doi.org/10.1016/j.compchemeng.2010.02.027). Computers & Chemical Engineering, 34(7), 1098–1107.<br>
 <a id="ref-8"></a>
-[8] Tomba, E., Barolo, M., García-Muñoz, S. (2012). [General framework for latent variable model inversion for the design and manufacturing of new products](https://doi.org/10.1021/ie301214c). Industrial & Engineering Chemistry Research, 51(39), 12886–12900.
-
+[8] Tomba, E., Barolo, M., García-Muñoz, S. (2012). [General framework for latent variable model inversion for the design and manufacturing of new products](https://doi.org/10.1021/ie301214c). Industrial & Engineering Chemistry Research, 51(39), 12886–12900.<br>
 <a id="ref-9"></a>
-[9] Palací-López, D., Facco, P., Barolo, M., Ferrer, A. (2019). [New tools for the design and manufacturing of new products based on latent variable model inversion](https://doi.org/10.1016/j.chemolab.2019.103848). Chemometrics and Intelligent Laboratory Systems, 194, 103848.
-
+[9] Palací-López, D., Facco, P., Barolo, M., Ferrer, A. (2019). [New tools for the design and manufacturing of new products based on latent variable model inversion](https://doi.org/10.1016/j.chemolab.2019.103848). Chemometrics and Intelligent Laboratory Systems, 194, 103848.<br>
 <a id="ref-10"></a>
-[10] Palací-López, D., et al. (2020). [Improved formulation of the latent variable model inversion-based optimization problem for quality by design applications](https://doi.org/10.1002/cem.3230). Journal of Chemometrics, 34(6), e3230.
-
+[10] Palací-López, D., et al. (2020). [Improved formulation of the latent variable model inversion-based optimization problem for quality by design applications](https://doi.org/10.1002/cem.3230). Journal of Chemometrics, 34(6), e3230.<br>
 <a id="ref-11"></a>
-[11] Kwok, J. T., Tsang, I. W. (2004). [The pre-image problem in kernel methods](https://doi.org/10.1109/TNN.2004.837781). IEEE Transactions on Neural Networks, 15(6), 1517–1525.
-
+[11] Kwok, J. T., Tsang, I. W. (2004). [The pre-image problem in kernel methods](https://doi.org/10.1109/TNN.2004.837781). IEEE Transactions on Neural Networks, 15(6), 1517–1525.<br>
 <a id="ref-12"></a>
-[12] Shahriari, B., Swersky, K., Wang, Z., Adams, R. P., de Freitas, N. (2016). [Taking the human out of the loop: a review of Bayesian optimization](https://doi.org/10.1109/JPROC.2015.2494218). Proceedings of the IEEE, 104(1), 148–175.
-
+[12] Shahriari, B., Swersky, K., Wang, Z., Adams, R. P., de Freitas, N. (2016). [Taking the human out of the loop: a review of Bayesian optimization](https://doi.org/10.1109/JPROC.2015.2494218). Proceedings of the IEEE, 104(1), 148–175.<br>
 <a id="ref-13"></a>
-[13] Lundberg, S. M., Erion, G., Chen, H., et al. (2020). [From local explanations to global understanding with explainable AI for trees](https://doi.org/10.1038/s42256-019-0138-9). Nature Machine Intelligence, 2, 56–67.
-
+[13] Lundberg, S. M., Erion, G., Chen, H., et al. (2020). [From local explanations to global understanding with explainable AI for trees](https://doi.org/10.1038/s42256-019-0138-9). Nature Machine Intelligence, 2, 56–67.<br>
 <a id="ref-14"></a>
-[14] Simonyan, K., Vedaldi, A., Zisserman, A. (2014). [Deep inside convolutional networks: visualising image classification models and saliency maps](https://doi.org/10.48550/arXiv.1312.6034). arXiv:1312.6034.
-
+[14] Simonyan, K., Vedaldi, A., Zisserman, A. (2014). [Deep inside convolutional networks: visualising image classification models and saliency maps](https://doi.org/10.48550/arXiv.1312.6034). arXiv:1312.6034.<br>
 <a id="ref-15"></a>
-[15] Gómez-Bombarelli, R., Wei, J. N., Duvenaud, D., et al. (2018). [Automatic chemical design using a data-driven continuous representation of molecules](https://doi.org/10.1021/acscentsci.7b00572). ACS Central Science, 4(2), 268–276.
-
+[15] Gómez-Bombarelli, R., Wei, J. N., Duvenaud, D., et al. (2018). [Automatic chemical design using a data-driven continuous representation of molecules](https://doi.org/10.1021/acscentsci.7b00572). ACS Central Science, 4(2), 268–276.<br>
 <a id="ref-16"></a>
-[16] Ardizzone, L., Kruse, J., Wirkert, S., et al. (2019). [Analyzing inverse problems with invertible neural networks](https://doi.org/10.48550/arXiv.1808.04730). International Conference on Learning Representations.
-
+[16] Ardizzone, L., Kruse, J., Wirkert, S., et al. (2019). [Analyzing inverse problems with invertible neural networks](https://doi.org/10.48550/arXiv.1808.04730). International Conference on Learning Representations.<br>
 <a id="ref-17"></a>
 [17] Chung, H., Kim, J., McCann, M. T., Klasky, M. L., Ye, J. C. (2023). [Diffusion posterior sampling for general noisy inverse problems](https://doi.org/10.48550/arXiv.2209.14687). International Conference on Learning Representations.
 

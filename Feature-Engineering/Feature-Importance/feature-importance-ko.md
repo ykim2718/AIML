@@ -1,5 +1,5 @@
 # Feature Importance (Korean)
-Rev. 0 | Created: 2026-08-31 | Updated: 2026-08-31 18:02 CDT
+Rev. 1 | Created: 2026-08-31 | Updated: 2026-09-04 20:10 UTC
 
 > Feature 에 숫자를 매기는 방법들을 그 숫자가 어디서 나오는가로 나누어 정리한 글이며, 이미
 > import 해 둔 library 가 아니라 묻고 있는 물음에서 방법이 골라지도록 하려는 것이다.
@@ -415,77 +415,53 @@ Table 10. Question and the family that answers it
 ## References
 
 <a id="ref-1"></a>
-[1] Breiman, L. (2001). [Random Forests](https://doi.org/10.1023/A:1010933404324). *Machine Learning*, 45(1), 5–32.
-
+[1] Breiman, L. (2001). [Random Forests](https://doi.org/10.1023/A:1010933404324). *Machine Learning*, 45(1), 5–32.<br>
 <a id="ref-2"></a>
-[2] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.
-
+[2] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
 <a id="ref-3"></a>
-[3] Strobl, C., Boulesteix, A.-L., Kneib, T., Augustin, T. and Zeileis, A. (2008). [Conditional variable importance for random forests](https://doi.org/10.1186/1471-2105-9-307). *BMC Bioinformatics*, 9, 307.
-
+[3] Strobl, C., Boulesteix, A.-L., Kneib, T., Augustin, T. and Zeileis, A. (2008). [Conditional variable importance for random forests](https://doi.org/10.1186/1471-2105-9-307). *BMC Bioinformatics*, 9, 307.<br>
 <a id="ref-4"></a>
-[4] Fisher, A., Rudin, C. and Dominici, F. (2019). [All Models are Wrong, but Many are Useful: Learning a Variable's Importance by Studying an Entire Class of Prediction Models Simultaneously](https://jmlr.org/papers/v20/18-760.html). *Journal of Machine Learning Research*, 20(177), 1–81.
-
+[4] Fisher, A., Rudin, C. and Dominici, F. (2019). [All Models are Wrong, but Many are Useful: Learning a Variable's Importance by Studying an Entire Class of Prediction Models Simultaneously](https://jmlr.org/papers/v20/18-760.html). *Journal of Machine Learning Research*, 20(177), 1–81.<br>
 <a id="ref-5"></a>
-[5] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.
-
+[5] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.<br>
 <a id="ref-6"></a>
-[6] Ribeiro, M. T., Singh, S. and Guestrin, C. (2016). ["Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://doi.org/10.1145/2939672.2939778). *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1135–1144.
-
+[6] Ribeiro, M. T., Singh, S. and Guestrin, C. (2016). ["Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://doi.org/10.1145/2939672.2939778). *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1135–1144.<br>
 <a id="ref-7"></a>
-[7] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.
-
+[7] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.<br>
 <a id="ref-8"></a>
-[8] Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., Katz, R., Himmelfarb, J., Bansal, N. and Lee, S.-I. (2020). [From local explanations to global understanding with explainable AI for trees](https://doi.org/10.1038/s42256-019-0138-9). *Nature Machine Intelligence*, 2, 56–67.
-
+[8] Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., Katz, R., Himmelfarb, J., Bansal, N. and Lee, S.-I. (2020). [From local explanations to global understanding with explainable AI for trees](https://doi.org/10.1038/s42256-019-0138-9). *Nature Machine Intelligence*, 2, 56–67.<br>
 <a id="ref-9"></a>
-[9] Covert, I., Lundberg, S. M. and Lee, S.-I. (2020). [Understanding Global Feature Contributions With Additive Importance Measures](https://papers.neurips.cc/paper/2020/hash/c7bf0b7c1a86d5eb3be2c722cf2cf746-Abstract.html). *Advances in Neural Information Processing Systems*, 33.
-
+[9] Covert, I., Lundberg, S. M. and Lee, S.-I. (2020). [Understanding Global Feature Contributions With Additive Importance Measures](https://papers.neurips.cc/paper/2020/hash/c7bf0b7c1a86d5eb3be2c722cf2cf746-Abstract.html). *Advances in Neural Information Processing Systems*, 33.<br>
 <a id="ref-10"></a>
-[10] Sundararajan, M., Taly, A. and Yan, Q. (2017). [Axiomatic Attribution for Deep Networks](https://proceedings.mlr.press/v70/sundararajan17a.html). *Proceedings of the 34th International Conference on Machine Learning*, PMLR 70, 3319–3328.
-
+[10] Sundararajan, M., Taly, A. and Yan, Q. (2017). [Axiomatic Attribution for Deep Networks](https://proceedings.mlr.press/v70/sundararajan17a.html). *Proceedings of the 34th International Conference on Machine Learning*, PMLR 70, 3319–3328.<br>
 <a id="ref-11"></a>
-[11] Bach, S., Binder, A., Montavon, G., Klauschen, F., Müller, K.-R. and Samek, W. (2015). [On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation](https://doi.org/10.1371/journal.pone.0130140). *PLoS ONE*, 10(7), e0130140.
-
+[11] Bach, S., Binder, A., Montavon, G., Klauschen, F., Müller, K.-R. and Samek, W. (2015). [On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation](https://doi.org/10.1371/journal.pone.0130140). *PLoS ONE*, 10(7), e0130140.<br>
 <a id="ref-12"></a>
-[12] Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D. and Batra, D. (2020). [Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization](https://doi.org/10.1007/s11263-019-01228-7). *International Journal of Computer Vision*, 128, 336–359.
-
+[12] Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D. and Batra, D. (2020). [Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization](https://doi.org/10.1007/s11263-019-01228-7). *International Journal of Computer Vision*, 128, 336–359.<br>
 <a id="ref-13"></a>
-[13] Sobol', I. M. (2001). [Global sensitivity indices for nonlinear mathematical models and their Monte Carlo estimates](https://doi.org/10.1016/S0378-4754(00)00270-6). *Mathematics and Computers in Simulation*, 55(1–3), 271–280.
-
+[13] Sobol', I. M. (2001). [Global sensitivity indices for nonlinear mathematical models and their Monte Carlo estimates](https://doi.org/10.1016/S0378-4754(00)00270-6). *Mathematics and Computers in Simulation*, 55(1–3), 271–280.<br>
 <a id="ref-14"></a>
-[14] Friedman, J. H. and Popescu, B. E. (2008). [Predictive learning via rule ensembles](https://doi.org/10.1214/07-AOAS148). *The Annals of Applied Statistics*, 2(3), 916–954.
-
+[14] Friedman, J. H. and Popescu, B. E. (2008). [Predictive learning via rule ensembles](https://doi.org/10.1214/07-AOAS148). *The Annals of Applied Statistics*, 2(3), 916–954.<br>
 <a id="ref-15"></a>
-[15] Apley, D. W. and Zhu, J. (2020). [Visualizing the effects of predictor variables in black box supervised learning models](https://doi.org/10.1111/rssb.12377). *Journal of the Royal Statistical Society: Series B*, 82(4), 1059–1086.
-
+[15] Apley, D. W. and Zhu, J. (2020). [Visualizing the effects of predictor variables in black box supervised learning models](https://doi.org/10.1111/rssb.12377). *Journal of the Royal Statistical Society: Series B*, 82(4), 1059–1086.<br>
 <a id="ref-16"></a>
-[16] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.
-
+[16] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.<br>
 <a id="ref-17"></a>
-[17] Lei, J., G'Sell, M., Rinaldo, A., Tibshirani, R. J. and Wasserman, L. (2018). [Distribution-Free Predictive Inference for Regression](https://doi.org/10.1080/01621459.2017.1307116). *Journal of the American Statistical Association*, 113(523), 1094–1111.
-
+[17] Lei, J., G'Sell, M., Rinaldo, A., Tibshirani, R. J. and Wasserman, L. (2018). [Distribution-Free Predictive Inference for Regression](https://doi.org/10.1080/01621459.2017.1307116). *Journal of the American Statistical Association*, 113(523), 1094–1111.<br>
 <a id="ref-18"></a>
-[18] Williamson, B. D., Gilbert, P. B., Simon, N. R. and Carone, M. (2023). [A General Framework for Inference on Algorithm-Agnostic Variable Importance](https://doi.org/10.1080/01621459.2021.2003200). *Journal of the American Statistical Association*, 118(543), 1645–1658.
-
+[18] Williamson, B. D., Gilbert, P. B., Simon, N. R. and Carone, M. (2023). [A General Framework for Inference on Algorithm-Agnostic Variable Importance](https://doi.org/10.1080/01621459.2021.2003200). *Journal of the American Statistical Association*, 118(543), 1645–1658.<br>
 <a id="ref-19"></a>
-[19] Kumar, I. E., Venkatasubramanian, S., Scheidegger, C. and Friedler, S. (2020). [Problems with Shapley-value-based explanations as feature importance measures](https://proceedings.mlr.press/v119/kumar20e.html). *Proceedings of the 37th International Conference on Machine Learning*, PMLR 119, 5491–5500.
-
+[19] Kumar, I. E., Venkatasubramanian, S., Scheidegger, C. and Friedler, S. (2020). [Problems with Shapley-value-based explanations as feature importance measures](https://proceedings.mlr.press/v119/kumar20e.html). *Proceedings of the 37th International Conference on Machine Learning*, PMLR 119, 5491–5500.<br>
 <a id="ref-20"></a>
-[20] Jethani, N., Sudarshan, M., Covert, I., Lee, S.-I. and Ranganath, R. (2022). [FastSHAP: Real-Time Shapley Value Estimation](https://arxiv.org/abs/2107.07436). *International Conference on Learning Representations*.
-
+[20] Jethani, N., Sudarshan, M., Covert, I., Lee, S.-I. and Ranganath, R. (2022). [FastSHAP: Real-Time Shapley Value Estimation](https://arxiv.org/abs/2107.07436). *International Conference on Learning Representations*.<br>
 <a id="ref-21"></a>
-[21] Peng, H., Long, F. and Ding, C. (2005). [Feature Selection Based on Mutual Information: Criteria of Max-Dependency, Max-Relevance, and Min-Redundancy](https://doi.org/10.1109/TPAMI.2005.159). *IEEE Transactions on Pattern Analysis and Machine Intelligence*, 27(8), 1226–1238.
-
+[21] Peng, H., Long, F. and Ding, C. (2005). [Feature Selection Based on Mutual Information: Criteria of Max-Dependency, Max-Relevance, and Min-Redundancy](https://doi.org/10.1109/TPAMI.2005.159). *IEEE Transactions on Pattern Analysis and Machine Intelligence*, 27(8), 1226–1238.<br>
 <a id="ref-22"></a>
-[22] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.
-
+[22] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
 <a id="ref-23"></a>
-[23] Verdinelli, I. and Wasserman, L. (2024). [Decorrelated Variable Importance](https://www.jmlr.org/papers/volume25/22-0801/22-0801.pdf). *Journal of Machine Learning Research*, 25(7), 1–27.
-
+[23] Verdinelli, I. and Wasserman, L. (2024). [Decorrelated Variable Importance](https://www.jmlr.org/papers/volume25/22-0801/22-0801.pdf). *Journal of Machine Learning Research*, 25(7), 1–27.<br>
 <a id="ref-24"></a>
-[24] Chen, H., Covert, I. C., Lundberg, S. M. and Lee, S.-I. (2023). [Algorithms to estimate Shapley value feature attributions](https://doi.org/10.1038/s42256-023-00657-x). *Nature Machine Intelligence*, 5, 590–601.
-
+[24] Chen, H., Covert, I. C., Lundberg, S. M. and Lee, S.-I. (2023). [Algorithms to estimate Shapley value feature attributions](https://doi.org/10.1038/s42256-023-00657-x). *Nature Machine Intelligence*, 5, 590–601.<br>
 <a id="ref-25"></a>
 [25] Bilodeau, B., Jaques, N., Koh, P. W. and Kim, B. (2024). [Impossibility theorems for feature attribution](https://doi.org/10.1073/pnas.2304406120). *Proceedings of the National Academy of Sciences*, 121(2), e2304406120.
 

@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution (Korean)
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 19:26 UTC
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
 
 > 표준정규 확률변수의 제곱합이 따르는 분포에 대한 기록. 어떻게 만들어지는지, 밀도함수와 moment 가
 > 무엇인지, 다른 표본분포와 어떻게 이어지는지, 그리고 이를 쓰는 검정에 왜 등장하는지를 다룬다.
@@ -198,19 +198,16 @@ $(r-1) + (c-1)$ 개를 없애므로 $rc - 1 - (r-1) - (c-1) = (r-1)(c-1)$ 이 �
 
 <a id="ref-1"></a>
 [1] Wilson, E. B., & Hilferty, M. M. (1931). [The Distribution of Chi-Square](https://doi.org/10.1073/pnas.17.12.684). *Proceedings of the
-National Academy of Sciences*, 17(12), 684–688.
-
+National Academy of Sciences*, 17(12), 684–688.<br>
 <a id="ref-2"></a>
 [2] Cochran, W. G. (1934). [The Distribution of Quadratic Forms in a Normal System, with
 Applications to the Analysis of Covariance](https://doi.org/10.1017/S0305004100016595). *Mathematical Proceedings of the Cambridge
-Philosophical Society*, 30(2), 178–191.
-
+Philosophical Society*, 30(2), 178–191.<br>
 <a id="ref-3"></a>
 [3] Pearson, K. (1900). [On the Criterion that a Given System of Deviations from the Probable in the
 Case of a Correlated System of Variables is Such that it Can be Reasonably Supposed to have Arisen
 from Random Sampling](https://doi.org/10.1080/14786440009463897). *The London, Edinburgh, and Dublin Philosophical Magazine and Journal of
-Science*, 50(302), 157–175.
-
+Science*, 50(302), 157–175.<br>
 <a id="ref-4"></a>
 [4] Johnson, N. L., Kotz, S., & Balakrishnan, N. (1994). *Continuous Univariate Distributions*
 (Vol. 1, 2nd ed.). Wiley. ISBN 978-0-471-58495-7.

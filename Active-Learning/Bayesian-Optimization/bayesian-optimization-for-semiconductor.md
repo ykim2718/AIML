@@ -1,5 +1,5 @@
 # Bayesian Optimization for Semiconductor Process Tuning
-Rev. 0 | Created: 2026-08-27 | Updated: 2026-08-27 15:08 CDT
+Rev. 1 | Created: 2026-08-27 | Updated: 2026-09-04 20:10 UTC
 
 공정 조건 하나를 시험하려면 장비를 세우고 wafer 를 걸어야 하므로 시도할 수 있는 횟수가 수십 회에 그친다. Grid 로 훑거나 무작위로 뿌리는 방법은 그 예산 안에서 답에 닿지 못한다. Bayesian optimization 은 지금까지의 결과로 아직 해 보지 않은 조건의 결과를 확률로 그려 두고, 그 그림을 근거로 다음 한 점을 고른다. 이 문서는 그 방법이 무엇을 가정하고 어떻게 도는지, 그리고 fab 이 그 위에 얹는 제약이 무엇인지 정리한다.
 
@@ -88,10 +88,8 @@ Bayesian optimization 과 active learning 은 surrogate model 과 acquisition fu
 
 ## References
 
-<a id="ref-1"></a>[1] Jones, D. R., Schonlau, M., Welch, W. J. [Efficient Global Optimization of Expensive Black-Box Functions](https://doi.org/10.1023/A:1008306431147). Journal of Global Optimization, 13(4), 455-492, 1998.
-
-<a id="ref-2"></a>[2] Rasmussen, C. E., Williams, C. K. I. [Gaussian Processes for Machine Learning](http://gaussianprocess.org/gpml/). MIT Press, 2006. ISBN 978-0-262-18253-9.
-
+<a id="ref-1"></a>[1] Jones, D. R., Schonlau, M., Welch, W. J. [Efficient Global Optimization of Expensive Black-Box Functions](https://doi.org/10.1023/A:1008306431147). Journal of Global Optimization, 13(4), 455-492, 1998.<br>
+<a id="ref-2"></a>[2] Rasmussen, C. E., Williams, C. K. I. [Gaussian Processes for Machine Learning](http://gaussianprocess.org/gpml/). MIT Press, 2006. ISBN 978-0-262-18253-9.<br>
 <a id="ref-3"></a>[3] Shahriari, B., Swersky, K., Wang, Z., Adams, R. P., de Freitas, N. [Taking the Human Out of the Loop: A Review of Bayesian Optimization](https://doi.org/10.1109/JPROC.2015.2494218). Proceedings of the IEEE, 104(1), 148-175, 2016.
 
 ---

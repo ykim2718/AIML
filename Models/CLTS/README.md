@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 26 | Created: 2026-08-12 | Updated: 2026-08-29 02:28 CDT
+Rev. 27 | Created: 2026-08-12 | Updated: 2026-09-04 20:10 UTC
 
 CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
 
@@ -106,20 +106,15 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 ## References
 
 <a id="ref-1"></a>
-[1] [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)
-
+[1] [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)<br>
 <a id="ref-2"></a>
-[2] [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)
-
+[2] [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)<br>
 <a id="ref-3"></a>
-[3] [Continuous Evolution Pool: Taming Recurring Concept Drift in Online Time Series Forecasting](https://arxiv.org/html/2506.14790)
-
+[3] [Continuous Evolution Pool: Taming Recurring Concept Drift in Online Time Series Forecasting](https://arxiv.org/html/2506.14790)<br>
 <a id="ref-4"></a>
-[4] [Online Continual Learning for Time Series: a Natural Score-driven Approach](https://arxiv.org/html/2601.12931)
-
+[4] [Online Continual Learning for Time Series: a Natural Score-driven Approach](https://arxiv.org/html/2601.12931)<br>
 <a id="ref-5"></a>
-[5] [pySmooth: Kalman filters and online ARIMA in Python](https://github.com/kenluck2001/pySmooth)
-
+[5] [pySmooth: Kalman filters and online ARIMA in Python](https://github.com/kenluck2001/pySmooth)<br>
 <a id="ref-6"></a>
 [6] [Kalman Filter for Time Series Forecasting in Python](https://forecastegy.com/posts/kalman-filter-for-time-series-forecasting-in-python/)
 

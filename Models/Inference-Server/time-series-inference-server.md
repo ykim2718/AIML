@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 31 | Created: 2026-08-28 | Updated: 2026-08-29 13:40 CDT
+Rev. 32 | Created: 2026-08-28 | Updated: 2026-09-04 20:10 UTC
 
 시계열 model 은 적합이 끝난 뒤에도 그 자체로는 아무 답도 내놓지 못한다. 관측이 계속 도착하는 환경에서 model 을 실제 답으로 잇는 장치가 inference server 이며, 이 리포트는 그 장치를 구성, model 의 몫, server 의 몫의 순서로 정리한다. 읽는 이는 시계열 model 을 적합해 본 적은 있으나 그것을 운영에 올려 본 적은 없는 사람을 상정한다.
 
@@ -220,35 +220,25 @@ Table 12. 제약과 그것이 강제하는 선택
 ## References
 
 <a id="ref-1"></a>
-[1] Apache Flink. [Working with state](https://github.com/apache/flink/blob/master/docs/content/docs/dev/datastream/fault-tolerance/state.md). The Apache Software Foundation.
-
+[1] Apache Flink. [Working with state](https://github.com/apache/flink/blob/master/docs/content/docs/dev/datastream/fault-tolerance/state.md). The Apache Software Foundation.<br>
 <a id="ref-2"></a>
-[2] Nixtla. [TimeGPT](https://github.com/Nixtla/nixtla). Nixtla.
-
+[2] Nixtla. [TimeGPT](https://github.com/Nixtla/nixtla). Nixtla.<br>
 <a id="ref-3"></a>
-[3] NVIDIA. [Batchers](https://github.com/triton-inference-server/server/blob/main/docs/user_guide/batcher.md). NVIDIA Corporation.
-
+[3] NVIDIA. [Batchers](https://github.com/triton-inference-server/server/blob/main/docs/user_guide/batcher.md). NVIDIA Corporation.<br>
 <a id="ref-4"></a>
-[4] KServe authors. [KServe](https://github.com/kserve/kserve). Cloud Native Computing Foundation.
-
+[4] KServe authors. [KServe](https://github.com/kserve/kserve). Cloud Native Computing Foundation.<br>
 <a id="ref-5"></a>
-[5] PyTorch. [TorchServe](https://github.com/pytorch/serve). The Linux Foundation.
-
+[5] PyTorch. [TorchServe](https://github.com/pytorch/serve). The Linux Foundation.<br>
 <a id="ref-6"></a>
-[6] Amazon Science. [Chronos: pretrained models for time series forecasting](https://github.com/amazon-science/chronos-forecasting). Amazon.
-
+[6] Amazon Science. [Chronos: pretrained models for time series forecasting](https://github.com/amazon-science/chronos-forecasting). Amazon.<br>
 <a id="ref-7"></a>
-[7] Google Research. [TimesFM](https://github.com/google-research/timesfm). Google.
-
+[7] Google Research. [TimesFM](https://github.com/google-research/timesfm). Google.<br>
 <a id="ref-8"></a>
-[8] Salesforce AI Research. [uni2ts: unified training of universal time series forecasting transformers](https://github.com/SalesforceAIResearch/uni2ts). Salesforce.
-
+[8] Salesforce AI Research. [uni2ts: unified training of universal time series forecasting transformers](https://github.com/SalesforceAIResearch/uni2ts). Salesforce.<br>
 <a id="ref-9"></a>
-[9] IBM Granite. [granite-tsfm](https://github.com/ibm-granite/granite-tsfm). IBM.
-
+[9] IBM Granite. [granite-tsfm](https://github.com/ibm-granite/granite-tsfm). IBM.<br>
 <a id="ref-10"></a>
-[10] Datadog. [Toto: time-series-optimized transformer for observability](https://github.com/DataDog/toto). Datadog.
-
+[10] Datadog. [Toto: time-series-optimized transformer for observability](https://github.com/DataDog/toto). Datadog.<br>
 <a id="ref-11"></a>
 [11] AutoGluon. [AutoGluon](https://github.com/autogluon/autogluon). The AutoGluon community.
 

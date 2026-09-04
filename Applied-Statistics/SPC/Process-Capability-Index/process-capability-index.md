@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-04 14:36 CDT
+Rev. 7 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -191,8 +191,7 @@ rather than a published standard, and what transfers is the shape.
 ## References
 
 <a id="ref-1"></a>
-[1] Kane, V. E. (1986). [Process Capability Indices](https://doi.org/10.1080/00224065.1986.11978984). *Journal of Quality Technology*, 18(1), 41–52.
-
+[1] Kane, V. E. (1986). [Process Capability Indices](https://doi.org/10.1080/00224065.1986.11978984). *Journal of Quality Technology*, 18(1), 41–52.<br>
 <a id="ref-2"></a>
 [2] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.
 ISBN 978-1-119-72309-7.

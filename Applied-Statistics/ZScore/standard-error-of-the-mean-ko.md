@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean (Korean)
-Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 19:26 UTC
+Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -90,8 +90,7 @@ standard error 를 추정한다. 이것은 추정값이라 그 자체의 불확�
 
 <a id="ref-1"></a>
 [1] Casella, G., & Berger, R. L. (2002). *Statistical Inference* (2nd ed.). Duxbury.
-ISBN 978-0-534-24312-8.
-
+ISBN 978-0-534-24312-8.<br>
 <a id="ref-2"></a>
 [2] Cochran, W. G. (1977). [*Sampling Techniques*](https://www.wiley.com/en-us/Sampling+Techniques,+3rd+Edition-p-9780471162407) (3rd ed.). Wiley. ISBN 978-0-471-16240-7.
 

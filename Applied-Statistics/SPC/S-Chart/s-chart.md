@@ -1,5 +1,5 @@
 # The s Control Chart
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 11:45 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
 
 > 부분군의 표준편차를 찍어 공정의 산포를 관리하는 s 관리도에 대한 기록. 관리한계가 어떻게 나오는지,
 > 왜 $\bar{s}$ 를 그대로 쓰지 않고 $c_4$ 로 나누는지, 그리고 언제 R 관리도 대신 이것을 쓰는지를 다룬다.
@@ -142,8 +142,7 @@ $c_4 = 0.9400$ 이므로 $CL = 1.880$, $UCL = 3.927$ 이고 $B_3 = 0$ 이라 아
 
 <a id="ref-1"></a>
 [1] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.
-ISBN 978-1-119-72309-7.
-
+ISBN 978-1-119-72309-7.<br>
 <a id="ref-2"></a>
 [2] Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
 ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.

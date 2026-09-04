@@ -1,5 +1,5 @@
 # Noise in LSB
-Rev. 5 | Created: 2026-08-22 | Updated: 2026-08-22 16:38 CDT
+Rev. 6 | Created: 2026-08-22 | Updated: 2026-09-04 20:10 UTC
 
 신호의 표준편차를 LSB 하나의 크기로 나눈 값은 ADC 와 DAC 를 다루는 분야에서 noise in LSB 또는 LSB rms noise 라고 부른다. 잡음을 volt 로 적으면 장치마다 입력 범위와 비트 수가 달라 서로 견줄 수 없지만, 이 값은 잡음을 그 장치의 분해능으로 잰 것이므로 장치가 달라도 같은 뜻으로 읽힌다. 이 문서는 이 값의 정의, 물리적 의미, 값에 따른 해석을 정리한다.
 
@@ -67,10 +67,8 @@ $$\sigma_{total} = \sqrt{\sigma_{quant}^2 + \sigma_{input}^2}$$
 
 ## References
 
-<a id="ref-1"></a>[1] Analog Devices. [ADC Input Noise: The Good, the Bad, and the Ugly. Is No Noise Good Noise?](https://www.analog.com/en/resources/analog-dialogue/articles/adc-input-noise.html). Analog Dialogue 40-02, 2006.
-
-<a id="ref-2"></a>[2] Analog Devices. [Understanding Noise, ENOB, and Effective Resolution in Analog-to-Digital Converters](https://www.analog.com/en/resources/technical-articles/noise-enob-and-effective-resoluition-in-analog-to-digital-converter-circuits--maxim-integrated.html).
-
+<a id="ref-1"></a>[1] Analog Devices. [ADC Input Noise: The Good, the Bad, and the Ugly. Is No Noise Good Noise?](https://www.analog.com/en/resources/analog-dialogue/articles/adc-input-noise.html). Analog Dialogue 40-02, 2006.<br>
+<a id="ref-2"></a>[2] Analog Devices. [Understanding Noise, ENOB, and Effective Resolution in Analog-to-Digital Converters](https://www.analog.com/en/resources/technical-articles/noise-enob-and-effective-resoluition-in-analog-to-digital-converter-circuits--maxim-integrated.html).<br>
 <a id="ref-3"></a>[3] Institute of Electrical and Electronics Engineers. [IEEE Std 1057-2017, IEEE Standard for Digitizing Waveform Recorders](https://ieeexplore.ieee.org/document/8291741/). 2017.
 
 ---

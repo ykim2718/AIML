@@ -1,5 +1,5 @@
 # Ceiling of the Classical z-Score
-Rev. 2 | Created: 2026-08-18 | Updated: 2026-08-18 23:41 CDT
+Rev. 3 | Created: 2026-08-18 | Updated: 2026-09-04 20:10 UTC
 
 > A note on the largest absolute z-score a sample of a given size can produce, the derivation of
 > that bound, and what it costs a rule that flags observations by comparing a z-score against a
@@ -100,8 +100,7 @@ which a rule becomes capable of firing shifts with a setting that is easy to lea
 ## References
 
 <a id="ref-1"></a>
-[1] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.
-
+[1] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.<br>
 <a id="ref-2"></a>
 [2] Barnett, V., & Lewis, T. (1994). *Outliers in Statistical Data*, 3rd edition. Wiley, Chichester. [https://www.wiley.com](https://www.wiley.com). ISBN 978-0-471-93094-5.
 

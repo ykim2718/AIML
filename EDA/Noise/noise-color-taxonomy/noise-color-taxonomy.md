@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 9 | Created: 2026-08-20 | Updated: 2026-08-22 16:38 CDT
+Rev. 10 | Created: 2026-08-20 | Updated: 2026-09-04 20:10 UTC
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 
@@ -101,14 +101,10 @@ Table 3. Application by noise color
 
 ## References
 
-<a id="ref-1"></a>[1] International Electrotechnical Commission. [IEC 60268-1:1985, Sound system equipment - Part 1: General](https://webstore.iec.ch/en/publication/1204). 1985.
-
-<a id="ref-2"></a>[2] General Services Administration. [Federal Standard 1037C, Telecommunications: Glossary of Telecommunication Terms](https://its.ntia.gov/about/resources/federal-standard-1037c/). 1996.
-
-<a id="ref-3"></a>[3] Institute of Electrical and Electronics Engineers. [IEEE Std 1139-2008, IEEE Standard Definitions of Physical Quantities for Fundamental Frequency and Time Metrology - Random Instabilities](https://doi.org/10.1109/IEEESTD.2008.4797525). 2008.
-
-<a id="ref-4"></a>[4] MathWorks. [spectralSlope - Spectral slope for audio signals and auditory spectrograms](https://www.mathworks.com/help/audio/ref/spectralslope.html).
-
+<a id="ref-1"></a>[1] International Electrotechnical Commission. [IEC 60268-1:1985, Sound system equipment - Part 1: General](https://webstore.iec.ch/en/publication/1204). 1985.<br>
+<a id="ref-2"></a>[2] General Services Administration. [Federal Standard 1037C, Telecommunications: Glossary of Telecommunication Terms](https://its.ntia.gov/about/resources/federal-standard-1037c/). 1996.<br>
+<a id="ref-3"></a>[3] Institute of Electrical and Electronics Engineers. [IEEE Std 1139-2008, IEEE Standard Definitions of Physical Quantities for Fundamental Frequency and Time Metrology - Random Instabilities](https://doi.org/10.1109/IEEESTD.2008.4797525). 2008.<br>
+<a id="ref-4"></a>[4] MathWorks. [spectralSlope - Spectral slope for audio signals and auditory spectrograms](https://www.mathworks.com/help/audio/ref/spectralslope.html).<br>
 <a id="ref-5"></a>[5] International Electrotechnical Commission. [IEC 61260-1:2014, Electroacoustics - Octave-band and fractional-octave-band filters - Part 1: Specifications](https://webstore.iec.ch/en/publication/5063). 2014.
 
 ---

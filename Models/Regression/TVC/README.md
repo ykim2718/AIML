@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 32 | Created: 2026-08-30 | Updated: 2026-09-04 16:10 CDT
+Rev. 33 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
 
 Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -186,12 +186,9 @@ Filter 자체에는 data leakage 가 없다. 4.3 이 적은 대로 $t$ 까지의
 
 ## References
 
-<a id="ref-1"></a>[1] Hastie, T. and Tibshirani, R., "[Varying-Coefficient Models](https://doi.org/10.1111/j.2517-6161.1993.tb01939.x)", Journal of the Royal Statistical Society: Series B (Methodological), 55(4), 757-779, 1993.
-
-<a id="ref-2"></a>[2] Kalman, R. E., "[A New Approach to Linear Filtering and Prediction Problems](https://doi.org/10.1115/1.3662552)", Journal of Basic Engineering, 82(1), 35-45, 1960.
-
-<a id="ref-3"></a>[3] Grambsch, P. M. and Therneau, T. M., "[Proportional hazards tests and diagnostics based on weighted residuals](https://doi.org/10.1093/biomet/81.3.515)", Biometrika, 81(3), 515-526, 1994.
-
+<a id="ref-1"></a>[1] Hastie, T. and Tibshirani, R., "[Varying-Coefficient Models](https://doi.org/10.1111/j.2517-6161.1993.tb01939.x)", Journal of the Royal Statistical Society: Series B (Methodological), 55(4), 757-779, 1993.<br>
+<a id="ref-2"></a>[2] Kalman, R. E., "[A New Approach to Linear Filtering and Prediction Problems](https://doi.org/10.1115/1.3662552)", Journal of Basic Engineering, 82(1), 35-45, 1960.<br>
+<a id="ref-3"></a>[3] Grambsch, P. M. and Therneau, T. M., "[Proportional hazards tests and diagnostics based on weighted residuals](https://doi.org/10.1093/biomet/81.3.515)", Biometrika, 81(3), 515-526, 1994.<br>
 <a id="ref-4"></a>[4] Primiceri, G. E., "[Time Varying Structural Vector Autoregressions and Monetary Policy](https://doi.org/10.1111/j.1467-937X.2005.00353.x)", The Review of Economic Studies, 72(3), 821-852, 2005.
 
 ---

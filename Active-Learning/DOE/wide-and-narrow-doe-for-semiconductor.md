@@ -1,5 +1,5 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 9 | Created: 2026-08-27 | Updated: 2026-08-27 17:06 CDT
+Rev. 10 | Created: 2026-08-27 | Updated: 2026-09-04 20:10 UTC
 
 반도체 공정에 machine learning 을 쓸 때 model 이 무엇을 배우는지는 DOE 가 덮은 범위가 정한다. 범위를 넓게 잡은 DOE 와 양산 조건 가까이에서 좁게 잡은 DOE 는 쓰임이 다르다. 이 문서는 이 둘을 학습과 추론에 어떻게 나누어 쓰는지를 명제에서 출발해 정리한다. DOE 자체가 machine learning 의 어디에 속하는지는 [Appendix B](#appendix-b-position-in-machine-learning) 에 따로 두었다.
 
@@ -73,8 +73,7 @@ Wide DOE 가 값을 하는 자리는 Detection 아래의 두 줄이다. 벗어�
 
 ## References
 
-<a id="ref-1"></a>[1] Settles, B. [Active Learning Literature Survey](https://burrsettles.com/pub/settles.activelearning.pdf). Computer Sciences Technical Report 1648, University of Wisconsin-Madison, 2009.
-
+<a id="ref-1"></a>[1] Settles, B. [Active Learning Literature Survey](https://burrsettles.com/pub/settles.activelearning.pdf). Computer Sciences Technical Report 1648, University of Wisconsin-Madison, 2009.<br>
 <a id="ref-2"></a>[2] Shahriari, B., Swersky, K., Wang, Z., Adams, R. P., de Freitas, N. [Taking the Human Out of the Loop: A Review of Bayesian Optimization](https://doi.org/10.1109/JPROC.2015.2494218). Proceedings of the IEEE, 104(1), 148-175, 2016.
 
 ---

@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 8 | Created: 2026-08-17 | Updated: 2026-09-04 16:10 CDT
+Rev. 9 | Created: 2026-08-17 | Updated: 2026-09-04 20:10 UTC
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -212,14 +212,11 @@ them.
 ## References
 
 <a id="ref-1"></a>
-[1] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)
-
+[1] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)<br>
 <a id="ref-2"></a>
-[2] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.
-
+[2] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.<br>
 <a id="ref-3"></a>
-[3] Grubbs, F. E. (1969). [Procedures for Detecting Outlying Observations in Samples](https://doi.org/10.1080/00401706.1969.10490657). *Technometrics*, 11(1), 1–21.
-
+[3] Grubbs, F. E. (1969). [Procedures for Detecting Outlying Observations in Samples](https://doi.org/10.1080/00401706.1969.10490657). *Technometrics*, 11(1), 1–21.<br>
 <a id="ref-4"></a>
 [4] NIST/SEMATECH e-Handbook of Statistical Methods, section 1.3.5.17.1, *Generalized Extreme Studentized Deviate Test for Outliers*. [https://doi.org/10.18434/M32189](https://doi.org/10.18434/M32189)
 

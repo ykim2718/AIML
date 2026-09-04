@@ -1,5 +1,5 @@
 # The 1.5 Sigma Shift Between Long-Term and Short-Term Capability
-Rev. 1 | Created: 2026-08-30 | Updated: 2026-09-04 19:26 UTC
+Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
 
 > A note on why a Six Sigma capability statement subtracts 1.5 from the short-term sigma level,
 > what model that subtraction assumes, where the constant came from, and what the constant cannot
@@ -232,16 +232,13 @@ ambiguous by a factor of two at best and by three orders of magnitude at worst.
 
 <a id="ref-1"></a>
 [1] Bothe, D. R. (2002). Statistical Reason for the 1.5σ Shift. *Quality Engineering*, 14(3),
-479–487. [https://doi.org/10.1081/QEN-120001884](https://doi.org/10.1081/QEN-120001884)
-
+479–487. [https://doi.org/10.1081/QEN-120001884](https://doi.org/10.1081/QEN-120001884)<br>
 <a id="ref-2"></a>
 [2] Bender, A. (1968). [Statistical Tolerancing as it Relates to Quality Control and the Designer](https://www.sae.org/publications/technical-papers/content/680490/).
-*SAE Technical Paper 680490*.
-
+*SAE Technical Paper 680490*.<br>
 <a id="ref-3"></a>
 [3] Harry, M. J., & Lawson, J. R. (1992). *Six Sigma Producibility Analysis and Process
-Characterization*. Addison-Wesley. ISBN 978-0-201-63412-9.
-
+Characterization*. Addison-Wesley. ISBN 978-0-201-63412-9.<br>
 <a id="ref-4"></a>
 [4] Raval, N., & Muralidharan, K. (2016). [A Note on 1.5 Sigma Shift in Performance Evaluation](https://doi.org/10.1142/S0218539316400076).
 *International Journal of Reliability, Quality and Safety Engineering*, 23(6), 1640007.

@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution
-Rev. 5 | Created: 2026-09-03 | Updated: 2026-09-04 19:26 UTC
+Rev. 6 | Created: 2026-09-03 | Updated: 2026-09-04 20:10 UTC
 
 > A note on the distribution of a sum of squared standard normal variables: how it is built, what
 > its density and moments are, how it relates to the other sampling distributions, and why it turns
@@ -218,19 +218,16 @@ of Table 2 the difference between the two rows is not significant at the 5 perce
 
 <a id="ref-1"></a>
 [1] Wilson, E. B., & Hilferty, M. M. (1931). [The Distribution of Chi-Square](https://doi.org/10.1073/pnas.17.12.684). *Proceedings of the
-National Academy of Sciences*, 17(12), 684–688.
-
+National Academy of Sciences*, 17(12), 684–688.<br>
 <a id="ref-2"></a>
 [2] Cochran, W. G. (1934). [The Distribution of Quadratic Forms in a Normal System, with
 Applications to the Analysis of Covariance](https://doi.org/10.1017/S0305004100016595). *Mathematical Proceedings of the Cambridge
-Philosophical Society*, 30(2), 178–191.
-
+Philosophical Society*, 30(2), 178–191.<br>
 <a id="ref-3"></a>
 [3] Pearson, K. (1900). [On the Criterion that a Given System of Deviations from the Probable in the
 Case of a Correlated System of Variables is Such that it Can be Reasonably Supposed to have Arisen
 from Random Sampling](https://doi.org/10.1080/14786440009463897). *The London, Edinburgh, and Dublin Philosophical Magazine and Journal of
-Science*, 50(302), 157–175.
-
+Science*, 50(302), 157–175.<br>
 <a id="ref-4"></a>
 [4] Johnson, N. L., Kotz, S., & Balakrishnan, N. (1994). *Continuous Univariate Distributions*
 (Vol. 1, 2nd ed.). Wiley. ISBN 978-0-471-58495-7.

@@ -1,5 +1,5 @@
 # Design of Experiments (Korean)
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 19:26 UTC
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
 
 > MathWorks Statistics and Machine Learning Toolbox 의 design of experiments 장이 다루는 design
 > 계열들 [[1](#ref-1)] 을 같은 구성으로 옮기고, 모든 구성법을 numpy 와 scipy 위에서 Python 으로
@@ -685,20 +685,16 @@ Candidate set 을 만들게 두지 않고 명시적으로 건네는 이유는 fa
 ## References
 
 <a id="ref-1"></a>
-[1] MathWorks. [Design of Experiments — Statistics and Machine Learning Toolbox Documentation](https://kr.mathworks.com/help/stats/design-of-experiments.html).
-
+[1] MathWorks. [Design of Experiments — Statistics and Machine Learning Toolbox Documentation](https://kr.mathworks.com/help/stats/design-of-experiments.html).<br>
 <a id="ref-2"></a>
 [2] Plackett, R. L., & Burman, J. P. (1946). [The Design of Optimum Multifactorial Experiments](https://doi.org/10.1093/biomet/33.4.305).
-*Biometrika*, 33(4), 305–325.
-
+*Biometrika*, 33(4), 305–325.<br>
 <a id="ref-3"></a>
 [3] Box, G. E. P., & Behnken, D. W. (1960). [Some New Three Level Designs for the Study of
-Quantitative Variables](https://doi.org/10.1080/00401706.1960.10489912). *Technometrics*, 2(4), 455–475.
-
+Quantitative Variables](https://doi.org/10.1080/00401706.1960.10489912). *Technometrics*, 2(4), 455–475.<br>
 <a id="ref-4"></a>
 [4] Meyer, R. K., & Nachtsheim, C. J. (1995). [The Coordinate-Exchange Algorithm for Constructing
-Exact Optimal Experimental Designs](https://doi.org/10.1080/00401706.1995.10485889). *Technometrics*, 37(1), 60–69.
-
+Exact Optimal Experimental Designs](https://doi.org/10.1080/00401706.1995.10485889). *Technometrics*, 37(1), 60–69.<br>
 <a id="ref-5"></a>
 [5] Montgomery, D. C. (2019). *Design and Analysis of Experiments* (10th ed.). Wiley.
 ISBN 978-1-119-49249-8.

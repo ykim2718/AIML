@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 10 | Created: 2026-08-15 | Updated: 2026-08-17 00:01 CDT
+Rev. 11 | Created: 2026-08-15 | Updated: 2026-09-04 20:10 UTC
 
 > This document asks whether the denominator of the standard R² can be replaced
 > by a reference stated from outside rather than computed from the data, and
@@ -224,14 +224,10 @@ reference.
 
 ## References
 
-<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. Sets out the interpretive limits the standard R² inherits from having its denominator tied to the mean of the data, which is what makes the variants in section 3 necessary.
-
-<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. Uses an out-of-sample R² whose denominator is fixed to the mean of the training window as its evaluation metric. It is the form section 3.1 describes, used as is.
-
-<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. Formalizes the skill score as mean squared error divided by a reference error, and shows the reference may be an external value such as a historical mean. It is the basis for the structure section 2 describes.
-
-<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. Defines the precision-to-tolerance ratio, measurement error divided by the spec tolerance, as the acceptance criterion for a measurement system. It is the `RMSE / sigma_ref` of section 3.2 as metrology uses it.
-
+<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. Sets out the interpretive limits the standard R² inherits from having its denominator tied to the mean of the data, which is what makes the variants in section 3 necessary.<br>
+<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. Uses an out-of-sample R² whose denominator is fixed to the mean of the training window as its evaluation metric. It is the form section 3.1 describes, used as is.<br>
+<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. Formalizes the skill score as mean squared error divided by a reference error, and shows the reference may be an external value such as a historical mean. It is the basis for the structure section 2 describes.<br>
+<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. Defines the precision-to-tolerance ratio, measurement error divided by the spec tolerance, as the acceptance criterion for a measurement system. It is the `RMSE / sigma_ref` of section 3.2 as metrology uses it.<br>
 <a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. Sets out how dividing forecast error by the error of a persistence baseline puts different series on one scale. It is the standard example of the per-sample baseline section 3.3 covers.
 
 ---
