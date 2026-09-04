@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 12:30 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 14:40 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -83,7 +83,7 @@ Table 1. Defect rate against index value, in parts per million.
 | 1.67 | 5.0 | 0.544 | 0.272 |
 | 2.00 | 6.0 | 0.00197 | 0.000987 |
 
-The middle column is why $C_p = 1.33$ became a common minimum requirement and $C_{pk} = 1.33$ a
+The 1.33 row is why $C_p = 1.33$ became a common minimum requirement and $C_{pk} = 1.33$ a
 common goal: it puts four standard deviations between the mean and the nearer limit, which leaves
 room for the ordinary drift of a real process. The bottom row is the arithmetic behind the name of
 the six sigma programme.
