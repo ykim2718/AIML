@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 14:28 CDT
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-04 14:35 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -155,17 +155,17 @@ Table 2. What the pair of indices indicates.
 
 Fab 이 재는 항목은 하나의 기준으로 지킬 수 있는 것보다 훨씬 많으므로, 항목마다 등급을 매기고
 등급마다 다른 요구치를 건다. 등급은 흔히 Priority 0, Priority 1, Priority 2 로 적으며, 어느 등급에
-넣을지는 그 항목을 지키기가 얼마나 어려운지가 아니라 벗어났을 때의 결과로 정한다. Priority 0 은
-그것이 없으면 소자가 동작하지 않는 항목, Priority 1 은 소자 특성의 분포를 움직이는 항목,
-Priority 2 는 흐름을 지켜보는 항목이다.
+넣을지는 그 항목을 지키기가 얼마나 어려운지가 아니라 무엇을 위해 지키는지로 정한다. Priority 0 은
+벗어나면 yield 를 잃는 항목, Priority 1 은 소자 특성을 움직이는 항목, Priority 2 는 공정이 흐르고
+있음을 알려 줄 뿐인 항목이다.
 
 Table 3. 대표적인 priority 체계와 그것이 함의하는 폭.
 
-| Priority | Parameter class | Cpk min | k max | Implied Cp min | Near tail, ppm |
+| Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
 |---|---|---:|---:|---:|---:|
-| 0 | 소자에 critical, gate CD 와 overlay 등 | 1.67 | 0.10 | 1.86 | 0.272 |
-| 1 | 소자 특성을 움직임, 막 두께와 implant dose 등 | 1.50 | 0.15 | 1.76 | 3.40 |
-| 2 | 흐름만 지켜봄, 소자가 아닌 층의 두께 등 | 1.33 | 0.20 | 1.66 | 33.0 |
+| 0 | Yield | 1.67 | 0.10 | 1.86 | 0.272 |
+| 1 | Device performance | 1.50 | 0.15 | 1.76 | 3.40 |
+| 2 | Process control | 1.33 | 0.20 | 1.66 | 33.0 |
 
 $C_{pk}$ 열은 오래 쓰여 온 최소 공정능력의 사다리를 따른다. 1.33 이 일반적인 최소값이고, 1.50 이
 critical 한 항목의 값이며, 1.67 은 아직 새 공정에 있는 critical 한 항목의 값이다 [[2](#ref-2)].

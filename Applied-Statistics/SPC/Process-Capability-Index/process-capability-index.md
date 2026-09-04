@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-04 14:28 CDT
+Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-04 14:35 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -165,17 +165,17 @@ needs measuring less often than one running near its limits.
 
 A fab measures far more parameters than it can hold to one standard, so the parameters are graded
 and each grade carries its own requirement. The grades are commonly written as Priority 0, Priority 1
-and Priority 2, and a parameter is assigned by the consequence of an excursion rather than by the
-difficulty of holding it: Priority 0 for what the device fails without, Priority 1 for what moves
-the parametric distribution, Priority 2 for what is watched for trend.
+and Priority 2, and a parameter is assigned by what its control is for rather than by the difficulty
+of holding it: Priority 0 where an excursion costs yield, Priority 1 where it moves the device
+performance, Priority 2 where it only tells the process it is drifting.
 
 Table 3. A representative priority scheme and the width it implies.
 
-| Priority | Parameter class | Cpk min | k max | Implied Cp min | Near tail, ppm |
+| Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
 |---|---|---:|---:|---:|---:|
-| 0 | Device critical, such as gate CD and overlay | 1.67 | 0.10 | 1.86 | 0.272 |
-| 1 | Parametric, such as film thickness and implant dose | 1.50 | 0.15 | 1.76 | 3.40 |
-| 2 | Monitored, such as the thickness of a non-device layer | 1.33 | 0.20 | 1.66 | 33.0 |
+| 0 | Yield | 1.67 | 0.10 | 1.86 | 0.272 |
+| 1 | Device performance | 1.50 | 0.15 | 1.76 | 3.40 |
+| 2 | Process control | 1.33 | 0.20 | 1.66 | 33.0 |
 
 The $C_{pk}$ column follows the long-standing ladder of minimum capability values: 1.33 as the
 general minimum, 1.50 for a critical parameter, and 1.67 for a critical parameter on a process that
