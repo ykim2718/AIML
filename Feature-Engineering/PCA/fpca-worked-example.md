@@ -1,5 +1,5 @@
 # FPCA Worked Example
-Rev. 1 | Created: 2026-08-14 | Updated: 2026-08-14 11:21 CDT
+Rev. 2 | Created: 2026-08-14 | Updated: 2026-09-04 16:10 CDT
 
 > Every number in this document can be recomputed by hand: four curves are built from a known mean and two known eigenfunctions, and the FPCA pipeline is run on them step by step.
 > The point is to watch each stage transform the numbers — data, mean, covariance, eigenpairs — until the pipeline hands back exactly the scores that were planted.
@@ -8,10 +8,10 @@ Rev. 1 | Created: 2026-08-14 | Updated: 2026-08-14 11:21 CDT
 FPCA treats each observation as a curve $X_i(t)$ and decomposes the collection into a mean function plus a few dominant modes of variation, the Karhunen–Loève expansion:
 
 $$
-X_i(t) \;=\; \mu(t) \;+\; \sum_{k=1}^{\infty} \xi_{ik}\, \varphi_k(t)
+X_i(t) = \mu(t) + \sum_{k=1}^{\infty} \xi_{ik} \varphi_k(t)
 $$
 
-The $\varphi_k$ are the eigenfunctions of the covariance operator, the $\lambda_k$ their eigenvalues, and the score $\xi_{ik} = \int_0^1 \bigl( X_i(t) - \mu(t) \bigr)\, \varphi_k(t)\, dt$ is the coordinate of curve $i$ along mode $k$. The pipeline below estimates each of these objects in turn from sampled data. Because the example is built with known $\mu$, $\varphi_k$, and $\xi_{ik}$, every estimate can be checked against the value it is supposed to recover.
+The $\varphi_k$ are the eigenfunctions of the covariance operator, the $\lambda_k$ their eigenvalues, and the score $\xi_{ik} = \int_0^1 \bigl( X_i(t) - \mu(t) \bigr) \varphi_k(t) dt$ is the coordinate of curve $i$ along mode $k$. The pipeline below estimates each of these objects in turn from sampled data. Because the example is built with known $\mu$, $\varphi_k$, and $\xi_{ik}$, every estimate can be checked against the value it is supposed to recover.
 
 ## 1. Notation
 
@@ -20,7 +20,7 @@ Table 1. Symbols used throughout
 | Symbol | Shape | Meaning |
 |---|---|---|
 | $t_j$ | — | Grid points $0, 0.1, \ldots, 1.0$, eleven points on $[0, 1]$ |
-| $w_j$ | — | Trapezoid quadrature weights $(0.05, 0.1, \ldots, 0.1, 0.05)$, which turn $\int_0^1 f(t)\, dt$ into $\sum_j w_j f(t_j)$ |
+| $w_j$ | — | Trapezoid quadrature weights $(0.05, 0.1, \ldots, 0.1, 0.05)$, which turn $\int_0^1 f(t) dt$ into $\sum_j w_j f(t_j)$ |
 | $n$ | — | The number of curves, here $n = 4$ |
 | $X_i(t_j)$ | $4 \times 11$ | The observed data, one row per curve |
 | $\mu(t)$, $\hat{\mu}(t)$ | $11$ | The true and estimated mean function |
@@ -37,14 +37,14 @@ The example plants the answer first. The mean is a rising line, mode 1 is a bump
 
 $$
 \mu(t) = 1 + 2t, \qquad
-\varphi_1(t) = \sqrt{2}\, \sin(\pi t), \qquad
-\varphi_2(t) = \sqrt{2}\, \cos(\pi t)
+\varphi_1(t) = \sqrt{2} \sin(\pi t), \qquad
+\varphi_2(t) = \sqrt{2} \cos(\pi t)
 $$
 
 The two modes are orthonormal on $[0,1]$: $\int_0^1 \varphi_1^2 = \int_0^1 \varphi_2^2 = 1$ and $\int_0^1 \varphi_1 \varphi_2 = 0$, which is what the eigenfunctions of any covariance operator must satisfy. Each curve is then a mean plus a weighted sum of the two modes, with the weights — the scores — chosen as small integers:
 
 $$
-X_i(t) \;=\; \mu(t) \;+\; \xi_{i1}\, \varphi_1(t) \;+\; \xi_{i2}\, \varphi_2(t)
+X_i(t) = \mu(t) + \xi_{i1} \varphi_1(t) + \xi_{i2} \varphi_2(t)
 $$
 
 Table 2. Planted scores
@@ -85,7 +85,7 @@ Fig 1. The data before and after centering. Panel (a) shows the four observed cu
 The mean function is estimated pointwise, by averaging the four curves at each grid point:
 
 $$
-\hat{\mu}(t_j) \;=\; \frac{1}{4} \sum_{i=1}^{4} X_i(t_j)
+\hat{\mu}(t_j) = \frac{1}{4} \sum_{i=1}^{4} X_i(t_j)
 $$
 
 At $t = 0.4$ this is $\frac{4.927 + 2.708 + 0.018 - 0.453}{4} = \frac{7.2}{4} = 1.8$, and the same happens at every grid point: $\hat{\mu} = (1.0, 1.2, \ldots, 3.0)$, exactly the planted line $1 + 2t$, because the planted scores in each column of Table 2 sum to zero. Subtracting $\hat{\mu}$ row by row gives the centered data of Table 4, drawn in panel (b) of Fig 1.
@@ -113,7 +113,7 @@ The symmetry visible in the columns — $X_3^c$ is $X_2^c$ reversed in time, $X_
 Where PCA forms a covariance matrix between variables, FPCA forms a covariance surface between time points:
 
 $$
-\hat{G}(s, t) \;=\; \frac{1}{n-1} \sum_{i=1}^{n} X_i^c(s)\, X_i^c(t)
+\hat{G}(s, t) = \frac{1}{n-1} \sum_{i=1}^{n} X_i^c(s) X_i^c(t)
 $$
 
 On the grid this is an $11 \times 11$ matrix. Three entries, computed from the columns of Table 4:
@@ -138,7 +138,7 @@ Fig 2. The covariance surface $\hat{G}(s,t)$ on the $11 \times 11$ grid. The dar
 
 ## 5. Eigenvalues And Eigenfunctions
 
-The continuous problem is the eigenequation of the covariance operator, $\int_0^1 \hat{G}(s,t)\, \varphi(s)\, ds = \lambda\, \varphi(t)$. Discretized with the quadrature weights it becomes a matrix eigenproblem: writing $W = \mathrm{diag}(w_1, \ldots, w_{11})$, the symmetric matrix $W^{1/2} \hat{G}\, W^{1/2}$ is eigendecomposed, and each eigenvector $u$ is mapped back to a function by $\hat{\varphi} = W^{-1/2} u$, which makes $\hat{\varphi}$ orthonormal under the quadrature inner product $\sum_j w_j f(t_j) g(t_j)$. On this grid that inner product reproduces the planted orthonormality exactly — $\sum_j w_j \varphi_1^2 = \sum_j w_j \varphi_2^2 = 1$ and $\sum_j w_j \varphi_1 \varphi_2 = 0$ — so no discretization error enters the example.
+The continuous problem is the eigenequation of the covariance operator, $\int_0^1 \hat{G}(s,t) \varphi(s) ds = \lambda \varphi(t)$. Discretized with the quadrature weights it becomes a matrix eigenproblem: writing $W = \mathrm{diag}(w_1, \ldots, w_{11})$, the symmetric matrix $W^{1/2} \hat{G} W^{1/2}$ is eigendecomposed, and each eigenvector $u$ is mapped back to a function by $\hat{\varphi} = W^{-1/2} u$, which makes $\hat{\varphi}$ orthonormal under the quadrature inner product $\sum_j w_j f(t_j) g(t_j)$. On this grid that inner product reproduces the planted orthonormality exactly — $\sum_j w_j \varphi_1^2 = \sum_j w_j \varphi_2^2 = 1$ and $\sum_j w_j \varphi_1 \varphi_2 = 0$ — so no discretization error enters the example.
 
 Table 5. Eigenvalues and fraction of variance explained
 
@@ -159,8 +159,8 @@ Fig 3. The estimated eigenstructure. Panel (a) shows $\hat{\varphi}_1$, the bump
 The score is the integral of a centered curve against an eigenfunction, and with the quadrature weights it is a weighted sum the reader can add up:
 
 $$
-\hat{\xi}_{ik} \;=\; \int_0^1 X_i^c(t)\, \hat{\varphi}_k(t)\, dt
-\;\approx\; \sum_{j=1}^{11} w_j\, X_i^c(t_j)\, \hat{\varphi}_k(t_j)
+\hat{\xi}_{ik} = \int_0^1 X_i^c(t) \hat{\varphi}_k(t) dt
+ \approx \sum_{j=1}^{11} w_j X_i^c(t_j) \hat{\varphi}_k(t_j)
 $$
 
 Table 6 spells the sum out for one score, curve 1 on mode 1. Each row multiplies three numbers already on the page: the centered value from Table 4, the eigenfunction value (equal to $\varphi_1$ from Table 3), and the weight.
@@ -204,18 +204,18 @@ Fig 4. The output of the pipeline. Panel (a) places each curve at its score pair
 Running the expansion forward with the estimated pieces rebuilds a curve from its scores:
 
 $$
-\hat{X}_i^{(K)}(t) \;=\; \hat{\mu}(t) \;+\; \sum_{k=1}^{K} \hat{\xi}_{ik}\, \hat{\varphi}_k(t)
+\hat{X}_i^{(K)}(t) = \hat{\mu}(t) + \sum_{k=1}^{K} \hat{\xi}_{ik} \hat{\varphi}_k(t)
 $$
 
-Panel (b) of Fig 4 shows the sequence for $X_1$. The mean alone misses the bump entirely; adding mode 1 captures the bulge but still misses the tilt; adding mode 2 reproduces the curve exactly. The integrated squared error $\int_0^1 (X_1 - \hat{X}_1^{(K)})^2\, dt$ makes the progression numeric, and ties back to the scores: leaving out mode $k$ costs exactly $\hat{\xi}_{1k}^2$, which is the score decomposition of the curve's total deviation from the mean.
+Panel (b) of Fig 4 shows the sequence for $X_1$. The mean alone misses the bump entirely; adding mode 1 captures the bulge but still misses the tilt; adding mode 2 reproduces the curve exactly. The integrated squared error $\int_0^1 (X_1 - \hat{X}_1^{(K)})^2 dt$ makes the progression numeric, and ties back to the scores: leaving out mode $k$ costs exactly $\hat{\xi}_{1k}^2$, which is the score decomposition of the curve's total deviation from the mean.
 
 Table 8. Reconstruction error for $X_1$ by number of modes
 
 | $K$ | Reconstruction | Integrated squared error |
 |---|---|---|
 | 0 | $\hat{\mu}$ | $5.000 = \hat{\xi}_{11}^2 + \hat{\xi}_{12}^2$ |
-| 1 | $\hat{\mu} + 2.000\, \hat{\varphi}_1$ | $1.000 = \hat{\xi}_{12}^2$ |
-| 2 | $\hat{\mu} + 2.000\, \hat{\varphi}_1 + 1.000\, \hat{\varphi}_2$ | $0.000$ |
+| 1 | $\hat{\mu} + 2.000 \hat{\varphi}_1$ | $1.000 = \hat{\xi}_{12}^2$ |
+| 2 | $\hat{\mu} + 2.000 \hat{\varphi}_1 + 1.000 \hat{\varphi}_2$ | $0.000$ |
 
 ## 8. From The Example To Real Data
 
@@ -223,11 +223,11 @@ Three simplifications made the recovery exact, and each marks the spot where a r
 
 ## Appendix A. Terminology
 
-- **Covariance operator** is the map $f \mapsto \int G(s,\cdot) f(s)\, ds$ whose eigenfunctions and eigenvalues FPCA estimates; the covariance surface $G$ is its kernel.
-- **Eigenfunction** is the function-valued analogue of an eigenvector: a unit-norm function $\varphi$ satisfying $\int G(s,t) \varphi(s)\, ds = \lambda \varphi(t)$.
+- **Covariance operator** is the map $f \mapsto \int G(s,\cdot) f(s) ds$ whose eigenfunctions and eigenvalues FPCA estimates; the covariance surface $G$ is its kernel.
+- **Eigenfunction** is the function-valued analogue of an eigenvector: a unit-norm function $\varphi$ satisfying $\int G(s,t) \varphi(s) ds = \lambda \varphi(t)$.
 - **FPCA** is Functional PCA, which treats an observation as a curve rather than a vector when taking components.
 - **FVE** is the fraction of variance explained, $\lambda_k / \sum_m \lambda_m$ for one mode and the running total of that ratio cumulatively.
-- **Integrated squared error** is $\int (X - \hat{X})^2\, dt$, the squared distance between a curve and its reconstruction accumulated over the whole interval.
+- **Integrated squared error** is $\int (X - \hat{X})^2 dt$, the squared distance between a curve and its reconstruction accumulated over the whole interval.
 - **Karhunen–Loève expansion** is the representation of a random curve as its mean plus an infinite weighted sum of the covariance operator's eigenfunctions, with uncorrelated weights.
 - **Mode** is one eigenfunction together with its eigenvalue, viewed as one direction of variation among the curves.
 - **PACE** is Principal Analysis by Conditional Expectation, the estimator that computes scores as conditional expectations when curves are observed too sparsely for the score integral.

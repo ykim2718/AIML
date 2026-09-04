@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 13:15 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 16:10 CDT
 
 > 웨이퍼 결과물 하나가 아니라 장비 센서 수십~수백 개의 조합을 한꺼번에 추적하는 기법에 대한 기록.
 > Hotelling $T^2$ 관리도와 PCA 기반 SPE 통계량이 각각 무엇을 보고, 왜 둘이 함께 필요한지를 다룬다.
@@ -67,7 +67,7 @@ $T^2$ 를 상수로 놓으면 $p$ 차원 공간의 타원체가 되며, 이것�
 정상 운전 자료 $m$ 개로 $\boldsymbol{\mu}$ 와 $\mathbf{S}$ 를 추정한 뒤 새 관측값을 감시할 때, 한계는
 $F$ 분포에서 나온다.
 
-$$T^{2}_{\mathrm{limit}} = \frac{p(m+1)(m-1)}{m(m-p)} F_{\alpha,\, p,\, m-p} \hspace{19em} (3)$$
+$$T^{2}_{\mathrm{limit}} = \frac{p(m+1)(m-1)}{m(m-p)} F_{\alpha, p, m-p} \hspace{19em} (3)$$
 
 $m$ 이 충분히 크면 이 값은 자유도 $p$ 인 chi-squared 분포의 상위 $\alpha$ 점으로 수렴한다.
 
@@ -99,7 +99,7 @@ $$T^{2} = \sum_{j=1}^{a} \frac{t_j^{2}}{\lambda_j} \hspace{19em} (5)$$
 
 부분공간에서 벗어난 거리는 잔차의 제곱합이며, squared prediction error 또는 $Q$ 통계량이라 부른다.
 
-$$SPE = \left\| \mathbf{x} - \hat{\mathbf{x}} \right\|^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$
+$$SPE = \left\lVert \mathbf{x} - \hat{\mathbf{x}} \right\rVert^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$
 
 $SPE$ 의 관리한계는 버린 주성분의 분산 $\lambda_{a+1}, \ldots, \lambda_p$ 로부터 Jackson 과 Mudholkar
 의 근사식으로 얻는다 [[1](#ref-1)]. $\theta_i = \sum_{j=a+1}^{p} \lambda_j^{i}$ 이고

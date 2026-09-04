@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 37 | Created: 2026-08-17 | Updated: 2026-08-25 22:36 CDT
+Rev. 38 | Created: 2026-08-17 | Updated: 2026-09-04 16:10 CDT
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.
@@ -35,7 +35,7 @@ called the modified z-score.
 
 ### 2.2. Consistency Constant
 
-For a normal sample the MAD converges to $\Phi^{-1}(0.75)\,\sigma$ rather than to $\sigma$, so
+For a normal sample the MAD converges to $\Phi^{-1}(0.75) \sigma$ rather than to $\sigma$, so
 the raw MAD understates the spread by about a third. Dividing by $\Phi^{-1}(0.75)$, equivalently
 multiplying by 1.482602, removes that bias in the limit and makes the modified score comparable
 to a classical z-score. Without it the score would sit on a scale of its own and no threshold
@@ -71,7 +71,7 @@ contaminated in the first place.
 The same rule can be written in the units of the data rather than in scales. Multiplying the
 inequality through by the robust scale turns it into an interval around the median.
 
-$$\tilde{x} - k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)} \; \le \; x_i \; \le \; \tilde{x} + k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)}$$
+$$\tilde{x} - k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)} \le x_i \le \tilde{x} + k \cdot \frac{\mathrm{MAD}}{\Phi^{-1}(0.75)}$$
 
 An observation inside that interval is retained and an observation outside it is flagged. The
 interval is therefore where the rule draws its boundary on the measurement scale itself.
@@ -406,23 +406,23 @@ The probability inside that band is what lies below $\mu + m$ less what lies bel
 Symmetry about $\mu$ is what then collapses the two terms into one, since the lower tail is the
 mirror of the upper.
 
-$$\Phi\left( \frac{m}{\sigma} \right) - \Phi\left( -\frac{m}{\sigma} \right) = 2\,\Phi\left( \frac{m}{\sigma} \right) - 1 = \frac{1}{2}$$
+$$\Phi\left( \frac{m}{\sigma} \right) - \Phi\left( -\frac{m}{\sigma} \right) = 2 \Phi\left( \frac{m}{\sigma} \right) - 1 = \frac{1}{2}$$
 
 - $\Phi$ (capital phi) — the cumulative distribution function of the standard normal, so $\Phi(u)$ is the probability of falling below $u$ standard deviations.
 - $m$ — the population MAD, the half-width of the band holding half the probability.
 
 Rearranging leaves $\Phi(m/\sigma) = 3/4$, and inverting it leaves the constant.
 
-$$m = \Phi^{-1}(0.75)\,\sigma = 0.674490\,\sigma$$
+$$m = \Phi^{-1}(0.75) \sigma = 0.674490 \sigma$$
 
 That is where the third quartile comes from: **half the probability inside $\pm m$ is the same
 statement as three quarters of it below $+m$.** The quartile is not chosen for the MAD. It is what
 the MAD turns out to be.
 
 The same number placed twice gives the interquartile range, since the first and the third quartile
-each sit $0.674490\,\sigma$ from the centre.
+each sit $0.674490 \sigma$ from the centre.
 
-$$\mathrm{IQR} = 2 \cdot 0.674490\,\sigma = 1.348980\,\sigma$$
+$$\mathrm{IQR} = 2 \cdot 0.674490 \sigma = 1.348980 \sigma$$
 
 A rule built on the interquartile range therefore rescales by the same constant this one does,
 taken twice rather than once.

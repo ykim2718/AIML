@@ -1,5 +1,5 @@
 # Wide-to-Narrow Practice
-Rev. 2 | Created: 2026-07-29 | Updated: 2026-08-15 11:20 CDT
+Rev. 3 | Created: 2026-07-29 | Updated: 2026-09-04 16:10 CDT
 
 반도체 장비 sensor trace의 wide data를 narrow data로 바꾸는 방법 가운데 세 가지 — 가중치 공유 encoding, sparsity 기반 sensor 선택, PLS 지도적 축약 — 의 구현 세부를 다룬다. 각 방법이 왜 동작하는지, 구현에서 무엇이 필수인지, 어떤 함정이 있는지를 적는다.
 
@@ -88,7 +88,7 @@ Table 2. Sparse PCA versus group lasso
 
 Sensor별 특징들을 그룹으로 묶고, 그룹 단위로 희소성을 거는 회귀다. 그룹 $g$ 의 특징 수를 $p_g$, 그 계수 vector를 $\beta_g$ 로 두면 목적함수는 다음과 같다.
 
-$$\min_{\beta}\ \frac{1}{2n}\lVert y - X\beta \rVert_2^2 + \lambda \sum_{g=1}^{G} \sqrt{p_g}\,\lVert \beta_g \rVert_2$$
+$$\min_{\beta}\ \frac{1}{2n}\lVert y - X\beta \rVert_2^2 + \lambda \sum_{g=1}^{G} \sqrt{p_g} \lVert \beta_g \rVert_2$$
 
 핵심은 그룹 계수 vector에 제곱 없는 L2 norm을 씌우고 그것들을 L1처럼 합산한다는 점이다. L2 norm은 원점에서 미분 불가능하므로 $\lVert \beta_g \rVert_2 = 0$, 즉 그룹 전체가 통째로 0이 되는 해가 발생한다. 반면 그룹 내부에서는 미분 가능하므로 선택된 그룹 안의 계수는 모두 살아남는다. 전부 아니면 전무다. $\sqrt{p_g}$ 는 그룹 크기 보정으로, 이것이 없으면 특징을 많이 가진 sensor가 자동으로 유리해진다.
 
@@ -103,7 +103,7 @@ $$\min_{\beta}\ \frac{1}{2n}\lVert y - X\beta \rVert_2^2 + \lambda \sum_{g=1}^{G
 
 혼합 비율 $\alpha$ 를 도입해 그룹 간 희소성과 그룹 내 희소성을 동시에 건다.
 
-$$\min_{\beta}\ \frac{1}{2n}\lVert y - X\beta \rVert_2^2 + \lambda \left[ (1-\alpha) \sum_{g=1}^{G} \sqrt{p_g}\,\lVert \beta_g \rVert_2 + \alpha \lVert \beta \rVert_1 \right]$$
+$$\min_{\beta}\ \frac{1}{2n}\lVert y - X\beta \rVert_2^2 + \lambda \left[ (1-\alpha) \sum_{g=1}^{G} \sqrt{p_g} \lVert \beta_g \rVert_2 + \alpha \lVert \beta \rVert_1 \right]$$
 
 실무에서 유용한 이유는 "RF power sensor는 쓰되 그 sensor의 특징 중 일부만 쓴다"는 결정이 가능해지기 때문이다. $\alpha$ 는 0.05~0.3 범위를 탐색한다.
 
@@ -154,7 +154,7 @@ $$\min_{A, B}\ \lVert X - X B A^{\mathsf T} \rVert_F^2 + \lambda_2 \lVert B \rVe
 
 두 방법의 목적함수는 한 항 차이다.
 
-$$\mathrm{PCA:}\ \max_{\lVert w \rVert = 1} \mathrm{Var}(Xw) \qquad \mathrm{PLS:}\ \max_{\lVert w \rVert = 1} \mathrm{Cov}(Xw,\, y)^2$$
+$$\mathrm{PCA:}\ \max_{\lVert w \rVert = 1} \mathrm{Var}(Xw) \qquad \mathrm{PLS:}\ \max_{\lVert w \rVert = 1} \mathrm{Cov}(Xw, y)^2$$
 
 PLS의 목적함수를 분해하면 다음과 같다.
 

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 27 | Created: 2026-08-28 | Updated: 2026-08-29 03:11 CDT
+Rev. 28 | Created: 2026-08-28 | Updated: 2026-09-04 16:10 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -82,7 +82,7 @@ $$\hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{\a
 
 여기서 $R$ 은 regularization 항이고 $\lambda$ 는 그 세기이다. Bayesian 정식화는 하나의 해 대신 사후분포를 구한다.
 
-$$p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x})\, p(\mathbf{x})$$
+$$p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x}) p(\mathbf{x})$$
 
 두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [[3](#ref-3)]. Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 다중해와 불확실성을 그대로 보여 준다.
 

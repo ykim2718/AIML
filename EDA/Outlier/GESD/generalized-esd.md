@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 7 | Created: 2026-08-17 | Updated: 2026-08-18 00:26 CDT
+Rev. 8 | Created: 2026-08-17 | Updated: 2026-09-04 16:10 CDT
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.
@@ -86,7 +86,7 @@ removed, and step $i + 1$ repeats the calculation on what remains.
 
 Each step carries its own critical value, computed from the t distribution.
 
-$$\lambda_i = \frac{(n-i)\, t_{p,\, n-i-1}}{\sqrt{\left(n-i-1+t_{p,\, n-i-1}^{2}\right)\left(n-i+1\right)}}$$
+$$\lambda_i = \frac{(n-i) t_{p, n-i-1}}{\sqrt{\left(n-i-1+t_{p, n-i-1}^{2}\right)\left(n-i+1\right)}}$$
 
 $$p = 1 - \frac{\alpha}{2\left(n-i+1\right)}$$
 
@@ -103,7 +103,7 @@ tabulated before the sample is seen.
 
 The number of outliers is the **largest** $i$ for which $R_i \gt \lambda_i$.
 
-$$\hat{k} = \max \left\{ i : R_i \gt \lambda_i \right\}$$
+$$\hat{k} = \max \left\lbrace i : R_i \gt \lambda_i \right\rbrace$$
 
 When no step exceeds its critical value the set is empty and $\hat{k}$ is 0.
 

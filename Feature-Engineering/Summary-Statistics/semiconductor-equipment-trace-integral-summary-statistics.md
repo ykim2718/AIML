@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 22 | Created: 2026-07-29 | Updated: 2026-08-14 21:14 CDT
+Rev. 23 | Created: 2026-07-29 | Updated: 2026-09-04 16:10 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -17,7 +17,7 @@ AUC는 summary statistics의 부분집합이다. trace 전체를 스칼라 하�
 
 균등 sampling에서
 
-$$\text{AUC} = \int_0^T x(t)\,dt \approx \bar{x}\,T$$
+$$\text{AUC} = \int_0^T x(t) dt \approx \bar{x} T$$
 
 이므로 단순 AUC는 평균 × 길이다. 평균 $\bar{x}$ 와 길이 $T$ 를 이미 특징으로 갖고 있다면 단순 AUC는 완전 공선이며, VIF만 올리고 정확도를 떨어뜨린다. AUC의 가치는 평균 × 길이로 분해되지 않는 변형형에서 나온다.
 
@@ -29,18 +29,18 @@ Table 1. Informative AUC variants
 
 | ID | Feature | Definition | Physical meaning |
 |---|---|---|---|
-| A1 | `auc_base` | $\int (x - x_0)\,dt$ | 초기 baseline 대비 누적량 |
-| A2 | `auc_res_abs` | $\int \lvert x - x_{\text{ref}}\rvert\,dt$ | Golden 대비 L1 형상 이탈량 |
-| A3 | `auc_res_over` / `auc_res_under` | $\int \max(x - x_{\text{ref}},0)\,dt$ / $\int \max(x_{\text{ref}} - x,0)\,dt$ | 초과와 미달의 분리 (부호 상쇄 방지) |
+| A1 | `auc_base` | $\int (x - x_0) dt$ | 초기 baseline 대비 누적량 |
+| A2 | `auc_res_abs` | $\int \lvert x - x_{\text{ref}}\rvert dt$ | Golden 대비 L1 형상 이탈량 |
+| A3 | `auc_res_over` / `auc_res_under` | $\int \max(x - x_{\text{ref}},0) dt$ / $\int \max(x_{\text{ref}} - x,0) dt$ | 초과와 미달의 분리 (부호 상쇄 방지) |
 | A4 | `pauc_k` | trace를 등간격 K block 분할 후 block별 적분 비율 | 형상 정보 보존 |
-| A5 | `tv` | $\int \lvert dx/dt \rvert\,dt$ | 진동과 불안정성 (ringing, hunting) |
-| A6 | `auc_energy` | $\int (x - \bar{x})^2\,dt$ | 산포의 시간 누적 |
+| A5 | `tv` | $\int \lvert dx/dt \rvert dt$ | 진동과 불안정성 (ringing, hunting) |
+| A6 | `auc_energy` | $\int (x - \bar{x})^2 dt$ | 산포의 시간 누적 |
 
 A2/A3가 핵심이다. 스칼라 하나로 파형 전체의 이탈을 요약하므로 정보 대비 차원 비율이 가장 좋다.
 
 ### 1.3 Phase Features from Cumulative AUC Quantiles
 
-$$F(t) = \frac{\int_0^t \lvert x - x_0\rvert\,d\tau}{\int_0^T \lvert x - x_0\rvert\,d\tau}, \qquad t_q = \frac{F^{-1}(q)}{T}$$
+$$F(t) = \frac{\int_0^t \lvert x - x_0\rvert d\tau}{\int_0^T \lvert x - x_0\rvert d\tau}, \qquad t_q = \frac{F^{-1}(q)}{T}$$
 
 - `t25`, `t50`, `t75` 는 신호의 무게중심이 시간축 앞쪽인지 뒤쪽인지를 나타낸다.
 - Ramp 속도, 정착 지연, valve와 MFC의 응답 지연이 여기에 반영된다.
@@ -54,10 +54,10 @@ Table 2. Physics-based integrals
 
 | Trace | Integral form | Physical quantity |
 |---|---|---|
-| 가스 유량 (sccm) | $\int Q\,dt$ | 총 투입 가스량 (sccm·s) |
-| RF power | $\int P\,dt$ | 총 이온/plasma dose (J) |
-| 압력 | $\int p\,dt$ | 압력–시간 적분 |
-| 온도 | $\int \exp(-E_a / k_B \Theta(t))\,dt$ | Arrhenius thermal budget |
+| 가스 유량 (sccm) | $\int Q dt$ | 총 투입 가스량 (sccm·s) |
+| RF power | $\int P dt$ | 총 이온/plasma dose (J) |
+| 압력 | $\int p dt$ | 압력–시간 적분 |
+| 온도 | $\int \exp(-E_a / k_B \Theta(t)) dt$ | Arrhenius thermal budget |
 
 마지막 항에서 $\Theta(t)$ 는 절대온도, $E_a$ 는 활성화 에너지, $k_B$ 는 Boltzmann 상수다. 시간축 길이 $T$ 와 구분하기 위해 온도를 $\Theta$ 로 쓴다.
 
@@ -75,7 +75,7 @@ A2/A3에 필요한 참조 trace $x_{\text{ref}}$ 는 다음과 같이 만든다.
 
 ### 1.6 Slope of the Cumulative AUC Curve
 
-누적곡선을 $C(t) = \int_0^t x\,d\tau$ 로 두고, 전체 구간에 OLS 직선을 적합했을 때의 기울기 $b$ 를 구한다. 직관적으로는 $\bar{x}$ 가 나올 것 같지만 그렇지 않다. $\bar{x}$ 가 나오는 것은 secant 기울기 $C(T)/T$ 이고, OLS 기울기는 다르다.
+누적곡선을 $C(t) = \int_0^t x d\tau$ 로 두고, 전체 구간에 OLS 직선을 적합했을 때의 기울기 $b$ 를 구한다. 직관적으로는 $\bar{x}$ 가 나올 것 같지만 그렇지 않다. $\bar{x}$ 가 나오는 것은 secant 기울기 $C(T)/T$ 이고, OLS 기울기는 다르다.
 
 #### Derivation
 
@@ -83,13 +83,13 @@ $$b = \frac{\mathrm{Cov}(t, C)}{\mathrm{Var}(t)}, \qquad \mathrm{Var}(t) = \frac
 
 분자를 부분적분한다. 양 끝에서 0이 되는 $v(\tau) = \tau^2/2 - T^2/8$ 을 쓰면
 
-$$\int \tau\,C\,dt = \underbrace{[vC]_0^T}_{=\,0} - \int v\,C'\,dt = -\int_{-T/2}^{T/2}\left(\frac{\tau^2}{2}-\frac{T^2}{8}\right)x\,d\tau$$
+$$\int \tau C dt = \underbrace{[vC]_0^T}_{= 0} - \int v C' dt = -\int_{-T/2}^{T/2}\left(\frac{\tau^2}{2}-\frac{T^2}{8}\right)x d\tau$$
 
 이고, 정리하면 다음을 얻는다.
 
-$$\boxed{\;b = \int_{-T/2}^{T/2} w(\tau)\,x(\tau)\,d\tau, \qquad w(\tau) = \frac{6}{T^{3}}\left(\frac{T^{2}}{4}-\tau^{2}\right)\;}$$
+$$\boxed{ b = \int_{-T/2}^{T/2} w(\tau) x(\tau) d\tau, \qquad w(\tau) = \frac{6}{T^{3}}\left(\frac{T^{2}}{4}-\tau^{2}\right) }$$
 
-$w$ 는 $\int w\,d\tau = 1$ 인 정규화 포물선 (Epanechnikov) kernel로, 중앙에서 최대이고 양 끝에서 정확히 0이다.
+$w$ 는 $\int w d\tau = 1$ 인 정규화 포물선 (Epanechnikov) kernel로, 중앙에서 최대이고 양 끝에서 정확히 0이다.
 
 #### The Slope Is a Weighted Average, Not a Trend
 
@@ -99,11 +99,11 @@ $w \ge 0$ 이고 적분이 1이므로 $b$ 는 원신호의 가중평균이다. �
 
 중점 기준 2차 moment를
 
-$$m_2 = \frac{\int \tau^2 x\,d\tau}{\int x\,d\tau}$$
+$$m_2 = \frac{\int \tau^2 x d\tau}{\int x d\tau}$$
 
 로 두면 다음이 성립한다.
 
-$$\boxed{\;b = \bar{x}\left(\frac{3}{2} - \frac{6\,m_2}{T^{2}}\right)\;}$$
+$$\boxed{ b = \bar{x}\left(\frac{3}{2} - \frac{6 m_2}{T^{2}}\right) }$$
 
 검산으로 $x$ 가 상수면 $m_2 = T^2/12$ 이므로 $b = \bar{x}(3/2 - 1/2) = \bar{x}$ 가 되어 일치한다.
 
@@ -111,7 +111,7 @@ $$\boxed{\;b = \bar{x}\left(\frac{3}{2} - \frac{6\,m_2}{T^{2}}\right)\;}$$
 
 #### Use the Dimensionless Ratio R
 
-$$R = \frac{b}{\bar{x}} = \frac{3}{2} - \frac{6\,m_2}{T^{2}}$$
+$$R = \frac{b}{\bar{x}} = \frac{3}{2} - \frac{6 m_2}{T^{2}}$$
 
 Table 3. Interpretation of R
 
@@ -125,7 +125,7 @@ Table 3. Interpretation of R
 
 #### Noise Properties
 
-$$\int w^2\,d\tau = \frac{36}{T^{6}}\cdot\frac{T^{5}}{30} = \frac{1.2}{T} \quad\Longrightarrow\quad \mathrm{Var}(b) = 1.2\,\mathrm{Var}(\bar{x})$$
+$$\int w^2 d\tau = \frac{36}{T^{6}}\cdot\frac{T^{5}}{30} = \frac{1.2}{T} \quad\Longrightarrow\quad \mathrm{Var}(b) = 1.2 \mathrm{Var}(\bar{x})$$
 
 평균 대비 분산이 20%만 증가한다. 양의 kernel 평균이기 때문이며, 원신호에 직접 적합한 OLS 기울기가 잡음을 증폭하는 것과 정반대다.
 
@@ -133,7 +133,7 @@ $$\int w^2\,d\tau = \frac{36}{T^{6}}\cdot\frac{T^{5}}{30} = \frac{1.2}{T} \quad\
 
 진짜 추세를 재되 잡음에 강건하게 하려면, trace를 폭 $w$ 의 등간격 연속 block $K$ 개로 나눠 block별 AUC 수열의 기울기를 취한다. Block 간 간격은 $h$ 로 둔다.
 
-$$A_k = \int_{t_k}^{t_k + w} x\,dt, \qquad \text{slope}_{\text{blk}} = \mathrm{OLS}(A_k \sim k)$$
+$$A_k = \int_{t_k}^{t_k + w} x dt, \qquad \text{slope}_{\text{blk}} = \mathrm{OLS}(A_k \sim k)$$
 
 #### Variance Scale versus Raw Differencing
 
@@ -181,7 +181,7 @@ Trace나 특징 단위가 아니라 chamber 단위로 소수만 추가한다.
 적분은 drift를 누적한다. Trace에 느린 offset $\delta$ 가 있으면 AUC는 $\delta T$ 만큼 통째로 이동하므로, 공정 변화가 아니라 계측 calibration 이력이 AUC 변동의 지배 성분이 되어 model을 완전히 오염시킨다. 필수 대응은 다음과 같다.
 
 1. A1/A2 형태만 사용한다. Baseline 또는 golden reference를 빼고 적분하면 drift가 상쇄된다.
-2. Pre-trace baseline을 차감한다. 초기 구간 중앙값 $x_0$ 기준으로 $\int (x - x_0)\,dt$ 를 쓴다.
+2. Pre-trace baseline을 차감한다. 초기 구간 중앙값 $x_0$ 기준으로 $\int (x - x_0) dt$ 를 쓴다.
 3. Chamber가 여러 대라면 chamber 내 중심화로 절대 offset을 제거한다.
 4. Drift 자체를 chamber 누적 RF hour 등 별도 공변량으로 명시한다.
 
@@ -306,7 +306,7 @@ Table 7. Redundancy checks
 
 | Check | Threshold | Action |
 |---|---|---|
-| corr(`auc_base`, $(\bar{x} - x_0)\,T$) | $\gt 0.99$ | AUC 폐기, 평균만 유지 |
+| corr(`auc_base`, $(\bar{x} - x_0) T$) | $\gt 0.99$ | AUC 폐기, 평균만 유지 |
 | corr($b$, $\bar{x}$) | $\gt 0.95$ | $b$ 대신 무차원 `R` 사용 |
 | corr(`slope_blk`, `auc_base`) | $\gt 0.95$ | 파형이 거의 선형이므로 하나 폐기 |
 | var(`R`) (wafer 간) | $\approx 0$ | 형상 변동 없음, 폐기 |
@@ -358,7 +358,7 @@ Table 7. Redundancy checks
 
 Trace를 $x_1, \dots, x_N$ 으로, timestamp를 $t_1, \dots, t_N$ 으로 두고 $T = t_N - t_1$ 로 쓴다. 차분은 $\Delta x_i = x_{i+1} - x_i$, $\Delta t_i = t_{i+1} - t_i$ 이며, $i$ 는 sample index, $N$ 은 sample 수다. 사다리꼴 합 연산자를 다음과 같이 둔다.
 
-$$\mathcal{T}[y] = \sum_{i=1}^{N-1} \frac{y_i + y_{i+1}}{2}\,\Delta t_i$$
+$$\mathcal{T}[y] = \sum_{i=1}^{N-1} \frac{y_i + y_{i+1}}{2} \Delta t_i$$
 
 부분 구간 $B$ 에 대한 합은 $\mathcal{T}_B[y]$ 로 쓴다. Variable 열은 그 행에서 새로 쓰는 기호만 밝힌다. 표시가 없는 행은 위의 공통 표기만 쓴다.
 
@@ -368,14 +368,14 @@ Table 8. Feature definitions
 |---|---|---|
 | `auc_base` | $\mathcal{T}[x - x_0]$ | $x_0$ 는 초기 구간의 중앙값 (pre-trace baseline) 이다 |
 | `auc_res_abs` | $\mathcal{T}\big[\lvert x - x_{\text{ref}}\rvert\big]$ | $x_{\text{ref}}$ 는 §1.5에서 산출한 golden reference이며, $x$ 와 시점이 정렬되어 있다 |
-| `auc_res_over` | $\mathcal{T}\big[\max(x - x_{\text{ref}},\,0)\big]$ | — |
-| `auc_res_under` | $\mathcal{T}\big[\max(x_{\text{ref}} - x,\,0)\big]$ | — |
+| `auc_res_over` | $\mathcal{T}\big[\max(x - x_{\text{ref}}, 0)\big]$ | — |
+| `auc_res_under` | $\mathcal{T}\big[\max(x_{\text{ref}} - x, 0)\big]$ | — |
 | `pauc_k` | $\mathcal{T}_{P_k}\big[\lvert x - x_0\rvert\big] \big/ \mathcal{T}\big[\lvert x - x_0\rvert\big]$ | $P_k$ 는 sample을 등분한 $k$ 번째 block의 index 구간이다 |
-| `tv` | $\sum_{i=1}^{N-1} \lvert \Delta x_i \rvert$ | $\int \lvert dx/dt\rvert\,dt$ 의 이산형이며, $\Delta t_i$ 가 상쇄되어 남지 않는다 |
+| `tv` | $\sum_{i=1}^{N-1} \lvert \Delta x_i \rvert$ | $\int \lvert dx/dt\rvert dt$ 의 이산형이며, $\Delta t_i$ 가 상쇄되어 남지 않는다 |
 | `auc_energy` | $\mathcal{T}\big[(x - \bar{x})^2\big]$ | $\bar{x}$ 는 산술평균이다 |
 | `t25`, `t50`, `t75` | $F_j = \mathcal{T}_{1:j}\big[\lvert x - x_0\rvert\big] \big/ \mathcal{T}\big[\lvert x - x_0\rvert\big]$ 를 선형보간해 $F = q$ 가 되는 시각 $t_q$ 를 찾고, $(t_q - t_1)/T$ 로 정규화한다 | $\mathcal{T}_{1:j}$ 는 처음부터 $j$ 번째 sample까지의 누적 합이고, $q$ 는 0.25, 0.50, 0.75다 |
 | `b` | $C_j = \mathcal{T}_{1:j}[x]$ 에 대한 $\mathrm{OLS}(C \sim t)$ 의 기울기 | $C_j$ 는 누적 AUC 곡선이다 |
-| `R` | $\dfrac{3}{2} - \dfrac{6\,m_2}{T^2}, \quad m_2 = \dfrac{\mathcal{T}\big[\tau^2 (x - x_0)\big]}{\mathcal{T}[x - x_0]}$ | $\tau_i = (t_i - t_1) - T/2$ 는 중심화한 시간축이다. $m_2$ 를 baseline 차감 후에 구하는 것은 §2.1의 drift 대응을 따른 것이다 |
+| `R` | $\dfrac{3}{2} - \dfrac{6 m_2}{T^2}, \quad m_2 = \dfrac{\mathcal{T}\big[\tau^2 (x - x_0)\big]}{\mathcal{T}[x - x_0]}$ | $\tau_i = (t_i - t_1) - T/2$ 는 중심화한 시간축이다. $m_2$ 를 baseline 차감 후에 구하는 것은 §2.1의 drift 대응을 따른 것이다 |
 | `slope_blk` | $A_k = \mathcal{T}_{B_k}[x - x_0]$ 에 대한 $\mathrm{OLS}(A \sim k)$ 의 기울기 | $B_k$ 는 폭 $w$ 의 $k$ 번째 block 구간이다 |
 | `s` | 최근 $m$ 장에 대한 $\mathrm{OLS}(\text{AUC}_i \sim i)$ 의 기울기 | $i$ 는 wafer index이며, 현재 wafer 이전만 쓴다 (§1.8) |
 
@@ -386,10 +386,10 @@ Table 9. Feature-moment correspondence
 | Feature | Mathematical identity | Time moment order |
 |---|---|---|
 | 산술평균, 단순 AUC | 균등가중 평균 | 0차 |
-| 원신호 OLS 기울기 | $\int \tau x\,d\tau$ 정규화 | 1차 |
-| $b$ / `R` | $\int \tau^2 x\,d\tau$ 를 통한 분해 | 2차 |
+| 원신호 OLS 기울기 | $\int \tau x d\tau$ 정규화 | 1차 |
+| $b$ / `R` | $\int \tau^2 x d\tau$ 를 통한 분해 | 2차 |
 | `t50` | 누적분포 중앙값 | 위상 (분위) |
-| 3차 시간 moment (본 문서 미사용) | $\int \tau^3 x\,d\tau$ 정규화 | 3차 |
+| 3차 시간 moment (본 문서 미사용) | $\int \tau^3 x d\tau$ 정규화 | 3차 |
 | `slope_blk` | 대역통과 filter 후 1차 | 1차 (평활) |
 
 0차만 쓰면 형상 정보가 전부 소실되고, 차수를 무한정 올리면 잡음만 증폭된다. 0–2차와 위상 하나의 조합이 정보 대비 분산의 절충점이다.

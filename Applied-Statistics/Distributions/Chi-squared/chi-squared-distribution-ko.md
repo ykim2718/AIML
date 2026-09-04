@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution (Korean)
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 08:40 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 16:10 CDT
 
 > 표준정규 확률변수의 제곱합이 따르는 분포에 대한 기록. 어떻게 만들어지는지, 밀도함수와 moment 가
 > 무엇인지, 다른 표본분포와 어떻게 이어지는지, 그리고 이를 쓰는 검정에 왜 등장하는지를 다룬다.
@@ -32,7 +32,7 @@ parameter 는 $k$ 하나뿐이며, 그것은 더해지는 제곱의 개수를 �
 
 $x \gt 0$ 에서 $\chi^2_k$ 의 밀도함수에는 gamma function $\Gamma$ 가 들어간다.
 
-$$f(x) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\, x^{k/2 - 1} e^{-x/2} \hspace{19em} (2)$$
+$$f(x) = \frac{1}{2^{k/2} \Gamma(k/2)} x^{k/2 - 1} e^{-x/2} \hspace{19em} (2)$$
 
 이 식의 어디에도 $k$ 가 정수여야 할 이유는 없다. section 2.1 의 세는 방식은 정수 $k$ 를 주지만,
 밀도함수 자체는 모든 실수 $k \gt 0$ 에 대해 성립한다. 어떤 근사가 만들어내는 소수 자유도를 이 분포로
@@ -151,7 +151,7 @@ $n-1$ 개만 자유롭게 고를 수 있고, 그 제곱합은 $n$ 개가 아니�
 
 식 (7) 을 뒤집으면 정규 분산의 confidence interval 이 나오며, 분포가 비대칭이므로 구간도 비대칭이다.
 
-$$\left[ \frac{(n-1)s^{2}}{\chi^2_{n-1,\,\alpha/2}}, \ \frac{(n-1)s^{2}}{\chi^2_{n-1,\,1-\alpha/2}} \right] \hspace{19em} (8)$$
+$$\left[ \frac{(n-1)s^{2}}{\chi^2_{n-1, \alpha/2}}, \ \frac{(n-1)s^{2}}{\chi^2_{n-1, 1-\alpha/2}} \right] \hspace{19em} (8)$$
 
 ### 5.2. Degrees of Freedom
 
@@ -257,7 +257,7 @@ $$F_Y(y) = \Phi(\sqrt{y}) - \Phi(-\sqrt{y}) = 2\Phi(\sqrt{y}) - 1 \hspace{19em} 
 $y$ 로 미분한다. 연쇄법칙이 $\sqrt{y}$ 의 도함수인 $1/(2\sqrt{y})$ 를 내놓고, $\Phi' = \phi$ 는
 표준정규 밀도함수 $\phi(z) = e^{-z^{2}/2}/\sqrt{2\pi}$ 이다.
 
-$$f_Y(y) = 2\,\phi(\sqrt{y}) \cdot \frac{1}{2\sqrt{y}} = \frac{1}{\sqrt{2\pi}}\, y^{-1/2} e^{-y/2} \hspace{19em} (13)$$
+$$f_Y(y) = 2 \phi(\sqrt{y}) \cdot \frac{1}{2\sqrt{y}} = \frac{1}{\sqrt{2\pi}} y^{-1/2} e^{-y/2} \hspace{19em} (13)$$
 
 남은 일은 식 (13) 을 알아보는 것이다. 식 (2) 에 $k = 1$ 을 넣으면 밀도함수
 $y^{-1/2} e^{-y/2} / \left( 2^{1/2}\Gamma(1/2) \right)$ 가 되는데, $\Gamma(1/2) = \sqrt{\pi}$ 이므로 그
@@ -273,7 +273,7 @@ $\chi^2_n$ 이다.
 제곱 하나에 대해, 정의하는 적분에서 $u = z\sqrt{1-2t}$ 로 치환한다. 이 치환은 $t \lt 1/2$ 에서만
 정당하며, 그 범위에서 지수가 음수로 남아 적분이 수렴한다.
 
-$$E\left[ e^{tZ^{2}} \right] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{tz^{2}} e^{-z^{2}/2}\, dz = \frac{1}{\sqrt{1-2t}} \int_{-\infty}^{\infty} \frac{e^{-u^{2}/2}}{\sqrt{2\pi}}\, du = (1-2t)^{-1/2} \hspace{19em} (14)$$
+$$E\left[ e^{tZ^{2}} \right] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{tz^{2}} e^{-z^{2}/2} dz = \frac{1}{\sqrt{1-2t}} \int_{-\infty}^{\infty} \frac{e^{-u^{2}/2}}{\sqrt{2\pi}} du = (1-2t)^{-1/2} \hspace{19em} (14)$$
 
 남은 적분은 표준정규 밀도함수의 전체 질량이므로 1 이다. 식 (1) 의 $Z_i$ 가 독립이므로 그 합의 moment
 generating function 은 이런 인자 $k$ 개의 곱이고, 그것이 식 (3) 이다. 식 (5) 는 같은 말을 거꾸로 읽은

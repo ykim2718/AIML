@@ -1,5 +1,5 @@
 # PCA Derivation
-Rev. 6 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
+Rev. 7 | Created: 2026-08-11 | Updated: 2026-09-04 16:10 CDT
 
 > The procedure can be followed without knowing why its answer is right, and most uses never need to ask.
 > This document is for when the question comes up: it derives, from the requirement of keeping as much variance as possible, that the axes PCA returns must be eigenvectors of the covariance matrix.
@@ -20,7 +20,7 @@ Table 1. Symbols used throughout
 | $u$ | $p \times 1$ | A candidate direction, constrained to unit length |
 | $\lambda$ | — | The Lagrange multiplier, which turns out to be an eigenvalue and a variance |
 | $u_j$, $\lambda_j$ | — | The j-th eigenvector and eigenvalue of $C$, ordered so that $\lambda_1 \ge \lambda_2 \ge \cdots$ |
-| $V$ | $p \times k$ | The loadings matrix, the kept components stacked as columns $V = [\, u_1 \cdots u_k \,]$ |
+| $V$ | $p \times k$ | The loadings matrix, the kept components stacked as columns $V = [ u_1 \cdots u_k ]$ |
 | $k$ | — | The number of components kept |
 
 Two remarks keep the reading smooth. First, $C$ is symmetric, because $(X_c^\top X_c)^\top = X_c^\top X_c$; the derivation leans on that fact twice, once in the gradient and once in the orthogonality argument. Second, the denominator $n - 1$ is the unbiased convention, and nothing below depends on it — replacing it with $n$ scales every eigenvalue by the same factor and leaves every eigenvector unchanged.
@@ -34,15 +34,15 @@ Centering comes first, and it is not a convention but a precondition. Variance i
 A direction is a unit vector $u$, and the coordinate of a sample along it is the scalar $u^\top x_i$. The variance of those coordinates is the objective:
 
 $$
-\mathrm{Var}(u) \;=\; \frac{1}{n-1} \sum_{i=1}^{n} \left( u^\top x_i \right)^2
-\;=\; u^\top \left( \frac{1}{n-1} \sum_{i=1}^{n} x_i x_i^\top \right) u
-\;=\; u^\top C\, u
+\mathrm{Var}(u) = \frac{1}{n-1} \sum_{i=1}^{n} \left( u^\top x_i \right)^2
+ = u^\top \left( \frac{1}{n-1} \sum_{i=1}^{n} x_i x_i^\top \right) u
+ = u^\top C u
 $$
 
 The constraint $u^\top u = 1$ is what makes the problem well posed. Doubling $u$ quadruples $u^\top C u$, so without the constraint the maximum is unbounded and meaningless; the object being chosen is a direction, and fixing the length to one removes everything that is not direction. The problem is therefore:
 
 $$
-\max_{u} \; u^\top C\, u \qquad \text{subject to} \qquad u^\top u = 1
+\max_{u} u^\top C u \qquad \text{subject to} \qquad u^\top u = 1
 $$
 
 ![Fig 1](pca-derivation-fig1.png)
@@ -54,18 +54,18 @@ Fig 1. The problem and its answer for a two-variable cloud with $C = \bigl[\begi
 A constrained maximum is found by folding the constraint into the objective with a multiplier and asking where the combined function is stationary:
 
 $$
-L(u, \lambda) \;=\; u^\top C\, u \;-\; \lambda \left( u^\top u - 1 \right)
+L(u, \lambda) = u^\top C u - \lambda \left( u^\top u - 1 \right)
 $$
 
 Setting the derivative with respect to $\lambda$ to zero recovers the constraint. Setting the gradient with respect to $u$ to zero gives the condition that matters:
 
 $$
-\frac{\partial L}{\partial u} \;=\; 2\,C u - 2\,\lambda u \;=\; 0
+\frac{\partial L}{\partial u} = 2 C u - 2 \lambda u = 0
 \qquad \Longrightarrow \qquad
-C u \;=\; \lambda u
+C u = \lambda u
 $$
 
-The gradient identity $\partial (u^\top C u) / \partial u = 2\,C u$ holds because $C$ is symmetric; for a general matrix $A$ the gradient is $(A + A^\top)\, u$, and the factor of two would not collapse.
+The gradient identity $\partial (u^\top C u) / \partial u = 2 C u$ holds because $C$ is symmetric; for a general matrix $A$ the gradient is $(A + A^\top) u$, and the factor of two would not collapse.
 
 This one line converts the optimization into linear algebra. The candidates for the best direction are not arbitrary vectors to be searched; they are exactly the eigenvectors of the covariance matrix, a finite list that the eigendecomposition produces outright.
 
@@ -74,7 +74,7 @@ This one line converts the optimization into linear algebra. The candidates for 
 $C u = \lambda u$ is satisfied by every eigenvector, so it marks all the stationary points and does not by itself name the maximum. One more line decides. Left-multiplying the condition by $u^\top$ and using $u^\top u = 1$:
 
 $$
-u^\top C\, u \;=\; \lambda\, u^\top u \;=\; \lambda
+u^\top C u = \lambda u^\top u = \lambda
 $$
 
 At a stationary point the objective equals its own eigenvalue. Maximizing is therefore nothing more than picking the eigenvector with the largest eigenvalue, and the variance along that first principal direction is $\lambda_1$ itself.
@@ -86,11 +86,11 @@ Two facts fall out of this line rather than being imposed. The eigenvalue is a v
 The second component answers the same question among the directions not yet used: maximize $u^\top C u$ subject to $u^\top u = 1$ and $u^\top u_1 = 0$. The second constraint gets its own multiplier:
 
 $$
-L(u, \lambda, \varphi) \;=\; u^\top C\, u \;-\; \lambda \left( u^\top u - 1 \right) \;-\; \varphi\, u^\top u_1
+L(u, \lambda, \varphi) = u^\top C u - \lambda \left( u^\top u - 1 \right) - \varphi u^\top u_1
 $$
 
 $$
-\frac{\partial L}{\partial u} \;=\; 2\,C u - 2\,\lambda u - \varphi\, u_1 \;=\; 0
+\frac{\partial L}{\partial u} = 2 C u - 2 \lambda u - \varphi u_1 = 0
 $$
 
 Left-multiplying by $u_1^\top$ kills every term but one. $u_1^\top u = 0$ by the constraint, and $u_1^\top C u = (C u_1)^\top u = \lambda_1 u_1^\top u = 0$ by the symmetry of $C$, so the equation collapses to $\varphi = 0$ — the new constraint costs nothing at the optimum — and the condition is $C u = \lambda u$ again. The second component is once more an eigenvector, the best one still admissible: the eigenvector of the second-largest eigenvalue. Repeating the argument with orthogonality to all earlier picks makes the j-th component the eigenvector of the j-th largest eigenvalue, so the single eigendecomposition delivers the entire ordered basis at once.
@@ -99,14 +99,14 @@ The orthogonality was not a stylistic preference. Eigenvectors of a symmetric ma
 
 There is also a fixed budget being divided. The trace of $C$ is the sum of the individual variable variances and equals $\sum_j \lambda_j$, so each component claims a share of a total that no choice of basis can change. That total is the denominator of every explained variance ratio.
 
-One more object falls out of this section. Stacking the kept components as columns gives the loadings matrix $V = [\, u_1 \cdots u_k \,]$ of shape $p \times k$, and the two facts in hand — the unit length imposed in §2 and the orthogonality just proved — compress into the single statement $V^\top V = I_k$. A matrix with that property is called column-wise orthonormal, or semi-orthogonal; the unqualified name orthogonal matrix is reserved for the square case $k = p$, where $V^\top = V^{-1}$ and the change of basis is a pure rotation that preserves every length and angle. The reversed product is a different object altogether: $V V^\top$ is the $p \times p$ projection onto the span of the kept components — the $P$ that §6 is about to use — and it cannot equal $I_p$ while $k \lt p$, because its rank is only $k$. [Appendix C](#appendix-c-the-column-wise-orthonormal-matrix) lays the two products side by side.
+One more object falls out of this section. Stacking the kept components as columns gives the loadings matrix $V = [ u_1 \cdots u_k ]$ of shape $p \times k$, and the two facts in hand — the unit length imposed in §2 and the orthogonality just proved — compress into the single statement $V^\top V = I_k$. A matrix with that property is called column-wise orthonormal, or semi-orthogonal; the unqualified name orthogonal matrix is reserved for the square case $k = p$, where $V^\top = V^{-1}$ and the change of basis is a pure rotation that preserves every length and angle. The reversed product is a different object altogether: $V V^\top$ is the $p \times p$ projection onto the span of the kept components — the $P$ that §6 is about to use — and it cannot equal $I_p$ while $k \lt p$, because its rank is only $k$. [Appendix C](#appendix-c-the-column-wise-orthonormal-matrix) lays the two products side by side.
 
 ## 6. The Reconstruction View
 
 PCA is often introduced by a different requirement: choose the k-dimensional subspace that minimizes the average squared distance between each sample and its projection. The two requirements meet in one identity. With $P$ the projection onto any subspace, each sample splits at a right angle:
 
 $$
-\lVert x_i \rVert^2 \;=\; \lVert P x_i \rVert^2 \;+\; \lVert x_i - P x_i \rVert^2
+\lVert x_i \rVert^2 = \lVert P x_i \rVert^2 + \lVert x_i - P x_i \rVert^2
 $$
 
 Summing over the samples and dividing by $n - 1$, exactly as the variance does, turns this into an accounting rule: the total variance equals the variance kept in the subspace plus the mean squared reconstruction error. The left side is fixed by the data, so minimizing the error and maximizing the kept variance are the same act, and both are solved by the eigenvectors already found. Keeping the first $k$ components keeps $\lambda_1 + \cdots + \lambda_k$ and loses exactly $\lambda_{k+1} + \cdots + \lambda_p$, which is why the sum of the discarded eigenvalues is not merely correlated with the reconstruction error but equal to it.
@@ -116,7 +116,7 @@ Summing over the samples and dividing by $n - 1$, exactly as the variance does, 
 Implementations rarely form $C$, and the derivation explains what they do instead. Take the thin SVD of the centered data, $X_c = U S V^\top$, with the singular values $s_j$ on the diagonal of $S$. Then:
 
 $$
-C \;=\; \frac{X_c^\top X_c}{n-1} \;=\; V\, \frac{S^2}{n-1}\, V^\top
+C = \frac{X_c^\top X_c}{n-1} = V \frac{S^2}{n-1} V^\top
 $$
 
 This is already an eigendecomposition: the columns of $V$ are the eigenvectors the derivation demands, with eigenvalues $\lambda_j = s_j^2 / (n - 1)$, and the $V$ the SVD returns is exactly the column-wise orthonormal matrix that §5 built one column at a time. Decomposing $X_c$ directly therefore returns the same axes without ever building the covariance matrix, and it is the preferred route because forming $C$ squares the condition number of the problem before the eigensolver starts.
@@ -139,7 +139,7 @@ $$
 C = \begin{bmatrix} 4 & 2 \\ 2 & 4 \end{bmatrix}
 $$
 
-The eigenvalues solve $\det(C - \lambda I) = (4 - \lambda)^2 - 4 = 0$, so $4 - \lambda = \pm 2$ and $\lambda_1 = 6$, $\lambda_2 = 2$. Substituting back, $(C - 6I)\, u = 0$ forces equal entries, and $(C - 2I)\, u = 0$ forces opposite ones:
+The eigenvalues solve $\det(C - \lambda I) = (4 - \lambda)^2 - 4 = 0$, so $4 - \lambda = \pm 2$ and $\lambda_1 = 6$, $\lambda_2 = 2$. Substituting back, $(C - 6I) u = 0$ forces equal entries, and $(C - 2I) u = 0$ forces opposite ones:
 
 $$
 u_1 = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix}
@@ -194,21 +194,21 @@ Every number in Table 2 has a visible counterpart here. The scores are where the
 The components of §5 are usually handled not one at a time but stacked into a single matrix, one component per column:
 
 $$
-V \;=\;
+V = 
 \begin{bmatrix}
 \vert & \vert & & \vert \\
 u_1 & u_2 & \cdots & u_k \\
 \vert & \vert & & \vert
 \end{bmatrix}
-\;\in\; \mathbb{R}^{\,p \times k}
+ \in \mathbb{R}^{ p \times k}
 $$
 
 Every entry of $V^\top V$ is a product of one column with another, $(V^\top V)_{ij} = u_i^\top u_j$, so the unit lengths of §2 fill the diagonal with ones and the orthogonality of §5 fills everything off the diagonal with zeros. No such argument exists for the rows, and the two products come out asymmetric:
 
 $$
-\underbrace{\; V^\top V = I_k \;}_{\textbf{column test:} \text{ always passes}}
+\underbrace{ V^\top V = I_k }_{\textbf{column test:} \text{ always passes}}
 \qquad\qquad
-\underbrace{\; V V^\top \neq I_p \;}_{\textbf{row test:} \text{ fails whenever } k \lt p}
+\underbrace{ V V^\top \neq I_p }_{\textbf{row test:} \text{ fails whenever } k \lt p}
 $$
 
 The asymmetry is why the naming is column-wise. A rectangular $V$ that passes only the column test is called a column-wise orthonormal matrix, or a semi-orthogonal matrix; the unqualified name orthogonal matrix is reserved for the square case $k = p$, where both tests pass at once and $V^\top = V^{-1}$. The failed row test is not a defect but the point of the truncation: $V V^\top$ is the projection onto the span of the kept components — the $P$ of §6 — and a projection that changed nothing would have compressed nothing.

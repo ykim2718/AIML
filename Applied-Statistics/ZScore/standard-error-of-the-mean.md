@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 0 | Created: 2026-08-30 | Updated: 2026-08-30 17:18 CDT
+Rev. 1 | Created: 2026-08-30 | Updated: 2026-09-04 16:10 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -129,11 +129,11 @@ Two properties of the variance are needed. Scaling a variable by a constant scal
 the square of that constant, and the variance of a sum of independent variables is the sum of
 their variances.
 
-$$\mathrm{Var}[aY] = a^{2}\,\mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i]$$
+$$\mathrm{Var}[aY] = a^{2} \mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i]$$
 
 Apply the first with $a = 1/n$, then the second.
 
-$$\mathrm{Var}\left[ \bar{X} \right] = \frac{1}{n^{2}} \, \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \frac{1}{n^{2}} \sum_{i=1}^{n} \sigma^{2} = \frac{n\sigma^{2}}{n^{2}} = \frac{\sigma^{2}}{n}$$
+$$\mathrm{Var}\left[ \bar{X} \right] = \frac{1}{n^{2}} \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \frac{1}{n^{2}} \sum_{i=1}^{n} \sigma^{2} = \frac{n\sigma^{2}}{n^{2}} = \frac{\sigma^{2}}{n}$$
 
 The standard deviation is the positive square root of the variance, which gives the relation of
 section 2.1.

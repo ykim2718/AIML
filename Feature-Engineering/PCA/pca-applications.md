@@ -1,5 +1,5 @@
 # PCA Applications
-Rev. 12 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
+Rev. 13 | Created: 2026-08-11 | Updated: 2026-09-04 16:10 CDT
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.
@@ -202,7 +202,7 @@ The terms below appear in the body without being defined there.
 
 ## Appendix B. FPCA And Extrapolation
 
-FPCA writes each curve as $x_i(t) = \mu(t) + \sum_j \xi_{ij}\, \varphi_j(t)$, where the mean function $\mu(t)$ and the eigenfunctions $\varphi_j(t)$ are estimated from the covariance surface on the observed domain $[0, T]$, and the scores $\xi_{ij}$ say how much of each eigenfunction one curve contains. The observed domain is a range of the argument $t$ alone — for a trace, the time window the training curves cover — and not a range of the measured values; what happens when the values are unusual is a separate question, taken up after the table. Three different questions get called extrapolation, and they have different answers.
+FPCA writes each curve as $x_i(t) = \mu(t) + \sum_j \xi_{ij} \varphi_j(t)$, where the mean function $\mu(t)$ and the eigenfunctions $\varphi_j(t)$ are estimated from the covariance surface on the observed domain $[0, T]$, and the scores $\xi_{ij}$ say how much of each eigenfunction one curve contains. The observed domain is a range of the argument $t$ alone — for a trace, the time window the training curves cover — and not a range of the measured values; what happens when the values are unusual is a separate question, taken up after the table. Three different questions get called extrapolation, and they have different answers.
 
 Table 7. Three questions called extrapolation
 

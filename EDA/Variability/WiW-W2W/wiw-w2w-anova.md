@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 50 | Created: 2026-09-01 | Updated: 2026-09-03 19:40 CDT
+Rev. 51 | Created: 2026-09-01 | Updated: 2026-09-04 16:10 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -153,7 +153,7 @@ Fig 2 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며
 
 Wafer 한 장의 산포가 그때까지 본 wafer 내 산포에서 크게 벗어나면 그 wafer 를 WiW excursion 으로 본다. Wafer $`i`$ 를 판정할 때 앞선 wafer 만으로 구한 $`\sigma_{within}(1..i-1)`$ 을 기준선으로 두고, 그 wafer 의 site 표준편차 $`s_i`$ 가 아래 한계를 넘는지 본다. 한계는 표본표준편차의 분포에서 나오며, 유도는 [Appendix D](#appendix-d-derivation-of-the-screening-limit) 에 적었다.
 
-$$s_i \gt \sigma_{within}(1..i-1) \sqrt{\frac{\chi^2_{p,\, N-1}}{N-1}} \hspace{19em} (13)$$
+$$s_i \gt \sigma_{within}(1..i-1) \sqrt{\frac{\chi^2_{p, N-1}}{N-1}} \hspace{19em} (13)$$
 
 Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선이 기준선, 빨간 선이 식 (13) 의 한계이고, 한계를 넘은 wafer 를 빨간 점으로 표시했다. 세 값 모두 site 값의 표준편차라 단위가 같으므로 오른쪽 축을 따로 두지 않고 한 축에 겹쳐 그렸다.
 
@@ -258,7 +258,7 @@ $$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (28)$$
 
 $`\chi^2_{p,\,N-1}`$ 을 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그보다 작을 확률이 $`p`$ 인 점으로 두면, 식 (28) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
 
-$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p,\, N-1} \right) = 1 - p \hspace{19em} (29)$$
+$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 - p \hspace{19em} (29)$$
 
 괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (13) 이 된다. 곧 식 (13) 을 넘은 wafer 는, 그 wafer 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 wafer 이다.
 

@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 26 | Created: 2026-07-29 | Updated: 2026-08-15 12:25 CDT
+Rev. 27 | Created: 2026-07-29 | Updated: 2026-09-04 16:10 CDT
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 
@@ -48,7 +48,7 @@ Table 2. Event-counting features
 
 두 특징은 상수배 관계에 가깝다. 한 주기가 기준선을 두 번 지나므로
 
-$$\text{cycle count} \approx \frac{(N-1)\,\text{zcr}}{2}$$
+$$\text{cycle count} \approx \frac{(N-1) \text{zcr}}{2}$$
 
 이며, trace 길이가 고정된 recipe에서는 완전 공선이 된다. Roughness 축의 세 특징 가운데 하나만 쓰고, 어느 것을 고를지는 §5.1의 검사로 정한다.
 
@@ -216,12 +216,12 @@ Table 4. Feature definitions
 | `sigma_st` | $\sigma_{\text{st}} = \sqrt{\mathrm{MSSD}/2}$ | $\mathrm{MSSD} = \dfrac{1}{N-1}\sum_{i=1}^{N-1}(\Delta x_i)^2$ 는 이웃 차분 제곱의 평균이다. 2로 나누는 근거는 [Appendix C](#appendix-c-lag-1-autocorrelation) 에 있다 |
 | `max_delta` | $\max_i \lvert \Delta x_i \rvert$ | — |
 | `slsr` | $\sigma_{\text{st}} / s$ | 두 값 모두 위 행에서 정의한 것이다 |
-| `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[g_i \neq g_{i+1}\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $g_i \in \{-1, +1\}$ 은 hysteresis를 적용한 부호로, $x_i - c \gt h/2$ 이면 $+1$, $x_i - c \lt -h/2$ 이면 $-1$, 그 사이면 직전 값을 유지한다. $c$ 는 기준선, $h$ 는 dead band 폭이다 |
-| `cycle_count` | $\lvert \{\, i : x_i \text{ is a peak with prominence} \ge \pi \,\} \rvert$ | $\pi$ 는 prominence 문턱값으로, range에 대한 비율로 잡는다. 봉우리 하나가 진동 한 주기에 대응한다 |
+| `zcr` | $\dfrac{1}{N-1}\sum_{i=1}^{N-1} \mathbb{1}\big[g_i \neq g_{i+1}\big]$ | $\mathbb{1}[\cdot]$ 은 조건이 참이면 1, 아니면 0인 지시함수다. $g_i \in \lbrace-1, +1\rbrace$ 은 hysteresis를 적용한 부호로, $x_i - c \gt h/2$ 이면 $+1$, $x_i - c \lt -h/2$ 이면 $-1$, 그 사이면 직전 값을 유지한다. $c$ 는 기준선, $h$ 는 dead band 폭이다 |
+| `cycle_count` | $\lvert \lbrace i : x_i \text{ is a peak with prominence} \ge \pi \rbrace \rvert$ | $\pi$ 는 prominence 문턱값으로, range에 대한 비율로 잡는다. 봉우리 하나가 진동 한 주기에 대응한다 |
 | `peak_time_norm` | $(t_{i^*} - t_1) / T$ | $i^* = \arg\max_i x_i$ 는 최댓값이 나오는 sample index다 |
 | `duration` | $T$ | — |
 
-`zcr` 에서 $h = 0$, $c = \bar{x}$ 로 두면 단순 부호 교차 계수가 된다. 문턱값을 주지 않았을 때의 기본값은 $c = \bar{x}$, $h = 2\sigma_{\text{st}}$, $\pi = 0.25\,(\max_i x_i - \min_i x_i)$ 다. 추세가 뚜렷한 trace에서는 §1.2에 따라 $c$ 를 이동중앙값으로 바꿔 넘긴다.
+`zcr` 에서 $h = 0$, $c = \bar{x}$ 로 두면 단순 부호 교차 계수가 된다. 문턱값을 주지 않았을 때의 기본값은 $c = \bar{x}$, $h = 2\sigma_{\text{st}}$, $\pi = 0.25 (\max_i x_i - \min_i x_i)$ 다. 추세가 뚜렷한 trace에서는 §1.2에 따라 $c$ 를 이동중앙값으로 바꿔 넘긴다.
 
 ## Appendix C. Lag-1 Autocorrelation
 
@@ -237,7 +237,7 @@ $$\hat{\rho}_1 = \frac{\sum_{i=1}^{N-1}(x_i - \bar{x})(x_{i+1} - \bar{x})}{\sum_
 
 차분의 제곱을 전개하면 $\mathrm{MSSD}$ 가 $\rho_1$ 으로 표현된다. $x$ 를 평균 0, 분산 $\sigma^2$ 인 정상 신호로 두면
 
-$$\mathbb{E}\big[(x_{i+1} - x_i)^2\big] = \mathbb{E}[x_{i+1}^2] - 2\,\mathbb{E}[x_i x_{i+1}] + \mathbb{E}[x_i^2] = 2\sigma^2 - 2\rho_1 \sigma^2 = 2\sigma^2 (1 - \rho_1)$$
+$$\mathbb{E}\big[(x_{i+1} - x_i)^2\big] = \mathbb{E}[x_{i+1}^2] - 2 \mathbb{E}[x_i x_{i+1}] + \mathbb{E}[x_i^2] = 2\sigma^2 - 2\rho_1 \sigma^2 = 2\sigma^2 (1 - \rho_1)$$
 
 이므로 $\mathrm{MSSD} \approx 2 s^2 (1 - \hat{\rho}_1)$ 이고, 여기에 §1.3의 정의를 넣으면 다음을 얻는다.
 
@@ -262,7 +262,7 @@ Table 5. Correspondence between the lag-1 autocorrelation and SLSR
 
 표의 네 번째 줄이 기준값 1을 주는 이유를 따로 본다. 백색잡음은 이웃 sample이 독립이므로 $\rho_1 = 0$ 이고, 차분의 분산에서 공분산 항이 사라진다.
 
-$$\mathrm{Var}(x_{i+1} - x_i) = \mathrm{Var}(x_{i+1}) + \mathrm{Var}(x_i) - 2\,\mathrm{Cov}(x_i, x_{i+1}) = \sigma^2 + \sigma^2 - 0 = 2\sigma^2$$
+$$\mathrm{Var}(x_{i+1} - x_i) = \mathrm{Var}(x_{i+1}) + \mathrm{Var}(x_i) - 2 \mathrm{Cov}(x_i, x_{i+1}) = \sigma^2 + \sigma^2 - 0 = 2\sigma^2$$
 
 차분의 기댓값이 0이므로 $\mathbb{E}\big[(\Delta x)^2\big] = \mathrm{Var}(\Delta x)$ 이고, 따라서 $\mathrm{MSSD} = 2\sigma^2$ 이다. 인수 2는 sample 두 개의 분산이 더해져 생긴 것이지 임의로 붙인 상수가 아니다.
 
@@ -270,7 +270,7 @@ $\sigma_{\text{st}}$ 를 $\sqrt{\mathrm{MSSD}/2}$ 로 정의하는 이유가 여
 
 이 유도는 정상성을 전제한다. 추세가 뚜렷한 trace에서는 $s$ 가 잡음이 아니라 추세의 진폭을 재므로 $\hat{\rho}_1$ 이 1 쪽으로 부풀고, 비는 그만큼 작게 나온다. 이때의 비는 "잡음 대비 추세의 우세" 를 읽는 값으로 해석해야 한다.
 
-`slsr` 을 제곱해 2를 곱하면 $\mathrm{VN} = 2\,\text{slsr}^2 = \mathrm{MSSD}/s^2$ 로 von Neumann ratio가 된다. 이 통계량은 무작위성 검정의 임계값표가 정리되어 있으므로, 관측된 거칠기가 백색잡음과 유의하게 다른지를 눈대중이 아니라 검정으로 판정할 수 있다.
+`slsr` 을 제곱해 2를 곱하면 $\mathrm{VN} = 2 \text{slsr}^2 = \mathrm{MSSD}/s^2$ 로 von Neumann ratio가 된다. 이 통계량은 무작위성 검정의 임계값표가 정리되어 있으므로, 관측된 거칠기가 백색잡음과 유의하게 다른지를 눈대중이 아니라 검정으로 판정할 수 있다.
 
 ## Appendix D. Roughness
 
@@ -292,7 +292,7 @@ Fig 1. Sine 주파수와 잡음 수준에 따른 Roughness 축 세 특징. 열�
 
 그러나 잡음 0.60을 넘으면 무너진다. 값이 40, 38, 33, 29, 32로 올라가고 마지막 행에서는 41–56에 이른다. Range가 잡음 outlier로 함께 커지는데도 그 0.25배를 넘는 봉우리가 계속 생기기 때문이다. 잡음이 진폭을 지배하는 구간에서는 이 특징을 쓰지 않는 것이 맞다.
 
-`zcr` 은 그 중간이다. Hysteresis가 기준선 근처의 잡음 교차를 걸러 주므로 5 주기 열이 0.033 → 0.030 → 0.030 → 0.043 → 0.140으로 잡음 0.60까지 거의 유지된다. 같은 열의 `cycle_count` 가 5 → 5 → 6 → 33 → 41로 뛰는 것과 대비된다. 환산식도 잘 맞는다. 첫 행 30 주기에서 $(N-1)\,\text{zcr}/2 = 299 \times 0.201 / 2 = 30.0$ 이다.
+`zcr` 은 그 중간이다. Hysteresis가 기준선 근처의 잡음 교차를 걸러 주므로 5 주기 열이 0.033 → 0.030 → 0.030 → 0.043 → 0.140으로 잡음 0.60까지 거의 유지된다. 같은 열의 `cycle_count` 가 5 → 5 → 6 → 33 → 41로 뛰는 것과 대비된다. 환산식도 잘 맞는다. 첫 행 30 주기에서 $(N-1) \text{zcr}/2 = 299 \times 0.201 / 2 = 30.0$ 이다.
 
 정리하면 잡음 강건성은 `slsr` 이 가장 높고 `cycle_count` 가 가장 낮으며, 물리적 해석은 그 반대 순서다. §1.2의 맞바꿈이 수치로 확인된다.
 

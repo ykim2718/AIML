@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean (Korean)
-Rev. 0 | Created: 2026-08-30 | Updated: 2026-08-30 17:35 CDT
+Rev. 1 | Created: 2026-08-30 | Updated: 2026-09-04 16:10 CDT
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -121,11 +121,11 @@ $$\bar{X} = \frac{1}{n} \sum_{i=1}^{n} X_i$$
 분산의 성질 두 가지가 필요하다. 확률변수에 상수를 곱하면 분산은 그 상수의 제곱만큼 커지고,
 독립인 확률변수를 더한 것의 분산은 각 분산의 합이다.
 
-$$\mathrm{Var}[aY] = a^{2}\,\mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i]$$
+$$\mathrm{Var}[aY] = a^{2} \mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i]$$
 
 $a = 1/n$ 으로 앞의 성질을 쓰고 이어서 뒤의 성질을 쓴다.
 
-$$\mathrm{Var}\left[ \bar{X} \right] = \frac{1}{n^{2}} \, \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \frac{1}{n^{2}} \sum_{i=1}^{n} \sigma^{2} = \frac{n\sigma^{2}}{n^{2}} = \frac{\sigma^{2}}{n}$$
+$$\mathrm{Var}\left[ \bar{X} \right] = \frac{1}{n^{2}} \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \frac{1}{n^{2}} \sum_{i=1}^{n} \sigma^{2} = \frac{n\sigma^{2}}{n^{2}} = \frac{\sigma^{2}}{n}$$
 
 표준편차는 분산의 양의 제곱근이므로 section 2.1 의 관계가 나온다.
 

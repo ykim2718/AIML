@@ -1,5 +1,5 @@
 # Mean, Variance, and Agreement Metrics for Regression in AI/ML
-Rev. 37 | Created: 2026-04-08 | Updated: 2026-08-20 11:17 CDT
+Rev. 38 | Created: 2026-04-08 | Updated: 2026-09-04 16:10 CDT
 
 > A taxonomy of regression evaluation metrics split into variance-based,
 > mean-based, and agreement-based families, read against the $y=x$ line and
@@ -117,7 +117,7 @@ $$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE}$
 
 #### Mean Percentage Error And Mean Absolute Percentage Error
 
-$$MPE = \frac{100\%}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \frac{100\%}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right|$$
+$$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \frac{100}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right|$$
 
 - Relation to the 1:1 line: these metrics evaluate the relative deviation from the line. MPE
   measures the average percentage bias, that is whether the model consistently overestimates or

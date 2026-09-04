@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 31 | Created: 2026-08-30 | Updated: 2026-09-01 13:39 CDT
+Rev. 32 | Created: 2026-08-30 | Updated: 2026-09-04 16:10 CDT
 
 Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 
@@ -89,7 +89,7 @@ $Q$ 는 계수의 이동 속도를 정하는 parameter 이다. $Q$ 가 0 이면 
 
 $Q$ 와 $R$ 도 자료에 적혀 있지 않으므로 추정해야 한다. 값을 하나 넣어 filter 를 돌리면 시점마다 prediction error $e_t$ 와 그 분산 $S_t$ 가 나오고, 그 둘로 자료의 likelihood 를 적을 수 있다. 그 likelihood 를 가장 크게 하는 값이 추정치이다.
 
-$$(\hat{Q}, \hat{R}) = \arg\max_{Q,\, R} \; -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
+$$(\hat{Q}, \hat{R}) = \arg\max_{Q, R} -\frac{1}{2} \sum_{t=1}^{n} \left( \ln S_t + \frac{e_t^2}{S_t} \right)$$
 
 $e_t$ 와 $S_t$ 는 4.2 의 loop 이 내놓는 값이므로 이 식은 $Q$ 와 $R$ 에 대한 closed form 해를 주지 않는다. 후보 값마다 filter 를 한 번 돌려 위 합을 계산하고 그 값을 수치적으로 최대화한다.
 

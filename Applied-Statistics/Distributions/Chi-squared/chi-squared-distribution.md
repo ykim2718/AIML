@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution
-Rev. 3 | Created: 2026-09-03 | Updated: 2026-09-04 08:15 CDT
+Rev. 4 | Created: 2026-09-03 | Updated: 2026-09-04 16:10 CDT
 
 > A note on the distribution of a sum of squared standard normal variables: how it is built, what
 > its density and moments are, how it relates to the other sampling distributions, and why it turns
@@ -36,7 +36,7 @@ side.
 
 The density of $\chi^2_k$ on $x \gt 0$ involves the gamma function $\Gamma$.
 
-$$f(x) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\, x^{k/2 - 1} e^{-x/2} \hspace{19em} (2)$$
+$$f(x) = \frac{1}{2^{k/2} \Gamma(k/2)} x^{k/2 - 1} e^{-x/2} \hspace{19em} (2)$$
 
 Nothing in this expression requires $k$ to be a whole number. The counting construction of
 section 2.1 gives integer $k$, but the density is a proper density for every real $k \gt 0$, and
@@ -165,7 +165,7 @@ result is exactly chi-squared, and exactly independent of the mean, is Cochran's
 Inverting equation (7) gives the confidence interval for a normal variance, which is asymmetric
 because the distribution is.
 
-$$\left[ \frac{(n-1)s^{2}}{\chi^2_{n-1,\,\alpha/2}}, \ \frac{(n-1)s^{2}}{\chi^2_{n-1,\,1-\alpha/2}} \right] \hspace{19em} (8)$$
+$$\left[ \frac{(n-1)s^{2}}{\chi^2_{n-1, \alpha/2}}, \ \frac{(n-1)s^{2}}{\chi^2_{n-1, 1-\alpha/2}} \right] \hspace{19em} (8)$$
 
 ### 5.2. Degrees of Freedom
 
@@ -281,7 +281,7 @@ Differentiate with respect to $y$. The chain rule contributes the derivative of 
 $1/(2\sqrt{y})$, and $\Phi' = \phi$ is the standard normal density
 $\phi(z) = e^{-z^{2}/2}/\sqrt{2\pi}$.
 
-$$f_Y(y) = 2\,\phi(\sqrt{y}) \cdot \frac{1}{2\sqrt{y}} = \frac{1}{\sqrt{2\pi}}\, y^{-1/2} e^{-y/2} \hspace{19em} (13)$$
+$$f_Y(y) = 2 \phi(\sqrt{y}) \cdot \frac{1}{2\sqrt{y}} = \frac{1}{\sqrt{2\pi}} y^{-1/2} e^{-y/2} \hspace{19em} (13)$$
 
 What remains is to recognise equation (13). Setting $k = 1$ in equation (2) gives the density
 $y^{-1/2} e^{-y/2} / \left( 2^{1/2}\Gamma(1/2) \right)$, and $\Gamma(1/2) = \sqrt{\pi}$ makes that
@@ -298,7 +298,7 @@ For a single square, substitute $u = z\sqrt{1-2t}$ in the defining integral. The
 legitimate only for $t \lt 1/2$, which is where the exponent stays negative and the integral
 converges.
 
-$$E\left[ e^{tZ^{2}} \right] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{tz^{2}} e^{-z^{2}/2}\, dz = \frac{1}{\sqrt{1-2t}} \int_{-\infty}^{\infty} \frac{e^{-u^{2}/2}}{\sqrt{2\pi}}\, du = (1-2t)^{-1/2} \hspace{19em} (14)$$
+$$E\left[ e^{tZ^{2}} \right] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{tz^{2}} e^{-z^{2}/2} dz = \frac{1}{\sqrt{1-2t}} \int_{-\infty}^{\infty} \frac{e^{-u^{2}/2}}{\sqrt{2\pi}} du = (1-2t)^{-1/2} \hspace{19em} (14)$$
 
 The remaining integral is the total mass of the standard normal density and equals 1. Since the
 $Z_i$ in equation (1) are independent, the moment generating function of their sum is the product

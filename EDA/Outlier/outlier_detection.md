@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 15 | Created: 2026-08-25 | Updated: 2026-08-26 13:06 CDT
+Rev. 16 | Created: 2026-08-25 | Updated: 2026-09-04 16:10 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -177,7 +177,7 @@ $$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \r
 
 Quartiles are order statistics, so the rule needs no distributional assumption and carries a
 breakdown point of 25% against the 0% of the z-score. On a normal sample of standard deviation
-$\sigma$ the range itself is $1.349\,\sigma$, which puts the fences at $\pm 2.7\,\sigma$ and admits
+$\sigma$ the range itself is $1.349 \sigma$, which puts the fences at $\pm 2.7 \sigma$ and admits
 roughly 0.7% of observations. The rule is therefore comparable in strictness to a z-score at 3,
 while surviving contamination that would defeat that score.
 [Appendix B. Tukey's Rule](#appendix-b-tukeys-rule) works the comparison out and gives the second
@@ -200,7 +200,7 @@ $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 - $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 3.1.
 
 That divisor is a consistency constant, and it is there because the raw MAD is not an estimate of
-$s$. On a normal sample the MAD converges to $0.674490\,\sigma$ rather than to $\sigma$, so it
+$s$. On a normal sample the MAD converges to $0.674490 \sigma$ rather than to $\sigma$, so it
 understates the spread by about a third. Dividing by the constant, which is the same as
 multiplying by 1.482602, puts $M_i$ on the scale $z_i$ is read on. Without that step the score
 would sit on a scale of its own, and no threshold could be carried between the two rules or read
@@ -636,7 +636,7 @@ The adjusted boxplot of [Hubert and Vandervieren (2008)](#ref-10) repairs this b
 fence according to how skewed the sample is, measured by the medcouple of
 [Brys, Hubert and Struyf (2004)](#ref-9).
 
-$$\left[ \ Q_1 - 1.5 \, e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \, e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]$$
+$$\left[ \ Q_1 - 1.5 e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]$$
 
 - $\mathrm{MC}$ — the medcouple, a robust skewness measure between $-1$ and $1$ that is 0 for a symmetric sample.
 - $a$, $b$ — $-4$ and $3$ when $\mathrm{MC} \ge 0$, and $-3$ and $4$ when it is negative, so the fence on the long side moves out and the one on the short side moves in.
