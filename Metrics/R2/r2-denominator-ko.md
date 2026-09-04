@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator (Korean)
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 14:50 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 14:57 CDT
 
 > 이 문서는 표준 R² 의 분모를 자료에서 계산하지 않고 바깥에서 정한 기준으로 바꿀 수 있는지,
 > 그리고 그렇게 바꾸고 나면 그 수가 무엇을 뜻하게 되는지를 묻는다.
@@ -8,7 +8,7 @@ Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 14:50 CDT
 
 표준 R² 는 다음과 같이 정의된다.
 
-$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}$$
+$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2} \hspace{19em} (1)$$
 
 분모 `SS_tot` 는 자료 자신의 평균 `y_bar` 를 중심으로 잡은 총제곱합이며, 흔히 자료의 총산포라
 부르는 양이다. 그 분모를 자료에서 계산하는 대신 바깥에서 정한 값으로 바꿀 수 있는지가 이 문서의
@@ -48,10 +48,10 @@ baseline 을 자료의 평균에 암묵적으로 둔 경우이다.
 
 | Symbol | Denominator | Baseline it encodes | Typical use | Reference |
 |---|---|---|---|---|
-| `R²` | `Σ(y_i − y_bar)²` | 이 자료의 평균 | 한 자료 안에서의 적합도 | [1](#ref-1) |
-| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 시점에 알던 평균 | Test set 평가 | [2](#ref-2) |
-| `R2_frd` | `N · sigma_ref²` | Spec 이 허용하는 산포 | Lot, batch, 기간 사이의 비교 | [3](#ref-3), [4](#ref-4) |
-| `R2_base` | `Σ(y_i − y_base_i)²` | 표본마다 답하는 기준 model | 시계열, 운영 중인 model 과의 비교 | [5](#ref-5) |
+| `R²` | `Σ(y_i − y_bar)²` | 이 자료의 평균 | 한 자료 안에서의 적합도 | [[1](#ref-1)] |
+| `R2_oos` | `Σ(y_i − y_train_bar)²` | 학습 시점에 알던 평균 | Test set 평가 | [[2](#ref-2)] |
+| `R2_frd` | `N · sigma_ref²` | Spec 이 허용하는 산포 | Lot, batch, 기간 사이의 비교 | [[3](#ref-3)], [[4](#ref-4)] |
+| `R2_base` | `Σ(y_i − y_base_i)²` | 표본마다 답하는 기준 model | 시계열, 운영 중인 model 과의 비교 | [[5](#ref-5)] |
 
 Reference 열은 각 형태가 실제로 쓰이는 곳을 가리키며, 서지 사항은 [References](#references) 에 있다.
 넷 가운데 이 문서가 지어낸 계산은 하나도 없고, 각각은 자기 분야에서 이미 표준이다. 이 문서가 더한
@@ -62,7 +62,7 @@ Reference 열은 각 형태가 실제로 쓰이는 곳을 가리키며, 서지 �
 가장 흔한 경우이다. Test set 을 평가할 때 분모의 기준은 test 자료의 평균이 아니라 학습 자료의 평균
 `y_train_bar` 에 묶는다.
 
-$$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2}$$
+$$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2} \hspace{19em} (2)$$
 
 이것이 옳은 꼴인 이유는 둘이다. 첫째, test 자료의 평균은 평가 시점에 알 수 없으므로 그것을 baseline
 에 넣는 일은 미래에서 정보를 빌려오는 셈이 된다. 둘째, 분모가 test set 을 어떻게 잘랐는지에 따라
@@ -75,7 +75,7 @@ $$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train
 
 분모를 자료에서 계산하지 않고 이미 알고 있는 기준 분산으로 바꾼다.
 
-$$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
+$$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2} \hspace{19em} (3)$$
 
 `sigma_ref` 에는 공정 spec 이 허용하는 산포, 쌓아 온 이력 자료의 분산, 계측 system 의 기준 분산
 같은 도메인 기준을 쓴다. 두께 예측이라면 해당 층의 관리 spec 산포를 분모에 넣는 것으로 지표는
@@ -84,12 +84,12 @@ $$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
 분모가 상수이므로 식은 한 단계 더 줄어든다. 분자 `SS_res` 를 표본 수 `N` 으로 나눈 것의 제곱근이
 root mean squared error, 곧 RMSE 이다.
 
-$$\mathrm{RMSE} = \sqrt{\frac{SS_{res}}{N}}$$
+$$\mathrm{RMSE} = \sqrt{\frac{SS_{res}}{N}} \hspace{19em} (4)$$
 
 RMSE 는 오차를 y 와 같은 단위로 돌려놓으므로 `sigma_ref` 로 바로 나눌 수 있다. `SS_res` 에
 `N · RMSE²` 를 넣으면 `N` 이 약분되고 아래만 남는다.
 
-$$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2$$
+$$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2 \hspace{19em} (5)$$
 
 이것이 이 변형의 물리적 의미이다. `R2_frd` 는 **model 의 오차가 spec 산포의 몇 배인지를 재어** 그것을
 1 에서 뺀다. Spec 의 절반이면 0.75, spec 과 같은 오차면 0, spec 을 넘는 오차면 음수가 된다. Baseline
@@ -110,7 +110,7 @@ baseline 은 어떤 표본을 만나든 `sigma_ref` 만큼의 오차를 낸다. 
 기준 자체가 표본마다 달라져야 하는 경우는 그 꼴로 적을 수 없다. 그때 baseline 은 각 i 마다 자기 값
 `y_base_i` 를 가진다.
 
-$$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2}$$
+$$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2} \hspace{19em} (6)$$
 
 시계열의 persistence baseline 이 대표적인 경우이다. 직전 단계의 값을 다음 단계의 예측으로 쓰므로
 `y_base_i` 가 i 마다 다르고, 어떤 상수로도 같은 분모를 만들 수 없다. 계절 평균을 baseline 으로 삼을
@@ -180,29 +180,25 @@ baseline 을 명시적으로 고른 형태들을 `Ref_R2` 라 부르고 `R2_oos`
 
 ## References
 
-<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. 표준 R² 가 분모를 자료의 평균에 묶어 둔 데서 물려받는 해석의 한계를 밝히며, section 3 의 변형들이 필요한 이유가 된다.
-
-<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균에 고정한 out-of-sample R² 를 평가 지표로 쓴다. Section 3.1 이 기술하는 형태를 그대로 쓴 것이다.
-
-<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. Skill score 를 평균제곱오차를 기준 오차로 나눈 것으로 정식화하고, 그 기준이 과거 평균 같은 외부 값일 수 있음을 보인다. Section 2 가 기술하는 구조의 근거이다.
-
-<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. 계측 오차를 spec tolerance 로 나눈 precision-to-tolerance ratio 를 계측 system 의 합격 기준으로 정의한다. Section 3.2 의 `RMSE / sigma_ref` 를 계측 분야가 쓰는 방식이다.
-
+<a id="ref-1"></a>[1] Kvålseth, T. O. (1985). [Cautionary Note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285. 표준 R² 가 분모를 자료의 평균에 묶어 둔 데서 물려받는 해석의 한계를 밝히며, section 3 의 변형들이 필요한 이유가 된다.<br>
+<a id="ref-2"></a>[2] Campbell, J. Y., & Thompson, S. B. (2008). [Predicting Excess Stock Returns Out of Sample: Can Anything Beat the Historical Average?](https://doi.org/10.1093/rfs/hhm055) *The Review of Financial Studies*, 21(4), 1509–1531. 분모를 학습 구간의 평균에 고정한 out-of-sample R² 를 평가 지표로 쓴다. Section 3.1 이 기술하는 형태를 그대로 쓴 것이다.<br>
+<a id="ref-3"></a>[3] Murphy, A. H. (1988). [Skill Scores Based on the Mean Square Error and Their Relationships to the Correlation Coefficient](https://doi.org/10.1175/1520-0493%281988%29116%3C2417%3ASSBOTM%3E2.0.CO%3B2). *Monthly Weather Review*, 116(12), 2417–2424. Skill score 를 평균제곱오차를 기준 오차로 나눈 것으로 정식화하고, 그 기준이 과거 평균 같은 외부 값일 수 있음을 보인다. Section 2 가 기술하는 구조의 근거이다.<br>
+<a id="ref-4"></a>[4] Automotive Industry Action Group (2010). [Measurement Systems Analysis Reference Manual](https://www.aiag.org/training-and-resources/manuals/details/MSA-4), 4th ed. ISBN 978-1-60534-211-5. 계측 오차를 spec tolerance 로 나눈 precision-to-tolerance ratio 를 계측 system 의 합격 기준으로 정의한다. Section 3.2 의 `RMSE / sigma_ref` 를 계측 분야가 쓰는 방식이다.<br>
 <a id="ref-5"></a>[5] Hyndman, R. J., & Koehler, A. B. (2006). [Another Look at Measures of Forecast Accuracy](https://doi.org/10.1016/j.ijforecast.2006.03.001). *International Journal of Forecasting*, 22(4), 679–688. 예측 오차를 persistence baseline 의 오차로 나누면 서로 다른 계열이 한 척도에 놓인다는 것을 밝힌다. Section 3.3 이 다루는 표본별 baseline 의 표준적인 예이다.
 
 ---
 
 ## Appendix A. Terminology
 
-- **baseline model** — 비교의 기준이 되는 model. R² 의 분모는 그 제곱오차합이다.
-- **out-of-sample** — 학습에 쓰지 않은 자료에서의 평가.
-- **persistence baseline** — 직전 단계의 값을 다음 단계의 예측으로 쓰는 시계열 baseline.
-- **Referenced R² (`Ref_R2`)** — 분모의 baseline 을 바깥에서 정해 계산한 R² 를 이 문서에서 통칭하는 이름.
-- **RMSE** — root mean squared error 이며 `sqrt(SS_res / N)` 로 계산한다. 오차를 y 와 같은 단위로 돌려놓으므로 spec 산포에 바로 견줄 수 있다.
-- **skill score** — `1 − model error / baseline error` 꼴 지표들의 통칭. R² 는 baseline 이 평균인 경우이다.
-- **spec tolerance** — 공정 spec 이 허용하는 산포. 고정 분모로 자주 쓰인다.
-- **SS_res** — 잔차제곱합 `Σ(y_i − y_hat_i)²`.
-- **SS_tot** — 총제곱합 `Σ(y_i − y_bar)²` 이며, 표준 R² 의 분모이다.
+- **baseline model**: 비교의 기준이 되는 model. R² 의 분모는 그 제곱오차합이다.
+- **out-of-sample**: 학습에 쓰지 않은 자료에서의 평가.
+- **persistence baseline**: 직전 단계의 값을 다음 단계의 예측으로 쓰는 시계열 baseline.
+- **Referenced R² (`Ref_R2`)**: 분모의 baseline 을 바깥에서 정해 계산한 R² 를 이 문서에서 통칭하는 이름.
+- **RMSE**: root mean squared error 이며 `sqrt(SS_res / N)` 로 계산한다. 오차를 y 와 같은 단위로 돌려놓으므로 spec 산포에 바로 견줄 수 있다.
+- **skill score**: `1 − model error / baseline error` 꼴 지표들의 통칭. R² 는 baseline 이 평균인 경우이다.
+- **spec tolerance**: 공정 spec 이 허용하는 산포. 고정 분모로 자주 쓰인다.
+- **SS_res**: 잔차제곱합 `Σ(y_i − y_hat_i)²`.
+- **SS_tot**: 총제곱합 `Σ(y_i − y_bar)²` 이며, 표준 R² 의 분모이다.
 
 ## Appendix B. Reference Implementation
 

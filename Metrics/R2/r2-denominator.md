@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 11 | Created: 2026-08-15 | Updated: 2026-09-04 20:10 UTC
+Rev. 12 | Created: 2026-08-15 | Updated: 2026-09-04 14:57 CDT
 
 > This document asks whether the denominator of the standard R² can be replaced
 > by a reference stated from outside rather than computed from the data, and
@@ -9,7 +9,7 @@ Rev. 11 | Created: 2026-08-15 | Updated: 2026-09-04 20:10 UTC
 
 The standard R² is defined as follows.
 
-$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}$$
+$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2} \hspace{19em} (1)$$
 
 The denominator `SS_tot` is the total sum of squares taken about the mean
 `y_bar` of the data itself, and it is the quantity usually called the total
@@ -58,10 +58,10 @@ is.
 
 | Symbol | Denominator | Baseline it encodes | Typical use | Reference |
 |---|---|---|---|---|
-| `R²` | `Σ(y_i − y_bar)²` | The mean of this dataset | Goodness of fit within one dataset | [1](#ref-1) |
-| `R2_oos` | `Σ(y_i − y_train_bar)²` | The mean known at training time | Test set evaluation | [2](#ref-2) |
-| `R2_frd` | `N · sigma_ref²` | The spread the spec allows | Comparison across lots, batches, periods | [3](#ref-3), [4](#ref-4) |
-| `R2_base` | `Σ(y_i − y_base_i)²` | A reference model answering per sample | Time series, comparison against a model in production | [5](#ref-5) |
+| `R²` | `Σ(y_i − y_bar)²` | The mean of this dataset | Goodness of fit within one dataset | [[1](#ref-1)] |
+| `R2_oos` | `Σ(y_i − y_train_bar)²` | The mean known at training time | Test set evaluation | [[2](#ref-2)] |
+| `R2_frd` | `N · sigma_ref²` | The spread the spec allows | Comparison across lots, batches, periods | [[3](#ref-3)], [[4](#ref-4)] |
+| `R2_base` | `Σ(y_i − y_base_i)²` | A reference model answering per sample | Time series, comparison against a model in production | [[5](#ref-5)] |
 
 The Reference column points at where each form is actually in use, and the
 bibliography is in [References](#references). None of the four is a calculation
@@ -75,7 +75,7 @@ This is the most common case. When a test set is evaluated, the reference in the
 denominator is anchored to the mean of the training data, `y_train_bar`, rather
 than to the mean of the test data.
 
-$$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2}$$
+$$R^2_{oos} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{train})^2} \hspace{19em} (2)$$
 
 Two reasons make this the right form. First, the mean of the test data is not
 knowable at evaluation time, so putting it in the baseline amounts to borrowing
@@ -93,7 +93,7 @@ name.
 The denominator is replaced by a known reference variance instead of being
 computed from the data.
 
-$$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2}$$
+$$R^2_{frd} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{N \cdot \sigma_{ref}^2} \hspace{19em} (3)$$
 
 For `sigma_ref` one uses a domain reference such as the spread a process spec
 allows, the variance of accumulated historical data, or the reference variance
@@ -105,13 +105,13 @@ Because the denominator is a constant, the expression reduces one step further.
 The square root of the numerator `SS_res` divided by the sample count `N` is the
 root mean squared error, RMSE.
 
-$$\mathrm{RMSE} = \sqrt{\frac{SS_{res}}{N}}$$
+$$\mathrm{RMSE} = \sqrt{\frac{SS_{res}}{N}} \hspace{19em} (4)$$
 
 RMSE returns the error to the same unit as y, so it can be divided by
 `sigma_ref` directly. Substituting `N · RMSE²` for `SS_res` cancels `N` and leaves only the
 following.
 
-$$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2$$
+$$R^2_{frd} = 1 - \left(\frac{\mathrm{RMSE}}{\sigma_{ref}}\right)^2 \hspace{19em} (5)$$
 
 This is the physical meaning of the variant. `R2_frd` **measures how many times
 the spec spread the model error is** and subtracts that from 1. Half the spec
@@ -137,7 +137,7 @@ vary with the sample.
 A case where the reference itself has to vary per sample cannot be written in
 that form. There the baseline holds its own value `y_base_i` for each i.
 
-$$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2}$$
+$$R^2_{base} = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - y_{base,i})^2} \hspace{19em} (6)$$
 
 The persistence baseline of a time series is the representative case. It uses
 the value at the previous step as the prediction for the next, so `y_base_i`
@@ -234,15 +234,15 @@ reference.
 
 ## Appendix A. Terminology
 
-- **baseline model** — the model that serves as the reference for comparison. The denominator of R² is its sum of squared errors.
-- **out-of-sample** — evaluation on data that was not used for training.
-- **persistence baseline** — a time series baseline that uses the value at the previous step as the prediction for the next.
-- **Referenced R² (`Ref_R2`)** — the collective name, set by this document, for an R² computed with the baseline in its denominator stated from outside.
-- **RMSE** — root mean squared error, computed as `sqrt(SS_res / N)`. It returns the error to the same unit as y, so it can be set against a spec spread directly.
-- **skill score** — the collective name for metrics of the form `1 − model error / baseline error`. R² is the case whose baseline is the mean.
-- **spec tolerance** — the spread a process spec allows. It is often used as a fixed denominator.
-- **SS_res** — the residual sum of squares, `Σ(y_i − y_hat_i)²`.
-- **SS_tot** — the total sum of squares, `Σ(y_i − y_bar)²`, which is the denominator of the standard R².
+- **baseline model**: the model that serves as the reference for comparison. The denominator of R² is its sum of squared errors.
+- **out-of-sample**: evaluation on data that was not used for training.
+- **persistence baseline**: a time series baseline that uses the value at the previous step as the prediction for the next.
+- **Referenced R² (`Ref_R2`)**: the collective name, set by this document, for an R² computed with the baseline in its denominator stated from outside.
+- **RMSE**: root mean squared error, computed as `sqrt(SS_res / N)`. It returns the error to the same unit as y, so it can be set against a spec spread directly.
+- **skill score**: the collective name for metrics of the form `1 − model error / baseline error`. R² is the case whose baseline is the mean.
+- **spec tolerance**: the spread a process spec allows. It is often used as a fixed denominator.
+- **SS_res**: the residual sum of squares, `Σ(y_i − y_hat_i)²`.
+- **SS_tot**: the total sum of squares, `Σ(y_i − y_bar)²`, which is the denominator of the standard R².
 
 ## Appendix B. Reference Implementation
 
