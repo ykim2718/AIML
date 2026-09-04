@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-04 14:35 CDT
+Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-04 14:36 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -163,11 +163,8 @@ needs measuring less often than one running near its limits.
 
 ### 4.4. Priority Classes
 
-A fab measures far more parameters than it can hold to one standard, so the parameters are graded
-and each grade carries its own requirement. The grades are commonly written as Priority 0, Priority 1
-and Priority 2, and a parameter is assigned by what its control is for rather than by the difficulty
-of holding it: Priority 0 where an excursion costs yield, Priority 1 where it moves the device
-performance, Priority 2 where it only tells the process it is drifting.
+A fab measures far more parameters than it can hold to one standard, so it grades them by what
+their control is for and gives each grade its own requirement.
 
 Table 3. A representative priority scheme and the width it implies.
 
@@ -178,28 +175,18 @@ Table 3. A representative priority scheme and the width it implies.
 | 2 | Process control | 1.33 | 0.20 | 1.66 | 33.0 |
 
 The $C_{pk}$ column follows the long-standing ladder of minimum capability values: 1.33 as the
-general minimum, 1.50 for a critical parameter, and 1.67 for a critical parameter on a process that
-is still new [[2](#ref-2)]. The $k$ column makes this a specification on two quantities instead of
-one, and equation (4) gives what the second one buys. A process satisfies a $C_{pk}$ requirement on
-its own by sitting exactly on target at exactly the required width, and it then fails as soon as the
-mean moves. Capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$, the implied $C_p$ column of
-Table 3, and that is the margin the process needs in order to hold its $C_{pk}$ through the drift it
-will have.
+general minimum, 1.50 for a critical parameter, and 1.67 for one on a process still new
+[[2](#ref-2)]. The $k$ column is the other half of the requirement, and equation (4) gives what it
+buys. A process satisfies $C_{pk}$ alone by sitting exactly on target at exactly the required width,
+and it fails as soon as the mean moves; capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$,
+which is the margin that holds the $C_{pk}$ through the drift the process will have.
 
-The implied width changes little across the grades, 1.86 at Priority 0 against 1.66 at Priority 2,
-while the centring allowance halves. Almost all of what the higher grade demands is therefore
-centring rather than width, and the choice is deliberate: centring is a setpoint and width is
-hardware.
-
-The grade also fixes what happens when the number falls short. A Priority 0 parameter below its
-requirement holds the lot and takes the chamber out of production, a Priority 1 parameter goes to
-engineering review before the lot moves on, and a Priority 2 parameter is recorded and acted on at
-the next scheduled maintenance. Without that mapping the grades are labels only, since the index is
-computed the same way in all three rows.
-
-The labels and the exact numbers are a convention internal to each fab rather than a published
-standard, and they differ between technology nodes at the same fab. What transfers is the shape: a
-few grades, a $C_{pk}$ minimum and a $k$ maximum on each, and a disposition rule attached to each.
+That implied width changes little across the grades, 1.86 against 1.66, while the centring allowance
+halves, so what a higher grade demands is centring rather than width — a setpoint rather than
+hardware. The grade also fixes the action on a miss: hold the lot and take the chamber out of
+production at Priority 0, engineering review before the lot moves on at Priority 1, a note for the
+next scheduled maintenance at Priority 2. The labels and the numbers are the convention of each fab
+rather than a published standard, and what transfers is the shape.
 
 ## References
 
@@ -215,8 +202,6 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Capability study**: the exercise of estimating the indices from a sample of a stable process.
-- **Excursion**: a departure of a parameter from its established behaviour, large enough to call
-  for action.
 - **In control**: showing no control chart signal of a cause outside the ordinary variation.
 - **Lot**: the group of wafers that moves through the process together.
 - **Parts per million**: the fraction outside the specification multiplied by $10^{6}$.
