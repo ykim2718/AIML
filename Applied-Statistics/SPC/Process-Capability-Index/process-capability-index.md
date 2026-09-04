@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 7 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
+Rev. 8 | Created: 2026-09-04 | Updated: 2026-09-04 17:48 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -170,23 +170,28 @@ Table 3. A representative priority scheme and the width it implies.
 
 | Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
 |---|---|---:|---:|---:|---:|
-| 0 | Yield | 1.67 | 0.10 | 1.86 | 0.272 |
-| 1 | Device performance | 1.50 | 0.15 | 1.76 | 3.40 |
-| 2 | Process control | 1.33 | 0.20 | 1.66 | 33.0 |
+| 0 | Product Yield | 1.67 | 0.10 | 1.86 | 0.272 |
+| 1 | Device Performance | 1.50 | 0.15 | 1.76 | 3.40 |
+| 2 | Process Performance | 1.33 | 0.20 | 1.66 | 33.0 |
+| 3 | Monitoring | 1.00 | 0.25 | 1.33 | 1350 |
 
 The $C_{pk}$ column follows the long-standing ladder of minimum capability values: 1.33 as the
 general minimum, 1.50 for a critical parameter, and 1.67 for one on a process still new
-[[2](#ref-2)]. The $k$ column is the other half of the requirement, and equation (4) gives what it
-buys. A process satisfies $C_{pk}$ alone by sitting exactly on target at exactly the required width,
-and it fails as soon as the mean moves; capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$,
+[[2](#ref-2)]. Monitoring sits below that ladder at 1.00, where the near tail is already 1350 ppm,
+because the grade exists to keep a parameter charted rather than to protect the product. The $k$
+column is the other half of the requirement, and equation (4) gives what it buys. A process
+satisfies $C_{pk}$ alone by sitting exactly on target at exactly the required width, and it fails
+as soon as the mean moves; capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$,
 which is the margin that holds the $C_{pk}$ through the drift the process will have.
 
-That implied width changes little across the grades, 1.86 against 1.66, while the centring allowance
-halves, so what a higher grade demands is centring rather than width — a setpoint rather than
-hardware. The grade also fixes the action on a miss: hold the lot and take the chamber out of
-production at Priority 0, engineering review before the lot moves on at Priority 1, a note for the
-next scheduled maintenance at Priority 2. The labels and the numbers are the convention of each fab
-rather than a published standard, and what transfers is the shape.
+That implied width changes little across the three protecting grades, 1.86 against 1.66, while the
+centring allowance at Priority 0 is twice as tight as at Priority 2, so what a higher grade demands
+is centring rather than width — a setpoint rather than hardware. Monitoring is the one grade that
+loosens both at once. The grade also fixes the action on a miss: hold the lot and take the chamber
+out of production at Priority 0, engineering review before the lot moves on at Priority 1, a note
+for the next scheduled maintenance at Priority 2, and a trend entry with no disposition at
+Priority 3. The labels and the numbers are the convention of each fab rather than a published
+standard, and what transfers is the shape.
 
 ## References
 
