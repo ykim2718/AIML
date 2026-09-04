@@ -1,5 +1,5 @@
 # The Wafer Uniformity Index
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 19:45 UTC
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 14:40 CDT
 
 > A note on the scalar index that semiconductor process control uses to summarise how much a layer
 > varies across a wafer: the two standard formulas, what the number does and does not carry, and how
@@ -227,6 +227,7 @@ ISBN 978-1-119-72309-7.
 - **Critical dimension**: the width of a printed feature, the quantity lithography controls.
 - **Edge exclusion**: the annulus at the wafer edge that carries no measurement sites.
 - **Measurement site**: one location on the wafer at which the process result is measured.
+- **NU**: non-uniformity, the symbol equations (1) to (3) use for the index.
 - **Radial signature**: the systematic dependence of the measured quantity on distance from the
   wafer centre.
 - **Repeatability**: the spread a metrology tool returns on repeated measurement of one unchanged

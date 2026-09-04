@@ -1,5 +1,5 @@
 # The Wafer Uniformity Index (Korean)
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 19:45 UTC
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 14:40 CDT
 
 > 반도체 공정 관리에서 층이 웨이퍼 위에서 얼마나 변하는지를 하나의 수로 요약하는 지표에 대한 기록.
 > 표준 산출 방식 두 가지, 그 수가 담는 것과 담지 못하는 것, 그리고 증착·식각·CMP 에서의 쓰임을 다룬다.
@@ -208,6 +208,7 @@ ISBN 978-1-119-72309-7.
 - **Critical dimension**: 인쇄된 형상의 폭이며, lithography 가 관리하는 양.
 - **Edge exclusion**: 측정 자리를 두지 않는 웨이퍼 가장자리의 띠.
 - **Measurement site**: 공정 결과를 측정하는 웨이퍼 위의 한 자리.
+- **NU**: non-uniformity 이며, 식 (1) 부터 식 (3) 까지가 지표를 가리키는 데 쓰는 기호.
 - **Radial signature**: 측정량이 웨이퍼 중심으로부터의 거리에 체계적으로 의존하는 것.
 - **Repeatability**: 변하지 않은 한 자리를 되풀이해 측정할 때 계측 장비가 내놓는 산포.
 - **Within-wafer non-uniformity**: 웨이퍼 하나의 측정 자리들에 대해 계산한 uniformity index 이며,
