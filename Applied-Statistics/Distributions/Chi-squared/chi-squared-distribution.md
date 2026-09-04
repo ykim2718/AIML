@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution
-Rev. 0 | Created: 2026-09-03 | Updated: 2026-09-03 23:58 CDT
+Rev. 1 | Created: 2026-09-03 | Updated: 2026-09-04 07:52 CDT
 
 > A note on the distribution of a sum of squared standard normal variables: how it is built, what
 > its density and moments are, how it relates to the other sampling distributions, and why it turns
@@ -283,6 +283,11 @@ Science*, 50(302), 157–175.
 [4] Johnson, N. L., Kotz, S., & Balakrishnan, N. (1994). *Continuous Univariate Distributions*
 (Vol. 1, 2nd ed.). Wiley. ISBN 978-0-471-58495-7.
 
+<a id="ref-5"></a>
+[5] mykepzzang. Blog post on the chi-squared distribution, cited as the source of the statement in
+Appendix B.1.
+[https://blog.naver.com/mykepzzang/220852102307](https://blog.naver.com/mykepzzang/220852102307)
+
 ---
 
 ## Appendix A. Terminology
@@ -302,20 +307,40 @@ Science*, 50(302), 157–175.
 
 ## Appendix B. Derivations
 
-### B.1. Density for One Degree of Freedom
+### B.1. Square of a Normal Variable
 
-Take $X = Z^2$ with $Z$ standard normal. For $x \gt 0$ the event $X \le x$ is the event
-$-\sqrt{x} \le Z \le \sqrt{x}$, so the distribution function of $X$ follows from that of $Z$, using
-the symmetry of the normal density $\phi$ in the second step.
+The construction in equation (1) starts from standard normal variables, but a measurement rarely
+arrives standardised. The theorem below states the general case.
 
-$$F(x) = \Phi(\sqrt{x}) - \Phi(-\sqrt{x}) = 2\Phi(\sqrt{x}) - 1 \hspace{19em} (11)$$
+**Theorem.** Let $X$ be a continuous random variable with $X \sim N(\mu, \sigma^{2})$ and
+$\sigma \gt 0$. Then the squared standardised deviation follows the chi-squared distribution with
+one degree of freedom [[5](#ref-5)].
 
-Differentiating, with $\phi(z) = e^{-z^2/2}/\sqrt{2\pi}$ and the chain rule contributing
-$1/(2\sqrt{x})$, gives the density.
+$$Y = \frac{(X - \mu)^{2}}{\sigma^{2}} \sim \chi^2_1 \hspace{19em} (11)$$
 
-$$f(x) = 2\,\phi(\sqrt{x}) \cdot \frac{1}{2\sqrt{x}} = \frac{1}{\sqrt{2\pi}}\, x^{-1/2} e^{-x/2} \hspace{19em} (12)$$
+**Proof.** Put $Z = (X - \mu)/\sigma$. A linear transform of a normal variable is normal, and this
+one has mean 0 and variance 1, so $Z \sim N(0, 1)$ and $Y = Z^{2}$.
 
-This is equation (2) at $k = 1$, since $2^{1/2}\Gamma(1/2) = \sqrt{2\pi}$.
+Being a square, $Y$ cannot be negative, so $F_Y(y) = 0$ for $y \le 0$. For $y \gt 0$ the event
+$Y \le y$ is the event $-\sqrt{y} \le Z \le \sqrt{y}$, so the distribution function of $Y$ follows
+from that of $Z$, written $\Phi$, the second step using the symmetry of the standard normal.
+
+$$F_Y(y) = \Phi(\sqrt{y}) - \Phi(-\sqrt{y}) = 2\Phi(\sqrt{y}) - 1 \hspace{19em} (12)$$
+
+Differentiate with respect to $y$. The chain rule contributes the derivative of $\sqrt{y}$, which is
+$1/(2\sqrt{y})$, and $\Phi' = \phi$ is the standard normal density
+$\phi(z) = e^{-z^{2}/2}/\sqrt{2\pi}$.
+
+$$f_Y(y) = 2\,\phi(\sqrt{y}) \cdot \frac{1}{2\sqrt{y}} = \frac{1}{\sqrt{2\pi}}\, y^{-1/2} e^{-y/2} \hspace{19em} (13)$$
+
+What remains is to recognise equation (13). Setting $k = 1$ in equation (2) gives the density
+$y^{-1/2} e^{-y/2} / \left( 2^{1/2}\Gamma(1/2) \right)$, and $\Gamma(1/2) = \sqrt{\pi}$ makes that
+constant $\sqrt{2}\sqrt{\pi} = \sqrt{2\pi}$. The two densities agree on $y \gt 0$ and both vanish
+elsewhere, so $Y \sim \chi^2_1$. $\blacksquare$
+
+Read together with equation (5), the theorem is what makes the family reachable from measurements
+rather than from standard normal variables: standardising and squaring $n$ independent normal
+observations gives $n$ independent $\chi^2_1$ variables, whose sum is $\chi^2_n$.
 
 ### B.2. Moment Generating Function
 
@@ -323,7 +348,7 @@ For a single square, substitute $u = z\sqrt{1-2t}$ in the defining integral. The
 legitimate only for $t \lt 1/2$, which is where the exponent stays negative and the integral
 converges.
 
-$$E\left[ e^{tZ^{2}} \right] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{tz^{2}} e^{-z^{2}/2}\, dz = \frac{1}{\sqrt{1-2t}} \int_{-\infty}^{\infty} \frac{e^{-u^{2}/2}}{\sqrt{2\pi}}\, du = (1-2t)^{-1/2} \hspace{19em} (13)$$
+$$E\left[ e^{tZ^{2}} \right] = \int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{tz^{2}} e^{-z^{2}/2}\, dz = \frac{1}{\sqrt{1-2t}} \int_{-\infty}^{\infty} \frac{e^{-u^{2}/2}}{\sqrt{2\pi}}\, du = (1-2t)^{-1/2} \hspace{19em} (14)$$
 
 The remaining integral is the total mass of the standard normal density and equals 1. Since the
 $Z_i$ in equation (1) are independent, the moment generating function of their sum is the product
@@ -335,7 +360,7 @@ product of $(1-2t)^{-m/2}$ and $(1-2t)^{-n/2}$ is $(1-2t)^{-(m+n)/2}$.
 Expand equation (3) about the origin, or differentiate it twice. The first two derivatives at
 $t = 0$ give the first two raw moments.
 
-$$M'(t) = k(1-2t)^{-k/2 - 1}, \qquad M''(t) = k(k+2)(1-2t)^{-k/2 - 2} \hspace{19em} (14)$$
+$$M'(t) = k(1-2t)^{-k/2 - 1}, \qquad M''(t) = k(k+2)(1-2t)^{-k/2 - 2} \hspace{19em} (15)$$
 
 Setting $t = 0$ gives $E[X] = k$ and $E[X^2] = k(k+2)$, so the variance is
 $k(k+2) - k^2 = 2k$, which is equation (4).
@@ -346,7 +371,7 @@ Write the sum of squared deviations from the true mean and add and subtract $\ba
 square. The expansion has three pieces: the sum of squared deviations from $\bar{x}$, a cross term,
 and $n(\bar{x} - \mu)^2$.
 
-$$\sum_{i=1}^{n} (x_i - \mu)^{2} = \sum_{i=1}^{n} (x_i - \bar{x})^{2} + 2(\bar{x} - \mu)\sum_{i=1}^{n}(x_i - \bar{x}) + n(\bar{x} - \mu)^{2} \hspace{19em} (15)$$
+$$\sum_{i=1}^{n} (x_i - \mu)^{2} = \sum_{i=1}^{n} (x_i - \bar{x})^{2} + 2(\bar{x} - \mu)\sum_{i=1}^{n}(x_i - \bar{x}) + n(\bar{x} - \mu)^{2} \hspace{19em} (16)$$
 
 The cross term vanishes because the deviations from $\bar{x}$ sum to zero, leaving two pieces.
 Dividing by $\sigma^2$, the left side is a sum of $n$ squared standard normals and so is
