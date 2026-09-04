@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 19:26 UTC
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-04 14:28 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -161,6 +161,46 @@ The practical use is threefold: qualifying a new process or tool against its spe
 chambers that run the same recipe, and setting the sampling rate, since a step with a high $C_{pk}$
 needs measuring less often than one running near its limits.
 
+### 4.4. Priority Classes
+
+A fab measures far more parameters than it can hold to one standard, so the parameters are graded
+and each grade carries its own requirement. The grades are commonly written as Priority 0, Priority 1
+and Priority 2, and a parameter is assigned by the consequence of an excursion rather than by the
+difficulty of holding it: Priority 0 for what the device fails without, Priority 1 for what moves
+the parametric distribution, Priority 2 for what is watched for trend.
+
+Table 3. A representative priority scheme and the width it implies.
+
+| Priority | Parameter class | Cpk min | k max | Implied Cp min | Near tail, ppm |
+|---|---|---:|---:|---:|---:|
+| 0 | Device critical, such as gate CD and overlay | 1.67 | 0.10 | 1.86 | 0.272 |
+| 1 | Parametric, such as film thickness and implant dose | 1.50 | 0.15 | 1.76 | 3.40 |
+| 2 | Monitored, such as the thickness of a non-device layer | 1.33 | 0.20 | 1.66 | 33.0 |
+
+The $C_{pk}$ column follows the long-standing ladder of minimum capability values: 1.33 as the
+general minimum, 1.50 for a critical parameter, and 1.67 for a critical parameter on a process that
+is still new [[2](#ref-2)]. The $k$ column makes this a specification on two quantities instead of
+one, and equation (4) gives what the second one buys. A process satisfies a $C_{pk}$ requirement on
+its own by sitting exactly on target at exactly the required width, and it then fails as soon as the
+mean moves. Capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$, the implied $C_p$ column of
+Table 3, and that is the margin the process needs in order to hold its $C_{pk}$ through the drift it
+will have.
+
+The implied width changes little across the grades, 1.86 at Priority 0 against 1.66 at Priority 2,
+while the centring allowance halves. Almost all of what the higher grade demands is therefore
+centring rather than width, and the choice is deliberate: centring is a setpoint and width is
+hardware.
+
+The grade also fixes what happens when the number falls short. A Priority 0 parameter below its
+requirement holds the lot and takes the chamber out of production, a Priority 1 parameter goes to
+engineering review before the lot moves on, and a Priority 2 parameter is recorded and acted on at
+the next scheduled maintenance. Without that mapping the grades are labels only, since the index is
+computed the same way in all three rows.
+
+The labels and the exact numbers are a convention internal to each fab rather than a published
+standard, and they differ between technology nodes at the same fab. What transfers is the shape: a
+few grades, a $C_{pk}$ minimum and a $k$ maximum on each, and a disposition rule attached to each.
+
 ## References
 
 <a id="ref-1"></a>
@@ -175,10 +215,15 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Capability study**: the exercise of estimating the indices from a sample of a stable process.
+- **Excursion**: a departure of a parameter from its established behaviour, large enough to call
+  for action.
 - **In control**: showing no control chart signal of a cause outside the ordinary variation.
+- **Lot**: the group of wafers that moves through the process together.
 - **Parts per million**: the fraction outside the specification multiplied by $10^{6}$.
 - **Performance index**: a capability index computed with a long-term estimate of the standard
   deviation, written $P_p$ and $P_{pk}$.
+- **Priority class**: a grade assigned to a measured parameter, carrying its own capability
+  requirement and its own action on failure.
 - **Sigma level**: the distance from the mean to the nearer specification limit in standard
   deviations, equal to $3 C_{pk}$.
 - **Specification limit**: a bound the product must satisfy, set by design rather than estimated
