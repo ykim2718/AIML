@@ -1,5 +1,5 @@
 # The Wafer Uniformity Index
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 10:20 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 19:26 UTC
 
 > A note on the scalar index that semiconductor process control uses to summarise how much a layer
 > varies across a wafer: the two standard formulas, what the number does and does not carry, and how
@@ -206,10 +206,9 @@ value carries the following with it, or it cannot be compared with anything.
 ## References
 
 <a id="ref-1"></a>
-[1] Davis, J. C., Sherer, J. M., Poole, S. J., & Loewenstein, L. M. (1996). A Robust Metric for
-Measuring Within-Wafer Uniformity. *IEEE Transactions on Components, Packaging, and Manufacturing
+[1] Davis, J. C., Sherer, J. M., Poole, S. J., & Loewenstein, L. M. (1996). [A Robust Metric for
+Measuring Within-Wafer Uniformity](https://doi.org/10.1109/3476.558556). *IEEE Transactions on Components, Packaging, and Manufacturing
 Technology — Part C*, 19(4), 283–289.
-[https://doi.org/10.1109/3476.558556](https://doi.org/10.1109/3476.558556)
 
 <a id="ref-2"></a>
 [2] A Study of Within-Wafer Non-Uniformity Metrics. *1999 4th International Workshop on Statistical

@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 16:10 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 19:26 UTC
 
 > 웨이퍼 결과물 하나가 아니라 장비 센서 수십~수백 개의 조합을 한꺼번에 추적하는 기법에 대한 기록.
 > Hotelling $T^2$ 관리도와 PCA 기반 SPE 통계량이 각각 무엇을 보고, 왜 둘이 함께 필요한지를 다룬다.
@@ -166,14 +166,12 @@ Model 을 다루는 데는 조건이 둘 있다. 하나는 정상 자료의 정�
 ## References
 
 <a id="ref-1"></a>
-[1] Jackson, J. E., & Mudholkar, G. S. (1979). Control Procedures for Residuals Associated with
-Principal Component Analysis. *Technometrics*, 21(3), 341–349.
-[https://doi.org/10.1080/00401706.1979.10489779](https://doi.org/10.1080/00401706.1979.10489779)
+[1] Jackson, J. E., & Mudholkar, G. S. (1979). [Control Procedures for Residuals Associated with
+Principal Component Analysis](https://doi.org/10.1080/00401706.1979.10489779). *Technometrics*, 21(3), 341–349.
 
 <a id="ref-2"></a>
-[2] MacGregor, J. F., & Kourti, T. (1995). Statistical Process Control of Multivariate Processes.
+[2] MacGregor, J. F., & Kourti, T. (1995). [Statistical Process Control of Multivariate Processes](https://doi.org/10.1016/0967-0661%2895%2900014-L).
 *Control Engineering Practice*, 3(3), 403–414.
-[https://doi.org/10.1016/0967-0661(95)00014-L](https://doi.org/10.1016/0967-0661%2895%2900014-L)
 
 <a id="ref-3"></a>
 [3] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.

@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 15:30 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 19:26 UTC
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -154,8 +154,7 @@ Table 2. What the pair of indices indicates.
 ## References
 
 <a id="ref-1"></a>
-[1] Kane, V. E. (1986). Process Capability Indices. *Journal of Quality Technology*, 18(1), 41–52.
-[https://doi.org/10.1080/00224065.1986.11978984](https://doi.org/10.1080/00224065.1986.11978984)
+[1] Kane, V. E. (1986). [Process Capability Indices](https://doi.org/10.1080/00224065.1986.11978984). *Journal of Quality Technology*, 18(1), 41–52.
 
 <a id="ref-2"></a>
 [2] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.

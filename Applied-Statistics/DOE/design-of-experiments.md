@@ -1,5 +1,5 @@
 # Design of Experiments
-Rev. 1 | Created: 2026-08-30 | Updated: 2026-09-04 08:20 CDT
+Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 19:26 UTC
 
 > The design families of the MathWorks Statistics and Machine Learning Toolbox chapter on design of
 > experiments [[1](#ref-1)], with the same organisation and with every construction implemented in
@@ -697,23 +697,19 @@ never proposes a run that is not on the list.
 ## References
 
 <a id="ref-1"></a>
-[1] MathWorks. Design of Experiments — Statistics and Machine Learning Toolbox Documentation.
-[https://kr.mathworks.com/help/stats/design-of-experiments.html](https://kr.mathworks.com/help/stats/design-of-experiments.html)
+[1] MathWorks. [Design of Experiments — Statistics and Machine Learning Toolbox Documentation](https://kr.mathworks.com/help/stats/design-of-experiments.html).
 
 <a id="ref-2"></a>
-[2] Plackett, R. L., & Burman, J. P. (1946). The Design of Optimum Multifactorial Experiments.
+[2] Plackett, R. L., & Burman, J. P. (1946). [The Design of Optimum Multifactorial Experiments](https://doi.org/10.1093/biomet/33.4.305).
 *Biometrika*, 33(4), 305–325.
-[https://doi.org/10.1093/biomet/33.4.305](https://doi.org/10.1093/biomet/33.4.305)
 
 <a id="ref-3"></a>
-[3] Box, G. E. P., & Behnken, D. W. (1960). Some New Three Level Designs for the Study of
-Quantitative Variables. *Technometrics*, 2(4), 455–475.
-[https://doi.org/10.1080/00401706.1960.10489912](https://doi.org/10.1080/00401706.1960.10489912)
+[3] Box, G. E. P., & Behnken, D. W. (1960). [Some New Three Level Designs for the Study of
+Quantitative Variables](https://doi.org/10.1080/00401706.1960.10489912). *Technometrics*, 2(4), 455–475.
 
 <a id="ref-4"></a>
-[4] Meyer, R. K., & Nachtsheim, C. J. (1995). The Coordinate-Exchange Algorithm for Constructing
-Exact Optimal Experimental Designs. *Technometrics*, 37(1), 60–69.
-[https://doi.org/10.1080/00401706.1995.10485889](https://doi.org/10.1080/00401706.1995.10485889)
+[4] Meyer, R. K., & Nachtsheim, C. J. (1995). [The Coordinate-Exchange Algorithm for Constructing
+Exact Optimal Experimental Designs](https://doi.org/10.1080/00401706.1995.10485889). *Technometrics*, 37(1), 60–69.
 
 <a id="ref-5"></a>
 [5] Montgomery, D. C. (2019). *Design and Analysis of Experiments* (10th ed.). Wiley.
