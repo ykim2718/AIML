@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 48 | Created: 2026-09-01 | Updated: 2026-09-03 19:15 CDT
+Rev. 49 | Created: 2026-09-01 | Updated: 2026-09-03 19:30 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -242,24 +242,28 @@ $$X_{ij} \sim \mathcal{N}(\mu_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-
 
 $$Z_{ij} = \frac{X_{ij} - \mu_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (25)$$
 
-$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (24) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀌고, 제곱을 풀어 정리하면 표준정규 제곱합에서 평균의 몫을 뺀 꼴이 된다.
+$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (24) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 제곱을 그대로 풀면 가운데에 $`Z`$ 의 합이 남는다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (26)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - 2 \bar{Z}_i \sum_{j=1}^{N} Z_{ij} + N \bar{Z}_i^2 \hspace{19em} (26)$$
+
+평균의 정의에서 $`\sum_{j} Z_{ij} = N \bar{Z}_i`$ 이므로 가운데 항은 $`2 N \bar{Z}_i^2`$ 이 되고, 마지막 항과 합치면 $`N \bar{Z}_i^2`$ 하나만 남는다. 곧 표준정규 제곱합에서 평균의 몫을 뺀 꼴이다.
+
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_i^2 + N \bar{Z}_i^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (27)$$
 
 우변의 첫 항은 표준정규 $`N`$ 개의 제곱합이므로 정의에 따라 $`\chi^2_N`$ 이다. $`\bar{Z}_i`$ 는 평균 0, 분산 $`1/N`$ 의 정규분포를 따라 $`\sqrt{N}\,\bar{Z}_i`$ 가 표준정규이므로 둘째 항은 $`\chi^2_1`$ 이다. 정규 표본에서 표본평균과 표본분산은 서로 독립이라 두 몫이 겹치지 않으므로, 자유도는 그대로 빼진다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (27)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (28)$$
 
 자유도가 $`N`$ 이 아니라 $`N-1`$ 인 까닭은 편차 $`X_{ij} - \bar{X}_i`$ 가 합이 0 이라는 제약 하나에 묶여 $`N`$ 개 중 $`N-1`$ 개만 자유롭기 때문이다.
 
-$`\chi^2_{p,\,N-1}`$ 을 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그보다 작을 확률이 $`p`$ 인 점으로 두면, 식 (27) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
+$`\chi^2_{p,\,N-1}`$ 을 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그보다 작을 확률이 $`p`$ 인 점으로 두면, 식 (28) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
 
-$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p,\, N-1} \right) = 1 - p \hspace{19em} (28)$$
+$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p,\, N-1} \right) = 1 - p \hspace{19em} (29)$$
 
 괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (13) 이 된다. 곧 식 (13) 을 넘은 wafer 는, 그 wafer 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 wafer 이다.
 
 기준선은 참값이 아니라 앞선 wafer 로 추정한 값이므로, 엄밀하게는 두 분산의 비가 F 분포를 따른다. 기준선이 wafer $`m`$ 장 위에 서 있으면 그 자유도는 $`\nu = m(N-1)`$ 이다.
 
-$$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (29)$$
+$$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (30)$$
 
 $`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (13) 을 그대로 쓸 수 있다. 이 자료의 $`N = 13`$, $`p = 0.999`$ 에서 계수는 카이제곱으로 1.656 이고, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
