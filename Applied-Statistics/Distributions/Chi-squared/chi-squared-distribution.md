@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution
-Rev. 1 | Created: 2026-09-03 | Updated: 2026-09-04 07:52 CDT
+Rev. 2 | Created: 2026-09-03 | Updated: 2026-09-04 08:04 CDT
 
 > A note on the distribution of a sum of squared standard normal variables: how it is built, what
 > its density and moments are, how it relates to the other sampling distributions, and why it turns
@@ -283,11 +283,6 @@ Science*, 50(302), 157–175.
 [4] Johnson, N. L., Kotz, S., & Balakrishnan, N. (1994). *Continuous Univariate Distributions*
 (Vol. 1, 2nd ed.). Wiley. ISBN 978-0-471-58495-7.
 
-<a id="ref-5"></a>
-[5] mykepzzang. Blog post on the chi-squared distribution, cited as the source of the statement in
-Appendix B.1.
-[https://blog.naver.com/mykepzzang/220852102307](https://blog.naver.com/mykepzzang/220852102307)
-
 ---
 
 ## Appendix A. Terminology
@@ -314,7 +309,7 @@ arrives standardised. The theorem below states the general case.
 
 **Theorem.** Let $X$ be a continuous random variable with $X \sim N(\mu, \sigma^{2})$ and
 $\sigma \gt 0$. Then the squared standardised deviation follows the chi-squared distribution with
-one degree of freedom [[5](#ref-5)].
+one degree of freedom.
 
 $$Y = \frac{(X - \mu)^{2}}{\sigma^{2}} \sim \chi^2_1 \hspace{19em} (11)$$
 
