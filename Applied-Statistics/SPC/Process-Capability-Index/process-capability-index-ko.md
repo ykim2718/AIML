@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 14:25 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 15:30 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -52,7 +52,7 @@ $$CPU = \frac{USL - \mu}{3\sigma}, \qquad CPL = \frac{\mu - LSL}{3\sigma}, \qqua
 세 지수는 서로 독립이 아니다. 식 (1) 과 식 (2) 를 식 (3) 에 넣으면 $C_{pk}$ 는 치우침만큼 깎인
 $C_p$ 로 나온다.
 
-$$C_{pk} = (1 - k)\, C_p \hspace{19em} (4)$$
+$$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 
 식 (4) 가 셋 사이 관계의 전부이다. $C_p$ 는 산포가 가능하게 하는 것이고, $k$ 는 치우침이 그 잠재력
 가운데 내주는 비율이며, $C_{pk}$ 는 남은 것이다. 따라서 언제나 $C_{pk} \le C_p$ 이고, 등호는 공정이
@@ -66,7 +66,7 @@ $$C_{pk} = (1 - k)\, C_p \hspace{19em} (4)$$
 꼬리가 함께 기여하므로 비율이 $C_p$ 를 따르고, 치우친 공정은 가까운 쪽 꼬리가 지배하므로 비율이
 $C_{pk}$ 를 따른다.
 
-$$p = \Phi\left( -3\,CPL \right) + \Phi\left( -3\,CPU \right) \hspace{19em} (5)$$
+$$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
 Table 1. Defect rate against index value, in parts per million.
 

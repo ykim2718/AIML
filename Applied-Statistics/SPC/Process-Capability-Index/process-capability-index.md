@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 14:40 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 15:30 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -57,7 +57,7 @@ $$CPU = \frac{USL - \mu}{3\sigma}, \qquad CPL = \frac{\mu - LSL}{3\sigma}, \qqua
 The three indices are not independent. Substituting equations (1) and (2) into equation (3) gives
 $C_{pk}$ as $C_p$ discounted by the centring.
 
-$$C_{pk} = (1 - k)\, C_p \hspace{19em} (4)$$
+$$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 
 Equation (4) is the whole relationship between them. $C_p$ is what the spread makes possible, $k$ is
 the fraction of that potential the off-centring gives away, and $C_{pk}$ is what is left. It follows
@@ -71,7 +71,7 @@ Under the normal model the indices convert directly into a fraction outside the 
 centred process both tails contribute and the fraction follows $C_p$; off centre, the near tail
 dominates and the fraction follows $C_{pk}$.
 
-$$p = \Phi\left( -3\,CPL \right) + \Phi\left( -3\,CPU \right) \hspace{19em} (5)$$
+$$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
 Table 1. Defect rate against index value, in parts per million.
 
