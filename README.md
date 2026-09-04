@@ -1,5 +1,5 @@
 # AIML
-Rev. 46 | Created: 2026-08-07 | Updated: 2026-09-03 18:45 CDT
+Rev. 47 | Created: 2026-08-07 | Updated: 2026-09-04 11:05 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -29,7 +29,7 @@ Table 2. Folders and what they hold
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, a survey of feature importance methods under `Feature-Importance/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, temporal partial least squares under `Regression/TPLS/`, time-varying coefficients under `Regression/TVC/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
-| [Applied-Statistics](Applied-Statistics/) | It covers distribution fitting, hypothesis testing, numerical work, a cointegration example on daily price series, and the ceiling that bounds the classical z-score under `ZScore/`. |
+| [Applied-Statistics](Applied-Statistics/) | It covers statistical process control under `SPC/`, which carries a README of its own over the control charts, the capability indices, the wafer uniformity index and the multivariate statistics; design of experiments under `DOE/`; distribution fitting, with the chi-squared distribution worked out under `Distributions/Chi-squared/`; hypothesis testing; numerical work; a cointegration example on daily price series; and the z-score family under `ZScore/` — the ceiling that bounds the classical score, the standard error of the mean, and the 1.5 sigma shift between short-term and long-term capability. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
 | [.claude](.claude/) | It carries the settings that make those rules load in this repository and the hook that installs them, with the note behind that setup kept in the repository the plugin comes from. |
 
@@ -102,7 +102,15 @@ Table 8. Applied statistics documents
 
 | Document | Description |
 |----------|-------------|
+| [Applied-Statistics/SPC/README.md](Applied-Statistics/SPC/README.md) | It indexes the statistical process control folder, defines the split between common and special cause variation that every method there follows from, and sets the order in which subgrouping, the charts, the capability indices, the wafer uniformity index and the multivariate statistics are applied. |
+| [Applied-Statistics/DOE/design-of-experiments.md](Applied-Statistics/DOE/design-of-experiments.md) | It follows the section order of the MathWorks design of experiments chapter — full factorial, fractional factorial, response surface and D-optimal — and implements every construction in Python, from multilevel and Plackett-Burman designs through central composite and Box-Behnken to coordinate- and row-exchange search with augmentation, covariates, categorical factors and candidate sets. |
+| [Applied-Statistics/DOE/design-of-experiments-ko.md](Applied-Statistics/DOE/design-of-experiments-ko.md) | It is the Korean edition of the design of experiments note, carrying the same sections, tables and code blocks, with the headings and captions left in English. |
+| [Applied-Statistics/Distributions/Chi-squared/chi-squared-distribution.md](Applied-Statistics/Distributions/Chi-squared/chi-squared-distribution.md) | It defines the distribution as a sum of squared standard normals, gives its density, moment generating function and moments, relates it to the normal, gamma, t and F distributions, and covers the two settings it is met in — the scaled sample variance of a normal population and Pearson's count statistic — with the derivations and the scipy calls in appendices. |
+| [Applied-Statistics/Distributions/Chi-squared/chi-squared-distribution-ko.md](Applied-Statistics/Distributions/Chi-squared/chi-squared-distribution-ko.md) | It is the Korean edition of the chi-squared note, carrying the same sections, equations and tables, with the headings and captions left in English. |
 | [Applied-Statistics/ZScore/z-score-ceiling.md](Applied-Statistics/ZScore/z-score-ceiling.md) | It derives the ceiling that bounds every classical z-score at (n-1)/sqrt(n), shows that the bound is attained rather than approached, and works out the sample sizes at which a rule set at a fixed cut-off can no longer flag anything. |
+| [Applied-Statistics/ZScore/standard-error-of-the-mean.md](Applied-Statistics/ZScore/standard-error-of-the-mean.md) | It relates the standard deviation of a population to the standard deviation of the mean of a sample drawn from it through the sample size, tabulates how the standard error falls as the square root of that size, and separates the several symbols that are all read as sigma. |
+| [Applied-Statistics/ZScore/standard-error-of-the-mean-ko.md](Applied-Statistics/ZScore/standard-error-of-the-mean-ko.md) | It is the Korean edition of the standard error note, carrying the same sections, tables and derivation, with the headings and captions left in English. |
+| [Applied-Statistics/ZScore/long-term-short-term-sigma-shift.md](Applied-Statistics/ZScore/long-term-short-term-sigma-shift.md) | It separates the two models a Six Sigma capability statement can mean by its 1.5 sigma shift — a shift of the mean and an inflation of the variance — shows that they disagree by a factor of two in defect rate at the same long-term sigma level, and traces the constant to the control chart detection limit that yields 3/sqrt(n) rather than 1.5. |
 
 ### 3.7 Scripts
 
