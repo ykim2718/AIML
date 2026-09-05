@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 7 | Created: 2026-09-04 | Updated: 2026-09-04 17:48 CDT
+Rev. 8 | Created: 2026-09-04 | Updated: 2026-09-04 20:45 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -156,7 +156,7 @@ Table 2. What the pair of indices indicates.
 Fab 이 재는 항목은 하나의 기준으로 지킬 수 있는 것보다 훨씬 많으므로, 무엇을 위해 지키는지로
 등급을 매기고 등급마다 다른 요구치를 건다.
 
-Table 3. 대표적인 priority 체계와 그것이 함의하는 폭.
+Table 3. Foundry Control Priority and Spec
 
 | Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
 |---|---|---:|---:|---:|---:|

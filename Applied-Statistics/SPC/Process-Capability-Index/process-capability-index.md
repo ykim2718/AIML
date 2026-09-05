@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 8 | Created: 2026-09-04 | Updated: 2026-09-04 17:48 CDT
+Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-04 20:45 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -166,7 +166,7 @@ needs measuring less often than one running near its limits.
 A fab measures far more parameters than it can hold to one standard, so it grades them by what
 their control is for and gives each grade its own requirement.
 
-Table 3. A representative priority scheme and the width it implies.
+Table 3. Foundry Control Priority and Spec
 
 | Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
 |---|---|---:|---:|---:|---:|
