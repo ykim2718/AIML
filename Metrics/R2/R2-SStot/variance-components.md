@@ -1,5 +1,5 @@
-# The Impact of Variance Components on the Coefficient of Determination ($R^2$)
-Rev. 11 | Created: 2026-04-08 | Updated: 2026-09-04 23:58 CDT
+# Variance Components in $R^2$
+Rev. 12 | Created: 2026-04-08 | Updated: 2026-09-04 23:51 CDT
 
 > A note on why $R^2$ moves with the variance of the residuals and with the variance of the
 > predictor, and on reading it as a ratio rather than as an absolute measure of accuracy.

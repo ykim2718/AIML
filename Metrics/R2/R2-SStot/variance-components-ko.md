@@ -1,5 +1,5 @@
-# The Impact of Variance Components on the Coefficient of Determination ($R^2$) (Korean)
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 23:58 CDT
+# Variance Components in $R^2$ (Korean)
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 23:51 CDT
 
 > $R^2$ 가 잔차의 분산과 예측변수의 분산을 따라 움직이는 이유, 그리고 그것을 정확도의 절대 척도가
 > 아니라 비율로 읽는 법에 대한 기록.
