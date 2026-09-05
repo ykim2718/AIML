@@ -1,5 +1,5 @@
 # The Impact of Variance Components on the Coefficient of Determination ($R^2$) (Korean)
-Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 23:50 CDT
+Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 23:47 CDT
 
 > $R^2$ 가 잔차의 분산과 예측변수의 분산을 따라 움직이는 이유, 그리고 그것을 정확도의 절대 척도가
 > 아니라 비율로 읽는 법에 대한 기록.
@@ -23,11 +23,11 @@ Rev. 0 | Created: 2026-09-04 | Updated: 2026-09-04 23:50 CDT
 
 기본이 되는 항등식은 아래와 같다.
 
-$$SS_{tot} = SS_{reg} + SS_{res}$$
+$$SS_{tot} = SS_{reg} + SS_{res} \hspace{19em} (1)$$
 
 여기서 $R^2$ 는 $Y$ 의 총분산 가운데 $X$ 가 설명하는 비율로 정의된다.
 
-$$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}}$$
+$$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}} \hspace{19em} (2)$$
 
 두 제곱합은 잔차제곱합 $SS_{res} = \sum (y_i - \hat{y}_i)^2$ 와 총제곱합
 $SS_{tot} = \sum (y_i - \bar{y})^2$ 이다.
@@ -37,13 +37,13 @@ $SS_{tot} = \sum (y_i - \bar{y})^2$ 이다.
 첫 번째 경우는 참인 관계 $\beta_1$ 과 $X$ 의 범위가 그대로일 때 잔차의 분산
 ($\sigma^2_{\epsilon}$) 이 커지는 것이다.
 
-### 3.1 The Mathematical Mechanism
+### 3.1. The Mathematical Mechanism
 
 자료의 잡음이 커지면 각 관측값 $y_i$ 가 회귀선 $\hat{y}_i$ 에서 더 멀어진다. 이것이 $SS_{res}$ 항을
 곧바로 부풀린다. 식 $R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$ 에서 분수의 분자가 커지면 분수
 $\frac{SS_{res}}{SS_{tot}}$ 전체가 커진다. 그 커진 값을 1 에서 빼므로 결과인 $R^2$ 는 작아진다.
 
-### 3.2 Conceptual Interpretation
+### 3.2. Conceptual Interpretation
 
 정보이론과 machine learning 의 맥락에서 $X$ 와 $Y$ 의 관계는 신호이고 잔차는 잡음이다. 오차 분산이
 커지면 잡음이 신호를 덮는다. 바탕의 model 이 옳더라도, 곧 참인 $\beta_1$ 을 찾아냈더라도 예측력은
@@ -59,11 +59,11 @@ $\frac{SS_{res}}{SS_{tot}}$ 전체가 커진다. 그 커진 값을 1 에서 빼�
 독립변수 $X$ 의 분산이 달라질 때는 더 뜻밖의 일이 벌어진다. $X$ 값의 범위를 넓혀 $\sigma^2_{x}$ 를
 키우면, 오차 분산 $\sigma^2_{\epsilon}$ 이 정확히 그대로여도 $R^2$ 는 대개 커진다.
 
-### 4.1 The Expansion Of The Denominator
+### 4.1. The Expansion Of The Denominator
 
 단순 선형회귀에서 설명된 분산은 아래와 같이 적힌다.
 
-$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2$$
+$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (3)$$
 
 $X$ 의 분산이 커지면 $\sum (x_i - \bar{x})^2$ 가 커진다. 이것이 $SS_{reg}$ 를 키운다.
 $SS_{tot} = SS_{reg} + SS_{res}$ 이고 $SS_{res}$ 는 그대로라고 두었으므로, 분모 $SS_{tot}$ 가
@@ -72,7 +72,7 @@ $SS_{tot} = SS_{reg} + SS_{res}$ 이고 $SS_{res}$ 는 그대로라고 두었으
 분수 $\frac{SS_{res}}{SS_{tot}}$ 에서 분자는 그대로인데 분모가 커진다. 그러면 분수가 작아지고, 더
 작은 수를 1 에서 빼므로 $R^2$ 가 높아진다.
 
-### 4.2 The Strength Of The Trend
+### 4.2. The Strength Of The Trend
 
 $X$ 를 더 넓은 범위에서 재면 전체 추세, 곧 기울기가 국소적인 흔들림에 견주어 더 지배적이 된다.
 $Y$ 의 총산포가 이제 무작위 오차보다 $X$ 의 변화에 더 이끌리므로, model 이 그 산포의 더 큰 몫을
@@ -121,9 +121,9 @@ Machine learning 에서 $R^2$ 하나에만 기대는 것은 이런 분산 의존
 4.0 까지 훑으며 각 표본이 내는 $R^2$ 를 기록한 것이다. 대수식이 아니라 자료 쪽에서 같은 의존성을
 보여 준다. 바탕의 관계는 전혀 변하지 않는데도 값이 표본의 산포를 따라 움직인다.
 
-Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
-
 ![Fig 1](variance-components_fig/sigma_r2.png)
+
+Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
 
 그림은 이 문서와 같은 folder 에 있는 `sigma_r2.py` 가 만든다.
 
@@ -131,10 +131,10 @@ Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
 
 ## Appendix A. Terminology
 
-- Coefficient of determination ($R^2$): 결정계수. 독립변수로부터 예측되는 종속변수 분산의 비율.
-- Explanatory power: 설명력. 자료에 깔린 pattern 을 model 이 나타낼 수 있는 정도.
-- Residual variance: 잔차 분산. 관측값과 예측값의 차이가 가지는 분산.
-- Mean absolute error: 평균 절대 오차. 관측값과 예측값의 절대 차이의 평균이며, 관측값의 단위를
+- **Coefficient of determination**: 결정계수 $R^2$. 독립변수로부터 예측되는 종속변수 분산의 비율.
+- **Explanatory power**: 설명력. 자료에 깔린 pattern 을 model 이 나타낼 수 있는 정도.
+- **Mean absolute error**: 평균 절대 오차. 관측값과 예측값의 절대 차이의 평균이며, 관측값의 단위를
   가진다.
-- Mean squared error: 평균 제곱 오차. 관측값과 예측값의 차이를 제곱한 것의 평균.
-- Signal-to-noise ratio: 신호 대 잡음비. 원하는 신호의 크기를 배경 잡음의 크기에 견주는 척도.
+- **Mean squared error**: 평균 제곱 오차. 관측값과 예측값의 차이를 제곱한 것의 평균.
+- **Residual variance**: 잔차 분산. 관측값과 예측값의 차이가 가지는 분산.
+- **Signal-to-noise ratio**: 신호 대 잡음비. 원하는 신호의 크기를 배경 잡음의 크기에 견주는 척도.

@@ -1,5 +1,5 @@
 # The Impact of Variance Components on the Coefficient of Determination ($R^2$)
-Rev. 9 | Created: 2026-04-08 | Updated: 2026-09-04 23:43 CDT
+Rev. 10 | Created: 2026-04-08 | Updated: 2026-09-04 23:47 CDT
 
 > A note on why $R^2$ moves with the variance of the residuals and with the variance of the
 > predictor, and on reading it as a ratio rather than as an absolute measure of accuracy.
@@ -29,12 +29,12 @@ partitioned into two distinct components.
 
 The fundamental identity is
 
-$$SS_{tot} = SS_{reg} + SS_{res}$$
+$$SS_{tot} = SS_{reg} + SS_{res} \hspace{19em} (1)$$
 
 From this, $R^2$ is defined as the proportion of the total variance in $Y$ that is explained by
 $X$.
 
-$$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}}$$
+$$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}} \hspace{19em} (2)$$
 
 The two sums of squares are the residual sum of squares
 $SS_{res} = \sum (y_i - \hat{y}_i)^2$ and the total sum of squares
@@ -46,7 +46,7 @@ The first scenario involves an increase in the variance of the residuals
 ($\sigma^2_{\epsilon}$), assuming the true relationship $\beta_1$ and the range of $X$ remain
 constant.
 
-### 3.1 The Mathematical Mechanism
+### 3.1. The Mathematical Mechanism
 
 As the noise in the data increases, each observed value $y_i$ deviates further from the
 regression line $\hat{y}_i$. This directly inflates the $SS_{res}$ term. In the formula
@@ -54,7 +54,7 @@ $R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$, as the numerator of the fraction increase
 fraction $\frac{SS_{res}}{SS_{tot}}$ grows larger. Consequently, when this larger value is
 subtracted from 1, the resulting $R^2$ decreases.
 
-### 3.2 Conceptual Interpretation
+### 3.2. Conceptual Interpretation
 
 In the context of information theory and machine learning, the relationship between $X$ and $Y$
 is the signal and the residuals are the noise. When the error variance increases, the noise
@@ -74,11 +74,11 @@ A more counterintuitive phenomenon occurs when the variance of the independent v
 changes. If the range of $X$ values is expanded, thereby increasing $\sigma^2_{x}$, the $R^2$
 typically increases, even if the error variance $\sigma^2_{\epsilon}$ remains exactly the same.
 
-### 4.1 The Expansion Of The Denominator
+### 4.1. The Expansion Of The Denominator
 
 In a simple linear regression, the explained variance is expressed as
 
-$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2$$
+$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (3)$$
 
 When the variance of $X$ increases, $\sum (x_i - \bar{x})^2$ increases. This causes $SS_{reg}$
 to grow. Since $SS_{tot} = SS_{reg} + SS_{res}$, and $SS_{res}$ is assumed constant, the
@@ -88,7 +88,7 @@ In the fraction $\frac{SS_{res}}{SS_{tot}}$, the denominator is getting larger w
 numerator stays the same. This makes the fraction smaller, and subtracting a smaller number from
 1 results in a higher $R^2$.
 
-### 4.2 The Strength Of The Trend
+### 4.2. The Strength Of The Trend
 
 When $X$ is measured over a wider range, the overall trend, that is the slope, becomes more
 dominant relative to the local fluctuations. The model captures a larger portion of the total
@@ -143,9 +143,9 @@ the range 0.1 to 4.0 for samples placed along the 1-to-1 line, and records the $
 sample yields. It shows the same dependence from the data side rather than from the algebra: the
 value moves with the spread of the sample even though the underlying relationship never changes.
 
-Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
-
 ![Fig 1](variance-components_fig/sigma_r2.png)
+
+Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
 
 The figure is produced by `sigma_r2.py`, in the folder of this document.
 
@@ -153,15 +153,15 @@ The figure is produced by `sigma_r2.py`, in the folder of this document.
 
 ## Appendix A. Terminology
 
-- Coefficient of determination ($R^2$): 결정계수. The proportion of variance in the dependent
+- **Coefficient of determination**: 결정계수 $R^2$. The proportion of variance in the dependent
   variable that is predictable from the independent variable.
-- Explanatory power: 설명력. The capacity of a model to represent the underlying patterns in the
-  data.
-- Residual variance: 잔차 분산. The variance of the differences between observed and predicted
-  values.
-- Mean absolute error: 평균 절대 오차. The mean of the absolute differences between observed and
-  predicted values, carrying the unit of the observations.
-- Mean squared error: 평균 제곱 오차. The mean of the squared differences between observed and
+- **Explanatory power**: 설명력. The capacity of a model to represent the underlying patterns in
+  the data.
+- **Mean absolute error**: 평균 절대 오차. The mean of the absolute differences between observed
+  and predicted values, carrying the unit of the observations.
+- **Mean squared error**: 평균 제곱 오차. The mean of the squared differences between observed and
   predicted values.
-- Signal-to-noise ratio: 신호 대 잡음비. A measure that compares the level of a desired signal to
-  the level of background noise.
+- **Residual variance**: 잔차 분산. The variance of the differences between observed and predicted
+  values.
+- **Signal-to-noise ratio**: 신호 대 잡음비. A measure that compares the level of a desired signal
+  to the level of background noise.
