@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 7 | Created: 2026-09-05 | Updated: 2026-09-05 02:05 CDT
+Rev. 8 | Created: 2026-09-05 | Updated: 2026-09-05 02:06 CDT
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 커진
@@ -13,7 +13,8 @@ Rev. 7 | Created: 2026-09-05 | Updated: 2026-09-05 02:05 CDT
 
 이 문서는 그 쌍을 정리한다. 두 관리도의 통계량과 관리한계, 읽는 순서, 산포가 평균 관리도에 닿는 두
 가지 경로, 그리고 그 경로를 실제 자료에서 가려내는 방법을 다룬다. 평균이 변하지 않은 채 산포만 커진
-경우의 판정은 [Appendix B](#appendix-b-case-study) 에서 한 사례로 따로 다루고, 본문에서 정의 없이 쓴
+경우의 판정은 [Appendix C](#appendix-c-case-study) 에서 한 사례로 따로 다룬다. 식 (1) 부터 식 (6)
+까지의 유도는 [Appendix B](#appendix-b-derivation-of-equations-1-to-6) 에 있고, 본문에서 정의 없이 쓴
 용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
 
 ## 2. The Chart Pair
@@ -179,6 +180,8 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **Baseline**: 관리한계를 추정한 기준 기간과 그 기간의 통계량.
 - **Chart constant**: 관리한계를 통계량의 평균에 대한 배수로 적기 위해 부분군 크기마다 표로 주어지는
   수이며, $B_3$, $B_4$, $A_3$ 가 그것이다.
+- **Chi-square distribution**: 독립인 표준정규 확률변수를 제곱하여 더한 값이 따르는 분포이며,
+  자유도는 더한 개수이다.
 - **Control limit**: 공정 자료에서 추정한, 관리도의 위아래 경계.
 - **Cp**: 규격 폭을 공정 산포 $6\sigma$ 로 나눈 공정능력지수이며, 중심의 위치는 보지 않는다.
 - **Cpk**: 중심이 규격 가운데에서 벗어난 정도까지 반영한 공정능력지수이며, 두 규격까지의 거리
@@ -191,11 +194,87 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **Levene test**: 여러 집단의 분산이 같은지 검정하는 방법.
 - **Nested ANOVA**: 변동을 계층 구조를 따라 성분으로 나누는 분산분석.
 - **ppm**: parts per million. 백만 개당 개수로 적은 불량률.
+- **Standard normal cdf**: 평균 0, 표준편차 1 인 정규분포의 누적분포함수이며 $\Phi$ 로 적는다.
 - **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
 
-## Appendix B. Case Study
+## Appendix B. Derivation of Equations (1) to (6)
 
-### B.1. Is a Growing Spread at a Constant Mean an Excursion?
+식 (1) 은 통계량의 정의이므로 유도할 것이 없고, 나머지 다섯은 두 곳에서 나온다. 식 (2) 부터 식 (4)
+까지는 정규모집단에서 $s$ 가 따르는 분포에서 나오고, 식 (5) 와 식 (6) 은 부분군 평균의 정규분포에서
+나온다. 아래는 그 순서를 따라간다.
+
+### B.1. The Divisor of Equation (1)
+
+식 (1) 이 $n$ 이 아니라 $n-1$ 로 나누는 것은 $s^2$ 이 $\sigma^2$ 의 불편추정량이 되게 하려는 것이다.
+$\sum (x_i - \bar{x})^2 = \sum (x_i - \mu)^2 - n(\bar{x} - \mu)^2$ 에 기댓값을 취하고,
+$E[(x_i - \mu)^2] = \sigma^2$ 과 $E[(\bar{x} - \mu)^2] = \sigma^2 / n$ 을 넣는다.
+
+$$E\left[ \sum_{i=1}^{n} (x_i - \bar{x})^{2} \right] = n\sigma^{2} - n \cdot \frac{\sigma^{2}}{n} = (n-1)\sigma^{2} \hspace{19em} (7)$$
+
+양변을 $n-1$ 로 나누면 $E[s^2] = \sigma^2$ 이다. 표본평균을 쓰느라 자유도 하나를 잃었고, 나누는 수가 그
+자유도이다.
+
+### B.2. The c4 Constant of Equation (2)
+
+$s^2$ 이 불편이라고 해서 $s$ 가 불편이 되지는 않는다. 제곱근이 비선형이므로 기댓값이 그대로 넘어가지
+않기 때문이며, 얼마나 어긋나는지는 $s$ 의 분포에서 나온다. 정규모집단에서 성립하는 결과는 다음
+하나이다 [[1](#ref-1)].
+
+$$W = \frac{(n-1)s^{2}}{\sigma^{2}} \sim \chi^{2}_{n-1} \hspace{19em} (8)$$
+
+따라서 $s = \sigma\sqrt{W/(n-1)}$ 이고, 자유도 $k$ 의 chi-square 확률변수 $V$ 가
+$E[\sqrt{V}] = \sqrt{2} \cdot \Gamma((k+1)/2) / \Gamma(k/2)$ 를 만족하므로 $k = n-1$ 을 넣어 정리한다.
+
+$$E[s] = \frac{\sigma}{\sqrt{n-1}} E\left[ \sqrt{W} \right] = \sigma \sqrt{\frac{2}{n-1}} \cdot \frac{\Gamma(n/2)}{\Gamma\left( (n-1)/2 \right)} = c_4 \sigma \hspace{19em} (9)$$
+
+이것이 식 (2) 의 $c_4$ 이며, $\bar{s}$ 를 $c_4$ 로 나누어야 $\sigma$ 의 추정값이 되는 이유이다.
+
+### B.3. The Chart Constants of Equations (3) and (4)
+
+관리한계는 찍는 통계량의 기댓값에서 그 통계량의 표준편차 3 배만큼 떨어진 자리이므로, $s$ 의 표준편차가
+필요하다. 식 (7) 에서 $E[s^2] = \sigma^2$ 이고 식 (9) 에서 $E[s] = c_4\sigma$ 이므로 둘의 차로 얻는다.
+
+$$\sigma_s^{2} = E[s^{2}] - \left( E[s] \right)^{2} = \sigma^{2}\left( 1 - c_4^{2} \right) \hspace{19em} (10)$$
+
+s 관리도의 한계 $c_4\sigma \pm 3\sigma\sqrt{1 - c_4^{2}}$ 에 식 (2) 의 $\sigma = \bar{s}/c_4$ 를 넣으면
+$\bar{s}$ 의 배수가 되고, 그 배수가 식 (3) 의 $B_3$ 와 $B_4$ 이다.
+
+$$c_4\sigma \pm 3\sigma\sqrt{1 - c_4^{2}} = \bar{s}\left( 1 \pm \frac{3}{c_4}\sqrt{1 - c_4^{2}} \right) \hspace{19em} (11)$$
+
+평균 관리도도 같은 방법이다. $\bar{x}$ 의 표준편차는 $\sigma/\sqrt{n}$ 이므로 한계는
+$\bar{\bar{x}} \pm 3\sigma/\sqrt{n}$ 이고, 여기에 다시 $\sigma = \bar{s}/c_4$ 를 넣으면 식 (4) 의 $A_3$
+이 나온다.
+
+$$\bar{\bar{x}} \pm \frac{3\sigma}{\sqrt{n}} = \bar{\bar{x}} \pm \frac{3}{c_4\sqrt{n}}\bar{s} \hspace{19em} (12)$$
+
+$B_3$ 가 $n \le 5$ 에서 음수가 되는 것도 식 (11) 에서 바로 읽힌다. $c_4$ 가 작을수록
+$3\sqrt{1 - c_4^{2}} / c_4$ 가 1 을 넘기 때문이며, 표준편차는 음수가 될 수 없으므로 0 으로 자른다.
+
+### B.4. The Signal Probabilities of Equations (5) and (6)
+
+식 (5) 는 관리한계를 baseline 에 그대로 두고 공정 표준편차만 $\rho$ 배가 된 경우이다. 한계는
+$\mu \pm 3\sigma/\sqrt{n}$ 에 머물러 있고 부분군 평균은 $\bar{x} \sim N(\mu, \rho^{2}\sigma^{2}/n)$ 을
+따르므로, $Z = (\bar{x} - \mu)\sqrt{n} / (\rho\sigma)$ 로 표준화하면 한계는 $\pm 3/\rho$ 로 옮겨간다.
+
+$$P\left( |Z| \gt \frac{3}{\rho} \right) = 2\Phi\left( -\frac{3}{\rho} \right) \hspace{19em} (13)$$
+
+식 (6) 은 그 넓어진 산포를 새 baseline 으로 받아들인 뒤이다. 한계가
+$\mu_0 \pm 3\rho\sigma/\sqrt{n}$ 로 넓어진 상태에서 평균이 $\delta\sigma$ 만큼 옮겨가면 같은 표준화에서
+$Z \sim N(k, 1)$ 이 되고, $k = \delta\sqrt{n}/\rho$ 는 이동을 넓어진 한계의 폭으로 잰 값이다.
+
+$$P\left( |Z| \gt 3 \right) = \Phi(k - 3) + \Phi(-k - 3) \hspace{19em} (14)$$
+
+부분군은 서로 독립이므로 첫 신호가 나오는 부분군의 번호는 성공확률 $p$ 의 기하분포를 따르고, 그
+기댓값이 식 (6) 의 ARL 이다.
+
+$$ARL = \sum_{m=1}^{\infty} m (1-p)^{m-1} p = \frac{1}{p} \hspace{19em} (15)$$
+
+식 (13) 을 식 (15) 의 $p$ 로 넣으면 Table 2 의 평균 관리도 두 열이, 식 (14) 를 넣으면 Table 3 이
+나온다. Table 2 의 s 관리도 두 열은 같은 방법을 식 (8) 의 분포에 적용한 것이다.
+
+## Appendix C. Case Study
+
+### C.1. Is a Growing Spread at a Constant Mean an Excursion?
 
 Excursion 의 선언은 규격이 아니라 관리도에서 나온다. 규격 안에 있는 공정도 선언 대상이 되고, 이 사례가
 바로 그 경우이다. Section 3 이 세운 두 경로를 이 한 경우에 적용하여, 판정과 그 전에 배제할 것과 선언
@@ -239,7 +318,7 @@ Excursion 을 선언하기 전에 배제해야 하는 것이 넷 있다. 산포�
 
 첫째, $s$ 한 점의 변동이다. $s$ 자체의 상대 변동은 $c_4$ 하나로 적힌다.
 
-$$\frac{\sigma_s}{E[s]} = \frac{\sqrt{1 - c_4^{2}}}{c_4} \hspace{19em} (7)$$
+$$\frac{\sigma_s}{E[s]} = \frac{\sqrt{1 - c_4^{2}}}{c_4} \hspace{19em} (16)$$
 
 Table 1 의 마지막 열이 그 값이며, $n = 5$ 에서 0.363 이다. 부분군 다섯 개짜리 관리도에서는 공정이
 완전히 정상이어도 $s$ 가 평균의 36 percent 폭으로 오르내린다. 한 점이 올라간 것은 증거가 아니고,
