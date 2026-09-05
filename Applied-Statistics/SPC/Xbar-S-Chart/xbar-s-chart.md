@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 8 | Created: 2026-09-05 | Updated: 2026-09-05 02:06 CDT
+Rev. 9 | Created: 2026-09-05 | Updated: 2026-09-05 08:29 CDT
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 커진
@@ -11,11 +11,15 @@ Rev. 8 | Created: 2026-09-05 | Updated: 2026-09-05 02:06 CDT
 다른 질문이고, 원인도 대응도 다르다. xbar-s 관리도는 그 둘을 두 장의 관리도로 나누어 같은 부분군에서
 동시에 읽는 방법이다.
 
+이 쌍이 필요한 이유는 평균이 그대로인 채 산포만 갑자기 커지는 경우에서 가장 잘 드러난다. 제품은 아직
+규격 안에 있고 평균 관리도는 조용하므로 넘어가기 쉬운데, 이때 물어야 할 것은 규격을 벗어났는가가 아니라
+공정이 어제와 같은가이다. Excursion 의 선언은 규격이 아니라 관리도에서 나오므로, 규격 안에 있는 공정도
+선언 대상이 된다. 그 판정을 [Appendix C](#appendix-c-case-study) 가 한 사례로 다룬다.
+
 이 문서는 그 쌍을 정리한다. 두 관리도의 통계량과 관리한계, 읽는 순서, 산포가 평균 관리도에 닿는 두
-가지 경로, 그리고 그 경로를 실제 자료에서 가려내는 방법을 다룬다. 평균이 변하지 않은 채 산포만 커진
-경우의 판정은 [Appendix C](#appendix-c-case-study) 에서 한 사례로 따로 다룬다. 식 (1) 부터 식 (6)
-까지의 유도는 [Appendix B](#appendix-b-derivation-of-equations-1-to-6) 에 있고, 본문에서 정의 없이 쓴
-용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
+가지 경로, 그리고 그 경로를 실제 자료에서 가려내는 방법을 다룬다. 식 (1) 부터 식 (6) 까지의 유도는
+[Appendix B](#appendix-b-derivation-of-equations-1-to-6) 에 있고, 본문에서 정의 없이 쓴 용어는
+[Appendix A](#appendix-a-terminology) 에 모았다.
 
 ## 2. The Chart Pair
 
@@ -274,11 +278,7 @@ $$ARL = \sum_{m=1}^{\infty} m (1-p)^{m-1} p = \frac{1}{p} \hspace{19em} (15)$$
 
 ## Appendix C. Case Study
 
-### C.1. Is a Growing Spread at a Constant Mean an Excursion?
-
-Excursion 의 선언은 규격이 아니라 관리도에서 나온다. 규격 안에 있는 공정도 선언 대상이 되고, 이 사례가
-바로 그 경우이다. Section 3 이 세운 두 경로를 이 한 경우에 적용하여, 판정과 그 전에 배제할 것과 선언
-후의 대응 순서를 차례로 둔다.
+### C.1. Is an Abrupt Spread Increase at a Constant Mean an Excursion?
 
 #### Verdict
 
