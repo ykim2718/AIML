@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 13 | Created: 2026-09-04 | Updated: 2026-09-04 21:16 CDT
+Rev. 14 | Created: 2026-09-04 | Updated: 2026-09-04 21:20 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -89,6 +89,12 @@ sigma level is the distance from the mean to the nearer limit in standard deviat
 $3 C_{pk}$ and is exactly the number equation (5) hands to $\Phi$. Moving such a process off centre
 collapses the far tail, and what is left is the near tail column read at the smaller $C_{pk}$ the
 move produces.
+
+The top row worked through shows where the two rates come from. Equation (4) gives
+$C_{pk} = (1 - 0) \times 0.67 = 0.67$, so $CPU$ and $CPL$ are both 0.67 and the sigma level is
+$3 \times 0.67 = 2.01$, which the table rounds to 2.0. Equation (5) then reads
+$p = \Phi(-2.01) + \Phi(-2.01)$, and $\Phi(-2.01) = 0.0222156$, so the near tail is 22216 ppm and
+the two together are 44431 ppm.
 
 The 1.33 row is why $C_p = 1.33$ became a common minimum requirement and $C_{pk} = 1.33$ a
 common goal: it puts four standard deviations between the mean and the nearer limit, which leaves
