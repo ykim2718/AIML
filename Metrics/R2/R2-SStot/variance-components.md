@@ -1,5 +1,5 @@
 # The Impact of Variance Components on the Coefficient of Determination ($R^2$)
-Rev. 8 | Created: 2026-04-08 | Updated: 2026-08-20 10:18 CDT
+Rev. 9 | Created: 2026-04-08 | Updated: 2026-09-04 23:43 CDT
 
 > A note on why $R^2$ moves with the variance of the residuals and with the variance of the
 > predictor, and on reading it as a ratio rather than as an absolute measure of accuracy.
@@ -145,7 +145,7 @@ value moves with the spread of the sample even though the underlying relationshi
 
 Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
 
-![Fig 1](the-impact-of-variance-components-on-the-coefficient-of-determination-r2_fig/sigma_r2.png)
+![Fig 1](variance-components_fig/sigma_r2.png)
 
 The figure is produced by `sigma_r2.py`, in the folder of this document.
 
