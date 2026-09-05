@@ -1,5 +1,5 @@
 # SPC (Statistical Process Control)
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 14:30 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-05 00:44 CDT
 
 > This folder covers the statistics that decide whether a running process is behaving, and whether
 > its behaviour is good enough for the product.
@@ -15,9 +15,10 @@ identifiable event and can be found and removed. Confusing the two makes a proce
 direction, because adjusting for common cause variation adds to it, and dismissing a special cause
 leaves it in place.
 
-Every method here follows from that split. A control chart declares which of the two is present. A
-capability index asks a different question — whether the stable process meets its specification —
-and it is only meaningful once the chart has settled the first one. A uniformity index is the same
+Every method here follows from that split. A control chart declares which of the two is present, and
+a pair of charts separates the two things a distribution can do, move and widen. A capability index
+asks a different question — whether the stable process meets its specification — and it is only
+meaningful once the charts have settled the first one. A uniformity index is the same
 dispersion statistic applied inside a single wafer rather than across a run. Multivariate methods
 carry the whole idea over to the case where the measurement is not one number but a vector of
 correlated sensor channels.
@@ -33,6 +34,7 @@ Table 1. Documents in this folder
 |---|---|---|
 | [Shewhart-Chart/shewhart-chart.md](Shewhart-Chart/shewhart-chart.md) | Korean | It covers the common and special cause split the chart is built on, why the limits sit at three sigma and what false alarm rate that buys, the chart types for variables and attributes, the average run length to a signal, the Western Electric run rules, and why being in control is not the same as being capable. |
 | [S-Chart/s-chart.md](S-Chart/s-chart.md) | Korean | It covers the subgroup standard deviation as a chart statistic — why it is a biased estimator of sigma and how $c_4$ corrects it, where the $B_3$ and $B_4$ limits come from and why small subgroups have no lower limit, how the range loses efficiency as the subgroup grows, and the $A_3$ constant that ties the pair to the mean chart. |
+| [Xbar-S-Chart/xbar-s-chart.md](Xbar-S-Chart/xbar-s-chart.md) | Korean | It reads the mean chart and the s chart as one pair: the constants that tie them together, why the s chart is read first, and the two paths by which the spread reaches the mean chart — inflating the scatter of the points while the limits are held, then widening the limits themselves once the new spread is accepted, which costs the mean chart an average run length of 4.5 against 33.4 on a one sigma shift. It closes on the case of a constant mean with a growing spread, which it calls a special cause, with the defect rate that follows and the diagnostics that separate a real increase from a regrouped subgroup. |
 | [Process-Capability-Index/process-capability-index.md](Process-Capability-Index/process-capability-index.md) | English, [Korean](Process-Capability-Index/process-capability-index-ko.md) | It defines $C_p$, $k$ and $C_{pk}$, derives $C_{pk} = (1-k)C_p$, converts each index into a defect rate, and shows with three worked processes why the indices are read together: the same $C_p$ with different centring costs a factor of twenty in defect rate, and the same $C_{pk}$ can mean either a misaligned process or a wide one. It also sets out the priority graded requirement a fab attaches to each measured parameter, with a $C_{pk}$ minimum, a $k$ maximum and a disposition rule on each grade. |
 | [Uniformity/wafer-uniformity-index.md](Uniformity/wafer-uniformity-index.md) | English, [Korean](Uniformity/wafer-uniformity-index-ko.md) | It gives the two standard formulas for within-wafer uniformity, the range method and the standard deviation method, what each measures physically, why neither can see the spatial signature that determines the corrective action, why the range index grows with the measurement point count, and how the index is used across deposition, etch, CMP, implant and lithography. |
 | [Multivariate-SPC/multivariate-spc.md](Multivariate-SPC/multivariate-spc.md) | Korean | It covers why one chart per sensor fails on a tool with many correlated channels, the Hotelling $T^2$ chart as a Mahalanobis distance with its $F$ based limit, PCA monitoring with the score space $T^2$ and the SPE residual statistic, what each of the two catches, contribution analysis and its smearing, and the fault detection use in a fab. |
