@@ -1,5 +1,5 @@
 # Mean, Variance, and Agreement Metrics for Regression in AI/ML
-Rev. 38 | Created: 2026-04-08 | Updated: 2026-09-04 16:10 CDT
+Rev. 39 | Created: 2026-04-08 | Updated: 2026-09-04 23:53 CDT
 
 > A taxonomy of regression evaluation metrics split into variance-based,
 > mean-based, and agreement-based families, read against the $y=x$ line and
@@ -43,7 +43,7 @@ absolute magnitude.
 
 $$r = \frac{\sum (y_i - \mu_y)(\hat{y}_i - \mu_{\hat{y}})}{\sqrt{\sum (y_i - \mu_y)^2 \sum (\hat{y}_i - \mu_{\hat{y}})^2}}$$
 
-where $y_i$ is the observed ground truth value, $\hat{y}_i$ is the predicted value, and $\mu_y$
+where $y_i$ is the observed ground truth value, $\hat y_i$ is the predicted value, and $\mu_y$
 and $\mu_{\hat{y}}$ are the means of the observed and the predicted values.
 
 - Relation to the 1:1 line: $r$ measures how tightly the data clusters around any straight line.

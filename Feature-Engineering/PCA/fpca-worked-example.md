@@ -1,5 +1,5 @@
 # FPCA Worked Example
-Rev. 2 | Created: 2026-08-14 | Updated: 2026-09-04 16:10 CDT
+Rev. 3 | Created: 2026-08-14 | Updated: 2026-09-04 23:53 CDT
 
 > Every number in this document can be recomputed by hand: four curves are built from a known mean and two known eigenfunctions, and the FPCA pipeline is run on them step by step.
 > The point is to watch each stage transform the numbers — data, mean, covariance, eigenpairs — until the pipeline hands back exactly the scores that were planted.
@@ -197,7 +197,7 @@ The scores are the final numbers FPCA produces: each curve of 11 samples has bee
 
 ![Fig 4](fpca-worked-example-fig4.png)
 
-Fig 4. The output of the pipeline. Panel (a) places each curve at its score pair $(\hat{\xi}_{i1}, \hat{\xi}_{i2})$; the symmetric pattern is the planted Table 2. Panel (b) rebuilds $X_1$ from the scores: the mean alone ($K=0$), the mean plus the bump mode ($K=1$), and both modes ($K=2$), which lands exactly on the observed curve.
+Fig 4. The output of the pipeline. Panel (a) places each curve at its score pair $(\hat\xi_{i1}, \hat\xi_{i2})$; the symmetric pattern is the planted Table 2. Panel (b) rebuilds $X_1$ from the scores: the mean alone ($K=0$), the mean plus the bump mode ($K=1$), and both modes ($K=2$), which lands exactly on the observed curve.
 
 ## 7. Reconstruction
 
@@ -207,7 +207,7 @@ $$
 \hat{X}_i^{(K)}(t) = \hat{\mu}(t) + \sum_{k=1}^{K} \hat{\xi}_{ik} \hat{\varphi}_k(t)
 $$
 
-Panel (b) of Fig 4 shows the sequence for $X_1$. The mean alone misses the bump entirely; adding mode 1 captures the bulge but still misses the tilt; adding mode 2 reproduces the curve exactly. The integrated squared error $\int_0^1 (X_1 - \hat{X}_1^{(K)})^2 dt$ makes the progression numeric, and ties back to the scores: leaving out mode $k$ costs exactly $\hat{\xi}_{1k}^2$, which is the score decomposition of the curve's total deviation from the mean.
+Panel (b) of Fig 4 shows the sequence for $X_1$. The mean alone misses the bump entirely; adding mode 1 captures the bulge but still misses the tilt; adding mode 2 reproduces the curve exactly. The integrated squared error $\int_0^1 (X_1 - \hat X_1^{(K)})^2 dt$ makes the progression numeric, and ties back to the scores: leaving out mode $k$ costs exactly $\hat\xi_{1k}^2$, which is the score decomposition of the curve's total deviation from the mean.
 
 Table 8. Reconstruction error for $X_1$ by number of modes
 
