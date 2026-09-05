@@ -1,5 +1,5 @@
-# Mean, Variance, and Agreement Metrics for Regression in AI/ML
-Rev. 39 | Created: 2026-04-08 | Updated: 2026-09-04 23:53 CDT
+# Regression Metrics
+Rev. 40 | Created: 2026-04-08 | Updated: 2026-09-04 23:56 CDT
 
 > A taxonomy of regression evaluation metrics split into variance-based,
 > mean-based, and agreement-based families, read against the $y=x$ line and
