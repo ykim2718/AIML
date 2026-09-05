@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-04 20:45 CDT
+Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-04 20:50 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -69,7 +69,8 @@ that $C_{pk} \le C_p$ always, with equality only when the process is centred.
 
 Under the normal model the indices convert directly into a fraction outside the specification. For a
 centred process both tails contribute and the fraction follows $C_p$; off centre, the near tail
-dominates and the fraction follows $C_{pk}$.
+dominates and the fraction follows $C_{pk}$. The derivation is in
+[Appendix B](#appendix-b-derivation-of-equation-5).
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
@@ -217,3 +218,27 @@ ISBN 978-1-119-72309-7.
   deviations, equal to $3 C_{pk}$.
 - **Specification limit**: a bound the product must satisfy, set by design rather than estimated
   from the process.
+
+## Appendix B. Derivation of Equation (5)
+
+The process is normal with mean $\mu$ and standard deviation $\sigma$, and a unit is defective
+when it falls outside either limit. The two events are disjoint, so the fraction outside the
+specification is their sum.
+
+$$p = P\left( X \lt LSL \right) + P\left( X \gt USL \right) \hspace{19em} (6)$$
+
+Standardising with $Z = (X - \mu)/\sigma$ turns each term into a standard normal tail, and the
+symmetry $\Phi(-z) = 1 - \Phi(z)$ puts both of them on the lower side.
+
+$$P\left( X \lt LSL \right) = \Phi\left( \frac{LSL - \mu}{\sigma} \right) = \Phi\left( -\frac{\mu - LSL}{\sigma} \right) \hspace{19em} (7)$$
+
+$$P\left( X \gt USL \right) = 1 - \Phi\left( \frac{USL - \mu}{\sigma} \right) = \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (8)$$
+
+Equation (3) defines $CPL$ and $CPU$ as those same distances measured in units of $3\sigma$, so
+$\mu - LSL = 3\sigma CPL$ and $USL - \mu = 3\sigma CPU$. Substituting them into equations
+(7) and (8) cancels $\sigma$ and leaves equation (5).
+
+The two columns of Table 1 are the two cases of that result. A centred process has $\mu = m$, so
+$CPU = CPL = C_p$ by equations (2) and (3) and the two tails are equal, which gives
+$p = 2\Phi(-3 C_p)$. Off centre the smaller of the two indices is $C_{pk}$, so $\Phi(-3 C_{pk})$
+is the near tail on its own, and the far tail is small enough beside it to be dropped.

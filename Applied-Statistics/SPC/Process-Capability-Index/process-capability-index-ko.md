@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 8 | Created: 2026-09-04 | Updated: 2026-09-04 20:45 CDT
+Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-04 20:50 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -64,7 +64,7 @@ $$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 
 정규분포 model 아래에서 이 지수들은 규격을 벗어나는 비율로 바로 환산된다. 중심에 있는 공정은 양쪽
 꼬리가 함께 기여하므로 비율이 $C_p$ 를 따르고, 치우친 공정은 가까운 쪽 꼬리가 지배하므로 비율이
-$C_{pk}$ 를 따른다.
+$C_{pk}$ 를 따른다. 유도는 [Appendix B](#appendix-b-derivation-of-equation-5) 에 있다.
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
@@ -206,3 +206,26 @@ ISBN 978-1-119-72309-7.
   같다.
 - **Specification limit**: 제품이 만족해야 하는 경계이며, 공정에서 추정하는 것이 아니라 설계가
   정한다.
+
+## Appendix B. Derivation of Equation (5)
+
+공정은 평균 $\mu$ 와 표준편차 $\sigma$ 인 정규분포를 따르고, 한 개는 두 한계 가운데 어느 쪽이든
+벗어나면 불량이다. 두 사건은 서로 배타적이므로 규격을 벗어나는 비율은 그 합이다.
+
+$$p = P\left( X \lt LSL \right) + P\left( X \gt USL \right) \hspace{19em} (6)$$
+
+$Z = (X - \mu)/\sigma$ 로 표준화하면 각 항이 표준정규분포의 꼬리가 되고, 대칭성
+$\Phi(-z) = 1 - \Phi(z)$ 가 둘을 모두 아래쪽 꼬리로 옮긴다.
+
+$$P\left( X \lt LSL \right) = \Phi\left( \frac{LSL - \mu}{\sigma} \right) = \Phi\left( -\frac{\mu - LSL}{\sigma} \right) \hspace{19em} (7)$$
+
+$$P\left( X \gt USL \right) = 1 - \Phi\left( \frac{USL - \mu}{\sigma} \right) = \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (8)$$
+
+식 (3) 은 $CPL$ 과 $CPU$ 를 바로 그 거리들을 $3\sigma$ 단위로 잰 것으로 정의하므로
+$\mu - LSL = 3\sigma CPL$ 이고 $USL - \mu = 3\sigma CPU$ 이다. 이것을 식 (7) 과 식 (8) 에
+넣으면 $\sigma$ 가 약분되고 식 (5) 가 남는다.
+
+Table 1 의 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
+의해 $CPU = CPL = C_p$ 이고 두 꼬리가 같아 $p = 2\Phi(-3 C_p)$ 가 된다. 치우친 공정에서는 두 지수
+가운데 작은 쪽이 $C_{pk}$ 이므로 $\Phi(-3 C_{pk})$ 가 가까운 쪽 꼬리 하나이고, 먼 쪽 꼬리는 그
+옆에서 버려도 될 만큼 작다.
