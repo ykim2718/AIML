@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-04 20:58 CDT
+Rev. 12 | Created: 2026-09-04 | Updated: 2026-09-04 21:10 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -167,14 +167,14 @@ needs measuring less often than one running near its limits.
 A fab measures far more parameters than it can hold to one standard, so it grades them by what
 their control is for and gives each grade its own requirement.
 
-Table 3. Foundry Control Priority and Spec
+Table 3. Foundry Control Priority and Wafer Acceptance Criteria
 
-| Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
-|---|---|---:|---:|---:|---:|
-| 0 | Product Yield | 1.67 | 0.10 | 1.86 | 0.272 |
-| 1 | Device Performance | 1.50 | 0.15 | 1.76 | 3.40 |
-| 2 | Process Performance | 1.33 | 0.20 | 1.66 | 33.0 |
-| 3 | Monitoring | 1.00 | 0.25 | 1.33 | 1350 |
+| Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm | Acceptance |
+|---|---|---:|---:|---:|---:|---:|
+| 0 | Product Yield | 1.67 | 0.10 | 1.86 | 0.272 | 100% |
+| 1 | Device Performance | 1.50 | 0.15 | 1.76 | 3.40 | 100% |
+| 2 | Process Performance | 1.33 | 0.20 | 1.66 | 33.0 | 80% |
+| 3 | Monitoring | 1.00 | 0.25 | 1.33 | 1350 | None |
 
 The $C_{pk}$ column follows the long-standing ladder of minimum capability values: 1.33 as the
 general minimum, 1.50 for a critical parameter, and 1.67 for one on a process still new
@@ -192,6 +192,11 @@ USL 110, drawn on one density scale. The dotted line is the process mean, which 
 holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
 is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far
 tail, which is negligible at every grade.
+
+The Acceptance column carries the grade over from the parameter to the lot: it is the share of the
+measured wafers that must meet the specification before the lot moves on. Priority 0 and
+Priority 1 admit no failing wafer, Priority 2 admits one in five, and Priority 3 gates nothing at
+all, since that grade charts a parameter rather than accepting product on it.
 
 That implied width changes little across the three protecting grades, 1.86 against 1.66, while the
 centring allowance at Priority 0 is twice as tight as at Priority 2, so what a higher grade demands

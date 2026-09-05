@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-04 20:58 CDT
+Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-04 21:10 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -156,14 +156,14 @@ Table 2. What the pair of indices indicates.
 Fab 이 재는 항목은 하나의 기준으로 지킬 수 있는 것보다 훨씬 많으므로, 무엇을 위해 지키는지로
 등급을 매기고 등급마다 다른 요구치를 건다.
 
-Table 3. Foundry Control Priority and Spec
+Table 3. Foundry Control Priority and Wafer Acceptance Criteria
 
-| Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm |
-|---|---|---:|---:|---:|---:|
-| 0 | Product Yield | 1.67 | 0.10 | 1.86 | 0.272 |
-| 1 | Device Performance | 1.50 | 0.15 | 1.76 | 3.40 |
-| 2 | Process Performance | 1.33 | 0.20 | 1.66 | 33.0 |
-| 3 | Monitoring | 1.00 | 0.25 | 1.33 | 1350 |
+| Priority | Control objective | Cpk min | k max | Implied Cp min | Near tail, ppm | Acceptance |
+|---|---|---:|---:|---:|---:|---:|
+| 0 | Product Yield | 1.67 | 0.10 | 1.86 | 0.272 | 100% |
+| 1 | Device Performance | 1.50 | 0.15 | 1.76 | 3.40 | 100% |
+| 2 | Process Performance | 1.33 | 0.20 | 1.66 | 33.0 | 80% |
+| 3 | Monitoring | 1.00 | 0.25 | 1.33 | 1350 | None |
 
 $C_{pk}$ 열은 오래 쓰여 온 최소 공정능력의 사다리를 따른다. 1.33 이 일반적인 최소값이고, 1.50 이
 critical 한 항목의 값이며, 1.67 은 아직 새 공정에 있는 항목의 값이다 [[2](#ref-2)]. Monitoring 은
@@ -180,6 +180,11 @@ Fig 2. 각 등급에 정확히 걸친 공정을 같은 규격 LSL 90, USL 110 �
 점선은 공정 평균이며 $k$ 의 상한이 그것을 가운데 아래에 붙들어 둔다. 각 panel 에는 그 공정이
 실현하는 지수가 적혀 있다. ppm 은 규격을 벗어나는 비율 전체이므로 먼 쪽 꼬리만큼 Table 3 의 가까운
 쪽 꼬리보다 크며, 그 차이는 어느 등급에서도 무시할 만하다.
+
+Acceptance 열은 등급을 항목에서 lot 으로 옮긴다. Lot 이 다음 공정으로 가려면 측정한 웨이퍼 가운데
+규격을 만족해야 하는 비율이다. Priority 0 과 Priority 1 은 미달 웨이퍼를 하나도 허용하지 않고,
+Priority 2 는 다섯에 하나까지 허용하며, Priority 3 은 아무것도 막지 않는다. 그 등급은 항목을 관리도에
+올릴 뿐 그것으로 제품을 합격시키지 않기 때문이다.
 
 함의된 폭은 제품을 지키는 세 등급 사이에서 1.86 대 1.66 으로 별로 달라지지 않는 반면 치우침의
 허용치는 Priority 0 이 Priority 2 보다 두 배 빡빡하므로, 높은 등급이 요구하는 것은 폭이 아니라
