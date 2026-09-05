@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 12 | Created: 2026-09-04 | Updated: 2026-09-04 21:10 CDT
+Rev. 13 | Created: 2026-09-04 | Updated: 2026-09-04 21:16 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -74,15 +74,21 @@ dominates and the fraction follows $C_{pk}$. The derivation is in
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
-Table 1. Defect rate against index value, in parts per million.
+Table 1. Defect rate of a centred process, in parts per million.
 
-| Index value | Sigma level | Centred, from Cp | Near tail, from Cpk |
-|---:|---:|---:|---:|
-| 0.67 | 2.0 | 44431 | 22216 |
-| 1.00 | 3.0 | 2700 | 1350 |
-| 1.33 | 4.0 | 66.1 | 33.0 |
-| 1.67 | 5.0 | 0.544 | 0.272 |
-| 2.00 | 6.0 | 0.00197 | 0.000987 |
+| Cp | Cpk | k | Sigma level | Both tails, ppm | Near tail, ppm |
+|---:|---:|---:|---:|---:|---:|
+| 0.67 | 0.67 | 0 | 2.0 | 44431 | 22216 |
+| 1.00 | 1.00 | 0 | 3.0 | 2700 | 1350 |
+| 1.33 | 1.33 | 0 | 4.0 | 66.1 | 33.0 |
+| 1.67 | 1.67 | 0 | 5.0 | 0.544 | 0.272 |
+| 2.00 | 2.00 | 0 | 6.0 | 0.00197 | 0.000987 |
+
+Every row is a centred process, so $k$ is 0 and equation (4) makes $C_{pk}$ equal to $C_p$. The
+sigma level is the distance from the mean to the nearer limit in standard deviations, which is
+$3 C_{pk}$ and is exactly the number equation (5) hands to $\Phi$. Moving such a process off centre
+collapses the far tail, and what is left is the near tail column read at the smaller $C_{pk}$ the
+move produces.
 
 The 1.33 row is why $C_p = 1.33$ became a common minimum requirement and $C_{pk} = 1.33$ a
 common goal: it puts four standard deviations between the mean and the nearer limit, which leaves
@@ -271,7 +277,7 @@ rearrange to $(LSL - \mu)/\sigma = -3 CPL$ and $(USL - \mu)/\sigma = 3 CPU$. Sub
 two into equation (11) gives equation (5). The $\sigma$ has left the expression because the two
 indices already carry it.
 
-The two columns of Table 1 are the two cases of that result. A centred process has $\mu = m$, so
+The last two columns of Table 1 are the two cases of that result. A centred process has $\mu = m$, so
 $CPU = CPL = C_p$ by equations (2) and (3) and the two tails are equal, which gives
 $p = 2\Phi(-3 C_p)$. Off centre the smaller of the two indices is $C_{pk}$, so $\Phi(-3 C_{pk})$
 is the near tail on its own, and the far tail is small enough beside it to be dropped.

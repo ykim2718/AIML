@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-04 21:10 CDT
+Rev. 12 | Created: 2026-09-04 | Updated: 2026-09-04 21:16 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -68,15 +68,20 @@ $C_{pk}$ 를 따른다. 유도는 [Appendix B](#appendix-b-derivation-of-equatio
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
-Table 1. Defect rate against index value, in parts per million.
+Table 1. Defect rate of a centred process, in parts per million.
 
-| Index value | Sigma level | Centred, from Cp | Near tail, from Cpk |
-|---:|---:|---:|---:|
-| 0.67 | 2.0 | 44431 | 22216 |
-| 1.00 | 3.0 | 2700 | 1350 |
-| 1.33 | 4.0 | 66.1 | 33.0 |
-| 1.67 | 5.0 | 0.544 | 0.272 |
-| 2.00 | 6.0 | 0.00197 | 0.000987 |
+| Cp | Cpk | k | Sigma level | Both tails, ppm | Near tail, ppm |
+|---:|---:|---:|---:|---:|---:|
+| 0.67 | 0.67 | 0 | 2.0 | 44431 | 22216 |
+| 1.00 | 1.00 | 0 | 3.0 | 2700 | 1350 |
+| 1.33 | 1.33 | 0 | 4.0 | 66.1 | 33.0 |
+| 1.67 | 1.67 | 0 | 5.0 | 0.544 | 0.272 |
+| 2.00 | 2.00 | 0 | 6.0 | 0.00197 | 0.000987 |
+
+모든 행은 중심에 있는 공정이므로 $k$ 가 0 이고 식 (4) 에 의해 $C_{pk}$ 가 $C_p$ 와 같다. Sigma
+level 은 평균에서 가까운 쪽 한계까지의 거리를 표준편차로 잰 것이며, $3 C_{pk}$ 이고 식 (5) 가
+$\Phi$ 에 넘기는 바로 그 수이다. 이 공정을 중심에서 밀어내면 먼 쪽 꼬리가 무너지고, 남는 것은 그
+이동이 만든 더 작은 $C_{pk}$ 에서 읽은 near tail 열이다.
 
 1.33 행이 $C_p = 1.33$ 이 흔한 최소 요구치가 되고 $C_{pk} = 1.33$ 이 흔한 목표가 된 이유이다.
 평균과 가까운 쪽 한계 사이에 표준편차 네 개를 두어, 실제 공정이 으레 겪는 흐름을 감당할 여유를 남기기
@@ -176,10 +181,11 @@ critical 한 항목의 값이며, 1.67 은 아직 새 공정에 있는 항목의
 
 <img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. 각 등급에 정확히 걸친 공정을 같은 규격 LSL 90, USL 110 에 대해 하나의 밀도 척도로 그린 것.
-점선은 공정 평균이며 $k$ 의 상한이 그것을 가운데 아래에 붙들어 둔다. 각 panel 에는 그 공정이
-실현하는 지수가 적혀 있다. ppm 은 규격을 벗어나는 비율 전체이므로 먼 쪽 꼬리만큼 Table 3 의 가까운
-쪽 꼬리보다 크며, 그 차이는 어느 등급에서도 무시할 만하다.
+Fig 2. The process that sits exactly on each grade, against the same specification, LSL 90 and
+USL 110, drawn on one density scale. The dotted line is the process mean, which the $k$ maximum
+holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
+is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far
+tail, which is negligible at every grade.
 
 Acceptance 열은 등급을 항목에서 lot 으로 옮긴다. Lot 이 다음 공정으로 가려면 측정한 웨이퍼 가운데
 규격을 만족해야 하는 비율이다. Priority 0 과 Priority 1 은 미달 웨이퍼를 하나도 허용하지 않고,
@@ -255,7 +261,7 @@ $$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}
 $(LSL - \mu)/\sigma = -3 CPL$ 이고 $(USL - \mu)/\sigma = 3 CPU$ 이다. 둘을 식 (11) 에 넣으면 식
 (5) 가 된다. 두 지수가 이미 $\sigma$ 를 품고 있으므로 식에서 $\sigma$ 가 사라진다.
 
-Table 1 의 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
+Table 1 의 마지막 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
 의해 $CPU = CPL = C_p$ 이고 두 꼬리가 같아 $p = 2\Phi(-3 C_p)$ 가 된다. 치우친 공정에서는 두 지수
 가운데 작은 쪽이 $C_{pk}$ 이므로 $\Phi(-3 C_{pk})$ 가 가까운 쪽 꼬리 하나이고, 먼 쪽 꼬리는 그
 옆에서 버려도 될 만큼 작다.
