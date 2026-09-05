@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 0 | Created: 2026-09-05 | Updated: 2026-09-05 00:37 CDT
+Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 01:41 CDT
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 커진
@@ -12,8 +12,9 @@ Rev. 0 | Created: 2026-09-05 | Updated: 2026-09-05 00:37 CDT
 동시에 읽는 방법이다.
 
 이 문서는 그 쌍을 정리한다. 두 관리도의 통계량과 관리한계, 읽는 순서, 산포가 평균 관리도에 닿는 두
-가지 경로, 그 경로를 실제 자료에서 가려내는 방법, 그리고 평균이 변하지 않은 채 산포만 커진 경우의
-판정을 다룬다. 본문에서 정의 없이 쓴 용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
+가지 경로, 그 경로를 실제 자료에서 가려내는 방법, 그리고 이 쌍이 반도체 공정에서 놓이는 자리를
+다룬다. 평균이 변하지 않은 채 산포만 커진 경우의 판정은 [Appendix B](#appendix-b-case-study) 에서 한
+사례로 따로 다루고, 본문에서 정의 없이 쓴 용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
 
 ## 2. The Chart Pair
 
@@ -157,9 +158,57 @@ Table 4. Ways to judge whether the spread is reaching the mean
 chamber 별로 나누어 다시 그리면 $s$ 가 제자리로 돌아온다. 반대로 나누어도 $s$ 가 그대로면 산포 증가는
 층 구성과 무관한 진짜 변화이다.
 
-## 4. A Constant Mean with Growing Dispersion
+## 4. Application
 
-### 4.1. Verdict
+반도체 공정에서 이 쌍이 놓이는 자리는 wafer 하나이다. wafer 마다 여러 점을 측정하므로 부분군이 자연히
+만들어지고, $\bar{x}$ 는 wafer 평균, $s$ 는 wafer 내 산포가 된다. 두 관리도가 그대로 두 가지 물음이
+된다. 목표 두께에 맞았는가와 wafer 안이 고른가이다.
+
+이 자리에서 [Appendix B](#appendix-b-case-study) 의 상황은 흔하다. 식각률이 wafer 가장자리에서만
+올라가면 wafer 평균은 거의 그대로인 채 $s$ 만 커진다. 평균 관리도만 보고 있으면 정상으로 읽히지만,
+가장자리 die 는 이미 규격을 벗어나 있다. 평균이 보호해 주지 못한다는 Appendix B.1 의 두 번째 근거가
+die 단위로 나타나는 경우이다.
+
+## References
+
+<a id="ref-1"></a>
+[1] Casella, G., & Berger, R. L. (2002). *Statistical Inference* (2nd ed.). Duxbury.
+ISBN 978-0-534-24312-8.<br>
+<a id="ref-2"></a>
+[2] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.
+ISBN 978-1-119-72309-7.<br>
+<a id="ref-3"></a>
+[3] Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
+ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
+
+---
+
+## Appendix A. Terminology
+
+- **ARL**: Average Run Length. 신호가 나올 때까지 걸리는 부분군 수의 기댓값이며, 관리 상태에서는 클수록,
+  이상 상태에서는 작을수록 좋다.
+- **Assignable cause**: 찾아내어 제거할 수 있는 개별 사건에서 오는 변동.
+- **Baseline**: 관리한계를 추정한 기준 기간과 그 기간의 통계량.
+- **Chart constant**: 관리한계를 통계량의 평균에 대한 배수로 적기 위해 부분군 크기마다 표로 주어지는
+  수이며, $B_3$, $B_4$, $A_3$ 가 그것이다.
+- **Control limit**: 공정 자료에서 추정한, 관리도의 위아래 경계.
+- **Cp**: 규격 폭을 공정 산포 $6\sigma$ 로 나눈 공정능력지수이며, 중심의 위치는 보지 않는다.
+- **Cpk**: 중심이 규격 가운데에서 벗어난 정도까지 반영한 공정능력지수이며, 두 규격까지의 거리
+  가운데 가까운 쪽으로 정해진다.
+- **CV**: Coefficient of Variation. 표준편차를 평균으로 나눈 값.
+- **Gauge R&R**: 측정계의 반복성과 재현성을 나누어 측정 산포를 추정하는 절차.
+- **In control**: 관리도에 이상원인의 신호가 없는 상태.
+- **Levene test**: 여러 집단의 분산이 같은지 검정하는 방법.
+- **Nested ANOVA**: 변동을 계층 구조를 따라 성분으로 나누는 분산분석.
+- **ppm**: parts per million. 백만 개당 개수로 적은 불량률.
+- **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
+
+## Appendix B. Case Study
+
+산포는 커졌는데 평균은 그대로인 공정을 이상으로 볼 것인가. Section 3 이 세운 두 경로를 이 한 경우에
+적용하고, 판정과 그 전에 배제할 것과 대응 순서를 차례로 둔다.
+
+### B.1. Verdict
 
 **이상으로 본다.** 평균이 규격 중심에 그대로 있어도 그렇다. 근거는 셋이다.
 
@@ -187,7 +236,7 @@ $C_p = 1.33$
 셋째, section 3.1 의 감시 능력 손실 때문이다. 넓어진 산포를 새 baseline 으로 받아들이면 이후의 평균
 이동을 잡는 능력이 Table 3 만큼 떨어진다. 산포 증가를 이상으로 처리하지 않으면 다음 이상도 놓친다.
 
-### 4.2. Before Calling It
+### B.2. Before Calling It
 
 결론을 내리기 전에 배제해야 하는 것이 넷 있다. 산포가 커 보이는 것과 산포가 커진 것은 다르다.
 
@@ -210,7 +259,7 @@ Table 1 의 마지막 열이 그 값이며, $n = 5$ 에서 0.363 이다. 부분�
 
 이 넷을 배제하고도 $s$ 가 계속 높으면, 평균이 어디에 있든 이상이다.
 
-### 4.3. Response Order
+### B.3. Response Order
 
 - s 관리도의 신호부터 이상원인으로 조사. 평균 관리도의 동시 신호는 원인이 아니라 결과로 취급.
 - 규격 대비 $C_p$ 와 $C_{pk}$ 재계산. 현재 산포로 출하 판정을 다시 세움.
@@ -219,44 +268,3 @@ Table 1 의 마지막 열이 그 값이며, $n = 5$ 에서 0.363 이다. 부분�
 
 세 번째 항목이 실무에서 가장 자주 어긋난다. 신호가 계속 나오는 것이 번거로워 한계를 다시 잡으면
 관리도는 조용해지지만, 그 조용함은 공정이 좋아진 것이 아니라 눈금이 넓어진 것이다.
-
-## 5. Application
-
-반도체 공정에서 이 쌍이 놓이는 자리는 wafer 하나이다. wafer 마다 여러 점을 측정하므로 부분군이 자연히
-만들어지고, $\bar{x}$ 는 wafer 평균, $s$ 는 wafer 내 산포가 된다. 두 관리도가 그대로 두 가지 물음이
-된다. 목표 두께에 맞았는가와 wafer 안이 고른가이다.
-
-이 자리에서 section 4 의 상황은 흔하다. 식각률이 wafer 가장자리에서만 올라가면 wafer 평균은 거의
-그대로인 채 $s$ 만 커진다. 평균 관리도만 보고 있으면 정상으로 읽히지만, 가장자리 die 는 이미 규격을
-벗어나 있다. 평균이 보호해 주지 못한다는 section 4.1 의 두 번째 근거가 die 단위로 나타나는 경우이다.
-
-## References
-
-<a id="ref-1"></a>
-[1] Casella, G., & Berger, R. L. (2002). *Statistical Inference* (2nd ed.). Duxbury.
-ISBN 978-0-534-24312-8.<br>
-<a id="ref-2"></a>
-[2] Montgomery, D. C. (2020). *Introduction to Statistical Quality Control* (8th ed.). Wiley.
-ISBN 978-1-119-72309-7.<br>
-<a id="ref-3"></a>
-[3] Shewhart, W. A. (1931). *Economic Control of Quality of Manufactured Product*. Van Nostrand.
-ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
-
----
-
-## Appendix A. Terminology
-
-- **ARL**: Average Run Length. 신호가 나올 때까지 걸리는 부분군 수의 기댓값이며, 관리 상태에서는 클수록,
-  이상 상태에서는 작을수록 좋다.
-- **Assignable cause**: 찾아내어 제거할 수 있는 개별 사건에서 오는 변동.
-- **Baseline**: 관리한계를 추정한 기준 기간과 그 기간의 통계량.
-- **Chart constant**: 관리한계를 통계량의 평균에 대한 배수로 적기 위해 부분군 크기마다 표로 주어지는
-  수이며, $B_3$, $B_4$, $A_3$ 가 그것이다.
-- **Control limit**: 공정 자료에서 추정한, 관리도의 위아래 경계.
-- **CV**: Coefficient of Variation. 표준편차를 평균으로 나눈 값.
-- **Gauge R&R**: 측정계의 반복성과 재현성을 나누어 측정 산포를 추정하는 절차.
-- **In control**: 관리도에 이상원인의 신호가 없는 상태.
-- **Levene test**: 여러 집단의 분산이 같은지 검정하는 방법.
-- **Nested ANOVA**: 변동을 계층 구조를 따라 성분으로 나누는 분산분석.
-- **ppm**: parts per million. 백만 개당 개수로 적은 불량률.
-- **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
