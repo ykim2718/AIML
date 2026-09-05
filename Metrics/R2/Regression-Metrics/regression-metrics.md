@@ -1,5 +1,5 @@
 # Regression Metrics
-Rev. 40 | Created: 2026-04-08 | Updated: 2026-09-04 23:56 CDT
+Rev. 41 | Created: 2026-04-08 | Updated: 2026-09-05 00:04 CDT
 
 > A taxonomy of regression evaluation metrics split into variance-based,
 > mean-based, and agreement-based families, read against the $y=x$ line and
@@ -33,7 +33,7 @@ Regression metrics
     └── Scale-independent → CCC, KGE
 ```
 
-### 2.1 Variance Index
+### 2.1. Variance Index
 
 These metrics assess the linearity and the strength of the relationship between observed and
 predicted values. They focus on whether the model captures the shape of the data, regardless of
@@ -41,7 +41,7 @@ absolute magnitude.
 
 #### Pearson Correlation Coefficient
 
-$$r = \frac{\sum (y_i - \mu_y)(\hat{y}_i - \mu_{\hat{y}})}{\sqrt{\sum (y_i - \mu_y)^2 \sum (\hat{y}_i - \mu_{\hat{y}})^2}}$$
+$$r = \frac{\sum (y_i - \mu_y)(\hat{y}_i - \mu_{\hat{y}})}{\sqrt{\sum (y_i - \mu_y)^2 \sum (\hat{y}_i - \mu_{\hat{y}})^2}} \hspace{19em} (1)$$
 
 where $y_i$ is the observed ground truth value, $\hat y_i$ is the predicted value, and $\mu_y$
 and $\mu_{\hat{y}}$ are the means of the observed and the predicted values.
@@ -58,7 +58,7 @@ and $\mu_{\hat{y}}$ are the means of the observed and the predicted values.
 
 #### Coefficient Of Determination
 
-$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \mu_y)^2}$$
+$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \mu_y)^2} \hspace{19em} (2)$$
 
 where $SS_{res}$ is the residual sum of squares, that is the unexplained variance, and
 $SS_{tot}$ is the total sum of squares, that is the total variance in the data.
@@ -74,7 +74,7 @@ $SS_{tot}$ is the total sum of squares, that is the total variance in the data.
 
 #### Explained Variance Score
 
-$$ExpVar = 1 - \frac{Var(y - \hat{y})}{Var(y)}$$
+$$ExpVar = 1 - \frac{Var(y - \hat{y})}{Var(y)} \hspace{19em} (3)$$
 
 where $Var(y - \hat{y})$ is the variance of the residuals and $Var(y)$ is the variance of the
 ground truth.
@@ -87,14 +87,14 @@ ground truth.
 - Application: signal processing where the relative change matters more than the absolute
   baseline.
 
-### 2.2 Mean Index
+### 2.2. Mean Index
 
 These metrics measure the physical distance between the predicted vector and the ground truth.
 They are essential for understanding the actual cost of an error.
 
 #### Mean Absolute Error
 
-$$MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|$$
+$$MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i| \hspace{19em} (4)$$
 
 where $n$ is the number of samples.
 
@@ -106,7 +106,7 @@ where $n$ is the number of samples.
 
 #### Mean Squared Error And Root Mean Squared Error
 
-$$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE}$$
+$$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE} \hspace{19em} (5)$$
 
 - Relation to the 1:1 line: the average of the squared distances to the line. RMSE represents
   the typical distance in the original units.
@@ -117,7 +117,7 @@ $$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE}$
 
 #### Mean Percentage Error And Mean Absolute Percentage Error
 
-$$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \frac{100}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right|$$
+$$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \frac{100}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right| \hspace{19em} (6)$$
 
 - Relation to the 1:1 line: these metrics evaluate the relative deviation from the line. MPE
   measures the average percentage bias, that is whether the model consistently overestimates or
@@ -135,21 +135,21 @@ $$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \
 
 #### Coefficient Of Variation Of RMSE
 
-$$CV(RMSE) = \frac{RMSE}{\mu_y}$$
+$$CV(RMSE) = \frac{RMSE}{\mu_y} \hspace{19em} (7)$$
 
 - Relation to the 1:1 line: it normalizes the error by the mean.
 - Low variance effect: if the mean $\mu_y$ is near zero, this metric explodes. It is nonetheless
   more stable than $R^2$ for low-variance datasets whose mean is not near zero.
 - Application: comparing model performance across sensor types with different scales.
 
-### 2.3 Agreement Index
+### 2.3. Agreement Index
 
 These evaluate fidelity, the requirement that the model follow the trend and match the absolute
 values at the same time.
 
 #### Lin's Concordance Correlation Coefficient
 
-$$\rho_c = \frac{2 \rho \sigma_y \sigma_{\hat{y}}}{\sigma_y^2 + \sigma_{\hat{y}}^2 + (\mu_y - \mu_{\hat{y}})^2}$$
+$$\rho_c = \frac{2 \rho \sigma_y \sigma_{\hat{y}}}{\sigma_y^2 + \sigma_{\hat{y}}^2 + (\mu_y - \mu_{\hat{y}})^2} \hspace{19em} (8)$$
 
 where $\rho$ is the Pearson correlation coefficient and $\sigma_y$ and $\sigma_{\hat{y}}$ are
 the standard deviations of the observed and the predicted values. The coefficient is abbreviated
@@ -163,7 +163,7 @@ CCC below.
 
 #### Kling-Gupta Efficiency
 
-$$KGE = 1 - \sqrt{(r-1)^2 + (\alpha-1)^2 + (\beta-1)^2}$$
+$$KGE = 1 - \sqrt{(r-1)^2 + (\alpha-1)^2 + (\beta-1)^2} \hspace{19em} (9)$$
 
 where $r$ is the Pearson correlation, $\alpha = \sigma_{\hat{y}}/\sigma_y$ is the variability
 ratio, and $\beta = \mu_{\hat{y}}/\mu_y$ is the bias ratio.
@@ -201,15 +201,15 @@ predicting within sub-micron accuracy.
 
 ## Appendix A. Terminology
 
-- Adjusted R²: 조정 결정계수. A coefficient of determination corrected for the number of
+- **Adjusted R²**: 조정 결정계수. A coefficient of determination corrected for the number of
   predictors, so that adding a predictor does not raise the score on its own.
-- Huber: 후버 손실. A loss that is squared for small residuals and linear for large ones, which
+- **Huber**: 후버 손실. A loss that is squared for small residuals and linear for large ones, which
   limits the pull of an outlier without discarding it.
-- Scale-dependent: 척도 종속. Carrying the unit of the measurement, so the value cannot be
+- **Scale-dependent**: 척도 종속. Carrying the unit of the measurement, so the value cannot be
   compared across quantities of different magnitude.
-- Scale-independent: 척도 독립. Normalized so that the value is comparable across quantities of
+- **Scale-independent**: 척도 독립. Normalized so that the value is comparable across quantities of
   different magnitude.
-- SMAPE: 대칭 평균 절대 백분율 오차. A percentage error that divides by the average of the
+- **SMAPE**: 대칭 평균 절대 백분율 오차. A percentage error that divides by the average of the
   observed and the predicted value, which removes the asymmetry of MAPE.
-- Virtual metrology: 가상 계측. Predicting a measurement from process and sensor data instead of
+- **Virtual metrology**: 가상 계측. Predicting a measurement from process and sensor data instead of
   measuring it directly.

@@ -1,5 +1,5 @@
 # Regression Metrics (Korean)
-Rev. 0 | Created: 2026-09-05 | Updated: 2026-09-05 00:02 CDT
+Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 00:04 CDT
 
 > 회귀 평가 지표를 variance-based, mean-based, agreement-based 세 갈래로 나눈 분류이며,
 > $y=x$ 선에 견주어, 그리고 그 가운데 여럿을 무너뜨리는 low variance effect 에 견주어
@@ -30,14 +30,14 @@ Regression metrics
     └── Scale-independent → CCC, KGE
 ```
 
-### 2.1 Variance Index
+### 2.1. Variance Index
 
 이 지표들은 관측값과 예측값 사이 관계의 선형성과 세기를 잰다. 절대적인 크기와 무관하게 model 이
 자료의 모양을 붙잡는지에 초점을 둔다.
 
 #### Pearson Correlation Coefficient
 
-$$r = \frac{\sum (y_i - \mu_y)(\hat{y}_i - \mu_{\hat{y}})}{\sqrt{\sum (y_i - \mu_y)^2 \sum (\hat{y}_i - \mu_{\hat{y}})^2}}$$
+$$r = \frac{\sum (y_i - \mu_y)(\hat{y}_i - \mu_{\hat{y}})}{\sqrt{\sum (y_i - \mu_y)^2 \sum (\hat{y}_i - \mu_{\hat{y}})^2}} \hspace{19em} (1)$$
 
 여기서 $y_i$ 는 관측된 참값이고, $\hat y_i$ 는 예측값이며, $\mu_y$ 와
 $\mu_{\hat{y}}$ 는 관측값과 예측값의 평균이다.
@@ -51,7 +51,7 @@ $\mu_{\hat{y}}$ 는 관측값과 예측값의 평균이다.
 
 #### Coefficient Of Determination
 
-$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \mu_y)^2}$$
+$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \mu_y)^2} \hspace{19em} (2)$$
 
 여기서 $SS_{res}$ 는 잔차제곱합, 곧 설명되지 않은 분산이고, $SS_{tot}$ 는 총제곱합, 곧 자료의 총
 분산이다.
@@ -65,7 +65,7 @@ $$R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum
 
 #### Explained Variance Score
 
-$$ExpVar = 1 - \frac{Var(y - \hat{y})}{Var(y)}$$
+$$ExpVar = 1 - \frac{Var(y - \hat{y})}{Var(y)} \hspace{19em} (3)$$
 
 여기서 $Var(y - \hat{y})$ 는 잔차의 분산이고 $Var(y)$ 는 참값의 분산이다.
 
@@ -75,14 +75,14 @@ $$ExpVar = 1 - \frac{Var(y - \hat{y})}{Var(y)}$$
   것이 목적인 안정한 공정에서는 뜻있는 점수를 주지 못한다.
 - 응용: 절대적인 기준선보다 상대적인 변화가 중요한 신호 처리.
 
-### 2.2 Mean Index
+### 2.2. Mean Index
 
 이 지표들은 예측 vector 와 참값 사이의 물리적 거리를 잰다. 오차의 실제 비용을 이해하는 데 꼭
 필요하다.
 
 #### Mean Absolute Error
 
-$$MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|$$
+$$MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i| \hspace{19em} (4)$$
 
 여기서 $n$ 은 표본의 개수이다.
 
@@ -93,7 +93,7 @@ $$MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|$$
 
 #### Mean Squared Error And Root Mean Squared Error
 
-$$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE}$$
+$$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE} \hspace{19em} (5)$$
 
 - 1:1 선과의 관계: 선까지 거리의 제곱의 평균. RMSE 는 원래 단위로 잰 전형적인 거리를 나타낸다.
 - 한계: 이상값에 크게 휘둘린다. 목표값의 낮은 분산에는 강건하지만, model 이 자료의 추세를 붙잡고
@@ -102,7 +102,7 @@ $$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2, \quad RMSE = \sqrt{MSE}$
 
 #### Mean Percentage Error And Mean Absolute Percentage Error
 
-$$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \frac{100}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right|$$
+$$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \frac{100}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right| \hspace{19em} (6)$$
 
 - 1:1 선과의 관계: 선에서 벗어난 상대적인 정도를 평가한다. MPE 는 평균 백분율 치우침, 곧 model 이
   줄곧 과대평가하는지 과소평가하는지를 재고, MAPE 는 항등선에 견준 백분율 오차의 평균 크기를
@@ -117,20 +117,20 @@ $$MPE = \frac{100}{n} \sum_{i=1}^{n} \frac{y_i - \hat{y}_i}{y_i}, \quad MAPE = \
 
 #### Coefficient Of Variation Of RMSE
 
-$$CV(RMSE) = \frac{RMSE}{\mu_y}$$
+$$CV(RMSE) = \frac{RMSE}{\mu_y} \hspace{19em} (7)$$
 
 - 1:1 선과의 관계: 오차를 평균으로 정규화한다.
 - Low variance effect: 평균 $\mu_y$ 가 0 에 가까우면 이 지표는 폭발한다. 그래도 평균이 0 에 가깝지
   않은 저분산 자료에서는 $R^2$ 보다 안정하다.
 - 응용: 척도가 서로 다른 sensor 종류들 사이에서 model 성능을 비교하기.
 
-### 2.3 Agreement Index
+### 2.3. Agreement Index
 
 이 지표들은 충실도, 곧 model 이 추세를 따라가면서 동시에 절대값도 맞혀야 한다는 요구를 평가한다.
 
 #### Lin's Concordance Correlation Coefficient
 
-$$\rho_c = \frac{2 \rho \sigma_y \sigma_{\hat{y}}}{\sigma_y^2 + \sigma_{\hat{y}}^2 + (\mu_y - \mu_{\hat{y}})^2}$$
+$$\rho_c = \frac{2 \rho \sigma_y \sigma_{\hat{y}}}{\sigma_y^2 + \sigma_{\hat{y}}^2 + (\mu_y - \mu_{\hat{y}})^2} \hspace{19em} (8)$$
 
 여기서 $\rho$ 는 Pearson 상관계수이고 $\sigma_y$ 와 $\sigma_{\hat{y}}$ 는 관측값과 예측값의
 표준편차이다. 이 계수를 아래에서는 CCC 로 줄여 적는다.
@@ -143,7 +143,7 @@ $$\rho_c = \frac{2 \rho \sigma_y \sigma_{\hat{y}}}{\sigma_y^2 + \sigma_{\hat{y}}
 
 #### Kling-Gupta Efficiency
 
-$$KGE = 1 - \sqrt{(r-1)^2 + (\alpha-1)^2 + (\beta-1)^2}$$
+$$KGE = 1 - \sqrt{(r-1)^2 + (\alpha-1)^2 + (\beta-1)^2} \hspace{19em} (9)$$
 
 여기서 $r$ 은 Pearson 상관이고, $\alpha = \sigma_{\hat{y}}/\sigma_y$ 는 변동성 비이며,
 $\beta = \mu_{\hat{y}}/\mu_y$ 는 치우침 비이다.
@@ -178,12 +178,12 @@ sensor 는 흔히 좁고 안정한 범위에서 도는데, 그 영역에서는 P
 
 ## Appendix A. Terminology
 
-- Adjusted R²: 조정 결정계수. 예측변수의 개수로 보정한 결정계수이며, 예측변수를 더한다고 해서 그
+- **Adjusted R²**: 조정 결정계수. 예측변수의 개수로 보정한 결정계수이며, 예측변수를 더한다고 해서 그
   자체로 점수가 오르지 않게 한다.
-- Huber: 후버 손실. 잔차가 작으면 제곱, 크면 선형인 손실이며, 이상값을 버리지 않으면서 그것이 끄는
+- **Huber**: 후버 손실. 잔차가 작으면 제곱, 크면 선형인 손실이며, 이상값을 버리지 않으면서 그것이 끄는
   힘을 제한한다.
-- Scale-dependent: 척도 종속. 측정의 단위를 지니므로 크기가 다른 양들 사이에서 값을 비교할 수 없다.
-- Scale-independent: 척도 독립. 정규화되어 있어 크기가 다른 양들 사이에서 값을 비교할 수 있다.
-- SMAPE: 대칭 평균 절대 백분율 오차. 관측값과 예측값의 평균으로 나누는 백분율 오차이며, MAPE 의
+- **Scale-dependent**: 척도 종속. 측정의 단위를 지니므로 크기가 다른 양들 사이에서 값을 비교할 수 없다.
+- **Scale-independent**: 척도 독립. 정규화되어 있어 크기가 다른 양들 사이에서 값을 비교할 수 있다.
+- **SMAPE**: 대칭 평균 절대 백분율 오차. 관측값과 예측값의 평균으로 나누는 백분율 오차이며, MAPE 의
   비대칭을 없앤다.
-- Virtual metrology: 가상 계측. 직접 재는 대신 공정과 sensor 자료로부터 측정값을 예측하는 것.
+- **Virtual metrology**: 가상 계측. 직접 재는 대신 공정과 sensor 자료로부터 측정값을 예측하는 것.
