@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 01:41 CDT
+Rev. 2 | Created: 2026-09-05 | Updated: 2026-09-05 01:52 CDT
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 커진
@@ -12,9 +12,9 @@ Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 01:41 CDT
 동시에 읽는 방법이다.
 
 이 문서는 그 쌍을 정리한다. 두 관리도의 통계량과 관리한계, 읽는 순서, 산포가 평균 관리도에 닿는 두
-가지 경로, 그 경로를 실제 자료에서 가려내는 방법, 그리고 이 쌍이 반도체 공정에서 놓이는 자리를
-다룬다. 평균이 변하지 않은 채 산포만 커진 경우의 판정은 [Appendix B](#appendix-b-case-study) 에서 한
-사례로 따로 다루고, 본문에서 정의 없이 쓴 용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
+가지 경로, 그리고 그 경로를 실제 자료에서 가려내는 방법을 다룬다. 평균이 변하지 않은 채 산포만 커진
+경우의 판정은 [Appendix B](#appendix-b-case-study) 에서 한 사례로 따로 다루고, 본문에서 정의 없이 쓴
+용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
 
 ## 2. The Chart Pair
 
@@ -157,17 +157,6 @@ Table 4. Ways to judge whether the spread is reaching the mean
 차이가 부분군 안의 산포로 들어가 $s$ 를 부풀린다. 이때는 산포 증가가 결과이고 평균 차이가 원인이므로,
 chamber 별로 나누어 다시 그리면 $s$ 가 제자리로 돌아온다. 반대로 나누어도 $s$ 가 그대로면 산포 증가는
 층 구성과 무관한 진짜 변화이다.
-
-## 4. Application
-
-반도체 공정에서 이 쌍이 놓이는 자리는 wafer 하나이다. wafer 마다 여러 점을 측정하므로 부분군이 자연히
-만들어지고, $\bar{x}$ 는 wafer 평균, $s$ 는 wafer 내 산포가 된다. 두 관리도가 그대로 두 가지 물음이
-된다. 목표 두께에 맞았는가와 wafer 안이 고른가이다.
-
-이 자리에서 [Appendix B](#appendix-b-case-study) 의 상황은 흔하다. 식각률이 wafer 가장자리에서만
-올라가면 wafer 평균은 거의 그대로인 채 $s$ 만 커진다. 평균 관리도만 보고 있으면 정상으로 읽히지만,
-가장자리 die 는 이미 규격을 벗어나 있다. 평균이 보호해 주지 못한다는 Appendix B.1 의 두 번째 근거가
-die 단위로 나타나는 경우이다.
 
 ## References
 
