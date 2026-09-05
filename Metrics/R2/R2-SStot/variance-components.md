@@ -1,5 +1,5 @@
 # The Impact of Variance Components on the Coefficient of Determination ($R^2$)
-Rev. 10 | Created: 2026-04-08 | Updated: 2026-09-04 23:47 CDT
+Rev. 11 | Created: 2026-04-08 | Updated: 2026-09-04 23:58 CDT
 
 > A note on why $R^2$ moves with the variance of the residuals and with the variance of the
 > predictor, and on reading it as a ratio rather than as an absolute measure of accuracy.
@@ -36,9 +36,9 @@ $X$.
 
 $$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}} \hspace{19em} (2)$$
 
-The two sums of squares are the residual sum of squares
-$SS_{res} = \sum (y_i - \hat{y}_i)^2$ and the total sum of squares
-$SS_{tot} = \sum (y_i - \bar{y})^2$.
+The two sums of squares are the residual sum of squares and the total sum of squares.
+
+$$SS_{res} = \sum (y_i - \hat{y}_i)^2, \qquad SS_{tot} = \sum (y_i - \bar{y})^2 \hspace{19em} (3)$$
 
 ## 3. The Impact Of Increased Error Variance
 
@@ -49,10 +49,9 @@ constant.
 ### 3.1. The Mathematical Mechanism
 
 As the noise in the data increases, each observed value $y_i$ deviates further from the
-regression line $\hat{y}_i$. This directly inflates the $SS_{res}$ term. In the formula
-$R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$, as the numerator of the fraction increases, the entire
-fraction $\frac{SS_{res}}{SS_{tot}}$ grows larger. Consequently, when this larger value is
-subtracted from 1, the resulting $R^2$ decreases.
+regression line $\hat{y}_i$. This directly inflates the `SS_res` term. In equation (2), as the
+numerator of that fraction increases, the whole fraction `SS_res / SS_tot` grows larger.
+Consequently, when this larger value is subtracted from 1, the resulting $R^2$ decreases.
 
 ### 3.2. Conceptual Interpretation
 
@@ -78,7 +77,7 @@ typically increases, even if the error variance $\sigma^2_{\epsilon}$ remains ex
 
 In a simple linear regression, the explained variance is expressed as
 
-$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (3)$$
+$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (4)$$
 
 When the variance of $X$ increases, $\sum (x_i - \bar{x})^2$ increases. This causes $SS_{reg}$
 to grow. Since $SS_{tot} = SS_{reg} + SS_{res}$, and $SS_{res}$ is assumed constant, the

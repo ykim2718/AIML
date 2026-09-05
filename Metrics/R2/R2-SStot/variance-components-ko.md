@@ -1,5 +1,5 @@
 # The Impact of Variance Components on the Coefficient of Determination ($R^2$) (Korean)
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 23:47 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-04 23:58 CDT
 
 > $R^2$ 가 잔차의 분산과 예측변수의 분산을 따라 움직이는 이유, 그리고 그것을 정확도의 절대 척도가
 > 아니라 비율로 읽는 법에 대한 기록.
@@ -29,8 +29,9 @@ $$SS_{tot} = SS_{reg} + SS_{res} \hspace{19em} (1)$$
 
 $$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}} \hspace{19em} (2)$$
 
-두 제곱합은 잔차제곱합 $SS_{res} = \sum (y_i - \hat{y}_i)^2$ 와 총제곱합
-$SS_{tot} = \sum (y_i - \bar{y})^2$ 이다.
+두 제곱합은 잔차제곱합과 총제곱합이다.
+
+$$SS_{res} = \sum (y_i - \hat{y}_i)^2, \qquad SS_{tot} = \sum (y_i - \bar{y})^2 \hspace{19em} (3)$$
 
 ## 3. The Impact Of Increased Error Variance
 
@@ -39,9 +40,9 @@ $SS_{tot} = \sum (y_i - \bar{y})^2$ 이다.
 
 ### 3.1. The Mathematical Mechanism
 
-자료의 잡음이 커지면 각 관측값 $y_i$ 가 회귀선 $\hat{y}_i$ 에서 더 멀어진다. 이것이 $SS_{res}$ 항을
-곧바로 부풀린다. 식 $R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$ 에서 분수의 분자가 커지면 분수
-$\frac{SS_{res}}{SS_{tot}}$ 전체가 커진다. 그 커진 값을 1 에서 빼므로 결과인 $R^2$ 는 작아진다.
+자료의 잡음이 커지면 각 관측값 $y_i$ 가 회귀선 $\hat{y}_i$ 에서 더 멀어진다. 이것이 `SS_res` 항을
+곧바로 부풀린다. 식 (2) 에서 그 분수의 분자가 커지면 분수 `SS_res / SS_tot` 전체가 커진다. 그 커진
+값을 1 에서 빼므로 결과인 $R^2$ 는 작아진다.
 
 ### 3.2. Conceptual Interpretation
 
@@ -63,7 +64,7 @@ $\frac{SS_{res}}{SS_{tot}}$ 전체가 커진다. 그 커진 값을 1 에서 빼�
 
 단순 선형회귀에서 설명된 분산은 아래와 같이 적힌다.
 
-$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (3)$$
+$$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (4)$$
 
 $X$ 의 분산이 커지면 $\sum (x_i - \bar{x})^2$ 가 커진다. 이것이 $SS_{reg}$ 를 키운다.
 $SS_{tot} = SS_{reg} + SS_{res}$ 이고 $SS_{res}$ 는 그대로라고 두었으므로, 분모 $SS_{tot}$ 가
