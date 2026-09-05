@@ -1,5 +1,5 @@
 # Process Capability Indices (Korean)
-Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-04 20:50 CDT
+Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-04 20:58 CDT
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.
@@ -174,6 +174,13 @@ critical 한 항목의 값이며, 1.67 은 아직 새 공정에 있는 항목의
 요구되는 $C_p$ 가 $C_{pk}/(1 - k)$ 로 올라가며, 그것이 공정이 겪을 흐름을 지나면서도 $C_{pk}$ 를
 지키는 여유이다.
 
+<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 2">
+
+Fig 2. 각 등급에 정확히 걸친 공정을 같은 규격 LSL 90, USL 110 에 대해 하나의 밀도 척도로 그린 것.
+점선은 공정 평균이며 $k$ 의 상한이 그것을 가운데 아래에 붙들어 둔다. 각 panel 에는 그 공정이
+실현하는 지수가 적혀 있다. ppm 은 규격을 벗어나는 비율 전체이므로 먼 쪽 꼬리만큼 Table 3 의 가까운
+쪽 꼬리보다 크며, 그 차이는 어느 등급에서도 무시할 만하다.
+
 함의된 폭은 제품을 지키는 세 등급 사이에서 1.86 대 1.66 으로 별로 달라지지 않는 반면 치우침의
 허용치는 Priority 0 이 Priority 2 보다 두 배 빡빡하므로, 높은 등급이 요구하는 것은 폭이 아니라
 치우침이며 hardware 가 아니라 setpoint 이다. 둘을 한꺼번에 푸는 등급은 Monitoring 하나뿐이다.
@@ -209,21 +216,39 @@ ISBN 978-1-119-72309-7.
 
 ## Appendix B. Derivation of Equation (5)
 
-공정은 평균 $\mu$ 와 표준편차 $\sigma$ 인 정규분포를 따르고, 한 개는 두 한계 가운데 어느 쪽이든
-벗어나면 불량이다. 두 사건은 서로 배타적이므로 규격을 벗어나는 비율은 그 합이다.
+공정은 평균 $\mu$ 와 표준편차 $\sigma$ 인 정규분포를 따르므로 그 밀도는 아래와 같다.
 
-$$p = P\left( X \lt LSL \right) + P\left( X \gt USL \right) \hspace{19em} (6)$$
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (6)$$
 
-$Z = (X - \mu)/\sigma$ 로 표준화하면 각 항이 표준정규분포의 꼬리가 되고, 대칭성
-$\Phi(-z) = 1 - \Phi(z)$ 가 둘을 모두 아래쪽 꼬리로 옮긴다.
+한 개는 $LSL$ 아래로 내려가거나 $USL$ 위로 올라가면 불량이다. 두 사건은 함께 일어날 수 없으므로
+규격을 벗어나는 비율은 두 넓이의 합이다.
 
-$$P\left( X \lt LSL \right) = \Phi\left( \frac{LSL - \mu}{\sigma} \right) = \Phi\left( -\frac{\mu - LSL}{\sigma} \right) \hspace{19em} (7)$$
+$$p = \int_{-\infty}^{LSL} f(x) \mathrm{d}x + \int_{USL}^{\infty} f(x) \mathrm{d}x \hspace{19em} (7)$$
 
-$$P\left( X \gt USL \right) = 1 - \Phi\left( \frac{USL - \mu}{\sigma} \right) = \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (8)$$
+$z = (x - \mu)/\sigma$ 로 치환하면 $x = \mu + \sigma z$ 이고
+$\mathrm{d}x = \sigma \mathrm{d}z$ 이므로, 치환이 데려온 $\sigma$ 가 분모의 $\sigma$ 와 약분되어
+피적분함수가 표준정규분포의 밀도 $\varphi$ 가 된다.
 
-식 (3) 은 $CPL$ 과 $CPU$ 를 바로 그 거리들을 $3\sigma$ 단위로 잰 것으로 정의하므로
-$\mu - LSL = 3\sigma CPL$ 이고 $USL - \mu = 3\sigma CPU$ 이다. 이것을 식 (7) 과 식 (8) 에
-넣으면 $\sigma$ 가 약분되고 식 (5) 가 남는다.
+$$f(x) \mathrm{d}x = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{z^2}{2} \right) \sigma \mathrm{d}z = \varphi(z) \mathrm{d}z, \qquad \Phi(a) = \int_{-\infty}^{a} \varphi(z) \mathrm{d}z \hspace{19em} (8)$$
+
+적분 구간도 치환을 따라 옮겨 가 $x = LSL$ 이 $z = (LSL - \mu)/\sigma$ 가 되고 $x = USL$ 이
+$z = (USL - \mu)/\sigma$ 가 되므로, 식 (7) 은 아래가 된다.
+
+$$p = \int_{-\infty}^{(LSL - \mu)/\sigma} \varphi(z) \mathrm{d}z + \int_{(USL - \mu)/\sigma}^{\infty} \varphi(z) \mathrm{d}z \hspace{19em} (9)$$
+
+첫 적분은 식 (8) 의 정의에 의해 그대로 $\Phi$ 이다. 두 번째는 위쪽 끝이 $+\infty$ 라 먼저 방향을
+뒤집어야 한다. 거기에 $u = -z$ 를 넣으면 구간이 뒤집히고 $\varphi(-u) = \varphi(u)$ 이므로
+피적분함수는 그대로 남아, 임의의 $a$ 에 대해 성립하는 항등식을 얻는다.
+
+$$\int_{a}^{\infty} \varphi(z) \mathrm{d}z = \int_{-\infty}^{-a} \varphi(u) \mathrm{d}u = \Phi(-a) \hspace{19em} (10)$$
+
+$a = (USL - \mu)/\sigma$ 로 이것을 적용하면 식 (9) 의 두 항이 모두 아래쪽 꼬리가 된다.
+
+$$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (11)$$
+
+식 (3) 은 $CPL = (\mu - LSL)/(3\sigma)$ 와 $CPU = (USL - \mu)/(3\sigma)$ 로 정의되며, 이를 옮기면
+$(LSL - \mu)/\sigma = -3 CPL$ 이고 $(USL - \mu)/\sigma = 3 CPU$ 이다. 둘을 식 (11) 에 넣으면 식
+(5) 가 된다. 두 지수가 이미 $\sigma$ 를 품고 있으므로 식에서 $\sigma$ 가 사라진다.
 
 Table 1 의 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
 의해 $CPU = CPL = C_p$ 이고 두 꼬리가 같아 $p = 2\Phi(-3 C_p)$ 가 된다. 치우친 공정에서는 두 지수

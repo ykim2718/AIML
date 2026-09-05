@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-04 20:50 CDT
+Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-04 20:58 CDT
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.
@@ -185,6 +185,14 @@ satisfies $C_{pk}$ alone by sitting exactly on target at exactly the required wi
 as soon as the mean moves; capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$,
 which is the margin that holds the $C_{pk}$ through the drift the process will have.
 
+<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 2">
+
+Fig 2. The process that sits exactly on each grade, against the same specification, LSL 90 and
+USL 110, drawn on one density scale. The dotted line is the process mean, which the $k$ maximum
+holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
+is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far
+tail, which is negligible at every grade.
+
 That implied width changes little across the three protecting grades, 1.86 against 1.66, while the
 centring allowance at Priority 0 is twice as tight as at Priority 2, so what a higher grade demands
 is centring rather than width — a setpoint rather than hardware. Monitoring is the one grade that
@@ -221,22 +229,42 @@ ISBN 978-1-119-72309-7.
 
 ## Appendix B. Derivation of Equation (5)
 
-The process is normal with mean $\mu$ and standard deviation $\sigma$, and a unit is defective
-when it falls outside either limit. The two events are disjoint, so the fraction outside the
-specification is their sum.
+The process is normal with mean $\mu$ and standard deviation $\sigma$, so its density is the
+following.
 
-$$p = P\left( X \lt LSL \right) + P\left( X \gt USL \right) \hspace{19em} (6)$$
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (6)$$
 
-Standardising with $Z = (X - \mu)/\sigma$ turns each term into a standard normal tail, and the
-symmetry $\Phi(-z) = 1 - \Phi(z)$ puts both of them on the lower side.
+A unit is defective when it falls below $LSL$ or above $USL$. The two events cannot both happen, so
+the fraction outside the specification is the sum of the two areas.
 
-$$P\left( X \lt LSL \right) = \Phi\left( \frac{LSL - \mu}{\sigma} \right) = \Phi\left( -\frac{\mu - LSL}{\sigma} \right) \hspace{19em} (7)$$
+$$p = \int_{-\infty}^{LSL} f(x) \mathrm{d}x + \int_{USL}^{\infty} f(x) \mathrm{d}x \hspace{19em} (7)$$
 
-$$P\left( X \gt USL \right) = 1 - \Phi\left( \frac{USL - \mu}{\sigma} \right) = \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (8)$$
+Substituting $z = (x - \mu)/\sigma$, so that $x = \mu + \sigma z$ and
+$\mathrm{d}x = \sigma \mathrm{d}z$, turns the integrand into the standard normal density
+$\varphi$, because the $\sigma$ the substitution brings in cancels the one in the denominator.
 
-Equation (3) defines $CPL$ and $CPU$ as those same distances measured in units of $3\sigma$, so
-$\mu - LSL = 3\sigma CPL$ and $USL - \mu = 3\sigma CPU$. Substituting them into equations
-(7) and (8) cancels $\sigma$ and leaves equation (5).
+$$f(x) \mathrm{d}x = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{z^2}{2} \right) \sigma \mathrm{d}z = \varphi(z) \mathrm{d}z, \qquad \Phi(a) = \int_{-\infty}^{a} \varphi(z) \mathrm{d}z \hspace{19em} (8)$$
+
+The limits move with the substitution, $x = LSL$ becoming $z = (LSL - \mu)/\sigma$ and $x = USL$
+becoming $z = (USL - \mu)/\sigma$, so equation (7) becomes the following.
+
+$$p = \int_{-\infty}^{(LSL - \mu)/\sigma} \varphi(z) \mathrm{d}z + \int_{(USL - \mu)/\sigma}^{\infty} \varphi(z) \mathrm{d}z \hspace{19em} (9)$$
+
+The first integral is $\Phi$ by its definition in equation (8). The second runs to $+\infty$ and
+has to be turned round first. Substituting $u = -z$ in it reverses the limits and leaves the
+integrand unchanged, since $\varphi(-u) = \varphi(u)$, which gives an identity holding for any
+$a$.
+
+$$\int_{a}^{\infty} \varphi(z) \mathrm{d}z = \int_{-\infty}^{-a} \varphi(u) \mathrm{d}u = \Phi(-a) \hspace{19em} (10)$$
+
+Applying it with $a = (USL - \mu)/\sigma$ puts both terms of equation (9) on the lower side.
+
+$$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (11)$$
+
+Equation (3) defines $CPL = (\mu - LSL)/(3\sigma)$ and $CPU = (USL - \mu)/(3\sigma)$, which
+rearrange to $(LSL - \mu)/\sigma = -3 CPL$ and $(USL - \mu)/\sigma = 3 CPU$. Substituting the
+two into equation (11) gives equation (5). The $\sigma$ has left the expression because the two
+indices already carry it.
 
 The two columns of Table 1 are the two cases of that result. A centred process has $\mu = m$, so
 $CPU = CPL = C_p$ by equations (2) and (3) and the two tails are equal, which gives
