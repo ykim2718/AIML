@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 5 | Created: 2026-09-05 | Updated: 2026-09-05 02:31 CDT
+Rev. 6 | Created: 2026-09-05 | Updated: 2026-09-05 01:56 CDT
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 커진
@@ -191,6 +191,7 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **Levene test**: 여러 집단의 분산이 같은지 검정하는 방법.
 - **Nested ANOVA**: 변동을 계층 구조를 따라 성분으로 나누는 분산분석.
 - **ppm**: parts per million. 백만 개당 개수로 적은 불량률.
+- **Setpoint**: 공정조건으로 지시하는 설정값이며, gas flow, power, time, 온도 따위가 그것이다.
 - **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
 
 ## Appendix B. Case Study
@@ -228,6 +229,27 @@ $C_p = 1.33$
 
 셋째, section 3.1 의 감시 능력 손실 때문이다. 넓어진 산포를 새 baseline 으로 받아들이면 이후의 평균
 이동을 잡는 능력이 Table 3 만큼 떨어진다. 산포 증가를 excursion 으로 선언하지 않으면 다음 것도 놓친다.
+
+다만 이 선언이 무엇에 대한 것인지는 좁혀 두어야 한다. Excursion 은 재현이 깨졌다는 선언이지 공정조건이
+틀렸다는 판정이 아니다. 재현되지 않는 것은 값 하나가 아니라 분포이고, 이 사례에서 재현되지 않는 것은
+산포뿐이어서 $\bar{\bar{x}}$ 는 여전히 $\mu$ 의 불편추정량으로 남는다. 잃는 것은 그 추정의 정밀도와,
+section 3.1 이 보인 판정 능력이다.
+
+재현을 깨는 원인도 대개 setpoint 밖에 있다. chamber 상태, 부품 마모, 재료 lot, 측정계가 그것이고, 그
+원인을 제거하면 같은 setpoint 를 그대로 다시 쓴다. 조건을 바꾸라는 판정은 관리도가 아니라 $C_p$ 와
+$C_{pk}$ 에서 나온다.
+
+Table 6. The two verdicts and the statistic each one comes from
+
+| Question | Statistic | Verdict when it fails |
+|---|---|---|
+| 지금이 baseline 과 같은가 | 관리도의 $\bar{x}$ 와 $s$ | 재현이 깨짐. 원인 제거 후 같은 조건으로 재가동 |
+| 이 조건이 규격을 맞추는가 | $C_p$ 와 $C_{pk}$ | 조건이 부족함. setpoint 변경 대상 |
+
+두 물음은 서로를 대신하지 못한다. 관리 상태인데 $C_{pk}$ 가 모자라면 excursion 이 하나도 없어도 그
+조건은 쓸 수 없고, excursion 이 났어도 원인을 제거해 회복하면 그 조건은 그대로 쓴다. 원인을 제거해도
+같은 excursion 이 되풀이될 때, 그 조건이 상시 있는 변동을 견디지 못한다는 뜻이므로 비로소 조건이 바뀔
+차례이다.
 
 #### Before Calling It
 
