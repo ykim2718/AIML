@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 11 | Created: 2026-09-05 | Updated: 2026-09-05 08:49 CDT
+Rev. 12 | Created: 2026-09-05 | Updated: 2026-09-05 08:58 CDT
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 갑자기
@@ -80,8 +80,8 @@ Table 1. Chart constants and the relative variability of a single s, by subgroup
 
 $$p_{\bar{x}} = 2\Phi\left( -\frac{3}{\rho} \right) \hspace{19em} (5)$$
 
-Table 2. Signal probability of one subgroup when only the spread grows, on limits held at baseline,
-for n = 5
+Table 2. Signal probability and ARL of one subgroup when only the spread grows, on limits held at
+baseline, for n = 5
 
 | Sigma multiplier | s chart | s chart ARL | Mean chart | Mean chart ARL |
 |---:|---:|---:|---:|---:|
@@ -194,18 +194,21 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **Excursion**: 공정이 확립된 거동에서 벗어난 상태이며, 생산을 멈추고 원인을 찾아 제거한 뒤 그
   구간의 생산물을 따로 처분해야 하는 사건.
 - **Gauge R&R**: 측정계의 반복성과 재현성을 나누어 측정 산포를 추정하는 절차.
+- **Geometric distribution**: 성공확률이 일정한 시행을 되풀이할 때 첫 성공이 나오는 시행 번호가
+  따르는 분포이며, 기댓값은 성공확률의 역수이다.
 - **In control**: 관리도에 excursion 의 신호가 없는 상태.
 - **Levene test**: 여러 집단의 분산이 같은지 검정하는 방법.
 - **Nested ANOVA**: 변동을 계층 구조를 따라 성분으로 나누는 분산분석.
 - **ppm**: parts per million. 백만 개당 개수로 적은 불량률.
 - **Standard normal cdf**: 평균 0, 표준편차 1 인 정규분포의 누적분포함수이며 $\Phi$ 로 적는다.
 - **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
+- **Unbiased estimator**: 기댓값이 추정 대상과 같은 추정량.
 
 ## Appendix B. Derivation of Equations (1) to (6)
 
-식 (1) 은 통계량의 정의이므로 유도할 것이 없고, 나머지 다섯은 두 곳에서 나온다. 식 (2) 부터 식 (4)
-까지는 정규모집단에서 $s$ 가 따르는 분포에서 나오고, 식 (5) 와 식 (6) 은 부분군 평균의 정규분포에서
-나온다. 아래는 그 순서를 따라간다.
+식 (1) 은 통계량의 정의이지만 그 분모가 왜 $n-1$ 인지는 따져 둘 값이 있고, 나머지 다섯은 두 곳에서
+나온다. 식 (2) 부터 식 (4) 까지는 정규모집단에서 $s$ 가 따르는 분포에서 나오고, 식 (5) 와 식 (6) 은
+부분군 평균의 정규분포에서 나온다. 아래는 그 순서를 따라간다.
 
 ### B.1. The Divisor of Equation (1)
 
@@ -264,17 +267,19 @@ $$P\left( |Z| \gt \frac{3}{\rho} \right) = 2\Phi\left( -\frac{3}{\rho} \right) \
 
 식 (6) 은 그 넓어진 산포를 새 baseline 으로 받아들인 뒤이다. 한계가
 $\mu_0 \pm 3\rho\sigma/\sqrt{n}$ 로 넓어진 상태에서 평균이 $\delta\sigma$ 만큼 옮겨가면 같은 표준화에서
-$Z \sim N(k, 1)$ 이 되고, $k = \delta\sqrt{n}/\rho$ 는 이동을 넓어진 한계의 폭으로 잰 값이다.
+$Z \sim N(k, 1)$ 이 되고, $k = \delta\sqrt{n}/\rho$ 는 이동을 넓어진 $\bar{x}$ 의 표준편차로 잰
+값이다.
 
 $$P\left( |Z| \gt 3 \right) = \Phi(k - 3) + \Phi(-k - 3) \hspace{19em} (14)$$
 
-부분군은 서로 독립이므로 첫 신호가 나오는 부분군의 번호는 성공확률 $p$ 의 기하분포를 따르고, 그
-기댓값이 식 (6) 의 ARL 이다.
+부분군은 서로 독립이므로, 한 부분군이 신호를 낼 확률을 $p$ 라 하면 첫 신호가 나오는 부분군의 번호는
+기하분포를 따르고, 그 기댓값이 식 (6) 의 ARL 이다.
 
 $$ARL = \sum_{m=1}^{\infty} m (1-p)^{m-1} p = \frac{1}{p} \hspace{19em} (15)$$
 
-식 (13) 을 식 (15) 의 $p$ 로 넣으면 Table 2 의 평균 관리도 두 열이, 식 (14) 를 넣으면 Table 3 이
-나온다. Table 2 의 s 관리도 두 열은 같은 방법을 식 (8) 의 분포에 적용한 것이다.
+식 (13) 이 Table 2 의 평균 관리도 확률 열이고, 그 값을 식 (15) 에 넣으면 옆의 ARL 열이 된다. 식 (14)
+를 같은 방법으로 넣으면 Table 3 이 나오고, Table 2 의 s 관리도 두 열은 식 (8) 의 분포에 같은 절차를
+적용한 것이다.
 
 ## Appendix C. Case Study
 
