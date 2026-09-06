@@ -1,7 +1,7 @@
 > ⚠️ **This is an auto-synced copy. Do not edit here.**
 
 # Automatic Rule Loading via Plugin Marketplace
-Rev. 195 | Created: 2026-08-16 | Updated: 2026-09-06 16:43 UTC
+Rev. 196 | Created: 2026-08-16 | Updated: 2026-09-06 17:04 UTC
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -499,7 +499,7 @@ Desktop interface에만 해당하는 제약이다.
 
 - **Hook**: 지정한 event에 개입하는 실행 지점이다. session 시작 시 동작하는 SessionStart hook과 매 prompt마다 동작하는 UserPromptSubmit hook을 사용한다.
 
-- **kebab-case**: 낱말을 모두 소문자로 적고 사이를 hyphen ( `-` ) 으로 잇는 이름 규격이다. 밑줄과 대문자를 쓰지 않으므로 `yrocket_rules` 가 아니라 `yrocket-rules` 로 적는다.
+- **kebab-case**: 낱말을 모두 소문자로 적고 사이를 hyphen ( `-` ) 으로 잇는 이름 규격이다. 밑줄과 대문자를 쓰지 않으므로 `yrocket_md_doc` 가 아니라 `yrocket-md-doc` 으로 적는다.
 
 - **Machine settings**: `~/.claude/settings.json` 이다. 사용자가 자기 machine에 두는 file이므로 그 machine의 모든 project에 적용되고, git 밖에 있어 machine마다 새로 갖추어야 한다. Web interface에는 존재하지 않는다.
 
