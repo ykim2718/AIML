@@ -2,7 +2,7 @@
 
 # Automatic Rule Loading via Plugin Marketplace
 
-rev. 194
+rev. 195
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 
@@ -114,7 +114,7 @@ component 중 load 시점이 고정된 것은 hook뿐이다. 나머지는 조건
 
 #### Manifest Examples
 
-marketplace와 plugin manifest의 실제 예시는 다음과 같다. marketplace name은 kebab-case 규격이라 밑줄을 쓰지 않는다.
+marketplace와 plugin manifest의 실제 예시는 다음과 같다. marketplace name은 kebab-case 규격이라 밑줄을 쓰지 않는다. catalog의 `plugins` 는 배열이므로, plugin을 여러 개 두면 entry를 나란히 적는다.
 
 ```json
 // .claude-plugin/marketplace.json
@@ -126,6 +126,11 @@ marketplace와 plugin manifest의 실제 예시는 다음과 같다. marketplace
       "name": "<PLUGIN_NAME>",
       "source": "./plugins/<PLUGIN_NAME>",
       "description": "<PLUGIN_DESCRIPTION>"
+    },
+    {
+      "name": "<PLUGIN_NAME_2>",
+      "source": "./plugins/<PLUGIN_NAME_2>",
+      "description": "<PLUGIN_DESCRIPTION_2>"
     }
   ]
 }
@@ -207,7 +212,8 @@ machine settings `~/.claude/settings.json` 에 적는 내용은 다음과 같다
     }
   },
   "enabledPlugins": {
-    "<PLUGIN_NAME>@<MARKETPLACE_NAME>": true
+    "<PLUGIN_NAME>@<MARKETPLACE_NAME>": true,
+    "<PLUGIN_NAME_2>@<MARKETPLACE_NAME>": true
   }
 }
 ```
@@ -219,7 +225,7 @@ settings file에 사람이 적어야 하는 것은 `extraKnownMarketplaces` 와 
 - **`extraKnownMarketplaces`**: marketplace의 이름과 source를 등록한다.
 - **`source.source`**: source type을 지정하며 `github`, `git`, `url`, `npm`, `file`, `directory` 를 지원한다.
 - **`autoUpdate`**: marketplace와 plugin을 session 시작 시 갱신 대상으로 삼는다.
-- **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다.
+- **`enabledPlugins`**: `plugin-name@marketplace-name` 형식의 key를 `true`로 두어 활성화한다. 한 marketplace의 plugin이 여럿이면 쓰려는 plugin마다 한 줄씩 적고, 적지 않은 plugin은 그 repository에서 꺼진 채로 남는다.
 
 방법은 세 가지이다. 앞의 둘은 settings file에 적고, CLI는 file을 거치지 않고 같은 등록과 활성화를 곧바로 한다.
 
@@ -401,7 +407,7 @@ claude plugin list
 claude plugin details <PLUGIN_NAME>@<MARKETPLACE_NAME>
 ```
 
-`details` 결과에 skill과 hook이 나타나면 정상이다.
+`details` 결과에 skill과 hook이 나타나면 정상이다. plugin마다 담은 component가 다르므로 `details` 는 확인할 plugin마다 실행한다.
 
 ### 4.3 Session Content (Web)
 
@@ -450,7 +456,7 @@ remote repository에는 Claude Code가 읽는 경로가 정해져 있다. 그 �
 - **Hook**: `hooks/` 에 rule file을 추가하고 `hooks.json`에 event를 연결한다. UserPromptSubmit에 묶으면 매 prompt마다 조건 없이 context에 들어간다. 같은 file에 SessionStart를 함께 묶을 수 있으며, plugin이 자신을 갱신하는 hook이 그 자리에 놓인다.
 - **Command**: `commands/` 에 md file을 추가하면 file 이름이 slash command 이름이 된다. 사용자가 `/<command-name>` 을 입력할 때만 load 된다.
 - **Agent**: `agents/` 에 md file을 추가한다. subagent의 정의이며, 사용자가 지목하거나 Claude가 일을 넘길 때만 load 된다.
-- **Plugin**: `plugins/` 아래에 새 plugin folder를 만들고 `.claude-plugin/plugin.json`을 둔다. `marketplace.json` 등록이 필요한 유일한 확장이다.
+- **Plugin**: `plugins/` 아래에 새 plugin folder를 만들고 `.claude-plugin/plugin.json`을 둔다. `marketplace.json` 등록이 필요한 유일한 확장이다. plugin은 소비하는 repository가 켜고 끄는 단위이므로, 일부 repository에서만 쓰는 component는 별도 plugin으로 나눈다. 나누면 그 component를 쓰지 않는 repository의 session이 그것을 싣지 않는다.
 - **Skill and reference file**: `skills/<skill-name>/SKILL.md` 를 추가한다. folder 이름이 skill 이름이 되고, 상세 내용은 `references/` 로 분리한다. `description`이 지금 하는 일과 맞을 때 또는 사용자가 `/<skill-name>` 을 입력할 때 load 된다. 작성 방법은 [Appendix D](#appendix-d-skill) 를 본다.
 - **Non-loaded document**: 설계 memo나 참고 자료처럼 Claude Code가 읽을 필요가 없는 문서는 plugin 구조 밖에 둔다. `docs/` 같은 folder는 무시되므로 동작에 영향을 주지 않는다.
 
@@ -564,6 +570,8 @@ session의 prompt에 입력하는 명령이다. 다음 하나는 두 interface�
 ### D.1 Skill
 
 새 rule 묶음은 [2.2](#22-plugin-marketplace-in-git-repository-) 의 구조대로 local repository에 skill folder를 추가해 push 하는 것으로 끝난다. plugin manifest는 수정하지 않아도 되고, push 하면 두 interface의 새 session에 함께 따라온다.
+
+어느 plugin에 둘지는 그 skill을 켜야 하는 repository의 범위로 정한다. 모든 repository가 쓰는 skill은 기존 plugin에 두고, 일부만 쓰는 skill은 [5](#5-extension) 의 기준대로 별도 plugin에 둔다. skill의 정식 이름에는 plugin 이름이 namespace로 붙어 `<PLUGIN_NAME>:<skill-name>` 이 되므로, 옮기면 그 이름도 함께 바뀐다.
 
 file 이름은 반드시 `SKILL.md`이며, folder 이름이 skill 이름이 된다. frontmatter의 `description`이 언제 이 skill을 load 할지 판단하는 근거이므로, 적용 시점을 분명히 적는다.
 
