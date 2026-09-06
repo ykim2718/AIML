@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 12 | Created: 2026-04-25 | Updated: 2026-09-06 02:00 UTC
+Rev. 13 | Created: 2026-04-25 | Updated: 2026-09-05 21:33 CDT
 
 ## 1. Introduction: R² and Its Relation to RSQ
 
@@ -16,9 +16,10 @@ $y$ explained by the model relative to its mean baseline.
 However, a less commonly discussed variant — the **uncentered R²** — replaces
 the mean-based baseline with a zero baseline. This article compares the two,
 derives the uncentered formula, provides a geometric interpretation, and
-discusses when each is appropriate. In particular, we examine whether uncentered
-R² is more suitable for evaluating 1:1-line agreement between $y_{true}$ and
-$\hat{y}$ in same-physical-quantity comparisons
+discusses when each is appropriate, with the Python implementations collected in
+[Appendix B](#appendix-b-python-code). In particular, we examine whether
+uncentered R² is more suitable for evaluating 1:1-line agreement between
+$y_{true}$ and $\hat{y}$ in same-physical-quantity comparisons
 [[3](#ref-3)][[4](#ref-4)].
 
 ## 2. Comparison of the Two Formulas
@@ -249,9 +250,36 @@ $\hat{\mathbf{y}} = \mathbf{y} + c\mathbf{1}$, the uncentered angle widens but
 the centered angle remains unchanged. Therefore, for evaluating absolute
 agreement, uncentered R² responds more sensitively.
 
-## 7. Python Code
+## References
 
-### 7.1 Centered R²
+<a id="ref-1"></a>[1] Draper, N. R., & Smith, H. (1998). [*Applied Regression Analysis*](https://doi.org/10.1002/9781118625590) (3rd ed.). Wiley.<br>
+<a id="ref-2"></a>[2] Eisenhauer, J. G. (2003). [Regression through the origin](https://doi.org/10.1111/1467-9639.00136). *Teaching Statistics*, 25(3), 76–80.<br>
+<a id="ref-3"></a>[3] Kvalseth, T. O. (1985). [Cautionary note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285.<br>
+<a id="ref-4"></a>[4] Legates, D. R., & McCabe, G. J. (1999). [Evaluating the use of "goodness-of-fit" measures in hydrologic and hydroclimatic model validation](https://doi.org/10.1029/1998WR900018). *Water Resources Research*, 35(1), 233–241.<br>
+<a id="ref-5"></a>[5] Strang, G. (2009). [*Introduction to Linear Algebra*](https://wellesleycambridge.com/) (4th ed.). Wellesley-Cambridge Press. ISBN 978-0-9802327-1-4.<br>
+<a id="ref-6"></a>[6] Wooldridge, J. M. (2010). [*Econometric Analysis of Cross Section and Panel Data*](https://mitpress.mit.edu/9780262232586/econometric-analysis-of-cross-section-and-panel-data/) (2nd ed.). MIT Press. ISBN 978-0-262-23258-6.
+
+---
+
+## Appendix A. Terminology
+
+- **CFD** — Computational Fluid Dynamics, the numerical simulation of fluid flow.
+- **centered R²** — the standard R², whose denominator is the sum of squares about the mean of the data.
+- **ESS** — Explained Sum of Squares. In uncentered form, $\sum \hat{y}_i^2$.
+- **FEM** — Finite Element Method, the numerical solution of field problems on a discretized domain.
+- **MAE** — Mean Absolute Error, the mean of the absolute residuals.
+- **MAPE** — Mean Absolute Percentage Error, the mean absolute residual expressed as a percentage of the observation. Undefined where an observation is zero.
+- **OLS** — Ordinary Least Squares, the estimator that minimizes the sum of squared residuals.
+- **RMSE** — Root Mean Squared Error, the square root of the mean squared residual.
+- **RSQ** — the Excel function name for the squared Pearson correlation coefficient, which equals the centered R².
+- **RSS** — Residual Sum of Squares, $\sum e_i^2$.
+- **RTO** — Regression Through the Origin, a regression whose intercept is fixed to zero.
+- **TSS** — Total Sum of Squares. In uncentered form, $\sum y_i^2$; in centered form, $\sum (y_i - \bar{y})^2$.
+- **uncentered R²** — the R² whose denominator is the sum of squares about zero rather than about the mean.
+
+## Appendix B. Python Code
+
+### B.1 Centered R²
 
 ```python
 import numpy as np
@@ -282,7 +310,7 @@ from sklearn.metrics import r2_score
 print(f"sklearn r2:    {r2_score(y_true, y_pred):.6f}")
 ```
 
-### 7.2 Uncentered R²
+### B.2 Uncentered R²
 
 ```python
 def uncentered_r2(y_true, y_pred):
@@ -316,7 +344,7 @@ print(f"  Uncentered R²: {uncentered_r2(y_true, y_pred_biased):.6f}  "
       f"(sensitive to bias)")
 ```
 
-### 7.3 Integrated Evaluation for 1:1-Line Agreement
+### B.3 Integrated Evaluation for 1:1-Line Agreement
 
 ```python
 def evaluate_1_to_1_line_agreement(y_true, y_pred):
@@ -355,30 +383,3 @@ results = evaluate_1_to_1_line_agreement(y_true, y_pred)
 for k, v in results.items():
     print(f"{k:>15s}: {v:.6f}")
 ```
-
-## References
-
-<a id="ref-1"></a>[1] Draper, N. R., & Smith, H. (1998). [*Applied Regression Analysis*](https://doi.org/10.1002/9781118625590) (3rd ed.). Wiley.<br>
-<a id="ref-2"></a>[2] Eisenhauer, J. G. (2003). [Regression through the origin](https://doi.org/10.1111/1467-9639.00136). *Teaching Statistics*, 25(3), 76–80.<br>
-<a id="ref-3"></a>[3] Kvalseth, T. O. (1985). [Cautionary note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285.<br>
-<a id="ref-4"></a>[4] Legates, D. R., & McCabe, G. J. (1999). [Evaluating the use of "goodness-of-fit" measures in hydrologic and hydroclimatic model validation](https://doi.org/10.1029/1998WR900018). *Water Resources Research*, 35(1), 233–241.<br>
-<a id="ref-5"></a>[5] Strang, G. (2009). [*Introduction to Linear Algebra*](https://wellesleycambridge.com/) (4th ed.). Wellesley-Cambridge Press. ISBN 978-0-9802327-1-4.<br>
-<a id="ref-6"></a>[6] Wooldridge, J. M. (2010). [*Econometric Analysis of Cross Section and Panel Data*](https://mitpress.mit.edu/9780262232586/econometric-analysis-of-cross-section-and-panel-data/) (2nd ed.). MIT Press. ISBN 978-0-262-23258-6.
-
----
-
-## Appendix A. Terminology
-
-- **CFD** — Computational Fluid Dynamics, the numerical simulation of fluid flow.
-- **centered R²** — the standard R², whose denominator is the sum of squares about the mean of the data.
-- **ESS** — Explained Sum of Squares. In uncentered form, $\sum \hat{y}_i^2$.
-- **FEM** — Finite Element Method, the numerical solution of field problems on a discretized domain.
-- **MAE** — Mean Absolute Error, the mean of the absolute residuals.
-- **MAPE** — Mean Absolute Percentage Error, the mean absolute residual expressed as a percentage of the observation. Undefined where an observation is zero.
-- **OLS** — Ordinary Least Squares, the estimator that minimizes the sum of squared residuals.
-- **RMSE** — Root Mean Squared Error, the square root of the mean squared residual.
-- **RSQ** — the Excel function name for the squared Pearson correlation coefficient, which equals the centered R².
-- **RSS** — Residual Sum of Squares, $\sum e_i^2$.
-- **RTO** — Regression Through the Origin, a regression whose intercept is fixed to zero.
-- **TSS** — Total Sum of Squares. In uncentered form, $\sum y_i^2$; in centered form, $\sum (y_i - \bar{y})^2$.
-- **uncentered R²** — the R² whose denominator is the sum of squares about zero rather than about the mean.

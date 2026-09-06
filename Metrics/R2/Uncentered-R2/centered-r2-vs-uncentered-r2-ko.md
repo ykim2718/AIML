@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R² (Korean)
-Rev. 0 | Created: 2026-09-05 | Updated: 2026-09-05 21:04 CDT
+Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 21:33 CDT
 
 ## 1. Introduction: R² and Its Relation to RSQ
 
@@ -13,9 +13,10 @@ engineering 보고서에서 R² 는 흔히 **RSQ** (Excel 함수 이름 `RSQ()`)
 
 그런데 덜 다루어지는 변형인 **uncentered R²** 는 평균 기준의 baseline 을 0 기준의
 baseline 으로 바꾼다. 이 글은 둘을 견주고, uncentered 식을 유도하고, 기하학적
-해석을 주고, 각각이 언제 알맞은지를 다룬다. 특히 같은 물리량끼리 견주는 자리에서
-$y_{true}$ 와 $\hat{y}$ 의 1:1 line 일치를 평가하는 데 uncentered R² 가 더
-적합한지를 살핀다
+해석을 주고, 각각이 언제 알맞은지를 다루며, Python 구현은
+[Appendix B](#appendix-b-python-code) 에 모았다. 특히 같은 물리량끼리 견주는
+자리에서 $y_{true}$ 와 $\hat{y}$ 의 1:1 line 일치를 평가하는 데 uncentered R² 가
+더 적합한지를 살핀다
 [[3](#ref-3)][[4](#ref-4)].
 
 ## 2. Comparison of the Two Formulas
@@ -236,9 +237,36 @@ $\hat{\mathbf{y}} = \mathbf{y} + c\mathbf{1}$ 아래에서 uncentered 각은 벌
 centered 각은 그대로이다. 따라서 절대 일치를 평가할 때 uncentered R² 가 더
 민감하게 반응한다.
 
-## 7. Python Code
+## References
 
-### 7.1 Centered R²
+<a id="ref-1"></a>[1] Draper, N. R., & Smith, H. (1998). [*Applied Regression Analysis*](https://doi.org/10.1002/9781118625590) (3rd ed.). Wiley.<br>
+<a id="ref-2"></a>[2] Eisenhauer, J. G. (2003). [Regression through the origin](https://doi.org/10.1111/1467-9639.00136). *Teaching Statistics*, 25(3), 76–80.<br>
+<a id="ref-3"></a>[3] Kvalseth, T. O. (1985). [Cautionary note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285.<br>
+<a id="ref-4"></a>[4] Legates, D. R., & McCabe, G. J. (1999). [Evaluating the use of "goodness-of-fit" measures in hydrologic and hydroclimatic model validation](https://doi.org/10.1029/1998WR900018). *Water Resources Research*, 35(1), 233–241.<br>
+<a id="ref-5"></a>[5] Strang, G. (2009). [*Introduction to Linear Algebra*](https://wellesleycambridge.com/) (4th ed.). Wellesley-Cambridge Press. ISBN 978-0-9802327-1-4.<br>
+<a id="ref-6"></a>[6] Wooldridge, J. M. (2010). [*Econometric Analysis of Cross Section and Panel Data*](https://mitpress.mit.edu/9780262232586/econometric-analysis-of-cross-section-and-panel-data/) (2nd ed.). MIT Press. ISBN 978-0-262-23258-6.
+
+---
+
+## Appendix A. Terminology
+
+- **CFD** — Computational Fluid Dynamics. 유체 흐름의 수치 모사.
+- **centered R²** — 표준 R² 이며, 분모가 자료 평균 둘레의 제곱합인 것.
+- **ESS** — Explained Sum of Squares. Uncentered 형태에서는 $\sum \hat{y}_i^2$.
+- **FEM** — Finite Element Method. 이산화된 영역에서 장 문제를 수치로 푸는 방법.
+- **MAE** — Mean Absolute Error. 잔차 절댓값의 평균.
+- **MAPE** — Mean Absolute Percentage Error. 잔차 절댓값을 관측값에 대한 백분율로 적은 것의 평균. 관측값이 0 인 자리에서는 정의되지 않는다.
+- **OLS** — Ordinary Least Squares. 잔차 제곱합을 최소로 하는 추정량.
+- **RMSE** — Root Mean Squared Error. 잔차 제곱 평균의 제곱근.
+- **RSQ** — Pearson 상관계수의 제곱을 뜻하는 Excel 함수 이름이며, centered R² 와 같다.
+- **RSS** — Residual Sum of Squares. $\sum e_i^2$.
+- **RTO** — Regression Through the Origin. 절편을 0 으로 고정한 회귀.
+- **TSS** — Total Sum of Squares. Uncentered 형태에서는 $\sum y_i^2$, centered 형태에서는 $\sum (y_i - \bar{y})^2$.
+- **uncentered R²** — 분모가 평균이 아니라 0 둘레의 제곱합인 R².
+
+## Appendix B. Python Code
+
+### B.1 Centered R²
 
 ```python
 import numpy as np
@@ -269,7 +297,7 @@ from sklearn.metrics import r2_score
 print(f"sklearn r2:    {r2_score(y_true, y_pred):.6f}")
 ```
 
-### 7.2 Uncentered R²
+### B.2 Uncentered R²
 
 ```python
 def uncentered_r2(y_true, y_pred):
@@ -303,7 +331,7 @@ print(f"  Uncentered R²: {uncentered_r2(y_true, y_pred_biased):.6f}  "
       f"(sensitive to bias)")
 ```
 
-### 7.3 Integrated Evaluation for 1:1-Line Agreement
+### B.3 Integrated Evaluation for 1:1-Line Agreement
 
 ```python
 def evaluate_1_to_1_line_agreement(y_true, y_pred):
@@ -342,30 +370,3 @@ results = evaluate_1_to_1_line_agreement(y_true, y_pred)
 for k, v in results.items():
     print(f"{k:>15s}: {v:.6f}")
 ```
-
-## References
-
-<a id="ref-1"></a>[1] Draper, N. R., & Smith, H. (1998). [*Applied Regression Analysis*](https://doi.org/10.1002/9781118625590) (3rd ed.). Wiley.<br>
-<a id="ref-2"></a>[2] Eisenhauer, J. G. (2003). [Regression through the origin](https://doi.org/10.1111/1467-9639.00136). *Teaching Statistics*, 25(3), 76–80.<br>
-<a id="ref-3"></a>[3] Kvalseth, T. O. (1985). [Cautionary note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285.<br>
-<a id="ref-4"></a>[4] Legates, D. R., & McCabe, G. J. (1999). [Evaluating the use of "goodness-of-fit" measures in hydrologic and hydroclimatic model validation](https://doi.org/10.1029/1998WR900018). *Water Resources Research*, 35(1), 233–241.<br>
-<a id="ref-5"></a>[5] Strang, G. (2009). [*Introduction to Linear Algebra*](https://wellesleycambridge.com/) (4th ed.). Wellesley-Cambridge Press. ISBN 978-0-9802327-1-4.<br>
-<a id="ref-6"></a>[6] Wooldridge, J. M. (2010). [*Econometric Analysis of Cross Section and Panel Data*](https://mitpress.mit.edu/9780262232586/econometric-analysis-of-cross-section-and-panel-data/) (2nd ed.). MIT Press. ISBN 978-0-262-23258-6.
-
----
-
-## Appendix A. Terminology
-
-- **CFD** — Computational Fluid Dynamics. 유체 흐름의 수치 모사.
-- **centered R²** — 표준 R² 이며, 분모가 자료 평균 둘레의 제곱합인 것.
-- **ESS** — Explained Sum of Squares. Uncentered 형태에서는 $\sum \hat{y}_i^2$.
-- **FEM** — Finite Element Method. 이산화된 영역에서 장 문제를 수치로 푸는 방법.
-- **MAE** — Mean Absolute Error. 잔차 절댓값의 평균.
-- **MAPE** — Mean Absolute Percentage Error. 잔차 절댓값을 관측값에 대한 백분율로 적은 것의 평균. 관측값이 0 인 자리에서는 정의되지 않는다.
-- **OLS** — Ordinary Least Squares. 잔차 제곱합을 최소로 하는 추정량.
-- **RMSE** — Root Mean Squared Error. 잔차 제곱 평균의 제곱근.
-- **RSQ** — Pearson 상관계수의 제곱을 뜻하는 Excel 함수 이름이며, centered R² 와 같다.
-- **RSS** — Residual Sum of Squares. $\sum e_i^2$.
-- **RTO** — Regression Through the Origin. 절편을 0 으로 고정한 회귀.
-- **TSS** — Total Sum of Squares. Uncentered 형태에서는 $\sum y_i^2$, centered 형태에서는 $\sum (y_i - \bar{y})^2$.
-- **uncentered R²** — 분모가 평균이 아니라 0 둘레의 제곱합인 R².
