@@ -1,5 +1,5 @@
 # R² (Coefficient of Determination)
-Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-05 00:18 CDT
+Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-05 21:14 CDT
 
 > This folder covers the one metric that reports a fit as a fraction of variance, and what that
 > fraction is actually a fraction of.
@@ -16,11 +16,13 @@ on a wide dataset and low on a narrow one.
 
 Every document here follows from that split. Two of them stay inside the standard definition and
 ask what moves it: what the variance components do to the ratio, and where the metric sits among
-the alternatives that answer a different question. The other three change something. One replaces
-the denominator with a stated baseline so the yardstick stops moving. One computes the ratio once
-per posterior draw so the answer arrives with an interval. One measures the relationship between
-R² and a percentage error metric and finds no fixed one. A sixth stays with the tool rather than
-the metric, and asks what scikit-learn returns when the target has more than one column.
+the alternatives that answer a different question. The other four change something. One replaces
+the denominator with a stated baseline so the yardstick stops moving. One drops the centering out
+of the denominator so the baseline becomes the origin rather than the mean. One computes the ratio
+once per posterior draw so the answer arrives with an interval. One measures the relationship
+between R² and a percentage error metric and finds no fixed one. A seventh stays with the tool
+rather than the metric, and asks what scikit-learn returns when the target has more than one
+column.
 
 The material is written for regression models evaluated on engineering data, so the worked
 examples are virtual metrology, sensor traces and process lots.
@@ -34,6 +36,7 @@ Table 1. Documents in this folder
 | [R2-SStot/variance-components.md](R2-SStot/variance-components.md) | English, [Korean](R2-SStot/variance-components-ko.md) | It partitions the total variation into the explained and the residual part, then shows what each one does to the ratio: raising the residual variance drives R² down, and widening the predictor variance drives it up with the relationship unchanged. It closes by sweeping the coefficient of variation of a sample on the 1-to-1 line, which shows the same dependence from the data side. |
 | [Regression-Metrics/regression-metrics.md](Regression-Metrics/regression-metrics.md) | English, [Korean](Regression-Metrics/regression-metrics-ko.md) | It places R² in a taxonomy of regression metrics divided into mean-based, variance-based and agreement-based families, reads each against the $y=x$ line, and sets out the low variance effect that makes the variance-based family collapse on a nearly constant signal. |
 | [R2-Denominator/r2-denominator.md](R2-Denominator/r2-denominator.md) | English, [Korean](R2-Denominator/r2-denominator-ko.md) | It reads the denominator as the error of a baseline, so that stating it is choosing that baseline. It gives three ways to state it — the training mean, a fixed reference dispersion such as a spec spread, and a baseline model answering per sample — shows that a fixed dispersion reduces to one minus the squared ratio of the root mean squared error to the spec, and sets out what has to be reported alongside the value. |
+| [Uncentered-R2/centered-r2-vs-uncentered-r2.md](Uncentered-R2/centered-r2-vs-uncentered-r2.md) | English | It sets the two forms of the ratio side by side, the centered one dividing by the deviation from the mean and the uncentered one by the deviation from the origin, and derives the uncentered decomposition from the orthogonality of the least squares residual. It reads both geometrically as the Pythagorean theorem on different vectors, gives the relation between them, and sets out where each belongs: regression through the origin and the econometric diagnostic statistics for the uncentered form, agreement with the 1:1 line for same-quantity predictions. |
 | [Bayesian-R2/bayesian-r2.md](Bayesian-R2/bayesian-r2.md) | English, [Korean](Bayesian-R2/bayesian-r2-ko.md) | It computes one R² per posterior draw to obtain R² as a distribution, uses the Gelman form whose denominator is the sum of the explained and the residual variance so no draw leaves [0, 1], and reads the resulting credible interval as the confidence in the explanatory power. A worked example on eight points carries every number. |
 | [R2-MAPE/r2-vs-mape.md](R2-MAPE/r2-vs-mape.md) | Korean | It asks whether R² and the mean absolute percentage error convert into each other and finds that they do not. The monotone trend always holds, but the curve itself depends on what the data generation held fixed, and three designs give three different expressions. |
 | [sklearn_r2/r2-multioutput.md](sklearn_r2/r2-multioutput.md) | English | It sets out what the multioutput argument of `r2_score` does with the per-output scores, gives the weighted average every setting is a case of, and shows one problem whose reported score runs from −1.17 to 0.99 depending on that one keyword. It closes with the constant output, where the denominator is zero and force_finite decides the answer. |
