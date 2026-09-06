@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 11 | Created: 2026-04-25 | Updated: 2026-09-06 01:35 UTC
+Rev. 12 | Created: 2026-04-25 | Updated: 2026-09-06 02:00 UTC
 
 ## 1. Introduction: R² and Its Relation to RSQ
 
@@ -358,12 +358,12 @@ for k, v in results.items():
 
 ## References
 
-<a id="ref-1"></a>[1] Draper, N. R., & Smith, H. (1998). *Applied Regression Analysis* (3rd ed.). Wiley.<br>
-<a id="ref-2"></a>[2] Eisenhauer, J. G. (2003). Regression through the origin. *Teaching Statistics*, 25(3), 76–80.<br>
-<a id="ref-3"></a>[3] Kvalseth, T. O. (1985). Cautionary note about R². *The American Statistician*, 39(4), 279–285.<br>
-<a id="ref-4"></a>[4] Legates, D. R., & McCabe, G. J. (1999). Evaluating the use of "goodness-of-fit" measures in hydrologic and hydroclimatic model validation. *Water Resources Research*, 35(1), 233–241.<br>
-<a id="ref-5"></a>[5] Strang, G. (2009). *Introduction to Linear Algebra* (4th ed.). Wellesley-Cambridge Press.<br>
-<a id="ref-6"></a>[6] Wooldridge, J. M. (2010). *Econometric Analysis of Cross Section and Panel Data* (2nd ed.). MIT Press.
+<a id="ref-1"></a>[1] Draper, N. R., & Smith, H. (1998). [*Applied Regression Analysis*](https://doi.org/10.1002/9781118625590) (3rd ed.). Wiley.<br>
+<a id="ref-2"></a>[2] Eisenhauer, J. G. (2003). [Regression through the origin](https://doi.org/10.1111/1467-9639.00136). *Teaching Statistics*, 25(3), 76–80.<br>
+<a id="ref-3"></a>[3] Kvalseth, T. O. (1985). [Cautionary note about R²](https://doi.org/10.1080/00031305.1985.10479448). *The American Statistician*, 39(4), 279–285.<br>
+<a id="ref-4"></a>[4] Legates, D. R., & McCabe, G. J. (1999). [Evaluating the use of "goodness-of-fit" measures in hydrologic and hydroclimatic model validation](https://doi.org/10.1029/1998WR900018). *Water Resources Research*, 35(1), 233–241.<br>
+<a id="ref-5"></a>[5] Strang, G. (2009). [*Introduction to Linear Algebra*](https://wellesleycambridge.com/) (4th ed.). Wellesley-Cambridge Press. ISBN 978-0-9802327-1-4.<br>
+<a id="ref-6"></a>[6] Wooldridge, J. M. (2010). [*Econometric Analysis of Cross Section and Panel Data*](https://mitpress.mit.edu/9780262232586/econometric-analysis-of-cross-section-and-panel-data/) (2nd ed.). MIT Press. ISBN 978-0-262-23258-6.
 
 ---
 
