@@ -1,6 +1,6 @@
 #!/bin/bash
 # .claude/hooks/session-start.sh
-# Install the yrocket-rules plugin so its skills load in a web session.
+# Install the marketplace plugins so their skills load in a web session.
 #
 # .claude/settings.json names the marketplace and enables the plugin, but a
 # declaration is not an install. A web session gets a fresh container whose
@@ -18,7 +18,7 @@ set -uo pipefail
 command -v claude >/dev/null 2>&1 || exit 0
 
 MARKETPLACE='ykim2718/Claude-Configuration'
-PLUGIN='yrocket-rules@claude-configuration'
+PLUGINS='yrocket-md-doc@claude-configuration yrocket-coding@claude-configuration'
 REPO_URL='https://github.com/ykim2718/Claude-Configuration.git'
 LOG="$HOME/.claude/plugin-bootstrap.log"
 
@@ -45,7 +45,9 @@ mkdir -p "$(dirname "$LOG")"
   # Both are idempotent: re-adding a marketplace and re-installing a plugin
   # that are already present succeed and change nothing.
   claude plugin marketplace add "$MARKETPLACE" || echo 'marketplace add FAILED'
-  claude plugin install "$PLUGIN" || echo 'install FAILED'
+  for p in $PLUGINS; do
+    claude plugin install "$p" || echo "install FAILED: $p"
+  done
   claude plugin list
 } >>"$LOG" 2>&1
 

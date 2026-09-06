@@ -8,7 +8,8 @@
     }
   },
   "enabledPlugins": {
-    "yrocket-rules@claude-configuration": true
+    "yrocket-md-doc@claude-configuration": true,
+    "yrocket-coding@claude-configuration": true
   },
   "env": {
     "TZ": "America/Chicago"

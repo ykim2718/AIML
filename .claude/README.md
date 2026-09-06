@@ -1,7 +1,7 @@
 # Claude Rules Setup
 Rev. 9 | Created: 2026-08-03 | Updated: 2026-08-31 22:49 CDT
 
-이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-rules` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과 그것을 설치하는 hook 을 가진다.
+이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-md-doc` 과 `yrocket-coding` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과 그것을 설치하는 hook 을 가진다.
 
 ## 1. Layout
 
@@ -30,7 +30,8 @@ Catalog 는 이 repo 에 없다. `.claude-plugin/marketplace.json` 은 plugin �
     }
   },
   "enabledPlugins": {
-    "yrocket-rules@claude-configuration": true
+    "yrocket-md-doc@claude-configuration": true,
+    "yrocket-coding@claude-configuration": true
   }
 }
 ```
