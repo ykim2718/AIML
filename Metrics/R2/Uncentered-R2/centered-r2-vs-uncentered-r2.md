@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 13 | Created: 2026-04-25 | Updated: 2026-09-05 21:33 CDT
+Rev. 14 | Created: 2026-04-25 | Updated: 2026-09-05 21:47 CDT
 
 ## 1. Introduction: R² and Its Relation to RSQ
 
@@ -263,19 +263,19 @@ agreement, uncentered R² responds more sensitively.
 
 ## Appendix A. Terminology
 
-- **CFD** — Computational Fluid Dynamics, the numerical simulation of fluid flow.
-- **centered R²** — the standard R², whose denominator is the sum of squares about the mean of the data.
-- **ESS** — Explained Sum of Squares. In uncentered form, $\sum \hat{y}_i^2$.
-- **FEM** — Finite Element Method, the numerical solution of field problems on a discretized domain.
-- **MAE** — Mean Absolute Error, the mean of the absolute residuals.
-- **MAPE** — Mean Absolute Percentage Error, the mean absolute residual expressed as a percentage of the observation. Undefined where an observation is zero.
-- **OLS** — Ordinary Least Squares, the estimator that minimizes the sum of squared residuals.
-- **RMSE** — Root Mean Squared Error, the square root of the mean squared residual.
-- **RSQ** — the Excel function name for the squared Pearson correlation coefficient, which equals the centered R².
-- **RSS** — Residual Sum of Squares, $\sum e_i^2$.
-- **RTO** — Regression Through the Origin, a regression whose intercept is fixed to zero.
-- **TSS** — Total Sum of Squares. In uncentered form, $\sum y_i^2$; in centered form, $\sum (y_i - \bar{y})^2$.
-- **uncentered R²** — the R² whose denominator is the sum of squares about zero rather than about the mean.
+- **centered R²**: the standard R², whose denominator is the sum of squares about the mean of the data.
+- **CFD**: Computational Fluid Dynamics, the numerical simulation of fluid flow.
+- **ESS**: Explained Sum of Squares. In uncentered form, $\sum \hat{y}_i^2$.
+- **FEM**: Finite Element Method, the numerical solution of field problems on a discretized domain.
+- **MAE**: Mean Absolute Error, the mean of the absolute residuals.
+- **MAPE**: Mean Absolute Percentage Error, the mean absolute residual expressed as a percentage of the observation. Undefined where an observation is zero.
+- **OLS**: Ordinary Least Squares, the estimator that minimizes the sum of squared residuals.
+- **RMSE**: Root Mean Squared Error, the square root of the mean squared residual.
+- **RSQ**: the Excel function name for the squared Pearson correlation coefficient, which equals the centered R².
+- **RSS**: Residual Sum of Squares, $\sum e_i^2$.
+- **RTO**: Regression Through the Origin, a regression whose intercept is fixed to zero.
+- **TSS**: Total Sum of Squares. In uncentered form, $\sum y_i^2$; in centered form, $\sum (y_i - \bar{y})^2$.
+- **uncentered R²**: the R² whose denominator is the sum of squares about zero rather than about the mean.
 
 ## Appendix B. Python Code
 

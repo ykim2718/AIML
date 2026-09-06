@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R² (Korean)
-Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 21:33 CDT
+Rev. 2 | Created: 2026-09-05 | Updated: 2026-09-05 21:47 CDT
 
 ## 1. Introduction: R² and Its Relation to RSQ
 
@@ -250,19 +250,19 @@ centered 각은 그대로이다. 따라서 절대 일치를 평가할 때 uncent
 
 ## Appendix A. Terminology
 
-- **CFD** — Computational Fluid Dynamics. 유체 흐름의 수치 모사.
-- **centered R²** — 표준 R² 이며, 분모가 자료 평균 둘레의 제곱합인 것.
-- **ESS** — Explained Sum of Squares. Uncentered 형태에서는 $\sum \hat{y}_i^2$.
-- **FEM** — Finite Element Method. 이산화된 영역에서 장 문제를 수치로 푸는 방법.
-- **MAE** — Mean Absolute Error. 잔차 절댓값의 평균.
-- **MAPE** — Mean Absolute Percentage Error. 잔차 절댓값을 관측값에 대한 백분율로 적은 것의 평균. 관측값이 0 인 자리에서는 정의되지 않는다.
-- **OLS** — Ordinary Least Squares. 잔차 제곱합을 최소로 하는 추정량.
-- **RMSE** — Root Mean Squared Error. 잔차 제곱 평균의 제곱근.
-- **RSQ** — Pearson 상관계수의 제곱을 뜻하는 Excel 함수 이름이며, centered R² 와 같다.
-- **RSS** — Residual Sum of Squares. $\sum e_i^2$.
-- **RTO** — Regression Through the Origin. 절편을 0 으로 고정한 회귀.
-- **TSS** — Total Sum of Squares. Uncentered 형태에서는 $\sum y_i^2$, centered 형태에서는 $\sum (y_i - \bar{y})^2$.
-- **uncentered R²** — 분모가 평균이 아니라 0 둘레의 제곱합인 R².
+- **centered R²**: 표준 R² 이며, 분모가 자료 평균 둘레의 제곱합인 것.
+- **CFD**: Computational Fluid Dynamics. 유체 흐름의 수치 모사.
+- **ESS**: Explained Sum of Squares. Uncentered 형태에서는 $\sum \hat{y}_i^2$.
+- **FEM**: Finite Element Method. 이산화된 영역에서 장 문제를 수치로 푸는 방법.
+- **MAE**: Mean Absolute Error. 잔차 절댓값의 평균.
+- **MAPE**: Mean Absolute Percentage Error. 잔차 절댓값을 관측값에 대한 백분율로 적은 것의 평균. 관측값이 0 인 자리에서는 정의되지 않는다.
+- **OLS**: Ordinary Least Squares. 잔차 제곱합을 최소로 하는 추정량.
+- **RMSE**: Root Mean Squared Error. 잔차 제곱 평균의 제곱근.
+- **RSQ**: Pearson 상관계수의 제곱을 뜻하는 Excel 함수 이름이며, centered R² 와 같다.
+- **RSS**: Residual Sum of Squares. $\sum e_i^2$.
+- **RTO**: Regression Through the Origin. 절편을 0 으로 고정한 회귀.
+- **TSS**: Total Sum of Squares. Uncentered 형태에서는 $\sum y_i^2$, centered 형태에서는 $\sum (y_i - \bar{y})^2$.
+- **uncentered R²**: 분모가 평균이 아니라 0 둘레의 제곱합인 R².
 
 ## Appendix B. Python Code
 
