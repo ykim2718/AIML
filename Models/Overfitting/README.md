@@ -1,5 +1,5 @@
 # Overfitting
-Rev. 0 | Created: 2026-09-07 | Updated: 2026-09-07 00:33 CDT
+Rev. 1 | Created: 2026-09-07 | Updated: 2026-09-07 16:33 CDT
 
 이 폴더는 overfitting 을 자료의 모양에 따라 나누어 다룬다. 열이 행보다 많은 자료와 행이 열보다 많은 자료는 같은 이름의 실패를 서로 다른 이유로 겪으므로, 방어도 검증도 다르게 설계해야 한다.
 
@@ -10,7 +10,7 @@ Table 1. Documents in this folder
 | # | Document | Subject |
 |---|----------|---------|
 | 1 | [overfitting-in-wide-data.md](overfitting-in-wide-data.md) | 열의 수가 행의 수보다 크거나 비슷한 자료. 세 가지 원인과 다섯 갈래의 방어, 그리고 그 효과를 정직하게 재는 절차 |
-| 2 | [overfitting-in-long-data.md](overfitting-in-long-data.md) | 행의 수가 열의 수보다 훨씬 큰 자료. Model 용량, 서로 닮은 행, 절차의 누수라는 세 경로와 그 각각의 장치 |
+| 2 | [overfitting-in-long-data.md](overfitting-in-long-data.md) | 행의 수가 열의 수보다 훨씬 큰 자료. Model 용량, 서로 닮은 행, 절차의 누수라는 세 경로와 그 각각의 장치, 그리고 어느 경로인지 가려내는 검사 |
 
 ## 2. Which One To Read
 

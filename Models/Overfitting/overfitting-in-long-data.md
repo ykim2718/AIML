@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 0 | Created: 2026-09-07 | Updated: 2026-09-07 00:28 CDT
+Rev. 1 | Created: 2026-09-07 | Updated: 2026-09-07 16:33 CDT
 
 ## 1. Purpose
 
@@ -81,11 +81,35 @@ Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 �
 
 같은 test 자료로 여러 후보를 반복해서 재면 그 자료는 더 이상 test 자료가 아니다. 후보를 고르는 데 쓰인 순간 그것은 검증 자료가 되며, 반복 횟수만큼 낙관적으로 기운다. 최종 보고용 자료는 한 번만 열고, 그 전까지의 모든 비교는 4.2 의 분할 안에서 끝낸다.
 
-## 5. Comparison
+## 5. Detection
 
-Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 2 가 그 대비이다.
+Overfitting 은 하나의 숫자로 확인되지 않고, 3 장의 경로마다 다른 검사로 확인한다. 가장 먼저 돌릴 것은 둘째 검사이다. 같은 자료에 분할만 바꾸어 두 번 재면 끝나고, 실무에서 가장 큰 경로를 바로 드러내기 때문이다. Table 2 가 검사와 그것이 가리키는 경로이다.
 
-Table 2. The same failure from two different causes
+Table 2. Checks that confirm overfitting
+
+| # | Check | What it reveals | Next step |
+|---|-------|-----------------|-----------|
+| 1 | Training error against held-out error | Model capacity | Capacity limit in 4.1 |
+| 2 | Random split against group split, same data and same model | Dependence between rows | Group-aware split in 4.2 |
+| 3 | Error on groups held out entirely | The size of the gap the report hides | Report this number instead |
+| 4 | Learning curve along new groups against rows inside groups | Whether more rows will help | Collection direction in 4.3 |
+| 5 | Permutation test over the whole procedure | Bias in the procedure itself | Rebuild the procedure |
+| 6 | Error compared between the earlier and later time segments | Leakage through the split | Split by time order |
+| 7 | One column carrying almost the whole fit | Leakage through a column | Check when that column is written |
+
+둘째와 셋째 검사는 같은 자료에 분할만 바꾸어 다시 재는 것으로 끝난다. 3.3 의 자료에서 두 값의 비는 1.9 였고, group 을 지킨 분할의 값이 새 group 에서의 실제 오차와 거의 같았다. 그러므로 보고할 값은 group 분할 쪽이며, 두 값이 처음부터 거의 같게 나오면 행 사이의 의존은 이 자료에서 문제가 아니어서 남는 경로는 용량과 누수 둘이다. 첫째 검사는 3.2 가 든 세 징후를 그대로 보는 것이고, 용량을 키워 가며 held-out 오차가 돌아서는 지점이 곧 4.1 이 멈출 자리이다.
+
+넷째 검사는 learning curve 를 두 방향으로 나누어 그린다. 4.3 의 모의 실험에서는 새 group 을 더하는 쪽에서만 오차가 내려갔다. 대상 자료에서 그 모양이 재현되면 표본이 모자란 것이고, 두 곡선이 모두 평평하면 행을 더 모으는 일로는 얻을 것이 없다. 이 검사는 overfitting 의 유무와 함께 다음에 무엇을 살지도 알려 준다.
+
+다섯째 검사는 응답을 무작위로 섞은 자료에 절차 전체를 다시 태운다. Model 학습만이 아니라 열 선택과 hyperparameter 조정까지 포함해야 하며, 그러고도 성능이 우연 수준으로 떨어지지 않으면 그 성능은 자료가 아니라 절차에서 나온 것이다.
+
+마지막 두 검사는 성격이 다르다. 3.4 에서 보았듯 누수는 held-out 오차에 나타나지 않으므로, 오차 대신 자료의 구조를 본다. 시간축으로 앞뒤 구간을 나누어 잰 성능이 크게 다르거나 한 열이 model 을 거의 혼자 설명하면, 그 열이 결과가 정해지기 전에 기록되는지를 자료를 만든 공정에서 확인한다 [[2](#ref-2)].
+
+## 6. Comparison
+
+Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 3 이 그 대비이다.
+
+Table 3. The same failure from two different causes
 
 | # | Aspect | Wide data | Long data |
 |---|--------|-----------|-----------|
@@ -96,7 +120,7 @@ Table 2. The same failure from two different causes
 
 두 자료를 가르는 물음은 하나이다. 자유도가 열에서 오는가, model 의 유연성에서 오는가. 앞이면 열을 줄이거나 계수를 묶고, 뒤이면 용량을 묶고 분할을 고친다. 열도 많고 행도 많은 자료는 두 방어를 함께 쓰며, 그때도 분할은 언제나 group 을 따른다.
 
-## 6. Further Work
+## 7. Further Work
 
 - **Group 구조를 자동으로 진단하는 절차**: 자료의 group 후보마다 $\rho$ 를 재어 유효 표본을 추정하고, 그 값으로 분할 방식을 정하는 단계를 표준 흐름에 넣는 일. 지금인 이유는 이 저장소의 자료가 wafer 와 lot 의 식별자를 이미 함께 저장하고 있어 $\rho$ 를 계산할 재료가 갖추어졌기 때문이다. 필요한 것은 group 식별자가 붙은 과거 자료와 그 위에서 $\rho$ 를 재는 script 이다.
 - **시간 간격의 폭을 자기상관에서 정하는 규칙**: 4.2 의 간격을 눈대중이 아니라 잔차 자기상관이 사라지는 지점으로 정하는 일. 지금인 이유는 간격을 좁게 잡아 생긴 낙관적 오차가 시계열 자료에서 반복 관찰되기 때문이다. 필요한 것은 대상 계열의 자기상관 추정과, 그 값을 분할 절차에 넘기는 규약이다.
@@ -123,8 +147,10 @@ Table 2. The same failure from two different causes
 - **hyperparameter**: 학습으로 정해지지 않고 밖에서 정해 주는 값.
 - **intracluster correlation**: Group 안의 두 행이 서로 닮은 정도. 전체 분산 가운데 group 사이 분산이 차지하는 몫.
 - **leakage**: 학습 시점에 알 수 없는 정보가 model 이나 그 평가에 섞여 들어가는 일.
+- **learning curve**: 학습에 쓴 행의 수에 따른 오차의 변화를 그린 곡선.
 - **long data**: 행의 수가 열의 수보다 훨씬 큰 자료.
 - **nested cross-validation**: 바깥 loop 이 성능을 재고 안쪽 loop 이 hyperparameter 를 고르는 cross-validation.
 - **offset**: Group 마다 다르게 더해지는 값. 그 group 의 행 전체를 위나 아래로 옮긴다.
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
+- **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
