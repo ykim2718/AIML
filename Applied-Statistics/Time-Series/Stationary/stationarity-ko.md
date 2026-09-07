@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 13 | Created: 2026-09-07 | Updated: 2026-09-07 17:30 CDT
+Rev. 14 | Created: 2026-09-07 | Updated: 2026-09-07 18:05 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -35,23 +35,41 @@ $$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + h, \ldots, t
 실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이며, 이것을 weak
 stationarity 또는 wide-sense stationarity 라 한다. 여기서 2차 통계량은 평균 같은 1차 moment 와 분산이나
 autocovariance 같은 2차 moment 를 함께 이르는 말이다. Skewness 나 kurtosis 처럼 3차 이상의 moment 는
-여기에 들지 않으므로, 그것들은 시각에 따라 움직여도 무방하다. 조건은 두 가지다.
+여기에 들지 않으므로, 그것들은 시각에 따라 움직여도 무방하다. 조건은 세 가지다.
+
+#### Constant Mean
 
 $$E[x(t)] = \mu \hspace{19em} (2)$$
 
-$$R(t,\, t+\tau) = E\big[(x(t)-\mu)\,(x(t+\tau)-\mu)\big] = R(\tau) \hspace{19em} (3)$$
+모든 시점에서 기댓값이 같은 상수 $\mu$ 이다. 자료에 오르거나 내리는 추세가 없다는 뜻이며, 값은 한
+수준 둘레에서 오르내린다.
 
-식 (2) 는 평균이 시각에 의존하지 않는다는 것이고, 식 (3) 은 두 시점의 autocovariance 가 두 시점이
-어디인지가 아니라 그 시차 $\tau$ 에만 의존한다는 것이다. 분산은 $\sigma^2 = R(0) \lt \infty$ 로 유한해야
-한다.
+#### Constant Variance
 
-여기서 흔한 오해 하나를 짚어 둔다. 정상성을 평균과 표준편차가 일정한 상태로만 기억하면 식 (3) 의
-대부분이 빠진다. 식 (3) 은 시차와 시각 두 축을 함께 다룬다. 분산이 일정하다는 말은 그중 $\tau = 0$
-이라는 시차 하나를 골라 그 자리의 $R(0)$ 이 어느 시각에나 같음을 확인했다는 뜻이고, 식 (3) 은 나머지
-모든 시차에서도 같은 불변을 요구한다. 평균과 분산이 일정하면서도 $\tau \neq 0$ 에서의 상관이 시각에
-따라 변하는 신호는 얼마든지 있고, 그런 신호에 스펙트럼 해석을 걸면 결과는 나오지만 그 결과가 어느
-시각의 것인지 말할 수 없다. 정상성이 요구하는 것은 평균과 분산 두 수치가 일정한 것이 아니라, 식 (2)
-의 평균 불변과 모든 시차에 걸친 $R(\tau)$ 의 불변이다.
+$$\mathrm{Var}\big(x(t)\big) = E\big[(x(t)-\mu)^2\big] = \sigma^2 \lt \infty \hspace{19em} (3)$$
+
+변동의 폭이 시간이 흐르면서 커지거나 줄지 않고 일정하다. 그 폭은 유한해야 한다.
+
+#### Autocovariance of the Lag Only
+
+$$R(t,\, t+\tau) = E\big[(x(t)-\mu)\,(x(t+\tau)-\mu)\big] = R(\tau) \hspace{19em} (4)$$
+
+두 시점 사이의 공분산이 절대 시각 $t$ 가 아니라 시차 $\tau$ 로만 정해진다. $t = 1$ 과 $t = 3$ 사이의
+관계가 $t = 100$ 과 $t = 102$ 사이의 관계와 같아야 한다는 뜻이다.
+
+Table 1. The three conditions of weak stationarity
+
+| Condition | Requirement | What it rules out |
+|-----------|-------------|-------------------|
+| Constant mean | $\mu_t = \mu$ | 추세와 수준 이동 |
+| Constant variance | $\sigma_t^2 = \sigma^2$ | 변동 폭의 확대나 축소 |
+| Lag-only autocovariance | $R(t,\, t+\tau) = R(\tau)$ | 자기상관 구조의 변화 |
+
+세 조건이 나란히 놓이지만 둘째는 셋째에 딸려 있다. 식 (3) 은 식 (4) 에서 $\tau = 0$ 인 자리이므로,
+식 (4) 가 서면 식 (3) 은 따라 선다. 그런데도 따로 적는 것은 평균과 분산 둘만 확인하고 멈추는 일이
+흔하기 때문이다. 그렇게 멈추면 $\tau \neq 0$ 인 나머지 시차가 통째로 빠지고, 상관 구조가 시각에 따라
+변하는 신호를 정상으로 읽게 된다. 그런 신호에 스펙트럼 해석을 걸면 결과는 나오지만 그 결과가 어느
+시각의 것인지 말할 수 없다.
 
 Gaussian process 에서는 이 구별이 사라진다. 결합분포가 평균 vector (1차 moment) 와 covariance matrix
 (2차 moment) 의 2차 통계량으로 완전히 결정되므로, weak stationarity 가 곧 strict stationarity 이다
@@ -68,7 +86,7 @@ Gaussian process 에서는 이 구별이 사라진다. 결합분포가 평균 ve
 영향을 주지 않는 상태를 말한다. $t = 0$ 에서 10 초를 재든 $t = 100$ 에서 10 초를 재든 두 기록의 확률적
 성질이 같으면, 시작 시각은 자료의 어느 수치에도 나타나지 않는다.
 
-Table 1. Stationary and non-stationary states
+Table 2. Stationary and non-stationary states
 
 | State | Example |
 |-------|---------|
@@ -86,7 +104,7 @@ Fig 1. One stationary record and three ways a record stops being one
 (a) 에서는 두 통계량이 모두 제자리에 머문다. (b) 는 이동평균이 중간에서 계단을 밟고, (c) 는 이동평균이
 그대로인 채 띠만 벌어지며, (d) 는 이동평균이 어디에도 머물지 않는다. 여기서 눈여겨볼 것은 (b) 의
 산포가 (a) 와 다르지 않고 (c) 의 평균도 (a) 처럼 움직이지 않는다는 점이다. 한 수치만 보아서는 둘 중
-하나를 정상으로 읽게 된다. 식 (3) 이 어느 한 시차가 아니라 모든 시차의 관계를 조건으로 삼은 이유가
+하나를 정상으로 읽게 된다. 식 (4) 가 어느 한 시차가 아니라 모든 시차의 관계를 조건으로 삼은 이유가
 그림에 그대로 나와 있다.
 
 ### 2.3 Distinctions
@@ -107,12 +125,12 @@ Fig 1. One stationary record and three ways a record stops being one
 실무에서 "정상이다" 라는 말은 서로 다른 여러 가지를 가리킨다. 어느 형태를 뜻하는지 정해 두어야
 그다음에 고를 도구가 정해진다.
 
-Table 2. Forms of stationarity and where each is met
+Table 3. Forms of stationarity and where each is met
 
 | Form | Condition | Typical case |
 |------|-----------|--------------|
 | Strict | 모든 결합분포의 시간 이동 불변 | 이론상의 기준. 검증 대상이 아님 |
-| Weak | 평균 일정. Autocovariance 가 시차만의 함수 | 스펙트럼 해석과 선형 필터 설계의 전제 |
+| Weak | 평균 일정. 분산 일정. Autocovariance 가 시차만의 함수 | 스펙트럼 해석과 선형 필터 설계의 전제 |
 | Cyclostationary | 통계량이 시간에 대해 주기적 | 회전기계 진동. 변조된 통신 신호 |
 | Quasi-stationary | 짧은 창 안에서만 근사적으로 정상 | 운전 조건이 천천히 변하는 설비 |
 | Difference-stationary | 차분하면 정상. Unit root 보유 | 누적되는 drift. 계측기 offset 의 표류 |
@@ -121,13 +139,13 @@ Table 2. Forms of stationarity and where each is met
 마지막 두 형태는 겉보기가 비슷하지만 처방이 반대이므로 구별이 중요하다. Difference-stationary 과정은
 충격이 영구히 남는 누적 구조이고,
 
-$$x_t = x_{t-1} + \varepsilon_t \hspace{19em} (4)$$
+$$x_t = x_{t-1} + \varepsilon_t \hspace{19em} (5)$$
 
 trend-stationary 과정은 결정론적 추세 둘레에서 되돌아오는 구조이다.
 
-$$x_t = a + b\,t + \varepsilon_t \hspace{19em} (5)$$
+$$x_t = a + b\,t + \varepsilon_t \hspace{19em} (6)$$
 
-식 (4) 를 추세로 보고 회귀 잔차를 취하면 잔차에 강한 자기상관이 남고, 식 (5) 를 차분하면 없던
+식 (5) 를 추세로 보고 회귀 잔차를 취하면 잔차에 강한 자기상관이 남고, 식 (6) 을 차분하면 없던
 음의 상관이 생긴다. 어느 쪽인지 먼저 가리고 나서 손을 대야 한다.
 
 Cyclostationary 과정은 통계량이 아무렇게나 변하는 것이 아니라 주기라는 구조를 하나 더 가진 것이며,
@@ -140,7 +158,7 @@ Cyclostationary 과정은 통계량이 아무렇게나 변하는 것이 아니�
 
 정상성 위에 ergodicity 를 더하면 시간 평균이 집단 평균과 같아진다.
 
-$$\lim_{T \to \infty} \frac{1}{T} \int_{0}^{T} x(t)\,dt = E[x(t)] = \mu \hspace{19em} (6)$$
+$$\lim_{T \to \infty} \frac{1}{T} \int_{0}^{T} x(t)\,dt = E[x(t)] = \mu \hspace{19em} (7)$$
 
 공학적으로 이것은 시험 비용을 결정하는 성질이다. 설비 한 대를 오래 관측한 결과가 같은 설비 여러
 대를 잠깐 관측한 결과와 같으므로, 한 대만 놓고도 모집단의 성능을 말할 수 있다. 다만 2.3 에서 적었듯
@@ -148,18 +166,19 @@ $$\lim_{T \to \infty} \frac{1}{T} \int_{0}^{T} x(t)\,dt = E[x(t)] = \mu \hspace{
 
 ### 4.2 Spectral Analysis
 
-정상 과정에서 autocovariance 함수와 power spectral density 는 Fourier 변환 쌍을 이룬다
+신호를 FFT 로 주파수 영역에서 읽을 수 있게 해 주는 전제 조건이 정상성이다. 정상 과정에서
+autocovariance 함수와 power spectral density 가 Fourier 변환 쌍을 이루기 때문이다
 [[4](#ref-4)].
 
-$$S(f) = \int_{-\infty}^{\infty} R(\tau)\, e^{-j 2\pi f \tau}\, d\tau \hspace{19em} (7)$$
+$$S(f) = \int_{-\infty}^{\infty} R(\tau)\, e^{-j 2\pi f \tau}\, d\tau \hspace{19em} (8)$$
 
-$$\sigma^2 = R(0) = \int_{-\infty}^{\infty} S(f)\, df \hspace{19em} (8)$$
+$$\sigma^2 = R(0) = \int_{-\infty}^{\infty} S(f)\, df \hspace{19em} (9)$$
 
-식 (8) 이 스펙트럼을 공학의 언어로 옮겨 준다. 신호의 분산이 주파수축 위에 어떻게 나뉘어 있는지를
+식 (9) 가 스펙트럼을 공학의 언어로 옮겨 준다. 신호의 분산이 주파수축 위에 어떻게 나뉘어 있는지를
 $S(f)$ 가 보여 주므로, 어느 대역이 진동 에너지를 얼마나 갖고 있는지를 그대로 읽을 수 있다.
 
-비정상 신호에서 무너지는 것이 무엇인지는 정확히 말해 둘 필요가 있다. 유한한 기록의 DFT 는 언제나
-계산되고 그래프도 그려진다. 무너지는 것은 계산이 아니라 해석이다. 식 (7) 의 $R(\tau)$ 가 시각에 따라
+그 전제가 깨졌을 때 무너지는 것이 무엇인지는 정확히 말해 둘 필요가 있다. 유한한 기록의 DFT 는 언제나
+계산되고 그래프도 그려진다. 무너지는 것은 계산이 아니라 해석이다. 식 (8) 의 $R(\tau)$ 가 시각에 따라
 달라지면 추정한 스펙트럼이 어느 시각의 스펙트럼인지 말할 수 없게 되고, 기록을 길게 잡을수록 추정이
 좋아진다는 보장도 사라진다. 그래서 비정상 신호에는 창을 짧게 끊어 각 창을 정상으로 보는 STFT 나
 wavelet 같은 시간-주파수 기법을 쓴다.
@@ -181,7 +200,7 @@ wavelet 같은 시간-주파수 기법을 쓴다.
 
 ### 5.2 Checks
 
-Table 3. Checks for stationarity on a single record
+Table 4. Checks for stationarity on a single record
 
 | Check | Null hypothesis | What it catches |
 |-------|-----------------|-----------------|
@@ -199,9 +218,9 @@ Split-record comparison 은 도구가 없어도 되는 검사이므로 먼저 �
 
 ADF test 는 다음 회귀에서 $\gamma = 0$ 을 귀무가설로 놓고 검정한다 [[5](#ref-5)].
 
-$$\Delta x_t = \alpha + \beta t + \gamma\, x_{t-1} + \sum_{i=1}^{p} \delta_i\, \Delta x_{t-i} + \varepsilon_t \hspace{19em} (9)$$
+$$\Delta x_t = \alpha + \beta t + \gamma\, x_{t-1} + \sum_{i=1}^{p} \delta_i\, \Delta x_{t-i} + \varepsilon_t \hspace{19em} (10)$$
 
-$\gamma = 0$ 이면 식 (4) 의 누적 구조가 남아 있다는 뜻이므로, 귀무가설의 기각이 정상성 쪽의 증거가
+$\gamma = 0$ 이면 식 (5) 의 누적 구조가 남아 있다는 뜻이므로, 귀무가설의 기각이 정상성 쪽의 증거가
 된다. KPSS test 는 귀무가설을 반대로 놓아 정상성을 귀무가설로 삼는다 [[6](#ref-6)].
 
 귀무가설이 서로 반대이므로 둘을 함께 돌려 네 가지 조합으로 읽는다. ADF 를 기각하고 KPSS 를 기각하지
@@ -219,7 +238,7 @@ $\gamma = 0$ 이면 식 (4) 의 누적 구조가 남아 있다는 뜻이므로, 
 
 비정상이 확인되었다고 해서 기록을 버리지는 않는다. 비정상의 원인이 무엇인지에 따라 처방이 정해진다.
 
-Table 4. Cause of non-stationarity and the corresponding treatment
+Table 5. Cause of non-stationarity and the corresponding treatment
 
 | Cause | Treatment |
 |-------|-----------|
@@ -289,9 +308,9 @@ Table 4. Cause of non-stationarity and the corresponding treatment
 - **time-invariance**: 측정을 시작한 시각이 결과의 확률적 성질에 영향을 주지 않는 성질.
 - **transient**: Steady-state operation 에 이르기 전이나 조건이 바뀌는 동안 나타나는 과도 구간의 신호.
 - **trend-stationary**: 결정론적 추세를 제거한 뒤에 정상이 되는 성질.
-- **unit root**: 충격이 감쇠하지 않고 누적되는 자기회귀 구조. 식 (4) 가 그 기본형이다.
+- **unit root**: 충격이 감쇠하지 않고 누적되는 자기회귀 구조. 식 (5) 가 그 기본형이다.
 - **wavelet**: 시간과 주파수를 함께 국소화한 기저로 신호를 분해하는 해석.
-- **weak stationarity**: 평균이 일정하고 autocovariance 가 시차만의 함수인 성질. Wide-sense stationarity 라고도 한다.
+- **weak stationarity**: 평균과 분산이 일정하고 autocovariance 가 시차만의 함수인 성질. Wide-sense stationarity 라고도 한다.
 - **white noise**: 서로 다른 시점의 값이 상관되지 않고 스펙트럼이 평탄한 정상 과정.
 - **Wiener filter**: 신호와 잡음의 2차 통계량으로부터 계수가 정해지는 선형 최적 필터.
 
@@ -331,7 +350,7 @@ spectral density 로부터 피로 손상을 누적한다.
 있어 수십 년 기록 전체를 하나의 정상 과정으로 보기 어렵다. 실무는 그래서 자료를 sea state 처럼
 조건이 고른 구간으로 나누어 각 구간을 정상으로 취급하고, 구간별 손상을 발생 빈도로 가중해 합친다.
 
-Table 5. What each domain assumes to be time-invariant
+Table 6. What each domain assumes to be time-invariant
 
 | Domain | Time-invariant quantity | Tool that depends on it |
 |--------|-------------------------|-------------------------|
