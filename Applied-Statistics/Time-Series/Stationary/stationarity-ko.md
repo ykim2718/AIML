@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 6 | Created: 2026-09-07 | Updated: 2026-09-07 14:35 CDT
+Rev. 7 | Created: 2026-09-07 | Updated: 2026-09-07 15:00 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -32,9 +32,9 @@ $$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + \tau, \ldots
 
 이 조건은 유한한 기록으로 확인할 수 없다. 모든 차수의 결합분포를 요구하는데 손에 있는 것은 한 개의
 실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이며, 이것을 weak
-stationarity 또는 wide-sense stationarity 라 한다. 여기서 2차 통계량은 평균 같은 1차 적률 (moment) 과
-분산이나 autocovariance 같은 2차 적률을 함께 이르는 말이다. 왜도나 첨도처럼 3차 이상의 적률은 여기에
-들지 않으므로, 그것들은 시각에 따라 움직여도 무방하다. 조건은 두 가지다.
+stationarity 또는 wide-sense stationarity 라 한다. 여기서 2차 통계량은 평균 같은 1차 moment 와 분산이나
+autocovariance 같은 2차 moment 를 함께 이르는 말이다. Skewness 나 kurtosis 처럼 3차 이상의 moment 는
+여기에 들지 않으므로, 그것들은 시각에 따라 움직여도 무방하다. 조건은 두 가지다.
 
 $$E[x(t)] = \mu \hspace{19em} (2)$$
 
@@ -49,8 +49,9 @@ $$R(t,\, t+\tau) = E\big[(x(t)-\mu)\,(x(t+\tau)-\mu)\big] = R(\tau) \hspace{19em
 스펙트럼 해석을 걸면 결과는 나오지만 그 결과가 어느 시각의 것인지 말할 수 없다. 정상성이 요구하는
 것은 두 수치가 아니라 상관 구조 전체의 시간 불변성이다.
 
-Gaussian process 에서는 이 구별이 사라진다. 결합분포가 평균 vector 와 covariance matrix 로 완전히
-결정되므로, weak stationarity 가 곧 strict stationarity 이다 [[1](#ref-1)].
+Gaussian process 에서는 이 구별이 사라진다. 결합분포가 평균 vector (1차 moment) 와 covariance matrix
+(2차 moment) 의 2차 통계량으로 완전히 결정되므로, weak stationarity 가 곧 strict stationarity 이다
+[[1](#ref-1)].
 
 ### 2.2 The Physical Reading
 
@@ -313,7 +314,7 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 - **Gaussian process**: 임의의 유한 개 시점을 뽑아도 그 결합분포가 정규분포인 확률과정.
 - **innovation**: 확률과정의 각 시점에 새로 들어오는, 과거와 무관한 무작위 입력.
 - **KPSS test**: 정상성을 귀무가설로 놓는 검정. ADF test 와 반대 방향에서 같은 물음을 본다.
-- **moment**: 분포의 모양을 차수별로 요약한 값. 1차는 평균, 2차는 분산, 3차는 왜도, 4차는 첨도이다.
+- **moment**: 분포의 모양을 차수별로 요약한 값. 1차는 평균, 2차는 분산, 3차는 skewness, 4차는 kurtosis 이다.
 - **order tracking**: 회전수 변동을 없애기 위해 신호를 시간축이 아니라 회전 각도축에서 다시 sampling 하는 처리.
 - **power spectral density**: 신호의 분산이 주파수축 위에 어떻게 분포하는지를 나타내는 함수.
 - **quasi-stationarity**: 짧은 구간 안에서만 근사적으로 정상인 성질.
