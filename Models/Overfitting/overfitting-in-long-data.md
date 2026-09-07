@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 1 | Created: 2026-09-07 | Updated: 2026-09-07 16:33 CDT
+Rev. 2 | Created: 2026-09-07 | Updated: 2026-09-07 17:05 CDT
 
 ## 1. Purpose
 
@@ -67,7 +67,7 @@ Fig 1(b) 가 그 결과이다. 200 개 group 에 group 마다 25 행씩 둔 5000
 
 ### 4.2 Splitting That Matches The Grouping
 
-분할은 자료가 묶인 방식을 따른다. Group 이 있으면 group 단위로 나누고, 시간 순서가 있으면 과거로 학습해 미래를 검증하며, 두 구간 사이에 자기상관이 미치는 만큼의 간격을 둔다 [[4](#ref-4)]. 무엇을 group 으로 볼지는 자료를 만든 공정이 정한다. 같은 wafer 의 측점, 같은 lot 의 wafer, 같은 설비의 lot 가 모두 후보이며, 예측이 새로운 무엇에 대해 이루어질지가 판단 기준이다.
+분할은 자료가 묶인 방식을 따른다. Group 이 있으면 group 단위로 나누고, 시간 순서가 있으면 과거로 학습해 미래를 검증하며, 두 구간 사이에 자기상관 (autocorrelation) 이 미치는 만큼의 간격을 둔다 [[4](#ref-4)]. 무엇을 group 으로 볼지는 자료를 만든 공정이 정한다. 같은 wafer 의 측점, 같은 lot 의 wafer, 같은 설비의 lot 가 모두 후보이며, 예측이 새로운 무엇에 대해 이루어질지가 판단 기준이다.
 
 Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 나누는 nested cross-validation 도 함께 쓴다 [[5](#ref-5)]. 안쪽과 바깥쪽 모두 같은 group 규칙을 따라야 하며, 한쪽만 지키면 그 한쪽에서 다시 새어 들어온다.
 
@@ -83,19 +83,41 @@ Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 �
 
 ## 5. Detection
 
-Overfitting 은 하나의 숫자로 확인되지 않고, 3 장의 경로마다 다른 검사로 확인한다. 가장 먼저 돌릴 것은 둘째 검사이다. 같은 자료에 분할만 바꾸어 두 번 재면 끝나고, 실무에서 가장 큰 경로를 바로 드러내기 때문이다. Table 2 가 검사와 그것이 가리키는 경로이다.
+Overfitting 은 하나의 숫자로 확인되지 않고 3 장의 경로마다 다른 검사로 확인하며, 그 가운데 어느 검사가 필요한지는 자료가 vector data 인지 trace data 인지가 정한다.
 
-Table 2. Checks that confirm overfitting
+### 5.1 Vector Data And Trace Data
 
-| # | Check | What it reveals | Next step |
-|---|-------|-----------------|-----------|
-| 1 | Training error against held-out error | Model capacity | Capacity limit in 4.1 |
-| 2 | Random split against group split, same data and same model | Dependence between rows | Group-aware split in 4.2 |
-| 3 | Error on groups held out entirely | The size of the gap the report hides | Report this number instead |
-| 4 | Learning curve along new groups against rows inside groups | Whether more rows will help | Collection direction in 4.3 |
-| 5 | Permutation test over the whole procedure | Bias in the procedure itself | Rebuild the procedure |
-| 6 | Error compared between the earlier and later time segments | Leakage through the split | Split by time order |
-| 7 | One column carrying almost the whole fit | Leakage through a column | Check when that column is written |
+두 모양은 한 대상이 몇 행을 남기는지로 갈린다. Vector data 는 한 대상이 한 행을 남기고 그 행이 대상의 특징을 담은 vector 인 자료이며, trace data 는 한 대상이 시간이나 위치를 따라 여러 행을 남기고 그 행들이 하나의 자취를 이루는 자료이다. 같은 공정에서 lot 마다 요약값 한 줄을 남기면 앞이고, chamber 의 sensor 를 초마다 기록하면 뒤이다.
+
+$n \gg p$ 가 뜻하는 바도 둘에서 다르다. Vector data 의 $n$ 은 대상의 수이지만 trace data 의 $n$ 은 대상의 수에 자취의 길이를 곱한 값이므로, 행을 늘리기 쉬운 쪽이 곧 3.3 의 문제를 처음부터 안고 있는 쪽이다. Table 2 가 두 모양의 차이이다.
+
+Table 2. Two shapes of long data
+
+| # | Aspect | Vector data | Trace data |
+|---|--------|-------------|------------|
+| 1 | One row | One object | One sample point of one object |
+| 2 | Rows per object | One | Many, ordered by time or position |
+| 3 | Group | Absent, or an origin shared by several objects | The trace itself |
+| 4 | m in equation (1) | 1 | The length of the trace |
+| 5 | Dominant path | Model capacity and leakage | Dependent rows |
+
+식 (1) 에 그대로 넣어 보면 차이가 보인다. Vector data 는 $m = 1$ 이므로 $\rho$ 가 얼마이든 유효 표본이 행의 수와 같지만, 자취의 길이가 25 인 trace data 는 3.3 에서 본 대로 행의 수의 십분의 일 아래로 내려간다. 행이 대상의 요약값이 아니라 자취의 한 점이라는 사실 하나가 그 차이를 만든다.
+
+### 5.2 Checks
+
+검사는 일곱이며, 자료의 모양이 그 가운데 무엇을 돌릴지 정한다. Table 3 이 그 일곱과 각각이 가리키는 경로이다.
+
+Table 3. Checks that confirm overfitting
+
+| # | Check | What it reveals | Where it applies | Next step |
+|---|-------|-----------------|------------------|-----------|
+| 1 | Training error against held-out error | Model capacity | Both shapes | Capacity limit in 4.1 |
+| 2 | Random split against group split, same data and same model | Dependence between rows | Trace data, and vector data with a shared origin | Group-aware split in 4.2 |
+| 3 | Error on groups held out entirely | The size of the gap the report hides | Same as check 2 | Report this number instead |
+| 4 | Learning curve along new groups against rows inside groups | Whether more rows will help | Trace data | Collection direction in 4.3 |
+| 5 | Permutation test over the whole procedure | Bias in the procedure itself | Both shapes | Rebuild the procedure |
+| 6 | Error compared between the earlier and later time segments | Leakage through the split | Trace data | Split by time order |
+| 7 | One column carrying almost the whole fit | Leakage through a column | Both shapes | Check when that column is written |
 
 둘째와 셋째 검사는 같은 자료에 분할만 바꾸어 다시 재는 것으로 끝난다. 3.3 의 자료에서 두 값의 비는 1.9 였고, group 을 지킨 분할의 값이 새 group 에서의 실제 오차와 거의 같았다. 그러므로 보고할 값은 group 분할 쪽이며, 두 값이 처음부터 거의 같게 나오면 행 사이의 의존은 이 자료에서 문제가 아니어서 남는 경로는 용량과 누수 둘이다. 첫째 검사는 3.2 가 든 세 징후를 그대로 보는 것이고, 용량을 키워 가며 held-out 오차가 돌아서는 지점이 곧 4.1 이 멈출 자리이다.
 
@@ -105,11 +127,19 @@ Table 2. Checks that confirm overfitting
 
 마지막 두 검사는 성격이 다르다. 3.4 에서 보았듯 누수는 held-out 오차에 나타나지 않으므로, 오차 대신 자료의 구조를 본다. 시간축으로 앞뒤 구간을 나누어 잰 성능이 크게 다르거나 한 열이 model 을 거의 혼자 설명하면, 그 열이 결과가 정해지기 전에 기록되는지를 자료를 만든 공정에서 확인한다 [[2](#ref-2)].
 
+#### Vector Data
+
+Vector data 에서는 둘째·셋째·넷째·여섯째 검사가 대개 비어 있다. 대상마다 한 행이므로 자취가 없고, 무작위 분할이 그대로 대상 단위 분할이기 때문이다. 남는 것은 첫째·다섯째·일곱째이며, 이 자료에서 held-out 오차가 정직하지 않게 나왔다면 원인은 용량이거나 누수이다. 다만 대상들이 같은 lot 이나 같은 설비에서 나왔다면 그 식별자가 group 이 되므로, 그때는 trace data 와 같은 일곱 검사를 그대로 쓴다.
+
+#### Trace Data
+
+Trace data 에서는 일곱 검사가 모두 필요하며, 둘째와 여섯째를 그 순서로 먼저 돌린다. 자취 하나가 곧 group 이므로 둘째가 유효 표본의 크기를 드러내고, 여섯째가 자취 안의 시간 순서를 지켰는지를 드러낸다. 두 검사는 서로를 대신하지 못한다. 자취를 group 으로 지켜 나누어도 학습 구간과 검증 구간이 시간으로 섞여 있으면 누수는 그대로 남는다.
+
 ## 6. Comparison
 
-Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 3 이 그 대비이다.
+Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 4 가 그 대비이다.
 
-Table 3. The same failure from two different causes
+Table 4. The same failure from two different causes
 
 | # | Aspect | Wide data | Long data |
 |---|--------|-----------|-----------|
@@ -137,6 +167,7 @@ Table 3. The same failure from two different causes
 
 ## Appendix A. Terminology
 
+- **autocorrelation**: 한 계열의 값이 시간 간격을 두고 자기 자신과 닮은 정도.
 - **capacity**: Model 이 만들어 낼 수 있는 함수의 다양함. 클수록 자료를 더 잘 따라가고 더 잘 외운다.
 - **cross-validation**: 자료를 여러 fold 로 나누어 한 fold 를 남기고 학습한 뒤 그 fold 로 평가하는 일을 돌아가며 반복하는 절차.
 - **early stopping**: Held-out 오차가 더 내려가지 않는 지점에서 학습을 멈추는 방법.
@@ -154,3 +185,5 @@ Table 3. The same failure from two different causes
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
+- **trace data**: 한 대상이 시간이나 위치를 따라 남긴 여러 행으로 이루어진 자료.
+- **vector data**: 한 대상이 한 행을 남기는 자료.
