@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 16 | Created: 2026-09-07 | Updated: 2026-09-07 19:05 CDT
+Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-07 19:20 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -240,14 +240,14 @@ $\gamma = 0$ 이면 식 (5) 의 누적 구조가 남아 있다는 뜻이므로, 
 
 Table 5. Cause of non-stationarity and the corresponding treatment
 
-| Cause | Treatment |
-|-------|-----------|
-| 결정론적 추세 | 추세 회귀 후 잔차 사용 |
-| Unit root drift | 차분 [[7](#ref-7)] |
-| 수준에 비례하는 분산 | 로그 변환 또는 Box-Cox 변환 |
-| 운전 조건의 변화 | 조건별 분할 후 구간마다 별도 해석 |
-| 회전수 변동 | Order tracking 으로 각도축에서 다시 sampling |
-| 본질적인 시변 구조 | STFT, wavelet, evolutionary spectrum [[3](#ref-3)] |
+| # | Cause | Treatment |
+|---|-------|-----------|
+| 1 | 결정론적 추세 | 추세 회귀 후 잔차 사용 |
+| 2 | Unit root drift | 차분 [[7](#ref-7)] |
+| 3 | 수준에 비례하는 분산 | 로그 변환 또는 Box-Cox 변환 |
+| 4 | 운전 조건의 변화 | 조건별 분할 후 구간마다 별도 해석 |
+| 5 | 회전수 변동 | Order tracking 으로 각도축에서 다시 sampling |
+| 6 | 본질적인 시변 구조 | STFT, wavelet, evolutionary spectrum [[3](#ref-3)] |
 
 마지막으로 방향을 하나 뒤집어 둔다. 비정상성은 제거해야 할 결함만이 아니라 그 자체가 정보인 경우가
 많다. 시동 구간의 transient 는 정속 운전에서 보이지 않는 공진을 드러내고, 계측값의 완만한 drift 는
