@@ -1,160 +1,13 @@
-# PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 1 | Created: 2026-09-06 | Updated: 2026-09-06 19:33 CDT
+"""Fit a second-order response surface through PLS and locate its stationary point.
 
-RSM approximates a process response by a second-order polynomial and reads the best operating condition off the stationary point of that surface; it has been the standard form of process optimization since Box and Wilson set it out [[1](#ref-1)]. PLS projects the predictors onto the directions of largest covariance with the response, so that regression and reduction finish in one pass even where the variables are entangled or outnumber the observations [[3](#ref-3)]. PLS-RSM, the subject of this document, is the two laid over each other: PLS rather than OLS fitted to an input matrix expanded to second order.
+Two designs are run against the same true surface: a rotatable central composite design, where the
+quadratic terms are nearly orthogonal, and a run of correlated operating data, where they are not.
+The comparison against OLS on the same expanded matrix is the point of the script.
 
-The name comes first. PLS-RSM is not an established method name in the literature. It is what process optimization papers have called the pairing when they use both, so this document treats it not as one algorithm but as a **set of design choices**. What changes at each of those choices is the content of the document.
+Changelog:
+- 0.0.0.2026.9.6: initial release
+"""
 
-## 1. Scope
-
-- Covered: the procedure that fits a second-order surface with PLS, the choice of component count, the recovery of the surface and the reading of its stationary point, and what the combination actually buys.
-- Not covered: the derivation of the PLS algorithm, the optimality theory of experimental design itself, nonlinear PLS in general [[5](#ref-5)].
-- Assumed: at least one response $y$, continuous process factors as inputs, and factors that are either entangled with one another or numerous.
-
-## 2. Why The Two Are Combined
-
-The standard RSM procedure fits the second-order model by OLS.
-
-$$\hat{y} = b_0 + \mathbf{x}^{\top}\mathbf{b} + \mathbf{x}^{\top}\mathbf{B}\mathbf{x}$$
-
-Here $\mathbf{b}$ is the vector of first-order coefficients and $\mathbf{B}$ the symmetric matrix holding the square and interaction terms. With $k$ factors the count of coefficients to estimate grows to $1 + k + k(k+1)/2$, which is 28 at $k = 6$ and 66 at $k = 10$. OLS requires $(\mathbf{X}^{\top}\mathbf{X})^{-1}$, so it breaks in two places. With fewer runs than coefficients the inverse does not exist at all, and with entangled columns it exists but the variance of the coefficients inflates, so the stationary point moves far on a small disturbance of the data.
-
-PLS asks for no such inverse. It finds one component direction $\mathbf{w}$ at a time under the objective below, then looks for the next direction in the residual left after removing the score of the one it found [[2](#ref-2)].
-
-$$\max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w},\, y)^2$$
-
-The component count $A$ is the only hyperparameter and the only regularisation strength, and raising $A$ makes PLS converge on OLS. That fixes the character of the combination: PLS-RSM does not replace OLS so much as choose, through $A$, where to stand between OLS and a reduced solution.
-
-## 3. The Expanded Input Matrix
-
-The first step of the procedure is to widen the input to second order. A row $\mathbf{x}$ of $k$ factors expands into the columns below.
-
-Table 1. Columns of the expanded matrix
-
-| Block | Columns | Count |
-|-------|---------|-------|
-| Linear | $x_1, \ldots, x_k$ | $k$ |
-| Square | $x_1^2, \ldots, x_k^2$ | $k$ |
-| Interaction | $x_i x_j,\ i \lt j$ | $k(k-1)/2$ |
-
-This expansion fixes the second half of the combination's character. Even where the original factors are independent, $x_i$ and $x_i^2$ are correlated, and without centring that correlation is severe. In other words, **the expansion itself manufactures the multicollinearity.** Coding the factors so that the centre of the region sits at zero is the RSM convention for that reason, and the convention holds whether or not PLS is used.
-
-## 4. Fitting And Choosing The Component Count
-
-PLS is fitted to the expanded matrix and the component count is chosen. That count is the only adjusting handle the method has, so the way it is chosen is the character of the model.
-
-- Choose the $A$ that minimises the cross-validated RMSE. Designed data has few rows, so one fold moves the estimate a long way, and the $A$ that is chosen can change with the random split into folds.
-- The rank of the expanded matrix caps $A$; past it no variance is left for a component to explain and the algorithm divides by zero.
-- Raising $A$ to the rank makes PLS identical to OLS. A situation where the count is drawn to its maximum is a signal in itself: the reason for using PLS has gone.
-
-Where the contribution of a variable has to be read, VIP is read alongside. VIP collects the share of the response each variable explains across the component space, and by convention a variable above 1 is taken as important [[6](#ref-6)]. In an expanded matrix, though, $x_i$, $x_i^2$ and $x_i x_j$ are scored separately, so the importance of one factor has to be read over the columns that factor takes part in.
-
-## 5. Recovering The Surface
-
-What PLS returns is not a loading in component space but a regression coefficient in the expanded variable space, so recovering the surface is a matter of putting those coefficients where they belong. Pairing column names with coefficients builds $\mathbf{b}$ and $\mathbf{B}$.
-
-$$b_i = \hat{\beta}_{x_i}, \qquad B_{ii} = \hat{\beta}_{x_i^2}, \qquad B_{ij} = B_{ji} = \tfrac{1}{2}\hat{\beta}_{x_i x_j}$$
-
-The interaction coefficient is halved because $\mathbf{x}^{\top}\mathbf{B}\mathbf{x}$ counts $B_{ij}$ and $B_{ji}$ twice. Miss that one line and the stationary point lands, quietly, in the wrong place.
-
-The stationary point follows from setting the gradient to zero.
-
-$$\mathbf{x}^{\ast} = -\tfrac{1}{2}\mathbf{B}^{-1}\mathbf{b}$$
-
-What that point is, the eigenvalues of $\mathbf{B}$ decide [[8](#ref-8)]. All negative is a maximum, all positive a minimum, mixed signs a saddle. A saddle means there is no optimum inside the experimental region, and then what should be reported is not the stationary point but the direction of the ridge leading out of the region.
-
-With several responses, a surface is built for each and the surfaces are tied together into one objective by a desirability function [[7](#ref-7)]. PLS handles several responses in a single model as well, but at the stage of locating the optimum each response has its own target, so a separate rule for tying them is still needed.
-
-## 6. What The Combination Buys
-
-What the combination buys can be checked. The script in [Appendix B](#appendix-b-python-example) takes one true surface and replicates two ways of collecting data 200 times each, measuring how far the stationary point located by PLS and by OLS falls from the true optimum.
-
-- **Central composite design**: a rotatable design of factorial points, axial points and centre points [[1](#ref-1)], whose expanded matrix has a median condition number of 3.6. The other standard second-order design is Box-Behnken, which differs in using only three levels [[4](#ref-4)].
-- **Correlated operating data**: observational data whose factors move together, with a median condition number of 337.2 after the same expansion.
-
-<img src="README_fig/pls-rsm-surfaces.png" width="1000" style="max-width: 100%;" alt="Fig 1">
-<p>Fig 1. Fitted surfaces and the spread of the located optimum over 200 replicates</p>
-
-Table 2. Distance from the located optimum to the true optimum
-
-| Design | Method | Median | Q25 | Q75 |
-|--------|--------|--------|-----|-----|
-| CCD | PLS | 0.107 | 0.072 | 0.164 |
-| CCD | OLS | 0.107 | 0.072 | 0.164 |
-| Correlated | PLS | 1.265 | 0.818 | 1.790 |
-| Correlated | OLS | 1.470 | 1.087 | 1.942 |
-
-There are three things to read, and all three cut against overstating the combination.
-
-First, **where the design is orthogonal PLS buys nothing.** On the CCD the two distance distributions agree to the decimal, and PLS was closer in 49.5% of the 200 replicates, which is indistinguishable from a coin toss. A good design lets cross-validation push the component count near the rank, at which PLS has converged on OLS.
-
-Second, **on entangled data there is a gain, and it is small.** The median distance falls from 1.470 to 1.265 and PLS is closer in 57.5% of replicates. The direction is clear, but this does not turn bad data into good data.
-
-Third, **the gap between the two data sets is far wider than the gap between the two methods.** The median distance opens from 0.107 to 1.265, more than tenfold. The question PLS-RSM answers is which regression to use, while what decides the accuracy of the optimum is how the data was obtained. The former cannot stand in for the latter.
-
-## 7. Where It Is Used
-
-- **Bio and pharmaceutical processes**: optimising culture and synthesis conditions where many entangled factors such as temperature, pH, agitation rate and nutrient concentration act together. Factors are numerous enough that a complete design is hard to afford.
-- **Chemical and materials processes**: yield optimisation where spectra such as NIR or Raman enter as inputs. This is the classic place where variables outnumber observations, and the place PLS grew up in [[3](#ref-3)].
-- **Quality engineering**: reading a direction for improvement out of operating records already accumulated. That data is not designed, so it belongs to the second case of section 6.
-
-## 8. Cautions
-
-- **The expansion manufactures collinearity.** Square and interaction terms are not orthogonal even where the original factors are. Without coding and centring, less is gained even from PLS.
-- **The stationary point can be an extrapolation.** $-\frac{1}{2}\mathbf{B}^{-1}\mathbf{b}$ can land outside the experimental region, where no data supports the surface. When it does, report no value and solve a constrained optimisation on the boundary instead.
-- **The component count is the model.** A large $A$ recovers the instability of OLS intact; a small one cannot express the curvature and pulls the optimum toward the centre. Do not use a fixed $A$ without cross-validation.
-- **PLS is not a substitute for a design.** That is the third observation of section 6. Where the factors can be moved, design the experiment; PLS comes out when they cannot.
-- **With several responses, set the optimisation rule separately.** Building several surfaces and choosing among them are different tasks.
-
-## References
-
-<a id="ref-1"></a>
-[1] Box, G. E. P. and Wilson, K. B. (1951). [On the Experimental Attainment of Optimum Conditions](https://doi.org/10.1111/j.2517-6161.1951.tb00067.x). *Journal of the Royal Statistical Society: Series B*, 13(1), 1–38.
-
-<a id="ref-2"></a>
-[2] Wold, S., Ruhe, A., Wold, H. and Dunn, W. J. (1984). [The Collinearity Problem in Linear Regression. The Partial Least Squares (PLS) Approach to Generalized Inverses](https://doi.org/10.1137/0905052). *SIAM Journal on Scientific and Statistical Computing*, 5(3), 735–743.
-
-<a id="ref-3"></a>
-[3] Wold, S., Sjöström, M. and Eriksson, L. (2001). [PLS-regression: a basic tool of chemometrics](https://doi.org/10.1016/S0169-7439(01)00155-1). *Chemometrics and Intelligent Laboratory Systems*, 58(2), 109–130.
-
-<a id="ref-4"></a>
-[4] Box, G. E. P. and Behnken, D. W. (1960). [Some New Three Level Designs for the Study of Quantitative Variables](https://doi.org/10.1080/00401706.1960.10489912). *Technometrics*, 2(4), 455–475.
-
-<a id="ref-5"></a>
-[5] Wold, S., Kettaneh-Wold, N. and Skagerberg, B. (1989). [Nonlinear PLS modeling](https://doi.org/10.1016/0169-7439(89)80111-X). *Chemometrics and Intelligent Laboratory Systems*, 7(1–2), 53–65.
-
-<a id="ref-6"></a>
-[6] Chong, I.-G. and Jun, C.-H. (2005). [Performance of some variable selection methods when multicollinearity is present](https://doi.org/10.1016/j.chemolab.2004.12.011). *Chemometrics and Intelligent Laboratory Systems*, 78(1–2), 103–112.
-
-<a id="ref-7"></a>
-[7] Derringer, G. and Suich, R. (1980). [Simultaneous Optimization of Several Response Variables](https://doi.org/10.1080/00224065.1980.11980968). *Journal of Quality Technology*, 12(4), 214–219.
-
-<a id="ref-8"></a>
-[8] Myers, R. H., Montgomery, D. C. and Anderson-Cook, C. M. (2016). *Response Surface Methodology: Process and Product Optimization Using Designed Experiments* (4th ed.). [Wiley](https://www.wiley.com/en-us/Response+Surface+Methodology:+Process+and+Product+Optimization+Using+Designed+Experiments,+4th+Edition-p-9781118916018). ISBN 978-1-118-91601-8.
-
----
-
-## Appendix A. Terminology
-
-- **canonical analysis**: the procedure that reads the eigenvalues of $\mathbf{B}$ at the stationary point to say whether that point is a maximum, a minimum or a saddle.
-- **CCD**: central composite design, which estimates a second-order model from factorial points, axial points and centre points.
-- **coded variable**: a dimensionless factor whose experimental region has been shifted so that the centre is 0 and the factorial levels are ±1.
-- **condition number**: the ratio of the largest singular value of a matrix to the smallest; the larger it is, the more the coefficient estimates move with a disturbance of the data.
-- **desirability**: a function that maps several responses each into the interval between 0 and 1 and ties them into one quantity to optimise.
-- **latent variable**: a new variable obtained by projecting the data onto a component direction found by PLS, also called a score.
-- **OLS**: ordinary least squares, the regression that minimises the sum of squared residuals.
-- **rank**: the number of linearly independent columns of a matrix, which caps the PLS component count.
-- **RMSE**: root mean squared error, the square root of the mean squared residual.
-- **rotatable design**: a design whose prediction variance is the same at every point equidistant from the centre.
-- **stationary point**: the point at which the gradient of the fitted surface is zero.
-- **VIP**: variable importance in the projection, the share of the response each variable explains across the component space.
-
-## Appendix B. Python Example
-
-The script that produced Fig 1 and Table 2 of section 6. It replicates the two designs against the same true surface and goes through expansion, fitting, recovery of the surface and computation of the stationary point in turn, leaving the distance distribution behind. Run with no arguments it reproduces the document's results, and `-h` shows the values that can be adjusted.
-
-```python
-# Models/Regression/PLS-RSM/pls_rsm.py
 __author__ = 'yRocket'
 __version__ = "0.0.0.2026.9.6"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
@@ -475,7 +328,7 @@ def run(output_folder: pathlib.Path, n_runs: int, correlation: float, noise_sd: 
     })
     summary.to_csv(output_folder / 'summary.csv')
     plot_results(results=first_results, distances=distances, true_optimum=true_optimum,
-                 output_path=output_folder / 'README_fig' / 'pls-rsm-surfaces.png')
+                 output_path=output_folder / 'pls-rsm_fig' / 'pls-rsm-surfaces.png')
     print(f"true optimum: {np.array2string(true_optimum, precision=3)}")
     print(summary.to_string(float_format=lambda value: f"{value:.4g}"))
     return summary
@@ -515,4 +368,10 @@ def parse_args() -> argparse.Namespace:
     if args.output_folder.exists() and not args.output_folder.is_dir():
         parser.error(f"--output-folder is not a folder: {args.output_folder}")
     return args
-```
+
+
+if __name__ == '__main__':
+    arguments = parse_args()
+    run(output_folder=arguments.output_folder, n_runs=arguments.n_runs, correlation=arguments.correlation,
+        noise_sd=arguments.noise_sd, max_components=arguments.max_components, n_splits=arguments.n_splits,
+        seed=arguments.seed, n_replicates=arguments.n_replicates)
