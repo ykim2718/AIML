@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 3 | Created: 2026-09-07 | Updated: 2026-09-07 17:22 CDT
+Rev. 4 | Created: 2026-09-07 | Updated: 2026-09-07 17:40 CDT
 
 ## 1. Purpose
 
@@ -105,6 +105,8 @@ Table 2. Checks that confirm overfitting
 
 마지막 두 검사는 성격이 다르다. 3.4 에서 보았듯 누수는 held-out 오차에 나타나지 않으므로, 오차 대신 자료의 구조를 본다. 시간축으로 앞뒤 구간을 나누어 잰 성능이 크게 다르거나 한 열이 model 을 거의 혼자 설명하면, 그 열이 결과가 정해지기 전에 기록되는지를 자료를 만든 공정에서 확인한다 [[2](#ref-2)].
 
+이 검사들을 실제로 보고된 숫자에 적용한 예는 [Appendix B](#appendix-b-case-study-of-a-train-test-gap) 에 있다.
+
 ## 6. Comparison
 
 Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 3 이 그 대비이다.
@@ -139,9 +141,11 @@ Table 3. The same failure from two different causes
 
 - **autocorrelation**: 한 계열의 값이 시간 간격을 두고 자기 자신과 닮은 정도.
 - **capacity**: Model 이 만들어 낼 수 있는 함수의 다양함. 클수록 자료를 더 잘 따라가고 더 잘 외운다.
+- **covariate shift**: 설명변수의 분포가 학습과 추론에서 달라지는 일. 응답과 설명변수의 관계 자체는 그대로이다.
 - **cross-validation**: 자료를 여러 fold 로 나누어 한 fold 를 남기고 학습한 뒤 그 fold 로 평가하는 일을 돌아가며 반복하는 절차.
 - **early stopping**: Held-out 오차가 더 내려가지 않는 지점에서 학습을 멈추는 방법.
 - **effective sample size**: 서로 독립인 행이 몇 개인 것과 같은지를 나타내는 수. 유효 표본.
+- **extrapolation**: 학습 자료가 덮지 않은 구간에서 예측하는 일.
 - **gradient boosting**: 앞의 model 이 남긴 잔차를 다음 model 이 맞추도록 차례로 쌓는 ensemble.
 - **group**: 같은 wafer, 같은 lot, 같은 설비처럼 함께 만들어져 서로 닮은 행의 묶음.
 - **held-out error**: 학습에 쓰지 않은 자료에서 잰 오차.
@@ -154,4 +158,31 @@ Table 3. The same failure from two different causes
 - **offset**: Group 마다 다르게 더해지는 값. 그 group 의 행 전체를 위나 아래로 옮긴다.
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
+- **R-squared**: 응답의 분산 가운데 model 이 설명한 몫이며, 기호는 $R^2$ 이다. 분모가 그 자료의 분산이므로 자료가 바뀌면 같은 model 도 다른 값을 낸다.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
+
+## Appendix B. Case Study Of A Train-Test Gap
+
+제출된 판단은 아직 이르다. 학습에서 $R^2$ 가 0.99, test 에서 $R^2$ 가 0.7, 그리고 학습 자료와 추론 자료의 평균과 산포가 서로 다르다는 세 관찰을 두고 "overfitting 이 심하다" 는 결론이 나왔지만, 같은 증상을 만드는 원인이 셋이어서 이 숫자만으로는 갈라지지 않는다.
+
+- **Overfitting**: 3.1 의 첫째 경로. 학습 자료를 외운 model 은 새 자료에서 성능이 떨어지므로 이 증상과 부합한다.
+- **Covariate shift**: 평균과 산포가 다르다는 것은 설명변수의 분포가 옮겨 갔다는 뜻이고, 옮겨 간 만큼 추론 자료의 일부가 학습 자료가 덮지 않은 구간에 놓인다. Model 이 전혀 overfit 하지 않았더라도 그 구간에서는 extrapolation 이 되어 오차가 커진다.
+- **R-squared 의 분모**: $R^2$ 는 응답의 분산으로 나눈 값이다. 두 자료의 산포가 다르면 같은 model 과 같은 RMSE 에서도 $R^2$ 가 다르게 나오며, 산포가 작은 쪽에서 낮게 나온다.
+
+셋째가 특히 중요하다. $R^2$ 가 0.99 에서 0.7 로 떨어진 폭 자체는 model 이 얼마나 나빠졌는지를 재지 않는다. 산포가 다른 두 자료에서 잰 두 $R^2$ 는 애초에 같은 자로 잰 값이 아니다.
+
+Table 4 가 셋을 갈라내는 순서이다.
+
+Table 4. Separating the three causes of the gap
+
+| # | Step | What it settles |
+|---|------|-----------------|
+| 1 | Report RMSE next to $R^2$ on both sets | Whether the model got worse or only the denominator changed |
+| 2 | Hold out rows drawn from the training distribution itself | The part of the gap that is overfitting alone |
+| 3 | Restrict the test rows to the range the training rows cover | The error with the shift removed |
+| 4 | Compare the input distributions column by column | Which columns moved, and by how much |
+| 5 | Refit with the capacity reduced | Whether the gap follows capacity |
+
+둘째 단계가 판단을 가른다. 학습과 같은 분포에서 뽑은 held-out 에서 $R^2$ 가 0.99 가까이 남으면 남은 하락은 overfitting 이 아니라 shift 와 분모의 몫이고, 거기서도 0.7 로 떨어지면 overfitting 이 맞다. 두 몫이 함께 있는 경우가 흔하며, 그때는 둘째 단계의 값이 overfitting 의 몫을, 그 값과 test 값의 차이가 shift 의 몫을 준다.
+
+처방은 갈린 결과를 따른다. Overfitting 쪽이면 4.1 의 용량 제한과 4.2 의 분할을 고친다. Shift 쪽이면 model 을 고치는 일이 아니라, 추론 구간을 덮도록 학습 자료의 범위를 넓히거나 (4.3) 추론을 학습 자료가 덮는 구간으로 제한한다. 어느 쪽이든 보고에는 $R^2$ 만이 아니라 RMSE 를 함께 적어, 다음 사람이 같은 자리에서 다시 막히지 않게 한다.
