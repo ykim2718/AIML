@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 12 | Created: 2026-09-07 | Updated: 2026-09-07 17:05 CDT
+Rev. 13 | Created: 2026-09-07 | Updated: 2026-09-07 17:30 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -16,10 +16,11 @@ Rev. 12 | Created: 2026-09-07 | Updated: 2026-09-07 17:05 CDT
 입 밖에 내지 않지만, 그것이 깨지면 계산은 그대로 나오면서 의미만 사라진다. 결과가 틀렸다는 신호가
 계산 쪽에서 오지 않으므로, 전제는 자료를 보기 전에 따로 확인해야 한다.
 
-이 문서는 그 전제를 정리한다. 통계적 정의와 그 물리적 대응, 실무에서 만나는 정상성의 형태, 분야별로
-무엇이 불변이라고 가정하는지, 정상성이 해석에 되돌려 주는 것, 유한한 기록 하나로 그것을 판정하는
-방법, 그리고 비정상 기록을 다루는 방법을 차례로 다룬다. 본문에서 정의 없이 쓴 용어는
-[Appendix A](#appendix-a-terminology) 에 모았다.
+이 문서는 그 전제를 정리한다. 통계적 정의와 그 물리적 대응, 실무에서 만나는 정상성의 형태, 정상성이
+해석에 되돌려 주는 것, 유한한 기록 하나로 그것을 판정하는 방법, 그리고 비정상 기록을 다루는 방법을
+차례로 다룬다. 분야마다 무엇을 불변이라고 가정하는지는
+[Appendix B](#appendix-b-the-same-assumption-in-three-domains) 에 따로 두었고, 본문에서 정의 없이 쓴
+용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
 
 ## 2. Definition
 
@@ -133,53 +134,9 @@ Cyclostationary 과정은 통계량이 아무렇게나 변하는 것이 아니�
 그 주기를 알면 위상별로 묶어 정상 과정처럼 다룰 수 있다 [[2](#ref-2)]. Quasi-stationary 과정은 창을
 짧게 잡아 그 안에서만 정상으로 보는 취급이고, 시간-주파수 해석의 근거가 여기에 있다 [[3](#ref-3)].
 
-## 4. Engineering Domains
+## 4. Consequences for Analysis
 
-분야마다 부르는 이름이 다를 뿐, 정상성이 요구하는 것은 하나다. 해석의 근거로 삼은 통계량이 관측
-구간 내내 같은 값이어야 한다는 것이다. 무엇을 그 통계량으로 삼는지가 분야를 가른다.
-
-### 4.1 Signal Processing and Communications
-
-여기서 정상성은 채널의 특성과 잡음의 통계적 성질이 시간에 따라 일정하다는 뜻이다. 이 가정이 서면
-최적 필터를 한 번만 설계하면 된다. Wiener filter 의 계수는 신호와 잡음의 2차 통계량에서 나오므로,
-그 통계량이 불변인 동안에는 같은 계수가 계속 최적이다.
-
-채널이 비정상이면 설계 시점의 통계로 만든 필터가 현재의 채널과 어긋나고, 어긋난 만큼 잡음이 남아
-복호 성능이 떨어진다. 대응은 필터를 시간에 따라 다시 맞추는 것이며, 적응 필터가 하는 일이 그것이다.
-
-### 4.2 Vibration and Condition Monitoring
-
-여기서 정상성은 설비가 정속 운전 (steady-state operation) 중이라는 뜻이다. 회전수와 부하가 일정한
-동안 발생하는 진동과 음향은 통계량이 변하지 않고, 그래야 그 신호의 주파수 성분을 설비의 고유한
-특성으로 읽을 수 있다. 베어링이나 기어에 결함이 생기면 이 스펙트럼 패턴이 달라지고, 상태 진단은
-그 차이를 본다.
-
-한 가지 단서를 붙여야 한다. 회전기계의 진동은 엄밀히는 정상 과정이 아니라 회전 주기에 묶인
-cyclostationary 과정이다. 결함이 만드는 충격이 회전에 맞추어 반복되므로, 통계량 자체가 회전 위상의
-함수가 된다. 결함 성분이 평균 스펙트럼에 잘 나타나지 않으면서 envelope spectrum 에서 선명하게 보이는
-이유가 여기에 있다 [[4](#ref-4)].
-
-### 4.3 Structural and Reliability Engineering
-
-구조 신뢰성에서 불변이어야 하는 것은 구조물에 가해지는 하중의 통계적 가혹도이다. 교량이나 해상
-구조물의 설계는 파랑과 바람을 확정된 시간 이력이 아니라 random vibration 으로 다루고, 하중의 power
-spectral density 로부터 피로 손상을 누적한다.
-
-이 계산은 과거 자료가 미래를 대표한다는 가정 위에서만 성립한다. 그런데 파랑과 바람에는 계절 주기가
-있어 수십 년 기록 전체를 하나의 정상 과정으로 보기 어렵다. 실무는 그래서 자료를 sea state 처럼
-조건이 고른 구간으로 나누어 각 구간을 정상으로 취급하고, 구간별 손상을 발생 빈도로 가중해 합친다.
-
-Table 3. What each domain assumes to be time-invariant
-
-| Domain | Time-invariant quantity | Tool that depends on it |
-|--------|-------------------------|-------------------------|
-| Signal processing | 잡음과 채널의 2차 통계량 | 고정 계수 최적 필터 |
-| Condition monitoring | 정속 운전 중의 진동 통계량 | 스펙트럼 기준선과 그 이탈 판정 |
-| Reliability | 하중의 power spectral density | 스펙트럼 기반 피로 수명 계산 |
-
-## 5. Consequences for Analysis
-
-### 5.1 Ergodicity
+### 4.1 Ergodicity
 
 정상성 위에 ergodicity 를 더하면 시간 평균이 집단 평균과 같아진다.
 
@@ -189,10 +146,10 @@ $$\lim_{T \to \infty} \frac{1}{T} \int_{0}^{T} x(t)\,dt = E[x(t)] = \mu \hspace{
 대를 잠깐 관측한 결과와 같으므로, 한 대만 놓고도 모집단의 성능을 말할 수 있다. 다만 2.3 에서 적었듯
 이것은 정상성에서 따라 나오는 것이 아니라 별도의 가정이다.
 
-### 5.2 Spectral Analysis
+### 4.2 Spectral Analysis
 
 정상 과정에서 autocovariance 함수와 power spectral density 는 Fourier 변환 쌍을 이룬다
-[[5](#ref-5)].
+[[4](#ref-4)].
 
 $$S(f) = \int_{-\infty}^{\infty} R(\tau)\, e^{-j 2\pi f \tau}\, d\tau \hspace{19em} (7)$$
 
@@ -207,24 +164,24 @@ $S(f)$ 가 보여 주므로, 어느 대역이 진동 에너지를 얼마나 갖�
 좋아진다는 보장도 사라진다. 그래서 비정상 신호에는 창을 짧게 끊어 각 창을 정상으로 보는 STFT 나
 wavelet 같은 시간-주파수 기법을 쓴다.
 
-### 5.3 Transfer of a Model Across Time
+### 4.3 Transfer of a Model Across Time
 
 과거 자료로 정한 것이 미래에도 유효하다는 보장 역시 정상성에서 나온다. 필터 계수, 관리한계, 회귀
 모델의 계수는 모두 추정할 당시의 통계량을 담고 있으므로, 그 통계량이 변하면 값 자체는 그대로인 채
 근거만 없어진다. 재현성과 예측 가능성을 정상성의 결과로 묶어 두는 이유가 이것이다.
 
-## 6. Assessment on a Finite Record
+## 5. Assessment on a Finite Record
 
-### 6.1 The Observation Window
+### 5.1 The Observation Window
 
 판정에 앞서 창의 길이를 정해야 한다. 정상성은 자료가 절대적으로 갖는 성질이 아니라 관측 구간에
 상대적인 성질이기 때문이다. 1 초 창에서 정상인 진동이 8 시간 창에서는 온도 drift 때문에 비정상이 되고,
 한 lot 안에서 정상인 계측값이 분기 단위로 보면 추세를 갖는다. "이 신호는 정상인가" 는 답할 수 없는
 물음이고, "이 신호는 이 창에서 정상인가" 가 답할 수 있는 물음이다.
 
-### 6.2 Checks
+### 5.2 Checks
 
-Table 4. Checks for stationarity on a single record
+Table 3. Checks for stationarity on a single record
 
 | Check | Null hypothesis | What it catches |
 |-------|-----------------|-----------------|
@@ -240,34 +197,34 @@ Split-record comparison 은 도구가 없어도 되는 검사이므로 먼저 �
 모두 붙는 것은 (a) 뿐이다. Reverse arrangements test 는 그 육안 판정을 추세에 대해 수치화한 것이다
 [[1](#ref-1)].
 
-ADF test 는 다음 회귀에서 $\gamma = 0$ 을 귀무가설로 놓고 검정한다 [[6](#ref-6)].
+ADF test 는 다음 회귀에서 $\gamma = 0$ 을 귀무가설로 놓고 검정한다 [[5](#ref-5)].
 
 $$\Delta x_t = \alpha + \beta t + \gamma\, x_{t-1} + \sum_{i=1}^{p} \delta_i\, \Delta x_{t-i} + \varepsilon_t \hspace{19em} (9)$$
 
 $\gamma = 0$ 이면 식 (4) 의 누적 구조가 남아 있다는 뜻이므로, 귀무가설의 기각이 정상성 쪽의 증거가
-된다. KPSS test 는 귀무가설을 반대로 놓아 정상성을 귀무가설로 삼는다 [[7](#ref-7)].
+된다. KPSS test 는 귀무가설을 반대로 놓아 정상성을 귀무가설로 삼는다 [[6](#ref-6)].
 
 귀무가설이 서로 반대이므로 둘을 함께 돌려 네 가지 조합으로 읽는다. ADF 를 기각하고 KPSS 를 기각하지
 못하면 정상으로 본다. 그 반대이면 unit root 가 있는 것으로 본다. 둘 다 기각하면 결정론적 추세와
 확률적 추세가 섞여 있는 경우이므로 추세 제거와 차분을 함께 검토한다. 둘 다 기각하지 못하면 기록이
 짧아 어느 쪽도 가리지 못한 것이며, 이때 필요한 것은 결론이 아니라 더 긴 기록이다.
 
-### 6.3 Power of the Tests
+### 5.3 Power of the Tests
 
 검정 결과를 자료의 성질로 곧바로 읽지 않도록 주의한다. 이 검정들의 검정력은 기록 길이에 크게 좌우되어,
 짧은 기록에서는 비정상을 놓치기 쉽고 매우 긴 기록에서는 실무적으로 무시할 만한 drift 도 유의하게
 나온다. 검정은 육안 판정과 공정 지식을 대체하는 것이 아니라 그것에 수치를 붙이는 도구이다.
 
-## 7. Handling of a Non-stationary Record
+## 6. Handling of a Non-stationary Record
 
 비정상이 확인되었다고 해서 기록을 버리지는 않는다. 비정상의 원인이 무엇인지에 따라 처방이 정해진다.
 
-Table 5. Cause of non-stationarity and the corresponding treatment
+Table 4. Cause of non-stationarity and the corresponding treatment
 
 | Cause | Treatment |
 |-------|-----------|
 | 결정론적 추세 | 추세 회귀 후 잔차 사용 |
-| Unit root drift | 차분 [[8](#ref-8)] |
+| Unit root drift | 차분 [[7](#ref-7)] |
 | 수준에 비례하는 분산 | 로그 변환 또는 Box-Cox 변환 |
 | 운전 조건의 변화 | 조건별 분할 후 구간마다 별도 해석 |
 | 회전수 변동 | Order tracking 으로 각도축에서 다시 sampling |
@@ -287,15 +244,15 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 <a id="ref-3"></a>
 [3] Priestley, M. B. (1965). [Evolutionary Spectra and Non-Stationary Processes](https://doi.org/10.1111/j.2517-6161.1965.tb01488.x). *Journal of the Royal Statistical Society: Series B*, 27(2), 204–229.<br>
 <a id="ref-4"></a>
-[4] Randall, R. B., & Antoni, J. (2011). [Rolling element bearing diagnostics — A tutorial](https://doi.org/10.1016/j.ymssp.2010.07.017). *Mechanical Systems and Signal Processing*, 25(2), 485–520.<br>
+[4] Khintchine, A. (1934). [Korrelationstheorie der stationären stochastischen Prozesse](https://doi.org/10.1007/BF01449156). *Mathematische Annalen*, 109, 604–615.<br>
 <a id="ref-5"></a>
-[5] Khintchine, A. (1934). [Korrelationstheorie der stationären stochastischen Prozesse](https://doi.org/10.1007/BF01449156). *Mathematische Annalen*, 109, 604–615.<br>
+[5] Dickey, D. A., & Fuller, W. A. (1979). [Distribution of the Estimators for Autoregressive Time Series with a Unit Root](https://doi.org/10.1080/01621459.1979.10482531). *Journal of the American Statistical Association*, 74(366), 427–431.<br>
 <a id="ref-6"></a>
-[6] Dickey, D. A., & Fuller, W. A. (1979). [Distribution of the Estimators for Autoregressive Time Series with a Unit Root](https://doi.org/10.1080/01621459.1979.10482531). *Journal of the American Statistical Association*, 74(366), 427–431.<br>
+[6] Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). [Testing the null hypothesis of stationarity against the alternative of a unit root](https://doi.org/10.1016/0304-4076%2892%2990104-Y). *Journal of Econometrics*, 54(1–3), 159–178.<br>
 <a id="ref-7"></a>
-[7] Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. (1992). [Testing the null hypothesis of stationarity against the alternative of a unit root](https://doi.org/10.1016/0304-4076%2892%2990104-Y). *Journal of Econometrics*, 54(1–3), 159–178.<br>
+[7] Box, G. E. P., Jenkins, G. M., & Reinsel, G. C. (2008). [Time Series Analysis: Forecasting and Control](https://doi.org/10.1002/9781118619193) (4th ed.). Wiley.<br>
 <a id="ref-8"></a>
-[8] Box, G. E. P., Jenkins, G. M., & Reinsel, G. C. (2008). [Time Series Analysis: Forecasting and Control](https://doi.org/10.1002/9781118619193) (4th ed.). Wiley.
+[8] Randall, R. B., & Antoni, J. (2011). [Rolling element bearing diagnostics — A tutorial](https://doi.org/10.1016/j.ymssp.2010.07.017). *Mechanical Systems and Signal Processing*, 25(2), 485–520.
 
 ---
 
@@ -337,3 +294,47 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 - **weak stationarity**: 평균이 일정하고 autocovariance 가 시차만의 함수인 성질. Wide-sense stationarity 라고도 한다.
 - **white noise**: 서로 다른 시점의 값이 상관되지 않고 스펙트럼이 평탄한 정상 과정.
 - **Wiener filter**: 신호와 잡음의 2차 통계량으로부터 계수가 정해지는 선형 최적 필터.
+
+## Appendix B. The Same Assumption in Three Domains
+
+분야마다 부르는 이름이 다를 뿐, 정상성이 요구하는 것은 하나다. 해석의 근거로 삼은 통계량이 관측
+구간 내내 같은 값이어야 한다는 것이다. 무엇을 그 통계량으로 삼는지가 분야를 가른다.
+
+### B.1 Signal Processing and Communications
+
+여기서 정상성은 채널의 특성과 잡음의 통계적 성질이 시간에 따라 일정하다는 뜻이다. 이 가정이 서면
+최적 필터를 한 번만 설계하면 된다. Wiener filter 의 계수는 신호와 잡음의 2차 통계량에서 나오므로,
+그 통계량이 불변인 동안에는 같은 계수가 계속 최적이다.
+
+채널이 비정상이면 설계 시점의 통계로 만든 필터가 현재의 채널과 어긋나고, 어긋난 만큼 잡음이 남아
+복호 성능이 떨어진다. 대응은 필터를 시간에 따라 다시 맞추는 것이며, 적응 필터가 하는 일이 그것이다.
+
+### B.2 Vibration and Condition Monitoring
+
+여기서 정상성은 설비가 정속 운전 (steady-state operation) 중이라는 뜻이다. 회전수와 부하가 일정한
+동안 발생하는 진동과 음향은 통계량이 변하지 않고, 그래야 그 신호의 주파수 성분을 설비의 고유한
+특성으로 읽을 수 있다. 베어링이나 기어에 결함이 생기면 이 스펙트럼 패턴이 달라지고, 상태 진단은
+그 차이를 본다.
+
+한 가지 단서를 붙여야 한다. 회전기계의 진동은 엄밀히는 정상 과정이 아니라 회전 주기에 묶인
+cyclostationary 과정이다. 결함이 만드는 충격이 회전에 맞추어 반복되므로, 통계량 자체가 회전 위상의
+함수가 된다. 결함 성분이 평균 스펙트럼에 잘 나타나지 않으면서 envelope spectrum 에서 선명하게 보이는
+이유가 여기에 있다 [[8](#ref-8)].
+
+### B.3 Structural and Reliability Engineering
+
+구조 신뢰성에서 불변이어야 하는 것은 구조물에 가해지는 하중의 통계적 가혹도이다. 교량이나 해상
+구조물의 설계는 파랑과 바람을 확정된 시간 이력이 아니라 random vibration 으로 다루고, 하중의 power
+spectral density 로부터 피로 손상을 누적한다.
+
+이 계산은 과거 자료가 미래를 대표한다는 가정 위에서만 성립한다. 그런데 파랑과 바람에는 계절 주기가
+있어 수십 년 기록 전체를 하나의 정상 과정으로 보기 어렵다. 실무는 그래서 자료를 sea state 처럼
+조건이 고른 구간으로 나누어 각 구간을 정상으로 취급하고, 구간별 손상을 발생 빈도로 가중해 합친다.
+
+Table 5. What each domain assumes to be time-invariant
+
+| Domain | Time-invariant quantity | Tool that depends on it |
+|--------|-------------------------|-------------------------|
+| Signal processing | 잡음과 채널의 2차 통계량 | 고정 계수 최적 필터 |
+| Condition monitoring | 정속 운전 중의 진동 통계량 | 스펙트럼 기준선과 그 이탈 판정 |
+| Reliability | 하중의 power spectral density | 스펙트럼 기반 피로 수명 계산 |
