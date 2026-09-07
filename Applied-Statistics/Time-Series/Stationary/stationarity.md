@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 1 | Created: 2026-09-07 | Updated: 2026-09-07 11:20 CDT
+Rev. 2 | Created: 2026-09-07 | Updated: 2026-09-07 12:05 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -67,6 +67,19 @@ Table 1. Stationary and non-stationary states
 |-------|---------|
 | Stationary | 정속 운전 중인 회전기계의 진동. 일정 유량에서의 난류 압력. 고정된 채널의 열잡음. 세기가 고른 바람 |
 | Non-stationary | 시동과 가속 구간의 진동 transient. 지진파. 마모로 서서히 나빠지는 장비. 조건이 자리를 잡아 가는 중인 공정 |
+
+같은 구별을 기록 위에서 보면 Fig 1 과 같다. 네 기록은 하나의 innovation 열에서 만든 것이어서 서로
+다른 점은 거기에 무엇을 더했는가뿐이며, (a) 만 정상이고 나머지 셋은 각각 평균과 산포와 누적 구조에서
+정상성을 잃는다. 굵은 선은 60 sample 창의 이동평균이고 띠는 같은 창의 이동표준편차이다.
+
+<img src="stationarity_fig/stationarity_comparison.png" width="900" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. One stationary record and three ways a record stops being one
+
+(a) 에서는 두 통계량이 모두 제자리에 머문다. (b) 는 이동평균이 중간에서 계단을 밟고, (c) 는 이동평균이
+그대로인 채 띠만 벌어지며, (d) 는 이동평균이 어디에도 머물지 않는다. 여기서 눈여겨볼 것은 (b) 의
+산포가 (a) 와 다르지 않고 (c) 의 평균도 (a) 처럼 움직이지 않는다는 점이다. 한 수치만 보아서는 둘 중
+하나를 정상으로 읽게 되므로, 2.1 이 요구한 것이 평균과 분산 두 수치가 아니라 상관 구조 전체였던 것이다.
 
 ### 2.3 Distinctions
 
@@ -215,8 +228,10 @@ Table 4. Checks for stationarity on a single record
 | KPSS test | 정상 | ADF 가 놓치는 완만한 이탈 |
 
 Split-record comparison 은 도구가 없어도 되는 검사이므로 먼저 한다. 기록을 앞뒤로 나누어 평균과 분산,
-그리고 스펙트럼을 겹쳐 보는 것으로 대부분의 실무적 비정상은 드러난다. Reverse arrangements test 는 그
-육안 판정을 추세에 대해 수치화한 것이다 [[1](#ref-1)].
+그리고 스펙트럼을 겹쳐 보는 것으로 대부분의 실무적 비정상은 드러난다. Fig 1 의 각 panel 이 적어 둔
+전후 반씩의 평균과 표준편차가 그 비교이며, (b) 는 평균에서 (c) 는 표준편차에서 갈리고 (a) 는 어느
+쪽도 갈리지 않는다. Reverse arrangements test 는 그 육안 판정을 추세에 대해 수치화한 것이다
+[[1](#ref-1)].
 
 ADF test 는 다음 회귀에서 $\gamma = 0$ 을 귀무가설로 놓고 검정한다 [[6](#ref-6)].
 
