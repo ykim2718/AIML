@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 4 | Created: 2026-09-07 | Updated: 2026-09-07 13:20 CDT
+Rev. 5 | Created: 2026-09-07 | Updated: 2026-09-07 14:05 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -32,7 +32,9 @@ $$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + \tau, \ldots
 
 이 조건은 유한한 기록으로 확인할 수 없다. 모든 차수의 결합분포를 요구하는데 손에 있는 것은 한 개의
 실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이며, 이것을 weak
-stationarity 또는 wide-sense stationarity 라 한다. 조건은 두 가지다.
+stationarity 또는 wide-sense stationarity 라 한다. 여기서 2차 통계량은 평균 같은 1차 적률 (moment) 과
+분산이나 autocovariance 같은 2차 적률을 함께 이르는 말이고, 왜도나 첨도처럼 3차 이상의 적률은 여기에
+들지 않는다. 조건은 두 가지다.
 
 $$E[x(t)] = \mu \hspace{19em} (2)$$
 
