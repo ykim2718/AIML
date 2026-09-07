@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 2 | Created: 2026-09-07 | Updated: 2026-09-07 12:05 CDT
+Rev. 3 | Created: 2026-09-07 | Updated: 2026-09-07 12:40 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -68,8 +68,8 @@ Table 1. Stationary and non-stationary states
 | Stationary | 정속 운전 중인 회전기계의 진동. 일정 유량에서의 난류 압력. 고정된 채널의 열잡음. 세기가 고른 바람 |
 | Non-stationary | 시동과 가속 구간의 진동 transient. 지진파. 마모로 서서히 나빠지는 장비. 조건이 자리를 잡아 가는 중인 공정 |
 
-같은 구별을 기록 위에서 보면 Fig 1 과 같다. 네 기록은 하나의 innovation 열에서 만든 것이어서 서로
-다른 점은 거기에 무엇을 더했는가뿐이며, (a) 만 정상이고 나머지 셋은 각각 평균과 산포와 누적 구조에서
+같은 구별을 기록 위에서 보면 Fig 1 과 같다. 네 기록은 같은 innovation 열 하나에서 만든 것이어서 서로
+다른 점은 그 열을 어떻게 다루었는가뿐이며, (a) 만 정상이고 나머지 셋은 각각 평균과 산포와 누적 구조에서
 정상성을 잃는다. 굵은 선은 60 sample 창의 이동평균이고 띠는 같은 창의 이동표준편차이다.
 
 <img src="stationarity_fig/stationarity_comparison.png" width="900" style="max-width: 100%;" alt="Fig 1">
@@ -123,8 +123,8 @@ $$x_t = a + b\,t + \varepsilon_t \hspace{19em} (5)$$
 음의 상관이 생긴다. 어느 쪽인지 먼저 가리고 나서 손을 대야 한다.
 
 Cyclostationary 과정은 통계량이 아무렇게나 변하는 것이 아니라 주기라는 구조를 하나 더 가진 것이며,
-그 주기를 알면 위상별로 묶어 정상 과정처럼 다룰 수 있다 [[2](#ref-2)]. Quasi-stationary 과정은 창을 짧게
-잡아 그 안에서만 정상으로 보는 취급이고, 시간-주파수 해석의 근거가 여기에 있다 [[3](#ref-3)].
+그 주기를 알면 위상별로 묶어 정상 과정처럼 다룰 수 있다 [[2](#ref-2)]. Quasi-stationary 과정은 창을
+짧게 잡아 그 안에서만 정상으로 보는 취급이고, 시간-주파수 해석의 근거가 여기에 있다 [[3](#ref-3)].
 
 ## 4. Engineering Domains
 
@@ -155,8 +155,8 @@ cyclostationary 과정이다. 결함이 만드는 충격이 회전에 맞추어 
 ### 4.3 Structural and Reliability Engineering
 
 구조 신뢰성에서 불변이어야 하는 것은 구조물에 가해지는 하중의 통계적 가혹도이다. 교량이나 해상
-구조물의 설계는 파랑과 바람을 확정된 시간 이력이 아니라 random vibration 으로 다루고, 하중의 power spectral
-density 로부터 피로 손상을 누적한다.
+구조물의 설계는 파랑과 바람을 확정된 시간 이력이 아니라 random vibration 으로 다루고, 하중의 power
+spectral density 로부터 피로 손상을 누적한다.
 
 이 계산은 과거 자료가 미래를 대표한다는 가정 위에서만 성립한다. 그런데 파랑과 바람에는 계절 주기가
 있어 수십 년 기록 전체를 하나의 정상 과정으로 보기 어렵다. 실무는 그래서 자료를 sea state 처럼
@@ -225,12 +225,12 @@ Table 4. Checks for stationarity on a single record
 | Split-record comparison | 두 구간의 평균과 분산과 스펙트럼이 동일 | 느린 drift |
 | Reverse arrangements test | 값의 순서가 무작위 | 단조 추세 |
 | ADF test | Unit root 존재. 즉 비정상 | 확률적 추세 |
-| KPSS test | 정상 | ADF 가 놓치는 완만한 이탈 |
+| KPSS test | 정상 | ADF 단독으로는 갈리지 않는 경우 |
 
 Split-record comparison 은 도구가 없어도 되는 검사이므로 먼저 한다. 기록을 앞뒤로 나누어 평균과 분산,
 그리고 스펙트럼을 겹쳐 보는 것으로 대부분의 실무적 비정상은 드러난다. Fig 1 의 각 panel 이 적어 둔
-전후 반씩의 평균과 표준편차가 그 비교이며, (b) 는 평균에서 (c) 는 표준편차에서 갈리고 (a) 는 어느
-쪽도 갈리지 않는다. Reverse arrangements test 는 그 육안 판정을 추세에 대해 수치화한 것이다
+전후 반씩의 평균과 표준편차가 그 비교이며, (b) 와 (d) 는 평균에서, (c) 는 표준편차에서 갈린다. 전후가
+모두 붙는 것은 (a) 뿐이다. Reverse arrangements test 는 그 육안 판정을 추세에 대해 수치화한 것이다
 [[1](#ref-1)].
 
 ADF test 는 다음 회귀에서 $\gamma = 0$ 을 귀무가설로 놓고 검정한다 [[6](#ref-6)].
@@ -302,11 +302,13 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 - **cyclostationarity**: 통계량이 시간에 대해 주기적으로 변하는 성질.
 - **DFT**: 유한한 길이의 이산 신호를 주파수 성분으로 분해하는 변환.
 - **difference-stationary**: 차분한 뒤에 정상이 되는 성질. Unit root 를 갖는 과정이 이에 해당한다.
+- **drift**: 계의 수준이나 산포가 한 방향으로 서서히 옮겨 가는 변화.
 - **dynamic equilibrium**: 유입 에너지와 소산 에너지가 통계적으로 균형을 이루어 계의 통계적 상태가 고정된 상태.
 - **envelope spectrum**: 신호의 포락선을 취한 뒤 구한 스펙트럼. 반복되는 충격 성분을 드러낸다.
 - **ergodicity**: 하나의 실현을 오래 관측한 시간 평균이 여러 실현의 집단 평균과 일치하는 성질.
 - **evolutionary spectrum**: 시각에 따라 달라지는 스펙트럼. 비정상 과정에 스펙트럼 개념을 확장한 것이다.
 - **Gaussian process**: 임의의 유한 개 시점을 뽑아도 그 결합분포가 정규분포인 확률과정.
+- **innovation**: 확률과정의 각 시점에 새로 들어오는, 과거와 무관한 무작위 입력.
 - **KPSS test**: 정상성을 귀무가설로 놓는 검정. ADF test 와 반대 방향에서 같은 물음을 본다.
 - **order tracking**: 회전수 변동을 없애기 위해 신호를 시간축이 아니라 회전 각도축에서 다시 sampling 하는 처리.
 - **power spectral density**: 신호의 분산이 주파수축 위에 어떻게 분포하는지를 나타내는 함수.
