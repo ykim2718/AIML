@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 8 | Created: 2026-09-07 | Updated: 2026-09-07 15:25 CDT
+Rev. 9 | Created: 2026-09-07 | Updated: 2026-09-07 15:50 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -25,10 +25,10 @@ Rev. 8 | Created: 2026-09-07 | Updated: 2026-09-07 15:25 CDT
 
 ### 2.1 Strict and Weak Stationarity
 
-엄밀한 정의는 분포에 대한 것이다. 어떤 확률과정의 유한 차원 결합분포가 시간을 $\tau$ 만큼 옮겨도
+엄밀한 정의는 분포에 대한 것이다. 어떤 확률과정의 유한 차원 결합분포가 시간을 $h$ 만큼 옮겨도
 그대로이면 그 과정을 strict stationary 라 한다.
 
-$$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + \tau, \ldots, t_k + \tau) \hspace{19em} (1)$$
+$$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + h, \ldots, t_k + h) \hspace{19em} (1)$$
 
 이 조건은 유한한 기록으로 확인할 수 없다. 모든 차수의 결합분포를 요구하는데 손에 있는 것은 한 개의
 실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이며, 이것을 weak
@@ -314,7 +314,7 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 - **Gaussian process**: 임의의 유한 개 시점을 뽑아도 그 결합분포가 정규분포인 확률과정.
 - **innovation**: 확률과정의 각 시점에 새로 들어오는, 과거와 무관한 무작위 입력.
 - **KPSS test**: 정상성을 귀무가설로 놓는 검정. ADF test 와 반대 방향에서 같은 물음을 본다.
-- **moment**: 분포의 모양을 차수별로 요약한 값. 1차는 평균, 2차는 분산, 3차는 skewness, 4차는 kurtosis 이다.
+- **moment**: 분포의 모양을 차수별로 요약한 값. 1차는 평균이고, 평균을 중심으로 잰 2차는 분산, 3차는 skewness, 4차는 kurtosis 이다.
 - **order tracking**: 회전수 변동을 없애기 위해 신호를 시간축이 아니라 회전 각도축에서 다시 sampling 하는 처리.
 - **power spectral density**: 신호의 분산이 주파수축 위에 어떻게 분포하는지를 나타내는 함수.
 - **quasi-stationarity**: 짧은 구간 안에서만 근사적으로 정상인 성질.
