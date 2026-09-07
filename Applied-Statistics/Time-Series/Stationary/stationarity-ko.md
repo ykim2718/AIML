@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 15 | Created: 2026-09-07 | Updated: 2026-09-07 18:40 CDT
+Rev. 16 | Created: 2026-09-07 | Updated: 2026-09-07 19:05 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -59,11 +59,11 @@ $$R(t,\, t+\tau) = E\big[(x(t)-\mu)\,(x(t+\tau)-\mu)\big] = R(\tau) \hspace{19em
 
 Table 1. The three conditions of weak stationarity
 
-| Condition | Requirement | What it rules out |
-|-----------|-------------|-------------------|
-| Constant mean | $E[x(t)] = \mu$ | 추세와 수준 이동 |
-| Constant variance | $\mathrm{Var}(x(t)) = \sigma^2$ | 변동 폭의 확대나 축소 |
-| Lag-only autocovariance | $R(t,\, t+\tau) = R(\tau)$ | 자기상관 구조의 변화 |
+| # | Condition | Requirement | What it rules out |
+|---|-----------|-------------|-------------------|
+| 1 | Constant mean | $E[x(t)] = \mu$ | 추세와 수준 이동 |
+| 2 | Constant variance | $\mathrm{Var}(x(t)) = \sigma^2$ | 변동 폭의 확대나 축소 |
+| 3 | Lag-only autocovariance | $R(t,\, t+\tau) = R(\tau)$ | 자기상관 구조의 변화 |
 
 세 조건이 나란히 놓이지만 둘째는 셋째에 딸려 있다. 식 (3) 은 식 (4) 에서 $\tau = 0$ 인 자리이므로,
 식 (4) 가 서면 식 (3) 은 따라 선다. 그런데도 따로 적는 것은 평균과 분산 둘만 확인하고 멈추는 일이
@@ -127,14 +127,14 @@ Fig 1. One stationary record and three ways a record stops being one
 
 Table 3. Forms of stationarity and where each is met
 
-| Form | Condition | Typical case |
-|------|-----------|--------------|
-| Strict | 모든 결합분포의 시간 이동 불변 | 이론상의 기준. 검증 대상이 아님 |
-| Weak | 평균 일정. 분산 일정. Autocovariance 가 시차만의 함수 | 스펙트럼 해석과 선형 필터 설계의 전제 |
-| Cyclostationary | 통계량이 시간에 대해 주기적 | 회전기계 진동. 변조된 통신 신호 |
-| Quasi-stationary | 짧은 창 안에서만 근사적으로 정상 | 운전 조건이 천천히 변하는 설비 |
-| Difference-stationary | 차분하면 정상. Unit root 보유 | 누적되는 drift. 계측기 offset 의 표류 |
-| Trend-stationary | 결정론적 추세를 빼면 정상 | 선형으로 오르는 열 drift |
+| # | Form | Condition | Typical case |
+|---|------|-----------|--------------|
+| 1 | Strict | 모든 결합분포의 시간 이동 불변 | 이론상의 기준. 검증 대상이 아님 |
+| 2 | Weak | 평균 일정. 분산 일정. Autocovariance 가 시차만의 함수 | 스펙트럼 해석과 선형 필터 설계의 전제 |
+| 3 | Cyclostationary | 통계량이 시간에 대해 주기적 | 회전기계 진동. 변조된 통신 신호 |
+| 4 | Quasi-stationary | 짧은 창 안에서만 근사적으로 정상 | 운전 조건이 천천히 변하는 설비 |
+| 5 | Difference-stationary | 차분하면 정상. Unit root 보유 | 누적되는 drift. 계측기 offset 의 표류 |
+| 6 | Trend-stationary | 결정론적 추세를 빼면 정상 | 선형으로 오르는 열 drift |
 
 마지막 두 형태는 겉보기가 비슷하지만 처방이 반대이므로 구별이 중요하다. Difference-stationary 과정은
 충격이 영구히 남는 누적 구조이고,
@@ -202,13 +202,13 @@ wavelet 같은 시간-주파수 기법을 쓴다.
 
 Table 4. Checks for stationarity on a single record
 
-| Check | Null hypothesis | What it catches |
-|-------|-----------------|-----------------|
-| Run chart | 없음. 육안 판정 | 수준 이동. 눈에 띄는 분산 변화 |
-| Split-record comparison | 두 구간의 평균과 분산과 스펙트럼이 동일 | 느린 drift |
-| Reverse arrangements test | 값의 순서가 무작위 | 단조 추세 |
-| ADF test | Unit root 존재. 즉 비정상 | 확률적 추세 |
-| KPSS test | 정상 | ADF 단독으로는 갈리지 않는 경우 |
+| # | Check | Null hypothesis | What it catches |
+|---|-------|-----------------|-----------------|
+| 1 | Run chart | 없음. 육안 판정 | 수준 이동. 눈에 띄는 분산 변화 |
+| 2 | Split-record comparison | 두 구간의 평균과 분산과 스펙트럼이 동일 | 느린 drift |
+| 3 | Reverse arrangements test | 값의 순서가 무작위 | 단조 추세 |
+| 4 | ADF test | Unit root 존재. 즉 비정상 | 확률적 추세 |
+| 5 | KPSS test | 정상 | ADF 단독으로는 갈리지 않는 경우 |
 
 Split-record comparison 은 도구가 없어도 되는 검사이므로 먼저 한다. 기록을 앞뒤로 나누어 평균과 분산,
 그리고 스펙트럼을 겹쳐 보는 것으로 대부분의 실무적 비정상은 드러난다. Fig 1 의 각 panel 이 적어 둔
