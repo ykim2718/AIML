@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 14 | Created: 2026-09-07 | Updated: 2026-09-07 18:05 CDT
+Rev. 15 | Created: 2026-09-07 | Updated: 2026-09-07 18:40 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -54,15 +54,15 @@ $$\mathrm{Var}\big(x(t)\big) = E\big[(x(t)-\mu)^2\big] = \sigma^2 \lt \infty \hs
 
 $$R(t,\, t+\tau) = E\big[(x(t)-\mu)\,(x(t+\tau)-\mu)\big] = R(\tau) \hspace{19em} (4)$$
 
-두 시점 사이의 공분산이 절대 시각 $t$ 가 아니라 시차 $\tau$ 로만 정해진다. $t = 1$ 과 $t = 3$ 사이의
-관계가 $t = 100$ 과 $t = 102$ 사이의 관계와 같아야 한다는 뜻이다.
+두 시점 사이의 공분산이 절대 시각 $t$ 가 아니라 시차 (lag) $\tau$ 로만 정해진다. $t = 1$ 과 $t = 3$
+사이의 관계가 $t = 100$ 과 $t = 102$ 사이의 관계와 같아야 한다는 뜻이다.
 
 Table 1. The three conditions of weak stationarity
 
 | Condition | Requirement | What it rules out |
 |-----------|-------------|-------------------|
-| Constant mean | $\mu_t = \mu$ | 추세와 수준 이동 |
-| Constant variance | $\sigma_t^2 = \sigma^2$ | 변동 폭의 확대나 축소 |
+| Constant mean | $E[x(t)] = \mu$ | 추세와 수준 이동 |
+| Constant variance | $\mathrm{Var}(x(t)) = \sigma^2$ | 변동 폭의 확대나 축소 |
 | Lag-only autocovariance | $R(t,\, t+\tau) = R(\tau)$ | 자기상관 구조의 변화 |
 
 세 조건이 나란히 놓이지만 둘째는 셋째에 딸려 있다. 식 (3) 은 식 (4) 에서 $\tau = 0$ 인 자리이므로,
