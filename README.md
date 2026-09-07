@@ -1,5 +1,5 @@
 # AIML
-Rev. 54 | Created: 2026-08-07 | Updated: 2026-09-07 10:55 CDT
+Rev. 55 | Created: 2026-08-07 | Updated: 2026-09-07 13:20 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -117,7 +117,7 @@ Table 8. Applied statistics documents
 | [Applied-Statistics/ZScore/standard-error-of-the-mean.md](Applied-Statistics/ZScore/standard-error-of-the-mean.md) | It relates the standard deviation of a population to the standard deviation of the mean of a sample drawn from it through the sample size, tabulates how the standard error falls as the square root of that size, and separates the several symbols that are all read as sigma. |
 | [Applied-Statistics/ZScore/standard-error-of-the-mean-ko.md](Applied-Statistics/ZScore/standard-error-of-the-mean-ko.md) | It is the Korean edition of the standard error note, carrying the same sections, tables and derivation, with the headings and captions left in English. |
 | [Applied-Statistics/ZScore/long-term-short-term-sigma-shift.md](Applied-Statistics/ZScore/long-term-short-term-sigma-shift.md) | It separates the two models a Six Sigma capability statement can mean by its 1.5 sigma shift — a shift of the mean and an inflation of the variance — shows that they disagree by a factor of two in defect rate at the same long-term sigma level, and traces the constant to the control chart detection limit that yields 3/sqrt(n) rather than 1.5. |
-| [Applied-Statistics/Time-Series/Stationary/stationarity.md](Applied-Statistics/Time-Series/Stationary/stationarity.md) | It separates strict from weak stationarity, reads the condition physically as a system in dynamic equilibrium, sets out the forms met in practice — cyclostationary, quasi-stationary, difference- and trend-stationary — and covers what the assumption buys in signal processing, condition monitoring and fatigue work, how it is judged on a single finite record, and what to do when it fails. |
+| [Applied-Statistics/Time-Series/Stationary/stationarity-ko.md](Applied-Statistics/Time-Series/Stationary/stationarity-ko.md) | It separates strict from weak stationarity, reads the condition physically as a system in dynamic equilibrium, sets out the forms met in practice — cyclostationary, quasi-stationary, difference- and trend-stationary — and covers what the assumption buys in signal processing, condition monitoring and fatigue work, how it is judged on a single finite record, and what to do when it fails. |
 
 ### 3.7 Scripts
 

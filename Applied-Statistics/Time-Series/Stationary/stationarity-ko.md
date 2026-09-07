@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 3 | Created: 2026-09-07 | Updated: 2026-09-07 12:40 CDT
+Rev. 4 | Created: 2026-09-07 | Updated: 2026-09-07 13:20 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -72,7 +72,7 @@ Table 1. Stationary and non-stationary states
 다른 점은 그 열을 어떻게 다루었는가뿐이며, (a) 만 정상이고 나머지 셋은 각각 평균과 산포와 누적 구조에서
 정상성을 잃는다. 굵은 선은 60 sample 창의 이동평균이고 띠는 같은 창의 이동표준편차이다.
 
-<img src="stationarity_fig/stationarity_comparison.png" width="900" style="max-width: 100%;" alt="Fig 1">
+<img src="stationarity-ko_fig/stationarity_comparison.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
 Fig 1. One stationary record and three ways a record stops being one
 
