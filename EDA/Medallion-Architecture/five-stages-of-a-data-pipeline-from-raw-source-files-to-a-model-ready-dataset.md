@@ -1,11 +1,27 @@
 # Five stages of a data pipeline, from raw source files to a model-ready dataset
-Rev. 11 | Created: 2026-06-23 | Updated: 2026-09-08 18:01 UTC
+Rev. 12 | Created: 2026-06-23 | Updated: 2026-09-08 14:22 CDT
 
 ## 1. Overview
 
 This report describes a five-stage data pipeline that takes data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The five stages map one-to-one onto the Databricks' Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)], an industry-standard layering popularized by Databricks. Each stage has a single responsibility and consumes only the stage before it, which keeps the pipeline reproducible and auditable.
 
-$$\text{Original} \xrightarrow{\text{parse}} \text{Raw} \xrightarrow{\text{clean}} \text{Clean} \xrightarrow{\text{reshape}} \text{Structured} \xrightarrow{\text{features}} \text{Feature}$$
+Each layer answers a different question, and the answer it gives is a guarantee about the data it holds.
+
+```text
+           BRONZE                         SILVER                          GOLD
+  ┌───────────────────────┐      ┌───────────────────────┐      ┌───────────────────────┐
+  │        keep it        │      │        make it        │      │        make it        │
+  │      as it landed     │ ───▶ │      trustworthy      │ ───▶ │      model-ready      │
+  └───────────────────────┘      └───────────────────────┘      └───────────────────────┘
+      written once and              nulls, outliers and            features built and
+      never edited, the             clocks resolved, so            reduced, and pinned
+       only safety net                the data can be             to a version so that
+     if a parse is wrong            queried with trust            train and serve agree
+```
+
+Fig 1. What each Medallion layer is responsible for
+
+Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. What fills the three layers is the five stages of section 2, and section 3 shows which stage falls where.
 
 ## 2. Five-Stage Pipeline
 
@@ -31,17 +47,18 @@ The optimized dataset. Domain knowledge converts raw inputs into the variables a
 
 ## 3. Medallion Architecture Mapping
 
-The five stages line up one-to-one with the Medallion architecture, the de facto standard for sorting data by quality and maturity.
+The five stages line up one-to-one with the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 adds the transform that carries each stage to the next, so that the boundary between two layers can be read as the transform that crosses it.
 
 ```text
-            BRONZE                       SILVER                     GOLD
-      (raw preservation)        (cleaned & structured)         (model-ready)
-  ┌───────────┬───────────┐     ┌───────────┬────────────┐     ┌───────────┐
-  │ Original  │    Raw    │ >>> │   Clean   │ Structured │ >>> │  Feature  │
-  └───────────┴───────────┘     └───────────┴────────────┘     └───────────┘
+           BRONZE                                 SILVER                              GOLD
+     (raw preservation)                   (cleaned & structured)                  (model-ready)
+  ┌───────────┬───────────┐              ┌───────────┬────────────┐               ┌───────────┐
+  │  Original │    Raw    │ ── clean ──▶ │   Clean   │ Structured │ ─ features ─▶ │  Feature  │
+  └───────────┴───────────┘              └───────────┴────────────┘               └───────────┘
+        └── parse ──┘                          └─ reshape ──┘
 ```
 
-Fig 1. The five stages grouped into the three Medallion layers
+Fig 2. The five stages, the transform between each pair, and the layers they fall into
 
 Table 1. Medallion layers and the stages they hold
 
