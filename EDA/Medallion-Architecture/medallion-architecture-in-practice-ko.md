@@ -1,9 +1,11 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset (Korean)
-Rev. 0 | Created: 2026-09-08 | Updated: 2026-09-08 16:12 CDT
+Rev. 1 | Created: 2026-09-08 | Updated: 2026-09-08 16:32 CDT
 
 ## 1. Overview
 
-이 문서는 raw source file 에서 model-ready dataset 까지 데이터를 나르는 pipeline 을 데이터 성숙도 순으로 정리한다. 계층 구조는 업계 표준인 Databricks 의 Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)] 이며, 이 pipeline 의 여섯 stage 가 그 세 layer 를 채운다. 각 stage 는 한 가지 책임만 지고 자기 앞의 stage 만 읽으므로, pipeline 이 재현 가능하고 추적 가능하게 유지된다.
+이 문서는 raw source file 에서 model-ready dataset 까지 데이터를 나르는 pipeline 을 데이터 성숙도 순으로 정리한다. 계층 구조는 업계 표준인 Databricks 의 Medallion architecture (Bronze → Silver → Gold) 이며, 이 pipeline 의 여섯 stage 가 그 세 layer 를 채운다. 각 stage 는 한 가지 책임만 지고 자기 앞의 stage 만 읽으므로, pipeline 이 재현 가능하고 추적 가능하게 유지된다.
+
+Databricks 는 이 architecture 를 lakehouse 안의 데이터를 조직하는 data design pattern 으로 정의하며, 그 목적은 데이터가 세 layer 를 지나는 동안 구조와 품질을 점진적으로 끌어올리는 데 있다 [[1](#ref-1)]. layer 의 이름은 데이터가 놓인 자리가 아니라 데이터가 무엇이 되었는지를 가리킨다.
 
 각 layer 는 자기가 담은 데이터에 대해 하나의 보증을 하며, 그 보증이 곧 그 layer 가 존재하는 이유이다.
 
@@ -62,7 +64,7 @@ Structured Data 와 Transformed Data 는 과도기적이다. model 에 무관한
 
 ### 3.3 Clean Data (Silver)
 
-믿을 수 있는 데이터이다. 결측값을 처리하고 잡음과 이상치를 제거하며 source 간 timestamp 를 정렬한다. 확신을 갖고 조회할 수 있는 첫 stage 이다. 한 가지 주의할 점이 있다. 일시적인 spike 와 실제 분포 변화 — dataset shift [[3](#ref-3)] — 는 통계적으로 비슷해 보일 수 있으므로, 제거 규칙은 도메인 검토를 거쳐 정해야 실제 신호를 버리지 않는다.
+믿을 수 있는 데이터이다. 결측값을 처리하고 잡음과 이상치를 제거하며 source 간 timestamp 를 정렬한다. 확신을 갖고 조회할 수 있는 첫 stage 이다. 한 가지 주의할 점이 있다. 일시적인 spike 와 실제 분포 변화 — dataset shift [[2](#ref-2)] — 는 통계적으로 비슷해 보일 수 있으므로, 제거 규칙은 도메인 검토를 거쳐 정해야 실제 신호를 버리지 않는다.
 
 ### 3.4 Structured Data (Silver)
 
@@ -70,11 +72,11 @@ Structured Data 와 Transformed Data 는 과도기적이다. model 에 무관한
 
 ### 3.5 Transformed Data (Silver)
 
-같은 값을 model 이 읽는 척도로 다시 표현한 것이다. 수치 열은 scaling 하고 범주 열은 encoding 하며 치우친 열은 단조 변환을 거친다. 표의 배치는 건드리지 않으며, 이것이 Structured Data 와 갈리는 지점이다. 한쪽은 값이 놓이는 방식을 바꾸고 다른 쪽은 값 자체를 바꾼다. 두 stage 는 서로를 읽지 않고 둘 다 Clean Data 를 읽으므로 어느 순서로 만들어도 된다. 여기서 적합하는 parameter — scaler 의 평균과 분산, encoder 의 범주 목록 — 는 훈련 행에서만 얻어 dataset 과 함께 저장한다. serving 시점에 다시 적합하는 것은 train/serve skew [[4](#ref-4)] 로 가는 알려진 길이기 때문이다.
+같은 값을 model 이 읽는 척도로 다시 표현한 것이다. 수치 열은 scaling 하고 범주 열은 encoding 하며 치우친 열은 단조 변환을 거친다. 표의 배치는 건드리지 않으며, 이것이 Structured Data 와 갈리는 지점이다. 한쪽은 값이 놓이는 방식을 바꾸고 다른 쪽은 값 자체를 바꾼다. 두 stage 는 서로를 읽지 않고 둘 다 Clean Data 를 읽으므로 어느 순서로 만들어도 된다. 여기서 적합하는 parameter — scaler 의 평균과 분산, encoder 의 범주 목록 — 는 훈련 행에서만 얻어 dataset 과 함께 저장한다. serving 시점에 다시 적합하는 것은 train/serve skew [[3](#ref-3)] 로 가는 알려진 길이기 때문이다.
 
 ### 3.6 Feature Data (Gold)
 
-최적화된 dataset 이다. 도메인 지식이 읽어 들인 열을 model 이 학습하는 변수 — 이동 평균, 주파수 성분, embedding — 로 바꾸고 차원 축소를 함께 적용한다. feature 가 sample 보다 많아지면 ($p \gg n$) 차원 축소는 선택이 아니라 필수이다 [[1](#ref-1)]. feature 정의는 version 을 붙여 train/serve skew [[4](#ref-4)] 를 막는다.
+최적화된 dataset 이다. 도메인 지식이 읽어 들인 열을 model 이 학습하는 변수 — 이동 평균, 주파수 성분, embedding — 로 바꾸고 차원 축소를 함께 적용한다. feature 가 sample 보다 많아지면 ($p \gg n$) 차원 축소는 선택이 아니라 필수이다 [[4](#ref-4)]. feature 정의는 version 을 붙여 train/serve skew [[3](#ref-3)] 를 막는다.
 
 ## 4. Key Principles
 
@@ -89,13 +91,13 @@ pipeline 의 값어치는 여섯 개의 이름표가 아니라 그 뒤의 규율
 ## References
 
 <a id="ref-1"></a>
-[1] Bühlmann, P., & van de Geer, S. (2011). [*Statistics for High-Dimensional Data: Methods, Theory and Applications*](https://doi.org/10.1007/978-3-642-20192-9). Springer.<br>
+[1] Databricks. [What is Medallion Architecture?](https://www.databricks.com/blog/what-is-medallion-architecture). Databricks.<br>
 <a id="ref-2"></a>
-[2] Databricks. [What is Medallion Architecture?](https://www.databricks.com/blog/what-is-medallion-architecture). Databricks.<br>
+[2] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.) (2009). [*Dataset Shift in Machine Learning*](https://doi.org/10.7551/mitpress/9780262170055.001.0001). MIT Press. ISBN 978-0-262-17005-8.<br>
 <a id="ref-3"></a>
-[3] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.) (2009). [*Dataset Shift in Machine Learning*](https://doi.org/10.7551/mitpress/9780262170055.001.0001). MIT Press. ISBN 978-0-262-17005-8.<br>
+[3] Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., Chaudhary, V., Young, M., Crespo, J.-F., & Dennison, D. (2015). [Hidden Technical Debt in Machine Learning Systems](https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems). *Advances in Neural Information Processing Systems*, 28.<br>
 <a id="ref-4"></a>
-[4] Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., Chaudhary, V., Young, M., Crespo, J.-F., & Dennison, D. (2015). [Hidden Technical Debt in Machine Learning Systems](https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems). *Advances in Neural Information Processing Systems*, 28.
+[4] Bühlmann, P., & van de Geer, S. (2011). [*Statistics for High-Dimensional Data: Methods, Theory and Applications*](https://doi.org/10.1007/978-3-642-20192-9). Springer.
 
 ---
 

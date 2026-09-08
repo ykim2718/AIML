@@ -1,9 +1,11 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 15 | Created: 2026-06-23 | Updated: 2026-09-08 16:12 CDT
+Rev. 16 | Created: 2026-06-23 | Updated: 2026-09-08 16:32 CDT
 
 ## 1. Overview
 
-This report describes a pipeline that carries data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The layering is the Databricks' Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)], an industry standard, and the six stages of this pipeline fill its three layers. Each stage has a single responsibility and reads only the stage or stages before it, which keeps the pipeline reproducible and auditable.
+This report describes a pipeline that carries data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The layering is the Databricks' Medallion architecture (Bronze → Silver → Gold), an industry standard, and the six stages of this pipeline fill its three layers. Each stage has a single responsibility and reads only the stage or stages before it, which keeps the pipeline reproducible and auditable.
+
+Databricks defines the architecture as a data design pattern for organizing data in a lakehouse, whose aim is to improve the structure and quality of the data incrementally as it passes through the three layers [[1](#ref-1)]. The layers are named for what the data has become, not for where it is kept.
 
 Each layer makes one guarantee about the data it holds, and that guarantee is what the layer is for.
 
@@ -62,7 +64,7 @@ The same data conformed to one schema. Originals are parsed into standardized co
 
 ### 3.3 Clean Data (Silver)
 
-Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first stage that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[3](#ref-3)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
+Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first stage that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[2](#ref-2)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
 
 ### 3.4 Structured Data (Silver)
 
@@ -70,11 +72,11 @@ The same values reshaped to the model's input specification. The two-dimensional
 
 ### 3.5 Transformed Data (Silver)
 
-The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. Neither stage reads the other and both read Clean Data, so they can be built in either order. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[4](#ref-4)].
+The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. Neither stage reads the other and both read Clean Data, so they can be built in either order. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[3](#ref-3)].
 
 ### 3.6 Feature Data (Gold)
 
-The optimized dataset. Domain knowledge converts the columns it reads into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[1](#ref-1)]. Feature definitions are versioned to prevent train/serve skew [[4](#ref-4)].
+The optimized dataset. Domain knowledge converts the columns it reads into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[4](#ref-4)]. Feature definitions are versioned to prevent train/serve skew [[3](#ref-3)].
 
 ## 4. Key Principles
 
@@ -89,13 +91,13 @@ Together they make a bad prediction diagnosable: the column that carried it can 
 ## References
 
 <a id="ref-1"></a>
-[1] Bühlmann, P., & van de Geer, S. (2011). [*Statistics for High-Dimensional Data: Methods, Theory and Applications*](https://doi.org/10.1007/978-3-642-20192-9). Springer.<br>
+[1] Databricks. [What is Medallion Architecture?](https://www.databricks.com/blog/what-is-medallion-architecture). Databricks.<br>
 <a id="ref-2"></a>
-[2] Databricks. [What is Medallion Architecture?](https://www.databricks.com/blog/what-is-medallion-architecture). Databricks.<br>
+[2] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.) (2009). [*Dataset Shift in Machine Learning*](https://doi.org/10.7551/mitpress/9780262170055.001.0001). MIT Press. ISBN 978-0-262-17005-8.<br>
 <a id="ref-3"></a>
-[3] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.) (2009). [*Dataset Shift in Machine Learning*](https://doi.org/10.7551/mitpress/9780262170055.001.0001). MIT Press. ISBN 978-0-262-17005-8.<br>
+[3] Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., Chaudhary, V., Young, M., Crespo, J.-F., & Dennison, D. (2015). [Hidden Technical Debt in Machine Learning Systems](https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems). *Advances in Neural Information Processing Systems*, 28.<br>
 <a id="ref-4"></a>
-[4] Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., Chaudhary, V., Young, M., Crespo, J.-F., & Dennison, D. (2015). [Hidden Technical Debt in Machine Learning Systems](https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems). *Advances in Neural Information Processing Systems*, 28.
+[4] Bühlmann, P., & van de Geer, S. (2011). [*Statistics for High-Dimensional Data: Methods, Theory and Applications*](https://doi.org/10.1007/978-3-642-20192-9). Springer.
 
 ---
 
