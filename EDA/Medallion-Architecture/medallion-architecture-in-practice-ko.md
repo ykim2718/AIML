@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset (Korean)
-Rev. 6 | Created: 2026-09-08 | Updated: 2026-09-08 18:14 CDT
+Rev. 7 | Created: 2026-09-08 | Updated: 2026-09-08 18:18 CDT
 
 ## 1. Overview
 
@@ -26,7 +26,7 @@ Databricks 는 이 architecture 를 lakehouse 안의 데이터를 조직하는 d
                                     and fed to a model
 ```
 
-Fig 1. 각 Medallion layer 의 보증과 그 데이터를 쓸 수 있는 곳
+Fig 1. What each Medallion layer guarantees and what its data can be used for
 
 Bronze 는 기록이 도착한 그대로임을, Silver 는 값을 믿을 수 있음을, Gold 는 열이 model 이 그대로 쓰는 것임을 보증한다. 꼭지 2 는 pipeline 의 여섯 stage 를 이 layer 안에 배치하고, 꼭지 3 은 각 stage 를 차례로 다룬다.
 
@@ -45,9 +45,9 @@ Bronze 는 기록이 도착한 그대로임을, Silver 는 값을 믿을 수 있
                                                   └─────────────┘
 ```
 
-Fig 2. 여섯 stage 와 그 사이의 transform, 그리고 그것들이 속한 layer
+Fig 2. The six stages, the transform between them, and the layers they fall into
 
-Table 1. Medallion layer 와 그 안에 담기는 stage
+Table 1. Medallion layers and the stages they hold
 
 | Layer | Stages | State | Purpose |
 | --- | --- | --- | --- |
