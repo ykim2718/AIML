@@ -1,9 +1,9 @@
-# Five stages of a data pipeline, from raw source files to a model-ready dataset
-Rev. 13 | Created: 2026-06-23 | Updated: 2026-09-08 15:04 CDT
+# Medallion architecture in practice: six stages from raw source files to a model-ready dataset
+Rev. 14 | Created: 2026-06-23 | Updated: 2026-09-08 15:38 CDT
 
 ## 1. Overview
 
-This report describes a five-stage data pipeline that takes data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The five stages map one-to-one onto the Databricks' Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)], an industry-standard layering popularized by Databricks. Each stage has a single responsibility and consumes only the stage before it, which keeps the pipeline reproducible and auditable.
+This report describes a data pipeline that takes data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The layering is the Databricks' Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)], an industry standard, and the six stages of this pipeline fill its three layers. Each stage has a single responsibility and reads only the stage or stages before it, which keeps the pipeline reproducible and auditable.
 
 Each layer answers a different question, and the answer it gives is a guarantee about the data it holds.
 
@@ -21,11 +21,11 @@ Each layer answers a different question, and the answer it gives is a guarantee 
 
 Fig 1. What each Medallion layer is responsible for
 
-Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. Section 2 places the five stages of the pipeline inside these layers, and section 3 takes each stage in turn.
+Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. Section 2 places the six stages of the pipeline inside these layers, and section 3 takes each stage in turn.
 
 ## 2. Medallion Architecture Mapping
 
-The five stages line up one-to-one with the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 names the transform that carries each stage to the next, so that a layer boundary can be read as the transform that crosses it, and shows Clean branching into two Silver forms.
+The six stages fall into the three layers of the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 names the transform that carries each stage to the next, so that a layer boundary can be read as the transform that crosses it, and shows Clean branching into two Silver forms.
 
 ```text
         BRONZE                               SILVER                       GOLD
@@ -38,19 +38,19 @@ The five stages line up one-to-one with the Medallion architecture, the de facto
                                                   └─────────────┘
 ```
 
-Fig 2. The stages, the transform that carries each one to the next, and the layers they fall into
+Fig 2. The six stages, the transform between them, and the layers they fall into
 
 Table 1. Medallion layers and the stages they hold
 
 | Layer | Stages | State | Purpose |
 | --- | --- | --- | --- |
 | Bronze | Original + Raw | Landed as-is; format mismatch and unstructured content included | Preserve the historical record |
-| Silver | Clean + Structured | Cleaned, conformed, and reshaped to a model-input form | Trusted, query-ready data |
+| Silver | Clean + Structured + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data |
 | Gold | Feature | Fully engineered, highest maturity | Drop straight into a model |
 
-Structured Data is a transitional layer. Model-agnostic reshaping (plain reshape, standard windowing) stays in Silver because many models can share it, while model-specific shaping leans toward Gold. When several models reuse the same structured output, it is best pinned to Silver.
+Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver.
 
-## 3. Five-Stage Pipeline
+## 3. Pipeline Stages
 
 ### 3.1 Original Data (Bronze)
 
@@ -68,13 +68,17 @@ Trustworthy data. Missing values are handled, noise and outliers are removed, an
 
 The same values reshaped to the model's input specification. The two-dimensional (2D) tabular form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
 
-### 3.5 Feature Data (Gold)
+### 3.5 Transformed Data (Silver)
+
+The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. Both read Clean Data and neither reads the other, so the two can be built in either order. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[4](#ref-4)].
+
+### 3.6 Feature Data (Gold)
 
 The optimized dataset. Domain knowledge converts raw inputs into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[1](#ref-1)]. Feature definitions are versioned to prevent train/serve skew [[4](#ref-4)].
 
 ## 4. Key Principles
 
-The value of the pipeline is not the five labels but the discipline behind them:
+The value of the pipeline is not the six labels but the discipline behind them:
 
 - Immutability — each layer is written once and never edited in place.
 - Reproducibility — each transform is deterministic, so the same input yields the same output.
@@ -103,5 +107,5 @@ Together these properties let a bad prediction be traced all the way back to the
 - **idempotent**: A property of a transform whose repeated application gives the same result as a single application.
 - **lineage**: The recorded chain of transforms that connects a column to its origin.
 - **Medallion architecture**: A layering of a data lakehouse into Bronze, Silver, and Gold by data quality and maturity.
-- **Silver**: The Medallion layer that holds cleaned, conformed, and reshaped data.
+- **Silver**: The Medallion layer that holds cleaned and conformed data, reshaped and re-expressed for a model.
 - **train/serve skew**: A mismatch between the feature values computed at training time and those computed at serving time.
