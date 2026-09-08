@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 17 | Created: 2026-06-23 | Updated: 2026-09-08 16:52 CDT
+Rev. 18 | Created: 2026-06-23 | Updated: 2026-09-08 18:09 CDT
 
 ## 1. Overview
 
@@ -54,7 +54,7 @@ Table 1. Medallion layers and the stages they hold
 | Silver | Clean + Structured + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data |
 | Gold | Feature | Fully engineered, highest maturity | Drop straight into a model |
 
-Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver.
+Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver. A model that needs no engineered feature can be trained on the Silver output directly, because Structured Data already carries the input shape it reads and Transformed Data the scale.
 
 ## 3. Pipeline Stages
 
