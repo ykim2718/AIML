@@ -1,5 +1,5 @@
 # Five stages of a data pipeline, from raw source files to a model-ready dataset
-Rev. 12 | Created: 2026-06-23 | Updated: 2026-09-08 14:22 CDT
+Rev. 13 | Created: 2026-06-23 | Updated: 2026-09-08 15:04 CDT
 
 ## 1. Overview
 
@@ -21,44 +21,24 @@ Each layer answers a different question, and the answer it gives is a guarantee 
 
 Fig 1. What each Medallion layer is responsible for
 
-Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. What fills the three layers is the five stages of section 2, and section 3 shows which stage falls where.
+Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. Section 2 places the five stages of the pipeline inside these layers, and section 3 takes each stage in turn.
 
-## 2. Five-Stage Pipeline
+## 2. Medallion Architecture Mapping
 
-### 2.1 Original Data (Bronze)
-
-The untouched files exactly as they arrive from each source. Every source and version brings its own format — CSV (Comma-Separated Values), JSON (JavaScript Object Notation), or XML (Extensible Markup Language) — its own column names, and its own header conventions. These files are stored exactly as received and are never edited in place; they are the historical record and the only safety net if a parsing bug surfaces later.
-
-### 2.2 Raw Data (Bronze)
-
-The same data conformed to one schema. Originals are parsed into standardized column names, units, and timestamps. The shape is now consistent, but the content is still raw: nulls, outliers, and duplicates remain. Parsing is kept idempotent so that Raw can always be regenerated from Original.
-
-### 2.3 Clean Data (Silver)
-
-Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first layer that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[3](#ref-3)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
-
-### 2.4 Structured Data (Silver)
-
-The same values reshaped to the model's input specification. The two-dimensional (2D) tabular form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
-
-### 2.5 Feature Data (Gold)
-
-The optimized dataset. Domain knowledge converts raw inputs into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[1](#ref-1)]. Feature definitions are versioned to prevent train/serve skew [[4](#ref-4)].
-
-## 3. Medallion Architecture Mapping
-
-The five stages line up one-to-one with the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 adds the transform that carries each stage to the next, so that the boundary between two layers can be read as the transform that crosses it.
+The five stages line up one-to-one with the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 names the transform that carries each stage to the next, so that a layer boundary can be read as the transform that crosses it, and shows Clean branching into two Silver forms.
 
 ```text
-           BRONZE                                 SILVER                              GOLD
-     (raw preservation)                   (cleaned & structured)                  (model-ready)
-  ┌───────────┬───────────┐              ┌───────────┬────────────┐               ┌───────────┐
-  │  Original │    Raw    │ ── clean ──▶ │   Clean   │ Structured │ ─ features ─▶ │  Feature  │
-  └───────────┴───────────┘              └───────────┴────────────┘               └───────────┘
-        └── parse ──┘                          └─ reshape ──┘
+        BRONZE                               SILVER                       GOLD
+                                                  ┌─────────────┐
+                                              ┌─▶ │  Structured │─┐
+  ┌───────────┬───────────┐    ┌───────────┐  │   └─────────────┘ │   ┌───────────┐
+  │  Original │    Raw    │──▶ │   Clean   │ ─┤                   ├──▶│  Feature  │
+  └───────────┴───────────┘    └───────────┘  │   ┌─────────────┐ │   └───────────┘
+        └── parse ──┘            clean        └─▶ │ Transformed │─┘     features
+                                                  └─────────────┘
 ```
 
-Fig 2. The five stages, the transform between each pair, and the layers they fall into
+Fig 2. The stages, the transform that carries each one to the next, and the layers they fall into
 
 Table 1. Medallion layers and the stages they hold
 
@@ -69,6 +49,28 @@ Table 1. Medallion layers and the stages they hold
 | Gold | Feature | Fully engineered, highest maturity | Drop straight into a model |
 
 Structured Data is a transitional layer. Model-agnostic reshaping (plain reshape, standard windowing) stays in Silver because many models can share it, while model-specific shaping leans toward Gold. When several models reuse the same structured output, it is best pinned to Silver.
+
+## 3. Five-Stage Pipeline
+
+### 3.1 Original Data (Bronze)
+
+The untouched files exactly as they arrive from each source. Every source and version brings its own format — CSV (Comma-Separated Values), JSON (JavaScript Object Notation), or XML (Extensible Markup Language) — its own column names, and its own header conventions. These files are stored exactly as received and are never edited in place; they are the historical record and the only safety net if a parsing bug surfaces later.
+
+### 3.2 Raw Data (Bronze)
+
+The same data conformed to one schema. Originals are parsed into standardized column names, units, and timestamps. The shape is now consistent, but the content is still raw: nulls, outliers, and duplicates remain. Parsing is kept idempotent so that Raw can always be regenerated from Original.
+
+### 3.3 Clean Data (Silver)
+
+Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first layer that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[3](#ref-3)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
+
+### 3.4 Structured Data (Silver)
+
+The same values reshaped to the model's input specification. The two-dimensional (2D) tabular form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
+
+### 3.5 Feature Data (Gold)
+
+The optimized dataset. Domain knowledge converts raw inputs into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[1](#ref-1)]. Feature definitions are versioned to prevent train/serve skew [[4](#ref-4)].
 
 ## 4. Key Principles
 
