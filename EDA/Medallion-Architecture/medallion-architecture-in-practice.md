@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 20 | Created: 2026-06-23 | Updated: 2026-09-08 18:40 CDT
+Rev. 21 | Created: 2026-06-23 | Updated: 2026-09-08 18:14 CDT
 
 ## 1. Overview
 
@@ -37,11 +37,11 @@ The six stages fall into the three layers of the Medallion architecture, the de 
 ```text
         BRONZE                               SILVER                       GOLD
                                                   ┌─────────────┐
-                                              ┌─▶ │  Structured │─┐
+                                              ┌─> │  Structured │─┐
   ┌───────────┬───────────┐    ┌───────────┐  │   └─────────────┘ │   ┌───────────┐
-  │  Original │    Raw    │──▶ │   Clean   │ ─┤                   ├──▶│  Feature  │
+  │  Original │    Raw    │──> │   Clean   │ ─┤                   ├──>│  Feature  │
   └───────────┴───────────┘    └───────────┘  │   ┌─────────────┐ │   └───────────┘
-        └── parse ──┘            clean        └─▶ │ Transformed │─┘     features
+        └── parse ──┘            clean        └─> │ Transformed │─┘     features
                                                   └─────────────┘
 ```
 

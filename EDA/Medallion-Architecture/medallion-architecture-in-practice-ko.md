@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset (Korean)
-Rev. 5 | Created: 2026-09-08 | Updated: 2026-09-08 18:40 CDT
+Rev. 6 | Created: 2026-09-08 | Updated: 2026-09-08 18:14 CDT
 
 ## 1. Overview
 
@@ -37,11 +37,11 @@ Bronze 는 기록이 도착한 그대로임을, Silver 는 값을 믿을 수 있
 ```text
         BRONZE                               SILVER                       GOLD
                                                   ┌─────────────┐
-                                              ┌─▶ │  Structured │─┐
+                                              ┌─> │  Structured │─┐
   ┌───────────┬───────────┐    ┌───────────┐  │   └─────────────┘ │   ┌───────────┐
-  │  Original │    Raw    │──▶ │   Clean   │ ─┤                   ├──▶│  Feature  │
+  │  Original │    Raw    │──> │   Clean   │ ─┤                   ├──>│  Feature  │
   └───────────┴───────────┘    └───────────┘  │   ┌─────────────┐ │   └───────────┘
-        └── parse ──┘            clean        └─▶ │ Transformed │─┘     features
+        └── parse ──┘            clean        └─> │ Transformed │─┘     features
                                                   └─────────────┘
 ```
 
