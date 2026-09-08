@@ -1,5 +1,5 @@
 # Plugin Setup In A Web Interface
-Rev. 0 | Created: 2026-09-08 | Updated: 2026-09-08 18:53 CDT
+Rev. 1 | Created: 2026-09-08 | Updated: 2026-09-08 18:57 CDT
 
 Web session 은 plugin 이 하나도 설치되지 않은 새 container 에서 시작한다. 이 문서는 그 container 에 plugin 을 싣는 두 경로 가운데, 저장소의 hook 이 아니라 cloud environment 의 setup script 를 쓰는 쪽을 다룬다.
 
@@ -14,33 +14,34 @@ Web session 은 plugin 이 하나도 설치되지 않은 새 container 에서 �
 아래 script 를 cloud environment 설정의 **Setup script** 칸에 넣으면 설치가 끝난다. Setup script 는 새 세션이 시작될 때 Claude Code 가 뜨기 전에 root 로 실행되는 Bash script 이므로 [[2](#ref-2)], 세션이 첫 prompt 를 받는 시점에는 plugin 이 이미 자리에 있다.
 
 ```bash
-# Claude Code cloud environment — Setup script field
-set -uo pipefail
-
-MARKETPLACE='ykim2718/Claude-Configuration'
-REPO_URL='https://github.com/ykim2718/Claude-Configuration.git'
-PLUGINS='yrocket-md-doc@claude-configuration yrocket-coding@claude-configuration yrocket-wordpress@claude-configuration'
+#!/usr/bin/env bash
+# version = "0.0.0+20260907" semantic versioning(Major.Minor.Patch)
+# yRocket plugins. The marketplace repo is private and this script runs before Claude Code
+# brings up its own git credentials, so the token has to supply them here.
+export CLAUDE_CONFIGURATION_REPO_TOKEN='<GITHUB_PAT>'
 LOG="$HOME/plugin-setup.log"
-
 {
-  date -u '+=== setup %Y-%m-%dT%H:%M:%SZ'
-  # The marketplace repository is private, so git needs a credential before the
-  # clone. The rewrite is scoped to this one URL, because a host-wide rewrite
-  # would override the credential every other github.com operation uses.
-  git config --global \
-    url."https://x-access-token:<GITHUB_PAT>@github.com/ykim2718/Claude-Configuration.git".insteadOf \
-    "$REPO_URL"
-  # Both are idempotent: re-adding a marketplace and re-installing a plugin
-  # that are already present succeed and change nothing.
-  claude plugin marketplace add "$MARKETPLACE"
-  claude plugin marketplace update claude-configuration
-  for p in $PLUGINS; do
-    claude plugin install "$p"
-  done
-  claude plugin list
-} >>"$LOG" 2>&1
+    echo "=== setup $(date -u +%FT%TZ) ==="
 
-# A missing plugin is worth a log line, never a failed session start.
+    if [ -z "$CLAUDE_CONFIGURATION_REPO_TOKEN" ]; then
+        echo "CLAUDE_CONFIGURATION_REPO_TOKEN is not set; leaving the existing plugins untouched"
+    else
+        # git reads these instead of a config file, so the token is never written to disk
+        export GIT_CONFIG_COUNT=1
+        export GIT_CONFIG_KEY_0='credential.https://github.com.helper'
+        export GIT_CONFIG_VALUE_0='!f() { echo username=x-access-token; echo "password=$CLAUDE_CONFIGURATION_REPO_TOKEN"; }; f'
+
+        claude plugin marketplace add ykim2718/Claude-Configuration
+        claude plugin marketplace update claude-configuration
+
+        for p in yrocket-md-doc yrocket-coding yrocket-wordpress; do
+            claude plugin install -y "$p@claude-configuration"
+        done
+    fi
+
+    claude plugin list
+} >>"$LOG" 2>&1
+cat "$LOG"
 exit 0
 ```
 
@@ -52,11 +53,12 @@ Setup script 에는 세 가지 제약이 있다 [[2](#ref-2)].
 
 ## 3. Token
 
-`Claude-Configuration` 이 private 이므로 clone 에 자격 증명이 필요하다. Script 의 `<GITHUB_PAT>` 자리에 그 repo 의 contents 읽기 권한만 가진 token 을 넣는다.
+`Claude-Configuration` 이 private 이고 이 script 는 Claude Code 가 자기 git 자격 증명을 올리기 전에 실행되므로, clone 에 쓸 자격 증명을 script 가 직접 대야 한다. `<GITHUB_PAT>` 자리에 그 repo 의 contents 읽기 권한만 가진 token 을 넣는다.
 
-- Token 값은 environment 설정 안에만 둔다. 저장소에 commit 하지 않으며, 이 문서에도 자리표시자만 남긴다.
-- URL rewrite 는 그 repo 하나에만 건다. `github.com` 전체에 걸면 다른 저장소를 다루는 git 작업의 자격 증명까지 덮는다.
-- Token 이 없거나 만료되면 clone 이 인증에서 실패하고 plugin 은 설치되지 않는다. 실패한 사실은 log 에만 남는다.
+- Token 값은 environment 설정의 Setup script 칸 안에만 둔다. 저장소에 commit 하지 않으며, 이 문서에도 자리표시자만 남긴다.
+- Token 은 `GIT_CONFIG_COUNT` 와 `GIT_CONFIG_KEY_0` · `GIT_CONFIG_VALUE_0` 를 통해 credential helper 로 git 에 넘어간다. git 이 config 파일 대신 이 환경 변수를 읽으므로 token 이 disk 에 남지 않는다.
+- 환경 변수는 script 의 process 에만 있으므로, 뒤이어 뜨는 세션의 git 작업에는 이 helper 가 걸리지 않는다.
+- Token 이 비어 있으면 script 는 설치를 건너뛰고 이미 있는 plugin 을 그대로 둔다. Token 이 만료된 경우에는 clone 이 인증에서 실패하며, 그 사실은 log 에만 남는다.
 
 ## 4. Verification
 
@@ -76,7 +78,7 @@ Installed plugins:
     Status: √ enabled
 ```
 
-세션 안에서 확인할 때는 `/md_rules` 를 불러 본다. Skill 이 실리면 plugin 이 설치된 것이고, 이름을 찾지 못하면 log 를 본다.
+Script 의 마지막 `cat` 이 그 log 를 표준 출력으로 다시 내보내므로, environment 의 setup 출력에서도 같은 내용을 볼 수 있다. 세션 안에서 확인할 때는 `/md_rules` 를 불러 본다. Skill 이 실리면 plugin 이 설치된 것이고, 이름을 찾지 못하면 log 를 본다.
 
 ## 5. Comparison
 
