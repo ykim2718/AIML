@@ -1,11 +1,11 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 14 | Created: 2026-06-23 | Updated: 2026-09-08 15:38 CDT
+Rev. 15 | Created: 2026-06-23 | Updated: 2026-09-08 16:12 CDT
 
 ## 1. Overview
 
-This report describes a data pipeline that takes data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The layering is the Databricks' Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)], an industry standard, and the six stages of this pipeline fill its three layers. Each stage has a single responsibility and reads only the stage or stages before it, which keeps the pipeline reproducible and auditable.
+This report describes a pipeline that carries data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The layering is the Databricks' Medallion architecture (Bronze → Silver → Gold) [[2](#ref-2)], an industry standard, and the six stages of this pipeline fill its three layers. Each stage has a single responsibility and reads only the stage or stages before it, which keeps the pipeline reproducible and auditable.
 
-Each layer answers a different question, and the answer it gives is a guarantee about the data it holds.
+Each layer makes one guarantee about the data it holds, and that guarantee is what the layer is for.
 
 ```text
            BRONZE                         SILVER                          GOLD
@@ -19,13 +19,13 @@ Each layer answers a different question, and the answer it gives is a guarantee 
      if a parse is wrong            queried with trust            train and serve agree
 ```
 
-Fig 1. What each Medallion layer is responsible for
+Fig 1. The guarantee each Medallion layer makes
 
 Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. Section 2 places the six stages of the pipeline inside these layers, and section 3 takes each stage in turn.
 
 ## 2. Medallion Architecture Mapping
 
-The six stages fall into the three layers of the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 names the transform that carries each stage to the next, so that a layer boundary can be read as the transform that crosses it, and shows Clean branching into two Silver forms.
+The six stages fall into the three layers of the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 names the transform at each layer boundary, so that a boundary can be read as the work that crosses it, and shows Clean branching into two Silver forms that rejoin at Feature.
 
 ```text
         BRONZE                               SILVER                       GOLD
@@ -62,19 +62,19 @@ The same data conformed to one schema. Originals are parsed into standardized co
 
 ### 3.3 Clean Data (Silver)
 
-Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first layer that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[3](#ref-3)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
+Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first stage that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[3](#ref-3)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
 
 ### 3.4 Structured Data (Silver)
 
-The same values reshaped to the model's input specification. The two-dimensional (2D) tabular form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
+The same values reshaped to the model's input specification. The two-dimensional (2D) form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
 
 ### 3.5 Transformed Data (Silver)
 
-The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. Both read Clean Data and neither reads the other, so the two can be built in either order. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[4](#ref-4)].
+The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. Neither stage reads the other and both read Clean Data, so they can be built in either order. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[4](#ref-4)].
 
 ### 3.6 Feature Data (Gold)
 
-The optimized dataset. Domain knowledge converts raw inputs into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[1](#ref-1)]. Feature definitions are versioned to prevent train/serve skew [[4](#ref-4)].
+The optimized dataset. Domain knowledge converts the columns it reads into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[1](#ref-1)]. Feature definitions are versioned to prevent train/serve skew [[4](#ref-4)].
 
 ## 4. Key Principles
 
@@ -84,7 +84,7 @@ The value of the pipeline is not the six labels but the discipline behind them:
 - Reproducibility — each transform is deterministic, so the same input yields the same output.
 - Lineage — every column can be traced back to the source record that produced it.
 
-Together these properties let a bad prediction be traced all the way back to the exact source record that produced it.
+Together they make a bad prediction diagnosable: the column that carried it can be re-derived, and the record behind that column can be opened.
 
 ## References
 
