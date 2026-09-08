@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 19 | Created: 2026-06-23 | Updated: 2026-09-08 18:24 CDT
+Rev. 20 | Created: 2026-06-23 | Updated: 2026-09-08 18:40 CDT
 
 ## 1. Overview
 
@@ -17,7 +17,7 @@ Each layer makes one guarantee about the data it holds, and that guarantee is wh
            BRONZE                         SILVER                          GOLD
   ┌───────────────────────┐      ┌───────────────────────┐      ┌───────────────────────┐
   │        keep it        │      │        make it        │      │        make it        │
-  │      as it landed     │ ───▶ │      trustworthy      │ ───▶ │      model-ready      │
+  │      as it landed     │ ───> │      trustworthy      │ ───> │      model-ready      │
   └───────────────────────┘      └───────────────────────┘      └───────────────────────┘
       written once and              nulls, outliers and            features built and
       never edited, the             clocks resolved, so            reduced, and pinned
@@ -26,7 +26,7 @@ Each layer makes one guarantee about the data it holds, and that guarantee is wh
                                     and fed to a model
 ```
 
-Fig 1. The guarantee each Medallion layer makes
+Fig 1. What each Medallion layer guarantees and what its data can be used for
 
 Bronze guarantees that the record is what arrived, Silver that the values can be trusted, and Gold that the columns are the ones a model consumes. Section 2 places the six stages of the pipeline inside these layers, and section 3 takes each stage in turn.
 
