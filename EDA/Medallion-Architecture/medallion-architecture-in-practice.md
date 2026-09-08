@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 18 | Created: 2026-06-23 | Updated: 2026-09-08 18:09 CDT
+Rev. 19 | Created: 2026-06-23 | Updated: 2026-09-08 18:24 CDT
 
 ## 1. Overview
 
@@ -23,6 +23,7 @@ Each layer makes one guarantee about the data it holds, and that guarantee is wh
       never edited, the             clocks resolved, so            reduced, and pinned
        only safety net                the data can be             to a version so that
      if a parse is wrong            queried with trust            train and serve agree
+                                    and fed to a model
 ```
 
 Fig 1. The guarantee each Medallion layer makes
@@ -51,7 +52,7 @@ Table 1. Medallion layers and the stages they hold
 | Layer | Stages | State | Purpose |
 | --- | --- | --- | --- |
 | Bronze | Original + Raw | Landed as-is; format mismatch and unstructured content included | Preserve the historical record |
-| Silver | Clean + Structured + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data |
+| Silver | Clean + Structured + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data, and model-ready when no new feature is needed |
 | Gold | Feature | Fully engineered, highest maturity | Drop straight into a model |
 
 Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver. A model that needs no engineered feature can be trained on the Silver output directly, because Structured Data already carries the input shape it reads and Transformed Data the scale.

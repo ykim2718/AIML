@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset (Korean)
-Rev. 3 | Created: 2026-09-08 | Updated: 2026-09-08 18:09 CDT
+Rev. 4 | Created: 2026-09-08 | Updated: 2026-09-08 18:24 CDT
 
 ## 1. Overview
 
@@ -23,6 +23,7 @@ Databricks 는 이 architecture 를 lakehouse 안의 데이터를 조직하는 d
       never edited, the             clocks resolved, so            reduced, and pinned
        only safety net                the data can be             to a version so that
      if a parse is wrong            queried with trust            train and serve agree
+                                    and fed to a model
 ```
 
 Fig 1. 각 Medallion layer 가 하는 보증
@@ -51,7 +52,7 @@ Table 1. Medallion layer 와 그 안에 담기는 stage
 | Layer | Stages | State | Purpose |
 | --- | --- | --- | --- |
 | Bronze | Original + Raw | 도착한 그대로. 형식 불일치와 비정형 내용 포함 | 원본 기록 보존 |
-| Silver | Clean + Structured + Transformed | 정제·정규화 후 model 입력 형태로 재배치하고 model 이 읽는 척도로 다시 표현 | 신뢰할 수 있고 조회 가능한 데이터 |
+| Silver | Clean + Structured + Transformed | 정제·정규화 후 model 입력 형태로 재배치하고 model 이 읽는 척도로 다시 표현 | 신뢰할 수 있고 조회 가능한 데이터. 새 feature 가 필요 없으면 model 에도 그대로 투입 |
 | Gold | Feature | 완전히 가공된 최고 성숙도 | model 에 그대로 투입 |
 
 Structured Data 와 Transformed Data 는 과도기적이다. model 에 무관한 작업 — 단순 재배치, 표준 windowing, 표준 scaling — 은 여러 model 이 함께 쓸 수 있으므로 Silver 에 남고, 특정 model 에만 맞춘 재배치나 encoding 은 Gold 쪽으로 기운다. 여러 model 이 같은 산출물을 재사용한다면 Silver 에 고정하는 것이 낫다. 새로 만들 feature 가 필요 없는 model 은 Silver 산출물로 바로 훈련할 수 있다. Structured Data 가 이미 그 model 이 읽는 입력 형태를, Transformed Data 가 그 척도를 갖추고 있기 때문이다.
