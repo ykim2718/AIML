@@ -1,11 +1,15 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 16 | Created: 2026-06-23 | Updated: 2026-09-08 16:32 CDT
+Rev. 17 | Created: 2026-06-23 | Updated: 2026-09-08 16:52 CDT
 
 ## 1. Overview
 
 This report describes a pipeline that carries data from raw source files to a model-ready dataset for Artificial Intelligence and Machine Learning (AI/ML) workloads, organized by data maturity. The layering is the Databricks' Medallion architecture (Bronze → Silver → Gold), an industry standard, and the six stages of this pipeline fill its three layers. Each stage has a single responsibility and reads only the stage or stages before it, which keeps the pipeline reproducible and auditable.
 
 Databricks defines the architecture as a data design pattern for organizing data in a lakehouse, whose aim is to improve the structure and quality of the data incrementally as it passes through the three layers [[1](#ref-1)]. The layers are named for what the data has become, not for where it is kept.
+
+- Bronze holds the records from the source systems — an RDBMS (Relational Database Management System), IoT (Internet of Things) devices, logs, or an API (Application Programming Interface) — almost exactly as they arrive.
+- Silver holds those same records cleansed, enriched, and conformed to one specification, an intermediate state between the source and the consumer.
+- Gold holds the aggregated and modeled result, shaped for the consumer that reads it: a star schema for BI (Business Intelligence) reporting, a feature table for model training.
 
 Each layer makes one guarantee about the data it holds, and that guarantee is what the layer is for.
 
@@ -110,4 +114,5 @@ Together they make a bad prediction diagnosable: the column that carried it can 
 - **lineage**: The recorded chain of transforms that connects a column to its origin.
 - **Medallion architecture**: A layering of a data lakehouse into Bronze, Silver, and Gold by data quality and maturity.
 - **Silver**: The Medallion layer that holds cleaned and conformed data, reshaped and re-expressed for a model.
+- **star schema**: A table layout that puts the measures in one fact table and their descriptive attributes in the dimension tables around it.
 - **train/serve skew**: A mismatch between the feature values computed at training time and those computed at serving time.

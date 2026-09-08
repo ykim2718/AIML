@@ -1,11 +1,15 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset (Korean)
-Rev. 1 | Created: 2026-09-08 | Updated: 2026-09-08 16:32 CDT
+Rev. 2 | Created: 2026-09-08 | Updated: 2026-09-08 16:52 CDT
 
 ## 1. Overview
 
 이 문서는 raw source file 에서 model-ready dataset 까지 데이터를 나르는 pipeline 을 데이터 성숙도 순으로 정리한다. 계층 구조는 업계 표준인 Databricks 의 Medallion architecture (Bronze → Silver → Gold) 이며, 이 pipeline 의 여섯 stage 가 그 세 layer 를 채운다. 각 stage 는 한 가지 책임만 지고 자기 앞의 stage 만 읽으므로, pipeline 이 재현 가능하고 추적 가능하게 유지된다.
 
 Databricks 는 이 architecture 를 lakehouse 안의 데이터를 조직하는 data design pattern 으로 정의하며, 그 목적은 데이터가 세 layer 를 지나는 동안 구조와 품질을 점진적으로 끌어올리는 데 있다 [[1](#ref-1)]. layer 의 이름은 데이터가 놓인 자리가 아니라 데이터가 무엇이 되었는지를 가리킨다.
+
+- Bronze 는 source system — RDBMS (Relational Database Management System), IoT (Internet of Things) 기기, log, API (Application Programming Interface) — 의 기록을 도착한 그대로 담는다.
+- Silver 는 그 기록을 정제하고 결합하고 하나의 규격에 맞춘, source 와 소비자 사이의 중간 상태로 담는다.
+- Gold 는 집계와 modeling 을 마친 결과를 그것을 읽는 쪽에 맞춰 담는다. BI (Business Intelligence) 보고를 위한 star schema, model 훈련을 위한 feature 표가 그것이다.
 
 각 layer 는 자기가 담은 데이터에 대해 하나의 보증을 하며, 그 보증이 곧 그 layer 가 존재하는 이유이다.
 
@@ -110,4 +114,5 @@ pipeline 의 값어치는 여섯 개의 이름표가 아니라 그 뒤의 규율
 - **lineage**: 한 열을 그 기원까지 잇는, 기록으로 남은 transform 의 사슬.
 - **Medallion architecture**: data lakehouse 를 데이터 품질과 성숙도에 따라 Bronze, Silver, Gold 로 나눈 계층 구조.
 - **Silver**: 정제·정규화된 뒤 model 을 위해 재배치되고 다시 표현된 데이터를 담는 Medallion layer.
+- **star schema**: 측정값을 하나의 fact table 에 두고 그 설명 속성을 둘레의 dimension table 에 두는 표 배치.
 - **train/serve skew**: 훈련 시점에 계산한 feature 값과 serving 시점에 계산한 값이 어긋나는 것.
