@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 9 | Created: 2026-09-09 | Updated: 2026-09-09 21:51 UTC
+Rev. 10 | Created: 2026-09-09 | Updated: 2026-09-09 21:52 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -97,7 +97,7 @@ An expansion charges two prices. The column count grows fast, which invites over
 
 ### 5.1 Dimensionality And Overfitting
 
-The column count grows as the $d$-th power of the variable count. Without the intercept, the full expansion has the column count of equation (6), and `interaction_only`, which keeps only products of distinct variables, has that of equation (7).
+The column count grows as the $d$-th power of the variable count. Covering the space those columns span at one density takes exponentially more observations as their number grows, which is the curse of dimensionality, and an expansion walks into it by adding columns to data whose row count does not move. Without the intercept, the full expansion has the column count of equation (6), and `interaction_only`, which keeps only products of distinct variables, has that of equation (7).
 
 $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (6)$$
 
@@ -314,6 +314,7 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 
 - **collinearity**: The state in which two or more columns point in nearly the same direction, so that their coefficients cannot be estimated apart.
 - **condition number**: The ratio of the largest singular value of a matrix to the smallest. It says how far a small error in the input is magnified in the solution.
+- **curse of dimensionality**: The exponential growth, as the number of columns rises, in the number of observations needed to cover the space at one density.
 - **degree**: The highest degree of a monomial the expansion admits. The degree of $X_1^2 X_2$ is 3.
 - **design matrix**: The matrix whose rows are the observations and whose columns are the terms the model uses. The coefficients come from solving it.
 - **dummy**: A column holding 1 where a row falls in one category of a categorical variable and 0 otherwise.

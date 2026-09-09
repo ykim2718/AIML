@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 10 | Created: 2026-09-07 | Updated: 2026-09-09 21:51 UTC
+Rev. 11 | Created: 2026-09-07 | Updated: 2026-09-09 21:52 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -97,7 +97,7 @@ Expansion 의 대가는 두 가지다. 하나는 열 수가 빠르게 늘어 ove
 
 ### 5.1 Dimensionality And Overfitting
 
-열의 수는 변수의 수에 대해 $d$ 차로 늘어난다. 절편을 뺀 전체 expansion 의 열 수는 식 (6), 서로 다른 변수의 곱만 남기는 `interaction_only` 의 열 수는 식 (7) 이다.
+열의 수는 변수의 수에 대해 $d$ 차로 늘어난다. 열이 늘수록 그 열들이 이루는 공간을 같은 밀도로 채우는 데 필요한 관측 수는 지수로 늘어나며, 이것을 curse of dimensionality 라 한다. Expansion 은 행 수를 그대로 둔 채 열만 늘리므로 그 현상을 자초한다. 절편을 뺀 전체 expansion 의 열 수는 식 (6), 서로 다른 변수의 곱만 남기는 `interaction_only` 의 열 수는 식 (7) 이다.
 
 $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (6)$$
 
@@ -314,6 +314,7 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 
 - **collinearity**: 두 개 이상의 열이 거의 같은 방향을 가리켜 계수를 따로 추정할 수 없는 상태.
 - **condition number**: 행렬의 최대 특이값과 최소 특이값의 비. 입력의 작은 오차가 해에서 얼마나 커지는지를 나타낸다.
+- **curse of dimensionality**: 열이 늘수록 그 공간을 같은 밀도로 채우는 데 필요한 관측 수가 지수로 늘어나는 현상.
 - **degree**: expansion 이 허용하는 monomial 의 최고 차수. $X_1^2 X_2$ 의 차수는 3 이다.
 - **design matrix**: 행이 관측이고 열이 model 이 쓰는 항인 행렬. 계수는 이 행렬을 풀어 얻는다.
 - **dummy**: 범주형 변수의 한 범주에 대응하여 그 범주면 1, 아니면 0 을 담는 열.
