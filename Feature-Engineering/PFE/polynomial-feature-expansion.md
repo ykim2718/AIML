@@ -1,5 +1,11 @@
 # Polynomial Feature Expansion
-Rev. 4 | Created: 2026-09-09 | Updated: 2026-09-09 21:37 UTC
+Rev. 5 | Created: 2026-09-09 | Updated: 2026-09-09 21:40 UTC
+
+A model reads its data as a table. Observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
+
+Fixing the table fixes what the model can see. Supervised learning, the fitting of a function that reproduces one response column from the others, works on those columns and on nothing else, so a relationship absent from the columns does not appear however the algorithm is changed. The ceiling on what a model can reach is set by the columns rather than by the model, and the work of building and choosing those columns is feature engineering, of which this document covers one method.
+
+A linear model gives each column one coefficient and adds the pieces up, so an effect that appears only when two columns move together has no column of its own to be written in. Polynomial feature expansion is the simplest way to give it one: the products and powers of the raw columns are appended as new columns, so the model itself stays linear.
 
 ## 1. Purpose
 
@@ -9,7 +15,7 @@ Rev. 4 | Created: 2026-09-09 | Updated: 2026-09-09 21:37 UTC
 
 ## 2. Summary
 
-The data is a table in which one row is one observation and one column is one variable. An expansion computes products and powers from the columns already in that table and appends them as new columns, leaving the rows as they are and growing only the columns. A table with the columns $x_1$ and $x_2$ becomes a table with $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$, and those three new columns are what give a linear model a curve and an interaction between variables.
+An expansion computes products and powers from the columns already in the table and appends them as new columns, leaving the rows as they are and growing only the columns. A table with the columns $x_1$ and $x_2$ becomes a table with $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$, and those three new columns are what give a linear model a curve and an interaction between variables.
 
 What it costs is columns. Expanding 20 variables to the second degree takes the column count from 20 to 230, and once the column count approaches the row count the coefficients can no longer be estimated (section 5.1). Three defaults hold the column count, and the unsteadiness of the coefficients, inside what the data carries. First, degree 2 limits the terms built to squares and to products of two variables (section 5.1). Second, before the expansion each variable has its own mean subtracted so that its values sit near zero, which is centering (section 4.2). Third, the expanded columns carry a ridge or lasso penalty that holds the coefficients down (section 5.2).
 
