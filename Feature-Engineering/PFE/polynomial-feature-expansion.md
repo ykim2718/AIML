@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 10 | Created: 2026-09-09 | Updated: 2026-09-09 21:52 UTC
+Rev. 11 | Created: 2026-09-09 | Updated: 2026-09-09 21:54 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -135,7 +135,7 @@ The expanded columns always carry a penalty, a term added to the fitting criteri
 
 Ridge is the default of the two. It divides the coefficient among the columns that resemble one another and steadies the prediction, while lasso keeps one of them and drops the rest. Lasso on expanded columns can keep a product term while deleting its main effects, breaking the heredity of section 4.3, so it is used with a hierarchical constraint rather than on its own [[6](#ref-6)].
 
-The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of section 6.2.
+The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix D](#appendix-d-implementation).
 
 ### 5.3 Failure Modes
 
@@ -163,96 +163,11 @@ Whether an expansion helped is confirmed in four ways.
 - The share of samples redrawn from the data with replacement, the bootstrap, in which a coefficient keeps its sign. A product term whose sign flips is not interpreted.
 - The residual plotted against the product terms. Confirm that the structure left before the expansion is gone.
 
-## 6. Implementation
+## 6. Comparison
 
-### 6.1 Options
+An expansion is out of place in three situations: many variables, several bends inside one variable, and a need to extrapolate. Table 4 sets out what to move to in each.
 
-The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, and only four arguments have to be settled [[7](#ref-7)].
-
-Table 4. PolynomialFeatures arguments
-
-| Argument | Effect | Note |
-| --- | --- | --- |
-| `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
-| `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
-| `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
-| `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
-
-```python
-# Python
-from sklearn.preprocessing import PolynomialFeatures
-
-# interaction_only=True keeps X1*X2 and drops X1^2, X2^2
-poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
-X_expanded = poly.fit_transform(X)
-term_name = poly.get_feature_names_out()
-```
-
-The names `get_feature_names_out()` returns are the only route from a coefficient back to its column. Lose them after the expansion and the coefficients remain while which product each belongs to cannot be said.
-
-### 6.2 Pipeline
-
-An expansion is not used alone but placed between standardization and the penalized fit. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
-
-The first standardization removes the conditioning problem of section 4.2, and the second makes the penalty fall evenly across the columns. The variance of a product term is close to the product of the raw variances and so differs widely from column to column; without the second standardization a ridge penalty lands almost entirely on the columns with the largest variance.
-
-```python
-# Python
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-
-pipeline = Pipeline([
-    ('raw_scale', StandardScaler()),
-    ('expand', PolynomialFeatures(include_bias=False)),
-    ('term_scale', StandardScaler()),
-    ('fit', Ridge()),
-])
-grid = {'expand__degree': [1, 2, 3], 'fit__alpha': [0.1, 1.0, 10.0, 100.0]}
-search = GridSearchCV(pipeline, grid, scoring='neg_root_mean_squared_error', cv=5)
-search.fit(X, y)
-```
-
-Putting the expansion inside the pipeline is not a convenience. The expansion is row-wise and leaks nothing by itself, but the standardizations on either side of it must take their means and variances from the training part of each fold, the pieces cross-validation splits the data into. Choosing the degree and the penalty together also finishes in one search only inside the pipeline.
-
-### 6.3 Cost
-
-The cost of an expansion is linear in the column count, and that count grows by equation (6). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
-
-The first is the kernel. The polynomial kernel of equation (8) computes the inner product of the expanded space without the expansion.
-
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (8)$$
-
-`KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
-
-The second is approximation. `PolynomialCountSketch` compresses the terms a polynomial kernel uses into a fixed number of columns, a sketch, and `Nystroem` approximates the kernel matrix from a subset of the samples. Both belong to the family that approximates a kernel with a finite number of columns to keep the speed of a linear model [[8](#ref-8)], and both bound the column count at a value the user sets.
-
-Sparse input is taken as it is. Feed in a CSR matrix, which stores only the non-zero values, and the expansion comes back in the same form, so data carrying many dummy columns does not inflate into a dense array.
-
-### 6.4 Selective Expansion
-
-Not every pair has to be built. Hand the expansion the columns to be crossed and the column count ends at the number chosen rather than at Table 2.
-
-```python
-# Python
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import PolynomialFeatures
-
-expand_column = ['temperature', 'pressure']
-transformer = ColumnTransformer(
-    [('expand', PolynomialFeatures(degree=2, include_bias=False), expand_column)],
-    remainder='passthrough',
-)
-```
-
-There are three grounds for choosing: an interaction the process already knows, a residual that shows structure over a combination of two variables, and a tree ensemble, several trees combined into one model, run first to measure interaction strength so that only the leading pairs are kept [[9](#ref-9)]. With none of the three, a penalty on the full expansion is the better move. Choosing pairs without grounds lets the analyst rather than the data decide which interactions reach the model.
-
-## 7. Comparison
-
-An expansion is out of place in three situations: many variables, several bends inside one variable, and a need to extrapolate. Table 5 sets out what to move to in each.
-
-Table 5. Alternatives to a polynomial expansion
+Table 4. Alternatives to a polynomial expansion
 
 | Method | What it buys | When to prefer | Cost |
 | --- | --- | --- | --- |
@@ -267,7 +182,7 @@ Table 5. Alternatives to a polynomial expansion
 
 Handing the expanded columns to PLS (Partial Least Squares) is another route. PLS projects the columns onto the directions of largest covariance with the response before regressing, so it meets the collinearity the expansion manufactures head on, and it is used on experimental data holding fewer observations than coefficients. Whichever is chosen, the order of judgement is the same. Establish first that expressive power is what is missing, then separate whether what is missing is a product term or a curvature, and choose the method after that. A treatment that compares the whole of basis expansion in one frame is available [[10](#ref-10)].
 
-## 8. Further Work
+## 7. Further Work
 
 - **Sparse polynomial chaos expansion** — A way to cut a high-degree expansion down to a size that can be carried, by selecting terms sparsely over a basis of mutually orthogonal polynomials [[13](#ref-13)]. Selecting the terms by least angle regression has settled into a procedure, which makes keeping a few dozen out of several hundred candidates computationally practical. Starting needs a distributional assumption on the input variables (the basis follows that distribution) and a designed sample.
 - **Hierarchical interaction selection at scale** — The lasso family that selects product terms with heredity imposed as a convex constraint [[6](#ref-6)]. Convex means the optimum found is the only one, and it solves up to several hundred variables, so the rule of section 4.3 can be enforced by the optimization rather than by a person. Starting needs a rule that narrows the candidate product terms in advance and a computational budget.
@@ -333,9 +248,9 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 
 Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Inside the braces, what stands left of the bar is the shape of an element and what stands right of it is the condition that shape has to meet. The element $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
 
-With two variables and $d = 2$, five pairs of exponents meet that condition. Table 6 is the five.
+With two variables and $d = 2$, five pairs of exponents meet that condition. Table 5 is the five.
 
-Table 6. Exponent pairs admitted by equation (3) at two variables and degree 2
+Table 5. Exponent pairs admitted by equation (3) at two variables and degree 2
 
 | # | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- | --- |
@@ -349,37 +264,37 @@ The one pair left out is $(0, 0)$, the constant term.
 
 Equation (3) defines the set of columns to be built without saying how large it is. That size is equation (6) and equation (7), derived below.
 
-One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, and the number of such choices is the number of ways $k$ identical items fall into $n$ bins, equation (9).
+One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, and the number of such choices is the number of ways $k$ identical items fall into $n$ bins, equation (8).
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (9)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (8)$$
 
-Summing the degrees from 0 to $d$ gives equation (10). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
+Summing the degrees from 0 to $d$ gives equation (9). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (10)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (9)$$
 
 The set of equation (3) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (6).
 
-With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (7). Once $d \ge n$ every subset is admitted and the sum closes as equation (11).
+With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (7). Once $d \ge n$ every subset is admitted and the sum closes as equation (10).
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (11)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (10)$$
 
 ## Appendix C. Ridge And Lasso On Expanded Columns
 
-The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (12) and lasso is equation (13) [[15](#ref-15)], where $\alpha$ sets how hard the penalty presses.
+The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (11) and lasso is equation (12) [[15](#ref-15)], where $\alpha$ sets how hard the penalty presses.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (12)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (11)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (12)$$
 
-The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (14): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller than $\alpha / 2$ and pulls the rest toward zero by that amount.
+The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (13): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller than $\alpha / 2$ and pulls the rest toward zero by that amount.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (13)$$
 
-Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (15) [[16](#ref-16)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
+Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (14) [[16](#ref-16)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (14)$$
 
-Table 7. Penalties on expanded columns
+Table 6. Penalties on expanded columns
 
 | # | Penalty | Term added | A group of columns that resemble one another | Where it fits |
 | --- | --- | --- | --- | --- |
@@ -390,3 +305,89 @@ Table 7. Penalties on expanded columns
 $\alpha$ is chosen on held-out error over candidates spaced by powers of ten, and it is meaningful only on standardized columns (section 5.2), which is what `RidgeCV`, `LassoCV` and `ElasticNetCV` search over. The intercept is left out of the penalty: penalizing it pulls the fitted level toward zero and moves the model off the centre of the data.
 
 What these penalties buy is not a degree of 4. It is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
+
+## Appendix D. Implementation
+
+
+### D.1 Options
+
+The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, and only four arguments have to be settled [[7](#ref-7)].
+
+Table 7. PolynomialFeatures arguments
+
+| Argument | Effect | Note |
+| --- | --- | --- |
+| `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
+| `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
+| `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
+| `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
+
+```python
+# Python
+from sklearn.preprocessing import PolynomialFeatures
+
+# interaction_only=True keeps X1*X2 and drops X1^2, X2^2
+poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
+X_expanded = poly.fit_transform(X)
+term_name = poly.get_feature_names_out()
+```
+
+The names `get_feature_names_out()` returns are the only route from a coefficient back to its column. Lose them after the expansion and the coefficients remain while which product each belongs to cannot be said.
+
+### D.2 Pipeline
+
+An expansion is not used alone but placed between standardization and the penalized fit. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
+
+The first standardization removes the conditioning problem of section 4.2, and the second makes the penalty fall evenly across the columns. The variance of a product term is close to the product of the raw variances and so differs widely from column to column; without the second standardization a ridge penalty lands almost entirely on the columns with the largest variance.
+
+```python
+# Python
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+
+pipeline = Pipeline([
+    ('raw_scale', StandardScaler()),
+    ('expand', PolynomialFeatures(include_bias=False)),
+    ('term_scale', StandardScaler()),
+    ('fit', Ridge()),
+])
+grid = {'expand__degree': [1, 2, 3], 'fit__alpha': [0.1, 1.0, 10.0, 100.0]}
+search = GridSearchCV(pipeline, grid, scoring='neg_root_mean_squared_error', cv=5)
+search.fit(X, y)
+```
+
+Putting the expansion inside the pipeline is not a convenience. The expansion is row-wise and leaks nothing by itself, but the standardizations on either side of it must take their means and variances from the training part of each fold, the pieces cross-validation splits the data into. Choosing the degree and the penalty together also finishes in one search only inside the pipeline.
+
+### D.3 Cost
+
+The cost of an expansion is linear in the column count, and that count grows by equation (6). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
+
+The first is the kernel. The polynomial kernel of equation (15) computes the inner product of the expanded space without the expansion.
+
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (15)$$
+
+`KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
+
+The second is approximation. `PolynomialCountSketch` compresses the terms a polynomial kernel uses into a fixed number of columns, a sketch, and `Nystroem` approximates the kernel matrix from a subset of the samples. Both belong to the family that approximates a kernel with a finite number of columns to keep the speed of a linear model [[8](#ref-8)], and both bound the column count at a value the user sets.
+
+Sparse input is taken as it is. Feed in a CSR matrix, which stores only the non-zero values, and the expansion comes back in the same form, so data carrying many dummy columns does not inflate into a dense array.
+
+### D.4 Selective Expansion
+
+Not every pair has to be built. Hand the expansion the columns to be crossed and the column count ends at the number chosen rather than at Table 2.
+
+```python
+# Python
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import PolynomialFeatures
+
+expand_column = ['temperature', 'pressure']
+transformer = ColumnTransformer(
+    [('expand', PolynomialFeatures(degree=2, include_bias=False), expand_column)],
+    remainder='passthrough',
+)
+```
+
+There are three grounds for choosing: an interaction the process already knows, a residual that shows structure over a combination of two variables, and a tree ensemble, several trees combined into one model, run first to measure interaction strength so that only the leading pairs are kept [[9](#ref-9)]. With none of the three, a penalty on the full expansion is the better move. Choosing pairs without grounds lets the analyst rather than the data decide which interactions reach the model.

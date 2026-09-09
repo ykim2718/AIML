@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 11 | Created: 2026-09-07 | Updated: 2026-09-09 21:52 UTC
+Rev. 12 | Created: 2026-09-07 | Updated: 2026-09-09 21:54 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -135,7 +135,7 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 둘 중 기본은 ridge 다. Ridge 는 닮은 열들에 계수를 나누어 주어 예측을 안정시키고, lasso 는 그 가운데 하나만 남기고 나머지를 지운다. Expansion 이 만든 열에서 lasso 는 곱항을 남기고 그 main effect 를 지워 4.3 절의 heredity 를 깨뜨릴 수 있으므로, 홀로 쓰기보다 계층 제약과 함께 쓴다 [[6](#ref-6)].
 
-Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 표준화한 뒤에 적용하며, 6.2 절의 pipeline 에 두 번째 표준화가 들어가는 이유가 그것이다.
+Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 표준화한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 표준화가 들어가는 이유가 그것이다.
 
 ### 5.3 Failure Modes
 
@@ -163,96 +163,11 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 - 자료에서 복원추출로 다시 뽑은 표본 (bootstrap) 에서 계수 부호가 유지되는 비율. 곱항의 부호가 뒤집히면 그 항은 해석하지 않는다.
 - 잔차를 곱항에 대해 그린 산점도. Expansion 전에 남아 있던 구조가 사라졌는지 확인한다.
 
-## 6. Implementation
+## 6. Comparison
 
-### 6.1 Options
+Expansion 이 맞지 않는 자리는 세 가지다. 변수가 많을 때, 한 변수 안에서 여러 번 꺾일 때, 그리고 extrapolation 이 필요할 때다. Table 4 는 그 자리에서 무엇으로 갈아탈지를 정리한 것이다.
 
-Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, 정할 것은 네 인자뿐이다 [[7](#ref-7)].
-
-Table 4. PolynomialFeatures arguments
-
-| Argument | Effect | Note |
-| --- | --- | --- |
-| `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
-| `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
-| `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
-| `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
-
-```python
-# Python
-from sklearn.preprocessing import PolynomialFeatures
-
-# interaction_only=True keeps X1*X2 and drops X1^2, X2^2
-poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
-X_expanded = poly.fit_transform(X)
-term_name = poly.get_feature_names_out()
-```
-
-`get_feature_names_out()` 이 돌려주는 이름은 계수를 다시 열에 되짚는 유일한 통로다. Expansion 뒤에 이름을 잃으면 계수는 남아도 그것이 어느 곱의 계수인지 말할 수 없다.
-
-### 6.2 Pipeline
-
-Expansion 은 홀로 쓰지 않고 표준화와 penalty 사이에 둔다. 순서는 원 변수 표준화, expansion, expansion 이 만든 열의 재표준화, 그리고 penalty 를 건 적합이다.
-
-앞의 표준화는 4.2 절의 조건수 문제를 없애고, 뒤의 표준화는 penalty 가 열마다 공평하게 걸리게 한다. 곱항의 분산은 원 변수 분산의 곱에 가까워 열마다 크게 벌어지므로, 재표준화 없이 ridge 를 걸면 penalty 가 사실상 분산이 큰 열에만 걸린다.
-
-```python
-# Python
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-
-pipeline = Pipeline([
-    ('raw_scale', StandardScaler()),
-    ('expand', PolynomialFeatures(include_bias=False)),
-    ('term_scale', StandardScaler()),
-    ('fit', Ridge()),
-])
-grid = {'expand__degree': [1, 2, 3], 'fit__alpha': [0.1, 1.0, 10.0, 100.0]}
-search = GridSearchCV(pipeline, grid, scoring='neg_root_mean_squared_error', cv=5)
-search.fit(X, y)
-```
-
-Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 표준화는 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
-
-### 6.3 Cost
-
-Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (6) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
-
-첫째는 kernel 이다. 다항 kernel 식 (8) 은 expansion 한 공간의 내적을 expansion 없이 계산한다.
-
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (8)$$
-
-`KernelRidge(kernel='poly')` 가 그 형태이며, 비용이 열이 아니라 행에 걸리므로 변수가 많고 행이 적은 자료에 맞는다. 대신 계수가 개별 monomial 에 붙지 않아 어느 곱이 기여했는지 읽을 수 없다.
-
-둘째는 근사다. `PolynomialCountSketch` 는 다항 kernel 이 쓰는 항들을 정해진 수의 열로 줄여 담고 (sketch), `Nystroem` 은 표본의 부분집합으로 kernel 행렬을 근사한다. 둘 다 kernel 을 유한한 수의 열로 근사해 선형 model 의 속도를 지키는 계열이며 [[8](#ref-8)], 열 수를 사용자가 정한 값으로 묶는다.
-
-희소 입력은 그대로 받는다. 0 이 아닌 값만 저장하는 CSR 형식의 행렬을 넣으면 expansion 결과도 같은 형식으로 나오므로, dummy 열이 많은 자료가 dense 로 부풀지 않는다.
-
-### 6.4 Selective Expansion
-
-모든 짝을 만들 필요는 없다. 곱할 열을 골라 넘기면 열 수는 Table 2 가 아니라 고른 개수로 끝난다.
-
-```python
-# Python
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import PolynomialFeatures
-
-expand_column = ['temperature', 'pressure']
-transformer = ColumnTransformer(
-    [('expand', PolynomialFeatures(degree=2, include_bias=False), expand_column)],
-    remainder='passthrough',
-)
-```
-
-고를 근거는 셋이다. 공정이 이미 아는 상호작용, 잔차가 두 변수의 조합에서 구조를 보이는 경우, 그리고 tree 여러 개를 합친 model (tree ensemble) 을 먼저 돌려 상호작용의 세기를 재고 상위 짝만 남기는 방법이다 [[9](#ref-9)]. 셋 다 없으면 전체 expansion 에 penalty 를 거는 편이 낫다. 근거 없이 짝을 고르면 어느 상호작용이 model 에 들어갈지를 자료가 아니라 분석자가 정하게 된다.
-
-## 7. Comparison
-
-Expansion 이 맞지 않는 자리는 세 가지다. 변수가 많을 때, 한 변수 안에서 여러 번 꺾일 때, 그리고 extrapolation 이 필요할 때다. Table 5 는 그 자리에서 무엇으로 갈아탈지를 정리한 것이다.
-
-Table 5. Alternatives to a polynomial expansion
+Table 4. Alternatives to a polynomial expansion
 
 | Method | What it buys | When to prefer | Cost |
 | --- | --- | --- | --- |
@@ -267,7 +182,7 @@ Table 5. Alternatives to a polynomial expansion
 
 Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다. PLS 는 열을 응답과의 공분산이 큰 방향으로 먼저 투영한 뒤 회귀하므로 expansion 이 만든 collinearity 를 정면으로 다루며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. basis expansion 전체를 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
 
-## 8. Further Work
+## 7. Further Work
 
 - **Sparse polynomial chaos expansion** — 서로 직교하는 다항식들의 모음 위에서 항을 희소하게 골라 고차 expansion 의 항 수를 줄이는 방법이다 [[13](#ref-13)]. 최소각 회귀 (least angle regression) 로 항을 고르는 절차가 자리 잡아 수백 개 후보에서 수십 개만 남기는 일이 계산으로 가능해졌다. 착수에는 입력 변수의 분포 가정 (기저가 그 분포에 따라 정해진다) 과 설계된 표본이 필요하다.
 - **Hierarchical interaction selection at scale** — heredity 를 convex 제약으로 걸어 곱항을 고르는 lasso 계열이다 [[6](#ref-6)]. 제약이 convex 여서 찾은 최적해가 유일하고 수백 변수까지 풀리므로, 4.3 절의 규칙을 사람이 지키는 대신 최적화가 지키게 할 수 있다. 착수에는 곱항 후보의 범위를 미리 좁히는 규칙과 계산 예산이 필요하다.
@@ -333,9 +248,9 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 
 식 (3) 은 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 중괄호 안에서 세로줄 왼쪽은 원소의 모양이고 오른쪽은 그 모양이 만족해야 할 조건이다. 원소 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
 
-변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 6 이 그 다섯이다.
+변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 5 이 그 다섯이다.
 
-Table 6. Exponent pairs admitted by equation (3) at two variables and degree 2
+Table 5. Exponent pairs admitted by equation (3) at two variables and degree 2
 
 | # | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- | --- |
@@ -349,37 +264,37 @@ Table 6. Exponent pairs admitted by equation (3) at two variables and degree 2
 
 식 (3) 은 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (6) 과 식 (7) 이며, 아래가 그 유도다.
 
-차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응한다. 그런 지수의 수는 같은 물건 $k$ 개를 $n$ 개의 칸에 나누어 담는 경우의 수와 같아 식 (9) 이다.
+차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응한다. 그런 지수의 수는 같은 물건 $k$ 개를 $n$ 개의 칸에 나누어 담는 경우의 수와 같아 식 (8) 이다.
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (9)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (8)$$
 
-차수를 0 부터 $d$ 까지 더하면 식 (10) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
+차수를 0 부터 $d$ 까지 더하면 식 (9) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (10)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (9)$$
 
 식 (3) 의 집합은 $k = 0$ 인 상수항을 뺀 것이므로 그 크기는 $\binom{n+d}{d} - 1$ 이고, 이것이 식 (6) 이다.
 
-`interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (7) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (11) 로 닫힌다.
+`interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (7) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (10) 로 닫힌다.
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (11)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (10)$$
 
 ## Appendix C. Ridge And Lasso On Expanded Columns
 
-Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (12), lasso 는 식 (13) 이며 [[15](#ref-15)], $\alpha$ 가 penalty 를 누르는 세기다.
+Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (11), lasso 는 식 (12) 이며 [[15](#ref-15)], $\alpha$ 가 penalty 를 누르는 세기다.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (12)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (11)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (12)$$
 
-차이는 penalty 의 모양에서 온다. 열이 표준화되어 있고 서로 직교하면 두 해는 식 (14) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
+차이는 penalty 의 모양에서 온다. 열이 표준화되어 있고 서로 직교하면 두 해는 식 (13) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (13)$$
 
-Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (15) 이며 [[16](#ref-16)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
+Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (14) 이며 [[16](#ref-16)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (14)$$
 
-Table 7. Penalties on expanded columns
+Table 6. Penalties on expanded columns
 
 | # | Penalty | Term added | A group of columns that resemble one another | Where it fits |
 | --- | --- | --- | --- | --- |
@@ -390,3 +305,89 @@ Table 7. Penalties on expanded columns
 $\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격으로 잡는다. 표준화한 열 위에서만 뜻이 있고 (5.2 절), 그 탐색을 `RidgeCV`, `LassoCV`, `ElasticNetCV` 가 대신한다. 절편은 penalty 에서 뺀다. 절편에 penalty 를 걸면 적합된 수준이 0 쪽으로 끌려가 model 이 자료의 중심에서 벗어난다.
 
 이 penalty 가 벌어 주는 것은 degree 4 가 아니다. 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
+
+## Appendix D. Implementation
+
+
+### D.1 Options
+
+Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, 정할 것은 네 인자뿐이다 [[7](#ref-7)].
+
+Table 7. PolynomialFeatures arguments
+
+| Argument | Effect | Note |
+| --- | --- | --- |
+| `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
+| `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
+| `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
+| `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
+
+```python
+# Python
+from sklearn.preprocessing import PolynomialFeatures
+
+# interaction_only=True keeps X1*X2 and drops X1^2, X2^2
+poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
+X_expanded = poly.fit_transform(X)
+term_name = poly.get_feature_names_out()
+```
+
+`get_feature_names_out()` 이 돌려주는 이름은 계수를 다시 열에 되짚는 유일한 통로다. Expansion 뒤에 이름을 잃으면 계수는 남아도 그것이 어느 곱의 계수인지 말할 수 없다.
+
+### D.2 Pipeline
+
+Expansion 은 홀로 쓰지 않고 표준화와 penalty 사이에 둔다. 순서는 원 변수 표준화, expansion, expansion 이 만든 열의 재표준화, 그리고 penalty 를 건 적합이다.
+
+앞의 표준화는 4.2 절의 조건수 문제를 없애고, 뒤의 표준화는 penalty 가 열마다 공평하게 걸리게 한다. 곱항의 분산은 원 변수 분산의 곱에 가까워 열마다 크게 벌어지므로, 재표준화 없이 ridge 를 걸면 penalty 가 사실상 분산이 큰 열에만 걸린다.
+
+```python
+# Python
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+
+pipeline = Pipeline([
+    ('raw_scale', StandardScaler()),
+    ('expand', PolynomialFeatures(include_bias=False)),
+    ('term_scale', StandardScaler()),
+    ('fit', Ridge()),
+])
+grid = {'expand__degree': [1, 2, 3], 'fit__alpha': [0.1, 1.0, 10.0, 100.0]}
+search = GridSearchCV(pipeline, grid, scoring='neg_root_mean_squared_error', cv=5)
+search.fit(X, y)
+```
+
+Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 표준화는 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
+
+### D.3 Cost
+
+Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (6) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
+
+첫째는 kernel 이다. 다항 kernel 식 (15) 은 expansion 한 공간의 내적을 expansion 없이 계산한다.
+
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (15)$$
+
+`KernelRidge(kernel='poly')` 가 그 형태이며, 비용이 열이 아니라 행에 걸리므로 변수가 많고 행이 적은 자료에 맞는다. 대신 계수가 개별 monomial 에 붙지 않아 어느 곱이 기여했는지 읽을 수 없다.
+
+둘째는 근사다. `PolynomialCountSketch` 는 다항 kernel 이 쓰는 항들을 정해진 수의 열로 줄여 담고 (sketch), `Nystroem` 은 표본의 부분집합으로 kernel 행렬을 근사한다. 둘 다 kernel 을 유한한 수의 열로 근사해 선형 model 의 속도를 지키는 계열이며 [[8](#ref-8)], 열 수를 사용자가 정한 값으로 묶는다.
+
+희소 입력은 그대로 받는다. 0 이 아닌 값만 저장하는 CSR 형식의 행렬을 넣으면 expansion 결과도 같은 형식으로 나오므로, dummy 열이 많은 자료가 dense 로 부풀지 않는다.
+
+### D.4 Selective Expansion
+
+모든 짝을 만들 필요는 없다. 곱할 열을 골라 넘기면 열 수는 Table 2 가 아니라 고른 개수로 끝난다.
+
+```python
+# Python
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import PolynomialFeatures
+
+expand_column = ['temperature', 'pressure']
+transformer = ColumnTransformer(
+    [('expand', PolynomialFeatures(degree=2, include_bias=False), expand_column)],
+    remainder='passthrough',
+)
+```
+
+고를 근거는 셋이다. 공정이 이미 아는 상호작용, 잔차가 두 변수의 조합에서 구조를 보이는 경우, 그리고 tree 여러 개를 합친 model (tree ensemble) 을 먼저 돌려 상호작용의 세기를 재고 상위 짝만 남기는 방법이다 [[9](#ref-9)]. 셋 다 없으면 전체 expansion 에 penalty 를 거는 편이 낫다. 근거 없이 짝을 고르면 어느 상호작용이 model 에 들어갈지를 자료가 아니라 분석자가 정하게 된다.
