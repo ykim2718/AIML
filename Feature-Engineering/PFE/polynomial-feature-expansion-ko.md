@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 9 | Created: 2026-09-07 | Updated: 2026-09-09 21:46 UTC
+Rev. 10 | Created: 2026-09-07 | Updated: 2026-09-09 21:51 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -302,7 +302,11 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 <a id="ref-13"></a>
 [13] Blatman, G. and Sudret, B. (2011). [Adaptive sparse polynomial chaos expansion based on least angle regression](https://doi.org/10.1016/j.jcp.2010.12.021). *Journal of Computational Physics*, 230(6), 2345–2367.<br>
 <a id="ref-14"></a>
-[14] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.
+[14] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.<br>
+<a id="ref-15"></a>
+[15] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
+<a id="ref-16"></a>
+[16] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.
 
 ---
 
@@ -326,6 +330,22 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 
 ## Appendix B. Term Count Derivation
 
+식 (3) 은 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 중괄호 안에서 세로줄 왼쪽은 원소의 모양이고 오른쪽은 그 모양이 만족해야 할 조건이다. 원소 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
+
+변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 6 이 그 다섯이다.
+
+Table 6. Exponent pairs admitted by equation (3) at two variables and degree 2
+
+| # | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
+| --- | --- | --- | --- | --- |
+| 1 | 1 | 0 | 1 | $x_1$ |
+| 2 | 0 | 1 | 1 | $x_2$ |
+| 3 | 2 | 0 | 2 | $x_1^2$ |
+| 4 | 1 | 1 | 2 | $x_1 x_2$ |
+| 5 | 0 | 2 | 2 | $x_2^2$ |
+
+빠진 짝은 $(0, 0)$ 하나이며, 그것이 상수항이다.
+
 식 (3) 은 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (6) 과 식 (7) 이며, 아래가 그 유도다.
 
 차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응한다. 그런 지수의 수는 같은 물건 $k$ 개를 $n$ 개의 칸에 나누어 담는 경우의 수와 같아 식 (9) 이다.
@@ -341,3 +361,31 @@ $$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (10)$$
 `interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (7) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (11) 로 닫힌다.
 
 $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (11)$$
+
+## Appendix C. Ridge And Lasso On Expanded Columns
+
+Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (12), lasso 는 식 (13) 이며 [[15](#ref-15)], $\alpha$ 가 penalty 를 누르는 세기다.
+
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (12)$$
+
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
+
+차이는 penalty 의 모양에서 온다. 열이 표준화되어 있고 서로 직교하면 두 해는 식 (14) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
+
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
+
+Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (15) 이며 [[16](#ref-16)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
+
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
+
+Table 7. Penalties on expanded columns
+
+| # | Penalty | Term added | A group of columns that resemble one another | Where it fits |
+| --- | --- | --- | --- | --- |
+| 1 | Ridge | Sum of the squared coefficients | Coefficient shared across the group | The default on expanded columns |
+| 2 | Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
+| 3 | Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
+
+$\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격으로 잡는다. 표준화한 열 위에서만 뜻이 있고 (5.2 절), 그 탐색을 `RidgeCV`, `LassoCV`, `ElasticNetCV` 가 대신한다. 절편은 penalty 에서 뺀다. 절편에 penalty 를 걸면 적합된 수준이 0 쪽으로 끌려가 model 이 자료의 중심에서 벗어난다.
+
+이 penalty 가 벌어 주는 것은 degree 4 가 아니다. 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.

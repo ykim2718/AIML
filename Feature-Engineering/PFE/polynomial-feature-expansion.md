@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 8 | Created: 2026-09-09 | Updated: 2026-09-09 21:46 UTC
+Rev. 9 | Created: 2026-09-09 | Updated: 2026-09-09 21:51 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -302,7 +302,11 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 <a id="ref-13"></a>
 [13] Blatman, G. and Sudret, B. (2011). [Adaptive sparse polynomial chaos expansion based on least angle regression](https://doi.org/10.1016/j.jcp.2010.12.021). *Journal of Computational Physics*, 230(6), 2345–2367.<br>
 <a id="ref-14"></a>
-[14] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.
+[14] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.<br>
+<a id="ref-15"></a>
+[15] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
+<a id="ref-16"></a>
+[16] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.
 
 ---
 
@@ -326,6 +330,22 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 
 ## Appendix B. Term Count Derivation
 
+Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Inside the braces, what stands left of the bar is the shape of an element and what stands right of it is the condition that shape has to meet. The element $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
+
+With two variables and $d = 2$, five pairs of exponents meet that condition. Table 6 is the five.
+
+Table 6. Exponent pairs admitted by equation (3) at two variables and degree 2
+
+| # | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
+| --- | --- | --- | --- | --- |
+| 1 | 1 | 0 | 1 | $x_1$ |
+| 2 | 0 | 1 | 1 | $x_2$ |
+| 3 | 2 | 0 | 2 | $x_1^2$ |
+| 4 | 1 | 1 | 2 | $x_1 x_2$ |
+| 5 | 0 | 2 | 2 | $x_2^2$ |
+
+The one pair left out is $(0, 0)$, the constant term.
+
 Equation (3) defines the set of columns to be built without saying how large it is. That size is equation (6) and equation (7), derived below.
 
 One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, and the number of such choices is the number of ways $k$ identical items fall into $n$ bins, equation (9).
@@ -341,3 +361,31 @@ The set of equation (3) excludes the constant term at $k = 0$, so its size is $\
 With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (7). Once $d \ge n$ every subset is admitted and the sum closes as equation (11).
 
 $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (11)$$
+
+## Appendix C. Ridge And Lasso On Expanded Columns
+
+The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (12) and lasso is equation (13) [[15](#ref-15)], where $\alpha$ sets how hard the penalty presses.
+
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (12)$$
+
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
+
+The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (14): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller than $\alpha / 2$ and pulls the rest toward zero by that amount.
+
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
+
+Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (15) [[16](#ref-16)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
+
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
+
+Table 7. Penalties on expanded columns
+
+| # | Penalty | Term added | A group of columns that resemble one another | Where it fits |
+| --- | --- | --- | --- | --- |
+| 1 | Ridge | Sum of the squared coefficients | Coefficient shared across the group | The default on expanded columns |
+| 2 | Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
+| 3 | Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
+
+$\alpha$ is chosen on held-out error over candidates spaced by powers of ten, and it is meaningful only on standardized columns (section 5.2), which is what `RidgeCV`, `LassoCV` and `ElasticNetCV` search over. The intercept is left out of the penalty: penalizing it pulls the fitted level toward zero and moves the model off the centre of the data.
+
+What these penalties buy is not a degree of 4. It is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
