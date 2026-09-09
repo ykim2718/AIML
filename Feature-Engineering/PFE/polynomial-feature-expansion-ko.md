@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 4 | Created: 2026-09-07 | Updated: 2026-09-09 21:36 UTC
+Rev. 5 | Created: 2026-09-07 | Updated: 2026-09-09 21:37 UTC
 
 ## 1. Purpose
 
@@ -19,13 +19,13 @@ Expansion 을 쓰지 않아야 하는 자리도 분명하다. 변수가 수십 �
 
 Table 1. Default choices and when they change
 
-| Condition | Choice | Why |
-| --- | --- | --- |
-| Fewer than a few dozen variables, curvature and pairwise effects expected | Degree 2, centered, ridge | A term count below the row count |
-| Curvature judged absent, only cross effects wanted | `interaction_only=True` | Squares dropped as a modelling decision, not as a saving |
-| Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
-| Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
-| Prediction outside the training range | Neither expansion nor a high degree | A polynomial governed by its top term outside the range |
+| # | Condition | Choice | Why |
+| --- | --- | --- | --- |
+| 1 | Fewer than a few dozen variables, curvature and pairwise effects expected | Degree 2, centered, ridge | A term count below the row count |
+| 2 | Curvature judged absent, only cross effects wanted | `interaction_only=True` | Squares dropped as a modelling decision, not as a saving |
+| 3 | Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
+| 4 | Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
+| 5 | Prediction outside the training range | Neither expansion nor a high degree | A polynomial governed by its top term outside the range |
 
 ## 3. Objective
 
