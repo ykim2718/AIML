@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 16 | Created: 2026-09-09 | Updated: 2026-09-09 22:02 UTC
+Rev. 17 | Created: 2026-09-09 | Updated: 2026-09-09 22:03 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -258,13 +258,13 @@ With two variables and $d = 2$, five pairs of exponents meet that condition. Tab
 
 Table 5. Exponent pairs admitted by equation (3) at two variables and degree 2
 
-| # | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
-| --- | --- | --- | --- | --- |
-| 1 | 1 | 0 | 1 | $x_1$ |
-| 2 | 0 | 1 | 1 | $x_2$ |
-| 3 | 2 | 0 | 2 | $x_1^2$ |
-| 4 | 1 | 1 | 2 | $x_1 x_2$ |
-| 5 | 0 | 2 | 2 | $x_2^2$ |
+| Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
+| --- | --- | --- | --- |
+| 1 | 0 | 1 | $x_1$ |
+| 0 | 1 | 1 | $x_2$ |
+| 2 | 0 | 2 | $x_1^2$ |
+| 1 | 1 | 2 | $x_1 x_2$ |
+| 0 | 2 | 2 | $x_2^2$ |
 
 The one pair left out is $(0, 0)$, the constant term.
 
@@ -302,11 +302,11 @@ $$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVer
 
 Table 6. Penalties on expanded columns
 
-| # | Penalty | Term added | A group of columns that resemble one another | Where it fits |
-| --- | --- | --- | --- | --- |
-| 1 | Ridge | Sum of the squared coefficients | Coefficient shared across the group | The default on expanded columns |
-| 2 | Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
-| 3 | Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
+| Penalty | Term added | A group of columns that resemble one another | Where it fits |
+| --- | --- | --- | --- |
+| Ridge | Sum of the squared coefficients | Coefficient shared across the group | The default on expanded columns |
+| Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
+| Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
 
 $\alpha$ is chosen on held-out error over candidates spaced by powers of ten, and it is meaningful only on standardized columns (section 5.2), which is what `RidgeCV`, `LassoCV` and `ElasticNetCV` search over. The intercept is left out of the penalty: penalizing it pulls the fitted level toward zero and moves the model off the centre of the data.
 

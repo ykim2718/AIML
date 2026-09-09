@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-09 22:02 UTC
+Rev. 18 | Created: 2026-09-07 | Updated: 2026-09-09 22:03 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -258,13 +258,13 @@ $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \i
 
 Table 5. Exponent pairs admitted by equation (3) at two variables and degree 2
 
-| # | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
-| --- | --- | --- | --- | --- |
-| 1 | 1 | 0 | 1 | $x_1$ |
-| 2 | 0 | 1 | 1 | $x_2$ |
-| 3 | 2 | 0 | 2 | $x_1^2$ |
-| 4 | 1 | 1 | 2 | $x_1 x_2$ |
-| 5 | 0 | 2 | 2 | $x_2^2$ |
+| Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
+| --- | --- | --- | --- |
+| 1 | 0 | 1 | $x_1$ |
+| 0 | 1 | 1 | $x_2$ |
+| 2 | 0 | 2 | $x_1^2$ |
+| 1 | 1 | 2 | $x_1 x_2$ |
+| 0 | 2 | 2 | $x_2^2$ |
 
 빠진 짝은 $(0, 0)$ 하나이며, 그것이 상수항이다.
 
@@ -302,11 +302,11 @@ $$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVer
 
 Table 6. Penalties on expanded columns
 
-| # | Penalty | Term added | A group of columns that resemble one another | Where it fits |
-| --- | --- | --- | --- | --- |
-| 1 | Ridge | Sum of the squared coefficients | Coefficient shared across the group | The default on expanded columns |
-| 2 | Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
-| 3 | Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
+| Penalty | Term added | A group of columns that resemble one another | Where it fits |
+| --- | --- | --- | --- |
+| Ridge | Sum of the squared coefficients | Coefficient shared across the group | The default on expanded columns |
+| Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
+| Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
 
 $\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격으로 잡는다. 표준화한 열 위에서만 뜻이 있고 (5.2 절), 그 탐색을 `RidgeCV`, `LassoCV`, `ElasticNetCV` 가 대신한다. 절편은 penalty 에서 뺀다. 절편에 penalty 를 걸면 적합된 수준이 0 쪽으로 끌려가 model 이 자료의 중심에서 벗어난다.
 
