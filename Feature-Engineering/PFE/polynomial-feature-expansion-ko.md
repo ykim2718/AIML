@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 18 | Created: 2026-09-07 | Updated: 2026-09-09 22:03 UTC
+Rev. 19 | Created: 2026-09-07 | Updated: 2026-09-09 22:07 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -41,7 +41,7 @@ Expansion 이 노리는 것은 두 가지다. 한 변수 안의 비선형 관계
 
 ### 3.1 Non-linear Relationship
 
-원 특성 $x$ 에 $x^2$, $x^3$ 같은 항을 더하면 model 은 계수에 대해 선형인 채로 곡선과 곡면을 그린다. 여기서 선형이라는 말은 $x$ 가 아니라 계수 $\beta$ 에 대한 것이며, 그래서 잔차 제곱합을 가장 작게 하는 계수를 푸는 최소제곱 (least squares) 이 그대로 쓰인다. 변수 두 개를 2차로 expansion 했을 때 model 이 학습하는 식은 (1) 이다.
+원 변수 $x$ 에 $x^2$, $x^3$ 같은 항을 더하면 model 은 계수에 대해 선형인 채로 곡선과 곡면을 그린다. 여기서 선형이라는 말은 $x$ 가 아니라 계수 $\beta$ 에 대한 것이며, 그래서 잔차 제곱합을 가장 작게 하는 계수를 푸는 최소제곱 (least squares) 이 그대로 쓰인다. 변수 두 개를 2차로 expansion 했을 때 model 이 학습하는 식은 (1) 이다.
 
 $$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_1 x_2 + \beta_5 x_2^2 \hspace{19em} (1)$$
 
@@ -135,7 +135,7 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 둘 중 기본은 ridge 다. Ridge 는 닮은 열들에 계수를 나누어 주어 예측을 안정시키고, lasso 는 그 가운데 하나만 남기고 나머지를 지운다. Expansion 이 만든 열에서 lasso 는 곱항을 남기고 그 main effect 를 지워 4.3 절의 heredity 를 깨뜨릴 수 있으므로, 홀로 쓰기보다 계층 제약과 함께 쓴다 [[6](#ref-6)].
 
-Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 표준화한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 표준화가 들어가는 이유가 그것이다.
+Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 표준화한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 표준화가 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns) 에 있다.
 
 ### 5.3 Failure Modes
 
@@ -180,7 +180,7 @@ Table 4. Alternatives to a polynomial expansion
 | Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
 | Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
 
-Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다. PLS 는 열을 응답과의 공분산이 큰 방향으로 먼저 투영한 뒤 회귀하므로 expansion 이 만든 collinearity 를 정면으로 다루며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. basis expansion 전체를 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
+Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다. PLS 는 열을 응답과의 공분산이 큰 방향으로 먼저 투영한 뒤 회귀하므로 expansion 이 만든 collinearity 를 정면으로 다루며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. 선형 model 이 받는 열을 넓히는 방법 전체, 곧 basis expansion 을 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
 
 ## 7. Further Work
 
@@ -310,7 +310,7 @@ Table 6. Penalties on expanded columns
 
 $\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격으로 잡는다. 표준화한 열 위에서만 뜻이 있고 (5.2 절), 그 탐색을 `RidgeCV`, `LassoCV`, `ElasticNetCV` 가 대신한다. 절편은 penalty 에서 뺀다. 절편에 penalty 를 걸면 적합된 수준이 0 쪽으로 끌려가 model 이 자료의 중심에서 벗어난다.
 
-이 penalty 가 벌어 주는 것은 degree 4 가 아니다. 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
+Penalty 를 건다고 degree 를 4 로 올릴 수 있는 것은 아니다. Penalty 가 버는 것은 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
 
 ## Appendix D. Implementation
 

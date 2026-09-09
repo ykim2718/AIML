@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 17 | Created: 2026-09-09 | Updated: 2026-09-09 22:03 UTC
+Rev. 18 | Created: 2026-09-09 | Updated: 2026-09-09 22:07 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -93,7 +93,7 @@ Main effects appear on their own. A product model without main effects therefore
 
 ## 5. Caution
 
-An expansion charges two prices. The column count grows fast, which invites overfitting — a model that fits the training data and misses new data — and raises the cost of the fit, and the columns it makes resemble one another, which unsettles the coefficients. The degree holds the first down, a penalty holds the second.
+An expansion charges two prices. The column count grows fast, which invites overfitting — a model that fits the training data and misses new data — and raises the cost of the fit. The columns it makes also resemble one another, which unsettles the coefficients. The degree holds the first price down, a penalty holds the second.
 
 ### 5.1 Dimensionality And Overfitting
 
@@ -135,7 +135,7 @@ The expanded columns always carry a penalty, a term added to the fitting criteri
 
 Ridge is the default of the two. It divides the coefficient among the columns that resemble one another and steadies the prediction, while lasso keeps one of them and drops the rest. Lasso on expanded columns can keep a product term while deleting its main effects, breaking the heredity of section 4.3, so it is used with a hierarchical constraint rather than on its own [[6](#ref-6)].
 
-The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix D](#appendix-d-implementation).
+The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix D](#appendix-d-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns).
 
 ### 5.3 Failure Modes
 
@@ -180,7 +180,7 @@ Table 4. Alternatives to a polynomial expansion
 | Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
 | Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
 
-Handing the expanded columns to PLS (Partial Least Squares) is another route. PLS projects the columns onto the directions of largest covariance with the response before regressing, so it meets the collinearity the expansion manufactures head on, and it is used on experimental data holding fewer observations than coefficients. Whichever is chosen, the order of judgement is the same. Establish first that expressive power is what is missing, then separate whether what is missing is a product term or a curvature, and choose the method after that. A treatment that compares the whole of basis expansion in one frame is available [[10](#ref-10)].
+Handing the expanded columns to PLS (Partial Least Squares) is another route. PLS projects the columns onto the directions of largest covariance with the response before regressing, so it meets the collinearity the expansion manufactures head on, and it is used on experimental data holding fewer observations than coefficients. Whichever is chosen, the order of judgement is the same. Establish first that expressive power is what is missing, then separate whether what is missing is a product term or a curvature, and choose the method after that. A treatment that compares in one frame the whole family of basis expansions, the methods that widen the columns a linear model is given, is available [[10](#ref-10)].
 
 ## 7. Further Work
 
@@ -292,7 +292,7 @@ $$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVe
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (12)$$
 
-The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (13): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller than $\alpha / 2$ and pulls the rest toward zero by that amount.
+The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (13): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
 
 $$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (13)$$
 
@@ -310,7 +310,7 @@ Table 6. Penalties on expanded columns
 
 $\alpha$ is chosen on held-out error over candidates spaced by powers of ten, and it is meaningful only on standardized columns (section 5.2), which is what `RidgeCV`, `LassoCV` and `ElasticNetCV` search over. The intercept is left out of the penalty: penalizing it pulls the fitted level toward zero and moves the model off the centre of the data.
 
-What these penalties buy is not a degree of 4. It is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
+A penalty does not buy a degree of 4. What it buys is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
 
 ## Appendix D. Implementation
 
