@@ -1,5 +1,5 @@
-# Polynomial Feature Expansion
-Rev. 0 | Created: 2026-09-07 | Updated: 2026-09-07 01:00 CDT
+# Polynomial Feature Expansion (Korean)
+Rev. 1 | Created: 2026-09-07 | Updated: 2026-09-09 00:08 CDT
 
 ## 1. Purpose
 

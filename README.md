@@ -1,5 +1,5 @@
 # AIML
-Rev. 57 | Created: 2026-08-07 | Updated: 2026-09-07 17:45 CDT
+Rev. 58 | Created: 2026-08-07 | Updated: 2026-09-09 00:09 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -63,7 +63,7 @@ Table 4. Feature engineering documents
 | [Feature-Engineering/wts.md](Feature-Engineering/wts.md) | It consolidates techniques for wide time series where features far outnumber samples, grounded in FDC, DOE, and metrology practice. |
 | [Feature-Engineering/Feature-Importance/feature-importance.md](Feature-Engineering/Feature-Importance/feature-importance.md) | It surveys the methods that put a number on a feature, arranged into seven families by where the number comes from — association in the data, structure of the fitted model, perturbation and removal, gradients, Shapley attribution, variance decomposition, and selection with a controlled error rate — sets out the seven axes on which any two of them are comparable, marks each method as standard or recent, and closes on the failure modes the families share. |
 | [Feature-Engineering/Feature-Importance/feature-importance-ko.md](Feature-Engineering/Feature-Importance/feature-importance-ko.md) | It is the Korean edition of the feature importance survey, carrying the same axes, hierarchy, tables and references, with the headings and captions left in English. |
-| [Feature-Engineering/PFE/polynomial-feature-expansion.md](Feature-Engineering/PFE/polynomial-feature-expansion.md) | It covers the expansion of the input columns into products and powers — the term count that decides the ceiling, the centring that keeps the design matrix solvable, the heredity rule that keeps a product term meaningful, the failure modes the expansion does not report, and the spline, kernel and factorization alternatives it hands off to. |
+| [Feature-Engineering/PFE/polynomial-feature-expansion-ko.md](Feature-Engineering/PFE/polynomial-feature-expansion-ko.md) | It covers the expansion of the input columns into products and powers — the term count that decides the ceiling, the centring that keeps the design matrix solvable, the heredity rule that keeps a product term meaningful, the failure modes the expansion does not report, and the spline, kernel and factorization alternatives it hands off to. |
 | [Feature-Engineering/PCA/README.md](Feature-Engineering/PCA/README.md) | It indexes the PCA folder, which treats PCA as a lineage of variants — the classical branches, their selection for semiconductor data, and the modern reinterpretation in representation learning. |
 | [Feature-Engineering/Wide-Data/README.md](Feature-Engineering/Wide-Data/README.md) | It indexes the Wide-Data folder, which surveys how the (wafer, feature, trace) sensor tensor is compressed into a narrow per-wafer table while preserving information. |
 
