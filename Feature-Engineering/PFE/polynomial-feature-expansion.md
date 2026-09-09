@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 5 | Created: 2026-09-09 | Updated: 2026-09-09 21:40 UTC
+Rev. 6 | Created: 2026-09-09 | Updated: 2026-09-09 21:42 UTC
 
 A model reads its data as a table. Observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -32,6 +32,8 @@ Table 1. Default choices and when they change
 | 3 | Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
 | 4 | Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
 | 5 | Prediction outside the training range | Neither expansion nor a high degree | A polynomial governed by its top term outside the range |
+
+Judging curvature absent, in row 2, means taking the response to move in one direction as a single variable moves alone, with no peak and no saturation in the range at hand. Two grounds carry that judgement: the process is known to be monotonic over the range, or a first-order fit leaves no bend in the residual plotted against that variable. Only on that judgement is `interaction_only=True` used to drop the square terms, and where the judgement is wrong the curvature stays in the residual.
 
 ## 3. Objective
 

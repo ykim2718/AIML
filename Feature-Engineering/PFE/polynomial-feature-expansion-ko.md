@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 6 | Created: 2026-09-07 | Updated: 2026-09-09 21:40 UTC
+Rev. 7 | Created: 2026-09-07 | Updated: 2026-09-09 21:42 UTC
 
 Model 은 자료를 표로 읽는다. 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -32,6 +32,8 @@ Table 1. Default choices and when they change
 | 3 | Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
 | 4 | Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
 | 5 | Prediction outside the training range | Neither expansion nor a high degree | A polynomial governed by its top term outside the range |
+
+2 행에서 곡률이 없다고 판단한다는 것은, 한 변수만 혼자 움직일 때 응답이 다루는 구간 안에서 정점도 포화도 없이 한 방향으로만 간다고 보는 것이다. 그 판단을 받치는 근거는 둘이다. 공정이 그 구간을 단조로운 영역으로 알고 있거나, 1차 항만으로 적합한 뒤 잔차를 그 변수에 대해 그렸을 때 굽은 모양이 남지 않는 경우다. 그렇게 판단했을 때만 `interaction_only=True` 로 제곱항을 빼며, 판단이 틀리면 그 곡률은 잔차에 남는다.
 
 ## 3. Objective
 
