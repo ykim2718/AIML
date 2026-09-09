@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 15 | Created: 2026-09-07 | Updated: 2026-09-09 22:00 UTC
+Rev. 16 | Created: 2026-09-07 | Updated: 2026-09-09 22:01 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -246,11 +246,13 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 
 ## Appendix B. Term Count Derivation
 
+집합 표기를 읽는 법이 먼저다. 집합은 원소를 늘어놓아 $\lbrace 2, 4, 6 \rbrace$ 처럼 적거나, 조건으로 $\lbrace \cdot \mid \cdot \rbrace$ 꼴로 적는다. 뒤의 꼴에서는 세로줄이 중괄호 안을 둘로 나누어, 왼쪽에 원소가 취하는 모양을, 오른쪽에 그 모양이 만족해야 할 조건을 적는다. 그래서 $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ 은 $n$ 이 1 부터 3 까지의 정수일 때의 $n^2$ 을 모두 모은 것, 곧 $\lbrace 1, 4, 9 \rbrace$ 이다. 세로줄 자리에는 콜론도 그만큼 자주 쓰이며, 이 문서는 둘을 함께 쓴다.
+
 4.1 절의 식 (3) 을 여기에 다시 적는다.
 
 $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (3)$$
 
-식 (3) 은 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 중괄호 안에서 세로줄 왼쪽은 원소의 모양이고 오른쪽은 그 모양이 만족해야 할 조건이다. 원소 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
+식 (3) 은 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 세로줄 왼쪽의 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
 
 변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 5 가 그 다섯이다.
 

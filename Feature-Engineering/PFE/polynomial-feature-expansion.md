@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 14 | Created: 2026-09-09 | Updated: 2026-09-09 22:00 UTC
+Rev. 15 | Created: 2026-09-09 | Updated: 2026-09-09 22:01 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -246,11 +246,13 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 
 ## Appendix B. Term Count Derivation
 
+Set notation comes first. A set is written either by listing its elements, as in $\lbrace 2, 4, 6 \rbrace$, or by a condition, in the form $\lbrace \cdot \mid \cdot \rbrace$. In that second form a vertical bar splits the braces: left of the bar stands the shape an element takes, right of it the condition that shape has to meet. So $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ reads as every $n^2$ for $n$ an integer from 1 to 3, which is the set $\lbrace 1, 4, 9 \rbrace$. A colon is used in place of the bar as often as not, and this document uses both.
+
 Equation (3), from section 4.1, is repeated here.
 
 $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (3)$$
 
-Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Inside the braces, what stands left of the bar is the shape of an element and what stands right of it is the condition that shape has to meet. The element $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
+Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Left of the bar, $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
 
 With two variables and $d = 2$, five pairs of exponents meet that condition. Table 5 is the five.
 
