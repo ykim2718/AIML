@@ -1,5 +1,5 @@
 # Outlier Detection Methods (Korean)
-Rev. 3 | Created: 2026-09-09 | Updated: 2026-09-09 16:12 CDT
+Rev. 4 | Created: 2026-09-09 | Updated: 2026-09-09 16:20 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾아내는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리한 survey 이다. 방법을 습관이 아니라 데이터의 모양에서 고를 수 있게 하려는 것이다.
@@ -238,21 +238,21 @@ Diffusion model 이 그 뒤 같은 자리를 넘겨받아, 정상 데이터에�
 
 **Table 1. Method by the shape of the data**
 
-| Data | Method | Why |
-|---|---|---|
-| 변수 하나, 분포 미상 | Interquartile Range | 형태를 가정하지 않고, fence 가 25% 의 breakdown point 를 가진다. |
-| 변수 하나, 근사적으로 정규, 깨끗함 | Z-Score | 문턱값이 명시된 오류율을 가진다. 단 꼭지 3.1 의 상한이 그 위에 놓일 만큼 표본이 커야 한다. |
-| 변수 하나, 오염이 예상됨 | Hampel Identifier | Median 과 MAD 는 찾고 있는 outlier 가 움직이지 못하므로, 스스로를 가리는 것이 없다. |
-| 변수 하나, outlier 여럿, 근사적으로 정규 | Generalized ESD | 검정 하나가 아니라 탐색 전체에 대한 수준을 명시하고, 첫 단계가 아니라 마지막으로 통과한 단계를 읽는다. |
-| 변수 몇 개, 서로 상관 | Mahalanobis Distance | 공분산을 읽는 유일한 항목이며, 믿으려면 robust 한 중심과 척도가 필요하다. |
-| 변수 다수, 조율할 label 없음 | ECOD | Hyperparameter 가 아예 없는 유일한 항목이며, 어느 변수가 그 관측을 극단적으로 만들었는지 말해 준다. |
-| 변수도 많고 관측도 많음 | Isolation Forest | 표본 크기에 선형이고, 부분표본에서 동작하며, 분포를 가정하지 않는다. |
-| 밀도가 서로 다른 cluster | Local Outlier Factor | 관측을 표본 전체가 아니라 그 이웃에 견준다. |
-| 알려진 영역과 판정할 새 점 | One-Class SVM | 문제가 경계이고, 경계는 이 방법이 적합하는 것이다. |
-| Audio, 긴 time series, 장비 trace | Autoencoder | 원래 좌표의 거리가 통하지 않는 곳에서도 재구성 오차는 살아남는다. |
-| 되풀이 생산되는 제품의 image | Patch feature memory | 꼭지 5.3 의 pretrained feature 가 결함의 모습을 이미 담고 있고, 채점이 inline 으로 돌릴 만큼 빠르다. |
-| 생산 lot 안의 부품 | [Part average testing](#appendix-c-semiconductor-practice) | 표준이 규칙을 이름 지어 두어, 한계값을 다투는 대신 감사할 수 있다. |
-| 장비 sensor trace | [Multivariate control chart](#appendix-c-semiconductor-practice) | 점수를 $T^2$ 와 $Q$ 로 나누면 무엇인가 움직였다는 것만이 아니라 어느 sensor 를 보아야 하는지를 말해 준다. |
+| # | Data | Method | Why |
+|---|---|---|---|
+| 1 | 변수 하나, 분포 미상 | Interquartile Range | 형태를 가정하지 않고, fence 가 25% 의 breakdown point 를 가진다. |
+| 2 | 변수 하나, 근사적으로 정규, 깨끗함 | Z-Score | 문턱값이 명시된 오류율을 가진다. 단 꼭지 3.1 의 상한이 그 위에 놓일 만큼 표본이 커야 한다. |
+| 3 | 변수 하나, 오염이 예상됨 | Hampel Identifier | Median 과 MAD 는 찾고 있는 outlier 가 움직이지 못하므로, 스스로를 가리는 것이 없다. |
+| 4 | 변수 하나, outlier 여럿, 근사적으로 정규 | Generalized ESD | 검정 하나가 아니라 탐색 전체에 대한 수준을 명시하고, 첫 단계가 아니라 마지막으로 통과한 단계를 읽는다. |
+| 5 | 변수 몇 개, 서로 상관 | Mahalanobis Distance | 공분산을 읽는 유일한 항목이며, 믿으려면 robust 한 중심과 척도가 필요하다. |
+| 6 | 변수 다수, 조율할 label 없음 | ECOD | Hyperparameter 가 아예 없는 유일한 항목이며, 어느 변수가 그 관측을 극단적으로 만들었는지 말해 준다. |
+| 7 | 변수도 많고 관측도 많음 | Isolation Forest | 표본 크기에 선형이고, 부분표본에서 동작하며, 분포를 가정하지 않는다. |
+| 8 | 밀도가 서로 다른 cluster | Local Outlier Factor | 관측을 표본 전체가 아니라 그 이웃에 견준다. |
+| 9 | 알려진 영역과 판정할 새 점 | One-Class SVM | 문제가 경계이고, 경계는 이 방법이 적합하는 것이다. |
+| 10 | Audio, 긴 time series, 장비 trace | Autoencoder | 원래 좌표의 거리가 통하지 않는 곳에서도 재구성 오차는 살아남는다. |
+| 11 | 되풀이 생산되는 제품의 image | Patch feature memory | 꼭지 5.3 의 pretrained feature 가 결함의 모습을 이미 담고 있고, 채점이 inline 으로 돌릴 만큼 빠르다. |
+| 12 | 생산 lot 안의 부품 | [Part average testing](#appendix-c-semiconductor-practice) | 표준이 규칙을 이름 지어 두어, 한계값을 다투는 대신 감사할 수 있다. |
+| 13 | 장비 sensor trace | [Multivariate control chart](#appendix-c-semiconductor-practice) | 점수를 $T^2$ 와 $Q$ 로 나누면 무엇인가 움직였다는 것만이 아니라 어느 sensor 를 보아야 하는지를 말해 준다. |
 
 ### 6.2. By the Axis Answered
 
@@ -260,20 +260,20 @@ Table 1 은 데이터에 대한 기술에서 방법을 고른다. Table 2 는 �
 
 **Table 2. Where each method sits on the axes of section 2**
 
-| Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
-|---|---|---|---|---|
-| Z-Score | Point | Global | Unsupervised | Single |
-| Interquartile Range | Point | Global | Unsupervised | 통제하지 않음 |
-| Hampel Identifier | Point | Global | Unsupervised | 통제하지 않으나 masking 이 일어날 수 없음 |
-| Generalized ESD | Point | Global | Unsupervised | **Multiple, 명시된 수준에서** |
-| Mahalanobis Distance | Point | Global | Unsupervised | Single |
-| Isolation Forest | Point | Global | Unsupervised | 통제하지 않음 |
-| One-Class SVM | Point | Global | Semi-supervised | 통제하지 않음 |
-| Local Outlier Factor | Point | **Local** | Unsupervised | 통제하지 않음 |
-| ECOD | Point | Global | Unsupervised | 통제하지 않음 |
-| Autoencoder | Point 또는 collective | Global | Semi-supervised | 통제하지 않음 |
-| Adversarial and diffusion | Point 또는 collective | Global | Semi-supervised | 통제하지 않음 |
-| Patch feature memory | Collective, 공간에서 | Global | Semi-supervised | 통제하지 않음 |
+| # | Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
+|---|---|---|---|---|---|
+| 1 | Z-Score | Point | Global | Unsupervised | Single |
+| 2 | Interquartile Range | Point | Global | Unsupervised | 통제하지 않음 |
+| 3 | Hampel Identifier | Point | Global | Unsupervised | 통제하지 않으나 masking 이 일어날 수 없음 |
+| 4 | Generalized ESD | Point | Global | Unsupervised | **Multiple, 명시된 수준에서** |
+| 5 | Mahalanobis Distance | Point | Global | Unsupervised | Single |
+| 6 | Isolation Forest | Point | Global | Unsupervised | 통제하지 않음 |
+| 7 | One-Class SVM | Point | Global | Semi-supervised | 통제하지 않음 |
+| 8 | Local Outlier Factor | Point | **Local** | Unsupervised | 통제하지 않음 |
+| 9 | ECOD | Point | Global | Unsupervised | 통제하지 않음 |
+| 10 | Autoencoder | Point 또는 collective | Global | Semi-supervised | 통제하지 않음 |
+| 11 | Adversarial and diffusion | Point 또는 collective | Global | Semi-supervised | 통제하지 않음 |
+| 12 | Patch feature memory | Collective, 공간에서 | Global | Semi-supervised | 통제하지 않음 |
 
 굵게 쓴 두 칸만이 뜻있는 이탈이다. Local outlier factor 는 reference set 을 바꾸는 유일한 방법이고 나머지는 모두 global 이다. 그리고 generalized ESD 는 outlier 를 몇 개 찾을지를 통제하는 유일한 방법이다. Single 과 통제하지 않음의 차이는 그 방법이 무엇을 위해 만들어졌는가일 뿐, 어떤 개수를 지킨다는 뜻이 아니다. 다른 모든 방법은 이웃이 앉은 자리에 함께 앉으며, 그래서 그 둘이 따로 항목을 얻는다.
 

@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 20 | Created: 2026-08-25 | Updated: 2026-09-09 16:12 CDT
+Rev. 21 | Created: 2026-08-25 | Updated: 2026-09-09 16:20 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -369,21 +369,21 @@ cleanly is not thereby ready for a line.
 
 **Table 1. Method by the shape of the data**
 
-| Data | Method | Why |
-|---|---|---|
-| One variable, distribution unknown | Interquartile Range | It assumes no shape, and the fences carry a breakdown point of 25%. |
-| One variable, approximately normal, clean | Z-Score | The threshold carries a stated error rate, provided the sample is large enough for the ceiling of section 3.1 to sit above it. |
-| One variable, contamination expected | Hampel Identifier | The median and the MAD are not moved by the outliers being looked for, so nothing masks itself. |
-| One variable, several outliers, approximately normal | Generalized ESD | It states a level for the whole search rather than for one test, and reads the last passing stage rather than the first. |
-| A few variables, correlated | Mahalanobis Distance | It is the only entry that reads the covariance, and it needs a robust centre and scale to be trusted. |
-| Many variables, no labels to tune against | ECOD | It is the one entry with no hyperparameter at all, and it says which variables made an observation extreme. |
-| Many variables, and many observations | Isolation Forest | It is linear in the sample size, works on subsamples, and assumes no distribution. |
-| Clusters of differing density | Local Outlier Factor | It compares an observation against its neighbourhood rather than the whole sample. |
-| A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
-| Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
-| Images of a repeated product | Patch feature memory | The pretrained features of section 5.3 already carry what a defect looks like, and scoring is fast enough to run inline. |
-| Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
-| Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
+| # | Data | Method | Why |
+|---|---|---|---|
+| 1 | One variable, distribution unknown | Interquartile Range | It assumes no shape, and the fences carry a breakdown point of 25%. |
+| 2 | One variable, approximately normal, clean | Z-Score | The threshold carries a stated error rate, provided the sample is large enough for the ceiling of section 3.1 to sit above it. |
+| 3 | One variable, contamination expected | Hampel Identifier | The median and the MAD are not moved by the outliers being looked for, so nothing masks itself. |
+| 4 | One variable, several outliers, approximately normal | Generalized ESD | It states a level for the whole search rather than for one test, and reads the last passing stage rather than the first. |
+| 5 | A few variables, correlated | Mahalanobis Distance | It is the only entry that reads the covariance, and it needs a robust centre and scale to be trusted. |
+| 6 | Many variables, no labels to tune against | ECOD | It is the one entry with no hyperparameter at all, and it says which variables made an observation extreme. |
+| 7 | Many variables, and many observations | Isolation Forest | It is linear in the sample size, works on subsamples, and assumes no distribution. |
+| 8 | Clusters of differing density | Local Outlier Factor | It compares an observation against its neighbourhood rather than the whole sample. |
+| 9 | A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
+| 10 | Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
+| 11 | Images of a repeated product | Patch feature memory | The pretrained features of section 5.3 already carry what a defect looks like, and scoring is fast enough to run inline. |
+| 12 | Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
+| 13 | Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
 ### 6.2. By the Axis Answered
 
@@ -392,20 +392,20 @@ which of the questions of section 2 each method actually answers.
 
 **Table 2. Where each method sits on the axes of section 2**
 
-| Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
-|---|---|---|---|---|
-| Z-Score | Point | Global | Unsupervised | Single |
-| Interquartile Range | Point | Global | Unsupervised | Uncontrolled |
-| Hampel Identifier | Point | Global | Unsupervised | Uncontrolled, but masking cannot occur |
-| Generalized ESD | Point | Global | Unsupervised | **Multiple, at a stated level** |
-| Mahalanobis Distance | Point | Global | Unsupervised | Single |
-| Isolation Forest | Point | Global | Unsupervised | Uncontrolled |
-| One-Class SVM | Point | Global | Semi-supervised | Uncontrolled |
-| Local Outlier Factor | Point | **Local** | Unsupervised | Uncontrolled |
-| ECOD | Point | Global | Unsupervised | Uncontrolled |
-| Autoencoder | Point or collective | Global | Semi-supervised | Uncontrolled |
-| Adversarial and diffusion | Point or collective | Global | Semi-supervised | Uncontrolled |
-| Patch feature memory | Collective in space | Global | Semi-supervised | Uncontrolled |
+| # | Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
+|---|---|---|---|---|---|
+| 1 | Z-Score | Point | Global | Unsupervised | Single |
+| 2 | Interquartile Range | Point | Global | Unsupervised | Uncontrolled |
+| 3 | Hampel Identifier | Point | Global | Unsupervised | Uncontrolled, but masking cannot occur |
+| 4 | Generalized ESD | Point | Global | Unsupervised | **Multiple, at a stated level** |
+| 5 | Mahalanobis Distance | Point | Global | Unsupervised | Single |
+| 6 | Isolation Forest | Point | Global | Unsupervised | Uncontrolled |
+| 7 | One-Class SVM | Point | Global | Semi-supervised | Uncontrolled |
+| 8 | Local Outlier Factor | Point | **Local** | Unsupervised | Uncontrolled |
+| 9 | ECOD | Point | Global | Unsupervised | Uncontrolled |
+| 10 | Autoencoder | Point or collective | Global | Semi-supervised | Uncontrolled |
+| 11 | Adversarial and diffusion | Point or collective | Global | Semi-supervised | Uncontrolled |
+| 12 | Patch feature memory | Collective in space | Global | Semi-supervised | Uncontrolled |
 
 The two bold cells are the only departures that matter. The local outlier factor is the only
 method that changes the reference set, the rest being global, and the generalized ESD is the only
