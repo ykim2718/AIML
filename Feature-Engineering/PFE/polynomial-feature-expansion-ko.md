@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 16 | Created: 2026-09-07 | Updated: 2026-09-09 22:01 UTC
+Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-09 22:02 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -107,13 +107,13 @@ $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (7)$$
 
 Table 2. Column count after expansion, bias column excluded
 
-| # | Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
-| --- | --- | --- | --- | --- | --- |
-| 1 | 5 | 20 | 15 | 55 | 25 |
-| 2 | 10 | 65 | 55 | 285 | 175 |
-| 3 | 20 | 230 | 210 | 1,770 | 1,350 |
-| 4 | 50 | 1,325 | 1,275 | 23,425 | 20,875 |
-| 5 | 100 | 5,150 | 5,050 | 176,850 | 166,750 |
+| Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
+| --- | --- | --- | --- | --- |
+| 5 | 20 | 15 | 55 | 25 |
+| 10 | 65 | 55 | 285 | 175 |
+| 20 | 230 | 210 | 1,770 | 1,350 |
+| 50 | 1,325 | 1,275 | 23,425 | 20,875 |
+| 100 | 5,150 | 5,050 | 176,850 | 166,750 |
 
 Table 2 에서 읽을 것은 `interaction_only` 가 줄여 주는 몫이 작다는 사실이다. $d = 2$ 에서 그 차이는 제곱항 $n$ 개뿐이어서 $n = 100$ 의 5,150 이 5,050 이 될 뿐이다. 곧 이 option 은 열 수를 줄이려고 켜는 것이 아니라, 한 변수 안의 곡률을 model 에 넣지 않겠다는 판단을 적어 두는 것이다.
 
@@ -143,16 +143,16 @@ Expansion 이 실패하는 모습은 여섯 가지로 정리된다. 대부분은
 
 Table 3. Failure modes of a polynomial expansion
 
-| # | Symptom | Cause | Countermeasure |
-| --- | --- | --- | --- |
-| 1 | Held-out error worse at degree 2 than at degree 1 | Term count close to the row count | Ridge or lasso, `interaction_only`, selective expansion |
-| 2 | Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
-| 3 | Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
-| 4 | A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
-| 5 | Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
-| 6 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
+| Symptom | Cause | Countermeasure |
+| --- | --- | --- |
+| Held-out error worse at degree 2 than at degree 1 | Term count close to the row count | Ridge or lasso, `interaction_only`, selective expansion |
+| Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
+| Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
+| A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
+| Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
+| Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-Table 3 의 5 행은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
+Table 3 의 다섯째 줄은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
 
 ### 5.4 Diagnostics
 
@@ -169,16 +169,16 @@ Expansion 이 맞지 않는 자리는 세 가지다. 변수가 많을 때, 한 �
 
 Table 4. Alternatives to a polynomial expansion
 
-| # | Method | What it buys | When to prefer | Cost |
-| --- | --- | --- | --- | --- |
-| 1 | Polynomial expansion | Explicit terms, a linear model kept intact | A few dozen variables, curvature and pairwise effects | Column count, fragile extrapolation |
-| 2 | Spline and P-spline | Local flexibility, a bounded basis [[11](#ref-11)] | Repeated bends inside one variable | Tensor products for interactions, growing again |
-| 3 | GAM | A sum of per-variable curves, readable | Non-linear main effects, few interactions | Interaction terms declared by hand |
-| 4 | Polynomial kernel | The same space without materializing it | Many variables, few rows | No coefficient attached to a term |
-| 5 | Random feature or sketch | Column count fixed by the user | Many rows and many variables | Approximation error |
-| 6 | Factorization machine | Pairwise coefficients factorized [[12](#ref-12)] | Sparse high-cardinality categorical data | Interaction strength only, limited reading |
-| 7 | Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
-| 8 | Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
+| Method | What it buys | When to prefer | Cost |
+| --- | --- | --- | --- |
+| Polynomial expansion | Explicit terms, a linear model kept intact | A few dozen variables, curvature and pairwise effects | Column count, fragile extrapolation |
+| Spline and P-spline | Local flexibility, a bounded basis [[11](#ref-11)] | Repeated bends inside one variable | Tensor products for interactions, growing again |
+| GAM | A sum of per-variable curves, readable | Non-linear main effects, few interactions | Interaction terms declared by hand |
+| Polynomial kernel | The same space without materializing it | Many variables, few rows | No coefficient attached to a term |
+| Random feature or sketch | Column count fixed by the user | Many rows and many variables | Approximation error |
+| Factorization machine | Pairwise coefficients factorized [[12](#ref-12)] | Sparse high-cardinality categorical data | Interaction strength only, limited reading |
+| Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
+| Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
 
 Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다. PLS 는 열을 응답과의 공분산이 큰 방향으로 먼저 투영한 뒤 회귀하므로 expansion 이 만든 collinearity 를 정면으로 다루며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. basis expansion 전체를 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
 
@@ -320,12 +320,12 @@ Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, �
 
 Table 7. PolynomialFeatures arguments
 
-| # | Argument | Effect | Note |
-| --- | --- | --- | --- |
-| 1 | `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
-| 2 | `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
-| 3 | `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
-| 4 | `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
+| Argument | Effect | Note |
+| --- | --- | --- |
+| `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
+| `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
+| `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
+| `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
 
 ```python
 # Python

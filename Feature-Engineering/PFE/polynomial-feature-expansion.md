@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 15 | Created: 2026-09-09 | Updated: 2026-09-09 22:01 UTC
+Rev. 16 | Created: 2026-09-09 | Updated: 2026-09-09 22:02 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -107,13 +107,13 @@ Both counts are derived from the set of equation (3) in [Appendix B](#appendix-b
 
 Table 2. Column count after expansion, bias column excluded
 
-| # | Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
-| --- | --- | --- | --- | --- | --- |
-| 1 | 5 | 20 | 15 | 55 | 25 |
-| 2 | 10 | 65 | 55 | 285 | 175 |
-| 3 | 20 | 230 | 210 | 1,770 | 1,350 |
-| 4 | 50 | 1,325 | 1,275 | 23,425 | 20,875 |
-| 5 | 100 | 5,150 | 5,050 | 176,850 | 166,750 |
+| Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
+| --- | --- | --- | --- | --- |
+| 5 | 20 | 15 | 55 | 25 |
+| 10 | 65 | 55 | 285 | 175 |
+| 20 | 230 | 210 | 1,770 | 1,350 |
+| 50 | 1,325 | 1,275 | 23,425 | 20,875 |
+| 100 | 5,150 | 5,050 | 176,850 | 166,750 |
 
 What Table 2 says is that `interaction_only` saves little. At $d = 2$ the difference is the $n$ square terms alone, so 5,150 becomes 5,050 at $n = 100$. The option is therefore not switched on to cut the column count; it is where the decision to keep curvature inside one variable out of the model is written down.
 
@@ -143,16 +143,16 @@ An expansion fails in six recognizable ways. Most arrive not as a model that fit
 
 Table 3. Failure modes of a polynomial expansion
 
-| # | Symptom | Cause | Countermeasure |
-| --- | --- | --- | --- |
-| 1 | Held-out error worse at degree 2 than at degree 1 | Term count close to the row count | Ridge or lasso, `interaction_only`, selective expansion |
-| 2 | Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
-| 3 | Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
-| 4 | A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
-| 5 | Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
-| 6 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
+| Symptom | Cause | Countermeasure |
+| --- | --- | --- |
+| Held-out error worse at degree 2 than at degree 1 | Term count close to the row count | Ridge or lasso, `interaction_only`, selective expansion |
+| Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
+| Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
+| A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
+| Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
+| Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-Row 5 of Table 3 is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
+The fifth row of Table 3 is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
 
 ### 5.4 Diagnostics
 
@@ -169,16 +169,16 @@ An expansion is out of place in three situations: many variables, several bends 
 
 Table 4. Alternatives to a polynomial expansion
 
-| # | Method | What it buys | When to prefer | Cost |
-| --- | --- | --- | --- | --- |
-| 1 | Polynomial expansion | Explicit terms, a linear model kept intact | A few dozen variables, curvature and pairwise effects | Column count, fragile extrapolation |
-| 2 | Spline and P-spline | Local flexibility, a bounded basis [[11](#ref-11)] | Repeated bends inside one variable | Tensor products for interactions, growing again |
-| 3 | GAM | A sum of per-variable curves, readable | Non-linear main effects, few interactions | Interaction terms declared by hand |
-| 4 | Polynomial kernel | The same space without materializing it | Many variables, few rows | No coefficient attached to a term |
-| 5 | Random feature or sketch | Column count fixed by the user | Many rows and many variables | Approximation error |
-| 6 | Factorization machine | Pairwise coefficients factorized [[12](#ref-12)] | Sparse high-cardinality categorical data | Interaction strength only, limited reading |
-| 7 | Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
-| 8 | Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
+| Method | What it buys | When to prefer | Cost |
+| --- | --- | --- | --- |
+| Polynomial expansion | Explicit terms, a linear model kept intact | A few dozen variables, curvature and pairwise effects | Column count, fragile extrapolation |
+| Spline and P-spline | Local flexibility, a bounded basis [[11](#ref-11)] | Repeated bends inside one variable | Tensor products for interactions, growing again |
+| GAM | A sum of per-variable curves, readable | Non-linear main effects, few interactions | Interaction terms declared by hand |
+| Polynomial kernel | The same space without materializing it | Many variables, few rows | No coefficient attached to a term |
+| Random feature or sketch | Column count fixed by the user | Many rows and many variables | Approximation error |
+| Factorization machine | Pairwise coefficients factorized [[12](#ref-12)] | Sparse high-cardinality categorical data | Interaction strength only, limited reading |
+| Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
+| Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
 
 Handing the expanded columns to PLS (Partial Least Squares) is another route. PLS projects the columns onto the directions of largest covariance with the response before regressing, so it meets the collinearity the expansion manufactures head on, and it is used on experimental data holding fewer observations than coefficients. Whichever is chosen, the order of judgement is the same. Establish first that expressive power is what is missing, then separate whether what is missing is a product term or a curvature, and choose the method after that. A treatment that compares the whole of basis expansion in one frame is available [[10](#ref-10)].
 
@@ -320,12 +320,12 @@ The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, 
 
 Table 7. PolynomialFeatures arguments
 
-| # | Argument | Effect | Note |
-| --- | --- | --- | --- |
-| 1 | `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
-| 2 | `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
-| 3 | `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
-| 4 | `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
+| Argument | Effect | Note |
+| --- | --- | --- |
+| `degree` | Highest degree of the monomials | A `(min, max)` tuple for the lowest degree as well, so `(2, 2)` for second-order terms only |
+| `interaction_only` | Products of distinct variables only | First-order terms kept, powers of a single variable dropped |
+| `include_bias` | A constant column of ones | False where the estimator carries its own intercept |
+| `order` | Memory layout of the output array | 'C' or 'F', a choice of layout rather than of content |
 
 ```python
 # Python
