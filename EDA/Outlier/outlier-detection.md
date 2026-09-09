@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 17 | Created: 2026-08-25 | Updated: 2026-09-04 20:10 UTC
+Rev. 18 | Created: 2026-08-25 | Updated: 2026-09-09 15:41 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -438,7 +438,33 @@ cheap methods of sections 3 and 4 remain the honest default on tabular data.
 The exception is the case where the raw coordinates carry no usable distance. That is where the
 deep methods earn their cost, and images are the clearest instance of it.
 
-### 6.4. Two Habits
+### 6.4. What Practice Actually Runs
+
+The methods a working analysis reaches for are not the ones a survey ranks. Table 3 lists them in
+the order they are actually met, which is close to the reverse of the order they deserve.
+
+**Table 3. What practice actually runs, most common first**
+
+| Rank | Rule | Why it is reached for |
+|---|---|---|
+| 1 | Interquartile range, the Tukey fence of section 3.2 | The box plot is the first drawing anyone makes, and its whiskers already are the rule. |
+| 2 | Z-score cut at 3, of section 3.1 | Habit. It is the rule everyone was taught, and it is the wrong one whenever the sample is neither normal nor clean. |
+| 3 | Modified z-score on the MAD, of section 3.3 | Where the work moves the moment the data are at all dirty. |
+| 4 | Quantile clipping, winsorizing at the 1st and the 99th percentile | Cheap, and it needs no test at all. It fixes a share of the sample rather than a property of it. |
+| 5 | A domain physical limit | It should be first. A negative pressure or a yield above 100% is settled before any statistic is computed. |
+
+The last two entries are of a different kind from the first three, which is why the ranking
+misleads as it stands. Winsorizing decides nothing: it is a treatment applied to a fixed share of
+the sample whether or not that share is discordant, and section 1 keeps treatment apart from
+detection. A physical limit is not a statistic either but knowledge held before the sample is read,
+and it is the one rule here that can call an observation wrong rather than inconsistent.
+
+That is the sense in which the fifth entry belongs first. Bounds the process cannot cross are
+applied before anything in sections 3 to 5 runs, because a value outside them is an error by
+construction, and leaving it in the sample corrupts every estimate the rest of this document is
+built on.
+
+### 6.5. Two Habits
 
 Two habits matter more than the choice itself. Fix the threshold before the data are seen, so that
 it is not tuned to produce a preferred answer. Then read the margin rather than the verdict, since
@@ -543,6 +569,7 @@ findings and only the second survives a change in the choices above.
 - **novelty detection** — Judging new observations against a training set assumed to be free of outliers, as opposed to searching one sample that may already contain them.
 - **order statistic** — An observation identified by its rank in the sorted sample rather than by its value, such as the median or a quartile. Moving an extreme observation further out does not move it.
 - **outlier** — An observation inconsistent with the distribution the rest of the sample follows. The label concerns consistency with a model and does not by itself establish that the observation is wrong.
+- **physical limit** — A bound a measured quantity cannot cross because of what it measures, such as a negative pressure or a yield above 100%. It is known before the sample is read, so a value outside it is wrong rather than merely inconsistent.
 - **pretrained network** — A network fitted on a large general dataset and then used without further training, for the features its intermediate layers produce rather than for its own output.
 - **principal component** — A direction fitted to the data along which the variance is largest, subject to being uncorrelated with the directions already fitted. A few of them usually carry most of the variation among correlated sensors.
 - **reconstruction error** — The distance between an input and the output a model produces when it compresses and rebuilds that input.
@@ -552,6 +579,7 @@ findings and only the second survives a change in the choices above.
 - **squared prediction error (Q statistic)** — The part of an observation that a fitted model does not explain, measured as the squared distance from the observation to its reconstruction in the model's space.
 - **SVM** — Support vector machine, a classifier that separates classes by the widest margin available in the geometry a kernel fixes. The one-class variant of section 4.2 has no second class and encloses the one it has instead.
 - **swamping** — The effect by which an outlier distorts the centre or the scale far enough that clean observations are flagged alongside it.
+- **winsorizing** — Replacing every observation past a chosen quantile with the value at that quantile, so that a fixed share of the sample is pulled in rather than tested. It is a treatment and not a detection rule.
 
 ## Appendix B. Tukey's Rule
 
@@ -581,7 +609,7 @@ The multiple of 1.5 was chosen for convenience, not derived. What it does on a n
 worth stating exactly, because section 3.2 calls the rule comparable to a z-score at 3 and the two
 are not identical.
 
-**Table 3. Where each fence sits on a normal sample**
+**Table 4. Where each fence sits on a normal sample**
 
 | Rule | Position | Share of a normal sample flagged |
 |---|---|---|

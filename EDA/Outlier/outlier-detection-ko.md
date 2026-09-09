@@ -1,5 +1,5 @@
 # Outlier Detection Methods (Korean)
-Rev. 0 | Created: 2026-09-09 | Updated: 2026-09-04 20:10 UTC
+Rev. 1 | Created: 2026-09-09 | Updated: 2026-09-09 15:41 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾아내는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리한 survey 이다. 방법을 습관이 아니라 데이터의 모양에서 고를 수 있게 하려는 것이다.
@@ -294,7 +294,25 @@ Contextual anomaly 가 form 축에서 손에 닿지 않는 것도 같은 이유�
 
 예외는 원래 좌표가 쓸 만한 거리를 담고 있지 않은 경우이다. Deep 방법들이 자기 비용을 벌어들이는 자리가 거기이며, image 가 그 가장 뚜렷한 사례이다.
 
-### 6.4. Two Habits
+### 6.4. What Practice Actually Runs
+
+실제 분석이 손을 뻗는 방법은 survey 가 순위를 매기는 방법과 다르다. Table 3 은 실제로 마주치는 순서대로 적은 것이며, 그 순서는 마땅히 놓여야 할 순서를 거의 뒤집어 놓은 것이다.
+
+**Table 3. What practice actually runs, most common first**
+
+| Rank | Rule | Why it is reached for |
+|---|---|---|
+| 1 | 꼭지 3.2 의 Tukey fence, 곧 interquartile range | Box plot 이 누구나 가장 먼저 그리는 그림이고, 그 수염이 이미 이 규칙이다. |
+| 2 | 꼭지 3.1 의 3 에서 자르는 z-score | 관성. 모두가 배운 규칙이지만, 표본이 정규도 아니고 깨끗하지도 않으면 언제나 틀린 규칙이다. |
+| 3 | 꼭지 3.3 의 MAD 로 만든 modified z-score | 데이터가 조금이라도 지저분해지면 작업이 옮겨 가는 자리. |
+| 4 | 분위수 절단, 곧 1 백분위수와 99 백분위수에서의 winsorizing | 싸고, 검정이 아예 필요 없다. 표본의 성질이 아니라 표본의 몫을 고정한다. |
+| 5 | 도메인의 물리 한계 | 이것이 첫째여야 한다. 음의 압력이나 100% 를 넘는 수율은 어떤 통계량을 계산하기도 전에 결판난다. |
+
+마지막 두 항목은 앞의 셋과 종류가 다르며, 그래서 이 순위는 그대로 두면 오해를 부른다. Winsorizing 은 아무것도 판정하지 않는다. 표본에서 고정된 몫에, 그 몫이 discordant 하든 아니든 적용하는 처리이며, 꼭지 1 이 처리를 검출과 갈라 놓았다. 물리 한계도 통계량이 아니라 표본을 읽기 전에 이미 가지고 있는 지식이고, 여기서 관측을 어긋났다가 아니라 틀렸다고 부를 수 있는 유일한 규칙이다.
+
+다섯째 항목이 첫째 자리에 놓여야 한다는 말은 그런 뜻이다. Process 가 넘을 수 없는 한계는 꼭지 3 부터 5 까지의 어느 것이 돌기도 전에 적용한다. 그 밖의 값은 구성상 오류이고, 그것을 표본에 남겨 두면 이 문서의 나머지가 딛고 선 모든 추정값이 망가지기 때문이다.
+
+### 6.5. Two Habits
 
 선택 자체보다 더 중요한 습관이 둘 있다. 데이터를 보기 전에 문턱값을 고정하여, 좋아하는 답이 나오도록 그것을 조율하지 않는다. 그다음에는 판정이 아니라 여유를 읽는다. Cut-off 를 간신히 넘긴 통계량과 넉넉한 차이로 넘긴 통계량은 서로 다른 발견이고, 위의 선택들이 바뀌어도 살아남는 것은 뒤의 것뿐이기 때문이다.
 
@@ -396,6 +414,7 @@ Contextual anomaly 가 form 축에서 손에 닿지 않는 것도 같은 이유�
 - **novelty detection** — 새 관측을 outlier 가 없다고 가정한 training set 에 견주어 판정하는 것으로, 이미 outlier 를 담고 있을 수 있는 표본 하나를 뒤지는 것과 다르다.
 - **order statistic** — 값이 아니라 정렬된 표본에서의 순위로 지목되는 관측으로, median 이나 사분위수 같은 것이다. 극단적인 관측을 더 멀리 옮겨도 그것은 움직이지 않는다.
 - **outlier** — 나머지 표본이 따르는 분포와 어긋나는 관측. 이 label 은 model 과의 정합성에 대한 것이며, 그 자체로 관측이 틀렸음을 밝히지는 않는다.
+- **physical limit** — 측정 대상이 무엇인가에 따라 측정값이 넘을 수 없는 한계로, 음의 압력이나 100% 를 넘는 수율 같은 것이다. 표본을 읽기 전에 이미 알고 있으므로, 그 밖의 값은 단지 어긋난 것이 아니라 틀린 것이다.
 - **pretrained network** — 크고 일반적인 dataset 에서 적합한 뒤 더 training 하지 않고 쓰는 network 로, 자기 출력이 아니라 중간 층이 내놓는 feature 를 쓰려는 것이다.
 - **principal component** — 이미 적합된 방향들과 상관이 없다는 조건 아래, 분산이 가장 큰 쪽으로 데이터에 적합한 방향. 서로 상관된 sensor 들에서는 보통 몇 개가 변동의 대부분을 담는다.
 - **reconstruction error** — 입력과, model 이 그 입력을 압축했다가 다시 세워 내놓은 출력 사이의 거리.
@@ -405,6 +424,7 @@ Contextual anomaly 가 form 축에서 손에 닿지 않는 것도 같은 이유�
 - **squared prediction error (Q statistic)** — 적합된 model 이 설명하지 못한 관측의 부분으로, 관측에서 그 model 의 공간 안 재구성까지의 제곱 거리로 잰다.
 - **SVM** — Support vector machine 으로, kernel 이 정한 기하 구조에서 얻을 수 있는 가장 넓은 여백으로 class 를 가르는 분류기. 꼭지 4.2 의 one-class 변형에는 두 번째 class 가 없어, 가진 하나를 감싼다.
 - **swamping** — Outlier 가 중심이나 척도를 충분히 일그러뜨려, 깨끗한 관측까지 그것과 함께 flag 되는 효과.
+- **winsorizing** — 고른 분위수를 넘어가는 모든 관측을 그 분위수의 값으로 바꾸어, 표본에서 고정된 몫을 검정하는 대신 안으로 끌어당기는 것. 검출 규칙이 아니라 처리이다.
 
 ## Appendix B. Tukey's Rule
 
@@ -427,7 +447,7 @@ $$Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}$$
 
 1.5 라는 배수는 유도된 것이 아니라 편의로 고른 것이다. 그것이 정규 표본에서 하는 일은 정확히 적어 둘 값어치가 있다. 꼭지 3.2 가 이 규칙을 3 의 z-score 와 비슷하다고 부르지만 둘은 같지 않기 때문이다.
 
-**Table 3. Where each fence sits on a normal sample**
+**Table 4. Where each fence sits on a normal sample**
 
 | Rule | Position | Share of a normal sample flagged |
 |---|---|---|
