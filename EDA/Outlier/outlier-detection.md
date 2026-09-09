@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 18 | Created: 2026-08-25 | Updated: 2026-09-09 15:41 CDT
+Rev. 19 | Created: 2026-08-25 | Updated: 2026-09-09 16:04 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -21,8 +21,9 @@ against what a method needs.
 
 Those two are properties of the data. The rest of what fixes a choice is a property of the outlier
 being looked for, and section 2 sorts those before any method is named. Sections 3 to 5 then take
-the three families of method in turn, and section 6 puts the choice in one table.
-[Appendix C. Semiconductor Practice](#appendix-c-semiconductor-practice) then reads two standard
+the three families of method in turn, and section 6 makes the choice: from the shape of the
+data, from the axes of section 2, and against what a working analysis actually reaches for.
+[Appendix C. Semiconductor Practice](#appendix-c-semiconductor-practice) reads two standard
 industrial rules against them.
 
 ## 2. Kinds of Outlier
@@ -71,8 +72,8 @@ The same flagged value can arrive three ways, and what should be done with it di
 - **Foreign population.** A correct measurement of something else, such as a part from another lot mixed into the batch.
 - **Genuine rare event.** A correct measurement of the process under study, sitting in a tail it really has.
 
-No statistic tells these apart. Detection produces a candidate and the cause is established by
-looking at the record behind it, which is why this document keeps detection and treatment separate.
+No statistic tells these apart. Detection produces a candidate, and the cause is established by
+looking at the record behind it rather than at the value itself.
 
 ### 2.4. Discordancy and Contamination
 
@@ -177,9 +178,9 @@ $$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \r
 
 Quartiles are order statistics, so the rule needs no distributional assumption and carries a
 breakdown point of 25% against the 0% of the z-score. On a normal sample of standard deviation
-$\sigma$ the range itself is $1.349 \sigma$, which puts the fences at $\pm 2.7 \sigma$ and admits
-roughly 0.7% of observations. The rule is therefore comparable in strictness to a z-score at 3,
-while surviving contamination that would defeat that score.
+$\sigma$ the range itself is $1.349 \sigma$, which puts the fences at $\pm 2.7 \sigma$ and leaves
+roughly 0.7% of observations outside them. The rule is therefore comparable in strictness to a
+z-score at 3, while surviving contamination that would defeat that score.
 [Appendix B. Tukey's Rule](#appendix-b-tukeys-rule) works the comparison out and gives the second
 fence the rule is usually drawn with.
 
@@ -406,10 +407,11 @@ which of the questions of section 2 each method actually answers.
 | Adversarial and diffusion | Point or collective | Global | Semi-supervised | Uncontrolled |
 | Patch feature memory | Collective in space | Global | Semi-supervised | Uncontrolled |
 
-The two bold cells are the whole of the variation in those columns. The local outlier factor is
-the only method that changes the reference set, and the generalized ESD is the only one that
-controls how many outliers it looks for. Every other method sits where its neighbours sit, which
-is why those two earn separate entries.
+The two bold cells are the only departures that matter. The local outlier factor is the only
+method that changes the reference set, the rest being global, and the generalized ESD is the only
+one that controls how many outliers it looks for, since single and uncontrolled differ in what a
+method was built for rather than in any count it holds to. Every other method sits where its
+neighbours sit, which is why those two earn separate entries.
 
 The deep methods reach a collective anomaly by changing the data rather than the method. A window
 over a series, or a patch of an image, becomes one vector, and the collective anomaly of section
@@ -440,14 +442,15 @@ deep methods earn their cost, and images are the clearest instance of it.
 
 ### 6.4. What Practice Actually Runs
 
-The methods a working analysis reaches for are not the ones a survey ranks. Table 3 lists them in
-the order they are actually met, which is close to the reverse of the order they deserve.
+A survey ranks methods by what they assume. Practice ranks them by what is already on the screen,
+and the two orders are not the same. Table 3 lists the rules in the order they are actually met,
+which says more about what is easy to reach than about what the data need.
 
 **Table 3. What practice actually runs, most common first**
 
 | Rank | Rule | Why it is reached for |
 |---|---|---|
-| 1 | Interquartile range, the Tukey fence of section 3.2 | The box plot is the first drawing anyone makes, and its whiskers already are the rule. |
+| 1 | Interquartile range, the Tukey fence of section 3.2 | The box plot is usually the first drawing made, and its whiskers already are the rule. |
 | 2 | Z-score cut at 3, of section 3.1 | Habit. It is the rule everyone was taught, and it is the wrong one whenever the sample is neither normal nor clean. |
 | 3 | Modified z-score on the MAD, of section 3.3 | Where the work moves the moment the data are at all dirty. |
 | 4 | Quantile clipping, winsorizing at the 1st and the 99th percentile | Cheap, and it needs no test at all. It fixes a share of the sample rather than a property of it. |
@@ -617,9 +620,9 @@ are not identical.
 | Outer fence, $c = 3$ | 4.7214 $\sigma$ | 0.0002% |
 | Classical rule at 3 | 3.0000 $\sigma$ | 0.2700% |
 
-The inner fence is therefore the looser of the two by a factor of 2.6, and a multiple of 1.724
-rather than 1.5 would put it exactly where a z-score at 3 sits. The outer fence is stricter than
-either by three orders of magnitude, which is why far out is a strong statement.
+The inner fence is therefore looser than the classical rule at 3 by a factor of 2.6, and a multiple
+of 1.724 rather than 1.5 would put it exactly where that rule sits. The outer fence is stricter
+than either by three orders of magnitude, which is why far out is a strong statement.
 
 Comparable is the right word for the inner fence rather than equal. Both rules flag a fraction of
 a percent where a rule at two standard deviations would flag five, and the choice between them

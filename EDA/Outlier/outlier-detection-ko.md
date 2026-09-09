@@ -1,5 +1,5 @@
 # Outlier Detection Methods (Korean)
-Rev. 1 | Created: 2026-09-09 | Updated: 2026-09-09 15:41 CDT
+Rev. 2 | Created: 2026-09-09 | Updated: 2026-09-09 16:04 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾아내는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리한 survey 이다. 방법을 습관이 아니라 데이터의 모양에서 고를 수 있게 하려는 것이다.
@@ -13,7 +13,7 @@ Outlier 는 나머지 표본이 따르는 model 과 어긋나는 관측이다. �
 - **Dimension.** 변수 하나, 몇 개, 아니면 거리가 의미를 잃을 만큼 큰 공간.
 - **Distribution.** 모수적 형태를, 무엇보다 정규성을 가정할 수 있는지 여부.
 
-이 둘은 데이터의 성질이다. 선택을 고정하는 나머지는 찾고 있는 outlier 의 성질이며, 꼭지 2 가 어떤 방법을 이름 대기 전에 그것들을 정리한다. 꼭지 3 부터 5 까지는 세 가지 방법 family 를 차례로 다루고, 꼭지 6 이 선택을 표 하나에 담는다. [Appendix C. Semiconductor Practice](#appendix-c-semiconductor-practice) 는 산업 표준 규칙 둘을 그 방법들에 비추어 읽는다.
+이 둘은 데이터의 성질이다. 선택을 고정하는 나머지는 찾고 있는 outlier 의 성질이며, 꼭지 2 가 어떤 방법을 이름 대기 전에 그것들을 정리한다. 꼭지 3 부터 5 까지는 세 가지 방법 family 를 차례로 다루고, 꼭지 6 이 선택을 내린다. 데이터의 모양에서, 꼭지 2 의 축에서, 그리고 실제 분석이 무엇에 손을 뻗는지에 견주어서이다. [Appendix C. Semiconductor Practice](#appendix-c-semiconductor-practice) 는 산업 표준 규칙 둘을 그 방법들에 비추어 읽는다.
 
 ## 2. Kinds of Outlier
 
@@ -48,7 +48,7 @@ Contextual anomaly 와 collective anomaly 는 값이 스스로 담고 있지 않
 - **Foreign population.** 다른 것을 옳게 측정한 값. 예를 들어 batch 에 섞여 들어온 다른 lot 의 부품.
 - **Genuine rare event.** 연구 대상 process 를 옳게 측정한 값으로, 그 process 가 실제로 가진 꼬리에 놓여 있다.
 
-어느 통계량도 이 셋을 가르지 못한다. 검출은 후보를 내놓을 뿐이고 원인은 그 뒤의 기록을 들여다보아야 밝혀지며, 이것이 이 문서가 검출과 처리를 따로 두는 이유이다.
+어느 통계량도 이 셋을 가르지 못한다. 검출은 후보를 내놓을 뿐이고, 원인은 값 자체가 아니라 그 뒤의 기록을 들여다보아야 밝혀진다.
 
 ### 2.4. Discordancy and Contamination
 
@@ -275,7 +275,7 @@ Table 1 은 데이터에 대한 기술에서 방법을 고른다. Table 2 는 �
 | Adversarial and diffusion | Point 또는 collective | Global | Semi-supervised | 통제하지 않음 |
 | Patch feature memory | Collective, 공간에서 | Global | Semi-supervised | 통제하지 않음 |
 
-굵게 쓴 두 칸이 그 열들이 가진 변화의 전부이다. Local outlier factor 는 reference set 을 바꾸는 유일한 방법이고, generalized ESD 는 outlier 를 몇 개 찾을지를 통제하는 유일한 방법이다. 다른 모든 방법은 이웃이 앉은 자리에 함께 앉으며, 그래서 그 둘이 따로 항목을 얻는다.
+굵게 쓴 두 칸만이 뜻있는 이탈이다. Local outlier factor 는 reference set 을 바꾸는 유일한 방법이고 나머지는 모두 global 이다. 그리고 generalized ESD 는 outlier 를 몇 개 찾을지를 통제하는 유일한 방법이다. Single 과 통제하지 않음의 차이는 그 방법이 무엇을 위해 만들어졌는가일 뿐, 어떤 개수를 지킨다는 뜻이 아니다. 다른 모든 방법은 이웃이 앉은 자리에 함께 앉으며, 그래서 그 둘이 따로 항목을 얻는다.
 
 Deep 방법들은 방법이 아니라 데이터를 바꾸어 collective anomaly 에 닿는다. Series 위의 window 나 image 의 patch 가 vector 하나가 되고, 꼭지 2.1 의 collective anomaly 가 그 vector 에서 point anomaly 가 된다. 꼭지 5 의 어느 것도 관측의 연속을 직접 채점하지 않는다.
 
@@ -296,13 +296,13 @@ Contextual anomaly 가 form 축에서 손에 닿지 않는 것도 같은 이유�
 
 ### 6.4. What Practice Actually Runs
 
-실제 분석이 손을 뻗는 방법은 survey 가 순위를 매기는 방법과 다르다. Table 3 은 실제로 마주치는 순서대로 적은 것이며, 그 순서는 마땅히 놓여야 할 순서를 거의 뒤집어 놓은 것이다.
+Survey 는 방법이 무엇을 가정하는지로 순위를 매긴다. 현장은 이미 화면에 떠 있는 것으로 순위를 매기며, 두 순서는 같지 않다. Table 3 은 실제로 마주치는 순서대로 규칙을 적은 것이고, 그 순서는 데이터가 무엇을 필요로 하는지보다 무엇이 손에 닿기 쉬운지를 말한다.
 
 **Table 3. What practice actually runs, most common first**
 
 | Rank | Rule | Why it is reached for |
 |---|---|---|
-| 1 | 꼭지 3.2 의 Tukey fence, 곧 interquartile range | Box plot 이 누구나 가장 먼저 그리는 그림이고, 그 수염이 이미 이 규칙이다. |
+| 1 | 꼭지 3.2 의 Tukey fence, 곧 interquartile range | Box plot 이 보통 가장 먼저 그리는 그림이고, 그 수염이 이미 이 규칙이다. |
 | 2 | 꼭지 3.1 의 3 에서 자르는 z-score | 관성. 모두가 배운 규칙이지만, 표본이 정규도 아니고 깨끗하지도 않으면 언제나 틀린 규칙이다. |
 | 3 | 꼭지 3.3 의 MAD 로 만든 modified z-score | 데이터가 조금이라도 지저분해지면 작업이 옮겨 가는 자리. |
 | 4 | 분위수 절단, 곧 1 백분위수와 99 백분위수에서의 winsorizing | 싸고, 검정이 아예 필요 없다. 표본의 성질이 아니라 표본의 몫을 고정한다. |
@@ -455,7 +455,7 @@ $$Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}$$
 | Outer fence, $c = 3$ | 4.7214 $\sigma$ | 0.0002% |
 | Classical rule at 3 | 3.0000 $\sigma$ | 0.2700% |
 
-따라서 안쪽 fence 는 3 의 z-score 보다 2.6 배 느슨하고, 1.5 대신 1.724 의 배수라면 3 의 z-score 가 놓인 자리에 정확히 놓였을 것이다. 바깥쪽 fence 는 그 둘보다 세 자릿수만큼 엄격하며, 그래서 far out 이 강한 진술이 된다.
+따라서 안쪽 fence 는 3 의 z-score 보다 2.6 배 느슨하고, 1.5 대신 1.724 의 배수라면 그 규칙이 놓인 자리에 정확히 놓였을 것이다. 바깥쪽 fence 는 그 둘보다 세 자릿수만큼 엄격하며, 그래서 far out 이 강한 진술이 된다.
 
 안쪽 fence 에 맞는 말은 같다가 아니라 비슷하다이다. 두 규칙 모두 표준편차 2 의 규칙이 5% 를 flag 할 자리에서 1% 도 되지 않는 몫에 flag 를 붙이며, 둘 사이의 선택은 그 몫이 아니라 오염에 달려 있다.
 
