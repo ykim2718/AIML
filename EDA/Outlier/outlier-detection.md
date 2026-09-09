@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 19 | Created: 2026-08-25 | Updated: 2026-09-09 16:04 CDT
+Rev. 20 | Created: 2026-08-25 | Updated: 2026-09-09 16:12 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -454,7 +454,7 @@ which says more about what is easy to reach than about what the data need.
 | 2 | Z-score cut at 3, of section 3.1 | Habit. It is the rule everyone was taught, and it is the wrong one whenever the sample is neither normal nor clean. |
 | 3 | Modified z-score on the MAD, of section 3.3 | Where the work moves the moment the data are at all dirty. |
 | 4 | Quantile clipping, winsorizing at the 1st and the 99th percentile | Cheap, and it needs no test at all. It fixes a share of the sample rather than a property of it. |
-| 5 | A domain physical limit | It should be first. A negative pressure or a yield above 100% is settled before any statistic is computed. |
+| 5 | 🌳A domain physical limit | It should be first. A negative pressure or a yield above 100% is settled before any statistic is computed. |
 
 The last two entries are of a different kind from the first three, which is why the ranking
 misleads as it stands. Winsorizing decides nothing: it is a treatment applied to a fixed share of
