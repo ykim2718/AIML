@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 11 | Created: 2026-09-09 | Updated: 2026-09-09 21:54 UTC
+Rev. 12 | Created: 2026-09-09 | Updated: 2026-09-09 21:54 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -307,7 +307,6 @@ $\alpha$ is chosen on held-out error over candidates spaced by powers of ten, an
 What these penalties buy is not a degree of 4. It is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
 
 ## Appendix D. Implementation
-
 
 ### D.1 Options
 

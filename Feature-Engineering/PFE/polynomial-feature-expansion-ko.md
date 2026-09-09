@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 12 | Created: 2026-09-07 | Updated: 2026-09-09 21:54 UTC
+Rev. 13 | Created: 2026-09-07 | Updated: 2026-09-09 21:54 UTC
 
 이 문서가 다루는 것은 tabular data, 곧 표로 정리된 자료다. Image 나 text 는 표가 아니어서 pixel 격자나 token 열로 model 에 그대로 들어간다. 표로 다루는 자료에서 관측은 같은 항목이 같은 자리에 있을 때에만 서로 견줄 수 있고, 그렇게 자리를 맞추면 행 하나가 관측 하나이고 열 하나가 변수 하나인 표가 된다. 공정 log 나 계측 raw 자료는 처음부터 그런 표가 아니다. 무엇을 한 관측으로 볼지, 곧 wafer 한 장인지 lot 하나인지 시험 하나인지를 정하고 그 관측에 대해 기록된 것을 한 행으로 줄이면 그때 표가 된다.
 
@@ -307,7 +307,6 @@ $\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격�
 이 penalty 가 벌어 주는 것은 degree 4 가 아니다. 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
 
 ## Appendix D. Implementation
-
 
 ### D.1 Options
 
