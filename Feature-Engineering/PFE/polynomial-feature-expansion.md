@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 7 | Created: 2026-09-09 | Updated: 2026-09-09 21:44 UTC
+Rev. 8 | Created: 2026-09-09 | Updated: 2026-09-09 21:46 UTC
 
 This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
 
@@ -102,6 +102,8 @@ The column count grows as the $d$-th power of the variable count. Without the in
 $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (6)$$
 
 $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (7)$$
+
+Both counts are derived from the set of equation (3) in [Appendix B](#appendix-b-term-count-derivation).
 
 Table 2. Column count after expansion, bias column excluded
 
@@ -322,177 +324,20 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 - **RMSE**: The square root of the mean squared error (Root Mean Squared Error).
 - **VIF**: The variance inflation factor, computed from the $R^2$ of one column regressed on the rest. It is $1/(1-R^2)$.
 
-## Appendix B. Reproduction Code
+## Appendix B. Term Count Derivation
 
-Fig 1 and every number the document quotes come from the script below.
+Equation (3) defines the set of columns to be built without saying how large it is. That size is equation (6) and equation (7), derived below.
 
-```python
-# Feature-Engineering/PFE/polynomial-feature-expansion.py
-__author__ = 'yRocket'
-__version__ = "0.0.1.2026.9.9"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
-import pathlib
-from math import comb
+One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, and the number of such choices is the number of ways $k$ identical items fall into $n$ bins, equation (9).
 
-import matplotlib
-import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.colors import TABLEAU_COLORS
-from sklearn.linear_model import LinearRegression, Ridge
-from sklearn.metrics import root_mean_squared_error
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (9)$$
 
-matplotlib.use('Agg')
+Summing the degrees from 0 to $d$ gives equation (10). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
-N_TRAIN = 60                                     # samples of the one-variable demonstration
-N_ROW = 60                                       # rows of the five-variable demonstration
-N_VARIABLE = 5                                   # variables of the five-variable demonstration
-X_OFFSET = 10.0                                  # location offset that stands for a physical unit
-NOISE_SIGMA = 0.08                               # noise of the one-variable demonstration
-DEGREE_DRAWN = [2, 5, 9]                         # degrees drawn in panel (a)
-DEGREE_RANGE = list(range(1, 9))                 # degrees swept in panel (b)
-DEGREE_SWEEP = list(range(1, 5))                 # degrees swept in panel (c)
-RIDGE_ALPHA = 1.0                                # ridge penalty on standardized expanded columns
-SEED = 0
-VARIABLE_COUNT = [5, 10, 20, 50, 100]            # variable counts of the term-count table
-TERM_DEGREE = [2, 3]                             # degrees of the term-count table
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (10)$$
 
-FIGSIZE: tuple = (13.5, 4.4)
-REFERENCE_WIDTH: float = 13.5                    # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 11.0
-FONT_SIZE = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
-OUT_PATH = pathlib.Path(__file__).parent / 'polynomial-feature-expansion_fig' / 'fig1.png'
+The set of equation (3) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (6).
 
-INK_COLOR = '#333333'
-MUTED_COLOR = '#767676'
-DEGREE_COLOR = [TABLEAU_COLORS['tab:blue'], TABLEAU_COLORS['tab:orange'], TABLEAU_COLORS['tab:red']]
-RAW_COLOR = TABLEAU_COLORS['tab:red']
-CENTERED_COLOR = TABLEAU_COLORS['tab:blue']
-OLS_COLOR = TABLEAU_COLORS['tab:red']
-RIDGE_COLOR = TABLEAU_COLORS['tab:blue']
+With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (7). Once $d \ge n$ every subset is admitted and the sum closes as equation (11).
 
-
-def truth_1d(x: np.ndarray) -> np.ndarray:
-    """Smooth one-variable response the polynomial fits approximate."""
-    return np.sin(2.0 * np.pi * x) * 0.5 + 0.3 * x
-
-
-def truth_2d(x: np.ndarray) -> np.ndarray:
-    """Five-variable response whose only non-linear part is one interaction term."""
-    return 1.0 + 2.0 * x[:, 0] - 3.0 * x[:, 1] + 0.5 * x[:, 2] + 4.0 * x[:, 0] * x[:, 1]
-
-
-def design_matrix(x: np.ndarray, degree: int) -> np.ndarray:
-    """Column-wise powers 1 ... degree of x, with the intercept column in front."""
-    return np.column_stack([np.ones_like(x)] + [x ** power for power in range(1, degree + 1)])
-
-
-def term_count_full(variable: int, degree: int) -> int:
-    """Number of monomials of degree 1 ... degree in the given number of variables."""
-    return comb(variable + degree, degree) - 1
-
-
-def term_count_interaction(variable: int, degree: int) -> int:
-    """Number of products of distinct variables, up to the given degree."""
-    return sum(comb(variable, order) for order in range(1, min(degree, variable) + 1))
-
-
-rng = np.random.default_rng(SEED)
-
-x_unit = np.sort(rng.uniform(0.0, 1.0, N_TRAIN))
-y_1d = truth_1d(x_unit) + rng.normal(0.0, NOISE_SIGMA, N_TRAIN)
-x_grid = np.linspace(-0.4, 1.4, 400)
-
-x_pair = rng.uniform(-1.0, 1.0, (N_ROW * 2, N_VARIABLE))
-y_2d = truth_2d(x_pair) + rng.normal(0.0, 0.3, N_ROW * 2)
-x_fit, x_test = x_pair[:N_ROW], x_pair[N_ROW:]
-y_fit, y_test = y_2d[:N_ROW], y_2d[N_ROW:]
-
-fig, axes = plt.subplots(1, 3, figsize=FIGSIZE)
-
-ax = axes[0]
-ax.plot(x_grid, truth_1d(x_grid), color=MUTED_COLOR, linewidth=1.2, linestyle='--', label='truth')
-ax.scatter(x_unit, y_1d, s=12, color=INK_COLOR, zorder=3, label='train')
-for degree, color in zip(DEGREE_DRAWN, DEGREE_COLOR):
-    coefficient = np.linalg.lstsq(design_matrix(x_unit, degree), y_1d, rcond=None)[0]
-    ax.plot(x_grid, design_matrix(x_grid, degree) @ coefficient, color=color, linewidth=1.4,
-            label=f"degree {degree}")
-ax.axvspan(0.0, 1.0, color='#000000', alpha=0.05)
-ax.set_ylim(-1.6, 1.6)
-ax.set_xlabel('x', fontsize=FONT_SIZE, color=INK_COLOR)
-ax.set_ylabel('y', fontsize=FONT_SIZE, color=INK_COLOR)
-ax.legend(fontsize=FONT_SIZE * 0.85, frameon=False, loc='lower center', ncol=2)
-
-ax = axes[1]
-condition_raw, condition_centered = [], []
-for degree in DEGREE_RANGE:
-    x_shifted = x_unit + X_OFFSET
-    condition_raw.append(np.linalg.cond(design_matrix(x_shifted, degree)))
-    x_scaled = (x_shifted - x_shifted.mean()) / x_shifted.std()
-    condition_centered.append(np.linalg.cond(design_matrix(x_scaled, degree)))
-ax.semilogy(DEGREE_RANGE, condition_raw, marker='o', color=RAW_COLOR, linewidth=1.4, label='raw x + 10')
-ax.semilogy(DEGREE_RANGE, condition_centered, marker='s', color=CENTERED_COLOR, linewidth=1.4,
-            label='centered and scaled')
-ax.set_xlabel('degree', fontsize=FONT_SIZE, color=INK_COLOR)
-ax.set_ylabel('condition number', fontsize=FONT_SIZE, color=INK_COLOR)
-ax.set_xticks(DEGREE_RANGE)
-ax.legend(fontsize=FONT_SIZE * 0.85, frameon=False, loc='upper left')
-
-ax = axes[2]
-rmse_ols, rmse_ridge = [], []
-for degree in DEGREE_SWEEP:
-    for model, holder in ((LinearRegression(), rmse_ols), (Ridge(alpha=RIDGE_ALPHA), rmse_ridge)):
-        pipeline = make_pipeline(StandardScaler(), PolynomialFeatures(degree=degree, include_bias=False),
-                                 StandardScaler(), model)
-        pipeline.fit(x_fit, y_fit)
-        holder.append(root_mean_squared_error(y_test, pipeline.predict(x_test)))
-ax.plot(DEGREE_SWEEP, rmse_ols, marker='o', color=OLS_COLOR, linewidth=1.4, label='OLS')
-ax.plot(DEGREE_SWEEP, rmse_ridge, marker='s', color=RIDGE_COLOR, linewidth=1.4,
-        label=f"ridge, alpha = {RIDGE_ALPHA:g}")
-ax.set_xlabel('degree', fontsize=FONT_SIZE, color=INK_COLOR)
-ax.set_ylabel('held-out RMSE', fontsize=FONT_SIZE, color=INK_COLOR)
-ax.set_xticks(DEGREE_SWEEP)
-ax.legend(fontsize=FONT_SIZE * 0.85, frameon=False, loc='lower right')
-
-for ax in axes:
-    ax.tick_params(labelsize=FONT_SIZE * 0.9, colors=MUTED_COLOR)
-    for side in ('top', 'right'):
-        ax.spines[side].set_visible(False)
-    for side in ('left', 'bottom'):
-        ax.spines[side].set_color('#d6d6d6')
-
-fig.subplots_adjust(left=0.06, right=0.99, top=0.96, bottom=0.22, wspace=0.28)
-for ax, label in zip(axes, ('(a)', '(b)', '(c)')):
-    box = ax.get_position()
-    fig.text(box.x0 + box.width / 2.0, 0.045, label, ha='center', va='center', fontsize=FONT_SIZE,
-             color=INK_COLOR)
-
-OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-fig.savefig(OUT_PATH, dpi=300)
-
-x_shifted = x_unit + X_OFFSET
-x_centered = x_shifted - x_shifted.mean()
-print("correlation between a variable and its square")
-print(f"  raw x + {X_OFFSET:g} : {np.corrcoef(x_shifted, x_shifted ** 2)[0, 1]:.4f}")
-print(f"  centered     : {np.corrcoef(x_centered, x_centered ** 2)[0, 1]:.4f}")
-
-print("\ncondition number of the design matrix")
-print(f"{'degree':>7}{'raw':>14}{'centered':>14}")
-for degree, raw, centered in zip(DEGREE_RANGE, condition_raw, condition_centered):
-    print(f"{degree:>7}{raw:>14.3e}{centered:>14.3e}")
-
-print("\nheld-out RMSE against degree")
-print(f"{'degree':>7}{'OLS':>10}{'ridge':>10}")
-for degree, ols, ridge in zip(DEGREE_SWEEP, rmse_ols, rmse_ridge):
-    print(f"{degree:>7}{ols:>10.3f}{ridge:>10.3f}")
-
-print("\nterm count without the bias column")
-print(f"{'n':>5}" + ''.join(f"{'d=' + str(degree) + ' full':>14}{'d=' + str(degree) + ' inter':>15}"
-                            for degree in TERM_DEGREE))
-for variable in VARIABLE_COUNT:
-    row = ''.join(f"{term_count_full(variable, degree):>14}{term_count_interaction(variable, degree):>15}"
-                  for degree in TERM_DEGREE)
-    print(f"{variable:>5}" + row)
-
-print(f"\nsaved {OUT_PATH}")
-```
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (11)$$
