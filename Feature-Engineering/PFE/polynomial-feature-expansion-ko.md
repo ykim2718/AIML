@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 3 | Created: 2026-09-07 | Updated: 2026-09-09 21:23 UTC
+Rev. 4 | Created: 2026-09-07 | Updated: 2026-09-09 21:36 UTC
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 3 | Created: 2026-09-07 | Updated: 2026-09-09 21:23 UTC
 
 ## 2. Summary
 
-Expansion 은 이미 있는 열로 곱과 제곱을 계산해 새 열을 만들어 자료에 덧붙이는 연산이다. 열이 $x_1$, $x_2$ 인 자료는 열이 $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$ 인 자료가 되며, 새로 생긴 그 세 열이 선형 model 에 곡선과 변수 사이의 상호작용을 준다.
+자료는 행 하나가 관측 하나이고 열 하나가 변수 하나인 표다. Expansion 은 그 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 붙이는 연산이며, 행은 그대로 두고 열만 늘린다. 열이 $x_1$, $x_2$ 인 표는 열이 $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$ 인 표가 되고, 새로 생긴 그 세 열이 선형 model 에 곡선과 변수 사이의 상호작용을 준다.
 
 대가는 열의 개수다. 변수 20 개를 2차로 expansion 하면 열은 20 개에서 230 개가 되고, 열 수가 행 수에 다가가면 계수를 더는 추정할 수 없다 (5.1 절). 그래서 기본값 세 가지로 열 수와 계수의 흔들림을 자료가 견디는 범위 안에 둔다. 첫째, degree 를 2 로 두어 만들 항을 제곱과 두 변수의 곱까지로 제한한다 (5.1 절). 둘째, expansion 전에 각 변수에서 그 변수의 평균을 빼 값을 0 근처로 옮긴다. 이것이 centering 이다 (4.2 절). 셋째, expansion 이 만든 열에 ridge 나 lasso 의 penalty 를 걸어 계수의 크기를 누른다 (5.2 절).
 
@@ -33,11 +33,11 @@ Expansion 이 노리는 것은 두 가지다. 한 변수 안의 비선형 관계
 
 ### 3.1 Non-linear Relationship
 
-원 특성 $x$ 에 $x^2$, $x^3$ 같은 항을 더하면 model 은 방정식을 선형으로 유지한 채 곡선과 곡면을 적합한다. 변수 두 개를 2차로 expansion 했을 때 model 이 학습하는 식은 (1) 이다.
+원 특성 $x$ 에 $x^2$, $x^3$ 같은 항을 더하면 model 은 계수에 대해 선형인 채로 곡선과 곡면을 그린다. 여기서 선형이라는 말은 $x$ 가 아니라 계수 $\beta$ 에 대한 것이며, 그래서 잔차 제곱합을 가장 작게 하는 계수를 푸는 최소제곱 (least squares) 이 그대로 쓰인다. 변수 두 개를 2차로 expansion 했을 때 model 이 학습하는 식은 (1) 이다.
 
 $$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_1 x_2 + \beta_5 x_2^2 \hspace{19em} (1)$$
 
-제곱항의 계수 $\beta_3$ 와 $\beta_5$ 가 한 변수 안의 곡률, 곧 정점이나 포화를 담는다. 계수는 여전히 선형으로 들어가므로 최소제곱과 그 위에 쌓인 추론, penalty 를 건 적합이 그대로 쓰인다. 비선형은 model 이 아니라 열에 들어 있어, 쓰던 선형 model 을 그대로 두고 비선형을 얻는다.
+제곱항의 계수 $\beta_3$ 와 $\beta_5$ 가 한 변수 안의 곡률, 곧 정점이나 포화를 담는다. 비선형은 model 이 아니라 열에 들어 있으므로, 쓰던 선형 model 과 그 위에 쌓인 추론·penalty 를 그대로 둔 채 비선형을 얻는다.
 
 ### 3.2 Feature Interaction
 
@@ -45,7 +45,7 @@ $$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_1 x_
 
 $$\frac{\partial \hat{y}}{\partial x_1} = \beta_1 + 2 \beta_3 x_1 + \beta_4 x_2 \hspace{19em} (2)$$
 
-$\beta_4$ 가 0 이 아니면 $x_1$ 의 효과는 $x_2$ 의 수준마다 다르다. 공정으로 옮기면 압력의 효과가 온도에 따라 달라진다는 뜻이며, $x_1$ 과 $x_2$ 의 1차 항 두 개만으로는 적을 수 없다. 두 변수가 함께 높을 때만 나타나는 효과는 이 곱항에만 담긴다. 응답면 (response surface) 을 2차 다항식으로 적는 오랜 관행이 곡률과 상호작용의 조합이며, 최적 조건을 그 곡면의 정류점에서 읽는 방법이 거기서 나왔다 [[1](#ref-1)].
+$\beta_4$ 가 0 이 아니면 $x_1$ 의 효과는 $x_2$ 의 수준마다 다르다. 공정으로 옮기면 압력의 효과가 온도에 따라 달라진다는 뜻이며, $x_1$ 과 $x_2$ 의 1차 항 두 개만으로는 적을 수 없다. 두 변수가 함께 높을 때만 나타나는 효과는 이 곱항에만 담긴다. 응답면 (response surface), 곧 공정 조건 위에 응답이 그리는 곡면을 2차 다항식으로 적는 오랜 관행이 곡률과 상호작용의 조합이며, 최적 조건을 그 곡면에서 기울기가 0 이 되는 점 (stationary point) 으로 읽는 방법이 거기서 나왔다 [[1](#ref-1)].
 
 ## 4. Mechanism
 
@@ -55,17 +55,17 @@ Expansion 이 만드는 열은 원 변수의 거듭제곱을 곱한 항, 곧 mon
 
 $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (3)$$
 
-변수가 $[X_1, X_2]$ 이고 $d = 2$ 이면 절편을 포함한 열은 $[1, X_1, X_2, X_1^2, X_1 X_2, X_2^2]$ 이며, 식 (1) 이 적합되는 곳이 그 열이다. 변수가 $n$ 개인 2차 model 의 일반형은 식 (4) 이고, 3 장의 두 목적이 각각 제곱항과 곱항에 들어 있다.
+변수가 $[X_1, X_2]$ 이고 $d = 2$ 이면 모든 행에서 값이 1 인 상수 열, 곧 절편 (intercept) 을 포함한 열은 $[1, X_1, X_2, X_1^2, X_1 X_2, X_2^2]$ 이며, 식 (1) 은 그 열 위에서 적합된다. 변수가 $n$ 개인 2차 model 의 일반형은 식 (4) 이고, 3 장의 두 목적이 각각 제곱항과 곱항에 들어 있다.
 
 $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{ij} x_i x_j + \varepsilon \hspace{19em} (4)$$
 
 ### 4.2 Centering And Conditioning
 
-Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이며, 얻는 것은 두 가지다. 열 사이의 상관이 낮아지고, design matrix 의 조건수가 낮아진다. 아래 두 문단이 그 수치다.
+Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이며, 얻는 것은 두 가지다. 열 사이의 상관이 낮아지고, design matrix 의 조건수가 낮아진다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬로, 계수는 이 행렬을 풀어 얻는다. 아래 두 문단이 그 두 수치다.
 
-물리 단위의 값은 대개 0 에서 멀리 떨어져 있고, 그런 $x$ 와 $x^2$ 는 거의 같은 방향을 가리킨다. $[10, 11]$ 구간에 놓인 60 개 표본에서 둘의 상관은 0.9999 이며, 평균을 뺀 뒤에는 -0.15 이다. Centering 뒤의 그 상관은 3차 중심적률에 비례하므로, 분포가 대칭이면 0 이 되고 표본에서는 그 근처에 놓인다.
+물리 단위의 값은 대개 0 에서 멀리 떨어져 있고, 그런 $x$ 와 $x^2$ 는 거의 같은 방향을 가리킨다. $[10, 11]$ 구간에 놓인 60 개 표본에서 둘의 상관은 0.9999 이며, 평균을 뺀 뒤에는 -0.15 이다. Centering 뒤의 그 상관은 평균을 뺀 값의 세제곱 평균, 곧 3차 중심적률에 비례하므로, 분포가 대칭이면 0 이 되고 표본에서는 그 근처에 놓인다.
 
-조건수 (condition number) 로 보면 차이가 더 크다. 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, centering 과 표준화 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 배정도 부동소수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
+조건수 (condition number) 로 보면 차이가 더 크다. 조건수는 입력의 작은 오차가 푼 결과에서 몇 배로 커지는지를 나타내는 값이다. 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, centering 과 표준화 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
 
 Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\beta_1$ 은 다른 변수가 평균일 때의 기울기여서 읽을 수 있는 값이 된다. Centering 하지 않으면 그것은 다른 변수가 0 일 때의 기울기이고, 그 0 은 자료에 없는 점인 경우가 많다 [[2](#ref-2)].
 
@@ -79,13 +79,13 @@ $y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = 
 
 $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (5)$$
 
-Main effect 가 저절로 생긴다. 곧 main effect 없는 곱항 model 은 원점을 어디에 두었느냐에 따라 달라져, 온도를 섭씨로 재느냐 절대온도로 재느냐가 model 을 바꾼다. Main effect 를 함께 두면 그 이동이 계수의 재배열로 흡수된다. 곱을 이루는 변수 가운데 하나만 있어도 된다는 약한 형태 (weak heredity) 를 근거로 main effect 를 지우는 관행이 있으나, 그것이 정당화되는 조건은 실무에서 거의 성립하지 않는다 [[4](#ref-4)]. 변수 선택을 자동화할 때도 heredity 를 사전 (prior) 이나 제약으로 걸어 두는 편이 낫다 [[5](#ref-5)] [[6](#ref-6)].
+Main effect 가 저절로 생긴다. 곧 main effect 없는 곱항 model 은 원점을 어디에 두었느냐에 따라 달라져, 온도를 섭씨로 재느냐 절대온도로 재느냐가 model 을 바꾼다. Main effect 를 함께 두면 그 이동이 계수의 재배열로 흡수된다. 곱을 이루는 변수 가운데 하나만 있어도 된다는 약한 형태 (weak heredity) 를 근거로 main effect 를 지우는 관행이 있으나, 그것이 정당화되는 조건은 실무에서 거의 성립하지 않는다 [[4](#ref-4)]. 변수 선택을 자동화할 때도 heredity 를 Bayes 의 사전 분포 (prior) 나 최적화의 제약으로 걸어 두는 편이 낫다 [[5](#ref-5)] [[6](#ref-6)].
 
 `interaction_only=True` 는 제곱항을 지우는 option 이지 heredity 를 어기는 option 이 아니다. 1차 항은 그대로 남으므로, 변수 두 개에서 나오는 열은 $[X_1, X_2, X_1 X_2]$ 이다.
 
 ## 5. Caution
 
-Expansion 의 대가는 두 가지다. 하나는 열 수가 빠르게 늘어 overfitting 을 부르고 계산 비용을 올리는 것이고, 다른 하나는 expansion 이 만든 열이 서로 닮아 계수가 흔들리는 것이다. 열 수는 degree 로, 계수의 흔들림은 penalty 로 잡는다.
+Expansion 의 대가는 두 가지다. 하나는 열 수가 빠르게 늘어 overfitting, 곧 훈련 자료에는 맞지만 새 자료에서는 어긋나는 상태를 부르고 계산 비용을 올리는 것이고, 다른 하나는 expansion 이 만든 열이 서로 닮아 계수가 흔들리는 것이다. 열 수는 degree 로, 계수의 흔들림은 penalty 로 잡는다.
 
 ### 5.1 Dimensionality And Overfitting
 
@@ -117,11 +117,11 @@ Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
 
 Fig 1(a) 는 첫 번째 이유다. 60 개 표본에 degree 2, 5, 9 를 맞춘 것으로, 훈련 구간 (회색) 안에서는 degree 5 와 9 가 모두 그럴듯하지만 구간을 벗어나면 차수가 높은 곡선이 먼저 폭주한다. 다항식의 바깥 거동은 최고차항이 지배하므로, extrapolation 이 필요한 곳에서 degree 를 올리면 훈련 구간 안의 적합은 좋아져도 구간 밖 예측의 오차는 커진다.
 
-Fig 1(b) 는 4.2 절의 조건수를 차수별로 그린 것이고, Fig 1(c) 는 항 수와 행 수의 관계다. 변수 5 개, 행 60 개, 참 model 이 곱항 하나인 자료에서 held-out RMSE 는 degree 1 의 1.34 에서 degree 2 의 0.34 로 내려갔다가 degree 3 에서 1.08 로 되돌아간다. degree 3 의 열 수는 55 로 행 수 60 에 거의 닿는다. 같은 자리에서 ridge 는 0.75 여서 그 악화의 절반 가까이를 막는다.
+Fig 1(b) 는 4.2 절의 조건수를 차수별로 그린 것이고, Fig 1(c) 는 항 수와 행 수의 관계다. 변수 5 개, 행 60 개, 참 model 이 곱항 하나인 자료에서 held-out RMSE, 곧 그 오차를 제곱 평균의 제곱근으로 잰 값은 degree 1 의 1.34 에서 degree 2 의 0.34 로 내려갔다가 degree 3 에서 1.08 로 되돌아간다. degree 3 의 열 수는 55 로 행 수 60 에 거의 닿는다. 같은 자리에서 ridge 는 0.75 여서 그 악화의 절반 가까이를 막는다.
 
 ### 5.2 Regularization
 
-Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 계수의 크기에 값을 매겨 적합 기준에 더하는 항이다. Expansion 은 열 수를 늘리는 동시에 서로 닮은 열을 만드는데, penalty 없는 최소제곱은 그 닮음을 서로 상쇄하는 두 개의 큰 계수로 흡수하며, 그래서 자료가 조금만 흔들려도 적합이 크게 움직인다. Ridge 는 풀기 전에 대각에 작은 값을 더해 그것을 막는다 [[3](#ref-3)].
+Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 계수의 크기에 값을 매겨 적합 기준에 더하는 항이다. Expansion 은 열 수를 늘리는 동시에 서로 닮은 열을 만드는데, penalty 없는 최소제곱은 그 닮음을 서로 상쇄하는 두 개의 큰 계수로 흡수하며, 그래서 자료가 조금만 흔들려도 적합이 크게 움직인다. Ridge 는 계수 제곱합에 비례하는 penalty 를 걸어 그 상쇄를 막는다 [[3](#ref-3)].
 
 둘 중 기본은 ridge 다. Ridge 는 닮은 열들에 계수를 나누어 주어 예측을 안정시키고, lasso 는 그 가운데 하나만 남기고 나머지를 지운다. Expansion 이 만든 열에서 lasso 는 곱항을 남기고 그 main effect 를 지워 4.3 절의 heredity 를 깨뜨릴 수 있으므로, 홀로 쓰기보다 계층 제약과 함께 쓴다 [[6](#ref-6)].
 
@@ -139,10 +139,10 @@ Table 3. Failure modes of a polynomial expansion
 | Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
 | Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
 | A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
-| Duplicate or all-zero columns | Binary and one-hot columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
+| Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-Table 3 의 다섯째 줄은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 0/1 열은 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 같은 범주 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
+Table 3 의 다섯째 줄은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
 
 ### 5.4 Diagnostics
 
@@ -150,7 +150,7 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 
 - Degree 를 1 부터 올리며 그린 held-out 오차 곡선. 최저점이 2 를 넘지 않는지 본다.
 - Expansion 뒤 design matrix 의 조건수와 열별 VIF (Variance Inflation Factor). Centering 뒤에도 큰 값이면 penalty 가 필요하다.
-- Bootstrap 재표본에서 계수 부호가 유지되는 비율. 곱항의 부호가 뒤집히면 그 항은 해석하지 않는다.
+- 자료에서 복원추출로 다시 뽑은 표본 (bootstrap) 에서 계수 부호가 유지되는 비율. 곱항의 부호가 뒤집히면 그 항은 해석하지 않는다.
 - 잔차를 곱항에 대해 그린 산점도. Expansion 전에 남아 있던 구조가 사라졌는지 확인한다.
 
 ## 6. Implementation
@@ -204,11 +204,11 @@ search = GridSearchCV(pipeline, grid, scoring='neg_root_mean_squared_error', cv=
 search.fit(X, y)
 ```
 
-Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 표준화는 fold 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
+Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 표준화는 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
 
 ### 6.3 Cost
 
-Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (6) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고 배정도 dense 행렬은 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
+Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (6) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
 
 첫째는 kernel 이다. 다항 kernel 식 (8) 은 expansion 한 공간의 내적을 expansion 없이 계산한다.
 
@@ -216,9 +216,9 @@ $$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \h
 
 `KernelRidge(kernel='poly')` 가 그 형태이며, 비용이 열이 아니라 행에 걸리므로 변수가 많고 행이 적은 자료에 맞는다. 대신 계수가 개별 monomial 에 붙지 않아 어느 곱이 기여했는지 읽을 수 없다.
 
-둘째는 근사다. `PolynomialCountSketch` 는 다항 kernel 의 특징 공간을 정해진 수의 열로 sketch 하고, `Nystroem` 은 표본의 부분집합으로 kernel 행렬을 근사한다. 둘 다 kernel 을 유한한 수의 열로 근사해 선형 model 의 속도를 지키는 계열이며 [[8](#ref-8)], 열 수를 사용자가 정한 값으로 묶는다.
+둘째는 근사다. `PolynomialCountSketch` 는 다항 kernel 이 쓰는 항들을 정해진 수의 열로 줄여 담고 (sketch), `Nystroem` 은 표본의 부분집합으로 kernel 행렬을 근사한다. 둘 다 kernel 을 유한한 수의 열로 근사해 선형 model 의 속도를 지키는 계열이며 [[8](#ref-8)], 열 수를 사용자가 정한 값으로 묶는다.
 
-희소 입력은 그대로 받는다. CSR 형식의 희소 행렬을 넣으면 expansion 결과도 희소 행렬로 나오므로, one-hot 열이 많은 자료가 dense 로 부풀지 않는다.
+희소 입력은 그대로 받는다. 0 이 아닌 값만 저장하는 CSR 형식의 행렬을 넣으면 expansion 결과도 같은 형식으로 나오므로, dummy 열이 많은 자료가 dense 로 부풀지 않는다.
 
 ### 6.4 Selective Expansion
 
@@ -236,7 +236,7 @@ transformer = ColumnTransformer(
 )
 ```
 
-고를 근거는 셋이다. 공정이 이미 아는 상호작용, 잔차가 두 변수의 조합에서 구조를 보이는 경우, 그리고 tree ensemble 을 먼저 돌려 상호작용의 세기를 재고 상위 짝만 남기는 방법이다 [[9](#ref-9)]. 셋 다 없으면 전체 expansion 에 penalty 를 거는 편이 낫다. 근거 없이 짝을 고르면 어느 상호작용이 model 에 들어갈지를 자료가 아니라 분석자가 정하게 된다.
+고를 근거는 셋이다. 공정이 이미 아는 상호작용, 잔차가 두 변수의 조합에서 구조를 보이는 경우, 그리고 tree 여러 개를 합친 model (tree ensemble) 을 먼저 돌려 상호작용의 세기를 재고 상위 짝만 남기는 방법이다 [[9](#ref-9)]. 셋 다 없으면 전체 expansion 에 penalty 를 거는 편이 낫다. 근거 없이 짝을 고르면 어느 상호작용이 model 에 들어갈지를 자료가 아니라 분석자가 정하게 된다.
 
 ## 7. Comparison
 
@@ -255,12 +255,12 @@ Table 5. Alternatives to a polynomial expansion
 | Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
 | Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
 
-PLS 로 expansion 이 만든 열을 받는 길도 있다. Expansion 이 만든 collinearity 를 정면으로 다루는 방법이며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. basis expansion 전체를 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
+Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다. PLS 는 열을 응답과의 공분산이 큰 방향으로 먼저 투영한 뒤 회귀하므로 expansion 이 만든 collinearity 를 정면으로 다루며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. basis expansion 전체를 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
 
 ## 8. Further Work
 
-- **Sparse polynomial chaos expansion** — 직교 다항식 기저 위에서 항을 희소하게 골라 고차 expansion 의 항 수를 줄이는 방법이다 [[13](#ref-13)]. 최소각 회귀 (least angle regression) 로 항을 고르는 절차가 자리 잡아 수백 개 후보에서 수십 개만 남기는 일이 계산으로 가능해졌다. 착수에는 입력 변수의 분포 가정 (기저가 그 분포에 따라 정해진다) 과 설계된 표본이 필요하다.
-- **Hierarchical interaction selection at scale** — heredity 를 볼록 제약으로 걸어 곱항을 고르는 lasso 계열이다 [[6](#ref-6)]. 제약이 볼록이라 수백 변수까지 풀리므로, 4.3 절의 규칙을 사람이 지키는 대신 최적화가 지키게 할 수 있다. 착수에는 곱항 후보의 범위를 미리 좁히는 규칙과 계산 예산이 필요하다.
+- **Sparse polynomial chaos expansion** — 서로 직교하는 다항식들의 모음 위에서 항을 희소하게 골라 고차 expansion 의 항 수를 줄이는 방법이다 [[13](#ref-13)]. 최소각 회귀 (least angle regression) 로 항을 고르는 절차가 자리 잡아 수백 개 후보에서 수십 개만 남기는 일이 계산으로 가능해졌다. 착수에는 입력 변수의 분포 가정 (기저가 그 분포에 따라 정해진다) 과 설계된 표본이 필요하다.
+- **Hierarchical interaction selection at scale** — heredity 를 convex 제약으로 걸어 곱항을 고르는 lasso 계열이다 [[6](#ref-6)]. 제약이 convex 여서 찾은 최적해가 유일하고 수백 변수까지 풀리므로, 4.3 절의 규칙을 사람이 지키는 대신 최적화가 지키게 할 수 있다. 착수에는 곱항 후보의 범위를 미리 좁히는 규칙과 계산 예산이 필요하다.
 - **Learned basis** — 고정된 monomial 기저 대신 1차원 함수를 학습해 쌓는 model 이다 [[14](#ref-14)]. 2024 년에 spline 기반 구현이 공개되어 같은 자료에서 expansion + ridge 와 직접 견줄 수 있게 되었다. 착수에는 held-out 비교 절차와, 학습되는 기저가 표본 수에 비해 과하지 않은지 판단할 기준이 필요하다.
 
 ## References
@@ -301,13 +301,17 @@ PLS 로 expansion 이 만든 열을 받는 길도 있다. Expansion 이 만든 c
 - **collinearity**: 두 개 이상의 열이 거의 같은 방향을 가리켜 계수를 따로 추정할 수 없는 상태.
 - **condition number**: 행렬의 최대 특이값과 최소 특이값의 비. 입력의 작은 오차가 해에서 얼마나 커지는지를 나타낸다.
 - **degree**: expansion 이 허용하는 monomial 의 최고 차수. $X_1^2 X_2$ 의 차수는 3 이다.
+- **design matrix**: 행이 관측이고 열이 model 이 쓰는 항인 행렬. 계수는 이 행렬을 풀어 얻는다.
+- **dummy**: 범주형 변수의 한 범주에 대응하여 그 범주면 1, 아니면 0 을 담는 열.
 - **extrapolation**: 훈련 자료가 덮지 않는 입력 범위에 대한 예측.
 - **held-out**: 적합에 쓰지 않고 적합한 model 의 오차를 재는 데만 쓰는 자료.
 - **heredity**: 곱항을 model 에 넣으면 그것을 이루는 낮은 차수 항도 함께 넣는 규칙.
 - **leverage**: 한 관측이 자신의 예측값을 끌어당기는 정도. 입력이 중심에서 멀수록 커진다.
 - **main effect**: 변수 하나의 1차 항 $\beta_i x_i$.
 - **monomial**: 변수들의 거듭제곱을 곱한 항. $X_1^2 X_2$ 가 그 예다.
+- **overfitting**: 훈련 자료에는 맞지만 새 자료에서는 어긋나는 상태.
 - **penalty**: 계수의 크기에 값을 매겨 적합 기준에 더하는 항. ridge 와 lasso 가 그것이다.
+- **RMSE**: 제곱 오차의 평균에 제곱근을 취한 값 (Root Mean Squared Error).
 - **VIF**: 한 열을 나머지 열로 회귀했을 때의 $R^2$ 로 계산하는 분산 팽창 계수. $1/(1-R^2)$ 이다.
 
 ## Appendix B. Reproduction Code
