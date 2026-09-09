@@ -1,11 +1,11 @@
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.9.7"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.9.9"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 """
 Render the three panels that support the polynomial feature expansion document and print every number
 the document quotes.
 
 panel (a)   = degree and extrapolation. One-variable fits on x in [0, 1], drawn out to [-0.4, 1.4].
-panel (b)   = condition number of the degree-d design matrix, raw offset units against centred units.
+panel (b)   = condition number of the degree-d design matrix, raw offset units against centered units.
 panel (c)   = held-out RMSE against degree for OLS and for ridge, on 60 rows of a five-variable
               response whose only non-linear part is one interaction.
 """
@@ -46,7 +46,7 @@ INK_COLOR = '#333333'
 MUTED_COLOR = '#767676'
 DEGREE_COLOR = [TABLEAU_COLORS['tab:blue'], TABLEAU_COLORS['tab:orange'], TABLEAU_COLORS['tab:red']]
 RAW_COLOR = TABLEAU_COLORS['tab:red']
-CENTRED_COLOR = TABLEAU_COLORS['tab:blue']
+CENTERED_COLOR = TABLEAU_COLORS['tab:blue']
 OLS_COLOR = TABLEAU_COLORS['tab:red']
 RIDGE_COLOR = TABLEAU_COLORS['tab:blue']
 
@@ -103,15 +103,15 @@ ax.set_ylabel('y', fontsize=FONT_SIZE, color=INK_COLOR)
 ax.legend(fontsize=FONT_SIZE * 0.85, frameon=False, loc='lower center', ncol=2)
 
 ax = axes[1]
-condition_raw, condition_centred = [], []
+condition_raw, condition_centered = [], []
 for degree in DEGREE_RANGE:
     x_shifted = x_unit + X_OFFSET
     condition_raw.append(np.linalg.cond(design_matrix(x_shifted, degree)))
     x_scaled = (x_shifted - x_shifted.mean()) / x_shifted.std()
-    condition_centred.append(np.linalg.cond(design_matrix(x_scaled, degree)))
+    condition_centered.append(np.linalg.cond(design_matrix(x_scaled, degree)))
 ax.semilogy(DEGREE_RANGE, condition_raw, marker='o', color=RAW_COLOR, linewidth=1.4, label='raw x + 10')
-ax.semilogy(DEGREE_RANGE, condition_centred, marker='s', color=CENTRED_COLOR, linewidth=1.4,
-            label='centred and scaled')
+ax.semilogy(DEGREE_RANGE, condition_centered, marker='s', color=CENTERED_COLOR, linewidth=1.4,
+            label='centered and scaled')
 ax.set_xlabel('degree', fontsize=FONT_SIZE, color=INK_COLOR)
 ax.set_ylabel('condition number', fontsize=FONT_SIZE, color=INK_COLOR)
 ax.set_xticks(DEGREE_RANGE)
@@ -150,15 +150,15 @@ OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT_PATH, dpi=300)
 
 x_shifted = x_unit + X_OFFSET
-x_centred = x_shifted - x_shifted.mean()
+x_centered = x_shifted - x_shifted.mean()
 print("correlation between a variable and its square")
 print(f"  raw x + {X_OFFSET:g} : {np.corrcoef(x_shifted, x_shifted ** 2)[0, 1]:.4f}")
-print(f"  centred      : {np.corrcoef(x_centred, x_centred ** 2)[0, 1]:.4f}")
+print(f"  centered     : {np.corrcoef(x_centered, x_centered ** 2)[0, 1]:.4f}")
 
 print("\ncondition number of the design matrix")
-print(f"{'degree':>7}{'raw':>14}{'centred':>14}")
-for degree, raw, centred in zip(DEGREE_RANGE, condition_raw, condition_centred):
-    print(f"{degree:>7}{raw:>14.3e}{centred:>14.3e}")
+print(f"{'degree':>7}{'raw':>14}{'centered':>14}")
+for degree, raw, centered in zip(DEGREE_RANGE, condition_raw, condition_centered):
+    print(f"{degree:>7}{raw:>14.3e}{centered:>14.3e}")
 
 print("\nheld-out RMSE against degree")
 print(f"{'degree':>7}{'OLS':>10}{'ridge':>10}")

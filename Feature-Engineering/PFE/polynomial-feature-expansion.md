@@ -1,25 +1,27 @@
 # Polynomial Feature Expansion
-Rev. 1 | Created: 2026-09-09 | Updated: 2026-09-09 21:06 UTC
+Rev. 2 | Created: 2026-09-09 | Updated: 2026-09-09 21:23 UTC
 
 ## 1. Purpose
 
 - **Problem Statement**: A linear model draws its boundary only as a straight line or a hyperplane. A response that appears when two conditions are high together, or one that turns over past a peak, is not expressed however well the coefficients are estimated, and what is missing stays in the structure of the residual, where even the fact that the model is wrong does not surface.
-- **Goal**: To carry a non-linear relationship and a feature interaction into a linear model by adding the products and powers of the raw variables as new columns, while holding the price of that expansion — the growth in column count and the overfitting it invites — under a chosen degree and a penalty.
+- **Goal**: To carry a non-linear relationship and a feature interaction into a linear model by adding the products and powers of the raw variables as new columns, so that the two prices it charges, a column count that grows with the degree and coefficients that a penalty has to steady, can be controlled.
 - **Non-Goal**: The learning algorithm placed on the expanded columns is not covered. Neither is the encoding of categorical variables nor the imputation of missing values.
 
 ## 2. Summary
 
-The expansion buys two things while leaving the model linear: a non-linear relationship inside one variable, and an interaction between variables. It is paid for in columns, and three defaults keep that payment to a size that can be carried. Degree 2, the raw variables centred before the expansion, and a ridge or lasso penalty on the expanded columns.
+An expansion computes products and powers from the columns already in the data and appends them as new columns. Data holding the columns $x_1$ and $x_2$ becomes data holding $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$, and those three new columns are what give a linear model a curve and an interaction between variables.
 
-The second and the third are the ones most often skipped. In uncentred physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits badly but as coefficients whose signs flip from one sample to the next.
+What it costs is columns. Expanding 20 variables to the second degree takes the column count from 20 to 230, and once the column count approaches the row count the coefficients can no longer be estimated (section 5.1). Three defaults hold the column count, and the unsteadiness of the coefficients, inside what the data carries. First, degree 2 limits the terms built to squares and to products of two variables (section 5.1). Second, before the expansion each variable has its own mean subtracted so that its values sit near zero, which is centering (section 4.2). Third, the expanded columns carry a ridge or lasso penalty that holds the coefficients down (section 5.2).
 
-Where the expansion should not be used is equally clear. Past a few dozen variables the column count passes the sample count, a shape that bends several times inside one variable calls for a spline rather than a higher degree, and where prediction outside the training range is needed the extrapolation behaviour of a polynomial is itself the risk. Table 1 is that fork.
+Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again.
+
+Where the expansion should not be used is equally clear. Past a few dozen variables the column count passes the sample count, a shape that bends several times inside one variable calls for a spline rather than a higher degree, and where prediction outside the training range is needed the way a polynomial diverges beyond that range, its extrapolation behaviour, is itself the risk. Table 1 sets out that fork.
 
 Table 1. Default choices and when they change
 
 | Condition | Choice | Why |
 | --- | --- | --- |
-| Fewer than a few dozen variables, curvature and pairwise effects expected | Degree 2, centred, ridge | A term count below the row count |
+| Fewer than a few dozen variables, curvature and pairwise effects expected | Degree 2, centered, ridge | A term count below the row count |
 | Curvature judged absent, only cross effects wanted | `interaction_only=True` | Squares dropped as a modelling decision, not as a saving |
 | Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
 | Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
@@ -35,7 +37,7 @@ Adding polynomial terms such as $x^2$ and $x^3$ to a raw variable $x$ lets the m
 
 $$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_1 x_2 + \beta_5 x_2^2 \hspace{19em} (1)$$
 
-The square coefficients $\beta_3$ and $\beta_5$ carry the curvature inside one variable, a peak or a saturation. The coefficients still enter linearly, so least squares and the inference and regularization built on it carry over unchanged. The non-linearity sits in the columns rather than in the model, and that is what makes the expansion the standard first move.
+The square coefficients $\beta_3$ and $\beta_5$ carry the curvature inside one variable, a peak or a saturation. The coefficients still enter linearly, so least squares and the inference and regularization built on it carry over unchanged. The non-linearity sits in the columns rather than in the model, so the linear model already in use is kept as it is.
 
 ### 3.2 Feature Interaction
 
@@ -43,13 +45,13 @@ The product term $\beta_4 x_1 x_2$ lets one variable change the slope of another
 
 $$\frac{\partial \hat{y}}{\partial x_1} = \beta_1 + 2 \beta_3 x_1 + \beta_4 x_2 \hspace{19em} (2)$$
 
-Where $\beta_4$ is not zero the effect of $x_1$ differs at each level of $x_2$. On a process it reads as the effect of pressure depending on the temperature, a sentence that two main effects cannot write, and it is the only place an effect appearing when two variables act together can be put. The long practice of writing a response surface as a second-order polynomial is curvature and interaction combined, and reading the optimum off the stationary point of that surface came from there [[1](#ref-1)].
+Where $\beta_4$ is not zero the effect of $x_1$ differs at each level of $x_2$. On a process it reads as the effect of pressure depending on the temperature, which the first-order terms of $x_1$ and $x_2$ alone cannot write. An effect that appears only when the two variables are high together is carried by this product term and nowhere else. The long practice of writing a response surface as a second-order polynomial is curvature and interaction combined, and reading the optimum off the stationary point of that surface came from there [[1](#ref-1)].
 
 ## 4. Mechanism
 
 ### 4.1 Expansion
 
-The expansion appends, as new columns, the monomials that can be built from the raw variables. With $n$ variables and a highest degree of $d$, the new columns are the set of equation (3).
+The columns an expansion makes are monomials, terms formed by multiplying powers of the raw variables. With $n$ variables and a highest degree of $d$, the new columns are the set of equation (3).
 
 $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (3)$$
 
@@ -59,15 +61,15 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 ### 4.2 Centering And Conditioning
 
-Centre the raw variables before expanding. This is the cheapest move in an expansion and the one with the largest effect.
+Subtract from each variable its own mean before expanding. This is centering, and the two paragraphs below give what it buys: a lower correlation between the columns and a lower condition number for the design matrix.
 
-Values in physical units usually sit far from zero, and such an $x$ and $x^2$ point in nearly the same direction. Over 60 samples on $[10, 11]$ their correlation is 0.9999, and after the mean is removed it is -0.15. The correlation after centring is proportional to the third central moment, so it is zero for a symmetric distribution and lands near zero in a sample.
+Values in physical units usually sit far from zero, and such an $x$ and $x^2$ point in nearly the same direction. Over 60 samples on $[10, 11]$ their correlation is 0.9999, and after the mean is removed it is -0.15. The correlation after centering is proportional to the third central moment, so it is zero for a symmetric distribution and lands near zero in a sample.
 
-Read as a condition number the difference is larger still. On the same sample the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centring and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). Double precision carries about 16 significant digits, so $d = 8$ in raw units is a problem only pretending to be solved.
+Read as a condition number the difference is larger still. On the same sample the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centering and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). Double precision carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
 
-The second reason to centre is interpretation. On centred data $\beta_1$ is the slope while the other variables sit at their means, a readable quantity. Uncentred it is the slope while the other variables are zero, and that zero is often a point the data never visits [[2](#ref-2)].
+The second reason to center is interpretation. On centered data $\beta_1$ is the slope while the other variables sit at their means, a readable quantity. Uncentered it is the slope while the other variables are zero, and that zero is often a point the data never visits [[2](#ref-2)].
 
-Centring lowers the correlation, though, without removing it. The collinearity an expansion manufactures is a property of the expansion rather than of the data, so a penalty is needed alongside it (section 5.2).
+Centering lowers the correlation, though, without removing it. The collinearity an expansion manufactures is a property of the expansion rather than of the data, so a penalty is needed alongside it (section 5.2).
 
 ### 4.3 Hierarchy
 
@@ -83,7 +85,7 @@ Main effects appear on their own. A product model without main effects therefore
 
 ## 5. Caution
 
-The expansion is paid for twice. The column count explodes, which invites overfitting and raises the cost of the fit, and the columns it makes are alike, which unsettles the coefficients. The degree answers the first, a penalty answers the second.
+An expansion charges two prices. The column count grows fast, which invites overfitting and raises the cost of the fit, and the columns it makes resemble one another, which unsettles the coefficients. The degree holds the first down, a penalty holds the second.
 
 ### 5.1 Dimensionality And Overfitting
 
@@ -107,19 +109,19 @@ What Table 2 says is that `interaction_only` saves little. At $d = 2$ the differ
 
 What actually sets the column count is the degree. Raising $d$ from 2 to 3 takes the columns from 230 to 1,770 at $n = 20$. As the column count approaches the row count the least-squares solution turns unstable, and past it the solution is not unique, so the ceiling on an expansion is set by the sample count rather than by the degree.
 
-The degree is therefore chosen on held-out error rather than on theory, and the candidates are few. It is 2 in almost every practical case, data that needs 3 is rare, and a 4 that appears to win is a sign that something other than an expansion should be used.
+The degree is therefore chosen on the error over data kept out of the fit, the held-out error, rather than on theory, and the candidates are few. It is 2 in almost every practical case, data that needs 3 is rare, and a 4 that appears to win is a sign that something other than an expansion should be used.
 
 <img src="polynomial-feature-expansion_fig/fig1.png" width="1100" style="max-width: 100%;" alt="Fig 1">
 
 Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
 
-Fig 1(a) is the first reason. Degrees 2, 5 and 9 are fitted to 60 samples; inside the training range (grey) degrees 5 and 9 are both plausible, and outside it the higher degree diverges first. The behaviour of a polynomial beyond its range is governed by its top term, so raising the degree where extrapolation is needed buys risk rather than expressive power.
+Fig 1(a) is the first reason. Degrees 2, 5 and 9 are fitted to 60 samples; inside the training range (grey) degrees 5 and 9 are both plausible, and outside it the higher degree diverges first. The behaviour of a polynomial beyond its range is governed by its top term, so raising the degree where extrapolation is needed improves the fit inside the training range while the error outside it grows.
 
 Fig 1(b) draws the condition numbers of section 4.2 against degree, and Fig 1(c) is the relation between the term count and the row count. On data with 5 variables, 60 rows and a true model holding one product term, the held-out RMSE falls from 1.34 at degree 1 to 0.34 at degree 2 and returns to 1.08 at degree 3. The 55 columns of degree 3 nearly reach the 60 rows. Ridge is at 0.75 in the same place, stopping close to half of that deterioration.
 
 ### 5.2 Regularization
 
-A penalty goes on the expanded columns as a matter of course. The expansion raises the column count and at the same time makes columns that resemble one another, and unpenalized least squares absorbs that resemblance into two large coefficients that cancel, which is why the fit moves far on a small disturbance of the data. Ridge answers it by adding a small value to the diagonal before the solve [[3](#ref-3)].
+The expanded columns always carry a penalty, a term added to the fitting criterion that charges for the size of the coefficients. The expansion raises the column count and at the same time makes columns that resemble one another, and unpenalized least squares absorbs that resemblance into two large coefficients that cancel, which is why the fit moves far on a small disturbance of the data. Ridge answers it by adding a small value to the diagonal before the solve [[3](#ref-3)].
 
 Ridge is the default of the two. It divides the coefficient among the columns that resemble one another and steadies the prediction, while lasso keeps one of them and drops the rest. Lasso on expanded columns can keep a product term while deleting its main effects, breaking the heredity of section 4.3, so it is used with a hierarchical constraint rather than on its own [[6](#ref-6)].
 
@@ -134,20 +136,20 @@ Table 3. Failure modes of a polynomial expansion
 | Symptom | Cause | Countermeasure |
 | --- | --- | --- |
 | Held-out error worse at degree 2 than at degree 1 | Term count close to the row count | Ridge or lasso, `interaction_only`, selective expansion |
-| Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centring, regularization, reading predictions instead of coefficients |
+| Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
 | Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
 | A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
 | Duplicate or all-zero columns | Binary and one-hot columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-The fifth row is written out separately because it is a trap the expansion does not catch. A 0/1 column squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
+The fifth row of Table 3 is written out separately because the expansion does not catch it on its own. A 0/1 column squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
 
 ### 5.4 Diagnostics
 
 Whether an expansion helped is confirmed in four ways.
 
 - The held-out error curve drawn while raising the degree from 1. Watch whether the minimum stays at 2 or below.
-- The condition number of the expanded design matrix and the VIF (Variance Inflation Factor) of each column. A large value after centring calls for regularization.
+- The condition number of the expanded design matrix and the VIF (Variance Inflation Factor) of each column. A large value after centering calls for a penalty.
 - The share of bootstrap resamples in which a coefficient keeps its sign. A product term whose sign flips is not interpreted.
 - The residual plotted against the product terms. Confirm that the structure left before the expansion is gone.
 
@@ -176,11 +178,11 @@ X_expanded = poly.fit_transform(X)
 term_name = poly.get_feature_names_out()
 ```
 
-The names `get_feature_names_out()` returns are the only route from a coefficient back to its column. Lose them after the expansion and there is no telling which coefficient belongs to which product, and the interpretability that is the point of an expansion is gone on the spot.
+The names `get_feature_names_out()` returns are the only route from a coefficient back to its column. Lose them after the expansion and the coefficients remain while which product each belongs to cannot be said.
 
 ### 6.2 Pipeline
 
-An expansion is not used alone but placed between standardization and regularization. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
+An expansion is not used alone but placed between standardization and the penalized fit. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
 
 The first standardization removes the conditioning problem of section 4.2, and the second makes the penalty fall evenly across the columns. The variance of a product term is close to the product of the raw variances and so differs widely from column to column; without the second standardization a ridge penalty lands almost entirely on the columns with the largest variance.
 
@@ -212,7 +214,7 @@ The first is the kernel. The polynomial kernel of equation (8) computes the inne
 
 $$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (8)$$
 
-`KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. Interpretation is what it costs. No coefficient attaches to an individual monomial, so which product contributed cannot be read.
+`KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
 
 The second is approximation. `PolynomialCountSketch` sketches the feature space of a polynomial kernel into a fixed number of columns, and `Nystroem` approximates the kernel matrix from a subset of the samples. Both belong to the family that approximates a kernel with a finite number of columns to keep the speed of a linear model [[8](#ref-8)], and both bound the column count at a value the user sets.
 
@@ -234,7 +236,7 @@ transformer = ColumnTransformer(
 )
 ```
 
-There are three grounds for choosing: an interaction the process already knows, a residual that shows structure over a combination of two variables, and a tree ensemble run first to measure interaction strength so that only the leading pairs are kept [[9](#ref-9)]. With none of the three, a penalty on the full expansion is the better move. A pair chosen without grounds is where the analyst's taste enters instead of the model.
+There are three grounds for choosing: an interaction the process already knows, a residual that shows structure over a combination of two variables, and a tree ensemble run first to measure interaction strength so that only the leading pairs are kept [[9](#ref-9)]. With none of the three, a penalty on the full expansion is the better move. Choosing pairs without grounds lets the analyst rather than the data decide which interactions reach the model.
 
 ## 7. Comparison
 
@@ -300,10 +302,12 @@ Handing the expanded columns to PLS is another route. It meets the collinearity 
 - **condition number**: The ratio of the largest singular value of a matrix to the smallest. It says how far a small error in the input is magnified in the solution.
 - **degree**: The highest degree of a monomial the expansion admits. The degree of $X_1^2 X_2$ is 3.
 - **extrapolation**: Prediction over an input range the training data does not cover.
+- **held-out**: Data kept out of the fit and used only to measure the error of the fitted model.
 - **heredity**: The rule that a product term put into a model brings the lower-degree terms composing it with it.
 - **leverage**: How strongly one observation pulls its own fitted value. It grows as the input sits further from the centre.
 - **main effect**: The first-order term of a single variable, $\beta_i x_i$.
 - **monomial**: A term formed by multiplying powers of the variables. $X_1^2 X_2$ is one.
+- **penalty**: A term added to the fitting criterion that charges for the size of the coefficients, as ridge and lasso do.
 - **VIF**: The variance inflation factor, computed from the $R^2$ of one column regressed on the rest. It is $1/(1-R^2)$.
 
 ## Appendix B. Reproduction Code
@@ -313,7 +317,7 @@ Fig 1 and every number the document quotes come from the script below.
 ```python
 # Feature-Engineering/PFE/polynomial-feature-expansion.py
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.9.7"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.9.9"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 import pathlib
 from math import comb
 
@@ -351,7 +355,7 @@ INK_COLOR = '#333333'
 MUTED_COLOR = '#767676'
 DEGREE_COLOR = [TABLEAU_COLORS['tab:blue'], TABLEAU_COLORS['tab:orange'], TABLEAU_COLORS['tab:red']]
 RAW_COLOR = TABLEAU_COLORS['tab:red']
-CENTRED_COLOR = TABLEAU_COLORS['tab:blue']
+CENTERED_COLOR = TABLEAU_COLORS['tab:blue']
 OLS_COLOR = TABLEAU_COLORS['tab:red']
 RIDGE_COLOR = TABLEAU_COLORS['tab:blue']
 
@@ -408,15 +412,15 @@ ax.set_ylabel('y', fontsize=FONT_SIZE, color=INK_COLOR)
 ax.legend(fontsize=FONT_SIZE * 0.85, frameon=False, loc='lower center', ncol=2)
 
 ax = axes[1]
-condition_raw, condition_centred = [], []
+condition_raw, condition_centered = [], []
 for degree in DEGREE_RANGE:
     x_shifted = x_unit + X_OFFSET
     condition_raw.append(np.linalg.cond(design_matrix(x_shifted, degree)))
     x_scaled = (x_shifted - x_shifted.mean()) / x_shifted.std()
-    condition_centred.append(np.linalg.cond(design_matrix(x_scaled, degree)))
+    condition_centered.append(np.linalg.cond(design_matrix(x_scaled, degree)))
 ax.semilogy(DEGREE_RANGE, condition_raw, marker='o', color=RAW_COLOR, linewidth=1.4, label='raw x + 10')
-ax.semilogy(DEGREE_RANGE, condition_centred, marker='s', color=CENTRED_COLOR, linewidth=1.4,
-            label='centred and scaled')
+ax.semilogy(DEGREE_RANGE, condition_centered, marker='s', color=CENTERED_COLOR, linewidth=1.4,
+            label='centered and scaled')
 ax.set_xlabel('degree', fontsize=FONT_SIZE, color=INK_COLOR)
 ax.set_ylabel('condition number', fontsize=FONT_SIZE, color=INK_COLOR)
 ax.set_xticks(DEGREE_RANGE)
@@ -455,15 +459,15 @@ OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT_PATH, dpi=300)
 
 x_shifted = x_unit + X_OFFSET
-x_centred = x_shifted - x_shifted.mean()
+x_centered = x_shifted - x_shifted.mean()
 print("correlation between a variable and its square")
 print(f"  raw x + {X_OFFSET:g} : {np.corrcoef(x_shifted, x_shifted ** 2)[0, 1]:.4f}")
-print(f"  centred      : {np.corrcoef(x_centred, x_centred ** 2)[0, 1]:.4f}")
+print(f"  centered     : {np.corrcoef(x_centered, x_centered ** 2)[0, 1]:.4f}")
 
 print("\ncondition number of the design matrix")
-print(f"{'degree':>7}{'raw':>14}{'centred':>14}")
-for degree, raw, centred in zip(DEGREE_RANGE, condition_raw, condition_centred):
-    print(f"{degree:>7}{raw:>14.3e}{centred:>14.3e}")
+print(f"{'degree':>7}{'raw':>14}{'centered':>14}")
+for degree, raw, centered in zip(DEGREE_RANGE, condition_raw, condition_centered):
+    print(f"{degree:>7}{raw:>14.3e}{centered:>14.3e}")
 
 print("\nheld-out RMSE against degree")
 print(f"{'degree':>7}{'OLS':>10}{'ridge':>10}")
