@@ -1,120 +1,96 @@
 # Ensemble Learning (Korean)
-Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 21:49 UTC
+Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 22:13 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: 학습을 마친 여러 model 을 합칠 때 대개 손에 잡히는 방법, 곧 label 의 다수결이나 가중 없는 평균을 쓰게 되는데, 이때 각 model 이 이미 계산해 둔 확률이 버려지고, 그 결합이 어느 행에서 확신이 없었는지도 남지 않는다.
-- **Goal**: 결합 규칙과 member 를 만들어 내는 framework 를 서로 떼어 두어, 주어진 문제에서 둘을 각각 고를 수 있게 하고, member 가 내놓는 확률이나 confidence 를 결합의 어느 자리에 넣을지 정할 수 있게 한다.
-- **Non-Goal**: 개별 base model 의 원리와 그 hyperparameter 조정, streaming 자료에서 member 의 가중치를 갱신하는 방법, snapshot ensemble 과 Monte Carlo dropout 처럼 deep learning 고유의 ensemble 은 다루지 않는다.
+- **Problem Statement**: 학습을 마친 여러 model 을 합치는 체계적인 방법이 없어, 결합을 습관으로 고르게 되고 고를 수 있었던 것들이 무엇이었는지는 끝내 드러나지 않는다.
+- **Goal**: 모델의 결과를 합치는 방법을 taxonomy 와 hierarchy 로 제시하여, 어떤 규칙이든 자리를 잡고 이웃과 견주고 밝힐 수 있는 이유로 고를 수 있게 한다.
+- **Non-Goal**: 모델 자체의 개선은 다루지 않는다.
 
 ## 2. Summary
 
-Meta-learner 에 label 대신 확률을 먹이는 것이 이기며, 그 차이는 hard voting 과 soft voting 중 무엇을 고르는가보다 크다. 확률은 member 가 어느 행에서 확신이 없었는지를 담지만 label 은 담지 않으며, 잃은 뒤에는 어떤 결합 규칙으로도 되찾지 못한다.
+어떤 결합 규칙이든 다른 규칙과 가르는 물음은 셋이다. Member 가 무엇을 내놓는가, 규칙이 자료에서 얼마나 배우는가, member 가 어디서 왔는가이다. Table 1 이 그 세 축이며, 나머지를 정렬하는 것은 둘째 축이다.
 
-확률을 쓰는 방법 가운데 평균이 가장 약하다. Soft voting 은 모든 행에서 모든 member 에게 정해진 몫을 주므로, 출력이 확률 척도에 있지 않은 member 하나가 평균을 어디서나 끌고 간다. 듣는 처방은 둘이다. 평균하기 전에 member 를 calibration 하거나, meta-learner 가 확률에서 member 마다 계수 하나씩을 적합하게 한다. Log-odds 평균은 그 둘에 들지 않는데, 산술평균이 한 member 에 씌워 두었던 상한을 없애기 때문이다.
+그 둘째 축은 네 갈래의 hierarchy 이며 갈래마다 사는 것이 하나씩이다. Fixed rule 은 아무것도 배우지 않고 아무 값도 치르지 않는다. Fitted weight 은 member 마다 scalar 하나를 배우며, 그것으로 약한 member 를 깎을 수 있다. Fitted combiner 는 member 출력의 함수를 배우며, 나머지가 이미 담고 있는 member 까지 깎는다. Framework 은 자기가 만든 member 에 규칙을 붙인 채로 온다. 셋째 갈래 위에는 아무것도 없는데, member 출력의 함수가 그 출력만으로 배울 수 있는 전부이기 때문이다.
 
-결합은 **평균** member 를 이기는 것이지 **가장 좋은** member 를 저절로 이기는 것이 아니다. Equation (1) 은 근사가 아니라 항등식이며, ensemble 의 오차가 member 오차의 평균에서 member 사이의 흩어짐을 뺀 값임을 말한다. 약한 member 를 더하면 첫 항이 올라가고, 그만큼을 둘째 항이 물어내야 한다.
+Member 가 무엇을 내놓는가가 어느 갈래에 닿을 수 있는지를 정한다. Label 은 label 을 세는 fixed rule 에만 닿고 그 밖에는 닿지 않으며, 확률은 모든 갈래에 닿는다. Section 3.3 이 어느 계열이 weight 을 만들 수 있는 값을 내놓는지의 표이고, 답은 일곱 중 하나이다.
 
-이득의 바닥은 개수가 아니라 상관이 정한다. Equation (2) 는 쌍별 상관이 $\rho$ 인 $M$ 개의 member 를 평균해도 $M$ 이 아무리 커지든 $\rho\sigma^{2}$ 이 남는다는 것을 보인다. Bagging, random subspace, boosting 이 모두 member 를 더 많이 만드는 대신 서로 다르게 만드는 쪽으로 작동하는 이유가 여기에 있다.
+결합은 **평균** member 를 이기는 것이지 **가장 좋은** member 를 저절로 이기는 것이 아니다. Equation (1) 은 근사가 아니라 항등식이며 ensemble 의 오차가 member 오차의 평균에서 member 사이의 흩어짐을 뺀 값임을 말한다. 첫 갈래 위의 모든 갈래가 존재하는 이유가 여기에 있다. Member 가 똑같은 몫을 받을 자격이 없을 때 첫 항을 눌러 두기 위해서이다. Equation (2) 는 그 이득의 바닥이 개수가 아니라 상관으로 정해진다는 것을 덧붙인다.
 
-Appendix B 가 이 네 진술을 held-out 분할 하나에서 잰다.
+Appendix B 가 Fig 1 의 모든 갈래를 held-out 분할 하나에서 잰다.
 
-## 3. Principle
+## 3. Taxonomy
 
-### 3.1 Why Combining Helps
+### 3.1 Three Axes
 
-Ensemble 의 제곱오차는 member 오차의 평균에서 member 사이 흩어짐의 평균을 뺀 값이며, 이는 근사가 아니라 모든 입력에서 정확히 성립한다. 가중 없는 평균이 $\bar f$ 인 $M$ 개의 member $f_1 \ldots f_M$ 에 대해 ambiguity decomposition 이 점마다 성립한다 [[1](#ref-1)].
+어떤 결합이든 자리를 잡아 주는 물음은 셋이며, 셋은 서로 무관하게 답해진다. Table 1 이 그 셋이다.
 
-$$\left(\bar f - y\right)^{2} = \frac{1}{M}\sum_{m}\left(f_m - y\right)^{2} - \frac{1}{M}\sum_{m}\left(f_m - \bar f\right)^{2} \hspace{19em} (1)$$
+Table 1. The three axes of a combination
 
-여기서 세 가지가 따라 나오며, 이것이 ensemble 을 쓰는 이유의 전부이다.
+| Axis | Question | Values |
+|------|----------|--------|
+| Input | 각 member 가 무엇을 내놓는가 | Label, 확률, 범위 없는 점수 |
+| Fitting | 규칙이 자료에서 얼마나 배우는가 | 배우지 않음, member 마다 scalar 하나, 출력의 함수 |
+| Origin | Member 가 어디서 오는가 | 한 algorithm 의 재추출, 한 algorithm 의 순차 적합, 서로 무관한 algorithm |
 
-- 둘째 항이 음수가 되지 않음. 따라서 ensemble 이 평균 member 보다 나빠지지 않음.
-- 가장 좋은 member 에 대해서는 아무 보장 없음. 강한 member 를 약한 member 와 평균하면 질 수 있음.
-- Member 사이의 흩어짐만이 이득의 원천. 나머지와 같은 답을 내는 member 는 보태는 것이 없음.
+Fitting 축이 나머지 둘을 정렬하는데, 제 몫을 받을 자격이 없는 member 에 대해 규칙이 무엇을 할 수 있는지를 그 축이 정하기 때문이다. Section 3.2 가 그 축을 hierarchy 로 펼치고, 그다음 Input 축이 그중 어느 갈래에 닿을 수 있는지를 말한다.
 
-분류에서는 같은 생각이 Condorcet 논증으로 나타난다. 각각 $p \gt 0.5$ 의 확률로 맞히는 독립인 member 들의 다수결은 $M$ 이 커질수록 정확해진다. 실제로 깨지는 전제는 독립성이며, 그것이 깨졌을 때 남는 것이 section 3.2 이다.
+### 3.2 Hierarchy Of Combination Rules
 
-### 3.2 The Correlation Floor
+Fig 1 은 Table 1 의 Fitting 축을 펼친 것이다.
 
-Member 가 서로 상관되면 개수는 더 이상 값을 하지 않는다. 분산이 모두 $\sigma^{2}$ 이고 쌍별 상관이 $\rho$ 인 $M$ 개의 member 를 두면, 그 평균의 분산은 다음과 같다.
+```text
+Combination of model outputs
+|
++-- Fixed rule ................................ learns nothing
+|   +-- Classification
+|   |   +-- Hard voting ....................... majority of the labels
+|   |   +-- Soft voting ....................... argmax of the mean probability
+|   +-- Regression
+|   |   +-- Simple averaging .................. mean of the predictions
+|   |   +-- Median ............................ middle value, immune to one wild member
+|   +-- Scale-free
+|       +-- Rank averaging .................... mean of the per-member ranks
+|       +-- Log-odds averaging ................ geometric mean of the odds
+|
++-- Fitted weight ............................. learns one scalar per member
+|   +-- Global
+|   |   +-- Inverse validation error .......... weight from each member's held-out error
+|   |   +-- Non-negative least squares ........ weights fitted on out-of-fold predictions
+|   +-- Per row
+|       +-- Confidence weighting .............. weight from the entropy of that row's output
+|
++-- Fitted combiner ........................... learns a function of the member outputs
+|   +-- Stacking .............................. meta-learner on out-of-fold predictions
+|   +-- Blending .............................. meta-learner on one holdout split
+|
++-- Built into the framework .................. the rule arrives with the members
+    +-- Bagging ............................... vote or average over bootstrap members
+    +-- Boosting .............................. weighted sum over sequential members
+```
 
-$$\mathrm{Var}\left(\bar f\right) = \rho\sigma^{2} + \frac{1 - \rho}{M}\sigma^{2} \hspace{19em} (2)$$
+Fig 1. Hierarchy of combination rules
 
-둘째 항은 $M$ 이 커지면 사라지지만 첫 항은 남는다. $\rho = 0.9$ 이면 member 를 무한히 모아도 단일 member 분산의 90% 가 그대로 남는다. Section 6 의 모든 framework 이 행을 다시 뽑거나, 열을 가리거나, target 을 바꾸어 $\rho$ 를 낮추는 장치인 이유가 이것이며, 같은 gradient boosting 적합을 네 번째로 복사해 붙여도 아무것도 달라지지 않는 이유도 같다.
+앞의 세 갈래는 순서가 있고 넷째 갈래는 없다. Fitted weight 은 fixed rule 이 하는 모든 것을 할 수 있는데, 같은 가중치도 적합할 수 있는 값 가운데 하나이기 때문이다. Fitted combiner 는 fitted weight 이 하는 모든 것을 할 수 있는데, member 마다 열 하나를 두는 선형 meta-learner 가 바로 가중치 한 벌이기 때문이다. 넷째 갈래가 그 순서 밖에 있는 것은 그 규칙을 고르는 것이 읽는 이가 아니라 framework 이기 때문이다.
 
-다양성은 equation (1) 의 둘째 항에 이르는 수단이며, 그 항이 값을 치르는 만큼만 값어치가 있다. 쌍별과 비쌍별을 아우르는 열 가지 다양성 통계량을 ensemble 정확도와 견주었을 때, 선택 기준으로 쓸 만큼 정확도를 따라가는 것은 하나도 없었다 [[13](#ref-13)]. Member 를 약하게 만들어 산 다양성은 equation (1) 의 첫 항에서 값을 치른다.
+Table 2 는 각 갈래가 무엇을 사고 무엇을 청구하는지이다.
 
-### 3.3 Two Independent Axes
+Table 2. What each branch of Fig 1 buys
 
-두 가지 결정은 따로 내리며, 어느 짝을 골라도 성립한다. Table 1 이 그 둘이다.
+| Branch | Learns | Discounts a weak member | Discounts a redundant member | Cost |
+|--------|--------|-------------------------|------------------------------|------|
+| Fixed rule | 배우지 않음 | 못함 | 못함 | 없음 |
+| Fitted weight | Member 마다 scalar 하나 | 함 | 못함 | Cross-validation 한 번 |
+| Fitted combiner | 출력의 함수 | 함 | 함 | Cross-validation 한 번, 그리고 유지할 두 번째 model |
+| Built into the framework | Framework 이 고정 | Framework 자체의 가중으로 | 못함 | Framework 안에서 치름 |
 
-Table 1. The two axes of an ensemble
+둘째 갈래와 셋째 갈래를 가르는 것은 중복이다. Scalar 는 member 가 홀로 얼마짜리인지만 말하므로 같은 말을 하는 두 member 에게 값을 두 번 치르지만, 출력의 함수는 둘이 같은 말을 한다는 것을 보고 하나에만 치를 수 있다.
 
-| Axis | Question | Choices |
-|------|----------|---------|
-| Framework | Member 사이에서 무엇을 다르게 만드는가 | 행 재추출, 열 은닉, target 변경, algorithm 변경 |
-| Aggregation | 그 출력을 어떻게 처리하는가 | 투표, 평균, 가중 평균, meta-learner |
+### 3.3 What A Member Supplies
 
-Random forest 는 두 축을 한꺼번에 고정하므로 흔히 하나의 method 로 읽히지만, 실은 행과 열을 함께 뽑는 framework 에 평균 규칙을 붙인 것이다. Stacking 은 aggregation 축만 고정하고 framework 은 열어 두며, 그래서 서로 다른 종류의 member 를 받아들인다.
+Member 가 내놓은 값을 그대로 weight 로 쓸 수 있는지는 그 member 가 속한 계열이 정하며, 값이 놓인 범위가 정하지 않는다. Table 3 이 흔히 쓰는 계열에 대한 그 판정이다.
 
-## 4. Aggregation
-
-### 4.1 Voting
-
-Hard voting 은 label 의 다수결을 취하고, soft voting 은 평균 확률의 argmax 를 취한다. Hard voting 은 member 가 확률을 내지 않을 때 남는 방법이며, soft voting 의 약한 판이 아니다. Label 은 과신할 수 없으므로, 확률이 일그러진 member 앞에서 살아남는 쪽은 오히려 이쪽이다.
-
-Table 2 는 각 규칙이 언제 쓸 수 있고 무엇을 버리는지를 적은 것이다.
-
-Table 2. Voting rules
-
-| Rule | Input per member | Ignores | Ties |
-|------|------------------|---------|------|
-| Hard voting | Label 하나 | Member 가 얼마나 확신했는가 | $M$ 이 짝수면 발생, 미리 정한 규칙으로 해소 |
-| Soft voting | 확률 vector 하나 | 버리는 것 없음 | 확률이 정확히 같지 않은 한 발생하지 않음 |
-| Weighted hard voting | Label 과 scalar 가중치 | 이 행에서 member 가 얼마나 확신했는가 | 가중치가 서로 같지 않은 한 가중치로 해소 |
-| Weighted soft voting | 확률 vector 와 scalar 가중치 | 버리는 것 없음 | 실제로 발생하지 않음 |
-
-Member 수가 짝수이면 hard voting 은 동점 규칙을 요구하며, 첫 class 를 고르는 동점 규칙은 드러나지 않는 편향이다. Member 를 셋으로, 일반적으로는 홀수로 두면 이 물음 자체가 사라진다.
-
-### 4.2 Averaging
-
-회귀에서 투표에 해당하는 것은 member 예측의 평균이며, equation (1) 이 그대로 적용된다. 평균은 member 사이 흩어짐만큼 정확히 평균 member 아래에 놓이므로, member 들이 서로 다른 방향으로 틀리면 모든 member 아래로 한꺼번에 내려갈 수 있다.
-
-### 4.3 Weights
-
-가중치는 non-negativity 제약 아래에서 out-of-fold 예측으로 적합하며, 학습 적합값으로도 손으로도 정하지 않는다. Non-negativity 를 건 최소제곱은 stacked regression 의 원래 처방이고, 계수를 해석 가능하게 두고 결합을 안정시키는 것이 그 제약이다 [[7](#ref-7)].
-
-Table 3 은 가중치를 정하는 방법들을 각각이 쓰는 근거의 양 순으로 늘어놓은 것이다.
-
-Table 3. Ways to set member weights
-
-| Method | Fitted on | Cost | Failure mode |
-|--------|-----------|------|--------------|
-| Equal weights | 없음 | 없음 | 약한 member 가 평균을 끌어내림 |
-| Inverse validation error | Member 별 held-out 오차 | Held-out 분할 한 번 | Member 사이 상관을 무시 |
-| Non-negative least squares | Out-of-fold 예측 | Cross-validation 한 번 | Out-of-fold 집합이 작으면 overfitting |
-| Meta-learner | Out-of-fold 예측 | Cross-validation 한 번 | 위와 같고, 유지할 model 이 하나 더 늘어남 |
-
-Member 가 이미 본 행의 예측으로 가중치를 적합하는 것이 전형적인 leak 이다. 학습 행을 외운 model 은 그 행에서 완벽해 보여 가중치를 독차지하고, 그 실패는 배포 뒤에야 드러난다.
-
-### 4.4 Log-Odds And Rank
-
-확률이 일그러진 member 에 대한 처방으로 log-odds 평균은 틀렸다. Log-odds 의 평균을 logistic 함수로 되돌린 값은 odds 의 기하평균이다.
-
-$$\bar z = \frac{1}{M}\sum_{m}\log\frac{p_m}{1 - p_m}, \qquad \bar p = \frac{1}{1 + e^{-\bar z}} \hspace{19em} (3)$$
-
-확률은 $[0, 1]$ 안에 갇히므로 확률의 산술평균은 한 member 의 영향을 $1/M$ 로 묶는다. Log-odds 평균은 그 상한을 없앤다. $0.9999$ 를 내놓는 member 는 $z \approx 9.2$ 를 보태어 0 근처에 있는 두 member 를 이긴다. 그 처방이 없애려던 일그러짐이 오히려 더 큰 가중치를 얻는 것이다.
-
-Rank 평균은 어떤 일그러짐에도 살아남는 선택지인데, 각 member 가 행을 늘어놓은 순서만 쓰기 때문이다. 대신 순위에 맞춘 목적을 얻고 확률을 내어 준다. 따라서 한 행씩 답하는 것이 아니라 한 묶음을 줄 세우는 일에 쓴다.
-
-## 5. Confidence
-
-### 5.1 Output As A Weight
-
-Member 가 내놓은 값을 그대로 weight 로 쓸 수 있는지는 그 member 가 속한 계열이 정하며, 값이 놓인 범위가 정하지 않는다. Table 4 가 흔히 쓰는 계열에 대한 그 판정이다.
-
-Table 4. Whether a member's own output can be used as a weight
+Table 3. Whether a member's own output can be used as a weight
 
 | Family | As a weight | Native output | Output range |
 |--------|-------------|---------------|--------------|
@@ -126,58 +102,133 @@ Table 4. Whether a member's own output can be used as a weight
 | k-nearest neighbours | 사용 불가, 서로 다른 값이 $k+1$ 개뿐 | $k$ 개 이웃 가운데의 비율 | $\{0, 1/k, \ldots, 1\}$ |
 | Neural network | 사용 불가, 과신하며 망이 커질수록 심해짐 | Logit 의 softmax | $(0, 1)$, 양끝으로 몰림 |
 
-Table 4 에서 그대로 쓸 수 있는 것은 한 행뿐이며, 일곱 중 넷이 그 행과 같은 $(0, 1)$ 범위를 쓴다. 나머지는 참 확률을 따라 커지되 그것과 같지는 않은 점수를 내놓으므로, 점수가 놓인 범위는 그 점수의 뜻에 대해 아무것도 말해 주지 않는다. Section 5.2 가 그 점수를 weight 로 바꾸고, section 5.3 이 그것을 쓴다.
+Table 3 에서 그대로 쓸 수 있는 것은 한 행뿐이며, 일곱 중 넷이 그 행과 같은 $(0, 1)$ 범위를 쓴다. 나머지는 참 확률을 따라 커지되 그것과 같지는 않은 점수를 내놓으므로, 점수가 놓인 범위는 그 점수의 뜻에 대해 아무것도 말해 주지 않는다.
 
-### 5.2 Calibration
+Not usable 행의 계열도 Fig 1 의 모든 갈래에 닿을 수 있지만, 그 길은 section 6.2 를 거친다. 그전까지 닿는 곳은 그 값을 확률로 읽지 않는 node 들, 곧 hard voting 과 rank 평균과 label 로 적합한 meta-learner 이다.
 
-Calibration 은 내놓은 점수를 확률로 옮기는 단조 사상이며, member 가 학습하지 않은 행에서 적합한다. Platt scaling 은 매개변수 하나짜리 logistic 을 적합하며 일그러짐이 sigmoid 모양이라고 전제하고, isotonic regression 은 비감소 계단함수라면 무엇이든 적합하는 대신 더 많은 행을 필요로 한다 [[9](#ref-9)] [[10](#ref-10)]. Temperature scaling 은 망에 대한 매개변수 하나짜리 형태로, softmax 앞에서 logit 을 나눈다. 둘 다 행의 순위는 건드리지 않으므로, 고정된 threshold 에서의 정확도는 그 threshold 를 넘나드는 자리에서만 움직인다.
+### 3.4 What The Combination Emits
 
-이 사상을 학습 행에서 적합하면 사상 자체가 망가진다. 사상은 학습 집합을 나눈 안쪽에서 적합하며, 결과를 보고하는 행에서는 결코 적합하지 않는다.
+결합이 내놓는 것은 label 아니면 확률이며, 그 선택이 뒤따르는 모든 것을 닫거나 연다. Label 은 보고하는 것 말고는 할 수 있는 일이 없다. 확률은 threshold 를 걸어 오차와 coverage 를 맞바꾸거나, 비용행렬을 쓰는 결정 규칙에 넘기거나, 같은 ensemble 이 다른 날 낸 출력과 견줄 수 있다.
 
-읽어야 할 점수는 Brier score 이며, 내놓은 확률과 결과의 제곱차 평균이다 [[11](#ref-11)]. Calibration 과 판별력에 함께 반응하므로 처방이 들었는지를 말해 주는 유일한 수치이고, 사상이 순위를 건드리지 않으니 Brier score 가 내려간 것은 확률 자체가 좋아졌다는 뜻이다.
+확률 갈래가 사고 label 갈래는 살 수 없는 것이 abstention 이다. 최적 규칙은 사후확률이 threshold 아래인 곳에서 답을 거절하는 것이며, 그러면 오차율과 거절률이 그 threshold 가 정하는 곡선 위에서 맞바꿔진다 [[12](#ref-12)]. 여기에 닿는 것은 Fig 1 의 확률 node 뿐인데, hard voting 은 threshold 를 걸 값을 남기지 않기 때문이다.
 
-### 5.3 Four Ways To Spend Confidence
+## 4. Principle
 
-확률이 결합에 들어가는 자리는 넷이며, 넷이 서로 대등하지는 않다. 정보를 얼마나 남기는지 순으로 적는다.
+### 4.1 Why Combining Helps
 
-- **Soft voting** — 모든 행에서 member 마다 정해진 몫. 가장 값싸며, 일그러진 member 하나에 무너짐.
-- **Per-row confidence weighting** — 행마다 달라지는 몫. 그 행에서 그 member 가 낸 출력의 entropy 로 정함.
-- **Meta-feature** — 확률을 두 번째 model 의 열로 넣음. 가중치와 member 사이 상관을 함께 학습.
-- **Abstention** — Ensemble 확률로 답할지 말지를 결정.
+Ensemble 의 제곱오차는 member 오차의 평균에서 member 사이 흩어짐의 평균을 뺀 값이며, 이는 근사가 아니라 모든 입력에서 정확히 성립한다. 가중 없는 평균이 $\bar f$ 인 $M$ 개의 member $f_1 \ldots f_M$ 에 대해 ambiguity decomposition 이 점마다 성립한다 [[1](#ref-1)].
 
-행별 가중은 행 $x$ 에서 member $m$ 이 낸 entropy 를 $K$ 개 class 에서의 최댓값으로 나누어 정규화한다.
+$$\left(\bar f - y\right)^{2} = \frac{1}{M}\sum_{m}\left(f_m - y\right)^{2} - \frac{1}{M}\sum_{m}\left(f_m - \bar f\right)^{2} \hspace{19em} (1)$$
 
-$$c_m(x) = 1 - \frac{H\left(p_m(x)\right)}{\log K} \hspace{19em} (4)$$
+여기서 세 가지가 따라 나오며, 이것이 ensemble 을 쓰는 이유의 전부이다.
 
-Equation (4) 는 확신에 상을 주므로, 손대지 않은 출력에서는 Table 4 의 일그러짐에 상을 주어 척도가 가장 나쁜 member 에게 모든 행에서 가장 큰 가중치를 넘긴다. Section 5.2 를 거친 뒤에만 쓴다.
+- 둘째 항이 음수가 되지 않음. 따라서 ensemble 이 평균 member 보다 나빠지지 않음.
+- 가장 좋은 member 에 대해서는 아무 보장 없음. 강한 member 를 약한 member 와 평균하면 질 수 있음.
+- Member 사이의 흩어짐만이 이득의 원천. 나머지와 같은 답을 내는 member 는 보태는 것이 없음.
 
-Meta-feature 경로가 가장 강하며, 그 이유는 넷 가운데 member 들을 함께 보는 유일한 방법이기 때문이다. Label 이 아니라 confidence 로 stacking 하라는 것은 이 method 의 설계 선택을 다룬 원 연구의 결론이었다 [[8](#ref-8)]. Meta-learner 는 자료에서 member 마다 계수 하나씩을 적합하여 나머지가 이미 담고 있는 member 를 깎는데, 고정된 평균 규칙으로는 내릴 수 없는 판단이다.
+Equation (1) 은 Fig 1 의 순서도 정한다. 첫 항은 몫이 같을 때의 member 평균 오차이고, 첫 갈래 위의 모든 갈래는 같은 몫을 받을 자격이 없는 member 에게서 몫을 덜어 그 항을 낮추려고 존재한다.
 
-Abstention 은 confidence 를 coverage 의 선택으로 바꾼다. 최적 규칙은 사후확률이 threshold 아래인 곳에서 답을 거절하는 것이며, 오차율과 거절률은 그 threshold 가 정하는 곡선 위에서 맞바꿔진다 [[12](#ref-12)]. Ensemble 이 물러선 행은 틀릴 가능성이 가장 큰 행이므로, coverage 가 내려갈수록 답한 행에 대한 정확도는 올라간다.
+분류에서는 같은 생각이 Condorcet 논증으로 나타난다. 각각 $p \gt 0.5$ 의 확률로 맞히는 독립인 member 들의 다수결은 $M$ 이 커질수록 정확해진다. 실제로 깨지는 전제는 독립성이며, 그것이 깨졌을 때 남는 것이 section 4.2 이다.
 
-### 5.4 Disagreement
+### 4.2 The Correlation Floor
+
+Member 가 서로 상관되면 개수는 더 이상 값을 하지 않는다. 분산이 모두 $\sigma^{2}$ 이고 쌍별 상관이 $\rho$ 인 $M$ 개의 member 를 두면, 그 평균의 분산은 다음과 같다.
+
+$$\mathrm{Var}\left(\bar f\right) = \rho\sigma^{2} + \frac{1 - \rho}{M}\sigma^{2} \hspace{19em} (2)$$
+
+둘째 항은 $M$ 이 커지면 사라지지만 첫 항은 남는다. $\rho = 0.9$ 이면 member 를 무한히 모아도 단일 member 분산의 90% 가 그대로 남는다. Table 1 의 Origin 축이 뜻을 가지는 이유가 여기에 있다. 행을 다시 뽑는 것, 열을 가리는 것, target 을 바꾸는 것이 $\rho$ 를 낮추는 세 장치이며, 같은 gradient boosting 적합을 네 번째로 복사해 붙이는 것은 그중 어느 것도 아니다.
+
+다양성은 equation (1) 의 둘째 항에 이르는 수단이며, 그 항이 값을 치르는 만큼만 값어치가 있다. 쌍별과 비쌍별을 아우르는 열 가지 다양성 통계량을 ensemble 정확도와 견주었을 때, 선택 기준으로 쓸 만큼 정확도를 따라가는 것은 하나도 없었다 [[13](#ref-13)]. Member 를 약하게 만들어 산 다양성은 첫 항에서 값을 치른다.
+
+### 4.3 Disagreement
 
 Member 사이의 흩어짐이 불확실성을 재는 것은 member 가 실제로 서로 다를 때뿐이다. 따로 학습한 member 들은 쓸 만한 불확실성 추정이 되고 더 정교한 Bayesian 처리에 견줄 만하지만 [[14](#ref-14)], 그것은 member 들이 서로 다른 맹점을 가진다는 데에 기댄 결과이다.
 
 같은 예측변수를 쓰고 같은 변수를 빠뜨린 member 들은 같은 자리에서 나란히 확신하며 틀린다. 그때 그들의 일치는 행의 어려움이 아니라 그들이 공유하는 맹점을 재며, 흩어짐이 매긴 행의 순서를 오차는 따라가지 않는다.
 
-Section 5.3 의 abstention 신호는 다른 양이다. Member 사이의 불일치가 아니라 ensemble 자신의 사후확률이다. 불일치는 재어 볼 값어치가 있지만, 믿을 값어치는 손에 든 member 에 대해 Appendix B.5 의 확인을 돌린 뒤에야 생긴다.
+Section 3.4 의 abstention 신호는 다른 양이다. Member 사이의 불일치가 아니라 ensemble 자신의 사후확률이다. 불일치는 재어 볼 값어치가 있지만, 믿을 값어치는 손에 든 member 에 대해 Appendix B.5 의 확인을 돌린 뒤에야 생긴다.
 
-## 6. Frameworks
+## 5. Fixed Rules
 
-### 6.1 Bagging
+Fig 1 의 첫 갈래이다. 아무것도 적합하지 않으므로 leak 할 적합도 없고 깎을 수 있는 member 도 없다.
 
-Bagging 은 행을 bootstrap 으로 다시 뽑아 member 마다 적합하고 그 결과를 평균하거나 투표하며, 분산을 낮추고 편향은 그대로 둔다 [[2](#ref-2)]. 표본이 흔들릴 때 함께 흔들리는 member 에만 값을 하므로, 가지치기하지 않은 깊은 tree 는 이득을 보고 선형 적합은 거의 보지 못한다.
+### 5.1 Voting
 
-Random forest 는 split 마다 열을 뽑는 단계를 더해, member 들이 지배적인 예측변수 하나를 통해 서로 같아지는 것을 막는다 [[3](#ref-3)]. 깊이와 개수가 같은 bagging tree 와 random forest 를 가르는 것이 그 한 단계이다.
+Hard voting 은 label 의 다수결을 취하고, soft voting 은 평균 확률의 argmax 를 취한다. Hard voting 은 member 가 확률을 내지 않을 때 남는 방법이며, soft voting 의 약한 판이 아니다. Label 은 과신할 수 없으므로, 확률이 일그러진 member 앞에서 살아남는 쪽은 오히려 이쪽이다.
 
-### 6.2 Boosting
+Table 4 는 각 규칙이 언제 쓸 수 있고 무엇을 버리는지를 적은 것이다.
 
-Boosting 은 member 를 차례로 적합하되 각각을 앞의 것들이 틀린 자리에 맞추고, 가중치를 주어 더한다. AdaBoost 는 잘못 분류된 행의 가중치를 올리고 [[4](#ref-4)], gradient boosting 은 새 member 를 손실의 gradient 에 맞추어 손실함수를 자유롭게 고를 수 있게 한다 [[5](#ref-5)]. 널리 쓰이는 구현들은 뒤쪽 형태를 물려받아 2차 정보, 희소성 처리, 메모리에 담기지 않는 자료의 학습을 더한 것이다 [[6](#ref-6)].
+Table 4. Voting rules
 
-값은 순차성으로 치른다. Bagging 의 member 는 서로 독립이어서 나란히 적합하지만 boosting 의 member 는 그렇지 않고, held-out 곡선을 보고 조기 종료하거나 끝까지 간다. Boosting 은 bagging 과 달리 편향도 낮추므로, 어려운 target 에서는 같은 tree 를 bagging 한 ensemble 을 이길 수 있고, bagging 이라면 나지 않았을 overfitting 이 날 수도 있다.
+| Rule | Input per member | Ignores | Ties |
+|------|------------------|---------|------|
+| Hard voting | Label 하나 | Member 가 얼마나 확신했는가 | $M$ 이 짝수면 발생, 미리 정한 규칙으로 해소 |
+| Soft voting | 확률 vector 하나 | 버리는 것 없음 | 확률이 정확히 같지 않은 한 발생하지 않음 |
+| Weighted hard voting | Label 과 scalar 가중치 | 이 행에서 member 가 얼마나 확신했는가 | 가중치가 서로 같지 않은 한 가중치로 해소 |
+| Weighted soft voting | 확률 vector 와 scalar 가중치 | 버리는 것 없음 | 실제로 발생하지 않음 |
 
-### 6.3 Stacking
+가중치가 붙은 두 행은 Fig 1 의 둘째 갈래에 속하며, 넷을 함께 보이려고 여기에 실었다. Member 수가 짝수이면 hard voting 은 동점 규칙을 요구하고 첫 class 를 고르는 동점 규칙은 드러나지 않는 편향이며, member 를 셋으로 또는 일반적으로 홀수로 두면 이 물음 자체가 사라진다.
+
+### 5.2 Averaging
+
+회귀에서 투표에 해당하는 것은 member 예측의 평균이며, equation (1) 이 그대로 적용된다. 평균은 member 사이 흩어짐만큼 정확히 평균 member 아래에 놓이므로, member 들이 서로 다른 방향으로 틀리면 모든 member 아래로 한꺼번에 내려갈 수 있다.
+
+Median 은 한 member 가 결과에 미칠 수 있는 크기에 상한을 씌운다. Member 하나가 터무니없는 값을 내면 평균은 끝없이 끌려가지만 median 은 절반이 그렇게 되기 전까지 움직이지 않으며, 나머지가 얼마나 벌어져 있었는지를 버리는 대신 그 상한을 산다.
+
+### 5.3 Log-Odds And Rank
+
+확률이 일그러진 member 에 대한 처방으로 log-odds 평균은 틀렸다. Log-odds 의 평균을 logistic 함수로 되돌린 값은 odds 의 기하평균이다.
+
+$$\bar z = \frac{1}{M}\sum_{m}\log\frac{p_m}{1 - p_m}, \qquad \bar p = \frac{1}{1 + e^{-\bar z}} \hspace{19em} (3)$$
+
+확률은 $[0, 1]$ 안에 갇히므로 확률의 산술평균은 한 member 의 영향을 $1/M$ 로 묶는다. Log-odds 평균은 그 상한을 없앤다. $0.9999$ 를 내놓는 member 는 $z \approx 9.2$ 를 보태어 0 근처에 있는 두 member 를 이긴다. 그 처방이 없애려던 일그러짐이 오히려 더 큰 가중치를 얻는 것이다.
+
+Rank 평균은 어떤 일그러짐에도 살아남는 node 인데, 각 member 가 행을 늘어놓은 순서만 쓰기 때문이다. 대신 순위에 맞춘 목적을 얻고 확률을 내어 준다. 따라서 한 행씩 답하는 것이 아니라 한 묶음을 줄 세우는 일에 쓴다.
+
+## 6. Fitted Weights
+
+Fig 1 의 둘째 갈래이다. Member 마다 scalar 하나를 적합하며, 약한 member 를 깎기에는 넉넉하고 두 member 가 같은 말을 하고 있음을 알아차리기에는 모자란다.
+
+### 6.1 One Scalar Per Member
+
+가중치는 non-negativity 제약 아래에서 out-of-fold 예측으로 적합하며, 학습 적합값으로도 손으로도 정하지 않는다. Non-negativity 를 건 최소제곱은 stacked regression 의 원래 처방이고, 계수를 해석 가능하게 두고 결합을 안정시키는 것이 그 제약이다 [[7](#ref-7)].
+
+Table 5 는 가중치를 정하는 방법들을 각각이 쓰는 근거의 양 순으로 늘어놓은 것이다.
+
+Table 5. Ways to set member weights
+
+| Method | Fitted on | Cost | Failure mode |
+|--------|-----------|------|--------------|
+| Equal weights | 없음 | 없음 | 약한 member 가 평균을 끌어내림 |
+| Inverse validation error | Member 별 held-out 오차 | Held-out 분할 한 번 | Member 사이 상관을 무시 |
+| Non-negative least squares | Out-of-fold 예측 | Cross-validation 한 번 | Out-of-fold 집합이 작으면 overfitting |
+| Meta-learner | Out-of-fold 예측 | Cross-validation 한 번 | 위와 같고, 유지할 model 이 하나 더 늘어남 |
+
+Member 가 이미 본 행의 예측으로 가중치를 적합하는 것이 전형적인 leak 이다. 학습 행을 외운 model 은 그 행에서 완벽해 보여 가중치를 독차지하고, 그 실패는 배포 뒤에야 드러난다.
+
+### 6.2 Calibration
+
+계열을 Table 3 의 Not usable 행에서 꺼내 주는 것이 calibration 이다. 내놓은 점수를 확률로 옮기는 단조 사상이며, member 가 학습하지 않은 행에서 적합한다. Platt scaling 은 매개변수 하나짜리 logistic 을 적합하며 일그러짐이 sigmoid 모양이라고 전제하고, isotonic regression 은 비감소 계단함수라면 무엇이든 적합하는 대신 더 많은 행을 필요로 한다 [[9](#ref-9)] [[10](#ref-10)]. Temperature scaling 은 망에 대한 매개변수 하나짜리 형태로, softmax 앞에서 logit 을 나눈다.
+
+이 사상은 행의 순위를 건드리지 않으므로, member 가 무엇을 보고하는지를 바꿀 뿐 member 가 class 를 얼마나 잘 가르는지는 바꾸지 않는다. 이것이 이 절이 문서 범위 밖이 아니라 여기에 있는 이유이다. Member 는 그대로이고 그 출력의 척도만 고친다.
+
+이 사상을 학습 행에서 적합하면 사상 자체가 망가진다. 사상은 학습 집합을 나눈 안쪽에서 적합하며, 결과를 보고하는 행에서는 결코 적합하지 않는다.
+
+읽어야 할 점수는 Brier score 이며, 내놓은 확률과 결과의 제곱차 평균이다 [[11](#ref-11)]. Calibration 과 판별력에 함께 반응하므로 처방이 들었는지를 말해 주는 유일한 수치이고, 사상이 순위를 건드리지 않으니 Brier score 가 내려간 것은 확률 자체가 좋아졌다는 뜻이다.
+
+### 6.3 Per-Row Confidence Weighting
+
+가중치가 test 집합 전체에 대해 scalar 하나일 필요는 없다. 행별 가중은 행 $x$ 에서 member $m$ 이 낸 entropy 를 $K$ 개 class 에서의 최댓값으로 나누어 정규화하며, 그래서 이 행에서 확신이 없는 member 는 이 행에만, 그리고 이 행에서만 덜 기여한다.
+
+$$c_m(x) = 1 - \frac{H\left(p_m(x)\right)}{\log K} \hspace{19em} (4)$$
+
+Equation (4) 는 확신에 상을 주므로, 손대지 않은 출력에서는 Table 3 의 일그러짐에 상을 주어 척도가 가장 나쁜 member 에게 모든 행에서 가장 큰 가중치를 넘긴다. Section 6.2 를 거친 뒤에만 쓴다.
+
+## 7. Fitted Combiners
+
+Fig 1 의 셋째 갈래이다. Member 출력의 함수를 적합하므로, 나머지가 이미 담고 있는 member 를 깎을 수 있으며, 그것이 scalar 가중치로는 할 수 없는 한 가지이다.
+
+### 7.1 Stacking
 
 Stacking 은 member 들의 out-of-fold 예측 위에 두 번째 model 을 적합한다 [[15](#ref-15)]. Out-of-fold 가 이 방법의 전부이다. Member 가 학습한 행에 대해 내는 예측은 낙관적이며, 그런 행으로 적합한 meta-learner 는 가장 많이 외운 member 를 믿는 법을 배운다.
 
@@ -188,34 +239,53 @@ Stacking 은 member 들의 out-of-fold 예측 위에 두 번째 model 을 적합
 - Meta-feature 로 label 이 아니라 확률 [[8](#ref-8)].
 - 이진 문제에서는 열을 둘이 아니라 하나. 두 열의 합이 1 이라 공선이기 때문.
 
+Table 1 의 Input 축이 값을 하는 자리가 셋째 규칙이다. Label 이 아니라 confidence 를 먹이라는 것은 이 method 의 설계 선택을 다룬 원 연구의 결론이었으며 [[8](#ref-8)], 그래야 meta-learner 가 member 를 두고 틀렸다는 것만이 아니라 확신이 없었다는 것까지 볼 수 있다.
+
 Meta-learner 는 작게 둔다. 열 셋에 정칙화한 선형 model 은 out-of-fold 행에서 계수 셋만 추정하면 되지만, 같은 열 셋에 forest 를 두면 fold 안에 없는 구조를 찾아낸다.
 
-### 6.4 Blending
+### 7.2 Blending
 
 Blending 은 stacking 의 cross-validation 을 holdout 하나로 바꾼다. Member 는 학습 집합의 한쪽에서, meta-learner 는 다른 쪽에서 적합한다. Member 당 적합이 $K+1$ 번이 아니라 한 번이면 되고, 두 쪽이 만나지 않으므로 leak 이 생길 수 없다.
 
 그 값은 두 번 치른다. Member 는 학습 집합 전체가 아니라 일부로 적합되고, meta-learner 는 모든 학습 행에 대한 out-of-fold 예측 대신 holdout 하나만 본다.
 
-## 7. Comparison
+## 8. Frameworks
 
-선택은 두 가지에서 따라 나온다. Member 가 무엇을 내놓는가, 그리고 결합을 적합할 행이 얼마나 남는가이다. Table 5 는 왼쪽 열부터 읽는다.
+Fig 1 의 넷째 갈래이며, 결합 규칙이 member 를 만든 절차에 붙은 채로 온다. 고르는 것은 규칙이 아니라 framework 이다.
 
-Table 5. Which combination to use
+### 8.1 Bagging
+
+Bagging 은 행을 bootstrap 으로 다시 뽑아 member 마다 적합하고 그 결과를 평균하거나 투표하며, 분산을 낮추고 편향은 그대로 둔다 [[2](#ref-2)]. 그 결합 규칙은 가중치가 같은 Fig 1 의 첫 갈래이고, 설계는 전부 equation (2) 의 $\rho$ 를 낮추는 쪽에 들어간다.
+
+Random forest 는 split 마다 열을 뽑는 단계를 더해, member 들이 지배적인 예측변수 하나를 통해 서로 같아지는 것을 막는다 [[3](#ref-3)]. 깊이와 개수가 같은 bagging tree 와 random forest 를 가르는 것이 그 한 단계이다.
+
+### 8.2 Boosting
+
+Boosting 은 member 를 차례로 적합하되 각각을 앞의 것들이 틀린 자리에 맞추고, 따로 한 번 더 도는 대신 적합 절차가 정하는 가중치로 더한다. AdaBoost 는 잘못 분류된 행의 가중치를 올리고 [[4](#ref-4)], gradient boosting 은 새 member 를 손실의 gradient 에 맞추어 손실함수를 자유롭게 고를 수 있게 한다 [[5](#ref-5)]. 널리 쓰이는 구현들은 뒤쪽 형태를 물려받아 2차 정보, 희소성 처리, 메모리에 담기지 않는 자료의 학습을 더한 것이다 [[6](#ref-6)].
+
+값은 순차성으로 치른다. Bagging 의 member 는 서로 독립이어서 나란히 적합하지만 boosting 의 member 는 그렇지 않고, held-out 곡선을 보고 조기 종료하거나 끝까지 간다. Boosting 은 bagging 과 달리 편향도 낮추므로, 어려운 target 에서는 같은 tree 를 bagging 한 ensemble 을 이길 수 있고, bagging 이라면 나지 않았을 overfitting 이 날 수도 있다.
+
+## 9. Selection
+
+선택은 Table 1 의 세 축 가운데 둘에서 따라 나온다. Member 가 무엇을 내놓는가, 그리고 결합을 적합할 행이 얼마나 남는가이다. Table 6 은 왼쪽 열부터 읽는다.
+
+Table 6. Which branch of Fig 1 to use
 
 | Use | When | Why |
 |-----|------|-----|
-| Hard voting | Member 가 확률을 내지 않거나, calibration 할 held-out 집합이 없음 | Label 말고는 아무것도 요구하지 않는 유일한 규칙 |
-| Soft voting | 세기가 비슷한 member, 확률이 이미 calibration 됨 | 적합하고 유지할 두 번째 model 이 없음 |
-| Weighted averaging | 회귀, 세기가 서로 다른 member | 가중치를 out-of-fold 행에서 한 번 적합 |
-| Stacking | 종류가 서로 다른 member, cross-validation 을 돌릴 만한 행 수 | 가중치와 상관을 함께 학습 |
-| Blending | Member 당 적합 한 번이 예산이거나 fold 가 비쌈 | Leak 없음, 대신 행을 내어 줌 |
+| Fixed rule on labels | Member 가 확률을 내지 않거나, calibration 할 held-out 집합이 없음 | Label 만으로 닿는 유일한 node |
+| Fixed rule on probabilities | 세기가 비슷한 member, 출력이 이미 weight 으로 쓸 수 있음 | 적합이 없어 leak 할 것도 유지할 것도 없음 |
+| Fitted weight | 세기가 서로 다른 member, cross-validation 한 번을 감당할 수 있음 | 두 번째 model 없이 약한 member 를 깎음 |
+| Fitted combiner on folds | 종류가 서로 다른 member, cross-validation 을 돌릴 만한 행 수 | 중복된 member 까지 깎는 유일한 갈래 |
+| Fitted combiner on a holdout | Member 당 적합 한 번이 예산이거나 fold 가 비쌈 | 위와 같고, 대신 행을 내어 줌 |
+| Framework | Member 가 아직 없음 | 규칙이 member 와 함께 오며, 사는 것은 $\rho$ |
 
-Appendix B 가 Table 5 의 각 행을 서로 견주어 재고, Appendix E 가 section 6 의 framework 에 대해 같은 일을 한다.
+Appendix B 가 Table 6 의 각 행을 서로 견주어 재고, Appendix E 가 section 8 의 framework 에 대해 같은 일을 한다.
 
-## 8. Further Work
+## 10. Further Work
 
-- **Threshold 가 아니라 보장으로 정하는 coverage** — Section 5.3 의 abstention 은 threshold 를 바꿔 가며 결과를 읽어 coverage 를 정하므로, 답한 행에 대한 보장이 없다. Conformal prediction 은 대신 목표 오차율에서 threshold 를 정하고, 그 분포 무관 coverage 보장은 바탕 model 이 무엇이든 성립하므로 section 6 의 ensemble 을 그대로 쓸 수 있다. 배포와 같은 분포에서 떼어 두었고 그와 교환가능한 calibration 분할이 필요하며, drift 하는 공정이 깨뜨리는 조건이 바로 그것이다.
-- **공정을 따라가는 가중치** — Section 4.3 의 non-negative least squares 가중치는 한 번 적합한 뒤 고정되므로, 성능이 나빠진 member 도 제 몫을 그대로 가진다. 진행 중인 손실로 member 의 가중치를 갱신하는 방식은 이제 streaming library 에서 표준이며 member 자체를 다시 적합할 필요가 없다. 지연이 제한된 label 과 가중치가 얼마나 빨리 움직일 수 있는지에 대한 규칙이 필요한데, 잡음을 쫓는 가중치는 고정된 가중치보다 나쁘기 때문이다.
+- **Threshold 가 아니라 보장으로 정하는 coverage** — Section 3.4 의 abstention 은 threshold 를 바꿔 가며 결과를 읽어 coverage 를 정하므로, 답한 행에 대한 보장이 없다. Conformal prediction 은 대신 목표 오차율에서 threshold 를 정하고, 그 분포 무관 coverage 보장은 바탕 model 이 무엇이든 성립하므로 Fig 1 의 어느 갈래든 그대로 쓸 수 있다. 배포와 같은 분포에서 떼어 두었고 그와 교환가능한 calibration 분할이 필요하며, drift 하는 공정이 깨뜨리는 조건이 바로 그것이다.
+- **공정을 따라가는 가중치** — Section 6.1 의 non-negative least squares 가중치는 한 번 적합한 뒤 고정되므로, 성능이 나빠진 member 도 제 몫을 그대로 가진다. 진행 중인 손실로 member 의 가중치를 갱신하는 방식은 이제 streaming library 에서 표준이며 member 자체를 다시 적합할 필요가 없다. 지연이 제한된 label 과 가중치가 얼마나 빨리 움직일 수 있는지에 대한 규칙이 필요한데, 잡음을 쫓는 가중치는 고정된 가중치보다 나쁘기 때문이다.
 
 ## References
 
@@ -251,6 +321,9 @@ Appendix B 가 Table 5 의 각 행을 서로 견주어 재고, Appendix E 가 se
 - **conformal prediction**: 어떤 model 의 점수든 coverage 가 미리 정해진 예측 집합으로 바꾸는 절차.
 - **coverage**: Abstention 을 두는 ensemble 이 실제로 답하는 행의 비율.
 - **ensemble**: 하나의 결합 규칙으로 함께 쓰이는 여러 개의 적합된 model.
+- **fitted combiner**: Member 출력의 함수를 적합하는 결합이며, Fig 1 의 셋째 갈래.
+- **fitted weight**: Member 마다 scalar 하나를 적합하는 결합이며, Fig 1 의 둘째 갈래.
+- **fixed rule**: 아무것도 적합하지 않는 결합이며, Fig 1 의 첫 갈래.
 - **hard voting**: Member label 의 다수결을 취하는 결합.
 - **isotonic regression**: 비감소 계단함수라면 무엇이든 될 수 있는 calibration 사상.
 - **leak**: Model 이 이미 학습 자료로 본 값을 적합이나 평가에 쓰는 것.
@@ -260,12 +333,11 @@ Appendix B 가 Table 5 의 각 행을 서로 견주어 재고, Appendix E 가 se
 - **soft voting**: Member 확률 평균의 argmax 를 취하는 결합.
 - **stacking**: Member 들의 out-of-fold 예측 위에 meta-learner 를 적합하는 framework.
 - **temperature scaling**: Logit 을 적합된 scalar 하나로 나누는 calibration 사상.
-
 ## Appendix B. Worked Example
 
 이 appendix 의 모든 측정은 한 쌍의 분할에서 나온다. 종류가 서로 다른 세 member, 곧 logistic regression 과 tree 200 개의 random forest 와 Gaussian naive Bayes 를 breast cancer 자료의 398 행으로 적합하고 held-out 171 행에서 채점한다. 회귀를 다루는 B.4 와 B.5 는 diabetes 자료를 같은 방식으로 309 대 133 으로 나누어 쓴다.
 
-Table 6. Combination rules on 171 held-out rows
+Table 7. Combination rules on 171 held-out rows
 
 | Method | Combines | Accuracy | Brier |
 |--------|----------|----------|-------|
@@ -284,7 +356,7 @@ Table 6. Combination rules on 171 held-out rows
 
 Hard voting 에 Brier score 가 없는 것은 확률을 내지 않기 때문이며, 그 빈칸이 label 만 쓰는 경로의 값이다. 뒤에서 threshold 를 걸 수도, abstention 을 둘 수도, 비용행렬을 쓰는 결정 규칙에 넘길 수도 없다.
 
-Table 7. Frameworks on the same 171 held-out rows
+Table 8. Frameworks on the same 171 held-out rows
 
 | Framework | Members | Accuracy | Brier |
 |-----------|---------|----------|-------|
@@ -293,11 +365,11 @@ Table 7. Frameworks on the same 171 held-out rows
 | Bagging | Tree 200 개, 행만 추출 | 0.9298 | 0.0450 |
 | Single tree | 1 | 0.9064 | 0.0936 |
 
-Table 6 의 각 행을 낸 code 는 B.1 부터 D.3 까지 그 순서로 이어지며, Table 7 을 낸 code 는 Appendix E 에 있다.
+Table 7 의 각 행을 낸 code 는 B.1 부터 D.3 까지 그 순서로 이어지며, Table 8 을 낸 code 는 Appendix E 에 있다.
 
 ### B.1 Data And Members
 
-세 member 를 한 번 적합하여 뒤의 모든 절이 그대로 쓴다. 그 정확도가 Table 6 의 Nothing 세 행이다.
+세 member 를 한 번 적합하여 뒤의 모든 절이 그대로 쓴다. 그 정확도가 Table 7 의 Nothing 세 행이다.
 
 ```python
 import numpy as np
@@ -334,7 +406,7 @@ naive_bayes  0.9240
 
 ### B.2 Hard And Soft Voting
 
-같은 적합에 section 4.1 의 두 규칙을 적용한 것이다. Naive Bayes 가 Table 4 에서 그대로 쓸 수 없다고 표시한 member 이며, 그 확률을 평균에 넣은 것이 여기서 soft voting 을 hard voting 아래로 내린 원인이다.
+같은 적합에 section 5.1 의 두 규칙을 적용한 것이다. Naive Bayes 가 Table 3 에서 그대로 쓸 수 없다고 표시한 member 이며, 그 확률을 평균에 넣은 것이 여기서 soft voting 을 hard voting 아래로 내린 원인이다.
 
 ```python
 # hard voting: the majority of the labels, nothing else
@@ -380,7 +452,7 @@ log-odds    0.9298  brier 0.0572
 
 ### B.4 Weighted Averaging With Out-Of-Fold Weights
 
-Section 4.2 의 회귀 쪽 대응물이다. 가중치는 out-of-fold 예측에 대한 non-negative least squares 에서 나오며, 마지막 두 줄이 equation (1) 을 수치로 확인한다.
+Section 5.2 의 회귀 쪽 대응물이다. 가중치는 out-of-fold 예측에 대한 non-negative least squares 에서 나오며, 마지막 두 줄이 equation (1) 을 수치로 확인한다.
 
 ```python
 from scipy.optimize import nnls
@@ -442,7 +514,7 @@ weighted rmse 55.29  weights {'ridge': 0.621, 'forest': 0.162, 'knn': 0.216}
 
 ### B.5 Member Spread As An Uncertainty Signal
 
-불일치를 믿기 전에 section 5.4 가 요구하는 확인을 B.4 의 member 에 대해 돌린 것이다. 흩어짐은 두 쪽을 세 배 가까이 갈라 놓지만 오차는 따라오지 않으며, 따라서 이 member 들에서 흩어짐은 오차에 대해 아무 정보도 담고 있지 않다.
+불일치를 믿기 전에 section 4.3 이 요구하는 확인을 B.4 의 member 에 대해 돌린 것이다. 흩어짐은 두 쪽을 세 배 가까이 갈라 놓지만 오차는 따라오지 않으며, 따라서 이 member 들에서 흩어짐은 오차에 대해 아무 정보도 담고 있지 않다.
 
 ```python
 spread = pred.std(axis=1)
@@ -464,7 +536,7 @@ largest   n 67  rmse 55.47  mean spread 16.92
 
 ### C.1 Stacking On Probabilities Against Labels
 
-Table 6 의 stacking 두 행이다. 둘의 차이는 meta-learner 에 무엇을 먹이는가 하나뿐이며, 계수는 Table 4 가 쓸 수 없다고 표시한 member 를 meta-learner 가 깎고 있음을 보인다.
+Table 7 의 stacking 두 행이다. 둘의 차이는 meta-learner 에 무엇을 먹이는가 하나뿐이며, 계수는 Table 3 이 쓸 수 없다고 표시한 member 를 meta-learner 가 깎고 있음을 보인다.
 
 ```python
 from sklearn.model_selection import StratifiedKFold
@@ -499,7 +571,7 @@ on labels        0.9591  brier 0.0317
 
 ### C.2 Blending
 
-K 개의 fold 대신 분할 하나를 쓴다. Member 는 학습 행의 70% 를 보고 meta-learner 는 그들이 보지 않은 120 행으로 적합하는데, 이것이 section 6.4 가 두 번 치른다고 한 값이다.
+K 개의 fold 대신 분할 하나를 쓴다. Member 는 학습 행의 70% 를 보고 meta-learner 는 그들이 보지 않은 120 행으로 적합하는데, 이것이 section 7.2 가 두 번 치른다고 한 값이다.
 
 ```python
 X_fit, X_bl, y_fit, y_bl = train_test_split(
@@ -523,7 +595,7 @@ blending 0.9298  brier 0.0406  meta rows 120
 
 ### D.1 Calibration Before Averaging
 
-사상은 학습 집합을 다섯 겹으로 나눈 안쪽에서 적합하므로, held-out 행은 그 적합에 끼지 않는다. Extreme 열은 0.99 를 넘거나 0.01 아래인 예측의 비율이며, Table 4 가 계열마다 지목한 일그러짐이 그것이다.
+사상은 학습 집합을 다섯 겹으로 나눈 안쪽에서 적합하므로, held-out 행은 그 적합에 끼지 않는다. Extreme 열은 0.99 를 넘거나 0.01 아래인 예측의 비율이며, Table 3 이 계열마다 지목한 일그러짐이 그것이다.
 
 ```python
 from sklearn.calibration import CalibratedClassifierCV
@@ -585,7 +657,7 @@ calibrated  0.9532  brier 0.0360
 
 ### D.3 Abstention
 
-Section 5.3 의 오차 대 거절 맞바꿈을 calibration 한 ensemble 에서 잰 것이다.
+Section 3.4 의 오차 대 거절 맞바꿈을 calibration 한 ensemble 에서 잰 것이다.
 
 ```python
 p = cal_stack.mean(axis=0)
@@ -609,7 +681,7 @@ threshold  coverage  accuracy
 
 ## Appendix E. Frameworks
 
-Table 7 을 B.1 의 분할에서 잰 것이며, framework 과 결합 규칙이 같은 171 행에서 채점되도록 했다. 아래의 각각은 그 자체로 완결된 tree ensemble 이어서 따로 aggregation 단계를 두지 않는다.
+Table 8 을 B.1 의 분할에서 잰 것이며, framework 과 결합 규칙이 같은 171 행에서 채점되도록 했다. 아래의 각각은 그 자체로 완결된 tree ensemble 이어서 따로 aggregation 단계를 두지 않는다.
 
 ```python
 from sklearn.ensemble import BaggingClassifier, GradientBoostingClassifier

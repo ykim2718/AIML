@@ -1,120 +1,96 @@
 # Ensemble Learning
-Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 21:49 UTC
+Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 22:13 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: Several fitted models are usually combined by whatever is easiest to reach — a majority vote over labels, or an unweighted mean — which throws away the probability each model already computed, and leaves no record of which rows the combination was unsure about.
-- **Goal**: Separate the combination rule from the framework that produces the members, so that a reader can pick one of each for a given problem, and can decide how the probability or confidence a member emits enters the combination.
-- **Non-Goal**: The principle of each base model and the tuning of its hyperparameters, the reweighting of members on a streaming source, and the ensembles specific to deep learning such as snapshot ensembles and Monte Carlo dropout are not covered.
+- **Problem Statement**: There is no systematic way to combine several models once they are fitted, so the combination is picked by habit and the choices that were available are never laid out.
+- **Goal**: Present the ways of combining model outputs as a taxonomy and a hierarchy, so that any rule can be placed, compared with its neighbours, and chosen for a stated reason.
+- **Non-Goal**: Improving the models themselves is not covered.
 
 ## 2. Summary
 
-Feeding the meta-learner probabilities rather than labels is what wins, and it wins by more than the choice between hard and soft voting does. A probability records which rows a member was unsure about; a label does not, and no combination rule can recover that afterwards.
+Three questions separate any combination rule from any other: what the members emit, how much the rule learns from data, and where the members came from. Table 1 is those three axes, and the second one orders the rest.
 
-Averaging is the weakest way to spend a probability. Soft voting gives every member a fixed share of the answer on every row, so a member whose output is not on a probability scale moves the mean everywhere. Two repairs work: calibrate the members before averaging, or let a meta-learner fit one coefficient per member from the probabilities themselves. Averaging log-odds is not among them, because it removes the cap that the arithmetic mean puts on any one member.
+That second axis is a hierarchy of four branches and each buys one thing. A fixed rule learns nothing and costs nothing. A fitted weight learns one scalar per member, which is enough to discount a weak member. A fitted combiner learns a function of the member outputs, which also discounts a member the others already cover. A framework brings its own rule already attached to the members it makes. Nothing sits above the third branch, because a function of the member outputs is everything there is left to learn from the outputs alone.
 
-A combination beats the *average* member, never automatically the *best* one. Equation (1) is exact and says the ensemble error is the mean member error minus the spread among members. Adding a weak member raises the first term, and the second term has to pay for it.
+What the members emit decides which branches are reachable at all. A label reaches the fixed rules that count labels, and nothing else; a probability reaches every branch. Section 3.3 is the table of which families emit a number a weight can be built from, and the answer is one family in seven.
 
-The gain has a floor set by correlation, not by count. Equation (2) shows that averaging $M$ members with pairwise correlation $\rho$ leaves $\rho\sigma^{2}$ standing however large $M$ becomes, which is why bagging, random subspaces and boosting all work by making members differ rather than by making more of them.
+A combination beats the *average* member, never automatically the *best* one. Equation (1) is exact and says the ensemble error is the mean member error minus the spread among members, which is why every branch above the first exists — to hold the first term down when a member does not deserve an equal share. Equation (2) adds that the gain has a floor set by correlation rather than by count.
 
-Appendix B measures these four statements on one held-out split.
+Appendix B measures every branch of Fig 1 on one held-out split.
 
-## 3. Principle
+## 3. Taxonomy
 
-### 3.1 Why Combining Helps
+### 3.1 Three Axes
 
-The ensemble squared error is the mean member error minus the mean spread among members, exactly and for every input. For $M$ members $f_1 \ldots f_M$ with unweighted mean $\bar f$, the ambiguity decomposition holds pointwise [[1](#ref-1)].
+Three questions place any combination, and they are answered independently of one another. Table 1 is the three.
 
-$$\left(\bar f - y\right)^{2} = \frac{1}{M}\sum_{m}\left(f_m - y\right)^{2} - \frac{1}{M}\sum_{m}\left(f_m - \bar f\right)^{2} \hspace{19em} (1)$$
+Table 1. The three axes of a combination
 
-Three consequences follow, and they are the whole reason ensembles are used.
+| Axis | Question | Values |
+|------|----------|--------|
+| Input | What each member emits | Label, probability, unbounded score |
+| Fitting | How much the rule learns from data | Nothing, one scalar per member, a function of the outputs |
+| Origin | Where the members come from | One algorithm resampled, one algorithm in sequence, unrelated algorithms |
 
-- Second term never negative, so the ensemble never worse than the mean member.
-- No claim about the best member; a strong member averaged with a weak one can lose.
-- Spread among members as the only source of gain, so a member that agrees with the rest adds nothing.
+The Fitting axis orders the other two, because it decides what the rule can do about a member that does not deserve its share. Section 3.2 gives that axis as a hierarchy, and the Input axis then says which of its branches are reachable.
 
-For classification the same idea appears as the Condorcet argument: independent members each correct with probability $p \gt 0.5$ give a majority vote whose accuracy rises with $M$. Independence is the assumption that fails in practice, and section 3.2 is what is left when it does.
+### 3.2 Hierarchy Of Combination Rules
 
-### 3.2 The Correlation Floor
+Fig 1 is the Fitting axis of Table 1, drawn out.
 
-Count stops paying once members are correlated. Take $M$ members with equal variance $\sigma^{2}$ and pairwise correlation $\rho$; the variance of their mean is
+```text
+Combination of model outputs
+|
++-- Fixed rule ................................ learns nothing
+|   +-- Classification
+|   |   +-- Hard voting ....................... majority of the labels
+|   |   +-- Soft voting ....................... argmax of the mean probability
+|   +-- Regression
+|   |   +-- Simple averaging .................. mean of the predictions
+|   |   +-- Median ............................ middle value, immune to one wild member
+|   +-- Scale-free
+|       +-- Rank averaging .................... mean of the per-member ranks
+|       +-- Log-odds averaging ................ geometric mean of the odds
+|
++-- Fitted weight ............................. learns one scalar per member
+|   +-- Global
+|   |   +-- Inverse validation error .......... weight from each member's held-out error
+|   |   +-- Non-negative least squares ........ weights fitted on out-of-fold predictions
+|   +-- Per row
+|       +-- Confidence weighting .............. weight from the entropy of that row's output
+|
++-- Fitted combiner ........................... learns a function of the member outputs
+|   +-- Stacking .............................. meta-learner on out-of-fold predictions
+|   +-- Blending .............................. meta-learner on one holdout split
+|
++-- Built into the framework .................. the rule arrives with the members
+    +-- Bagging ............................... vote or average over bootstrap members
+    +-- Boosting .............................. weighted sum over sequential members
+```
 
-$$\mathrm{Var}\left(\bar f\right) = \rho\sigma^{2} + \frac{1 - \rho}{M}\sigma^{2} \hspace{19em} (2)$$
+Fig 1. Hierarchy of combination rules
 
-The second term vanishes as $M$ grows and the first does not. At $\rho = 0.9$ an infinite ensemble still carries 90% of a single member's variance. This is why every framework in section 6 is a device for lowering $\rho$ — by resampling rows, by hiding columns, by changing the target — and why adding a fourth copy of the same gradient boosting fit changes nothing.
+The first three branches are ordered and the fourth is not. A fitted weight can do everything a fixed rule can, since equal weights are one of the values it may fit; a fitted combiner can do everything a fitted weight can, since a linear meta-learner with one column per member is exactly a set of weights. The fourth branch sits outside that order because its rule is chosen by the framework rather than by the reader.
 
-Diversity is a means to the second term of equation (1), and it is worth only what that term pays. Ten pairwise and non-pairwise diversity statistics were compared against ensemble accuracy and none of them tracked it closely enough to be used as a selection criterion [[13](#ref-13)]. Diversity bought by weakening members is paid for out of the first term of equation (1).
+Table 2 is what each branch buys and what it charges.
 
-### 3.3 Two Independent Axes
+Table 2. What each branch of Fig 1 buys
 
-Two decisions are made separately and any pair of them is legal. Table 1 names them.
+| Branch | Learns | Discounts a weak member | Discounts a redundant member | Cost |
+|--------|--------|-------------------------|------------------------------|------|
+| Fixed rule | Nothing | No | No | None |
+| Fitted weight | One scalar per member | Yes | No | One cross-validation pass |
+| Fitted combiner | A function of the outputs | Yes | Yes | One cross-validation pass, and a second model to keep |
+| Built into the framework | Fixed by the framework | By the framework's own weighting | No | Paid inside the framework |
 
-Table 1. The two axes of an ensemble
+Redundancy is the line between the second and third branches. A scalar says only what a member is worth on its own, so two members that say the same thing are paid twice; a function of the outputs can see that they agree and pay for one of them.
 
-| Axis | Question | Choices |
-|------|----------|---------|
-| Framework | What is made different between members | Rows resampled, columns hidden, target changed, algorithm changed |
-| Aggregation | What is done with the outputs | Vote, average, weighted average, meta-learner |
+### 3.3 What A Member Supplies
 
-Random forest fixes both axes at once and is often read as a single method; it is a row-and-column framework with an averaging rule attached. Stacking fixes only the aggregation axis and leaves the framework free, which is why it accepts members of unrelated kinds.
+Whether a member's own output can be used as a weight is decided by the family the member comes from, not by the range the number falls in. Table 3 is that decision for the common families.
 
-## 4. Aggregation
-
-### 4.1 Voting
-
-Hard voting takes the majority of the labels; soft voting takes the argmax of the mean probability. Hard voting is what remains when a member emits no probability, and it is not a weaker version of soft voting — it is the version that survives a member whose probabilities are distorted, because a label cannot be overconfident.
-
-Table 2 sets out where each one is available and what each one ignores.
-
-Table 2. Voting rules
-
-| Rule | Input per member | Ignores | Ties |
-|------|------------------|---------|------|
-| Hard voting | One label | How sure the member was | Possible at even $M$, broken by a rule fixed in advance |
-| Soft voting | One probability vector | Nothing the member emitted | Not possible unless probabilities are exactly equal |
-| Weighted hard voting | Label and a scalar weight | How sure the member was on this row | Broken by the weights unless two of them are equal |
-| Weighted soft voting | Probability vector and a scalar weight | Nothing the member emitted | Not possible in practice |
-
-An even number of members with hard voting forces a tie rule, and a tie rule that picks the first class is a silent bias. Three members, or an odd count generally, removes the question.
-
-### 4.2 Averaging
-
-For regression the counterpart of voting is the mean of the member predictions, and equation (1) governs it unchanged. The mean sits below the average member by exactly the spread among them, so it can fall below every single member at once when the members err in different directions.
-
-### 4.3 Weights
-
-Weights are fitted on out-of-fold predictions under a non-negativity constraint, never on the training fit and never by hand. Least squares under non-negativity is the original prescription for stacked regression and it is what keeps the coefficients interpretable and the combination stable [[7](#ref-7)].
-
-Table 3 lists the ways weights are set, ordered by how much evidence each one uses.
-
-Table 3. Ways to set member weights
-
-| Method | Fitted on | Cost | Failure mode |
-|--------|-----------|------|--------------|
-| Equal weights | Nothing | None | A weak member drags the mean |
-| Inverse validation error | Held-out error per member | One held-out split | Ignores correlation between members |
-| Non-negative least squares | Out-of-fold predictions | One cross-validation pass | Overfits when the out-of-fold set is small |
-| Meta-learner | Out-of-fold predictions | One cross-validation pass | Same, plus a second model to keep |
-
-Weights fitted on predictions the member has already seen are the classic leak. A model that memorized its training rows looks perfect on them and takes the whole weight, and the failure only appears at deployment.
-
-### 4.4 Log-Odds And Rank
-
-Averaging log-odds is the wrong repair for a member whose probabilities are distorted. The mean of the log-odds, mapped back through the logistic function, is the geometric mean of the odds:
-
-$$\bar z = \frac{1}{M}\sum_{m}\log\frac{p_m}{1 - p_m}, \qquad \bar p = \frac{1}{1 + e^{-\bar z}} \hspace{19em} (3)$$
-
-The arithmetic mean of probabilities caps any one member's influence at $1/M$, because a probability is bounded to $[0, 1]$. The log-odds mean removes that cap: a member emitting $0.9999$ contributes $z \approx 9.2$ and outvotes two members sitting near zero. The distortion the repair was reached for therefore gains weight instead of losing it.
-
-Rank averaging is the option that survives arbitrary distortion, because it uses only the order each member puts the rows in. It buys a ranking objective and gives up the probability, so it applies where the task is to rank a batch and not to answer one row at a time.
-
-## 5. Confidence
-
-### 5.1 Output As A Weight
-
-Whether a member's own output can be used as a weight is decided by the family the member comes from, not by the range the number falls in. Table 4 is that decision for the common families.
-
-Table 4. Whether a member's own output can be used as a weight
+Table 3. Whether a member's own output can be used as a weight
 
 | Family | As a weight | Native output | Output range |
 |--------|-------------|---------------|--------------|
@@ -126,58 +102,133 @@ Table 4. Whether a member's own output can be used as a weight
 | k-nearest neighbours | Not usable, only $k+1$ distinct values | Fraction of the $k$ neighbours | $\{0, 1/k, \ldots, 1\}$ |
 | Neural network | Not usable, overconfident and worse as the network grows | Softmax of the logits | $(0, 1)$, driven to the ends |
 
-One row of Table 4 is usable as emitted, and four of the seven share the range $(0, 1)$ with it. The rest produce a score that rises with the true probability but does not equal it, so the range a score falls in says nothing about what it means. Section 5.2 turns those scores into weights, and section 5.3 spends them.
+One row of Table 3 is usable as emitted, and four of the seven share the range $(0, 1)$ with it. The rest produce a score that rises with the true probability but does not equal it, so the range a score falls in says nothing about what it means.
 
-### 5.2 Calibration
+A family from the Not usable rows still reaches every branch of Fig 1, but only through section 6.2. Until then it reaches the nodes that do not read the number as a probability: hard voting, rank averaging, and a meta-learner fitted on labels.
 
-Calibration is a monotone map from the emitted score to a probability, fitted on rows the member did not train on. Platt scaling fits a one-parameter logistic and assumes the distortion is sigmoid-shaped; isotonic regression fits any non-decreasing step function and needs more rows to do it [[9](#ref-9)] [[10](#ref-10)]. Temperature scaling is the one-parameter form for a network, dividing the logits before the softmax. Both leave the ranking of rows untouched, so accuracy at a fixed threshold can move only where the threshold crossing moves.
+### 3.4 What The Combination Emits
 
-Fitting the map on the training rows destroys it. The map is fitted inside a split of the training set, never on the rows the result is reported on.
+A combination emits either a label or a probability, and that choice closes or opens everything downstream. A label can be reported and nothing else. A probability can be thresholded to trade errors for coverage, handed to a decision rule with a cost matrix, or compared against the same ensemble's output on another day.
 
-The score to read is the Brier score, the mean squared difference between the emitted probability and the outcome [[11](#ref-11)]. It moves with both calibration and discrimination, so it is the one number that says whether the repair helped; since the map leaves the ranking alone, a drop in the Brier score is a gain in the probability itself.
+Abstention is what the probability branch buys and the label branch cannot. The optimum rule is to reject where the posterior is below a threshold, and the error and reject rates then trade off along a curve fixed by that threshold [[12](#ref-12)]. Only the probability nodes of Fig 1 reach it, because hard voting leaves no number to threshold.
 
-### 5.3 Four Ways To Spend Confidence
+## 4. Principle
 
-Probabilities enter the combination in four places, and the four are not equally good. Ordered by how much of the information they keep:
+### 4.1 Why Combining Helps
 
-- **Soft voting** — a fixed share per member on every row. Cheapest, and the one that a distorted member breaks.
-- **Per-row confidence weighting** — a share that varies by row, from the entropy of that member's own output on that row.
-- **Meta-feature** — probabilities as columns for a second model, which learns both the weights and the correlations between members.
-- **Abstention** — the ensemble probability used to decide whether to answer at all.
+The ensemble squared error is the mean member error minus the mean spread among members, exactly and for every input. For $M$ members $f_1 \ldots f_M$ with unweighted mean $\bar f$, the ambiguity decomposition holds pointwise [[1](#ref-1)].
 
-Per-row weighting normalizes the entropy of member $m$ on row $x$ against its maximum over $K$ classes:
+$$\left(\bar f - y\right)^{2} = \frac{1}{M}\sum_{m}\left(f_m - y\right)^{2} - \frac{1}{M}\sum_{m}\left(f_m - \bar f\right)^{2} \hspace{19em} (1)$$
 
-$$c_m(x) = 1 - \frac{H\left(p_m(x)\right)}{\log K} \hspace{19em} (4)$$
+Three consequences follow, and they are the whole reason ensembles are used.
 
-Equation (4) rewards confidence, so on raw output it rewards the distortion of Table 4 and hands the largest weight to the worst-scaled member on every row. It may only be applied after section 5.2.
+- Second term never negative, so the ensemble never worse than the mean member.
+- No claim about the best member; a strong member averaged with a weak one can lose.
+- Spread among members as the only source of gain, so a member that agrees with the rest adds nothing.
 
-The meta-feature route is the strongest, because it is the only one of the four that sees the members jointly. Stacking with confidences rather than labels was the finding of the original study of the method's design choices [[8](#ref-8)]. The meta-learner fits one coefficient per member from the data and discounts a member the others already cover, which is a decision no fixed averaging rule can make.
+Equation (1) also orders Fig 1. The first term is the average member error under equal shares, and every branch above the first exists to lower it by moving share away from a member that does not deserve an equal one.
 
-Abstention converts confidence into a coverage choice. The optimum rule is to reject where the posterior is below a threshold, and the error and reject rates trade off along a curve fixed by that threshold [[12](#ref-12)]. The rows the ensemble declines are the rows it is most likely to get wrong, so accuracy on the rows it answers rises as coverage falls.
+For classification the same idea appears as the Condorcet argument: independent members each correct with probability $p \gt 0.5$ give a majority vote whose accuracy rises with $M$. Independence is the assumption that fails in practice, and section 4.2 is what is left when it does.
 
-### 5.4 Disagreement
+### 4.2 The Correlation Floor
+
+Count stops paying once members are correlated. Take $M$ members with equal variance $\sigma^{2}$ and pairwise correlation $\rho$; the variance of their mean is
+
+$$\mathrm{Var}\left(\bar f\right) = \rho\sigma^{2} + \frac{1 - \rho}{M}\sigma^{2} \hspace{19em} (2)$$
+
+The second term vanishes as $M$ grows and the first does not. At $\rho = 0.9$ an infinite ensemble still carries 90% of a single member's variance. This is why the Origin axis of Table 1 matters at all: resampling rows, hiding columns and changing the target are three devices for lowering $\rho$, and adding a fourth copy of the same gradient boosting fit is none of them.
+
+Diversity is a means to the second term of equation (1), and it is worth only what that term pays. Ten pairwise and non-pairwise diversity statistics were compared against ensemble accuracy and none of them tracked it closely enough to be used as a selection criterion [[13](#ref-13)]. Diversity bought by weakening members is paid for out of the first term.
+
+### 4.3 Disagreement
 
 The spread among members estimates uncertainty only where the members are genuinely different. Independently trained members are a practical uncertainty estimate and are competitive with more elaborate Bayesian treatments [[14](#ref-14)], but that rests on the members having distinct blind spots.
 
 Members that share the same predictors and the same missing variable agree confidently in the same wrong place. Their agreement then measures the blind spot they hold in common rather than the difficulty of the row, and the spread then orders the rows in a way the error does not.
 
-The abstention signal of section 5.3 is a different quantity: the ensemble's own posterior, not the disagreement between members. Disagreement is worth measuring, and it is worth trusting only after the check in Appendix B.5 has been run on the members at hand.
+The abstention signal of section 3.4 is a different quantity: the ensemble's own posterior, not the disagreement between members. Disagreement is worth measuring, and it is worth trusting only after the check in Appendix B.5 has been run on the members at hand.
 
-## 6. Frameworks
+## 5. Fixed Rules
 
-### 6.1 Bagging
+This is the first branch of Fig 1. Nothing is fitted, so there is no fit that can leak and no member that can be discounted.
 
-Bagging fits each member on a bootstrap resample of the rows and averages or votes the results, which lowers variance and leaves bias where it was [[2](#ref-2)]. It pays only for members that move when the sample moves, so a deep unpruned tree gains and a linear fit barely does.
+### 5.1 Voting
 
-Random forest adds column sampling at every split, so that members stop agreeing through the one dominant predictor [[3](#ref-3)]. That one step is what separates a random forest from bagged trees of the same depth and count.
+Hard voting takes the majority of the labels; soft voting takes the argmax of the mean probability. Hard voting is what remains when a member emits no probability, and it is not a weaker version of soft voting — it is the version that survives a member whose probabilities are distorted, because a label cannot be overconfident.
 
-### 6.2 Boosting
+Table 4 sets out where each one is available and what each one ignores.
 
-Boosting fits members in sequence, each one on what the previous ones got wrong, and adds them with weights. AdaBoost reweights the rows that were misclassified [[4](#ref-4)]; gradient boosting fits each new member to the gradient of the loss, which makes the loss function a free choice [[5](#ref-5)]. The widely used implementations descend from the second form and add second-order information, sparsity handling and training on data too large to hold in memory [[6](#ref-6)].
+Table 4. Voting rules
 
-Sequence is the cost. Bagging members are independent and fit in parallel; boosting members are not, and the run stops early or not at all on a held-out curve. Boosting also lowers bias, which bagging does not, so it can beat a bagged ensemble of the same trees on a hard target and can overfit where bagging would not.
+| Rule | Input per member | Ignores | Ties |
+|------|------------------|---------|------|
+| Hard voting | One label | How sure the member was | Possible at even $M$, broken by a rule fixed in advance |
+| Soft voting | One probability vector | Nothing the member emitted | Not possible unless probabilities are exactly equal |
+| Weighted hard voting | Label and a scalar weight | How sure the member was on this row | Broken by the weights unless two of them are equal |
+| Weighted soft voting | Probability vector and a scalar weight | Nothing the member emitted | Not possible in practice |
 
-### 6.3 Stacking
+The two weighted rows belong to the second branch of Fig 1 and are listed here so that the four appear together. An even number of members with hard voting forces a tie rule, and a tie rule that picks the first class is a silent bias; three members, or an odd count generally, removes the question.
+
+### 5.2 Averaging
+
+For regression the counterpart of voting is the mean of the member predictions, and equation (1) governs it unchanged. The mean sits below the average member by exactly the spread among them, so it can fall below every single member at once when the members err in different directions.
+
+The median bounds what one member can do to the result. A mean moves without limit when one member returns a wild value, and a median does not move at all until half the members do, which buys that bound at the price of ignoring how far apart the rest were.
+
+### 5.3 Log-Odds And Rank
+
+Averaging log-odds is the wrong repair for a member whose probabilities are distorted. The mean of the log-odds, mapped back through the logistic function, is the geometric mean of the odds:
+
+$$\bar z = \frac{1}{M}\sum_{m}\log\frac{p_m}{1 - p_m}, \qquad \bar p = \frac{1}{1 + e^{-\bar z}} \hspace{19em} (3)$$
+
+The arithmetic mean of probabilities caps any one member's influence at $1/M$, because a probability is bounded to $[0, 1]$. The log-odds mean removes that cap: a member emitting $0.9999$ contributes $z \approx 9.2$ and outvotes two members sitting near zero. The distortion the repair was reached for therefore gains weight instead of losing it.
+
+Rank averaging is the node that survives arbitrary distortion, because it uses only the order each member puts the rows in. It buys a ranking objective and gives up the probability, so it applies where the task is to rank a batch and not to answer one row at a time.
+
+## 6. Fitted Weights
+
+This is the second branch of Fig 1. One scalar per member is fitted, which is enough to discount a weak member and not enough to notice that two members are saying the same thing.
+
+### 6.1 One Scalar Per Member
+
+Weights are fitted on out-of-fold predictions under a non-negativity constraint, never on the training fit and never by hand. Least squares under non-negativity is the original prescription for stacked regression and it is what keeps the coefficients interpretable and the combination stable [[7](#ref-7)].
+
+Table 5 lists the ways weights are set, ordered by how much evidence each one uses.
+
+Table 5. Ways to set member weights
+
+| Method | Fitted on | Cost | Failure mode |
+|--------|-----------|------|--------------|
+| Equal weights | Nothing | None | A weak member drags the mean |
+| Inverse validation error | Held-out error per member | One held-out split | Ignores correlation between members |
+| Non-negative least squares | Out-of-fold predictions | One cross-validation pass | Overfits when the out-of-fold set is small |
+| Meta-learner | Out-of-fold predictions | One cross-validation pass | Same, plus a second model to keep |
+
+Weights fitted on predictions the member has already seen are the classic leak. A model that memorized its training rows looks perfect on them and takes the whole weight, and the failure only appears at deployment.
+
+### 6.2 Calibration
+
+Calibration is what moves a family out of the Not usable rows of Table 3. It is a monotone map from the emitted score to a probability, fitted on rows the member did not train on. Platt scaling fits a one-parameter logistic and assumes the distortion is sigmoid-shaped; isotonic regression fits any non-decreasing step function and needs more rows to do it [[9](#ref-9)] [[10](#ref-10)]. Temperature scaling is the one-parameter form for a network, dividing the logits before the softmax.
+
+The map leaves the ranking of rows untouched, so it changes what a member reports and not how well the member separates the classes. That is why it belongs here and not outside the document's scope: the member is unchanged and only the scale of its output is fixed.
+
+Fitting the map on the training rows destroys it. The map is fitted inside a split of the training set, never on the rows the result is reported on.
+
+The score to read is the Brier score, the mean squared difference between the emitted probability and the outcome [[11](#ref-11)]. It moves with both calibration and discrimination, so it is the one number that says whether the repair helped; since the map leaves the ranking alone, a drop in the Brier score is a gain in the probability itself.
+
+### 6.3 Per-Row Confidence Weighting
+
+A weight need not be one scalar for the whole test set. Per-row weighting normalizes the entropy of member $m$ on row $x$ against its maximum over $K$ classes, so that a member unsure on this row contributes less to this row and only to this row:
+
+$$c_m(x) = 1 - \frac{H\left(p_m(x)\right)}{\log K} \hspace{19em} (4)$$
+
+Equation (4) rewards confidence, so on raw output it rewards the distortion of Table 3 and hands the largest weight to the worst-scaled member on every row. It may only be applied after section 6.2.
+
+## 7. Fitted Combiners
+
+This is the third branch of Fig 1. A function of the member outputs is fitted, so the combiner can discount a member the others already cover, which is the one thing a scalar weight cannot do.
+
+### 7.1 Stacking
 
 Stacking fits a second model on the members' out-of-fold predictions [[15](#ref-15)]. Out-of-fold is the whole mechanism: a member's prediction on a row it has trained on is optimistic, and a meta-learner fitted on such rows learns to trust whichever member memorized hardest.
 
@@ -188,34 +239,53 @@ Four rules make the difference between stacking that helps and stacking that lea
 - Probabilities rather than labels as the meta-features [[8](#ref-8)].
 - One column per binary problem, not two, since the pair sums to one and is collinear.
 
+The third rule is where the Input axis of Table 1 pays. Feeding confidences rather than labels was the finding of the original study of the method's design choices [[8](#ref-8)], and it is what lets the meta-learner see that a member was unsure rather than only that it was wrong.
+
 The meta-learner stays small. A regularized linear model on three columns has three coefficients to estimate from the out-of-fold rows; a forest on the same three columns will find structure in the folds that is not there.
 
-### 6.4 Blending
+### 7.2 Blending
 
 Blending replaces the cross-validation of stacking with a single holdout: members are fitted on one part of the training set and the meta-learner on the other. It costs one fit per member instead of $K+1$ and it cannot leak, since the two parts never meet.
 
 It pays for that twice. The members are fitted on part of the training set rather than all of it, and the meta-learner sees one holdout instead of an out-of-fold prediction for every training row.
 
-## 7. Comparison
+## 8. Frameworks
 
-The choice follows from two things: what the members emit, and how many rows are left over for fitting the combination. Table 5 reads from the left column.
+This is the fourth branch of Fig 1, where the combination rule arrives already attached to the procedure that made the members. The rule is not chosen; the framework is.
 
-Table 5. Which combination to use
+### 8.1 Bagging
+
+Bagging fits each member on a bootstrap resample of the rows and averages or votes the results, which lowers variance and leaves bias where it was [[2](#ref-2)]. Its combination rule is the first branch of Fig 1 with equal weights, and the whole design instead goes into lowering $\rho$ of equation (2).
+
+Random forest adds column sampling at every split, so that members stop agreeing through the one dominant predictor [[3](#ref-3)]. That one step is what separates a random forest from bagged trees of the same depth and count.
+
+### 8.2 Boosting
+
+Boosting fits members in sequence, each one on what the previous ones got wrong, and adds them with weights that the fitting procedure sets rather than a separate pass. AdaBoost reweights the rows that were misclassified [[4](#ref-4)]; gradient boosting fits each new member to the gradient of the loss, which makes the loss function a free choice [[5](#ref-5)]. The widely used implementations descend from the second form and add second-order information, sparsity handling and training on data too large to hold in memory [[6](#ref-6)].
+
+Sequence is the cost. Bagging members are independent and fit in parallel; boosting members are not, and the run stops early or not at all on a held-out curve. Boosting also lowers bias, which bagging does not, so it can beat a bagged ensemble of the same trees on a hard target and can overfit where bagging would not.
+
+## 9. Selection
+
+The choice follows from two of the three axes of Table 1: what the members emit, and how many rows are left over for fitting the combination. Table 6 reads from the left column.
+
+Table 6. Which branch of Fig 1 to use
 
 | Use | When | Why |
 |-----|------|-----|
-| Hard voting | A member emits no probability, or no held-out set exists to calibrate on | The only rule that needs nothing but labels |
-| Soft voting | Members of comparable strength, probabilities already calibrated | No second model to fit or keep |
-| Weighted averaging | Regression, members of unequal strength | Weights fitted once on out-of-fold rows |
-| Stacking | Members of unrelated kinds, enough rows for a cross-validation pass | Learns weights and correlations together |
-| Blending | One fit per member is the budget, or the folds are expensive | No leak, at the price of rows |
+| Fixed rule on labels | A member emits no probability, or no held-out set exists to calibrate on | The only node a label alone reaches |
+| Fixed rule on probabilities | Members of comparable strength, outputs already usable as weights | No fit, so nothing to leak and nothing to keep |
+| Fitted weight | Members of unequal strength, one cross-validation pass affordable | Discounts a weak member without a second model |
+| Fitted combiner on folds | Members of unrelated kinds, enough rows for a cross-validation pass | The only branch that also discounts a redundant member |
+| Fitted combiner on a holdout | One fit per member is the budget, or the folds are expensive | Same, at the price of rows |
+| Framework | The members do not exist yet | The rule comes with them, and $\rho$ is what is being bought |
 
-Appendix B measures every row of Table 5 against the others, and Appendix E does the same for the frameworks of section 6.
+Appendix B measures every row of Table 6 against the others, and Appendix E does the same for the frameworks of section 8.
 
-## 8. Further Work
+## 10. Further Work
 
-- **Coverage set by guarantee rather than by threshold** — Abstention as set out in section 5.3 fixes coverage by trying thresholds and reading the result, which gives no guarantee on the rows that are answered. Conformal prediction sets the threshold from a target error rate instead, and its distribution-free coverage guarantee holds for any underlying model, so the ensemble of section 6 can be used unchanged. It needs a calibration split held out from the same distribution as deployment and exchangeable with it, which is the condition a drifting process breaks.
-- **Weights that follow the process** — The non-negative least squares weights of section 4.3 are fitted once and are fixed thereafter, so a member that degrades keeps its share. Reweighting members from their running loss is now standard in streaming libraries and needs no refitting of the members themselves. It needs labels arriving with a bounded delay and a rule for how fast a weight may move, since a weight that chases noise is worse than a fixed one.
+- **Coverage set by guarantee rather than by threshold** — Abstention as set out in section 3.4 fixes coverage by trying thresholds and reading the result, which gives no guarantee on the rows that are answered. Conformal prediction sets the threshold from a target error rate instead, and its distribution-free coverage guarantee holds for any underlying model, so any branch of Fig 1 can be used unchanged. It needs a calibration split held out from the same distribution as deployment and exchangeable with it, which is the condition a drifting process breaks.
+- **Weights that follow the process** — The non-negative least squares weights of section 6.1 are fitted once and are fixed thereafter, so a member that degrades keeps its share. Reweighting members from their running loss is now standard in streaming libraries and needs no refitting of the members themselves. It needs labels arriving with a bounded delay and a rule for how fast a weight may move, since a weight that chases noise is worse than a fixed one.
 
 ## References
 
@@ -251,6 +321,9 @@ Appendix B measures every row of Table 5 against the others, and Appendix E does
 - **conformal prediction**: A procedure that turns any model's scores into prediction sets whose coverage rate is fixed in advance.
 - **coverage**: The fraction of rows an abstaining ensemble answers.
 - **ensemble**: Several fitted models used together through one combination rule.
+- **fitted combiner**: A combination that fits a function of the member outputs, the third branch of Fig 1.
+- **fitted weight**: A combination that fits one scalar per member, the second branch of Fig 1.
+- **fixed rule**: A combination that fits nothing, the first branch of Fig 1.
 - **hard voting**: A combination that takes the majority of the member labels.
 - **isotonic regression**: A calibration map that is any non-decreasing step function.
 - **leak**: The use, in fitting or in evaluation, of a value the model has already seen as training data.
@@ -260,12 +333,11 @@ Appendix B measures every row of Table 5 against the others, and Appendix E does
 - **soft voting**: A combination that takes the argmax of the mean member probability.
 - **stacking**: A framework that fits a meta-learner on the members' out-of-fold predictions.
 - **temperature scaling**: A calibration map that divides the logits by one fitted scalar.
-
 ## Appendix B. Worked Example
 
 Every measurement in this appendix comes from one pair of splits. Three members of unrelated kinds — logistic regression, a 200-tree random forest and Gaussian naive Bayes — are fitted on 398 rows of the breast cancer data and scored on the 171 held out. The regression parts, B.4 and B.5, use the diabetes data split 309 to 133 the same way.
 
-Table 6. Combination rules on 171 held-out rows
+Table 7. Combination rules on 171 held-out rows
 
 | Method | Combines | Accuracy | Brier |
 |--------|----------|----------|-------|
@@ -284,7 +356,7 @@ Table 6. Combination rules on 171 held-out rows
 
 Hard voting has no Brier score because it emits no probability, and that empty cell is the cost of the label-only route: nothing downstream can threshold it, abstain on it, or feed it to a decision rule with a cost matrix.
 
-Table 7. Frameworks on the same 171 held-out rows
+Table 8. Frameworks on the same 171 held-out rows
 
 | Framework | Members | Accuracy | Brier |
 |-----------|---------|----------|-------|
@@ -293,11 +365,11 @@ Table 7. Frameworks on the same 171 held-out rows
 | Bagging | 200 trees, rows sampled | 0.9298 | 0.0450 |
 | Single tree | 1 | 0.9064 | 0.0936 |
 
-The code behind each row of Table 6 runs from B.1 through D.3, in that order, and the code behind Table 7 is in Appendix E.
+The code behind each row of Table 7 runs from B.1 through D.3, in that order, and the code behind Table 8 is in Appendix E.
 
 ### B.1 Data And Members
 
-The three members, fitted once and reused by every later section. Their accuracies are the three Nothing rows of Table 6.
+The three members, fitted once and reused by every later section. Their accuracies are the three Nothing rows of Table 7.
 
 ```python
 import numpy as np
@@ -334,7 +406,7 @@ naive_bayes  0.9240
 
 ### B.2 Hard And Soft Voting
 
-The two rules of section 4.1 applied to the same fits. Naive Bayes is the member that Table 4 marks unusable as emitted, and averaging its probabilities is what puts soft voting below hard voting here.
+The two rules of section 5.1 applied to the same fits. Naive Bayes is the member that Table 3 marks unusable as emitted, and averaging its probabilities is what puts soft voting below hard voting here.
 
 ```python
 # hard voting: the majority of the labels, nothing else
@@ -380,7 +452,7 @@ log-odds    0.9298  brier 0.0572
 
 ### B.4 Weighted Averaging With Out-Of-Fold Weights
 
-The regression counterpart of section 4.2. Weights come from non-negative least squares on out-of-fold predictions, and the last two lines check equation (1) numerically.
+The regression counterpart of section 5.2. Weights come from non-negative least squares on out-of-fold predictions, and the last two lines check equation (1) numerically.
 
 ```python
 from scipy.optimize import nnls
@@ -442,7 +514,7 @@ weighted rmse 55.29  weights {'ridge': 0.621, 'forest': 0.162, 'knn': 0.216}
 
 ### B.5 Member Spread As An Uncertainty Signal
 
-The check that section 5.4 requires before disagreement is trusted, run on the members of B.4. The spread separates the two halves by a factor of nearly three and the error does not follow, so on these members the spread carries no information about the error.
+The check that section 4.3 requires before disagreement is trusted, run on the members of B.4. The spread separates the two halves by a factor of nearly three and the error does not follow, so on these members the spread carries no information about the error.
 
 ```python
 spread = pred.std(axis=1)
@@ -464,7 +536,7 @@ largest   n 67  rmse 55.47  mean spread 16.92
 
 ### C.1 Stacking On Probabilities Against Labels
 
-The two stacking rows of Table 6. The only difference between them is what the meta-learner is fed, and the coefficients show it discounting the member that Table 4 marks unusable.
+The two stacking rows of Table 7. The only difference between them is what the meta-learner is fed, and the coefficients show it discounting the member that Table 3 marks unusable.
 
 ```python
 from sklearn.model_selection import StratifiedKFold
@@ -499,7 +571,7 @@ on labels        0.9591  brier 0.0317
 
 ### C.2 Blending
 
-One split instead of K folds. The members see 70% of the training rows and the meta-learner is fitted on the 120 rows they did not see, which is what section 6.4 calls paying twice.
+One split instead of K folds. The members see 70% of the training rows and the meta-learner is fitted on the 120 rows they did not see, which is what section 7.2 calls paying twice.
 
 ```python
 X_fit, X_bl, y_fit, y_bl = train_test_split(
@@ -523,7 +595,7 @@ blending 0.9298  brier 0.0406  meta rows 120
 
 ### D.1 Calibration Before Averaging
 
-The map is fitted inside a five-fold split of the training set, so no held-out row takes part in fitting it. The extreme column counts the predictions past 0.99 or below 0.01, which is the distortion Table 4 assigns to each family.
+The map is fitted inside a five-fold split of the training set, so no held-out row takes part in fitting it. The extreme column counts the predictions past 0.99 or below 0.01, which is the distortion Table 3 assigns to each family.
 
 ```python
 from sklearn.calibration import CalibratedClassifierCV
@@ -585,7 +657,7 @@ calibrated  0.9532  brier 0.0360
 
 ### D.3 Abstention
 
-The error-reject tradeoff of section 5.3, measured on the calibrated ensemble.
+The error-reject tradeoff of section 3.4, measured on the calibrated ensemble.
 
 ```python
 p = cal_stack.mean(axis=0)
@@ -609,7 +681,7 @@ threshold  coverage  accuracy
 
 ## Appendix E. Frameworks
 
-Table 7, measured on the split of B.1 so that the frameworks and the combination rules are scored on the same 171 rows. Each of these is a self-contained ensemble of trees and needs no separate aggregation step.
+Table 8, measured on the split of B.1 so that the frameworks and the combination rules are scored on the same 171 rows. Each of these is a self-contained ensemble of trees and needs no separate aggregation step.
 
 ```python
 from sklearn.ensemble import BaggingClassifier, GradientBoostingClassifier
