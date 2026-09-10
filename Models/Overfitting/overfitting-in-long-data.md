@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 5 | Created: 2026-09-07 | Updated: 2026-09-10 09:12 CDT
+Rev. 6 | Created: 2026-09-07 | Updated: 2026-09-10 09:30 CDT
 
 ## 1. Purpose
 
@@ -17,7 +17,11 @@ Long data 의 overfitting 은 parameter 의 수에서 오지 않고 세 곳에�
 
 셋 가운데 실무에서 가장 크고 가장 늦게 드러나는 것은 둘째이다. 행이 wafer·lot·설비 같은 group 으로 묶여 있으면 유효 표본 (effective sample size) 이 행의 수보다 훨씬 작은데, 무작위 분할은 같은 group 의 행을 학습과 검증에 나누어 담아 그 사실을 감춘다. 3 장의 모의 실험에서 무작위 분할이 0.94 로 보고한 오차는 새로운 group 에서 실제로 1.86 이었다.
 
-처방은 세 줄이다. 용량은 held-out 오차가 돌아서는 지점에서 멈추고, 분할은 자료의 group 을 따르고, 행을 늘릴 때는 같은 group 안이 아니라 새 group 을 늘린다.
+처방도 셋이다.
+
+- **용량**: Held-out 오차가 돌아서는 지점에서 멈춘다.
+- **분할**: 자료가 묶인 group 을 따른다.
+- **행의 추가**: 같은 group 안이 아니라 새 group 을 늘린다.
 
 ## 3. Principle
 
