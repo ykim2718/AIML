@@ -211,7 +211,7 @@ Table 4. Separating the three causes of the gap
 
 3.1 의 자료를 여섯 행만 그대로 옮기면 같은 group 의 행들이 무엇을 공유하는지가 표에서 바로 보인다. 열은 여섯이고 그 가운데 첫째 열은 group 안에서 값이 바뀌지 않으며, 나머지 다섯은 행마다 따로 뽑힌다. 응답은 둘째와 셋째 열의 비선형 함수에 그 group 의 offset 과 잡음을 더한 값이다.
 
-Table 5 는 그 자료에서 두 group 의 세 행씩을 그대로 옮긴 것이다.
+Table 5 가 두 group 에서 세 행씩 뽑은 그 여섯 행이다.
 
 Table 5. Six rows drawn from two groups
 
