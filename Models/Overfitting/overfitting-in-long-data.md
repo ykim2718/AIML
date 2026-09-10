@@ -1,11 +1,11 @@
 # Overfitting In Long Data
-Rev. 10 | Created: 2026-09-07 | Updated: 2026-09-10 11:05 CDT
+Rev. 11 | Created: 2026-09-07 | Updated: 2026-09-10 11:25 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: 행이 많은 자료에서는 overfitting 이 없다고 보고 검증을 느슨하게 하여, validation performance 와 test performance 가 크게 차이 날 수 있다.
 - **Goal**: Overfitting taxonomy 에 따른 해석과 대응책을 정리한다.
-- **Non-Goal**: 열이 행보다 많은 자료의 방어는 다루지 않는다. Deep learning 고유의 정칙화도 다루지 않는다.
+- **Non-Goal**: 열이 행보다 많은 자료의 방어는 다루지 않는다. Dropout 이나 weight decay 처럼 신경망에만 있는 regularization 도 다루지 않는다.
 
 ## 2. Summary
 
@@ -193,6 +193,7 @@ Table 3. The same failure from two different causes
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
 - **R-squared**: 응답의 분산 가운데 model 이 설명한 몫이며, 기호는 $R^2$ 이다. 분모가 그 자료의 분산이므로 자료가 바뀌면 같은 model 도 다른 값을 낸다.
+- **regularization**: Model 이 학습 자료를 지나치게 따라가지 못하도록 학습에 제약을 더하는 장치. 계수의 크기를 벌하거나, 학습을 일찍 멈추거나, 신경망이라면 일부 unit 을 학습 중에 꺼 두는 방식이 여기에 든다.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
 - **taxonomy**: 대상을 서로 겹치지 않는 갈래로 나눈 분류 체계.
 
