@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 12 | Created: 2026-09-07 | Updated: 2026-09-10 12:00 CDT
+Rev. 13 | Created: 2026-09-07 | Updated: 2026-09-10 12:35 CDT
 
 ## 1. Purpose
 
@@ -222,7 +222,7 @@ Table 5. The same failure from two different causes
 - **effective sample size**: 서로 독립인 행이 몇 개인 것과 같은지를 나타내는 수. 유효 표본.
 - **extrapolation**: 학습 자료가 덮지 않은 구간에서 예측하는 일.
 - **gradient boosting**: 앞의 model 이 남긴 잔차를 다음 model 이 맞추도록 차례로 쌓는 ensemble.
-- **group**: 같은 wafer, 같은 lot, 같은 설비처럼 함께 만들어져 서로 닮은 행의 묶음.
+- **group**: 같은 wafer, 같은 lot, 같은 설비처럼 함께 만들어져 서로 닮은 행의 묶음. 통계 문헌에서는 같은 것을 cluster 라 부르며, intracluster correlation 의 cluster 가 그것이다.
 - **held-out error**: 학습에 쓰지 않은 자료에서 잰 오차.
 - **hyperparameter**: 학습으로 정해지지 않고 밖에서 정해 주는 값.
 - **intracluster correlation**: Group 안의 두 행이 서로 닮은 정도. 전체 분산 가운데 group 사이 분산이 차지하는 몫.
