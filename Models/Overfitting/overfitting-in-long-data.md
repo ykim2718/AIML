@@ -1,10 +1,10 @@
 # Overfitting In Long Data
-Rev. 11 | Created: 2026-09-07 | Updated: 2026-09-10 11:25 CDT
+Rev. 12 | Created: 2026-09-07 | Updated: 2026-09-10 12:00 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: 행이 많은 자료에서는 overfitting 이 없다고 보고 검증을 느슨하게 하여, validation performance 와 test performance 가 크게 차이 날 수 있다.
-- **Goal**: Overfitting taxonomy 에 따른 해석과 대응책을 정리한다.
+- **Goal**: Overfitting taxonomy 에 따른 물리와 해석, 반도체 자료에서의 대응책을 정리한다.
 - **Non-Goal**: 열이 행보다 많은 자료의 방어는 다루지 않는다. Dropout 이나 weight decay 처럼 신경망에만 있는 regularization 도 다루지 않는다.
 
 ## 2. Summary
@@ -67,6 +67,24 @@ Fig 1(b) 가 그 결과이다. 200 개 group 에 group 마다 25 행씩 둔 5000
 
 누수는 앞의 두 경로와 달리 held-out 오차로도 잡히지 않는다. 검증 자료 역시 같은 누수를 안고 있기 때문이며, 그래서 이 경로만은 자료를 만든 사람에게 열의 생성 시점을 묻는 것으로 확인해야 한다.
 
+### 3.5 Where The Paths Come From In The Process
+
+세 경로는 통계의 성질이기 전에 자료가 만들어진 방식의 결과이다. 반도체 계측 자료에서 각 경로가 어디서 오는지가 Table 2 이다.
+
+Table 2. The physical origin of each path in process data
+
+| # | Path | Where it comes from | What carries it |
+|---|------|---------------------|-----------------|
+| 1 | Model capacity | A response that varies smoothly with a few process knobs | A model free to cut the space once per row |
+| 2 | Dependent rows | Sites processed together in one chamber at one time | Chamber state, incoming material, the run itself |
+| 3 | Leakage | Metrology and disposition recorded after the response is fixed | Post-process columns and a split that ignores drift |
+
+첫째 경로의 물리는 자유도의 불일치이다. 두께나 선폭 같은 응답은 소수의 공정 인자에 매끄럽게 반응하므로 실제 자유도가 작은데, tree 계열 model 은 측점 하나마다 구획을 만들 수 있어 자유도를 행의 수까지 늘린다.
+
+둘째 경로의 물리는 공유된 처리 조건이다. 한 wafer 의 측점들은 같은 chamber 에서 같은 시각에 처리되므로 chamber 벽면 상태, 가스와 온도의 그날 값, 들어온 wafer 자체의 편차를 함께 겪는다. 그 몫이 그 wafer 의 측정값 전체를 위나 아래로 옮기며, 이것이 3.3 의 offset 이다. Lot 단위로 올라가면 소재 batch 와 전처리 이력이, chamber 단위로 올라가면 chamber 사이의 차이가 같은 일을 한다.
+
+셋째 경로의 물리는 기록의 시간 순서이다. 계측은 공정 뒤에 일어나고, 재작업 (rework) 여부나 최종 판정처럼 응답이 정해진 뒤에야 기록되는 열이 자료에 함께 실린다. 또한 chamber 의 상태는 시간에 따라 서서히 변하다가 정비 (preventive maintenance) 에서 되돌아가므로, 시간 순서를 무시한 분할은 그 변화를 건너뛰고 model 을 평가한다.
+
 ## 4. Application
 
 ### 4.1 Capacity Control
@@ -101,11 +119,33 @@ Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 �
 
 같은 test 자료로 여러 후보를 반복해서 재면 그 자료는 더 이상 test 자료가 아니다. 후보를 고르는 데 쓰인 순간 그것은 검증 자료가 되며, 반복 횟수만큼 낙관적으로 기운다. 최종 보고용 자료는 한 번만 열고, 그 전까지의 모든 비교는 4.2 의 분할 안에서 끝낸다.
 
+### 4.6 Applying The Three Devices To Semiconductor Data
+
+반도체 자료에서 세 장치는 공정의 계층에 그대로 얹힌다. 가장 많이 틀리는 것은 분할 단위이며, 그것을 정하는 물음은 하나이다. Model 이 답해야 하는 것이 새로운 무엇인가. Table 3 이 그 물음과 단위이다.
+
+Table 3. Split unit by the question the model answers
+
+| # | Question the model answers | Split unit | Rows that must stay together |
+|---|---------------------------|------------|------------------------------|
+| 1 | Another site on a wafer already measured | Site | None |
+| 2 | A wafer not measured before | Wafer | Sites of one wafer |
+| 3 | A lot not run before | Lot | Wafers of one lot |
+| 4 | A chamber the model has not seen | Chamber | Lots run in one chamber |
+| 5 | The coming week on the same chamber | Time block with a gap | Rows inside one block |
+
+계측 model 은 대개 2 나 3 이다. 1 을 쓸 수 있는 경우는 이미 측정한 wafer 의 빠진 측점을 메울 때뿐이며, 그 밖에는 무작위 분할이 곧 1 을 고른 것이 되어 3.3 이 잰 차이가 그대로 생긴다.
+
+나머지 두 장치도 공정의 수치로 옮겨 적을 수 있다.
+
+- **용량 (4.1)**: 계측 자료는 행이 많고 열이 적으므로 leaf 하나가 담는 최소 행 수를 크게 두어도 잃는 것이 적다. 이 값을 wafer 당 측점 수보다 크게 두면 leaf 하나가 한 wafer 만 담는 일이 막힌다.
+- **누수 (4.4)**: 계측 순서, 재작업 flag, 최종 판정처럼 응답 뒤에 기록되는 열을 자료 사전에서 걸러 낸다. 정비 시각은 시간 분할의 경계로 쓴다.
+- **표본 (4.3)**: 측점을 늘리는 계획과 wafer 수를 늘리는 계획을 견줄 때는 유효 표본의 증가를 비용으로 나누어 본다. 앞쪽은 식 (1) 의 분모만 키우므로 비용을 아무리 써도 증가가 거의 없다.
+
 ## 5. Detection
 
-Overfitting 은 하나의 숫자로 확인되지 않고, 3 장의 경로마다 다른 검사로 확인한다. 가장 먼저 돌릴 것은 둘째 검사이다. 같은 자료에 분할만 바꾸어 두 번 재면 끝나고, 실무에서 가장 큰 경로를 바로 드러내기 때문이다. Table 2 가 검사와 그것이 가리키는 경로이다.
+Overfitting 은 하나의 숫자로 확인되지 않고, 3 장의 경로마다 다른 검사로 확인한다. 가장 먼저 돌릴 것은 둘째 검사이다. 같은 자료에 분할만 바꾸어 두 번 재면 끝나고, 실무에서 가장 큰 경로를 바로 드러내기 때문이다. Table 4 가 검사와 그것이 가리키는 경로이다.
 
-Table 2. Checks that confirm overfitting
+Table 4. Checks that confirm overfitting
 
 | # | Check | What it reveals | Next step |
 |---|-------|-----------------|-----------|
@@ -141,9 +181,9 @@ Table 2. Checks that confirm overfitting
 
 ## 6. Comparison
 
-Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 3 이 그 대비이다.
+Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪는다. Table 5 가 그 대비이다.
 
-Table 3. The same failure from two different causes
+Table 5. The same failure from two different causes
 
 | # | Aspect | Wide data | Long data |
 |---|--------|-----------|-----------|
@@ -174,8 +214,10 @@ Table 3. The same failure from two different causes
 - **analysis of variance**: 전체 변동을 원인별 몫으로 나누어 견주는 절차. 여기서는 group 사이와 group 안의 두 몫으로 나눈다.
 - **autocorrelation**: 한 계열의 값이 시간 간격을 두고 자기 자신과 닮은 정도.
 - **capacity**: Model 이 만들어 낼 수 있는 함수의 다양함. 클수록 자료를 더 잘 따라가고 더 잘 외운다.
+- **chamber**: 공정이 실제로 일어나는 설비 안의 처리 공간. 같은 설비라도 chamber 마다 상태가 다르다.
 - **covariate shift**: 설명변수의 분포가 학습과 추론에서 달라지는 일. 응답과 설명변수의 관계 자체는 그대로이다.
 - **cross-validation**: 자료를 여러 fold 로 나누어 한 fold 를 남기고 학습한 뒤 그 fold 로 평가하는 일을 돌아가며 반복하는 절차.
+- **drift**: 설비의 상태가 시간에 따라 서서히 변하는 일.
 - **early stopping**: Held-out 오차가 더 내려가지 않는 지점에서 학습을 멈추는 방법.
 - **effective sample size**: 서로 독립인 행이 몇 개인 것과 같은지를 나타내는 수. 유효 표본.
 - **extrapolation**: 학습 자료가 덮지 않은 구간에서 예측하는 일.
@@ -187,15 +229,20 @@ Table 3. The same failure from two different causes
 - **leakage**: 학습 시점에 알 수 없는 정보가 model 이나 그 평가에 섞여 들어가는 일.
 - **learning curve**: 학습에 쓴 행의 수에 따른 오차의 변화를 그린 곡선.
 - **long data**: 행의 수가 열의 수보다 훨씬 큰 자료.
+- **lot**: 함께 이동하며 같은 공정 이력을 겪는 wafer 묶음.
+- **measurement site**: Wafer 위에서 계측이 이루어지는 지점. 측점.
 - **nested cross-validation**: 바깥 loop 이 성능을 재고 안쪽 loop 이 hyperparameter 를 고르는 cross-validation.
 - **offset**: Group 마다 다르게 더해지는 값. 그 group 의 행 전체를 위나 아래로 옮긴다.
 - **out-of-fold prediction**: Cross-validation 에서 그 행이 학습에 쓰이지 않은 fold 의 model 로 낸 예측.
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
+- **preventive maintenance**: 설비를 정기적으로 정비하여 상태를 되돌리는 일.
 - **R-squared**: 응답의 분산 가운데 model 이 설명한 몫이며, 기호는 $R^2$ 이다. 분모가 그 자료의 분산이므로 자료가 바뀌면 같은 model 도 다른 값을 낸다.
 - **regularization**: Model 이 학습 자료를 지나치게 따라가지 못하도록 학습에 제약을 더하는 장치. 계수의 크기를 벌하거나, 학습을 일찍 멈추거나, 신경망이라면 일부 unit 을 학습 중에 꺼 두는 방식이 여기에 든다.
+- **rework**: 규격을 벗어난 wafer 를 되돌려 다시 처리하는 일. 재작업.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
 - **taxonomy**: 대상을 서로 겹치지 않는 갈래로 나눈 분류 체계.
+- **wafer**: 반도체 소자를 만드는 원판. 그 위의 여러 측점에서 계측이 이루어진다.
 
 ## Appendix B. Case Study Of A Train-Test Gap
 
@@ -205,9 +252,9 @@ Table 3. The same failure from two different causes
 
 마지막 것이 특히 중요하다. $R^2$ 가 0.99 에서 0.7 로 떨어진 폭 자체는 model 이 얼마나 나빠졌는지를 재지 않는다. 분모가 서로 다른 두 값은 애초에 같은 자로 잰 것이 아니기 때문이다.
 
-Table 4 가 셋을 갈라내는 순서이다.
+Table 6 이 셋을 갈라내는 순서이다.
 
-Table 4. Separating the three causes of the gap
+Table 6. Separating the three causes of the gap
 
 | # | Step | What it settles |
 |---|------|-----------------|
@@ -225,9 +272,9 @@ Table 4. Separating the three causes of the gap
 
 3.1 의 자료를 여섯 행만 그대로 옮기면 같은 group 의 행들이 무엇을 공유하는지가 표에서 바로 보인다. 열은 여섯이고 그 가운데 첫째 열은 group 안에서 값이 바뀌지 않으며, 나머지 다섯은 행마다 따로 뽑힌다. 응답은 둘째와 셋째 열의 비선형 함수에 그 group 의 offset 과 잡음을 더한 값이다.
 
-Table 5 가 두 group 에서 세 행씩 뽑은 그 여섯 행이다.
+Table 7 이 두 group 에서 세 행씩 뽑은 그 여섯 행이다.
 
-Table 5. Six rows drawn from two groups
+Table 7. Six rows drawn from two groups
 
 | Group | x1 | x2 | x3 | x4 | x5 | x6 | Offset | y |
 |-------|------|-------|-------|-------|-------|-------|--------|-------|
@@ -246,7 +293,7 @@ Offset 열은 자료에 들어 있지 않다. 설명을 위해 함께 적었을 
 - **겹치지 않는 응답**: y 는 group 1 에서 0.87 에서 3.78 사이, group 2 에서 -4.52 에서 -3.71 사이이다. 두 무리가 전혀 겹치지 않으며, 그 차이의 대부분은 x1 부터 x6 이 아니라 offset 3.06 과 -3.83 에서 온다.
 - **한 행이 주는 정보**: group 1 의 한 행을 학습에서 보면 model 은 x1 이 0.42 인 행의 y 가 3 근처라는 것을 배운다. 같은 group 의 다른 행이 검증에 놓이면 그 행은 이미 절반쯤 답이 알려진 문제이다.
 
-계측 자료로 옮기면 group 은 wafer 한 장이고 행은 그 wafer 위의 측점이다. x1 은 그 wafer 를 처리한 설비의 설정값처럼 wafer 마다 하나씩 정해지는 값이고, 나머지 다섯 열은 측점마다 다른 측정값이다. Offset 에 해당하는 것은 그 wafer 의 측정값 전체를 위나 아래로 옮기는 chamber 상태나 소재 편차이며, 자료에 열로 들어 있지 않다.
+계측 자료로 옮기면 group 은 wafer 한 장이고 행은 그 wafer 위의 측점이다. x1 은 그 wafer 를 처리한 설비의 설정값처럼 wafer 마다 하나씩 정해지는 값이고, 나머지 다섯 열은 측점마다 다른 측정값이다. Offset 에 해당하는 것은 3.5 가 든 chamber 상태와 소재 편차이며, 자료에 열로 들어 있지 않다.
 
 이 구조 때문에 행을 무작위로 나누면 같은 wafer 의 측점이 학습과 검증에 함께 들어간다. 3.3 이 재는 것이 바로 그 결과이다.
 
@@ -256,9 +303,9 @@ $\rho$ 는 한 번의 one-way analysis of variance 로 얻는다. 응답의 변�
 
 $$\rho = \frac{\sigma_b^2}{\sigma_b^2 + \sigma_w^2} \hspace{19em} (2)$$
 
-$\sigma_b^2$ 는 group 사이의 분산, $\sigma_w^2$ 는 group 안의 분산이다. 둘 다 관측되지 않으므로 표본에서 추정한다. Table 6 이 그 추정에 쓰이는 값들이다.
+$\sigma_b^2$ 는 group 사이의 분산, $\sigma_w^2$ 는 group 안의 분산이다. 둘 다 관측되지 않으므로 표본에서 추정한다. Table 8 이 그 추정에 쓰이는 값들이다.
 
-Table 6. Quantities in the one-way analysis of variance
+Table 8. Quantities in the one-way analysis of variance
 
 | # | Symbol | Meaning |
 |---|--------|---------|
