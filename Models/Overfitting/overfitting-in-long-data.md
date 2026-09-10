@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 13 | Created: 2026-09-07 | Updated: 2026-09-10 12:35 CDT
+Rev. 14 | Created: 2026-09-07 | Updated: 2026-09-10 18:05 UTC
 
 ## 1. Purpose
 
@@ -37,17 +37,23 @@ Table 1. Three paths into a long-data model
 | 2 | Dependent rows | Rows that repeat one another inside a group | Random-split error far below the error on new groups |
 | 3 | Leakage | A column or a split that carries the answer | An implausibly good model that fails on arrival |
 
-Fig 1 은 앞의 둘을 모의 실험으로 잰 것이다. 자료는 열이 6 개뿐이고 행이 group 으로 묶여 있으며, group 마다 고유한 offset 을 가진다. Panel 마다 행과 group 의 수는 아래에 적는다.
-
-행이 group 으로 묶여 있다는 것은 행이 하나씩 따로 생기지 않고 몇 개씩 같은 조건에서 함께 생긴다는 뜻이다. 같은 group 의 행들은 어떤 열의 값을 공유하고 응답에도 그 group 에만 붙는 값이 함께 들어 있어, 한 행을 보면 같은 group 의 다른 행을 상당 부분 맞출 수 있다. 이 자료의 여섯 행을 실제로 적어 보인 예가 [Appendix C](#appendix-c-what-a-grouped-row-looks-like) 에 있다.
+Fig 1 은 앞의 둘을 모의 실험으로 잰 것이다.
 
 <img src="overfitting-in-long-data_fig/long-data-overfitting.png" width="1100" style="max-width: 100%;" alt="Fig 1">
 
 Fig 1. Capacity, split choice, and the direction in which rows are added
 
+세 panel 의 자료는 모두 열이 6 개뿐이고 행이 group 으로 묶여 있으며, group 마다 고유한 offset 을 가진다.
+
+- **Panel (a)**: 400 개 group 에 group 마다 25 행씩 둔 10000 행 자료. 가로축은 tree 의 깊이이며, 깊이를 풀수록 훈련 오차는 0 으로 내려가지만 held-out 오차는 깊이 6 을 지나 다시 올라간다. 열이 적어도 용량만으로 overfitting 이 일어난다는 뜻이다.
+- **Panel (b)**: 200 개 group 에 group 마다 25 행씩 둔 5000 행 자료. 같은 자료와 같은 model 인데 무작위 분할이 보고한 오차가 가장 낮고, group 을 지킨 분할과 학습에 쓰이지 않은 새 group 순으로 높아진다. 분할을 어떻게 하느냐가 보고되는 숫자를 두 배까지 바꾼다는 뜻이다.
+- **Panel (c)**: 행을 500 개에서 20000 개까지 두 방향으로 늘리며 새 group 에서의 오차를 따라간 것이다. 새 group 을 더한 곡선만 내려가고 group 수를 20 으로 고정한 곡선은 제자리이므로, 행의 수가 아니라 group 의 수가 정보의 양이라는 뜻이다.
+
+행이 group 으로 묶여 있다는 것은 행이 하나씩 따로 생기지 않고 몇 개씩 같은 조건에서 함께 생긴다는 뜻이다. 같은 group 의 행들은 어떤 열의 값을 공유하고 응답에도 그 group 에만 붙는 값이 함께 들어 있어, 한 행을 보면 같은 group 의 다른 행을 상당 부분 맞출 수 있다. 이 자료의 여섯 행을 실제로 적어 보인 예가 [Appendix C](#appendix-c-what-a-grouped-row-looks-like) 에 있다.
+
 ### 3.2 Model Capacity
 
-열이 6 개뿐이어도 model 이 충분히 유연하면 행을 외운다. 400 개 group 에 group 마다 25 행씩 둔 10000 행 자료에서, Fig 1(a) 처럼 tree 의 깊이를 풀어 주면 훈련 오차는 0 으로 내려가지만 held-out 오차는 깊이 6 의 1.64 에서 2.27 로 올라간다. 열의 수가 아니라 model 이 만들어 낼 수 있는 구획의 수가 자유도이며, tree 하나로도 그 수는 행의 수까지 늘어난다.
+열이 6 개뿐이어도 model 이 충분히 유연하면 행을 외운다. Fig 1(a) 에서 held-out 오차는 깊이 6 의 1.64 에서 깊이를 푼 2.27 로 올라간다. 열의 수가 아니라 model 이 만들어 낼 수 있는 구획의 수가 자유도이며, tree 하나로도 그 수는 행의 수까지 늘어난다.
 
 이 경로는 세 가지가 함께 나타나므로 알아보기 쉽다. 훈련 오차가 0 에 가깝고, held-out 오차가 용량과 함께 올라가며, 같은 자료를 다시 뽑아 학습하면 model 이 크게 달라진다.
 
@@ -59,7 +65,7 @@ $$n_{\mathrm{eff}} = \frac{n}{1 + (m-1)\rho} \hspace{19em} (1)$$
 
 $m = 25$, $\rho = 0.5$ 이면 분모가 13 이므로 10000 행이 실제로는 769 행만큼의 정보를 가진다. 이 상태에서 무작위 분할을 쓰면 검증 행과 같은 group 의 행이 학습에 들어가 있으므로, model 은 그 group 의 offset 을 이미 알고 있는 셈이 된다.
 
-Fig 1(b) 가 그 결과이다. 200 개 group 에 group 마다 25 행씩 둔 5000 행 자료이며, 같은 자료와 같은 model 인데 무작위 분할은 0.94 를, group 을 지킨 분할은 1.75 를 보고했고, 학습에 쓰이지 않은 새 group 에서의 실제 오차는 1.86 이었다. 무작위 분할의 값은 실제의 절반이며, 이 차이는 model 을 고쳐서 줄일 수 있는 것이 아니라 보고된 숫자가 다른 질문에 답한 결과이다.
+Fig 1(b) 가 그 결과이다. 무작위 분할은 0.94 를, group 을 지킨 분할은 1.75 를 보고했고, 학습에 쓰이지 않은 새 group 에서의 실제 오차는 1.86 이었다. 무작위 분할의 값은 실제의 절반이며, 이 차이는 model 을 고쳐서 줄일 수 있는 것이 아니라 보고된 숫자가 다른 질문에 답한 결과이다.
 
 ### 3.4 Leakage
 
@@ -101,7 +107,7 @@ Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 �
 
 ### 4.3 Growing The Sample In The Right Direction
 
-행을 늘릴 때는 새 group 을 늘린다. Fig 1(c) 는 같은 자료 생성기에서 행을 두 방향으로 늘린 것이다. 새 group 을 더하면 500 행의 2.03 에서 20000 행의 1.62 로 오차가 내려가지만, group 수를 20 으로 고정하고 group 안의 행만 늘리면 20000 행에서도 2.20 으로 제자리이다. 식 (1) 이 말하는 것과 같다. 분모의 $m$ 만 키우는 일은 $n_{\mathrm{eff}}$ 를 거의 늘리지 못한다.
+행을 늘릴 때는 새 group 을 늘린다. Fig 1(c) 에서 새 group 을 더하면 500 행의 2.03 에서 20000 행의 1.62 로 오차가 내려가지만, group 수를 20 으로 고정하고 group 안의 행만 늘리면 20000 행에서도 2.20 으로 제자리이다. 식 (1) 이 말하는 것과 같다. 분모의 $m$ 만 키우는 일은 $n_{\mathrm{eff}}$ 를 거의 늘리지 못한다.
 
 이 판단은 자료 수집 계획에 바로 쓰인다. Wafer 당 측점을 늘릴지 wafer 수를 늘릴지 물을 때, 답은 거의 언제나 뒤쪽이다.
 
