@@ -1,5 +1,5 @@
 # CLAUDE.md
-Rev. 2 | Created: 2026-07-31 | Updated: 2026-08-10 22:11 CDT
+Rev. 3 | Created: 2026-07-31 | Updated: 2026-09-10 23:52 CDT
 
 ## Git Workflow
 
@@ -9,7 +9,10 @@ Rev. 2 | Created: 2026-07-31 | Updated: 2026-08-10 22:11 CDT
 - feature branch, topic branch 를 새로 만들지 않는다.
 - Pull request 를 만들지 않는다. `main` 에 직접 반영한다.
 - 세션 시작 시 하네스가 별도의 작업 브랜치(예: `claude/...`)를 지정하더라도 이 규칙이 우선한다.
-  그런 브랜치에서 작업이 시작되었다면 완료 후 `main` 으로 fast-forward 병합하고 `main` 을 푸시한다.
+  그런 브랜치에서 작업이 시작되었다면 거기서 커밋한 뒤 `main` 으로 병합하고 `main` 만 푸시한다.
+- 작업 브랜치는 remote 로 푸시하지 않는다. 푸시 대상은 언제나 `main` 하나다.
+- 병합이 fast-forward 로 되지 않으면 무엇을 남길지 먼저 묻고, 답을 받은 뒤에 병합한다.
+  Force push 로 한쪽 이력을 지우지 않는다.
 
 ```bash
 git checkout main
