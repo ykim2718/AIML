@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 7 | Created: 2026-09-07 | Updated: 2026-09-10 09:55 CDT
+Rev. 8 | Created: 2026-09-07 | Updated: 2026-09-10 10:20 CDT
 
 ## 1. Purpose
 
@@ -53,7 +53,7 @@ Fig 1. Capacity, split choice, and the direction in which rows are added
 
 ### 3.3 Dependent Rows
 
-행이 group 으로 묶여 있으면 행의 수가 정보의 양을 말해 주지 않는다. Group 안의 행들이 서로 닮은 정도를 intracluster correlation $\rho$ 로 두고 group 의 크기를 $m$ 이라 하면, 유효 표본은 아래와 같다 [[1](#ref-1)].
+행이 group 으로 묶여 있으면 행의 수가 정보의 양을 말해 주지 않는다. Group 안의 행들이 서로 닮은 정도를 intracluster correlation $\rho$ 로 두고 group 의 크기를 $m$ 이라 하면, 유효 표본은 아래와 같다 [[1](#ref-1)]. $\rho$ 를 자료에서 구하는 방법은 [Appendix D](#appendix-d-estimating-the-intracluster-correlation) 에 있다.
 
 $$n_{\mathrm{eff}} = \frac{n}{1 + (m-1)\rho} \hspace{19em} (1)$$
 
@@ -161,6 +161,7 @@ Table 3. The same failure from two different causes
 
 ## Appendix A. Terminology
 
+- **analysis of variance**: 전체 변동을 원인별 몫으로 나누어 견주는 절차. 여기서는 group 사이와 group 안의 두 몫으로 나눈다.
 - **autocorrelation**: 한 계열의 값이 시간 간격을 두고 자기 자신과 닮은 정도.
 - **capacity**: Model 이 만들어 낼 수 있는 함수의 다양함. 클수록 자료를 더 잘 따라가고 더 잘 외운다.
 - **covariate shift**: 설명변수의 분포가 학습과 추론에서 달라지는 일. 응답과 설명변수의 관계 자체는 그대로이다.
@@ -178,6 +179,7 @@ Table 3. The same failure from two different causes
 - **long data**: 행의 수가 열의 수보다 훨씬 큰 자료.
 - **nested cross-validation**: 바깥 loop 이 성능을 재고 안쪽 loop 이 hyperparameter 를 고르는 cross-validation.
 - **offset**: Group 마다 다르게 더해지는 값. 그 group 의 행 전체를 위나 아래로 옮긴다.
+- **out-of-fold prediction**: Cross-validation 에서 그 행이 학습에 쓰이지 않은 fold 의 model 로 낸 예측.
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
 - **R-squared**: 응답의 분산 가운데 model 이 설명한 몫이며, 기호는 $R^2$ 이다. 분모가 그 자료의 분산이므로 자료가 바뀌면 같은 model 도 다른 값을 낸다.
@@ -235,3 +237,56 @@ Offset 열은 자료에 들어 있지 않다. 설명을 위해 함께 적었을 
 계측 자료로 옮기면 group 은 wafer 한 장이고 행은 그 wafer 위의 측점이다. x1 은 그 wafer 를 처리한 설비의 설정값처럼 wafer 마다 하나씩 정해지는 값이고, 나머지 다섯 열은 측점마다 다른 측정값이다. Offset 에 해당하는 것은 그 wafer 의 측정값 전체를 위나 아래로 옮기는 chamber 상태나 소재 편차이며, 자료에 열로 들어 있지 않다.
 
 이 구조 때문에 행을 무작위로 나누면 같은 wafer 의 측점이 학습과 검증에 함께 들어간다. 3.3 이 재는 것이 바로 그 결과이다.
+
+## Appendix D. Estimating The Intracluster Correlation
+
+$\rho$ 는 한 번의 one-way analysis of variance 로 얻는다. 응답의 변동을 group 사이의 몫과 group 안의 몫으로 나누고, 전체 가운데 앞의 몫이 차지하는 비율이 $\rho$ 이다 [[1](#ref-1)].
+
+$$\rho = \frac{\sigma_b^2}{\sigma_b^2 + \sigma_w^2} \hspace{19em} (2)$$
+
+$\sigma_b^2$ 는 group 사이의 분산, $\sigma_w^2$ 는 group 안의 분산이다. 둘 다 관측되지 않으므로 표본에서 추정한다. Table 6 이 그 추정에 쓰이는 값들이다.
+
+Table 6. Quantities in the one-way analysis of variance
+
+| # | Symbol | Meaning |
+|---|--------|---------|
+| 1 | k | Number of groups |
+| 2 | N | Number of rows in total |
+| 3 | MSB | Between-group mean square, on k-1 degrees of freedom |
+| 4 | MSW | Within-group mean square, on N-k degrees of freedom |
+| 5 | m0 | Group size the estimator uses, equal to m when every group holds m rows |
+
+MSW 가 그대로 $\sigma_w^2$ 의 추정값이고, $\sigma_b^2$ 의 추정값은 MSB 에서 MSW 를 뺀 뒤 group 크기로 나눈 값이다. 둘을 식 (2) 에 넣으면 아래가 남는다.
+
+$$\hat{\rho} = \frac{\mathrm{MSB} - \mathrm{MSW}}{\mathrm{MSB} + (m_0 - 1)\,\mathrm{MSW}} \hspace{19em} (3)$$
+
+$m_0$ 는 group 의 크기가 서로 다를 때 쓰는 대푯값이며, $m_i$ 를 $i$ 번째 group 의 행 수라 하면 아래와 같다.
+
+$$m_0 = \frac{1}{k-1}\left(N - \frac{\sum_i m_i^2}{N}\right) \hspace{19em} (4)$$
+
+Group 이 모두 같은 크기 $m$ 이면 $m_0 = m$ 이 되어 식 (3) 이 그만큼 단순해진다.
+
+#### Procedure
+
+- **1 단계**: Group 식별자로 행을 나눈다. 무엇을 group 으로 볼지는 4.2 가 정한다.
+- **2 단계**: 각 group 의 평균과 전체 평균의 차이로 MSB 를, group 안에서의 편차로 MSW 를 얻는다.
+- **3 단계**: 식 (4) 로 $m_0$ 를 구하고 식 (3) 에 넣어 $\hat{\rho}$ 를 얻는다.
+- **4 단계**: 값이 음수이면 0 으로 자른다. Group 사이 분산이 실제로 0 인 자료에서도 표본 변동만으로 MSB 가 MSW 보다 작아질 수 있다.
+
+#### What To Measure It On
+
+응답에 대해 재면 열이 설명할 수 있는 몫까지 group 사이의 차이에 섞여 들어간다. 분할을 설계하려고 재는 값이라면 model 이 설명하고 남은 잔차에 대해 재는 편이 맞다. 관심이 새 group 에서 얼마나 틀리는지에 있고, 그 크기를 결정하는 것은 열이 설명하지 못한 group 차이이기 때문이다.
+
+#### A Worked Example
+
+3.1 의 자료 가운데 200 개 group 에 group 마다 25 행씩 둔 5000 행에 이 절차를 적용한 결과가 아래이다.
+
+- **응답에 대해**: MSB 54.26, MSW 1.24, $m_0 = 25$ 이므로 $\hat{\rho} = 0.63$ 이다. 이 자료는 offset 의 표준편차가 1.5 이고 group 안의 변동이 분산 1.25 이므로 참값이 0.64 이며, 추정값이 거기에 닿는다.
+- **잔차에 대해**: group 을 지킨 분할에서 얻은 out-of-fold 잔차로 다시 재면 MSB 68.11, MSW 0.36 으로 $\hat{\rho} = 0.88$ 이다. 열이 설명한 몫은 잔차에서 빠져나가지만 학습에 없던 group 의 offset 은 model 이 맞출 수 없어 그대로 남기 때문에 값이 더 크다.
+
+식 (1) 에 넣으면 앞의 값은 유효 표본 309 행, 뒤의 값은 226 행을 준다. 3.3 이 어림으로 든 0.5 보다 둘 다 크지만 결론은 같다. 5000 행이 300 행 남짓의 정보를 가진다.
+
+#### Cautions
+
+- **Group 의 수**: MSB 의 자유도가 $k-1$ 이므로 group 이 열 개 남짓이면 $\hat{\rho}$ 가 크게 흔들린다. 이 경우 값 하나를 믿기보다 분할을 group 단위로 두는 쪽이 안전하다.
+- **Group 후보가 여럿일 때**: 측점·wafer·lot 처럼 후보가 겹쳐 있으면 각각에 대해 따로 재고, 가장 큰 $\hat{\rho}$ 를 주는 층을 분할 단위로 삼는다.
