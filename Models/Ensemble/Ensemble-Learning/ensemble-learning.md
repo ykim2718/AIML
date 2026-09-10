@@ -1,5 +1,5 @@
 # Ensemble Learning
-Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:44 UTC
+Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 21:49 UTC
 
 ## 1. Purpose
 
@@ -43,7 +43,7 @@ $$\mathrm{Var}\left(\bar f\right) = \rho\sigma^{2} + \frac{1 - \rho}{M}\sigma^{2
 
 The second term vanishes as $M$ grows and the first does not. At $\rho = 0.9$ an infinite ensemble still carries 90% of a single member's variance. This is why every framework in section 6 is a device for lowering $\rho$ — by resampling rows, by hiding columns, by changing the target — and why adding a fourth copy of the same gradient boosting fit changes nothing.
 
-Diversity is necessary but is not a quantity to maximize on its own. Ten pairwise and non-pairwise diversity statistics were compared against ensemble accuracy and none of them tracked it closely enough to be used as a selection criterion [[13](#ref-13)]. Diversity bought by weakening members is paid for out of the first term of equation (1).
+Diversity is a means to the second term of equation (1), and it is worth only what that term pays. Ten pairwise and non-pairwise diversity statistics were compared against ensemble accuracy and none of them tracked it closely enough to be used as a selection criterion [[13](#ref-13)]. Diversity bought by weakening members is paid for out of the first term of equation (1).
 
 ### 3.3 Two Independent Axes
 
@@ -116,21 +116,21 @@ Whether a member's own output can be used as a weight is decided by the family t
 
 Table 4. Whether a member's own output can be used as a weight
 
-| Family | Native output | As a weight | What it needs first |
-|--------|---------------|-------------|---------------------|
-| Logistic regression | Probability from a fitted link | Usable as emitted where the link is right | Nothing |
-| Random forest | Fraction of member votes | Not usable, compressed toward the centre | Isotonic regression |
-| Gradient boosting | Logistic of an additive margin | Not usable, overconfident | Platt scaling or isotonic |
-| Naive Bayes | Product of independent likelihoods | Not usable, extremely overconfident under dependent features | Isotonic regression |
-| SVM | Signed distance to the boundary | Not usable, not on a probability scale | Platt scaling |
-| k-nearest neighbours | Fraction of the $k$ neighbours | Not usable, granular in steps of $1/k$ | Isotonic regression |
-| Neural network | Softmax of the logits | Not usable, overconfident and worse as the network grows | Temperature scaling |
+| Family | As a weight | Native output | Output range |
+|--------|-------------|---------------|--------------|
+| Logistic regression | Usable as emitted where the link is right | Probability from a fitted link | $(0, 1)$ |
+| Random forest | Not usable, compressed toward the centre | Fraction of member votes | $\{0, 1/T, \ldots, 1\}$ over $T$ trees |
+| Gradient boosting | Not usable, overconfident | Logistic of an additive margin | $(0, 1)$, driven to the ends |
+| Naive Bayes | Not usable, extremely overconfident under dependent features | Product of independent likelihoods | $(0, 1)$, driven hard to the ends |
+| SVM | Not usable, not on a probability scale | Signed distance to the boundary | $(-\infty, \infty)$ |
+| k-nearest neighbours | Not usable, only $k+1$ distinct values | Fraction of the $k$ neighbours | $\{0, 1/k, \ldots, 1\}$ |
+| Neural network | Not usable, overconfident and worse as the network grows | Softmax of the logits | $(0, 1)$, driven to the ends |
 
-One row of Table 4 is usable as emitted. The rest produce a score that rises with the true probability but does not equal it. Section 5.2 turns those scores into weights, and section 5.3 spends them.
+One row of Table 4 is usable as emitted, and four of the seven share the range $(0, 1)$ with it. The rest produce a score that rises with the true probability but does not equal it, so the range a score falls in says nothing about what it means. Section 5.2 turns those scores into weights, and section 5.3 spends them.
 
 ### 5.2 Calibration
 
-Calibration is a monotone map from the emitted score to a probability, fitted on rows the member did not train on. Platt scaling fits a one-parameter logistic and assumes the distortion is sigmoid-shaped; isotonic regression fits any non-decreasing step function and needs more rows to do it [[9](#ref-9)] [[10](#ref-10)]. Both leave the ranking of rows untouched, so accuracy at a fixed threshold can move only where the threshold crossing moves.
+Calibration is a monotone map from the emitted score to a probability, fitted on rows the member did not train on. Platt scaling fits a one-parameter logistic and assumes the distortion is sigmoid-shaped; isotonic regression fits any non-decreasing step function and needs more rows to do it [[9](#ref-9)] [[10](#ref-10)]. Temperature scaling is the one-parameter form for a network, dividing the logits before the softmax. Both leave the ranking of rows untouched, so accuracy at a fixed threshold can move only where the threshold crossing moves.
 
 Fitting the map on the training rows destroys it. The map is fitted inside a split of the training set, never on the rows the result is reported on.
 

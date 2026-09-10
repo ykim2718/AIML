@@ -1,5 +1,5 @@
 # Ensemble Learning (Korean)
-Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:44 UTC
+Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 21:49 UTC
 
 ## 1. Purpose
 
@@ -43,7 +43,7 @@ $$\mathrm{Var}\left(\bar f\right) = \rho\sigma^{2} + \frac{1 - \rho}{M}\sigma^{2
 
 둘째 항은 $M$ 이 커지면 사라지지만 첫 항은 남는다. $\rho = 0.9$ 이면 member 를 무한히 모아도 단일 member 분산의 90% 가 그대로 남는다. Section 6 의 모든 framework 이 행을 다시 뽑거나, 열을 가리거나, target 을 바꾸어 $\rho$ 를 낮추는 장치인 이유가 이것이며, 같은 gradient boosting 적합을 네 번째로 복사해 붙여도 아무것도 달라지지 않는 이유도 같다.
 
-다양성은 필요하지만 그 자체를 최대화할 양은 아니다. 쌍별과 비쌍별을 아우르는 열 가지 다양성 통계량을 ensemble 정확도와 견주었을 때, 선택 기준으로 쓸 만큼 정확도를 따라가는 것은 하나도 없었다 [[13](#ref-13)]. Member 를 약하게 만들어 산 다양성은 equation (1) 의 첫 항에서 값을 치른다.
+다양성은 equation (1) 의 둘째 항에 이르는 수단이며, 그 항이 값을 치르는 만큼만 값어치가 있다. 쌍별과 비쌍별을 아우르는 열 가지 다양성 통계량을 ensemble 정확도와 견주었을 때, 선택 기준으로 쓸 만큼 정확도를 따라가는 것은 하나도 없었다 [[13](#ref-13)]. Member 를 약하게 만들어 산 다양성은 equation (1) 의 첫 항에서 값을 치른다.
 
 ### 3.3 Two Independent Axes
 
@@ -116,21 +116,21 @@ Member 가 내놓은 값을 그대로 weight 로 쓸 수 있는지는 그 member
 
 Table 4. Whether a member's own output can be used as a weight
 
-| Family | Native output | As a weight | What it needs first |
-|--------|---------------|-------------|---------------------|
-| Logistic regression | 적합된 link 에서 나온 확률 | Link 가 맞으면 그대로 사용 가능 | 없음 |
-| Random forest | Member 득표 비율 | 사용 불가, 가운데로 눌려 있음 | Isotonic regression |
-| Gradient boosting | 누적 margin 의 logistic | 사용 불가, 과신 | Platt scaling 또는 isotonic |
-| Naive Bayes | 독립 가정 아래 likelihood 의 곱 | 사용 불가, feature 가 종속이면 극단적으로 과신 | Isotonic regression |
-| SVM | 경계까지의 부호 있는 거리 | 사용 불가, 확률 척도가 아님 | Platt scaling |
-| k-nearest neighbours | $k$ 개 이웃 가운데의 비율 | 사용 불가, $1/k$ 단위로 끊김 | Isotonic regression |
-| Neural network | Logit 의 softmax | 사용 불가, 과신하며 망이 커질수록 심해짐 | Temperature scaling |
+| Family | As a weight | Native output | Output range |
+|--------|-------------|---------------|--------------|
+| Logistic regression | Link 이 맞으면 그대로 사용 가능 | 적합된 link 에서 나온 확률 | $(0, 1)$ |
+| Random forest | 사용 불가, 가운데로 눌려 있음 | Member 득표 비율 | Tree $T$ 개에 대해 $\{0, 1/T, \ldots, 1\}$ |
+| Gradient boosting | 사용 불가, 과신 | 누적 margin 의 logistic | $(0, 1)$, 양끝으로 몰림 |
+| Naive Bayes | 사용 불가, feature 가 종속이면 극단적으로 과신 | 독립 가정 아래 likelihood 의 곱 | $(0, 1)$, 양끝으로 심하게 몰림 |
+| SVM | 사용 불가, 확률 척도가 아님 | 경계까지의 부호 있는 거리 | $(-\infty, \infty)$ |
+| k-nearest neighbours | 사용 불가, 서로 다른 값이 $k+1$ 개뿐 | $k$ 개 이웃 가운데의 비율 | $\{0, 1/k, \ldots, 1\}$ |
+| Neural network | 사용 불가, 과신하며 망이 커질수록 심해짐 | Logit 의 softmax | $(0, 1)$, 양끝으로 몰림 |
 
-Table 4 에서 그대로 쓸 수 있는 것은 한 행뿐이다. 나머지는 참 확률을 따라 커지되 그것과 같지는 않은 점수를 내놓는다. Section 5.2 가 그 점수를 weight 로 바꾸고, section 5.3 이 그것을 쓴다.
+Table 4 에서 그대로 쓸 수 있는 것은 한 행뿐이며, 일곱 중 넷이 그 행과 같은 $(0, 1)$ 범위를 쓴다. 나머지는 참 확률을 따라 커지되 그것과 같지는 않은 점수를 내놓으므로, 점수가 놓인 범위는 그 점수의 뜻에 대해 아무것도 말해 주지 않는다. Section 5.2 가 그 점수를 weight 로 바꾸고, section 5.3 이 그것을 쓴다.
 
 ### 5.2 Calibration
 
-Calibration 은 내놓은 점수를 확률로 옮기는 단조 사상이며, member 가 학습하지 않은 행에서 적합한다. Platt scaling 은 매개변수 하나짜리 logistic 을 적합하며 일그러짐이 sigmoid 모양이라고 전제하고, isotonic regression 은 비감소 계단함수라면 무엇이든 적합하는 대신 더 많은 행을 필요로 한다 [[9](#ref-9)] [[10](#ref-10)]. 둘 다 행의 순위는 건드리지 않으므로, 고정된 threshold 에서의 정확도는 그 threshold 를 넘나드는 자리에서만 움직인다.
+Calibration 은 내놓은 점수를 확률로 옮기는 단조 사상이며, member 가 학습하지 않은 행에서 적합한다. Platt scaling 은 매개변수 하나짜리 logistic 을 적합하며 일그러짐이 sigmoid 모양이라고 전제하고, isotonic regression 은 비감소 계단함수라면 무엇이든 적합하는 대신 더 많은 행을 필요로 한다 [[9](#ref-9)] [[10](#ref-10)]. Temperature scaling 은 망에 대한 매개변수 하나짜리 형태로, softmax 앞에서 logit 을 나눈다. 둘 다 행의 순위는 건드리지 않으므로, 고정된 threshold 에서의 정확도는 그 threshold 를 넘나드는 자리에서만 움직인다.
 
 이 사상을 학습 행에서 적합하면 사상 자체가 망가진다. 사상은 학습 집합을 나눈 안쪽에서 적합하며, 결과를 보고하는 행에서는 결코 적합하지 않는다.
 
