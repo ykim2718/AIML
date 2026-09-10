@@ -1,9 +1,9 @@
 # Trace Feature Selection (Korean)
-Rev. 0 | Created: 2026-09-10 | Updated: 2026-09-10 20:53 UTC
+Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:13 UTC
 
-> 반도체 장비 trace 가 만들어 내는 feature list 를 두고 filter-wrapper-embedded 분류체계를 검증하고,
-> mechanism 축만으로는 정해지지 않는 두 축을 더한 문서다. 그 두 가지는 무엇을 단위로 고르는가와,
-> wafer 가 바뀌어도 같은 것이 골라지는가이다.
+> 반도체 장비 trace 가 만들어 내는 수천 개의 feature 가운데 무엇이 target 을 움직이는가, 그리고
+> 그에 답하는 방법이 세 축 — model 을 언제 참조하는가, 무엇을 단위로 고르는가, wafer 가 바뀌어도
+> 그 선택이 살아남는가 — 위 어디에 놓이는가.
 
 ## 1. Purpose
 
@@ -13,26 +13,24 @@ Rev. 0 | Created: 2026-09-10 | Updated: 2026-09-10 20:53 UTC
 
 ## 2. Summary
 
-검증 대상으로 받은 mechanism 축 — Filter, Wrapper, Embedded — 은 이 분야의 표준 분할이며 [[1](#ref-1)] [[3](#ref-3)] 그대로 둔다. 다만 그 잎 가운데 셋이 잘못된 가지에 놓여 있고, 하나는 형제들과 다른 질문에 답하며, 이 축만으로는 trace data 에서 방법을 고를 수 없다. 거기서 답을 가르는 두 가지, 곧 무엇을 단위로 고르는가와 wafer 가 바뀌어도 그 선택이 살아남는가에 대해 이 축은 아무 말도 하지 않기 때문이다.
+Trace feature 를 고르는 방법의 자리를 정하려면 축이 셋 필요하고, mechanism 축은 그 가운데 첫째일 뿐이다. 이 축은 model 을 언제 참조하는가로 방법의 자리를 정하며, 그것이 답이 무엇의 성질인지와 비용이 얼마인지를 고정한다. §3 의 각 가지에 대한 그 자리를 Table 1 에 적는다.
 
-Table 1. Verification result on the submitted taxonomy
+Table 1. Branches of the mechanism axis
 
-| Item | Verdict | Ground |
-|------|---------|--------|
-| Filter, Wrapper, Embedded as the mechanism axis | 유지 | Model 을 참조하는가, 참조한다면 언제인가로 나눈 분할 [[1](#ref-1)] [[3](#ref-3)] |
-| SHAP and LIME under Embedded | 네 번째 가지 post-hoc ranking 으로 이동 | 적합이 끝난 뒤에 계산되며 학습 목적함수를 바꾸지 않음 (§3.1) |
-| Attention weights under Embedded | 함께 이동, 그리고 진단용으로 격하 | 같은 이동 근거에, 예측이 무엇에 의존하는지 짚는다는 주장 자체가 논쟁 중 (§3.1) |
-| Tree importance under Embedded | 둘로 분리 | MDI 는 학습 시점의 분기에서 읽으므로 잔류, permutation importance 는 post-hoc (§3.2) |
-| Variance thresholding beside the correlation tests | 축 밖 전처리로 이동 | Target 을 전혀 보지 않으므로 지도 기준과 나란히 비교할 수 없음 (§3.3) |
-| Filter with no internal split | Univariate, multivariate, neighbour contrast 로 분할 | Univariate 구성원은 한 신호의 사본을 모두 남기며, 그것이 trace 의 경우 (§3.4) |
-| Regularization at the column unit only | Group penalty 추가 | Trace 표에서 실행 가능한 단위는 열이 아니라 sensor (§5) |
-| No branch that states an error rate | Error-controlled 가지 추가 | 제출된 방법은 모두 오차 진술 없는 순위만 돌려줌 (§4.5) |
+| Branch | When the model is consulted | The answer is a property of | Cost |
+|--------|-----------------------------|-----------------------------|------|
+| 0. Preprocessing | 참조하지 않으며 target 도 보지 않음 | Feature 그 자체 | 한 번 훑기 |
+| 1. Filter | 적합 이전 | 자료 | Feature 마다 한 번 훑기 |
+| 2. Wrapper | 후보 부분집합마다 한 번 | 그 model 과 그 탐색 | 단계마다 재적합 한 번 |
+| 3. Embedded | 적합 도중 | 적합된 model | 적합 그 자체 |
+| 4. Post-hoc ranking | 적합이 끝난 뒤 | 그 적합 하나 | Feature 마다 탐침 한 번 |
+| 5. Error-controlled | 순위가 이미 나온 뒤 | 명시된 가정 아래의 분포 | 여러 번의 실행, 또는 knockoff 구성 |
 
-더한 두 축은 selection unit (§5) 과 stability (§6) 다. 앞의 것은 고른 집합을 실행에 옮길 수 있는지를 가른다. Trace 의 열 하나는 sensor 와 recipe step 과 요약 통계량을 한꺼번에 가리키는데, 그 가운데 line 이 바꿀 수 있는 것은 앞의 둘뿐이기 때문이다. 뒤의 것은 그 집합이 실재하는지를 가른다. Wafer 가 수백인데 상관된 sensor 쌍이 있으면, 한 신호의 사본 둘 가운데 무엇을 고를지는 단일 적합에서 잡음이 정하기 때문이다.
+나머지 두 축은 mechanism 축이 말하지 않는 것이며, trace data 에서는 그 둘이 답을 가른다. Selection unit (§5) 은 고른 집합을 실행에 옮길 수 있는지를 가른다. Trace 의 열 하나는 sensor 와 recipe step 과 요약 통계량을 한꺼번에 가리키는데, 그 가운데 line 이 바꿀 수 있는 것은 앞의 둘뿐이기 때문이다. Stability (§6) 는 그 집합이 실재하는지를 가른다. Wafer 는 수백인데 feature 는 수천이어서, 한 신호의 사본 둘 가운데 무엇을 고를지를 단일 적합에서는 잡음이 정하기 때문이다.
 
-## 3. Verified Hierarchy
+## 3. Hierarchy
 
-고친 계층은 model 을 언제 참조하는가로 나뉜다. 제출된 축이 이미 쓰던 그 분할을 양끝으로 늘린 것으로, 앞에는 target 을 보기 전의 전처리를, 뒤에는 순위가 다 나온 다음의 error-controlled 가지를 둔다.
+계층은 model 을 언제 참조하는가로 나뉘며, model 도 target 도 전혀 참조하지 않는 가지에서 시작해 순위가 이미 나온 뒤에야 닿는 가지로 끝난다.
 
 ```
 Trace feature selection
@@ -66,41 +64,41 @@ Trace feature selection
     +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs
 ```
 
-Fig 1. Verified hierarchy of trace feature selection methods by when the model is consulted
+Fig 1. Hierarchy of trace feature selection methods by when the model is consulted
 
-가지 0 은 가장 먼저 돌고 target 을 참조하지 않으므로 잘못 고를 수는 없고 덜 고를 수만 있다. 가지 1 부터 3 까지가 제출된 축이며, 1 과 3 을 다시 나누었다. 가지 4 는 Embedded 에서 빼낸 잎을 모은 것이다. 가지 5 는 순위가 아니라 오차율로 답하는 유일한 가지이고, 1 부터 4 가운데 어디에서든 이어진다. 아래 네 절이 각 이동의 근거다.
+가지 0 은 가장 먼저 돌고 target 을 참조하지 않으므로 잘못 고를 수는 없고 덜 고를 수만 있다. 가지 1 부터 3 까지는 model 을 적합 이전에 참조하는가, 적합 둘레에서 참조하는가, 적합 안에서 참조하는가로 갈린다. 가지 4 는 이미 끝난 model 을 탐침한다. 가지 5 는 순위가 아니라 오차율로 답하는 유일한 가지이고, 1 부터 4 가운데 어디에서든 이어진다. 아래 네 절이 잘못 넘기 쉬운 경계 넷을 정한다.
 
-### 3.1 Post-Hoc Ranking Is Not Embedded
+### 3.1 The Boundary Between Embedded And Post-Hoc
 
 SHAP 과 LIME 과 attention weight 는 embedded 방법이 아니다. Embedded 는 선택이 학습 중에 최소화되는 목적함수의 한 항이라는 뜻이기 때문이다 [[1](#ref-1)]. Lasso 가 고르는 것은 L1 penalty 가 손실 안에 있어 계수를 정확히 0 으로 몰기 때문인데 [[7](#ref-7)], SHAP [[12](#ref-12)] 이나 LIME [[13](#ref-13)] 에는 그에 해당하는 일이 없다. 둘 다 적합이 끝난 뒤에 계산되고, model 을 black box 로 다루며, 학습된 가중치를 건드리지 않는다. 그 산출물은 순위이고 문턱은 여전히 방법 밖에서 정해야 한다. 그것은 filter 의 거동이며, 다만 원자료가 아니라 적합된 model 에 적용되었을 뿐이다.
 
-Attention weight 에는 자리 문제 말고 또 하나의 반론이 붙는다. 입력에 걸린 attention 은 예측이 어느 입력에 의존하는지를 믿을 만하게 짚어 내지 못한다. 같은 예측을 내는 다른 가중치 배정이 존재하고, 그 가중치는 gradient 기반 척도와 상관이 낮다 [[14](#ref-14)]. 이에 대한 반박은 그 결과를 없애는 것이 아니라 좁히는 것으로, model 의 나머지를 고정하면 attention 을 마음대로 바꿔 놓을 수 없음을 보인다 [[15](#ref-15)]. 남는 것은 진단으로는 충분하고 선택 기준으로는 모자라므로, attention weight 는 계층에 남기되 그렇게 표시한다.
+Attention weight 에는 자리 문제 말고 또 하나의 반론이 붙는다. 입력에 걸린 attention 은 예측이 어느 입력에 의존하는지를 믿을 만하게 짚어 내지 못한다. 같은 예측을 내는 다른 가중치 배정이 존재하고, 그 가중치는 gradient 기반 척도와 상관이 낮다 [[14](#ref-14)]. 이에 대한 반박은 그 결과를 없애는 것이 아니라 좁히는 것으로, model 의 나머지를 고정하면 attention 을 마음대로 바꿔 놓을 수 없음을 보인다 [[15](#ref-15)]. 남는 것은 진단으로는 충분하고 선택 기준으로는 모자라며, 가지 4.3 이 적는 것이 그것이다.
 
-### 3.2 Tree Importance Splits In Two
+### 3.2 The Two Methods Under Tree Importance
 
-Tree importance 는 한 이름 아래 놓인 서로 다른 두 방법이고, 그 가운데 하나만 embedded 다. MDI 는 어떤 feature 가 쓰인 분기들에 걸쳐 누적한 불순도 감소량으로, 학습 절차가 세운 구조에서 읽어 내므로 embedded 이며 가지 3.3 에 남는다. Permutation importance 는 완성된 model 의 입력에서 한 열을 섞고 손실을 지켜보므로 post-hoc 이며 가지 4.1 에 속한다.
+Tree importance 는 한 이름 아래 놓인 서로 다른 두 방법이고, 그 가운데 하나만 embedded 다. MDI 는 어떤 feature 가 쓰인 분기들에 걸쳐 누적한 불순도 감소량으로, 학습 절차가 세운 구조에서 읽어 내므로 embedded 이며 가지 3.3 에 놓인다. Permutation importance 는 완성된 model 의 입력에서 한 열을 섞고 손실을 지켜보므로 post-hoc 이며 가지 4.1 에 속한다.
 
 Trace 표에서 이 구별은 겉치레가 아니다. MDI 는 서로 다른 값을 많이 가지는 feature 쪽으로 치우쳐, 연속형 열을 낮은 cardinality 의 열보다 부풀린다 [[11](#ref-11)]. Trace feature 표가 바로 그 혼합이다. 평균이나 기울기 같은 연속형 요약 통계량 옆에 cycle count 나 step index 같은 낮은 cardinality 의 계수값이 나란히 놓이고, MDI 는 target 과 무관한 이유로 앞의 무리를 뒤의 무리 위에 세운다.
 
-### 3.3 Variance Thresholding Is Not A Selection Criterion
+### 3.3 The Place Of Variance Thresholding
 
-Variance thresholding 은 상관 검정 옆에 놓일 것이 아니다. Target 을 전혀 보지 않기 때문이다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 모두 feature 를 target 에 대고 점수를 매기므로 서로 비교할 수 있고 다른 지도 기준과도 비교할 수 있다. Variance thresholding 은 feature 를 그 자신에 대고 재므로, 같은 상자에 넣으면 성립하지 않는 비교를 암시하게 된다.
+Variance thresholding 은 상관 검정 옆이 아니라 mechanism 축 밖에 놓인다. Target 을 전혀 보지 않기 때문이다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 모두 feature 를 target 에 대고 점수를 매기므로 서로 비교할 수 있고 다른 지도 기준과도 비교할 수 있다. Variance thresholding 은 feature 를 그 자신에 대고 재므로, 같은 상자에 넣으면 성립하지 않는 비교를 암시하게 된다.
 
 그 일 자체는 실제로 필요하고 가장 먼저 이루어진다. Trace 수집물에는 recipe 안에서 움직이지 않는 setpoint 처럼 구조적으로 상수인 열과, 보고를 멈춘 sensor 의 열이 들어 있다. 둘 다 어떤 지도 기준보다 먼저 빠져야 한다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화에 지배되기 때문이다. 그것이 전처리이고, Fig 1 의 가지 0 이며, 거의 중복인 열의 제거도 여기에 함께 놓인다.
 
-### 3.4 Filter Splits Univariate From Multivariate
+### 3.4 The Division Inside The Filter Branch
 
-Filter 가지는 안에서 다시 나뉘어야 한다. 그 구성원들이 trace 표에서 거동을 가르는 단 하나의 성질, 곧 feature 를 혼자 재는가 이미 고른 feature 에 대어 재는가에서 갈리기 때문이다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 한 번에 한 열씩 target 에 대어 점수를 매기므로, 여러 요약 통계량이 모두 한 물리량을 따라가는 sensor 는 거의 같은 점수를 여러 개 내놓게 된다. Filter 는 그것을 모두 남기고, 열 수는 줄지만 중복은 함께 줄지 않는다. mRMR 은 target 에 대한 관련성을 이미 선택된 집합과의 중복에 대어 점수를 매기며, 중복 질문에 답하는 구성원이다 [[5](#ref-5)].
+Filter 가지는 feature 를 혼자 재는가 이미 고른 feature 에 대어 재는가로 나뉘며, 그것이 trace 표에서 filter 의 거동을 가르는 단 하나의 성질이다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 한 번에 한 열씩 target 에 대어 점수를 매기므로, 여러 요약 통계량이 모두 한 물리량을 따라가는 sensor 는 거의 같은 점수를 여러 개 내놓게 된다. Filter 는 그것을 모두 남기고, 열 수는 줄지만 중복은 함께 줄지 않는다. mRMR 은 target 에 대한 관련성을 이미 선택된 집합과의 중복에 대어 점수를 매기며, 중복 질문에 답하는 구성원이다 [[5](#ref-5)].
 
-여기에 속하지만 빠져 있던 세 번째 갈래가 있다. Relief 와 그 후손은 각 행을 같은 class 와 다른 class 의 최근접 이웃에 대비하여 feature 에 점수를 매기므로, 다른 feature 와 함께일 때만 의미를 가지는 feature 도 점수를 얻을 수 있다. 주변부 기준으로는 만들어 낼 수 없는 결과다 [[6](#ref-6)]. 산출물은 univariate 구성원과 마찬가지로 feature 당 숫자 하나이지만 계산이 주변부가 아니며, 그래서 1.1 의 구성원이 아니라 별도의 갈래다.
+그 둘 옆에 세 번째 갈래가 있다. Relief 와 그 후손은 각 행을 같은 class 와 다른 class 의 최근접 이웃에 대비하여 feature 에 점수를 매기므로, 다른 feature 와 함께일 때만 의미를 가지는 feature 도 점수를 얻을 수 있다. 주변부 기준으로는 만들어 낼 수 없는 결과다 [[6](#ref-6)]. 산출물은 univariate 구성원과 마찬가지로 feature 당 숫자 하나이지만 계산이 주변부가 아니며, 그래서 1.1 의 구성원이 아니라 별도의 갈래다.
 
 ## 4. Mechanism Axis
 
-Mechanism 축은 model 을 언제 참조하는가로 방법의 자리를 정하고, 그것이 비용과 그 답이 무엇의 성질인지를 결정한다. 아래 다섯 절은 Fig 1 의 가지를 차례로 다루며, 각 표는 가지의 정의를 되풀이하는 대신 한 가지 안에서 구성원을 갈라 놓는 성질을 적는다.
+한 가지 안에서 구성원은 한 가지 성질로 갈리며, 아래의 각 표가 적는 것이 그 성질이다. 다섯 절은 Fig 1 에서 고르는 일을 하는 다섯 가지를 다룬다. 가지 0 에는 표가 없다. 그 구성원은 열 사이에서 고르는 것이 아니라 열을 덜어 내기 때문이다.
 
 ### 4.1 Filter
 
-이 가지가 안에서 갈리는 기준은 feature 를 혼자 재는가 이미 고른 것들에 대어 재는가이며, 공선성이 심한 표에서 답을 바꾸는 filter 의 성질은 그것뿐이다.
+이 가지는 trace feature list 전량에 돌릴 만큼 싸고, 그것이 이 가지의 쓰임이다. 비싼 것을 시도하기 전에 한 번 훑어 수천 열을 수백 열로 자른다.
 
 Table 2. Filter methods
 
@@ -113,7 +111,7 @@ Table 2. Filter methods
 | mRMR | 선택된 집합과의 중복을 뺀 관련성 | 예 | 아니오 |
 | Relief, ReliefF | Feature 공간에서의 이웃 대비 | 부분적으로 | 예 |
 
-이 가지 전체는 trace feature list 전량에 돌릴 만큼 싸고, 그것이 이 가지의 역할이다. 비싼 것을 시도하기 전에 한 번 훑어 수천 열을 수백 열로 자른다. 자름은 넉넉하게 한다. Univariate 구성원 가운데 어느 것도 다른 feature 와 함께일 때만 의미를 가지는 feature 를 볼 수 없고, 여기서 버린 열은 뒤에서 되찾을 수 없기 때문이다.
+자름은 넉넉하게 한다. Univariate 구성원 가운데 어느 것도 다른 feature 와 함께일 때만 의미를 가지는 feature 를 볼 수 없고, 여기서 버린 열은 뒤에서 되찾지 못한다.
 
 ### 4.2 Wrapper
 
@@ -121,7 +119,7 @@ Table 2. Filter methods
 
 Table 3. Wrapper methods
 
-| Method | Search direction | Refits per pass | Failure on a wide table |
+| Method | Search direction | Refits per step | Failure on a wide table |
 |--------|------------------|-----------------|-------------------------|
 | RFE | 후진, 최하위 묶음을 떨굼 | 제거 단계마다 하나 | 첫 적합이 전체 열 위에서 이루어지며, 그때의 순위가 가장 못 믿을 것 |
 | Backward elimination | 후진, 한 번에 하나 | 남은 feature 마다 하나 | 열 수가 행 수를 넘으면 정의되지 않음 |

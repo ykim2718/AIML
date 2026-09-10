@@ -1,9 +1,9 @@
 # Trace Feature Selection
-Rev. 0 | Created: 2026-09-10 | Updated: 2026-09-10 20:53 UTC
+Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:13 UTC
 
-> A verification of the filter-wrapper-embedded taxonomy against the feature list that a semiconductor
-> equipment trace produces, with the two axes added that the mechanism axis alone leaves undecided —
-> what a selection is a selection of, and whether it repeats when the wafers change.
+> Which of the thousands of features a semiconductor equipment trace produces move the target, and
+> where a method that answers it sits on three axes — when the model is consulted, what unit the
+> selection is made at, and whether the selection survives a change of wafers.
 
 ## 1. Purpose
 
@@ -13,26 +13,24 @@ Rev. 0 | Created: 2026-09-10 | Updated: 2026-09-10 20:53 UTC
 
 ## 2. Summary
 
-The mechanism axis submitted for verification — Filter, Wrapper, Embedded — is the canonical split of the field [[1](#ref-1)] [[3](#ref-3)] and is kept unchanged. Three of its leaves sit in the wrong branch, one leaf answers a different question from its siblings, and the axis by itself cannot select a method for trace data, because it is silent on the two things that decide the answer there: the unit a selection is made at, and whether the selection survives a change of wafers.
+Three axes are needed to place a method that selects trace features, and the mechanism axis is only the first of them. It positions a method by when the model is consulted, which fixes what the answer is a property of and what it costs, and Table 1 gives that position for each branch of §3.
 
-Table 1. Verification result on the submitted taxonomy
+Table 1. Branches of the mechanism axis
 
-| Item | Verdict | Ground |
-|------|---------|--------|
-| Filter, Wrapper, Embedded as the mechanism axis | Kept | The split by whether a model is consulted, and when [[1](#ref-1)] [[3](#ref-3)] |
-| SHAP and LIME under Embedded | Moved to a fourth branch, post-hoc ranking | Computed after the fit, with the training objective unchanged (§3.1) |
-| Attention weights under Embedded | Moved with them, and demoted to a diagnostic | Same placement ground, plus a contested claim to identify what a prediction depends on (§3.1) |
-| Tree importance under Embedded | Split in two | MDI is read off the training-time splits and stays; permutation importance is post-hoc (§3.2) |
-| Variance thresholding beside the correlation tests | Moved out of the axis, into preprocessing | It never consults the target, so it is not comparable with a supervised criterion (§3.3) |
-| Filter with no internal split | Split into univariate, multivariate, neighbour contrast | The univariate members keep every copy of one signal, which is the trace case (§3.4) |
-| Regularization at the column unit only | Group penalties added | The actionable unit of a trace table is the sensor, not the column (§5) |
-| No branch that states an error rate | Error-controlled branch added | Every submitted method returns a ranking with no error statement (§4.5) |
+| Branch | When the model is consulted | The answer is a property of | Cost |
+|--------|-----------------------------|-----------------------------|------|
+| 0. Preprocessing | Never, and the target is not consulted either | The feature by itself | One pass |
+| 1. Filter | Before any fit | The data | One pass per feature |
+| 2. Wrapper | Once per candidate subset | That model and that search | One refit per step |
+| 3. Embedded | During the fit | The fitted model | The fit itself |
+| 4. Post-hoc ranking | After the fit is finished | That one fit | One probe per feature |
+| 5. Error-controlled | After a ranking already exists | The distribution, under a stated assumption | Many runs, or a knockoff construction |
 
-The two added axes are the selection unit (§5) and stability (§6). The first decides whether a selected set can be acted on, since a trace column names a sensor, a recipe step and a summary statistic at once, and only the first two are things a line can change. The second decides whether the set is real, since with wafers in the hundreds and correlated sensor pairs the choice a single fit makes between two copies of one signal is settled by noise.
+The other two axes are what the mechanism axis is silent on, and on trace data they decide the answer. The selection unit (§5) decides whether a selected set can be acted on, because a trace column names a sensor, a recipe step and a summary statistic at once and only the first two are things a line can change. Stability (§6) decides whether the set is real, because with wafers in the hundreds against features in the thousands, the choice a single fit makes between two copies of one signal is settled by noise.
 
-## 3. Verified Hierarchy
+## 3. Hierarchy
 
-The corrected hierarchy divides by when the model is consulted, which is the division the submitted axis already used, extended at both ends: preprocessing before any target is consulted, and an error-controlled branch after every ranking has been produced.
+The hierarchy divides by when the model is consulted, and it runs from the branch that consults no model and no target at all to the branch that is reached only once a ranking already exists.
 
 ```
 Trace feature selection
@@ -66,41 +64,41 @@ Trace feature selection
     +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs
 ```
 
-Fig 1. Verified hierarchy of trace feature selection methods by when the model is consulted
+Fig 1. Hierarchy of trace feature selection methods by when the model is consulted
 
-Branch 0 runs first and consults no target, so it cannot select wrongly, only insufficiently. Branches 1 to 3 are the submitted axis, with 1 and 3 subdivided. Branch 4 collects the leaves moved out of Embedded. Branch 5 is the only branch that answers with an error rate rather than a ranking, and it is reached from any of 1 to 4. The four subsections below give the ground for each move.
+Branch 0 runs first and consults no target, so it cannot select wrongly, only insufficiently. Branches 1 to 3 differ by whether the model is consulted before the fit, around it, or inside it. Branch 4 probes a model that is already finished. Branch 5 is the only branch that answers with an error rate rather than a ranking, and it is reached from any of 1 to 4. The four subsections below fix the four boundaries that are easiest to cross by mistake.
 
-### 3.1 Post-Hoc Ranking Is Not Embedded
+### 3.1 The Boundary Between Embedded And Post-Hoc
 
 SHAP, LIME and attention weights are not embedded methods, because embedded means that the selection is a term of the objective being minimized during training [[1](#ref-1)]. Lasso selects because the L1 penalty sits inside the loss and drives coefficients to exactly zero [[7](#ref-7)]; nothing analogous happens with SHAP [[12](#ref-12)] or LIME [[13](#ref-13)], which are computed after the fit is finished, treat the model as a black box, and leave the trained weights untouched. Their output is a ranking, and a cut-off still has to be chosen outside the method — which is the behaviour of a filter, applied to a fitted model rather than to raw data.
 
-Attention weights carry a second objection beyond placement. Attention over the inputs does not reliably identify the inputs a prediction depends on: alternative weight assignments yield the same prediction, and the weights correlate poorly with gradient-based measures [[14](#ref-14)]. The rebuttal narrows that result rather than removing it, showing that attention is not free to be reassigned once the rest of the model is held fixed [[15](#ref-15)]. What survives is enough for a diagnostic and not enough for a selection criterion, so attention weights are kept in the hierarchy and marked as such.
+Attention weights carry a second objection beyond placement. Attention over the inputs does not reliably identify the inputs a prediction depends on: alternative weight assignments yield the same prediction, and the weights correlate poorly with gradient-based measures [[14](#ref-14)]. The rebuttal narrows that result rather than removing it, showing that attention is not free to be reassigned once the rest of the model is held fixed [[15](#ref-15)]. What survives is enough for a diagnostic and not enough for a selection criterion, which is what branch 4.3 records.
 
-### 3.2 Tree Importance Splits In Two
+### 3.2 The Two Methods Under Tree Importance
 
-Tree importance is two different methods under one name, and only one of them is embedded. MDI, the impurity decrease accumulated over the splits a feature was used in, is read off the structure the training procedure built, so it is embedded and stays in branch 3.3. Permutation importance shuffles a column of a finished model's input and watches the loss, so it is post-hoc and belongs in branch 4.1.
+Tree importance is two different methods under one name, and only one of them is embedded. MDI, the impurity decrease accumulated over the splits a feature was used in, is read off the structure the training procedure built, so it is embedded and sits in branch 3.3. Permutation importance shuffles a column of a finished model's input and watches the loss, so it is post-hoc and belongs in branch 4.1.
 
 The distinction is not cosmetic on a trace table. MDI is biased toward features with many distinct values, and inflates continuous columns over low-cardinality ones [[11](#ref-11)]. A trace feature table is exactly that mixture: continuous summary statistics such as the mean and the slope sit beside low-cardinality counts such as the cycle count and the step index, and MDI will rank the first group above the second for reasons that have nothing to do with the target.
 
-### 3.3 Variance Thresholding Is Not A Selection Criterion
+### 3.3 The Place Of Variance Thresholding
 
-Variance thresholding does not belong beside the correlation tests, because it never looks at the target. Pearson correlation, Spearman correlation, ANOVA F and mutual information all score a feature against the target and can therefore be compared with one another and with any other supervised criterion. Variance thresholding scores a feature against itself, so placing it in the same box implies a comparison that cannot be made.
+Variance thresholding sits outside the mechanism axis rather than beside the correlation tests, because it never looks at the target. Pearson correlation, Spearman correlation, ANOVA F and mutual information all score a feature against the target and can therefore be compared with one another and with any other supervised criterion. Variance thresholding scores a feature against itself, so placing it in the same box implies a comparison that cannot be made.
 
 Its work is real and it is done first: a trace collection carries columns that are constant by construction, such as a setpoint that never moves within a recipe, and columns from sensors that stopped reporting. Both must go before any supervised criterion runs, because a zero-variance column has an undefined correlation and a near-constant one has a correlation dominated by its quantization. That is preprocessing, and it is branch 0 in Fig 1, together with the removal of near-duplicate columns.
 
-### 3.4 Filter Splits Univariate From Multivariate
+### 3.4 The Division Inside The Filter Branch
 
-The Filter branch needs an internal split, because its members disagree on the one property that decides their behaviour on a trace table: whether a feature is scored alone or against the features already chosen. Pearson correlation, Spearman correlation, ANOVA F and mutual information score one column at a time against the target, and a sensor whose several summary statistics all track one physical quantity therefore contributes several near-equal scores. The filter keeps all of them, and the column count falls without the redundancy falling with it. mRMR scores relevance to the target against redundancy with the already-selected set, and is the member that answers the redundancy question [[5](#ref-5)].
+The filter branch divides by whether a feature is scored alone or against the features already chosen, which is the one property of a filter that decides its behaviour on a trace table. Pearson correlation, Spearman correlation, ANOVA F and mutual information score one column at a time against the target, and a sensor whose several summary statistics all track one physical quantity therefore contributes several near-equal scores. The filter keeps all of them, and the column count falls without the redundancy falling with it. mRMR scores relevance to the target against redundancy with the already-selected set, and is the member that answers the redundancy question [[5](#ref-5)].
 
-A third kind belongs here and was absent. Relief and its descendants score a feature by contrasting each row with its nearest neighbours of the same and of the opposite class, so a feature that matters only in combination with another can still earn a score, which no marginal criterion can produce [[6](#ref-6)]. The output is one number per feature, as with the univariate members, but the computation is not marginal, and that is why it is a branch of its own rather than a member of 1.1.
+A third kind sits beside those two. Relief and its descendants score a feature by contrasting each row with its nearest neighbours of the same and of the opposite class, so a feature that matters only in combination with another can still earn a score, which no marginal criterion can produce [[6](#ref-6)]. The output is one number per feature, as with the univariate members, but the computation is not marginal, and that is why it is a branch of its own rather than a member of 1.1.
 
 ## 4. Mechanism Axis
 
-The mechanism axis positions a method by when a model is consulted, and that decides its cost and what its answer is a property of. The five subsections take the branches of Fig 1 in order, and each table names the property that separates the members of one branch rather than repeating the branch's own definition.
+Within a branch the members differ on one property, and each table below names that property. The five subsections take the five branches of Fig 1 that select; branch 0 has no table, because its members remove columns rather than choose among them.
 
 ### 4.1 Filter
 
-The branch is separated internally by whether a feature is scored alone or against the features already chosen, which is the only property of a filter that changes its answer on a collinear table.
+The branch is cheap enough to run on the full trace feature list, which is what it is for: one pass that cuts thousands of columns to hundreds before anything expensive is attempted.
 
 Table 2. Filter methods
 
@@ -113,7 +111,7 @@ Table 2. Filter methods
 | mRMR | Relevance minus redundancy against the selected set | Yes | No |
 | Relief, ReliefF | Neighbour contrast in feature space | Partly | Yes |
 
-The whole branch is cheap enough to run on the full trace feature list, and that is its role: one pass that cuts thousands of columns to hundreds before anything expensive is attempted. The cut is made generously, because none of the univariate members can see a feature that matters only in combination, and a column dropped here is not recoverable later.
+The cut is made generously. None of the univariate members can see a feature that matters only in combination with another, and a column dropped here is not recovered later.
 
 ### 4.2 Wrapper
 
@@ -121,7 +119,7 @@ The branch scores a subset by the performance of a model refitted on it, so its 
 
 Table 3. Wrapper methods
 
-| Method | Search direction | Refits per pass | Failure on a wide table |
+| Method | Search direction | Refits per step | Failure on a wide table |
 |--------|------------------|-----------------|-------------------------|
 | RFE | Backward, dropping the lowest-ranked block | One per elimination step | The initial fit is on all columns, where the ranking is least trustworthy |
 | Backward elimination | Backward, one feature at a time | One per remaining feature | Not defined when the column count exceeds the row count |
