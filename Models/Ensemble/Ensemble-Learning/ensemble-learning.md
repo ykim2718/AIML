@@ -1,5 +1,5 @@
 # Ensemble Learning
-Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-10 22:19 UTC
+Rev. 5 | Created: 2026-09-10 | Updated: 2026-09-10 22:28 UTC
 
 ## 1. Purpose
 
@@ -92,15 +92,15 @@ Whether a member's own output can be used as a weight is decided by the family t
 
 Table 3. Whether a member's own output can be used as a weight
 
-| Family | As a weight | Native output | Output range |
-|--------|-------------|---------------|--------------|
-| Logistic regression | Usable as emitted where the link is right | Probability from a fitted link | $(0, 1)$ |
-| Random forest | Not usable, compressed toward the centre | Fraction of member votes | $\{0, 1/T, \ldots, 1\}$ over $T$ trees |
-| Gradient boosting | Not usable, overconfident | Logistic of an additive margin | $(0, 1)$, driven to the ends |
-| Naive Bayes | Not usable, extremely overconfident under dependent features | Product of independent likelihoods | $(0, 1)$, driven hard to the ends |
-| SVM | Not usable, not on a probability scale | Signed distance to the boundary | $(-\infty, \infty)$ |
-| k-nearest neighbours | Not usable, only $k+1$ distinct values | Fraction of the $k$ neighbours | $\{0, 1/k, \ldots, 1\}$ |
-| Neural network | Not usable, overconfident and worse as the network grows | Softmax of the logits | $(0, 1)$, driven to the ends |
+| Family | Deliverable | Output range | As a weight |
+|--------|-------------|--------------|-------------|
+| Logistic regression | Probability from a fitted link | $(0, 1)$ | Usable as emitted where the link is right |
+| Random forest | Fraction of member votes | $\{0, 1/T, \ldots, 1\}$ over $T$ trees | Not usable, compressed toward the centre |
+| Gradient boosting | Logistic of an additive margin | $(0, 1)$, driven to the ends | Not usable, overconfident |
+| Naive Bayes | Product of independent likelihoods | $(0, 1)$, driven hard to the ends | Not usable, extremely overconfident under dependent features |
+| SVM | Signed distance to the boundary | $(-\infty, \infty)$ | Not usable, not on a probability scale |
+| k-nearest neighbours | Fraction of the $k$ neighbours | $\{0, 1/k, \ldots, 1\}$ | Not usable, only $k+1$ distinct values |
+| Neural network | Softmax of the logits | $(0, 1)$, driven to the ends | Not usable, overconfident and worse as the network grows |
 
 One row of Table 3 is usable as emitted, and four of the seven share the range $(0, 1)$ with it. The rest produce a score that rises with the true probability but does not equal it, so the range a score falls in says nothing about what it means.
 
@@ -255,15 +255,15 @@ This is the fourth branch of Fig 1, where the combination rule arrives already a
 
 ### 8.1 Bagging
 
-Bagging fits each member on a bootstrap resample of the rows and averages or votes the results, which lowers variance and leaves bias where it was [[2](#ref-2)]. Its combination rule is the first branch of Fig 1 with equal weights, and the whole design instead goes into lowering $\rho$ of equation (2).
+Bagging fits each member on a bootstrap resample of the rows and combines them with equal shares, which is the first branch of Fig 1 [[2](#ref-2)]. Nothing is fitted at the combination step, so every member carries the same share however it turned out, and the design spends itself on lowering $\rho$ of equation (2) instead.
 
 Random forest adds column sampling at every split, so that members stop agreeing through the one dominant predictor [[3](#ref-3)]. That one step is what separates a random forest from bagged trees of the same depth and count.
 
 ### 8.2 Boosting
 
-Boosting fits members in sequence, each one on what the previous ones got wrong, and adds them with weights that the fitting procedure sets rather than a separate pass. AdaBoost reweights the rows that were misclassified [[4](#ref-4)]; gradient boosting fits each new member to the gradient of the loss, which makes the loss function a free choice [[5](#ref-5)]. The widely used implementations descend from the second form and add second-order information, sparsity handling and training on data too large to hold in memory [[6](#ref-6)].
+Boosting fits members in sequence, each one on what the previous ones got wrong, and adds them with weights. AdaBoost reweights the rows that were misclassified [[4](#ref-4)]; gradient boosting fits each new member to the gradient of the loss, which makes the loss function a free choice [[5](#ref-5)]. The widely used implementations descend from the second form and add second-order information, sparsity handling and training on data too large to hold in memory [[6](#ref-6)].
 
-Sequence is the cost. Bagging members are independent and fit in parallel; boosting members are not, and the run stops early or not at all on a held-out curve. Boosting also lowers bias, which bagging does not, so it can beat a bagged ensemble of the same trees on a hard target and can overfit where bagging would not.
+Boosting's rule belongs to a different branch of Fig 1 than bagging's. It carries one scalar per member, which is the second branch, and the fitting procedure sets those scalars as it goes, from each member's error on the rows it was given, rather than from a separate pass over out-of-fold predictions.
 
 ## 9. Selection
 

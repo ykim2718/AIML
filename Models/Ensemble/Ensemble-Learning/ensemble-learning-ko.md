@@ -1,5 +1,5 @@
 # Ensemble Learning (Korean)
-Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-10 22:19 UTC
+Rev. 5 | Created: 2026-09-10 | Updated: 2026-09-10 22:28 UTC
 
 ## 1. Purpose
 
@@ -92,15 +92,15 @@ Member 가 내놓은 값을 그대로 weight 로 쓸 수 있는지는 그 member
 
 Table 3. Whether a member's own output can be used as a weight
 
-| Family | As a weight | Native output | Output range |
-|--------|-------------|---------------|--------------|
-| Logistic regression | Link 이 맞으면 그대로 사용 가능 | 적합된 link 에서 나온 확률 | $(0, 1)$ |
-| Random forest | 사용 불가, 가운데로 눌려 있음 | Member 득표 비율 | Tree $T$ 개에 대해 $\{0, 1/T, \ldots, 1\}$ |
-| Gradient boosting | 사용 불가, 과신 | 누적 margin 의 logistic | $(0, 1)$, 양끝으로 몰림 |
-| Naive Bayes | 사용 불가, feature 가 종속이면 극단적으로 과신 | 독립 가정 아래 likelihood 의 곱 | $(0, 1)$, 양끝으로 심하게 몰림 |
-| SVM | 사용 불가, 확률 척도가 아님 | 경계까지의 부호 있는 거리 | $(-\infty, \infty)$ |
-| k-nearest neighbours | 사용 불가, 서로 다른 값이 $k+1$ 개뿐 | $k$ 개 이웃 가운데의 비율 | $\{0, 1/k, \ldots, 1\}$ |
-| Neural network | 사용 불가, 과신하며 망이 커질수록 심해짐 | Logit 의 softmax | $(0, 1)$, 양끝으로 몰림 |
+| Family | Deliverable | Output range | As a weight |
+|--------|-------------|--------------|-------------|
+| Logistic regression | 적합된 link 에서 나온 확률 | $(0, 1)$ | Link 이 맞으면 그대로 사용 가능 |
+| Random forest | Member 득표 비율 | Tree $T$ 개에 대해 $\{0, 1/T, \ldots, 1\}$ | 사용 불가, 가운데로 눌려 있음 |
+| Gradient boosting | 누적 margin 의 logistic | $(0, 1)$, 양끝으로 몰림 | 사용 불가, 과신 |
+| Naive Bayes | 독립 가정 아래 likelihood 의 곱 | $(0, 1)$, 양끝으로 심하게 몰림 | 사용 불가, feature 가 종속이면 극단적으로 과신 |
+| SVM | 경계까지의 부호 있는 거리 | $(-\infty, \infty)$ | 사용 불가, 확률 척도가 아님 |
+| k-nearest neighbours | $k$ 개 이웃 가운데의 비율 | $\{0, 1/k, \ldots, 1\}$ | 사용 불가, 서로 다른 값이 $k+1$ 개뿐 |
+| Neural network | Logit 의 softmax | $(0, 1)$, 양끝으로 몰림 | 사용 불가, 과신하며 망이 커질수록 심해짐 |
 
 Table 3 에서 그대로 쓸 수 있는 것은 한 행뿐이며, 일곱 중 넷이 그 행과 같은 $(0, 1)$ 범위를 쓴다. 나머지는 참 확률을 따라 커지되 그것과 같지는 않은 점수를 내놓으므로, 점수가 놓인 범위는 그 점수의 뜻에 대해 아무것도 말해 주지 않는다.
 
@@ -255,15 +255,15 @@ Fig 1 의 넷째 갈래이며, 결합 규칙이 member 를 만든 절차에 붙�
 
 ### 8.1 Bagging
 
-Bagging 은 행을 bootstrap 으로 다시 뽑아 member 마다 적합하고 그 결과를 평균하거나 투표하며, 분산을 낮추고 편향은 그대로 둔다 [[2](#ref-2)]. 그 결합 규칙은 가중치가 같은 Fig 1 의 첫 갈래이고, 설계는 전부 equation (2) 의 $\rho$ 를 낮추는 쪽에 들어간다.
+Bagging 은 행을 bootstrap 으로 다시 뽑아 member 마다 적합하고 몫을 똑같이 나누어 합치며, 그것이 Fig 1 의 첫 갈래이다 [[2](#ref-2)]. 결합 단계에서는 아무것도 적합하지 않으므로 member 가 어떻게 나왔든 몫이 같으며, 설계는 대신 equation (2) 의 $\rho$ 를 낮추는 데 쓰인다.
 
 Random forest 는 split 마다 열을 뽑는 단계를 더해, member 들이 지배적인 예측변수 하나를 통해 서로 같아지는 것을 막는다 [[3](#ref-3)]. 깊이와 개수가 같은 bagging tree 와 random forest 를 가르는 것이 그 한 단계이다.
 
 ### 8.2 Boosting
 
-Boosting 은 member 를 차례로 적합하되 각각을 앞의 것들이 틀린 자리에 맞추고, 따로 한 번 더 도는 대신 적합 절차가 정하는 가중치로 더한다. AdaBoost 는 잘못 분류된 행의 가중치를 올리고 [[4](#ref-4)], gradient boosting 은 새 member 를 손실의 gradient 에 맞추어 손실함수를 자유롭게 고를 수 있게 한다 [[5](#ref-5)]. 널리 쓰이는 구현들은 뒤쪽 형태를 물려받아 2차 정보, 희소성 처리, 메모리에 담기지 않는 자료의 학습을 더한 것이다 [[6](#ref-6)].
+Boosting 은 member 를 차례로 적합하되 각각을 앞의 것들이 틀린 자리에 맞추고, 가중치를 주어 더한다. AdaBoost 는 잘못 분류된 행의 가중치를 올리고 [[4](#ref-4)], gradient boosting 은 새 member 를 손실의 gradient 에 맞추어 손실함수를 자유롭게 고를 수 있게 한다 [[5](#ref-5)]. 널리 쓰이는 구현들은 뒤쪽 형태를 물려받아 2차 정보, 희소성 처리, 메모리에 담기지 않는 자료의 학습을 더한 것이다 [[6](#ref-6)].
 
-값은 순차성으로 치른다. Bagging 의 member 는 서로 독립이어서 나란히 적합하지만 boosting 의 member 는 그렇지 않고, held-out 곡선을 보고 조기 종료하거나 끝까지 간다. Boosting 은 bagging 과 달리 편향도 낮추므로, 어려운 target 에서는 같은 tree 를 bagging 한 ensemble 을 이길 수 있고, bagging 이라면 나지 않았을 overfitting 이 날 수도 있다.
+Boosting 의 규칙은 bagging 의 규칙과 Fig 1 에서 다른 갈래에 속한다. Member 마다 scalar 하나를 지니므로 둘째 갈래이며, 그 scalar 를 적합 절차가 진행하면서 각 member 가 받은 행에서 낸 오차로 정한다. Out-of-fold 예측을 따로 훑어 정하지 않는다.
 
 ## 9. Selection
 
