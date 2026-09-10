@@ -1,5 +1,5 @@
 # Ensemble Learning
-Rev. 0 | Created: 2026-09-10 | Updated: 2026-09-10 21:24 UTC
+Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:44 UTC
 
 ## 1. Purpose
 
@@ -9,13 +9,15 @@ Rev. 0 | Created: 2026-09-10 | Updated: 2026-09-10 21:24 UTC
 
 ## 2. Summary
 
-Feeding the meta-learner probabilities rather than labels is what wins, and it wins by more than the choice between hard and soft voting. On the 171 held-out rows of Table 5, the best single member reaches 0.9591, hard voting matches it at 0.9591, plain soft voting falls to 0.9415, and stacking reaches 0.9591 on labels but 0.9649 on probabilities. The probability carries which rows a member was unsure about; a label does not, and no combination rule can recover it afterwards.
+Feeding the meta-learner probabilities rather than labels is what wins, and it wins by more than the choice between hard and soft voting does. A probability records which rows a member was unsure about; a label does not, and no combination rule can recover that afterwards.
 
-Averaging probabilities is not the way to spend them. Soft voting gives every member a fixed share of the answer on every row, so an overconfident member moves the mean everywhere. Naive Bayes on this data puts 95.3% of its predictions beyond $0.99$ or below $0.01$, and it drags plain soft voting below hard voting. Two repairs work and one does not: calibration lifts soft voting to 0.9474, a meta-learner fitted on the probabilities lifts it to 0.9649 by learning a coefficient of 0.969 for that member against 4.392 for the best one, and averaging log-odds instead makes it worse at 0.9298 because it removes the cap that the arithmetic mean puts on any one member.
+Averaging is the weakest way to spend a probability. Soft voting gives every member a fixed share of the answer on every row, so a member whose output is not on a probability scale moves the mean everywhere. Two repairs work: calibrate the members before averaging, or let a meta-learner fit one coefficient per member from the probabilities themselves. Averaging log-odds is not among them, because it removes the cap that the arithmetic mean puts on any one member.
 
-A combination beats the *average* member, never automatically the *best* one. Equation (1) is exact and says the ensemble error is the mean member error minus the spread among members; the regression run in section 4.2 reproduces it to the decimal, $3267.2 - 177.9 = 3089.3$. Adding a weak member raises the first term and the second term has to pay for it.
+A combination beats the *average* member, never automatically the *best* one. Equation (1) is exact and says the ensemble error is the mean member error minus the spread among members. Adding a weak member raises the first term, and the second term has to pay for it.
 
 The gain has a floor set by correlation, not by count. Equation (2) shows that averaging $M$ members with pairwise correlation $\rho$ leaves $\rho\sigma^{2}$ standing however large $M$ becomes, which is why bagging, random subspaces and boosting all work by making members differ rather than by making more of them.
+
+Appendix B measures these four statements on one held-out split.
 
 ## 3. Principle
 
@@ -60,7 +62,7 @@ Random forest fixes both axes at once and is often read as a single method; it i
 
 ### 4.1 Voting
 
-Hard voting takes the majority of the labels; soft voting takes the argmax of the mean probability. Hard voting is what remains when a member emits no probability, and it is not a weaker version of soft voting — it is the version that survives an uncalibrated member, because a label cannot be overconfident.
+Hard voting takes the majority of the labels; soft voting takes the argmax of the mean probability. Hard voting is what remains when a member emits no probability, and it is not a weaker version of soft voting — it is the version that survives a member whose probabilities are distorted, because a label cannot be overconfident.
 
 Table 2 sets out where each one is available and what each one ignores.
 
@@ -77,13 +79,11 @@ An even number of members with hard voting forces a tie rule, and a tie rule tha
 
 ### 4.2 Averaging
 
-For regression the counterpart of voting is the mean of the member predictions. The run in Appendix B.2, on 133 held-out rows of the diabetes data, gives RMSE 55.67 for ridge, 59.42 for the forest and 56.32 for k-nearest neighbours; the simple mean reaches 55.58, below every member.
-
-The same run reproduces equation (1). Mean member MSE is 3267.2, the mean spread among members is 177.9, and the ensemble MSE is 3089.3.
+For regression the counterpart of voting is the mean of the member predictions, and equation (1) governs it unchanged. The mean sits below the average member by exactly the spread among them, so it can fall below every single member at once when the members err in different directions.
 
 ### 4.3 Weights
 
-Weights are fitted on out-of-fold predictions under a non-negativity constraint, never on the training fit and never by hand. Least squares under non-negativity is the original prescription for stacked regression and it is what keeps the coefficients interpretable and the combination stable [[7](#ref-7)]. In Appendix B.2 the fitted weights are 0.621, 0.162 and 0.216, and the weighted mean improves RMSE from 55.58 to 55.29.
+Weights are fitted on out-of-fold predictions under a non-negativity constraint, never on the training fit and never by hand. Least squares under non-negativity is the original prescription for stacked regression and it is what keeps the coefficients interpretable and the combination stable [[7](#ref-7)].
 
 Table 3 lists the ways weights are set, ordered by how much evidence each one uses.
 
@@ -100,46 +100,47 @@ Weights fitted on predictions the member has already seen are the classic leak. 
 
 ### 4.4 Log-Odds And Rank
 
-Averaging log-odds is the wrong repair for a miscalibrated member, and the run in Appendix B.3 shows it. The mean of the log-odds, mapped back through the logistic function, is the geometric mean of the odds:
+Averaging log-odds is the wrong repair for a member whose probabilities are distorted. The mean of the log-odds, mapped back through the logistic function, is the geometric mean of the odds:
 
 $$\bar z = \frac{1}{M}\sum_{m}\log\frac{p_m}{1 - p_m}, \qquad \bar p = \frac{1}{1 + e^{-\bar z}} \hspace{19em} (3)$$
 
-The arithmetic mean of probabilities caps any one member's influence at $1/M$, because a probability is bounded to $[0, 1]$. The log-odds mean removes that cap: a member emitting $0.9999$ contributes $z \approx 9.2$ and can outvote two members sitting near zero. On the data of Table 5 it drops accuracy to 0.9298 and nearly doubles the Brier score to 0.0572, the worst combination tried.
+The arithmetic mean of probabilities caps any one member's influence at $1/M$, because a probability is bounded to $[0, 1]$. The log-odds mean removes that cap: a member emitting $0.9999$ contributes $z \approx 9.2$ and outvotes two members sitting near zero. The distortion the repair was reached for therefore gains weight instead of losing it.
 
-Rank averaging is the option that survives arbitrary miscalibration, because it uses only the order each member puts the rows in. It buys a ranking objective and gives up the probability, so it applies where the task is to rank a batch and not to answer one row at a time.
+Rank averaging is the option that survives arbitrary distortion, because it uses only the order each member puts the rows in. It buys a ranking objective and gives up the probability, so it applies where the task is to rank a batch and not to answer one row at a time.
 
 ## 5. Confidence
 
-### 5.1 What A Model Emits
+### 5.1 Output As A Weight
 
-A number between zero and one is not a probability until something has checked it. Table 4 lists what each family actually emits and what has to be done before that number is averaged with another.
+Whether a member's own output can be used as a weight is decided by the family the member comes from, not by the range the number falls in. Table 4 is that decision for the common families.
 
-Table 4. What each model family emits
+Table 4. Whether a member's own output can be used as a weight
 
-| Family | Native output | Shape of the error | Repair |
-|--------|---------------|--------------------|--------|
-| Logistic regression | Probability from a fitted link | Close to calibrated when the link is right | Usually none |
-| Random forest | Fraction of member votes | Pushed away from 0 and 1 | Isotonic regression |
-| Gradient boosting | Logistic of an additive margin | Overconfident | Platt scaling or isotonic |
-| Naive Bayes | Product of independent likelihoods | Extremely overconfident when features are dependent | Isotonic regression |
-| SVM | Signed distance to the boundary, not a probability | Not on a probability scale at all | Platt scaling |
-| Neural network | Softmax of the logits | Overconfident, worse as the network grows | Temperature scaling |
+| Family | Native output | As a weight | What it needs first |
+|--------|---------------|-------------|---------------------|
+| Logistic regression | Probability from a fitted link | Usable as emitted where the link is right | Nothing |
+| Random forest | Fraction of member votes | Not usable, compressed toward the centre | Isotonic regression |
+| Gradient boosting | Logistic of an additive margin | Not usable, overconfident | Platt scaling or isotonic |
+| Naive Bayes | Product of independent likelihoods | Not usable, extremely overconfident under dependent features | Isotonic regression |
+| SVM | Signed distance to the boundary | Not usable, not on a probability scale | Platt scaling |
+| k-nearest neighbours | Fraction of the $k$ neighbours | Not usable, granular in steps of $1/k$ | Isotonic regression |
+| Neural network | Softmax of the logits | Not usable, overconfident and worse as the network grows | Temperature scaling |
 
-The measured effect on the data of Table 5 is not subtle. Naive Bayes places 95.3% of its test predictions beyond $0.99$ or below $0.01$, against 71.9% for logistic regression, and its Brier score is 0.0760 against 0.0265.
+One row of Table 4 is usable as emitted. The rest produce a score that rises with the true probability but does not equal it. Section 5.2 turns those scores into weights, and section 5.3 spends them.
 
 ### 5.2 Calibration
 
-Calibration is a monotone map from the emitted score to a probability, fitted on rows the member did not train on. Platt scaling fits a one-parameter logistic and assumes the miscalibration is sigmoid-shaped; isotonic regression fits any non-decreasing step function and needs more rows to do it [[9](#ref-9)] [[10](#ref-10)]. Both leave the ranking of rows untouched, so accuracy at a fixed threshold can move only where the threshold crossing moves.
+Calibration is a monotone map from the emitted score to a probability, fitted on rows the member did not train on. Platt scaling fits a one-parameter logistic and assumes the distortion is sigmoid-shaped; isotonic regression fits any non-decreasing step function and needs more rows to do it [[9](#ref-9)] [[10](#ref-10)]. Both leave the ranking of rows untouched, so accuracy at a fixed threshold can move only where the threshold crossing moves.
 
-Fitting the map on the training rows destroys it. In Appendix D.1 the map is fitted inside a five-fold split of the training set, which is what the isotonic fit in that appendix does, and never on the held-out rows the table reports.
+Fitting the map on the training rows destroys it. The map is fitted inside a split of the training set, never on the rows the result is reported on.
 
-The score to read is the Brier score, the mean squared difference between the emitted probability and the outcome [[11](#ref-11)]. It moves with both calibration and discrimination, so it is the one number that says whether a repair helped: naive Bayes goes from 0.0760 to 0.0614 under isotonic regression while its accuracy is unchanged.
+The score to read is the Brier score, the mean squared difference between the emitted probability and the outcome [[11](#ref-11)]. It moves with both calibration and discrimination, so it is the one number that says whether the repair helped; since the map leaves the ranking alone, a drop in the Brier score is a gain in the probability itself.
 
 ### 5.3 Four Ways To Spend Confidence
 
-Probabilities enter the combination in four places, and they are not equally good. Ordered by how much of the information they keep:
+Probabilities enter the combination in four places, and the four are not equally good. Ordered by how much of the information they keep:
 
-- **Soft voting** — a fixed share per member on every row. Cheapest, and the one that an overconfident member breaks.
+- **Soft voting** — a fixed share per member on every row. Cheapest, and the one that a distorted member breaks.
 - **Per-row confidence weighting** — a share that varies by row, from the entropy of that member's own output on that row.
 - **Meta-feature** — probabilities as columns for a second model, which learns both the weights and the correlations between members.
 - **Abstention** — the ensemble probability used to decide whether to answer at all.
@@ -148,19 +149,19 @@ Per-row weighting normalizes the entropy of member $m$ on row $x$ against its ma
 
 $$c_m(x) = 1 - \frac{H\left(p_m(x)\right)}{\log K} \hspace{19em} (4)$$
 
-This rewards confidence, which is exactly wrong on raw output — the overconfident member gets the largest weight everywhere. In Appendix D.2 it drops accuracy to 0.9240, below plain soft voting. Applied to calibrated probabilities it reaches 0.9532, above calibrated soft voting at 0.9474. The rule is that equation (4) may only be applied after section 5.2.
+Equation (4) rewards confidence, so on raw output it rewards the distortion of Table 4 and hands the largest weight to the worst-scaled member on every row. It may only be applied after section 5.2.
 
-The meta-feature route is the strongest and the reason is that it is the only one that sees the members jointly. Stacking with confidences rather than labels was the finding of the original study of the method's design choices [[8](#ref-8)], and Table 5 reproduces it: 0.9649 against 0.9591. The fitted coefficients — 4.392, 2.678, 0.969 — are the meta-learner discovering by itself that the third member should be discounted, which is a decision no fixed averaging rule can make.
+The meta-feature route is the strongest, because it is the only one of the four that sees the members jointly. Stacking with confidences rather than labels was the finding of the original study of the method's design choices [[8](#ref-8)]. The meta-learner fits one coefficient per member from the data and discounts a member the others already cover, which is a decision no fixed averaging rule can make.
 
-Abstention converts confidence into a coverage choice. The optimum rule is to reject where the posterior is below a threshold, and the error and reject rates trade off along a curve fixed by that threshold [[12](#ref-12)]. Appendix D.3 measures the curve on this data: 0.9474 accuracy at full coverage, 0.9866 at 87.1% coverage, and 1.0000 at 74.3% coverage. The rows the ensemble declines are the rows it was going to get wrong.
+Abstention converts confidence into a coverage choice. The optimum rule is to reject where the posterior is below a threshold, and the error and reject rates trade off along a curve fixed by that threshold [[12](#ref-12)]. The rows the ensemble declines are the rows it is most likely to get wrong, so accuracy on the rows it answers rises as coverage falls.
 
 ### 5.4 Disagreement
 
-The spread among members estimates uncertainty only where the members are genuinely different, and this document's own regression run is the counterexample. Independently trained members are a practical uncertainty estimate and are competitive with more elaborate Bayesian treatments [[14](#ref-14)], but that rests on the members having distinct blind spots.
+The spread among members estimates uncertainty only where the members are genuinely different. Independently trained members are a practical uncertainty estimate and are competitive with more elaborate Bayesian treatments [[14](#ref-14)], but that rests on the members having distinct blind spots.
 
-In Appendix B.4 the 133 held-out rows are split at the median member spread. The low-spread half has RMSE 55.69 at a mean spread of 6.14; the high-spread half has RMSE 55.47 at a mean spread of 16.92. The spread varies by a factor of nearly three and the error does not move. Three members that share the same predictors and the same missing variable agree confidently in the same wrong place, and their agreement measures their common blind spot rather than the difficulty of the row.
+Members that share the same predictors and the same missing variable agree confidently in the same wrong place. Their agreement then measures the blind spot they hold in common rather than the difficulty of the row, and the spread then orders the rows in a way the error does not.
 
-Classification behaves differently on the same data because the abstention signal in section 5.3 is the ensemble's own posterior rather than the disagreement between members. Disagreement is worth measuring; it is not worth trusting without the check above.
+The abstention signal of section 5.3 is a different quantity: the ensemble's own posterior, not the disagreement between members. Disagreement is worth measuring, and it is worth trusting only after the check in Appendix B.5 has been run on the members at hand.
 
 ## 6. Frameworks
 
@@ -168,7 +169,7 @@ Classification behaves differently on the same data because the abstention signa
 
 Bagging fits each member on a bootstrap resample of the rows and averages or votes the results, which lowers variance and leaves bias where it was [[2](#ref-2)]. It pays only for members that move when the sample moves, so a deep unpruned tree gains and a linear fit barely does.
 
-Random forest adds column sampling at every split, so that members stop agreeing through the one dominant predictor [[3](#ref-3)]. That extra step is the whole difference in Table 6: bagged trees reach 0.9298 and the forest reaches 0.9532 on the same members and the same data.
+Random forest adds column sampling at every split, so that members stop agreeing through the one dominant predictor [[3](#ref-3)]. That one step is what separates a random forest from bagged trees of the same depth and count.
 
 ### 6.2 Boosting
 
@@ -193,45 +194,13 @@ The meta-learner stays small. A regularized linear model on three columns has th
 
 Blending replaces the cross-validation of stacking with a single holdout: members are fitted on one part of the training set and the meta-learner on the other. It costs one fit per member instead of $K+1$ and it cannot leak, since the two parts never meet.
 
-It pays for that twice, and Table 5 shows the bill. On the same members, blending reaches 0.9298 against stacking's 0.9649. The members saw 70% of the training rows instead of all of them, and the meta-learner was fitted on 120 rows instead of the 398 out-of-fold predictions stacking gives it.
+It pays for that twice. The members are fitted on part of the training set rather than all of it, and the meta-learner sees one holdout instead of an out-of-fold prediction for every training row.
 
 ## 7. Comparison
 
-Table 5 is the measured comparison. Three members — logistic regression, a 200-tree random forest and Gaussian naive Bayes — are fitted on 398 rows of the breast cancer data and scored on the 171 held out, with the code in Appendix B, C, D and E.
+The choice follows from two things: what the members emit, and how many rows are left over for fitting the combination. Table 5 reads from the left column.
 
-Table 5. Combination rules on 171 held-out rows
-
-| Method | Combines | Accuracy | Brier |
-|--------|----------|----------|-------|
-| Stacking on probabilities | Probability | 0.9649 | 0.0275 |
-| Logistic regression alone | Nothing | 0.9591 | 0.0265 |
-| Hard voting | Label | 0.9591 | N/A |
-| Stacking on labels | Label | 0.9591 | 0.0317 |
-| Random forest alone | Nothing | 0.9532 | 0.0404 |
-| Confidence weighted, calibrated | Calibrated probability | 0.9532 | 0.0360 |
-| Soft voting, calibrated | Calibrated probability | 0.9474 | 0.0359 |
-| Soft voting, raw | Probability | 0.9415 | 0.0373 |
-| Blending | Probability | 0.9298 | 0.0406 |
-| Mean of log-odds | Probability | 0.9298 | 0.0572 |
-| Naive Bayes alone | Nothing | 0.9240 | 0.0760 |
-| Confidence weighted, raw | Probability | 0.9240 | 0.0496 |
-
-Hard voting has no Brier score because it emits no probability, and that empty cell is the cost of the label-only route: nothing downstream can threshold it, abstain on it, or feed it to a decision rule with a cost matrix.
-
-Table 6 separates the frameworks, all on the same split and all self-contained ensembles of trees.
-
-Table 6. Frameworks on the same 171 held-out rows
-
-| Framework | Members | Accuracy | Brier |
-|-----------|---------|----------|-------|
-| Random forest | 200 trees, rows and columns sampled | 0.9532 | 0.0404 |
-| Gradient boosting | 100 trees, sequential | 0.9357 | 0.0422 |
-| Bagging | 200 trees, rows sampled | 0.9298 | 0.0450 |
-| Single tree | 1 | 0.9064 | 0.0936 |
-
-Table 7 is the selection rule, read from the left column.
-
-Table 7. Which combination to use
+Table 5. Which combination to use
 
 | Use | When | Why |
 |-----|------|-----|
@@ -241,9 +210,11 @@ Table 7. Which combination to use
 | Stacking | Members of unrelated kinds, enough rows for a cross-validation pass | Learns weights and correlations together |
 | Blending | One fit per member is the budget, or the folds are expensive | No leak, at the price of rows |
 
+Appendix B measures every row of Table 5 against the others, and Appendix E does the same for the frameworks of section 6.
+
 ## 8. Further Work
 
-- **Coverage set by guarantee rather than by threshold** — The abstention table in section 5.3 fixes coverage by trying thresholds and reading the result, which gives no guarantee on the rows that are answered. Conformal prediction sets the threshold from a target error rate instead, and its distribution-free coverage guarantee holds for any underlying model, so the ensemble of section 6 can be used unchanged. It needs a calibration split held out from the same distribution as deployment and exchangeable with it, which is the condition a drifting process breaks.
+- **Coverage set by guarantee rather than by threshold** — Abstention as set out in section 5.3 fixes coverage by trying thresholds and reading the result, which gives no guarantee on the rows that are answered. Conformal prediction sets the threshold from a target error rate instead, and its distribution-free coverage guarantee holds for any underlying model, so the ensemble of section 6 can be used unchanged. It needs a calibration split held out from the same distribution as deployment and exchangeable with it, which is the condition a drifting process breaks.
 - **Weights that follow the process** — The non-negative least squares weights of section 4.3 are fitted once and are fixed thereafter, so a member that degrades keeps its share. Reweighting members from their running loss is now standard in streaming libraries and needs no refitting of the members themselves. It needs labels arriving with a bounded delay and a rule for how fast a weight may move, since a weight that chases noise is worse than a fixed one.
 
 ## References
@@ -290,11 +261,43 @@ Table 7. Which combination to use
 - **stacking**: A framework that fits a meta-learner on the members' out-of-fold predictions.
 - **temperature scaling**: A calibration map that divides the logits by one fitted scalar.
 
-## Appendix B. Voting And Averaging
+## Appendix B. Worked Example
 
-### B.1 Hard And Soft Voting
+Every measurement in this appendix comes from one pair of splits. Three members of unrelated kinds — logistic regression, a 200-tree random forest and Gaussian naive Bayes — are fitted on 398 rows of the breast cancer data and scored on the 171 held out. The regression parts, B.4 and B.5, use the diabetes data split 309 to 133 the same way.
 
-Three members of unrelated kinds are fitted on the breast cancer data, and the two voting rules are applied to the same fits. The accuracies are the first rows of Table 5.
+Table 6. Combination rules on 171 held-out rows
+
+| Method | Combines | Accuracy | Brier |
+|--------|----------|----------|-------|
+| Stacking on probabilities | Probability | 0.9649 | 0.0275 |
+| Logistic regression alone | Nothing | 0.9591 | 0.0265 |
+| Hard voting | Label | 0.9591 | N/A |
+| Stacking on labels | Label | 0.9591 | 0.0317 |
+| Random forest alone | Nothing | 0.9532 | 0.0404 |
+| Confidence weighted, calibrated | Calibrated probability | 0.9532 | 0.0360 |
+| Soft voting, calibrated | Calibrated probability | 0.9474 | 0.0359 |
+| Soft voting, raw | Probability | 0.9415 | 0.0373 |
+| Blending | Probability | 0.9298 | 0.0406 |
+| Mean of log-odds | Probability | 0.9298 | 0.0572 |
+| Naive Bayes alone | Nothing | 0.9240 | 0.0760 |
+| Confidence weighted, raw | Probability | 0.9240 | 0.0496 |
+
+Hard voting has no Brier score because it emits no probability, and that empty cell is the cost of the label-only route: nothing downstream can threshold it, abstain on it, or feed it to a decision rule with a cost matrix.
+
+Table 7. Frameworks on the same 171 held-out rows
+
+| Framework | Members | Accuracy | Brier |
+|-----------|---------|----------|-------|
+| Random forest | 200 trees, rows and columns sampled | 0.9532 | 0.0404 |
+| Gradient boosting | 100 trees, sequential | 0.9357 | 0.0422 |
+| Bagging | 200 trees, rows sampled | 0.9298 | 0.0450 |
+| Single tree | 1 | 0.9064 | 0.0936 |
+
+The code behind each row of Table 6 runs from B.1 through D.3, in that order, and the code behind Table 7 is in Appendix E.
+
+### B.1 Data And Members
+
+The three members, fitted once and reused by every later section. Their accuracies are the three Nothing rows of Table 6.
 
 ```python
 import numpy as np
@@ -319,6 +322,21 @@ models = {
 for model in models.values():
     model.fit(X_tr, y_tr)
 
+for name, model in models.items():
+    print(f'{name:12s} {accuracy_score(y_te, model.predict(X_te)):.4f}')
+```
+
+```text
+logistic     0.9591
+forest       0.9532
+naive_bayes  0.9240
+```
+
+### B.2 Hard And Soft Voting
+
+The two rules of section 4.1 applied to the same fits. Naive Bayes is the member that Table 4 marks unusable as emitted, and averaging its probabilities is what puts soft voting below hard voting here.
+
+```python
 # hard voting: the majority of the labels, nothing else
 labels = np.column_stack([m.predict(X_te) for m in models.values()])
 hard = (labels.mean(axis=1) > 0.5).astype(int)
@@ -327,36 +345,52 @@ hard = (labels.mean(axis=1) > 0.5).astype(int)
 probs = np.stack([m.predict_proba(X_te) for m in models.values()])
 soft = probs.mean(axis=0).argmax(axis=1)
 
-for name, model in models.items():
-    print(f'{name:12s} {accuracy_score(y_te, model.predict(X_te)):.4f}')
 print(f'hard voting  {accuracy_score(y_te, hard):.4f}')
 print(f'soft voting  {accuracy_score(y_te, soft):.4f}')
 ```
 
 ```text
-logistic     0.9591
-forest       0.9532
-naive_bayes  0.9240
 hard voting  0.9591
 soft voting  0.9415
 ```
 
-### B.2 Weighted Averaging With Out-Of-Fold Weights
+### B.3 Averaging Log-Odds
 
-The regression counterpart. Weights come from non-negative least squares on out-of-fold predictions, and the last two lines check equation (1) numerically.
+Equation (3) on the same members, showing what removing the cap on a member's influence costs.
 
 ```python
-import numpy as np
+from sklearn.metrics import brier_score_loss
+
+EPS = 1e-6
+p = np.clip(np.stack([m.predict_proba(X_te)[:, 1] for m in models.values()]),
+            EPS, 1 - EPS)
+
+arithmetic = p.mean(axis=0)
+geometric = 1 / (1 + np.exp(-np.log(p / (1 - p)).mean(axis=0)))
+
+for name, q in (('arithmetic', arithmetic), ('log-odds', geometric)):
+    print(f'{name:11s} {accuracy_score(y_te, (q > 0.5).astype(int)):.4f}  '
+          f'brier {brier_score_loss(y_te, q):.4f}')
+```
+
+```text
+arithmetic  0.9415  brier 0.0373
+log-odds    0.9298  brier 0.0572
+```
+
+### B.4 Weighted Averaging With Out-Of-Fold Weights
+
+The regression counterpart of section 4.2. Weights come from non-negative least squares on out-of-fold predictions, and the last two lines check equation (1) numerically.
+
+```python
 from scipy.optimize import nnls
 from sklearn.base import clone
 from sklearn.datasets import load_diabetes
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import RidgeCV
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import KFold, cross_val_predict, train_test_split
+from sklearn.model_selection import KFold, cross_val_predict
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
 
 X_reg, y_reg = load_diabetes(return_X_y=True)
 Xr_tr, Xr_te, yr_tr, yr_te = train_test_split(
@@ -373,6 +407,7 @@ oof = np.column_stack([
 for model in members.values():
     model.fit(Xr_tr, yr_tr)
 pred = np.column_stack([m.predict(Xr_te) for m in members.values()])
+
 
 def rmse(p):
     return np.sqrt(mean_squared_error(yr_te, p))
@@ -405,33 +440,9 @@ weighted rmse 55.29  weights {'ridge': 0.621, 'forest': 0.162, 'knn': 0.216}
 3267.2 - 177.9 = 3089.3, ensemble mse 3089.3
 ```
 
-### B.3 Averaging Log-Odds
+### B.5 Member Spread As An Uncertainty Signal
 
-Equation (3) applied to the members of B.1, showing why removing the cap on a member's influence costs accuracy here.
-
-```python
-from sklearn.metrics import brier_score_loss
-
-EPS = 1e-6
-p = np.clip(np.stack([m.predict_proba(X_te)[:, 1] for m in models.values()]),
-            EPS, 1 - EPS)
-
-arithmetic = p.mean(axis=0)
-geometric = 1 / (1 + np.exp(-np.log(p / (1 - p)).mean(axis=0)))
-
-for name, q in (('arithmetic', arithmetic), ('log-odds', geometric)):
-    print(f'{name:11s} {accuracy_score(y_te, (q > 0.5).astype(int)):.4f}  '
-          f'brier {brier_score_loss(y_te, q):.4f}')
-```
-
-```text
-arithmetic  0.9415  brier 0.0373
-log-odds    0.9298  brier 0.0572
-```
-
-### B.4 Member Spread As An Uncertainty Signal
-
-The check of section 5.4, on the regression members of B.2. The spread separates the halves by a factor of nearly three and the error does not follow.
+The check that section 5.4 requires before disagreement is trusted, run on the members of B.4. The spread separates the two halves by a factor of nearly three and the error does not follow, so on these members the spread carries no information about the error.
 
 ```python
 spread = pred.std(axis=1)
@@ -453,11 +464,10 @@ largest   n 67  rmse 55.47  mean spread 16.92
 
 ### C.1 Stacking On Probabilities Against Labels
 
-The comparison behind the top and middle rows of Table 5. The only difference between the two stacks is what the meta-learner is fed.
+The two stacking rows of Table 6. The only difference between them is what the meta-learner is fed, and the coefficients show it discounting the member that Table 4 marks unusable.
 
 ```python
-from sklearn.base import clone
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
+from sklearn.model_selection import StratifiedKFold
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
 
@@ -489,7 +499,7 @@ on labels        0.9591  brier 0.0317
 
 ### C.2 Blending
 
-One split instead of K folds. The members see 70% of the training rows and the meta-learner is fitted on the 120 rows they did not see.
+One split instead of K folds. The members see 70% of the training rows and the meta-learner is fitted on the 120 rows they did not see, which is what section 6.4 calls paying twice.
 
 ```python
 X_fit, X_bl, y_fit, y_bl = train_test_split(
@@ -513,7 +523,7 @@ blending 0.9298  brier 0.0406  meta rows 120
 
 ### D.1 Calibration Before Averaging
 
-The map is fitted inside a five-fold split of the training set, so no held-out row takes part in fitting it. The last two lines are the soft voting rows of Table 5.
+The map is fitted inside a five-fold split of the training set, so no held-out row takes part in fitting it. The extreme column counts the predictions past 0.99 or below 0.01, which is the distortion Table 4 assigns to each family.
 
 ```python
 from sklearn.calibration import CalibratedClassifierCV
@@ -549,7 +559,7 @@ soft voting, calibrated  0.9474  brier 0.0359
 
 ### D.2 Per-Row Confidence Weighting
 
-Equation (4) applied twice, to the raw probabilities and to the calibrated ones, showing that the weighting must come after the calibration.
+Equation (4) applied twice, to the raw probabilities and to the calibrated ones. On raw output the weighting rewards the distortion and loses to plain soft voting; after calibration it wins.
 
 ```python
 def confidence_weighted(probs):
@@ -599,7 +609,7 @@ threshold  coverage  accuracy
 
 ## Appendix E. Frameworks
 
-Table 6 measured on the split of B.1, so that the frameworks and the combination rules are scored on the same 171 rows. Each of these is a self-contained ensemble of trees and needs no separate aggregation step.
+Table 7, measured on the split of B.1 so that the frameworks and the combination rules are scored on the same 171 rows. Each of these is a self-contained ensemble of trees and needs no separate aggregation step.
 
 ```python
 from sklearn.ensemble import BaggingClassifier, GradientBoostingClassifier
