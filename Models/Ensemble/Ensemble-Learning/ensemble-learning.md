@@ -1,11 +1,11 @@
 # Ensemble Learning
-Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 22:13 UTC
+Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-10 22:19 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: There is no systematic way to combine several models once they are fitted, so the combination is picked by habit and the choices that were available are never laid out.
-- **Goal**: Present the ways of combining model outputs as a taxonomy and a hierarchy, so that any rule can be placed, compared with its neighbours, and chosen for a stated reason.
-- **Non-Goal**: Improving the models themselves is not covered.
+- **Problem Statement**: There is no systematic way to combine several fitted models.
+- **Goal**: Present the ways of combining model outputs through a taxonomy and a hierarchy.
+- **Non-Goal**: Improving the models is not covered.
 
 ## 2. Summary
 

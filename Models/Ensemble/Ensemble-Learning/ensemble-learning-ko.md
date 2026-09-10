@@ -1,11 +1,11 @@
 # Ensemble Learning (Korean)
-Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 22:13 UTC
+Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-10 22:19 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: 학습을 마친 여러 model 을 합치는 체계적인 방법이 없어, 결합을 습관으로 고르게 되고 고를 수 있었던 것들이 무엇이었는지는 끝내 드러나지 않는다.
-- **Goal**: 모델의 결과를 합치는 방법을 taxonomy 와 hierarchy 로 제시하여, 어떤 규칙이든 자리를 잡고 이웃과 견주고 밝힐 수 있는 이유로 고를 수 있게 한다.
-- **Non-Goal**: 모델 자체의 개선은 다루지 않는다.
+- **Problem Statement**: 학습을 마친 여러 model 을 합치는 체계적인 방법이 없다.
+- **Goal**: 모델의 결과를 합치는 방법을 taxonomy and hierarchy 를 통해 제시한다.
+- **Non-Goal**: 모델의 개선은 다루지 않는다.
 
 ## 2. Summary
 
