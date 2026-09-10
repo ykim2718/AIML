@@ -1,9 +1,9 @@
 # Overfitting In Long Data
-Rev. 8 | Created: 2026-09-07 | Updated: 2026-09-10 10:20 CDT
+Rev. 9 | Created: 2026-09-07 | Updated: 2026-09-10 10:35 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: 행이 많은 자료에서는 overfitting 이 없다고 보고 검증을 느슨하게 두는 일이 흔하다. 그 결과 cross-validation 이 보고한 오차와 운영에서 나오는 오차가 두 배 넘게 벌어져도 배포 전에는 드러나지 않는다.
+- **Problem Statement**: 행이 많은 자료에서는 overfitting 이 없다고 보고 검증을 느슨하게 하여, validation performance 와 test performance 가 크게 차이 날 수 있다.
 - **Goal**: 행이 열보다 훨씬 많은 자료에서 overfitting 이 들어오는 경로를 가려내고, 각 경로에 맞는 장치를 골라 쓸 수 있게 한다.
 - **Non-Goal**: 열이 행보다 많은 자료의 방어는 다루지 않는다. Deep learning 고유의 정칙화도 다루지 않는다.
 
