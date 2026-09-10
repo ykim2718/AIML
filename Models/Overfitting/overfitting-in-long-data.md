@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 6 | Created: 2026-09-07 | Updated: 2026-09-10 09:30 CDT
+Rev. 7 | Created: 2026-09-07 | Updated: 2026-09-10 09:55 CDT
 
 ## 1. Purpose
 
@@ -38,6 +38,8 @@ Table 1. Three paths into a long-data model
 | 3 | Leakage | A column or a split that carries the answer | An implausibly good model that fails on arrival |
 
 Fig 1 은 앞의 둘을 모의 실험으로 잰 것이다. 자료는 열이 6 개뿐이고 행이 group 으로 묶여 있으며, group 마다 고유한 offset 을 가진다. Panel 마다 행과 group 의 수는 아래에 적는다.
+
+행이 group 으로 묶여 있다는 것은 행이 하나씩 따로 생기지 않고 몇 개씩 같은 조건에서 함께 생긴다는 뜻이다. 같은 group 의 행들은 어떤 열의 값을 공유하고 응답에도 그 group 에만 붙는 값이 함께 들어 있어, 한 행을 보면 같은 group 의 다른 행을 상당 부분 맞출 수 있다. 이 자료의 여섯 행을 실제로 적어 보인 예가 [Appendix C](#appendix-c-what-a-grouped-row-looks-like) 에 있다.
 
 <img src="overfitting-in-long-data_fig/long-data-overfitting.png" width="1100" style="max-width: 100%;" alt="Fig 1">
 
@@ -204,3 +206,32 @@ Table 4. Separating the three causes of the gap
 둘째 단계가 판단을 가른다. 학습과 같은 분포에서 뽑은 held-out 에서 $R^2$ 가 0.99 가까이 남으면 남은 하락은 overfitting 이 아니라 shift 와 분모의 몫이고, 거기서도 0.7 로 떨어지면 overfitting 이 맞다. 두 몫이 함께 있는 경우가 흔하며, 그때는 둘째 단계의 값이 overfitting 의 몫을, 그 값과 test 값의 차이가 shift 의 몫을 준다.
 
 처방은 갈린 결과를 따른다. Overfitting 쪽이면 4.1 의 용량 제한과 4.2 의 분할을 고친다. Shift 쪽이면 model 을 고치는 일이 아니라, 추론 구간을 덮도록 학습 자료의 범위를 넓히거나 (4.3) 추론을 학습 자료가 덮는 구간으로 제한한다. 어느 쪽이든 보고에는 $R^2$ 만이 아니라 RMSE 를 함께 적어, 다음 사람이 같은 자리에서 다시 막히지 않게 한다.
+
+## Appendix C. What A Grouped Row Looks Like
+
+3.1 의 자료를 여섯 행만 그대로 옮기면 같은 group 의 행들이 무엇을 공유하는지가 표에서 바로 보인다. 열은 여섯이고 그 가운데 첫째 열은 group 안에서 값이 바뀌지 않으며, 나머지 다섯은 행마다 따로 뽑힌다. 응답은 둘째와 셋째 열의 비선형 함수에 그 group 의 offset 과 잡음을 더한 값이다.
+
+Table 5 는 그 자료에서 두 group 의 세 행씩을 그대로 옮긴 것이다.
+
+Table 5. Six rows drawn from two groups
+
+| Group | x1 | x2 | x3 | x4 | x5 | x6 | Offset | y |
+|-------|------|-------|-------|-------|-------|-------|--------|-------|
+| 1 | 0.42 | -0.45 | -0.22 | -2.02 | -0.23 | -0.87 | 3.06 | 2.34 |
+| 1 | 0.42 | 3.32 | 0.23 | -0.35 | -0.28 | -0.67 | 3.06 | 3.78 |
+| 1 | 0.42 | -1.06 | -0.39 | 0.48 | -0.24 | 0.96 | 3.06 | 0.87 |
+| 2 | -0.57 | -0.20 | 0.02 | 1.55 | 0.55 | -0.51 | -3.83 | -3.71 |
+| 2 | -0.57 | -0.18 | 0.54 | 1.94 | -0.27 | -0.24 | -3.83 | -4.52 |
+| 2 | -0.57 | 1.00 | -0.89 | -0.29 | 0.88 | 0.58 | -3.83 | -3.37 |
+
+Offset 열은 자료에 들어 있지 않다. 설명을 위해 함께 적었을 뿐이며, model 이 보는 것은 x1 부터 x6 까지와 y 이다.
+
+표에서 읽을 것은 셋이다.
+
+- **공유하는 열**: x1 은 group 1 의 세 행에서 모두 0.42, group 2 의 세 행에서 모두 -0.57 이다. Group 이 정해지면 이 열의 값도 정해진다.
+- **겹치지 않는 응답**: y 는 group 1 에서 0.87 에서 3.78 사이, group 2 에서 -4.52 에서 -3.71 사이이다. 두 무리가 전혀 겹치지 않으며, 그 차이의 대부분은 x1 부터 x6 이 아니라 offset 3.06 과 -3.83 에서 온다.
+- **한 행이 주는 정보**: group 1 의 한 행을 학습에서 보면 model 은 x1 이 0.42 인 행의 y 가 3 근처라는 것을 배운다. 같은 group 의 다른 행이 검증에 놓이면 그 행은 이미 절반쯤 답이 알려진 문제이다.
+
+계측 자료로 옮기면 group 은 wafer 한 장이고 행은 그 wafer 위의 측점이다. x1 은 그 wafer 를 처리한 설비의 설정값처럼 wafer 마다 하나씩 정해지는 값이고, 나머지 다섯 열은 측점마다 다른 측정값이다. Offset 에 해당하는 것은 그 wafer 의 측정값 전체를 위나 아래로 옮기는 chamber 상태나 소재 편차이며, 자료에 열로 들어 있지 않다.
+
+이 구조 때문에 행을 무작위로 나누면 같은 wafer 의 측점이 학습과 검증에 함께 들어간다. 3.3 이 재는 것이 바로 그 결과이다.
