@@ -1,10 +1,10 @@
 # Overfitting In Long Data
-Rev. 9 | Created: 2026-09-07 | Updated: 2026-09-10 10:35 CDT
+Rev. 10 | Created: 2026-09-07 | Updated: 2026-09-10 11:05 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: 행이 많은 자료에서는 overfitting 이 없다고 보고 검증을 느슨하게 하여, validation performance 와 test performance 가 크게 차이 날 수 있다.
-- **Goal**: 행이 열보다 훨씬 많은 자료에서 overfitting 이 들어오는 경로를 가려내고, 각 경로에 맞는 장치를 골라 쓸 수 있게 한다.
+- **Goal**: Overfitting taxonomy 에 따른 해석과 대응책을 정리한다.
 - **Non-Goal**: 열이 행보다 많은 자료의 방어는 다루지 않는다. Deep learning 고유의 정칙화도 다루지 않는다.
 
 ## 2. Summary
@@ -20,14 +20,14 @@ Long data 의 overfitting 은 parameter 의 수에서 오지 않고 세 곳에�
 처방도 셋이다.
 
 - **용량**: Held-out 오차가 돌아서는 지점에서 멈춘다.
-- **분할**: 자료가 묶인 group 을 따른다.
-- **행의 추가**: 같은 group 안이 아니라 새 group 을 늘린다.
+- **닮은 행**: 분할은 자료가 묶인 group 을 따르고, 행은 같은 group 안이 아니라 새 group 을 늘린다.
+- **누수**: 열이 기록되는 시점을 확인하고, 전처리와 선택을 학습 fold 안에 둔다.
 
 ## 3. Principle
 
 ### 3.1 Three Paths
 
-Overfitting 이 들어오는 경로는 셋이며, 각각 다른 장치로 막는다. Table 1 이 그 셋이다.
+이 문서가 쓰는 taxonomy 는 overfitting 이 들어오는 경로 셋이며, 각각 다른 장치로 막는다. 아래의 해석과 대응책은 모두 이 셋 가운데 어느 것인지를 먼저 가린 뒤에 정해진다. Table 1 이 그 셋이다.
 
 Table 1. Three paths into a long-data model
 
@@ -87,7 +87,17 @@ Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 �
 
 이 판단은 자료 수집 계획에 바로 쓰인다. Wafer 당 측점을 늘릴지 wafer 수를 늘릴지 물을 때, 답은 거의 언제나 뒤쪽이다.
 
-### 4.4 Test Set Discipline
+### 4.4 Leakage Control
+
+누수는 열과 분할과 전처리의 세 자리에서 들어오므로 (3.4), 대응도 그 세 자리에 하나씩 둔다.
+
+- **열**: 각 열이 기록되는 시점을 자료 사전에 적고, 응답이 정해진 뒤에 기록되는 열을 설명변수에서 뺀다.
+- **분할**: 4.2 의 시간 순서 규칙이 그대로 이 경로의 장치이다. Group 규칙과 함께 지켜야 하며, 한쪽만 지키면 나머지 한쪽에서 새어 들어온다.
+- **전처리**: 중심과 척도, 결측 대치, 열 선택을 학습 fold 안에서만 계산하고 검증 fold 에 적용한다.
+
+이 경로의 대응은 model 을 고치는 일이 아니라 자료가 만들어진 순서를 문서로 남기는 일이다. 3.4 가 말한 대로 오차로는 드러나지 않으므로, 그 기록이 없으면 같은 누수가 다음 model 에서 되풀이된다 [[2](#ref-2)].
+
+### 4.5 Test Set Discipline
 
 같은 test 자료로 여러 후보를 반복해서 재면 그 자료는 더 이상 test 자료가 아니다. 후보를 고르는 데 쓰인 순간 그것은 검증 자료가 되며, 반복 횟수만큼 낙관적으로 기운다. 최종 보고용 자료는 한 번만 열고, 그 전까지의 모든 비교는 4.2 의 분할 안에서 끝낸다.
 
@@ -104,8 +114,8 @@ Table 2. Checks that confirm overfitting
 | 3 | Error on groups held out entirely | The size of the gap the report hides | Report this number instead |
 | 4 | Learning curve along new groups against rows inside groups | Whether more rows will help | Collection direction in 4.3 |
 | 5 | Permutation test over the whole procedure | Bias in the procedure itself | Rebuild the procedure |
-| 6 | Error compared between the earlier and later time segments | Leakage through the split | Split by time order |
-| 7 | One column carrying almost the whole fit | Leakage through a column | Check when that column is written |
+| 6 | Error compared between the earlier and later time segments | Leakage through the split | Leakage control in 4.4 |
+| 7 | One column carrying almost the whole fit | Leakage through a column | Leakage control in 4.4 |
 
 둘째와 셋째 검사는 같은 자료에 분할만 바꾸어 다시 재는 것으로 끝난다. 3.3 의 자료에서 두 값의 비는 1.9 였고, group 을 지킨 분할의 값이 새 group 에서의 실제 오차와 거의 같았다. 그러므로 보고할 값은 group 분할 쪽이며, 두 값이 처음부터 거의 같게 나오면 행 사이의 의존은 이 자료에서 문제가 아니어서 남는 경로는 용량과 누수 둘이다. 첫째 검사는 3.2 가 든 세 징후를 그대로 보는 것이고, 용량을 키워 가며 held-out 오차가 돌아서는 지점이 곧 4.1 이 멈출 자리이다.
 
@@ -184,6 +194,7 @@ Table 3. The same failure from two different causes
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
 - **R-squared**: 응답의 분산 가운데 model 이 설명한 몫이며, 기호는 $R^2$ 이다. 분모가 그 자료의 분산이므로 자료가 바뀌면 같은 model 도 다른 값을 낸다.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
+- **taxonomy**: 대상을 서로 겹치지 않는 갈래로 나눈 분류 체계.
 
 ## Appendix B. Case Study Of A Train-Test Gap
 
