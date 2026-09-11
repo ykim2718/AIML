@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 22 | Created: 2026-09-11 | Updated: 2026-09-11 18:30 CDT
+Rev. 23 | Created: 2026-09-11 | Updated: 2026-09-11 18:50 CDT
 
 ## 1. Purpose
 
@@ -215,11 +215,16 @@ def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S
 ### B.2 Optimal Weight Search
 
 ```python
+from typing import Literal, get_args
+
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, log_loss, r2_score, roc_auc_score
 
 
-def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: str = "f1",
+Metric = Literal["r2", "f1", "accuracy", "roc_auc", "log_loss"]
+
+
+def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: Metric = "f1",
                         threshold: float = 0.5, step: float = 0.01,
                         v_T: np.ndarray = None, v_S: np.ndarray = None) -> tuple[float, float]:
     """Search the weight w of models T and S that suits the validation dataset best, by grid search.
@@ -228,7 +233,7 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     - y_true: true labels (N,)
     - p_T: predicted probability of model T (N,)
     - p_S: predicted probability of model S (N,)
-    - metric: metric to optimize ('f1', 'accuracy', 'r2', 'roc_auc', 'log_loss')
+    - metric: metric to optimize, one of Metric
     - threshold: classification threshold (used by f1 and accuracy)
     - step: weight step of the grid search (default: 0.01 -> 100 intervals)
     - v_T: predicted value of model T (N,), required by 'r2' and refused by every other metric
@@ -255,7 +260,13 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     ... )
     >>> float(best_w), round(float(best_score), 4)
     (0.75, 0.9707)
+    >>> find_optimal_weight(y_true, p_T, p_S, metric="rmse")
+    Traceback (most recent call last):
+    ValueError: metric must be one of ('r2', 'f1', 'accuracy', 'roc_auc', 'log_loss'), not 'rmse'.
     """
+    if metric not in get_args(Metric):
+        raise ValueError(f"metric must be one of {get_args(Metric)}, not '{metric}'.")
+
     if metric == "r2":
         if v_T is None or v_S is None:
             raise ValueError("metric 'r2' scores the single predicted value, so v_T and v_S are required.")
@@ -286,8 +297,6 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
             score = log_loss(y_true, p_hybrid)
         elif metric == "r2":
             score = r2_score(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
-        else:
-            raise ValueError(f"unsupported metric: {metric}")
 
         # keep the best so far
         if is_lower_better:
