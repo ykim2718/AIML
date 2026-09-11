@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 15 | Created: 2026-09-11 | Updated: 2026-09-11 14:20 CDT
+Rev. 16 | Created: 2026-09-11 | Updated: 2026-09-11 14:50 CDT
 
 ## 1. Purpose
 
@@ -269,6 +269,11 @@ p_M_val = np.clip(p_M_val, 0, 1)
 p_S_val = y_val * 0.5 + np.random.normal(0, 0.3, size=N_samples)
 p_S_val = np.clip(p_S_val, 0, 1)
 
+# --- the first five rows of the sample ---
+print("y_val:", y_val[:5])
+print("p_M  :", np.round(p_M_val[:5], 4))
+print("p_S  :", np.round(p_S_val[:5], 4))
+
 # --- run the grid search ---
 # 1. optimize on F1-score
 best_w_f1, best_score_f1 = find_optimal_weight(
@@ -291,4 +296,15 @@ best_w_loss, best_score_loss = find_optimal_weight(
 print(
     f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
 )
+```
+
+먼저 찍히는 다섯 행이 표본의 머리이고, 그 뒤 세 줄이 탐색 결과입니다.
+
+```text
+y_val: [0 1 0 0 0]
+p_M  : [0.0684 1.     0.1901 0.     0.    ]
+p_S  : [0.3905 0.9685 0.0096 0.     0.138 ]
+[F1-Score] best w: 0.78 | score: 0.9174
+[ROC-AUC]  best w: 0.73 | score: 0.9968
+[Log Loss] best w: 1.0 | score: 0.2517
 ```
