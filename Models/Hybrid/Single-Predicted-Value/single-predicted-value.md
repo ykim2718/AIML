@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 18 | Created: 2026-09-11 | Updated: 2026-09-11 15:45 CDT
+Rev. 19 | Created: 2026-09-11 | Updated: 2026-09-11 16:30 CDT
 
 ## 1. Purpose
 
@@ -69,7 +69,7 @@ Two things call for care when the combination is built on probabilities.
 
 ### 4.2 Optimal Weight Search
 
-A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
+A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, R-squared, ROC-AUC or log loss. Scoring on `r2` needs the predicted value of each model, `v_T` and `v_S`, and every other metric refuses them. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
@@ -79,16 +79,17 @@ p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_
 
 ### 4.3 Metric Selection
 
-Metrics divide on whether they use the classification threshold. `ROC-AUC` evaluates the whole probability dimension and is therefore untouched by the classification threshold, while `F1-Score` and `Accuracy` work against the `threshold` setting that turns a probability into a final class.
+Metrics divide on what they hold against `y_true`. `r2` scores the single predicted value of equation (5) and is the one that aims at the deliverable directly; `F1-Score` and `Accuracy` score the class the `threshold` produces, so the weight they choose moves that class; `ROC-AUC` and `Log Loss` score the hybrid probability itself and leave the chosen value alone.
 
 Table 1. Metrics for the weight search
 
-| Metric | Direction | Threshold | Basis |
+| Metric | Direction | Threshold | Compared with y_true |
 | --- | --- | --- | --- |
-| `roc_auc` | Higher is better | Not used | The whole probability dimension |
-| `log_loss` | Lower is better | Not used | Disagreement between the probability and the label |
-| `f1` | Higher is better | Used | Final class produced by the threshold |
-| `accuracy` | Higher is better | Used | Final class produced by the threshold |
+| `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
+| `f1` | Higher is better | Used | The class the threshold produces |
+| `accuracy` | Higher is better | Used | The class the threshold produces |
+| `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
+| `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
 ## 5. Comparison
 
@@ -114,6 +115,7 @@ N/A — no external source is cited.
 - **Log Loss**: A metric of the disagreement between the predicted probability and the label. Lower is better.
 - **Platt Scaling**: A calibration method passing a model output through a logistic function to put it on a probability scale.
 - **Probability Calibration**: The procedure of matching the probabilities a model emits to the observed frequency.
+- **R-squared**: A metric of how much of the variance of the true value the prediction accounts for. Higher is better.
 - **ROC-AUC**: A metric summarizing classification performance over every threshold.
 - **Soft Voting**: A combination that averages the predicted probabilities of the models with weights to decide the final class.
 - **Threshold**: The classification threshold that turns a probability into a final class.
@@ -184,20 +186,23 @@ def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S
 
 ```python
 import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, log_loss, roc_auc_score
+from sklearn.metrics import accuracy_score, f1_score, log_loss, r2_score, roc_auc_score
 
 
 def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: str = "f1",
-                        threshold: float = 0.5, step: float = 0.01) -> tuple[float, float]:
+                        threshold: float = 0.5, step: float = 0.01,
+                        v_T: np.ndarray = None, v_S: np.ndarray = None) -> tuple[float, float]:
     """Search the weight w of models T and S that suits the validation dataset best, by grid search.
 
     Parameters:
     - y_true: true labels (N,)
     - p_T: predicted probability of model T (N,)
     - p_S: predicted probability of model S (N,)
-    - metric: metric to optimize ('f1', 'roc_auc', 'log_loss', 'accuracy')
+    - metric: metric to optimize ('f1', 'accuracy', 'r2', 'roc_auc', 'log_loss')
     - threshold: classification threshold (used by f1 and accuracy)
     - step: weight step of the grid search (default: 0.01 -> 100 intervals)
+    - v_T: predicted value of model T (N,), required by 'r2' and refused by every other metric
+    - v_S: predicted value of model S (N,), required by 'r2' and refused by every other metric
 
     Returns:
     - best_w: optimal weight for model T (model S takes 1 - best_w)
@@ -212,7 +217,21 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric="log_loss", step=0.25)
     >>> float(best_w), round(float(best_score), 4)
     (1.0, 0.2899)
+    >>> y_value = np.array([10.0, 20.0, 30.0, 40.0])
+    >>> v_T = np.array([11.0, 19.0, 33.0, 37.0])
+    >>> v_S = np.array([14.0, 25.0, 26.0, 44.0])
+    >>> best_w, best_score = find_optimal_weight(
+    ...     y_value, p_T, p_S, metric="r2", step=0.25, v_T=v_T, v_S=v_S
+    ... )
+    >>> float(best_w), round(float(best_score), 4)
+    (0.75, 0.9707)
     """
+    if metric == "r2":
+        if v_T is None or v_S is None:
+            raise ValueError("metric 'r2' scores the single predicted value, so v_T and v_S are required.")
+    elif v_T is not None or v_S is not None:
+        raise ValueError(f"v_T and v_S belong to metric 'r2', not to '{metric}'.")
+
     weights = np.arange(0.0, 1.0 + step, step)
     best_w = None
 
@@ -235,6 +254,8 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
             score = roc_auc_score(y_true, p_hybrid)
         elif metric == "log_loss":
             score = log_loss(y_true, p_hybrid)
+        elif metric == "r2":
+            score = r2_score(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
         else:
             raise ValueError(f"unsupported metric: {metric}")
 
@@ -303,14 +324,21 @@ print(
     f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
 )
 
-# --- the single predicted value at the weight F1-Score chose ---
+# 4. optimize on R-squared, which scores the single predicted value itself
+best_w_r2, best_score_r2 = find_optimal_weight(
+    y_true, y_prob_by_t, y_prob_by_s, metric="r2",
+    v_T=y_pred_by_t, v_S=y_pred_by_s
+)
+print(f"[R-squared] best w: {best_w_r2} | score: {best_score_r2:.4f}")
+
+# --- the single predicted value at the weight R-squared chose ---
 v_hybrid = hybrid_predict_value(
-    y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_f1
+    y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_r2
 )
 print("v_hybrid   :", np.round(v_hybrid[:10], 4))
 ```
 
-The five arrays printed first are the head of the sample, ten rows of it, the three lines after them are the search result, and the last line is the single predicted value at the weight F1-Score chose.
+The five arrays printed first are the head of the sample, ten rows of it, the four lines after them are the search result, and the last line is the single predicted value at the weight R-squared chose.
 
 ```text
 y_true     : [0 1 0 0 0 1 0 0 0 1]
@@ -321,5 +349,6 @@ y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5
 [F1-Score] best w: 0.78 | score: 0.9174
 [ROC-AUC]  best w: 0.73 | score: 0.9968
 [Log Loss] best w: 1.0 | score: 0.2542
-v_hybrid   : [0.     1.     0.     0.     0.     0.9051 0.9446 0.     0.     1.    ]
+[R-squared] best w: 0.7 | score: 0.7127
+v_hybrid   : [0.     1.     0.     0.     0.     0.8626 0.9628 0.     0.     1.    ]
 ```

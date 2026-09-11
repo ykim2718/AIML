@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 19 | Created: 2026-09-11 | Updated: 2026-09-11 15:45 CDT
+Rev. 20 | Created: 2026-09-11 | Updated: 2026-09-11 16:30 CDT
 
 ## 1. Purpose
 
@@ -69,7 +69,7 @@ v_{\mathrm{hybrid}} = \frac{w \cdot p_T \cdot v_T + (1 - w) \cdot p_S \cdot v_S}
 
 ### 4.2 Optimal Weight Search
 
-Validation 데이터셋에서 F1-score, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
+Validation 데이터셋에서 F1-score, R-squared, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. `r2` 로 점수를 매기려면 각 모델의 예측 값 `v_T`, `v_S` 가 필요하고, 다른 지표는 그 둘을 받지 않습니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
 
 Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이터셋의 가중합 계산에 적용하여 최종 평가를 수행하면 됩니다.
 
@@ -79,16 +79,17 @@ p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_
 
 ### 4.3 Metric Selection
 
-지표는 분류 임계값 (Threshold) 을 쓰는지로 갈립니다. `ROC-AUC`는 확률값 차원 전체를 평가하므로 분류 임계값에 영향을 받지 않는 반면, `F1-Score`나 `Accuracy`는 확률을 최종 클래스로 변환하는 `threshold` 설정에 맞춰 작동합니다.
+지표는 `y_true` 와 무엇을 대는지로 갈립니다. `r2` 는 식 (5) 의 단일 예측값을 재어 산출물을 바로 겨냥하고, `F1-Score` 와 `Accuracy` 는 `threshold` 가 만든 클래스를 재므로 이들이 고른 가중치는 그 클래스를 움직이며, `ROC-AUC` 와 `Log Loss` 는 하이브리드 확률 자체를 재어 고른 값은 건드리지 않습니다.
 
 Table 1. Metrics for the weight search
 
-| Metric | Direction | Threshold | Basis |
+| Metric | Direction | Threshold | Compared with y_true |
 | --- | --- | --- | --- |
-| `roc_auc` | 클수록 좋음 | 쓰지 않음 | 확률값 차원 전체 |
-| `log_loss` | 작을수록 좋음 | 쓰지 않음 | 확률값과 정답의 불일치 |
-| `f1` | 클수록 좋음 | 씀 | 임계값으로 변환한 최종 클래스 |
-| `accuracy` | 클수록 좋음 | 씀 | 임계값으로 변환한 최종 클래스 |
+| `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
+| `f1` | Higher is better | Used | The class the threshold produces |
+| `accuracy` | Higher is better | Used | The class the threshold produces |
+| `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
+| `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
 ## 5. Comparison
 
@@ -114,6 +115,7 @@ N/A — 외부 출처를 인용하지 않음.
 - **Log Loss**: 예측 확률과 정답의 불일치를 재는 지표. 작을수록 좋음.
 - **Platt Scaling**: 모델의 출력을 logistic 함수에 통과시켜 확률로 맞추는 교정 방법.
 - **Probability Calibration**: 모델이 내놓는 확률을 실제 빈도에 맞추는 절차.
+- **R-squared**: A metric of how much of the variance of the true value the prediction accounts for. Higher is better.
 - **ROC-AUC**: 모든 임계값에 걸친 분류 성능을 하나로 요약한 지표.
 - **Soft Voting**: 각 모델의 예측 확률을 가중 평균하여 최종 클래스를 정하는 결합 방식.
 - **Threshold**: 확률을 최종 클래스로 변환하는 분류 임계값.
@@ -184,20 +186,23 @@ def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S
 
 ```python
 import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, log_loss, roc_auc_score
+from sklearn.metrics import accuracy_score, f1_score, log_loss, r2_score, roc_auc_score
 
 
 def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: str = "f1",
-                        threshold: float = 0.5, step: float = 0.01) -> tuple[float, float]:
+                        threshold: float = 0.5, step: float = 0.01,
+                        v_T: np.ndarray = None, v_S: np.ndarray = None) -> tuple[float, float]:
     """Search the weight w of models T and S that suits the validation dataset best, by grid search.
 
     Parameters:
     - y_true: true labels (N,)
     - p_T: predicted probability of model T (N,)
     - p_S: predicted probability of model S (N,)
-    - metric: metric to optimize ('f1', 'roc_auc', 'log_loss', 'accuracy')
+    - metric: metric to optimize ('f1', 'accuracy', 'r2', 'roc_auc', 'log_loss')
     - threshold: classification threshold (used by f1 and accuracy)
     - step: weight step of the grid search (default: 0.01 -> 100 intervals)
+    - v_T: predicted value of model T (N,), required by 'r2' and refused by every other metric
+    - v_S: predicted value of model S (N,), required by 'r2' and refused by every other metric
 
     Returns:
     - best_w: optimal weight for model T (model S takes 1 - best_w)
@@ -212,7 +217,21 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric="log_loss", step=0.25)
     >>> float(best_w), round(float(best_score), 4)
     (1.0, 0.2899)
+    >>> y_value = np.array([10.0, 20.0, 30.0, 40.0])
+    >>> v_T = np.array([11.0, 19.0, 33.0, 37.0])
+    >>> v_S = np.array([14.0, 25.0, 26.0, 44.0])
+    >>> best_w, best_score = find_optimal_weight(
+    ...     y_value, p_T, p_S, metric="r2", step=0.25, v_T=v_T, v_S=v_S
+    ... )
+    >>> float(best_w), round(float(best_score), 4)
+    (0.75, 0.9707)
     """
+    if metric == "r2":
+        if v_T is None or v_S is None:
+            raise ValueError("metric 'r2' scores the single predicted value, so v_T and v_S are required.")
+    elif v_T is not None or v_S is not None:
+        raise ValueError(f"v_T and v_S belong to metric 'r2', not to '{metric}'.")
+
     weights = np.arange(0.0, 1.0 + step, step)
     best_w = None
 
@@ -235,6 +254,8 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
             score = roc_auc_score(y_true, p_hybrid)
         elif metric == "log_loss":
             score = log_loss(y_true, p_hybrid)
+        elif metric == "r2":
+            score = r2_score(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
         else:
             raise ValueError(f"unsupported metric: {metric}")
 
@@ -303,14 +324,21 @@ print(
     f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
 )
 
-# --- the single predicted value at the weight F1-Score chose ---
+# 4. optimize on R-squared, which scores the single predicted value itself
+best_w_r2, best_score_r2 = find_optimal_weight(
+    y_true, y_prob_by_t, y_prob_by_s, metric="r2",
+    v_T=y_pred_by_t, v_S=y_pred_by_s
+)
+print(f"[R-squared] best w: {best_w_r2} | score: {best_score_r2:.4f}")
+
+# --- the single predicted value at the weight R-squared chose ---
 v_hybrid = hybrid_predict_value(
-    y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_f1
+    y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_r2
 )
 print("v_hybrid   :", np.round(v_hybrid[:10], 4))
 ```
 
-먼저 찍히는 다섯 배열이 표본의 머리 열 행이고, 그 뒤 세 줄이 탐색 결과이며, 마지막 줄이 F1-Score 가 고른 가중치에서의 단일 예측값입니다.
+먼저 찍히는 다섯 배열이 표본의 머리 열 행이고, 그 뒤 네 줄이 탐색 결과이며, 마지막 줄이 R-squared 가 고른 가중치에서의 단일 예측값입니다.
 
 ```text
 y_true     : [0 1 0 0 0 1 0 0 0 1]
@@ -321,5 +349,6 @@ y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5
 [F1-Score] best w: 0.78 | score: 0.9174
 [ROC-AUC]  best w: 0.73 | score: 0.9968
 [Log Loss] best w: 1.0 | score: 0.2542
-v_hybrid   : [0.     1.     0.     0.     0.     0.9051 0.9446 0.     0.     1.    ]
+[R-squared] best w: 0.7 | score: 0.7127
+v_hybrid   : [0.     1.     0.     0.     0.     0.8626 0.9628 0.     0.     1.    ]
 ```
