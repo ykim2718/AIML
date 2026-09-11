@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 10 | Created: 2026-09-11 | Updated: 2026-09-11 13:00 CDT
+Rev. 11 | Created: 2026-09-11 | Updated: 2026-09-11 13:20 CDT
 
 ## 1. Purpose
 
@@ -56,7 +56,7 @@ Where each model emits a predicted value of its own, the single value is the two
 v_{\mathrm{hybrid}} = \frac{w \cdot p_M \cdot v_M + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_M + (1 - w) \cdot p_S} \hspace{15em} (5)
 ```
 
-The implementation is [Appendix B.1](#b1-single-predicted-value). It min-max normalizes each probability onto 0~1 first, which sets the lowest probability of a model to zero and drops that row's share of it, and it raises on a row where both normalized probabilities are zero instead of returning a number.
+The implementation is [Appendix B.1](#b1-single-predicted-value). It checks that both probabilities lie within 0~1 before weighing them, and it raises on a row where both are zero instead of returning a number.
 
 ## 4. Application
 
@@ -130,19 +130,21 @@ import numpy as np
 Probability = Union[float, np.ndarray]
 
 
-def normalize_probability(p: Probability) -> np.ndarray:
-    """확률을 0~1 구간으로 min-max normalize 합니다.
+def check_probability(p: Probability) -> np.ndarray:
+    """확률이 0~1 구간 안에 있는지 확인합니다.
 
-    p: 모델의 예측 확률 또는 점수
+    p: 모델의 예측 확률
 
-    >>> normalize_probability(np.array([0.9, 0.5, 0.2]))
-    array([1.        , 0.42857143, 0.        ])
+    >>> check_probability(np.array([0.9, 0.5, 0.2]))
+    array([0.9, 0.5, 0.2])
+    >>> check_probability(np.array([0.9, 1.4]))
+    Traceback (most recent call last):
+    ValueError: probability outside 0~1: min=0.9, max=1.4
     """
     p = np.asarray(p, dtype=float)
-    span = p.max() - p.min()
-    if span == 0:
-        raise ValueError("every probability is the same value, so it cannot be normalized.")
-    return (p - p.min()) / span
+    if p.min() < 0 or p.max() > 1:
+        raise ValueError(f"probability outside 0~1: min={p.min()}, max={p.max()}")
+    return p
 
 
 def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S: Probability,
@@ -159,14 +161,14 @@ def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S
     >>> p_M = np.array([0.9, 0.5, 0.2])
     >>> p_S = np.array([0.3, 0.6, 0.9])
     >>> np.round(hybrid_predict_value(v_M, v_S, p_M, p_S, w=0.5), 4)
-    array([10.    , 21.0769, 36.    ])
-    >>> hybrid_predict_value(v_M, v_S, np.array([0.2, 0.5, 0.9]), p_S, w=0.5)
+    array([10.5   , 21.0909, 34.9091])
+    >>> hybrid_predict_value(v_M, v_S, np.array([0.0, 0.5, 0.2]), np.array([0.0, 0.6, 0.9]))
     Traceback (most recent call last):
     ValueError: both models report zero probability, so the weighted value is undefined.
     """
-    # both probabilities on the same 0~1 scale before they are weighed against each other
-    p_M = normalize_probability(p_M)
-    p_S = normalize_probability(p_S)
+    # both probabilities have to be on the 0~1 scale before they are weighed against each other
+    p_M = check_probability(p_M)
+    p_S = check_probability(p_S)
 
     # confidence each model carries into the combination
     weight_M = w * p_M
