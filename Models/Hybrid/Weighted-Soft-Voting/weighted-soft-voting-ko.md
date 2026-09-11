@@ -1,5 +1,5 @@
 # Weighted Soft Voting (Korean)
-Rev. 9 | Created: 2026-09-11 | Updated: 2026-09-11 11:50 CDT
+Rev. 10 | Created: 2026-09-11 | Updated: 2026-09-11 12:30 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 9 | Created: 2026-09-11 | Updated: 2026-09-11 11:50 CDT
 
 ## 2. Summary
 
-단일 예측값은 두 확률의 가중 평균에서 다시 읽어낸 클래스이며, 어느 한 모델이 내놓은 예측값이 아닙니다. 두 모델 M과 S가 모두 예측 확률 ($p_M$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.2), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
+단일 예측값은 두 확률에서 나옵니다. 클래스는 두 확률의 가중 평균에서 다시 읽어내고, 클래스가 아닌 예측 값은 그 두 확률을 가중치로 삼아 평균합니다. 두 모델 M과 S가 모두 예측 확률 ($p_M$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.2), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
 
 ## 3. Principle
 
@@ -32,7 +32,7 @@ p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
 \hspace{15em} (2)
 ```
 
-각 모델이 내놓은 예측값은 여기에 쓰이지 않습니다. 단일 예측값은 $p_{\mathrm{hybrid}}$ 에서 다시 읽어내며, 각 모델이 그 안에서 차지하는 몫은 가중치 w 가 정합니다.
+각 모델이 내놓은 예측값은 여기에 쓰이지 않습니다. 클래스는 $p_{\mathrm{hybrid}}$ 에서 다시 읽어내며, 각 모델이 그 안에서 차지하는 몫은 가중치 w 가 정합니다. 예측 값 자체를 합치는 규칙은 꼭지 3.3 에 있습니다.
 
 식 (1) 과 식 (2) 의 구현은 [Appendix B.1](#b1-binary-classification) 입니다.
 
@@ -50,6 +50,16 @@ p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
 
 구현은 [Appendix B.2](#b2-multi-class-classification) 이며, 입력 두 개는 모두 (`N_samples`, `N_classes`) 형상의 배열입니다.
 
+### 3.3 Single Predicted Value
+
+각 모델이 예측 값을 함께 내놓는 경우, 단일 예측값은 두 값을 확률로 가중 평균한 것입니다. 자기 답을 더 확신하는 모델 쪽으로 결과가 끌립니다.
+
+```math
+v_{\mathrm{hybrid}} = \frac{w \cdot p_M \cdot v_M + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_M + (1 - w) \cdot p_S} \hspace{15em} (5)
+```
+
+두 확률이 모두 0 인 행은 가중 평균이 정의되지 않으므로, 구현은 값을 돌려주는 대신 오류를 냅니다. 구현은 [Appendix B.3](#b3-single-predicted-value) 입니다.
+
 ## 4. Application
 
 ### 4.1 Cautions
@@ -61,12 +71,12 @@ p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
 
 ### 4.2 Optimal Weight Search
 
-Validation 데이터셋에서 F1-score, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 M 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.3](#b3-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.4](#b4-execution-example) 입니다.
+Validation 데이터셋에서 F1-score, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 M 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.4](#b4-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.5](#b5-execution-example) 입니다.
 
 Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이터셋의 가중합 계산에 적용하여 최종 평가를 수행하면 됩니다.
 
 ```math
-p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)
+p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (6)
 ```
 
 ### 4.3 Metric Selection
@@ -175,7 +185,46 @@ def hybrid_predict_multiclass(p_M_array: np.ndarray, p_S_array: np.ndarray,
     return predictions, p_hybrid
 ```
 
-### B.3 Optimal Weight Search
+### B.3 Single Predicted Value
+
+```python
+from typing import Union
+
+import numpy as np
+
+Probability = Union[float, np.ndarray]
+
+
+def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S: Probability,
+                         w: float = 0.5) -> np.ndarray:
+    """
+    v_M: 모델 M의 예측 값
+    v_S: 모델 S의 예측 값
+    p_M: 모델 M의 예측 확률 (0~1)
+    p_S: 모델 S의 예측 확률 (0~1)
+    w: 모델 M에 부여할 가중치 (0~1)
+
+    >>> v_M = np.array([10.0, 20.0])
+    >>> v_S = np.array([12.0, 30.0])
+    >>> p_M = np.array([0.9, 0.2])
+    >>> p_S = np.array([0.3, 0.8])
+    >>> hybrid_predict_value(v_M, v_S, p_M, p_S, w=0.5)
+    array([10.5, 28. ])
+    >>> hybrid_predict_value(v_M, v_S, np.array([0.0, 0.2]), np.array([0.0, 0.8]))
+    Traceback (most recent call last):
+    ValueError: both models report zero probability, so the weighted value is undefined.
+    """
+    # confidence each model carries into the combination
+    weight_M = w * p_M
+    weight_S = (1 - w) * p_S
+
+    denominator = weight_M + weight_S
+    if np.any(denominator == 0):
+        raise ValueError("both models report zero probability, so the weighted value is undefined.")
+    return (weight_M * v_M + weight_S * v_S) / denominator
+```
+
+### B.4 Optimal Weight Search
 
 ```python
 import numpy as np
@@ -246,7 +295,7 @@ def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, me
     return best_w, best_score
 ```
 
-### B.4 Execution Example
+### B.5 Execution Example
 
 ```python
 # --- synthetic validation data ---

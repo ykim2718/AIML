@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 8 | Created: 2026-09-11 | Updated: 2026-09-11 11:50 CDT
+Rev. 9 | Created: 2026-09-11 | Updated: 2026-09-11 12:30 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 8 | Created: 2026-09-11 | Updated: 2026-09-11 11:50 CDT
 
 ## 2. Summary
 
-The single prediction is the class read off the weighted average of the two probabilities, not the prediction of either model. Where both models M and S provide predicted probabilities ($p_M$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
+The single prediction comes from the two probabilities: a class is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models M and S provide predicted probabilities ($p_M$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
 
 ## 3. Principle
 
@@ -32,7 +32,7 @@ The final class of a binary classification is decided at the threshold 0.5.
 \hspace{15em} (2)
 ```
 
-Each model's own predicted value takes no part in this: the single prediction is read off $p_{\mathrm{hybrid}}$, and the share a model holds in it is what the weight w sets.
+Each model's own predicted value takes no part in this: the class is read off $p_{\mathrm{hybrid}}$, and the share a model holds in it is what the weight w sets. Section 3.3 is the rule for the predicted values themselves.
 
 The implementation of equation (1) and equation (2) is [Appendix B.1](#b1-binary-classification).
 
@@ -50,6 +50,16 @@ In a multi-class classification with three or more classes, the per-class probab
 
 The implementation is [Appendix B.2](#b2-multi-class-classification), and both inputs are arrays of shape (`N_samples`, `N_classes`).
 
+### 3.3 Single Predicted Value
+
+Where each model emits a predicted value of its own, the single value is the two values averaged with the probabilities as weights, so the model surer of its answer pulls the result toward it.
+
+```math
+v_{\mathrm{hybrid}} = \frac{w \cdot p_M \cdot v_M + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_M + (1 - w) \cdot p_S} \hspace{15em} (5)
+```
+
+A row on which both probabilities are zero has no weighted value, and the implementation raises there instead of returning a number. The implementation is [Appendix B.3](#b3-single-predicted-value).
+
 ## 4. Application
 
 ### 4.1 Cautions
@@ -61,12 +71,12 @@ Two things call for care when the combination is built on probabilities.
 
 ### 4.2 Optimal Weight Search
 
-A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model M and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.3](#b3-optimal-weight-search), and the run on synthetic data is [Appendix B.4](#b4-execution-example).
+A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model M and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.4](#b4-optimal-weight-search), and the run on synthetic data is [Appendix B.5](#b5-execution-example).
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
 ```math
-p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)
+p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (6)
 ```
 
 ### 4.3 Metric Selection
@@ -175,7 +185,46 @@ def hybrid_predict_multiclass(p_M_array: np.ndarray, p_S_array: np.ndarray,
     return predictions, p_hybrid
 ```
 
-### B.3 Optimal Weight Search
+### B.3 Single Predicted Value
+
+```python
+from typing import Union
+
+import numpy as np
+
+Probability = Union[float, np.ndarray]
+
+
+def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S: Probability,
+                         w: float = 0.5) -> np.ndarray:
+    """
+    v_M: 모델 M의 예측 값
+    v_S: 모델 S의 예측 값
+    p_M: 모델 M의 예측 확률 (0~1)
+    p_S: 모델 S의 예측 확률 (0~1)
+    w: 모델 M에 부여할 가중치 (0~1)
+
+    >>> v_M = np.array([10.0, 20.0])
+    >>> v_S = np.array([12.0, 30.0])
+    >>> p_M = np.array([0.9, 0.2])
+    >>> p_S = np.array([0.3, 0.8])
+    >>> hybrid_predict_value(v_M, v_S, p_M, p_S, w=0.5)
+    array([10.5, 28. ])
+    >>> hybrid_predict_value(v_M, v_S, np.array([0.0, 0.2]), np.array([0.0, 0.8]))
+    Traceback (most recent call last):
+    ValueError: both models report zero probability, so the weighted value is undefined.
+    """
+    # confidence each model carries into the combination
+    weight_M = w * p_M
+    weight_S = (1 - w) * p_S
+
+    denominator = weight_M + weight_S
+    if np.any(denominator == 0):
+        raise ValueError("both models report zero probability, so the weighted value is undefined.")
+    return (weight_M * v_M + weight_S * v_S) / denominator
+```
+
+### B.4 Optimal Weight Search
 
 ```python
 import numpy as np
@@ -246,7 +295,7 @@ def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, me
     return best_w, best_score
 ```
 
-### B.4 Execution Example
+### B.5 Execution Example
 
 ```python
 # --- synthetic validation data ---
