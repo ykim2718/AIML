@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 9 | Created: 2026-09-11 | Updated: 2026-09-11 12:30 CDT
+Rev. 10 | Created: 2026-09-11 | Updated: 2026-09-11 13:00 CDT
 
 ## 1. Purpose
 
@@ -34,8 +34,6 @@ The final class of a binary classification is decided at the threshold 0.5.
 
 Each model's own predicted value takes no part in this: the class is read off $p_{\mathrm{hybrid}}$, and the share a model holds in it is what the weight w sets. Section 3.3 is the rule for the predicted values themselves.
 
-The implementation of equation (1) and equation (2) is [Appendix B.1](#b1-binary-classification).
-
 ### 3.2 Multi-Class Extension
 
 In a multi-class classification with three or more classes, the per-class probability vectors $p_M$ and $p_S$ are summed with the weight, and the class holding the highest probability is selected.
@@ -48,7 +46,7 @@ In a multi-class classification with three or more classes, the per-class probab
 \mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
 ```
 
-The implementation is [Appendix B.2](#b2-multi-class-classification), and both inputs are arrays of shape (`N_samples`, `N_classes`).
+Both inputs are arrays of shape (`N_samples`, `N_classes`).
 
 ### 3.3 Single Predicted Value
 
@@ -58,7 +56,7 @@ Where each model emits a predicted value of its own, the single value is the two
 v_{\mathrm{hybrid}} = \frac{w \cdot p_M \cdot v_M + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_M + (1 - w) \cdot p_S} \hspace{15em} (5)
 ```
 
-A row on which both probabilities are zero has no weighted value, and the implementation raises there instead of returning a number. The implementation is [Appendix B.3](#b3-single-predicted-value).
+The implementation is [Appendix B.1](#b1-single-predicted-value). It min-max normalizes each probability onto 0~1 first, which sets the lowest probability of a model to zero and drops that row's share of it, and it raises on a row where both normalized probabilities are zero instead of returning a number.
 
 ## 4. Application
 
@@ -71,7 +69,7 @@ Two things call for care when the combination is built on probabilities.
 
 ### 4.2 Optimal Weight Search
 
-A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model M and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.4](#b4-optimal-weight-search), and the run on synthetic data is [Appendix B.5](#b5-execution-example).
+A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model M and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
@@ -122,7 +120,7 @@ N/A — no external source is cited.
 
 ## Appendix B. Python Implementation
 
-### B.1 Binary Classification
+### B.1 Single Predicted Value
 
 ```python
 from typing import Union
@@ -132,67 +130,19 @@ import numpy as np
 Probability = Union[float, np.ndarray]
 
 
-def hybrid_predict(p_M: Probability, p_S: Probability, w: float = 0.5,
-                   threshold: float = 0.5) -> tuple[np.ndarray, Probability]:
+def normalize_probability(p: Probability) -> np.ndarray:
+    """확률을 0~1 구간으로 min-max normalize 합니다.
+
+    p: 모델의 예측 확률 또는 점수
+
+    >>> normalize_probability(np.array([0.9, 0.5, 0.2]))
+    array([1.        , 0.42857143, 0.        ])
     """
-    p_M: 모델 M의 예측 확률 (0~1)
-    p_S: 모델 S의 예측 확률 (0~1)
-    w: 모델 M에 부여할 가중치 (0~1)
-    threshold: 분류 임계값
-
-    >>> p_M = np.array([0.9, 0.2])
-    >>> p_S = np.array([0.6, 0.4])
-    >>> predictions, p_hybrid = hybrid_predict(p_M, p_S, w=0.7)
-    >>> predictions
-    array([1, 0])
-    >>> p_hybrid
-    array([0.81, 0.26])
-    """
-    # weighted average probability
-    p_hybrid = w * p_M + (1 - w) * p_S
-
-    # final class at the threshold
-    predictions = (p_hybrid >= threshold).astype(int)
-    return predictions, p_hybrid
-```
-
-### B.2 Multi-Class Classification
-
-```python
-import numpy as np
-
-
-def hybrid_predict_multiclass(p_M_array: np.ndarray, p_S_array: np.ndarray,
-                              w: float = 0.5) -> tuple[np.ndarray, np.ndarray]:
-    """
-    p_M_array: Shape (N_samples, N_classes)
-    p_S_array: Shape (N_samples, N_classes)
-
-    >>> p_M_array = np.array([[0.7, 0.2, 0.1], [0.1, 0.3, 0.6]])
-    >>> p_S_array = np.array([[0.4, 0.5, 0.1], [0.2, 0.5, 0.3]])
-    >>> predictions, p_hybrid = hybrid_predict_multiclass(p_M_array, p_S_array, w=0.5)
-    >>> predictions
-    array([0, 2])
-    >>> p_hybrid
-    array([[0.55, 0.35, 0.1 ],
-           [0.15, 0.4 , 0.45]])
-    """
-    # weighted sum of the per-class probabilities
-    p_hybrid = w * p_M_array + (1 - w) * p_S_array
-
-    # index of the class holding the highest probability
-    predictions = np.argmax(p_hybrid, axis=1)
-    return predictions, p_hybrid
-```
-
-### B.3 Single Predicted Value
-
-```python
-from typing import Union
-
-import numpy as np
-
-Probability = Union[float, np.ndarray]
+    p = np.asarray(p, dtype=float)
+    span = p.max() - p.min()
+    if span == 0:
+        raise ValueError("every probability is the same value, so it cannot be normalized.")
+    return (p - p.min()) / span
 
 
 def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S: Probability,
@@ -204,16 +154,20 @@ def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S
     p_S: 모델 S의 예측 확률 (0~1)
     w: 모델 M에 부여할 가중치 (0~1)
 
-    >>> v_M = np.array([10.0, 20.0])
-    >>> v_S = np.array([12.0, 30.0])
-    >>> p_M = np.array([0.9, 0.2])
-    >>> p_S = np.array([0.3, 0.8])
-    >>> hybrid_predict_value(v_M, v_S, p_M, p_S, w=0.5)
-    array([10.5, 28. ])
-    >>> hybrid_predict_value(v_M, v_S, np.array([0.0, 0.2]), np.array([0.0, 0.8]))
+    >>> v_M = np.array([10.0, 20.0, 30.0])
+    >>> v_S = np.array([12.0, 22.0, 36.0])
+    >>> p_M = np.array([0.9, 0.5, 0.2])
+    >>> p_S = np.array([0.3, 0.6, 0.9])
+    >>> np.round(hybrid_predict_value(v_M, v_S, p_M, p_S, w=0.5), 4)
+    array([10.    , 21.0769, 36.    ])
+    >>> hybrid_predict_value(v_M, v_S, np.array([0.2, 0.5, 0.9]), p_S, w=0.5)
     Traceback (most recent call last):
     ValueError: both models report zero probability, so the weighted value is undefined.
     """
+    # both probabilities on the same 0~1 scale before they are weighed against each other
+    p_M = normalize_probability(p_M)
+    p_S = normalize_probability(p_S)
+
     # confidence each model carries into the combination
     weight_M = w * p_M
     weight_S = (1 - w) * p_S
@@ -224,7 +178,7 @@ def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S
     return (weight_M * v_M + weight_S * v_S) / denominator
 ```
 
-### B.4 Optimal Weight Search
+### B.2 Optimal Weight Search
 
 ```python
 import numpy as np
@@ -295,7 +249,7 @@ def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, me
     return best_w, best_score
 ```
 
-### B.5 Execution Example
+### B.3 Execution Example
 
 ```python
 # --- synthetic validation data ---
