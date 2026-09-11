@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 12 | Created: 2026-09-11 | Updated: 2026-09-11 13:40 CDT
+Rev. 13 | Created: 2026-09-11 | Updated: 2026-09-11 14:00 CDT
 
 ## 1. Purpose
 
@@ -56,7 +56,7 @@ Where each model emits a predicted value of its own, the single value is the two
 v_{\mathrm{hybrid}} = \frac{w \cdot p_M \cdot v_M + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_M + (1 - w) \cdot p_S} \hspace{15em} (5)
 ```
 
-The implementation is [Appendix B.1](#b1-single-predicted-value). It checks that both probabilities lie within 0~1 before weighing them, and it raises on a row where both are zero instead of returning a number.
+The denominator is the hybrid probability of equation (1), so the weighted soft voting of section 3.1 is what carries the two values here as well. The implementation is [Appendix B.1](#b1-single-predicted-value). It checks that both probabilities lie within 0~1 before weighing them, and it raises on a row where both are zero instead of returning a number.
 
 ## 4. Application
 
@@ -236,7 +236,7 @@ def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, me
         elif metric == "log_loss":
             score = log_loss(y_true, p_hybrid)
         else:
-            raise ValueError(f"지원하지 않는 평가 지표입니다: {metric}")
+            raise ValueError(f"unsupported metric: {metric}")
 
         # keep the best so far
         if is_lower_better:
@@ -274,14 +274,14 @@ p_S_val = np.clip(p_S_val, 0, 1)
 best_w_f1, best_score_f1 = find_optimal_weight(
     y_val, p_M_val, p_S_val, metric="f1"
 )
-print(f"[F1-Score 기준] 최적 w: {best_w_f1} | 점수: {best_score_f1:.4f}")
+print(f"[F1-Score] best w: {best_w_f1} | score: {best_score_f1:.4f}")
 
 # 2. optimize on ROC-AUC
 best_w_auc, best_score_auc = find_optimal_weight(
     y_val, p_M_val, p_S_val, metric="roc_auc"
 )
 print(
-    f"[ROC-AUC  기준] 최적 w: {best_w_auc} | 점수: {best_score_auc:.4f}"
+    f"[ROC-AUC]  best w: {best_w_auc} | score: {best_score_auc:.4f}"
 )
 
 # 3. optimize on log loss, lower is better
@@ -289,6 +289,6 @@ best_w_loss, best_score_loss = find_optimal_weight(
     y_val, p_M_val, p_S_val, metric="log_loss"
 )
 print(
-    f"[Log Loss 기준] 최적 w: {best_w_loss} | 점수: {best_score_loss:.4f}"
+    f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
 )
 ```
