@@ -1,5 +1,5 @@
 # Weighted Soft Voting (Korean)
-Rev. 2 | Created: 2026-09-11 | Updated: 2026-09-11 08:35 CDT
+Rev. 3 | Created: 2026-09-11 | Updated: 2026-09-11 08:45 CDT
 
 ## 1. Purpose
 
@@ -21,7 +21,14 @@ $$p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)$$
 
 이진 분류의 최종 클래스는 임계값 0.5 를 기준으로 갈립니다.
 
-$$\mathrm{Final\ Class} = 1 \ \ \mathrm{if}\ p_{\mathrm{hybrid}} \ge 0.5, \qquad 0 \ \ \mathrm{otherwise} \hspace{15em} (2)$$
+```math
+\mathrm{Final\ Class} =
+\begin{cases}
+1 & \mathrm{if}\ p_{\mathrm{hybrid}} \ge 0.5 \\
+0 & \mathrm{otherwise}
+\end{cases}
+\hspace{15em} (2)
+```
 
 식 (1) 과 식 (2) 의 구현은 [Appendix B.1](#b1-binary-classification) 입니다.
 
