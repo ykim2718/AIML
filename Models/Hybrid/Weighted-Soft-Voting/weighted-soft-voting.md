@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 2 | Created: 2026-09-11 | Updated: 2026-09-11 08:45 CDT
+Rev. 3 | Created: 2026-09-11 | Updated: 2026-09-11 09:00 CDT
 
 ## 1. Purpose
 
@@ -17,7 +17,9 @@ Where both models M and S provide predicted probabilities ($p_M$, $p_S$), soft v
 
 A weight w ($0 \le w \le 1$) applied to the probabilities $p_M$ and $p_S$ of the two models gives the hybrid probability $p_{\mathrm{hybrid}}$.
 
-$$p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)$$
+```math
+p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
+```
 
 The final class of a binary classification is decided at the threshold 0.5.
 
@@ -36,9 +38,13 @@ The implementation of equation (1) and equation (2) is [Appendix B.1](#b1-binary
 
 In a multi-class classification with three or more classes, the per-class probability vectors $p_M$ and $p_S$ are summed with the weight, and the class holding the highest probability is selected.
 
-$$\mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_M + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)$$
+```math
+\mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_M + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)
+```
 
-$$\mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)$$
+```math
+\mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
+```
 
 The implementation is [Appendix B.2](#b2-multi-class-classification), and both inputs are arrays of shape (`N_samples`, `N_classes`).
 
@@ -57,7 +63,9 @@ A grid search finds the optimal weight w on the validation dataset against a met
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
-$$p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)$$
+```math
+p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)
+```
 
 ## 5. Comparison
 

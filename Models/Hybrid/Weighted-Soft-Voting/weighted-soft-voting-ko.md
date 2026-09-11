@@ -1,5 +1,5 @@
 # Weighted Soft Voting (Korean)
-Rev. 3 | Created: 2026-09-11 | Updated: 2026-09-11 08:45 CDT
+Rev. 4 | Created: 2026-09-11 | Updated: 2026-09-11 09:00 CDT
 
 ## 1. Purpose
 
@@ -17,7 +17,9 @@ Rev. 3 | Created: 2026-09-11 | Updated: 2026-09-11 08:45 CDT
 
 두 모델의 확률값 $p_M$ 과 $p_S$ 에 가중치 w ($0 \le w \le 1$) 를 적용하여 하이브리드 확률 $p_{\mathrm{hybrid}}$ 를 계산합니다.
 
-$$p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)$$
+```math
+p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
+```
 
 이진 분류의 최종 클래스는 임계값 0.5 를 기준으로 갈립니다.
 
@@ -36,9 +38,13 @@ $$p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)$$
 
 클래스가 3개 이상인 다중 클래스 분류에서는 각 클래스별 확률 벡터 $p_M$ 과 $p_S$ 를 가중합한 후 가장 높은 확률을 가진 클래스를 선택합니다.
 
-$$\mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_M + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)$$
+```math
+\mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_M + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)
+```
 
-$$\mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)$$
+```math
+\mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
+```
 
 구현은 [Appendix B.2](#b2-multi-class-classification) 이며, 입력 두 개는 모두 (`N_samples`, `N_classes`) 형상의 배열입니다.
 
@@ -57,7 +63,9 @@ Validation 데이터셋에서 F1-score, ROC-AUC, Log-Loss 등 사용자가 정�
 
 Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이터셋의 가중합 계산에 적용하여 최종 평가를 수행하면 됩니다.
 
-$$p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)$$
+```math
+p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)
+```
 
 ## 5. Comparison
 
