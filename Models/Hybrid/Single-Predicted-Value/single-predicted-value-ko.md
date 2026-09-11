@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 25 | Created: 2026-09-11 | Updated: 2026-09-11 19:10 CDT
+Rev. 26 | Created: 2026-09-11 | Updated: 2026-09-11 19:30 CDT
 
 ## 1. Purpose
 
@@ -388,6 +388,13 @@ best_w_r2, best_score_r2 = find_optimal_weight(
 )
 print(f"[R-squared] best w: {best_w_r2} | score: {best_score_r2:.4f}")
 
+# 5. optimize on MAPE, which scores the same value on a percentage scale
+best_w_mape, best_score_mape = find_optimal_weight(
+    y_true, y_prob_by_t, y_prob_by_s, metric="mape",
+    v_T=y_pred_by_t, v_S=y_pred_by_s
+)
+print(f"[MAPE]      best w: {best_w_mape} | score: {best_score_mape:.4f}")
+
 # --- the single predicted value at the weight R-squared chose ---
 v_hybrid = hybrid_predict_value(
     y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_r2
@@ -395,7 +402,7 @@ v_hybrid = hybrid_predict_value(
 print("v_hybrid   :", np.round(v_hybrid[:10], 4))
 ```
 
-먼저 찍히는 다섯 배열이 표본의 머리 열 행이고, 그 뒤 네 줄이 탐색 결과이며, 마지막 줄이 R-squared 가 고른 가중치에서의 단일 예측값입니다.
+먼저 찍히는 다섯 배열이 표본의 머리 열 행이고, 그 뒤 다섯 줄이 탐색 결과이며, 마지막 줄이 R-squared 가 고른 가중치에서의 단일 예측값입니다. MAPE 점수가 1e13 에 이르는 것은 `y_true` 가 대부분의 행에서 0 이고 그 값으로 나누기 때문이며, 꼭지 4.2 가 적은 단점이 그대로 드러난 것입니다.
 
 ```text
 y_true     : [0 1 0 0 0 1 0 0 0 1]
@@ -407,5 +414,6 @@ y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5
 [ROC-AUC]  best w: 0.73 | score: 0.9968
 [Log Loss] best w: 1.0 | score: 0.2542
 [R-squared] best w: 0.7 | score: 0.7127
+[MAPE]      best w: 1.0 | score: 13510798882111.5684
 v_hybrid   : [0.     1.     0.     0.     0.     0.8626 0.9628 0.     0.     1.    ]
 ```
