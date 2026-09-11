@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 20 | Created: 2026-09-11 | Updated: 2026-09-11 16:30 CDT
+Rev. 21 | Created: 2026-09-11 | Updated: 2026-09-11 17:10 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 20 | Created: 2026-09-11 | Updated: 2026-09-11 16:30 CDT
 
 ## 2. Summary
 
-단일 예측값은 두 확률에서 나옵니다. 클래스는 두 확률의 가중 평균에서 다시 읽어내고, 클래스가 아닌 예측 값은 그 두 확률을 가중치로 삼아 평균합니다. 두 모델 T과 S가 모두 예측 확률 ($p_T$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.2), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
+단일 예측값은 두 확률에서 나옵니다. 클래스는 두 확률의 가중 평균에서 다시 읽어내고, 클래스가 아닌 예측 값은 그 두 확률을 가중치로 삼아 평균합니다. 두 모델 T와 S가 모두 예측 확률 ($p_T$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.1), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
 
 ## 3. Principle
 
@@ -58,16 +58,11 @@ v_{\mathrm{hybrid}} = \frac{w \cdot p_T \cdot v_T + (1 - w) \cdot p_S \cdot v_S}
 
 분모는 식 (1) 의 하이브리드 확률이므로, 꼭지 3.1 의 Soft Voting 이 여기서도 두 값을 실어 나릅니다. 구현은 [Appendix B.1](#b1-single-predicted-value) 입니다. 가중합에 앞서 두 확률이 0~1 안에 있는지 확인하며, 두 확률이 모두 0 인 행에서는 값을 돌려주는 대신 오류를 냅니다.
 
-## 4. Application
+## 4. Optimal Weight Search
 
-### 4.1 Cautions
+w 값을 임의로 정하기보다는, Validation Dataset에서 성능 지표 (ROC-AUC, F1-score 등) 를 가장 높여주는 w를 탐색 (Grid Search) 하여 선정하는 것을 권장합니다.
 
-확률 기반 하이브리드 결합 시 주의사항은 두 가지입니다.
-
-- **확률 교정 (Probability Calibration)**: 두 모델의 확률 분포가 정교하게 맞추어져 있는지 확인해야 합니다. 한 모델이 확률을 너무 과신 (예: 대부분 0.05 또는 0.95 근처) 하고 다른 모델은 신중한 경우 (예: 0.4∼0.6 사이), 단순 가중치 조합 시 과신하는 모델의 영향력이 과도하게 커질 수 있습니다.
-- **가중치 w 최적화**: w 값을 임의로 정하기보다는, Validation Dataset에서 성능 지표 (ROC-AUC, F1-score 등) 를 가장 높여주는 w를 탐색 (Grid Search) 하여 선정하는 것을 권장합니다.
-
-### 4.2 Optimal Weight Search
+### 4.1 Grid Search
 
 Validation 데이터셋에서 F1-score, R-squared, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. `r2` 로 점수를 매기려면 각 모델의 예측 값 `v_T`, `v_S` 가 필요하고, 다른 지표는 그 둘을 받지 않습니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
 
@@ -77,7 +72,7 @@ Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이�
 p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (6)
 ```
 
-### 4.3 Metric Selection
+### 4.2 Metric Selection
 
 지표는 `y_true` 와 무엇을 대는지로 갈립니다. `r2` 는 식 (5) 의 단일 예측값을 재어 산출물을 바로 겨냥하고, `F1-Score` 와 `Accuracy` 는 `threshold` 가 만든 클래스를 재므로 이들이 고른 가중치는 그 클래스를 움직이며, `ROC-AUC` 와 `Log Loss` 는 하이브리드 확률 자체를 재어 고른 값은 건드리지 않습니다.
 
@@ -91,15 +86,54 @@ Table 1. Metrics for the weight search
 | `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
 | `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
-## 5. Comparison
+#### `r2`
+
+식 (5) 의 `v_hybrid` 를 `y_true` 와 댑니다. 이 문서의 산출물이 바로 그 값입니다.
+
+- 장점: 독자가 가져가는 값을 직접 움직이는 유일한 지표. 임계값을 정할 필요 없음. 연속값과 클래스에 같은 규칙으로 적용.
+- 단점: `v_T`, `v_S` 가 있어야 함. 두 확률이 모두 0 인 행에서는 식 (5) 의 분모가 0 이라 정의되지 않음. 오차를 제곱하므로 한 행의 큰 오차가 w 를 좌우.
+
+#### `f1`
+
+`threshold` 가 만든 클래스를 정밀도와 재현율의 조화 평균으로 잽니다.
+
+- 장점: 레이블이 불균형일 때 양성 클래스의 성능이 드러남. 실제로 쓰는 동작점에서의 성능을 한 숫자로 읽음.
+- 단점: `threshold` 에 묶여 있어 임계값이 바뀌면 고른 w 가 낡음. 음성 클래스는 그것이 부른 오류로만 반영.
+
+#### `accuracy`
+
+`threshold` 가 만든 클래스 가운데 맞힌 행의 비율입니다.
+
+- 장점: 결과를 가장 단순하게 읽는 방식. 두 클래스를 같은 무게로 셈.
+- 단점: 레이블이 불균형이면 다수 클래스만 맞혀도 높게 나옴. `f1` 과 같은 방식으로 `threshold` 에 묶임.
+
+#### `roc_auc`
+
+식 (1) 의 `p_hybrid` 가 만드는 순위를 모든 임계값에 걸쳐 한꺼번에 잽니다.
+
+- 장점: 임계값을 정할 필요가 없어 동작점을 정하기 전의 탐색에 맞음. 레이블 불균형에 견고.
+- 단점: 확률을 단조 변환해도 값이 그대로라 교정이 어긋난 모델도 통과. 단일 예측값을 재는 지표가 아님.
+
+#### `log_loss`
+
+식 (1) 의 `p_hybrid` 를 `y_true` 와 대어, 확률이 정답에서 얼마나 떨어져 있는지로 벌점을 매깁니다.
+
+- 장점: 확률의 눈금까지 채점하는 유일한 지표라, 꼭지 5 가 경고하는 교정 상태가 드러남.
+- 단점: 확신을 갖고 틀린 한 행의 벌점이 매우 커서 그 행이 w 를 좌우. 확률이 0 이나 1 이면 클리핑 없이는 발산.
+
+## 5. Cautions
+
+두 모델의 확률 분포가 정교하게 맞추어져 있는지 확인해야 합니다. 한 모델이 확률을 너무 과신 (예: 대부분 0.05 또는 0.95 근처) 하고 다른 모델은 신중한 경우 (예: 0.4∼0.6 사이), 단순 가중치 조합 시 과신하는 모델의 영향력이 과도하게 커질 수 있습니다.
+
+## 6. Comparison
 
 N/A — 다른 결합 방식을 다루지 않음.
 
-## 6. Further Work
+## 7. Further Work
 
 - **확률 교정 적용**
   - 무엇: `IsotonicRegression`이나 `Platt Scaling`을 통한 교정을 두 모델의 확률에 적용한 뒤 가중합.
-  - 왜 지금: section 4.1 의 조건, 즉 한 모델이 과신하고 다른 모델이 신중한 상태에서는 가중치만으로 영향력의 불균형을 바로잡지 못함.
+  - 왜 지금: 꼭지 5 의 조건, 즉 한 모델이 과신하고 다른 모델이 신중한 상태에서는 가중치만으로 영향력의 불균형을 바로잡지 못함.
   - 무엇이 필요: 교정에 쓸 데이터와, 교정 전후의 최적 w 및 지표 점수 비교.
 
 ## References

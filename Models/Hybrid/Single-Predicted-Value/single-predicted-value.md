@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 19 | Created: 2026-09-11 | Updated: 2026-09-11 16:30 CDT
+Rev. 20 | Created: 2026-09-11 | Updated: 2026-09-11 17:10 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 19 | Created: 2026-09-11 | Updated: 2026-09-11 16:30 CDT
 
 ## 2. Summary
 
-The single prediction comes from the two probabilities: a class is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models T and S provide predicted probabilities ($p_T$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
+The single prediction comes from the two probabilities: a class is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models T and S provide predicted probabilities ($p_T$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.1) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
 
 ## 3. Principle
 
@@ -58,16 +58,11 @@ v_{\mathrm{hybrid}} = \frac{w \cdot p_T \cdot v_T + (1 - w) \cdot p_S \cdot v_S}
 
 The denominator is the hybrid probability of equation (1), so the weighted soft voting of section 3.1 is what carries the two values here as well. The implementation is [Appendix B.1](#b1-single-predicted-value). It checks that both probabilities lie within 0~1 before weighing them, and it raises on a row where both are zero instead of returning a number.
 
-## 4. Application
+## 4. Optimal Weight Search
 
-### 4.1 Cautions
+Rather than fixing w arbitrarily, a search (grid search) for the w that raises a performance metric the most on the validation dataset is recommended.
 
-Two things call for care when the combination is built on probabilities.
-
-- **Probability Calibration**: The probability distributions of the two models have to be checked for a fine match. Where one model is too confident (for example, mostly near 0.05 or 0.95) and the other is cautious (for example, between 0.4 and 0.6), a plain weighted combination can give the confident model too much influence.
-- **Optimization of the weight w**: Rather than fixing w arbitrarily, a search (grid search) for the w that raises a performance metric (ROC-AUC, F1-score and the like) the most on the validation dataset is recommended.
-
-### 4.2 Optimal Weight Search
+### 4.1 Grid Search
 
 A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, R-squared, ROC-AUC or log loss. Scoring on `r2` needs the predicted value of each model, `v_T` and `v_S`, and every other metric refuses them. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
 
@@ -77,7 +72,7 @@ The optimal `best_w` found on the validation data is carried unchanged into the 
 p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (6)
 ```
 
-### 4.3 Metric Selection
+### 4.2 Metric Selection
 
 Metrics divide on what they hold against `y_true`. `r2` scores the single predicted value of equation (5) and is the one that aims at the deliverable directly; `F1-Score` and `Accuracy` score the class the `threshold` produces, so the weight they choose moves that class; `ROC-AUC` and `Log Loss` score the hybrid probability itself and leave the chosen value alone.
 
@@ -91,15 +86,54 @@ Table 1. Metrics for the weight search
 | `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
 | `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
-## 5. Comparison
+#### `r2`
+
+Scores `v_hybrid` of equation (5) against `y_true`, which is the deliverable of this document.
+
+- Strength: the only metric that moves the value the reader takes away; no threshold to fix; the same rule serves a continuous value and a class.
+- Weakness: needs `v_T` and `v_S`; undefined on a row where both probabilities are zero, since that is the denominator of equation (5); squares its errors, so one wild row can decide w.
+
+#### `f1`
+
+Scores the class the `threshold` produces, as the harmonic mean of precision and recall on the positive class.
+
+- Strength: shows the positive class under an imbalanced label, where a majority guess cannot hide; reads as one number at the operating point actually shipped.
+- Weakness: tied to the `threshold`, so a new threshold makes the chosen w stale; the negative class enters only through the errors it causes.
+
+#### `accuracy`
+
+Scores the class the `threshold` produces, as the fraction of rows it gets right.
+
+- Strength: the plainest reading of the result, and it counts both classes on the same footing.
+- Weakness: an imbalanced label lifts it on the majority class alone; tied to the `threshold` in the same way `f1` is.
+
+#### `roc_auc`
+
+Scores `p_hybrid` of equation (1) as the ranking it induces, over every threshold at once.
+
+- Strength: no threshold to fix, so it serves a search run before the operating point is chosen; steady under an imbalanced label.
+- Weakness: unchanged by any monotone rescaling of the probability, so a badly calibrated model passes it; the single predicted value is not what it measures.
+
+#### `log_loss`
+
+Scores `p_hybrid` of equation (1) against `y_true`, penalizing the probability by how far it sits from the label.
+
+- Strength: the only metric here that grades the scale of the probability, so it exposes the calibration section 5 warns about.
+- Weakness: a confident mistake costs it enormously, so one row can decide w; a probability at 0 or 1 sends it to infinity unless it is clipped.
+
+## 5. Cautions
+
+The probability distributions of the two models have to be checked for a fine match. Where one model is too confident (for example, mostly near 0.05 or 0.95) and the other is cautious (for example, between 0.4 and 0.6), a plain weighted combination can give the confident model too much influence.
+
+## 6. Comparison
 
 N/A — no alternative combination rule is covered.
 
-## 6. Further Work
+## 7. Further Work
 
 - **Applying probability calibration**
   - What: calibration through `IsotonicRegression` or `Platt Scaling`, applied to both probabilities before the weighted sum.
-  - Why now: under the condition of section 4.1, one model confident and the other cautious, a weight alone does not correct the imbalance in influence.
+  - Why now: under the condition of section 5, one model confident and the other cautious, a weight alone does not correct the imbalance in influence.
   - What is needed: data for the calibration, and a comparison of the optimal w and the metric scores before and after it.
 
 ## References
