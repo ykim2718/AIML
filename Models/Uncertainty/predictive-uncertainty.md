@@ -1,5 +1,5 @@
 # Predictive Uncertainty
-Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 19:09 CDT
+Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 19:14 CDT
 
 ## 1. Purpose
 
@@ -9,17 +9,17 @@ Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 19:09 CDT
 
 ## 2. Summary
 
-Three implementations produce a probability from a fitted regression model, and Table 1 is the choice between them. Probabilistic regression fits a mean and a variance per row and hands back a density. Quantile regression fits a bound per requested level and hands back an interval. Bootstrap and resampling read the disagreement among refitted members as a spread.
+Three implementations produce a probability from a fitted regression model, and Table 1 sets out the choice between them. Probabilistic regression fits a mean and a variance per row and hands back a density. Quantile regression fits a bound per requested level and hands back an interval. Bootstrap and resampling read the disagreement among refitted members as a spread.
 
-The three do not deliver the same thing, and Table 2 orders what they deliver into four levels. A point answers what to expect, an interval answers whether the outcome falls inside one range, a set of quantiles answers that for a range whose width moves with the input, and a density answers what the probability is that the outcome passes any limit. Only the last level answers the question the Problem Statement asks of an ensemble, because a per-row weight is a function of a per-row variance.
+Table 2 orders what the three deliver into four levels. A point answers what to expect, an interval answers whether the outcome falls inside one range, a set of quantiles answers that for a range whose width moves with the input, and a density answers what the probability is that the outcome passes any limit. Only the last level answers the question the Problem Statement asks of an ensemble, because a per-row weight is a function of a per-row variance.
 
 Two of the three implementations measure the wrong quantity if used as they are usually written. Bootstrapping a point model measures how much the fitted mean moves, not how much the outcome moves, and Appendix B measures its coverage at 0.115 against a nominal 0.90. A forest's tree spread has the same defect, and it is hidden at default settings, where a leaf holds one row and the tree spread accidentally resembles the noise.
 
-Section 10 is the payoff for the Problem Statement. Two members whose feature sets leave each of them ignorant in a different place are combined at 2.3910 RMSE by equal weights and at 2.1689 by weights built from their own per-row variances, against 2.0643 and 3.0808 for the members alone.
+Section 10 answers the Problem Statement. Two members whose feature sets leave each of them ignorant in a different place are combined at 2.3910 RMSE by equal weights and at 2.1689 by weights built from their own per-row variances, against 2.0643 and 3.0808 for the members alone.
 
 ## 3. Taxonomy
 
-Table 1 is the three implementations, with what each emits and when each is used.
+Table 1 lists the three implementations with what each emits and when each is used.
 
 Table 1. The three implementations
 
@@ -29,7 +29,7 @@ Table 1. The three implementations
 | Quantile regression | One bound per requested level, such as 0.10, 0.50 and 0.90 | A stated interval is wanted at levels fixed in advance, with no distribution assumed |
 | Bootstrap and resampling | Spread of the predictions of refitted members | The members already exist, and what is wanted is how much the fit itself is in doubt |
 
-Fig 1 is the same three with the route each takes in a library.
+Fig 1 draws the same three with the route each takes in a library.
 
 ```text
 Probability attached to the prediction of a regression model
@@ -52,11 +52,11 @@ Probability attached to the prediction of a regression model
 
 Fig 1. The three implementations and the route each takes in a library
 
-The third branch differs from the other two in what it is a spread of. The first two fit a spread of the outcome; the third measures a spread of the model, and section 7 is what follows from that.
+The first two branches fit a spread of the outcome and the third measures a spread of the model, and section 7 works out what follows from that.
 
 ## 4. Hierarchy
 
-The three implementations of Table 1 do not answer the same questions, and Table 2 orders what they answer into four levels. Each level contains the one below it, so a level is reached by every method that reaches a level above it.
+Table 2 orders what the three implementations of Table 1 answer into four levels. Each level contains the one below it, so a level is reached by every method that reaches a level above it.
 
 Table 2. What each level answers
 
@@ -69,11 +69,11 @@ Table 2. What each level answers
 
 Level 4 is what the Problem Statement needs. An ensemble weight has to be a number per row, so it has to come from a variance per row, and a variance is what level 4 emits and level 3 leaves implicit in a pair of bounds. Level 4 is also the level at which the question "what is the probability that this prediction exceeds the limit" is answered for a limit that was not known when the model was fitted.
 
-The level a method reaches says nothing about whether what it emits is correct. `BayesianRidge` reaches level 4 and Appendix B measures its standard deviation between 1.889 and 1.901 across rows whose true noise standard deviation runs from 0.51 to 5.25, a correlation of 0.420 with the truth. Section 11 is the measurement that separates the two.
+Reaching a level and being correct at it are separate matters. `BayesianRidge` reaches level 4 and Appendix B measures its standard deviation between 1.889 and 1.901 across rows whose true noise standard deviation runs from 0.51 to 5.25, a correlation of 0.420 with the truth. Section 11 gives the measurement that separates the two.
 
 ## 5. Probabilistic Regression
 
-A loss that reads the variance as a second output is what turns a point model into a density. For a Gaussian assumption the loss is the negative log-likelihood, written here with $s = \log \sigma$ so that the second output is unconstrained [[6](#ref-6)].
+A loss that reads the variance as a second output turns a point model into a density. For a Gaussian assumption the loss is the negative log-likelihood, written here with $s = \log \sigma$ so that the second output is unconstrained [[6](#ref-6)].
 
 $$\mathrm{NLL}(y, \mu, s) = s + \frac{(y - \mu)^{2}}{2}e^{-2s} \hspace{19em} (1)$$
 
@@ -91,7 +91,7 @@ Two libraries supply the same thing already assembled. NGBoost boosts the parame
 
 The fitted variance shrinks as trees are added, and the coverage falls with it. Appendix B measures 0.852 at 100 trees, 0.817 at 200 and 0.765 at 400, with the mean width falling from 5.40 to 4.68 over the same range.
 
-The cause is in equation (1). Lowering $s$ is rewarded wherever the residual on the training rows is small, and a boosted model drives the training residual toward zero, so the variance head is fitted against a residual that keeps shrinking for reasons the test rows do not share. Holding out rows to stop on, or bounding $\sigma$ from below, is what keeps the second output honest.
+The cause is in equation (1). Lowering $s$ is rewarded wherever the residual on the training rows is small, and a boosted model drives the training residual toward zero, so the variance head is fitted against a residual that keeps shrinking for reasons the test rows do not share. Holding out rows to stop on, or bounding $\sigma$ from below, keeps the second output honest.
 
 `BayesianRidge` has the opposite failure and it is structural rather than a matter of tuning. Its emitted variance is a fitted noise constant plus a term that grows with the distance of the input from the fitted data, so on well-determined rows the width is one number. Appendix B measures it moving by 0.012 across 600 rows.
 
@@ -101,9 +101,9 @@ Replacing the squared-error loss with the pinball loss changes which functional 
 
 $$L_{\alpha}(y, q) = \max\left\{\alpha\,(y - q),\ (\alpha - 1)(y - q)\right\} \hspace{19em} (2)$$
 
-Equation (2) is minimized by a bound below which a fraction $\alpha$ of the training outcomes falls, so a fit at 0.10 and one at 0.90 bracket 80 per cent of those. Nothing in the fit ties the two together: each is a separate minimization, and Appendix B measures the resulting coverage at 0.815 to 0.832 for the three boosting libraries against a nominal 0.90.
+Equation (2) is minimized by a bound below which a fraction $\alpha$ of the training outcomes falls, so a fit at 0.10 and one at 0.90 bracket 80 per cent of those. Each level is a separate minimization with no term tying it to the other, and Appendix B measures the resulting coverage at 0.815 to 0.832 for the three boosting libraries against a nominal 0.90.
 
-Table 3 is the parameter that selects the level in each library. The name `alpha` means the level in LightGBM and in `GradientBoostingRegressor`, and the L1 penalty in `QuantileRegressor`, where the level is `quantile` and the penalty defaults to 1.0.
+Table 3 gives the parameter that selects the level in each library. The name `alpha` means the level in LightGBM and in `GradientBoostingRegressor`, and the L1 penalty in `QuantileRegressor`, where the level is `quantile` and the penalty defaults to 1.0.
 
 Table 3. How each library fits a quantile
 
@@ -121,17 +121,17 @@ Separately fitted levels are also free to cross, since no term ties one fit to a
 
 ## 7. Bootstrap And Resampling
 
-Refitting a model on resampled rows measures how much the fitted mean moves, and that is a different quantity from how much the outcome moves [[7](#ref-7)]. The gap is not a matter of degree. Appendix B refits `Ridge` on 200 bootstrap resamples and takes the 5th and 95th percentiles of the 200 predictions per row, which gives a mean width of 0.40 and a coverage of 0.115 against a nominal 0.90, while the residual standard deviation of the same model is 1.940.
+Refitting a model on resampled rows measures how much the fitted mean moves, and that is a different quantity from how much the outcome moves [[7](#ref-7)]. Appendix B refits `Ridge` on 200 bootstrap resamples and takes the 5th and 95th percentiles of the 200 predictions per row, which gives a mean width of 0.40 and a coverage of 0.115 against a nominal 0.90, while the residual standard deviation of the same model is 1.940.
 
 The spread across the trees of a random forest is the same quantity and carries the same defect. It is harder to see at default settings, where a fully grown leaf holds about one row, so each tree's prediction is close to one noisy observation and the spread over trees resembles the noise by accident. Appendix B measures 0.858 coverage there and 0.650 once `min_samples_leaf=20` makes each leaf average its rows, and the second number is what the route is actually worth.
 
 The forest has a second route that does measure the outcome. The fitted rows in the leaves an input lands in, pooled across trees, are a weighted sample of the outcome at that input, and any quantile of that sample is a level 3 answer [[2](#ref-2)]. Appendix B measures 0.893 coverage with a width that moves by 2.89, against 0.650 for the tree spread on the same forest.
 
-Nothing above rules out the resampling route; it fixes what it is for. The spread of refitted members is the right quantity for asking how much the fit itself is in doubt, which is what grows where the training data thins. Added to a fitted noise term it gives the two parts of a predictive variance, and used alone it gives the smaller of the two.
+The spread of refitted members is the right quantity for one question: how much the fit itself is in doubt, which is what grows where the training data thins. Added to a fitted noise term it gives the two parts of a predictive variance, and used alone it gives the smaller of the two.
 
 ## 8. Tree And Ensemble Family
 
-Three of the four tree models reach level 3 by swapping in the pinball loss, and the fourth reaches it without changing its loss at all. Table 4 is that difference and what each reaches beyond it.
+Three of the four tree models reach level 3 by swapping in the pinball loss, and the fourth reaches it without changing its loss at all. Table 4 records that difference and what each reaches beyond it.
 
 Table 4. What each tree model reaches
 
@@ -148,7 +148,7 @@ The random forest is the only row whose one fit serves both levels, because the 
 
 ## 9. Linear Family
 
-Two of the linear regressors emit a mean and a variance, one emits a quantile when asked for a level, and the remaining five emit a centre and nothing else. Table 5 is what each emits.
+Two of the linear regressors emit a mean and a variance, one emits a quantile when asked for a level, and the remaining five emit a centre and nothing else. Table 5 records what each emits.
 
 Table 5. What the linear regressors emit
 
@@ -163,13 +163,13 @@ Table 5. What the linear regressors emit
 | `BayesianRidge` | `predict(X, return_std=False)` | 4, Gaussian | Conditional mean and variance |
 | `ARDRegression` | `predict(X, return_std=False)` | 4, Gaussian | Conditional mean and variance |
 
-The first five rows differ in the centre they estimate and not in what they say about the spread, which is nothing. `Ridge`, `Lasso` and `ElasticNet` differ from one another only in the penalty and all three fit the conditional mean; `HuberRegressor` and `LinearSVR` fit a centre that resists outliers, which makes the point more reliable and leaves the question of the spread exactly where it was.
+The first five rows say nothing about the spread and differ only in the centre they estimate. `Ridge`, `Lasso` and `ElasticNet` differ from one another only in the penalty and all three fit the conditional mean; `HuberRegressor` and `LinearSVR` fit a centre that resists outliers, which makes the point more reliable and leaves the question of the spread exactly where it was.
 
 Reaching level 3 from any of those five means `QuantileRegressor`, which is a different fit rather than an option on the existing one, since no linear estimator in the family takes a loss argument. Reaching level 4 means `BayesianRidge` or `ARDRegression`, with the constant noise term of section 5.2.
 
 ## 10. Weighting An Ensemble
 
-A per-row variance turns a fixed ensemble weight into one that moves with the input, which is what the Problem Statement asks for. For two members with means $\mu_{1}, \mu_{2}$ and variances $\sigma_{1}^{2}, \sigma_{2}^{2}$ at the same row, the weights that minimize the variance of the combination are inverse to those variances.
+A per-row variance turns a fixed ensemble weight into one that moves with the input. For two members with means $\mu_{1}, \mu_{2}$ and variances $\sigma_{1}^{2}, \sigma_{2}^{2}$ at the same row, the weights that minimize the variance of the combination are inverse to those variances.
 
 $$w_{1} = \frac{1/\sigma_{1}^{2}}{1/\sigma_{1}^{2} + 1/\sigma_{2}^{2}}, \qquad \hat y = w_{1}\mu_{1} + (1 - w_{1})\mu_{2} \hspace{19em} (3)$$
 
@@ -179,7 +179,7 @@ The gain comes from the members differing in where they are uncertain, and it di
 
 ## 11. Calibration
 
-Coverage measured over all rows is met by over-covering the quiet rows and under-covering the noisy ones, so an emitted interval is judged by three numbers together. Table 6 is the three, with the failure each one catches.
+Coverage measured over all rows is met by over-covering the quiet rows and under-covering the noisy ones, so an emitted interval is judged by three numbers together. Table 6 names the three, with the failure each one catches.
 
 Table 6. What an emitted interval is judged by
 
@@ -189,14 +189,14 @@ Table 6. What an emitted interval is judged by
 | Conditional coverage | The same, within a band of rows grouped by an input | A constant width standing in for a varying one |
 | Sharpness | Mean width of the interval | Bounds made to cover by being useless |
 
-Coverage and sharpness are read against each other, because either alone is trivially met. The rule is to maximize sharpness subject to calibration: among the methods whose coverage holds, the narrowest interval wins [[8](#ref-8)]. Appendix B is arranged as that comparison.
+Coverage and sharpness are read against each other, because either alone is trivially met. The rule is to maximize sharpness subject to calibration: among the methods whose coverage holds, the narrowest interval wins [[8](#ref-8)]. Appendix B is arranged to make that comparison.
 
 A single number that scores both at once is a proper scoring rule, whose expected value is optimized by the true distribution and by no other [[5](#ref-5)]. Two of them cover the levels of Table 2.
 
 - Pinball loss of equation (2), proper for one quantile. Available as `mean_pinball_loss` and `d2_pinball_score`.
 - Continuous ranked probability score, proper for a full distribution. The integral of the squared difference between the emitted CDF and the step function at the outcome.
 
-Neither replaces the coverage table. A proper score ranks methods against one another without saying whether the best of them is right, and the coverage of 0.115 in Appendix B is a fact about that interval which no ranking reports.
+A proper score ranks methods against one another without saying whether the best of them is right, so the coverage table stays beside it. The coverage of 0.115 in Appendix B is a fact about that interval which no ranking reports.
 
 ## 12. Selection
 
@@ -321,7 +321,7 @@ mu, sd = raw[:, 0], np.exp(raw[:, 1])
 
 The emitted standard deviation runs from 0.77 to 5.33 and correlates 0.962 with the true noise standard deviation, against 0.420 for `BayesianRidge` on the same rows.
 
-Table 9 is the coverage of that fit as trees are added, at the same learning rate and depth.
+Table 9 measures the coverage of that fit as trees are added, at the same learning rate and depth.
 
 Table 9. Coverage of the NLL fit against the tree count
 
@@ -331,7 +331,7 @@ Table 9. Coverage of the NLL fit against the tree count
 | 200 | 0.817 | 5.05 | 0.810 | 0.860 |
 | 400 | 0.765 | 4.68 | 0.750 | 0.835 |
 
-The probability of passing a limit is read off the same two columns, and Table 10 is that probability at two limits against the rate actually observed.
+The probability of passing a limit is read off the same two columns, and Table 10 compares that probability at two limits with the rate actually observed.
 
 Table 10. Probability of exceeding a limit, averaged over the 600 test rows
 
@@ -434,7 +434,7 @@ w1 = (1 / sd1 ** 2) / (1 / sd1 ** 2 + 1 / sd2 ** 2)
 combined = w1 * mu1 + (1 - w1) * mu2
 ```
 
-Table 11 is that combination against the alternatives, scored as the root mean squared error on the 600 test rows.
+Table 11 scores that combination against the alternatives as the root mean squared error on the 600 test rows.
 
 Table 11. Two members combined, root mean squared error
 

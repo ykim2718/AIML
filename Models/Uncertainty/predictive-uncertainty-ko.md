@@ -1,5 +1,5 @@
 # Predictive Uncertainty (Korean)
-Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 19:09 CDT
+Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 19:14 CDT
 
 ## 1. Purpose
 
@@ -9,17 +9,17 @@ Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 19:09 CDT
 
 ## 2. Summary
 
-학습된 regression model 에서 확률을 얻는 구현은 셋이며, Table 1 이 그 선택이다. Probabilistic regression 은 한 행마다 평균과 분산을 학습하여 density 를 돌려준다. Quantile regression 은 요청한 level 마다 경계를 학습하여 interval 을 돌려준다. Bootstrap 과 resampling 은 다시 학습한 member 들의 어긋남을 폭으로 읽는다.
+학습된 regression model 에서 확률을 얻는 구현은 셋이며, Table 1 이 그 선택을 정리한다. Probabilistic regression 은 한 행마다 평균과 분산을 학습하여 density 를 돌려준다. Quantile regression 은 요청한 level 마다 경계를 학습하여 interval 을 돌려준다. Bootstrap 과 resampling 은 다시 학습한 member 들의 어긋남을 폭으로 읽는다.
 
-셋이 내놓는 것은 같지 않으며, Table 2 가 그것을 네 level 로 정렬한다. Point 는 무엇을 기대할지에, interval 은 결과가 한 구간 안에 드는지에, quantile 의 집합은 같은 질문에 폭이 입력에 따라 움직이는 구간으로, density 는 결과가 임의의 한계를 넘을 확률에 답한다. Problem Statement 가 ensemble 에 대해 묻는 질문에 답하는 것은 마지막 level 뿐인데, 행마다의 weight 는 행마다의 분산의 함수이기 때문이다.
+Table 2 가 세 구현이 내놓는 것을 네 level 로 정렬한다. Point 는 무엇을 기대할지에, interval 은 결과가 한 구간 안에 드는지에, quantile 의 집합은 같은 질문에 폭이 입력에 따라 움직이는 구간으로, density 는 결과가 임의의 한계를 넘을 확률에 답한다. Problem Statement 가 ensemble 에 대해 묻는 질문에 답하는 것은 마지막 level 뿐인데, 행마다의 weight 는 행마다의 분산의 함수이기 때문이다.
 
 셋 가운데 둘은 보통 쓰이는 방식대로 쓰면 엉뚱한 양을 잰다. 점 예측 model 을 bootstrap 하면 학습된 평균이 얼마나 움직이는지를 재지 결과가 얼마나 움직이는지를 재지 않으며, Appendix B 는 그 coverage 를 nominal 0.90 에 대해 0.115 로 잰다. Forest 의 tree spread 도 같은 결함을 지니는데, 기본 설정에서는 leaf 가 한 행을 담아 tree spread 가 우연히 noise 를 닮으므로 그 결함이 가려진다.
 
-Section 10 이 Problem Statement 에 대한 보답이다. Feature 구성이 서로 달라 각각 다른 자리에서 무지한 두 member 를 equal weight 로 묶으면 RMSE 2.3910 이고, 각자의 행마다의 분산으로 만든 weight 로 묶으면 2.1689 이며, member 를 따로 쓰면 2.0643 과 3.0808 이다.
+Section 10 이 Problem Statement 에 답한다. Feature 구성이 서로 달라 각각 다른 자리에서 무지한 두 member 를 equal weight 로 묶으면 RMSE 2.3910 이고, 각자의 행마다의 분산으로 만든 weight 로 묶으면 2.1689 이며, member 를 따로 쓰면 2.0643 과 3.0808 이다.
 
 ## 3. Taxonomy
 
-Table 1 이 세 구현이며, 각각이 무엇을 내놓고 언제 쓰이는지를 함께 적었다.
+Table 1 이 세 구현을, 각각이 무엇을 내놓고 언제 쓰이는지와 함께 적는다.
 
 Table 1. The three implementations
 
@@ -29,7 +29,7 @@ Table 1. The three implementations
 | Quantile regression | 요청한 level 마다 경계 하나, 예를 들어 0.10, 0.50, 0.90 | 미리 정한 level 의 interval 이 필요하고 distribution 을 가정하지 않을 때 |
 | Bootstrap and resampling | 다시 학습한 member 들의 예측의 폭 | Member 가 이미 있고, 알고 싶은 것이 fit 자체가 얼마나 의심스러운지일 때 |
 
-Fig 1 은 같은 셋을, library 에서 각각이 지나는 경로와 함께 놓은 것이다.
+Fig 1 이 같은 셋을 library 에서 각각이 지나는 경로와 함께 그린다.
 
 ```text
 Probability attached to the prediction of a regression model
@@ -52,11 +52,11 @@ Probability attached to the prediction of a regression model
 
 Fig 1. The three implementations and the route each takes in a library
 
-셋째 가지는 무엇의 폭인가에서 앞의 둘과 다르다. 앞의 둘은 결과의 폭을 학습하고, 셋째는 model 의 폭을 재며, 거기서 따라 나오는 것이 section 7 이다.
+앞의 두 가지는 결과의 폭을 학습하고 셋째는 model 의 폭을 재며, 거기서 따라 나오는 것을 section 7 이 풀어 놓는다.
 
 ## 4. Hierarchy
 
-Table 1 의 세 구현이 답하는 질문은 같지 않으며, Table 2 가 그 답을 네 level 로 정렬한다. 각 level 은 아래 level 을 품으므로, 위 level 에 닿는 방법은 아래 level 에도 닿는다.
+Table 2 가 Table 1 의 세 구현이 답하는 것을 네 level 로 정렬한다. 각 level 은 아래 level 을 품으므로, 위 level 에 닿는 방법은 아래 level 에도 닿는다.
 
 Table 2. What each level answers
 
@@ -69,11 +69,11 @@ Table 2. What each level answers
 
 Problem Statement 가 필요로 하는 것은 level 4 이다. Ensemble weight 는 행마다의 숫자여야 하므로 행마다의 분산에서 나와야 하고, 그 분산을 내놓는 것이 level 4 이며 level 3 은 그것을 경계 한 쌍 안에 묻어 둔다. Model 을 학습할 때 알지 못했던 한계에 대해 "이 예측이 그 한계를 넘을 확률은 얼마인가" 에 답하는 것도 level 4 이다.
 
-한 방법이 닿은 level 은 그것이 내놓은 값이 옳은지에 대해 아무 말도 하지 않는다. `BayesianRidge` 는 level 4 에 닿으며, Appendix B 는 참 noise 표준편차가 0.51 에서 5.25 까지 움직이는 행들에서 그 표준편차를 1.889 와 1.901 사이로, 참값과의 상관 0.420 으로 잰다. 그 둘을 갈라내는 측정이 section 11 이다.
+닿은 level 과 그 값이 옳은가는 별개의 문제다. `BayesianRidge` 는 level 4 에 닿으며, Appendix B 는 참 noise 표준편차가 0.51 에서 5.25 까지 움직이는 행들에서 그 표준편차를 1.889 와 1.901 사이로, 참값과의 상관 0.420 으로 잰다. 그 둘을 갈라내는 측정을 section 11 이 준다.
 
 ## 5. Probabilistic Regression
 
-점 예측 model 을 density 로 바꾸는 것은 분산을 둘째 출력으로 읽는 loss 이다. Gaussian 을 가정하면 그 loss 는 negative log-likelihood 이며, 둘째 출력이 제약 없이 움직이도록 $s = \log \sigma$ 로 적는다 [[6](#ref-6)].
+분산을 둘째 출력으로 읽는 loss 가 점 예측 model 을 density 로 바꾼다. Gaussian 을 가정하면 그 loss 는 negative log-likelihood 이며, 둘째 출력이 제약 없이 움직이도록 $s = \log \sigma$ 로 적는다 [[6](#ref-6)].
 
 $$\mathrm{NLL}(y, \mu, s) = s + \frac{(y - \mu)^{2}}{2}e^{-2s} \hspace{19em} (1)$$
 
@@ -91,7 +91,7 @@ Equation (1) 은 한 행마다 $\mu$ 와 $\sigma$ 를 주며, 한계 $L$ 을 넘
 
 학습된 분산은 tree 를 더할수록 줄어들고 coverage 도 따라 내려간다. Appendix B 는 tree 100 그루에서 0.852, 200 에서 0.817, 400 에서 0.765 를 재며, 같은 구간에서 평균 폭은 5.40 에서 4.68 로 줄어든다.
 
-원인은 equation (1) 안에 있다. 학습 행의 residual 이 작은 자리에서는 $s$ 를 낮추는 것이 보상을 받는데, boosting 된 model 은 학습 residual 을 0 쪽으로 몰고 가므로, 분산 head 는 test 행이 공유하지 않는 이유로 계속 줄어드는 residual 을 상대로 학습된다. 멈출 기준이 될 행을 따로 떼어 두거나 $\sigma$ 에 아래 한계를 두는 것이 둘째 출력을 정직하게 지킨다.
+원인은 equation (1) 안에 있다. 학습 행의 residual 이 작은 자리에서는 $s$ 를 낮추는 것이 보상을 받는데, boosting 된 model 은 학습 residual 을 0 쪽으로 몰고 가므로, 분산 head 는 test 행이 공유하지 않는 이유로 계속 줄어드는 residual 을 상대로 학습된다. 멈출 기준이 될 행을 따로 떼어 두거나 $\sigma$ 에 아래 한계를 두면 둘째 출력이 정직하게 남는다.
 
 `BayesianRidge` 의 실패는 반대이며, 조정의 문제가 아니라 구조의 문제다. 내놓는 분산이 학습된 noise 상수에 입력이 학습 데이터에서 멀어질수록 커지는 항을 더한 것이므로, fit 이 잘 정해진 행에서는 폭이 숫자 하나이다. Appendix B 는 그것이 600 행에 걸쳐 0.012 만큼 움직이는 것을 잰다.
 
@@ -101,9 +101,9 @@ Squared-error loss 를 pinball loss 로 바꾸면 같은 model 이 conditional d
 
 $$L_{\alpha}(y, q) = \max\left\{\alpha\,(y - q),\ (\alpha - 1)(y - q)\right\} \hspace{19em} (2)$$
 
-Equation (2) 는 학습 결과의 $\alpha$ 만큼이 그 아래 떨어지는 경계에서 최소가 되므로, 0.10 에서의 fit 과 0.90 에서의 fit 이 그 가운데 80 퍼센트를 감싼다. 둘을 묶어 주는 것은 fit 안에 없다. 각각이 별개의 최소화이고, Appendix B 는 boosting library 셋에서 그 결과 coverage 를 nominal 0.90 에 대해 0.815 에서 0.832 로 잰다.
+Equation (2) 는 학습 결과의 $\alpha$ 만큼이 그 아래 떨어지는 경계에서 최소가 되므로, 0.10 에서의 fit 과 0.90 에서의 fit 이 그 가운데 80 퍼센트를 감싼다. 각 level 은 다른 level 과 묶어 주는 항이 없는 별개의 최소화이고, Appendix B 는 boosting library 셋에서 그 결과 coverage 를 nominal 0.90 에 대해 0.815 에서 0.832 로 잰다.
 
-Table 3 이 각 library 에서 level 을 고르는 parameter 이다. `alpha` 라는 이름이 LightGBM 과 `GradientBoostingRegressor` 에서는 level 을 뜻하고 `QuantileRegressor` 에서는 L1 penalty 를 뜻하는데, 거기서 level 은 `quantile` 이고 penalty 의 기본값은 1.0 이다.
+Table 3 이 각 library 에서 level 을 고르는 parameter 를 적는다. `alpha` 라는 이름이 LightGBM 과 `GradientBoostingRegressor` 에서는 level 을 뜻하고 `QuantileRegressor` 에서는 L1 penalty 를 뜻하는데, 거기서 level 은 `quantile` 이고 penalty 의 기본값은 1.0 이다.
 
 Table 3. How each library fits a quantile
 
@@ -121,17 +121,17 @@ Level 당 한 번의 fit 이 규모를 정하는 값이다. `LGBMRegressor` 로 
 
 ## 7. Bootstrap And Resampling
 
-Resampling 한 행으로 model 을 다시 학습하는 것은 학습된 평균이 얼마나 움직이는지를 재며, 그것은 결과가 얼마나 움직이는지와 다른 양이다 [[7](#ref-7)]. 그 차이는 정도의 문제가 아니다. Appendix B 는 `Ridge` 를 bootstrap resample 200 벌에 다시 학습하고 행마다 200 개 예측의 5, 95 백분위수를 취하는데, 평균 폭 0.40 에 coverage 0.115 가 나오며 같은 model 의 residual 표준편차는 1.940 이다.
+Resampling 한 행으로 model 을 다시 학습하는 것은 학습된 평균이 얼마나 움직이는지를 재며, 그것은 결과가 얼마나 움직이는지와 다른 양이다 [[7](#ref-7)]. Appendix B 는 `Ridge` 를 bootstrap resample 200 벌에 다시 학습하고 행마다 200 개 예측의 5, 95 백분위수를 취하는데, 평균 폭 0.40 에 coverage 0.115 가 나오며 같은 model 의 residual 표준편차는 1.940 이다.
 
 Random forest 의 tree 들 사이의 폭도 같은 양이고 같은 결함을 지닌다. 기본 설정에서는 다 자란 leaf 가 한 행쯤을 담으므로 tree 하나의 예측이 noise 섞인 관측 하나에 가깝고 tree 들의 폭이 우연히 noise 를 닮아, 결함이 잘 보이지 않는다. Appendix B 는 거기서 coverage 0.858 을, `min_samples_leaf=20` 으로 leaf 가 자기 행들을 평균하게 하면 0.650 을 재며, 이 경로의 실제 값어치는 뒤의 숫자이다.
 
 Forest 에는 결과를 재는 둘째 경로가 있다. 입력이 떨어지는 leaf 안의 학습 행들을 tree 전체에 걸쳐 모으면 그 입력에서의 결과의 가중 표본이 되고, 그 표본의 어떤 quantile 이든 level 3 의 답이다 [[2](#ref-2)]. Appendix B 는 폭이 2.89 만큼 움직이면서 coverage 0.893 을 재는데, 같은 forest 의 tree spread 는 0.650 이다.
 
-위의 어느 것도 resampling 경로를 버리라는 말이 아니라 그것의 쓰임을 고쳐 잡는 말이다. 다시 학습한 member 들의 폭은 fit 자체가 얼마나 의심스러운지를 묻는 데 맞는 양이며, 그것이 학습 데이터가 얇아지는 자리에서 커지는 값이다. 학습된 noise 항에 더하면 predictive variance 의 두 부분이 되고, 혼자 쓰면 그 둘 가운데 작은 쪽이 된다.
+다시 학습한 member 들의 폭은 fit 자체가 얼마나 의심스러운지를 묻는 한 가지 질문에 맞는 양이며, 그것이 학습 데이터가 얇아지는 자리에서 커지는 값이다. 학습된 noise 항에 더하면 predictive variance 의 두 부분이 되고, 혼자 쓰면 그 둘 가운데 작은 쪽이 된다.
 
 ## 8. Tree And Ensemble Family
 
-네 tree model 가운데 셋은 loss 를 pinball loss 로 바꾸어 level 3 에 닿고, 넷째는 loss 를 전혀 바꾸지 않고 닿는다. Table 4 가 그 차이와, 각각이 그 너머로 무엇에 닿는지이다.
+네 tree model 가운데 셋은 loss 를 pinball loss 로 바꾸어 level 3 에 닿고, 넷째는 loss 를 전혀 바꾸지 않고 닿는다. Table 4 가 그 차이와, 각각이 그 너머로 무엇에 닿는지를 적는다.
 
 Table 4. What each tree model reaches
 
@@ -148,7 +148,7 @@ Table 4. What each tree model reaches
 
 ## 9. Linear Family
 
-Linear regressor 가운데 둘은 평균과 분산을 내놓고, 하나는 level 을 요청하면 quantile 을 내놓으며, 남은 다섯은 중심만 내놓는다. Table 5 가 각각이 내놓는 것이다.
+Linear regressor 가운데 둘은 평균과 분산을 내놓고, 하나는 level 을 요청하면 quantile 을 내놓으며, 남은 다섯은 중심만 내놓는다. Table 5 가 각각이 내놓는 것을 적는다.
 
 Table 5. What the linear regressors emit
 
@@ -163,13 +163,13 @@ Table 5. What the linear regressors emit
 | `BayesianRidge` | `predict(X, return_std=False)` | 4, Gaussian | Conditional mean 과 variance |
 | `ARDRegression` | `predict(X, return_std=False)` | 4, Gaussian | Conditional mean 과 variance |
 
-앞의 다섯 행은 어떤 중심을 추정하는지에서 서로 다를 뿐, 폭에 대해 하는 말은 모두 같으며 그것은 아무 말도 하지 않는 것이다. `Ridge`, `Lasso`, `ElasticNet` 은 penalty 에서만 서로 다르고 셋 다 conditional mean 을 학습한다. `HuberRegressor` 와 `LinearSVR` 은 outlier 에 견디는 중심을 학습하는데, 그래서 점 추정이 더 믿을 만해질 뿐 폭에 대한 물음은 있던 자리에 그대로 남는다.
+앞의 다섯 행은 폭에 대해 아무 말도 하지 않으며, 어떤 중심을 추정하는지에서만 서로 다르다. `Ridge`, `Lasso`, `ElasticNet` 은 penalty 에서만 서로 다르고 셋 다 conditional mean 을 학습한다. `HuberRegressor` 와 `LinearSVR` 은 outlier 에 견디는 중심을 학습하는데, 그래서 점 추정이 더 믿을 만해질 뿐 폭에 대한 물음은 있던 자리에 그대로 남는다.
 
 그 다섯에서 level 3 에 닿는 길은 `QuantileRegressor` 이며, 이는 기존 fit 의 option 이 아니라 다른 fit 이다. 이 계열의 어떤 linear estimator 도 loss 를 인자로 받지 않기 때문이다. Level 4 에 닿는 길은 `BayesianRidge` 나 `ARDRegression` 이고, section 5.2 의 상수 noise 항을 함께 받는다.
 
 ## 10. Weighting An Ensemble
 
-행마다의 분산은 고정된 ensemble weight 를 입력에 따라 움직이는 weight 로 바꾸며, 그것이 Problem Statement 가 요구하는 것이다. 같은 행에서 평균이 $\mu_{1}, \mu_{2}$ 이고 분산이 $\sigma_{1}^{2}, \sigma_{2}^{2}$ 인 두 member 에 대해, 결합의 분산을 최소로 만드는 weight 는 그 분산에 반비례한다.
+행마다의 분산이 고정된 ensemble weight 를 입력에 따라 움직이는 weight 로 바꾼다. 같은 행에서 평균이 $\mu_{1}, \mu_{2}$ 이고 분산이 $\sigma_{1}^{2}, \sigma_{2}^{2}$ 인 두 member 에 대해, 결합의 분산을 최소로 만드는 weight 는 그 분산에 반비례한다.
 
 $$w_{1} = \frac{1/\sigma_{1}^{2}}{1/\sigma_{1}^{2} + 1/\sigma_{2}^{2}}, \qquad \hat y = w_{1}\mu_{1} + (1 - w_{1})\mu_{2} \hspace{19em} (3)$$
 
@@ -179,7 +179,7 @@ Appendix B 는 feature 구성 때문에 각각 결과의 다른 동인에 눈이
 
 ## 11. Calibration
 
-전체 행에서 잰 coverage 는 조용한 행을 과도하게 덮고 시끄러운 행을 덜 덮어서 달성되므로, 내놓은 interval 은 세 숫자를 함께 놓고 판정한다. Table 6 이 그 셋이고, 각각이 잡아내는 실패를 함께 적었다.
+전체 행에서 잰 coverage 는 조용한 행을 과도하게 덮고 시끄러운 행을 덜 덮어서 달성되므로, 내놓은 interval 은 세 숫자를 함께 놓고 판정한다. Table 6 이 그 셋을, 각각이 잡아내는 실패와 함께 적는다.
 
 Table 6. What an emitted interval is judged by
 
@@ -189,14 +189,14 @@ Table 6. What an emitted interval is judged by
 | Conditional coverage | 같은 값을, 입력으로 묶은 band 안에서 | 변하는 폭 자리를 고정된 폭이 대신하는 것 |
 | Sharpness | Interval 의 평균 폭 | 쓸모없이 넓혀서 덮게 만든 경계 |
 
-Coverage 와 sharpness 는 서로에 대해 읽는데, 어느 하나만이면 무의미하게 충족되기 때문이다. 규칙은 calibration 을 조건으로 두고 sharpness 를 최대화하는 것이며, coverage 가 성립하는 방법들 가운데 interval 이 가장 좁은 것이 이긴다 [[8](#ref-8)]. Appendix B 가 그 비교로 짜여 있다.
+Coverage 와 sharpness 는 서로에 대해 읽는데, 어느 하나만이면 무의미하게 충족되기 때문이다. 규칙은 calibration 을 조건으로 두고 sharpness 를 최대화하는 것이며, coverage 가 성립하는 방법들 가운데 interval 이 가장 좁은 것이 이긴다 [[8](#ref-8)]. Appendix B 가 그 비교를 하도록 짜여 있다.
 
 둘을 한꺼번에 채점하는 숫자 하나가 proper scoring rule 이며, 참 distribution 에서만 그 기대값이 최적이 되는 점수이다 [[5](#ref-5)]. 그 가운데 둘이 Table 2 의 level 들을 덮는다.
 
 - Equation (2) 의 pinball loss, quantile 하나에 대해 proper. `mean_pinball_loss` 와 `d2_pinball_score` 로 제공.
 - Continuous ranked probability score, distribution 전체에 대해 proper. 내놓은 CDF 와 결과에서의 step function 사이 차이의 제곱을 적분한 값.
 
-어느 것도 coverage 표를 대신하지 않는다. Proper score 는 방법들을 서로 견주어 줄 세우면서 그 가운데 최고가 옳은지는 말하지 않으며, Appendix B 의 coverage 0.115 는 어떤 줄 세우기도 보고하지 않는 그 interval 에 대한 사실이다.
+Proper score 는 방법들을 서로 견주어 줄 세우면서 그 가운데 최고가 옳은지는 말하지 않으므로, coverage 표가 그 곁에 남는다. Appendix B 의 coverage 0.115 는 어떤 줄 세우기도 보고하지 않는 그 interval 에 대한 사실이다.
 
 ## 12. Selection
 
@@ -321,7 +321,7 @@ mu, sd = raw[:, 0], np.exp(raw[:, 1])
 
 내놓는 표준편차는 0.77 에서 5.33 까지 움직이며 참 noise 표준편차와 0.962 로 상관하는데, 같은 행에서 `BayesianRidge` 는 0.420 이다.
 
-Table 9 는 같은 learning rate 와 depth 에서 tree 를 더할 때 그 fit 의 coverage 이다.
+Table 9 가 같은 learning rate 와 depth 에서 tree 를 더할 때 그 fit 의 coverage 를 잰다.
 
 Table 9. Coverage of the NLL fit against the tree count
 
@@ -331,7 +331,7 @@ Table 9. Coverage of the NLL fit against the tree count
 | 200 | 0.817 | 5.05 | 0.810 | 0.860 |
 | 400 | 0.765 | 4.68 | 0.750 | 0.835 |
 
-한계를 넘을 확률은 같은 두 열에서 읽으며, Table 10 이 두 한계에서의 그 확률과 실제로 관측된 비율이다.
+한계를 넘을 확률은 같은 두 열에서 읽으며, Table 10 이 두 한계에서의 그 확률을 실제로 관측된 비율과 견준다.
 
 Table 10. Probability of exceeding a limit, averaged over the 600 test rows
 
@@ -434,7 +434,7 @@ w1 = (1 / sd1 ** 2) / (1 / sd1 ** 2 + 1 / sd2 ** 2)
 combined = w1 * mu1 + (1 - w1) * mu2
 ```
 
-Table 11 이 그 결합과 대안들을 600 개 test 행의 root mean squared error 로 채점한 것이다.
+Table 11 이 그 결합을 대안들과 견주어 600 개 test 행의 root mean squared error 로 채점한다.
 
 Table 11. Two members combined, root mean squared error
 
