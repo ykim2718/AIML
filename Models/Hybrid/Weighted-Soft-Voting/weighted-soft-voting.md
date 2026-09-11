@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 0 | Created: 2026-09-11 | Updated: 2026-09-11 08:20 CDT
+Rev. 1 | Created: 2026-09-11 | Updated: 2026-09-11 08:35 CDT
 
 ## 1. Purpose
 
@@ -21,7 +21,7 @@ $$p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)$$
 
 The final class of a binary classification is decided at the threshold 0.5.
 
-$$\mathrm{Final\ Class} = \begin{cases} 1 & p_{\mathrm{hybrid}} \ge 0.5 \\ 0 & \mathrm{otherwise} \end{cases} \hspace{19em} (2)$$
+$$\mathrm{Final\ Class} = 1 \ \ \mathrm{if}\ p_{\mathrm{hybrid}} \ge 0.5, \qquad 0 \ \ \mathrm{otherwise} \hspace{15em} (2)$$
 
 The implementation of equation (1) and equation (2) is [Appendix B.1](#b1-binary-classification).
 
