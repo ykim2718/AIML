@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 24 | Created: 2026-09-11 | Updated: 2026-09-11 18:50 CDT
+Rev. 25 | Created: 2026-09-11 | Updated: 2026-09-11 19:10 CDT
 
 ## 1. Purpose
 
@@ -64,7 +64,7 @@ w 값을 임의로 정하기보다는, Validation Dataset에서 성능 지표 (R
 
 ### 4.1 Grid Search
 
-Validation 데이터셋에서 R-squared, F1-score, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. `r2` 로 점수를 매기려면 각 모델의 예측 값 `v_T`, `v_S` 가 필요하고, 다른 지표는 그 둘을 받지 않습니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
+Validation 데이터셋에서 R-squared, MAPE, F1-score, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. `r2` 나 `mape` 로 점수를 매기려면 각 모델의 예측 값 `v_T`, `v_S` 가 필요하고, 다른 지표는 그 둘을 받지 않습니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
 
 Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이터셋의 가중합 계산에 적용하여 최종 평가를 수행하면 됩니다.
 
@@ -74,24 +74,32 @@ p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_
 
 ### 4.2 Metric Selection
 
-지표는 `y_true` 와 무엇을 대는지로 갈립니다. `r2` 는 식 (5) 의 단일 예측값을 재어 산출물을 바로 겨냥하고, `F1-Score` 와 `Accuracy` 는 `threshold` 가 만든 클래스 `y_pred` 를 재므로 이들이 고른 가중치는 `y_pred` 를 움직이며, `ROC-AUC` 와 `Log Loss` 는 하이브리드 확률 자체를 재어 고른 값은 건드리지 않습니다.
+지표는 `y_true` 와 무엇을 대는지로 갈립니다. `r2` 와 `mape` 는 식 (5) 의 단일 예측값을 재어 산출물을 바로 겨냥하고, `F1-Score` 와 `Accuracy` 는 `threshold` 가 만든 클래스 `y_pred` 를 재므로 이들이 고른 가중치는 `y_pred` 를 움직이며, `ROC-AUC` 와 `Log Loss` 는 하이브리드 확률 자체를 재어 고른 값은 건드리지 않습니다.
 
 Table 1. Metrics for the weight search
 
-| Metric | Direction | Threshold | Compared with y_true |
-| --- | --- | --- | --- |
-| `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
-| `f1` | Higher is better | Used | `y_pred`, the class from the threshold |
-| `accuracy` | Higher is better | Used | `y_pred`, the class from the threshold |
-| `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
-| `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
+| # | Metric | Direction | Threshold | Compared with y_true |
+| --- | --- | --- | --- | --- |
+| 1 | `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
+| 2 | `mape` | Lower is better | Not used | `v_hybrid` of equation (5) |
+| 3 | `f1` | Higher is better | Used | `y_pred`, the class from the threshold |
+| 4 | `accuracy` | Higher is better | Used | `y_pred`, the class from the threshold |
+| 5 | `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
+| 6 | `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
 #### `r2`
 
 식 (5) 의 `v_hybrid` 를 `y_true` 와 댑니다. 이 문서의 산출물이 바로 그 값입니다.
 
-- 장점: 독자가 가져가는 값을 직접 움직이는 유일한 지표. 임계값을 정할 필요 없음. 연속값과 클래스에 같은 규칙으로 적용.
+- 장점: 독자가 가져가는 값을 직접 겨냥. 임계값을 정할 필요 없음. 연속값과 클래스에 같은 규칙으로 적용.
 - 단점: `v_T`, `v_S` 가 있어야 함. 두 확률이 모두 0 인 행에서는 식 (5) 의 분모가 0 이라 정의되지 않음. 오차를 제곱하므로 한 행의 큰 오차가 w 를 좌우.
+
+#### `mape`
+
+식 (5) 의 `v_hybrid` 를 `y_true` 와 대어, 절대 오차를 정답으로 나눈 값의 평균을 냅니다.
+
+- 장점: 백분율로 읽히므로 단위와 크기가 다른 대상끼리 결과를 견줄 수 있음. 정답이 큰 행이 지표를 독차지하지 않음.
+- 단점: 정답이 0 이거나 0 에 가까우면 발산. 같은 크기라도 과대예측의 벌점이 과소예측보다 큼.
 
 #### `f1`
 
@@ -143,6 +151,7 @@ N/A — 외부 출처를 인용하지 않음.
 - **Grid Search**: 정해진 구간을 일정 간격으로 훑어 최적값을 찾는 탐색.
 - **Isotonic Regression**: 단조 증가 제약 아래 예측 확률을 실제 빈도에 맞추는 교정 방법.
 - **Log Loss**: 예측 확률과 정답의 불일치를 재는 지표. 작을수록 좋음.
+- **MAPE**: Mean absolute percentage error, the mean of the absolute errors divided by the true value. Lower is better.
 - **Platt Scaling**: 모델의 출력을 logistic 함수에 통과시켜 확률로 맞추는 교정 방법.
 - **Probability Calibration**: 모델이 내놓는 확률을 실제 빈도에 맞추는 절차.
 - **R-squared**: A metric of how much of the variance of the true value the prediction accounts for. Higher is better.
@@ -218,10 +227,12 @@ def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S
 from typing import Literal, get_args
 
 import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, log_loss, r2_score, roc_auc_score
+from sklearn.metrics import (accuracy_score, f1_score, log_loss, mean_absolute_percentage_error, r2_score,
+                             roc_auc_score)
 
 
-Metric = Literal["r2", "f1", "accuracy", "roc_auc", "log_loss"]
+Metric = Literal["r2", "mape", "f1", "accuracy", "roc_auc", "log_loss"]
+VALUE_METRICS = ("r2", "mape")
 
 
 def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: Metric = "f1",
@@ -236,8 +247,8 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     - metric: metric to optimize, one of Metric
     - threshold: classification threshold (used by f1 and accuracy)
     - step: weight step of the grid search (default: 0.01 -> 100 intervals)
-    - v_T: predicted value of model T (N,), required by 'r2' and refused by every other metric
-    - v_S: predicted value of model S (N,), required by 'r2' and refused by every other metric
+    - v_T: predicted value of model T (N,), required by the value metrics and refused by the others
+    - v_S: predicted value of model S (N,), required by the value metrics and refused by the others
 
     Returns:
     - best_w: optimal weight for model T (model S takes 1 - best_w)
@@ -260,24 +271,29 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     ... )
     >>> float(best_w), round(float(best_score), 4)
     (0.75, 0.9707)
+    >>> best_w, best_score = find_optimal_weight(
+    ...     y_value, p_T, p_S, metric="mape", step=0.25, v_T=v_T, v_S=v_S
+    ... )
+    >>> float(best_w), round(float(best_score), 4)
+    (1.0, 0.0813)
     >>> find_optimal_weight(y_true, p_T, p_S, metric="rmse")
     Traceback (most recent call last):
-    ValueError: metric must be one of ('r2', 'f1', 'accuracy', 'roc_auc', 'log_loss'), not 'rmse'.
+    ValueError: metric must be one of ('r2', 'mape', 'f1', 'accuracy', 'roc_auc', 'log_loss'), not 'rmse'.
     """
     if metric not in get_args(Metric):
         raise ValueError(f"metric must be one of {get_args(Metric)}, not '{metric}'.")
 
-    if metric == "r2":
+    if metric in VALUE_METRICS:
         if v_T is None or v_S is None:
-            raise ValueError("metric 'r2' scores the single predicted value, so v_T and v_S are required.")
+            raise ValueError(f"metric '{metric}' scores the single predicted value, so v_T and v_S are required.")
     elif v_T is not None or v_S is not None:
-        raise ValueError(f"v_T and v_S belong to metric 'r2', not to '{metric}'.")
+        raise ValueError(f"v_T and v_S belong to {VALUE_METRICS}, not to '{metric}'.")
 
     weights = np.arange(0.0, 1.0 + step, step)
     best_w = None
 
-    # log loss is lower-better, every other metric is higher-better
-    is_lower_better = metric == "log_loss"
+    # log loss and mape are lower-better, every other metric is higher-better
+    is_lower_better = metric in ("log_loss", "mape")
     best_score = float("inf") if is_lower_better else -float("inf")
 
     for w in weights:
@@ -297,6 +313,8 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
             score = log_loss(y_true, p_hybrid)
         elif metric == "r2":
             score = r2_score(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
+        elif metric == "mape":
+            score = mean_absolute_percentage_error(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
 
         # keep the best so far
         if is_lower_better:
