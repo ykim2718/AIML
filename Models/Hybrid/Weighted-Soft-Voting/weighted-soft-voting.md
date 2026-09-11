@@ -1,5 +1,5 @@
-# Weighted Soft Voting
-Rev. 13 | Created: 2026-09-11 | Updated: 2026-09-11 14:00 CDT
+# Single Predicted Value From Two Models
+Rev. 14 | Created: 2026-09-11 | Updated: 2026-09-11 14:20 CDT
 
 ## 1. Purpose
 
