@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 21 | Created: 2026-09-11 | Updated: 2026-09-11 17:10 CDT
+Rev. 22 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
 
 ## 1. Purpose
 
@@ -60,11 +60,11 @@ v_{\mathrm{hybrid}} = \frac{w \cdot p_T \cdot v_T + (1 - w) \cdot p_S \cdot v_S}
 
 ## 4. Optimal Weight Search
 
-w 값을 임의로 정하기보다는, Validation Dataset에서 성능 지표 (ROC-AUC, F1-score 등) 를 가장 높여주는 w를 탐색 (Grid Search) 하여 선정하는 것을 권장합니다.
+w 값을 임의로 정하기보다는, Validation Dataset에서 성능 지표 (R-squared, ROC-AUC, F1-score 등) 를 가장 높여주는 w를 탐색 (Grid Search) 하여 선정하는 것을 권장합니다.
 
 ### 4.1 Grid Search
 
-Validation 데이터셋에서 F1-score, R-squared, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. `r2` 로 점수를 매기려면 각 모델의 예측 값 `v_T`, `v_S` 가 필요하고, 다른 지표는 그 둘을 받지 않습니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
+Validation 데이터셋에서 R-squared, F1-score, ROC-AUC, Log-Loss 등 사용자가 정의한 평가 지표를 기준으로 최적의 가중치 w를 Grid Search로 탐색합니다. `r2` 로 점수를 매기려면 각 모델의 예측 값 `v_T`, `v_S` 가 필요하고, 다른 지표는 그 둘을 받지 않습니다. 탐색 구간은 0.0 에서 1.0 까지이고, 간격은 기본값 0.01 로 100개 구간을 훑습니다. 반환값은 모델 T 에 부여할 최적 가중치 `best_w` 와 그 가중치에서의 평가 지표 점수이며, 모델 S 의 가중치는 `1 - best_w` 입니다. 탐색 함수는 [Appendix B.2](#b2-optimal-weight-search) 이고, 가상 데이터를 활용한 실행 예시는 [Appendix B.3](#b3-execution-example) 입니다.
 
 Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이터셋의 가중합 계산에 적용하여 최종 평가를 수행하면 됩니다.
 
@@ -125,11 +125,7 @@ Table 1. Metrics for the weight search
 
 두 모델의 확률 분포가 정교하게 맞추어져 있는지 확인해야 합니다. 한 모델이 확률을 너무 과신 (예: 대부분 0.05 또는 0.95 근처) 하고 다른 모델은 신중한 경우 (예: 0.4∼0.6 사이), 단순 가중치 조합 시 과신하는 모델의 영향력이 과도하게 커질 수 있습니다.
 
-## 6. Comparison
-
-N/A — 다른 결합 방식을 다루지 않음.
-
-## 7. Further Work
+## 6. Further Work
 
 - **확률 교정 적용**
   - 무엇: `IsotonicRegression`이나 `Platt Scaling`을 통한 교정을 두 모델의 확률에 적용한 뒤 가중합.

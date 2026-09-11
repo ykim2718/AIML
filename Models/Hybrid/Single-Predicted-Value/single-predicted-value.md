@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 20 | Created: 2026-09-11 | Updated: 2026-09-11 17:10 CDT
+Rev. 21 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
 
 ## 1. Purpose
 
@@ -60,11 +60,11 @@ The denominator is the hybrid probability of equation (1), so the weighted soft 
 
 ## 4. Optimal Weight Search
 
-Rather than fixing w arbitrarily, a search (grid search) for the w that raises a performance metric the most on the validation dataset is recommended.
+Rather than fixing w arbitrarily, a search (grid search) for the w that raises a performance metric (R-squared, ROC-AUC, F1-score and the like) the most on the validation dataset is recommended.
 
 ### 4.1 Grid Search
 
-A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, R-squared, ROC-AUC or log loss. Scoring on `r2` needs the predicted value of each model, `v_T` and `v_S`, and every other metric refuses them. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
+A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as R-squared, F1-score, ROC-AUC or log loss. Scoring on `r2` needs the predicted value of each model, `v_T` and `v_S`, and every other metric refuses them. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
@@ -125,11 +125,7 @@ Scores `p_hybrid` of equation (1) against `y_true`, penalizing the probability b
 
 The probability distributions of the two models have to be checked for a fine match. Where one model is too confident (for example, mostly near 0.05 or 0.95) and the other is cautious (for example, between 0.4 and 0.6), a plain weighted combination can give the confident model too much influence.
 
-## 6. Comparison
-
-N/A — no alternative combination rule is covered.
-
-## 7. Further Work
+## 6. Further Work
 
 - **Applying probability calibration**
   - What: calibration through `IsotonicRegression` or `Platt Scaling`, applied to both probabilities before the weighted sum.
