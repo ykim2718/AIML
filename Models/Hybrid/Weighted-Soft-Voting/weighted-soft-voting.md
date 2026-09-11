@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 4 | Created: 2026-09-11 | Updated: 2026-09-11 09:40 CDT
+Rev. 5 | Created: 2026-09-11 | Updated: 2026-09-11 10:30 CDT
 
 ## 1. Purpose
 
@@ -113,21 +113,36 @@ N/A — no external source is cited.
 ### B.1 Binary Classification
 
 ```python
+from typing import Union
+
 import numpy as np
 
+Probability = Union[float, np.ndarray]
 
-def hybrid_predict_proba(p_M, p_S, w=0.5):
+
+def hybrid_predict_proba(p_M: Probability, p_S: Probability, w: float = 0.5) -> Probability:
     """
     p_M: 모델 M의 예측 확률 (0~1)
     p_S: 모델 S의 예측 확률 (0~1)
     w: 모델 M에 부여할 가중치 (0~1)
+
+    >>> p_M = np.array([0.9, 0.2])
+    >>> p_S = np.array([0.6, 0.4])
+    >>> hybrid_predict_proba(p_M, p_S, w=0.7)
+    array([0.81, 0.26])
     """
     # weighted average probability
     p_hybrid = w * p_M + (1 - w) * p_S
     return p_hybrid
 
 
-def hybrid_predict(p_M, p_S, w=0.5, threshold=0.5):
+def hybrid_predict(p_M: Probability, p_S: Probability, w: float = 0.5, threshold: float = 0.5) -> np.ndarray:
+    """
+    >>> p_M = np.array([0.9, 0.2])
+    >>> p_S = np.array([0.6, 0.4])
+    >>> hybrid_predict(p_M, p_S, w=0.7)
+    array([1, 0])
+    """
     p_hybrid = hybrid_predict_proba(p_M, p_S, w)
     return (p_hybrid >= threshold).astype(int)
 ```
@@ -138,10 +153,20 @@ def hybrid_predict(p_M, p_S, w=0.5, threshold=0.5):
 import numpy as np
 
 
-def hybrid_predict_multiclass(p_M_array, p_S_array, w=0.5):
+def hybrid_predict_multiclass(p_M_array: np.ndarray, p_S_array: np.ndarray,
+                              w: float = 0.5) -> tuple[np.ndarray, np.ndarray]:
     """
     p_M_array: Shape (N_samples, N_classes)
     p_S_array: Shape (N_samples, N_classes)
+
+    >>> p_M_array = np.array([[0.7, 0.2, 0.1], [0.1, 0.3, 0.6]])
+    >>> p_S_array = np.array([[0.4, 0.5, 0.1], [0.2, 0.5, 0.3]])
+    >>> predictions, p_hybrid = hybrid_predict_multiclass(p_M_array, p_S_array, w=0.5)
+    >>> predictions
+    array([0, 2])
+    >>> p_hybrid
+    array([[0.55, 0.35, 0.1 ],
+           [0.15, 0.4 , 0.45]])
     """
     # weighted sum of the per-class probabilities
     p_hybrid = w * p_M_array + (1 - w) * p_S_array
@@ -158,9 +183,8 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, log_loss, roc_auc_score
 
 
-def find_optimal_weight(
-    y_true, p_M, p_S, metric="f1", threshold=0.5, step=0.01
-):
+def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, metric: str = "f1",
+                        threshold: float = 0.5, step: float = 0.01) -> tuple[float, float]:
     """Validation 데이터셋을 활용해 모델 M과 S의 최적 가중치 w를 Grid Search로 탐색합니다.
 
     Parameters:
@@ -174,6 +198,16 @@ def find_optimal_weight(
     Returns:
     - best_w: 모델 M에 부여할 최적 가중치 (모델 S의 가중치는 1 - best_w)
     - best_score: 해당 가중치에서의 평가 지표 점수
+
+    >>> y_true = np.array([0, 0, 1, 1])
+    >>> p_M = np.array([0.2, 0.3, 0.7, 0.8])
+    >>> p_S = np.array([0.6, 0.4, 0.5, 0.3])
+    >>> best_w, best_score = find_optimal_weight(y_true, p_M, p_S, metric="roc_auc", step=0.25)
+    >>> float(best_w), round(float(best_score), 4)
+    (0.5, 1.0)
+    >>> best_w, best_score = find_optimal_weight(y_true, p_M, p_S, metric="log_loss", step=0.25)
+    >>> float(best_w), round(float(best_score), 4)
+    (1.0, 0.2899)
     """
     weights = np.arange(0.0, 1.0 + step, step)
     best_w = None
