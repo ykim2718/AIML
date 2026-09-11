@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 21 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
+Rev. 22 | Created: 2026-09-11 | Updated: 2026-09-11 18:30 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 21 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
 
 ## 2. Summary
 
-The single prediction comes from the two probabilities: a class is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models T and S provide predicted probabilities ($p_T$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.1) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
+The single prediction comes from the two probabilities: `y_pred` is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models T and S provide predicted probabilities ($p_T$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.1) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
 
 ## 3. Principle
 
@@ -21,10 +21,10 @@ A weight w ($0 \le w \le 1$) applied to the probabilities $p_T$ and $p_S$ of the
 p_{\mathrm{hybrid}} = w \cdot p_T + (1 - w) \cdot p_S \hspace{19em} (1)
 ```
 
-The final class of a binary classification is decided at the threshold 0.5.
+The prediction `y_pred` of a binary classification is decided at the threshold 0.5.
 
 ```math
-\mathrm{Final\ Class} =
+y_{\mathrm{pred}} =
 \begin{cases}
 1 & \mathrm{if}\ p_{\mathrm{hybrid}} \ge 0.5 \\
 0 & \mathrm{otherwise}
@@ -32,18 +32,18 @@ The final class of a binary classification is decided at the threshold 0.5.
 \hspace{15em} (2)
 ```
 
-Each model's own predicted value takes no part in this: the class is read off $p_{\mathrm{hybrid}}$, and the share a model holds in it is what the weight w sets. Section 3.3 is the rule for the predicted values themselves.
+Each model's own predicted value takes no part in this: `y_pred` is read off $p_{\mathrm{hybrid}}$, and the share a model holds in it is what the weight w sets. Section 3.3 is the rule for the predicted values themselves.
 
 ### 3.2 Multi-Class Extension
 
-In a multi-class classification with three or more classes, the per-class probability vectors $p_T$ and $p_S$ are summed with the weight, and the class holding the highest probability is selected.
+In a multi-class classification with three or more classes, the per-class probability vectors $p_T$ and $p_S$ are summed with the weight, and `y_pred` is the class holding the highest probability.
 
 ```math
 \mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_T + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)
 ```
 
 ```math
-\mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
+y_{\mathrm{pred}} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
 ```
 
 Both inputs are arrays of shape (`N_samples`, `N_classes`).
@@ -74,15 +74,15 @@ p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_
 
 ### 4.2 Metric Selection
 
-Metrics divide on what they hold against `y_true`. `r2` scores the single predicted value of equation (5) and is the one that aims at the deliverable directly; `F1-Score` and `Accuracy` score the class the `threshold` produces, so the weight they choose moves that class; `ROC-AUC` and `Log Loss` score the hybrid probability itself and leave the chosen value alone.
+Metrics divide on what they hold against `y_true`. `r2` scores the single predicted value of equation (5) and is the one that aims at the deliverable directly; `F1-Score` and `Accuracy` score `y_pred`, the class the `threshold` produces, so the weight they choose moves `y_pred`; `ROC-AUC` and `Log Loss` score the hybrid probability itself and leave the chosen value alone.
 
 Table 1. Metrics for the weight search
 
 | Metric | Direction | Threshold | Compared with y_true |
 | --- | --- | --- | --- |
 | `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
-| `f1` | Higher is better | Used | The class the threshold produces |
-| `accuracy` | Higher is better | Used | The class the threshold produces |
+| `f1` | Higher is better | Used | `y_pred`, the class from the threshold |
+| `accuracy` | Higher is better | Used | `y_pred`, the class from the threshold |
 | `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
 | `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
@@ -95,14 +95,14 @@ Scores `v_hybrid` of equation (5) against `y_true`, which is the deliverable of 
 
 #### `f1`
 
-Scores the class the `threshold` produces, as the harmonic mean of precision and recall on the positive class.
+Scores `y_pred`, the class the `threshold` produces, as the harmonic mean of precision and recall on the positive class.
 
 - Strength: shows the positive class under an imbalanced label, where a majority guess cannot hide; reads as one number at the operating point actually shipped.
 - Weakness: tied to the `threshold`, so a new threshold makes the chosen w stale; the negative class enters only through the errors it causes.
 
 #### `accuracy`
 
-Scores the class the `threshold` produces, as the fraction of rows it gets right.
+Scores `y_pred`, the class the `threshold` produces, as the fraction of rows it gets right.
 
 - Strength: the plainest reading of the result, and it counts both classes on the same footing.
 - Weakness: an imbalanced label lifts it on the majority class alone; tied to the `threshold` in the same way `f1` is.
@@ -275,11 +275,11 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
 
         # score of the chosen metric
         if metric == "f1":
-            preds = (p_hybrid >= threshold).astype(int)
-            score = f1_score(y_true, preds)
+            y_pred = (p_hybrid >= threshold).astype(int)
+            score = f1_score(y_true, y_pred)
         elif metric == "accuracy":
-            preds = (p_hybrid >= threshold).astype(int)
-            score = accuracy_score(y_true, preds)
+            y_pred = (p_hybrid >= threshold).astype(int)
+            score = accuracy_score(y_true, y_pred)
         elif metric == "roc_auc":
             score = roc_auc_score(y_true, p_hybrid)
         elif metric == "log_loss":

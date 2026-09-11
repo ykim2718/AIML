@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 22 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
+Rev. 23 | Created: 2026-09-11 | Updated: 2026-09-11 18:30 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 22 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
 
 ## 2. Summary
 
-단일 예측값은 두 확률에서 나옵니다. 클래스는 두 확률의 가중 평균에서 다시 읽어내고, 클래스가 아닌 예측 값은 그 두 확률을 가중치로 삼아 평균합니다. 두 모델 T와 S가 모두 예측 확률 ($p_T$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.1), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
+단일 예측값은 두 확률에서 나옵니다. `y_pred` 는 두 확률의 가중 평균에서 다시 읽어내고, 클래스가 아닌 예측 값은 그 두 확률을 가중치로 삼아 평균합니다. 두 모델 T와 S가 모두 예측 확률 ($p_T$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.1), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
 
 ## 3. Principle
 
@@ -21,10 +21,10 @@ Rev. 22 | Created: 2026-09-11 | Updated: 2026-09-11 17:40 CDT
 p_{\mathrm{hybrid}} = w \cdot p_T + (1 - w) \cdot p_S \hspace{19em} (1)
 ```
 
-이진 분류의 최종 클래스는 임계값 0.5 를 기준으로 갈립니다.
+이진 분류의 예측값 `y_pred` 는 임계값 0.5 를 기준으로 갈립니다.
 
 ```math
-\mathrm{Final\ Class} =
+y_{\mathrm{pred}} =
 \begin{cases}
 1 & \mathrm{if}\ p_{\mathrm{hybrid}} \ge 0.5 \\
 0 & \mathrm{otherwise}
@@ -32,18 +32,18 @@ p_{\mathrm{hybrid}} = w \cdot p_T + (1 - w) \cdot p_S \hspace{19em} (1)
 \hspace{15em} (2)
 ```
 
-각 모델이 내놓은 예측값은 여기에 쓰이지 않습니다. 클래스는 $p_{\mathrm{hybrid}}$ 에서 다시 읽어내며, 각 모델이 그 안에서 차지하는 몫은 가중치 w 가 정합니다. 예측 값 자체를 합치는 규칙은 꼭지 3.3 에 있습니다.
+각 모델이 내놓은 예측값은 여기에 쓰이지 않습니다. `y_pred` 는 $p_{\mathrm{hybrid}}$ 에서 다시 읽어내며, 각 모델이 그 안에서 차지하는 몫은 가중치 w 가 정합니다. 예측 값 자체를 합치는 규칙은 꼭지 3.3 에 있습니다.
 
 ### 3.2 Multi-Class Extension
 
-클래스가 3개 이상인 다중 클래스 분류에서는 각 클래스별 확률 벡터 $p_T$ 과 $p_S$ 를 가중합한 후 가장 높은 확률을 가진 클래스를 선택합니다.
+클래스가 3개 이상인 다중 클래스 분류에서는 각 클래스별 확률 벡터 $p_T$ 과 $p_S$ 를 가중합한 후 가장 높은 확률을 가진 클래스를 `y_pred` 로 삼습니다.
 
 ```math
 \mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_T + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)
 ```
 
 ```math
-\mathrm{Final\ Class} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
+y_{\mathrm{pred}} = \arg\max \left( \mathbf{p}_{\mathrm{hybrid}} \right) \hspace{19em} (4)
 ```
 
 입력 두 개는 모두 (`N_samples`, `N_classes`) 형상의 배열입니다.
@@ -74,15 +74,15 @@ p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_
 
 ### 4.2 Metric Selection
 
-지표는 `y_true` 와 무엇을 대는지로 갈립니다. `r2` 는 식 (5) 의 단일 예측값을 재어 산출물을 바로 겨냥하고, `F1-Score` 와 `Accuracy` 는 `threshold` 가 만든 클래스를 재므로 이들이 고른 가중치는 그 클래스를 움직이며, `ROC-AUC` 와 `Log Loss` 는 하이브리드 확률 자체를 재어 고른 값은 건드리지 않습니다.
+지표는 `y_true` 와 무엇을 대는지로 갈립니다. `r2` 는 식 (5) 의 단일 예측값을 재어 산출물을 바로 겨냥하고, `F1-Score` 와 `Accuracy` 는 `threshold` 가 만든 클래스 `y_pred` 를 재므로 이들이 고른 가중치는 `y_pred` 를 움직이며, `ROC-AUC` 와 `Log Loss` 는 하이브리드 확률 자체를 재어 고른 값은 건드리지 않습니다.
 
 Table 1. Metrics for the weight search
 
 | Metric | Direction | Threshold | Compared with y_true |
 | --- | --- | --- | --- |
 | `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
-| `f1` | Higher is better | Used | The class the threshold produces |
-| `accuracy` | Higher is better | Used | The class the threshold produces |
+| `f1` | Higher is better | Used | `y_pred`, the class from the threshold |
+| `accuracy` | Higher is better | Used | `y_pred`, the class from the threshold |
 | `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
 | `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
@@ -95,14 +95,14 @@ Table 1. Metrics for the weight search
 
 #### `f1`
 
-`threshold` 가 만든 클래스를 정밀도와 재현율의 조화 평균으로 잽니다.
+`threshold` 가 만든 클래스 `y_pred` 를 정밀도와 재현율의 조화 평균으로 잽니다.
 
 - 장점: 레이블이 불균형일 때 양성 클래스의 성능이 드러남. 실제로 쓰는 동작점에서의 성능을 한 숫자로 읽음.
 - 단점: `threshold` 에 묶여 있어 임계값이 바뀌면 고른 w 가 낡음. 음성 클래스는 그것이 부른 오류로만 반영.
 
 #### `accuracy`
 
-`threshold` 가 만든 클래스 가운데 맞힌 행의 비율입니다.
+`threshold` 가 만든 클래스 `y_pred` 가운데 맞힌 행의 비율입니다.
 
 - 장점: 결과를 가장 단순하게 읽는 방식. 두 클래스를 같은 무게로 셈.
 - 단점: 레이블이 불균형이면 다수 클래스만 맞혀도 높게 나옴. `f1` 과 같은 방식으로 `threshold` 에 묶임.
@@ -275,11 +275,11 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
 
         # score of the chosen metric
         if metric == "f1":
-            preds = (p_hybrid >= threshold).astype(int)
-            score = f1_score(y_true, preds)
+            y_pred = (p_hybrid >= threshold).astype(int)
+            score = f1_score(y_true, y_pred)
         elif metric == "accuracy":
-            preds = (p_hybrid >= threshold).astype(int)
-            score = accuracy_score(y_true, preds)
+            y_pred = (p_hybrid >= threshold).astype(int)
+            score = accuracy_score(y_true, y_pred)
         elif metric == "roc_auc":
             score = roc_auc_score(y_true, p_hybrid)
         elif metric == "log_loss":
