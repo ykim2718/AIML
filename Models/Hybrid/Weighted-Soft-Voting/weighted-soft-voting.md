@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 3 | Created: 2026-09-11 | Updated: 2026-09-11 09:00 CDT
+Rev. 4 | Created: 2026-09-11 | Updated: 2026-09-11 09:40 CDT
 
 ## 1. Purpose
 
@@ -67,7 +67,7 @@ The optimal `best_w` found on the validation data is carried unchanged into the 
 p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)
 ```
 
-## 5. Comparison
+### 4.3 Metric Selection
 
 Metrics divide on whether they use the classification threshold. `ROC-AUC` evaluates the whole probability dimension and is therefore untouched by the classification threshold, while `F1-Score` and `Accuracy` work against the `threshold` setting that turns a probability into a final class.
 
@@ -79,6 +79,10 @@ Table 1. Metrics for the weight search
 | `log_loss` | Lower is better | Not used | Disagreement between the probability and the label |
 | `f1` | Higher is better | Used | Final class produced by the threshold |
 | `accuracy` | Higher is better | Used | Final class produced by the threshold |
+
+## 5. Comparison
+
+N/A — no alternative combination rule is covered.
 
 ## 6. Further Work
 

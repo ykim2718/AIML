@@ -1,5 +1,5 @@
 # Weighted Soft Voting (Korean)
-Rev. 4 | Created: 2026-09-11 | Updated: 2026-09-11 09:00 CDT
+Rev. 5 | Created: 2026-09-11 | Updated: 2026-09-11 09:40 CDT
 
 ## 1. Purpose
 
@@ -67,7 +67,7 @@ Validation 데이터로 찾아낸 최적의 `best_w` 를 그대로 Test 데이�
 p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (5)
 ```
 
-## 5. Comparison
+### 4.3 Metric Selection
 
 지표는 분류 임계값 (Threshold) 을 쓰는지로 갈립니다. `ROC-AUC`는 확률값 차원 전체를 평가하므로 분류 임계값에 영향을 받지 않는 반면, `F1-Score`나 `Accuracy`는 확률을 최종 클래스로 변환하는 `threshold` 설정에 맞춰 작동합니다.
 
@@ -79,6 +79,10 @@ Table 1. Metrics for the weight search
 | `log_loss` | 작을수록 좋음 | 쓰지 않음 | 확률값과 정답의 불일치 |
 | `f1` | 클수록 좋음 | 씀 | 임계값으로 변환한 최종 클래스 |
 | `accuracy` | 클수록 좋음 | 씀 | 임계값으로 변환한 최종 클래스 |
+
+## 5. Comparison
+
+N/A — 다른 결합 방식을 다루지 않음.
 
 ## 6. Further Work
 
