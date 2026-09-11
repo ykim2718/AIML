@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 11 | Created: 2026-09-11 | Updated: 2026-09-11 13:20 CDT
+Rev. 12 | Created: 2026-09-11 | Updated: 2026-09-11 13:40 CDT
 
 ## 1. Purpose
 
@@ -131,9 +131,9 @@ Probability = Union[float, np.ndarray]
 
 
 def check_probability(p: Probability) -> np.ndarray:
-    """확률이 0~1 구간 안에 있는지 확인합니다.
+    """Check that the probability lies within 0~1.
 
-    p: 모델의 예측 확률
+    p: predicted probability of a model
 
     >>> check_probability(np.array([0.9, 0.5, 0.2]))
     array([0.9, 0.5, 0.2])
@@ -150,11 +150,11 @@ def check_probability(p: Probability) -> np.ndarray:
 def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S: Probability,
                          w: float = 0.5) -> np.ndarray:
     """
-    v_M: 모델 M의 예측 값
-    v_S: 모델 S의 예측 값
-    p_M: 모델 M의 예측 확률 (0~1)
-    p_S: 모델 S의 예측 확률 (0~1)
-    w: 모델 M에 부여할 가중치 (0~1)
+    v_M: predicted value of model M
+    v_S: predicted value of model S
+    p_M: predicted probability of model M (0~1)
+    p_S: predicted probability of model S (0~1)
+    w: weight given to model M (0~1)
 
     >>> v_M = np.array([10.0, 20.0, 30.0])
     >>> v_S = np.array([12.0, 22.0, 36.0])
@@ -189,19 +189,19 @@ from sklearn.metrics import accuracy_score, f1_score, log_loss, roc_auc_score
 
 def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, metric: str = "f1",
                         threshold: float = 0.5, step: float = 0.01) -> tuple[float, float]:
-    """Validation 데이터셋을 활용해 모델 M과 S의 최적 가중치 w를 Grid Search로 탐색합니다.
+    """Search the weight w of models M and S that suits the validation dataset best, by grid search.
 
     Parameters:
-    - y_true: 실제 정답 레이블 (N,)
-    - p_M: 모델 M의 예측 확률 (N,)
-    - p_S: 모델 S의 예측 확률 (N,)
-    - metric: 최적화 기준 지표 ('f1', 'roc_auc', 'log_loss', 'accuracy')
-    - threshold: 분류 임계값 (f1, accuracy에서 사용)
-    - step: Grid Search 가중치 간격 (기본값: 0.01 -> 100개 구간 탐색)
+    - y_true: true labels (N,)
+    - p_M: predicted probability of model M (N,)
+    - p_S: predicted probability of model S (N,)
+    - metric: metric to optimize ('f1', 'roc_auc', 'log_loss', 'accuracy')
+    - threshold: classification threshold (used by f1 and accuracy)
+    - step: weight step of the grid search (default: 0.01 -> 100 intervals)
 
     Returns:
-    - best_w: 모델 M에 부여할 최적 가중치 (모델 S의 가중치는 1 - best_w)
-    - best_score: 해당 가중치에서의 평가 지표 점수
+    - best_w: optimal weight for model M (model S takes 1 - best_w)
+    - best_score: metric score at that weight
 
     >>> y_true = np.array([0, 0, 1, 1])
     >>> p_M = np.array([0.2, 0.3, 0.7, 0.8])
