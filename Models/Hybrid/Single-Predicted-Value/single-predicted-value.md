@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 16 | Created: 2026-09-11 | Updated: 2026-09-11 15:10 CDT
+Rev. 17 | Created: 2026-09-11 | Updated: 2026-09-11 15:30 CDT
 
 ## 1. Purpose
 
@@ -262,34 +262,34 @@ N_samples = 1000
 y_true = np.random.randint(0, 2, size=N_samples)
 
 # probability from model T, relatively close to the truth
-p_by_t = y_true * 0.7 + np.random.normal(0, 0.2, size=N_samples)
-p_by_t = np.clip(p_by_t, 0.01, 1)
+y_prob_by_t = y_true * 0.7 + np.random.normal(0, 0.2, size=N_samples)
+y_prob_by_t = np.clip(y_prob_by_t, 0.01, 1)
 
 # probability from model S
-p_by_s = y_true * 0.5 + np.random.normal(0, 0.3, size=N_samples)
-p_by_s = np.clip(p_by_s, 0.01, 1)
+y_prob_by_s = y_true * 0.5 + np.random.normal(0, 0.3, size=N_samples)
+y_prob_by_s = np.clip(y_prob_by_s, 0.01, 1)
 
 # the class each model predicts on its own, at the 0.5 threshold
-y_pred_by_t = (p_by_t >= 0.5).astype(int)
-y_pred_by_s = (p_by_s >= 0.5).astype(int)
+y_pred_by_t = (y_prob_by_t >= 0.5).astype(int)
+y_pred_by_s = (y_prob_by_s >= 0.5).astype(int)
 
-# --- the first five rows of the sample ---
-print("y_true     :", y_true[:5])
-print("y_pred_by_t:", y_pred_by_t[:5])
-print("y_pred_by_s:", y_pred_by_s[:5])
-print("p_by_t     :", np.round(p_by_t[:5], 4))
-print("p_by_s     :", np.round(p_by_s[:5], 4))
+# --- the first twenty rows of the sample ---
+print("y_true     :", y_true[:20])
+print("y_pred_by_t:", y_pred_by_t[:20])
+print("y_pred_by_s:", y_pred_by_s[:20])
+print("y_prob_by_t:", np.round(y_prob_by_t[:20], 4))
+print("y_prob_by_s:", np.round(y_prob_by_s[:20], 4))
 
 # --- run the grid search ---
 # 1. optimize on F1-score
 best_w_f1, best_score_f1 = find_optimal_weight(
-    y_true, p_by_t, p_by_s, metric="f1"
+    y_true, y_prob_by_t, y_prob_by_s, metric="f1"
 )
 print(f"[F1-Score] best w: {best_w_f1} | score: {best_score_f1:.4f}")
 
 # 2. optimize on ROC-AUC
 best_w_auc, best_score_auc = find_optimal_weight(
-    y_true, p_by_t, p_by_s, metric="roc_auc"
+    y_true, y_prob_by_t, y_prob_by_s, metric="roc_auc"
 )
 print(
     f"[ROC-AUC]  best w: {best_w_auc} | score: {best_score_auc:.4f}"
@@ -297,7 +297,7 @@ print(
 
 # 3. optimize on log loss, lower is better
 best_w_loss, best_score_loss = find_optimal_weight(
-    y_true, p_by_t, p_by_s, metric="log_loss"
+    y_true, y_prob_by_t, y_prob_by_s, metric="log_loss"
 )
 print(
     f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
@@ -305,21 +305,24 @@ print(
 
 # --- the single predicted value at the weight F1-Score chose ---
 v_hybrid = hybrid_predict_value(
-    y_pred_by_t, y_pred_by_s, p_by_t, p_by_s, w=best_w_f1
+    y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_f1
 )
-print("v_hybrid   :", np.round(v_hybrid[:5], 4))
+print("v_hybrid   :", np.round(v_hybrid[:20], 4))
 ```
 
-The five arrays printed first are the head of the sample, the three lines after them are the search result, and the last line is the single predicted value at the weight F1-Score chose.
+The five arrays printed first are the head of the sample, twenty rows of it, the three lines after them are the search result, and the last line is the single predicted value at the weight F1-Score chose.
 
 ```text
-y_true     : [0 1 0 0 0]
-y_pred_by_t: [0 1 0 0 0]
-y_pred_by_s: [0 1 0 0 0]
-p_by_t     : [0.0684 1.     0.1901 0.01   0.01  ]
-p_by_s     : [0.3905 0.9685 0.01   0.01   0.138 ]
+y_true     : [0 1 0 0 0 1 0 0 0 1 0 0 0 0 1 0 1 1 1 0]
+y_pred_by_t: [0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 0]
+y_pred_by_s: [0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 0 1 1 1 0]
+y_prob_by_t: [0.0684 1.     0.1901 0.01   0.01   0.7984 0.01   0.3663 0.2359 0.6062
+ 0.01   0.2708 0.01   0.2476 0.3811 0.01   0.701  0.7094 0.61   0.1246]
+y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5554
+ 0.01   0.01   0.3601 0.01   0.1859 0.161  0.8557 0.7157 0.7988 0.01  ]
 [F1-Score] best w: 0.78 | score: 0.9174
 [ROC-AUC]  best w: 0.73 | score: 0.9968
 [Log Loss] best w: 1.0 | score: 0.2542
-v_hybrid   : [0. 1. 0. 0. 0.]
+v_hybrid   : [0.     1.     0.     0.     0.     0.9051 0.9446 0.     0.     1.
+ 0.     0.     0.     0.     0.     0.     1.     1.     1.     0.    ]
 ```
