@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 25 | Created: 2026-09-11 | Updated: 2026-09-11 19:30 CDT
+Rev. 26 | Created: 2026-09-11 | Updated: 2026-09-11 20:00 CDT
 
 ## 1. Purpose
 
@@ -64,7 +64,7 @@ Rather than fixing w arbitrarily, a search (grid search) for the w that raises a
 
 ### 4.1 Grid Search
 
-A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as R-squared, MAPE, F1-score, ROC-AUC or log loss. Scoring on `r2` or `mape` needs the predicted value of each model, `v_T` and `v_S`, and every other metric refuses them. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
+A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as R-squared, MAPE, F1-score, ROC-AUC or log loss. The metric is a callable taking (`y_true`, `y_score`), so `roc_auc_score` and the like are passed as they are, while `f1_score` and `accuracy_score` need the threshold first and arrive wrapped in `ThresholdMetric`. `higher_is_better` gives the direction, and passing the predicted value of each model, `v_T` and `v_S`, makes the metric score the single predicted value instead of the probability. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
@@ -74,48 +74,48 @@ p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_
 
 ### 4.2 Metric Selection
 
-Metrics divide on what they hold against `y_true`. `r2` and `mape` score the single predicted value of equation (5) and are the ones that aim at the deliverable directly; `F1-Score` and `Accuracy` score `y_pred`, the class the `threshold` produces, so the weight they choose moves `y_pred`; `ROC-AUC` and `Log Loss` score the hybrid probability itself and leave the chosen value alone.
+Metrics divide on what they hold against `y_true`. R-squared and MAPE score the single predicted value of equation (5) and are the ones that aim at the deliverable directly; `F1-Score` and `Accuracy` score `y_pred`, the class the `threshold` produces, so the weight they choose moves `y_pred`; `ROC-AUC` and `Log Loss` score the hybrid probability itself and leave the chosen value alone.
 
 Table 1. Metrics for the weight search
 
 | # | Metric | Direction | Threshold | Compared with y_true |
 | --- | --- | --- | --- | --- |
-| 1 | `r2` | Higher is better | Not used | `v_hybrid` of equation (5) |
-| 2 | `mape` | Lower is better | Not used | `v_hybrid` of equation (5) |
-| 3 | `f1` | Higher is better | Used | `y_pred`, the class from the threshold |
-| 4 | `accuracy` | Higher is better | Used | `y_pred`, the class from the threshold |
-| 5 | `roc_auc` | Higher is better | Not used | `p_hybrid` of equation (1) |
+| 1 | `r2_score` | Higher is better | Not used | `v_hybrid` of equation (5) |
+| 2 | `mean_absolute_percentage_error` | Lower is better | Not used | `v_hybrid` of equation (5) |
+| 3 | `ThresholdMetric(f1_score)` | Higher is better | Used | `y_pred`, the class from the threshold |
+| 4 | `ThresholdMetric(accuracy_score)` | Higher is better | Used | `y_pred`, the class from the threshold |
+| 5 | `roc_auc_score` | Higher is better | Not used | `p_hybrid` of equation (1) |
 | 6 | `log_loss` | Lower is better | Not used | `p_hybrid` of equation (1) |
 
-#### `r2`
+#### `r2_score`
 
 Scores `v_hybrid` of equation (5) against `y_true`, which is the deliverable of this document.
 
 - Strength: aims at the value the reader takes away; no threshold to fix; the same rule serves a continuous value and a class.
 - Weakness: needs `v_T` and `v_S`; undefined on a row where both probabilities are zero, since that is the denominator of equation (5); squares its errors, so one wild row can decide w.
 
-#### `mape`
+#### `mean_absolute_percentage_error`
 
 Scores `v_hybrid` of equation (5) against `y_true`, as the mean of the absolute errors divided by the true value.
 
 - Strength: reads as a percentage, so a result stays comparable across targets of different units and sizes; a row with a large true value cannot dominate it.
 - Weakness: a true value at or near zero sends it to infinity; it punishes an overshoot harder than an undershoot of the same size.
 
-#### `f1`
+#### `ThresholdMetric(f1_score)`
 
 Scores `y_pred`, the class the `threshold` produces, as the harmonic mean of precision and recall on the positive class.
 
 - Strength: shows the positive class under an imbalanced label, where a majority guess cannot hide; reads as one number at the operating point actually shipped.
-- Weakness: tied to the `threshold`, so a new threshold makes the chosen w stale; the negative class enters only through the errors it causes.
+- Weakness: tied to the threshold held by `ThresholdMetric`, so a new threshold makes the chosen w stale; the negative class enters only through the errors it causes.
 
-#### `accuracy`
+#### `ThresholdMetric(accuracy_score)`
 
 Scores `y_pred`, the class the `threshold` produces, as the fraction of rows it gets right.
 
 - Strength: the plainest reading of the result, and it counts both classes on the same footing.
-- Weakness: an imbalanced label lifts it on the majority class alone; tied to the `threshold` in the same way `f1` is.
+- Weakness: an imbalanced label lifts it on the majority class alone; tied to the threshold in the same way `f1_score` is.
 
-#### `roc_auc`
+#### `roc_auc_score`
 
 Scores `p_hybrid` of equation (1) as the ranking it induces, over every threshold at once.
 
@@ -224,19 +224,39 @@ def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S
 ### B.2 Optimal Weight Search
 
 ```python
-from typing import Literal, get_args
+from typing import Callable
 
 import numpy as np
 from sklearn.metrics import (accuracy_score, f1_score, log_loss, mean_absolute_percentage_error, r2_score,
                              roc_auc_score)
 
-
-Metric = Literal["r2", "mape", "f1", "accuracy", "roc_auc", "log_loss"]
-VALUE_METRICS = ("r2", "mape")
+Score = Callable[[np.ndarray, np.ndarray], float]
 
 
-def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: Metric = "f1",
-                        threshold: float = 0.5, step: float = 0.01,
+class ThresholdMetric:
+    """Turn a metric that scores a class into one that scores a probability.
+
+    score_fn: metric taking (y_true, y_pred), such as f1_score or accuracy_score
+    threshold: classification threshold applied before the metric runs
+
+    >>> y_true = np.array([0, 0, 1, 1])
+    >>> p_hybrid = np.array([0.2, 0.6, 0.7, 0.4])
+    >>> metric = ThresholdMetric(f1_score, threshold=0.5)
+    >>> round(float(metric(y_true, p_hybrid)), 4)
+    0.5
+    """
+
+    def __init__(self, score_fn: Score, threshold: float = 0.5):
+        self.score_fn = score_fn
+        self.threshold = threshold
+
+    def __call__(self, y_true: np.ndarray, p_hybrid: np.ndarray) -> float:
+        y_pred = (p_hybrid >= self.threshold).astype(int)
+        return self.score_fn(y_true, y_pred)
+
+
+def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: Score,
+                        higher_is_better: bool = True, step: float = 0.01,
                         v_T: np.ndarray = None, v_S: np.ndarray = None) -> tuple[float, float]:
     """Search the weight w of models T and S that suits the validation dataset best, by grid search.
 
@@ -244,11 +264,11 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     - y_true: true labels (N,)
     - p_T: predicted probability of model T (N,)
     - p_S: predicted probability of model S (N,)
-    - metric: metric to optimize, one of Metric
-    - threshold: classification threshold (used by f1 and accuracy)
+    - metric: callable taking (y_true, y_score), such as roc_auc_score or ThresholdMetric(f1_score)
+    - higher_is_better: direction of the metric, False for log_loss and mean_absolute_percentage_error
     - step: weight step of the grid search (default: 0.01 -> 100 intervals)
-    - v_T: predicted value of model T (N,), required by the value metrics and refused by the others
-    - v_S: predicted value of model S (N,), required by the value metrics and refused by the others
+    - v_T: predicted value of model T (N,), which makes the metric score the single predicted value
+    - v_S: predicted value of model S (N,), given together with v_T
 
     Returns:
     - best_w: optimal weight for model T (model S takes 1 - best_w)
@@ -257,72 +277,52 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     >>> y_true = np.array([0, 0, 1, 1])
     >>> p_T = np.array([0.2, 0.3, 0.7, 0.8])
     >>> p_S = np.array([0.6, 0.4, 0.5, 0.3])
-    >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric="roc_auc", step=0.25)
+    >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric=roc_auc_score, step=0.25)
     >>> float(best_w), round(float(best_score), 4)
     (0.5, 1.0)
-    >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric="log_loss", step=0.25)
+    >>> best_w, best_score = find_optimal_weight(
+    ...     y_true, p_T, p_S, metric=log_loss, higher_is_better=False, step=0.25
+    ... )
     >>> float(best_w), round(float(best_score), 4)
     (1.0, 0.2899)
     >>> y_value = np.array([10.0, 20.0, 30.0, 40.0])
     >>> v_T = np.array([11.0, 19.0, 33.0, 37.0])
     >>> v_S = np.array([14.0, 25.0, 26.0, 44.0])
     >>> best_w, best_score = find_optimal_weight(
-    ...     y_value, p_T, p_S, metric="r2", step=0.25, v_T=v_T, v_S=v_S
+    ...     y_value, p_T, p_S, metric=r2_score, step=0.25, v_T=v_T, v_S=v_S
     ... )
     >>> float(best_w), round(float(best_score), 4)
     (0.75, 0.9707)
-    >>> best_w, best_score = find_optimal_weight(
-    ...     y_value, p_T, p_S, metric="mape", step=0.25, v_T=v_T, v_S=v_S
-    ... )
-    >>> float(best_w), round(float(best_score), 4)
-    (1.0, 0.0813)
-    >>> find_optimal_weight(y_true, p_T, p_S, metric="rmse")
+    >>> find_optimal_weight(y_true, p_T, p_S, metric="f1")
     Traceback (most recent call last):
-    ValueError: metric must be one of ('r2', 'mape', 'f1', 'accuracy', 'roc_auc', 'log_loss'), not 'rmse'.
+    TypeError: metric must be callable, not str.
     """
-    if metric not in get_args(Metric):
-        raise ValueError(f"metric must be one of {get_args(Metric)}, not '{metric}'.")
-
-    if metric in VALUE_METRICS:
-        if v_T is None or v_S is None:
-            raise ValueError(f"metric '{metric}' scores the single predicted value, so v_T and v_S are required.")
-    elif v_T is not None or v_S is not None:
-        raise ValueError(f"v_T and v_S belong to {VALUE_METRICS}, not to '{metric}'.")
+    if not callable(metric):
+        raise TypeError(f"metric must be callable, not {type(metric).__name__}.")
+    if (v_T is None) != (v_S is None):
+        raise ValueError("v_T and v_S are given together or not at all.")
 
     weights = np.arange(0.0, 1.0 + step, step)
     best_w = None
-
-    # log loss and mape are lower-better, every other metric is higher-better
-    is_lower_better = metric in ("log_loss", "mape")
-    best_score = float("inf") if is_lower_better else -float("inf")
+    best_score = -float("inf") if higher_is_better else float("inf")
 
     for w in weights:
         # weighted average probability
         p_hybrid = w * p_T + (1 - w) * p_S
 
-        # score of the chosen metric
-        if metric == "f1":
-            y_pred = (p_hybrid >= threshold).astype(int)
-            score = f1_score(y_true, y_pred)
-        elif metric == "accuracy":
-            y_pred = (p_hybrid >= threshold).astype(int)
-            score = accuracy_score(y_true, y_pred)
-        elif metric == "roc_auc":
-            score = roc_auc_score(y_true, p_hybrid)
-        elif metric == "log_loss":
-            score = log_loss(y_true, p_hybrid)
-        elif metric == "r2":
-            score = r2_score(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
-        elif metric == "mape":
-            score = mean_absolute_percentage_error(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
+        # the metric scores the single predicted value where both models report one
+        if v_T is None:
+            score = metric(y_true, p_hybrid)
+        else:
+            score = metric(y_true, hybrid_predict_value(v_T, v_S, p_T, p_S, w))
 
         # keep the best so far
-        if is_lower_better:
-            if score < best_score:
+        if higher_is_better:
+            if score > best_score:
                 best_score = score
                 best_w = round(w, 4)
         else:
-            if score > best_score:
+            if score < best_score:
                 best_score = score
                 best_w = round(w, 4)
 
@@ -359,39 +359,35 @@ print("y_prob_by_t:", np.round(y_prob_by_t[:10], 4))
 print("y_prob_by_s:", np.round(y_prob_by_s[:10], 4))
 
 # --- run the grid search ---
-# 1. optimize on F1-score
+# 1. optimize on F1-score, which needs the threshold the class is read at
 best_w_f1, best_score_f1 = find_optimal_weight(
-    y_true, y_prob_by_t, y_prob_by_s, metric="f1"
+    y_true, y_prob_by_t, y_prob_by_s, metric=ThresholdMetric(f1_score, threshold=0.5)
 )
-print(f"[F1-Score] best w: {best_w_f1} | score: {best_score_f1:.4f}")
+print(f"[F1-Score]  best w: {best_w_f1} | score: {best_score_f1:.4f}")
 
 # 2. optimize on ROC-AUC
 best_w_auc, best_score_auc = find_optimal_weight(
-    y_true, y_prob_by_t, y_prob_by_s, metric="roc_auc"
+    y_true, y_prob_by_t, y_prob_by_s, metric=roc_auc_score
 )
-print(
-    f"[ROC-AUC]  best w: {best_w_auc} | score: {best_score_auc:.4f}"
-)
+print(f"[ROC-AUC]   best w: {best_w_auc} | score: {best_score_auc:.4f}")
 
 # 3. optimize on log loss, lower is better
 best_w_loss, best_score_loss = find_optimal_weight(
-    y_true, y_prob_by_t, y_prob_by_s, metric="log_loss"
+    y_true, y_prob_by_t, y_prob_by_s, metric=log_loss, higher_is_better=False
 )
-print(
-    f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
-)
+print(f"[Log Loss]  best w: {best_w_loss} | score: {best_score_loss:.4f}")
 
 # 4. optimize on R-squared, which scores the single predicted value itself
 best_w_r2, best_score_r2 = find_optimal_weight(
-    y_true, y_prob_by_t, y_prob_by_s, metric="r2",
+    y_true, y_prob_by_t, y_prob_by_s, metric=r2_score,
     v_T=y_pred_by_t, v_S=y_pred_by_s
 )
 print(f"[R-squared] best w: {best_w_r2} | score: {best_score_r2:.4f}")
 
 # 5. optimize on MAPE, which scores the same value on a percentage scale
 best_w_mape, best_score_mape = find_optimal_weight(
-    y_true, y_prob_by_t, y_prob_by_s, metric="mape",
-    v_T=y_pred_by_t, v_S=y_pred_by_s
+    y_true, y_prob_by_t, y_prob_by_s, metric=mean_absolute_percentage_error,
+    higher_is_better=False, v_T=y_pred_by_t, v_S=y_pred_by_s
 )
 print(f"[MAPE]      best w: {best_w_mape} | score: {best_score_mape:.4f}")
 
@@ -410,9 +406,9 @@ y_pred_by_t: [0 1 0 0 0 1 0 0 0 1]
 y_pred_by_s: [0 1 0 0 0 0 1 0 0 1]
 y_prob_by_t: [0.0684 1.     0.1901 0.01   0.01   0.7984 0.01   0.3663 0.2359 0.6062]
 y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5554]
-[F1-Score] best w: 0.78 | score: 0.9174
-[ROC-AUC]  best w: 0.73 | score: 0.9968
-[Log Loss] best w: 1.0 | score: 0.2542
+[F1-Score]  best w: 0.78 | score: 0.9174
+[ROC-AUC]   best w: 0.73 | score: 0.9968
+[Log Loss]  best w: 1.0 | score: 0.2542
 [R-squared] best w: 0.7 | score: 0.7127
 [MAPE]      best w: 1.0 | score: 13510798882111.5684
 v_hybrid   : [0.     1.     0.     0.     0.     0.8626 0.9628 0.     0.     1.    ]
