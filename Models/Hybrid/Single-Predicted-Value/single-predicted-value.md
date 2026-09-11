@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 17 | Created: 2026-09-11 | Updated: 2026-09-11 15:30 CDT
+Rev. 18 | Created: 2026-09-11 | Updated: 2026-09-11 15:45 CDT
 
 ## 1. Purpose
 
@@ -156,13 +156,13 @@ def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S
     p_S: predicted probability of model S (0~1)
     w: weight given to model T (0~1)
 
-    >>> v_T = np.array([10.0, 20.0, 30.0])
-    >>> v_S = np.array([12.0, 22.0, 36.0])
-    >>> p_T = np.array([0.9, 0.5, 0.2])
-    >>> p_S = np.array([0.3, 0.6, 0.9])
-    >>> np.round(hybrid_predict_value(v_T, v_S, p_T, p_S, w=0.5), 4)
+    >>> y_pred_by_t = np.array([10.0, 20.0, 30.0])
+    >>> y_pred_by_s = np.array([12.0, 22.0, 36.0])
+    >>> y_prob_by_t = np.array([0.9, 0.5, 0.2])
+    >>> y_prob_by_s = np.array([0.3, 0.6, 0.9])
+    >>> np.round(hybrid_predict_value(y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=0.5), 4)
     array([10.5   , 21.0909, 34.9091])
-    >>> hybrid_predict_value(v_T, v_S, np.array([0.0, 0.5, 0.2]), np.array([0.0, 0.6, 0.9]))
+    >>> hybrid_predict_value(y_pred_by_t, y_pred_by_s, np.array([0.0, 0.5, 0.2]), np.array([0.0, 0.6, 0.9]))
     Traceback (most recent call last):
     ValueError: both models report zero probability, so the weighted value is undefined.
     """
@@ -273,12 +273,12 @@ y_prob_by_s = np.clip(y_prob_by_s, 0.01, 1)
 y_pred_by_t = (y_prob_by_t >= 0.5).astype(int)
 y_pred_by_s = (y_prob_by_s >= 0.5).astype(int)
 
-# --- the first twenty rows of the sample ---
-print("y_true     :", y_true[:20])
-print("y_pred_by_t:", y_pred_by_t[:20])
-print("y_pred_by_s:", y_pred_by_s[:20])
-print("y_prob_by_t:", np.round(y_prob_by_t[:20], 4))
-print("y_prob_by_s:", np.round(y_prob_by_s[:20], 4))
+# --- the first ten rows of the sample ---
+print("y_true     :", y_true[:10])
+print("y_pred_by_t:", y_pred_by_t[:10])
+print("y_pred_by_s:", y_pred_by_s[:10])
+print("y_prob_by_t:", np.round(y_prob_by_t[:10], 4))
+print("y_prob_by_s:", np.round(y_prob_by_s[:10], 4))
 
 # --- run the grid search ---
 # 1. optimize on F1-score
@@ -307,22 +307,19 @@ print(
 v_hybrid = hybrid_predict_value(
     y_pred_by_t, y_pred_by_s, y_prob_by_t, y_prob_by_s, w=best_w_f1
 )
-print("v_hybrid   :", np.round(v_hybrid[:20], 4))
+print("v_hybrid   :", np.round(v_hybrid[:10], 4))
 ```
 
-The five arrays printed first are the head of the sample, twenty rows of it, the three lines after them are the search result, and the last line is the single predicted value at the weight F1-Score chose.
+The five arrays printed first are the head of the sample, ten rows of it, the three lines after them are the search result, and the last line is the single predicted value at the weight F1-Score chose.
 
 ```text
-y_true     : [0 1 0 0 0 1 0 0 0 1 0 0 0 0 1 0 1 1 1 0]
-y_pred_by_t: [0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 0]
-y_pred_by_s: [0 1 0 0 0 0 1 0 0 1 0 0 0 0 0 0 1 1 1 0]
-y_prob_by_t: [0.0684 1.     0.1901 0.01   0.01   0.7984 0.01   0.3663 0.2359 0.6062
- 0.01   0.2708 0.01   0.2476 0.3811 0.01   0.701  0.7094 0.61   0.1246]
-y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5554
- 0.01   0.01   0.3601 0.01   0.1859 0.161  0.8557 0.7157 0.7988 0.01  ]
+y_true     : [0 1 0 0 0 1 0 0 0 1]
+y_pred_by_t: [0 1 0 0 0 1 0 0 0 1]
+y_pred_by_s: [0 1 0 0 0 0 1 0 0 1]
+y_prob_by_t: [0.0684 1.     0.1901 0.01   0.01   0.7984 0.01   0.3663 0.2359 0.6062]
+y_prob_by_s: [0.3905 0.9685 0.01   0.01   0.138  0.2967 0.604  0.041  0.01   0.5554]
 [F1-Score] best w: 0.78 | score: 0.9174
 [ROC-AUC]  best w: 0.73 | score: 0.9968
 [Log Loss] best w: 1.0 | score: 0.2542
-v_hybrid   : [0.     1.     0.     0.     0.     0.9051 0.9446 0.     0.     1.
- 0.     0.     0.     0.     0.     0.     1.     1.     1.     0.    ]
+v_hybrid   : [0.     1.     0.     0.     0.     0.9051 0.9446 0.     0.     1.    ]
 ```
