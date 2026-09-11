@@ -1,10 +1,10 @@
 # Predictive Uncertainty (Korean)
-Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 19:10 CDT
+Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-10 19:09 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: 학습된 regression model의 예측 에 대한 확률을 구하여 ensemble 모델등에 활용하고 싶다.
-- **Goal**: 예측 값의 확률의 taxonomy 와 hierarchy를 통한 방법을 제시한다.
+- **Goal**: 예측 값의 확률을 taxonomy 와 hierarchy를 통해 방법을 제시한다.
 - **Non-Goal**: classifier의 결과를 다루지 않는다.
 
 ## 2. Summary
