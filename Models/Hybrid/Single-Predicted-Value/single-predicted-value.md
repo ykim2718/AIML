@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 15 | Created: 2026-09-11 | Updated: 2026-09-11 14:50 CDT
+Rev. 16 | Created: 2026-09-11 | Updated: 2026-09-11 15:10 CDT
 
 ## 1. Purpose
 
@@ -9,16 +9,16 @@ Rev. 15 | Created: 2026-09-11 | Updated: 2026-09-11 14:50 CDT
 
 ## 2. Summary
 
-The single prediction comes from the two probabilities: a class is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models M and S provide predicted probabilities ($p_M$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
+The single prediction comes from the two probabilities: a class is read off their weighted average, and a predicted value of any other kind is the two values averaged with those same probabilities as weights. Where both models T and S provide predicted probabilities ($p_T$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
 
 ## 3. Principle
 
 ### 3.1 Weighted Soft Voting
 
-A weight w ($0 \le w \le 1$) applied to the probabilities $p_M$ and $p_S$ of the two models gives the hybrid probability $p_{\mathrm{hybrid}}$.
+A weight w ($0 \le w \le 1$) applied to the probabilities $p_T$ and $p_S$ of the two models gives the hybrid probability $p_{\mathrm{hybrid}}$.
 
 ```math
-p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
+p_{\mathrm{hybrid}} = w \cdot p_T + (1 - w) \cdot p_S \hspace{19em} (1)
 ```
 
 The final class of a binary classification is decided at the threshold 0.5.
@@ -36,10 +36,10 @@ Each model's own predicted value takes no part in this: the class is read off $p
 
 ### 3.2 Multi-Class Extension
 
-In a multi-class classification with three or more classes, the per-class probability vectors $p_M$ and $p_S$ are summed with the weight, and the class holding the highest probability is selected.
+In a multi-class classification with three or more classes, the per-class probability vectors $p_T$ and $p_S$ are summed with the weight, and the class holding the highest probability is selected.
 
 ```math
-\mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_M + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)
+\mathbf{p}_{\mathrm{hybrid}} = w \cdot \mathbf{p}_T + (1 - w) \cdot \mathbf{p}_S \hspace{19em} (3)
 ```
 
 ```math
@@ -53,7 +53,7 @@ Both inputs are arrays of shape (`N_samples`, `N_classes`).
 Where each model emits a predicted value of its own, the single value is the two values averaged with the probabilities as weights, so the model surer of its answer pulls the result toward it.
 
 ```math
-v_{\mathrm{hybrid}} = \frac{w \cdot p_M \cdot v_M + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_M + (1 - w) \cdot p_S} \hspace{15em} (5)
+v_{\mathrm{hybrid}} = \frac{w \cdot p_T \cdot v_T + (1 - w) \cdot p_S \cdot v_S}{w \cdot p_T + (1 - w) \cdot p_S} \hspace{15em} (5)
 ```
 
 The denominator is the hybrid probability of equation (1), so the weighted soft voting of section 3.1 is what carries the two values here as well. The implementation is [Appendix B.1](#b1-single-predicted-value). It checks that both probabilities lie within 0~1 before weighing them, and it raises on a row where both are zero instead of returning a number.
@@ -69,12 +69,12 @@ Two things call for care when the combination is built on probabilities.
 
 ### 4.2 Optimal Weight Search
 
-A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model M and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
+A grid search finds the optimal weight w on the validation dataset against a metric the user defines, such as F1-score, ROC-AUC or log loss. The search runs from 0.0 to 1.0, at a step whose default of 0.01 covers 100 intervals. The return is the optimal weight `best_w` to give model T and the metric score at that weight, the weight of model S being `1 - best_w`. The search function is [Appendix B.2](#b2-optimal-weight-search), and the run on synthetic data is [Appendix B.3](#b3-execution-example).
 
 The optimal `best_w` found on the validation data is carried unchanged into the weighted sum on the test dataset for the final evaluation.
 
 ```math
-p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{M,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (6)
+p_{\mathrm{hybrid,test}} = w_{\mathrm{best}} \cdot p_{T,\mathrm{test}} + (1 - w_{\mathrm{best}}) \cdot p_{S,\mathrm{test}} \hspace{19em} (6)
 ```
 
 ### 4.3 Metric Selection
@@ -147,37 +147,37 @@ def check_probability(p: Probability) -> np.ndarray:
     return p
 
 
-def hybrid_predict_value(v_M: np.ndarray, v_S: np.ndarray, p_M: Probability, p_S: Probability,
+def hybrid_predict_value(v_T: np.ndarray, v_S: np.ndarray, p_T: Probability, p_S: Probability,
                          w: float = 0.5) -> np.ndarray:
     """
-    v_M: predicted value of model M
+    v_T: predicted value of model T
     v_S: predicted value of model S
-    p_M: predicted probability of model M (0~1)
+    p_T: predicted probability of model T (0~1)
     p_S: predicted probability of model S (0~1)
-    w: weight given to model M (0~1)
+    w: weight given to model T (0~1)
 
-    >>> v_M = np.array([10.0, 20.0, 30.0])
+    >>> v_T = np.array([10.0, 20.0, 30.0])
     >>> v_S = np.array([12.0, 22.0, 36.0])
-    >>> p_M = np.array([0.9, 0.5, 0.2])
+    >>> p_T = np.array([0.9, 0.5, 0.2])
     >>> p_S = np.array([0.3, 0.6, 0.9])
-    >>> np.round(hybrid_predict_value(v_M, v_S, p_M, p_S, w=0.5), 4)
+    >>> np.round(hybrid_predict_value(v_T, v_S, p_T, p_S, w=0.5), 4)
     array([10.5   , 21.0909, 34.9091])
-    >>> hybrid_predict_value(v_M, v_S, np.array([0.0, 0.5, 0.2]), np.array([0.0, 0.6, 0.9]))
+    >>> hybrid_predict_value(v_T, v_S, np.array([0.0, 0.5, 0.2]), np.array([0.0, 0.6, 0.9]))
     Traceback (most recent call last):
     ValueError: both models report zero probability, so the weighted value is undefined.
     """
     # both probabilities have to be on the 0~1 scale before they are weighed against each other
-    p_M = check_probability(p_M)
+    p_T = check_probability(p_T)
     p_S = check_probability(p_S)
 
     # confidence each model carries into the combination
-    weight_M = w * p_M
+    weight_T = w * p_T
     weight_S = (1 - w) * p_S
 
-    denominator = weight_M + weight_S
+    denominator = weight_T + weight_S
     if np.any(denominator == 0):
         raise ValueError("both models report zero probability, so the weighted value is undefined.")
-    return (weight_M * v_M + weight_S * v_S) / denominator
+    return (weight_T * v_T + weight_S * v_S) / denominator
 ```
 
 ### B.2 Optimal Weight Search
@@ -187,29 +187,29 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, log_loss, roc_auc_score
 
 
-def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, metric: str = "f1",
+def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, metric: str = "f1",
                         threshold: float = 0.5, step: float = 0.01) -> tuple[float, float]:
-    """Search the weight w of models M and S that suits the validation dataset best, by grid search.
+    """Search the weight w of models T and S that suits the validation dataset best, by grid search.
 
     Parameters:
     - y_true: true labels (N,)
-    - p_M: predicted probability of model M (N,)
+    - p_T: predicted probability of model T (N,)
     - p_S: predicted probability of model S (N,)
     - metric: metric to optimize ('f1', 'roc_auc', 'log_loss', 'accuracy')
     - threshold: classification threshold (used by f1 and accuracy)
     - step: weight step of the grid search (default: 0.01 -> 100 intervals)
 
     Returns:
-    - best_w: optimal weight for model M (model S takes 1 - best_w)
+    - best_w: optimal weight for model T (model S takes 1 - best_w)
     - best_score: metric score at that weight
 
     >>> y_true = np.array([0, 0, 1, 1])
-    >>> p_M = np.array([0.2, 0.3, 0.7, 0.8])
+    >>> p_T = np.array([0.2, 0.3, 0.7, 0.8])
     >>> p_S = np.array([0.6, 0.4, 0.5, 0.3])
-    >>> best_w, best_score = find_optimal_weight(y_true, p_M, p_S, metric="roc_auc", step=0.25)
+    >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric="roc_auc", step=0.25)
     >>> float(best_w), round(float(best_score), 4)
     (0.5, 1.0)
-    >>> best_w, best_score = find_optimal_weight(y_true, p_M, p_S, metric="log_loss", step=0.25)
+    >>> best_w, best_score = find_optimal_weight(y_true, p_T, p_S, metric="log_loss", step=0.25)
     >>> float(best_w), round(float(best_score), 4)
     (1.0, 0.2899)
     """
@@ -222,7 +222,7 @@ def find_optimal_weight(y_true: np.ndarray, p_M: np.ndarray, p_S: np.ndarray, me
 
     for w in weights:
         # weighted average probability
-        p_hybrid = w * p_M + (1 - w) * p_S
+        p_hybrid = w * p_T + (1 - w) * p_S
 
         # score of the chosen metric
         if metric == "f1":
@@ -259,31 +259,37 @@ np.random.seed(42)
 N_samples = 1000
 
 # ground truth
-y_val = np.random.randint(0, 2, size=N_samples)
+y_true = np.random.randint(0, 2, size=N_samples)
 
-# probability from model M, relatively close to the truth
-p_M_val = y_val * 0.7 + np.random.normal(0, 0.2, size=N_samples)
-p_M_val = np.clip(p_M_val, 0, 1)
+# probability from model T, relatively close to the truth
+p_by_t = y_true * 0.7 + np.random.normal(0, 0.2, size=N_samples)
+p_by_t = np.clip(p_by_t, 0.01, 1)
 
 # probability from model S
-p_S_val = y_val * 0.5 + np.random.normal(0, 0.3, size=N_samples)
-p_S_val = np.clip(p_S_val, 0, 1)
+p_by_s = y_true * 0.5 + np.random.normal(0, 0.3, size=N_samples)
+p_by_s = np.clip(p_by_s, 0.01, 1)
+
+# the class each model predicts on its own, at the 0.5 threshold
+y_pred_by_t = (p_by_t >= 0.5).astype(int)
+y_pred_by_s = (p_by_s >= 0.5).astype(int)
 
 # --- the first five rows of the sample ---
-print("y_val:", y_val[:5])
-print("p_M  :", np.round(p_M_val[:5], 4))
-print("p_S  :", np.round(p_S_val[:5], 4))
+print("y_true     :", y_true[:5])
+print("y_pred_by_t:", y_pred_by_t[:5])
+print("y_pred_by_s:", y_pred_by_s[:5])
+print("p_by_t     :", np.round(p_by_t[:5], 4))
+print("p_by_s     :", np.round(p_by_s[:5], 4))
 
 # --- run the grid search ---
 # 1. optimize on F1-score
 best_w_f1, best_score_f1 = find_optimal_weight(
-    y_val, p_M_val, p_S_val, metric="f1"
+    y_true, p_by_t, p_by_s, metric="f1"
 )
 print(f"[F1-Score] best w: {best_w_f1} | score: {best_score_f1:.4f}")
 
 # 2. optimize on ROC-AUC
 best_w_auc, best_score_auc = find_optimal_weight(
-    y_val, p_M_val, p_S_val, metric="roc_auc"
+    y_true, p_by_t, p_by_s, metric="roc_auc"
 )
 print(
     f"[ROC-AUC]  best w: {best_w_auc} | score: {best_score_auc:.4f}"
@@ -291,20 +297,29 @@ print(
 
 # 3. optimize on log loss, lower is better
 best_w_loss, best_score_loss = find_optimal_weight(
-    y_val, p_M_val, p_S_val, metric="log_loss"
+    y_true, p_by_t, p_by_s, metric="log_loss"
 )
 print(
     f"[Log Loss] best w: {best_w_loss} | score: {best_score_loss:.4f}"
 )
+
+# --- the single predicted value at the weight F1-Score chose ---
+v_hybrid = hybrid_predict_value(
+    y_pred_by_t, y_pred_by_s, p_by_t, p_by_s, w=best_w_f1
+)
+print("v_hybrid   :", np.round(v_hybrid[:5], 4))
 ```
 
-The five rows printed first are the head of the sample, and the three lines after them are the search result.
+The five arrays printed first are the head of the sample, the three lines after them are the search result, and the last line is the single predicted value at the weight F1-Score chose.
 
 ```text
-y_val: [0 1 0 0 0]
-p_M  : [0.0684 1.     0.1901 0.     0.    ]
-p_S  : [0.3905 0.9685 0.0096 0.     0.138 ]
+y_true     : [0 1 0 0 0]
+y_pred_by_t: [0 1 0 0 0]
+y_pred_by_s: [0 1 0 0 0]
+p_by_t     : [0.0684 1.     0.1901 0.01   0.01  ]
+p_by_s     : [0.3905 0.9685 0.01   0.01   0.138 ]
 [F1-Score] best w: 0.78 | score: 0.9174
 [ROC-AUC]  best w: 0.73 | score: 0.9968
-[Log Loss] best w: 1.0 | score: 0.2517
+[Log Loss] best w: 1.0 | score: 0.2542
+v_hybrid   : [0. 1. 0. 0. 0.]
 ```
