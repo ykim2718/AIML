@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 26 | Created: 2026-09-11 | Updated: 2026-09-11 20:00 CDT
+Rev. 27 | Created: 2026-09-11 | Updated: 2026-09-11 20:20 CDT
 
 ## 1. Purpose
 
@@ -158,6 +158,7 @@ N/A — no external source is cited.
 - **ROC-AUC**: A metric summarizing classification performance over every threshold.
 - **Soft Voting**: A combination that averages the predicted probabilities of the models with weights to decide the final class.
 - **Threshold**: The classification threshold that turns a probability into a final class.
+- **ThresholdMetric**: A callable holding a class metric and the threshold it needs, so that it scores a probability like the metrics that take one directly.
 
 ## Appendix B. Python Implementation
 
@@ -293,9 +294,11 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     ... )
     >>> float(best_w), round(float(best_score), 4)
     (0.75, 0.9707)
-    >>> find_optimal_weight(y_true, p_T, p_S, metric="f1")
-    Traceback (most recent call last):
-    TypeError: metric must be callable, not str.
+    >>> best_w, best_score = find_optimal_weight(
+    ...     y_true, p_T, p_S, metric=ThresholdMetric(accuracy_score), step=0.25
+    ... )
+    >>> float(best_w), round(float(best_score), 4)
+    (0.5, 1.0)
     """
     if not callable(metric):
         raise TypeError(f"metric must be callable, not {type(metric).__name__}.")

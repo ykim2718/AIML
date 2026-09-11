@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models (Korean)
-Rev. 27 | Created: 2026-09-11 | Updated: 2026-09-11 20:00 CDT
+Rev. 28 | Created: 2026-09-11 | Updated: 2026-09-11 20:20 CDT
 
 ## 1. Purpose
 
@@ -158,6 +158,7 @@ N/A — 외부 출처를 인용하지 않음.
 - **ROC-AUC**: 모든 임계값에 걸친 분류 성능을 하나로 요약한 지표.
 - **Soft Voting**: 각 모델의 예측 확률을 가중 평균하여 최종 클래스를 정하는 결합 방식.
 - **Threshold**: 확률을 최종 클래스로 변환하는 분류 임계값.
+- **ThresholdMetric**: 클래스를 재는 지표와 그것이 필요한 임계값을 함께 쥔 callable. 확률을 바로 받는 지표들과 같은 방식으로 확률을 채점한다.
 
 ## Appendix B. Python Implementation
 
@@ -293,9 +294,11 @@ def find_optimal_weight(y_true: np.ndarray, p_T: np.ndarray, p_S: np.ndarray, me
     ... )
     >>> float(best_w), round(float(best_score), 4)
     (0.75, 0.9707)
-    >>> find_optimal_weight(y_true, p_T, p_S, metric="f1")
-    Traceback (most recent call last):
-    TypeError: metric must be callable, not str.
+    >>> best_w, best_score = find_optimal_weight(
+    ...     y_true, p_T, p_S, metric=ThresholdMetric(accuracy_score), step=0.25
+    ... )
+    >>> float(best_w), round(float(best_score), 4)
+    (0.5, 1.0)
     """
     if not callable(metric):
         raise TypeError(f"metric must be callable, not {type(metric).__name__}.")
