@@ -1,5 +1,5 @@
 # Weighted Soft Voting (Korean)
-Rev. 8 | Created: 2026-09-11 | Updated: 2026-09-11 11:30 CDT
+Rev. 9 | Created: 2026-09-11 | Updated: 2026-09-11 11:50 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 8 | Created: 2026-09-11 | Updated: 2026-09-11 11:30 CDT
 
 ## 2. Summary
 
-두 모델 M과 S가 모두 예측 확률 ($p_M$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.2), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
+단일 예측값은 두 확률의 가중 평균에서 다시 읽어낸 클래스이며, 어느 한 모델이 내놓은 예측값이 아닙니다. 두 모델 M과 S가 모두 예측 확률 ($p_M$, $p_S$) 을 제공한다면, 각 모델의 확신도를 정밀하게 반영하는 Soft Voting (확률 가중 평균) 방식을 사용하는 것이 가장 효과적입니다. 가중치 w 는 임의로 정하지 않고 validation dataset 에서 grid search 로 찾으며 (section 4.2), 찾은 값을 test dataset 의 가중합에 그대로 적용합니다.
 
 ## 3. Principle
 
@@ -31,6 +31,8 @@ p_{\mathrm{hybrid}} = w \cdot p_M + (1 - w) \cdot p_S \hspace{19em} (1)
 \end{cases}
 \hspace{15em} (2)
 ```
+
+각 모델이 내놓은 예측값은 여기에 쓰이지 않습니다. 단일 예측값은 $p_{\mathrm{hybrid}}$ 에서 다시 읽어내며, 각 모델이 그 안에서 차지하는 몫은 가중치 w 가 정합니다.
 
 식 (1) 과 식 (2) 의 구현은 [Appendix B.1](#b1-binary-classification) 입니다.
 

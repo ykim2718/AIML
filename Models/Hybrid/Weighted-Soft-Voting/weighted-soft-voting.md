@@ -1,5 +1,5 @@
 # Weighted Soft Voting
-Rev. 7 | Created: 2026-09-11 | Updated: 2026-09-11 11:30 CDT
+Rev. 8 | Created: 2026-09-11 | Updated: 2026-09-11 11:50 CDT
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 7 | Created: 2026-09-11 | Updated: 2026-09-11 11:30 CDT
 
 ## 2. Summary
 
-Where both models M and S provide predicted probabilities ($p_M$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
+The single prediction is the class read off the weighted average of the two probabilities, not the prediction of either model. Where both models M and S provide predicted probabilities ($p_M$, $p_S$), soft voting, a weighted average of the probabilities that reflects the confidence of each model precisely, is the most effective method. The weight w comes from a grid search on a validation dataset (section 4.2) rather than from a guess, and the value found is carried unchanged into the weighted sum on the test dataset.
 
 ## 3. Principle
 
@@ -31,6 +31,8 @@ The final class of a binary classification is decided at the threshold 0.5.
 \end{cases}
 \hspace{15em} (2)
 ```
+
+Each model's own predicted value takes no part in this: the single prediction is read off $p_{\mathrm{hybrid}}$, and the share a model holds in it is what the weight w sets.
 
 The implementation of equation (1) and equation (2) is [Appendix B.1](#b1-binary-classification).
 
