@@ -1,11 +1,11 @@
 # Weighted Soft Voting
-Rev. 6 | Created: 2026-09-11 | Updated: 2026-09-11 11:10 CDT
+Rev. 7 | Created: 2026-09-11 | Updated: 2026-09-11 11:30 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: Two models M and S each emit a predicted probability, with no rule for combining the two into one prediction.
-- **Goal**: The definition of the hybrid probability that joins the two probabilities through a weight w, and the procedure for fixing w on a validation dataset.
-- **Non-Goal**: Fitting and improving the models M and S themselves.
+- **Problem Statement**: No simple way to combine the predictions computed by several models into one.
+- **Goal**: A single prediction that accounts for both probabilities, where two models each emit a prediction and a probability.
+- **Non-Goal**: Fitting and improving the models themselves.
 
 ## 2. Summary
 

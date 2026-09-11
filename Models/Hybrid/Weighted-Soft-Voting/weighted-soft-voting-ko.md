@@ -1,11 +1,11 @@
 # Weighted Soft Voting (Korean)
-Rev. 7 | Created: 2026-09-11 | Updated: 2026-09-11 11:10 CDT
+Rev. 8 | Created: 2026-09-11 | Updated: 2026-09-11 11:30 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: 두 모델 M 과 S 가 각각 예측 확률을 내놓지만, 둘을 하나의 예측으로 묶는 규칙이 없음.
-- **Goal**: 가중치 w 로 두 확률을 묶는 hybrid 확률의 정의와, validation dataset 에서 w 를 정하는 절차 제시.
-- **Non-Goal**: 모델 M 과 S 자체의 학습과 개선.
+- **Problem Statement**: 복수의 모델에서 계산한 예측값을 하나로 합치는 간단한 방법이 없다.
+- **Goal**: 두 모델에서 각각 예측 값과 확률을 내놓을 때, 두 확률을 고려한 단일 예측값을 제시하고자 한다.
+- **Non-Goal**: 모델 자체의 학습과 개선은 하지 않는다.
 
 ## 2. Summary
 
