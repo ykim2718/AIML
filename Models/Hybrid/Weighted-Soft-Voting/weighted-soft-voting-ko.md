@@ -1,5 +1,5 @@
 # Weighted Soft Voting (Korean)
-Rev. 6 | Created: 2026-09-11 | Updated: 2026-09-11 10:30 CDT
+Rev. 7 | Created: 2026-09-11 | Updated: 2026-09-11 11:10 CDT
 
 ## 1. Purpose
 
@@ -120,31 +120,28 @@ import numpy as np
 Probability = Union[float, np.ndarray]
 
 
-def hybrid_predict_proba(p_M: Probability, p_S: Probability, w: float = 0.5) -> Probability:
+def hybrid_predict(p_M: Probability, p_S: Probability, w: float = 0.5,
+                   threshold: float = 0.5) -> tuple[np.ndarray, Probability]:
     """
     p_M: 모델 M의 예측 확률 (0~1)
     p_S: 모델 S의 예측 확률 (0~1)
     w: 모델 M에 부여할 가중치 (0~1)
+    threshold: 분류 임계값
 
     >>> p_M = np.array([0.9, 0.2])
     >>> p_S = np.array([0.6, 0.4])
-    >>> hybrid_predict_proba(p_M, p_S, w=0.7)
+    >>> predictions, p_hybrid = hybrid_predict(p_M, p_S, w=0.7)
+    >>> predictions
+    array([1, 0])
+    >>> p_hybrid
     array([0.81, 0.26])
     """
     # weighted average probability
     p_hybrid = w * p_M + (1 - w) * p_S
-    return p_hybrid
 
-
-def hybrid_predict(p_M: Probability, p_S: Probability, w: float = 0.5, threshold: float = 0.5) -> np.ndarray:
-    """
-    >>> p_M = np.array([0.9, 0.2])
-    >>> p_S = np.array([0.6, 0.4])
-    >>> hybrid_predict(p_M, p_S, w=0.7)
-    array([1, 0])
-    """
-    p_hybrid = hybrid_predict_proba(p_M, p_S, w)
-    return (p_hybrid >= threshold).astype(int)
+    # final class at the threshold
+    predictions = (p_hybrid >= threshold).astype(int)
+    return predictions, p_hybrid
 ```
 
 ### B.2 Multi-Class Classification
