@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 73 | Created: 2026-09-09 | Updated: 2026-09-12 05:18 CDT
+Rev. 74 | Created: 2026-09-09 | Updated: 2026-09-12 05:28 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -109,7 +109,7 @@ Substituting the shift $x_1 = z_1 + a$, $x_2 = z_2 + b$ into a product-only mode
 
 $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (12)$$
 
-On the right of equation (12), $\beta_{12} b z_1$ and $\beta_{12} a z_2$ are the first-order terms of $z_1$ and $z_2$, their main effects. They appear on their own, out of the shift of origin alone, with no one having put them in the model. A product model without main effects therefore depends on where the origin was placed, and whether temperature is measured in Celsius or in kelvin changes the model. Keep the main effects and that shift is absorbed as a rearrangement of the coefficients. There is a practice of dropping a main effect on the weak form of the rule, weak heredity, under which only one of the variables forming the product need be present, but the conditions that justify it almost never hold in practice [[4](#ref-4)]. Where variable selection is automated it is likewise better to carry heredity as a Bayesian prior or as a constraint on the optimization [[5](#ref-5)] [[6](#ref-6)].
+On the right of equation (12), $\beta_{12} b z_1$ and $\beta_{12} a z_2$ are the first-order terms of $z_1$ and $z_2$, their main effects. They appear on their own, out of the shift of origin alone, with no one having put them in the model. A product model without main effects therefore depends on where the origin was placed, and whether temperature is measured in Celsius or in kelvin changes the model. Put the same shift into a model that keeps the main effects, $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_{12} x_1 x_2$, and the coefficient of the product, $\beta_{12}$, is unchanged while the first-order coefficients become $\beta_1 + \beta_{12} b$ and $\beta_2 + \beta_{12} a$ and the intercept becomes $\beta_0 + \beta_1 a + \beta_2 b + \beta_{12} ab$; the shape of the model is the same. The shift is absorbed as a rearrangement of the coefficient values, and the fitted surface does not move. There is a practice of dropping a main effect on the weak form of the rule, weak heredity, under which only one of the variables forming the product need be present, but the conditions that justify it almost never hold in practice [[4](#ref-4)]. Where variable selection is automated it is likewise better to carry heredity as a Bayesian prior or as a constraint on the optimization [[5](#ref-5)] [[6](#ref-6)].
 
 ## 5. Caution
 

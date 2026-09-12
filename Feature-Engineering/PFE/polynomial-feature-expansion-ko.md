@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 75 | Created: 2026-09-07 | Updated: 2026-09-12 05:18 CDT
+Rev. 76 | Created: 2026-09-07 | Updated: 2026-09-12 05:28 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -109,7 +109,7 @@ $y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = 
 
 $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (12)$$
 
-식 (12) 의 오른쪽에서 $\beta_{12} b z_1$ 과 $\beta_{12} a z_2$ 가 각각 $z_1$ 과 $z_2$ 의 1차 항, 곧 main effect 다. Model 에 넣지 않았는데도 원점을 옮긴 것만으로 저절로 생긴다. 곧 main effect 없는 곱항 model 은 원점을 어디에 두었느냐에 따라 달라져, 온도를 섭씨로 재느냐 절대온도로 재느냐가 model 을 바꾼다. Main effect 를 함께 두면 그 이동이 계수의 재배열로 흡수된다. 곱을 이루는 변수 가운데 하나만 있어도 된다는 약한 형태 (weak heredity) 를 근거로 main effect 를 지우는 관행이 있으나, 그것이 정당화되는 조건은 실무에서 거의 성립하지 않는다 [[4](#ref-4)]. 변수 선택을 자동화할 때도 heredity 를 Bayes 의 사전 분포 (prior) 나 최적화의 제약으로 걸어 두는 편이 낫다 [[5](#ref-5)] [[6](#ref-6)].
+식 (12) 의 오른쪽에서 $\beta_{12} b z_1$ 과 $\beta_{12} a z_2$ 가 각각 $z_1$ 과 $z_2$ 의 1차 항, 곧 main effect 다. Model 에 넣지 않았는데도 원점을 옮긴 것만으로 저절로 생긴다. 곧 main effect 없는 곱항 model 은 원점을 어디에 두었느냐에 따라 달라져, 온도를 섭씨로 재느냐 절대온도로 재느냐가 model 을 바꾼다. Main effect 를 함께 둔 model $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_{12} x_1 x_2$ 에 같은 이동을 넣으면 곱항의 계수 $\beta_{12}$ 는 그대로이고, 1차 항의 계수가 $\beta_1 + \beta_{12} b$ 와 $\beta_2 + \beta_{12} a$ 로, 절편이 $\beta_0 + \beta_1 a + \beta_2 b + \beta_{12} ab$ 로 바뀔 뿐 model 의 꼴은 같다. 곧 원점을 옮긴 결과가 계수 값의 재배열로 흡수되어 적합된 곡면은 달라지지 않는다. 곱을 이루는 변수 가운데 하나만 있어도 된다는 약한 형태 (weak heredity) 를 근거로 main effect 를 지우는 관행이 있으나, 그것이 정당화되는 조건은 실무에서 거의 성립하지 않는다 [[4](#ref-4)]. 변수 선택을 자동화할 때도 heredity 를 Bayes 의 사전 분포 (prior) 나 최적화의 제약으로 걸어 두는 편이 낫다 [[5](#ref-5)] [[6](#ref-6)].
 
 ## 5. Caution
 
