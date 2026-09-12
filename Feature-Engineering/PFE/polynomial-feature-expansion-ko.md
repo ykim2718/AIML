@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 22 | Created: 2026-09-07 | Updated: 2026-09-11 19:28 CDT
+Rev. 23 | Created: 2026-09-07 | Updated: 2026-09-11 19:30 CDT
 
 ## 1. Purpose
 
@@ -157,30 +157,11 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 - 자료에서 복원추출로 다시 뽑은 표본 (bootstrap) 에서 계수 부호가 유지되는 비율. 곱항의 부호가 뒤집히면 그 항은 해석하지 않는다.
 - 잔차를 곱항에 대해 그린 산점도. Expansion 전에 남아 있던 구조가 사라졌는지 확인한다.
 
-## 6. Comparison
+## 6. Further Work
 
-Expansion 이 맞지 않는 자리는 세 가지다. 변수가 많을 때, 한 변수 안에서 여러 번 꺾일 때, 그리고 extrapolation 이 필요할 때다. Table 4 는 그 자리에서 무엇으로 갈아탈지를 정리한 것이다.
-
-Table 4. Alternatives to a polynomial expansion
-
-| Method | What it buys | When to prefer | Cost |
-| --- | --- | --- | --- |
-| Polynomial expansion | Explicit terms, a linear model kept intact | A few dozen variables, curvature and pairwise effects | Column count, fragile extrapolation |
-| Spline and P-spline | Local flexibility, a bounded basis [[11](#ref-11)] | Repeated bends inside one variable | Tensor products for interactions, growing again |
-| GAM | A sum of per-variable curves, readable | Non-linear main effects, few interactions | Interaction terms declared by hand |
-| Polynomial kernel | The same space without materializing it | Many variables, few rows | No coefficient attached to a term |
-| Random feature or sketch | Column count fixed by the user | Many rows and many variables | Approximation error |
-| Factorization machine | Pairwise coefficients factorized [[12](#ref-12)] | Sparse high-cardinality categorical data | Interaction strength only, limited reading |
-| Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
-| Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
-
-Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다. PLS 는 열을 응답과의 공분산이 큰 방향으로 먼저 투영한 뒤 회귀하므로 expansion 이 만든 collinearity 를 정면으로 다루며, 관측이 계수보다 적은 실험 자료에서 쓰인다. 어느 쪽을 고르든 판단의 순서는 같다. 먼저 표현력이 부족한지 확인하고, 부족하다면 그 부족이 곱항인지 곡률인지 가른 뒤에 방법을 고른다. 선형 model 이 받는 열을 넓히는 방법 전체, 곧 basis expansion 을 한 틀에서 견주는 정리가 있다 [[10](#ref-10)].
-
-## 7. Further Work
-
-- **Sparse polynomial chaos expansion** — 서로 직교하는 다항식들의 모음 위에서 항을 희소하게 골라 고차 expansion 의 항 수를 줄이는 방법이다 [[13](#ref-13)]. 최소각 회귀 (least angle regression) 로 항을 고르는 절차가 자리 잡아 수백 개 후보에서 수십 개만 남기는 일이 계산으로 가능해졌다. 착수에는 입력 변수의 분포 가정 (기저가 그 분포에 따라 정해진다) 과 설계된 표본이 필요하다.
+- **Sparse polynomial chaos expansion** — 서로 직교하는 다항식들의 모음 위에서 항을 희소하게 골라 고차 expansion 의 항 수를 줄이는 방법이다 [[10](#ref-10)]. 최소각 회귀 (least angle regression) 로 항을 고르는 절차가 자리 잡아 수백 개 후보에서 수십 개만 남기는 일이 계산으로 가능해졌다. 착수에는 입력 변수의 분포 가정 (기저가 그 분포에 따라 정해진다) 과 설계된 표본이 필요하다.
 - **Hierarchical interaction selection at scale** — heredity 를 convex 제약으로 걸어 곱항을 고르는 lasso 계열이다 [[6](#ref-6)]. 제약이 convex 여서 찾은 최적해가 유일하고 수백 변수까지 풀리므로, 4.3 절의 규칙을 사람이 지키는 대신 최적화가 지키게 할 수 있다. 착수에는 곱항 후보의 범위를 미리 좁히는 규칙과 계산 예산이 필요하다.
-- **Learned basis** — 고정된 monomial 기저 대신 1차원 함수를 학습해 쌓는 model 이다 [[14](#ref-14)]. 2024 년에 spline 기반 구현이 공개되어 같은 자료에서 expansion + ridge 와 직접 견줄 수 있게 되었다. 착수에는 held-out 비교 절차와, 학습되는 기저가 표본 수에 비해 과하지 않은지 판단할 기준이 필요하다.
+- **Learned basis** — 고정된 monomial 기저 대신 1차원 함수를 학습해 쌓는 model 이다 [[11](#ref-11)]. 2024 년에 spline 기반 구현이 공개되어 같은 자료에서 expansion + ridge 와 직접 견줄 수 있게 되었다. 착수에는 held-out 비교 절차와, 학습되는 기저가 표본 수에 비해 과하지 않은지 판단할 기준이 필요하다.
 
 ## References
 
@@ -203,19 +184,13 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 <a id="ref-9"></a>
 [9] Friedman, J. H. and Popescu, B. E. (2008). [Predictive learning via rule ensembles](https://doi.org/10.1214/07-AOAS148). *The Annals of Applied Statistics*, 2(3), 916–954.<br>
 <a id="ref-10"></a>
-[10] Hastie, T., Tibshirani, R. and Friedman, J. (2009). [The Elements of Statistical Learning: Data Mining, Inference, and Prediction](https://doi.org/10.1007/978-0-387-84858-7) (2nd ed.). Springer. ISBN 978-0-387-84857-0.<br>
+[10] Blatman, G. and Sudret, B. (2011). [Adaptive sparse polynomial chaos expansion based on least angle regression](https://doi.org/10.1016/j.jcp.2010.12.021). *Journal of Computational Physics*, 230(6), 2345–2367.<br>
 <a id="ref-11"></a>
-[11] Eilers, P. H. C. and Marx, B. D. (1996). [Flexible smoothing with B-splines and penalties](https://doi.org/10.1214/ss/1038425655). *Statistical Science*, 11(2), 89–121.<br>
+[11] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.<br>
 <a id="ref-12"></a>
-[12] Rendle, S. (2010). [Factorization Machines](https://doi.org/10.1109/ICDM.2010.127). *2010 IEEE International Conference on Data Mining*, 995–1000.<br>
+[12] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
 <a id="ref-13"></a>
-[13] Blatman, G. and Sudret, B. (2011). [Adaptive sparse polynomial chaos expansion based on least angle regression](https://doi.org/10.1016/j.jcp.2010.12.021). *Journal of Computational Physics*, 230(6), 2345–2367.<br>
-<a id="ref-14"></a>
-[14] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.<br>
-<a id="ref-15"></a>
-[15] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
-<a id="ref-16"></a>
-[16] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.
+[13] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.
 
 ---
 
@@ -249,9 +224,9 @@ $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \i
 
 식 (3) 은 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 세로줄 왼쪽의 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
 
-변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 5 가 그 다섯이다.
+변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 4 가 그 다섯이다.
 
-Table 5. Exponent pairs admitted by equation (3) at two variables and degree 2
+Table 4. Exponent pairs admitted by equation (3) at two variables and degree 2
 
 | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- |
@@ -271,7 +246,7 @@ $$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n
 
 세는 방법은 별과 막대 (stars and bars) 다. 차수 $k$ 를 같은 별 $k$ 개로 놓고, 변수 $n$ 개를 막대 $n-1$ 개로 나눈 칸 $n$ 개로 놓으면, 한 칸에 든 별의 수가 그 변수의 지수 $a_i$ 가 된다. 그러면 지수 벌을 세는 일은 별 $k$ 개와 막대 $n-1$ 개, 모두 $k+n-1$ 개를 한 줄로 늘어놓고 그중 어느 $n-1$ 자리를 막대로 삼을지 고르는 일과 같아져 $\binom{k+n-1}{n-1}$ 이 된다.
 
-$n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 5 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
+$n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 4 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
 
 차수를 0 부터 $d$ 까지 더하면 식 (9) 가 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
 
@@ -285,7 +260,7 @@ $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (10)$$
 
 ## Appendix C. Ridge And Lasso On Expanded Columns
 
-Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (11), lasso 는 식 (12) 이며 [[15](#ref-15)], $\alpha$ 가 penalty 를 누르는 세기다.
+Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (11), lasso 는 식 (12) 이며 [[12](#ref-12)], $\alpha$ 가 penalty 를 누르는 세기다.
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (11)$$
 
@@ -295,11 +270,11 @@ $$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVe
 
 $$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (13)$$
 
-Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (14) 이며 [[16](#ref-16)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
+Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (14) 이며 [[13](#ref-13)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (14)$$
 
-Table 6. Penalties on expanded columns
+Table 5. Penalties on expanded columns
 
 | Penalty | Term added | A group of columns that resemble one another | Where it fits |
 | --- | --- | --- | --- |
@@ -317,7 +292,7 @@ Penalty 를 건다고 degree 를 4 로 올릴 수 있는 것은 아니다. Penal
 
 Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, 정할 것은 네 인자뿐이다 [[7](#ref-7)].
 
-Table 7. PolynomialFeatures arguments
+Table 6. PolynomialFeatures arguments
 
 | Argument | Effect | Note |
 | --- | --- | --- |

@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 21 | Created: 2026-09-09 | Updated: 2026-09-11 19:28 CDT
+Rev. 22 | Created: 2026-09-09 | Updated: 2026-09-11 19:30 CDT
 
 ## 1. Purpose
 
@@ -157,30 +157,11 @@ Whether an expansion helped is confirmed in four ways.
 - The share of samples redrawn from the data with replacement, the bootstrap, in which a coefficient keeps its sign. A product term whose sign flips is not interpreted.
 - The residual plotted against the product terms. Confirm that the structure left before the expansion is gone.
 
-## 6. Comparison
+## 6. Further Work
 
-An expansion is out of place in three situations: many variables, several bends inside one variable, and a need to extrapolate. Table 4 sets out what to move to in each.
-
-Table 4. Alternatives to a polynomial expansion
-
-| Method | What it buys | When to prefer | Cost |
-| --- | --- | --- | --- |
-| Polynomial expansion | Explicit terms, a linear model kept intact | A few dozen variables, curvature and pairwise effects | Column count, fragile extrapolation |
-| Spline and P-spline | Local flexibility, a bounded basis [[11](#ref-11)] | Repeated bends inside one variable | Tensor products for interactions, growing again |
-| GAM | A sum of per-variable curves, readable | Non-linear main effects, few interactions | Interaction terms declared by hand |
-| Polynomial kernel | The same space without materializing it | Many variables, few rows | No coefficient attached to a term |
-| Random feature or sketch | Column count fixed by the user | Many rows and many variables | Approximation error |
-| Factorization machine | Pairwise coefficients factorized [[12](#ref-12)] | Sparse high-cardinality categorical data | Interaction strength only, limited reading |
-| Tree ensemble | Interactions found without being named | The form of the interaction unknown | A piecewise-constant surface, no extrapolation |
-| Rule ensemble | Rules alongside linear terms [[9](#ref-9)] | Interpretable interactions wanted | Rule count to be tuned |
-
-Handing the expanded columns to PLS (Partial Least Squares) is another route. PLS projects the columns onto the directions of largest covariance with the response before regressing, so it meets the collinearity the expansion manufactures head on, and it is used on experimental data holding fewer observations than coefficients. Whichever is chosen, the order of judgement is the same. Establish first that expressive power is what is missing, then separate whether what is missing is a product term or a curvature, and choose the method after that. A treatment that compares in one frame the whole family of basis expansions, the methods that widen the columns a linear model is given, is available [[10](#ref-10)].
-
-## 7. Further Work
-
-- **Sparse polynomial chaos expansion** — A way to cut a high-degree expansion down to a size that can be carried, by selecting terms sparsely over a basis of mutually orthogonal polynomials [[13](#ref-13)]. Selecting the terms by least angle regression has settled into a procedure, which makes keeping a few dozen out of several hundred candidates computationally practical. Starting needs a distributional assumption on the input variables (the basis follows that distribution) and a designed sample.
+- **Sparse polynomial chaos expansion** — A way to cut a high-degree expansion down to a size that can be carried, by selecting terms sparsely over a basis of mutually orthogonal polynomials [[10](#ref-10)]. Selecting the terms by least angle regression has settled into a procedure, which makes keeping a few dozen out of several hundred candidates computationally practical. Starting needs a distributional assumption on the input variables (the basis follows that distribution) and a designed sample.
 - **Hierarchical interaction selection at scale** — The lasso family that selects product terms with heredity imposed as a convex constraint [[6](#ref-6)]. Convex means the optimum found is the only one, and it solves up to several hundred variables, so the rule of section 4.3 can be enforced by the optimization rather than by a person. Starting needs a rule that narrows the candidate product terms in advance and a computational budget.
-- **Learned basis** — A model that stacks one-dimensional functions learned from the data in place of a fixed monomial basis [[14](#ref-14)]. A spline-based implementation was released in 2024, which makes a direct comparison with an expansion plus ridge on the same data possible. Starting needs a held-out comparison procedure and a criterion for whether the learned basis is excessive for the sample count.
+- **Learned basis** — A model that stacks one-dimensional functions learned from the data in place of a fixed monomial basis [[11](#ref-11)]. A spline-based implementation was released in 2024, which makes a direct comparison with an expansion plus ridge on the same data possible. Starting needs a held-out comparison procedure and a criterion for whether the learned basis is excessive for the sample count.
 
 ## References
 
@@ -203,19 +184,13 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 <a id="ref-9"></a>
 [9] Friedman, J. H. and Popescu, B. E. (2008). [Predictive learning via rule ensembles](https://doi.org/10.1214/07-AOAS148). *The Annals of Applied Statistics*, 2(3), 916–954.<br>
 <a id="ref-10"></a>
-[10] Hastie, T., Tibshirani, R. and Friedman, J. (2009). [The Elements of Statistical Learning: Data Mining, Inference, and Prediction](https://doi.org/10.1007/978-0-387-84858-7) (2nd ed.). Springer. ISBN 978-0-387-84857-0.<br>
+[10] Blatman, G. and Sudret, B. (2011). [Adaptive sparse polynomial chaos expansion based on least angle regression](https://doi.org/10.1016/j.jcp.2010.12.021). *Journal of Computational Physics*, 230(6), 2345–2367.<br>
 <a id="ref-11"></a>
-[11] Eilers, P. H. C. and Marx, B. D. (1996). [Flexible smoothing with B-splines and penalties](https://doi.org/10.1214/ss/1038425655). *Statistical Science*, 11(2), 89–121.<br>
+[11] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.<br>
 <a id="ref-12"></a>
-[12] Rendle, S. (2010). [Factorization Machines](https://doi.org/10.1109/ICDM.2010.127). *2010 IEEE International Conference on Data Mining*, 995–1000.<br>
+[12] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
 <a id="ref-13"></a>
-[13] Blatman, G. and Sudret, B. (2011). [Adaptive sparse polynomial chaos expansion based on least angle regression](https://doi.org/10.1016/j.jcp.2010.12.021). *Journal of Computational Physics*, 230(6), 2345–2367.<br>
-<a id="ref-14"></a>
-[14] Liu, Z., Wang, Y., Vaidya, S., Ruehle, F., Halverson, J., Soljačić, M., Hou, T. Y. and Tegmark, M. (2024). [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756). *arXiv:2404.19756*.<br>
-<a id="ref-15"></a>
-[15] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
-<a id="ref-16"></a>
-[16] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.
+[13] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.
 
 ---
 
@@ -249,9 +224,9 @@ $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \i
 
 Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Left of the bar, $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
 
-With two variables and $d = 2$, five pairs of exponents meet that condition. Table 5 is the five.
+With two variables and $d = 2$, five pairs of exponents meet that condition. Table 4 is the five.
 
-Table 5. Exponent pairs admitted by equation (3) at two variables and degree 2
+Table 4. Exponent pairs admitted by equation (3) at two variables and degree 2
 
 | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- |
@@ -271,7 +246,7 @@ $$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n
 
 The count itself is stars and bars. Take the degree $k$ as $k$ identical stars, and the $n$ variables as $n$ bins separated by $n-1$ bars, so that the stars falling in a bin are the exponent $a_i$ of that variable. Counting the exponent choices is then laying $k$ stars and $n-1$ bars, $k+n-1$ symbols, in a row and choosing which $n-1$ positions carry the bars, which is $\binom{k+n-1}{n-1}$.
 
-At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 5.
+At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 4.
 
 Summing the degrees from 0 to $d$ gives equation (9). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
@@ -285,7 +260,7 @@ $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (10)$$
 
 ## Appendix C. Ridge And Lasso On Expanded Columns
 
-The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (11) and lasso is equation (12) [[15](#ref-15)], where $\alpha$ sets how hard the penalty presses.
+The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (11) and lasso is equation (12) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (11)$$
 
@@ -295,11 +270,11 @@ The shape of the penalty is the whole difference. Where the columns are standard
 
 $$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (13)$$
 
-Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (14) [[16](#ref-16)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
+Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (14) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (14)$$
 
-Table 6. Penalties on expanded columns
+Table 5. Penalties on expanded columns
 
 | Penalty | Term added | A group of columns that resemble one another | Where it fits |
 | --- | --- | --- | --- |
@@ -317,7 +292,7 @@ A penalty does not buy a degree of 4. What it buys is the difference between a f
 
 The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, and only four arguments have to be settled [[7](#ref-7)].
 
-Table 7. PolynomialFeatures arguments
+Table 6. PolynomialFeatures arguments
 
 | Argument | Effect | Note |
 | --- | --- | --- |
