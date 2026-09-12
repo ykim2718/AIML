@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 37 | Created: 2026-09-09 | Updated: 2026-09-11 21:47 CDT
+Rev. 38 | Created: 2026-09-09 | Updated: 2026-09-11 21:57 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -77,7 +77,7 @@ Conditioning is how sensitive solving the design matrix is to a small error in t
 
 What raises the condition number is the degree and the collinearity between the columns; what lowers it is standardization. Subtracting the mean cuts the overlap between the columns and dividing by the standard deviation removes the differences in their size, so both parts are needed to take the condition number lowest. On the sample of section 4.2 the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after standardization. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
 
-### 4.4 Hierarchy
+### 4.4 Heredity
 
 Keep a product term, and the main effects composing it stay as well. The rule is called heredity, and its ground is the coordinate system rather than statistics.
 
@@ -86,8 +86,6 @@ Substituting the shift $x_1 = z_1 + a$, $x_2 = z_2 + b$ into a product-only mode
 $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (6)$$
 
 Main effects appear on their own. A product model without main effects therefore depends on where the origin was placed, and whether temperature is measured in Celsius or in kelvin changes the model. Keep the main effects and that shift is absorbed as a rearrangement of the coefficients. There is a practice of dropping a main effect on the weak form of the rule, weak heredity, under which only one of the variables forming the product need be present, but the conditions that justify it almost never hold in practice [[4](#ref-4)]. Where variable selection is automated it is likewise better to carry heredity as a Bayesian prior or as a constraint on the optimization [[5](#ref-5)] [[6](#ref-6)].
-
-`interaction_only=True` is the option that drops the square terms, not an option that breaks heredity. The first-order terms remain, so two variables give the columns $[X_1, X_2, X_1 X_2]$.
 
 ## 5. Caution
 

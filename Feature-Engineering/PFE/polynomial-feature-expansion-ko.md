@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 39 | Created: 2026-09-07 | Updated: 2026-09-11 21:47 CDT
+Rev. 40 | Created: 2026-09-07 | Updated: 2026-09-11 21:57 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -77,7 +77,7 @@ Conditioning 은 design matrix 를 푸는 일이 입력의 작은 오차에 얼�
 
 조건수를 올리는 것은 degree 와 열 사이의 collinearity 이고, 내리는 것은 standardization 이다. 평균을 빼면 열 사이의 겹침이 줄고 표준편차로 나누면 열마다 다른 크기가 없어지므로, 두 부분을 함께 해야 조건수가 가장 낮아진다. 4.2 절과 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, standardization 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
 
-### 4.4 Hierarchy
+### 4.4 Heredity
 
 곱항을 남기면 그 곱을 이루는 두 변수의 1차 항, 곧 main effect 도 함께 남긴다. 이 규칙을 heredity 라 하며, 근거는 통계가 아니라 좌표계에 있다.
 
@@ -86,8 +86,6 @@ $y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = 
 $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (6)$$
 
 Main effect 가 저절로 생긴다. 곧 main effect 없는 곱항 model 은 원점을 어디에 두었느냐에 따라 달라져, 온도를 섭씨로 재느냐 절대온도로 재느냐가 model 을 바꾼다. Main effect 를 함께 두면 그 이동이 계수의 재배열로 흡수된다. 곱을 이루는 변수 가운데 하나만 있어도 된다는 약한 형태 (weak heredity) 를 근거로 main effect 를 지우는 관행이 있으나, 그것이 정당화되는 조건은 실무에서 거의 성립하지 않는다 [[4](#ref-4)]. 변수 선택을 자동화할 때도 heredity 를 Bayes 의 사전 분포 (prior) 나 최적화의 제약으로 걸어 두는 편이 낫다 [[5](#ref-5)] [[6](#ref-6)].
-
-`interaction_only=True` 는 제곱항을 지우는 option 이지 heredity 를 어기는 option 이 아니다. 1차 항은 그대로 남으므로, 변수 두 개에서 나오는 열은 $[X_1, X_2, X_1 X_2]$ 이다.
 
 ## 5. Caution
 
