@@ -1,11 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 19 | Created: 2026-09-09 | Updated: 2026-09-09 22:45 UTC
-
-This document is about tabular data, data laid out as a table. Image and text data are not tables and reach a model as a grid of pixels or as a sequence of tokens instead. In tabular data, observations can be compared only where the same item sits in the same place, and lining them up that way gives a table in which one row is one observation and one column is one variable. A process log or a raw metrology file does not arrive as such a table; it becomes one once what counts as a single observation is fixed — one wafer, one lot, one test — and everything recorded about that observation is reduced to a single row.
-
-Fixing the table fixes what the model can see. Supervised learning, the fitting of a function that reproduces one response column from the others, works on those columns and on nothing else, so a relationship absent from the columns does not appear however the algorithm is changed. The ceiling on what a model can reach is set by the columns rather than by the model, and the work of building and choosing those columns is feature engineering, of which this document covers one method.
-
-A linear model gives each column one coefficient and adds the pieces up, so an effect that appears only when two columns move together has no column of its own to be written in. Polynomial feature expansion is the simplest way to give it one: the products and powers of the raw columns are appended as new columns, so the model itself stays linear.
+Rev. 20 | Created: 2026-09-09 | Updated: 2026-09-12 00:17 UTC
 
 ## 1. Purpose
 
