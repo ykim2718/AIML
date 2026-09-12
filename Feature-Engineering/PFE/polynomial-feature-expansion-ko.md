@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 31 | Created: 2026-09-07 | Updated: 2026-09-11 20:18 CDT
+Rev. 32 | Created: 2026-09-07 | Updated: 2026-09-11 20:31 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -15,11 +15,11 @@ Expansion 은 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 
 
 대가는 열의 개수 증가이다. 열 수가 행 수에 근접하면 계수, 곧 각 열에 곱해지는 $\beta$ 값을 하나로 정할 수 없다 (5.1 절).
 
-이 차원의 저주를 감소시키기 위해서, 아래 세 가지는 열 수를 행 수보다 충분히 적게 두고, 표본을 다시 뽑아도 그 $\beta$ 가 크게 흔들리지 않게 하는 기본값이다.
+이 차원의 저주를 감소시키기 위해서, 아래 세 가지를 기본으로 둔다. 기본이란 자료에서 달리 할 근거가 나오기 전까지 그대로 쓰는 설정이라는 뜻이며, 셋을 함께 두면 열 수가 행 수보다 충분히 적게 남고 표본을 다시 뽑아도 그 $\beta$ 가 크게 흔들리지 않는다.
 
-- Degree 는 2 로 두어, 만들 항을 제곱과 두 변수의 곱까지로 제한한다 (5.1 절).
-- Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이다 (4.2 절).
-- Expansion 이 만든 열에는 ridge 나 lasso 의 penalty 를 건다. Ridge 는 모든 $\beta$ 를 같은 비율로 줄일 뿐 0 으로 만들지 않고, lasso 는 작은 $\beta$ 를 정확히 0 으로 만든다 (5.2 절).
+- **Degree 2** — 만들 항을 한 변수의 제곱과 두 변수의 곱까지로 제한한다 (5.1 절).
+- **Centering** — Expansion 전에 각 변수에서 그 변수의 평균을 뺀다 (4.2 절).
+- **Penalty** — Expansion 이 만든 열에 ridge 나 lasso 를 건다. Ridge 는 모든 $\beta$ 를 같은 비율로 줄일 뿐 0 으로 만들지 않고, lasso 는 작은 $\beta$ 를 정확히 0 으로 만든다 (5.2 절).
 
 세 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다.
 

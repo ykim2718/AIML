@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 30 | Created: 2026-09-09 | Updated: 2026-09-11 20:18 CDT
+Rev. 31 | Created: 2026-09-09 | Updated: 2026-09-11 20:31 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -15,11 +15,11 @@ An expansion computes products and powers from the columns already in the table 
 
 What it costs is the rising column count. Once the column count nears the row count the coefficients, the $\beta$ values that multiply the columns, can no longer be pinned to one solution (section 5.1).
 
-To lessen that curse of dimensionality, the three defaults below keep the column count well under the row count, and keep those $\beta$ from moving far when the sample is drawn again.
+To lessen that curse of dimensionality, the three below are set as the defaults. A default is what is kept until the data gives a reason to do otherwise, and together the three leave the column count well under the row count and keep those $\beta$ from moving far when the sample is drawn again.
 
-- Degree is 2, which limits the terms built to squares and to products of two variables (section 5.1).
-- Each variable has its own mean subtracted before the expansion, which is centering (section 4.2).
-- The expanded columns carry a ridge or lasso penalty. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
+- **Degree 2** — The terms built are limited to the square of one variable and the product of two (section 5.1).
+- **Centering** — Each variable has its own mean subtracted before the expansion (section 4.2).
+- **Penalty** — The expanded columns carry a ridge or a lasso. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
 
 Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again.
 
