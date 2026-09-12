@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 40 | Created: 2026-09-09 | Updated: 2026-09-11 22:22 CDT
+Rev. 41 | Created: 2026-09-09 | Updated: 2026-09-11 22:31 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,7 +65,7 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-Values in physical units usually sit far from zero, and such an $x$ and $x^2$ point in nearly the same direction. Writing the deviation from the mean as $u = x - \bar{x}$ gives $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$, so the covariance that forms the numerator of the correlation splits as equation (6).
+The first reason to center is the drop in correlation. Values in physical units usually sit far from zero, and such an $x$ and $x^2$ point in nearly the same direction. Writing the deviation from the mean as $u = x - \bar{x}$ gives $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$, so the covariance that forms the numerator of the correlation splits as equation (6).
 
 $$\mathrm{cov}(x, x^2) = 2\bar{x}\,\mathrm{var}(u) + \overline{u^3} \hspace{19em} (6)$$
 
