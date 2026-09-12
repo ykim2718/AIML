@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 50 | Created: 2026-09-07 | Updated: 2026-09-12 00:12 CDT
+Rev. 51 | Created: 2026-09-07 | Updated: 2026-09-12 00:26 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -65,9 +65,9 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Expansion 전에 각 열을 평균 0, 표준편차 1 로 맞춘다. 이것이 standardization 이며, 평균을 빼는 부분만 따로 centering 이라 한다. 두 부분이 하는 일은 다르다. 평균을 빼면 열 사이의 상관이 낮아지고 계수를 읽을 수 있게 되며, 이것이 아래 두 문단이다. 표준편차로 나누면 열마다 다른 크기가 없어지고, 그 몫은 4.3 절과 5.2 절에 있다.
 
-Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이다. 공분산의 정의가 식 (6) 이다.
+Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이다. 윗줄은 표본 평균을 뜻하며, 공분산의 정의가 식 (6) 이다.
 
-$$\mathrm{cov}(x, x^2) = \overline{(x - \bar{x})(x^2 - \overline{x^2})} \hspace{19em} (6)$$
+$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})(x_i^2 - \overline{x^2}) \hspace{19em} (6)$$
 
 첫 인자 $x - \bar{x}$ 가 $u$ 이고, 괄호를 풀면 평균이 두 항으로 갈라져 식 (7) 이 된다.
 

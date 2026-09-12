@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 48 | Created: 2026-09-09 | Updated: 2026-09-12 00:12 CDT
+Rev. 49 | Created: 2026-09-09 | Updated: 2026-09-12 00:26 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,9 +65,9 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0. The definition of the covariance is equation (6).
+The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0. An overline is the sample mean, and the definition of the covariance is equation (6).
 
-$$\mathrm{cov}(x, x^2) = \overline{(x - \bar{x})(x^2 - \overline{x^2})} \hspace{19em} (6)$$
+$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})(x_i^2 - \overline{x^2}) \hspace{19em} (6)$$
 
 The first factor $x - \bar{x}$ is $u$, and multiplying out splits the average into two terms, which is equation (7).
 
