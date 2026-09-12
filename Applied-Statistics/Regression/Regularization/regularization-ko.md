@@ -1,5 +1,5 @@
 # Regularization
-Rev. 0 | Created: 2026-09-12 | Updated: 2026-09-12 12:30 CDT
+Rev. 1 | Created: 2026-09-12 | Updated: 2026-09-12 13:14 CDT
 
 ## 1. Purpose
 
@@ -84,6 +84,8 @@ Table 1. Comparison of the three penalties
 | Main role | 다중공선성 완화, 분산 감소 | 변수 선택, model 단순화 | 다중공선성 상황에서의 변수 선택 |
 | Suited data | 대부분의 변수가 유의미할 때 | 불필요한 변수가 많을 때 | 상관관계가 높은 변수 그룹이 많을 때 |
 
+이 세 방법과 OLS 를 같은 데이터에 적용한 결과는 [Appendix B](#appendix-b-worked-example) 에 있다.
+
 ## 6. Dimension Reduction and Variable Removal
 
 Penalty 를 더하는 대신 변수 자체를 줄이는 방법이 두 가지 있다.
@@ -105,3 +107,95 @@ Penalty 를 더하는 대신 변수 자체를 줄이는 방법이 두 가지 있
 - **shrinkage**: Penalty 로 계수의 크기를 0 쪽으로 줄이는 효과.
 - **singular matrix**: 역행렬이 존재하지 않는 정방행렬.
 - **VIF**: Variance Inflation Factor. 한 변수가 다른 변수들로 얼마나 설명되는지를 나타내는 공선성 지표.
+
+## Appendix B. Worked Example
+
+아래 code 는 상관계수가 0.99 를 넘는 변수 두 개와 응답에 관여하지 않는 변수 세 개를 담은 자료를 만들어, section 3 의 두 조건과 section 4 의 세 penalty 가 계수에 남기는 차이를 한 번에 보인다.
+
+```python
+# Python
+import numpy as np
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+
+# 1. Two nearly collinear features, one useful feature, three that carry nothing
+np.random.seed(0)
+n_samples = 60
+
+x1 = np.random.randn(n_samples)
+x2 = x1 + 0.01 * np.random.randn(n_samples)
+x3 = np.random.randn(n_samples)
+unrelated = np.random.randn(n_samples, 3)
+X = np.column_stack([x1, x2, x3, unrelated])
+
+# Only x1, x2 and x3 drive the response
+y = 3 * x1 + 3 * x2 + 2 * x3 + 0.5 * np.random.randn(n_samples)
+
+print(f"corr(x1, x2): {np.corrcoef(x1, x2)[0, 1]:.6f}")
+print(f"condition number of X^T X: {np.linalg.cond(X.T @ X):.3e}")
+print("-" * 60)
+
+# 2. More features than observations: X^T X cannot be full rank
+X_wide = np.random.randn(5, 8)
+XtX_wide = X_wide.T @ X_wide
+print(f"p > n: X^T X is {XtX_wide.shape[0]} x {XtX_wide.shape[1]}, "
+      f"rank {np.linalg.matrix_rank(XtX_wide)}")
+print(f"p > n: determinant of X^T X: {np.linalg.det(XtX_wide):.3e}")
+print("-" * 60)
+
+# 3. The same data under the four estimators
+models = {
+    "OLS": LinearRegression(),
+    "Ridge (alpha=1.0)": Ridge(alpha=1.0),
+    "Lasso (alpha=0.1)": Lasso(alpha=0.1),
+    "ElasticNet (alpha=0.1, l1_ratio=0.5)": ElasticNet(alpha=0.1, l1_ratio=0.5),
+}
+for name, model in models.items():
+    model.fit(X, y)
+    print(f"{name}")
+    print(f"  coefficients: {np.round(model.coef_, 3)}")
+    print(f"  exact zeros: {int(np.sum(model.coef_ == 0))}")
+print("-" * 60)
+
+# 4. How far each coefficient vector moves when noise of sd 0.01 is added to y
+y_perturbed = y + 0.01 * np.random.randn(n_samples)
+for name in ("OLS", "Ridge (alpha=1.0)"):
+    before = models[name].coef_.copy()
+    after = models[name].fit(X, y_perturbed).coef_
+    print(f"{name}: max coefficient shift {np.max(np.abs(after - before)):.4f}")
+```
+
+NumPy 2.4.6 과 scikit-learn 1.9.1 에서 실행한 결과는 다음과 같다.
+
+```text
+corr(x1, x2): 0.999953
+condition number of X^T X: 4.444e+04
+------------------------------------------------------------
+p > n: X^T X is 8 x 8, rank 5
+p > n: determinant of X^T X: -3.766e-45
+------------------------------------------------------------
+OLS
+  coefficients: [-0.07   6.225  1.898 -0.105 -0.029  0.039]
+  exact zeros: 0
+Ridge (alpha=1.0)
+  coefficients: [ 3.047  3.063  1.867 -0.09  -0.03   0.041]
+  exact zeros: 0
+Lasso (alpha=0.1)
+  coefficients: [ 6.067e+00  2.000e-03  1.790e+00 -0.000e+00 -0.000e+00  0.000e+00]
+  exact zeros: 3
+ElasticNet (alpha=0.1, l1_ratio=0.5)
+  coefficients: [ 2.996  2.991  1.755 -0.012 -0.004  0.   ]
+  exact zeros: 1
+------------------------------------------------------------
+OLS: max coefficient shift 0.1059
+Ridge (alpha=1.0): max coefficient shift 0.0008
+```
+
+결과에서 읽을 것은 다섯 가지다.
+
+- **역행렬 없음**: 관측치 5 개에 변수 8 개인 $X^\top X$ 의 rank 5 와 $-3.766 \times 10^{-45}$ 인 행렬식. Section 3.1 이 말한 전위수 미달.
+- **OLS 의 널뜀**: 상관 0.999953 인 두 변수에 $-0.07$ 과 $6.225$ 로 갈린 계수. 참값은 둘 다 3 이며, 합은 지켜지고 배분이 무너진 모양.
+- **Ridge**: 3.047 과 3.063 으로 참값 가까이 모인 두 계수. 완전한 0 은 없음.
+- **Lasso**: 두 변수 중 하나만 6.067 로 남기고 다른 하나를 0.002 로 누른 결과, 그리고 응답에 관여하지 않는 변수 세 개의 완전한 0.
+- **ElasticNet**: 2.996 과 2.991 로 두 변수를 함께 남긴 그룹 효과.
+
+응답에 표준편차 0.01 의 잡음을 더해 다시 적합했을 때 계수의 최대 이동은 OLS 가 0.1059, Ridge 가 0.0008 이다. Section 3.2 가 말한 분산의 차이가 이 두 수에 그대로 나타난다.
