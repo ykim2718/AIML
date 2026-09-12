@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 34 | Created: 2026-09-09 | Updated: 2026-09-11 21:12 CDT
+Rev. 35 | Created: 2026-09-09 | Updated: 2026-09-11 21:26 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -15,10 +15,11 @@ An expansion computes products and powers from the columns already in the table 
 
 What it costs is the rising column count. Once the column count nears the row count the coefficients, the $\beta$ values that multiply the columns, can no longer be pinned to one solution (section 5.1).
 
-To lessen that curse of dimensionality, the three below are set as the defaults. A default is what is kept until the data gives a reason to do otherwise, and together the three leave the column count well under the row count and keep those $\beta$ from moving far when the sample is drawn again.
+To lessen that curse of dimensionality, the four below are set as the defaults. A default is what is kept until the data gives a reason to do otherwise, and together the four leave the column count well under the row count and keep those $\beta$ from moving far when the sample is drawn again.
 
 - **Degree 2** — The terms built are limited to the square of one variable and the product of two (section 5.1).
 - **Centering** — Each variable has its own mean subtracted before the expansion, which lowers the correlation between the columns and leaves the solve for the coefficients less sensitive to a small error in the input (sections 4.2 and 4.3).
+- **Standardization** — Each column is brought to mean 0 and standard deviation 1 before and after the expansion. The first lowers the condition number, the second makes the penalty fall evenly across the columns (sections 4.3 and 5.2).
 - **Penalty** — The expanded columns carry a ridge or a lasso. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
 
 Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again. Centering lowers that correlation without taking it to zero (section 4.2), so the sign flips do not go away on centering alone. What is left falls to the penalty, which keeps the columns that resemble one another from carrying large coefficients that cancel (section 5.2).
@@ -218,6 +219,7 @@ Whether an expansion helped is confirmed in four ways.
 - **overfitting**: The state in which a model fits the training data while missing new data.
 - **penalty**: A term added to the fitting criterion that charges for the size of the coefficients, as ridge and lasso do.
 - **RMSE**: The square root of the mean squared error (Root Mean Squared Error).
+- **standardization**: Subtracting from each column its own mean and dividing by its standard deviation, bringing it to mean 0 and standard deviation 1.
 - **VIF**: The variance inflation factor, computed from the $R^2$ of one column regressed on the rest. It is $1/(1-R^2)$.
 
 ## Appendix B. Term Count Derivation

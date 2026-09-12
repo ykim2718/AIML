@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 36 | Created: 2026-09-07 | Updated: 2026-09-11 21:12 CDT
+Rev. 37 | Created: 2026-09-07 | Updated: 2026-09-11 21:26 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -15,13 +15,14 @@ Expansion 은 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 
 
 대가는 열의 개수 증가이다. 열 수가 행 수에 근접하면 계수, 곧 각 열에 곱해지는 $\beta$ 값을 하나로 정할 수 없다 (5.1 절).
 
-이 차원의 저주를 감소시키기 위해서, 아래 세 가지를 기본으로 둔다. 기본이란 자료에서 달리 할 근거가 나오기 전까지 그대로 쓰는 설정이라는 뜻이며, 셋을 함께 두면 열 수가 행 수보다 충분히 적게 남고 표본을 다시 뽑아도 그 $\beta$ 가 크게 흔들리지 않는다.
+이 차원의 저주를 감소시키기 위해서, 아래 네 가지를 기본으로 둔다. 기본이란 자료에서 달리 할 근거가 나오기 전까지 그대로 쓰는 설정이라는 뜻이며, 넷을 함께 두면 열 수가 행 수보다 충분히 적게 남고 표본을 다시 뽑아도 그 $\beta$ 가 크게 흔들리지 않는다.
 
 - **Degree 2** — 만들 항을 한 변수의 제곱과 두 변수의 곱까지로 제한한다 (5.1 절).
 - **Centering** — Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 열 사이의 상관이 낮아지고, 계수를 푸는 계산이 입력의 작은 오차에 덜 민감해진다 (4.2, 4.3 절).
+- **Standardization** — Expansion 앞뒤로 각 열을 평균 0, 표준편차 1 로 맞춘다. 앞의 것은 조건수를 낮추고, 뒤의 것은 penalty 가 열마다 공평하게 걸리게 한다 (4.3, 5.2 절).
 - **Penalty** — Expansion 이 만든 열에 ridge 나 lasso 를 건다. Ridge 는 모든 $\beta$ 를 같은 비율로 줄일 뿐 0 으로 만들지 않고, lasso 는 작은 $\beta$ 를 정확히 0 으로 만든다 (5.2 절).
 
-세 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다. Centering 은 그 상관을 낮출 뿐 0 으로 만들지 못하므로 (4.2 절), 부호가 뒤집히는 일이 centering 만으로 사라지지는 않는다. 남는 몫은 penalty 가 맡아, 닮은 열들이 서로 상쇄하는 큰 계수를 갖지 못하게 한다 (5.2 절).
+네 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다. Centering 은 그 상관을 낮출 뿐 0 으로 만들지 못하므로 (4.2 절), 부호가 뒤집히는 일이 centering 만으로 사라지지는 않는다. 남는 몫은 penalty 가 맡아, 닮은 열들이 서로 상쇄하는 큰 계수를 갖지 못하게 한다 (5.2 절).
 
 Expansion 을 쓰지 않아야 하는 자리도 분명하다. 변수가 수십 개를 넘으면 열 수가 표본 수를 넘고, 한 변수 안에서 여러 번 꺾이는 모양이 필요하면 degree 를 올리는 대신 spline 으로 가야 하며, 훈련 구간 밖을 예측해야 하면 그 구간 밖에서 다항식이 폭주하는 성질, 곧 extrapolation 이 그대로 위험이 된다.
 
@@ -75,7 +76,7 @@ Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\be
 
 Conditioning 은 design matrix 를 푸는 일이 입력의 작은 오차에 얼마나 민감한지를 말하며, 그것을 재는 값이 조건수 (condition number) 다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬로, 계수는 이 행렬을 풀어 얻는다. 조건수는 그 오차가 푼 결과에서 몇 배로 커지는지를 나타낸다.
 
-조건수를 올리는 것은 degree 와 열 사이의 collinearity 이고, 내리는 것은 centering 과 표준화다. 4.2 절과 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, centering 과 표준화 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
+조건수를 올리는 것은 degree 와 열 사이의 collinearity 이고, 내리는 것은 centering 과 standardization 이다. 4.2 절과 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, centering 과 standardization 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
 
 ### 4.4 Hierarchy
 
@@ -135,7 +136,7 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 Ridge 가 계수를 0 으로 만들지 않는다는 것은 ridge 로는 열을 지울 수 없다는 뜻이다. 그래도 기본으로 두는 이유는 expansion 에서 penalty 가 버는 것이 열의 개수가 아니라 예측의 안정이기 때문이며, 그 크기는 5.1 절의 degree 3 에서 held-out RMSE 가 1.08 에서 0.75 로 내려가는 차이다. 열의 개수를 실제로 줄여야 하면 그것은 lasso 나 elastic net 의 몫이다.
 
-Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 표준화한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 표준화가 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns) 에 있다.
+Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns) 에 있다.
 
 ### 5.3 Failure Modes
 
@@ -218,6 +219,7 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 - **overfitting**: 훈련 자료에는 맞지만 새 자료에서는 어긋나는 상태.
 - **penalty**: 계수의 크기에 값을 매겨 적합 기준에 더하는 항. ridge 와 lasso 가 그것이다.
 - **RMSE**: 제곱 오차의 평균에 제곱근을 취한 값 (Root Mean Squared Error).
+- **standardization**: 각 열에서 그 열의 평균을 빼고 표준편차로 나누어 평균 0, 표준편차 1 로 맞추는 연산.
 - **VIF**: 한 열을 나머지 열로 회귀했을 때의 $R^2$ 로 계산하는 분산 팽창 계수. $1/(1-R^2)$ 이다.
 
 ## Appendix B. Term Count Derivation
@@ -272,7 +274,7 @@ $$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVe
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
 
-차이는 penalty 의 모양에서 온다. 열이 표준화되어 있고 서로 직교하면 두 해는 식 (14) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
+차이는 penalty 의 모양에서 온다. 열이 standardization 되어 있고 서로 직교하면 두 해는 식 (14) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
 
 $$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
 
@@ -288,7 +290,7 @@ Table 4. Penalties on expanded columns
 | Lasso | Sum of the absolute coefficients | One kept, the rest at zero | A short term list, under a heredity constraint |
 | Elastic net | Both, mixed by $\rho$ | Kept or dropped together | Selection wanted with a list that holds |
 
-$\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격으로 잡는다. 표준화한 열 위에서만 뜻이 있고 (5.2 절), 그 탐색을 `RidgeCV`, `LassoCV`, `ElasticNetCV` 가 대신한다. 절편은 penalty 에서 뺀다. 절편에 penalty 를 걸면 적합된 수준이 0 쪽으로 끌려가 model 이 자료의 중심에서 벗어난다.
+$\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격으로 잡는다. standardization 한 열 위에서만 뜻이 있고 (5.2 절), 그 탐색을 `RidgeCV`, `LassoCV`, `ElasticNetCV` 가 대신한다. 절편은 penalty 에서 뺀다. 절편에 penalty 를 걸면 적합된 수준이 0 쪽으로 끌려가 model 이 자료의 중심에서 벗어난다.
 
 Penalty 를 건다고 degree 를 4 로 올릴 수 있는 것은 아니다. Penalty 가 버는 것은 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
 
@@ -321,9 +323,9 @@ term_name = poly.get_feature_names_out()
 
 ### D.2 Pipeline
 
-Expansion 은 홀로 쓰지 않고 표준화와 penalty 사이에 둔다. 순서는 원 변수 표준화, expansion, expansion 이 만든 열의 재표준화, 그리고 penalty 를 건 적합이다.
+Expansion 은 홀로 쓰지 않고 standardization 과 penalty 사이에 둔다. 순서는 원 변수의 standardization, expansion, expansion 이 만든 열의 두 번째 standardization, 그리고 penalty 를 건 적합이다.
 
-앞의 표준화는 4.3 절의 조건수 문제를 없애고, 뒤의 표준화는 penalty 가 열마다 공평하게 걸리게 한다. 곱항의 분산은 원 변수 분산의 곱에 가까워 열마다 크게 벌어지므로, 재표준화 없이 ridge 를 걸면 penalty 가 사실상 분산이 큰 열에만 걸린다.
+앞의 standardization 은 4.3 절의 조건수 문제를 없애고, 뒤의 standardization 은 penalty 가 열마다 공평하게 걸리게 한다. 곱항의 분산은 원 변수 분산의 곱에 가까워 열마다 크게 벌어지므로, 두 번째 standardization 없이 ridge 를 걸면 penalty 가 사실상 분산이 큰 열에만 걸린다.
 
 ```python
 # Python
@@ -343,7 +345,7 @@ search = GridSearchCV(pipeline, grid, scoring='neg_root_mean_squared_error', cv=
 search.fit(X, y)
 ```
 
-Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 표준화는 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
+Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 standardization 은 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
 
 ### D.3 Cost
 
