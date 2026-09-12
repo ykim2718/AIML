@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 32 | Created: 2026-09-09 | Updated: 2026-09-11 20:47 CDT
+Rev. 33 | Created: 2026-09-09 | Updated: 2026-09-11 21:00 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -18,7 +18,7 @@ What it costs is the rising column count. Once the column count nears the row co
 To lessen that curse of dimensionality, the three below are set as the defaults. A default is what is kept until the data gives a reason to do otherwise, and together the three leave the column count well under the row count and keep those $\beta$ from moving far when the sample is drawn again.
 
 - **Degree 2** — The terms built are limited to the square of one variable and the product of two (section 5.1).
-- **Centering** — Each variable has its own mean subtracted before the expansion (section 4.2).
+- **Centering** — Each variable has its own mean subtracted before the expansion, which lowers the correlation between the columns and leaves the solve for the coefficients less sensitive to a small error in the input (sections 4.2 and 4.3).
 - **Penalty** — The expanded columns carry a ridge or a lasso. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
 
 Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again. Centering lowers that correlation without taking it to zero (section 4.2), so the sign flips do not go away on centering alone. What is left falls to the penalty, which keeps the columns that resemble one another from carrying large coefficients that cancel (section 5.2).
@@ -61,19 +61,23 @@ For $[X_1, X_2]$ at $d = 2$ the columns, including the intercept that is a const
 
 $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{ij} x_i x_j + \varepsilon \hspace{19em} (5)$$
 
-### 4.2 Centering And Conditioning
+### 4.2 Centering
 
-Subtract from each variable its own mean before expanding. This is centering, and it buys two things: a lower correlation between the columns, and a lower condition number for the design matrix, the matrix whose rows are the observations and whose columns are the terms the model uses, from which the coefficients are solved. The two paragraphs below are those two numbers.
+Subtract from each variable its own mean before expanding. This is centering, and it buys three things: a lower correlation between the columns, a coefficient that can be read, and better conditioning of the design matrix. The first two are the two paragraphs below, the third is section 4.3.
 
 Values in physical units usually sit far from zero, and such an $x$ and $x^2$ point in nearly the same direction. Over 60 samples on $[10, 11]$ their correlation is 0.9999, and after the mean is removed it is -0.15. The correlation after centering is proportional to the mean of the cubed deviations from the mean, the third central moment, so it is zero for a symmetric distribution and lands near zero in a sample.
-
-Read as a condition number the difference is larger still. The condition number says by what factor a small error in the input is magnified in the solution. On the same sample the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centering and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
 
 The second reason to center is interpretation. On centered data $\beta_1$ is the slope while the other variables sit at their means, a readable quantity. Uncentered it is the slope while the other variables are zero, and that zero is often a point the data never visits [[2](#ref-2)].
 
 Centering lowers the correlation, though, without removing it. The collinearity an expansion manufactures is a property of the expansion rather than of the data, so a penalty is needed alongside it (section 5.2).
 
-### 4.3 Hierarchy
+### 4.3 Conditioning
+
+Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses, from which the coefficients are solved. The condition number says by what factor such an error is magnified in the solution.
+
+What centering takes off is larger on the condition number than on the correlation. On the sample of section 4.2 the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centering and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
+
+### 4.4 Hierarchy
 
 Keep a product term, and the main effects composing it stay as well. The rule is called heredity, and its ground is the coordinate system rather than statistics.
 
@@ -121,13 +125,13 @@ Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
 
 Fig 1(a) is the first reason. Degrees 2, 5 and 9 are fitted to 60 samples; inside the training range (grey) degrees 5 and 9 are both plausible, and outside it the higher degree diverges first. The behaviour of a polynomial beyond its range is governed by its top term, so raising the degree where extrapolation is needed improves the fit inside the training range while the error outside it grows.
 
-Fig 1(b) draws the condition numbers of section 4.2 against degree, and Fig 1(c) is the relation between the term count and the row count. On data with 5 variables, 60 rows and a true model holding one product term, the held-out RMSE, that error measured as the root of the mean squared error, falls from 1.34 at degree 1 to 0.34 at degree 2 and returns to 1.08 at degree 3. The 55 columns of degree 3 nearly reach the 60 rows. Ridge is at 0.75 in the same place, stopping close to half of that deterioration.
+Fig 1(b) draws the condition numbers of section 4.3 against degree, and Fig 1(c) is the relation between the term count and the row count. On data with 5 variables, 60 rows and a true model holding one product term, the held-out RMSE, that error measured as the root of the mean squared error, falls from 1.34 at degree 1 to 0.34 at degree 2 and returns to 1.08 at degree 3. The 55 columns of degree 3 nearly reach the 60 rows. Ridge is at 0.75 in the same place, stopping close to half of that deterioration.
 
 ### 5.2 Regularization
 
 The expanded columns always carry a penalty, a term added to the fitting criterion that charges for the size of the coefficients. The expansion raises the column count and at the same time makes columns that resemble one another, and unpenalized least squares absorbs that resemblance into two large coefficients that cancel, which is why the fit moves far on a small disturbance of the data. Ridge answers it with a penalty proportional to the sum of the squared coefficients, which is what stops the two large coefficients from cancelling [[3](#ref-3)].
 
-Ridge is the default of the two. It divides the coefficient among the columns that resemble one another and steadies the prediction, while lasso keeps one of them and drops the rest. Lasso on expanded columns can keep a product term while deleting its main effects, breaking the heredity of section 4.3, so it is used with a hierarchical constraint rather than on its own [[6](#ref-6)].
+Ridge is the default of the two. It divides the coefficient among the columns that resemble one another and steadies the prediction, while lasso keeps one of them and drops the rest. Lasso on expanded columns can keep a product term while deleting its main effects, breaking the heredity of section 4.4, so it is used with a hierarchical constraint rather than on its own [[6](#ref-6)].
 
 That ridge never drives a coefficient to zero means no column can be dropped with it. It is still the default because what a penalty buys on an expansion is not a smaller column count but a steadier prediction, and the size of that is the held-out RMSE of section 5.1 falling from 1.08 to 0.75 at degree 3. Where the column count itself has to come down, that is the work of lasso or elastic net.
 
@@ -162,7 +166,7 @@ Whether an expansion helped is confirmed in four ways.
 ## 6. Further Work
 
 - **Sparse polynomial chaos expansion** — A way to cut a high-degree expansion down to a size that can be carried, by selecting terms sparsely over a basis of mutually orthogonal polynomials [[10](#ref-10)]. Selecting the terms by least angle regression has settled into a procedure, which makes keeping a few dozen out of several hundred candidates computationally practical. Starting needs a distributional assumption on the input variables (the basis follows that distribution) and a designed sample.
-- **Hierarchical interaction selection at scale** — The lasso family that selects product terms with heredity imposed as a convex constraint [[6](#ref-6)]. Convex means the optimum found is the only one, and it solves up to several hundred variables, so the rule of section 4.3 can be enforced by the optimization rather than by a person. Starting needs a rule that narrows the candidate product terms in advance and a computational budget.
+- **Hierarchical interaction selection at scale** — The lasso family that selects product terms with heredity imposed as a convex constraint [[6](#ref-6)]. Convex means the optimum found is the only one, and it solves up to several hundred variables, so the rule of section 4.4 can be enforced by the optimization rather than by a person. Starting needs a rule that narrows the candidate product terms in advance and a computational budget.
 - **Learned basis** — A model that stacks one-dimensional functions learned from the data in place of a fixed monomial basis [[11](#ref-11)]. A spline-based implementation was released in 2024, which makes a direct comparison with an expansion plus ridge on the same data possible. Starting needs a held-out comparison procedure and a criterion for whether the learned basis is excessive for the sample count.
 
 ## References
@@ -319,7 +323,7 @@ The names `get_feature_names_out()` returns are the only route from a coefficien
 
 An expansion is not used alone but placed between standardization and the penalized fit. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
 
-The first standardization removes the conditioning problem of section 4.2, and the second makes the penalty fall evenly across the columns. The variance of a product term is close to the product of the raw variances and so differs widely from column to column; without the second standardization a ridge penalty lands almost entirely on the columns with the largest variance.
+The first standardization removes the conditioning problem of section 4.3, and the second makes the penalty fall evenly across the columns. The variance of a product term is close to the product of the raw variances and so differs widely from column to column; without the second standardization a ridge penalty lands almost entirely on the columns with the largest variance.
 
 ```python
 # Python
