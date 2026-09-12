@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 56 | Created: 2026-09-09 | Updated: 2026-09-12 01:58 CDT
+Rev. 57 | Created: 2026-09-09 | Updated: 2026-09-12 02:10 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,7 +65,7 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\overline{x}$, and the deviations $u_i = x_i - \overline{x}$, whose own mean is 0; an overline is the sample mean. The definition of the covariance, $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ (equation (16) of [Appendix B](#appendix-b-covariance-and-correlation)), applied at $X = x$ and $Y = x^2$ gives equation (6): the mean of the product is $\overline{x^3}$, and the product of the means is $\overline{x}$ times $\overline{x^2}$.
+The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\overline{x}$, and the deviations $u_i = x_i - \overline{x}$, whose own mean is 0; an overline is the sample mean. The definition of the covariance, $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ (equation (16) of [Appendix B](#appendix-b-covariance)), applied at $X = x$ and $Y = x^2$ gives equation (6): the mean of the product is $\overline{x^3}$, and the product of the means is $\overline{x}$ times $\overline{x^2}$.
 
 $$\mathrm{cov}(x, x^2) = \overline{x^3} - \overline{x} \overline{x^2} \hspace{19em} (6)$$
 
@@ -83,7 +83,7 @@ $$\mathrm{cov}(x, x^2) = 2 \overline{x} \overline{u^2} + \overline{u^3} \hspace{
 
 The two terms of equation (9) come from different places. The first, $2 \overline{x} \overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
 
-Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix B](#appendix-b-covariance-and-correlation). With $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (9) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (10).
+Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix C](#appendix-c-correlation-of-a-variable-and-its-square). With $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (9) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (10).
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
 
@@ -125,7 +125,7 @@ $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (13)$$
 
 $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (14)$$
 
-Both counts are derived from the set of equation (4) in [Appendix C](#appendix-c-term-count-derivation).
+Both counts are derived from the set of equation (4) in [Appendix C](#appendix-d-term-count-derivation).
 
 Table 1. Column count after expansion, bias column excluded
 
@@ -159,7 +159,7 @@ Ridge is the default of the two. It divides the coefficient among the columns th
 
 That ridge never drives a coefficient to zero means no column can be dropped with it. It is still the default because what a penalty buys on an expansion is not a smaller column count but a steadier prediction, and the size of that is the held-out RMSE of section 5.1 falling from 1.08 to 0.75 at degree 3. Where the column count itself has to come down, that is the work of lasso or elastic net.
 
-The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix E](#appendix-e-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix D](#appendix-d-ridge-and-lasso-on-expanded-columns).
+The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix E](#appendix-f-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix D](#appendix-e-ridge-and-lasso-on-expanded-columns).
 
 ### 5.3 Failure Modes
 
@@ -245,7 +245,7 @@ Whether an expansion helped is confirmed in four ways.
 - **standardization**: Subtracting from each column its own mean and dividing by its standard deviation, bringing it to mean 0 and standard deviation 1.
 - **VIF**: The variance inflation factor, computed from the $R^2$ of one column regressed on the rest. It is $1/(1-R^2)$.
 
-## Appendix B. Covariance And Correlation
+## Appendix B. Covariance
 
 A covariance measures how far two columns move together. Its definition on a population is equation (15), where $E[\cdot]$ is the expected value and $\mu_X$ and $\mu_Y$ are the expected values of the two variables.
 
@@ -266,7 +266,9 @@ The sign, and the covariance of a variable with itself, say four things.
 - At $\mathrm{Cov}(X, Y) = 0$ there is no linear relation between the two.
 - $\mathrm{Cov}(X, X)$ is the variance $\mathrm{Var}(X)$.
 
-Section 4.2 and the derivation below use the mean divided by $1/N$. A correlation is a covariance over two standard deviations, and the same divisor appears above and below, so the correlation is the same whether $1/N$ or $1/(n-1)$ is used.
+Section 4.2 and the derivation in [Appendix C](#appendix-c-correlation-of-a-variable-and-its-square) use the mean divided by $1/N$. A correlation is a covariance over two standard deviations, and the same divisor appears above and below, so the correlation is the same whether $1/N$ or $1/(n-1)$ is used.
+
+## Appendix C. Correlation Of A Variable And Its Square
 
 Section 4.2 divides the covariance by the two standard deviations to write the correlation, and states that correlation as equation (10) and equation (11). Why the division is needed, and where the two equations come from, is below.
 
@@ -286,7 +288,7 @@ $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) =
 
 The correlation is $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$, so $(\overline{u^2})^{3/2}$ cancels and equation (10) of section 4.2 is what is left. Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\overline{x} = 0$, that is $t = 0$, so equation (11) is equation (10) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
 
-## Appendix C. Term Count Derivation
+## Appendix D. Term Count Derivation
 
 Set notation comes first. A set is written either by listing its elements, as in $\lbrace 2, 4, 6 \rbrace$, or by a condition, in the form $\lbrace \cdot \mid \cdot \rbrace$. In that second form a vertical bar splits the braces: left of the bar stands the shape an element takes, right of it the condition that shape has to meet. So $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ reads as every $n^2$ for $n$ an integer from 1 to 3, which is the set $\lbrace 1, 4, 9 \rbrace$. A colon is used in place of the bar as often as not, and this document uses both.
 
@@ -330,7 +332,7 @@ With `interaction_only` no variable is used twice, so a surviving term correspon
 
 $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (23)$$
 
-## Appendix D. Ridge And Lasso On Expanded Columns
+## Appendix E. Ridge And Lasso On Expanded Columns
 
 The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (24) and lasso is equation (25) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
 
@@ -358,9 +360,9 @@ $\alpha$ is chosen on held-out error over candidates spaced by powers of ten, an
 
 A penalty does not buy a degree of 4. What it buys is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
 
-## Appendix E. Implementation
+## Appendix F. Implementation
 
-### E.1 Options
+### F.1 Options
 
 The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, and only four arguments have to be settled [[7](#ref-7)].
 
@@ -385,7 +387,7 @@ term_name = poly.get_feature_names_out()
 
 The names `get_feature_names_out()` returns are the only route from a coefficient back to its column. Lose them after the expansion and the coefficients remain while which product each belongs to cannot be said.
 
-### E.2 Pipeline
+### F.2 Pipeline
 
 An expansion is not used alone but placed between standardization and the penalized fit. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
 
@@ -411,7 +413,7 @@ search.fit(X, y)
 
 Putting the expansion inside the pipeline is not a convenience. The expansion is row-wise and leaks nothing by itself, but the standardizations on either side of it must take their means and variances from the training part of each fold, the pieces cross-validation splits the data into. Choosing the degree and the penalty together also finishes in one search only inside the pipeline.
 
-### E.3 Cost
+### F.3 Cost
 
 The cost of an expansion is linear in the column count, and that count grows by equation (13). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
 
@@ -425,7 +427,7 @@ The second is approximation. `PolynomialCountSketch` compresses the terms a poly
 
 Sparse input is taken as it is. Feed in a CSR matrix, which stores only the non-zero values, and the expansion comes back in the same form, so data carrying many dummy columns does not inflate into a dense array.
 
-### E.4 Selective Expansion
+### F.4 Selective Expansion
 
 Not every pair has to be built. Hand the expansion the columns to be crossed and the column count ends at the number chosen rather than at Table 1.
 

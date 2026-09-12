@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 58 | Created: 2026-09-07 | Updated: 2026-09-12 01:58 CDT
+Rev. 59 | Created: 2026-09-07 | Updated: 2026-09-12 02:10 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -65,7 +65,7 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Expansion 전에 각 열을 평균 0, 표준편차 1 로 맞춘다. 이것이 standardization 이며, 평균을 빼는 부분만 따로 centering 이라 한다. 두 부분이 하는 일은 다르다. 평균을 빼면 열 사이의 상관이 낮아지고 계수를 읽을 수 있게 되며, 이것이 아래 두 문단이다. 표준편차로 나누면 열마다 다른 크기가 없어지고, 그 몫은 4.3 절과 5.2 절에 있다.
 
-Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\overline{x}$, 평균을 뺀 값을 $u_i = x_i - \overline{x}$ 로 두면 $u$ 의 평균은 0 이며, 윗줄은 표본 평균을 뜻한다. 공분산의 정의 $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ ([Appendix B](#appendix-b-covariance-and-correlation) 의 식 (16)) 를 $X = x$, $Y = x^2$ 에 적용하면 식 (6) 이 된다. 곱의 평균은 $\overline{x^3}$ 이고, 각 평균의 곱은 $\overline{x}$ 와 $\overline{x^2}$ 의 곱이다.
+Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\overline{x}$, 평균을 뺀 값을 $u_i = x_i - \overline{x}$ 로 두면 $u$ 의 평균은 0 이며, 윗줄은 표본 평균을 뜻한다. 공분산의 정의 $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ ([Appendix B](#appendix-b-covariance) 의 식 (16)) 를 $X = x$, $Y = x^2$ 에 적용하면 식 (6) 이 된다. 곱의 평균은 $\overline{x^3}$ 이고, 각 평균의 곱은 $\overline{x}$ 와 $\overline{x^2}$ 의 곱이다.
 
 $$\mathrm{cov}(x, x^2) = \overline{x^3} - \overline{x} \overline{x^2} \hspace{19em} (6)$$
 
@@ -83,7 +83,7 @@ $$\mathrm{cov}(x, x^2) = 2 \overline{x} \overline{u^2} + \overline{u^3} \hspace{
 
 식 (9) 의 두 항은 출처가 다르다. 앞의 항 $2 \overline{x} \overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
 
-두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-covariance-and-correlation) 에 있다. $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (9) 는 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (10) 이다.
+두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix C](#appendix-c-correlation-of-a-variable-and-its-square) 에 있다. $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (9) 는 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (10) 이다.
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
 
@@ -125,7 +125,7 @@ $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (13)$$
 
 $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (14)$$
 
-두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix C](#appendix-c-term-count-derivation) 에 있다.
+두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix C](#appendix-d-term-count-derivation) 에 있다.
 
 Table 1. Column count after expansion, bias column excluded
 
@@ -159,7 +159,7 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 Ridge 가 계수를 0 으로 만들지 않는다는 것은 ridge 로는 열을 지울 수 없다는 뜻이다. 그래도 기본으로 두는 이유는 expansion 에서 penalty 가 버는 것이 열의 개수가 아니라 예측의 안정이기 때문이며, 그 크기는 5.1 절의 degree 3 에서 held-out RMSE 가 1.08 에서 0.75 로 내려가는 차이다. 열의 개수를 실제로 줄여야 하면 그것은 lasso 나 elastic net 의 몫이다.
 
-Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix E](#appendix-e-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix D](#appendix-d-ridge-and-lasso-on-expanded-columns) 에 있다.
+Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix E](#appendix-f-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix D](#appendix-e-ridge-and-lasso-on-expanded-columns) 에 있다.
 
 ### 5.3 Failure Modes
 
@@ -245,7 +245,7 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 - **standardization**: 각 열에서 그 열의 평균을 빼고 표준편차로 나누어 평균 0, 표준편차 1 로 맞추는 연산.
 - **VIF**: 한 열을 나머지 열로 회귀했을 때의 $R^2$ 로 계산하는 분산 팽창 계수. $1/(1-R^2)$ 이다.
 
-## Appendix B. Covariance And Correlation
+## Appendix B. Covariance
 
 공분산은 두 열이 함께 움직이는 정도를 재는 값이다. 모집단에 대한 정의가 식 (15) 이며, $E[\cdot]$ 는 기댓값 (expected value), $\mu_X$ 와 $\mu_Y$ 는 두 변수의 기댓값이다.
 
@@ -266,7 +266,9 @@ $$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})(y_i - \overline{y})
 - $\mathrm{Cov}(X, Y) = 0$ 이면 두 변수 사이에 선형 관계가 없다.
 - $\mathrm{Cov}(X, X)$ 는 분산 $\mathrm{Var}(X)$ 다.
 
-4.2 절과 아래의 유도는 $1/N$ 로 나눈 평균을 쓴다. 상관은 공분산을 두 표준편차로 나눈 값이고 분자와 분모가 같은 약수를 가지므로, $1/N$ 을 쓰든 $1/(n-1)$ 을 쓰든 상관의 값은 같다.
+4.2 절과 [Appendix C](#appendix-c-correlation-of-a-variable-and-its-square) 의 유도는 $1/N$ 로 나눈 평균을 쓴다. 상관은 공분산을 두 표준편차로 나눈 값이고 분자와 분모가 같은 약수를 가지므로, $1/N$ 을 쓰든 $1/(n-1)$ 을 쓰든 상관의 값은 같다.
+
+## Appendix C. Correlation Of A Variable And Its Square
 
 4.2 절은 공분산을 두 표준편차로 나누어 상관으로 적고, 그 상관이 식 (10) 과 식 (11) 이라고 했다. 나누어야 하는 이유와 두 식의 유도가 아래다.
 
@@ -286,7 +288,7 @@ $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) =
 
 상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (10) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\overline{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (10) 에 $t = 0$ 을 넣은 것이 식 (11) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
 
-## Appendix C. Term Count Derivation
+## Appendix D. Term Count Derivation
 
 집합 표기를 읽는 법이 먼저다. 집합은 원소를 늘어놓아 $\lbrace 2, 4, 6 \rbrace$ 처럼 적거나, 조건으로 $\lbrace \cdot \mid \cdot \rbrace$ 꼴로 적는다. 뒤의 꼴에서는 세로줄이 중괄호 안을 둘로 나누어, 왼쪽에 원소가 취하는 모양을, 오른쪽에 그 모양이 만족해야 할 조건을 적는다. 그래서 $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ 은 $n$ 이 1 부터 3 까지의 정수일 때의 $n^2$ 을 모두 모은 것, 곧 $\lbrace 1, 4, 9 \rbrace$ 이다. 세로줄 자리에는 콜론도 그만큼 자주 쓰이며, 이 문서는 둘을 함께 쓴다.
 
@@ -330,7 +332,7 @@ $$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (22)$$
 
 $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (23)$$
 
-## Appendix D. Ridge And Lasso On Expanded Columns
+## Appendix E. Ridge And Lasso On Expanded Columns
 
 Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (24), lasso 는 식 (25) 이며 [[12](#ref-12)], $\alpha$ 가 penalty 를 누르는 세기다.
 
@@ -358,9 +360,9 @@ $\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격�
 
 Penalty 를 건다고 degree 를 4 로 올릴 수 있는 것은 아니다. Penalty 가 버는 것은 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
 
-## Appendix E. Implementation
+## Appendix F. Implementation
 
-### E.1 Options
+### F.1 Options
 
 Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, 정할 것은 네 인자뿐이다 [[7](#ref-7)].
 
@@ -385,7 +387,7 @@ term_name = poly.get_feature_names_out()
 
 `get_feature_names_out()` 이 돌려주는 이름은 계수를 다시 열에 되짚는 유일한 통로다. Expansion 뒤에 이름을 잃으면 계수는 남아도 그것이 어느 곱의 계수인지 말할 수 없다.
 
-### E.2 Pipeline
+### F.2 Pipeline
 
 Expansion 은 홀로 쓰지 않고 standardization 과 penalty 사이에 둔다. 순서는 원 변수의 standardization, expansion, expansion 이 만든 열의 두 번째 standardization, 그리고 penalty 를 건 적합이다.
 
@@ -411,7 +413,7 @@ search.fit(X, y)
 
 Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 standardization 은 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
 
-### E.3 Cost
+### F.3 Cost
 
 Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (13) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
 
@@ -425,7 +427,7 @@ $$K(\mathbf{x}, \mathbf{z}) = (\gamma \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hsp
 
 희소 입력은 그대로 받는다. 0 이 아닌 값만 저장하는 CSR 형식의 행렬을 넣으면 expansion 결과도 같은 형식으로 나오므로, dummy 열이 많은 자료가 dense 로 부풀지 않는다.
 
-### E.4 Selective Expansion
+### F.4 Selective Expansion
 
 모든 짝을 만들 필요는 없다. 곱할 열을 골라 넘기면 열 수는 Table 1 이 아니라 고른 개수로 끝난다.
 
