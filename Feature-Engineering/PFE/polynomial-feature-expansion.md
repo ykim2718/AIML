@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 61 | Created: 2026-09-09 | Updated: 2026-09-12 02:47 CDT
+Rev. 62 | Created: 2026-09-09 | Updated: 2026-09-12 02:58 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -272,21 +272,27 @@ Section 4.2 and the derivation in [Appendix C](#appendix-c-correlation-of-a-vari
 
 Section 4.2 divides the covariance by the two standard deviations to write the correlation, and states that correlation as equation (10) and equation (11). Why the division is needed, and where the two equations come from, is below.
 
-The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3 \mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot weigh the two terms against each other. Dividing by the standard deviations, $\mathrm{sd}(cx) = c \cdot \mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2 \cdot \mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (18), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
+For two variables $X$ and $Y$ the correlation is defined as equation (18).
 
-$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (18)$$
+$$r(X, Y) = \frac{\mathrm{Cov}(X, Y)}{\mathrm{sd}(X) \cdot \mathrm{sd}(Y)} \hspace{19em} (18)$$
 
-The correlation is $r(x, x^2) = \mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$, so the derivation is a matter of the two standard deviations in its denominator. The covariance in the numerator is equation (9) of section 4.2, and $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (16) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \overline{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (19).
+What this appendix solves is the case $X = x$ and $Y = x^2$. The numerator $\mathrm{Cov}(X, Y)$ is then equation (9) of section 4.2, and the two standard deviations in the denominator are $\mathrm{sd}(X) = \mathrm{sd}(x)$ and $\mathrm{sd}(Y) = \mathrm{sd}(x^2)$.
 
-$$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (19)$$
+The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3 \mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot weigh the two terms against each other. Dividing by the standard deviations, $\mathrm{sd}(cx) = c \cdot \mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2 \cdot \mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (19), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
+
+$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (19)$$
+
+What is left is the two standard deviations in the denominator. $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (16) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \overline{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (20).
+
+$$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (20)$$
 
 The three values substituted below, $t$, $s$ and $k$, are there to gather what centering changes into one place. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data. The two are the usual quantities: $s$ is the skewness and $k$ the kurtosis.
 
-Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes that numerator and those two denominators as equation (20).
+Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes that numerator and those two denominators as equation (21).
 
-$$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (20)$$
+$$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (21)$$
 
-Put the three into that ratio and $(\overline{u^2})^{3/2}$ cancels, so equation (10) of section 4.2 is what is left.
+Put the three into equation (18) and $(\overline{u^2})^{3/2}$ cancels, so equation (10) of section 4.2 is what is left.
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
 
@@ -322,39 +328,39 @@ The one pair left out is $(0, 0)$, the constant term.
 
 Equation (4) defines the set of columns to be built without saying how large it is. That size is equation (13) and equation (14), derived below.
 
-One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (21), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
+One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (22), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (21)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (22)$$
 
 The count itself is stars and bars. Take the degree $k$ as $k$ identical stars, and the $n$ variables as $n$ bins separated by $n-1$ bars, so that the stars falling in a bin are the exponent $a_i$ of that variable. Counting the exponent choices is then laying $k$ stars and $n-1$ bars, $k+n-1$ symbols, in a row and choosing which $n-1$ positions carry the bars, which is $\binom{k+n-1}{n-1}$.
 
 At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 3.
 
-Summing the degrees from 0 to $d$ gives equation (22). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
+Summing the degrees from 0 to $d$ gives equation (23). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (22)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (23)$$
 
 The set of equation (4) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (13).
 
-With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (14). Once $d \ge n$ every subset is admitted and the sum closes as equation (23).
+With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (14). Once $d \ge n$ every subset is admitted and the sum closes as equation (24).
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (23)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (24)$$
 
 ## Appendix E. Ridge And Lasso On Expanded Columns
 
-The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (24) and lasso is equation (25) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
+The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (25) and lasso is equation (26) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (24)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (25)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (25)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (26)$$
 
-The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (26): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
+The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (27): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (26)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (27)$$
 
-Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (27) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
+Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (28) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (27)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (28)$$
 
 Table 4. Penalties on expanded columns
 
@@ -425,9 +431,9 @@ Putting the expansion inside the pipeline is not a convenience. The expansion is
 
 The cost of an expansion is linear in the column count, and that count grows by equation (13). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
 
-The first is the kernel. The polynomial kernel of equation (28) computes the inner product of the expanded space without the expansion.
+The first is the kernel. The polynomial kernel of equation (29) computes the inner product of the expanded space without the expansion.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (28)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (29)$$
 
 `KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
 
