@@ -1,5 +1,5 @@
 # Multivariate Feature Selection (Korean)
-Rev. 2 | Created: 2026-09-12 | Updated: 2026-09-12 18:02 CDT
+Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-12 18:06 CDT
 
 ## 1. Purpose
 
@@ -121,7 +121,9 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 6 의 세 단계를 그대로 실행한 예다. Embedded 단계는 tree-based importance 를 쓴다.
+scikit-learn 으로 section 6 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. Embedded 단계는 tree-based importance 를 쓴다.
+
+입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
 ```python
 import numpy as np
@@ -131,28 +133,77 @@ from sklearn.feature_selection import RFE, SelectFromModel
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-# Load a dataset whose 30 features carry heavy redundancy
-X, y = load_breast_cancer(return_X_y=True)
-X = StandardScaler().fit_transform(X)
-print(f"original feature count: {X.shape[1]}")  # 30
 
-# Step 1, filter: drop one of every pair whose absolute correlation exceeds 0.95
-corr = np.abs(np.corrcoef(X, rowvar=False))
-redundant = np.unique(np.where(np.triu(corr, k=1) > 0.95)[1])
-kept = np.setdiff1d(np.arange(X.shape[1]), redundant)
-X_filtered = X[:, kept]
-print(f"after the correlation filter: {X_filtered.shape[1]}")  # 23
+class MultivariateFeatureSelector:
+    """Run the three steps of the workflow on one dataset, keeping the original column indices.
 
-# Step 2, embedded: keep the features a random forest splits on above average
-forest = RandomForestClassifier(n_estimators=200, random_state=0)
-embedded = SelectFromModel(forest, threshold="mean").fit(X_filtered, y)
-X_embedded = embedded.transform(X_filtered)
-print(f"after the embedded selection: {X_embedded.shape[1]}")  # 6
+    Args:
+        correlation_limit: absolute correlation above which one feature of a pair is dropped.
+        forest_size: number of trees of the random forest used by the embedded step.
+        final_count: number of features the wrapper step leaves.
+        random_state: seed of the random forest.
+    """
 
-# Step 3, wrapper: RFE removes the weakest feature at each step until five remain
-wrapper = RFE(LogisticRegression(max_iter=5000), n_features_to_select=5).fit(X_embedded, y)
-print(f"after RFE: {wrapper.n_features_}")  # 5
-print(f"selection mask of the last step: {wrapper.get_support()}")
+    def __init__(self, correlation_limit: float = 0.95, forest_size: int = 200,
+                 final_count: int = 5, random_state: int = 0) -> None:
+        if not 0.0 < correlation_limit < 1.0:
+            raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
+        if final_count < 1:
+            raise ValueError(f"final_count must be at least 1: {final_count=}")
+        self.correlation_limit = correlation_limit
+        self.forest_size = forest_size
+        self.final_count = final_count
+        self.random_state = random_state
+
+    def filter_step(self, X: np.ndarray) -> np.ndarray:
+        """Return the columns left after dropping one feature of every correlated pair."""
+        corr = np.abs(np.corrcoef(X, rowvar=False))
+        redundant = np.unique(np.where(np.triu(corr, k=1) > self.correlation_limit)[1])
+        return np.setdiff1d(np.arange(X.shape[1]), redundant)
+
+    def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Return the columns whose random forest importance is above the mean importance."""
+        forest = RandomForestClassifier(n_estimators=self.forest_size, random_state=self.random_state)
+        selector = SelectFromModel(estimator=forest, threshold="mean").fit(X[:, columns], y)
+        return columns[selector.get_support()]
+
+    def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Return the columns RFE keeps after removing the weakest feature one at a time."""
+        if len(columns) < self.final_count:
+            raise ValueError(f"the wrapper step got fewer columns than it must keep: "
+                             f"{len(columns)=}, {self.final_count=}")
+        estimator = LogisticRegression(max_iter=5000)
+        selector = RFE(estimator=estimator, n_features_to_select=self.final_count).fit(X[:, columns], y)
+        return columns[selector.get_support()]
+
+    def run(self, X: np.ndarray, y: np.ndarray) -> dict:
+        """Return the surviving column indices of each step, keyed by step name."""
+        filtered = self.filter_step(X=X)
+        embedded = self.embedded_step(X=X, y=y, columns=filtered)
+        wrapped = self.wrapper_step(X=X, y=y, columns=embedded)
+        return {"filter": filtered, "embedded": embedded, "wrapper": wrapped}
+
+
+if __name__ == "__main__":
+    data = load_breast_cancer()
+    X = StandardScaler().fit_transform(data.data)
+    print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
+
+    selector = MultivariateFeatureSelector(correlation_limit=0.95, final_count=5)
+    steps = selector.run(X=X, y=data.target)
+    for name, columns in steps.items():
+        print(f"{name:>8} step: {len(columns)} features left")
+    print(f"selected: {', '.join(data.feature_names[steps['wrapper']])}")
+```
+
+실행 결과는 다음과 같다.
+
+```text
+input: 569 samples, 30 features
+  filter step: 23 features left
+embedded step: 6 features left
+ wrapper step: 5 features left
+selected: mean radius, mean concavity, radius error, worst concavity, worst concave points
 ```
 
 단계를 지날 때마다 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
