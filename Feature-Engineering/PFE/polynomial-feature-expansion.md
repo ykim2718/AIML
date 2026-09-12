@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 78 | Created: 2026-09-09 | Updated: 2026-09-12 06:16 CDT
+Rev. 79 | Created: 2026-09-09 | Updated: 2026-09-12 06:35 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -128,7 +128,7 @@ $$m_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
 
 $$m_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
 
-Both counts are derived from the set of equation (4) in [Appendix C](#appendix-d-term-count-derivation).
+Both counts are derived from the set of equation (4) in [Appendix D](#appendix-d-term-count-derivation).
 
 Table 1. Column count after expansion, original variables included and bias column excluded
 
@@ -145,13 +145,6 @@ What actually sets the column count is the degree. Raising $d$ from 2 to 3 takes
 
 The degree is therefore chosen on the error over data kept out of the fit, the held-out error, rather than on theory, and the candidates are few. It is 2 in almost every practical case, data that needs 3 is rare, and a degree of 4 or more that appears to win is a sign that something other than an expansion should be used.
 
-<img src="polynomial-feature-expansion_fig/fig1.png" width="1100" style="max-width: 100%;" alt="Fig 1">
-
-Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
-
-Fig 1(a) is the first reason. Degrees 2, 5 and 9 are fitted to 60 samples; inside the training range (grey) degrees 5 and 9 are both plausible, and outside it the higher degree diverges first. The behaviour of a polynomial beyond its range is governed by its top term, so raising the degree where extrapolation is needed improves the fit inside the training range while the error outside it grows.
-
-Fig 1(b) draws the condition numbers of section 4.3 against degree, and Fig 1(c) is the relation between the term count and the row count. On data with 5 variables, 60 rows and a true model holding one product term, the held-out RMSE, that error measured as the root of the mean squared error, falls from 1.34 at degree 1 to 0.34 at degree 2 and returns to 1.08 at degree 3. The 55 columns of degree 3 nearly reach the 60 rows. Ridge is at 0.75 in the same place, stopping close to half of that deterioration.
 
 ### 5.2 Regularization
 
@@ -161,9 +154,21 @@ Ridge is the default of the two. It divides the coefficient among the columns th
 
 That ridge never drives a coefficient to zero means no column can be dropped with it. It is still the default because what a penalty buys on an expansion is not a smaller column count but a steadier prediction, and the size of that is the held-out RMSE of section 5.1 falling from 1.08 to 0.75 at degree 3. Where the column count itself has to come down, that is the work of lasso or elastic net.
 
-The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix E](#appendix-f-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix D](#appendix-e-ridge-and-lasso-on-expanded-columns).
+The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix F](#appendix-f-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix E](#appendix-e-ridge-and-lasso-on-expanded-columns).
 
-### 5.3 Failure Modes
+### 5.3 Evidence
+
+Fig 1 measures on one data set what the three sections before it state: (a) degree and extrapolation (section 5.1), (b) the condition number (section 4.3), and (c) the held-out error as the column count reaches the row count, with what a penalty buys (section 5.2).
+
+<img src="polynomial-feature-expansion_fig/fig1.png" width="1100" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
+
+Fig 1(a) is the reason to keep the degree low. Degrees 2, 5 and 9 are fitted to 60 samples; inside the training range (grey) degrees 5 and 9 are both plausible, and outside it the higher degree diverges first. The behaviour of a polynomial beyond its range is governed by its top term, so raising the degree where extrapolation is needed improves the fit inside the training range while the error outside it grows.
+
+Fig 1(b) draws the condition numbers of section 4.3 against degree, and Fig 1(c) is the relation between the term count and the row count. On data with 5 variables, 60 rows and a true model holding one product term, the held-out RMSE, that error measured as the root of the mean squared error, falls from 1.34 at degree 1 to 0.34 at degree 2 and returns to 1.08 at degree 3. The 55 columns of degree 3 nearly reach the 60 rows. Ridge is at 0.75 in the same place, stopping close to half of that deterioration.
+
+### 5.4 Failure Modes
 
 An expansion fails in six recognizable ways. Most arrive not as a model that fits badly but as coefficients or predictions that turn unstable.
 
@@ -180,7 +185,7 @@ Table 2. Failure modes of a polynomial expansion
 
 The fifth row of Table 2 is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
 
-### 5.4 Diagnostics
+### 5.5 Diagnostics
 
 Whether an expansion helped is confirmed in four ways.
 

@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 80 | Created: 2026-09-07 | Updated: 2026-09-12 06:16 CDT
+Rev. 81 | Created: 2026-09-07 | Updated: 2026-09-12 06:35 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -128,7 +128,7 @@ $$m_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
 
 $$m_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
 
-두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix C](#appendix-d-term-count-derivation) 에 있다.
+두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix D](#appendix-d-term-count-derivation) 에 있다.
 
 Table 1. Column count after expansion, original variables included and bias column excluded
 
@@ -145,13 +145,6 @@ Table 1 에서 읽을 것은 `interaction_only` 가 줄여 주는 몫이 작다�
 
 그래서 degree 는 이론이 아니라 적합에 쓰지 않고 남겨 둔 자료의 오차, 곧 held-out 오차로 고르며, 후보는 좁다. 실무의 거의 모든 경우에 2 이고, 3 이 필요한 자료는 드물며, 4 이상이 이기는 것처럼 보이면 expansion 이 아니라 다른 방법을 써야 한다는 신호다.
 
-<img src="polynomial-feature-expansion_fig/fig1.png" width="1100" style="max-width: 100%;" alt="Fig 1">
-
-Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
-
-Fig 1(a) 는 첫 번째 이유다. 60 개 표본에 degree 2, 5, 9 를 맞춘 것으로, 훈련 구간 (회색) 안에서는 degree 5 와 9 가 모두 그럴듯하지만 구간을 벗어나면 차수가 높은 곡선이 먼저 폭주한다. 다항식의 바깥 거동은 최고차항이 지배하므로, extrapolation 이 필요한 곳에서 degree 를 올리면 훈련 구간 안의 적합은 좋아져도 구간 밖 예측의 오차는 커진다.
-
-Fig 1(b) 는 4.3 절의 조건수를 차수별로 그린 것이고, Fig 1(c) 는 항 수와 행 수의 관계다. 변수 5 개, 행 60 개, 참 model 이 곱항 하나인 자료에서 held-out RMSE, 곧 그 오차를 제곱 평균의 제곱근으로 잰 값은 degree 1 의 1.34 에서 degree 2 의 0.34 로 내려갔다가 degree 3 에서 1.08 로 되돌아간다. degree 3 의 열 수는 55 로 행 수 60 에 거의 닿는다. 같은 자리에서 ridge 는 0.75 여서 그 악화의 절반 가까이를 막는다.
 
 ### 5.2 Regularization
 
@@ -161,9 +154,21 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 Ridge 가 계수를 0 으로 만들지 않는다는 것은 ridge 로는 열을 지울 수 없다는 뜻이다. 그래도 기본으로 두는 이유는 expansion 에서 penalty 가 버는 것이 열의 개수가 아니라 예측의 안정이기 때문이며, 그 크기는 5.1 절의 degree 3 에서 held-out RMSE 가 1.08 에서 0.75 로 내려가는 차이다. 열의 개수를 실제로 줄여야 하면 그것은 lasso 나 elastic net 의 몫이다.
 
-Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix E](#appendix-f-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix D](#appendix-e-ridge-and-lasso-on-expanded-columns) 에 있다.
+Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix F](#appendix-f-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix E](#appendix-e-ridge-and-lasso-on-expanded-columns) 에 있다.
 
-### 5.3 Failure Modes
+### 5.3 Evidence
+
+Fig 1 은 앞의 세 꼭지가 말한 것을 한 자료에서 잰 그림이다. (a) 는 degree 와 extrapolation (5.1 절), (b) 는 조건수 (4.3 절), (c) 는 열 수가 행 수에 닿을 때의 held-out 오차와 penalty 의 효과 (5.2 절) 다.
+
+<img src="polynomial-feature-expansion_fig/fig1.png" width="1100" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Degree and extrapolation, conditioning, and the cost of expansion
+
+Fig 1(a) 는 degree 를 낮게 두는 이유다. 60 개 표본에 degree 2, 5, 9 를 맞춘 것으로, 훈련 구간 (회색) 안에서는 degree 5 와 9 가 모두 그럴듯하지만 구간을 벗어나면 차수가 높은 곡선이 먼저 폭주한다. 다항식의 바깥 거동은 최고차항이 지배하므로, extrapolation 이 필요한 곳에서 degree 를 올리면 훈련 구간 안의 적합은 좋아져도 구간 밖 예측의 오차는 커진다.
+
+Fig 1(b) 는 4.3 절의 조건수를 차수별로 그린 것이고, Fig 1(c) 는 항 수와 행 수의 관계다. 변수 5 개, 행 60 개, 참 model 이 곱항 하나인 자료에서 held-out RMSE, 곧 그 오차를 제곱 평균의 제곱근으로 잰 값은 degree 1 의 1.34 에서 degree 2 의 0.34 로 내려갔다가 degree 3 에서 1.08 로 되돌아간다. degree 3 의 열 수는 55 로 행 수 60 에 거의 닿는다. 같은 자리에서 ridge 는 0.75 여서 그 악화의 절반 가까이를 막는다.
+
+### 5.4 Failure Modes
 
 Expansion 이 실패하는 모습은 여섯 가지로 정리된다. 대부분은 model 이 못 맞추는 모습이 아니라 계수나 예측이 불안정해지는 모습으로 온다.
 
@@ -180,7 +185,7 @@ Table 2. Failure modes of a polynomial expansion
 
 Table 2 의 다섯째 줄은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
 
-### 5.4 Diagnostics
+### 5.5 Diagnostics
 
 Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 
