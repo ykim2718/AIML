@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 62 | Created: 2026-09-09 | Updated: 2026-09-12 02:58 CDT
+Rev. 63 | Created: 2026-09-09 | Updated: 2026-09-12 03:10 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -286,7 +286,7 @@ What is left is the two standard deviations in the denominator. $\mathrm{var}(x)
 
 $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (20)$$
 
-The three values substituted below, $t$, $s$ and $k$, are there to gather what centering changes into one place. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data. The two are the usual quantities: $s$ is the skewness and $k$ the kurtosis.
+To gather the terms that centering changes in equation (9) and equation (20) into one place, $t$, $s$ (skewness) and $k$ (kurtosis) are introduced. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data.
 
 Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes that numerator and those two denominators as equation (21).
 
