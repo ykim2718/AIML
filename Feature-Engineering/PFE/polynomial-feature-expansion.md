@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 77 | Created: 2026-09-09 | Updated: 2026-09-12 06:05 CDT
+Rev. 78 | Created: 2026-09-09 | Updated: 2026-09-12 06:16 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -134,15 +134,14 @@ Table 1. Column count after expansion, original variables included and bias colu
 
 | $n$ | $m_{\mathrm{full}}$ at $d = 2$ | $m_{\mathrm{inter}}$ at $d = 2$ | $m_{\mathrm{full}}$ at $d = 3$ | $m_{\mathrm{inter}}$ at $d = 3$ |
 | --- | --- | --- | --- | --- |
+| 2 | 5 | 3 | 9 | 3 |
 | 5 | 20 | 15 | 55 | 25 |
 | 10 | 65 | 55 | 285 | 175 |
-| 20 | 230 | 210 | 1,770 | 1,350 |
-| 50 | 1,325 | 1,275 | 23,425 | 20,875 |
 | 100 | 5,150 | 5,050 | 176,850 | 166,750 |
 
 What Table 1 says is that `interaction_only` saves little. At $d = 2$ the difference is the $n$ square terms alone, so 5,150 becomes 5,050 at $n = 100$. The option is therefore not switched on to cut the column count; it is where the decision to keep curvature inside one variable out of the model is written down.
 
-What actually sets the column count is the degree. Raising $d$ from 2 to 3 takes the columns from 230 to 1,770 at $n = 20$. As the column count approaches the row count the least-squares solution turns unstable, and past it the solution is not unique, so the ceiling on an expansion is set by the sample count rather than by the degree.
+What actually sets the column count is the degree. Raising $d$ from 2 to 3 takes the columns from 65 to 285 at $n = 10$. As the column count approaches the row count the least-squares solution turns unstable, and past it the solution is not unique, so the ceiling on an expansion is set by the sample count rather than by the degree.
 
 The degree is therefore chosen on the error over data kept out of the fit, the held-out error, rather than on theory, and the candidates are few. It is 2 in almost every practical case, data that needs 3 is rare, and a degree of 4 or more that appears to win is a sign that something other than an expansion should be used.
 

@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 79 | Created: 2026-09-07 | Updated: 2026-09-12 06:05 CDT
+Rev. 80 | Created: 2026-09-07 | Updated: 2026-09-12 06:16 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -134,15 +134,14 @@ Table 1. Column count after expansion, original variables included and bias colu
 
 | $n$ | $m_{\mathrm{full}}$ at $d = 2$ | $m_{\mathrm{inter}}$ at $d = 2$ | $m_{\mathrm{full}}$ at $d = 3$ | $m_{\mathrm{inter}}$ at $d = 3$ |
 | --- | --- | --- | --- | --- |
+| 2 | 5 | 3 | 9 | 3 |
 | 5 | 20 | 15 | 55 | 25 |
 | 10 | 65 | 55 | 285 | 175 |
-| 20 | 230 | 210 | 1,770 | 1,350 |
-| 50 | 1,325 | 1,275 | 23,425 | 20,875 |
 | 100 | 5,150 | 5,050 | 176,850 | 166,750 |
 
 Table 1 에서 읽을 것은 `interaction_only` 가 줄여 주는 몫이 작다는 사실이다. $d = 2$ 에서 그 차이는 제곱항 $n$ 개뿐이어서 $n = 100$ 의 5,150 이 5,050 이 될 뿐이다. 곧 이 option 은 열 수를 줄이려고 켜는 것이 아니라, 한 변수 안의 곡률을 model 에 넣지 않겠다는 판단을 적어 두는 것이다.
 
-열 수를 실제로 정하는 것은 degree 다. $d$ 를 2 에서 3 으로 올리면 $n = 20$ 에서 열은 230 에서 1,770 으로 늘어난다. 열 수가 행 수에 가까워지면 최소제곱의 해는 불안정해지고 넘어서면 유일하지 않으므로, expansion 의 상한을 정하는 것은 degree 가 아니라 표본 수이다.
+열 수를 실제로 정하는 것은 degree 다. $d$ 를 2 에서 3 으로 올리면 $n = 10$ 에서 열은 65 에서 285 로 늘어난다. 열 수가 행 수에 가까워지면 최소제곱의 해는 불안정해지고 넘어서면 유일하지 않으므로, expansion 의 상한을 정하는 것은 degree 가 아니라 표본 수이다.
 
 그래서 degree 는 이론이 아니라 적합에 쓰지 않고 남겨 둔 자료의 오차, 곧 held-out 오차로 고르며, 후보는 좁다. 실무의 거의 모든 경우에 2 이고, 3 이 필요한 자료는 드물며, 4 이상이 이기는 것처럼 보이면 expansion 이 아니라 다른 방법을 써야 한다는 신호다.
 
