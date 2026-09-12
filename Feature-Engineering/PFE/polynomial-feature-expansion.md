@@ -1,11 +1,11 @@
 # Polynomial Feature Expansion
-Rev. 20 | Created: 2026-09-09 | Updated: 2026-09-12 00:17 UTC
+Rev. 21 | Created: 2026-09-09 | Updated: 2026-09-11 19:28 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: A linear model draws its boundary only as a straight line or a hyperplane. A response that appears when two conditions are high together, or one that turns over past a peak, is not expressed however well the coefficients are estimated, and what is missing stays in the structure of the residual, where even the fact that the model is wrong does not surface.
-- **Goal**: To carry a non-linear relationship and a feature interaction into a linear model by adding the products and powers of the raw variables as new columns, so that the two prices it charges, a column count that grows with the degree and coefficients that a penalty has to steady, can be controlled.
-- **Non-Goal**: The learning algorithm placed on the expanded columns is not covered. Neither is the encoding of categorical variables nor the imputation of missing values.
+- **Problem Statement**: Numeric tabular data is hard to express with a linear model.
+- **Goal**: To build a non-linear model by adding the polynomial features of the original variables ($x^2$, $x^3$) and the interaction terms ($x_1 \ast x_2$).
+- **Non-Goal**: Derived variables are not covered, and the learning on the expanded data set is not covered.
 
 ## 2. Summary
 
@@ -225,6 +225,7 @@ Handing the expanded columns to PLS (Partial Least Squares) is another route. PL
 - **condition number**: The ratio of the largest singular value of a matrix to the smallest. It says how far a small error in the input is magnified in the solution.
 - **curse of dimensionality**: The exponential growth, as the number of columns rises, in the number of observations needed to cover the space at one density.
 - **degree**: The highest degree of a monomial the expansion admits. The degree of $X_1^2 X_2$ is 3.
+- **derived variable**: A variable built from two or more columns by domain knowledge, such as a ratio or a rate.
 - **design matrix**: The matrix whose rows are the observations and whose columns are the terms the model uses. The coefficients come from solving it.
 - **dummy**: A column holding 1 where a row falls in one category of a categorical variable and 0 otherwise.
 - **extrapolation**: Prediction over an input range the training data does not cover.

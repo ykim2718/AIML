@@ -1,11 +1,11 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 21 | Created: 2026-09-07 | Updated: 2026-09-12 00:17 UTC
+Rev. 22 | Created: 2026-09-07 | Updated: 2026-09-11 19:28 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: 선형 model 은 경계를 직선과 초평면으로만 그린다. 두 조건이 함께 높을 때만 나타나는 응답이나 정점을 지나 꺾이는 응답은 계수를 아무리 잘 추정해도 표현되지 않으며, 그 부족분은 잔차의 구조로 남아 model 이 틀렸다는 사실조차 드러나지 않는다.
-- **Goal**: 원 변수의 곱과 거듭제곱을 새 열로 만들어 비선형 관계와 특성 간 상호작용을 선형 model 에 담되, 그 대가인 열 수 증가와 계수의 흔들림을 degree 와 penalty 로 통제할 수 있게 한다.
-- **Non-Goal**: expansion 이 만든 열에 붙는 model 의 학습 algorithm 은 다루지 않는다. 범주형 변수의 encoding 과 결측치 대체 방법도 다루지 않는다.
+- **Problem Statement**: Numeric tabular data 에서 선형 model 로는 표현하기 힘들다.
+- **Goal**: Original variable 의 polynomial feature ($x^2$, $x^3$) 와 interaction term ($x_1 \ast x_2$) 을 추가하여 비선형 model 을 만든다.
+- **Non-Goal**: Derived variable 은 다루지 않고, expanded data set 의 학습을 다루지 않는다.
 
 ## 2. Summary
 
@@ -225,6 +225,7 @@ Expansion 이 만든 열을 PLS (Partial Least Squares) 로 받는 길도 있다
 - **condition number**: 행렬의 최대 특이값과 최소 특이값의 비. 입력의 작은 오차가 해에서 얼마나 커지는지를 나타낸다.
 - **curse of dimensionality**: 열이 늘수록 그 공간을 같은 밀도로 채우는 데 필요한 관측 수가 지수로 늘어나는 현상.
 - **degree**: expansion 이 허용하는 monomial 의 최고 차수. $X_1^2 X_2$ 의 차수는 3 이다.
+- **derived variable**: 도메인 지식으로 두 개 이상의 열을 묶어 새로 만든 변수. 비나 율이 그 예다.
 - **design matrix**: 행이 관측이고 열이 model 이 쓰는 항인 행렬. 계수는 이 행렬을 풀어 얻는다.
 - **dummy**: 범주형 변수의 한 범주에 대응하여 그 범주면 1, 아니면 0 을 담는 열.
 - **extrapolation**: 훈련 자료가 덮지 않는 입력 범위에 대한 예측.
