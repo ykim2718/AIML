@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 53 | Created: 2026-09-07 | Updated: 2026-09-12 00:55 CDT
+Rev. 54 | Created: 2026-09-07 | Updated: 2026-09-12 01:10 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -69,19 +69,19 @@ Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공
 
 $$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})(x_i^2 - \overline{x^2}) \hspace{19em} (6)$$
 
-첫 인자 $x - \bar{x}$ 가 $u$ 이고, 괄호를 풀면 평균이 두 항으로 갈라져 식 (7) 이 된다.
+[Appendix B](#appendix-b-covariance-and-correlation) 의 식 (17), 곧 $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ 를 $X = x$, $Y = x^2$ 에 적용하면 식 (7) 이 된다. 곱의 평균은 $\overline{x^3}$ 이고, 각 평균의 곱은 $\bar{x}$ 와 $\overline{x^2}$ 의 곱이다.
 
-$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 - \overline{x^2} \cdot \overline{u} \hspace{19em} (7)$$
+$$\mathrm{cov}(x, x^2) = \overline{x^3} - \bar{x} \overline{x^2} \hspace{19em} (7)$$
 
-$\overline{u} = 0$ 이므로 뒤의 항이 사라지고 식 (8) 이 남는다.
+$x = u + \bar{x}$ 를 넣어 두 평균을 $u$ 로 적으면 식 (8) 이 된다. 전개한 항 가운데 $\overline{u}$ 가 곱해진 것은 $\overline{u} = 0$ 이므로 각각 사라진다.
 
-$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 \hspace{19em} (8)$$
+$$\overline{x^3} = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3, \qquad \overline{x^2} = \overline{u^2} + \bar{x}^2 \hspace{19em} (8)$$
 
-$x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 을 넣고 항마다 평균을 취하면 식 (9) 가 된다.
+식 (8) 을 식 (7) 에 넣으면 식 (9) 가 된다.
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2 \bar{x} \overline{u^2} + \bar{x}^2 \overline{u} \hspace{19em} (9)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3 - \bar{x} (\overline{u^2} + \bar{x}^2) \hspace{19em} (9)$$
 
-여기서도 $\overline{u} = 0$ 이 마지막 항을 지우므로, 공분산은 식 (10) 으로 닫힌다.
+$\bar{x}^3$ 이 상쇄되고 $3 \bar{x} \overline{u^2}$ 에서 $\bar{x} \overline{u^2}$ 를 빼면, 공분산은 식 (10) 으로 닫힌다.
 
 $$\mathrm{cov}(x, x^2) = 2 \bar{x} \overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
 

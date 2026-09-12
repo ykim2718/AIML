@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 51 | Created: 2026-09-09 | Updated: 2026-09-12 00:55 CDT
+Rev. 52 | Created: 2026-09-09 | Updated: 2026-09-12 01:10 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -69,19 +69,19 @@ The first reason to center is the drop in correlation. A correlation is the cova
 
 $$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})(x_i^2 - \overline{x^2}) \hspace{19em} (6)$$
 
-The first factor $x - \bar{x}$ is $u$, and multiplying out splits the average into two terms, which is equation (7).
+Equation (17) of [Appendix B](#appendix-b-covariance-and-correlation), $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$, applied at $X = x$ and $Y = x^2$ gives equation (7): the mean of the product is $\overline{x^3}$, and the product of the means is $\bar{x}$ times $\overline{x^2}$.
 
-$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 - \overline{x^2} \cdot \overline{u} \hspace{19em} (7)$$
+$$\mathrm{cov}(x, x^2) = \overline{x^3} - \bar{x} \overline{x^2} \hspace{19em} (7)$$
 
-Since $\overline{u} = 0$ the second term goes, leaving equation (8).
+Substituting $x = u + \bar{x}$ writes both means in $u$, which is equation (8). Of the expanded terms, each one multiplied by $\overline{u}$ drops out, since $\overline{u} = 0$.
 
-$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 \hspace{19em} (8)$$
+$$\overline{x^3} = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3, \qquad \overline{x^2} = \overline{u^2} + \bar{x}^2 \hspace{19em} (8)$$
 
-Substituting $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ and averaging term by term gives equation (9).
+Putting equation (8) into equation (7) gives equation (9).
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2 \bar{x} \overline{u^2} + \bar{x}^2 \overline{u} \hspace{19em} (9)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3 - \bar{x} (\overline{u^2} + \bar{x}^2) \hspace{19em} (9)$$
 
-Here too $\overline{u} = 0$ removes the last term, so the covariance closes as equation (10).
+The $\bar{x}^3$ cancels and $\bar{x} \overline{u^2}$ comes off $3 \bar{x} \overline{u^2}$, so the covariance closes as equation (10).
 
 $$\mathrm{cov}(x, x^2) = 2 \bar{x} \overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
 
