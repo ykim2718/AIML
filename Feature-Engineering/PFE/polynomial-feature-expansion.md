@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 45 | Created: 2026-09-09 | Updated: 2026-09-11 23:34 CDT
+Rev. 46 | Created: 2026-09-09 | Updated: 2026-09-11 23:47 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,9 +65,13 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0. In the definition of the covariance, $\overline{(x - \bar{x})(x^2 - \overline{x^2})}$, the first factor is $u$, and since $\overline{u} = 0$ subtracting the constant $\overline{x^2}$ from the second factor changes nothing. Substituting $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ into what is left, $\overline{u\,x^2}$, and averaging term by term gives equation (6).
+The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0. The expansion from the definition of the covariance to equation (6) is below, where $\overline{u} = 0$ removes $\overline{x^2}\,\overline{u}$ on the first line and $\bar{x}^2\,\overline{u}$ on the second.
 
-$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{6em} (6)$$
+$$\begin{aligned}
+\mathrm{cov}(x, x^2) &= \overline{(x - \bar{x})(x^2 - \overline{x^2})} = \overline{u\,x^2} - \overline{x^2}\,\overline{u} = \overline{u\,x^2} \\
+&= \overline{u\,(u^2 + 2\bar{x}u + \bar{x}^2)} = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} \\
+&= 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{10em} (6)
+\end{aligned}$$
 
 The two terms of equation (6) come from different places. The first, $2\bar{x}\,\overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
 
