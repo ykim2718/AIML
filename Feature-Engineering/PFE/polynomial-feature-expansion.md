@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 55 | Created: 2026-09-09 | Updated: 2026-09-12 01:47 CDT
+Rev. 56 | Created: 2026-09-09 | Updated: 2026-09-12 01:58 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -277,6 +277,8 @@ $$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} 
 The derivation is a matter of the denominator. The numerator is equation (9) of section 4.2, and $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (16) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \overline{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (19).
 
 $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (19)$$
+
+The three are there to gather what centering changes into one place. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data. The two are the usual quantities: $s$ is the skewness and $k$ the kurtosis.
 
 Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes the numerator and the two denominators as equation (20).
 

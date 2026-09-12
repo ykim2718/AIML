@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 57 | Created: 2026-09-07 | Updated: 2026-09-12 01:47 CDT
+Rev. 58 | Created: 2026-09-07 | Updated: 2026-09-12 01:58 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -277,6 +277,8 @@ $$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} 
 유도는 분모를 구하는 일이다. 분자는 4.2 절의 식 (9) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2$ 의 분산은 식 (16) 을 $X = Y = x^2$ 에 적용한 것, 곧 $\overline{x^4} - (\overline{x^2})^2$ 이며, 두 평균에 $x = u + \overline{x}$ 를 넣고 $\overline{u} = 0$ 으로 정리하면 식 (19) 가 된다.
 
 $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (19)$$
+
+세 값을 두는 이유는 centering 이 바꾸는 것을 한 자리에 모으기 위해서다. 적률과 $\overline{x}$ 가 뒤섞인 채로는 평균의 위치가 상관의 어디에 들어 있는지 보이지 않지만, 평균의 위치를 $t$ 하나에 담고 분포의 모양을 $s$ 와 $k$ 에 담으면 centering 이 $t$ 만 0 으로 만들고 $s$ 와 $k$ 는 건드리지 않는다는 것이 식에서 바로 읽힌다. 셋 모두 흩어짐으로 나눈 값이라 단위가 없어, 자료의 단위를 바꾸어도 값이 같다. $s$ 는 왜도 (skewness), $k$ 는 첨도 (kurtosis) 로 통용되는 양이다.
 
 여기에 $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (20) 으로 적힌다.
 
