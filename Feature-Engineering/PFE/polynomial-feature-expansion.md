@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 72 | Created: 2026-09-09 | Updated: 2026-09-12 05:05 CDT
+Rev. 73 | Created: 2026-09-09 | Updated: 2026-09-12 05:18 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -89,9 +89,9 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number.
 
-The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses. The least squares of section 3.1 picks the $\boldsymbol{\beta}$ that minimizes the sum of the squared residuals, and that $\boldsymbol{\beta}$ is the solution of $\mathbf{X}^{\top} \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^{\top} \mathbf{y}$, written in the design matrix $\mathbf{X}$ and the response $\mathbf{y}$, so fitting the model, that is settling on the coefficient values the data implies, is solving this matrix. Finding $\boldsymbol{\beta}$ in equation (1) and equation (2) is that same solve: equation (1) builds a design matrix whose columns are $[1, x, x^2, x^3]$ and equation (2) one whose columns are $[1, x_1, x_2, x_1 x_2]$, and $\boldsymbol{\beta}$ is the solution of the system written in that matrix. Written row by row, the system of equation (1) is equation (10), where $x_i$ is the $i$-th observation and $\mathbf{y}$ collects their responses.
+The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses. The least squares of section 3.1 picks the $\boldsymbol{\beta}$ that minimizes the sum of the squared residuals, and that $\boldsymbol{\beta}$ is the solution of $\mathbf{X}^{\top} \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^{\top} \mathbf{y}$, written in the design matrix $\mathbf{X}$ and the response $\mathbf{y}$, so fitting the model, that is settling on the coefficient values the data implies, is solving this matrix. Finding $\boldsymbol{\beta}$ in equation (1) and equation (2) is that same solve: equation (1) builds a design matrix whose columns are $[1, x, x^2, x^3]$ and equation (2) one whose columns are $[1, x_1, x_2, x_1 x_2]$, and $\boldsymbol{\beta}$ is the solution of the system written in that matrix. Written one row per observation, the system of equation (1) is equation (10), where $x_i$ is the $i$-th observation and $y_i$ its response. Those $N$ equations gathered into one line are $\mathbf{X} \boldsymbol{\beta} = \mathbf{y}$.
 
-$$\mathbf{X} = \begin{bmatrix} 1 & x_1 & x_1^2 & x_1^3 \\ \vdots & \vdots & \vdots & \vdots \\ 1 & x_N & x_N^2 & x_N^3 \end{bmatrix}, \qquad \mathbf{X} \boldsymbol{\beta} = \mathbf{y} \hspace{6em} (10)$$
+$$y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \beta_3 x_i^3, \qquad i = 1, \dots, N \hspace{12em} (10)$$
 
 The definition is equation (11). For a linear system $\mathbf{A}\mathbf{z} = \mathbf{b}$, the factor by which a relative error in the right-hand side $\mathbf{b}$ can grow in the solution $\mathbf{z}$ is bounded by the condition number $\kappa(\mathbf{A})$ of the coefficient matrix, which is the ratio of the largest singular value to the smallest.
 
