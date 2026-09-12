@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 75 | Created: 2026-09-09 | Updated: 2026-09-12 05:40 CDT
+Rev. 76 | Created: 2026-09-09 | Updated: 2026-09-12 05:52 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -115,7 +115,10 @@ On the right of equation (13), $\beta_{12} b z_1$ and $\beta_{12} a z_2$ are the
 
 ## 5. Caution
 
-An expansion charges two prices. The column count grows fast, which invites overfitting — a model that fits the training data and misses new data — and raises the cost of the fit. The columns it makes also resemble one another, which unsettles the coefficients. The degree holds the first price down, a penalty holds the second.
+An expansion charges two prices.
+
+- **The column count** — It grows fast, which invites overfitting, a model that fits the training data and misses new data, and raises the cost of the fit. The degree holds it down (section 5.1).
+- **Unsettled coefficients** — The columns an expansion makes resemble one another, so the coefficients move far with the sample. A penalty holds them down (section 5.2).
 
 ### 5.1 Dimensionality And Overfitting
 

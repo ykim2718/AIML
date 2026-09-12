@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 77 | Created: 2026-09-07 | Updated: 2026-09-12 05:40 CDT
+Rev. 78 | Created: 2026-09-07 | Updated: 2026-09-12 05:52 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -115,7 +115,10 @@ $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_
 
 ## 5. Caution
 
-Expansion 의 대가는 두 가지다. 하나는 열 수가 빠르게 늘어 overfitting, 곧 훈련 자료에는 맞지만 새 자료에서는 어긋나는 상태를 부르고 계산 비용을 올리는 것이고, 다른 하나는 expansion 이 만든 열이 서로 닮아 계수가 흔들리는 것이다. 열 수는 degree 로, 계수의 흔들림은 penalty 로 잡는다.
+Expansion 의 대가는 두 가지다.
+
+- **열 수** — 열 수가 빠르게 늘어 overfitting, 곧 훈련 자료에는 맞지만 새 자료에서는 어긋나는 상태를 부르고 계산 비용을 올린다. Degree 로 잡는다 (5.1 절).
+- **계수의 흔들림** — Expansion 이 만든 열이 서로 닮아 계수가 표본에 따라 크게 움직인다. Penalty 로 잡는다 (5.2 절).
 
 ### 5.1 Dimensionality And Overfitting
 
