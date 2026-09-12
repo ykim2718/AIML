@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 65 | Created: 2026-09-09 | Updated: 2026-09-12 03:40 CDT
+Rev. 66 | Created: 2026-09-09 | Updated: 2026-09-12 03:55 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -87,7 +87,7 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 ### 4.3 Conditioning
 
-Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses, from which the coefficients are solved. The condition number says by what factor such an error is magnified in the solution.
+Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses. The least squares of section 3.1 picks the $\boldsymbol{\beta}$ that minimizes the sum of the squared residuals, and that $\boldsymbol{\beta}$ is the solution of $\mathbf{X}^{\top} \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^{\top} \mathbf{y}$, written in the design matrix $\mathbf{X}$ and the response $\mathbf{y}$, so fitting the model is solving this matrix. The condition number says by what factor such an error is magnified in the solution.
 
 What raises the condition number is the degree and the collinearity between the columns; what lowers it is standardization. Subtracting the mean cuts the overlap between the columns and dividing by the standard deviation removes the differences in their size, so both parts are needed to take the condition number lowest.
 

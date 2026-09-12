@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 67 | Created: 2026-09-07 | Updated: 2026-09-12 03:40 CDT
+Rev. 68 | Created: 2026-09-07 | Updated: 2026-09-12 03:55 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -87,7 +87,7 @@ Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\be
 
 ### 4.3 Conditioning
 
-Conditioning 은 design matrix 를 푸는 일이 입력의 작은 오차에 얼마나 민감한지를 말하며, 그것을 재는 값이 조건수 (condition number) 다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬로, 계수는 이 행렬을 풀어 얻는다. 조건수는 그 오차가 푼 결과에서 몇 배로 커지는지를 나타낸다.
+Conditioning 은 design matrix 를 푸는 일이 입력의 작은 오차에 얼마나 민감한지를 말하며, 그것을 재는 값이 조건수 (condition number) 다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬이다. 3.1 절의 최소제곱은 잔차 제곱합을 가장 작게 하는 $\boldsymbol{\beta}$ 를 구하는 일이고 그 $\boldsymbol{\beta}$ 는 design matrix $\mathbf{X}$ 와 응답 $\mathbf{y}$ 로 적은 연립방정식 $\mathbf{X}^{\top} \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^{\top} \mathbf{y}$ 의 해이므로, model 을 적합하는 일이 곧 이 행렬을 푸는 일이다. 조건수는 그 오차가 푼 결과에서 몇 배로 커지는지를 나타낸다.
 
 조건수를 올리는 것은 degree 와 열 사이의 collinearity 이고, 내리는 것은 standardization 이다. 평균을 빼면 열 사이의 겹침이 줄고 표준편차로 나누면 열마다 다른 크기가 없어지므로, 두 부분을 함께 해야 조건수가 가장 낮아진다.
 
