@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 23 | Created: 2026-09-09 | Updated: 2026-09-11 19:35 CDT
+Rev. 24 | Created: 2026-09-09 | Updated: 2026-09-11 19:39 CDT
 
 ## 1. Purpose
 
@@ -11,7 +11,11 @@ Rev. 23 | Created: 2026-09-09 | Updated: 2026-09-11 19:35 CDT
 
 An expansion computes products and powers from the columns already in the table and appends them as new columns, leaving the rows as they are and growing only the columns. A table with the columns $x_1$ and $x_2$ becomes a table with $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$, and those three new columns are what give a linear model a curve and an interaction between variables.
 
-What it costs is columns. Expanding 20 variables to the second degree takes the column count from 20 to 230, and once the column count approaches the row count the coefficients can no longer be estimated (section 5.1). Three defaults hold the column count, and the unsteadiness of the coefficients, inside what the data carries. First, degree 2 limits the terms built to squares and to products of two variables (section 5.1). Second, before the expansion each variable has its own mean subtracted so that its values sit near zero, which is centering (section 4.2). Third, the expanded columns carry a ridge or lasso penalty that holds the coefficients down (section 5.2).
+What it costs is columns. Expanding 20 variables to the second degree takes the column count from 20 to 230, and once the column count approaches the row count the coefficients, the $\beta$ values that multiply the columns, can no longer be pinned to one solution (section 5.1). The three defaults below keep the column count well under the row count, and keep those $\beta$ from moving far when the sample is drawn again.
+
+- Degree is 2, which limits the terms built to squares and to products of two variables (section 5.1).
+- Each variable has its own mean subtracted before the expansion, which is centering (section 4.2).
+- The expanded columns carry a ridge or lasso penalty, which holds the size of those $\beta$ down (section 5.2).
 
 Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again.
 
