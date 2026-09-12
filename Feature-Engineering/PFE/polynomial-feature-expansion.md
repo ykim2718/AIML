@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 22 | Created: 2026-09-09 | Updated: 2026-09-11 19:30 CDT
+Rev. 23 | Created: 2026-09-09 | Updated: 2026-09-11 19:35 CDT
 
 ## 1. Purpose
 
@@ -31,35 +31,39 @@ Judging curvature absent, in row 2, means taking the response to move in one dir
 
 ## 3. Objective
 
-The expansion is aimed at two things, a non-linear relationship inside one variable and an interaction between variables. A linear model expresses neither, and the expansion puts both into the columns so that the model itself stays linear.
+An expansion is aimed at two things, a non-linear relationship inside one variable and an interaction between variables, neither of which a linear model expresses. The first is carried by a polynomial feature, the second by an interaction term, and both are put into the columns so that the model itself stays linear.
 
 ### 3.1 Non-linear Relationship
 
-Adding terms such as $x^2$ and $x^3$ to a raw variable $x$ lets the model draw a curve or a curved surface while staying linear in its coefficients. Linear here is about the coefficients $\beta$ rather than about $x$, which is why least squares, the solve that picks the coefficients minimizing the sum of the squared residuals, carries over as it is. Expanding two variables to the second degree, the model learns equation (1).
+The non-linear relationship inside one variable is carried by the powers of that variable, its polynomial features. Adding $x^2$ and $x^3$ to a variable $x$, the model learns equation (1) and draws a curve while staying linear in its coefficients.
 
-$$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_1 x_2 + \beta_5 x_2^2 \hspace{19em} (1)$$
+$$\hat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 \hspace{19em} (1)$$
 
-The square coefficients $\beta_3$ and $\beta_5$ carry the curvature inside one variable, a peak or a saturation. The non-linearity sits in the columns rather than in the model, so the linear model already in use, and the inference and the penalty built on it, are kept as they are.
+Linear here is about the coefficients $\beta$ rather than about $x$, which is why least squares, the solve that picks the coefficients minimizing the sum of the squared residuals, carries over as it is. The coefficient $\beta_2$ carries one bend, a peak or a saturation, and $\beta_3$ carries a second one. The non-linearity sits in the columns rather than in the model, so the linear model already in use, and the inference and the penalty built on it, are kept as they are.
 
 ### 3.2 Feature Interaction
 
-The product term $\beta_4 x_1 x_2$ lets one variable change the slope of another. Differentiating equation (1) with respect to $x_1$ gives equation (2), which says as much.
+The interaction between variables is carried by the product of two distinct variables, an interaction term. Adding the product $x_1 x_2$ to the variables $x_1$ and $x_2$ gives equation (2).
 
-$$\frac{\partial \hat{y}}{\partial x_1} = \beta_1 + 2 \beta_3 x_1 + \beta_4 x_2 \hspace{19em} (2)$$
+$$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2 \hspace{19em} (2)$$
 
-Where $\beta_4$ is not zero the effect of $x_1$ differs at each level of $x_2$. On a process it reads as the effect of pressure depending on the temperature, which the first-order terms of $x_1$ and $x_2$ alone cannot write. An effect that appears only when the two variables are high together is carried by this product term and nowhere else. The long practice of writing a response surface, the surface the response traces over the process conditions, as a second-order polynomial is curvature and interaction combined, and reading the optimum off the point where that surface has zero slope, its stationary point, came from there [[1](#ref-1)].
+The product term lets one variable change the slope of another. Differentiating equation (2) with respect to $x_1$ gives equation (3), which says as much.
+
+$$\frac{\partial \hat{y}}{\partial x_1} = \beta_1 + \beta_3 x_2 \hspace{19em} (3)$$
+
+Where $\beta_3$ is not zero the effect of $x_1$ differs at each level of $x_2$. On a process it reads as the effect of pressure depending on the temperature, which the first-order terms of $x_1$ and $x_2$ alone cannot write. An effect that appears only when the two variables are high together is carried by this product term and nowhere else. The long practice of writing a response surface, the surface the response traces over the process conditions, as a second-order polynomial is curvature and interaction combined, and reading the optimum off the point where that surface has zero slope, its stationary point, came from there [[1](#ref-1)].
 
 ## 4. Mechanism
 
 ### 4.1 Expansion
 
-The columns an expansion makes are monomials, terms formed by multiplying powers of the raw variables. With $n$ variables and a highest degree of $d$, the new columns are the set of equation (3).
+The columns an expansion makes are monomials, terms formed by multiplying powers of the raw variables. With $n$ variables and a highest degree of $d$, the new columns are the set of equation (4).
 
-$$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (3)$$
+$$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (4)$$
 
-For $[X_1, X_2]$ at $d = 2$ the columns, including the intercept that is a constant column of ones, are $[1, X_1, X_2, X_1^2, X_1 X_2, X_2^2]$, which is what equation (1) is fitted on. Written for $n$ variables the second-order model is equation (4), where the two objectives of section 3 sit in the square terms and the product terms respectively.
+For $[X_1, X_2]$ at $d = 2$ the columns, including the intercept that is a constant column of ones, are $[1, X_1, X_2, X_1^2, X_1 X_2, X_2^2]$, which holds the square terms of section 3.1 and the product term of section 3.2 together. Written for $n$ variables the second-order model is equation (5).
 
-$$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{ij} x_i x_j + \varepsilon \hspace{19em} (4)$$
+$$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{ij} x_i x_j + \varepsilon \hspace{19em} (5)$$
 
 ### 4.2 Centering And Conditioning
 
@@ -77,9 +81,9 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 Keep a product term, and the main effects composing it stay as well. The rule is called heredity, and its ground is the coordinate system rather than statistics.
 
-Substituting the shift $x_1 = z_1 + a$, $x_2 = z_2 + b$ into a product-only model such as $y = \beta_{12} x_1 x_2$ gives equation (5).
+Substituting the shift $x_1 = z_1 + a$, $x_2 = z_2 + b$ into a product-only model such as $y = \beta_{12} x_1 x_2$ gives equation (6).
 
-$$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (5)$$
+$$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (6)$$
 
 Main effects appear on their own. A product model without main effects therefore depends on where the origin was placed, and whether temperature is measured in Celsius or in kelvin changes the model. Keep the main effects and that shift is absorbed as a rearrangement of the coefficients. There is a practice of dropping a main effect on the weak form of the rule, weak heredity, under which only one of the variables forming the product need be present, but the conditions that justify it almost never hold in practice [[4](#ref-4)]. Where variable selection is automated it is likewise better to carry heredity as a Bayesian prior or as a constraint on the optimization [[5](#ref-5)] [[6](#ref-6)].
 
@@ -91,13 +95,13 @@ An expansion charges two prices. The column count grows fast, which invites over
 
 ### 5.1 Dimensionality And Overfitting
 
-The column count grows as the $d$-th power of the variable count. Covering the space those columns span at one density takes exponentially more observations as their number grows, which is the curse of dimensionality, and an expansion walks into it by adding columns to data whose row count does not move. Without the intercept, the full expansion has the column count of equation (6), and `interaction_only`, which keeps only products of distinct variables, has that of equation (7).
+The column count grows as the $d$-th power of the variable count. Covering the space those columns span at one density takes exponentially more observations as their number grows, which is the curse of dimensionality, and an expansion walks into it by adding columns to data whose row count does not move. Without the intercept, the full expansion has the column count of equation (7), and `interaction_only`, which keeps only products of distinct variables, has that of equation (8).
 
-$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (6)$$
+$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (7)$$
 
-$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (7)$$
+$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (8)$$
 
-Both counts are derived from the set of equation (3) in [Appendix B](#appendix-b-term-count-derivation).
+Both counts are derived from the set of equation (4) in [Appendix B](#appendix-b-term-count-derivation).
 
 Table 2. Column count after expansion, bias column excluded
 
@@ -220,13 +224,13 @@ Set notation comes first. A set is written either by listing its elements, as in
 
 Equation (3), from section 4.1, is repeated here.
 
-$$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (3)$$
+$$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (4)$$
 
 Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Left of the bar, $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
 
 With two variables and $d = 2$, five pairs of exponents meet that condition. Table 4 is the five.
 
-Table 4. Exponent pairs admitted by equation (3) at two variables and degree 2
+Table 4. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- |
@@ -238,41 +242,41 @@ Table 4. Exponent pairs admitted by equation (3) at two variables and degree 2
 
 The one pair left out is $(0, 0)$, the constant term.
 
-Equation (3) defines the set of columns to be built without saying how large it is. That size is equation (6) and equation (7), derived below.
+Equation (3) defines the set of columns to be built without saying how large it is. That size is equation (7) and equation (8), derived below.
 
-One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (8), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
+One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (9), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (8)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (9)$$
 
 The count itself is stars and bars. Take the degree $k$ as $k$ identical stars, and the $n$ variables as $n$ bins separated by $n-1$ bars, so that the stars falling in a bin are the exponent $a_i$ of that variable. Counting the exponent choices is then laying $k$ stars and $n-1$ bars, $k+n-1$ symbols, in a row and choosing which $n-1$ positions carry the bars, which is $\binom{k+n-1}{n-1}$.
 
 At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 4.
 
-Summing the degrees from 0 to $d$ gives equation (9). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
+Summing the degrees from 0 to $d$ gives equation (10). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (9)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (10)$$
 
-The set of equation (3) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (6).
+The set of equation (4) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (7).
 
-With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (7). Once $d \ge n$ every subset is admitted and the sum closes as equation (10).
+With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (8). Once $d \ge n$ every subset is admitted and the sum closes as equation (11).
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (10)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (11)$$
 
 ## Appendix C. Ridge And Lasso On Expanded Columns
 
-The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (11) and lasso is equation (12) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
+The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (12) and lasso is equation (13) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (11)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (12)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (12)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
 
-The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (13): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
+The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (14): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (13)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
 
-Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (14) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
+Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (15) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (14)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
 
 Table 5. Penalties on expanded columns
 
@@ -341,11 +345,11 @@ Putting the expansion inside the pipeline is not a convenience. The expansion is
 
 ### D.3 Cost
 
-The cost of an expansion is linear in the column count, and that count grows by equation (6). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
+The cost of an expansion is linear in the column count, and that count grows by equation (7). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
 
-The first is the kernel. The polynomial kernel of equation (15) computes the inner product of the expanded space without the expansion.
+The first is the kernel. The polynomial kernel of equation (16) computes the inner product of the expanded space without the expansion.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (15)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (16)$$
 
 `KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
 
