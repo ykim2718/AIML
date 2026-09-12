@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 55 | Created: 2026-09-07 | Updated: 2026-09-12 01:26 CDT
+Rev. 56 | Created: 2026-09-07 | Updated: 2026-09-12 01:38 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -259,7 +259,12 @@ $$\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y] \hspace{19em} (16)$$
 
 $$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}) \hspace{19em} (17)$$
 
-부호가 뜻하는 것은 셋이다. $\mathrm{Cov}(X, Y) \gt 0$ 이면 $X$ 가 커질 때 $Y$ 도 커지고, $\mathrm{Cov}(X, Y) \lt 0$ 이면 $X$ 가 커질 때 $Y$ 는 작아지며, $\mathrm{Cov}(X, Y) = 0$ 이면 두 변수 사이에 선형 관계가 없다. 자기 자신과의 공분산 $\mathrm{Cov}(X, X)$ 는 분산 $\mathrm{Var}(X)$ 다.
+부호와 자기 자신과의 공분산이 뜻하는 것은 넷이다.
+
+- $\mathrm{Cov}(X, Y) \gt 0$ 이면 $X$ 가 커질 때 $Y$ 도 커진다.
+- $\mathrm{Cov}(X, Y) \lt 0$ 이면 $X$ 가 커질 때 $Y$ 는 작아진다.
+- $\mathrm{Cov}(X, Y) = 0$ 이면 두 변수 사이에 선형 관계가 없다.
+- $\mathrm{Cov}(X, X)$ 는 분산 $\mathrm{Var}(X)$ 다.
 
 4.2 절과 아래의 유도는 $1/N$ 로 나눈 평균을 쓴다. 상관은 공분산을 두 표준편차로 나눈 값이고 분자와 분모가 같은 약수를 가지므로, $1/N$ 을 쓰든 $1/(n-1)$ 을 쓰든 상관의 값은 같다.
 

@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 53 | Created: 2026-09-09 | Updated: 2026-09-12 01:26 CDT
+Rev. 54 | Created: 2026-09-09 | Updated: 2026-09-12 01:38 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -259,7 +259,12 @@ Measured on a sample of $n$ observations the covariance is equation (17), where 
 
 $$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}) \hspace{19em} (17)$$
 
-The sign says one of three things. At $\mathrm{Cov}(X, Y) \gt 0$, $Y$ rises as $X$ rises; at $\mathrm{Cov}(X, Y) \lt 0$, $Y$ falls as $X$ rises; at $\mathrm{Cov}(X, Y) = 0$ there is no linear relation between the two. The covariance of a variable with itself, $\mathrm{Cov}(X, X)$, is the variance $\mathrm{Var}(X)$.
+The sign, and the covariance of a variable with itself, say four things.
+
+- At $\mathrm{Cov}(X, Y) \gt 0$, $Y$ rises as $X$ rises.
+- At $\mathrm{Cov}(X, Y) \lt 0$, $Y$ falls as $X$ rises.
+- At $\mathrm{Cov}(X, Y) = 0$ there is no linear relation between the two.
+- $\mathrm{Cov}(X, X)$ is the variance $\mathrm{Var}(X)$.
 
 Section 4.2 and the derivation below use the mean divided by $1/N$. A correlation is a covariance over two standard deviations, and the same divisor appears above and below, so the correlation is the same whether $1/N$ or $1/(n-1)$ is used.
 
