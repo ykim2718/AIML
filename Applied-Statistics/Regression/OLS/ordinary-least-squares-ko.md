@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-12 13:06 CDT
+Rev. 4 | Created: 2026-09-12 | Updated: 2026-09-12 13:07 CDT
 
 ## 1. Purpose
 
@@ -79,9 +79,11 @@ $\beta$ 에 대해 미분하여 0 으로 설정한다.
 식 (5) 를 정리한 것이 normal equation 이다.
 
 ```math
-X^\top X \beta = X^\top y
+\boxed{X^\top X \beta = X^\top y}
 \hspace{19em} (6)
 ```
+
+이름의 normal 은 직교를 뜻한다. 식 (6) 은 $X^\top (y - X\beta) = 0$ 과 같은 말이므로, 잔차가 design matrix 의 모든 열과 직교하고 $X\hat{\beta}$ 는 $y$ 를 $X$ 의 열공간 (column space) 에 내린 정사영이다.
 
 ## 6. Fitting
 
@@ -100,6 +102,7 @@ $X^\top X$ 의 역행렬이 존재할 때, 해 $\hat{\beta}$ 는 유일하게 �
 
 ## Appendix A. Terminology
 
+- **column space**: Design matrix 의 열들이 만드는 벡터 공간.
 - **design matrix**: 관측치를 행으로, model 의 항을 열로 놓은 $n \times (p+1)$ 행렬.
 - **fitting**: 자료가 지시하는 최적의 계수 값을 구하는 과정.
 - **intercept**: Design matrix 의 1 로 채워진 첫 열에 대응하는 계수 $\beta_0$.
