@@ -1,5 +1,5 @@
 # Multivariate Feature Selection (Korean)
-Rev. 0 | Created: 2026-09-12 | Updated: 2026-09-12 18:05 CDT
+Rev. 1 | Created: 2026-09-12 | Updated: 2026-09-12 18:02 CDT
 
 ## 1. Purpose
 
@@ -118,3 +118,41 @@ Table 1. Comparison of the three approaches
 - **XOR 문제**: 두 이진 입력이 서로 다를 때만 1 이 되는 관계. 각 입력은 출력과 상관이 0 이지만 두 입력의 조합은 출력을 완전히 결정한다.
 - **과적합 (Overfitting)**: Model 이 학습 자료의 잡음까지 학습하여 새 자료에서 성능이 떨어지는 상태.
 - **다중공선성 (Multicollinearity)**: 입력 변수들이 서로 강한 선형 관계를 가져, 계수가 개별 변수에 고유하게 배정되지 않는 상태.
+
+## Appendix B. Implementation
+
+scikit-learn 으로 section 6 의 세 단계를 그대로 실행한 예다. Embedded 단계는 tree-based importance 를 쓴다.
+
+```python
+import numpy as np
+from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import RFE, SelectFromModel
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+# Load a dataset whose 30 features carry heavy redundancy
+X, y = load_breast_cancer(return_X_y=True)
+X = StandardScaler().fit_transform(X)
+print(f"original feature count: {X.shape[1]}")  # 30
+
+# Step 1, filter: drop one of every pair whose absolute correlation exceeds 0.95
+corr = np.abs(np.corrcoef(X, rowvar=False))
+redundant = np.unique(np.where(np.triu(corr, k=1) > 0.95)[1])
+kept = np.setdiff1d(np.arange(X.shape[1]), redundant)
+X_filtered = X[:, kept]
+print(f"after the correlation filter: {X_filtered.shape[1]}")  # 23
+
+# Step 2, embedded: keep the features a random forest splits on above average
+forest = RandomForestClassifier(n_estimators=200, random_state=0)
+embedded = SelectFromModel(forest, threshold="mean").fit(X_filtered, y)
+X_embedded = embedded.transform(X_filtered)
+print(f"after the embedded selection: {X_embedded.shape[1]}")  # 6
+
+# Step 3, wrapper: RFE removes the weakest feature at each step until five remain
+wrapper = RFE(LogisticRegression(max_iter=5000), n_features_to_select=5).fit(X_embedded, y)
+print(f"after RFE: {wrapper.n_features_}")  # 5
+print(f"selection mask of the last step: {wrapper.get_support()}")
+```
+
+단계를 지날 때마다 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
