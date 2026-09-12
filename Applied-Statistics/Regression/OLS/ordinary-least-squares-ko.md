@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 7 | Created: 2026-09-12 | Updated: 2026-09-12 13:22 CDT
+Rev. 8 | Created: 2026-09-12 | Updated: 2026-09-12 13:26 CDT
 
 ## 1. Purpose
 
@@ -89,7 +89,7 @@ X^\top X \beta = X^\top y
 
 Model 을 적합 (fit) 한다는 것은 자료가 지시하는 최적의 계수 값 $\hat{\beta}$ 를 구하는 과정이며, 이는 식 (6) 의 normal equation 을 푸는 문제와 같다.
 
-$X^\top X$ 의 역행렬이 존재할 때, 해 $\hat{\beta}$ 는 유일하게 결정된다.
+$X^\top X$ 의 역행렬이 존재할 때 해 $\hat{\beta}$ 는 유일하게 결정되며, 그 닫힌 형태인 식 (7) 이 이 문서의 결론이다.
 
 ```math
 \hat{\beta} = (X^\top X)^{-1} X^\top y
