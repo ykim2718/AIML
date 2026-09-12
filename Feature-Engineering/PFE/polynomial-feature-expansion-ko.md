@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 33 | Created: 2026-09-07 | Updated: 2026-09-11 20:40 CDT
+Rev. 34 | Created: 2026-09-07 | Updated: 2026-09-11 20:47 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -63,11 +63,11 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 ### 4.2 Centering And Conditioning
 
-Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이며, 얻는 것은 두 가지다. 열 사이의 상관이 낮아지고, design matrix 의 조건수가 낮아진다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬로, 계수는 이 행렬을 풀어 얻는다. 아래 두 문단이 그 두 수치다.
+Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이며, 얻는 것은 두 가지다. 열 사이의 상관이 낮아지고, design matrix 의 조건수 (condition number) 가 낮아진다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬로, 계수는 이 행렬을 풀어 얻는다. 아래 두 문단이 그 두 수치다.
 
 물리 단위의 값은 대개 0 에서 멀리 떨어져 있고, 그런 $x$ 와 $x^2$ 는 거의 같은 방향을 가리킨다. $[10, 11]$ 구간에 놓인 60 개 표본에서 둘의 상관은 0.9999 이며, 평균을 뺀 뒤에는 -0.15 이다. Centering 뒤의 그 상관은 평균을 뺀 값의 세제곱 평균, 곧 3차 중심적률에 비례하므로, 분포가 대칭이면 0 이 되고 표본에서는 그 근처에 놓인다.
 
-조건수 (condition number) 로 보면 차이가 더 크다. 조건수는 입력의 작은 오차가 푼 결과에서 몇 배로 커지는지를 나타내는 값이다. 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, centering 과 표준화 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
+조건수로 보면 차이가 더 크다. 조건수는 입력의 작은 오차가 푼 결과에서 몇 배로 커지는지를 나타내는 값이다. 같은 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, centering 과 표준화 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
 
 Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\beta_1$ 은 다른 변수가 평균일 때의 기울기여서 읽을 수 있는 값이 된다. Centering 하지 않으면 그것은 다른 변수가 0 일 때의 기울기이고, 그 0 은 자료에 없는 점인 경우가 많다 [[2](#ref-2)].
 

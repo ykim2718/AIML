@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 32 | Created: 2026-09-09 | Updated: 2026-09-11 20:40 CDT
+Rev. 32 | Created: 2026-09-09 | Updated: 2026-09-11 20:47 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
