@@ -1,5 +1,5 @@
 # Multivariate Feature Selection (Korean)
-Rev. 1 | Created: 2026-09-12 | Updated: 2026-09-12 18:02 CDT
+Rev. 2 | Created: 2026-09-12 | Updated: 2026-09-12 18:02 CDT
 
 ## 1. Purpose
 
@@ -44,9 +44,9 @@ Feature 조합이 개별 feature 보다 target 을 더 잘 설명하는 경우�
 
 다변량 분석의 목적은 셋이다.
 
-- Feature 사이의 다중공선성 및 중복성 제거
-- Feature 사이의 시너지 효과 발굴
-- Model 성능 향상과 과적합 방지
+1️⃣ Feature 사이의 다중공선성 및 중복성 제거<br>
+2️⃣ Feature 사이의 시너지 효과 발굴<br>
+3️⃣ Model 성능 향상과 과적합 방지
 
 ## 4. Approach-based Methods
 
