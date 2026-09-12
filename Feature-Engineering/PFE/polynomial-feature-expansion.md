@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 63 | Created: 2026-09-09 | Updated: 2026-09-12 03:10 CDT
+Rev. 64 | Created: 2026-09-09 | Updated: 2026-09-12 03:20 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -288,7 +288,7 @@ $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\o
 
 To gather the terms that centering changes in equation (9) and equation (20) into one place, $t$, $s$ (skewness) and $k$ (kurtosis) are introduced. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data.
 
-Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes that numerator and those two denominators as equation (21).
+Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, and taking the square root of equation (20) since a standard deviation is the root of a variance, writes that numerator and those two denominators as equation (21).
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (21)$$
 

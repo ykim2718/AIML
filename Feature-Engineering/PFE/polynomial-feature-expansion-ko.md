@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 65 | Created: 2026-09-07 | Updated: 2026-09-12 03:10 CDT
+Rev. 66 | Created: 2026-09-07 | Updated: 2026-09-12 03:20 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -288,7 +288,7 @@ $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\o
 
 식 (9) 와 식 (20) 에서 centering 이 바꾸는 항을 한자리에 모으기 위해 $t$, $s$ (skewness), $k$ (kurtosis) 를 도입한다. 적률과 $\overline{x}$ 가 뒤섞인 채로는 평균의 위치가 상관의 어디에 들어 있는지 보이지 않지만, 평균의 위치를 $t$ 하나에 담고 분포의 모양을 $s$ 와 $k$ 에 담으면 centering 이 $t$ 만 0 으로 만들고 $s$ 와 $k$ 는 건드리지 않는다는 것이 식에서 바로 읽힌다. 셋 모두 흩어짐으로 나눈 값이라 단위가 없어, 자료의 단위를 바꾸어도 값이 같다.
 
-여기에 $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 그 분자와 두 분모가 식 (21) 로 적힌다.
+여기에 $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣고, 표준편차는 분산의 제곱근이므로 식 (20) 에 제곱근을 취하면, 그 분자와 두 분모가 식 (21) 로 적힌다.
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (21)$$
 
