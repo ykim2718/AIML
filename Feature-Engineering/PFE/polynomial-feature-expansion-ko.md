@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 26 | Created: 2026-09-07 | Updated: 2026-09-11 19:43 CDT
+Rev. 27 | Created: 2026-09-07 | Updated: 2026-09-11 19:47 CDT
 
 ## 1. Purpose
 
@@ -11,7 +11,9 @@ Rev. 26 | Created: 2026-09-07 | Updated: 2026-09-11 19:43 CDT
 
 Expansion 은 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 붙이는 연산이며, 행은 그대로 두고 열만 늘린다. 열이 $x_1$, $x_2$ 인 표는 열이 $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$ 인 표가 되고, 새로 생긴 그 세 열이 선형 model 에 곡선과 변수 사이의 상호작용을 준다.
 
-대가는 열의 개수 증가로 인한 차원의 저주다. 열 수가 행 수에 근접하면 계수, 곧 각 열에 곱해지는 $\beta$ 값을 하나로 정할 수 없다 (5.1 절). 아래 세 가지는 열 수를 행 수보다 충분히 적게 두고, 표본을 다시 뽑아도 그 $\beta$ 가 크게 흔들리지 않게 하는 기본값이다.
+대가는 열의 개수 증가이다. 열 수가 행 수에 근접하면 계수, 곧 각 열에 곱해지는 $\beta$ 값을 하나로 정할 수 없다 (5.1 절).
+
+이 차원의 저주를 감소시키기 위해서, 아래 세 가지는 열 수를 행 수보다 충분히 적게 두고, 표본을 다시 뽑아도 그 $\beta$ 가 크게 흔들리지 않게 하는 기본값이다.
 
 - Degree 는 2 로 두어, 만들 항을 제곱과 두 변수의 곱까지로 제한한다 (5.1 절).
 - Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이다 (4.2 절).
@@ -37,7 +39,7 @@ Table 1. Default choices and when they change
 
 Expansion 이 노리는 것은 두 가지다. 한 변수 안의 비선형 관계와 변수 사이의 상호작용이며, 선형 model 은 둘 다 표현하지 못한다. 앞의 것은 polynomial feature 가, 뒤의 것은 interaction term 이 맡으며, 둘 다 열로 만들어지므로 model 자체는 선형으로 남는다.
 
-### 3.1 Non-linear Relationship
+### 3.1 Polynomial Feature
 
 한 변수 안의 비선형 관계는 그 변수의 거듭제곱, 곧 polynomial feature 가 맡는다. 변수 $x$ 에 $x^2$ 와 $x^3$ 을 더하면 model 이 학습하는 식은 (1) 이며, model 은 계수에 대해 선형인 채로 곡선을 그린다.
 

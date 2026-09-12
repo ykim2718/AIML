@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 25 | Created: 2026-09-09 | Updated: 2026-09-11 19:43 CDT
+Rev. 26 | Created: 2026-09-09 | Updated: 2026-09-11 19:47 CDT
 
 ## 1. Purpose
 
@@ -11,7 +11,9 @@ Rev. 25 | Created: 2026-09-09 | Updated: 2026-09-11 19:43 CDT
 
 An expansion computes products and powers from the columns already in the table and appends them as new columns, leaving the rows as they are and growing only the columns. A table with the columns $x_1$ and $x_2$ becomes a table with $x_1$, $x_2$, $x_1^2$, $x_1 x_2$, $x_2^2$, and those three new columns are what give a linear model a curve and an interaction between variables.
 
-What it costs is the curse of dimensionality that the rising column count brings. Once the column count nears the row count the coefficients, the $\beta$ values that multiply the columns, can no longer be pinned to one solution (section 5.1). The three defaults below keep the column count well under the row count, and keep those $\beta$ from moving far when the sample is drawn again.
+What it costs is the rising column count. Once the column count nears the row count the coefficients, the $\beta$ values that multiply the columns, can no longer be pinned to one solution (section 5.1).
+
+To lessen that curse of dimensionality, the three defaults below keep the column count well under the row count, and keep those $\beta$ from moving far when the sample is drawn again.
 
 - Degree is 2, which limits the terms built to squares and to products of two variables (section 5.1).
 - Each variable has its own mean subtracted before the expansion, which is centering (section 4.2).
@@ -37,7 +39,7 @@ Judging curvature absent, in row 2, means taking the response to move in one dir
 
 An expansion is aimed at two things, a non-linear relationship inside one variable and an interaction between variables, neither of which a linear model expresses. The first is carried by a polynomial feature, the second by an interaction term, and both are put into the columns so that the model itself stays linear.
 
-### 3.1 Non-linear Relationship
+### 3.1 Polynomial Feature
 
 The non-linear relationship inside one variable is carried by the powers of that variable, its polynomial features. Adding $x^2$ and $x^3$ to a variable $x$, the model learns equation (1) and draws a curve while staying linear in its coefficients.
 
