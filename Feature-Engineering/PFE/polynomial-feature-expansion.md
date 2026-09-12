@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 43 | Created: 2026-09-09 | Updated: 2026-09-11 23:02 CDT
+Rev. 44 | Created: 2026-09-09 | Updated: 2026-09-11 23:14 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,9 +65,9 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0. Substituting $x_i^2 = (u_i + \bar{x})^2 = u_i^2 + 2\bar{x}u_i + \bar{x}^2$ into the definition of the covariance and averaging term by term, the term carrying $\bar{x}^2$ vanishes because the mean of $u$ is 0, and two terms are left. That is equation (6).
+The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0. In the definition of the covariance, $\overline{(x - \bar{x})(x^2 - \overline{x^2})}$, the first factor is $u$, and since $\overline{u} = 0$ subtracting the constant $\overline{x^2}$ from the second factor changes nothing. Substituting $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ into what is left, $\overline{u\,x^2}$, and averaging term by term gives equation (6).
 
-$$\mathrm{cov}(x, x^2) = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{19em} (6)$$
+$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{6em} (6)$$
 
 The two terms of equation (6) come from different places. The first, $2\bar{x}\,\overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
 
@@ -89,7 +89,7 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses, from which the coefficients are solved. The condition number says by what factor such an error is magnified in the solution.
 
-What raises the condition number is the degree and the collinearity between the columns; what lowers it is standardization. Subtracting the mean cuts the overlap between the columns and dividing by the standard deviation removes the differences in their size, so both parts are needed to take the condition number lowest. Over 60 samples on $[10, 11]$ the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after standardization. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
+What raises the condition number is the degree and the collinearity between the columns; what lowers it is standardization. Subtracting the mean cuts the overlap between the columns and dividing by the standard deviation removes the differences in their size, so both parts are needed to take the condition number lowest.
 
 ### 4.4 Heredity
 

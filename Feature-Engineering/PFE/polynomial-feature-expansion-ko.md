@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 45 | Created: 2026-09-07 | Updated: 2026-09-11 23:02 CDT
+Rev. 46 | Created: 2026-09-07 | Updated: 2026-09-11 23:14 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -65,9 +65,9 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Expansion 전에 각 열을 평균 0, 표준편차 1 로 맞춘다. 이것이 standardization 이며, 평균을 빼는 부분만 따로 centering 이라 한다. 두 부분이 하는 일은 다르다. 평균을 빼면 열 사이의 상관이 낮아지고 계수를 읽을 수 있게 되며, 이것이 아래 두 문단이다. 표준편차로 나누면 열마다 다른 크기가 없어지고, 그 몫은 4.3 절과 5.2 절에 있다.
 
-Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이다. 공분산의 정의에 $x_i^2 = (u_i + \bar{x})^2 = u_i^2 + 2\bar{x}u_i + \bar{x}^2$ 을 넣고 항마다 평균을 취하면, $u$ 의 평균이 0 이어서 $\bar{x}^2$ 이 곱해진 항은 사라지고 두 항만 남는다. 그것이 식 (6) 이다.
+Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이다. 공분산의 정의 $\overline{(x - \bar{x})(x^2 - \overline{x^2})}$ 에서 첫 인자는 $u$ 이고, $\overline{u} = 0$ 이므로 둘째 인자에서 상수 $\overline{x^2}$ 을 빼는 일은 값을 바꾸지 않는다. 남은 $\overline{u\,x^2}$ 에 $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 을 넣고 항마다 평균을 취하면 식 (6) 이 된다.
 
-$$\mathrm{cov}(x, x^2) = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{19em} (6)$$
+$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{6em} (6)$$
 
 식 (6) 의 두 항은 출처가 다르다. 앞의 항 $2\bar{x}\,\overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
 
@@ -89,7 +89,7 @@ Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\be
 
 Conditioning 은 design matrix 를 푸는 일이 입력의 작은 오차에 얼마나 민감한지를 말하며, 그것을 재는 값이 조건수 (condition number) 다. Design matrix 는 행이 관측이고 열이 model 이 쓰는 항인 행렬로, 계수는 이 행렬을 풀어 얻는다. 조건수는 그 오차가 푼 결과에서 몇 배로 커지는지를 나타낸다.
 
-조건수를 올리는 것은 degree 와 열 사이의 collinearity 이고, 내리는 것은 standardization 이다. 평균을 빼면 열 사이의 겹침이 줄고 표준편차로 나누면 열마다 다른 크기가 없어지므로, 두 부분을 함께 해야 조건수가 가장 낮아진다. $[10, 11]$ 구간에 놓인 60 개 표본에서 $d = 2$ 의 design matrix 조건수는 원 단위에서 $1.6 \times 10^5$, standardization 뒤에는 2.8 이다. $d = 4$ 에서는 $3.4 \times 10^{10}$ 과 16 이고, $d = 8$ 에서는 $1.5 \times 10^{21}$ 과 $8.0 \times 10^{2}$ 이다 (Fig 1(b)). 64-bit 실수의 유효 자릿수가 약 16 자리이므로, 원 단위의 $d = 8$ 에서는 풀어 얻은 계수에 유효 숫자가 하나도 남지 않는다.
+조건수를 올리는 것은 degree 와 열 사이의 collinearity 이고, 내리는 것은 standardization 이다. 평균을 빼면 열 사이의 겹침이 줄고 표준편차로 나누면 열마다 다른 크기가 없어지므로, 두 부분을 함께 해야 조건수가 가장 낮아진다.
 
 ### 4.4 Heredity
 
