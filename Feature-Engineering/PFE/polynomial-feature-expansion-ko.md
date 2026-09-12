@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 49 | Created: 2026-09-07 | Updated: 2026-09-11 23:58 CDT
+Rev. 50 | Created: 2026-09-07 | Updated: 2026-09-12 00:12 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -65,29 +65,37 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Expansion 전에 각 열을 평균 0, 표준편차 1 로 맞춘다. 이것이 standardization 이며, 평균을 빼는 부분만 따로 centering 이라 한다. 두 부분이 하는 일은 다르다. 평균을 빼면 열 사이의 상관이 낮아지고 계수를 읽을 수 있게 되며, 이것이 아래 두 문단이다. 표준편차로 나누면 열마다 다른 크기가 없어지고, 그 몫은 4.3 절과 5.2 절에 있다.
 
-Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이다. 공분산의 정의에서 식 (6) 까지를 등호마다 한 줄로 적으면 아래와 같다.
+Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이다. 공분산의 정의가 식 (6) 이다.
 
-$$\begin{aligned}
-\mathrm{cov}(x, x^2) &= \overline{(x - \bar{x})(x^2 - \overline{x^2})} \\
-&= \overline{u\,x^2} - \overline{x^2}\,\overline{u} \\
-&= \overline{u\,x^2} \\
-&= \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} \\
-&= 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{10em} (6)
-\end{aligned}$$
+$$\mathrm{cov}(x, x^2) = \overline{(x - \bar{x})(x^2 - \overline{x^2})} \hspace{19em} (6)$$
 
-다섯 줄이 하는 일은 각각 다르다. 첫 줄은 공분산의 정의다. 둘째 줄은 첫 인자 $x - \bar{x}$ 를 $u$ 로 적고 괄호를 풀어 평균을 두 항으로 나눈 것이다. 셋째 줄은 $\overline{u} = 0$ 이어서 그 두 항 가운데 $\overline{x^2}\,\overline{u}$ 가 사라진 것이다. 넷째 줄은 남은 $\overline{u\,x^2}$ 에 $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 을 넣고 항마다 평균을 취한 것이다. 다섯째 줄은 다시 $\overline{u} = 0$ 으로 $\bar{x}^2\,\overline{u}$ 를 지운 것이며, 그것이 식 (6) 이다.
+첫 인자 $x - \bar{x}$ 가 $u$ 이고, 괄호를 풀면 평균이 두 항으로 갈라져 식 (7) 이 된다.
 
-식 (6) 의 두 항은 출처가 다르다. 앞의 항 $2\bar{x}\,\overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
+$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} - \overline{x^2}\,\overline{u} \hspace{19em} (7)$$
 
-두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-correlation-of-a-variable-and-its-square) 에 있다. $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (6) 은 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (7) 이다.
+$\overline{u} = 0$ 이므로 뒤의 항이 사라지고 식 (8) 이 남는다.
 
-$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (7)$$
+$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} \hspace{19em} (8)$$
 
-Centering 은 $\bar{x}$ 를 0 으로 만들어 $t = 0$ 을 강제하므로, 식 (7) 은 식 (8) 로 줄어든다.
+$x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 을 넣고 항마다 평균을 취하면 식 (9) 가 된다.
 
-$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (8)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} \hspace{19em} (9)$$
 
-두 식의 차이가 centering 이 상관을 낮추는 근거다. 식 (7) 에서 $\lvert t \rvert$ 를 키우면 분자는 $2t$, 분모는 $2 \lvert t \rvert$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다. $t$ 는 평균이 흩어짐의 몇 배만큼 0 에서 떨어져 있는지를 재는 값이어서 물리 단위의 자료에서는 크고, 그래서 그 자료의 $x$ 와 $x^2$ 의 상관은 1 에 닿는다. 식 (8) 에는 $t$ 가 없다. Centering 뒤의 상관은 평균의 위치와 무관하게 분포의 모양 $s$ 와 $k$ 로만 정해지며, 대칭 분포에서는 $s = 0$ 이므로 정확히 0 이다.
+여기서도 $\overline{u} = 0$ 이 마지막 항을 지우므로, 공분산은 식 (10) 으로 닫힌다.
+
+$$\mathrm{cov}(x, x^2) = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
+
+식 (10) 의 두 항은 출처가 다르다. 앞의 항 $2\bar{x}\,\overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
+
+두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-correlation-of-a-variable-and-its-square) 에 있다. $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (10) 은 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (11) 이다.
+
+$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (11)$$
+
+Centering 은 $\bar{x}$ 를 0 으로 만들어 $t = 0$ 을 강제하므로, 식 (11) 은 식 (12) 로 줄어든다.
+
+$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (12)$$
+
+두 식의 차이가 centering 이 상관을 낮추는 근거다. 식 (11) 에서 $\lvert t \rvert$ 를 키우면 분자는 $2t$, 분모는 $2 \lvert t \rvert$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다. $t$ 는 평균이 흩어짐의 몇 배만큼 0 에서 떨어져 있는지를 재는 값이어서 물리 단위의 자료에서는 크고, 그래서 그 자료의 $x$ 와 $x^2$ 의 상관은 1 에 닿는다. 식 (12) 에는 $t$ 가 없다. Centering 뒤의 상관은 평균의 위치와 무관하게 분포의 모양 $s$ 와 $k$ 로만 정해지며, 대칭 분포에서는 $s = 0$ 이므로 정확히 0 이다.
 
 Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\beta_1$ 은 다른 변수가 평균일 때의 기울기여서 읽을 수 있는 값이 된다. Centering 하지 않으면 그것은 다른 변수가 0 일 때의 기울기이고, 그 0 은 자료에 없는 점인 경우가 많다 [[2](#ref-2)].
 
@@ -103,9 +111,9 @@ Conditioning 은 design matrix 를 푸는 일이 입력의 작은 오차에 얼�
 
 곱항을 남기면 그 곱을 이루는 두 변수의 1차 항, 곧 main effect 도 함께 남긴다. 이 규칙을 heredity 라 하며, 근거는 통계가 아니라 좌표계에 있다.
 
-$y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = z_1 + a$, $x_2 = z_2 + b$ 를 넣으면 식 (9) 가 된다.
+$y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = z_1 + a$, $x_2 = z_2 + b$ 를 넣으면 식 (13) 이 된다.
 
-$$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (9)$$
+$$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (13)$$
 
 Main effect 가 저절로 생긴다. 곧 main effect 없는 곱항 model 은 원점을 어디에 두었느냐에 따라 달라져, 온도를 섭씨로 재느냐 절대온도로 재느냐가 model 을 바꾼다. Main effect 를 함께 두면 그 이동이 계수의 재배열로 흡수된다. 곱을 이루는 변수 가운데 하나만 있어도 된다는 약한 형태 (weak heredity) 를 근거로 main effect 를 지우는 관행이 있으나, 그것이 정당화되는 조건은 실무에서 거의 성립하지 않는다 [[4](#ref-4)]. 변수 선택을 자동화할 때도 heredity 를 Bayes 의 사전 분포 (prior) 나 최적화의 제약으로 걸어 두는 편이 낫다 [[5](#ref-5)] [[6](#ref-6)].
 
@@ -115,11 +123,11 @@ Expansion 의 대가는 두 가지다. 하나는 열 수가 빠르게 늘어 ove
 
 ### 5.1 Dimensionality And Overfitting
 
-열의 수는 변수의 수에 대해 $d$ 차로 늘어난다. 열이 늘수록 그 열들이 이루는 공간을 같은 밀도로 채우는 데 필요한 관측 수는 지수로 늘어나며, 이것을 curse of dimensionality 라 한다. Expansion 은 행 수를 그대로 둔 채 열만 늘리므로 그 현상을 자초한다. 절편을 뺀 전체 expansion 의 열 수는 식 (10), 서로 다른 변수의 곱만 남기는 `interaction_only` 의 열 수는 식 (11) 이다.
+열의 수는 변수의 수에 대해 $d$ 차로 늘어난다. 열이 늘수록 그 열들이 이루는 공간을 같은 밀도로 채우는 데 필요한 관측 수는 지수로 늘어나며, 이것을 curse of dimensionality 라 한다. Expansion 은 행 수를 그대로 둔 채 열만 늘리므로 그 현상을 자초한다. 절편을 뺀 전체 expansion 의 열 수는 식 (14), 서로 다른 변수의 곱만 남기는 `interaction_only` 의 열 수는 식 (15) 이다.
 
-$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (10)$$
+$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
 
-$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (11)$$
+$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
 
 두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix C](#appendix-c-term-count-derivation) 에 있다.
 
@@ -243,21 +251,21 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 
 ## Appendix B. Correlation Of A Variable And Its Square
 
-4.2 절은 공분산을 두 표준편차로 나누어 상관으로 적고, 그 상관이 식 (7) 과 식 (8) 이라고 했다. 나누어야 하는 이유와 두 식의 유도가 아래다.
+4.2 절은 공분산을 두 표준편차로 나누어 상관으로 적고, 그 상관이 식 (11) 과 식 (12) 이라고 했다. 나누어야 하는 이유와 두 식의 유도가 아래다.
 
-나누어야 하는 이유는 단위다. 열 $x$ 를 $c \gt 0$ 배 하면 $\mathrm{cov}(cx, (cx)^2) = c^3\,\mathrm{cov}(x, x^2)$ 이므로, 공분산의 크기는 자료의 단위를 바꾸기만 해도 달라져 두 항의 몫을 재는 데 쓸 수 없다. 표준편차로 나누면 $\mathrm{sd}(cx) = c\,\mathrm{sd}(x)$ 와 $\mathrm{sd}((cx)^2) = c^2\,\mathrm{sd}(x^2)$ 이 그 $c^3$ 을 약분하므로 식 (12) 의 왼쪽이 성립하고, Cauchy–Schwarz 부등식이 그 값을 $[-1, 1]$ 안에 묶어 오른쪽이 성립한다.
+나누어야 하는 이유는 단위다. 열 $x$ 를 $c \gt 0$ 배 하면 $\mathrm{cov}(cx, (cx)^2) = c^3\,\mathrm{cov}(x, x^2)$ 이므로, 공분산의 크기는 자료의 단위를 바꾸기만 해도 달라져 두 항의 몫을 재는 데 쓸 수 없다. 표준편차로 나누면 $\mathrm{sd}(cx) = c\,\mathrm{sd}(x)$ 와 $\mathrm{sd}((cx)^2) = c^2\,\mathrm{sd}(x^2)$ 이 그 $c^3$ 을 약분하므로 식 (16) 의 왼쪽이 성립하고, Cauchy–Schwarz 부등식이 그 값을 $[-1, 1]$ 안에 묶어 오른쪽이 성립한다.
 
-$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (12)$$
+$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (16)$$
 
-유도는 분모를 구하는 일이다. 분자는 식 (6) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 에서 상수 $\bar{x}^2$ 은 분산을 바꾸지 않으므로, 남은 두 항의 분산을 펼치면 식 (13) 이 된다.
+유도는 분모를 구하는 일이다. 분자는 식 (10) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 에서 상수 $\bar{x}^2$ 은 분산을 바꾸지 않으므로, 남은 두 항의 분산을 펼치면 식 (17) 이 된다.
 
-$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4\bar{x}^2\,\overline{u^2} + 4\bar{x}\,\overline{u^3} \hspace{6em} (13)$$
+$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4\bar{x}^2\,\overline{u^2} + 4\bar{x}\,\overline{u^3} \hspace{6em} (17)$$
 
-여기에 $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (14) 로 적힌다.
+여기에 $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (18) 로 적힌다.
 
-$$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (14)$$
+$$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (18)$$
 
-상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x)\,\mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (7) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\bar{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (7) 에 $t = 0$ 을 넣은 것이 식 (8) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
+상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x)\,\mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (11) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\bar{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (11) 에 $t = 0$ 을 넣은 것이 식 (12) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
 
 ## Appendix C. Term Count Derivation
 
@@ -283,41 +291,41 @@ Table 3. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 빠진 짝은 $(0, 0)$ 하나이며, 그것이 상수항이다.
 
-식 (4) 는 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (10) 과 식 (11) 이며, 아래가 그 유도다.
+식 (4) 는 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (14) 와 식 (15) 이며, 아래가 그 유도다.
 
-차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응하므로, 그 차수의 monomial 을 세는 일은 그런 지수 벌을 세는 일이다. 그 수가 식 (15) 이며, 왼쪽의 세로줄 둘 $\lvert \cdot \rvert$ 은 그 안에 든 집합의 원소 개수를 뜻한다.
+차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응하므로, 그 차수의 monomial 을 세는 일은 그런 지수 벌을 세는 일이다. 그 수가 식 (19) 이며, 왼쪽의 세로줄 둘 $\lvert \cdot \rvert$ 은 그 안에 든 집합의 원소 개수를 뜻한다.
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (15)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (19)$$
 
 세는 방법은 별과 막대 (stars and bars) 다. 차수 $k$ 를 같은 별 $k$ 개로 놓고, 변수 $n$ 개를 막대 $n-1$ 개로 나눈 칸 $n$ 개로 놓으면, 한 칸에 든 별의 수가 그 변수의 지수 $a_i$ 가 된다. 그러면 지수 벌을 세는 일은 별 $k$ 개와 막대 $n-1$ 개, 모두 $k+n-1$ 개를 한 줄로 늘어놓고 그중 어느 $n-1$ 자리를 막대로 삼을지 고르는 일과 같아져 $\binom{k+n-1}{n-1}$ 이 된다.
 
 $n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 3 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
 
-차수를 0 부터 $d$ 까지 더하면 식 (16) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
+차수를 0 부터 $d$ 까지 더하면 식 (20) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (16)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (20)$$
 
-식 (4) 의 집합은 $k = 0$ 인 상수항을 뺀 것이므로 그 크기는 $\binom{n+d}{d} - 1$ 이고, 이것이 식 (10) 이다.
+식 (4) 의 집합은 $k = 0$ 인 상수항을 뺀 것이므로 그 크기는 $\binom{n+d}{d} - 1$ 이고, 이것이 식 (14) 이다.
 
-`interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (11) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (17) 로 닫힌다.
+`interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (15) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (21) 로 닫힌다.
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (17)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (21)$$
 
 ## Appendix D. Ridge And Lasso On Expanded Columns
 
-Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (18), lasso 는 식 (19) 이며 [[12](#ref-12)], $\alpha$ 가 penalty 를 누르는 세기다.
+Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (22), lasso 는 식 (23) 이며 [[12](#ref-12)], $\alpha$ 가 penalty 를 누르는 세기다.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (18)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (22)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (19)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (23)$$
 
-차이는 penalty 의 모양에서 온다. 열이 standardization 되어 있고 서로 직교하면 두 해는 식 (20) 으로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
+차이는 penalty 의 모양에서 온다. 열이 standardization 되어 있고 서로 직교하면 두 해는 식 (24) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (20)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (24)$$
 
-Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (21) 이며 [[13](#ref-13)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
+Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (25) 이며 [[13](#ref-13)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (21)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (25)$$
 
 Table 4. Penalties on expanded columns
 
@@ -386,11 +394,11 @@ Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion �
 
 ### E.3 Cost
 
-Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (10) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
+Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (14) 로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
 
-첫째는 kernel 이다. 다항 kernel 식 (22) 는 expansion 한 공간의 내적을 expansion 없이 계산한다.
+첫째는 kernel 이다. 다항 kernel 식 (26) 은 expansion 한 공간의 내적을 expansion 없이 계산한다.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (22)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (26)$$
 
 `KernelRidge(kernel='poly')` 가 그 형태이며, 비용이 열이 아니라 행에 걸리므로 변수가 많고 행이 적은 자료에 맞는다. 대신 계수가 개별 monomial 에 붙지 않아 어느 곱이 기여했는지 읽을 수 없다.
 
