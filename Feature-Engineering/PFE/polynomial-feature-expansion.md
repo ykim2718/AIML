@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 42 | Created: 2026-09-09 | Updated: 2026-09-11 22:52 CDT
+Rev. 43 | Created: 2026-09-09 | Updated: 2026-09-11 23:02 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -80,8 +80,6 @@ Centering takes $\bar{x}$ to 0 and so forces $t = 0$, which reduces equation (7)
 $$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (8)$$
 
 The difference between the two equations is the ground for centering. Raise $\lvert t \rvert$ in equation (7) and the numerator approaches $2t$ while the denominator approaches $2 \lvert t \rvert$, so $\lvert r \rvert$ goes to 1. Since $t$ measures how many spreads the mean sits away from zero, it is large on data in physical units, which is why the correlation between $x$ and $x^2$ there reaches 1. Equation (8) carries no $t$. The correlation after centering is set by the shape alone, $s$ and $k$, independent of where the mean sits, and it is exactly 0 for a symmetric distribution, where $s = 0$.
-
-The 60 samples on $[10, 11]$ are that calculation. With $\bar{x} = 10.51$, $\overline{u^2} = 0.0880$ and $\overline{u^3} = -0.0034$, equation (6) is $1.8494 - 0.0034 = 1.8459$, and dividing by the standard deviations of $x$ and $x^2$, $0.2967$ and $6.2224$, the correlation is $0.9999$. After centering the first term is gone and the correlation is $-0.0034 / (0.2967 \times 0.0782) = -0.15$.
 
 The second reason to center is interpretation. On centered data $\beta_1$ is the slope while the other variables sit at their means, a readable quantity. Uncentered it is the slope while the other variables are zero, and that zero is often a point the data never visits [[2](#ref-2)].
 

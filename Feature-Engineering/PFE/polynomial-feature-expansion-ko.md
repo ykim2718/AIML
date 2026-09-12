@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 44 | Created: 2026-09-07 | Updated: 2026-09-11 22:52 CDT
+Rev. 45 | Created: 2026-09-07 | Updated: 2026-09-11 23:02 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -80,8 +80,6 @@ Centering 은 $\bar{x}$ 를 0 으로 만들어 $t = 0$ 을 강제하므로, 식 
 $$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (8)$$
 
 두 식의 차이가 centering 이 상관을 낮추는 근거다. 식 (7) 에서 $\lvert t \rvert$ 를 키우면 분자는 $2t$, 분모는 $2 \lvert t \rvert$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다. $t$ 는 평균이 흩어짐의 몇 배만큼 0 에서 떨어져 있는지를 재는 값이어서 물리 단위의 자료에서는 크고, 그래서 그 자료의 $x$ 와 $x^2$ 의 상관은 1 에 닿는다. 식 (8) 에는 $t$ 가 없다. Centering 뒤의 상관은 평균의 위치와 무관하게 분포의 모양 $s$ 와 $k$ 로만 정해지며, 대칭 분포에서는 $s = 0$ 이므로 정확히 0 이다.
-
-$[10, 11]$ 구간에 놓인 60 개 표본이 그 계산이다. $\bar{x} = 10.51$, $\overline{u^2} = 0.0880$, $\overline{u^3} = -0.0034$ 이므로 식 (6) 은 $1.8494 - 0.0034 = 1.8459$ 이고, $x$ 와 $x^2$ 의 표준편차 $0.2967$ 과 $6.2224$ 로 나누면 상관은 $0.9999$ 이다. Centering 뒤에는 앞의 항이 사라져 상관이 $-0.0034 / (0.2967 \times 0.0782) = -0.15$ 이다.
 
 Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\beta_1$ 은 다른 변수가 평균일 때의 기울기여서 읽을 수 있는 값이 된다. Centering 하지 않으면 그것은 다른 변수가 0 일 때의 기울기이고, 그 0 은 자료에 없는 점인 경우가 많다 [[2](#ref-2)].
 
