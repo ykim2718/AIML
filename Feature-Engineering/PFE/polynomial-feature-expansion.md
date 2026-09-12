@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 35 | Created: 2026-09-09 | Updated: 2026-09-11 21:26 CDT
+Rev. 36 | Created: 2026-09-09 | Updated: 2026-09-11 21:35 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -76,7 +76,7 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses, from which the coefficients are solved. The condition number says by what factor such an error is magnified in the solution.
 
-What raises the condition number is the degree and the collinearity between the columns; what lowers it is centering and scaling. On the sample of section 4.2 the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centering and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
+What raises the condition number is the degree and the collinearity between the columns; what lowers it is centering and standardization. Centering cuts the overlap between the columns and standardization removes the differences in their size, so the two together take the condition number lowest. On the sample of section 4.2 the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centering and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
 
 ### 4.4 Hierarchy
 
