@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 61 | Created: 2026-09-07 | Updated: 2026-09-12 02:30 CDT
+Rev. 62 | Created: 2026-09-07 | Updated: 2026-09-12 02:38 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -286,7 +286,11 @@ $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\o
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (20)$$
 
-셋을 그 비에 넣으면 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (10) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\overline{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (10) 에 $t = 0$ 을 넣은 것이 식 (11) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
+셋을 그 비에 넣으면 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (10) 이 남는다.
+
+$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
+
+$s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\overline{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (10) 에 $t = 0$ 을 넣은 것이 식 (11) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
 
 ## Appendix D. Term Count Derivation
 
