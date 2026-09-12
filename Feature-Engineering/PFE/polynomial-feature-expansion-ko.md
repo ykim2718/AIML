@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 29 | Created: 2026-09-07 | Updated: 2026-09-11 19:51 CDT
+Rev. 30 | Created: 2026-09-07 | Updated: 2026-09-11 19:57 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -19,7 +19,7 @@ Expansion 은 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 
 
 - Degree 는 2 로 두어, 만들 항을 제곱과 두 변수의 곱까지로 제한한다 (5.1 절).
 - Expansion 전에 각 변수에서 그 변수의 평균을 뺀다. 이것이 centering 이다 (4.2 절).
-- Expansion 이 만든 열에는 ridge 나 lasso 의 penalty 를 걸어 그 $\beta$ 의 크기를 누른다 (5.2 절).
+- Expansion 이 만든 열에는 ridge 나 lasso 의 penalty 를 건다. Ridge 는 모든 $\beta$ 를 같은 비율로 줄일 뿐 0 으로 만들지 않고, lasso 는 작은 $\beta$ 를 정확히 0 으로 만든다 (5.2 절).
 
 세 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다.
 
@@ -89,7 +89,7 @@ Centering 의 두 번째 이유는 해석이다. Centering 한 자료에서 $\be
 
 곱항을 남기면 그 곱을 이루는 두 변수의 1차 항, 곧 main effect 도 함께 남긴다. 이 규칙을 heredity 라 하며, 근거는 통계가 아니라 좌표계에 있다.
 
-$y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = z_1 + a$, $x_2 = z_2 + b$ 를 넣으면 식 (6) 가 된다.
+$y = \beta_{12} x_1 x_2$ 처럼 곱항만 있는 model 에 원점 이동 $x_1 = z_1 + a$, $x_2 = z_2 + b$ 를 넣으면 식 (6) 이 된다.
 
 $$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (6)$$
 
@@ -230,11 +230,11 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 
 집합 표기를 읽는 법이 먼저다. 집합은 원소를 늘어놓아 $\lbrace 2, 4, 6 \rbrace$ 처럼 적거나, 조건으로 $\lbrace \cdot \mid \cdot \rbrace$ 꼴로 적는다. 뒤의 꼴에서는 세로줄이 중괄호 안을 둘로 나누어, 왼쪽에 원소가 취하는 모양을, 오른쪽에 그 모양이 만족해야 할 조건을 적는다. 그래서 $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ 은 $n$ 이 1 부터 3 까지의 정수일 때의 $n^2$ 을 모두 모은 것, 곧 $\lbrace 1, 4, 9 \rbrace$ 이다. 세로줄 자리에는 콜론도 그만큼 자주 쓰이며, 이 문서는 둘을 함께 쓴다.
 
-4.1 절의 식 (4) 을 여기에 다시 적는다.
+4.1 절의 식 (4) 를 여기에 다시 적는다.
 
 $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (4)$$
 
-식 (4) 은 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 세로줄 왼쪽의 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
+식 (4) 는 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 세로줄 왼쪽의 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
 
 변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 4 가 그 다섯이다.
 
@@ -250,7 +250,7 @@ Table 4. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 빠진 짝은 $(0, 0)$ 하나이며, 그것이 상수항이다.
 
-식 (4) 은 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (7) 과 식 (8) 이며, 아래가 그 유도다.
+식 (4) 는 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (7) 과 식 (8) 이며, 아래가 그 유도다.
 
 차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응하므로, 그 차수의 monomial 을 세는 일은 그런 지수 벌을 세는 일이다. 그 수가 식 (9) 이며, 왼쪽의 세로줄 둘 $\lvert \cdot \rvert$ 은 그 안에 든 집합의 원소 개수를 뜻한다.
 
@@ -260,7 +260,7 @@ $$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n
 
 $n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 4 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
 
-차수를 0 부터 $d$ 까지 더하면 식 (10) 가 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
+차수를 0 부터 $d$ 까지 더하면 식 (10) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
 
 $$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (10)$$
 
@@ -278,7 +278,7 @@ $$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVe
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (13)$$
 
-차이는 penalty 의 모양에서 온다. 열이 표준화되어 있고 서로 직교하면 두 해는 식 (14) 으로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
+차이는 penalty 의 모양에서 온다. 열이 표준화되어 있고 서로 직교하면 두 해는 식 (14) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
 
 $$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (14)$$
 
@@ -355,7 +355,7 @@ Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion �
 
 Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (7) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
 
-첫째는 kernel 이다. 다항 kernel 식 (16) 는 expansion 한 공간의 내적을 expansion 없이 계산한다.
+첫째는 kernel 이다. 다항 kernel 식 (16) 은 expansion 한 공간의 내적을 expansion 없이 계산한다.
 
 $$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (16)$$
 

@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 28 | Created: 2026-09-09 | Updated: 2026-09-11 19:51 CDT
+Rev. 29 | Created: 2026-09-09 | Updated: 2026-09-11 19:57 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -19,7 +19,7 @@ To lessen that curse of dimensionality, the three defaults below keep the column
 
 - Degree is 2, which limits the terms built to squares and to products of two variables (section 5.1).
 - Each variable has its own mean subtracted before the expansion, which is centering (section 4.2).
-- The expanded columns carry a ridge or lasso penalty, which holds the size of those $\beta$ down (section 5.2).
+- The expanded columns carry a ridge or lasso penalty. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
 
 Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again.
 
@@ -125,7 +125,7 @@ What Table 2 says is that `interaction_only` saves little. At $d = 2$ the differ
 
 What actually sets the column count is the degree. Raising $d$ from 2 to 3 takes the columns from 230 to 1,770 at $n = 20$. As the column count approaches the row count the least-squares solution turns unstable, and past it the solution is not unique, so the ceiling on an expansion is set by the sample count rather than by the degree.
 
-The degree is therefore chosen on the error over data kept out of the fit, the held-out error, rather than on theory, and the candidates are few. It is 2 in almost every practical case, data that needs 3 is rare, and a 4 that appears to win is a sign that something other than an expansion should be used.
+The degree is therefore chosen on the error over data kept out of the fit, the held-out error, rather than on theory, and the candidates are few. It is 2 in almost every practical case, data that needs 3 is rare, and a degree of 4 or more that appears to win is a sign that something other than an expansion should be used.
 
 <img src="polynomial-feature-expansion_fig/fig1.png" width="1100" style="max-width: 100%;" alt="Fig 1">
 
@@ -230,11 +230,11 @@ Whether an expansion helped is confirmed in four ways.
 
 Set notation comes first. A set is written either by listing its elements, as in $\lbrace 2, 4, 6 \rbrace$, or by a condition, in the form $\lbrace \cdot \mid \cdot \rbrace$. In that second form a vertical bar splits the braces: left of the bar stands the shape an element takes, right of it the condition that shape has to meet. So $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ reads as every $n^2$ for $n$ an integer from 1 to 3, which is the set $\lbrace 1, 4, 9 \rbrace$. A colon is used in place of the bar as often as not, and this document uses both.
 
-Equation (3), from section 4.1, is repeated here.
+Equation (4), from section 4.1, is repeated here.
 
 $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \in \mathbb{Z}_{\ge 0}, \ 1 \le \sum_{i=1}^{n} a_i \le d \right\rbrace \hspace{19em} (4)$$
 
-Equation (3) is dense in notation and simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Left of the bar, $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
+Equation (4) is dense in notation but simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Left of the bar, $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
 
 With two variables and $d = 2$, five pairs of exponents meet that condition. Table 4 is the five.
 
@@ -250,7 +250,7 @@ Table 4. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 The one pair left out is $(0, 0)$, the constant term.
 
-Equation (3) defines the set of columns to be built without saying how large it is. That size is equation (7) and equation (8), derived below.
+Equation (4) defines the set of columns to be built without saying how large it is. That size is equation (7) and equation (8), derived below.
 
 One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (9), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
 
