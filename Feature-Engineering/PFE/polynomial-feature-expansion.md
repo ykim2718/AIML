@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 64 | Created: 2026-09-09 | Updated: 2026-09-12 03:20 CDT
+Rev. 65 | Created: 2026-09-09 | Updated: 2026-09-12 03:40 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,33 +65,21 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\overline{x}$, and the deviations $u_i = x_i - \overline{x}$, whose own mean is 0; an overline is the sample mean. The definition of the covariance, $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ (equation (16) of [Appendix B](#appendix-b-covariance)), applied at $X = x$ and $Y = x^2$ gives equation (6): the mean of the product is $\overline{x^3}$, and the product of the means is $\overline{x}$ times $\overline{x^2}$.
+The first reason to center is the drop in correlation. For two variables $X$ and $Y$ the covariance and the correlation are defined as equation (6) and equation (7), where $E[\cdot]$ is the expected value and $\mathrm{sd}$ is the standard deviation.
 
-$$\mathrm{cov}(x, x^2) = \overline{x^3} - \overline{x} \overline{x^2} \hspace{19em} (6)$$
+$$\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y] \hspace{19em} (6)$$
 
-Substituting $x = u + \overline{x}$ writes both means in $u$, which is equation (7). Of the expanded terms, each one multiplied by $\overline{u}$ drops out, since $\overline{u} = 0$.
+$$r(X, Y) = \frac{\mathrm{Cov}(X, Y)}{\mathrm{sd}(X) \cdot \mathrm{sd}(Y)} \hspace{19em} (7)$$
 
-$$\overline{x^3} = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3, \qquad \overline{x^2} = \overline{u^2} + \overline{x}^2 \hspace{19em} (7)$$
+Setting $X = x$ and $Y = x^2$, taking the samples $x_1, \dots, x_N$ with mean $\overline{x}$ and deviations $u_i = x_i - \overline{x}$, and reducing to the moments of $u$ gives equation (8). There $t = \overline{x} / \sqrt{\overline{u^2}}$ measures how many spreads the mean sits away from zero, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ how far the distribution leans to one side, its skewness, and $k = \overline{u^4} / (\overline{u^2})^2$ the weight of its tails, its kurtosis; an overline is the sample mean. The steps between are in [Appendix C](#appendix-c-correlation-of-a-variable-and-its-square).
 
-Putting equation (7) into equation (6) gives equation (8).
+$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (8)$$
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3 - \overline{x} (\overline{u^2} + \overline{x}^2) \hspace{19em} (8)$$
+Centering takes $\overline{x}$ to 0, which forces $t = 0$ and leaves $s$ and $k$ untouched, so equation (8) reduces to equation (9).
 
-The $\overline{x}^3$ cancels and $\overline{x} \overline{u^2}$ comes off $3 \overline{x} \overline{u^2}$, so the covariance closes as equation (9).
+$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (9)$$
 
-$$\mathrm{cov}(x, x^2) = 2 \overline{x} \overline{u^2} + \overline{u^3} \hspace{19em} (9)$$
-
-The two terms of equation (9) come from different places. The first, $2 \overline{x} \overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
-
-Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix C](#appendix-c-correlation-of-a-variable-and-its-square). With $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (9) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (10).
-
-$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
-
-Centering takes $\overline{x}$ to 0 and so forces $t = 0$, which reduces equation (10) to equation (11).
-
-$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (11)$$
-
-The difference between the two equations is the ground for centering. Raise $\lvert t \rvert$ in equation (10) and the numerator approaches $2t$ while the denominator approaches $2 \lvert t \rvert$, so $\lvert r \rvert$ goes to 1. Since $t$ measures how many spreads the mean sits away from zero, it is large on data in physical units, which is why the correlation between $x$ and $x^2$ there reaches 1. Equation (11) carries no $t$. The correlation after centering is set by the shape alone, $s$ and $k$, independent of where the mean sits, and it is exactly 0 for a symmetric distribution, where $s = 0$.
+The difference between the two equations is the ground for centering. Raise $\lvert t \rvert$ in equation (8) and the numerator approaches $2t$ while the denominator approaches $2 \lvert t \rvert$, so $\lvert r \rvert$ goes to 1. Since $t$ measures how many spreads the mean sits away from zero, it is large on data in physical units, which is why the correlation between $x$ and $x^2$ there reaches 1. Equation (9) carries no $t$. The correlation after centering is set by the shape alone, $s$ and $k$, independent of where the mean sits, and it is exactly 0 for a symmetric distribution, where $s = 0$.
 
 The second reason to center is interpretation. On centered data $\beta_1$ is the slope while the other variables sit at their means, a readable quantity. Uncentered it is the slope while the other variables are zero, and that zero is often a point the data never visits [[2](#ref-2)].
 
@@ -107,9 +95,9 @@ What raises the condition number is the degree and the collinearity between the 
 
 Keep a product term, and the main effects composing it stay as well. The rule is called heredity, and its ground is the coordinate system rather than statistics.
 
-Substituting the shift $x_1 = z_1 + a$, $x_2 = z_2 + b$ into a product-only model such as $y = \beta_{12} x_1 x_2$ gives equation (12).
+Substituting the shift $x_1 = z_1 + a$, $x_2 = z_2 + b$ into a product-only model such as $y = \beta_{12} x_1 x_2$ gives equation (10).
 
-$$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (12)$$
+$$\beta_{12} (z_1 + a)(z_2 + b) = \beta_{12} z_1 z_2 + \beta_{12} b z_1 + \beta_{12} a z_2 + \beta_{12} ab \hspace{19em} (10)$$
 
 Main effects appear on their own. A product model without main effects therefore depends on where the origin was placed, and whether temperature is measured in Celsius or in kelvin changes the model. Keep the main effects and that shift is absorbed as a rearrangement of the coefficients. There is a practice of dropping a main effect on the weak form of the rule, weak heredity, under which only one of the variables forming the product need be present, but the conditions that justify it almost never hold in practice [[4](#ref-4)]. Where variable selection is automated it is likewise better to carry heredity as a Bayesian prior or as a constraint on the optimization [[5](#ref-5)] [[6](#ref-6)].
 
@@ -119,11 +107,11 @@ An expansion charges two prices. The column count grows fast, which invites over
 
 ### 5.1 Dimensionality And Overfitting
 
-The column count grows as the $d$-th power of the variable count. Covering the space those columns span at one density takes exponentially more observations as their number grows, which is the curse of dimensionality, and an expansion walks into it by adding columns to data whose row count does not move. Without the intercept, the full expansion has the column count of equation (13), and `interaction_only`, which keeps only products of distinct variables, has that of equation (14).
+The column count grows as the $d$-th power of the variable count. Covering the space those columns span at one density takes exponentially more observations as their number grows, which is the curse of dimensionality, and an expansion walks into it by adding columns to data whose row count does not move. Without the intercept, the full expansion has the column count of equation (11), and `interaction_only`, which keeps only products of distinct variables, has that of equation (12).
 
-$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (13)$$
+$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (11)$$
 
-$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (14)$$
+$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (12)$$
 
 Both counts are derived from the set of equation (4) in [Appendix C](#appendix-d-term-count-derivation).
 
@@ -247,17 +235,17 @@ Whether an expansion helped is confirmed in four ways.
 
 ## Appendix B. Covariance
 
-A covariance measures how far two columns move together. Its definition on a population is equation (15), where $E[\cdot]$ is the expected value and $\mu_X$ and $\mu_Y$ are the expected values of the two variables.
+A covariance measures how far two columns move together. Its definition on a population is equation (13), where $E[\cdot]$ is the expected value and $\mu_X$ and $\mu_Y$ are the expected values of the two variables.
 
-$$\mathrm{Cov}(X, Y) = \sigma_{XY} = E[(X - \mu_X)(Y - \mu_Y)] \hspace{19em} (15)$$
+$$\mathrm{Cov}(X, Y) = \sigma_{XY} = E[(X - \mu_X)(Y - \mu_Y)] \hspace{19em} (13)$$
 
-Multiplying out under the properties of the expectation gives equation (16), the form that is easier to compute: the expected value of the product, less the product of the expected values.
+Multiplying out under the properties of the expectation gives equation (6), the form that is easier to compute and the one section 4.2 uses: the expected value of the product, less the product of the expected values.
 
-$$\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y] \hspace{19em} (16)$$
+$$\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y] \hspace{19em} (6)$$
 
-Measured on a sample of $n$ observations the covariance is equation (17), where $x_i$ and $y_i$ are the $i$-th observation, $\overline{x}$ and $\overline{y}$ are the sample means, and the division by $n - 1$ drops one degree of freedom so that the population value is estimated without bias, as an unbiased estimator.
+Measured on a sample of $n$ observations the covariance is equation (14), where $x_i$ and $y_i$ are the $i$-th observation, $\overline{x}$ and $\overline{y}$ are the sample means, and the division by $n - 1$ drops one degree of freedom so that the population value is estimated without bias, as an unbiased estimator.
 
-$$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})(y_i - \overline{y}) \hspace{19em} (17)$$
+$$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})(y_i - \overline{y}) \hspace{19em} (14)$$
 
 The sign, and the covariance of a variable with itself, say four things.
 
@@ -270,35 +258,47 @@ Section 4.2 and the derivation in [Appendix C](#appendix-c-correlation-of-a-vari
 
 ## Appendix C. Correlation Of A Variable And Its Square
 
-Section 4.2 divides the covariance by the two standard deviations to write the correlation, and states that correlation as equation (10) and equation (11). Why the division is needed, and where the two equations come from, is below.
+Section 4.2 sets $X = x$ and $Y = x^2$ in equation (7) to reach equation (8) and equation (9). The steps between are below.
 
-For two variables $X$ and $Y$ the correlation is defined as equation (18).
+The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3 \mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot measure how far two variables move together. Dividing by the standard deviations, $\mathrm{sd}(cx) = c \cdot \mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2 \cdot \mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (15), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
 
-$$r(X, Y) = \frac{\mathrm{Cov}(X, Y)}{\mathrm{sd}(X) \cdot \mathrm{sd}(Y)} \hspace{19em} (18)$$
+$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (15)$$
 
-What this appendix solves is the case $X = x$ and $Y = x^2$. The numerator $\mathrm{Cov}(X, Y)$ is then equation (9) of section 4.2, and the two standard deviations in the denominator are $\mathrm{sd}(X) = \mathrm{sd}(x)$ and $\mathrm{sd}(Y) = \mathrm{sd}(x^2)$.
+The numerator comes first. Equation (6) at $X = x$ and $Y = x^2$ has the mean of the product as $\overline{x^3}$ and the product of the means as $\overline{x}$ times $\overline{x^2}$, so the covariance is equation (16).
 
-The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3 \mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot weigh the two terms against each other. Dividing by the standard deviations, $\mathrm{sd}(cx) = c \cdot \mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2 \cdot \mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (19), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
+$$\mathrm{cov}(x, x^2) = \overline{x^3} - \overline{x} \overline{x^2} \hspace{19em} (16)$$
 
-$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (19)$$
+Substituting $x = u + \overline{x}$ writes both means in $u$, which is equation (17). Of the expanded terms, each one multiplied by $\overline{u}$ drops out, since $\overline{u} = 0$.
 
-What is left is the two standard deviations in the denominator. $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (16) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \overline{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (20).
+$$\overline{x^3} = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3, \qquad \overline{x^2} = \overline{u^2} + \overline{x}^2 \hspace{19em} (17)$$
+
+Putting equation (17) into equation (16) gives equation (18).
+
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3 - \overline{x} (\overline{u^2} + \overline{x}^2) \hspace{19em} (18)$$
+
+The $\overline{x}^3$ cancels and $\overline{x} \overline{u^2}$ comes off $3 \overline{x} \overline{u^2}$, so the covariance closes as equation (19).
+
+$$\mathrm{cov}(x, x^2) = 2 \overline{x} \overline{u^2} + \overline{u^3} \hspace{19em} (19)$$
+
+The two terms of equation (19) come from different places. The first, $2 \overline{x} \overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side. Subtracting the mean takes the first term to 0 and leaves the second as it was.
+
+What is left is the two standard deviations of the denominator. $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (6) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \overline{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (20).
 
 $$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (20)$$
 
-To gather the terms that centering changes in equation (9) and equation (20) into one place, $t$, $s$ (skewness) and $k$ (kurtosis) are introduced. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data.
+The $t$, $s$ and $k$ of section 4.2 gather the terms that centering changes in equation (19) and equation (20) into one place. With the moments and $\overline{x}$ mixed together it is not visible where the location of the mean enters the correlation, but with the location held in $t$ alone and the shape in $s$ and $k$, the equation shows directly that centering takes $t$ to 0 and leaves $s$ and $k$ as they were. All three are divided by the spread and so carry no units, which makes them the same under a change of units in the data.
 
-Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, and taking the square root of equation (20) since a standard deviation is the root of a variance, writes that numerator and those two denominators as equation (21).
+Substituting the three, and taking the square root of equation (20) since a standard deviation is the root of a variance, writes the numerator and the two denominators as equation (21).
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (21)$$
 
-Put the three into equation (18) and $(\overline{u^2})^{3/2}$ cancels, so equation (10) of section 4.2 is what is left.
+Put the three into equation (7) and $(\overline{u^2})^{3/2}$ cancels, so equation (8) of section 4.2 is what is left.
 
-$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
+$$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (8)$$
 
-Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\overline{x} = 0$, that is $t = 0$, so equation (11) is equation (10) at $t = 0$.
+Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\overline{x} = 0$, that is $t = 0$, so equation (9) is equation (8) at $t = 0$.
 
-$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (11)$$
+$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (9)$$
 
 Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
 
@@ -326,7 +326,7 @@ Table 3. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 The one pair left out is $(0, 0)$, the constant term.
 
-Equation (4) defines the set of columns to be built without saying how large it is. That size is equation (13) and equation (14), derived below.
+Equation (4) defines the set of columns to be built without saying how large it is. That size is equation (11) and equation (12), derived below.
 
 One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (22), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
 
@@ -340,9 +340,9 @@ Summing the degrees from 0 to $d$ gives equation (23). Writing it with one slack
 
 $$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (23)$$
 
-The set of equation (4) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (13).
+The set of equation (4) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (11).
 
-With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (14). Once $d \ge n$ every subset is admitted and the sum closes as equation (24).
+With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (12). Once $d \ge n$ every subset is admitted and the sum closes as equation (24).
 
 $$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (24)$$
 
@@ -429,7 +429,7 @@ Putting the expansion inside the pipeline is not a convenience. The expansion is
 
 ### F.3 Cost
 
-The cost of an expansion is linear in the column count, and that count grows by equation (13). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
+The cost of an expansion is linear in the column count, and that count grows by equation (11). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
 
 The first is the kernel. The polynomial kernel of equation (29) computes the inner product of the expanded space without the expansion.
 
