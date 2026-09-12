@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 31 | Created: 2026-09-09 | Updated: 2026-09-11 20:31 CDT
+Rev. 32 | Created: 2026-09-09 | Updated: 2026-09-11 20:40 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -21,7 +21,7 @@ To lessen that curse of dimensionality, the three below are set as the defaults.
 - **Centering** — Each variable has its own mean subtracted before the expansion (section 4.2).
 - **Penalty** — The expanded columns carry a ridge or a lasso. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
 
-Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again.
+Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again. Centering lowers that correlation without taking it to zero (section 4.2), so the sign flips do not go away on centering alone. What is left falls to the penalty, which keeps the columns that resemble one another from carrying large coefficients that cancel (section 5.2).
 
 Where the expansion should not be used is equally clear. Past a few dozen variables the column count passes the sample count, a shape that bends several times inside one variable calls for a spline rather than a higher degree, and where prediction outside the training range is needed the way a polynomial diverges beyond that range, its extrapolation behaviour, is itself the risk.
 

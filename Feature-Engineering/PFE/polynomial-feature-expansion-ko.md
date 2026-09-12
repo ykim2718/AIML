@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 32 | Created: 2026-09-07 | Updated: 2026-09-11 20:31 CDT
+Rev. 33 | Created: 2026-09-07 | Updated: 2026-09-11 20:40 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -21,7 +21,7 @@ Expansion 은 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 
 - **Centering** — Expansion 전에 각 변수에서 그 변수의 평균을 뺀다 (4.2 절).
 - **Penalty** — Expansion 이 만든 열에 ridge 나 lasso 를 건다. Ridge 는 모든 $\beta$ 를 같은 비율로 줄일 뿐 0 으로 만들지 않고, lasso 는 작은 $\beta$ 를 정확히 0 으로 만든다 (5.2 절).
 
-세 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다.
+세 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다. Centering 은 그 상관을 낮출 뿐 0 으로 만들지 못하므로 (4.2 절), 부호가 뒤집히는 일이 centering 만으로 사라지지는 않는다. 남는 몫은 penalty 가 맡아, 닮은 열들이 서로 상쇄하는 큰 계수를 갖지 못하게 한다 (5.2 절).
 
 Expansion 을 쓰지 않아야 하는 자리도 분명하다. 변수가 수십 개를 넘으면 열 수가 표본 수를 넘고, 한 변수 안에서 여러 번 꺾이는 모양이 필요하면 degree 를 올리는 대신 spline 으로 가야 하며, 훈련 구간 밖을 예측해야 하면 그 구간 밖에서 다항식이 폭주하는 성질, 곧 extrapolation 이 그대로 위험이 된다.
 
