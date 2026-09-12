@@ -1,9 +1,11 @@
 # Polynomial Feature Expansion
-Rev. 27 | Created: 2026-09-09 | Updated: 2026-09-11 19:50 CDT
+Rev. 28 | Created: 2026-09-09 | Updated: 2026-09-11 19:51 CDT
+
+Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
 ## 1. Purpose
 
-- **Problem Statement**: Numeric tabular data is hard to express with a linear model.
+- **Problem Statement**: Numeric tabular data has cases that are hard to express with a linear model.
 - **Goal**: To build a non-linear model by adding the power terms of the original variables ($x^2$, $x^3$) and the interaction terms ($x_1 \ast x_2$).
 - **Non-Goal**: Derived variables are not covered, and the learning on the expanded data set is not covered.
 
@@ -47,7 +49,7 @@ $$\hat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 \hspace{19em} (1)$$
 
 Linear here is about the coefficients $\beta$ rather than about $x$, which is why least squares, the solve that picks the coefficients minimizing the sum of the squared residuals, carries over as it is. The coefficient $\beta_2$ carries one bend, a peak or a saturation, and $\beta_3$ carries a second one. The non-linearity sits in the columns rather than in the model, so the linear model already in use, and the inference and the penalty built on it, are kept as they are.
 
-### 3.2 Feature Interaction
+### 3.2 Interaction Term
 
 The interaction between variables is carried by the product of two distinct variables, an interaction term. Adding the product $x_1 x_2$ to the variables $x_1$ and $x_2$ gives equation (2).
 

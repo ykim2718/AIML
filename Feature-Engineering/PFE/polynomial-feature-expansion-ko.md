@@ -1,9 +1,11 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 28 | Created: 2026-09-07 | Updated: 2026-09-11 19:50 CDT
+Rev. 29 | Created: 2026-09-07 | Updated: 2026-09-11 19:51 CDT
+
+Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
 ## 1. Purpose
 
-- **Problem Statement**: Numeric tabular data 에서 선형 model 로는 표현하기 힘들다.
+- **Problem Statement**: Numeric tabular data 에서 선형 model 로는 표현하기 힘든 경우가 있다.
 - **Goal**: Original variable 의 power term ($x^2$, $x^3$) 와 interaction term ($x_1 \ast x_2$) 을 추가하여 비선형 model 을 만든다.
 - **Non-Goal**: Derived variable 은 다루지 않고, expanded data set 의 학습을 다루지 않는다.
 
@@ -47,7 +49,7 @@ $$\hat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 \hspace{19em} (1)$$
 
 여기서 선형이라는 말은 $x$ 가 아니라 계수 $\beta$ 에 대한 것이며, 그래서 잔차 제곱합을 가장 작게 하는 계수를 푸는 최소제곱 (least squares) 이 그대로 쓰인다. 계수 $\beta_2$ 는 한 번 꺾이는 곡률, 곧 정점이나 포화를 담고, $\beta_3$ 은 한 번 더 꺾이는 모양을 담는다. 비선형은 model 이 아니라 열에 들어 있으므로, 쓰던 선형 model 과 그 위에 쌓인 추론·penalty 를 그대로 둔 채 비선형을 얻는다.
 
-### 3.2 Feature Interaction
+### 3.2 Interaction Term
 
 변수 사이의 상호작용은 서로 다른 두 변수의 곱, 곧 interaction term 이 맡는다. 변수 $x_1$, $x_2$ 에 곱 $x_1 x_2$ 를 더하면 식 (2) 가 된다.
 
