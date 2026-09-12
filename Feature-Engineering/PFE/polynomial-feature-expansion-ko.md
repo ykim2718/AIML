@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 82 | Created: 2026-09-07 | Updated: 2026-09-12 06:46 CDT
+Rev. 84 | Created: 2026-09-07 | Updated: 2026-09-12 07:05 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -176,14 +176,14 @@ Table 2. Failure modes of a polynomial expansion
 
 | # | Symptom | Cause | Countermeasure |
 | --- | --- | --- | --- |
-| 1 | Held-out error worse at degree 2 than at degree 1 | Term count close to the row count | Ridge or lasso, `interaction_only`, selective expansion |
-| 2 | Coefficient signs flipping across resamples | Collinearity manufactured by the expansion | Centering, a penalty, reading predictions instead of coefficients |
-| 3 | Prediction diverging just outside the training range | Extrapolation behaviour of a polynomial | Spline, a range guard on the input, no extrapolation |
-| 4 | A handful of rows dominating the fit | Squares amplifying leverage | Outlier handling before expansion, robust loss |
-| 5 | Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
-| 6 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
+| 1 | Degree 2 의 held-out 오차가 degree 1 보다 나쁨 | 항 수가 행 수에 가까움 | Ridge 나 lasso, `interaction_only`, 선택적 expansion |
+| 2 | 표본을 다시 뽑을 때마다 계수의 부호가 뒤집힘 | Expansion 이 만든 collinearity | Centering, penalty, 계수 대신 예측을 읽기 |
+| 3 | 훈련 구간을 조금 벗어나면 예측이 폭주함 | 다항식의 extrapolation 거동 | Spline, 입력 범위 검사, extrapolation 하지 않기 |
+| 4 | 몇 개의 행이 적합을 지배함 | 제곱항이 leverage 를 키움 | Expansion 전 이상치 처리, robust loss |
+| 5 | 중복된 열이나 값이 모두 0 인 열 | Dummy 열의 제곱과 곱 | `interaction_only=True`, 연속형 열만 expansion |
+| 6 | Imputation 으로 채운 값이 증폭됨 | 곱 안에서 제곱된 imputation 오차 | Expansion 전 imputation, 대체 여부를 적는 지시 열 |
 
-Table 2 의 5 행은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
+Table 2 의 5 행, 곧 dummy 열에서 나오는 중복된 열과 값이 모두 0 인 열은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
 
 ### 5.5 Diagnostics
 

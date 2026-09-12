@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 80 | Created: 2026-09-09 | Updated: 2026-09-12 06:46 CDT
+Rev. 81 | Created: 2026-09-09 | Updated: 2026-09-12 07:05 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -183,7 +183,7 @@ Table 2. Failure modes of a polynomial expansion
 | 5 | Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
 | 6 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-Row 5 of Table 2 is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
+Row 5 of Table 2, the duplicate and all-zero columns that come out of dummy columns, is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
 
 ### 5.5 Diagnostics
 
