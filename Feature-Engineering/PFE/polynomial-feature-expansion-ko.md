@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 30 | Created: 2026-09-07 | Updated: 2026-09-11 19:57 CDT
+Rev. 31 | Created: 2026-09-07 | Updated: 2026-09-11 20:18 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -23,19 +23,7 @@ Expansion 은 표에 이미 있는 열로 곱과 제곱을 계산해 새 열로 
 
 세 가지 가운데 자주 빠지는 것은 centering 과 penalty 다. Centering 하지 않은 물리 단위에서 $x$ 와 $x^2$ 의 상관은 1 에 가깝고 (4.2 절), expansion 이 만든 열은 원 변수가 서로 직교하더라도 서로 직교하지 않는다. 그래서 expansion 의 실패는 model 이 자료를 못 맞추는 모습이 아니라, 표본을 다시 뽑을 때마다 계수의 부호가 뒤집히는 모습으로 나타난다.
 
-Expansion 을 쓰지 않아야 하는 자리도 분명하다. 변수가 수십 개를 넘으면 열 수가 표본 수를 넘고, 한 변수 안에서 여러 번 꺾이는 모양이 필요하면 degree 를 올리는 대신 spline 으로 가야 하며, 훈련 구간 밖을 예측해야 하면 그 구간 밖에서 다항식이 폭주하는 성질, 곧 extrapolation 이 그대로 위험이 된다. Table 1 이 그 갈림을 정리한 것이다.
-
-Table 1. Default choices and when they change
-
-| # | Condition | Choice | Why |
-| --- | --- | --- | --- |
-| 1 | Fewer than a few dozen variables, curvature and pairwise effects expected | Degree 2, centered, ridge | A term count below the row count |
-| 2 | Curvature judged absent, only cross effects wanted | `interaction_only=True` | Squares dropped as a modelling decision, not as a saving |
-| 3 | Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
-| 4 | Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
-| 5 | Prediction outside the training range | Neither expansion nor a high degree | A polynomial governed by its top term outside the range |
-
-2 행에서 곡률이 없다고 판단한다는 것은, 한 변수만 혼자 움직일 때 응답이 다루는 구간 안에서 정점도 포화도 없이 한 방향으로만 간다고 보는 것이다. 그 판단을 받치는 근거는 둘이다. 공정이 그 구간을 단조로운 영역으로 알고 있거나, 1차 항만으로 적합한 뒤 잔차를 그 변수에 대해 그렸을 때 굽은 모양이 남지 않는 경우다. 그렇게 판단했을 때만 `interaction_only=True` 로 제곱항을 빼며, 판단이 틀리면 그 곡률은 잔차에 남는다.
+Expansion 을 쓰지 않아야 하는 자리도 분명하다. 변수가 수십 개를 넘으면 열 수가 표본 수를 넘고, 한 변수 안에서 여러 번 꺾이는 모양이 필요하면 degree 를 올리는 대신 spline 으로 가야 하며, 훈련 구간 밖을 예측해야 하면 그 구간 밖에서 다항식이 폭주하는 성질, 곧 extrapolation 이 그대로 위험이 된다.
 
 ## 3. Objective
 
@@ -111,7 +99,7 @@ $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (8)$$
 
 두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix B](#appendix-b-term-count-derivation) 에 있다.
 
-Table 2. Column count after expansion, bias column excluded
+Table 1. Column count after expansion, bias column excluded
 
 | Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
 | --- | --- | --- | --- | --- |
@@ -121,7 +109,7 @@ Table 2. Column count after expansion, bias column excluded
 | 50 | 1,325 | 1,275 | 23,425 | 20,875 |
 | 100 | 5,150 | 5,050 | 176,850 | 166,750 |
 
-Table 2 에서 읽을 것은 `interaction_only` 가 줄여 주는 몫이 작다는 사실이다. $d = 2$ 에서 그 차이는 제곱항 $n$ 개뿐이어서 $n = 100$ 의 5,150 이 5,050 이 될 뿐이다. 곧 이 option 은 열 수를 줄이려고 켜는 것이 아니라, 한 변수 안의 곡률을 model 에 넣지 않겠다는 판단을 적어 두는 것이다.
+Table 1 에서 읽을 것은 `interaction_only` 가 줄여 주는 몫이 작다는 사실이다. $d = 2$ 에서 그 차이는 제곱항 $n$ 개뿐이어서 $n = 100$ 의 5,150 이 5,050 이 될 뿐이다. 곧 이 option 은 열 수를 줄이려고 켜는 것이 아니라, 한 변수 안의 곡률을 model 에 넣지 않겠다는 판단을 적어 두는 것이다.
 
 열 수를 실제로 정하는 것은 degree 다. $d$ 를 2 에서 3 으로 올리면 $n = 20$ 에서 열은 230 에서 1,770 으로 늘어난다. 열 수가 행 수에 가까워지면 최소제곱의 해는 불안정해지고 넘어서면 유일하지 않으므로, expansion 의 상한을 정하는 것은 degree 가 아니라 표본 수이다.
 
@@ -141,13 +129,15 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 둘 중 기본은 ridge 다. Ridge 는 닮은 열들에 계수를 나누어 주어 예측을 안정시키고, lasso 는 그 가운데 하나만 남기고 나머지를 지운다. Expansion 이 만든 열에서 lasso 는 곱항을 남기고 그 main effect 를 지워 4.3 절의 heredity 를 깨뜨릴 수 있으므로, 홀로 쓰기보다 계층 제약과 함께 쓴다 [[6](#ref-6)].
 
+Ridge 가 계수를 0 으로 만들지 않는다는 것은 ridge 로는 열을 지울 수 없다는 뜻이다. 그래도 기본으로 두는 이유는 expansion 에서 penalty 가 버는 것이 열의 개수가 아니라 예측의 안정이기 때문이며, 그 크기는 5.1 절의 degree 3 에서 held-out RMSE 가 1.08 에서 0.75 로 내려가는 차이다. 열의 개수를 실제로 줄여야 하면 그것은 lasso 나 elastic net 의 몫이다.
+
 Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 표준화한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 표준화가 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns) 에 있다.
 
 ### 5.3 Failure Modes
 
 Expansion 이 실패하는 모습은 여섯 가지로 정리된다. 대부분은 model 이 못 맞추는 모습이 아니라 계수나 예측이 불안정해지는 모습으로 온다.
 
-Table 3. Failure modes of a polynomial expansion
+Table 2. Failure modes of a polynomial expansion
 
 | Symptom | Cause | Countermeasure |
 | --- | --- | --- |
@@ -158,7 +148,7 @@ Table 3. Failure modes of a polynomial expansion
 | Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-Table 3 의 다섯째 줄은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
+Table 2 의 다섯째 줄은 expansion 이 스스로 걸러 주지 않으므로 따로 적는다. 범주형 변수는 범주 하나에 열 하나를 두고 그 범주면 1, 아니면 0 을 적어 수치로 바꾸며, 그 열을 dummy 라 한다. Dummy 는 제곱이 자기 자신이어서 완전히 중복된 열이 되고, 한 행이 두 범주에 함께 속할 수 없으므로 같은 범주형 변수에서 나온 두 dummy 의 곱은 언제나 0 이다. Expansion 은 그것을 알지 못하므로, 범주형에서 나온 열은 expansion 대상에서 빼거나 `interaction_only` 로 다루어야 한다.
 
 ### 5.4 Diagnostics
 
@@ -236,9 +226,9 @@ $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \i
 
 식 (4) 는 기호가 빽빽하지만 읽는 법은 간단하다. 왼쪽의 $\Phi_d(\mathbf{x})$ 는 변수 값 한 벌 $\mathbf{x} = (x_1, \dots, x_n)$ 에서 만들어지는 새 열들의 모음이다. 세로줄 왼쪽의 $\prod_{i=1}^{n} x_i^{a_i}$ 는 변수 $x_i$ 를 각각 $a_i$ 제곱하여 모두 곱한 것, 곧 monomial 하나다. 지수 $a_i$ 는 0 이상의 정수이며 ($a_i \in \mathbb{Z}_{\ge 0}$), 0 이면 그 변수는 곱에서 빠진다. 지수의 합 $\sum_i a_i$ 가 그 항의 차수이므로, 조건 $1 \le \sum_i a_i \le d$ 는 합이 0 인 상수항을 빼고 차수를 $d$ 까지만 허용한다는 뜻이다.
 
-변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 4 가 그 다섯이다.
+변수가 두 개이고 $d = 2$ 이면 그 조건을 만족하는 지수 짝은 다섯이다. Table 3 이 그 다섯이다.
 
-Table 4. Exponent pairs admitted by equation (4) at two variables and degree 2
+Table 3. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- |
@@ -258,7 +248,7 @@ $$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n
 
 세는 방법은 별과 막대 (stars and bars) 다. 차수 $k$ 를 같은 별 $k$ 개로 놓고, 변수 $n$ 개를 막대 $n-1$ 개로 나눈 칸 $n$ 개로 놓으면, 한 칸에 든 별의 수가 그 변수의 지수 $a_i$ 가 된다. 그러면 지수 벌을 세는 일은 별 $k$ 개와 막대 $n-1$ 개, 모두 $k+n-1$ 개를 한 줄로 늘어놓고 그중 어느 $n-1$ 자리를 막대로 삼을지 고르는 일과 같아져 $\binom{k+n-1}{n-1}$ 이 된다.
 
-$n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 4 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
+$n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 3 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
 
 차수를 0 부터 $d$ 까지 더하면 식 (10) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
 
@@ -286,7 +276,7 @@ Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
 
-Table 5. Penalties on expanded columns
+Table 4. Penalties on expanded columns
 
 | Penalty | Term added | A group of columns that resemble one another | Where it fits |
 | --- | --- | --- | --- |
@@ -304,7 +294,7 @@ Penalty 를 건다고 degree 를 4 로 올릴 수 있는 것은 아니다. Penal
 
 Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, 정할 것은 네 인자뿐이다 [[7](#ref-7)].
 
-Table 6. PolynomialFeatures arguments
+Table 5. PolynomialFeatures arguments
 
 | Argument | Effect | Note |
 | --- | --- | --- |
@@ -367,7 +357,7 @@ $$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \h
 
 ### D.4 Selective Expansion
 
-모든 짝을 만들 필요는 없다. 곱할 열을 골라 넘기면 열 수는 Table 2 가 아니라 고른 개수로 끝난다.
+모든 짝을 만들 필요는 없다. 곱할 열을 골라 넘기면 열 수는 Table 1 이 아니라 고른 개수로 끝난다.
 
 ```python
 # Python

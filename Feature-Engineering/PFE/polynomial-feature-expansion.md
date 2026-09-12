@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 29 | Created: 2026-09-09 | Updated: 2026-09-11 19:57 CDT
+Rev. 30 | Created: 2026-09-09 | Updated: 2026-09-11 20:18 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -23,19 +23,7 @@ To lessen that curse of dimensionality, the three defaults below keep the column
 
 Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again.
 
-Where the expansion should not be used is equally clear. Past a few dozen variables the column count passes the sample count, a shape that bends several times inside one variable calls for a spline rather than a higher degree, and where prediction outside the training range is needed the way a polynomial diverges beyond that range, its extrapolation behaviour, is itself the risk. Table 1 sets out that fork.
-
-Table 1. Default choices and when they change
-
-| # | Condition | Choice | Why |
-| --- | --- | --- | --- |
-| 1 | Fewer than a few dozen variables, curvature and pairwise effects expected | Degree 2, centered, ridge | A term count below the row count |
-| 2 | Curvature judged absent, only cross effects wanted | `interaction_only=True` | Squares dropped as a modelling decision, not as a saving |
-| 3 | Many variables, few rows | Polynomial kernel or a sketch | Cost on rows rather than on columns |
-| 4 | Repeated bends inside one variable | Spline or GAM | Local basis instead of a higher degree |
-| 5 | Prediction outside the training range | Neither expansion nor a high degree | A polynomial governed by its top term outside the range |
-
-Judging curvature absent, in row 2, means taking the response to move in one direction as a single variable moves alone, with no peak and no saturation in the range at hand. Two grounds carry that judgement: the process is known to be monotonic over the range, or a first-order fit leaves no bend in the residual plotted against that variable. Only on that judgement is `interaction_only=True` used to drop the square terms, and where the judgement is wrong the curvature stays in the residual.
+Where the expansion should not be used is equally clear. Past a few dozen variables the column count passes the sample count, a shape that bends several times inside one variable calls for a spline rather than a higher degree, and where prediction outside the training range is needed the way a polynomial diverges beyond that range, its extrapolation behaviour, is itself the risk.
 
 ## 3. Objective
 
@@ -111,7 +99,7 @@ $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (8)$$
 
 Both counts are derived from the set of equation (4) in [Appendix B](#appendix-b-term-count-derivation).
 
-Table 2. Column count after expansion, bias column excluded
+Table 1. Column count after expansion, bias column excluded
 
 | Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
 | --- | --- | --- | --- | --- |
@@ -121,7 +109,7 @@ Table 2. Column count after expansion, bias column excluded
 | 50 | 1,325 | 1,275 | 23,425 | 20,875 |
 | 100 | 5,150 | 5,050 | 176,850 | 166,750 |
 
-What Table 2 says is that `interaction_only` saves little. At $d = 2$ the difference is the $n$ square terms alone, so 5,150 becomes 5,050 at $n = 100$. The option is therefore not switched on to cut the column count; it is where the decision to keep curvature inside one variable out of the model is written down.
+What Table 1 says is that `interaction_only` saves little. At $d = 2$ the difference is the $n$ square terms alone, so 5,150 becomes 5,050 at $n = 100$. The option is therefore not switched on to cut the column count; it is where the decision to keep curvature inside one variable out of the model is written down.
 
 What actually sets the column count is the degree. Raising $d$ from 2 to 3 takes the columns from 230 to 1,770 at $n = 20$. As the column count approaches the row count the least-squares solution turns unstable, and past it the solution is not unique, so the ceiling on an expansion is set by the sample count rather than by the degree.
 
@@ -141,13 +129,15 @@ The expanded columns always carry a penalty, a term added to the fitting criteri
 
 Ridge is the default of the two. It divides the coefficient among the columns that resemble one another and steadies the prediction, while lasso keeps one of them and drops the rest. Lasso on expanded columns can keep a product term while deleting its main effects, breaking the heredity of section 4.3, so it is used with a hierarchical constraint rather than on its own [[6](#ref-6)].
 
+That ridge never drives a coefficient to zero means no column can be dropped with it. It is still the default because what a penalty buys on an expansion is not a smaller column count but a steadier prediction, and the size of that is the held-out RMSE of section 5.1 falling from 1.08 to 0.75 at degree 3. Where the column count itself has to come down, that is the work of lasso or elastic net.
+
 The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix D](#appendix-d-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns).
 
 ### 5.3 Failure Modes
 
 An expansion fails in six recognizable ways. Most arrive not as a model that fits badly but as coefficients or predictions that turn unstable.
 
-Table 3. Failure modes of a polynomial expansion
+Table 2. Failure modes of a polynomial expansion
 
 | Symptom | Cause | Countermeasure |
 | --- | --- | --- |
@@ -158,7 +148,7 @@ Table 3. Failure modes of a polynomial expansion
 | Duplicate or all-zero columns | Dummy columns squared and crossed | `interaction_only=True`, expansion restricted to continuous columns |
 | Imputed values amplified | Imputation error squared inside a product | Imputation before expansion, an indicator column for what was imputed |
 
-The fifth row of Table 3 is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
+The fifth row of Table 2 is written out separately because the expansion does not catch it on its own. A categorical variable is turned into numbers by giving each category a column that holds 1 where the row falls in that category and 0 otherwise, a dummy. A dummy squared is itself and becomes an exactly duplicated column, and the product of two dummies from the same categorical variable is always zero, since one row cannot fall in two categories at once. The expansion knows none of this, so columns coming from a categorical variable are either left out of the expansion or handled with `interaction_only`.
 
 ### 5.4 Diagnostics
 
@@ -236,9 +226,9 @@ $$\Phi_d(\mathbf{x}) = \left\lbrace \prod_{i=1}^{n} x_i^{a_i} \ \middle|\ a_i \i
 
 Equation (4) is dense in notation but simple to read. On the left, $\Phi_d(\mathbf{x})$ is the collection of new columns built from one set of variable values $\mathbf{x} = (x_1, \dots, x_n)$. Left of the bar, $\prod_{i=1}^{n} x_i^{a_i}$ is each variable $x_i$ raised to $a_i$ and all of them multiplied together, which is one monomial. Each exponent $a_i$ is a non-negative integer, written $a_i \in \mathbb{Z}_{\ge 0}$, and where it is 0 that variable drops out of the product. The sum of the exponents $\sum_i a_i$ is the degree of the term, so the condition $1 \le \sum_i a_i \le d$ excludes the constant term, whose exponents sum to 0, and admits degrees up to $d$.
 
-With two variables and $d = 2$, five pairs of exponents meet that condition. Table 4 is the five.
+With two variables and $d = 2$, five pairs of exponents meet that condition. Table 3 is the five.
 
-Table 4. Exponent pairs admitted by equation (4) at two variables and degree 2
+Table 3. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 | Exponent of $x_1$ | Exponent of $x_2$ | Degree | Term |
 | --- | --- | --- | --- |
@@ -258,7 +248,7 @@ $$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n
 
 The count itself is stars and bars. Take the degree $k$ as $k$ identical stars, and the $n$ variables as $n$ bins separated by $n-1$ bars, so that the stars falling in a bin are the exponent $a_i$ of that variable. Counting the exponent choices is then laying $k$ stars and $n-1$ bars, $k+n-1$ symbols, in a row and choosing which $n-1$ positions carry the bars, which is $\binom{k+n-1}{n-1}$.
 
-At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 4.
+At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 3.
 
 Summing the degrees from 0 to $d$ gives equation (10). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
@@ -286,7 +276,7 @@ Expanded columns are far from orthogonal (section 4.2) and come in groups that r
 
 $$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (15)$$
 
-Table 5. Penalties on expanded columns
+Table 4. Penalties on expanded columns
 
 | Penalty | Term added | A group of columns that resemble one another | Where it fits |
 | --- | --- | --- | --- |
@@ -304,7 +294,7 @@ A penalty does not buy a degree of 4. What it buys is the difference between a f
 
 The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, and only four arguments have to be settled [[7](#ref-7)].
 
-Table 6. PolynomialFeatures arguments
+Table 5. PolynomialFeatures arguments
 
 | Argument | Effect | Note |
 | --- | --- | --- |
@@ -367,7 +357,7 @@ Sparse input is taken as it is. Feed in a CSR matrix, which stores only the non-
 
 ### D.4 Selective Expansion
 
-Not every pair has to be built. Hand the expansion the columns to be crossed and the column count ends at the number chosen rather than at Table 2.
+Not every pair has to be built. Hand the expansion the columns to be crossed and the column count ends at the number chosen rather than at Table 1.
 
 ```python
 # Python
