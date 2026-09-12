@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 78 | Created: 2026-09-07 | Updated: 2026-09-12 05:52 CDT
+Rev. 79 | Created: 2026-09-07 | Updated: 2026-09-12 06:05 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -124,15 +124,15 @@ Expansion 의 대가는 두 가지다.
 
 열의 수는 변수의 수에 대해 $d$ 차로 늘어난다. 열이 늘수록 그 열들이 이루는 공간을 같은 밀도로 채우는 데 필요한 관측 수는 지수로 늘어나며, 이것을 curse of dimensionality 라 한다. Expansion 은 행 수를 그대로 둔 채 열만 늘리므로 그 현상을 자초한다. 절편을 뺀 전체 expansion 의 열 수는 식 (14), 서로 다른 변수의 곱만 남기는 `interaction_only` 의 열 수는 식 (15) 이다.
 
-$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
+$$m_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
 
-$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
+$$m_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
 
 두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix C](#appendix-d-term-count-derivation) 에 있다.
 
-Table 1. Column count after expansion, bias column excluded
+Table 1. Column count after expansion, original variables included and bias column excluded
 
-| Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
+| $n$ | $m_{\mathrm{full}}$ at $d = 2$ | $m_{\mathrm{inter}}$ at $d = 2$ | $m_{\mathrm{full}}$ at $d = 3$ | $m_{\mathrm{inter}}$ at $d = 3$ |
 | --- | --- | --- | --- | --- |
 | 5 | 20 | 15 | 55 | 25 |
 | 10 | 65 | 55 | 285 | 175 |

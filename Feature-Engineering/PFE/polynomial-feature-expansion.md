@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 76 | Created: 2026-09-09 | Updated: 2026-09-12 05:52 CDT
+Rev. 77 | Created: 2026-09-09 | Updated: 2026-09-12 06:05 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -124,15 +124,15 @@ An expansion charges two prices.
 
 The column count grows as the $d$-th power of the variable count. Covering the space those columns span at one density takes exponentially more observations as their number grows, which is the curse of dimensionality, and an expansion walks into it by adding columns to data whose row count does not move. Without the intercept, the full expansion has the column count of equation (14), and `interaction_only`, which keeps only products of distinct variables, has that of equation (15).
 
-$$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
+$$m_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (14)$$
 
-$$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
+$$m_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (15)$$
 
 Both counts are derived from the set of equation (4) in [Appendix C](#appendix-d-term-count-derivation).
 
-Table 1. Column count after expansion, bias column excluded
+Table 1. Column count after expansion, original variables included and bias column excluded
 
-| Variables | Degree 2, full | Degree 2, interaction only | Degree 3, full | Degree 3, interaction only |
+| $n$ | $m_{\mathrm{full}}$ at $d = 2$ | $m_{\mathrm{inter}}$ at $d = 2$ | $m_{\mathrm{full}}$ at $d = 3$ | $m_{\mathrm{inter}}$ at $d = 3$ |
 | --- | --- | --- | --- | --- |
 | 5 | 20 | 15 | 55 | 25 |
 | 10 | 65 | 55 | 285 | 175 |
