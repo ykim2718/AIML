@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 2 | Created: 2026-09-12 | Updated: 2026-09-12 13:00 CDT
+Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-12 13:06 CDT
 
 ## 1. Purpose
 
@@ -163,6 +163,27 @@ print("scikit-learn fit:")
 print(f"  intercept: {model.intercept_[0]:.4f}")
 print(f"  coefficients: {model.coef_[0]}")
 ```
+
+NumPy 2.4.6 과 scikit-learn 1.9.1 에서 실행한 결과는 다음과 같다.
+
+```text
+Shape of design matrix X: (100, 3)
+First 3 rows of the design matrix:
+ [[1.         3.74540119 0.15714593]
+ [1.         9.50714306 3.18205206]
+ [1.         7.31993942 1.57177991]]
+--------------------------------------------------
+Normal equation (direct inverse):
+  intercept (beta_0): 2.9106
+  coefficient (beta_1): 1.9658
+  coefficient (beta_2): 5.1439
+--------------------------------------------------
+scikit-learn fit:
+  intercept: 2.9106
+  coefficients: [1.96582747 5.14386228]
+```
+
+정규방정식으로 구한 계수와 `LinearRegression` 이 적합한 계수는 소수 넷째 자리까지 같다. 둘 다 참값 $(3, 2, 5)$ 에서 조금 벗어나 있는데, code 가 응답에 더한 noise 때문이다.
 
 Code 에서 짚을 곳은 세 군데다.
 
