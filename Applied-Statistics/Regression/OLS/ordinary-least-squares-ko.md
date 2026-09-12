@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 9 | Created: 2026-09-12 | Updated: 2026-09-12 13:20 CDT
+Rev. 10 | Created: 2026-09-12 | Updated: 2026-09-12 13:30 CDT
 
 ## 1. Purpose
 
@@ -83,7 +83,28 @@ X^\top X \beta = X^\top y
 \hspace{19em} (6)
 ```
 
-이름의 normal 은 직교를 뜻하며, 식 (6) 은 $X^\top (y - X\beta) = 0$ 과 같은 말, 곧 잔차가 design matrix 의 모든 열과 직교한다는 조건이다. 직교하면 $X\beta$ 는 $X$ 의 열들이 만드는 공간 (column space) 안에서 $y$ 에 가장 가까운 점, 곧 $y$ 에서 그 공간에 수선을 내린 발 (정사영, orthogonal projection) 이 되고, 다른 어떤 계수를 넣어도 잔차는 그보다 길어진다. 잔차 제곱합이 최소가 되는 자리가 바로 이 지점이다.
+이름의 normal 은 직교를 뜻하며, 식 (6) 은 $X^\top (y - X\beta) = 0$ 과 같은 말, 곧 잔차가 design matrix 의 모든 열과 직교한다는 조건이다. 직교하면 $X\beta$ 는 $X$ 의 열들이 만드는 공간 (column space) 안에서 $y$ 에 가장 가까운 점, 곧 $y$ 에서 그 공간에 내린 수선 (perpendicular) 의 발 (정사영, orthogonal projection) 이 되고, 다른 어떤 계수를 넣어도 잔차는 그보다 길어진다. 잔차 제곱합이 최소가 되는 자리가 바로 이 지점이다.
+
+이 조건을 그림으로 옮긴 것이 Fig 1 이다.
+
+```text
+                            y
+                           /|
+                          / |
+                         /  |
+                        /   |  residual
+                       /    |  (perpendicular to the column space)
+                      /     |
+        O -----------+------+----------------------  column space
+                            X beta
+                            (foot of the perpendicular)
+```
+
+Fig 1. The residual as the perpendicular from y to the column space
+
+- **평면**: $X\beta$ 로 만들 수 있는 모든 벡터가 놓이는 자리인 열공간.
+- **수선 (perpendicular)**: $y$ 에서 그 평면에 90° 로 내린 선분. 그 길이의 제곱이 $RSS$ 이다.
+- **수선의 발**: 평면 위에서 $y$ 에 가장 가까운 점 $X\beta$. 평면 위의 다른 점을 고르면 빗변이 되어 $y$ 까지의 거리가 길어진다.
 
 ## 6. Fitting
 
@@ -109,6 +130,7 @@ $X^\top X$ 의 역행렬이 존재할 때 해 $\hat{\beta}$ 는 유일하게 결
 - **L2 norm**: 벡터 원소의 제곱합의 제곱근.
 - **normal equation**: $RSS$ 의 경사도를 0 으로 두어 얻은 연립방정식 $X^\top X \beta = X^\top y$.
 - **orthogonal projection**: 한 벡터에서 어떤 공간에 내린 수선의 발. 그 공간 안에서 원래 벡터에 가장 가까운 점이다.
+- **perpendicular**: 한 점에서 직선이나 평면에 90° 로 내리그은 선분. 그것이 닿는 점이 수선의 발이다.
 - **residual**: 관측값과 model 예측값의 차이.
 - **RSS**: Residual Sum of Squares. 잔차의 제곱합.
 
