@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 51 | Created: 2026-09-07 | Updated: 2026-09-12 00:26 CDT
+Rev. 52 | Created: 2026-09-07 | Updated: 2026-09-12 00:40 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -71,21 +71,21 @@ $$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})(x_i^2 - \ove
 
 첫 인자 $x - \bar{x}$ 가 $u$ 이고, 괄호를 풀면 평균이 두 항으로 갈라져 식 (7) 이 된다.
 
-$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} - \overline{x^2}\,\overline{u} \hspace{19em} (7)$$
+$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 - \overline{x^2} \cdot \overline{u} \hspace{19em} (7)$$
 
 $\overline{u} = 0$ 이므로 뒤의 항이 사라지고 식 (8) 이 남는다.
 
-$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} \hspace{19em} (8)$$
+$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 \hspace{19em} (8)$$
 
 $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 을 넣고 항마다 평균을 취하면 식 (9) 가 된다.
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} \hspace{19em} (9)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2 \bar{x} \overline{u^2} + \bar{x}^2 \overline{u} \hspace{19em} (9)$$
 
 여기서도 $\overline{u} = 0$ 이 마지막 항을 지우므로, 공분산은 식 (10) 으로 닫힌다.
 
-$$\mathrm{cov}(x, x^2) = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
+$$\mathrm{cov}(x, x^2) = 2 \bar{x} \overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
 
-식 (10) 의 두 항은 출처가 다르다. 앞의 항 $2\bar{x}\,\overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
+식 (10) 의 두 항은 출처가 다르다. 앞의 항 $2 \bar{x} \overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
 
 두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-correlation-of-a-variable-and-its-square) 에 있다. $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (10) 은 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (11) 이다.
 
@@ -253,19 +253,19 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 
 4.2 절은 공분산을 두 표준편차로 나누어 상관으로 적고, 그 상관이 식 (11) 과 식 (12) 이라고 했다. 나누어야 하는 이유와 두 식의 유도가 아래다.
 
-나누어야 하는 이유는 단위다. 열 $x$ 를 $c \gt 0$ 배 하면 $\mathrm{cov}(cx, (cx)^2) = c^3\,\mathrm{cov}(x, x^2)$ 이므로, 공분산의 크기는 자료의 단위를 바꾸기만 해도 달라져 두 항의 몫을 재는 데 쓸 수 없다. 표준편차로 나누면 $\mathrm{sd}(cx) = c\,\mathrm{sd}(x)$ 와 $\mathrm{sd}((cx)^2) = c^2\,\mathrm{sd}(x^2)$ 이 그 $c^3$ 을 약분하므로 식 (16) 의 왼쪽이 성립하고, Cauchy–Schwarz 부등식이 그 값을 $[-1, 1]$ 안에 묶어 오른쪽이 성립한다.
+나누어야 하는 이유는 단위다. 열 $x$ 를 $c \gt 0$ 배 하면 $\mathrm{cov}(cx, (cx)^2) = c^3 \mathrm{cov}(x, x^2)$ 이므로, 공분산의 크기는 자료의 단위를 바꾸기만 해도 달라져 두 항의 몫을 재는 데 쓸 수 없다. 표준편차로 나누면 $\mathrm{sd}(cx) = c \cdot \mathrm{sd}(x)$ 와 $\mathrm{sd}((cx)^2) = c^2 \cdot \mathrm{sd}(x^2)$ 이 그 $c^3$ 을 약분하므로 식 (16) 의 왼쪽이 성립하고, Cauchy–Schwarz 부등식이 그 값을 $[-1, 1]$ 안에 묶어 오른쪽이 성립한다.
 
 $$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (16)$$
 
 유도는 분모를 구하는 일이다. 분자는 식 (10) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 에서 상수 $\bar{x}^2$ 은 분산을 바꾸지 않으므로, 남은 두 항의 분산을 펼치면 식 (17) 이 된다.
 
-$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4\bar{x}^2\,\overline{u^2} + 4\bar{x}\,\overline{u^3} \hspace{6em} (17)$$
+$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4 \bar{x}^2 \overline{u^2} + 4 \bar{x} \overline{u^3} \hspace{6em} (17)$$
 
 여기에 $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (18) 로 적힌다.
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (18)$$
 
-상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x)\,\mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (11) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\bar{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (11) 에 $t = 0$ 을 넣은 것이 식 (12) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
+상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (11) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\bar{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (11) 에 $t = 0$ 을 넣은 것이 식 (12) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
 
 ## Appendix C. Term Count Derivation
 
@@ -398,7 +398,7 @@ Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (14) 로 늘
 
 첫째는 kernel 이다. 다항 kernel 식 (26) 은 expansion 한 공간의 내적을 expansion 없이 계산한다.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (26)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (26)$$
 
 `KernelRidge(kernel='poly')` 가 그 형태이며, 비용이 열이 아니라 행에 걸리므로 변수가 많고 행이 적은 자료에 맞는다. 대신 계수가 개별 monomial 에 붙지 않아 어느 곱이 기여했는지 읽을 수 없다.
 

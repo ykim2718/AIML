@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 49 | Created: 2026-09-09 | Updated: 2026-09-12 00:26 CDT
+Rev. 50 | Created: 2026-09-09 | Updated: 2026-09-12 00:40 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -71,21 +71,21 @@ $$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})(x_i^2 - \ove
 
 The first factor $x - \bar{x}$ is $u$, and multiplying out splits the average into two terms, which is equation (7).
 
-$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} - \overline{x^2}\,\overline{u} \hspace{19em} (7)$$
+$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 - \overline{x^2} \cdot \overline{u} \hspace{19em} (7)$$
 
 Since $\overline{u} = 0$ the second term goes, leaving equation (8).
 
-$$\mathrm{cov}(x, x^2) = \overline{u\,x^2} \hspace{19em} (8)$$
+$$\mathrm{cov}(x, x^2) = \frac{1}{N} \sum_{i=1}^{N} u_i x_i^2 \hspace{19em} (8)$$
 
 Substituting $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ and averaging term by term gives equation (9).
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2\bar{x}\,\overline{u^2} + \bar{x}^2\,\overline{u} \hspace{19em} (9)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 2 \bar{x} \overline{u^2} + \bar{x}^2 \overline{u} \hspace{19em} (9)$$
 
 Here too $\overline{u} = 0$ removes the last term, so the covariance closes as equation (10).
 
-$$\mathrm{cov}(x, x^2) = 2\bar{x}\,\overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
+$$\mathrm{cov}(x, x^2) = 2 \bar{x} \overline{u^2} + \overline{u^3} \hspace{19em} (10)$$
 
-The two terms of equation (10) come from different places. The first, $2\bar{x}\,\overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
+The two terms of equation (10) come from different places. The first, $2 \bar{x} \overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
 
 Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix B](#appendix-b-correlation-of-a-variable-and-its-square). With $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (10) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (11).
 
@@ -253,19 +253,19 @@ Whether an expansion helped is confirmed in four ways.
 
 Section 4.2 divides the covariance by the two standard deviations to write the correlation, and states that correlation as equation (11) and equation (12). Why the division is needed, and where the two equations come from, is below.
 
-The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3\,\mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot weigh the two terms against each other. Dividing by the standard deviations, $\mathrm{sd}(cx) = c\,\mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2\,\mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (16), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
+The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3 \mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot weigh the two terms against each other. Dividing by the standard deviations, $\mathrm{sd}(cx) = c \cdot \mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2 \cdot \mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (16), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
 
 $$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (16)$$
 
 The derivation is a matter of the denominator. The numerator is equation (10), and $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. In $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ the constant $\bar{x}^2$ leaves a variance unchanged, so expanding the variance of the two remaining terms gives equation (17).
 
-$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4\bar{x}^2\,\overline{u^2} + 4\bar{x}\,\overline{u^3} \hspace{6em} (17)$$
+$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4 \bar{x}^2 \overline{u^2} + 4 \bar{x} \overline{u^3} \hspace{6em} (17)$$
 
 Substituting $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes the numerator and the two denominators as equation (18).
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (18)$$
 
-The correlation is $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x)\,\mathrm{sd}(x^2))$, so $(\overline{u^2})^{3/2}$ cancels and equation (11) of section 4.2 is what is left. Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\bar{x} = 0$, that is $t = 0$, so equation (12) is equation (11) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
+The correlation is $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$, so $(\overline{u^2})^{3/2}$ cancels and equation (11) of section 4.2 is what is left. Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\bar{x} = 0$, that is $t = 0$, so equation (12) is equation (11) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
 
 ## Appendix C. Term Count Derivation
 
@@ -398,7 +398,7 @@ The cost of an expansion is linear in the column count, and that count grows by 
 
 The first is the kernel. The polynomial kernel of equation (26) computes the inner product of the expanded space without the expansion.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (26)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (26)$$
 
 `KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
 
