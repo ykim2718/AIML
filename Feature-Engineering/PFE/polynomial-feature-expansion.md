@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 60 | Created: 2026-09-09 | Updated: 2026-09-12 02:38 CDT
+Rev. 61 | Created: 2026-09-09 | Updated: 2026-09-12 02:47 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -290,7 +290,11 @@ Put the three into that ratio and $(\overline{u^2})^{3/2}$ cancels, so equation 
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
 
-Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\overline{x} = 0$, that is $t = 0$, so equation (11) is equation (10) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
+Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\overline{x} = 0$, that is $t = 0$, so equation (11) is equation (10) at $t = 0$.
+
+$$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (11)$$
+
+Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
 
 ## Appendix D. Term Count Derivation
 
