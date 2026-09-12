@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 36 | Created: 2026-09-09 | Updated: 2026-09-11 21:35 CDT
+Rev. 37 | Created: 2026-09-09 | Updated: 2026-09-11 21:47 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -15,14 +15,13 @@ An expansion computes products and powers from the columns already in the table 
 
 What it costs is the rising column count. Once the column count nears the row count the coefficients, the $\beta$ values that multiply the columns, can no longer be pinned to one solution (section 5.1).
 
-To lessen that curse of dimensionality, the four below are set as the defaults. A default is what is kept until the data gives a reason to do otherwise, and together the four leave the column count well under the row count and keep those $\beta$ from moving far when the sample is drawn again.
+To lessen that curse of dimensionality, the three below are set as the defaults. A default is what is kept until the data gives a reason to do otherwise, and together the three leave the column count well under the row count and keep those $\beta$ from moving far when the sample is drawn again.
 
 - **Degree 2** — The terms built are limited to the square of one variable and the product of two (section 5.1).
-- **Centering** — Each variable has its own mean subtracted before the expansion, which lowers the correlation between the columns and leaves the solve for the coefficients less sensitive to a small error in the input (sections 4.2 and 4.3).
-- **Standardization** — Each column is brought to mean 0 and standard deviation 1 before and after the expansion. The first lowers the condition number, the second makes the penalty fall evenly across the columns (sections 4.3 and 5.2).
+- **Standardization** — Each column is brought to mean 0 and standard deviation 1 before and after the expansion. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable; dividing by the standard deviation removes the differences in column size, so the penalty falls evenly (sections 4.2, 4.3 and 5.2).
 - **Penalty** — The expanded columns carry a ridge or a lasso. Ridge divides every $\beta$ by the same factor without ever reaching zero, and lasso sets the small ones to exactly zero (section 5.2).
 
-Centering and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again. Centering lowers that correlation without taking it to zero (section 4.2), so the sign flips do not go away on centering alone. What is left falls to the penalty, which keeps the columns that resemble one another from carrying large coefficients that cancel (section 5.2).
+Standardization and the penalty are the two that get skipped. In uncentered physical units the correlation between $x$ and $x^2$ is close to 1 (section 4.2), and the columns the expansion makes are not orthogonal to one another even where the raw variables are. So the failure of an expansion arrives not as a model that fits the data badly but as coefficients whose signs flip each time the sample is drawn again. Centering lowers that correlation without taking it to zero (section 4.2), so the sign flips do not go away on centering alone. What is left falls to the penalty, which keeps the columns that resemble one another from carrying large coefficients that cancel (section 5.2).
 
 Where the expansion should not be used is equally clear. Past a few dozen variables the column count passes the sample count, a shape that bends several times inside one variable calls for a spline rather than a higher degree, and where prediction outside the training range is needed the way a polynomial diverges beyond that range, its extrapolation behaviour, is itself the risk.
 
@@ -62,9 +61,9 @@ For $[X_1, X_2]$ at $d = 2$ the columns, including the intercept that is a const
 
 $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{ij} x_i x_j + \varepsilon \hspace{19em} (5)$$
 
-### 4.2 Centering
+### 4.2 Standardization
 
-Subtract from each variable its own mean before expanding. This is centering, and it buys three things: a lower correlation between the columns, a coefficient that can be read, and better conditioning of the design matrix. The first two are the two paragraphs below, the third is section 4.3.
+Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
 Values in physical units usually sit far from zero, and such an $x$ and $x^2$ point in nearly the same direction. Over 60 samples on $[10, 11]$ their correlation is 0.9999, and after the mean is removed it is -0.15. The correlation after centering is proportional to the mean of the cubed deviations from the mean, the third central moment, so it is zero for a symmetric distribution and lands near zero in a sample.
 
@@ -76,7 +75,7 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses, from which the coefficients are solved. The condition number says by what factor such an error is magnified in the solution.
 
-What raises the condition number is the degree and the collinearity between the columns; what lowers it is centering and standardization. Centering cuts the overlap between the columns and standardization removes the differences in their size, so the two together take the condition number lowest. On the sample of section 4.2 the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after centering and scaling. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
+What raises the condition number is the degree and the collinearity between the columns; what lowers it is standardization. Subtracting the mean cuts the overlap between the columns and dividing by the standard deviation removes the differences in their size, so both parts are needed to take the condition number lowest. On the sample of section 4.2 the design matrix at $d = 2$ has a condition number of $1.6 \times 10^5$ in raw units and 2.8 after standardization. At $d = 4$ they are $3.4 \times 10^{10}$ and 16, and at $d = 8$ they are $1.5 \times 10^{21}$ and $8.0 \times 10^{2}$ (Fig 1(b)). A 64-bit float carries about 16 significant digits, so at $d = 8$ in raw units no significant digit of the coefficients survives the solve.
 
 ### 4.4 Hierarchy
 
