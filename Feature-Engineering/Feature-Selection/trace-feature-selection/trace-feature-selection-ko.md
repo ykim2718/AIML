@@ -1,5 +1,5 @@
 # Trace Feature Selection (Korean)
-Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:13 UTC
+Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-12 17:50 CDT
 
 > 반도체 장비 trace 가 만들어 내는 수천 개의 feature 가운데 무엇이 target 을 움직이는가, 그리고
 > 그에 답하는 방법이 세 축 — model 을 언제 참조하는가, 무엇을 단위로 고르는가, wafer 가 바뀌어도
@@ -9,7 +9,7 @@ Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:13 UTC
 
 - **Problem Statement**: Recipe 하나의 trace 는 sensor 수백 개에서 feature 수천 열을 만들어 내는데 wafer 수는 수백에 머물러, 그 전부를 넣고 적합한 model 은 우연 상관을 학습하고 공정 담당자가 손댈 자리를 돌려주지 않는다.
 - **Goal**: 선택 방법을 mechanism, selection unit, stability 의 세 축 위에 놓아, 어떤 방법이 각 축에서 어느 자리를 잡았고 따라서 그 답이 무엇을 덮지 못하는지 독자가 짚을 수 있게 한다.
-- **Non-Goal**: Feature 하나에 숫자를 매기는 일은 여기서 다루지 않는다. 그것은 [Feature Importance](../Feature-Importance/feature-importance.md) 의 주제다.
+- **Non-Goal**: Feature 하나에 숫자를 매기는 일은 여기서 다루지 않는다. 그것은 [Feature Importance](../../Feature-Importance/feature-importance.md) 의 주제다.
 
 ## 2. Summary
 

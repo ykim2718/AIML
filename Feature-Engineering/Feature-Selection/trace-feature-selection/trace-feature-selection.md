@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:13 UTC
+Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-12 17:50 CDT
 
 > Which of the thousands of features a semiconductor equipment trace produces move the target, and
 > where a method that answers it sits on three axes — when the model is consulted, what unit the
@@ -9,7 +9,7 @@ Rev. 1 | Created: 2026-09-10 | Updated: 2026-09-10 21:13 UTC
 
 - **Problem Statement**: One recipe's trace yields thousands of feature columns from hundreds of sensors while the wafer count stays in the hundreds, so a model fitted on all of them learns chance correlation and returns no place a process engineer can act on.
 - **Goal**: Place the selection methods on three axes — mechanism, selection unit, stability — so that a reader can name which axis position a candidate method takes and what its answer therefore does not cover.
-- **Non-Goal**: Putting a number on one feature is not covered here; that is the subject of [Feature Importance](../Feature-Importance/feature-importance.md).
+- **Non-Goal**: Putting a number on one feature is not covered here; that is the subject of [Feature Importance](../../Feature-Importance/feature-importance.md).
 
 ## 2. Summary
 
