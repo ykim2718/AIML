@@ -1,10 +1,10 @@
 # Polynomial Feature Expansion
-Rev. 26 | Created: 2026-09-09 | Updated: 2026-09-11 19:47 CDT
+Rev. 27 | Created: 2026-09-09 | Updated: 2026-09-11 19:50 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: Numeric tabular data is hard to express with a linear model.
-- **Goal**: To build a non-linear model by adding the polynomial features of the original variables ($x^2$, $x^3$) and the interaction terms ($x_1 \ast x_2$).
+- **Goal**: To build a non-linear model by adding the power terms of the original variables ($x^2$, $x^3$) and the interaction terms ($x_1 \ast x_2$).
 - **Non-Goal**: Derived variables are not covered, and the learning on the expanded data set is not covered.
 
 ## 2. Summary
@@ -37,11 +37,11 @@ Judging curvature absent, in row 2, means taking the response to move in one dir
 
 ## 3. Objective
 
-An expansion is aimed at two things, a non-linear relationship inside one variable and an interaction between variables, neither of which a linear model expresses. The first is carried by a polynomial feature, the second by an interaction term, and both are put into the columns so that the model itself stays linear.
+An expansion is aimed at two things, a non-linear relationship inside one variable and an interaction between variables, neither of which a linear model expresses. The first is carried by a power term, the second by an interaction term, and both are put into the columns so that the model itself stays linear.
 
-### 3.1 Polynomial Feature
+### 3.1 Power Term
 
-The non-linear relationship inside one variable is carried by the powers of that variable, its polynomial features. Adding $x^2$ and $x^3$ to a variable $x$, the model learns equation (1) and draws a curve while staying linear in its coefficients.
+The non-linear relationship inside one variable is carried by the powers of that variable, its power terms. Adding $x^2$ and $x^3$ to a variable $x$, the model learns equation (1) and draws a curve while staying linear in its coefficients.
 
 $$\hat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 \hspace{19em} (1)$$
 

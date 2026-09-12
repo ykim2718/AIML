@@ -1,10 +1,10 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 27 | Created: 2026-09-07 | Updated: 2026-09-11 19:47 CDT
+Rev. 28 | Created: 2026-09-07 | Updated: 2026-09-11 19:50 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: Numeric tabular data 에서 선형 model 로는 표현하기 힘들다.
-- **Goal**: Original variable 의 polynomial feature ($x^2$, $x^3$) 와 interaction term ($x_1 \ast x_2$) 을 추가하여 비선형 model 을 만든다.
+- **Goal**: Original variable 의 power term ($x^2$, $x^3$) 와 interaction term ($x_1 \ast x_2$) 을 추가하여 비선형 model 을 만든다.
 - **Non-Goal**: Derived variable 은 다루지 않고, expanded data set 의 학습을 다루지 않는다.
 
 ## 2. Summary
@@ -37,11 +37,11 @@ Table 1. Default choices and when they change
 
 ## 3. Objective
 
-Expansion 이 노리는 것은 두 가지다. 한 변수 안의 비선형 관계와 변수 사이의 상호작용이며, 선형 model 은 둘 다 표현하지 못한다. 앞의 것은 polynomial feature 가, 뒤의 것은 interaction term 이 맡으며, 둘 다 열로 만들어지므로 model 자체는 선형으로 남는다.
+Expansion 이 노리는 것은 두 가지다. 한 변수 안의 비선형 관계와 변수 사이의 상호작용이며, 선형 model 은 둘 다 표현하지 못한다. 앞의 것은 power term 이, 뒤의 것은 interaction term 이 맡으며, 둘 다 열로 만들어지므로 model 자체는 선형으로 남는다.
 
-### 3.1 Polynomial Feature
+### 3.1 Power Term
 
-한 변수 안의 비선형 관계는 그 변수의 거듭제곱, 곧 polynomial feature 가 맡는다. 변수 $x$ 에 $x^2$ 와 $x^3$ 을 더하면 model 이 학습하는 식은 (1) 이며, model 은 계수에 대해 선형인 채로 곡선을 그린다.
+한 변수 안의 비선형 관계는 그 변수의 거듭제곱, 곧 power term 이 맡는다. 변수 $x$ 에 $x^2$ 와 $x^3$ 을 더하면 model 이 학습하는 식은 (1) 이며, model 은 계수에 대해 선형인 채로 곡선을 그린다.
 
 $$\hat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 \hspace{19em} (1)$$
 
