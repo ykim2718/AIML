@@ -1,5 +1,5 @@
 # Univariate Feature Selection (Korean)
-Rev. 0 | Created: 2026-09-12 | Updated: 2026-09-12 18:05 CDT
+Rev. 1 | Created: 2026-09-12 | Updated: 2026-09-12 17:58 CDT
 
 ## 1. Purpose
 
@@ -63,28 +63,7 @@ F = \frac{\sigma_{\mathrm{between}}^2}{\sigma_{\mathrm{within}}^2} \hspace{19em}
 - 적용 조건: 비선형 관계를 포함한 모든 data type
 - 원리: 한 변수를 알 때 다른 변수의 entropy 가 줄어드는 양을 측정
 
-## 5. Implementation
-
-scikit-learn 의 `SelectKBest` 는 점수 함수와 $k$ 를 받아 section 3 의 세 단계를 한 번에 수행한다.
-
-```python
-from sklearn.datasets import load_iris
-from sklearn.feature_selection import SelectKBest, chi2
-
-# Load the Iris dataset, which has four features
-X, y = load_iris(return_X_y=True)
-print(f"original feature count: {X.shape[1]}")  # 4
-
-# Keep the two best features scored by the chi-square test
-selector = SelectKBest(score_func=chi2, k=2)
-X_new = selector.fit_transform(X, y)
-
-print(f"selected feature count: {X_new.shape[1]}")  # 2
-print(f"score of each feature: {selector.scores_}")
-print(f"selection mask: {selector.get_support()}")
-```
-
-## 6. Pros And Cons
+## 5. Pros And Cons
 
 장점은 비용과 단순성에서 오고, 단점은 feature 를 하나씩만 본다는 전제에서 온다.
 
@@ -108,3 +87,24 @@ Table 1. Pros and cons of univariate feature selection
 - **Filter Method**: Model 을 적합하기 전에 data 의 통계량만으로 feature 를 고르는 방식.
 - **p-value**: 귀무가설이 참일 때 관측된 것만큼 극단적인 통계량이 나올 확률.
 - **다중공선성 (Multicollinearity)**: 입력 변수들이 서로 강한 선형 관계를 가져, 계수가 개별 변수에 고유하게 배정되지 않는 상태.
+
+## Appendix B. Implementation
+
+scikit-learn 의 `SelectKBest` 는 점수 함수와 $k$ 를 받아 section 3 의 세 단계를 한 번에 수행한다.
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.feature_selection import SelectKBest, chi2
+
+# Load the Iris dataset, which has four features
+X, y = load_iris(return_X_y=True)
+print(f"original feature count: {X.shape[1]}")  # 4
+
+# Keep the two best features scored by the chi-square test
+selector = SelectKBest(score_func=chi2, k=2)
+X_new = selector.fit_transform(X, y)
+
+print(f"selected feature count: {X_new.shape[1]}")  # 2
+print(f"score of each feature: {selector.scores_}")
+print(f"selection mask: {selector.get_support()}")
+```
