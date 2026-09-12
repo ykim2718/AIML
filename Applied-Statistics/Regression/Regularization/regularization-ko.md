@@ -1,5 +1,5 @@
 # Regularization
-Rev. 1 | Created: 2026-09-12 | Updated: 2026-09-12 13:14 CDT
+Rev. 2 | Created: 2026-09-12 | Updated: 2026-09-12 14:24 CDT
 
 ## 1. Purpose
 
@@ -75,6 +75,28 @@ ElasticNet 은 L1 규제와 L2 규제를 결합한 방식이다.
 
 ## 5. Comparison
 
+세 방법을 가르는 것은 계수를 완전한 0 으로 만드는지이며, 그 차이는 penalty 가 그리는 제약 영역의 모양에서 온다. Penalty 를 더해 비용함수를 최소화하는 것은 계수 벡터를 일정한 크기 안에 묶어 두고 $RSS$ 를 최소화하는 것과 같고, 그 크기를 재는 norm 이 영역의 모양을 정한다.
+
+두 penalty 의 제약 영역은 Fig 1 과 같다.
+
+```text
+              b2                                    b2
+              |                                     |
+             /|\                                _.--+--._
+            / | \                              /    |    \
+      -----+--+--+----- b1              ------+-----+-----+------ b1
+            \ | /                              \    |    /
+             \|/                                '--_+_--'
+              |                                     |
+
+             (a)                                   (b)
+```
+
+Fig 1. Constraint regions of the L1 and L2 penalties
+
+- **(a)**: L1 의 제약 영역. 축 위에 꼭짓점이 있는 마름모이며, $RSS$ 의 등고선이 커지다가 처음 닿는 곳이 대개 그 꼭짓점이다. 꼭짓점에서는 한 계수가 정확히 0 이다.
+- **(b)**: L2 의 제약 영역. 꼭짓점이 없는 원이며, 등고선이 닿는 점은 축에서 벗어나 있어 두 계수 모두 0 이 아니다.
+
 Table 1. Comparison of the three penalties
 
 | Aspect | Ridge (L2) | Lasso (L1) | ElasticNet (L1 + L2) |
@@ -97,6 +119,7 @@ Penalty 를 더하는 대신 변수 자체를 줄이는 방법이 두 가지 있
 
 ## Appendix A. Terminology
 
+- **contour**: 같은 $RSS$ 값을 주는 계수 조합들이 그리는 선.
 - **determinant**: 정방행렬에 대응하는 스칼라 값. 0 이면 역행렬이 존재하지 않는다.
 - **full rank**: 행렬의 rank 가 그 행렬이 가질 수 있는 최댓값과 같은 상태.
 - **L1 norm**: 벡터 원소의 절댓값 합.
