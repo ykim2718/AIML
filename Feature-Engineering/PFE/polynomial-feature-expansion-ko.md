@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 84 | Created: 2026-09-07 | Updated: 2026-09-12 07:05 CDT
+Rev. 85 | Created: 2026-09-07 | Updated: 2026-09-12 07:20 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -190,7 +190,7 @@ Table 2 의 5 행, 곧 dummy 열에서 나오는 중복된 열과 값이 모두 
 Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 
 - Degree 를 1 부터 올리며 그린 held-out 오차 곡선. 최저점이 2 를 넘지 않는지 본다.
-- Expansion 뒤 design matrix 의 조건수와 열별 VIF (Variance Inflation Factor). Centering 뒤에도 큰 값이면 penalty 가 필요하다.
+- Expansion 뒤 design matrix 의 조건수와 열별 VIF (Variance Inflation Factor). VIF 는 열 $j$ 를 나머지 열로 회귀해 얻은 $R_j^2$ 로 $1 / (1 - R_j^2)$ 이며, 그 열이 나머지와 직교한 경우에 비해 $\hat{\beta}_j$ 의 분산이 몇 배로 부푼지를 뜻한다 ($R_j^2 = 0.9$ 면 10). 조건수가 행렬 전체를 한 수로 보는 데 비해 VIF 는 어느 열이 겹치는지 열마다 짚어 주며, centering 뒤에도 큰 값이면 penalty 가 필요하다.
 - 자료에서 복원추출로 다시 뽑은 표본 (bootstrap) 에서 계수 부호가 유지되는 비율. 곱항의 부호가 뒤집히면 그 항은 해석하지 않는다.
 - 잔차를 곱항에 대해 그린 산점도. Expansion 전에 남아 있던 구조가 사라졌는지 확인한다.
 
@@ -243,6 +243,7 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 - **extrapolation**: 훈련 자료가 덮지 않는 입력 범위에 대한 예측.
 - **held-out**: 적합에 쓰지 않고 적합한 model 의 오차를 재는 데만 쓰는 자료.
 - **heredity**: 곱항을 model 에 넣으면 그것을 이루는 낮은 차수 항도 함께 넣는 규칙.
+- **imputation**: 비어 있는 값을 다른 값으로 채우는 일. 그 열의 평균이나 model 의 예측으로 채운다.
 - **leverage**: 한 관측이 자신의 예측값을 끌어당기는 정도. 입력이 중심에서 멀수록 커진다.
 - **main effect**: 변수 하나의 1차 항 $\beta_i x_i$.
 - **monomial**: 변수들의 거듭제곱을 곱한 항. $X_1^2 X_2$ 가 그 예다.

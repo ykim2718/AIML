@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 81 | Created: 2026-09-09 | Updated: 2026-09-12 07:05 CDT
+Rev. 82 | Created: 2026-09-09 | Updated: 2026-09-12 07:20 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -190,7 +190,7 @@ Row 5 of Table 2, the duplicate and all-zero columns that come out of dummy colu
 Whether an expansion helped is confirmed in four ways.
 
 - The held-out error curve drawn while raising the degree from 1. Watch whether the minimum stays at 2 or below.
-- The condition number of the expanded design matrix and the VIF (Variance Inflation Factor) of each column. A large value after centering calls for a penalty.
+- The condition number of the expanded design matrix and the VIF (Variance Inflation Factor) of each column. The VIF of column $j$ is $1 / (1 - R_j^2)$ on the $R_j^2$ of that column regressed on the rest, the factor by which the variance of $\hat{\beta}_j$ is inflated over the orthogonal case ($R_j^2 = 0.9$ gives 10). Where the condition number reads the whole matrix as one number, the VIF names the column that overlaps, and a large value after centering calls for a penalty.
 - The share of samples redrawn from the data with replacement, the bootstrap, in which a coefficient keeps its sign. A product term whose sign flips is not interpreted.
 - The residual plotted against the product terms. Confirm that the structure left before the expansion is gone.
 
@@ -243,6 +243,7 @@ Whether an expansion helped is confirmed in four ways.
 - **extrapolation**: Prediction over an input range the training data does not cover.
 - **held-out**: Data kept out of the fit and used only to measure the error of the fitted model.
 - **heredity**: The rule that a product term put into a model brings the lower-degree terms composing it with it.
+- **imputation**: Filling a missing value with another, such as the mean of that column or the prediction of a model.
 - **leverage**: How strongly one observation pulls its own fitted value. It grows as the input sits further from the centre.
 - **main effect**: The first-order term of a single variable, $\beta_i x_i$.
 - **monomial**: A term formed by multiplying powers of the variables. $X_1^2 X_2$ is one.
