@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 44 | Created: 2026-09-09 | Updated: 2026-09-11 23:14 CDT
+Rev. 45 | Created: 2026-09-09 | Updated: 2026-09-11 23:34 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -71,7 +71,7 @@ $$\mathrm{cov}(x, x^2) = \overline{u\,x^2} = \overline{u^3} + 2\bar{x}\,\overlin
 
 The two terms of equation (6) come from different places. The first, $2\bar{x}\,\overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
 
-Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation. With $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (6) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (7).
+Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix B](#appendix-b-correlation-of-a-variable-and-its-square). With $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (6) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (7).
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (7)$$
 
@@ -113,7 +113,7 @@ $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (10)$$
 
 $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (11)$$
 
-Both counts are derived from the set of equation (4) in [Appendix B](#appendix-b-term-count-derivation).
+Both counts are derived from the set of equation (4) in [Appendix C](#appendix-c-term-count-derivation).
 
 Table 1. Column count after expansion, bias column excluded
 
@@ -147,7 +147,7 @@ Ridge is the default of the two. It divides the coefficient among the columns th
 
 That ridge never drives a coefficient to zero means no column can be dropped with it. It is still the default because what a penalty buys on an expansion is not a smaller column count but a steadier prediction, and the size of that is the held-out RMSE of section 5.1 falling from 1.08 to 0.75 at degree 3. Where the column count itself has to come down, that is the work of lasso or elastic net.
 
-The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix D](#appendix-d-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns).
+The penalty acts on the size of a column, so it is applied after the expanded columns are standardized, which is what puts the second standardization into the pipeline of [Appendix E](#appendix-e-implementation). The objectives of the three penalties, and how far each of them moves a coefficient, are in [Appendix D](#appendix-d-ridge-and-lasso-on-expanded-columns).
 
 ### 5.3 Failure Modes
 
@@ -233,7 +233,25 @@ Whether an expansion helped is confirmed in four ways.
 - **standardization**: Subtracting from each column its own mean and dividing by its standard deviation, bringing it to mean 0 and standard deviation 1.
 - **VIF**: The variance inflation factor, computed from the $R^2$ of one column regressed on the rest. It is $1/(1-R^2)$.
 
-## Appendix B. Term Count Derivation
+## Appendix B. Correlation Of A Variable And Its Square
+
+Section 4.2 divides the covariance by the two standard deviations to write the correlation, and states that correlation as equation (7) and equation (8). Why the division is needed, and where the two equations come from, is below.
+
+The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{cov}(cx, (cx)^2) = c^3\,\mathrm{cov}(x, x^2)$, so the size of a covariance moves with a change of units alone and cannot weigh the two terms against each other. Dividing by the standard deviations, $\mathrm{sd}(cx) = c\,\mathrm{sd}(x)$ and $\mathrm{sd}((cx)^2) = c^2\,\mathrm{sd}(x^2)$ cancel that $c^3$, which is the left half of equation (12), and the Cauchy–Schwarz inequality holds the value inside $[-1, 1]$, which is the right half.
+
+$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (12)$$
+
+The derivation is a matter of the denominator. The numerator is equation (6), and $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. In $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ the constant $\bar{x}^2$ leaves a variance unchanged, so expanding the variance of the two remaining terms gives equation (13).
+
+$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4\bar{x}^2\,\overline{u^2} + 4\bar{x}\,\overline{u^3} \hspace{6em} (13)$$
+
+Substituting $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes the numerator and the two denominators as equation (14).
+
+$$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (14)$$
+
+The correlation is $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x)\,\mathrm{sd}(x^2))$, so $(\overline{u^2})^{3/2}$ cancels and equation (7) of section 4.2 is what is left. Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\bar{x} = 0$, that is $t = 0$, so equation (8) is equation (7) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
+
+## Appendix C. Term Count Derivation
 
 Set notation comes first. A set is written either by listing its elements, as in $\lbrace 2, 4, 6 \rbrace$, or by a condition, in the form $\lbrace \cdot \mid \cdot \rbrace$. In that second form a vertical bar splits the braces: left of the bar stands the shape an element takes, right of it the condition that shape has to meet. So $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ reads as every $n^2$ for $n$ an integer from 1 to 3, which is the set $\lbrace 1, 4, 9 \rbrace$. A colon is used in place of the bar as often as not, and this document uses both.
 
@@ -259,39 +277,39 @@ The one pair left out is $(0, 0)$, the constant term.
 
 Equation (4) defines the set of columns to be built without saying how large it is. That size is equation (10) and equation (11), derived below.
 
-One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (12), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
+One monomial of degree exactly $k$ corresponds to one choice of non-negative integer exponents $(a_1, \dots, a_n)$ summing to $k$, so counting the monomials of that degree is counting those choices. That count is equation (15), whose left side carries a pair of bars $\lvert \cdot \rvert$ for the number of elements in the set they enclose.
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (12)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (15)$$
 
 The count itself is stars and bars. Take the degree $k$ as $k$ identical stars, and the $n$ variables as $n$ bins separated by $n-1$ bars, so that the stars falling in a bin are the exponent $a_i$ of that variable. Counting the exponent choices is then laying $k$ stars and $n-1$ bars, $k+n-1$ symbols, in a row and choosing which $n-1$ positions carry the bars, which is $\binom{k+n-1}{n-1}$.
 
 At $n = 2$ and $k = 2$ that is $\binom{3}{1} = 3$, and the arrangements $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ read as the exponents $(2, 0)$, $(1, 1)$, $(0, 2)$ — the three degree-2 terms $x_1^2$, $x_1 x_2$, $x_2^2$ of Table 3.
 
-Summing the degrees from 0 to $d$ gives equation (13). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
+Summing the degrees from 0 to $d$ gives equation (16). Writing it with one slack exponent $a_0 \ge 0$ such that $a_0 + \sum_i a_i = d$ collapses the sum into a single count, that of $d$ items falling into $n+1$ bins.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (13)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (16)$$
 
 The set of equation (4) excludes the constant term at $k = 0$, so its size is $\binom{n+d}{d} - 1$, which is equation (10).
 
-With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (11). Once $d \ge n$ every subset is admitted and the sum closes as equation (14).
+With `interaction_only` no variable is used twice, so a surviving term corresponds to one subset of the $n$ variables of size $j$, where $j$ runs from 1 to $\min(d, n)$. Adding those counts is equation (11). Once $d \ge n$ every subset is admitted and the sum closes as equation (17).
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (14)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (17)$$
 
-## Appendix C. Ridge And Lasso On Expanded Columns
+## Appendix D. Ridge And Lasso On Expanded Columns
 
-The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (15) and lasso is equation (16) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
+The penalty on the expanded columns is one of three. Written as an objective, ridge is equation (18) and lasso is equation (19) [[12](#ref-12)], where $\alpha$ sets how hard the penalty presses.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (15)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (18)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (16)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (19)$$
 
-The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (17): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
+The shape of the penalty is the whole difference. Where the columns are standardized and orthogonal the two solutions close in equation (20): ridge divides every coefficient by the same factor and never reaches zero, while lasso sets to exactly zero every coefficient smaller in size than $\alpha / 2$ and pulls the rest toward zero by that amount.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (17)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (20)$$
 
-Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (18) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
+Expanded columns are far from orthogonal (section 4.2) and come in groups that resemble one another. Ridge spreads one coefficient across such a group; lasso keeps one member and zeroes the rest, and which member survives changes with the sample, so the list of terms lasso returns is itself unstable. Elastic net, equation (21) [[13](#ref-13)], mixes the two by $\rho$, which is lasso at 1 and ridge at 0. Its quadratic part keeps a group in or out together, so terms are still selected while the list moves less.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (18)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (21)$$
 
 Table 4. Penalties on expanded columns
 
@@ -305,9 +323,9 @@ $\alpha$ is chosen on held-out error over candidates spaced by powers of ten, an
 
 A penalty does not buy a degree of 4. What it buys is the difference between a fit that survives a column count close to the row count and one that does not, and section 5.1 gives the size of that difference.
 
-## Appendix D. Implementation
+## Appendix E. Implementation
 
-### D.1 Options
+### E.1 Options
 
 The expansion itself is one line of `sklearn.preprocessing.PolynomialFeatures`, and only four arguments have to be settled [[7](#ref-7)].
 
@@ -332,7 +350,7 @@ term_name = poly.get_feature_names_out()
 
 The names `get_feature_names_out()` returns are the only route from a coefficient back to its column. Lose them after the expansion and the coefficients remain while which product each belongs to cannot be said.
 
-### D.2 Pipeline
+### E.2 Pipeline
 
 An expansion is not used alone but placed between standardization and the penalized fit. The order is standardize the raw variables, expand, standardize the expanded columns again, then fit with a penalty.
 
@@ -358,13 +376,13 @@ search.fit(X, y)
 
 Putting the expansion inside the pipeline is not a convenience. The expansion is row-wise and leaks nothing by itself, but the standardizations on either side of it must take their means and variances from the training part of each fold, the pieces cross-validation splits the data into. Choosing the degree and the penalty together also finishes in one search only inside the pipeline.
 
-### D.3 Cost
+### E.3 Cost
 
 The cost of an expansion is linear in the column count, and that count grows by equation (10). At 100,000 rows, 100 variables and $d = 2$ the columns number 5,150, and holding them in a dense matrix, one that stores every value, takes 4.1 GB at 64 bits a value. Two routes keep the expanded columns out of memory.
 
-The first is the kernel. The polynomial kernel of equation (19) computes the inner product of the expanded space without the expansion.
+The first is the kernel. The polynomial kernel of equation (22) computes the inner product of the expanded space without the expansion.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (19)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (22)$$
 
 `KernelRidge(kernel='poly')` is that form, and since the cost falls on rows rather than on columns it suits data with many variables and few rows. What it costs is interpretation: no coefficient attaches to an individual monomial, so which product contributed cannot be read.
 
@@ -372,7 +390,7 @@ The second is approximation. `PolynomialCountSketch` compresses the terms a poly
 
 Sparse input is taken as it is. Feed in a CSR matrix, which stores only the non-zero values, and the expansion comes back in the same form, so data carrying many dummy columns does not inflate into a dense array.
 
-### D.4 Selective Expansion
+### E.4 Selective Expansion
 
 Not every pair has to be built. Hand the expansion the columns to be crossed and the column count ends at the number chosen rather than at Table 1.
 

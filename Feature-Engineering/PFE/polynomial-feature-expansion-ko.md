@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 46 | Created: 2026-09-07 | Updated: 2026-09-11 23:14 CDT
+Rev. 47 | Created: 2026-09-07 | Updated: 2026-09-11 23:34 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -71,7 +71,7 @@ $$\mathrm{cov}(x, x^2) = \overline{u\,x^2} = \overline{u^3} + 2\bar{x}\,\overlin
 
 식 (6) 의 두 항은 출처가 다르다. 앞의 항 $2\bar{x}\,\overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
 
-두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 한다. $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (6) 은 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (7) 이다.
+두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-correlation-of-a-variable-and-its-square) 에 있다. $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (6) 은 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (7) 이다.
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (7)$$
 
@@ -113,7 +113,7 @@ $$p_{\mathrm{full}} = \binom{n+d}{d} - 1 \hspace{19em} (10)$$
 
 $$p_{\mathrm{inter}} = \sum_{j=1}^{\min(d,\ n)} \binom{n}{j} \hspace{19em} (11)$$
 
-두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix B](#appendix-b-term-count-derivation) 에 있다.
+두 식은 모두 식 (4) 의 집합에서 나오며, 그 유도는 [Appendix C](#appendix-c-term-count-derivation) 에 있다.
 
 Table 1. Column count after expansion, bias column excluded
 
@@ -147,7 +147,7 @@ Expansion 이 만든 열에는 penalty 를 반드시 함께 건다. Penalty 는 
 
 Ridge 가 계수를 0 으로 만들지 않는다는 것은 ridge 로는 열을 지울 수 없다는 뜻이다. 그래도 기본으로 두는 이유는 expansion 에서 penalty 가 버는 것이 열의 개수가 아니라 예측의 안정이기 때문이며, 그 크기는 5.1 절의 degree 3 에서 held-out RMSE 가 1.08 에서 0.75 로 내려가는 차이다. 열의 개수를 실제로 줄여야 하면 그것은 lasso 나 elastic net 의 몫이다.
 
-Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix D](#appendix-d-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix C](#appendix-c-ridge-and-lasso-on-expanded-columns) 에 있다.
+Penalty 는 열의 크기에 걸리므로 expansion 이 만든 열을 standardization 한 뒤에 적용하며, [Appendix E](#appendix-e-implementation) 의 pipeline 에 두 번째 standardization 이 들어가는 이유가 그것이다. 세 penalty 의 목적 함수와 각각이 계수를 얼마나 움직이는지는 [Appendix D](#appendix-d-ridge-and-lasso-on-expanded-columns) 에 있다.
 
 ### 5.3 Failure Modes
 
@@ -233,7 +233,25 @@ Expansion 이 도움이 되었는지는 네 가지로 확인한다.
 - **standardization**: 각 열에서 그 열의 평균을 빼고 표준편차로 나누어 평균 0, 표준편차 1 로 맞추는 연산.
 - **VIF**: 한 열을 나머지 열로 회귀했을 때의 $R^2$ 로 계산하는 분산 팽창 계수. $1/(1-R^2)$ 이다.
 
-## Appendix B. Term Count Derivation
+## Appendix B. Correlation Of A Variable And Its Square
+
+4.2 절은 공분산을 두 표준편차로 나누어 상관으로 적고, 그 상관이 식 (7) 과 식 (8) 이라고 했다. 나누어야 하는 이유와 두 식의 유도가 아래다.
+
+나누어야 하는 이유는 단위다. 열 $x$ 를 $c \gt 0$ 배 하면 $\mathrm{cov}(cx, (cx)^2) = c^3\,\mathrm{cov}(x, x^2)$ 이므로, 공분산의 크기는 자료의 단위를 바꾸기만 해도 달라져 두 항의 몫을 재는 데 쓸 수 없다. 표준편차로 나누면 $\mathrm{sd}(cx) = c\,\mathrm{sd}(x)$ 와 $\mathrm{sd}((cx)^2) = c^2\,\mathrm{sd}(x^2)$ 이 그 $c^3$ 을 약분하므로 식 (12) 의 왼쪽이 성립하고, Cauchy–Schwarz 부등식이 그 값을 $[-1, 1]$ 안에 묶어 오른쪽이 성립한다.
+
+$$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (12)$$
+
+유도는 분모를 구하는 일이다. 분자는 식 (6) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2 = u^2 + 2\bar{x}u + \bar{x}^2$ 에서 상수 $\bar{x}^2$ 은 분산을 바꾸지 않으므로, 남은 두 항의 분산을 펼치면 식 (13) 이 된다.
+
+$$\mathrm{var}(x^2) = \mathrm{var}(u^2 + 2\bar{x}u) = \overline{u^4} - (\overline{u^2})^2 + 4\bar{x}^2\,\overline{u^2} + 4\bar{x}\,\overline{u^3} \hspace{6em} (13)$$
+
+여기에 $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (14) 로 적힌다.
+
+$$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (14)$$
+
+상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x)\,\mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (7) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\bar{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (7) 에 $t = 0$ 을 넣은 것이 식 (8) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
+
+## Appendix C. Term Count Derivation
 
 집합 표기를 읽는 법이 먼저다. 집합은 원소를 늘어놓아 $\lbrace 2, 4, 6 \rbrace$ 처럼 적거나, 조건으로 $\lbrace \cdot \mid \cdot \rbrace$ 꼴로 적는다. 뒤의 꼴에서는 세로줄이 중괄호 안을 둘로 나누어, 왼쪽에 원소가 취하는 모양을, 오른쪽에 그 모양이 만족해야 할 조건을 적는다. 그래서 $\lbrace n^2 \mid n \in \mathbb{Z}, \ 1 \le n \le 3 \rbrace$ 은 $n$ 이 1 부터 3 까지의 정수일 때의 $n^2$ 을 모두 모은 것, 곧 $\lbrace 1, 4, 9 \rbrace$ 이다. 세로줄 자리에는 콜론도 그만큼 자주 쓰이며, 이 문서는 둘을 함께 쓴다.
 
@@ -259,39 +277,39 @@ Table 3. Exponent pairs admitted by equation (4) at two variables and degree 2
 
 식 (4) 는 만들 열의 집합을 정의할 뿐 그 크기를 말하지 않는다. 그 크기가 식 (10) 과 식 (11) 이며, 아래가 그 유도다.
 
-차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응하므로, 그 차수의 monomial 을 세는 일은 그런 지수 벌을 세는 일이다. 그 수가 식 (12) 이며, 왼쪽의 세로줄 둘 $\lvert \cdot \rvert$ 은 그 안에 든 집합의 원소 개수를 뜻한다.
+차수가 정확히 $k$ 인 monomial 하나는 합이 $k$ 인 음이 아닌 정수 지수 $(a_1, \dots, a_n)$ 하나에 대응하므로, 그 차수의 monomial 을 세는 일은 그런 지수 벌을 세는 일이다. 그 수가 식 (15) 이며, 왼쪽의 세로줄 둘 $\lvert \cdot \rvert$ 은 그 안에 든 집합의 원소 개수를 뜻한다.
 
-$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (12)$$
+$$\left| \lbrace (a_1, \dots, a_n) : a_i \in \mathbb{Z}_{\ge 0}, \ \sum_{i=1}^{n} a_i = k \rbrace \right| = \binom{k+n-1}{n-1} \hspace{19em} (15)$$
 
 세는 방법은 별과 막대 (stars and bars) 다. 차수 $k$ 를 같은 별 $k$ 개로 놓고, 변수 $n$ 개를 막대 $n-1$ 개로 나눈 칸 $n$ 개로 놓으면, 한 칸에 든 별의 수가 그 변수의 지수 $a_i$ 가 된다. 그러면 지수 벌을 세는 일은 별 $k$ 개와 막대 $n-1$ 개, 모두 $k+n-1$ 개를 한 줄로 늘어놓고 그중 어느 $n-1$ 자리를 막대로 삼을지 고르는 일과 같아져 $\binom{k+n-1}{n-1}$ 이 된다.
 
 $n = 2$, $k = 2$ 로 확인하면 $\binom{3}{1} = 3$ 이고, 배열 $\ast\ast\mid$, $\ast\mid\ast$, $\mid\ast\ast$ 가 각각 지수 $(2, 0)$, $(1, 1)$, $(0, 2)$, 곧 Table 3 의 차수 2 항 $x_1^2$, $x_1 x_2$, $x_2^2$ 셋과 같다.
 
-차수를 0 부터 $d$ 까지 더하면 식 (13) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
+차수를 0 부터 $d$ 까지 더하면 식 (16) 이 된다. 남는 몫을 담을 지수 $a_0 \ge 0$ 을 하나 더 두어 $a_0 + \sum_i a_i = d$ 로 적으면, 이 합은 물건 $d$ 개를 $n+1$ 개의 칸에 담는 경우의 수 하나로 묶인다.
 
-$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (13)$$
+$$\sum_{k=0}^{d} \binom{k+n-1}{n-1} = \binom{n+d}{d} \hspace{19em} (16)$$
 
 식 (4) 의 집합은 $k = 0$ 인 상수항을 뺀 것이므로 그 크기는 $\binom{n+d}{d} - 1$ 이고, 이것이 식 (10) 이다.
 
-`interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (11) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (14) 로 닫힌다.
+`interaction_only` 에서는 같은 변수를 두 번 쓰지 않으므로, 남는 항 하나는 변수 $n$ 개에서 고른 크기 $j$ 의 부분집합 하나에 대응한다. $j$ 는 1 부터 $\min(d, n)$ 까지이고, 그 수를 더한 것이 식 (11) 이다. $d \ge n$ 이면 모든 부분집합이 허용되어 그 합은 식 (17) 로 닫힌다.
 
-$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (14)$$
+$$\sum_{j=1}^{n} \binom{n}{j} = 2^n - 1 \hspace{19em} (17)$$
 
-## Appendix C. Ridge And Lasso On Expanded Columns
+## Appendix D. Ridge And Lasso On Expanded Columns
 
-Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (15), lasso 는 식 (16) 이며 [[12](#ref-12)], $\alpha$ 가 penalty 를 누르는 세기다.
+Expansion 이 만든 열에 거는 penalty 는 셋 가운데 하나다. 목적 함수로 적으면 ridge 는 식 (18), lasso 는 식 (19) 이며 [[12](#ref-12)], $\alpha$ 가 penalty 를 누르는 세기다.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (15)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{ridge}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_2^2 \hspace{15em} (18)$$
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (16)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{lasso}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \lVert \boldsymbol{\beta} \rVert_1 \hspace{15em} (19)$$
 
-차이는 penalty 의 모양에서 온다. 열이 standardization 되어 있고 서로 직교하면 두 해는 식 (17) 로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
+차이는 penalty 의 모양에서 온다. 열이 standardization 되어 있고 서로 직교하면 두 해는 식 (20) 으로 닫힌 꼴이 된다. Ridge 는 모든 계수를 같은 비율로 나누어 줄이고 0 에는 닿지 않으며, lasso 는 크기가 $\alpha / 2$ 에 못 미치는 계수를 정확히 0 으로 만들고 나머지는 그만큼 0 쪽으로 당긴다.
 
-$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (17)$$
+$$\hat{\beta}_j^{\mathrm{ridge}} = \frac{\hat{\beta}_j^{\mathrm{ols}}}{1 + \alpha}, \qquad \hat{\beta}_j^{\mathrm{lasso}} = \mathrm{sign}(\hat{\beta}_j^{\mathrm{ols}}) \max \left( \lvert \hat{\beta}_j^{\mathrm{ols}} \rvert - \frac{\alpha}{2}, \ 0 \right) \hspace{9em} (20)$$
 
-Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (18) 이며 [[13](#ref-13)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
+Expansion 이 만든 열은 직교와 거리가 멀고 (4.2 절), 서로 닮은 열이 무리를 이룬다. Ridge 는 그 무리에 계수를 나누어 주고, lasso 는 하나만 남기고 나머지를 0 으로 만든다. 어느 것이 남을지는 표본이 조금만 달라져도 바뀌므로, lasso 가 돌려주는 항의 목록은 그 자체로 불안정하다. 둘을 $\rho$ 로 섞은 elastic net 이 식 (21) 이며 [[13](#ref-13)], $\rho$ 가 1 이면 lasso, 0 이면 ridge 다. 제곱 항이 닮은 무리를 함께 남기거나 함께 지우므로, 항을 고르면서도 목록이 덜 흔들린다.
 
-$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (18)$$
+$$\hat{\boldsymbol{\beta}}_{\mathrm{enet}} = \arg\min_{\boldsymbol{\beta}} \lVert \mathbf{y} - \mathbf{X}\boldsymbol{\beta} \rVert_2^2 + \alpha \left( \rho \lVert \boldsymbol{\beta} \rVert_1 + \frac{1 - \rho}{2} \lVert \boldsymbol{\beta} \rVert_2^2 \right) \hspace{9em} (21)$$
 
 Table 4. Penalties on expanded columns
 
@@ -305,9 +323,9 @@ $\alpha$ 는 held-out 오차로 고르며, 후보는 10 의 거듭제곱 간격�
 
 Penalty 를 건다고 degree 를 4 로 올릴 수 있는 것은 아니다. Penalty 가 버는 것은 열 수가 행 수에 가까울 때 적합이 무너지느냐 버티느냐의 차이이며, 그 차이의 크기는 5.1 절에 있다.
 
-## Appendix D. Implementation
+## Appendix E. Implementation
 
-### D.1 Options
+### E.1 Options
 
 Expansion 자체는 `sklearn.preprocessing.PolynomialFeatures` 한 줄이며, 정할 것은 네 인자뿐이다 [[7](#ref-7)].
 
@@ -332,7 +350,7 @@ term_name = poly.get_feature_names_out()
 
 `get_feature_names_out()` 이 돌려주는 이름은 계수를 다시 열에 되짚는 유일한 통로다. Expansion 뒤에 이름을 잃으면 계수는 남아도 그것이 어느 곱의 계수인지 말할 수 없다.
 
-### D.2 Pipeline
+### E.2 Pipeline
 
 Expansion 은 홀로 쓰지 않고 standardization 과 penalty 사이에 둔다. 순서는 원 변수의 standardization, expansion, expansion 이 만든 열의 두 번째 standardization, 그리고 penalty 를 건 적합이다.
 
@@ -358,13 +376,13 @@ search.fit(X, y)
 
 Expansion 을 pipeline 안에 두는 이유는 편의가 아니다. Expansion 자체는 행마다 독립이라 누수 (leakage) 를 만들지 않지만, 앞뒤의 standardization 은 cross-validation 이 자료를 나눈 조각 (fold) 의 훈련 부분에서만 평균과 분산을 얻어야 한다. degree 와 penalty 를 함께 고르는 일도 pipeline 안에서만 한 번의 탐색으로 끝난다.
 
-### D.3 Cost
+### E.3 Cost
 
 Expansion 의 비용은 열 수에 선형이고, 그 열 수는 식 (10) 으로 늘어난다. 행 100,000, 변수 100, $d = 2$ 이면 열은 5,150 개이고, 값을 하나도 빠뜨리지 않고 담는 dense 행렬로 두면 64-bit 실수 기준 4.1 GB 다. Expansion 결과를 memory 에 두지 않는 길이 둘 있다.
 
-첫째는 kernel 이다. 다항 kernel 식 (19) 는 expansion 한 공간의 내적을 expansion 없이 계산한다.
+첫째는 kernel 이다. 다항 kernel 식 (22) 는 expansion 한 공간의 내적을 expansion 없이 계산한다.
 
-$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (19)$$
+$$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \hspace{19em} (22)$$
 
 `KernelRidge(kernel='poly')` 가 그 형태이며, 비용이 열이 아니라 행에 걸리므로 변수가 많고 행이 적은 자료에 맞는다. 대신 계수가 개별 monomial 에 붙지 않아 어느 곱이 기여했는지 읽을 수 없다.
 
@@ -372,7 +390,7 @@ $$K(\mathbf{x}, \mathbf{z}) = (\gamma\, \mathbf{x}^{\top} \mathbf{z} + c)^{d} \h
 
 희소 입력은 그대로 받는다. 0 이 아닌 값만 저장하는 CSR 형식의 행렬을 넣으면 expansion 결과도 같은 형식으로 나오므로, dummy 열이 많은 자료가 dense 로 부풀지 않는다.
 
-### D.4 Selective Expansion
+### E.4 Selective Expansion
 
 모든 짝을 만들 필요는 없다. 곱할 열을 골라 넘기면 열 수는 Table 1 이 아니라 고른 개수로 끝난다.
 
