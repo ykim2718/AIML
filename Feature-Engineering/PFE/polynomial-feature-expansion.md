@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 54 | Created: 2026-09-09 | Updated: 2026-09-12 01:38 CDT
+Rev. 55 | Created: 2026-09-09 | Updated: 2026-09-12 01:47 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -65,29 +65,29 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
-The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\bar{x}$, and the deviations $u_i = x_i - \bar{x}$, whose own mean is 0; an overline is the sample mean. The definition of the covariance, $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ (equation (16) of [Appendix B](#appendix-b-covariance-and-correlation)), applied at $X = x$ and $Y = x^2$ gives equation (6): the mean of the product is $\overline{x^3}$, and the product of the means is $\bar{x}$ times $\overline{x^2}$.
+The first reason to center is the drop in correlation. A correlation is the covariance of two columns over the product of their standard deviations, so where the correlation comes from is read off the covariance in the numerator. Take the samples $x_1, \dots, x_N$, their mean $\overline{x}$, and the deviations $u_i = x_i - \overline{x}$, whose own mean is 0; an overline is the sample mean. The definition of the covariance, $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ (equation (16) of [Appendix B](#appendix-b-covariance-and-correlation)), applied at $X = x$ and $Y = x^2$ gives equation (6): the mean of the product is $\overline{x^3}$, and the product of the means is $\overline{x}$ times $\overline{x^2}$.
 
-$$\mathrm{cov}(x, x^2) = \overline{x^3} - \bar{x} \overline{x^2} \hspace{19em} (6)$$
+$$\mathrm{cov}(x, x^2) = \overline{x^3} - \overline{x} \overline{x^2} \hspace{19em} (6)$$
 
-Substituting $x = u + \bar{x}$ writes both means in $u$, which is equation (7). Of the expanded terms, each one multiplied by $\overline{u}$ drops out, since $\overline{u} = 0$.
+Substituting $x = u + \overline{x}$ writes both means in $u$, which is equation (7). Of the expanded terms, each one multiplied by $\overline{u}$ drops out, since $\overline{u} = 0$.
 
-$$\overline{x^3} = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3, \qquad \overline{x^2} = \overline{u^2} + \bar{x}^2 \hspace{19em} (7)$$
+$$\overline{x^3} = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3, \qquad \overline{x^2} = \overline{u^2} + \overline{x}^2 \hspace{19em} (7)$$
 
 Putting equation (7) into equation (6) gives equation (8).
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3 - \bar{x} (\overline{u^2} + \bar{x}^2) \hspace{19em} (8)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3 - \overline{x} (\overline{u^2} + \overline{x}^2) \hspace{19em} (8)$$
 
-The $\bar{x}^3$ cancels and $\bar{x} \overline{u^2}$ comes off $3 \bar{x} \overline{u^2}$, so the covariance closes as equation (9).
+The $\overline{x}^3$ cancels and $\overline{x} \overline{u^2}$ comes off $3 \overline{x} \overline{u^2}$, so the covariance closes as equation (9).
 
-$$\mathrm{cov}(x, x^2) = 2 \bar{x} \overline{u^2} + \overline{u^3} \hspace{19em} (9)$$
+$$\mathrm{cov}(x, x^2) = 2 \overline{x} \overline{u^2} + \overline{u^3} \hspace{19em} (9)$$
 
-The two terms of equation (9) come from different places. The first, $2 \bar{x} \overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
+The two terms of equation (9) come from different places. The first, $2 \overline{x} \overline{u^2}$, comes only from how far the mean sits from zero; the second, $\overline{u^3}$, only from how far the distribution leans to one side, its third central moment. Subtracting the mean takes the first term to 0 and leaves the second as it was.
 
-Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix B](#appendix-b-covariance-and-correlation). With $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (9) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (10).
+Weighing the two terms against each other takes dividing the covariance by the standard deviations, that is, writing the correlation; why that division is needed and where the two equations below come from are in [Appendix B](#appendix-b-covariance-and-correlation). With $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$, equation (9) is $(\overline{u^2})^{3/2} (2t + s)$, the variance of $x$ is $\overline{u^2}$ and the variance of $x^2$ is $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$, so the correlation is equation (10).
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
 
-Centering takes $\bar{x}$ to 0 and so forces $t = 0$, which reduces equation (10) to equation (11).
+Centering takes $\overline{x}$ to 0 and so forces $t = 0$, which reduces equation (10) to equation (11).
 
 $$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (11)$$
 
@@ -255,9 +255,9 @@ Multiplying out under the properties of the expectation gives equation (16), the
 
 $$\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y] \hspace{19em} (16)$$
 
-Measured on a sample of $n$ observations the covariance is equation (17), where $x_i$ and $y_i$ are the $i$-th observation, $\bar{x}$ and $\bar{y}$ are the sample means, and the division by $n - 1$ drops one degree of freedom so that the population value is estimated without bias, as an unbiased estimator.
+Measured on a sample of $n$ observations the covariance is equation (17), where $x_i$ and $y_i$ are the $i$-th observation, $\overline{x}$ and $\overline{y}$ are the sample means, and the division by $n - 1$ drops one degree of freedom so that the population value is estimated without bias, as an unbiased estimator.
 
-$$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}) \hspace{19em} (17)$$
+$$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})(y_i - \overline{y}) \hspace{19em} (17)$$
 
 The sign, and the covariance of a variable with itself, say four things.
 
@@ -274,15 +274,15 @@ The reason to divide is units. Scaling a column $x$ by $c \gt 0$ gives $\mathrm{
 
 $$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (18)$$
 
-The derivation is a matter of the denominator. The numerator is equation (9) of section 4.2, and $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (16) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \bar{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (19).
+The derivation is a matter of the denominator. The numerator is equation (9) of section 4.2, and $\mathrm{var}(x) = \overline{u^2}$ is the definition itself. The variance of $x^2$ is equation (16) at $X = Y = x^2$, that is $\overline{x^4} - (\overline{x^2})^2$, and substituting $x = u + \overline{x}$ into both means and reducing by $\overline{u} = 0$ gives equation (19).
 
-$$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \bar{x}^2 \overline{u^2} + 4 \bar{x} \overline{u^3} \hspace{6em} (19)$$
+$$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (19)$$
 
-Substituting $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes the numerator and the two denominators as equation (20).
+Substituting $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$ and $k = \overline{u^4} / (\overline{u^2})^2$ writes the numerator and the two denominators as equation (20).
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (20)$$
 
-The correlation is $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$, so $(\overline{u^2})^{3/2}$ cancels and equation (10) of section 4.2 is what is left. Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\bar{x} = 0$, that is $t = 0$, so equation (11) is equation (10) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
+The correlation is $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$, so $(\overline{u^2})^{3/2}$ cancels and equation (10) of section 4.2 is what is left. Both $s$ and $k$ are written in the deviations $u$ alone, which centering does not change, and centering only makes $\overline{x} = 0$, that is $t = 0$, so equation (11) is equation (10) at $t = 0$. Raise $\lvert t \rvert$ and the denominator, $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$, approaches $2 \lvert t \rvert$ while the numerator approaches $2t$, so $\lvert r \rvert$ goes to 1.
 
 ## Appendix C. Term Count Derivation
 

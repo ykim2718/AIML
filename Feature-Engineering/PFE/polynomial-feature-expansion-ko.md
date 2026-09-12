@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion (Korean)
-Rev. 56 | Created: 2026-09-07 | Updated: 2026-09-12 01:38 CDT
+Rev. 57 | Created: 2026-09-07 | Updated: 2026-09-12 01:47 CDT
 
 Polynomial feature expansion 은 한 변수의 거듭제곱과 서로 다른 변수의 곱을 함께 만드는 연산이다. 이 문서는 그 두 가지 열로 numeric tabular data 의 non-linear behavior 를 model 에 담는 방법을 다룬다.
 
@@ -65,29 +65,29 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Expansion 전에 각 열을 평균 0, 표준편차 1 로 맞춘다. 이것이 standardization 이며, 평균을 빼는 부분만 따로 centering 이라 한다. 두 부분이 하는 일은 다르다. 평균을 빼면 열 사이의 상관이 낮아지고 계수를 읽을 수 있게 되며, 이것이 아래 두 문단이다. 표준편차로 나누면 열마다 다른 크기가 없어지고, 그 몫은 4.3 절과 5.2 절에 있다.
 
-Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\bar{x}$, 평균을 뺀 값을 $u_i = x_i - \bar{x}$ 로 두면 $u$ 의 평균은 0 이며, 윗줄은 표본 평균을 뜻한다. 공분산의 정의 $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ ([Appendix B](#appendix-b-covariance-and-correlation) 의 식 (16)) 를 $X = x$, $Y = x^2$ 에 적용하면 식 (6) 이 된다. 곱의 평균은 $\overline{x^3}$ 이고, 각 평균의 곱은 $\bar{x}$ 와 $\overline{x^2}$ 의 곱이다.
+Centering 의 첫 번째 이유는 상관의 감소다. 상관은 두 열의 공분산을 두 열의 표준편차로 나눈 값이므로, 상관이 어디서 오는지는 분자인 공분산에서 읽는다. 표본을 $x_1, \dots, x_N$, 그 평균을 $\overline{x}$, 평균을 뺀 값을 $u_i = x_i - \overline{x}$ 로 두면 $u$ 의 평균은 0 이며, 윗줄은 표본 평균을 뜻한다. 공분산의 정의 $\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y]$ ([Appendix B](#appendix-b-covariance-and-correlation) 의 식 (16)) 를 $X = x$, $Y = x^2$ 에 적용하면 식 (6) 이 된다. 곱의 평균은 $\overline{x^3}$ 이고, 각 평균의 곱은 $\overline{x}$ 와 $\overline{x^2}$ 의 곱이다.
 
-$$\mathrm{cov}(x, x^2) = \overline{x^3} - \bar{x} \overline{x^2} \hspace{19em} (6)$$
+$$\mathrm{cov}(x, x^2) = \overline{x^3} - \overline{x} \overline{x^2} \hspace{19em} (6)$$
 
-$x = u + \bar{x}$ 를 넣어 두 평균을 $u$ 로 적으면 식 (7) 이 된다. 전개한 항 가운데 $\overline{u}$ 가 곱해진 것은 $\overline{u} = 0$ 이므로 각각 사라진다.
+$x = u + \overline{x}$ 를 넣어 두 평균을 $u$ 로 적으면 식 (7) 이 된다. 전개한 항 가운데 $\overline{u}$ 가 곱해진 것은 $\overline{u} = 0$ 이므로 각각 사라진다.
 
-$$\overline{x^3} = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3, \qquad \overline{x^2} = \overline{u^2} + \bar{x}^2 \hspace{19em} (7)$$
+$$\overline{x^3} = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3, \qquad \overline{x^2} = \overline{u^2} + \overline{x}^2 \hspace{19em} (7)$$
 
 식 (7) 을 식 (6) 에 넣으면 식 (8) 이 된다.
 
-$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \bar{x} \overline{u^2} + \bar{x}^3 - \bar{x} (\overline{u^2} + \bar{x}^2) \hspace{19em} (8)$$
+$$\mathrm{cov}(x, x^2) = \overline{u^3} + 3 \overline{x} \overline{u^2} + \overline{x}^3 - \overline{x} (\overline{u^2} + \overline{x}^2) \hspace{19em} (8)$$
 
-$\bar{x}^3$ 이 상쇄되고 $3 \bar{x} \overline{u^2}$ 에서 $\bar{x} \overline{u^2}$ 를 빼면, 공분산은 식 (9) 로 닫힌다.
+$\overline{x}^3$ 이 상쇄되고 $3 \overline{x} \overline{u^2}$ 에서 $\overline{x} \overline{u^2}$ 를 빼면, 공분산은 식 (9) 로 닫힌다.
 
-$$\mathrm{cov}(x, x^2) = 2 \bar{x} \overline{u^2} + \overline{u^3} \hspace{19em} (9)$$
+$$\mathrm{cov}(x, x^2) = 2 \overline{x} \overline{u^2} + \overline{u^3} \hspace{19em} (9)$$
 
-식 (9) 의 두 항은 출처가 다르다. 앞의 항 $2 \bar{x} \overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
+식 (9) 의 두 항은 출처가 다르다. 앞의 항 $2 \overline{x} \overline{u^2}$ 는 평균이 0 에서 얼마나 떨어져 있는지에서만 오고, 뒤의 항 $\overline{u^3}$ 는 분포가 한쪽으로 기운 정도, 곧 3차 중심적률에서만 온다. 평균을 빼는 일은 앞의 항을 0 으로 만들고 뒤의 항은 그대로 둔다.
 
-두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-covariance-and-correlation) 에 있다. $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (9) 는 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (10) 이다.
+두 항의 몫을 견주려면 공분산을 표준편차로 나누어 상관으로 적어야 하며, 그 나눗셈이 필요한 이유와 아래 두 식의 유도는 [Appendix B](#appendix-b-covariance-and-correlation) 에 있다. $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 로 두면 식 (9) 는 $(\overline{u^2})^{3/2} (2t + s)$ 이고, $x$ 의 분산은 $\overline{u^2}$, $x^2$ 의 분산은 $(\overline{u^2})^2 (k - 1 + 4t^2 + 4ts)$ 이므로 상관은 식 (10) 이다.
 
 $$r(x, x^2) = \frac{2t + s}{\sqrt{k - 1 + 4t^2 + 4ts}} \hspace{19em} (10)$$
 
-Centering 은 $\bar{x}$ 를 0 으로 만들어 $t = 0$ 을 강제하므로, 식 (10) 은 식 (11) 로 줄어든다.
+Centering 은 $\overline{x}$ 를 0 으로 만들어 $t = 0$ 을 강제하므로, 식 (10) 은 식 (11) 로 줄어든다.
 
 $$r(u, u^2) = \frac{s}{\sqrt{k - 1}} \hspace{19em} (11)$$
 
@@ -255,9 +255,9 @@ $$\mathrm{Cov}(X, Y) = \sigma_{XY} = E[(X - \mu_X)(Y - \mu_Y)] \hspace{19em} (15
 
 $$\mathrm{Cov}(X, Y) = E[XY] - E[X]E[Y] \hspace{19em} (16)$$
 
-표본 $n$ 개로 재는 공분산은 식 (17) 이다. $x_i$ 와 $y_i$ 는 $i$ 번째 관측이고 $\bar{x}$ 와 $\bar{y}$ 는 표본 평균이며, $n - 1$ 로 나누는 것은 모집단의 값을 치우침 없이 추정 (unbiased estimator) 하도록 자유도를 하나 줄인 것이다.
+표본 $n$ 개로 재는 공분산은 식 (17) 이다. $x_i$ 와 $y_i$ 는 $i$ 번째 관측이고 $\overline{x}$ 와 $\overline{y}$ 는 표본 평균이며, $n - 1$ 로 나누는 것은 모집단의 값을 치우침 없이 추정 (unbiased estimator) 하도록 자유도를 하나 줄인 것이다.
 
-$$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}) \hspace{19em} (17)$$
+$$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})(y_i - \overline{y}) \hspace{19em} (17)$$
 
 부호와 자기 자신과의 공분산이 뜻하는 것은 넷이다.
 
@@ -274,15 +274,15 @@ $$s_{XY} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y}) \hspace{1
 
 $$r(cx, (cx)^2) = r(x, x^2), \qquad \lvert r(x, x^2) \rvert \le 1 \hspace{12em} (18)$$
 
-유도는 분모를 구하는 일이다. 분자는 4.2 절의 식 (9) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2$ 의 분산은 식 (16) 을 $X = Y = x^2$ 에 적용한 것, 곧 $\overline{x^4} - (\overline{x^2})^2$ 이며, 두 평균에 $x = u + \bar{x}$ 를 넣고 $\overline{u} = 0$ 으로 정리하면 식 (19) 가 된다.
+유도는 분모를 구하는 일이다. 분자는 4.2 절의 식 (9) 이고, $\mathrm{var}(x) = \overline{u^2}$ 는 정의 그대로다. $x^2$ 의 분산은 식 (16) 을 $X = Y = x^2$ 에 적용한 것, 곧 $\overline{x^4} - (\overline{x^2})^2$ 이며, 두 평균에 $x = u + \overline{x}$ 를 넣고 $\overline{u} = 0$ 으로 정리하면 식 (19) 가 된다.
 
-$$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \bar{x}^2 \overline{u^2} + 4 \bar{x} \overline{u^3} \hspace{6em} (19)$$
+$$\mathrm{var}(x^2) = \overline{x^4} - (\overline{x^2})^2 = \overline{u^4} - (\overline{u^2})^2 + 4 \overline{x}^2 \overline{u^2} + 4 \overline{x} \overline{u^3} \hspace{6em} (19)$$
 
-여기에 $t = \bar{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (20) 으로 적힌다.
+여기에 $t = \overline{x} / \sqrt{\overline{u^2}}$, $s = \overline{u^3} / (\overline{u^2})^{3/2}$, $k = \overline{u^4} / (\overline{u^2})^2$ 를 넣으면 분자와 두 분모가 식 (20) 으로 적힌다.
 
 $$\mathrm{cov}(x, x^2) = (\overline{u^2})^{3/2} (2t + s), \quad \mathrm{sd}(x) = (\overline{u^2})^{1/2}, \quad \mathrm{sd}(x^2) = \overline{u^2} \sqrt{k - 1 + 4t^2 + 4ts} \hspace{2em} (20)$$
 
-상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (10) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\bar{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (10) 에 $t = 0$ 을 넣은 것이 식 (11) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
+상관은 $\mathrm{cov}(x, x^2) / (\mathrm{sd}(x) \cdot \mathrm{sd}(x^2))$ 이므로 $(\overline{u^2})^{3/2}$ 이 약분되어 4.2 절의 식 (10) 이 남는다. $s$ 와 $k$ 는 평균을 뺀 값 $u$ 로만 적혀 있어 centering 이 바꾸지 않고, centering 은 $\overline{x} = 0$ 곧 $t = 0$ 만 만들므로 식 (10) 에 $t = 0$ 을 넣은 것이 식 (11) 이다. $\lvert t \rvert$ 를 키우면 분모는 $2 \lvert t \rvert \sqrt{1 + s / t + (k - 1) / (4t^2)}$ 여서 $2 \lvert t \rvert$ 에 가까워지고 분자는 $2t$ 에 가까워지므로 $\lvert r \rvert$ 는 1 로 간다.
 
 ## Appendix C. Term Count Derivation
 
