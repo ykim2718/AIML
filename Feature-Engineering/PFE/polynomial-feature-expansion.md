@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 68 | Created: 2026-09-09 | Updated: 2026-09-12 04:20 CDT
+Rev. 69 | Created: 2026-09-09 | Updated: 2026-09-12 04:32 CDT
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 
@@ -87,7 +87,11 @@ Centering lowers the correlation, though, without removing it. The collinearity 
 
 ### 4.3 Conditioning
 
-Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number. The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses. The least squares of section 3.1 picks the $\boldsymbol{\beta}$ that minimizes the sum of the squared residuals, and that $\boldsymbol{\beta}$ is the solution of $\mathbf{X}^{\top} \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^{\top} \mathbf{y}$, written in the design matrix $\mathbf{X}$ and the response $\mathbf{y}$, so fitting the model, that is settling on the coefficient values the data implies, is solving this matrix. The definition is equation (10). For a linear system $\mathbf{A}\mathbf{z} = \mathbf{b}$, the factor by which a relative error in the right-hand side $\mathbf{b}$ can grow in the solution $\mathbf{z}$ is bounded by the condition number $\kappa(\mathbf{A})$ of the coefficient matrix, which is the ratio of the largest singular value to the smallest.
+Conditioning is how sensitive solving the design matrix is to a small error in the input, and the number that measures it is the condition number.
+
+The design matrix is the matrix whose rows are the observations and whose columns are the terms the model uses. The least squares of section 3.1 picks the $\boldsymbol{\beta}$ that minimizes the sum of the squared residuals, and that $\boldsymbol{\beta}$ is the solution of $\mathbf{X}^{\top} \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^{\top} \mathbf{y}$, written in the design matrix $\mathbf{X}$ and the response $\mathbf{y}$, so fitting the model, that is settling on the coefficient values the data implies, is solving this matrix.
+
+The definition is equation (10). For a linear system $\mathbf{A}\mathbf{z} = \mathbf{b}$, the factor by which a relative error in the right-hand side $\mathbf{b}$ can grow in the solution $\mathbf{z}$ is bounded by the condition number $\kappa(\mathbf{A})$ of the coefficient matrix, which is the ratio of the largest singular value to the smallest.
 
 $$\frac{\lVert \Delta \mathbf{z} \rVert}{\lVert \mathbf{z} \rVert} \le \kappa(\mathbf{A}) \frac{\lVert \Delta \mathbf{b} \rVert}{\lVert \mathbf{b} \rVert}, \qquad \kappa(\mathbf{A}) = \frac{\sigma_{\max}}{\sigma_{\min}} \hspace{12em} (10)$$
 
