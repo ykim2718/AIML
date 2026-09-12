@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 5 | Created: 2026-09-12 | Updated: 2026-09-12 13:12 CDT
+Rev. 6 | Created: 2026-09-12 | Updated: 2026-09-12 13:18 CDT
 
 ## 1. Purpose
 
@@ -83,7 +83,7 @@ X^\top X \beta = X^\top y
 \hspace{19em} (6)
 ```
 
-이름의 normal 은 직교를 뜻한다. 식 (6) 은 $X^\top (y - X\beta) = 0$ 과 같은 말이므로, 잔차가 design matrix 의 모든 열과 직교하고 $X\hat{\beta}$ 는 $y$ 를 $X$ 의 열공간 (column space) 에 내린 정사영이다.
+이름의 normal 은 직교를 뜻한다. 식 (6) 은 $X^\top (y - X\beta) = 0$ 과 같은 말이므로, 그 해에서 잔차가 design matrix 의 모든 열과 직교하고 $X\beta$ 는 $y$ 를 $X$ 의 열공간 (column space) 에 내린 정사영이 된다.
 
 ## 6. Fitting
 
@@ -92,7 +92,7 @@ Model 을 적합 (fit) 한다는 것은 자료가 지시하는 최적의 계수 
 $X^\top X$ 의 역행렬이 존재할 때, 해 $\hat{\beta}$ 는 유일하게 결정된다.
 
 ```math
-\boxed{\hat{\beta} = (X^\top X)^{-1} X^\top y}
+\fbox{$\hat{\beta} = (X^\top X)^{-1} X^\top y$}
 \hspace{19em} (7)
 ```
 
