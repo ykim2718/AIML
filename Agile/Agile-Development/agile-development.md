@@ -1,5 +1,5 @@
 # Agile Development
-Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-13 12:21 CDT
+Rev. 2 | Created: 2026-09-13 | Updated: 2026-09-13 12:41 CDT
 
 ## 1. Purpose
 
@@ -13,9 +13,9 @@ The three names sit on three layers of one system, and the outer layer contains 
 
 Agile itself is short to state and hard to check. It builds a product in short cycles instead of one long plan, takes feedback at the end of every cycle, and improves the process from what that feedback showed. The rest of this document is the machinery that makes the statement checkable — a bar that declares a task done, a release that can be withdrawn, a retrospective whose output changes the next cycle, and the vocabulary a team says all of that in.
 
-## 3. Taxonomy
+## 3. Taxonomy and its Hierarchy
 
-The three layers are told apart by the question each one answers. Agile answers how the team works and collaborates, DevOps answers how development and operation stop being two separate organizations, and CI/CD answers which part of that is carried out by machines.
+The three layers are told apart by the question each one answers, and they nest inside one another. A step down narrows what is being decided and makes it concrete; a step up adds what the layer below leaves out. Agile answers how the team works and collaborates, DevOps answers how development and operation stop being two separate organizations, and CI/CD answers which part of that is carried out by machines.
 
 Table 1. The three layers and what each one decides
 
@@ -27,37 +27,32 @@ Table 1. The three layers and what each one decides
 
 Agile is a framework for the question "how will we work and collaborate", and it cuts requirements into small pieces that are developed, improved and deployed in short cycles called sprints. DevOps is a culture for the question "how do we remove the boundary between development (Dev) and operation (Ops) and deliver value without delay". CI/CD is the pipeline that verifies code, builds it, and carries it safely into the service environment, which is what makes the other two visible in practice.
 
-The containment among the three layers, and what each layer holds that the layer below does not, are drawn in [Fig 1](#fig-1).
+CI/CD sits at the bottom of that containment because it is one technical component of the larger system rather than the system itself.
+
+The three layers, the question each one answers, and what each one adds to the layer below are drawn in [Fig 1](#fig-1).
 
 ```text
-Agile  (philosophy: how to work and collaborate)
+Agile   (philosophy)   "How will we work and collaborate?"
   |
-  +-- Sprint planning, backlog management, customer feedback, product planning (PO/PM)
+  |   adds   sprint planning, backlog management, customer feedback,
+  |          product planning (PO/PM)
   |
-  +-- DevOps  (culture: remove the Dev/Ops boundary)
+  +-- DevOps   (culture)   "How do Dev and Ops stop being two organizations?"
         |
-        +-- Monitoring, organizational culture, feedback system, Dev-Ops communication
+        |   adds   monitoring, organizational culture, feedback system,
+        |          the way Dev and Ops teams communicate
         |
-        +-- CI/CD  (technical practice: automate the delivery path)
+        +-- CI/CD   (practice)   "Which part of that runs by machine?"
               |
-              +-- Build, test and deployment pipeline
+              |   holds   the build, test and deployment pipeline
 
 Agile (superset)  >  DevOps (superset)  >  CI/CD (subset)
 ```
 
 <a id="fig-1"></a>
-Fig 1. Containment of Agile, DevOps and CI/CD
+Fig 1. The three layers, what each one answers, and what each one adds
 
-## 4. Hierarchy
-
-Each step down the layers narrows what is being decided and makes it concrete, and each step up adds what the layer below leaves out. What each step adds is named below, and the containment it produces is drawn in [Fig 1](#fig-1).
-
-- DevOps as a superset of CI/CD — beyond the pipeline it holds monitoring, organizational culture, the feedback system, and the way development and operation teams communicate.
-- Agile as a superset of DevOps — beyond those technical and operational elements it holds sprint planning, backlog management, customer feedback intake, and product planning (PO/PM).
-
-CI/CD sits at the bottom of that containment because it is one technical component of the larger system rather than the system itself.
-
-### 4.1 Values
+### 3.1 Values
 
 The philosophy at the top of the hierarchy is fixed by the four values published in the Manifesto for Agile Software Development in 2001. Each value states a preference between two things that are both real, not a rejection of the item on the right.
 
@@ -70,7 +65,7 @@ Table 2. The four values of the Agile Manifesto
 | Customer collaboration | Contract negotiation |
 | Responding to change | Following a plan |
 
-### 4.2 Placement
+### 3.2 Placement
 
 Against the waterfall model the difference is not the set of technical steps but where the plan is allowed to change and when feedback arrives. Waterfall passes each stage once in order, so the feedback lands at the end; Agile repeats the whole path in short units, so the feedback lands every unit.
 
@@ -83,7 +78,7 @@ Table 3. Waterfall and Agile compared
 | Feedback point | Late in the project, just before or after deployment | Continuous feedback at every iteration (sprint) |
 | Strength | Predictable, and systematic to manage | Very fast to follow a change in market or customer |
 
-## 5. Iteration Cycle
+## 4. Iteration Cycle
 
 The technical steps of a sprint are the same as anywhere else — commit, merge, build, deploy. What changes is the way the work is run, the definition of done, and the deployment interval. Instead of months of coding closed by a single deployment, the whole path from planning through retrospective repeats every sprint, normally one to four weeks.
 
@@ -132,29 +127,29 @@ The stages of that cycle and the terms used at each of them are drawn in [Fig 2]
 <a id="fig-2"></a>
 Fig 2. Sprint cycle and the terms used at each stage
 
-## 6. Completion And Release
+## 5. Completion And Release
 
 Three terms carry most of the difference between an agile cycle and a plan-driven one, because each of them moves a decision that would otherwise be made once at the end of the project.
 
-### 6.1 Definition Of Done
+### 5.1 Definition Of Done
 
 Work is done when it passes the Definition of Done (DoD), not when the code is written. Ordinary development often calls "the code is finished" done; an agile team fixes a bar in advance and calls a task done only once it clears that bar. A DoD may require code written, unit tests passed, code review closed, documentation updated, and deployment to the staging server completed — all five, for one task to be Done.
 
-### 6.2 Deployment And Release
+### 5.2 Deployment And Release
 
 Deployment and release are separated as two technical events. Under continuous deployment (CD) verified code is deployed to the server automatically, dozens of times a day if that is what the merges produce. A feature flag or canary release then keeps the deployment from being an exposure: the code is deployed, but the switch opens the feature to 5 % of users first, and the audience is widened once the response is read.
 
-### 6.3 Retrospective And BKM
+### 5.3 Retrospective And BKM
 
 The sprint retrospective is the part of the process that changes the process. The team asks what went wrong procedurally in this sprint, and the answer is written straight into the team's Best Known Method (BKM) document or development rules, so that the next sprint runs under the revised rule rather than under a note that was never applied.
 
-## 7. Team Vocabulary
+## 6. Team Vocabulary
 
 The process terms carry the same meaning inside a team as outside it, deployment, merge and release included. What a team adds on top of them is a short vocabulary of its own, used to share what it has learned, to decide who meets a change first, and to say where a piece of work stands. Those three purposes give the three groups below, and every term in them appears at one of the stages of [Fig 2](#fig-2).
 
-### 7.1 Knowledge And Standard
+### 6.1 Knowledge And Standard
 
-The first group holds what the team already knows, so that one problem is not solved twice. Section 6.3 covered the loop that keeps the first of them current; here the three are fixed side by side.
+The first group holds what the team already knows, so that one problem is not solved twice. Section 5.3 covered the loop that keeps the first of them current; here the three are fixed side by side.
 
 Table 4. Terms that hold what the team has learned
 
@@ -166,9 +161,9 @@ Table 4. Terms that hold what the team has learned
 
 Depending on the culture and the systems a team works in, the BKM document is also called a playbook or a runbook. The name changes with the house; what it holds does not.
 
-### 7.2 Feature Control
+### 6.2 Feature Control
 
-The second group decides who meets a change and when. Section 6.2 pointed the feature flag at a fraction of customers, and the same switch, with the two terms beside it, also points at the team's own members and at the repair that cannot wait for the schedule.
+The second group decides who meets a change and when. Section 5.2 pointed the feature flag at a fraction of customers, and the same switch, with the two terms beside it, also points at the team's own members and at the repair that cannot wait for the schedule.
 
 Table 5. Terms that control who meets a change
 
@@ -178,7 +173,7 @@ Table 5. Terms that control who meets a change
 | Dogfooding | Staff using the product before any customer does, to find the bugs first | "Dogfood this internally before the release" |
 | Hotfix | The urgent deployment that repairs a serious bug in the operating environment | Outside the regular deployment schedule |
 
-### 7.3 Work State
+### 6.3 Work State
 
 The third group states where a piece of work stands, so that one status is read the same way by everyone.
 

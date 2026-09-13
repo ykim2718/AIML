@@ -1,5 +1,5 @@
 # Agile Development
-Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-13 12:21 CDT
+Rev. 2 | Created: 2026-09-13 | Updated: 2026-09-13 12:41 CDT
 
 ## 1. Purpose
 
@@ -13,9 +13,9 @@ Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-13 12:21 CDT
 
 Agile 자체는 말하기는 짧고 확인하기는 어렵다. 거대한 계획 하나 대신 짧은 주기로 제품을 만들고, 주기마다 끝에서 피드백을 받고, 그 피드백이 드러낸 것으로 process 를 고친다. 이 문서의 나머지는 그 문장을 확인할 수 있게 만드는 장치다. 작업을 완료라고 선언하는 기준, 되돌릴 수 있는 release, 그 결과가 다음 주기를 바꾸는 회고, 그리고 팀이 그 모두를 말할 때 쓰는 용어가 그것이다.
 
-## 3. Taxonomy
+## 3. Taxonomy and its Hierarchy
 
-세 층은 각자가 답하는 질문으로 갈린다. Agile 은 팀이 어떻게 일하고 협업할 것인가에 답하고, DevOps 는 개발과 운영이 어떻게 두 개의 조직이기를 그만두는가에 답하며, CI/CD 는 그 가운데 무엇을 기계가 수행하는가에 답한다.
+세 층은 각자가 답하는 질문으로 갈리고, 서로의 안에 포개진다. 한 단계 내려가면 정하는 대상이 좁아지고 구체적이 되며, 한 단계 올라가면 아래 층이 빠뜨린 것이 더해진다. Agile 은 팀이 어떻게 일하고 협업할 것인가에 답하고, DevOps 는 개발과 운영이 어떻게 두 개의 조직이기를 그만두는가에 답하며, CI/CD 는 그 가운데 무엇을 기계가 수행하는가에 답한다.
 
 Table 1. The three layers and what each one decides
 
@@ -27,37 +27,32 @@ Table 1. The three layers and what each one decides
 
 Agile 은 "어떻게 일하고 협업할 것인가" 에 대한 framework 이며, 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 주기 단위로 개발하고 개선하고 배포한다. DevOps 는 "개발 (Dev) 과 운영 (Ops) 의 경계를 없애고 어떻게 지체 없이 가치를 전달할 것인가" 에 대한 문화다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기는 pipeline 이며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
 
-세 층의 포함 관계와 각 층이 아래 층에 없는 무엇을 더 가지는지는 [Fig 1](#fig-1) 에 그렸다.
+CI/CD 가 그 포함 관계의 맨 아래에 놓이는 까닭은 그것이 거대한 체계의 기술적 구성 요소 하나이지 체계 자체가 아니기 때문이다.
+
+세 층과 각 층이 답하는 질문, 그리고 각 층이 아래 층에 더하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
 ```text
-Agile  (philosophy: how to work and collaborate)
+Agile   (philosophy)   "How will we work and collaborate?"
   |
-  +-- Sprint planning, backlog management, customer feedback, product planning (PO/PM)
+  |   adds   sprint planning, backlog management, customer feedback,
+  |          product planning (PO/PM)
   |
-  +-- DevOps  (culture: remove the Dev/Ops boundary)
+  +-- DevOps   (culture)   "How do Dev and Ops stop being two organizations?"
         |
-        +-- Monitoring, organizational culture, feedback system, Dev-Ops communication
+        |   adds   monitoring, organizational culture, feedback system,
+        |          the way Dev and Ops teams communicate
         |
-        +-- CI/CD  (technical practice: automate the delivery path)
+        +-- CI/CD   (practice)   "Which part of that runs by machine?"
               |
-              +-- Build, test and deployment pipeline
+              |   holds   the build, test and deployment pipeline
 
 Agile (superset)  >  DevOps (superset)  >  CI/CD (subset)
 ```
 
 <a id="fig-1"></a>
-Fig 1. Containment of Agile, DevOps and CI/CD
+Fig 1. The three layers, what each one answers, and what each one adds
 
-## 4. Hierarchy
-
-층을 한 단계 내려갈 때마다 정하는 대상이 좁아지고 구체적이 되며, 한 단계 올라갈 때마다 아래 층이 빠뜨린 것이 더해진다. 각 단계가 무엇을 더하는지는 아래에 적었고, 그렇게 생기는 포함 관계는 [Fig 1](#fig-1) 에 그렸다.
-
-- DevOps 는 CI/CD 의 상위 집합 — pipeline 외에 monitoring, 조직 문화, 피드백 체계, 개발팀과 운영팀의 소통 방식을 담는다.
-- Agile 은 DevOps 의 상위 집합 — 그 기술·운영 요소 외에 sprint 계획, backlog 관리, 고객 피드백 수용, 제품 기획 (PO/PM) 을 담는다.
-
-CI/CD 가 그 포함 관계의 맨 아래에 놓이는 까닭은 그것이 거대한 체계의 기술적 구성 요소 하나이지 체계 자체가 아니기 때문이다.
-
-### 4.1 Values
+### 3.1 Values
 
 계층 맨 위의 철학은 2001 년 발표된 애자일 소프트웨어 개발 선언 (Manifesto for Agile Software Development) 의 네 가지 가치로 고정되어 있다. 각 가치는 둘 다 실재하는 것 사이의 우선순위를 말하는 것이지, 오른쪽 항목을 버린다는 뜻이 아니다.
 
@@ -70,7 +65,7 @@ Table 2. The four values of the Agile Manifesto
 | 고객과의 협력 | 계약 협상 |
 | 변화에 대응하기 | 계획을 따르기 |
 
-### 4.2 Placement
+### 3.2 Placement
 
 폭포수 (waterfall) 모델과 갈리는 지점은 기술적 단계의 목록이 아니라, 계획을 언제 바꿀 수 있고 피드백이 언제 도착하는가이다. Waterfall 은 각 단계를 순서대로 한 번씩 지나므로 피드백이 끝에 닿고, Agile 은 그 전 과정을 짧은 단위로 되풀이하므로 피드백이 단위마다 닿는다.
 
@@ -83,7 +78,7 @@ Table 3. Waterfall and Agile compared
 | 피드백 시점 | 프로젝트 최후반, 배포 직전 또는 직후 | 매 반복 주기 (sprint) 마다 지속적 피드백 |
 | 장점 | 예측 가능성이 높고 관리가 체계적 | 시장과 고객의 변화에 매우 신속하게 대응 |
 
-## 5. Iteration Cycle
+## 4. Iteration Cycle
 
 Sprint 안의 기술적 단계는 다른 곳과 같다. Commit, merge, build, 배포가 그것이다. 달라지는 것은 업무를 진행하는 방식, 완료의 정의, 그리고 배포 주기다. 몇 달 동안 coding 만 하고 마지막에 한 번 배포하는 대신, 기획부터 회고까지의 전 과정이 sprint 마다 되풀이되며 그 길이는 보통 1~4주다.
 
@@ -132,29 +127,29 @@ Sprint 안의 기술적 단계는 다른 곳과 같다. Commit, merge, build, �
 <a id="fig-2"></a>
 Fig 2. Sprint cycle and the terms used at each stage
 
-## 6. Completion And Release
+## 5. Completion And Release
 
 Agile 주기와 계획 주도 주기의 차이는 대부분 아래 세 용어가 지고 있다. 셋 모두 프로젝트 끝에 한 번 내려질 결정을 앞으로 당겨 놓기 때문이다.
 
-### 6.1 Definition Of Done
+### 5.1 Definition Of Done
 
 작업은 code 를 다 썼을 때가 아니라 DoD (Definition of Done) 를 통과했을 때 완료다. 일반적인 개발에서는 "code 를 다 짰다" 를 완료라 부르기도 하지만, agile 팀은 기준을 미리 정해 두고 그 기준을 넘긴 작업만 완료라 부른다. DoD 는 code 작성, 단위 test 통과, code review 완료, 문서화, staging server 배포 완료를 요구할 수 있으며, 한 작업이 Done 이 되려면 그 다섯이 모두 충족되어야 한다.
 
-### 6.2 Deployment And Release
+### 5.2 Deployment And Release
 
 배포와 release 는 두 개의 기술적 사건으로 분리된다. CD (지속적 배포) 아래에서 검증된 code 는 server 에 자동으로 배포되며, merge 가 그만큼 나온다면 하루에도 수십 번 배포된다. Feature flag 또는 canary release 는 그 배포가 곧 공개가 되지 않게 막는다. Code 는 배포되지만 switch 는 기능을 먼저 5 % 의 사용자에게만 열고, 반응을 읽은 뒤에 대상을 넓힌다.
 
-### 6.3 Retrospective And BKM
+### 5.3 Retrospective And BKM
 
 Sprint 회고는 process 가 process 를 바꾸는 자리다. 팀은 이번 sprint 에서 process 상 무엇이 문제였는지를 묻고, 그 답을 팀의 BKM (Best Known Method) 문서나 개발 규칙에 곧바로 적는다. 그래서 다음 sprint 는 적용된 적 없는 memo 가 아니라 고쳐진 규칙 아래에서 돌아간다.
 
-## 7. Team Vocabulary
+## 6. Team Vocabulary
 
 개발 process 용어는 팀 안에서나 밖에서나 같은 뜻으로 쓰이며, 배포, merge, release 가 모두 그렇다. 팀이 그 위에 더하는 것은 짧은 자기 용어이다. 알아낸 것을 나누려고, 변경을 누가 먼저 만날지 정하려고, 작업이 어디에 서 있는지 말하려고 쓴다. 그 세 가지 목적이 아래 세 묶음을 만들고, 여기 든 모든 용어는 [Fig 2](#fig-2) 의 어느 단계에 등장한다.
 
-### 7.1 Knowledge And Standard
+### 6.1 Knowledge And Standard
 
-첫 묶음은 팀이 이미 알고 있는 것을 담아, 한 문제를 두 번 풀지 않게 한다. 그 가운데 첫 항목을 갱신하는 loop 는 section 6.3 이 다루었고, 여기서는 셋을 나란히 놓아 고정한다.
+첫 묶음은 팀이 이미 알고 있는 것을 담아, 한 문제를 두 번 풀지 않게 한다. 그 가운데 첫 항목을 갱신하는 loop 는 section 5.3 이 다루었고, 여기서는 셋을 나란히 놓아 고정한다.
 
 Table 4. Terms that hold what the team has learned
 
@@ -166,9 +161,9 @@ Table 4. Terms that hold what the team has learned
 
 팀의 문화와 쓰는 system 에 따라 BKM 문서를 playbook 이나 runbook 이라 부르기도 한다. 집마다 이름은 달라지지만 담기는 것은 같다.
 
-### 7.2 Feature Control
+### 6.2 Feature Control
 
-둘째 묶음은 변경을 누가 언제 만나는지를 정한다. Section 6.2 는 feature flag 를 고객의 일부에게 겨누었고, 같은 switch 와 그 곁의 두 용어는 팀 자신과 일정을 기다릴 수 없는 수리에도 겨눈다.
+둘째 묶음은 변경을 누가 언제 만나는지를 정한다. Section 5.2 는 feature flag 를 고객의 일부에게 겨누었고, 같은 switch 와 그 곁의 두 용어는 팀 자신과 일정을 기다릴 수 없는 수리에도 겨눈다.
 
 Table 5. Terms that control who meets a change
 
@@ -178,7 +173,7 @@ Table 5. Terms that control who meets a change
 | Dogfooding | 고객에게 공개하기 전에 내부 임직원이 먼저 써 보며 bug 를 찾는 과정 | "이번 release 전 내부 dogfooding 먼저 진행합니다" |
 | Hotfix | 운영 환경에서 발생한 심각한 bug 를 고치는 긴급 배포 | 정기 배포 일정과 무관한 자리 |
 
-### 7.3 Work State
+### 6.3 Work State
 
 셋째 묶음은 작업이 어디에 서 있는지를 말하여, 한 상태를 모두가 같은 뜻으로 읽게 한다.
 
