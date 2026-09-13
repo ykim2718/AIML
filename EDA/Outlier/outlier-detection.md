@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 24 | Created: 2026-08-25 | Updated: 2026-09-13 10:03 CDT
+Rev. 25 | Created: 2026-08-25 | Updated: 2026-09-13 10:17 CDT
 
 > Methods that find observations departing from the pattern the rest of the data follows,
 > arranged by what each one assumes, so that a method is chosen from the shape of the data.
@@ -7,7 +7,8 @@ Rev. 24 | Created: 2026-08-25 | Updated: 2026-09-13 10:03 CDT
 ## 1. Scope
 
 An outlier is an observation inconsistent with the model the rest of the sample follows. The flag
-states inconsistency with that model, so detection and treatment stay separate.
+states inconsistency with that model, not error, so detection and treatment stay separate: a flag
+opens an investigation rather than closing one.
 
 Every method buys its answer with an assumption. Where the data violate it, the flags record the
 violation rather than a departure. Two properties of the data decide the choice.
@@ -99,8 +100,10 @@ assumed clean and not clean teaches the method to treat its outliers as normal.
 How many outliers are expected changes the procedure, not just the threshold.
 
 - **Single.** One test, one stated error rate.
-- **Multiple.** Several, in unknown number, which is where masking and swamping appear.
+- **Multiple.** Several, in unknown number, which is where masking and swamping appear. Both are defined below.
 
+Masking is one outlier inflating the centre or the scale until a second no longer looks extreme.
+Swamping is the reverse: the distortion is large enough that clean observations are flagged with it.
 [Hawkins (1980)](#ref-5) treats the many-outlier problem, and section 3.4 is the procedure built for
 it.
 
@@ -183,8 +186,10 @@ M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
 - $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by.
 - $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 3.1.
 
-The divisor is a consistency constant. On a normal sample the MAD converges to $0.674490 \sigma$, so
-dividing by it, which is multiplying by 1.482602, puts $M_i$ on the scale $z_i$ is read on.
+The divisor is a consistency constant, and it is there because the raw MAD does not estimate $s$. On
+a normal sample the MAD converges to $0.674490 \sigma$, about a third short of the spread. Dividing
+by the constant, which is multiplying by 1.482602, puts $M_i$ on the scale $z_i$ is read on. Without
+it the score has a scale of its own, and no threshold carries between the two rules.
 
 It is a calibration and the only place normality enters the method. It fixes where a threshold sits,
 not which observations are extreme.
@@ -198,9 +203,10 @@ defined, and no estimator at the same 50% breakdown point escapes it.
 
 ### 3.4. Generalized ESD
 
-Repeating a single-outlier test on what is left does not hold the significance level. The
-generalized extreme studentized deviate procedure declares an upper bound $r$ first, then runs $r$
-stages of the same statistic.
+Repeating a single-outlier test on what is left does not hold the significance level, since each
+repetition spends it again. The generalized extreme studentized deviate procedure declares an upper
+bound $r$ first, then runs $r$ stages of the same statistic, with the level stated for the whole
+search.
 
 ```math
 R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r

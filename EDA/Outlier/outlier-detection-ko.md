@@ -1,12 +1,12 @@
 # Outlier Detection Methods
-Rev. 7 | Created: 2026-09-09 | Updated: 2026-09-13 10:03 CDT
+Rev. 8 | Created: 2026-09-09 | Updated: 2026-09-13 10:17 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리했다. 방법을 습관이 아니라 데이터의 모양에서 고르기 위한 것이다.
 
 ## 1. Scope
 
-Outlier 는 나머지 표본이 따르는 model 과 어긋나는 관측이다. Flag 는 그 model 과의 부정합을 말할 뿐이므로, 검출과 처리는 따로 둔다.
+Outlier 는 나머지 표본이 따르는 model 과 어긋나는 관측이다. Flag 는 그 model 과의 부정합을 말할 뿐 틀렸다는 판정이 아니므로, 검출과 처리는 따로 둔다. Flag 는 조사를 닫는 것이 아니라 여는 것이다.
 
 모든 방법은 가정을 치르고 답을 산다. 데이터가 그 가정을 어기면 flag 는 이탈이 아니라 가정 위반을 기록한다. 선택은 데이터의 두 성질이 정한다.
 
@@ -81,9 +81,9 @@ Flag 가 붙은 값이 도착한 경로는 셋이고, 무엇을 해야 하는지
 Outlier 를 몇 개 예상하는지는 문턱값만이 아니라 절차 자체를 바꾼다.
 
 - **Single.** 검정 하나, 명시된 오류율 하나.
-- **Multiple.** 개수를 모르는 여럿이며, masking 과 swamping 이 나타나는 자리이다.
+- **Multiple.** 개수를 모르는 여럿이며, masking 과 swamping 이 나타나는 자리이다. 둘은 아래에서 정의한다.
 
-[Hawkins (1980)](#ref-5) 이 다수 outlier 문제를 다루었고, 꼭지 3.4 가 그것을 위해 만들어진 절차이다.
+Masking 은 outlier 하나가 중심이나 척도를 부풀려 두 번째 outlier 가 더는 극단적으로 보이지 않게 하는 것이다. Swamping 은 그 반대로, 일그러짐이 커서 깨끗한 관측까지 함께 flag 되는 것이다. [Hawkins (1980)](#ref-5) 이 다수 outlier 문제를 다루었고, 꼭지 3.4 가 그것을 위해 만들어진 절차이다.
 
 ### 2.8. Time Series Type
 
@@ -149,7 +149,7 @@ M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
 - $\Phi^{-1}(0.75) = 0.674490$ — 표준정규분포의 3 사분위수로, MAD 를 이 값으로 나눈다.
 - $M_i$ — 관측 $i$ 의 modified z-score 로, 꼭지 3.1 의 $z_i$ 와 같은 척도에서 읽는다.
 
-그 제수는 consistency constant 이다. 정규 표본에서 MAD 는 $0.674490 \sigma$ 로 수렴하므로, 그것으로 나누는 것은 1.482602 를 곱하는 것과 같고 $M_i$ 를 $z_i$ 의 척도 위에 올린다.
+그 제수는 consistency constant 이며, raw MAD 가 $s$ 를 추정하지 않기 때문에 있다. 정규 표본에서 MAD 는 $0.674490 \sigma$ 로 수렴하여 퍼짐을 3 분의 1 가량 낮추어 말한다. 이 상수로 나누는 것은 1.482602 를 곱하는 것과 같고, $M_i$ 를 $z_i$ 의 척도 위에 올린다. 그 단계가 없으면 점수는 자기만의 척도에 놓여 어떤 문턱값도 두 규칙 사이를 오가지 못한다.
 
 이 상수는 calibration 이며 정규성이 들어오는 유일한 자리이다. 정하는 것은 문턱값이 놓이는 자리이지 어느 관측이 극단적인가가 아니다.
 
@@ -159,7 +159,7 @@ M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
 
 ### 3.4. Generalized ESD
 
-단일 outlier 검정을 남은 표본에 되풀이하는 방식은 유의수준을 지키지 못한다. Generalized extreme studentized deviate 절차는 상한 $r$ 을 먼저 선언하고 같은 통계량을 $r$ 단계에 걸쳐 돌린다.
+단일 outlier 검정을 남은 표본에 되풀이하는 방식은 유의수준을 지키지 못한다. 되풀이할 때마다 수준을 다시 쓰기 때문이다. Generalized extreme studentized deviate 절차는 상한 $r$ 을 먼저 선언하고 같은 통계량을 $r$ 단계에 걸쳐 돌리며, 수준은 탐색 전체에 대해 명시한다.
 
 ```math
 R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r
