@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 10 | Created: 2026-09-12 | Updated: 2026-09-12 23:26 CDT
+Rev. 11 | Created: 2026-09-12 | Updated: 2026-09-12 23:30 CDT
 
 ## 1. Purpose
 
@@ -149,7 +149,7 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 두 이름 (`random_forest`, `lasso`) 을 모두 구현하고, wrapper 단계의 구현하지 않은 이름은 `NotImplementedError` 로 막는다.
+scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 두 이름 (`random_forest`, `lasso`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
@@ -160,7 +160,8 @@ from typing import Literal
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import RFE, SelectFromModel, mutual_info_classif, mutual_info_regression
+from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
+                                       mutual_info_classif, mutual_info_regression)
 from sklearn.linear_model import Lasso, LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
@@ -170,7 +171,7 @@ class MultivariateFeatureSelector:
     """Run the three steps of the workflow on one dataset, keeping the original column indices.
 
     Each step takes a method name whose Literal lists the members of that branch, so the code says
-    which one is applied. A member that is not implemented raises NotImplementedError.
+    which one is applied. A name outside that list raises ValueError.
 
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
@@ -179,19 +180,23 @@ class MultivariateFeatureSelector:
         filter_count: number of features the ranking filters (mrmr, relieff) keep.
         neighbour_count: number of hits and misses relieff compares per sample.
         forest_size: number of trees of the random forest used by the embedded step.
+        fold_count: number of cross validation folds the sequential wrapper scores on.
         final_count: number of features the wrapper step leaves.
         random_state: seed of the random forest and of the mutual information estimates.
     """
 
     def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
                  lasso_alpha: float = 0.01, filter_count: int = 10, neighbour_count: int = 10,
-                 forest_size: int = 200, final_count: int = 5, random_state: int = 0) -> None:
+                 forest_size: int = 200, fold_count: int = 5, final_count: int = 5,
+                 random_state: int = 0) -> None:
         if not 0.0 < correlation_limit < 1.0:
             raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
         if vif_limit <= 1.0:
             raise ValueError(f"vif_limit must exceed 1: {vif_limit=}")
         if lasso_alpha <= 0.0:
             raise ValueError(f"lasso_alpha must be positive: {lasso_alpha=}")
+        if fold_count < 2:
+            raise ValueError(f"fold_count must be at least 2: {fold_count=}")
         if filter_count < 1 or neighbour_count < 1 or final_count < 1:
             raise ValueError(f"counts must be at least 1: {filter_count=}, {neighbour_count=}, {final_count=}")
         self.correlation_limit = correlation_limit
@@ -200,6 +205,7 @@ class MultivariateFeatureSelector:
         self.filter_count = filter_count
         self.neighbour_count = neighbour_count
         self.forest_size = forest_size
+        self.fold_count = fold_count
         self.final_count = final_count
         self.random_state = random_state
 
@@ -296,14 +302,28 @@ class MultivariateFeatureSelector:
 
     def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
                      method: Literal["rfe", "forward", "backward"] = "rfe") -> np.ndarray:
-        """Return the columns RFE keeps after removing the weakest feature one at a time."""
-        if method != "rfe":
-            raise NotImplementedError(f"the wrapper step implements RFE only: {method=}")
+        """Return the columns the named search keeps, as indices into the columns of X."""
         if len(columns) < self.final_count:
             raise ValueError(f"the wrapper step got fewer columns than it must keep: "
                              f"{len(columns)=}, {self.final_count=}")
+        if method == "rfe":
+            return self._by_rfe(X=X, y=y, columns=columns)
+        if method in ("forward", "backward"):
+            return self._by_sequential(X=X, y=y, columns=columns, direction=method)
+        raise ValueError(f"unknown wrapper method: {method=}")
+
+    def _by_rfe(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Keep the columns left after dropping the smallest coefficient one feature at a time."""
         estimator = LogisticRegression(max_iter=5000)
         selector = RFE(estimator=estimator, n_features_to_select=self.final_count).fit(X[:, columns], y)
+        return columns[selector.get_support()]
+
+    def _by_sequential(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
+                       direction: Literal["forward", "backward"]) -> np.ndarray:
+        """Keep the columns a greedy search holds, adding or removing one by cross validation score."""
+        estimator = LogisticRegression(max_iter=5000)
+        selector = SequentialFeatureSelector(estimator=estimator, n_features_to_select=self.final_count,
+                                             direction=direction, cv=self.fold_count).fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def run(self, X: np.ndarray, y: np.ndarray) -> dict:
@@ -337,6 +357,13 @@ if __name__ == "__main__":
         show(label=f"embedded by {embedded_method}",
              columns=selector.embedded_step(X=X, y=data.target, columns=np.arange(X.shape[1]),
                                             method=embedded_method))
+
+    forest_columns = selector.embedded_step(X=X, y=data.target, columns=np.arange(X.shape[1]),
+                                            method="random_forest")
+    for wrapper_method in ("rfe", "forward", "backward"):
+        show(label=f"wrapper by {wrapper_method}, out of the random forest columns",
+             columns=selector.wrapper_step(X=X, y=data.target, columns=forest_columns,
+                                           method=wrapper_method))
 
     for step_name, step_columns in selector.run(X=X, y=data.target).items():
         show(label=f"{step_name} step of the workflow", columns=step_columns)
@@ -385,6 +412,15 @@ embedded by lasso (12 features)
   smoothness error, worst concave points, worst concavity, worst radius, worst smoothness, worst
   symmetry, worst texture
 
+wrapper by rfe, out of the random forest columns (5 features)
+  area error, worst area, worst concave points, worst perimeter, worst radius
+
+wrapper by forward, out of the random forest columns (5 features)
+  mean concavity, worst area, worst concave points, worst perimeter, worst radius
+
+wrapper by backward, out of the random forest columns (5 features)
+  mean concavity, worst area, worst concave points, worst perimeter, worst radius
+
 filter step of the workflow (23 features)
   compactness error, concave points error, concavity error, fractal dimension error, mean
   compactness, mean concave points, mean concavity, mean fractal dimension, mean radius, mean
@@ -400,4 +436,4 @@ wrapper step of the workflow (5 features)
   mean concavity, mean radius, radius error, worst concave points, worst concavity
 ```
 
-네 filter 는 같은 자료에서 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. `run` 이 쓰는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
+네 filter 는 같은 자료에서 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 쓰는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
