@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 13 | Created: 2026-09-12 | Updated: 2026-09-12 23:38 CDT
+Rev. 14 | Created: 2026-09-12 | Updated: 2026-09-13 00:24 CDT
 
 ## 1. Purpose
 
@@ -129,11 +129,12 @@ Table 1. Comparison of the three approaches
 
 ## 5. Workflow
 
-비용이 낮은 기법으로 후보를 줄인 뒤 비싼 기법을 쓴다. Wrapper 의 비용은 남은 feature 개수에 따라 커지므로, 그 앞에 두 단계를 둔다.
+비용이 낮은 기법으로 후보를 줄인 뒤 비싼 기법을 쓴다. Wrapper 의 비용은 남은 feature 개수에 따라 커지므로, 그 앞에 세 단계를 둔다.
 
-- Step 1 (pre-filtering): univariate 통계량 또는 VIF 로 상관계수 0.95 이상인 중복 feature 와 분산이 0 인 feature 를 1차 제거
-- Step 2 (embedded selection): Lasso 또는 random forest, XGBoost 기반으로 중요 feature 후보군 2차 선별
-- Step 3 (fine-tuning via wrapper): 후보군이 줄어든 뒤 RFE 나 sequential feature selection 으로 최종 subset 결정
+- Step 1 (constant removal): 모든 표본에서 값이 같은 feature 를 먼저 제거. 상관도 중요도도 정의되지 않고, 뒤 단계가 가릴 것이 없음
+- Step 2 (pre-filtering): univariate 통계량 또는 VIF 로 상관계수 0.95 이상인 중복 feature 를 1차 제거
+- Step 3 (embedded selection): Lasso 또는 random forest, XGBoost 기반으로 중요 feature 후보군 2차 선별
+- Step 4 (fine-tuning via wrapper): 후보군이 줄어든 뒤 RFE 나 sequential feature selection 으로 최종 subset 결정
 
 ---
 
@@ -149,9 +150,9 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 두 이름 (`random_forest`, `lasso`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 두 이름 (`random_forest`, `lasso`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
-입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
+입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
 ```python
 __author__ = "yRocket"
@@ -212,35 +213,42 @@ class MultivariateFeatureSelector:
         self.final_count = final_count
         self.random_state = random_state
 
-    def filter_step(self, X: np.ndarray, y: np.ndarray,
+    def drop_constant(self, X: np.ndarray) -> np.ndarray:
+        """Return the columns whose value changes across the samples, dropping the constant ones."""
+        varying = np.where(np.ptp(X, axis=0) > 0.0)[0]
+        if len(varying) == 0:
+            raise ValueError(f"every feature holds one value: {X.shape=}")
+        return varying
+
+    def filter_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
                     method: Literal["corr", "vif", "mrmr", "relieff"] = "corr") -> np.ndarray:
-        """Return the columns the named filter keeps, as indices into the columns of X."""
+        """Return the subset of columns the named filter keeps, as indices into the columns of X."""
         if method == "corr":
-            return self._by_correlation(X=X)
+            return self._by_correlation(X=X, columns=columns)
         if method == "vif":
-            return self._by_vif(X=X)
+            return self._by_vif(X=X, columns=columns)
         if method == "mrmr":
-            return self._by_mrmr(X=X, y=y)
+            return self._by_mrmr(X=X, y=y, columns=columns)
         if method == "relieff":
-            return self._by_relieff(X=X, y=y)
+            return self._by_relieff(X=X, y=y, columns=columns)
         raise ValueError(f"unknown filter method: {method=}")
 
-    def _by_correlation(self, X: np.ndarray) -> np.ndarray:
+    def _by_correlation(self, X: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Drop the later feature of every pair whose absolute correlation exceeds the limit."""
-        corr = np.abs(np.corrcoef(X, rowvar=False))
+        corr = np.abs(np.corrcoef(X[:, columns], rowvar=False))
         redundant = np.unique(np.where(np.triu(corr, k=1) > self.correlation_limit)[1])
-        return np.setdiff1d(np.arange(X.shape[1]), redundant)
+        return columns[np.setdiff1d(np.arange(len(columns)), redundant)]
 
-    def _by_vif(self, X: np.ndarray) -> np.ndarray:
+    def _by_vif(self, X: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Drop the feature of the largest variance inflation factor until every one is under the limit."""
-        columns = list(range(X.shape[1]))
-        while len(columns) > 1:
-            factors = [self._vif_of(X=X, columns=columns, position=position) for position in range(len(columns))]
+        held = list(columns)
+        while len(held) > 1:
+            factors = [self._vif_of(X=X, columns=held, position=position) for position in range(len(held))]
             worst = int(np.argmax(factors))
             if factors[worst] <= self.vif_limit:
                 break
-            columns.pop(worst)
-        return np.asarray(columns)
+            held.pop(worst)
+        return np.asarray(held)
 
     def _vif_of(self, X: np.ndarray, columns: list, position: int) -> float:
         """Return 1 / (1 - R^2) of one feature regressed on the remaining ones."""
@@ -251,31 +259,32 @@ class MultivariateFeatureSelector:
         unexplained = float(np.sum(residual ** 2) / np.sum((target - target.mean()) ** 2))
         return float("inf") if unexplained <= 0.0 else 1.0 / unexplained
 
-    def _by_mrmr(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
+    def _by_mrmr(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Add the feature of the largest relevance minus mean redundancy, until filter_count are held."""
-        relevance = mutual_info_classif(X, y, random_state=self.random_state)
+        subset = X[:, columns]
+        relevance = mutual_info_classif(subset, y, random_state=self.random_state)
         selected = [int(np.argmax(relevance))]
-        while len(selected) < min(self.filter_count, X.shape[1]):
-            rest = [column for column in range(X.shape[1]) if column not in selected]
+        while len(selected) < min(self.filter_count, len(columns)):
+            rest = [position for position in range(len(columns)) if position not in selected]
             redundancy = np.array([
-                np.mean([mutual_info_regression(X[:, [column]], X[:, chosen],
+                np.mean([mutual_info_regression(subset[:, [position]], subset[:, chosen],
                                                 random_state=self.random_state)[0] for chosen in selected])
-                for column in rest])
+                for position in rest])
             selected.append(rest[int(np.argmax(relevance[rest] - redundancy))])
-        return np.sort(np.asarray(selected))
+        return columns[np.sort(np.asarray(selected))]
 
-    def _by_relieff(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
+    def _by_relieff(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the features whose value separates nearest misses from nearest hits the most."""
-        span = np.ptp(X, axis=0)
-        span[span == 0.0] = 1.0
-        score = np.zeros(X.shape[1])
+        subset = X[:, columns]
+        span = np.ptp(subset, axis=0)
+        score = np.zeros(len(columns))
         for label in np.unique(y):
-            hits = self._neighbours_of(X=X, source=X[y == label], pool=X[y == label], skip_self=True)
-            misses = self._neighbours_of(X=X, source=X[y == label], pool=X[y != label], skip_self=False)
-            score += (misses - hits) / (span * len(X))
-        return np.sort(np.argsort(score)[-min(self.filter_count, X.shape[1]):])
+            hits = self._neighbours_of(source=subset[y == label], pool=subset[y == label], skip_self=True)
+            misses = self._neighbours_of(source=subset[y == label], pool=subset[y != label], skip_self=False)
+            score += (misses - hits) / (span * len(subset))
+        return columns[np.sort(np.argsort(score)[-min(self.filter_count, len(columns)):])]
 
-    def _neighbours_of(self, X: np.ndarray, source: np.ndarray, pool: np.ndarray, skip_self: bool) -> np.ndarray:
+    def _neighbours_of(self, source: np.ndarray, pool: np.ndarray, skip_self: bool) -> np.ndarray:
         """Return the mean absolute per-feature distance from each source sample to its nearest pool samples."""
         count = min(self.neighbour_count + int(skip_self), len(pool))
         finder = NearestNeighbors(n_neighbors=count).fit(pool)
@@ -333,17 +342,22 @@ class MultivariateFeatureSelector:
             filter_method: Literal["corr", "vif", "mrmr", "relieff"] = "corr",
             embedded_method: Literal["random_forest", "lasso"] = "random_forest",
             wrapper_method: Literal["rfe", "forward", "backward"] = "rfe") -> dict:
-        """Return the surviving column indices of each step, keyed by step name."""
-        filtered = self.filter_step(X=X, y=y, method=filter_method)
+        """Return the surviving column indices of each step, keyed by step name.
+
+        The constant features go first: they carry nothing any later step can weigh.
+        """
+        varying = self.drop_constant(X=X)
+        filtered = self.filter_step(X=X, y=y, columns=varying, method=filter_method)
         embedded = self.embedded_step(X=X, y=y, columns=filtered, method=embedded_method)
         wrapped = self.wrapper_step(X=X, y=y, columns=embedded, method=wrapper_method)
-        return {"filter": filtered, "embedded": embedded, "wrapper": wrapped}
+        return {"varying": varying, "filter": filtered, "embedded": embedded, "wrapper": wrapped}
 
 
 if __name__ == "__main__":
     data = load_breast_cancer()
-    X = StandardScaler().fit_transform(data.data)
-    names = np.asarray(data.feature_names)
+    # Append a column that never changes, to show the first step removing it
+    X = np.column_stack([StandardScaler().fit_transform(data.data), np.full(len(data.data), 1.0)])
+    names = np.asarray(list(data.feature_names) + ["constant probe"])
     selector = MultivariateFeatureSelector(correlation_limit=0.95, final_count=5)
 
     def show(label: str, columns: np.ndarray) -> None:
@@ -355,17 +369,18 @@ if __name__ == "__main__":
     print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
     show(label="input", columns=np.arange(X.shape[1]))
 
+    varying = selector.drop_constant(X=X)
+    show(label="left by the constant filter", columns=varying)
+
     for filter_method in ("corr", "vif", "mrmr", "relieff"):
         show(label=f"filter by {filter_method}",
-             columns=selector.filter_step(X=X, y=data.target, method=filter_method))
+             columns=selector.filter_step(X=X, y=data.target, columns=varying, method=filter_method))
 
     for embedded_method in ("random_forest", "lasso"):
         show(label=f"embedded by {embedded_method}",
-             columns=selector.embedded_step(X=X, y=data.target, columns=np.arange(X.shape[1]),
-                                            method=embedded_method))
+             columns=selector.embedded_step(X=X, y=data.target, columns=varying, method=embedded_method))
 
-    forest_columns = selector.embedded_step(X=X, y=data.target, columns=np.arange(X.shape[1]),
-                                            method="random_forest")
+    forest_columns = selector.embedded_step(X=X, y=data.target, columns=varying, method="random_forest")
     for wrapper_method in ("rfe", "forward", "backward"):
         show(label=f"wrapper by {wrapper_method}, out of the random forest columns",
              columns=selector.wrapper_step(X=X, y=data.target, columns=forest_columns,
@@ -380,9 +395,17 @@ if __name__ == "__main__":
 실행 결과는 다음과 같다.
 
 ```text
-input: 569 samples, 30 features
+input: 569 samples, 31 features
 
-input (30 features)
+input (31 features)
+  area error, compactness error, concave points error, concavity error, constant probe, fractal
+  dimension error, mean area, mean compactness, mean concave points, mean concavity, mean fractal
+  dimension, mean perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter
+  error, radius error, smoothness error, symmetry error, texture error, worst area, worst
+  compactness, worst concave points, worst concavity, worst fractal dimension, worst perimeter,
+  worst radius, worst smoothness, worst symmetry, worst texture
+
+left by the constant filter (30 features)
   area error, compactness error, concave points error, concavity error, fractal dimension error,
   mean area, mean compactness, mean concave points, mean concavity, mean fractal dimension, mean
   perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter error, radius
@@ -429,6 +452,14 @@ wrapper by forward, out of the random forest columns (5 features)
 wrapper by backward, out of the random forest columns (5 features)
   mean concavity, worst area, worst concave points, worst perimeter, worst radius
 
+varying step of the workflow (30 features)
+  area error, compactness error, concave points error, concavity error, fractal dimension error,
+  mean area, mean compactness, mean concave points, mean concavity, mean fractal dimension, mean
+  perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter error, radius
+  error, smoothness error, symmetry error, texture error, worst area, worst compactness, worst
+  concave points, worst concavity, worst fractal dimension, worst perimeter, worst radius, worst
+  smoothness, worst symmetry, worst texture
+
 filter step of the workflow (23 features)
   compactness error, concave points error, concavity error, fractal dimension error, mean
   compactness, mean concave points, mean concavity, mean fractal dimension, mean radius, mean
@@ -444,4 +475,4 @@ wrapper step of the workflow (5 features)
   mean concavity, mean radius, radius error, worst concave points, worst concavity
 ```
 
-네 filter 는 같은 자료에서 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
