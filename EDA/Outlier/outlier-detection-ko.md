@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 9 | Created: 2026-09-09 | Updated: 2026-09-13 10:27 CDT
+Rev. 10 | Created: 2026-09-09 | Updated: 2026-09-13 10:35 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리했다. 방법을 습관이 아니라 데이터의 모양에서 고르기 위한 것이다.
@@ -8,44 +8,111 @@ Rev. 9 | Created: 2026-09-09 | Updated: 2026-09-13 10:27 CDT
 
 Outlier 는 나머지 표본이 따르는 model 과 어긋나는 관측이다. Flag 는 그 model 과의 부정합을 말할 뿐 틀렸다는 판정이 아니므로, 검출과 처리는 따로 둔다. Flag 는 조사를 닫는 것이 아니라 여는 것이다.
 
-모든 방법은 가정을 치르고 답을 산다. 데이터가 그 가정을 어기면 flag 는 이탈이 아니라 가정 위반을 기록한다. 선택은 데이터의 두 성질이 정한다.
+모든 방법은 가정을 치르고 답을 산다. 데이터가 그 가정을 어기면 flag 는 이탈이 아니라 가정 위반을 기록한다. 어떤 가정을 쓸 수 있는지는 데이터의 두 성질이 정한다.
 
 - **Dimension.** 변수 하나, 몇 개, 아니면 거리가 의미를 잃을 만큼 큰 공간.
 - **Distribution.** 모수적 형태를, 무엇보다 정규성을 가정할 수 있는지 여부.
 
-꼭지 2 가 그 두 성질과 꼭지 3 의 축, 그리고 현장이 실제로 돌리는 것에 견주어 선택을 내린다. 꼭지 4 부터 6 까지는 세 가지 방법 family 를 차례로 다루며, 방법마다 무엇을 가정하고 무엇을 정하고 무엇에 무너지고 어디에서 만나는지를 적는다. 유도와 상수, benchmark 수치, 산업 표준 둘은 appendix 에 둔다.
+꼭지 2 는 outlier 의 종류를 그것을 이름 대는 축으로 정리하고, 꼭지 3 은 방법을 그 축에 답하는 family 로 정리한다. 꼭지 4 부터 6 까지는 그 family 를 차례로 다루며, 방법마다 무엇을 가정하고 무엇을 정하고 무엇에 무너지고 어디에서 만나는지를 적는다. 유도와 상수, benchmark 수치, 산업 표준 둘, 그리고 현장이 규칙을 마주치는 순서는 appendix 에 둔다.
 
-## 2. Selection
+## 2. Taxonomy of Outliers
 
-아래의 표는 방법을 세 가지 길로 고른다. 데이터의 모양에서, 묻고 있는 질문에서, 그리고 이미 화면에 떠 있는 것에서이다.
+아래 여덟 꼭지는 여덟 개의 category 가 아니라 여덟 개의 축이며, 한 관측은 그 모두에 동시에 자리를 가진다. 한 번의 측정이 point outlier 이면서 global 이 아니라 local 이고, 기록 오류에서 왔으며, contaminant 는 아니면서 discordant 이고, 자기 regression 에서 leverage 가 높을 수 있다.
 
-### 2.1. By the Shape of the Data
+방법은 한 축에 답하고 나머지 축에 대해서는 아무 말도 하지 않는다. 꼭지 3.2 가 이 문서의 모든 방법을 그 축 위에 놓는다.
 
-**Table 1. Method by the shape of the data**
+### 2.1. Form
 
-| # | Data | Method | Why |
-|---|---|---|---|
-| 1 | 변수 하나, 분포 미상 | Interquartile Range | 형태를 가정하지 않고, fence 가 25% 의 breakdown point 를 가진다. |
-| 2 | 변수 하나, 근사적으로 정규, 깨끗함 | Z-Score | 문턱값이 명시된 오류율을 가진다. 단 꼭지 4.1 의 상한이 그 위에 놓일 만큼 표본이 커야 한다. |
-| 3 | 변수 하나, 오염이 예상됨 | Hampel Identifier | Median 과 MAD 는 찾고 있는 outlier 가 움직이지 못하므로, 스스로를 가리는 것이 없다. |
-| 4 | 변수 하나, outlier 여럿, 근사적으로 정규 | Generalized ESD | 검정 하나가 아니라 탐색 전체에 대한 수준을 명시하고, 첫 단계가 아니라 마지막으로 통과한 단계를 읽는다. |
-| 5 | 변수 몇 개, 서로 상관 | Mahalanobis Distance | 공분산을 읽는 유일한 항목이며, 믿으려면 robust 한 중심과 척도가 필요하다. |
-| 6 | 변수 다수, 조율할 label 없음 | ECOD | Hyperparameter 가 아예 없는 유일한 항목이며, 어느 변수가 그 관측을 극단적으로 만들었는지 말해 준다. |
-| 7 | 변수도 많고 관측도 많음 | Isolation Forest | 표본 크기에 선형이고, 부분표본에서 동작하며, 분포를 가정하지 않는다. |
-| 8 | 밀도가 서로 다른 cluster | Local Outlier Factor | 관측을 표본 전체가 아니라 그 이웃에 견준다. |
-| 9 | 알려진 영역과 판정할 새 점 | One-Class SVM | 문제가 경계이고, 경계는 이 방법이 적합하는 것이다. |
-| 10 | Audio, 긴 time series, 장비 trace | Autoencoder | 원래 좌표의 거리가 통하지 않는 곳에서도 재구성 오차는 살아남는다. |
-| 11 | 되풀이 생산되는 제품의 image | Patch feature memory | 꼭지 6.3 의 pretrained feature 가 결함의 모습을 이미 담고 있고, 채점이 inline 으로 돌릴 만큼 빠르다. |
-| 12 | 생산 lot 안의 부품 | [Part average testing](#appendix-c-semiconductor-practice) | 표준이 규칙을 이름 지어 두어, 한계값을 다투는 대신 감사할 수 있다. |
-| 13 | 장비 sensor trace | [Multivariate control chart](#appendix-c-semiconductor-practice) | 점수를 $T^2$ 와 $Q$ 로 나누면 무엇인가 움직였다는 것만이 아니라 어느 sensor 를 보아야 하는지를 말해 준다. |
+[Chandola, Banerjee and Kumar (2009)](#ref-8) 는 anomaly 를 데이터에서 취하는 형태로 나눈다.
 
-### 2.2. By the Axis Answered
+- **Point.** 관측 하나가 그 자체로 극단적이다. 평범한 날씨 기록에 섞인 영하 100 도.
+- **Contextual.** 값 자체는 표본 안에서 평범하고 맥락에서 극단적이다. 2 도는 한 해의 측정값 가운데서는 눈에 띄지 않지만 8 월의 값으로는 틀렸다.
+- **Collective.** 어느 값 하나도 극단적이지 않지만 그것들이 이어진 구간이 함께 극단적이다. 모든 측정값이 정상 범위 안에 있는 심전도의 저전압 구간.
 
-Table 1 은 데이터에 대한 기술에서 방법을 고른다. Table 2 는 반대 방향으로 읽어, 각 방법이 꼭지 3 의 질문 가운데 실제로 어느 것에 답하는지를 말한다.
+Contextual anomaly 와 collective anomaly 는 값이 담고 있지 않은 것을, 곧 context 변수와 순서를 요구한다. 주변 분포만 보는 방법은 어느 것도 찾지 못한다.
 
-**Table 2. Where each method sits on the axes of section 3**
+### 2.2. Reference Set
 
-| # | Method | Form (3.1) | Reference set (3.2) | Labels (3.6) | Count (3.7) |
+관측은 표본 전체에 견주어, 또는 이웃에 견주어 극단적이다.
+
+- **Global.** 표본 전체에 견주어 극단적.
+- **Local.** 표본 전체에 견주면 평범하고, 자기가 속한 group 에 견주면 극단적.
+
+이 축은 꼭지 2.1 과 독립이므로 point 와 global 을 한 label 로 묶는 것은 잘못이다. [Breunig, Kriegel, Ng and Sander (2000)](#ref-17) 이 local outlier factor 를 만든 것은 local point outlier 를 위해서이며, 꼭지 5.3 이 다루는 경우이다.
+
+### 2.3. Cause
+
+Flag 가 붙은 값이 도착한 경로는 셋이고, 무엇을 해야 하는지는 경로마다 다르다.
+
+- **Error.** 측정, 전사, 전송에서 생긴 실수. 그 값은 연구 대상 process 가 아니라 그것을 기록한 process 를 기술한다.
+- **Foreign population.** 다른 것을 옳게 측정한 값. 예를 들어 batch 에 섞여 들어온 다른 lot 의 부품.
+- **Genuine rare event.** 연구 대상 process 를 옳게 측정한 값으로, 그 process 가 실제로 가진 꼬리에 놓여 있다.
+
+어느 통계량도 이 셋을 가르지 못한다. 검출은 후보를 내놓고, 원인은 그 뒤의 기록이 밝힌다.
+
+### 2.4. Discordancy and Contamination
+
+[Barnett and Lewis (1994)](#ref-2) 는 둘을 갈라 둔다. **Contaminant** 는 다른 분포에서 온 관측이다. **Discordant observation** 은 나머지와 통계적으로 어긋나 보이는 관측이다.
+
+둘은 서로를 함의하지 않는다. Contaminant 가 본체 안에 숨을 수 있고, 오염되지 않은 heavy-tailed 표본도 예측 가능한 비율로 discordant 관측을 낸다. 이 문서의 모든 검정은 discordancy 를 검정하며, contamination 은 꼭지 2.3 의 조사가 밝힌다.
+
+### 2.5. Position in a Regression
+
+분포가 아니라 model 을 적합하면 축 하나가 셋으로 갈라지고, 그 셋은 서로 어긋난다.
+
+- **Residual outlier.** 반응에서 적합된 면으로부터 멀다.
+- **Leverage point.** 예측변수에서 극단적이며, 실제로 적합을 움직이든 아니든 움직일 힘을 가진다.
+- **Influential observation.** 제거하면 적합이 눈에 띄게 바뀌며, [Cook (1977)](#ref-4) 이 자기 이름이 붙은 거리로 재었다.
+
+영향 없는 높은 leverage 는 흔하고, 큰 잔차 없는 영향도 마찬가지로 점이 직선을 자기 쪽으로 끌어다 놓은 경우이다. [Belsley, Kuh and Welsch (1980)](#ref-6) 이 그 둘을 가르는 진단 지표를 모아 놓았다.
+
+### 2.6. Labels
+
+찾기를 시작하기 전에 무엇을 알고 있는지가 무엇을 할 수 있는지를 정한다.
+
+- **Supervised.** 두 class 모두의 label 이 붙은 예시. 이것은 outlier 문제라기보다 class 불균형이 심한 classification 문제이다.
+- **Semi-supervised.** 깨끗하다고 알려진 training set 과, 그것에 견주어 판정할 새 관측. 이것은 novelty detection 이다.
+- **Unsupervised.** Label 이 없는 표본 하나이며, 이미 outlier 를 담고 있을 수 있다.
+
+꼭지 4 부터 6 까지는 unsupervised 이거나 semi-supervised 이며, label 붙은 outlier 가 드물기 때문이다. 깨끗하다고 가정했지만 깨끗하지 않은 training set 은 그 안의 outlier 를 정상으로 여기도록 방법을 가르친다.
+
+### 2.7. Count
+
+Outlier 를 몇 개 예상하는지는 문턱값만이 아니라 절차 자체를 바꾼다.
+
+- **Single.** 검정 하나, 명시된 오류율 하나.
+- **Multiple.** 개수를 모르는 여럿이며, masking 과 swamping 이 나타나는 자리이다. 둘은 아래에서 정의한다.
+
+Masking 은 outlier 하나가 중심이나 척도를 부풀려 두 번째 outlier 가 더는 극단적으로 보이지 않게 하는 것이다. Swamping 은 그 반대로, 일그러짐이 커서 깨끗한 관측까지 함께 flag 되는 것이다. [Hawkins (1980)](#ref-5) 이 다수 outlier 문제를 다루었고, 꼭지 4.4 가 그것을 위해 만들어진 절차이다.
+
+### 2.8. Time Series Type
+
+순서가 있는 데이터에서는 꼭지 2.1 의 form 축이 이탈이 series 에 들어오는 방식으로 갈라진다. [Fox (1972)](#ref-3) 가 앞의 둘을, [Chen and Liu (1993)](#ref-7) 이 표준이 된 넷을 정리했다.
+
+- **Additive.** 측정값 하나가 밀려나고 series 는 곧바로 돌아온다.
+- **Innovational.** 충격이 process 안으로 들어와, 뒤따르는 측정값들로 이탈이 전파된다.
+- **Level shift.** Series 가 새 수준으로 옮겨 가 그대로 머문다.
+- **Temporary change.** Series 가 움직였다가 여러 측정값에 걸쳐 되돌아온다.
+
+넷 모두 꼭지 2.1 아래에서는 하나의 collective anomaly 이며, 그래서 그 축은 장비 trace 에 쓰기에 너무 성기다. Chamber 가 영구히 drift 한 것과 스스로 회복한 것의 차이가 level shift 와 temporary change 이다.
+
+## 3. Hierarchy of Methods
+
+세 가지 방법 family 는 가정을 하나씩 내려놓는 계층을 이룬다. 한 단계 내려갈 때마다 위 단계가 읽지 못하는 데이터를 다룰 수 있게 되고, 그만큼 답이 주장할 수 있는 것이 약해진다.
+
+### 3.1. The Three Families
+
+통계적 방법 (꼭지 4) 은 분포의 형태를 가정하고 그로부터의 이탈을 재며, 그 가정이 명시된 오류율을 사 온다. Machine learning 방법 (꼭지 5) 은 형태를 내려놓고 데이터의 기하만 남기며, 여러 변수를 한꺼번에 다루는 대신 오류율이 붙지 않은 점수를 받는다. Deep 방법 (꼭지 6) 은 원래 좌표의 기하마저 내려놓고 표현을 먼저 배우며, 어떤 거리도 읽지 못하는 구조의 데이터를 다루는 대신 깨끗한 training 데이터와 비용을 치른다.
+
+이 계층은 순위가 아니다. 한 단계 아래의 방법은 더 넓은 데이터에 답하고 더 좁은 질문에 답하므로, family 는 데이터가 무엇인지가 정하고, 그 family 안에서 어느 방법이 필요한지는 꼭지 2 의 축이 정한다.
+
+### 3.2. Placement on the Axes
+
+Table 2 는 꼭지 4 부터 6 까지의 모든 방법을 꼭지 2 의 축 위에 놓고, 각 방법이 그 질문 가운데 어느 것에 실제로 답하는지를 말한다.
+
+**Table 2. Where each method sits on the axes of section 2**
+
+| # | Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
 |---|---|---|---|---|---|
 | 1 | Z-Score | Point | Global | Unsupervised | Single |
 | 2 | Interquartile Range | Point | Global | Unsupervised | 통제하지 않음 |
@@ -66,119 +133,38 @@ Deep 방법들은 방법이 아니라 데이터를 바꾸어 collective anomaly 
 
 네 개의 축이 표에서 빠져 있는데, 셋은 여기 있는 어느 방법도 답하지 않기 때문이고 하나는 모든 방법이 똑같이 답하기 때문이다.
 
-- **Cause (3.3).** 어느 통계량도 오류와 드문 사건을 가르지 못하며, 그 꼭지가 그것을 그대로 말한다.
-- **Discordancy and contamination (3.4).** 여기 있는 모든 방법이 discordancy 를 검정하고 어느 것도 contamination 을 판정하지 않으므로, 이 축은 어느 방법이 결과를 내놓는가가 아니라 결과를 어떻게 읽는가를 가른다.
-- **Position in a regression (3.5).** Leverage 와 influence 는 적합된 model 을 요구하는데, 이 문서는 그 대신 분포와 영역을 적합한다.
-- **Time series type (3.8).** Window 를 쓰는 방법이 level shift 에 flag 를 붙일 수는 있지만, 여기 있는 어느 것도 level shift 와 temporary change 를 가르지 못한다.
+- **Cause (2.3).** 어느 통계량도 오류와 드문 사건을 가르지 못하며, 그 꼭지가 그것을 그대로 말한다.
+- **Discordancy and contamination (2.4).** 여기 있는 모든 방법이 discordancy 를 검정하고 어느 것도 contamination 을 판정하지 않으므로, 이 축은 어느 방법이 결과를 내놓는가가 아니라 결과를 어떻게 읽는가를 가른다.
+- **Position in a regression (2.5).** Leverage 와 influence 는 적합된 model 을 요구하는데, 이 문서는 그 대신 분포와 영역을 적합한다.
+- **Time series type (2.8).** Window 를 쓰는 방법이 level shift 에 flag 를 붙일 수는 있지만, 여기 있는 어느 것도 level shift 와 temporary change 를 가르지 못한다.
 
 Contextual anomaly 도 form 축에서 손에 닿지 않는다. 견줄 context 변수를 요구하는데 여기 있는 어느 방법도 그것을 받지 않는다.
 
-### 2.3. What Practice Actually Runs
+### 3.3. Placement by the Shape of the Data
 
-Survey 는 방법이 무엇을 가정하는지로, 현장은 이미 화면에 떠 있는 것으로 순위를 매긴다. Table 3 은 실제로 마주치는 순서대로 규칙을 적은 것이다.
+Table 1 은 같은 배치를 반대쪽에서 읽어, 데이터의 모양에서 그 모양이 가정을 만족시키는 방법으로 간다.
 
-**Table 3. What practice actually runs, most common first**
+**Table 1. Method by the shape of the data**
 
-| Rank | Rule | Why it is reached for |
-|---|---|---|
-| 1 | 꼭지 4.2 의 Tukey fence, 곧 interquartile range | Box plot 이 보통 가장 먼저 그리는 그림이고, 그 수염이 이미 이 규칙이다. |
-| 2 | 꼭지 4.1 의 3 에서 자르는 z-score | 관성. 모두가 배운 규칙이지만, 표본이 정규도 아니고 깨끗하지도 않으면 언제나 틀린 규칙이다. |
-| 3 | 꼭지 4.3 의 MAD 로 만든 modified z-score | 데이터가 조금이라도 지저분해지면 작업이 옮겨 가는 자리. |
-| 4 | 분위수 절단, 곧 1 백분위수와 99 백분위수에서의 winsorizing | 싸고, 검정이 아예 필요 없다. 표본의 성질이 아니라 표본의 몫을 고정한다. |
-| 5 | 🌳도메인의 물리 한계 | 이것이 첫째여야 한다. 음의 압력이나 100% 를 넘는 수율은 어떤 통계량을 계산하기도 전에 결판난다. |
-
-마지막 두 항목은 앞의 셋과 종류가 다르다. Winsorizing 은 아무것도 판정하지 않는다. 고정된 몫에 그 몫이 discordant 하든 아니든 적용하는 처리이고, 꼭지 1 이 처리를 검출과 갈라 놓았다. 물리 한계는 표본을 읽기 전에 가지고 있는 지식이며, 관측을 어긋났다가 아니라 틀렸다고 부를 수 있는 유일한 규칙이다.
-
-그래서 다섯째 항목이 첫째 자리이다. Process 가 넘을 수 없는 한계는 꼭지 4 부터 6 까지의 무엇이 돌기도 전에 적용한다. 그 밖의 값을 남겨 두면 뒤따르는 모든 추정값이 망가진다.
-
-### 2.4. Two Habits
-
-선택보다 중요한 습관이 둘이다. 데이터를 보기 전에 문턱값을 고정하여 좋아하는 답에 맞추지 않는다. 그리고 판정이 아니라 여유를 읽는다. 위의 선택이 바뀌어도 살아남는 것은 cut-off 를 넉넉히 넘긴 통계량뿐이다.
-
-## 3. Kinds of Outlier
-
-아래 여덟 꼭지는 여덟 개의 category 가 아니라 여덟 개의 축이며, 한 관측은 그 모두에 동시에 자리를 가진다. 한 번의 측정이 point outlier 이면서 global 이 아니라 local 이고, 기록 오류에서 왔으며, contaminant 는 아니면서 discordant 이고, 자기 regression 에서 leverage 가 높을 수 있다.
-
-방법은 한 축을 기준으로 고르며 나머지 축에 대해서는 아무 말도 하지 않는다. 꼭지 2.2 가 이 문서의 모든 방법을 그 축 위에 놓는다.
-
-### 3.1. Form
-
-[Chandola, Banerjee and Kumar (2009)](#ref-8) 는 anomaly 를 데이터에서 취하는 형태로 나눈다.
-
-- **Point.** 관측 하나가 그 자체로 극단적이다. 평범한 날씨 기록에 섞인 영하 100 도.
-- **Contextual.** 값 자체는 표본 안에서 평범하고 맥락에서 극단적이다. 2 도는 한 해의 측정값 가운데서는 눈에 띄지 않지만 8 월의 값으로는 틀렸다.
-- **Collective.** 어느 값 하나도 극단적이지 않지만 그것들이 이어진 구간이 함께 극단적이다. 모든 측정값이 정상 범위 안에 있는 심전도의 저전압 구간.
-
-Contextual anomaly 와 collective anomaly 는 값이 담고 있지 않은 것을, 곧 context 변수와 순서를 요구한다. 주변 분포만 보는 방법은 어느 것도 찾지 못한다.
-
-### 3.2. Reference Set
-
-관측은 표본 전체에 견주어, 또는 이웃에 견주어 극단적이다.
-
-- **Global.** 표본 전체에 견주어 극단적.
-- **Local.** 표본 전체에 견주면 평범하고, 자기가 속한 group 에 견주면 극단적.
-
-이 축은 꼭지 3.1 과 독립이므로 point 와 global 을 한 label 로 묶는 것은 잘못이다. [Breunig, Kriegel, Ng and Sander (2000)](#ref-17) 이 local outlier factor 를 만든 것은 local point outlier 를 위해서이며, 꼭지 5.3 이 다루는 경우이다.
-
-### 3.3. Cause
-
-Flag 가 붙은 값이 도착한 경로는 셋이고, 무엇을 해야 하는지는 경로마다 다르다.
-
-- **Error.** 측정, 전사, 전송에서 생긴 실수. 그 값은 연구 대상 process 가 아니라 그것을 기록한 process 를 기술한다.
-- **Foreign population.** 다른 것을 옳게 측정한 값. 예를 들어 batch 에 섞여 들어온 다른 lot 의 부품.
-- **Genuine rare event.** 연구 대상 process 를 옳게 측정한 값으로, 그 process 가 실제로 가진 꼬리에 놓여 있다.
-
-어느 통계량도 이 셋을 가르지 못한다. 검출은 후보를 내놓고, 원인은 그 뒤의 기록이 밝힌다.
-
-### 3.4. Discordancy and Contamination
-
-[Barnett and Lewis (1994)](#ref-2) 는 둘을 갈라 둔다. **Contaminant** 는 다른 분포에서 온 관측이다. **Discordant observation** 은 나머지와 통계적으로 어긋나 보이는 관측이다.
-
-둘은 서로를 함의하지 않는다. Contaminant 가 본체 안에 숨을 수 있고, 오염되지 않은 heavy-tailed 표본도 예측 가능한 비율로 discordant 관측을 낸다. 이 문서의 모든 검정은 discordancy 를 검정하며, contamination 은 꼭지 3.3 의 조사가 밝힌다.
-
-### 3.5. Position in a Regression
-
-분포가 아니라 model 을 적합하면 축 하나가 셋으로 갈라지고, 그 셋은 서로 어긋난다.
-
-- **Residual outlier.** 반응에서 적합된 면으로부터 멀다.
-- **Leverage point.** 예측변수에서 극단적이며, 실제로 적합을 움직이든 아니든 움직일 힘을 가진다.
-- **Influential observation.** 제거하면 적합이 눈에 띄게 바뀌며, [Cook (1977)](#ref-4) 이 자기 이름이 붙은 거리로 재었다.
-
-영향 없는 높은 leverage 는 흔하고, 큰 잔차 없는 영향도 마찬가지로 점이 직선을 자기 쪽으로 끌어다 놓은 경우이다. [Belsley, Kuh and Welsch (1980)](#ref-6) 이 그 둘을 가르는 진단 지표를 모아 놓았다.
-
-### 3.6. Labels
-
-찾기를 시작하기 전에 무엇을 알고 있는지가 무엇을 할 수 있는지를 정한다.
-
-- **Supervised.** 두 class 모두의 label 이 붙은 예시. 이것은 outlier 문제라기보다 class 불균형이 심한 classification 문제이다.
-- **Semi-supervised.** 깨끗하다고 알려진 training set 과, 그것에 견주어 판정할 새 관측. 이것은 novelty detection 이다.
-- **Unsupervised.** Label 이 없는 표본 하나이며, 이미 outlier 를 담고 있을 수 있다.
-
-꼭지 4 부터 6 까지는 unsupervised 이거나 semi-supervised 이며, label 붙은 outlier 가 드물기 때문이다. 깨끗하다고 가정했지만 깨끗하지 않은 training set 은 그 안의 outlier 를 정상으로 여기도록 방법을 가르친다.
-
-### 3.7. Count
-
-Outlier 를 몇 개 예상하는지는 문턱값만이 아니라 절차 자체를 바꾼다.
-
-- **Single.** 검정 하나, 명시된 오류율 하나.
-- **Multiple.** 개수를 모르는 여럿이며, masking 과 swamping 이 나타나는 자리이다. 둘은 아래에서 정의한다.
-
-Masking 은 outlier 하나가 중심이나 척도를 부풀려 두 번째 outlier 가 더는 극단적으로 보이지 않게 하는 것이다. Swamping 은 그 반대로, 일그러짐이 커서 깨끗한 관측까지 함께 flag 되는 것이다. [Hawkins (1980)](#ref-5) 이 다수 outlier 문제를 다루었고, 꼭지 4.4 가 그것을 위해 만들어진 절차이다.
-
-### 3.8. Time Series Type
-
-순서가 있는 데이터에서는 꼭지 3.1 의 form 축이 이탈이 series 에 들어오는 방식으로 갈라진다. [Fox (1972)](#ref-3) 가 앞의 둘을, [Chen and Liu (1993)](#ref-7) 이 표준이 된 넷을 정리했다.
-
-- **Additive.** 측정값 하나가 밀려나고 series 는 곧바로 돌아온다.
-- **Innovational.** 충격이 process 안으로 들어와, 뒤따르는 측정값들로 이탈이 전파된다.
-- **Level shift.** Series 가 새 수준으로 옮겨 가 그대로 머문다.
-- **Temporary change.** Series 가 움직였다가 여러 측정값에 걸쳐 되돌아온다.
-
-넷 모두 꼭지 3.1 아래에서는 하나의 collective anomaly 이며, 그래서 그 축은 장비 trace 에 쓰기에 너무 성기다. Chamber 가 영구히 drift 한 것과 스스로 회복한 것의 차이가 level shift 와 temporary change 이다.
+| # | Data | Method | Why |
+|---|---|---|---|
+| 1 | 변수 하나, 분포 미상 | Interquartile Range | 형태를 가정하지 않고, fence 가 25% 의 breakdown point 를 가진다. |
+| 2 | 변수 하나, 근사적으로 정규, 깨끗함 | Z-Score | 문턱값이 명시된 오류율을 가진다. 단 꼭지 4.1 의 상한이 그 위에 놓일 만큼 표본이 커야 한다. |
+| 3 | 변수 하나, 오염이 예상됨 | Hampel Identifier | Median 과 MAD 는 찾고 있는 outlier 가 움직이지 못하므로, 스스로를 가리는 것이 없다. |
+| 4 | 변수 하나, outlier 여럿, 근사적으로 정규 | Generalized ESD | 검정 하나가 아니라 탐색 전체에 대한 수준을 명시하고, 첫 단계가 아니라 마지막으로 통과한 단계를 읽는다. |
+| 5 | 변수 몇 개, 서로 상관 | Mahalanobis Distance | 공분산을 읽는 유일한 항목이며, 믿으려면 robust 한 중심과 척도가 필요하다. |
+| 6 | 변수 다수, 조율할 label 없음 | ECOD | Hyperparameter 가 아예 없는 유일한 항목이며, 어느 변수가 그 관측을 극단적으로 만들었는지 말해 준다. |
+| 7 | 변수도 많고 관측도 많음 | Isolation Forest | 표본 크기에 선형이고, 부분표본에서 동작하며, 분포를 가정하지 않는다. |
+| 8 | 밀도가 서로 다른 cluster | Local Outlier Factor | 관측을 표본 전체가 아니라 그 이웃에 견준다. |
+| 9 | 알려진 영역과 판정할 새 점 | One-Class SVM | 문제가 경계이고, 경계는 이 방법이 적합하는 것이다. |
+| 10 | Audio, 긴 time series, 장비 trace | Autoencoder | 원래 좌표의 거리가 통하지 않는 곳에서도 재구성 오차는 살아남는다. |
+| 11 | 되풀이 생산되는 제품의 image | Patch feature memory | 꼭지 6.3 의 pretrained feature 가 결함의 모습을 이미 담고 있고, 채점이 inline 으로 돌릴 만큼 빠르다. |
+| 12 | 생산 lot 안의 부품 | [Part average testing](#appendix-c-semiconductor-practice) | 표준이 규칙을 이름 지어 두어, 한계값을 다투는 대신 감사할 수 있다. |
+| 13 | 장비 sensor trace | [Multivariate control chart](#appendix-c-semiconductor-practice) | 점수를 $T^2$ 와 $Q$ 로 나누면 무엇인가 움직였다는 것만이 아니라 어느 sensor 를 보아야 하는지를 말해 준다. |
 
 ## 4. Statistical Methods
 
-이 방법들은 분포의 형태를 가정하고 그로부터의 이탈을 잰다. 계산이 가장 싸고 근거를 대기가 가장 쉬우며, 가정이 성립하는 동안은 옳은 기본값이다.
+계산이 가장 싸고 근거를 대기가 가장 쉬운 family 이며, 가정이 성립하는 동안은 옳은 기본값이다.
 
 ### 4.1. Z-Score
 
@@ -277,7 +263,7 @@ d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)
 
 ## 5. Machine Learning Methods
 
-이 방법들은 분포 가정을 버리고 label 없는 데이터에서 정상 영역을 배운다. 여러 변수를 한꺼번에 다루고 오류율을 주장하지 않으므로, 출력은 통과 여부가 아니라 순위를 매길 점수이다.
+정상 영역을 label 없는 데이터에서 배우므로, 출력은 통과 여부가 아니라 순위를 매길 점수이다.
 
 ### 5.1. [Isolation Forest](#ref-19)
 
@@ -292,7 +278,7 @@ Isolation Forest 는 무작위 변수를 무작위 문턱값에서 쪼개어 tre
 
 One-Class SVM 은 training 데이터가 차지하는 영역을 감싸는 경계를 배우고, 그 경계 밖의 것을 outlier 라고 부른다. Kernel 이 경계가 어떻게 휠 수 있는지를 정하고, parameter $\nu$ 가 경계 밖으로 나가도 되는 training 데이터의 비율에 상한을 준다.
 
-- **Assumption.** 깨끗하다고 알려진 training set. 그러면 문제는 novelty detection 이다 (꼭지 3.6).
+- **Assumption.** 깨끗하다고 알려진 training set. 그러면 문제는 novelty detection 이다 (꼭지 2.6).
 - **Setting.** Kernel 과 그 bandwidth, 그리고 경계 밖으로 나가는 training 데이터 비율의 상한 $\nu$.
 - **Breaks when.** Training set 이 깨끗하지 않을 때, 변수의 척도가 다를 때, 표본이 클 때. 적합이 표본 크기에 대해 이차 이상이다.
 - **Met at.** 먼저 고정해 둔 정상 영역이 있고, 그에 견주어 판정할 새 자료가 있을 때.
@@ -317,7 +303,7 @@ ECOD 는 outlier 를 꼬리의 드문 사건으로 보고, 아무것도 적합�
 
 ## 6. Deep Learning Methods
 
-이 방법들은 정상 데이터의 표현을 배우고 그것을 재현하지 못하는 정도에서 이탈을 읽는다. 원래 좌표의 거리가 통하지 않는 데이터, 곧 audio, 긴 time series, 장비 trace, 무엇보다 image 를 위한 것이며 training 에 쓸 깨끗한 데이터가 필요하다. Image 의 처방은 꼭지 6.3 에 있다.
+이탈은 배운 표현을 재현하지 못하는 정도에서 읽는다. Audio, 긴 time series, 장비 trace, 무엇보다 image 를 위한 것이며 training 에 쓸 깨끗한 데이터가 필요하다. Image 의 처방은 꼭지 6.3 에 있다.
 
 ### 6.1. Autoencoder
 
@@ -325,7 +311,7 @@ Autoencoder 는 입력을 좁은 code 로 압축하고 그로부터 입력을 �
 
 - **Assumption.** 깨끗한 training 데이터, 그리고 network 가 입력을 그대로 복사하지 못할 만큼 좁은 bottleneck.
 - **Setting.** Code 의 너비와 재구성 오차에 두는 cut.
-- **Breaks when.** 용량이 너무 클 때. 본 적 없는 anomaly 도 정상만큼 충실히 재구성된다. Training set 이 깨끗하지 않을 때도 무너진다 (꼭지 3.6).
+- **Breaks when.** 용량이 너무 클 때. 본 적 없는 anomaly 도 정상만큼 충실히 재구성된다. Training set 이 깨끗하지 않을 때도 무너진다 (꼭지 2.6).
 - **Met at.** 장비 trace 처럼 점마다의 한계값으로는 읽히지 않는 긴 순서 기록.
 
 ### 6.2. Generative Adversarial Network
@@ -573,3 +559,28 @@ Raw MAD 는 $s$ 를 추정하지 않는다. 정규 표본에서 $0.674490 \sigma
 [PatchCore](#ref-23) 가 꼭지 6.3 의 patch feature memory 를 세워 MVTec AD benchmark 에서 최고 99.1% 의 검출 AUROC 를 보고했다. [EfficientAD](#ref-24) 는 32 개 dataset 에 걸쳐 95.4% 의 검출 AUROC 에 image 당 2.2 ms 로 닿으며, 그 지연이 inline 검사를 가능하게 한다.
 
 실제 검사의 조명과 결함 변이를 담으려고 만든 MVTec AD 2 에서는 false positive rate 5% 에서 31% 의 localization AU-PRO 를 넘긴 방법이 아직 없다. 앞의 benchmark 를 깔끔하게 가르는 방법이 그것만으로 line 에 나갈 준비가 된 것은 아니다.
+
+
+## Appendix F. What Practice Actually Runs
+
+Survey 는 방법이 무엇을 가정하는지로 순위를 매긴다. 현장은 이미 화면에 떠 있는 것으로 순위를 매기며, 두 순서는 같지 않다.
+
+### F.1. The Order Practice Meets Them
+
+**Table 3. What practice actually runs, most common first**
+
+| Rank | Rule | Why it is reached for |
+|---|---|---|
+| 1 | 꼭지 4.2 의 Tukey fence, 곧 interquartile range | Box plot 이 보통 가장 먼저 그리는 그림이고, 그 수염이 이미 이 규칙이다. |
+| 2 | 꼭지 4.1 의 3 에서 자르는 z-score | 관성. 모두가 배운 규칙이지만, 표본이 정규도 아니고 깨끗하지도 않으면 언제나 틀린 규칙이다. |
+| 3 | 꼭지 4.3 의 MAD 로 만든 modified z-score | 데이터가 조금이라도 지저분해지면 작업이 옮겨 가는 자리. |
+| 4 | 분위수 절단, 곧 1 백분위수와 99 백분위수에서의 winsorizing | 싸고, 검정이 아예 필요 없다. 표본의 성질이 아니라 표본의 몫을 고정한다. |
+| 5 | 🌳도메인의 물리 한계 | 이것이 첫째여야 한다. 음의 압력이나 100% 를 넘는 수율은 어떤 통계량을 계산하기도 전에 결판난다. |
+
+마지막 두 항목은 앞의 셋과 종류가 다르다. Winsorizing 은 아무것도 판정하지 않는다. 고정된 몫에 그 몫이 discordant 하든 아니든 적용하는 처리이고, 꼭지 1 이 처리를 검출과 갈라 놓았다. 물리 한계는 표본을 읽기 전에 가지고 있는 지식이며, 관측을 어긋났다가 아니라 틀렸다고 부를 수 있는 유일한 규칙이다.
+
+그래서 다섯째 항목이 첫째 자리이다. Process 가 넘을 수 없는 한계는 꼭지 4 부터 6 까지의 무엇이 돌기도 전에 적용한다. 그 밖의 값을 남겨 두면 뒤따르는 모든 추정값이 망가진다.
+
+### F.2. Two Habits
+
+어느 방법을 쓰느냐보다 중요한 습관이 둘이다. 데이터를 보기 전에 문턱값을 고정하여 좋아하는 답에 맞추지 않는다. 그리고 판정이 아니라 여유를 읽는다. 위의 선택이 바뀌어도 살아남는 것은 cut-off 를 넉넉히 넘긴 통계량뿐이다.
