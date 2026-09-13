@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 28 | Created: 2026-08-25 | Updated: 2026-09-13 10:45 CDT
+Rev. 29 | Created: 2026-08-25 | Updated: 2026-09-13 10:47 CDT
 
 > Methods that find observations departing from the pattern the rest of the data follows,
 > arranged by what each one assumes, so that a method follows from the shape of the data rather
@@ -22,6 +22,32 @@ into the families that answer them. Sections 4 to 6 take those families in turn,
 as what it assumes, what is set, what breaks it, and where it is met. The appendices carry the
 derivations, the constants, the benchmark figures, the two industrial standards, and the order in
 which practice meets the rules ([Appendix F](#appendix-f-what-practice-actually-runs)).
+
+Fig 1 lays the two out.
+
+```text
+Outlier detection
+|
++-- Taxonomy of outliers (section 2) - eight axes, one position on each at once
+|   +-- Form ............ point | contextual | collective
+|   +-- Reference set ... global | local
+|   +-- Cause ........... error | foreign population | genuine rare event
+|   +-- Discordancy ..... discordant | contaminant
+|   +-- Regression ...... residual | leverage | influential
+|   +-- Labels .......... supervised | semi-supervised | unsupervised
+|   +-- Count ........... single | multiple
+|   +-- Time series ..... additive | innovational | level shift | temporary change
+|
++-- Hierarchy of methods (section 3) - each step gives up an assumption
+    +-- Statistical (section 4) - assumes a distributional form, buys a stated error rate
+    |   +-- z-score | interquartile range | Hampel | generalized ESD | Mahalanobis
+    +-- Machine learning (section 5) - gives up the form, keeps the geometry
+    |   +-- isolation forest | one-class SVM | local outlier factor | ECOD
+    +-- Deep (section 6) - gives up the raw geometry, learns a representation
+        +-- autoencoder | adversarial and diffusion | patch feature memory
+```
+
+**Fig 1. The taxonomy of outliers and the hierarchy of methods**
 
 ## 2. Taxonomy of Outliers
 

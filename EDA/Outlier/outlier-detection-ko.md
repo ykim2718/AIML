@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 11 | Created: 2026-09-09 | Updated: 2026-09-13 10:45 CDT
+Rev. 12 | Created: 2026-09-09 | Updated: 2026-09-13 10:47 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리했다. 방법이 관행이 아니라 데이터의 모양에서 따라 나오게 하려는 것이다.
@@ -14,6 +14,32 @@ Outlier 는 나머지 표본이 따르는 model 과 어긋나는 관측이다. F
 - **Distribution.** 모수적 형태를, 무엇보다 정규성을 가정할 수 있는지 여부.
 
 꼭지 2 는 outlier 의 종류를 그것을 이름 대는 축으로 정리하고, 꼭지 3 은 방법을 그 축에 답하는 family 로 정리한다. 꼭지 4 부터 6 까지는 그 family 를 차례로 다루며, 방법마다 무엇을 가정하고 무엇을 정하고 무엇에 무너지고 어디에서 만나는지를 적는다. 유도와 상수, benchmark 수치, 산업 표준 둘, 그리고 현장이 규칙을 마주치는 순서 ([Appendix F](#appendix-f-what-practice-actually-runs)) 는 appendix 에 둔다.
+
+Fig 1 이 그 둘을 펼쳐 놓은 것이다.
+
+```text
+Outlier detection
+|
++-- Taxonomy of outliers (section 2) - eight axes, one position on each at once
+|   +-- Form ............ point | contextual | collective
+|   +-- Reference set ... global | local
+|   +-- Cause ........... error | foreign population | genuine rare event
+|   +-- Discordancy ..... discordant | contaminant
+|   +-- Regression ...... residual | leverage | influential
+|   +-- Labels .......... supervised | semi-supervised | unsupervised
+|   +-- Count ........... single | multiple
+|   +-- Time series ..... additive | innovational | level shift | temporary change
+|
++-- Hierarchy of methods (section 3) - each step gives up an assumption
+    +-- Statistical (section 4) - assumes a distributional form, buys a stated error rate
+    |   +-- z-score | interquartile range | Hampel | generalized ESD | Mahalanobis
+    +-- Machine learning (section 5) - gives up the form, keeps the geometry
+    |   +-- isolation forest | one-class SVM | local outlier factor | ECOD
+    +-- Deep (section 6) - gives up the raw geometry, learns a representation
+        +-- autoencoder | adversarial and diffusion | patch feature memory
+```
+
+**Fig 1. The taxonomy of outliers and the hierarchy of methods**
 
 ## 2. Taxonomy of Outliers
 
