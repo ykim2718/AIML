@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 12 | Created: 2026-09-12 | Updated: 2026-09-12 23:34 CDT
+Rev. 13 | Created: 2026-09-12 | Updated: 2026-09-12 23:38 CDT
 
 ## 1. Purpose
 
@@ -154,6 +154,9 @@ scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단�
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
 ```python
+__author__ = "yRocket"
+__version__ = "0.0.0+20260912"
+
 import textwrap
 from typing import Literal
 

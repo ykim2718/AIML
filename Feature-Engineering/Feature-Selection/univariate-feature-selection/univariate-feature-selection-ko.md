@@ -1,5 +1,5 @@
 # Univariate Feature Selection
-Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-12 22:28 CDT
+Rev. 4 | Created: 2026-09-12 | Updated: 2026-09-12 23:38 CDT
 
 ## 1. Purpose
 
@@ -90,60 +90,111 @@ Table 1. Pros and cons of univariate feature selection
 
 ## Appendix B. Implementation
 
-scikit-learn 의 `SelectKBest` 로 section 3 의 세 단계를 실행하는 class 다. 검정 함수와 cut-off 개수 $k$ 를 생성자로 받고, feature 마다의 점수와 선택된 column 번호를 함께 돌려주어 무엇이 어떤 점수로 남았는지 볼 수 있게 한다.
+scikit-learn 의 `SelectKBest` 로 section 3 의 세 단계를 실행하는 class 다. Cut-off 개수 $k$ 를 생성자로 받고, section 4 의 네 지표를 `Literal` 로 나열한 method 이름으로 골라, feature 마다의 점수와 선택된 column 번호를 함께 돌려준다. 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 iris dataset 으로, 표본 150 개와 feature 4 개를 가진다. $\chi^2$ 검정은 음수가 아닌 값을 요구하며 iris 의 네 feature 는 모두 그 조건을 만족한다.
 
 ```python
-from typing import Callable
+__author__ = "yRocket"
+__version__ = "0.0.0+20260912"
+
+import textwrap
+from typing import Literal
 
 import numpy as np
 from sklearn.datasets import load_iris
-from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.feature_selection import (SelectKBest, chi2, f_classif, mutual_info_classif,
+                                       r_regression)
 
 
 class UnivariateFeatureSelector:
     """Score every feature alone against the target and keep the k best ones.
 
+    The scoring method name is a Literal that lists the metrics of section 4, so the code says which
+    one is applied. A name outside that list raises ValueError.
+
     Args:
-        score_func: statistical test applied to one feature at a time.
         k: number of features the cut-off keeps.
+        random_state: seed of the mutual information estimate.
     """
 
-    def __init__(self, score_func: Callable = chi2, k: int = 2) -> None:
+    def __init__(self, k: int = 2, random_state: int = 0) -> None:
         if k < 1:
             raise ValueError(f"k must be at least 1: {k=}")
-        self.score_func = score_func
         self.k = k
+        self.random_state = random_state
 
-    def run(self, X: np.ndarray, y: np.ndarray) -> dict:
+    def score(self, X: np.ndarray, y: np.ndarray,
+              method: Literal["chi2", "anova", "pearson", "mutual_info"] = "chi2") -> np.ndarray:
+        """Return the score of every feature, in column order, under the named metric."""
+        if method == "chi2":
+            return chi2(X, y)[0]
+        if method == "anova":
+            return f_classif(X, y)[0]
+        if method == "pearson":
+            return np.abs(r_regression(X, y))
+        if method == "mutual_info":
+            return mutual_info_classif(X, y, random_state=self.random_state)
+        raise ValueError(f"unknown scoring method: {method=}")
+
+    def run(self, X: np.ndarray, y: np.ndarray,
+            method: Literal["chi2", "anova", "pearson", "mutual_info"] = "chi2") -> dict:
         """Return the score of every feature and the columns left after the cut-off."""
         if self.k > X.shape[1]:
             raise ValueError(f"k asks for more features than the data has: {self.k=}, {X.shape[1]=}")
-        selector = SelectKBest(score_func=self.score_func, k=self.k).fit(X, y)
+        selector = SelectKBest(score_func=lambda features, target: self.score(X=features, y=target, method=method),
+                               k=self.k).fit(X, y)
         return {"scores": selector.scores_, "columns": np.where(selector.get_support())[0]}
 
 
 if __name__ == "__main__":
     data = load_iris()
-    print(f"input: {data.data.shape[0]} samples, {data.data.shape[1]} features")
+    names = np.asarray(data.feature_names)
+    selector = UnivariateFeatureSelector(k=2)
 
-    selector = UnivariateFeatureSelector(score_func=chi2, k=2)
-    result = selector.run(X=data.data, y=data.target)
-    for name, score in zip(data.feature_names, result["scores"]):
-        print(f"{name:>18}: {score:7.2f}")
-    print(f"selected: {', '.join(np.asarray(data.feature_names)[result['columns']])}")
+    def show(label: str, columns: np.ndarray) -> None:
+        """Print the label with the count, then the feature names in alphabetical order."""
+        print(f"\n{label} ({len(columns)} features)")
+        print(textwrap.fill(", ".join(sorted(names[columns])), width=100,
+                            initial_indent="  ", subsequent_indent="  "))
+
+    print(f"input: {data.data.shape[0]} samples, {data.data.shape[1]} features")
+    show(label="input", columns=np.arange(data.data.shape[1]))
+
+    for scoring_method in ("chi2", "anova", "pearson", "mutual_info"):
+        result = selector.run(X=data.data, y=data.target, method=scoring_method)
+        show(label=f"selected by {scoring_method}", columns=result["columns"])
+        scores = ", ".join(f"{name} {score:.2f}" for name, score in sorted(zip(names, result["scores"])))
+        print(textwrap.fill(scores, width=100, initial_indent="  scores: ", subsequent_indent="  "))
 ```
 
 실행 결과는 다음과 같다.
 
 ```text
 input: 150 samples, 4 features
- sepal length (cm):   10.82
-  sepal width (cm):    3.71
- petal length (cm):  116.31
-  petal width (cm):   67.05
-selected: petal length (cm), petal width (cm)
+
+input (4 features)
+  petal length (cm), petal width (cm), sepal length (cm), sepal width (cm)
+
+selected by chi2 (2 features)
+  petal length (cm), petal width (cm)
+  scores: petal length (cm) 116.31, petal width (cm) 67.05, sepal length (cm) 10.82, sepal width
+  (cm) 3.71
+
+selected by anova (2 features)
+  petal length (cm), petal width (cm)
+  scores: petal length (cm) 1180.16, petal width (cm) 960.01, sepal length (cm) 119.26, sepal width
+  (cm) 49.16
+
+selected by pearson (2 features)
+  petal length (cm), petal width (cm)
+  scores: petal length (cm) 0.95, petal width (cm) 0.96, sepal length (cm) 0.78, sepal width (cm)
+  0.43
+
+selected by mutual_info (2 features)
+  petal length (cm), petal width (cm)
+  scores: petal length (cm) 0.99, petal width (cm) 0.97, sepal length (cm) 0.47, sepal width (cm)
+  0.29
 ```
 
-Petal 의 두 feature 가 sepal 의 두 feature 보다 한 자리 큰 점수를 받아 남는다. 두 petal feature 는 서로 상관계수 0.96 으로 묶여 있지만 이 방법은 그것을 보지 못하고 둘 다 남기며, 그것이 section 5 가 적은 단점이다.
+네 지표가 모두 petal 의 두 feature 를 고르며, sepal 의 두 feature 보다 큰 점수를 준다. 두 petal feature 는 서로 상관계수 0.96 으로 묶여 있지만 이 방법은 그것을 보지 못하고 둘 다 남기며, 그것이 section 5 가 적은 단점이다.
