@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 7 | Created: 2026-09-12 | Updated: 2026-09-12 22:50 CDT
+Rev. 8 | Created: 2026-09-12 | Updated: 2026-09-12 22:53 CDT
 
 ## 1. Purpose
 
@@ -149,11 +149,13 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. Embedded 단계는 tree-based importance 를 쓴다.
+scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었고 무엇이 빠졌는지 서명에서 읽힌다. 구현하지 않은 이름은 `NotImplementedError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
 ```python
+from typing import Literal
+
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
@@ -164,6 +166,9 @@ from sklearn.preprocessing import StandardScaler
 
 class MultivariateFeatureSelector:
     """Run the three steps of the workflow on one dataset, keeping the original column indices.
+
+    Each step takes a method name whose Literal lists the members of that branch, so the code says
+    which one is applied. The member left out of the implementation raises NotImplementedError.
 
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
@@ -183,24 +188,30 @@ class MultivariateFeatureSelector:
         self.final_count = final_count
         self.random_state = random_state
 
-    def filter_step(self, X: np.ndarray) -> np.ndarray:
-        """Return the columns left after dropping one feature of every correlated pair.
-
-        Of the filter branch this covers the correlation matrix only.
-        VIF, mRMR and ReliefF are other members of that branch and are not applied here.
-        """
+    def filter_step(self, X: np.ndarray,
+                    method: Literal["correlation_matrix", "vif", "mrmr", "relieff"]
+                    = "correlation_matrix") -> np.ndarray:
+        """Return the columns left after dropping one feature of every correlated pair."""
+        if method != "correlation_matrix":
+            raise NotImplementedError(f"the filter step implements the correlation matrix only: {method=}")
         corr = np.abs(np.corrcoef(X, rowvar=False))
         redundant = np.unique(np.where(np.triu(corr, k=1) > self.correlation_limit)[1])
         return np.setdiff1d(np.arange(X.shape[1]), redundant)
 
-    def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+    def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
+                      method: Literal["random_forest", "lasso"] = "random_forest") -> np.ndarray:
         """Return the columns whose random forest importance is above the mean importance."""
+        if method != "random_forest":
+            raise NotImplementedError(f"the embedded step implements the random forest only: {method=}")
         forest = RandomForestClassifier(n_estimators=self.forest_size, random_state=self.random_state)
         selector = SelectFromModel(estimator=forest, threshold="mean").fit(X[:, columns], y)
         return columns[selector.get_support()]
 
-    def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+    def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
+                     method: Literal["rfe", "forward", "backward"] = "rfe") -> np.ndarray:
         """Return the columns RFE keeps after removing the weakest feature one at a time."""
+        if method != "rfe":
+            raise NotImplementedError(f"the wrapper step implements RFE only: {method=}")
         if len(columns) < self.final_count:
             raise ValueError(f"the wrapper step got fewer columns than it must keep: "
                              f"{len(columns)=}, {self.final_count=}")
@@ -210,9 +221,9 @@ class MultivariateFeatureSelector:
 
     def run(self, X: np.ndarray, y: np.ndarray) -> dict:
         """Return the surviving column indices of each step, keyed by step name."""
-        filtered = self.filter_step(X=X)
-        embedded = self.embedded_step(X=X, y=y, columns=filtered)
-        wrapped = self.wrapper_step(X=X, y=y, columns=embedded)
+        filtered = self.filter_step(X=X, method="correlation_matrix")
+        embedded = self.embedded_step(X=X, y=y, columns=filtered, method="random_forest")
+        wrapped = self.wrapper_step(X=X, y=y, columns=embedded, method="rfe")
         return {"filter": filtered, "embedded": embedded, "wrapper": wrapped}
 
 
