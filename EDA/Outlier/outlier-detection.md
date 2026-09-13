@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 21 | Created: 2026-08-25 | Updated: 2026-09-09 16:20 CDT
+Rev. 22 | Created: 2026-08-25 | Updated: 2026-09-13 09:41 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the

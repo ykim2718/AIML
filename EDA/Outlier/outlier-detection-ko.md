@@ -1,5 +1,5 @@
-# Outlier Detection Methods (Korean)
-Rev. 4 | Created: 2026-09-09 | Updated: 2026-09-09 16:20 CDT
+# Outlier Detection Methods
+Rev. 5 | Created: 2026-09-09 | Updated: 2026-09-13 09:41 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾아내는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리한 survey 이다. 방법을 습관이 아니라 데이터의 모양에서 고를 수 있게 하려는 것이다.
