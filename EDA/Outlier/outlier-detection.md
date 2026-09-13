@@ -1,8 +1,9 @@
 # Outlier Detection Methods
-Rev. 27 | Created: 2026-08-25 | Updated: 2026-09-13 10:35 CDT
+Rev. 28 | Created: 2026-08-25 | Updated: 2026-09-13 10:45 CDT
 
 > Methods that find observations departing from the pattern the rest of the data follows,
-> arranged by what each one assumes, so that a method is chosen from the shape of the data.
+> arranged by what each one assumes, so that a method follows from the shape of the data rather
+> than from the rule practice reaches for first.
 
 ## 1. Scope
 
@@ -20,7 +21,7 @@ Section 2 sorts the kinds of outlier into the axes that name them, and section 3
 into the families that answer them. Sections 4 to 6 take those families in turn, each method stated
 as what it assumes, what is set, what breaks it, and where it is met. The appendices carry the
 derivations, the constants, the benchmark figures, the two industrial standards, and the order in
-which practice meets the rules.
+which practice meets the rules ([Appendix F](#appendix-f-what-practice-actually-runs)).
 
 ## 2. Taxonomy of Outliers
 
