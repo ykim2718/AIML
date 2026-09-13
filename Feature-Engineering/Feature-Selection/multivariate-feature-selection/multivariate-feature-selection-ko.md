@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 8 | Created: 2026-09-12 | Updated: 2026-09-12 22:53 CDT
+Rev. 9 | Created: 2026-09-12 | Updated: 2026-09-12 23:07 CDT
 
 ## 1. Purpose
 
@@ -22,28 +22,15 @@ Feature 조합이 개별 feature 보다 target 을 더 잘 설명하는 경우�
 기법은 model 을 언제 참조하는가 (approach) 와 상호작용을 어떤 방식으로 다루는가 (interaction) 의 두 갈래로 나뉜다.
 
 ```text
-Multivariate feature selection taxonomy
-|
-+-- 1. Approach-based hierarchy
-|   |
-|   +-- Filter methods
-|   |   +-- Correlation matrix and VIF ...... multicollinearity removal
-|   |   +-- mRMR ........................... minimum redundancy maximum relevance
-|   |   +-- ReliefF ........................ neighbour contrast
-|   |
-|   +-- Wrapper methods
-|   |   +-- Forward selection / backward elimination
-|   |   +-- RFE ........................... recursive feature elimination
-|   |   +-- Genetic algorithm search
-|   |
-|   +-- Embedded methods
-|       +-- Lasso (L1) / ElasticNet
-|       +-- Tree-based importance ......... random forest, XGBoost
-|
-+-- 2. Interaction-based hierarchy
-    +-- Redundancy reduction ............... removing duplicated information
-    +-- Feature synergy .................... keeping features that matter together
-    +-- Dimensionality tradeoff ............ trading dimension against signal
+input: 569 samples, 30 features
+    corr filter: 23 features left
+     vif filter: 17 features left
+    mrmr filter: 10 features left
+ relieff filter: 10 features left
+  filter step: 23 features left
+embedded step: 6 features left
+ wrapper step: 5 features left
+selected: mean radius, mean concavity, radius error, worst concavity, worst concave points
 ```
 
 Fig 1. Two hierarchies of multivariate feature selection
@@ -149,7 +136,7 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었고 무엇이 빠졌는지 서명에서 읽힌다. 구현하지 않은 이름은 `NotImplementedError` 로 막는다.
+scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을 모두 구현하고, 나머지 두 단계의 구현하지 않은 이름은 `NotImplementedError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
@@ -159,8 +146,9 @@ from typing import Literal
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import RFE, SelectFromModel
+from sklearn.feature_selection import RFE, SelectFromModel, mutual_info_classif, mutual_info_regression
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 
@@ -168,35 +156,104 @@ class MultivariateFeatureSelector:
     """Run the three steps of the workflow on one dataset, keeping the original column indices.
 
     Each step takes a method name whose Literal lists the members of that branch, so the code says
-    which one is applied. The member left out of the implementation raises NotImplementedError.
+    which one is applied. A member that is not implemented raises NotImplementedError.
 
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
+        vif_limit: variance inflation factor above which a feature is dropped, one at a time.
+        filter_count: number of features the ranking filters (mrmr, relieff) keep.
+        neighbour_count: number of hits and misses relieff compares per sample.
         forest_size: number of trees of the random forest used by the embedded step.
         final_count: number of features the wrapper step leaves.
-        random_state: seed of the random forest.
+        random_state: seed of the random forest and of the mutual information estimates.
     """
 
-    def __init__(self, correlation_limit: float = 0.95, forest_size: int = 200,
+    def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
+                 filter_count: int = 10, neighbour_count: int = 10, forest_size: int = 200,
                  final_count: int = 5, random_state: int = 0) -> None:
         if not 0.0 < correlation_limit < 1.0:
             raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
-        if final_count < 1:
-            raise ValueError(f"final_count must be at least 1: {final_count=}")
+        if vif_limit <= 1.0:
+            raise ValueError(f"vif_limit must exceed 1: {vif_limit=}")
+        if filter_count < 1 or neighbour_count < 1 or final_count < 1:
+            raise ValueError(f"counts must be at least 1: {filter_count=}, {neighbour_count=}, {final_count=}")
         self.correlation_limit = correlation_limit
+        self.vif_limit = vif_limit
+        self.filter_count = filter_count
+        self.neighbour_count = neighbour_count
         self.forest_size = forest_size
         self.final_count = final_count
         self.random_state = random_state
 
-    def filter_step(self, X: np.ndarray,
-                    method: Literal["correlation_matrix", "vif", "mrmr", "relieff"]
-                    = "correlation_matrix") -> np.ndarray:
-        """Return the columns left after dropping one feature of every correlated pair."""
-        if method != "correlation_matrix":
-            raise NotImplementedError(f"the filter step implements the correlation matrix only: {method=}")
+    def filter_step(self, X: np.ndarray, y: np.ndarray,
+                    method: Literal["corr", "vif", "mrmr", "relieff"] = "corr") -> np.ndarray:
+        """Return the columns the named filter keeps, as indices into the columns of X."""
+        if method == "corr":
+            return self._by_correlation(X=X)
+        if method == "vif":
+            return self._by_vif(X=X)
+        if method == "mrmr":
+            return self._by_mrmr(X=X, y=y)
+        if method == "relieff":
+            return self._by_relieff(X=X, y=y)
+        raise ValueError(f"unknown filter method: {method=}")
+
+    def _by_correlation(self, X: np.ndarray) -> np.ndarray:
+        """Drop the later feature of every pair whose absolute correlation exceeds the limit."""
         corr = np.abs(np.corrcoef(X, rowvar=False))
         redundant = np.unique(np.where(np.triu(corr, k=1) > self.correlation_limit)[1])
         return np.setdiff1d(np.arange(X.shape[1]), redundant)
+
+    def _by_vif(self, X: np.ndarray) -> np.ndarray:
+        """Drop the feature of the largest variance inflation factor until every one is under the limit."""
+        columns = list(range(X.shape[1]))
+        while len(columns) > 1:
+            factors = [self._vif_of(X=X, columns=columns, position=position) for position in range(len(columns))]
+            worst = int(np.argmax(factors))
+            if factors[worst] <= self.vif_limit:
+                break
+            columns.pop(worst)
+        return np.asarray(columns)
+
+    def _vif_of(self, X: np.ndarray, columns: list, position: int) -> float:
+        """Return 1 / (1 - R^2) of one feature regressed on the remaining ones."""
+        target = X[:, columns[position]]
+        others = X[:, [column for index, column in enumerate(columns) if index != position]]
+        design = np.column_stack([np.ones(len(others)), others])
+        residual = target - design @ np.linalg.lstsq(design, target, rcond=None)[0]
+        unexplained = float(np.sum(residual ** 2) / np.sum((target - target.mean()) ** 2))
+        return float("inf") if unexplained <= 0.0 else 1.0 / unexplained
+
+    def _by_mrmr(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """Add the feature of the largest relevance minus mean redundancy, until filter_count are held."""
+        relevance = mutual_info_classif(X, y, random_state=self.random_state)
+        selected = [int(np.argmax(relevance))]
+        while len(selected) < min(self.filter_count, X.shape[1]):
+            rest = [column for column in range(X.shape[1]) if column not in selected]
+            redundancy = np.array([
+                np.mean([mutual_info_regression(X[:, [column]], X[:, chosen],
+                                                random_state=self.random_state)[0] for chosen in selected])
+                for column in rest])
+            selected.append(rest[int(np.argmax(relevance[rest] - redundancy))])
+        return np.sort(np.asarray(selected))
+
+    def _by_relieff(self, X: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """Keep the features whose value separates nearest misses from nearest hits the most."""
+        span = np.ptp(X, axis=0)
+        span[span == 0.0] = 1.0
+        score = np.zeros(X.shape[1])
+        for label in np.unique(y):
+            hits = self._neighbours_of(X=X, source=X[y == label], pool=X[y == label], skip_self=True)
+            misses = self._neighbours_of(X=X, source=X[y == label], pool=X[y != label], skip_self=False)
+            score += (misses - hits) / (span * len(X))
+        return np.sort(np.argsort(score)[-min(self.filter_count, X.shape[1]):])
+
+    def _neighbours_of(self, X: np.ndarray, source: np.ndarray, pool: np.ndarray, skip_self: bool) -> np.ndarray:
+        """Return the mean absolute per-feature distance from each source sample to its nearest pool samples."""
+        count = min(self.neighbour_count + int(skip_self), len(pool))
+        finder = NearestNeighbors(n_neighbors=count).fit(pool)
+        neighbours = finder.kneighbors(source, return_distance=False)[:, int(skip_self):]
+        return np.abs(source[:, None, :] - pool[neighbours]).sum(axis=(0, 1))
 
     def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
                       method: Literal["random_forest", "lasso"] = "random_forest") -> np.ndarray:
@@ -221,7 +278,7 @@ class MultivariateFeatureSelector:
 
     def run(self, X: np.ndarray, y: np.ndarray) -> dict:
         """Return the surviving column indices of each step, keyed by step name."""
-        filtered = self.filter_step(X=X, method="correlation_matrix")
+        filtered = self.filter_step(X=X, y=y, method="corr")
         embedded = self.embedded_step(X=X, y=y, columns=filtered, method="random_forest")
         wrapped = self.wrapper_step(X=X, y=y, columns=embedded, method="rfe")
         return {"filter": filtered, "embedded": embedded, "wrapper": wrapped}
@@ -233,6 +290,9 @@ if __name__ == "__main__":
     print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
 
     selector = MultivariateFeatureSelector(correlation_limit=0.95, final_count=5)
+    for name in ("corr", "vif", "mrmr", "relieff"):
+        print(f"{name:>8} filter: {len(selector.filter_step(X=X, y=data.target, method=name))} features left")
+
     steps = selector.run(X=X, y=data.target)
     for name, columns in steps.items():
         print(f"{name:>8} step: {len(columns)} features left")
@@ -249,4 +309,4 @@ embedded step: 6 features left
 selected: mean radius, mean concavity, radius error, worst concavity, worst concave points
 ```
 
-단계를 지날 때마다 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
+네 filter 는 같은 자료에서 23, 17, 10, 10 개를 남겨 서로 다른 답을 낸다. `run` 이 쓰는 `corr` 로 이어 가면 단계마다 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
