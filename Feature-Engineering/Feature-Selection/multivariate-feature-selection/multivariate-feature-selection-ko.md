@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 9 | Created: 2026-09-12 | Updated: 2026-09-12 23:07 CDT
+Rev. 10 | Created: 2026-09-12 | Updated: 2026-09-12 23:26 CDT
 
 ## 1. Purpose
 
@@ -22,15 +22,28 @@ Feature 조합이 개별 feature 보다 target 을 더 잘 설명하는 경우�
 기법은 model 을 언제 참조하는가 (approach) 와 상호작용을 어떤 방식으로 다루는가 (interaction) 의 두 갈래로 나뉜다.
 
 ```text
-input: 569 samples, 30 features
-    corr filter: 23 features left
-     vif filter: 17 features left
-    mrmr filter: 10 features left
- relieff filter: 10 features left
-  filter step: 23 features left
-embedded step: 6 features left
- wrapper step: 5 features left
-selected: mean radius, mean concavity, radius error, worst concavity, worst concave points
+Multivariate feature selection taxonomy
+|
++-- 1. Approach-based hierarchy
+|   |
+|   +-- Filter methods
+|   |   +-- Correlation matrix and VIF ...... multicollinearity removal
+|   |   +-- mRMR ........................... minimum redundancy maximum relevance
+|   |   +-- ReliefF ........................ neighbour contrast
+|   |
+|   +-- Wrapper methods
+|   |   +-- Forward selection / backward elimination
+|   |   +-- RFE ........................... recursive feature elimination
+|   |   +-- Genetic algorithm search
+|   |
+|   +-- Embedded methods
+|       +-- Lasso (L1) / ElasticNet
+|       +-- Tree-based importance ......... random forest, XGBoost
+|
++-- 2. Interaction-based hierarchy
+    +-- Redundancy reduction ............... removing duplicated information
+    +-- Feature synergy .................... keeping features that matter together
+    +-- Dimensionality tradeoff ............ trading dimension against signal
 ```
 
 Fig 1. Two hierarchies of multivariate feature selection
@@ -136,18 +149,19 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을 모두 구현하고, 나머지 두 단계의 구현하지 않은 이름은 `NotImplementedError` 로 막는다.
+scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 두 이름 (`random_forest`, `lasso`) 을 모두 구현하고, wrapper 단계의 구현하지 않은 이름은 `NotImplementedError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
 ```python
+import textwrap
 from typing import Literal
 
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import RFE, SelectFromModel, mutual_info_classif, mutual_info_regression
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import Lasso, LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -161,6 +175,7 @@ class MultivariateFeatureSelector:
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
         vif_limit: variance inflation factor above which a feature is dropped, one at a time.
+        lasso_alpha: weight of the lasso penalty of the embedded step.
         filter_count: number of features the ranking filters (mrmr, relieff) keep.
         neighbour_count: number of hits and misses relieff compares per sample.
         forest_size: number of trees of the random forest used by the embedded step.
@@ -169,16 +184,19 @@ class MultivariateFeatureSelector:
     """
 
     def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
-                 filter_count: int = 10, neighbour_count: int = 10, forest_size: int = 200,
-                 final_count: int = 5, random_state: int = 0) -> None:
+                 lasso_alpha: float = 0.01, filter_count: int = 10, neighbour_count: int = 10,
+                 forest_size: int = 200, final_count: int = 5, random_state: int = 0) -> None:
         if not 0.0 < correlation_limit < 1.0:
             raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
         if vif_limit <= 1.0:
             raise ValueError(f"vif_limit must exceed 1: {vif_limit=}")
+        if lasso_alpha <= 0.0:
+            raise ValueError(f"lasso_alpha must be positive: {lasso_alpha=}")
         if filter_count < 1 or neighbour_count < 1 or final_count < 1:
             raise ValueError(f"counts must be at least 1: {filter_count=}, {neighbour_count=}, {final_count=}")
         self.correlation_limit = correlation_limit
         self.vif_limit = vif_limit
+        self.lasso_alpha = lasso_alpha
         self.filter_count = filter_count
         self.neighbour_count = neighbour_count
         self.forest_size = forest_size
@@ -257,11 +275,23 @@ class MultivariateFeatureSelector:
 
     def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
                       method: Literal["random_forest", "lasso"] = "random_forest") -> np.ndarray:
-        """Return the columns whose random forest importance is above the mean importance."""
-        if method != "random_forest":
-            raise NotImplementedError(f"the embedded step implements the random forest only: {method=}")
+        """Return the columns the named embedded model keeps, as indices into the columns of X."""
+        if method == "random_forest":
+            return self._by_forest(X=X, y=y, columns=columns)
+        if method == "lasso":
+            return self._by_lasso(X=X, y=y, columns=columns)
+        raise ValueError(f"unknown embedded method: {method=}")
+
+    def _by_forest(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Keep the columns whose random forest importance is above the mean importance."""
         forest = RandomForestClassifier(n_estimators=self.forest_size, random_state=self.random_state)
         selector = SelectFromModel(estimator=forest, threshold="mean").fit(X[:, columns], y)
+        return columns[selector.get_support()]
+
+    def _by_lasso(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Keep the columns whose lasso coefficient stays off zero, reading the class label as 0 or 1."""
+        lasso = Lasso(alpha=self.lasso_alpha, random_state=self.random_state)
+        selector = SelectFromModel(estimator=lasso, threshold=1e-10).fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
@@ -287,26 +317,87 @@ class MultivariateFeatureSelector:
 if __name__ == "__main__":
     data = load_breast_cancer()
     X = StandardScaler().fit_transform(data.data)
-    print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
-
+    names = np.asarray(data.feature_names)
     selector = MultivariateFeatureSelector(correlation_limit=0.95, final_count=5)
-    for name in ("corr", "vif", "mrmr", "relieff"):
-        print(f"{name:>8} filter: {len(selector.filter_step(X=X, y=data.target, method=name))} features left")
 
-    steps = selector.run(X=X, y=data.target)
-    for name, columns in steps.items():
-        print(f"{name:>8} step: {len(columns)} features left")
-    print(f"selected: {', '.join(data.feature_names[steps['wrapper']])}")
+    def show(label: str, columns: np.ndarray) -> None:
+        """Print the label with the count, then the feature names in alphabetical order."""
+        print(f"\n{label} ({len(columns)} features)")
+        print(textwrap.fill(", ".join(sorted(names[columns])), width=100,
+                            initial_indent="  ", subsequent_indent="  "))
+
+    print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
+    show(label="input", columns=np.arange(X.shape[1]))
+
+    for filter_method in ("corr", "vif", "mrmr", "relieff"):
+        show(label=f"filter by {filter_method}",
+             columns=selector.filter_step(X=X, y=data.target, method=filter_method))
+
+    for embedded_method in ("random_forest", "lasso"):
+        show(label=f"embedded by {embedded_method}",
+             columns=selector.embedded_step(X=X, y=data.target, columns=np.arange(X.shape[1]),
+                                            method=embedded_method))
+
+    for step_name, step_columns in selector.run(X=X, y=data.target).items():
+        show(label=f"{step_name} step of the workflow", columns=step_columns)
 ```
 
 실행 결과는 다음과 같다.
 
 ```text
 input: 569 samples, 30 features
-  filter step: 23 features left
-embedded step: 6 features left
- wrapper step: 5 features left
-selected: mean radius, mean concavity, radius error, worst concavity, worst concave points
+
+input (30 features)
+  area error, compactness error, concave points error, concavity error, fractal dimension error,
+  mean area, mean compactness, mean concave points, mean concavity, mean fractal dimension, mean
+  perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter error, radius
+  error, smoothness error, symmetry error, texture error, worst area, worst compactness, worst
+  concave points, worst concavity, worst fractal dimension, worst perimeter, worst radius, worst
+  smoothness, worst symmetry, worst texture
+
+filter by corr (23 features)
+  compactness error, concave points error, concavity error, fractal dimension error, mean
+  compactness, mean concave points, mean concavity, mean fractal dimension, mean radius, mean
+  smoothness, mean symmetry, mean texture, radius error, smoothness error, symmetry error, texture
+  error, worst compactness, worst concave points, worst concavity, worst fractal dimension, worst
+  smoothness, worst symmetry, worst texture
+
+filter by vif (17 features)
+  compactness error, concave points error, concavity error, fractal dimension error, mean concave
+  points, mean fractal dimension, mean smoothness, mean symmetry, mean texture, perimeter error,
+  smoothness error, symmetry error, texture error, worst area, worst fractal dimension, worst
+  smoothness, worst symmetry
+
+filter by mrmr (10 features)
+  area error, mean concave points, perimeter error, symmetry error, worst concave points, worst
+  concavity, worst perimeter, worst smoothness, worst symmetry, worst texture
+
+filter by relieff (10 features)
+  mean area, mean concave points, mean concavity, mean perimeter, mean radius, worst area, worst
+  concave points, worst perimeter, worst radius, worst texture
+
+embedded by random_forest (9 features)
+  area error, mean area, mean concave points, mean concavity, mean perimeter, worst area, worst
+  concave points, worst perimeter, worst radius
+
+embedded by lasso (12 features)
+  concavity error, mean concave points, mean fractal dimension, mean texture, radius error,
+  smoothness error, worst concave points, worst concavity, worst radius, worst smoothness, worst
+  symmetry, worst texture
+
+filter step of the workflow (23 features)
+  compactness error, concave points error, concavity error, fractal dimension error, mean
+  compactness, mean concave points, mean concavity, mean fractal dimension, mean radius, mean
+  smoothness, mean symmetry, mean texture, radius error, smoothness error, symmetry error, texture
+  error, worst compactness, worst concave points, worst concavity, worst fractal dimension, worst
+  smoothness, worst symmetry, worst texture
+
+embedded step of the workflow (6 features)
+  mean concave points, mean concavity, mean radius, radius error, worst concave points, worst
+  concavity
+
+wrapper step of the workflow (5 features)
+  mean concavity, mean radius, radius error, worst concave points, worst concavity
 ```
 
-네 filter 는 같은 자료에서 23, 17, 10, 10 개를 남겨 서로 다른 답을 낸다. `run` 이 쓰는 `corr` 로 이어 가면 단계마다 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
+네 filter 는 같은 자료에서 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. `run` 이 쓰는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 RFE 는 6 개만 남은 자리에서 돈다.
