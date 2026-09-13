@@ -1,17 +1,17 @@
 # Agile Development
-Rev. 0 | Created: 2026-09-13 | Updated: 2026-09-13 12:20 CDT
+Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-13 12:21 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: Agile, DevOps and CI/CD are named side by side as if a team picked one of them, so what is actually being adopted is never settled.
-- **Goal**: Separate the three by the question each one answers, so that a team can state its own bar for done, its own release unit, and its own improvement loop.
+- **Goal**: Separate the three by the question each one answers and fix the vocabulary the cycle is run with, so that a team can state its own bar for done, its own release unit, its own improvement loop, and the standing of any piece of work in one word.
 - **Non-Goal**: Configuring a particular tool (Jira, Jenkins, GitHub Actions) is not covered.
 
 ## 2. Summary
 
 The three names sit on three layers of one system, and the outer layer contains the inner one. Agile is the development philosophy, DevOps is the culture that carries that philosophy across development and operation, and CI/CD is the automation that implements both. A team does not choose among them; it decides how far down that stack it has gone.
 
-Agile itself is short to state and hard to check. It builds a product in short cycles instead of one long plan, takes feedback at the end of every cycle, and improves the process from what that feedback showed. The rest of this document is the machinery that makes the statement checkable — a bar that declares a task done, a release that can be withdrawn, and a retrospective whose output changes the next cycle.
+Agile itself is short to state and hard to check. It builds a product in short cycles instead of one long plan, takes feedback at the end of every cycle, and improves the process from what that feedback showed. The rest of this document is the machinery that makes the statement checkable — a bar that declares a task done, a release that can be withdrawn, a retrospective whose output changes the next cycle, and the vocabulary a team says all of that in.
 
 ## 3. Taxonomy
 
@@ -94,12 +94,15 @@ The stages of that cycle and the terms used at each of them are drawn in [Fig 2]
         |
         +--> Product Backlog ......... Full list of requirements and features to build
         +--> Sprint Backlog .......... Work to be finished in this sprint (1-2 weeks)
+        +--> POC (Proof of Concept) .. Feasibility checked before the work is committed
         |
         v
 [ 2. Iterative Development & Daily Check ]
         |
         +--> Daily Standup / Scrum ... 15 minutes a day on progress and blockers
         +--> Ticket / User Story ..... Unit of work written from the user's viewpoint
+        +--> WIP (Work In Progress) .. Card or PR marked as not yet ready for review
+        +--> Blocker ................. What stops the next step until it is cleared
         +--> Commit -> PR -> Merge ... Continuous coding and integration
         |
         v
@@ -112,13 +115,17 @@ The stages of that cycle and the terms used at each of them are drawn in [Fig 2]
 [ 4. Internal Demo & Customer Feedback (CD) ]
         |
         +--> Sprint Review / Demo .... Increment shown to the stakeholders
+        +--> Dogfooding .............. Staff using the build before any customer does
         +--> Feature Flag / Canary ... New feature opened to a subset of users first
         +--> Continuous Deployment ... Verified code deployed daily or hourly
+        +--> SOP ..................... Fixed procedure an incident response follows
+        +--> Hotfix .................. Urgent deployment outside the regular schedule
         |
         v
 [ 5. Retrospective ]
         |
         +--> Sprint Retrospective .... What went well, what did not, what to improve
+        +--> Post-mortem ............. Cause and prevention fixed after an outage
         +--> BKM / Playbook Update ... Improvements written into the team standard
 ```
 
@@ -141,22 +148,76 @@ Deployment and release are separated as two technical events. Under continuous d
 
 The sprint retrospective is the part of the process that changes the process. The team asks what went wrong procedurally in this sprint, and the answer is written straight into the team's Best Known Method (BKM) document or development rules, so that the next sprint runs under the revised rule rather than under a note that was never applied.
 
+## 7. Team Vocabulary
+
+The process terms carry the same meaning inside a team as outside it, deployment, merge and release included. What a team adds on top of them is a short vocabulary of its own, used to share what it has learned, to decide who meets a change first, and to say where a piece of work stands. Those three purposes give the three groups below, and every term in them appears at one of the stages of [Fig 2](#fig-2).
+
+### 7.1 Knowledge And Standard
+
+The first group holds what the team already knows, so that one problem is not solved twice. Section 6.3 covered the loop that keeps the first of them current; here the three are fixed side by side.
+
+Table 4. Terms that hold what the team has learned
+
+| Term | What it names | Where it is used |
+| --- | --- | --- |
+| BKM (Best Known Method) | The best and most efficient method known so far for a task | "Handle this issue by the BKM document" |
+| SOP (Standard Operating Procedure) | The official manual for repeated work | Server checks, incident response |
+| Post-mortem | The review after a project closes or a large outage, fixing cause and prevention | The document or the meeting that follows an outage |
+
+Depending on the culture and the systems a team works in, the BKM document is also called a playbook or a runbook. The name changes with the house; what it holds does not.
+
+### 7.2 Feature Control
+
+The second group decides who meets a change and when. Section 6.2 pointed the feature flag at a fraction of customers, and the same switch, with the two terms beside it, also points at the team's own members and at the repair that cannot wait for the schedule.
+
+Table 5. Terms that control who meets a change
+
+| Term | What it names | Where it is used |
+| --- | --- | --- |
+| Feature flag | The switch that turns a deployed feature on or off for a chosen user or staff member | Deployment finished, exposure withheld |
+| Dogfooding | Staff using the product before any customer does, to find the bugs first | "Dogfood this internally before the release" |
+| Hotfix | The urgent deployment that repairs a serious bug in the operating environment | Outside the regular deployment schedule |
+
+### 7.3 Work State
+
+The third group states where a piece of work stands, so that one status is read the same way by everyone.
+
+Table 6. Terms that state where work stands
+
+| Term | What it names | Where it is used |
+| --- | --- | --- |
+| WIP (Work In Progress) | Work currently under way | `[WIP]` on a PR or a card, meaning not ready for review |
+| Blocker | The technical or administrative obstacle stopping the next step | "Blocked on the DB permission problem" |
+| POC (Proof of Concept) | The trial that checks whether an idea can be built at all | Before a new technology is adopted |
+
+One sentence of ordinary team traffic carries most of this vocabulary at once, which is the reason to fix each term once rather than explain it every time.
+
+> This new feature is past its POC and merged into the main branch. Turn the feature flag on so the team can dogfood it first, and if the deployment goes wrong, follow the BKM in the wiki and handle it as a hotfix.
+
 ---
 
 ## Appendix A. Terminology
 
 - **Agile**: an adjective meaning nimble in ordinary use, taken in IT and business as a proper noun for the development philosophy described in section 3.
 - **BKM (Best Known Method)**: the team document holding the best method known so far for a task, updated from retrospectives.
+- **Blocker**: a technical or administrative obstacle that stops work from moving to the next step.
 - **Canary release**: opening a deployed feature to a small fraction of users before the whole audience.
 - **CD (Continuous Deployment)**: automatic deployment of verified code to the service environment.
 - **CI (Continuous Integration)**: automatic build and test triggered whenever code is merged.
 - **DevOps**: the culture and practice that unite development (Dev) and operation (Ops).
 - **DoD (Definition of Done)**: the explicit bar a team agrees on, which a task must clear to be called done.
+- **Dogfooding**: staff using the product themselves before it reaches a customer, to find bugs first.
 - **Feature flag**: a switch that turns a deployed feature on or off without a new deployment.
+- **Hotfix**: an urgent deployment, outside the regular schedule, that repairs a serious bug in the operating environment.
 - **Increment**: the working product produced by one sprint.
+- **Playbook**: another name for the BKM document, used where the team's culture prefers it.
 - **PO/PM (Product Owner / Product Manager)**: the role that owns the product plan and the order of the backlog.
+- **POC (Proof of Concept)**: a trial project that checks whether an idea or a technology can be built at all.
+- **Post-mortem**: the review held after a project closes or a large outage, which fixes the cause and the prevention.
 - **Product backlog**: the full ordered list of requirements and features for the product.
+- **Runbook**: another name for the BKM document, used where the team's culture prefers it.
 - **Scrum**: the daily standup meeting, and by extension the framework it belongs to.
+- **SOP (Standard Operating Procedure)**: the official manual for repeated work such as server checks and incident response.
 - **Sprint**: one iteration of the agile cycle, normally one to four weeks.
 - **Sprint backlog**: the subset of the product backlog a team commits to finish in one sprint.
 - **Sprint retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
@@ -164,3 +225,4 @@ The sprint retrospective is the part of the process that changes the process. Th
 - **Staging server**: the environment that mirrors production, used to verify a build before release.
 - **User story**: a unit of work written from the user's viewpoint.
 - **Waterfall**: the model that passes plan, design, development, test and deployment once each, in order.
+- **WIP (Work In Progress)**: work currently under way, marked so that it is not taken as ready for review.
