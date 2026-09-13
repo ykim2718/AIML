@@ -1,5 +1,5 @@
 # Univariate Feature Selection
-Rev. 4 | Created: 2026-09-12 | Updated: 2026-09-12 23:38 CDT
+Rev. 5 | Created: 2026-09-12 | Updated: 2026-09-13 00:22 CDT
 
 ## 1. Purpose
 
@@ -17,8 +17,9 @@ Univariate feature selection 은 각 feature 를 다른 feature 와의 연관을
 
 ## 3. Principle
 
-절차는 세 단계이며, 앞 단계의 결과가 다음 단계의 입력이 된다.
+절차는 네 단계이며, 앞 단계의 결과가 다음 단계의 입력이 된다.
 
+- 상수 제거: 모든 표본에서 값이 같은 feature 를 먼저 제외. 검정 통계량이 정의되지 않고, target 을 가를 정보도 없음
 - 독립적 평가: 각 입력 변수 $x_i$ 와 target 변수 $y$ 사이의 통계적 점수 계산
 - 순위 매기기: 계산된 점수를 기준으로 feature 정렬
 - Cut-off: 상위 $k$ 개 feature 선택, 또는 p-value 가 기준치 (예: $0.05$) 이하인 feature 추출
@@ -26,14 +27,16 @@ Univariate feature selection 은 각 feature 를 다른 feature 와의 연관을
 ```text
 [ Input data X ]
     |
-    +-- Feature 1 --( statistical test )--> score S1
-    |
-    +-- Feature 2 --( statistical test )--> score S2  --[ top-k ]--> [ Selected feature subset ]
-    |
-    +-- Feature 3 --( statistical test )--> score S3
+    +--[ drop the constant features ]
+            |
+            +-- Feature 1 --( statistical test )--> score S1
+            |
+            +-- Feature 2 --( statistical test )--> score S2  --[ top-k ]--> [ Selected subset ]
+            |
+            +-- Feature 3 --( statistical test )--> score S3
 ```
 
-Fig 1. Scoring each feature independently and taking the top k
+Fig 1. Dropping the constant features, then scoring each of the rest and taking the top k
 
 ## 4. Statistical Metrics
 
@@ -90,9 +93,9 @@ Table 1. Pros and cons of univariate feature selection
 
 ## Appendix B. Implementation
 
-scikit-learn 의 `SelectKBest` 로 section 3 의 세 단계를 실행하는 class 다. Cut-off 개수 $k$ 를 생성자로 받고, section 4 의 네 지표를 `Literal` 로 나열한 method 이름으로 골라, feature 마다의 점수와 선택된 column 번호를 함께 돌려준다. 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 의 `SelectKBest` 로 section 3 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 검정을 돌린다. Cut-off 개수 $k$ 를 생성자로 받고, section 4 의 네 지표를 `Literal` 로 나열한 method 이름으로 골라, feature 마다의 점수와 선택된 column 번호를 함께 돌려준다. 목록에 없는 이름은 `ValueError` 로 막는다.
 
-입력은 scikit-learn 에 들어 있는 iris dataset 으로, 표본 150 개와 feature 4 개를 가진다. $\chi^2$ 검정은 음수가 아닌 값을 요구하며 iris 의 네 feature 는 모두 그 조건을 만족한다.
+입력은 scikit-learn 에 들어 있는 iris dataset 이며, 상수 제거 단계가 보이도록 값이 늘 3.0 인 column 하나를 덧붙여 표본 150 개와 feature 5 개로 만들었다. $\chi^2$ 검정은 음수가 아닌 값을 요구하며 iris 의 네 feature 는 모두 그 조건을 만족한다.
 
 ```python
 __author__ = "yRocket"
@@ -124,6 +127,13 @@ class UnivariateFeatureSelector:
         self.k = k
         self.random_state = random_state
 
+    def drop_constant(self, X: np.ndarray) -> np.ndarray:
+        """Return the columns whose value changes across the samples, dropping the constant ones."""
+        varying = np.where(np.ptp(X, axis=0) > 0.0)[0]
+        if len(varying) == 0:
+            raise ValueError(f"every feature holds one value: {X.shape=}")
+        return varying
+
     def score(self, X: np.ndarray, y: np.ndarray,
               method: Literal["chi2", "anova", "pearson", "mutual_info"] = "chi2") -> np.ndarray:
         """Return the score of every feature, in column order, under the named metric."""
@@ -139,17 +149,24 @@ class UnivariateFeatureSelector:
 
     def run(self, X: np.ndarray, y: np.ndarray,
             method: Literal["chi2", "anova", "pearson", "mutual_info"] = "chi2") -> dict:
-        """Return the score of every feature and the columns left after the cut-off."""
-        if self.k > X.shape[1]:
-            raise ValueError(f"k asks for more features than the data has: {self.k=}, {X.shape[1]=}")
+        """Return the varying columns, their scores, and the columns left after the cut-off.
+
+        The constant features go first, before any test is run: their score is undefined and they
+        carry nothing the target can be told apart by.
+        """
+        varying = self.drop_constant(X=X)
+        if self.k > len(varying):
+            raise ValueError(f"k asks for more features than vary: {self.k=}, {len(varying)=}")
         selector = SelectKBest(score_func=lambda features, target: self.score(X=features, y=target, method=method),
-                               k=self.k).fit(X, y)
-        return {"scores": selector.scores_, "columns": np.where(selector.get_support())[0]}
+                               k=self.k).fit(X[:, varying], y)
+        return {"varying": varying, "scores": selector.scores_, "columns": varying[selector.get_support()]}
 
 
 if __name__ == "__main__":
     data = load_iris()
-    names = np.asarray(data.feature_names)
+    # Append a column that never changes, to show the first filter removing it
+    X = np.column_stack([data.data, np.full(len(data.data), 3.0)])
+    names = np.asarray(list(data.feature_names) + ["constant probe"])
     selector = UnivariateFeatureSelector(k=2)
 
     def show(label: str, columns: np.ndarray) -> None:
@@ -158,22 +175,27 @@ if __name__ == "__main__":
         print(textwrap.fill(", ".join(sorted(names[columns])), width=100,
                             initial_indent="  ", subsequent_indent="  "))
 
-    print(f"input: {data.data.shape[0]} samples, {data.data.shape[1]} features")
-    show(label="input", columns=np.arange(data.data.shape[1]))
+    print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
+    show(label="input", columns=np.arange(X.shape[1]))
+    show(label="left by the constant filter", columns=selector.drop_constant(X=X))
 
     for scoring_method in ("chi2", "anova", "pearson", "mutual_info"):
-        result = selector.run(X=data.data, y=data.target, method=scoring_method)
+        result = selector.run(X=X, y=data.target, method=scoring_method)
         show(label=f"selected by {scoring_method}", columns=result["columns"])
-        scores = ", ".join(f"{name} {score:.2f}" for name, score in sorted(zip(names, result["scores"])))
+        scores = ", ".join(f"{name} {score:.2f}"
+                           for name, score in sorted(zip(names[result["varying"]], result["scores"])))
         print(textwrap.fill(scores, width=100, initial_indent="  scores: ", subsequent_indent="  "))
 ```
 
 실행 결과는 다음과 같다.
 
 ```text
-input: 150 samples, 4 features
+input: 150 samples, 5 features
 
-input (4 features)
+input (5 features)
+  constant probe, petal length (cm), petal width (cm), sepal length (cm), sepal width (cm)
+
+left by the constant filter (4 features)
   petal length (cm), petal width (cm), sepal length (cm), sepal width (cm)
 
 selected by chi2 (2 features)
@@ -197,4 +219,4 @@ selected by mutual_info (2 features)
   0.29
 ```
 
-네 지표가 모두 petal 의 두 feature 를 고르며, sepal 의 두 feature 보다 큰 점수를 준다. 두 petal feature 는 서로 상관계수 0.96 으로 묶여 있지만 이 방법은 그것을 보지 못하고 둘 다 남기며, 그것이 section 5 가 적은 단점이다.
+덧붙인 상수 column 은 검정 전에 떨어져 점수 목록에도 오르지 않는다. 남은 넷 가운데 네 지표가 모두 petal 의 두 feature 를 고르며, sepal 의 두 feature 보다 큰 점수를 준다. 두 petal feature 는 서로 상관계수 0.96 으로 묶여 있지만 이 방법은 그것을 보지 못하고 둘 다 남기며, 그것이 section 5 가 적은 단점이다.
