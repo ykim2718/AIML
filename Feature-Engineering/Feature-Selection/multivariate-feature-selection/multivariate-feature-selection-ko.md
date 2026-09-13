@@ -1,11 +1,21 @@
 # Multivariate Feature Selection
-Rev. 4 | Created: 2026-09-12 | Updated: 2026-09-12 22:27 CDT
+Rev. 5 | Created: 2026-09-12 | Updated: 2026-09-12 22:31 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: Feature 를 하나씩만 평가하면 두 feature 가 결합해야 드러나는 신호를 놓치고, 같은 정보를 담은 feature 가 함께 남는다.
 - **Goal**: Feature 사이의 상호작용과 중복성을 함께 보는 선택 기법을 접근 방식별로 갈라 놓아, 주어진 data 크기와 계산 예산에서 어느 기법을 쓸지 독자가 고를 수 있게 한다.
 - **Non-Goal**: Feature 를 하나씩 검정하는 기법은 다루지 않는다. 그것은 [Univariate Feature Selection](../univariate-feature-selection/univariate-feature-selection-ko.md) 의 주제다.
+
+### 1.1 Motivation
+
+Feature 조합이 개별 feature 보다 target 을 더 잘 설명하는 경우가 있으므로, 선택은 조합 단위로 이루어져야 한다. $X_1$ 과 $X_2$ 가 각각은 target $Y$ 와 낮은 상관을 보여도 두 feature 의 조합은 $Y$ 를 설명하는 강한 신호가 될 수 있으며, XOR 문제가 그 대표적인 예다.
+
+다변량 분석의 목적은 셋이다.
+
+1️⃣ Feature 사이의 다중공선성 및 중복성 제거<br>
+2️⃣ Feature 사이의 시너지 효과 발굴<br>
+3️⃣ Model 성능 향상과 과적합 방지
 
 ## 2. Taxonomy
 
@@ -38,21 +48,11 @@ Multivariate feature selection taxonomy
 
 Fig 1. Two hierarchies of multivariate feature selection
 
-## 3. Motivation
-
-Feature 조합이 개별 feature 보다 target 을 더 잘 설명하는 경우가 있으므로, 선택은 조합 단위로 이루어져야 한다. $X_1$ 과 $X_2$ 가 각각은 target $Y$ 와 낮은 상관을 보여도 두 feature 의 조합은 $Y$ 를 설명하는 강한 신호가 될 수 있으며, XOR 문제가 그 대표적인 예다.
-
-다변량 분석의 목적은 셋이다.
-
-1️⃣ Feature 사이의 다중공선성 및 중복성 제거<br>
-2️⃣ Feature 사이의 시너지 효과 발굴<br>
-3️⃣ Model 성능 향상과 과적합 방지
-
-## 4. Approach-based Methods
+## 3. Approach-based Methods
 
 접근 방식은 계산 비용과 답의 성질을 정한다. Filter 는 자료의 성질을, wrapper 는 그 model 과 탐색의 성질을, embedded 는 적합된 model 의 성질을 답으로 내놓는다.
 
-### 4.1 Multivariate Filter Methods
+### 3.1 Multivariate Filter Methods
 
 Model 학습 없이 data 의 통계적 특성만으로 feature 조합을 선별한다. Univariate filter 와 달리 feature 사이의 상관성을 함께 계산한다.
 
@@ -66,7 +66,7 @@ mRMR (Minimum Redundancy Maximum Relevance) 는 target 과의 mutual information
 
 VIF (Variance Inflation Factor) 는 한 feature 를 나머지 feature 로 회귀하여 그 설명력을 측정한다. $\mathrm{VIF} \gt 10$ 인 feature 를 순차적으로 제거한다.
 
-### 4.2 Wrapper Methods
+### 3.2 Wrapper Methods
 
 특정 model 을 검증 도구로 삼아, 최적의 성능을 내는 feature subset 을 탐색 algorithm 으로 찾는다.
 
@@ -78,13 +78,41 @@ RFE (Recursive Feature Elimination) 의 절차는 다음과 같다.
 
 Greedy search 는 feature 를 하나씩 추가 (forward) 하거나 제거 (backward) 하며 cross validation 점수의 변화를 추적한다.
 
-### 4.3 Embedded Methods
+### 3.3 Embedded Methods
 
 Model 의 학습 algorithm 안에 feature 선택 과정이 들어 있다.
 
 Lasso 는 손실 함수에 계수 절댓값의 합 $\lambda \sum |\beta_i|$ 을 penalty 로 더하여, 불필요한 feature 의 계수를 정확히 0 으로 보낸다.
 
 Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다.
+
+## 4. Interaction-based Methods
+
+같은 기법을 상호작용을 어떻게 다루는가로 다시 묶으면 section 2 의 둘째 갈래가 된다. 한 기법이 두 갈래에 걸치기도 하며, 그때는 그 기법이 각 갈래에서 무엇을 하는지로 갈라 적는다.
+
+### 4.1 Redundancy Reduction
+
+중복 신호를 지우는 갈래이며, feature 사이의 상관만 보고 target 은 보지 않아도 된다.
+
+- 상관 filter: 상관계수가 기준치를 넘는 쌍에서 한쪽을 제거
+- VIF: 나머지 feature 로 설명되는 정도가 큰 feature 를 순차적으로 제거
+- mRMR 의 min-redundancy 항: 선택된 feature 사이의 mutual information 을 벌점으로 부과
+
+### 4.2 Feature Synergy
+
+결합 신호를 살리는 갈래이며, feature 를 조합 단위로 평가해야 드러난다.
+
+- Wrapper (RFE, forward·backward search): 후보 subset 을 model 에 넣어 점수를 매기므로 조합의 효과가 그대로 점수에 들어감
+- Tree-based importance: 분할이 이미 갈라진 node 안에서 이루어져, 다른 feature 의 값에 따라 달라지는 기여가 반영됨
+- ReliefF: 표본마다 가까운 같은 class 와 다른 class 의 이웃을 전체 feature vector 의 거리 위에서 비교하므로, 다른 feature 와 함께일 때만 드러나는 차이가 점수에 들어감
+
+### 4.3 Dimensionality Tradeoff
+
+남길 차원 수를 신호와 맞바꾸는 갈래이며, 앞의 두 갈래가 매긴 순위를 어디서 자를지를 정한다.
+
+- Lasso 의 $\lambda$: 값이 클수록 0 이 되는 계수가 늘어 차원이 줄어듦
+- RFE 의 목표 feature 개수: 남길 차원을 직접 지정
+- Tree-based importance 의 문턱값: 평균 중요도 같은 기준으로 자를 자리를 정함
 
 ## 5. Comparison
 
