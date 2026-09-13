@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-13 00:22 CDT
+Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-13 00:25 CDT
 
 > 반도체 장비 trace 가 만들어 내는 수천 개의 feature 가운데 무엇이 target 을 움직이는가, 그리고
 > 그에 답하는 방법이 세 축 — model 을 언제 참조하는가, 무엇을 단위로 고르는가, wafer 가 바뀌어도

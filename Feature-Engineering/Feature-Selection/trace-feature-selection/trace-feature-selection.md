@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 2 | Created: 2026-09-10 | Updated: 2026-09-12 17:50 CDT
+Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-13 00:25 CDT
 
 > Which of the thousands of features a semiconductor equipment trace produces move the target, and
 > where a method that answers it sits on three axes — when the model is consulted, what unit the
