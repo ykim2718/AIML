@@ -1,5 +1,5 @@
-# Multivariate Feature Selection (Korean)
-Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-12 18:06 CDT
+# Multivariate Feature Selection
+Rev. 4 | Created: 2026-09-12 | Updated: 2026-09-12 22:27 CDT
 
 ## 1. Purpose
 
