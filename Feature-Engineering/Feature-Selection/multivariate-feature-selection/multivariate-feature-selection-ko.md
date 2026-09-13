@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 11 | Created: 2026-09-12 | Updated: 2026-09-12 23:30 CDT
+Rev. 12 | Created: 2026-09-12 | Updated: 2026-09-12 23:34 CDT
 
 ## 1. Purpose
 
@@ -326,11 +326,14 @@ class MultivariateFeatureSelector:
                                              direction=direction, cv=self.fold_count).fit(X[:, columns], y)
         return columns[selector.get_support()]
 
-    def run(self, X: np.ndarray, y: np.ndarray) -> dict:
+    def run(self, X: np.ndarray, y: np.ndarray,
+            filter_method: Literal["corr", "vif", "mrmr", "relieff"] = "corr",
+            embedded_method: Literal["random_forest", "lasso"] = "random_forest",
+            wrapper_method: Literal["rfe", "forward", "backward"] = "rfe") -> dict:
         """Return the surviving column indices of each step, keyed by step name."""
-        filtered = self.filter_step(X=X, y=y, method="corr")
-        embedded = self.embedded_step(X=X, y=y, columns=filtered, method="random_forest")
-        wrapped = self.wrapper_step(X=X, y=y, columns=embedded, method="rfe")
+        filtered = self.filter_step(X=X, y=y, method=filter_method)
+        embedded = self.embedded_step(X=X, y=y, columns=filtered, method=embedded_method)
+        wrapped = self.wrapper_step(X=X, y=y, columns=embedded, method=wrapper_method)
         return {"filter": filtered, "embedded": embedded, "wrapper": wrapped}
 
 
@@ -365,7 +368,9 @@ if __name__ == "__main__":
              columns=selector.wrapper_step(X=X, y=data.target, columns=forest_columns,
                                            method=wrapper_method))
 
-    for step_name, step_columns in selector.run(X=X, y=data.target).items():
+    workflow = selector.run(X=X, y=data.target, filter_method="corr",
+                            embedded_method="random_forest", wrapper_method="rfe")
+    for step_name, step_columns in workflow.items():
         show(label=f"{step_name} step of the workflow", columns=step_columns)
 ```
 
@@ -436,4 +441,4 @@ wrapper step of the workflow (5 features)
   mean concavity, mean radius, radius error, worst concave points, worst concavity
 ```
 
-네 filter 는 같은 자료에서 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 쓰는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+네 filter 는 같은 자료에서 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
