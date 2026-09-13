@@ -1,5 +1,5 @@
 # Agile Software Development
-Rev. 4 | Created: 2026-09-13 | Updated: 2026-09-13 13:07 CDT
+Rev. 5 | Created: 2026-09-13 | Updated: 2026-09-13 13:20 CDT
 
 ## 1. Purpose
 
@@ -48,7 +48,7 @@ Table 1. The three layers and what each one decides
 | DevOps | Organizational culture and mode of collaboration | Integration and automation of development (Dev) and operation (Ops) (culture) |
 | CI/CD | Technical practice and automation tooling | Automation of build, test and deployment (technical practice) |
 
-Agile is a framework for the question "how will we work and collaborate", and it cuts requirements into small pieces that are developed, improved and deployed in short cycles called sprints. DevOps is a culture for the question "how do we remove the boundary between development (Dev) and operation (Ops) and deliver value without delay". CI/CD is the pipeline that verifies code, builds it, and carries it safely into the service environment, which is what makes the other two visible in practice.
+Agile cuts requirements into small pieces that are developed, improved and deployed in short cycles called sprints. DevOps removes the delay that the boundary between the two organizations puts in front of delivered value. CI/CD verifies code, builds it, and carries it safely into the service environment, which is what makes the other two visible in practice.
 
 CI/CD sits at the bottom of that containment because it is one technical component of the larger system rather than the system itself.
 
@@ -67,7 +67,7 @@ Table 2. The four values of the Agile Manifesto
 
 ### 3.2 Placement
 
-Against the waterfall model the difference is not the set of technical steps but where the plan is allowed to change and when feedback arrives. Waterfall passes each stage once in order, so the feedback lands at the end; Agile repeats the whole path in short units, so the feedback lands every unit.
+Against the waterfall model the difference lies in where the plan is allowed to change and when feedback arrives, rather than in the set of technical steps. Waterfall passes each stage once in order, so the feedback lands at the end; Agile repeats the whole path in short units, so the feedback lands every unit.
 
 Table 3. Waterfall and Agile compared
 
@@ -129,7 +129,7 @@ Fig 2. Sprint cycle and the terms used at each stage
 
 ## 5. Completion And Release
 
-Three terms carry most of the difference between an agile cycle and a plan-driven one, because each of them moves a decision that would otherwise be made once at the end of the project.
+Three decisions carry most of the difference between an agile cycle and a plan-driven one, because each of them is brought forward from the end of the project to the inside of every sprint.
 
 ### 5.1 Definition Of Done
 
@@ -149,7 +149,7 @@ The process terms carry the same meaning inside a team as outside it, deployment
 
 ### 6.1 Knowledge And Standard
 
-The first group holds what the team already knows, so that one problem is not solved twice. Section 5.3 covered the loop that keeps the first of them current; here the three are fixed side by side.
+The first group holds what the team already knows, so that one problem is not solved twice. Section 5.3 covered the loop that keeps the BKM current; here the three are fixed side by side.
 
 Table 4. Terms that hold what the team has learned
 

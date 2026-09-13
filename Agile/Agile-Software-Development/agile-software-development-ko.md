@@ -1,5 +1,5 @@
 # Agile Software Development
-Rev. 4 | Created: 2026-09-13 | Updated: 2026-09-13 13:07 CDT
+Rev. 5 | Created: 2026-09-13 | Updated: 2026-09-13 13:20 CDT
 
 ## 1. Purpose
 
@@ -48,7 +48,7 @@ Table 1. The three layers and what each one decides
 | DevOps | 조직 문화 및 협업 방식 | 개발 (Dev) 과 운영 (Ops) 의 통합 및 자동화 (culture) |
 | CI/CD | 기술적 실천 및 자동화 도구 | build, test, 배포 절차의 자동화 (technical practice) |
 
-Agile 은 "어떻게 일하고 협업할 것인가" 에 대한 framework 이며, 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 주기 단위로 개발하고 개선하고 배포한다. DevOps 는 "개발 (Dev) 과 운영 (Ops) 의 경계를 없애고 어떻게 지체 없이 가치를 전달할 것인가" 에 대한 문화다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기는 pipeline 이며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
+Agile 은 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 주기 단위로 개발하고 개선하고 배포한다. DevOps 는 두 조직 사이의 경계가 전달된 가치 앞에 놓는 지체를 걷어낸다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
 
 CI/CD 가 그 포함 관계의 맨 아래에 놓이는 까닭은 그것이 거대한 체계의 기술적 구성 요소 하나이지 체계 자체가 아니기 때문이다.
 
@@ -67,7 +67,7 @@ Table 2. The four values of the Agile Manifesto
 
 ### 3.2 Placement
 
-폭포수 (waterfall) 모델과 갈리는 지점은 기술적 단계의 목록이 아니라, 계획을 언제 바꿀 수 있고 피드백이 언제 도착하는가이다. Waterfall 은 각 단계를 순서대로 한 번씩 지나므로 피드백이 끝에 닿고, Agile 은 그 전 과정을 짧은 단위로 되풀이하므로 피드백이 단위마다 닿는다.
+폭포수 (waterfall) 모델과 갈리는 지점은 계획을 언제 바꿀 수 있고 피드백이 언제 도착하는가에 있으며, 기술적 단계의 목록에 있지 않다. Waterfall 은 각 단계를 순서대로 한 번씩 지나므로 피드백이 끝에 닿고, Agile 은 그 전 과정을 짧은 단위로 되풀이하므로 피드백이 단위마다 닿는다.
 
 Table 3. Waterfall and Agile compared
 
@@ -129,7 +129,7 @@ Fig 2. Sprint cycle and the terms used at each stage
 
 ## 5. Completion And Release
 
-Agile 주기와 계획 주도 주기의 차이는 대부분 아래 세 용어가 지고 있다. 셋 모두 프로젝트 끝에 한 번 내려질 결정을 앞으로 당겨 놓기 때문이다.
+Agile 주기와 계획 주도 주기의 차이는 대부분 아래 세 결정이 지고 있다. 셋 모두 프로젝트 끝에 한 번 내려질 판단을 sprint 안쪽으로 당겨 놓기 때문이다.
 
 ### 5.1 Definition Of Done
 
@@ -149,7 +149,7 @@ Sprint 회고는 process 가 process 를 바꾸는 자리다. 팀은 이번 spri
 
 ### 6.1 Knowledge And Standard
 
-첫 묶음은 팀이 이미 알고 있는 것을 담아, 한 문제를 두 번 풀지 않게 한다. 그 가운데 첫 항목을 갱신하는 loop 는 section 5.3 이 다루었고, 여기서는 셋을 나란히 놓아 고정한다.
+첫 묶음은 팀이 이미 알고 있는 것을 담아, 한 문제를 두 번 풀지 않게 한다. BKM 을 갱신하는 loop 는 section 5.3 이 다루었고, 여기서는 셋을 나란히 놓아 고정한다.
 
 Table 4. Terms that hold what the team has learned
 
