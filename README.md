@@ -1,5 +1,5 @@
 # AIML
-Rev. 74 | Created: 2026-08-07 | Updated: 2026-09-13 12:41 CDT
+Rev. 75 | Created: 2026-08-07 | Updated: 2026-09-13 12:49 CDT
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -30,7 +30,7 @@ Table 2. Folders and what they hold
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, temporal partial least squares under `Regression/TPLS/`, time-varying coefficients under `Regression/TVC/`, the defenses against overfitting in wide data under `Overfitting/`, the combination of several fitted models under `Ensemble/`, the probability a regression model attaches to its own prediction under `Uncertainty/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
 | [Applied-Statistics](Applied-Statistics/) | It covers statistical process control under `SPC/`, which carries a README of its own over the control charts, the capability indices, the wafer uniformity index and the multivariate statistics; design of experiments under `DOE/`, with response surfaces fitted by partial least squares under `DOE/PLS-RSM/`; distribution fitting, with the chi-squared distribution worked out under `Distributions/Chi-squared/`; hypothesis testing; numerical work; time series work under `Time-Series/`, with a cointegration example on daily price series and the stationarity assumption behind it under `Stationary/`; linear regression under `Regression/`, with the least squares derivation under `Regression/OLS/` and the penalties that answer a singular or unstable cross-product matrix under `Regression/Regularization/`; and the z-score family under `ZScore/` — the ceiling that bounds the classical score, the standard error of the mean, and the 1.5 sigma shift between short-term and long-term capability. |
-| [Agile](Agile/) | It covers the way the work around the model is run rather than the model itself — the three layers of agile practice, the sprint cycle, and the vocabulary a team says its status in, under `Agile-Development/`. |
+| [Agile](Agile/) | It covers the way the work around the model is run rather than the model itself — the three layers of agile practice, the sprint cycle, and the vocabulary a team says its status in, under `Agile-Software-Development/`. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
 | [.claude](.claude/) | It carries the settings that make those rules load in this repository and the hook that installs them, with the note behind that setup kept in the repository the plugin comes from. |
 
@@ -144,7 +144,7 @@ Table 10. Agile documents
 
 | Document | Description |
 |----------|-------------|
-| [Agile/Agile-Development/agile-development.md](Agile/Agile-Development/agile-development.md) ([Korean](Agile/Agile-Development/agile-development-ko.md)) | It separates Agile, DevOps and CI/CD by the question each one answers and draws the containment they form, sets the four values of the 2001 manifesto and the waterfall comparison against that hierarchy, walks the sprint cycle from planning through retrospective as a diagram of the terms met at each stage, and fixes what a team calls done, how a deployment is held back from being a release, and the vocabulary — BKM, SOP, post-mortem, feature flag, dogfooding, hotfix, WIP, blocker and POC — that the cycle is run in. |
+| [Agile/Agile-Software-Development/agile-software-development.md](Agile/Agile-Software-Development/agile-software-development.md) ([Korean](Agile/Agile-Software-Development/agile-software-development-ko.md)) | It separates Agile, DevOps and CI/CD by the question each one answers and draws the containment they form, sets the four values of the 2001 manifesto and the waterfall comparison against that hierarchy, walks the sprint cycle from planning through retrospective as a diagram of the terms met at each stage, and fixes what a team calls done, how a deployment is held back from being a release, and the vocabulary — BKM, SOP, post-mortem, feature flag, dogfooding, hotfix, WIP, blocker and POC — that the cycle is run in. |
 
 ## 4. Order Of Use
 
