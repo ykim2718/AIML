@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 6 | Created: 2026-09-12 | Updated: 2026-09-12 22:43 CDT
+Rev. 7 | Created: 2026-09-12 | Updated: 2026-09-12 22:50 CDT
 
 ## 1. Purpose
 
@@ -88,7 +88,7 @@ Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 
 
 ### 3.4 Comparison
 
-세 방식은 계산 비용과 상호작용 반영 정도가 서로 반대 방향으로 움직인다.
+Multivariate filter, wrapper, embedded 는 계산 비용과 상호작용 반영 정도가 서로 반대 방향으로 움직인다.
 
 Table 1. Comparison of the three approaches
 
@@ -184,7 +184,11 @@ class MultivariateFeatureSelector:
         self.random_state = random_state
 
     def filter_step(self, X: np.ndarray) -> np.ndarray:
-        """Return the columns left after dropping one feature of every correlated pair."""
+        """Return the columns left after dropping one feature of every correlated pair.
+
+        Of the filter branch this covers the correlation matrix only.
+        VIF, mRMR and ReliefF are other members of that branch and are not applied here.
+        """
         corr = np.abs(np.corrcoef(X, rowvar=False))
         redundant = np.unique(np.where(np.triu(corr, k=1) > self.correlation_limit)[1])
         return np.setdiff1d(np.arange(X.shape[1]), redundant)
