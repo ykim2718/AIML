@@ -1,5 +1,5 @@
-# Univariate Feature Selection (Korean)
-Rev. 2 | Created: 2026-09-12 | Updated: 2026-09-12 18:08 CDT
+# Univariate Feature Selection
+Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-12 22:28 CDT
 
 ## 1. Purpose
 
