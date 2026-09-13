@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 25 | Created: 2026-08-25 | Updated: 2026-09-13 10:17 CDT
+Rev. 26 | Created: 2026-08-25 | Updated: 2026-09-13 10:27 CDT
 
 > Methods that find observations departing from the pattern the rest of the data follows,
 > arranged by what each one assumes, so that a method is chosen from the shape of the data.
@@ -16,341 +16,24 @@ violation rather than a departure. Two properties of the data decide the choice.
 - **Dimension.** One variable, a handful, or a space too large for distances to stay meaningful.
 - **Distribution.** Whether a parametric shape can be assumed, normality above all.
 
-The rest of the choice is a property of the outlier being looked for, which section 2 sorts.
-Sections 3 to 5 take the three families in turn, and section 6 chooses: by the shape of the data, by
-the axes of section 2, and against what practice runs. [Appendix C. Semiconductor
-Practice](#appendix-c-semiconductor-practice) reads two industrial standards against them.
+Section 2 makes the choice from those two properties, from the axes of section 3, and against what
+practice runs. Sections 4 to 6 take the three families of method in turn, each stated as what it
+assumes, what is set, what breaks it, and where it is met. The appendices carry the derivations, the
+constants, the benchmark figures and the two industrial standards.
 
-## 2. Kinds of Outlier
+## 2. Selection
 
-The eight subsections are eight axes, not eight categories: an observation has a position on every
-one at once. One measurement can be a point outlier, local rather than global, caused by a recording
-error, discordant without being a contaminant, and high-leverage in its regression.
+The tables below choose a method three ways: from the shape of the data, from the question being
+asked, and from what is already on the screen.
 
-A method is chosen against one axis and says nothing on the others. Section 6.2 places every method
-here on these axes.
-
-### 2.1. Form
-
-[Chandola, Banerjee and Kumar (2009)](#ref-8) split anomalies by the form they take in the data.
-
-- **Point.** One observation is extreme on its own. A temperature of minus 100 degrees in a record of ordinary weather.
-- **Contextual.** The value is ordinary in the sample and extreme in its context. Two degrees is unremarkable in a year of readings and wrong for August.
-- **Collective.** No single value is extreme, but a run of them together is. A stretch of low voltage in an electrocardiogram, where every reading is inside the normal range.
-
-Contextual and collective anomalies need something the value does not carry, a context variable and
-an ordering. A method reading only the marginal distribution finds neither.
-
-### 2.2. Reference Set
-
-An observation is extreme relative to the whole sample or to a neighbourhood.
-
-- **Global.** Extreme against the sample as a whole.
-- **Local.** Ordinary against the whole sample, extreme against the group it sits in.
-
-This axis is independent of section 2.1, so pairing point with global as one label is a mistake.
-[Breunig, Kriegel, Ng and Sander (2000)](#ref-17) built the local outlier factor for the local point
-outlier, the case of section 4.3.
-
-### 2.3. Cause
-
-A flagged value arrives three ways, and what to do with it differs in each.
-
-- **Error.** A mistake in measuring, transcribing or transmitting. The value describes the process that recorded it, not the process being studied.
-- **Foreign population.** A correct measurement of something else, such as a part from another lot mixed into the batch.
-- **Genuine rare event.** A correct measurement of the process under study, sitting in a tail it really has.
-
-No statistic tells these apart. Detection produces a candidate, and the record behind it settles the
-cause.
-
-### 2.4. Discordancy and Contamination
-
-[Barnett and Lewis (1994)](#ref-2) separate two things. A **contaminant** came from a different
-distribution. A **discordant observation** looks statistically inconsistent with the rest.
-
-Neither implies the other: a contaminant can hide inside the bulk, and a clean heavy-tailed sample
-produces discordant observations at a predictable rate. Every test here tests discordancy.
-Contamination is what the investigation of section 2.3 establishes.
-
-### 2.5. Position in a Regression
-
-Fitting a model rather than a distribution splits one axis into three, and the three come apart.
-
-- **Residual outlier.** Far from the fitted surface in the response.
-- **Leverage point.** Extreme in the predictors, which gives the observation the power to move the fit whether or not it does.
-- **Influential observation.** Removing it changes the fit materially, which [Cook (1977)](#ref-4) measured with the distance that carries his name.
-
-High leverage without influence is common, and so is influence without a large residual, where the
-point has dragged the line onto itself. [Belsley, Kuh and Welsch (1980)](#ref-6) collect the
-diagnostics that separate them.
-
-### 2.6. Labels
-
-What is known before the search starts fixes what can be done.
-
-- **Supervised.** Labelled examples of both classes. This is a classification problem with severe class imbalance rather than an outlier problem.
-- **Semi-supervised.** A training set known to be clean, with new observations to judge against it. This is novelty detection.
-- **Unsupervised.** One unlabelled sample that may already contain outliers.
-
-Sections 3 to 5 are unsupervised or semi-supervised, labelled outliers being rare. A training set
-assumed clean and not clean teaches the method to treat its outliers as normal.
-
-### 2.7. Count
-
-How many outliers are expected changes the procedure, not just the threshold.
-
-- **Single.** One test, one stated error rate.
-- **Multiple.** Several, in unknown number, which is where masking and swamping appear. Both are defined below.
-
-Masking is one outlier inflating the centre or the scale until a second no longer looks extreme.
-Swamping is the reverse: the distortion is large enough that clean observations are flagged with it.
-[Hawkins (1980)](#ref-5) treats the many-outlier problem, and section 3.4 is the procedure built for
-it.
-
-### 2.8. Time Series Type
-
-With ordered data the form axis of section 2.1 refines into how the departure enters the series.
-[Fox (1972)](#ref-3) introduced the first two, and [Chen and Liu (1993)](#ref-7) settled the
-standard four.
-
-- **Additive.** One reading is displaced and the series returns immediately.
-- **Innovational.** A shock enters the process, so the displacement propagates through the readings that follow.
-- **Level shift.** The series moves to a new level and stays there.
-- **Temporary change.** The series moves and decays back over several readings.
-
-All four are one collective anomaly under section 2.1, which is why that axis is too coarse for a
-machine trace. A chamber that drifted permanently and one that recovered on its own differ as level
-shift against temporary change.
-
-## 3. Statistical Methods
-
-These assume a distributional form and measure departure from it. Cheapest to compute, easiest to
-defend, and the right default while the assumption holds.
-
-### 3.1. Z-Score
-
-The z-score divides the deviation of an observation from the sample mean by the sample standard
-deviation.
-
-```math
-z_i = \frac{x_i - \bar{x}}{s}
-```
-
-- $z_i$ — the z-score of observation $i$.
-- $x_i$ — the $i$-th observation of a sample of $n$ values.
-- $\bar{x}$ (x bar) — the mean of that sample.
-- $s$ — its standard deviation, formed by dividing the sum of squared deviations by $n-1$.
-
-An absolute score above 3 is the conventional flag. The rule assumes normality, under which about
-0.27% of observations exceed 3 by chance alone.
-
-Both estimates come from the sample under test, so an outlier inflates the scale it is measured
-against and masks itself. The same self-reference caps the score at $(n-1)/\sqrt{n}$, a bound due to
-[Shiffler (1988)](#ref-12): a rule at 3 cannot fire below 11 observations, one at 3.5 below 15.
-
-### 3.2. Interquartile Range
-
-Tukey's rule flags an observation outside the interval below. Its two ends are the fences the
-whiskers of a box plot draw.
-
-```math
-\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1
-```
-
-- $Q_1$ — the first quartile, the value a quarter of the sample falls below.
-- $Q_3$ — the third quartile, the value three quarters of the sample falls below.
-- $\mathrm{IQR}$ — the distance between them, which is the spread of the middle half.
-
-Quartiles are order statistics, so the rule needs no distributional assumption and carries a
-breakdown point of 25% against the 0% of the z-score. On a normal sample the range is
-$1.349 \sigma$, which puts the fences at $\pm 2.7 \sigma$ and leaves roughly 0.7% outside. That is
-comparable in strictness to a z-score at 3, and it survives contamination that would defeat one.
-[Appendix B. Tukey's Rule](#appendix-b-tukeys-rule) works out the comparison and the second fence.
-
-### 3.3. Hampel Identifier
-
-The Hampel identifier keeps the form of the z-score and replaces both estimates: the median for the
-mean, and the rescaled median of the deviations from it for the standard deviation.
-
-```math
-\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)
-```
-
-```math
-M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
-```
-
-- $x_1, \ldots, x_n$ — the sample, and $x_i$ its $i$-th observation, as in section 3.1.
-- $\tilde{x}$ (x tilde) — the median of the sample, which the deviations are taken from and which the score is centred on.
-- $\mathrm{MAD}$ — the median of those absolute deviations, which is the raw robust scale before any rescaling.
-- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by.
-- $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 3.1.
-
-The divisor is a consistency constant, and it is there because the raw MAD does not estimate $s$. On
-a normal sample the MAD converges to $0.674490 \sigma$, about a third short of the spread. Dividing
-by the constant, which is multiplying by 1.482602, puts $M_i$ on the scale $z_i$ is read on. Without
-it the score has a scale of its own, and no threshold carries between the two rules.
-
-It is a calibration and the only place normality enters the method. It fixes where a threshold sits,
-not which observations are extreme.
-
-An absolute score above 3.5 is the conventional flag, recommended by [Iglewicz and Hoaglin
-(1993)](#ref-14). Neither the median nor the MAD moves under a minority, so the identifier reaches
-the outliers that mask themselves in section 3.1, and it needs no iteration.
-
-The failure mode is a tie. More than half the sample at one value makes the MAD 0 and no score
-defined, and no estimator at the same 50% breakdown point escapes it.
-
-### 3.4. Generalized ESD
-
-Repeating a single-outlier test on what is left does not hold the significance level, since each
-repetition spends it again. The generalized extreme studentized deviate procedure declares an upper
-bound $r$ first, then runs $r$ stages of the same statistic, with the level stated for the whole
-search.
-
-```math
-R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r
-```
-
-- $R_i$ — the extreme studentized deviate at stage $i$.
-- $x_j$ — an observation of the sample, indexed by $j$ to keep it apart from the stage number.
-- $\bar{x}_i$ and $s_i$ — the mean and the standard deviation of what remains of the sample once the $i-1$ observations removed at earlier stages are gone.
-- $\max_j$ — a maximum over the observations still remaining. The one attaining it is removed before stage $i+1$.
-- $r$ — the declared upper bound on the number of outliers, fixed before the data are read.
-
-Each $R_i$ is compared against the critical value $\lambda_i$ tabulated by [Rosner (1983)](#ref-13).
-The count is the **largest** $i$ with $R_i \gt \lambda_i$, not the first, which is what defeats
-masking: a stage can fail while a later one, with the masking observation already removed, succeeds.
-It is the many-outlier method of [ISO 16269-4](#ref-15), and it assumes the uncontaminated part of
-the sample is approximately normal.
-
-### 3.5. Mahalanobis Distance
-
-For multivariate data the [Mahalanobis distance](#ref-11) measures how far an observation lies
-from the centre in units that account for the covariance between variables.
-
-```math
-d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)
-```
-
-- $x$ — one observation, written as a vector with one entry per variable.
-- $\mu$ — the centre of the sample, the vector of per-variable means.
-- $\Sigma$ — the covariance matrix of the variables, and $\Sigma^{-1}$ its inverse.
-- $d^2(x)$ — the squared distance, which reduces to $z_i^2$ of section 3.1 when there is one variable.
-
-The covariance term lifts it above a per-variable check: an observation ordinary in every variable
-can still be implausible in their combination. Under multivariate normality, with $\mu$ and $\Sigma$
-known rather than estimated, $d^2$ is chi-square with one degree of freedom per variable, and the
-cut-off comes from there.
-
-The self-reference of section 3.1 returns and is worse. A cluster of outliers inflates the estimated
-$\Sigma$ in the direction that hides it, so the distance needs a robust pair such as the minimum
-covariance determinant of [Rousseeuw and Van Driessen (1999)](#ref-16) on data that may already be
-contaminated.
-
-## 4. Machine Learning Methods
-
-These drop the distributional assumption and learn the normal region from unlabelled data. They take
-several variables at once and claim no error rate, so the output is a score to rank rather than a
-test to pass.
-
-### 4.1. [Isolation Forest](#ref-19)
-
-Isolation Forest builds trees by splitting on a random variable at a random threshold, and records
-how many splits an observation needs before it sits alone. An observation in a sparse region is
-separated by few splits, so a short average path length across the forest is the anomaly score.
-
-It isolates rather than profiles: no density, no distance, linear in the sample size, and it works
-on subsamples. Hence the usual first choice when the data are large or wide.
-
-### 4.2. [One-Class SVM](#ref-18)
-
-One-Class SVM learns a boundary enclosing the region the training data occupy, and calls anything
-outside that boundary an outlier. The kernel decides how the boundary may bend, and the parameter
-$\nu$ sets an upper bound on the fraction of training data allowed to fall outside it.
-
-It fits a problem already stated as a boundary, where the question is whether a new observation
-belongs to a known region. The fit is quadratic or worse in the sample size, and the answer depends
-on the kernel, its bandwidth and the scaling of the variables, none of which the data choose.
-
-### 4.3. LOF (Local Outlier Factor)
-
-Local Outlier Factor compares the density around an observation with the density around each of
-its $k$ nearest neighbours. A factor near 1 means the observation is as densely surrounded as its
-neighbours are, and a factor well above 1 means it sits in a sparser place than they do.
-
-The local comparison finds an observation unremarkable against the whole sample and clearly apart
-from its own group, which no global method reaches. That is what pays for the neighbour search when
-clusters differ in density.
-
-### 4.4. [ECOD](#ref-21) (Empirical Cumulative Distribution)
-
-ECOD takes the view that an outlier is a rare event in a tail, and measures tail rarity without
-fitting anything. It builds the empirical cumulative distribution of each variable separately,
-reads off the left and right tail probability of every observation, and aggregates those
-probabilities across variables into one score.
-
-It is the one method here with no hyperparameter, where every other has a neighbourhood size, a
-kernel or a contamination rate to set without labels to set it against. It is linear in both the
-sample size and the variable count, and the per-variable tail probabilities say which variables made
-an observation extreme.
-
-Reading each variable on its own costs the combination: ECOD misses a departure that exists only
-across variables, which is the case of section 3.5.
-
-## 5. Deep Learning Methods
-
-These learn a representation of normal data and read the departure off the failure to reproduce it.
-They are for data whose structure defeats a distance in the raw coordinates, such as audio, long
-time series, machine traces and above all images, and they need enough clean data to train on.
-Images have a recipe of their own in section 5.3.
-
-### 5.1. Autoencoder
-
-An autoencoder compresses its input to a narrow code and reconstructs the input from it. Trained
-on normal data alone, it learns a representation that spends its capacity on normal structure, and
-the reconstruction error then serves as the anomaly score.
-
-The assumption is a bottleneck narrow enough that the network cannot learn to copy. Too much
-capacity and it reconstructs unseen anomalies as faithfully as normal data, and the error separates
-nothing.
-
-### 5.2. Generative Adversarial Network
-
-An adversarial approach trains a generator to produce samples indistinguishable from normal data.
-Scoring means finding the closest generated sample and reading the residual: a normal observation
-lies on the learned manifold and is matched closely, an anomalous one is not.
-
-[AnoGAN](#ref-20), the first of the kind, adds a discriminator feature term to that residual.
-Scoring one observation costs an iterative search in the latent space rather than a forward pass,
-which later variants set out to remove.
-
-Diffusion models took the same role, scoring an observation by how far denoising has to move it.
-They report gains over autoencoder baselines on tabular benchmarks, at a cost higher again than the
-adversarial methods.
-
-### 5.3. Industrial Image Inspection
-
-Visual defect inspection has converged on one recipe: run a pretrained network over the image, keep
-the patch features of defect-free examples, and score a new patch by its distance to that memory.
-[PatchCore](#ref-23) established it and reports up to 99.1% detection AUROC on MVTec AD;
-[EfficientAD](#ref-24) reaches 95.4% across 32 datasets at 2.2 ms per image, the latency inline
-inspection needs.
-
-Those figures belong to the benchmark. On MVTec AD 2, built to carry the lighting and defect
-variation of real inspection, no published method exceeds 31% localization AU-PRO at a 5% false
-positive rate.
-
-## 6. Selection
-
-### 6.1. By the Shape of the Data
+### 2.1. By the Shape of the Data
 
 **Table 1. Method by the shape of the data**
 
 | # | Data | Method | Why |
 |---|---|---|---|
 | 1 | One variable, distribution unknown | Interquartile Range | It assumes no shape, and the fences carry a breakdown point of 25%. |
-| 2 | One variable, approximately normal, clean | Z-Score | The threshold carries a stated error rate, provided the sample is large enough for the ceiling of section 3.1 to sit above it. |
+| 2 | One variable, approximately normal, clean | Z-Score | The threshold carries a stated error rate, provided the sample is large enough for the ceiling of section 4.1 to sit above it. |
 | 3 | One variable, contamination expected | Hampel Identifier | The median and the MAD are not moved by the outliers being looked for, so nothing masks itself. |
 | 4 | One variable, several outliers, approximately normal | Generalized ESD | It states a level for the whole search rather than for one test, and reads the last passing stage rather than the first. |
 | 5 | A few variables, correlated | Mahalanobis Distance | It is the only entry that reads the covariance, and it needs a robust centre and scale to be trusted. |
@@ -359,18 +42,18 @@ positive rate.
 | 8 | Clusters of differing density | Local Outlier Factor | It compares an observation against its neighbourhood rather than the whole sample. |
 | 9 | A known region, new points to test | One-Class SVM | The problem is a boundary, which is what the method fits. |
 | 10 | Audio, long time series, machine traces | Autoencoder | Reconstruction error survives where a distance in raw coordinates does not. |
-| 11 | Images of a repeated product | Patch feature memory | The pretrained features of section 5.3 already carry what a defect looks like, and scoring is fast enough to run inline. |
+| 11 | Images of a repeated product | Patch feature memory | The pretrained features of section 6.3 already carry what a defect looks like, and scoring is fast enough to run inline. |
 | 12 | Parts within a production lot | [Part average testing](#appendix-c-semiconductor-practice) | A standard names the rule, so the limit can be audited rather than argued. |
 | 13 | Equipment sensor traces | [Multivariate control chart](#appendix-c-semiconductor-practice) | Splitting the score into $T^2$ and $Q$ says which sensor to look at, not only that something moved. |
 
-### 6.2. By the Axis Answered
+### 2.2. By the Axis Answered
 
 Table 1 picks a method from a description of the data. Table 2 reads the other way, and says
-which of the questions of section 2 each method actually answers.
+which of the questions of section 3 each method actually answers.
 
-**Table 2. Where each method sits on the axes of section 2**
+**Table 2. Where each method sits on the axes of section 3**
 
-| # | Method | Form (2.1) | Reference set (2.2) | Labels (2.6) | Count (2.7) |
+| # | Method | Form (3.1) | Reference set (3.2) | Labels (3.6) | Count (3.7) |
 |---|---|---|---|---|---|
 | 1 | Z-Score | Point | Global | Unsupervised | Single |
 | 2 | Interquartile Range | Point | Global | Unsupervised | Uncontrolled |
@@ -396,25 +79,15 @@ point anomaly in it. Nothing in section 5 scores a run of observations directly.
 Four axes are missing from the table, three because no method here answers them and one because
 every method answers it the same way.
 
-- **Cause (2.3).** No statistic separates an error from a rare event, which that section says outright.
-- **Discordancy and contamination (2.4).** Every method here tests discordancy and none judges contamination, so the axis sorts how a result is read rather than which method produces it.
-- **Position in a regression (2.5).** Leverage and influence need a fitted model, and this document fits distributions and regions instead.
-- **Time series type (2.8).** A windowed method can flag a level shift, but nothing here tells a level shift from a temporary change.
+- **Cause (3.3).** No statistic separates an error from a rare event, which that section says outright.
+- **Discordancy and contamination (3.4).** Every method here tests discordancy and none judges contamination, so the axis sorts how a result is read rather than which method produces it.
+- **Position in a regression (3.5).** Leverage and influence need a fitted model, and this document fits distributions and regions instead.
+- **Time series type (3.8).** A windowed method can flag a level shift, but nothing here tells a level shift from a temporary change.
 
 A contextual anomaly is out of reach on the form axis as well: it needs a context variable, and no
 method here takes one.
 
-### 6.3. What the Benchmarks Report
-
-The published comparisons name no winner. Across the 30 algorithms and 57 datasets of
-[ADBench](#ref-22), no unsupervised method is statistically superior to the rest; Isolation Forest
-and ECOD are consistently among the better ones without dominating, and several deep methods built
-for tabular data fall below them. Newer is not by itself a reason to switch.
-
-The exception is raw coordinates that carry no usable distance, where the deep methods earn their
-cost. Images are the clearest instance.
-
-### 6.4. What Practice Actually Runs
+### 2.3. What Practice Actually Runs
 
 A survey ranks methods by what they assume, and practice ranks them by what is already on the
 screen. Table 3 lists the rules in the order they are actually met.
@@ -423,9 +96,9 @@ screen. Table 3 lists the rules in the order they are actually met.
 
 | Rank | Rule | Why it is reached for |
 |---|---|---|
-| 1 | Interquartile range, the Tukey fence of section 3.2 | The box plot is usually the first drawing made, and its whiskers already are the rule. |
-| 2 | Z-score cut at 3, of section 3.1 | Habit. It is the rule everyone was taught, and it is the wrong one whenever the sample is neither normal nor clean. |
-| 3 | Modified z-score on the MAD, of section 3.3 | Where the work moves the moment the data are at all dirty. |
+| 1 | Interquartile range, the Tukey fence of section 4.2 | The box plot is usually the first drawing made, and its whiskers already are the rule. |
+| 2 | Z-score cut at 3, of section 4.1 | Habit. It is the rule everyone was taught, and it is the wrong one whenever the sample is neither normal nor clean. |
+| 3 | Modified z-score on the MAD, of section 4.3 | Where the work moves the moment the data are at all dirty. |
 | 4 | Quantile clipping, winsorizing at the 1st and the 99th percentile | Cheap, and it needs no test at all. It fixes a share of the sample rather than a property of it. |
 | 5 | 🌳A domain physical limit | It should be first. A negative pressure or a yield above 100% is settled before any statistic is computed. |
 
@@ -435,13 +108,317 @@ section 1 keeps treatment apart from detection. A physical limit is knowledge he
 is read, and the one rule here that calls an observation wrong rather than inconsistent.
 
 So the fifth entry belongs first. Bounds the process cannot cross are applied before anything in
-sections 3 to 5 runs, since a value outside them corrupts every estimate that follows.
+sections 4 to 6 runs, since a value outside them corrupts every estimate that follows.
 
-### 6.5. Two Habits
+### 2.4. Two Habits
 
 Two habits matter more than the choice. Fix the threshold before the data are seen, so it is not
 tuned to a preferred answer. Then read the margin rather than the verdict: only a statistic that
 clears its cut-off by a wide gap survives a change in the choices above.
+
+## 3. Kinds of Outlier
+
+The eight subsections are eight axes, not eight categories: an observation has a position on every
+one at once. One measurement can be a point outlier, local rather than global, caused by a recording
+error, discordant without being a contaminant, and high-leverage in its regression.
+
+A method is chosen against one axis and says nothing on the others. Section 2.2 places every method
+here on these axes.
+
+### 3.1. Form
+
+[Chandola, Banerjee and Kumar (2009)](#ref-8) split anomalies by the form they take in the data.
+
+- **Point.** One observation is extreme on its own. A temperature of minus 100 degrees in a record of ordinary weather.
+- **Contextual.** The value is ordinary in the sample and extreme in its context. Two degrees is unremarkable in a year of readings and wrong for August.
+- **Collective.** No single value is extreme, but a run of them together is. A stretch of low voltage in an electrocardiogram, where every reading is inside the normal range.
+
+Contextual and collective anomalies need something the value does not carry, a context variable and
+an ordering. A method reading only the marginal distribution finds neither.
+
+### 3.2. Reference Set
+
+An observation is extreme relative to the whole sample or to a neighbourhood.
+
+- **Global.** Extreme against the sample as a whole.
+- **Local.** Ordinary against the whole sample, extreme against the group it sits in.
+
+This axis is independent of section 3.1, so pairing point with global as one label is a mistake.
+[Breunig, Kriegel, Ng and Sander (2000)](#ref-17) built the local outlier factor for the local point
+outlier, the case of section 5.3.
+
+### 3.3. Cause
+
+A flagged value arrives three ways, and what to do with it differs in each.
+
+- **Error.** A mistake in measuring, transcribing or transmitting. The value describes the process that recorded it, not the process being studied.
+- **Foreign population.** A correct measurement of something else, such as a part from another lot mixed into the batch.
+- **Genuine rare event.** A correct measurement of the process under study, sitting in a tail it really has.
+
+No statistic tells these apart. Detection produces a candidate, and the record behind it settles the
+cause.
+
+### 3.4. Discordancy and Contamination
+
+[Barnett and Lewis (1994)](#ref-2) separate two things. A **contaminant** came from a different
+distribution. A **discordant observation** looks statistically inconsistent with the rest.
+
+Neither implies the other: a contaminant can hide inside the bulk, and a clean heavy-tailed sample
+produces discordant observations at a predictable rate. Every test here tests discordancy.
+Contamination is what the investigation of section 3.3 establishes.
+
+### 3.5. Position in a Regression
+
+Fitting a model rather than a distribution splits one axis into three, and the three come apart.
+
+- **Residual outlier.** Far from the fitted surface in the response.
+- **Leverage point.** Extreme in the predictors, which gives the observation the power to move the fit whether or not it does.
+- **Influential observation.** Removing it changes the fit materially, which [Cook (1977)](#ref-4) measured with the distance that carries his name.
+
+High leverage without influence is common, and so is influence without a large residual, where the
+point has dragged the line onto itself. [Belsley, Kuh and Welsch (1980)](#ref-6) collect the
+diagnostics that separate them.
+
+### 3.6. Labels
+
+What is known before the search starts fixes what can be done.
+
+- **Supervised.** Labelled examples of both classes. This is a classification problem with severe class imbalance rather than an outlier problem.
+- **Semi-supervised.** A training set known to be clean, with new observations to judge against it. This is novelty detection.
+- **Unsupervised.** One unlabelled sample that may already contain outliers.
+
+Sections 4 to 6 are unsupervised or semi-supervised, labelled outliers being rare. A training set
+assumed clean and not clean teaches the method to treat its outliers as normal.
+
+### 3.7. Count
+
+How many outliers are expected changes the procedure, not just the threshold.
+
+- **Single.** One test, one stated error rate.
+- **Multiple.** Several, in unknown number, which is where masking and swamping appear. Both are defined below.
+
+Masking is one outlier inflating the centre or the scale until a second no longer looks extreme.
+Swamping is the reverse: the distortion is large enough that clean observations are flagged with it.
+[Hawkins (1980)](#ref-5) treats the many-outlier problem, and section 4.4 is the procedure built for
+it.
+
+### 3.8. Time Series Type
+
+With ordered data the form axis of section 3.1 refines into how the departure enters the series.
+[Fox (1972)](#ref-3) introduced the first two, and [Chen and Liu (1993)](#ref-7) settled the
+standard four.
+
+- **Additive.** One reading is displaced and the series returns immediately.
+- **Innovational.** A shock enters the process, so the displacement propagates through the readings that follow.
+- **Level shift.** The series moves to a new level and stays there.
+- **Temporary change.** The series moves and decays back over several readings.
+
+All four are one collective anomaly under section 3.1, which is why that axis is too coarse for a
+machine trace. A chamber that drifted permanently and one that recovered on its own differ as level
+shift against temporary change.
+
+## 4. Statistical Methods
+
+These assume a distributional form and measure departure from it. Cheapest to compute, easiest to
+defend, and the right default while the assumption holds.
+
+### 4.1. Z-Score
+
+The z-score divides the deviation of an observation from the sample mean by the sample standard
+deviation.
+
+```math
+z_i = \frac{x_i - \bar{x}}{s}
+```
+
+- $z_i$ — the z-score of observation $i$.
+- $x_i$ — the $i$-th observation of a sample of $n$ values.
+- $\bar{x}$ (x bar) — the mean of that sample.
+- $s$ — its standard deviation, formed by dividing the sum of squared deviations by $n-1$.
+
+- **Assumption.** Normality, and a sample clean enough that the mean and the standard deviation are not moved by what is being looked for.
+- **Setting.** An absolute score above 3, which about 0.27% of a normal sample exceeds by chance.
+- **Breaks when.** Contamination is present, since the outlier inflates the scale it is measured against and masks itself, or the sample is small: the score has a ceiling of $(n-1)/\sqrt{n}$, so a rule at 3 cannot fire below 11 observations ([Appendix D](#appendix-d-estimator-constants-and-bounds)).
+- **Met at.** A single parameter already known to be near normal, on data screened for gross errors.
+
+### 4.2. Interquartile Range
+
+Tukey's rule flags an observation outside the interval below. Its two ends are the fences the
+whiskers of a box plot draw.
+
+```math
+\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1
+```
+
+- $Q_1$ — the first quartile, the value a quarter of the sample falls below.
+- $Q_3$ — the third quartile, the value three quarters of the sample falls below.
+- $\mathrm{IQR}$ — the distance between them, which is the spread of the middle half.
+
+- **Assumption.** No distributional shape, but symmetry: the fences are placed at the same multiple on both sides.
+- **Setting.** An inner fence at 1.5 IQR and an outer fence at 3 IQR ([Appendix B](#appendix-b-tukeys-rule)).
+- **Breaks when.** The sample is skewed. The long tail is a property of the distribution, and the rule reads it as a stream of outliers ([Appendix B](#appendix-b-tukeys-rule)).
+- **Met at.** A first look at any single parameter, which is what the whiskers of a box plot already draw.
+
+### 4.3. Hampel Identifier
+
+The Hampel identifier keeps the form of the z-score and replaces both estimates: the median for the
+mean, and the rescaled median of the deviations from it for the standard deviation.
+
+```math
+\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)
+```
+
+```math
+M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
+```
+
+- $x_1, \ldots, x_n$ — the sample, and $x_i$ its $i$-th observation, as in section 4.1.
+- $\tilde{x}$ (x tilde) — the median of the sample, which the deviations are taken from and which the score is centred on.
+- $\mathrm{MAD}$ — the median of those absolute deviations, which is the raw robust scale before any rescaling.
+- $\Phi^{-1}(0.75) = 0.674490$ — the third quartile of the standard normal distribution, which the MAD is divided by.
+- $M_i$ — the modified z-score of observation $i$, read on the same scale as $z_i$ of section 4.1.
+
+- **Assumption.** Nothing about the data. Normality enters only through the constant that puts the score on the z-score scale ([Appendix D](#appendix-d-estimator-constants-and-bounds)).
+- **Setting.** An absolute modified z-score above 3.5, the value recommended by [Iglewicz and Hoaglin (1993)](#ref-14).
+- **Breaks when.** More than half the sample takes one value, where the MAD is 0 and no score is defined.
+- **Met at.** A single parameter judged within its own lot, where the outliers being looked for are in the sample.
+
+### 4.4. Generalized ESD
+
+Repeating a single-outlier test on what is left does not hold the significance level, since each
+repetition spends it again. The generalized extreme studentized deviate procedure declares an upper
+bound $r$ first, then runs $r$ stages of the same statistic, with the level stated for the whole
+search.
+
+```math
+R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r
+```
+
+- $R_i$ — the extreme studentized deviate at stage $i$.
+- $x_j$ — an observation of the sample, indexed by $j$ to keep it apart from the stage number.
+- $\bar{x}_i$ and $s_i$ — the mean and the standard deviation of what remains of the sample once the $i-1$ observations removed at earlier stages are gone.
+- $\max_j$ — a maximum over the observations still remaining. The one attaining it is removed before stage $i+1$.
+- $r$ — the declared upper bound on the number of outliers, fixed before the data are read.
+
+- **Assumption.** The uncontaminated part of the sample is approximately normal, and an upper bound $r$ on the outlier count is fixed before the data are read.
+- **Setting.** $r$, a significance level for the whole search, and the critical values $\lambda_i$ of [Rosner (1983)](#ref-13) ([Appendix D](#appendix-d-estimator-constants-and-bounds)).
+- **Breaks when.** $r$ is set below the true count, or the stages are read from the first failure rather than the last passing one, which lets masking survive.
+- **Met at.** A decision that has to be defended against a standard, which is the many-outlier method of [ISO 16269-4](#ref-15).
+
+### 4.5. Mahalanobis Distance
+
+For multivariate data the [Mahalanobis distance](#ref-11) measures how far an observation lies
+from the centre in units that account for the covariance between variables.
+
+```math
+d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)
+```
+
+- $x$ — one observation, written as a vector with one entry per variable.
+- $\mu$ — the centre of the sample, the vector of per-variable means.
+- $\Sigma$ — the covariance matrix of the variables, and $\Sigma^{-1}$ its inverse.
+- $d^2(x)$ — the squared distance, which reduces to $z_i^2$ of section 4.1 when there is one variable.
+
+- **Assumption.** Multivariate normality, and a centre and covariance that the outliers have not moved.
+- **Setting.** A chi-square cut-off with one degree of freedom per variable ([Appendix D](#appendix-d-estimator-constants-and-bounds)).
+- **Breaks when.** $\mu$ and $\Sigma$ come from contaminated data, since a cluster of outliers inflates $\Sigma$ in the direction that hides it. A robust pair repairs it ([Appendix D](#appendix-d-estimator-constants-and-bounds)).
+- **Met at.** A few correlated parameters read together, such as the summary parameters of one process step.
+
+## 5. Machine Learning Methods
+
+These drop the distributional assumption and learn the normal region from unlabelled data. They take
+several variables at once and claim no error rate, so the output is a score to rank rather than a
+test to pass.
+
+### 5.1. [Isolation Forest](#ref-19)
+
+Isolation Forest builds trees by splitting on a random variable at a random threshold, and records
+how many splits an observation needs before it sits alone. An observation in a sparse region is
+separated by few splits, so a short average path length across the forest is the anomaly score.
+
+- **Assumption.** Outliers are few and sit in sparse regions. No distribution is assumed.
+- **Setting.** The number of trees and the subsample size. The output is a rank, not an error rate.
+- **Breaks when.** The departure exists only in the combination of variables, or a contamination rate is set from a guess.
+- **Met at.** Wide tables with many rows, where a first ranking is wanted cheaply.
+
+### 5.2. [One-Class SVM](#ref-18)
+
+One-Class SVM learns a boundary enclosing the region the training data occupy, and calls anything
+outside that boundary an outlier. The kernel decides how the boundary may bend, and the parameter
+$\nu$ sets an upper bound on the fraction of training data allowed to fall outside it.
+
+- **Assumption.** A training set known to be clean, which makes the problem novelty detection (section 3.6).
+- **Setting.** A kernel, its bandwidth, and $\nu$, the upper bound on the training fraction outside the boundary.
+- **Breaks when.** The training set was not clean, the variables are on different scales, or the sample is large: the fit is quadratic or worse in the sample size.
+- **Met at.** A known-good region fixed earlier, with new material to judge against it.
+
+### 5.3. LOF (Local Outlier Factor)
+
+Local Outlier Factor compares the density around an observation with the density around each of
+its $k$ nearest neighbours. A factor near 1 means the observation is as densely surrounded as its
+neighbours are, and a factor well above 1 means it sits in a sparser place than they do.
+
+- **Assumption.** Density is meaningful, so a distance in the raw coordinates is meaningful.
+- **Setting.** The neighbourhood size $k$. A factor near 1 is ordinary and well above 1 is sparse.
+- **Breaks when.** The variables are many enough that distances stop separating, or $k$ reaches across a cluster boundary.
+- **Met at.** Data holding groups of different density, such as several tools or chambers pooled in one table.
+
+### 5.4. [ECOD](#ref-21) (Empirical Cumulative Distribution)
+
+ECOD takes the view that an outlier is a rare event in a tail, and measures tail rarity without
+fitting anything. It builds the empirical cumulative distribution of each variable separately,
+reads off the left and right tail probability of every observation, and aggregates those
+probabilities across variables into one score.
+
+- **Assumption.** An outlier is a tail event in at least one variable.
+- **Setting.** None. It is the one method here with nothing to set.
+- **Breaks when.** The departure exists only in the combination of variables, which is the case of section 4.5.
+- **Met at.** Wide tables with no labels to tune against, where the flag has to name the variable responsible.
+
+## 6. Deep Learning Methods
+
+These learn a representation of normal data and read the departure off the failure to reproduce it.
+They are for data whose structure defeats a distance in the raw coordinates, such as audio, long
+time series, machine traces and above all images, and they need enough clean data to train on.
+Images have a recipe of their own in section 6.3.
+
+### 6.1. Autoencoder
+
+An autoencoder compresses its input to a narrow code and reconstructs the input from it. Trained
+on normal data alone, it learns a representation that spends its capacity on normal structure, and
+the reconstruction error then serves as the anomaly score.
+
+- **Assumption.** Clean training data, and a bottleneck narrow enough that the network cannot learn to copy its input.
+- **Setting.** The code width, and a cut on the reconstruction error.
+- **Breaks when.** Capacity is too large, so unseen anomalies are reconstructed as faithfully as normal data, or the training set was not clean (section 3.6).
+- **Met at.** Equipment traces and other long ordered records that a per-point limit cannot read.
+
+### 6.2. Generative Adversarial Network
+
+An adversarial approach trains a generator to produce samples indistinguishable from normal data.
+Scoring means finding the closest generated sample and reading the residual: a normal observation
+lies on the learned manifold and is matched closely, an anomalous one is not.
+
+[AnoGAN](#ref-20), the first of the kind, adds a discriminator feature term to that residual, and
+scores one observation by an iterative search in the latent space rather than a forward pass.
+Diffusion models have since taken the same role, scoring an observation by how far denoising has to
+move it, at a cost higher again.
+
+- **Assumption.** The same as section 6.1, with a generator that has learned the manifold the normal data occupy.
+- **Setting.** The latent search budget for scoring, and a cut on the residual.
+- **Breaks when.** The latent search does not converge, or the scoring cost per observation exceeds what the line allows.
+- **Met at.** The data of section 6.1 where a generative model is already in place and its cost is accepted.
+
+### 6.3. Industrial Image Inspection
+
+Visual defect inspection has converged on one recipe: run a pretrained network over the image, keep
+the patch features of defect-free examples, and score a new patch by its distance to that memory.
+[Appendix E](#appendix-e-benchmarks) gives the reported detection rates and latencies.
+
+- **Assumption.** Defect-free examples cover the normal appearance, and the product repeats.
+- **Setting.** A pretrained backbone, the patch size, the memory size, and a distance cut.
+- **Breaks when.** Lighting and defect variation exceed what the memory holds, where reported localization falls off sharply ([Appendix E](#appendix-e-benchmarks)).
+- **Met at.** Inline image inspection of a repeated product, at the latency a line needs.
 
 ## References
 
@@ -517,8 +494,8 @@ clears its cut-off by a wide gap survives a change in the choices above.
 - **degrees of freedom** — The number of independent quantities a statistic is free to vary over. It fixes which chi-square distribution a squared distance is read against, one per variable here.
 - **discordant observation** — An observation that looks statistically inconsistent with the rest of the sample. A test of discordancy reports this and not contamination.
 - **discriminator** — The network trained alongside a generator to tell generated samples from real ones. Its internal features can be reused to compare an observation against what the generator produced.
-- **ECOD** — Empirical-cumulative-distribution-based outlier detection, the method of section 4.4.
-- **ESD** — Extreme studentized deviate, abbreviated in the name of the generalized ESD procedure of section 3.4.
+- **ECOD** — Empirical-cumulative-distribution-based outlier detection, the method of section 5.4.
+- **ESD** — Extreme studentized deviate, abbreviated in the name of the generalized ESD procedure of section 4.4.
 - **extreme studentized deviate** — The largest absolute deviation from the sample mean, divided by the sample standard deviation. It is the statistic each stage of the generalized ESD procedure computes.
 - **false positive rate** — The fraction of normal observations that a rule flags. It is the price paid for whatever detection rate the rule reaches.
 - **generator** — The network trained to produce samples a discriminator cannot tell from the training data. Once trained it stands in for the distribution the normal data came from.
@@ -549,18 +526,18 @@ clears its cut-off by a wide gap survives a change in the choices above.
 - **significance level** — The probability of flagging an observation when the sample is in fact clean, fixed before the data are seen. Repeating a test without accounting for the repetition raises it above the value chosen.
 - **specification limit** — The boundary a measured parameter must stay inside for a part to be sold, set from the design rather than from the sample. A part can pass it and still be an outlier within its lot.
 - **squared prediction error (Q statistic)** — The part of an observation that a fitted model does not explain, measured as the squared distance from the observation to its reconstruction in the model's space.
-- **SVM** — Support vector machine, a classifier that separates classes by the widest margin available in the geometry a kernel fixes. The one-class variant of section 4.2 has no second class and encloses the one it has instead.
+- **SVM** — Support vector machine, a classifier that separates classes by the widest margin available in the geometry a kernel fixes. The one-class variant of section 5.2 has no second class and encloses the one it has instead.
 - **swamping** — The effect by which an outlier distorts the centre or the scale far enough that clean observations are flagged alongside it.
 - **winsorizing** — Replacing every observation past a chosen quantile with the value at that quantile, so that a fixed share of the sample is pulled in rather than tested. It is a treatment and not a detection rule.
 
 ## Appendix B. Tukey's Rule
 
-Section 3.2 states the rule in one line. This appendix records where the multiple of 1.5 comes
+Section 4.2 states the rule in one line. This appendix records where the multiple of 1.5 comes
 from, what it costs against a z-score, and where the rule stops working.
 
 ### B.1. Inner and Outer Fences
 
-[Tukey (1977)](#ref-1) drew two pairs of fences rather than one. The inner pair is the rule of section 3.2,
+[Tukey (1977)](#ref-1) drew two pairs of fences rather than one. The inner pair is the rule of section 4.2,
 and the outer pair sits at three interquartile ranges instead of one and a half.
 
 ```math
@@ -568,7 +545,7 @@ Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}
 ```
 
 - $c$ — the multiple that places the fences, 1.5 for the inner pair and 3 for the outer pair.
-- $Q_1$, $Q_3$, $\mathrm{IQR}$ — as in section 3.2.
+- $Q_1$, $Q_3$, $\mathrm{IQR}$ — as in section 4.2.
 
 An observation past an inner fence Tukey called **outside**, and one past an outer fence **far
 out**. The whiskers reach the last observation inside the inner fences, so every separate point in
@@ -579,7 +556,7 @@ off cannot make that distinction.
 
 ### B.2. What the Multiple Costs
 
-The multiple of 1.5 was chosen for convenience, not derived. Section 3.2 calls the rule comparable
+The multiple of 1.5 was chosen for convenience, not derived. Section 4.2 calls the rule comparable
 to a z-score at 3, and the two are not identical.
 
 **Table 4. Where each fence sits on a normal sample**
@@ -623,12 +600,12 @@ distribution reported as a list of outliers.
 ## Appendix C. Semiconductor Practice
 
 A fab runs the methods a standard names, an auditor can check, and a technician can act on. Two of
-them are constructions already covered in sections 3 to 5.
+them are constructions already covered in sections 4 to 6.
 
 ### C.1. Part Average Testing
 
 Part average testing removes parts abnormal for their own lot even when every measurement passes its
-specification limit. AEC-Q001 defines it for automotive components on the plan of section 3.3: the
+specification limit. AEC-Q001 defines it for automotive components on the plan of section 4.3: the
 robust mean is the median, and the robust sigma is the interquartile range divided by 1.35. A part
 is retained inside the interval below.
 
@@ -640,7 +617,7 @@ is retained inside the interval below.
 - $\mathrm{IQR}$ — their interquartile range, and $\mathrm{IQR}/1.35$ is what the standard calls the robust sigma.
 - $k$ — the multiple of that sigma the limits are set at, 6 by convention.
 
-That divisor is the $1.349 \sigma$ of section 3.2, rounded, and it does for the quartile spread what
+That divisor is the $1.349 \sigma$ of section 4.2, rounded, and it does for the quartile spread what
 $\Phi^{-1}(0.75)$ does for the MAD. The standard picks the quartiles over the MAD and 6 over 3.5,
 but the construction is the same: a robust centre, a robust scale in normal units, and a multiple of
 that scale.
@@ -656,7 +633,7 @@ detection and classification](#ref-26) reduces each trace to summary parameters 
 monitors them together, since a per-variable limit misses a departure that only the combination
 shows.
 
-The standard construction is the multivariate control chart of section 3.5 in a reduced space.
+The standard construction is the multivariate control chart of section 4.5 in a reduced space.
 Principal components are fitted on normal production, and an observation is scored by Hotelling's
 $T^2$ inside that space and by the squared prediction error, the $Q$ statistic, for the part the
 components do not explain. $T^2$ says the process moved within the structure it normally has, and
@@ -664,3 +641,65 @@ $Q$ says it left that structure.
 
 The split makes the flag actionable: the loading contributing most to a $T^2$ or a $Q$ names the
 sensor to look at.
+
+## Appendix D. Estimator Constants and Bounds
+
+The settings of sections 4.1 to 4.5 rest on constants and bounds that the body states without
+deriving. This appendix records where each comes from.
+
+### D.1. The Ceiling on a Z-Score
+
+Both estimates of the z-score come from the sample under test, so an outlier inflates the scale it
+is measured against. The same self-reference caps the score: in a sample of size $n$ no absolute
+z-score can exceed $(n-1)/\sqrt{n}$, a bound due to [Shiffler (1988)](#ref-12). A rule at 3
+therefore cannot fire below 11 observations, and one at 3.5 cannot fire below 15.
+
+### D.2. The MAD Consistency Constant
+
+The raw MAD does not estimate $s$. On a normal sample it converges to $0.674490 \sigma$, about a
+third short of the spread, and $0.674490$ is the third quartile of the standard normal distribution.
+Dividing by it, which is multiplying by 1.482602, puts the modified z-score on the scale the z-score
+is read on. Without that step no threshold carries between the two rules. The constant is a
+calibration rather than an assumption: changing it rescales every score by the same factor and
+reorders nothing.
+
+### D.3. Critical Values of the Generalized ESD
+
+Each $R_i$ is compared against a critical value $\lambda_i$ derived for that stage and tabulated by
+[Rosner (1983)](#ref-13). The count of outliers is the largest $i$ for which $R_i \gt \lambda_i$,
+not the first. Reading it that way is what defeats masking: a stage can fail while a later stage,
+with the masking observation already removed, succeeds.
+
+### D.4. The Chi-Square Cut-Off and a Robust Covariance
+
+Under multivariate normality, with the centre and the covariance known rather than estimated, the
+squared Mahalanobis distance follows a chi-square distribution with one degree of freedom per
+variable, and the cut-off comes from there. Estimating the pair from a contaminated sample breaks
+that reading, since a cluster of outliers inflates $\Sigma$ in exactly the direction that hides
+them. The minimum covariance determinant of [Rousseeuw and Van Driessen (1999)](#ref-16) supplies a
+robust centre and covariance and restores it.
+
+## Appendix E. Benchmarks
+
+Published comparisons fix how much a method can be expected to give. The figures below belong to the
+benchmarks that produced them.
+
+### E.1. Tabular Data
+
+The published comparisons name no winner. Across the 30 algorithms and 57 datasets of
+[ADBench](#ref-22), no unsupervised method is statistically superior to the rest; Isolation Forest
+and ECOD are consistently among the better ones without dominating, and several deep methods built
+for tabular data fall below them. Newer is not by itself a reason to switch.
+
+The exception is raw coordinates that carry no usable distance, where the deep methods earn their
+cost. Images are the clearest instance.
+
+### E.2. Images
+
+[PatchCore](#ref-23) established the patch feature memory of section 6.3 and reports up to 99.1%
+detection AUROC on the MVTec AD benchmark. [EfficientAD](#ref-24) reaches 95.4% detection AUROC
+across 32 datasets at 2.2 ms per image, the latency that makes inline inspection possible.
+
+On MVTec AD 2, built to carry the lighting and defect variation of real inspection, no published
+method exceeds 31% localization AU-PRO at a 5% false positive rate. A method that separates the
+older benchmark cleanly is not thereby ready for a line.
