@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 5 | Created: 2026-09-09 | Updated: 2026-09-13 09:41 CDT
+Rev. 6 | Created: 2026-09-09 | Updated: 2026-09-13 09:46 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾아내는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리한 survey 이다. 방법을 습관이 아니라 데이터의 모양에서 고를 수 있게 하려는 것이다.
@@ -104,7 +104,9 @@ Masking 은 outlier 하나가 중심이나 척도를 부풀려 두 번째 outlie
 
 Z-score 는 관측과 표본 평균의 편차를 표본 표준편차로 나눈다.
 
-$$z_i = \frac{x_i - \bar{x}}{s}$$
+```math
+z_i = \frac{x_i - \bar{x}}{s}
+```
 
 - $z_i$ — 관측 $i$ 의 z-score.
 - $x_i$ — $n$ 개 값으로 이루어진 표본의 $i$ 번째 관측.
@@ -119,7 +121,9 @@ $$z_i = \frac{x_i - \bar{x}}{s}$$
 
 Interquartile range 는 1 사분위수에서 3 사분위수까지의 거리이다. Tukey 의 규칙은 아래 구간 안에 드는 관측을 남기고 벗어나는 관측에 flag 를 붙인다. 구간의 두 끝은 box plot 의 수염이 그리는 fence 이다.
 
-$$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1$$
+```math
+\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1
+```
 
 - $Q_1$ — 1 사분위수로, 표본의 4 분의 1 이 그 아래에 놓이는 값.
 - $Q_3$ — 3 사분위수로, 표본의 4 분의 3 이 그 아래에 놓이는 값.
@@ -131,9 +135,13 @@ $$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \r
 
 Hampel identifier 는 z-score 의 형태를 그대로 두고 두 추정값을 모두 바꾼다. 평균의 자리에 median 이 들어가고, 표준편차의 자리에는 median 으로부터의 편차의 median 을 다시 잰 값이 들어간다.
 
-$$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)$$
+```math
+\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)
+```
 
-$$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
+```math
+M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
+```
 
 - $x_1, \ldots, x_n$ — 표본이고 $x_i$ 는 그 $i$ 번째 관측으로, 꼭지 3.1 과 같다.
 - $\tilde{x}$ (x tilde) — 표본의 median 으로, 편차를 그로부터 재고 점수를 그에 맞추어 중심에 놓는다.
@@ -153,7 +161,9 @@ $$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
 
 표본을 outlier 하나에 대해 검정하고 남은 것에 같은 검정을 되풀이하는 방식은 유의수준을 지키지 못한다. Generalized extreme studentized deviate 절차는 outlier 개수의 상한 $r$ 을 먼저 선언하고 같은 통계량을 $r$ 단계에 걸쳐 돌려 그것을 고친다.
 
-$$R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r$$
+```math
+R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r
+```
 
 - $R_i$ — 단계 $i$ 에서의 extreme studentized deviate.
 - $x_j$ — 표본의 관측이며, 단계 번호와 구별하려고 $j$ 로 첨자를 붙였다.
@@ -167,7 +177,9 @@ $$R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots,
 
 다변량 데이터에서 [Mahalanobis distance](#ref-11) 는 변수 사이의 공분산을 감안한 단위로 관측이 중심에서 얼마나 떨어져 있는지를 잰다.
 
-$$d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)$$
+```math
+d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)
+```
 
 - $x$ — 관측 하나이며, 변수마다 성분 하나를 가지는 vector 로 쓴다.
 - $\mu$ — 표본의 중심으로, 변수별 평균의 vector 이다.
@@ -319,9 +331,9 @@ Survey 는 방법이 무엇을 가정하는지로 순위를 매긴다. 현장은
 ## References
 
 <a id="ref-1"></a>
-[1] Tukey, J. W. (1977). *Exploratory Data Analysis*. Addison-Wesley, Reading. [https://www.pearson.com](https://www.pearson.com). ISBN 978-0-201-07616-5.<br>
+[1] Tukey, J. W. (1977). [*Exploratory Data Analysis*](https://www.pearson.com). Addison-Wesley, Reading. ISBN 978-0-201-07616-5.<br>
 <a id="ref-2"></a>
-[2] Barnett, V., & Lewis, T. (1994). *Outliers in Statistical Data*, 3rd edition. Wiley, Chichester. [https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945](https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945). ISBN 978-0-471-93094-5.<br>
+[2] Barnett, V., & Lewis, T. (1994). [*Outliers in Statistical Data*](https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945), 3rd edition. Wiley, Chichester. ISBN 978-0-471-93094-5.<br>
 <a id="ref-3"></a>
 [3] Fox, A. J. (1972). [Outliers in Time Series](https://doi.org/10.1111/j.2517-6161.1972.tb00912.x). *Journal of the Royal Statistical Society: Series B*, 34(3), 350–363.<br>
 <a id="ref-4"></a>
@@ -339,15 +351,15 @@ Survey 는 방법이 무엇을 가정하는지로 순위를 매긴다. 현장은
 <a id="ref-10"></a>
 [10] Hubert, M., & Vandervieren, E. (2008). [An Adjusted Boxplot for Skewed Distributions](https://doi.org/10.1016/j.csda.2007.11.008). *Computational Statistics and Data Analysis*, 52(12), 5186–5201.<br>
 <a id="ref-11"></a>
-[11] Mahalanobis, P. C. (1936). On the Generalised Distance in Statistics. *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55. [https://www.insa.nic.in](https://www.insa.nic.in).<br>
+[11] Mahalanobis, P. C. (1936). [On the Generalised Distance in Statistics](https://www.insa.nic.in). *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55.<br>
 <a id="ref-12"></a>
 [12] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.<br>
 <a id="ref-13"></a>
 [13] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.<br>
 <a id="ref-14"></a>
-[14] Iglewicz, B., & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers*. The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. [https://asq.org/quality-press](https://asq.org/quality-press). ISBN 978-0-87389-247-6.<br>
+[14] Iglewicz, B., & Hoaglin, D. C. (1993). [*How to Detect and Handle Outliers*](https://asq.org/quality-press). The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. ISBN 978-0-87389-247-6.<br>
 <a id="ref-15"></a>
-[15] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)<br>
+[15] ISO 16269-4:2010, [*Statistical interpretation of data — Part 4: Detection and treatment of outliers*](https://www.iso.org/standard/44396.html). International Organization for Standardization.<br>
 <a id="ref-16"></a>
 [16] Rousseeuw, P. J., & Van Driessen, K. (1999). [A Fast Algorithm for the Minimum Covariance Determinant Estimator](https://doi.org/10.1080/00401706.1999.10485670). *Technometrics*, 41(3), 212–223.<br>
 <a id="ref-17"></a>
@@ -367,7 +379,7 @@ Survey 는 방법이 무엇을 가정하는지로 순위를 매긴다. 현장은
 <a id="ref-24"></a>
 [24] Batzner, K., Heckler, L., & König, R. (2024). [EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies](https://arxiv.org/abs/2303.14535). *Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision*, 128–138.<br>
 <a id="ref-25"></a>
-[25] AEC-Q001 Rev-D (2011), *Guidelines for Part Average Testing*. Automotive Electronics Council. [http://www.aecouncil.com/AECDocuments.html](http://www.aecouncil.com/AECDocuments.html)<br>
+[25] AEC-Q001 Rev-D (2011), [*Guidelines for Part Average Testing*](http://www.aecouncil.com/AECDocuments.html). Automotive Electronics Council.<br>
 <a id="ref-26"></a>
 [26] Hsu, C.-Y., Chien, C.-F., & Lin, K.-Y. (2012). [Semiconductor Fault Detection and Classification for Yield Enhancement and Manufacturing Intelligence](https://doi.org/10.1007/s10696-012-9161-4). *Flexible Services and Manufacturing Journal*, 24(3), 358–378.
 
@@ -434,7 +446,9 @@ Survey 는 방법이 무엇을 가정하는지로 순위를 매긴다. 현장은
 
 [Tukey (1977)](#ref-1) 은 fence 를 한 쌍이 아니라 두 쌍 그렸다. 안쪽 쌍이 꼭지 3.2 의 규칙이고, 바깥쪽 쌍은 interquartile range 의 1.5 배가 아니라 3 배에 놓인다.
 
-$$Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}$$
+```math
+Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}
+```
 
 - $c$ — Fence 를 놓는 배수로, 안쪽 쌍에서는 1.5 이고 바깥쪽 쌍에서는 3 이다.
 - $Q_1$, $Q_3$, $\mathrm{IQR}$ — 꼭지 3.2 와 같다.
@@ -467,7 +481,9 @@ Lognormal 표본이 그 크기를 뚜렷이 보여 준다. 200,000 개를 뽑으
 
 [Hubert and Vandervieren (2008)](#ref-10) 의 adjusted boxplot 은 [Brys, Hubert and Struyf (2004)](#ref-9) 의 medcouple 로 잰 표본의 왜도에 따라 각 fence 를 옮겨 이것을 고친다.
 
-$$\left[ \ Q_1 - 1.5 e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]$$
+```math
+\left[ \ Q_1 - 1.5 e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]
+```
 
 - $\mathrm{MC}$ — Medcouple 로, $-1$ 과 $1$ 사이에 있고 대칭 표본에서 0 이 되는 robust 한 왜도 척도이다.
 - $a$, $b$ — $\mathrm{MC} \ge 0$ 일 때 $-4$ 와 $3$ 이고 음수일 때 $-3$ 과 $4$ 여서, 긴 쪽의 fence 는 밖으로 나가고 짧은 쪽의 fence 는 안으로 들어온다.
@@ -482,7 +498,9 @@ Fab 이 실제로 돌리는 방법은 가장 새로운 것이 아니다. 표준�
 
 Part average testing 은 측정값이 모두 specification limit 을 통과하더라도 자기 lot 에서 비정상인 parameter 를 가진 부품을 걸러 낸다. AEC-Q001 이 자동차 부품에 대해 이를 정의하며, 꼭지 3.3 의 설계 위에 세워져 있다. Robust mean 은 median 이고, robust sigma 는 interquartile range 를 1.35 로 나눈 것이다. 부품은 아래 구간 안에 들 때 남는다.
 
-$$\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}$$
+```math
+\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}
+```
 
 - $\tilde{x}$ — 판정 대상 부품들에 걸친 그 parameter 의 median 으로, 표준은 이것을 robust mean 이라 부른다.
 - $\mathrm{IQR}$ — 그것들의 interquartile range 이며, $\mathrm{IQR}/1.35$ 가 표준이 robust sigma 라 부르는 것이다.

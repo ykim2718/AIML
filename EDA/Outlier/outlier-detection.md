@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 22 | Created: 2026-08-25 | Updated: 2026-09-13 09:41 CDT
+Rev. 23 | Created: 2026-08-25 | Updated: 2026-09-13 09:46 CDT
 
 > A survey of the methods that find observations departing from the pattern the rest of the data
 > follows, arranged by what each one assumes, so that a method can be chosen from the shape of the
@@ -148,7 +148,9 @@ and easiest to defend, and they are the right default whenever their assumption 
 The z-score divides the deviation of an observation from the sample mean by the sample standard
 deviation.
 
-$$z_i = \frac{x_i - \bar{x}}{s}$$
+```math
+z_i = \frac{x_i - \bar{x}}{s}
+```
 
 - $z_i$ — the z-score of observation $i$.
 - $x_i$ — the $i$-th observation of a sample of $n$ values.
@@ -170,7 +172,9 @@ The interquartile range is the distance from the first quartile to the third. Tu
 retains an observation that falls inside the interval below and flags one that falls outside it.
 The two ends are the fences drawn by the whiskers of a box plot.
 
-$$\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1$$
+```math
+\left[ \ Q_1 - 1.5 \cdot \mathrm{IQR}, \quad Q_3 + 1.5 \cdot \mathrm{IQR} \ \right], \qquad \mathrm{IQR} = Q_3 - Q_1
+```
 
 - $Q_1$ — the first quartile, the value a quarter of the sample falls below.
 - $Q_3$ — the third quartile, the value three quarters of the sample falls below.
@@ -190,9 +194,13 @@ The Hampel identifier keeps the form of the z-score and replaces both of its est
 median takes the place of the mean, and the median of the deviations from it, rescaled, takes the
 place of the standard deviation.
 
-$$\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)$$
+```math
+\mathrm{MAD} = \mathrm{median}\left( \left| x_1 - \tilde{x} \right|, \ldots, \left| x_n - \tilde{x} \right| \right)
+```
 
-$$M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}$$
+```math
+M_i = \frac{x_i - \tilde{x}}{\mathrm{MAD} / \Phi^{-1}(0.75)}
+```
 
 - $x_1, \ldots, x_n$ — the sample, and $x_i$ its $i$-th observation, as in section 3.1.
 - $\tilde{x}$ (x tilde) — the median of the sample, which the deviations are taken from and which the score is centred on.
@@ -226,7 +234,9 @@ Testing a sample for one outlier and then repeating the test on what is left doe
 significance level. The generalized extreme studentized deviate procedure fixes that by declaring
 an upper bound $r$ on the number of outliers first, then running $r$ stages of the same statistic.
 
-$$R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r$$
+```math
+R_i = \frac{\max_j \left| x_j - \bar{x}_i \right|}{s_i}, \qquad i = 1, \ldots, r
+```
 
 - $R_i$ — the extreme studentized deviate at stage $i$.
 - $x_j$ — an observation of the sample, indexed by $j$ to keep it apart from the stage number.
@@ -245,7 +255,9 @@ masking observation already removed, succeeds. The procedure is the many-outlier
 For multivariate data the [Mahalanobis distance](#ref-11) measures how far an observation lies
 from the centre in units that account for the covariance between variables.
 
-$$d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)$$
+```math
+d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)
+```
 
 - $x$ — one observation, written as a vector with one entry per variable.
 - $\mu$ — the centre of the sample, the vector of per-variable means.
@@ -477,9 +489,9 @@ findings and only the second survives a change in the choices above.
 ## References
 
 <a id="ref-1"></a>
-[1] Tukey, J. W. (1977). *Exploratory Data Analysis*. Addison-Wesley, Reading. [https://www.pearson.com](https://www.pearson.com). ISBN 978-0-201-07616-5.<br>
+[1] Tukey, J. W. (1977). [*Exploratory Data Analysis*](https://www.pearson.com). Addison-Wesley, Reading. ISBN 978-0-201-07616-5.<br>
 <a id="ref-2"></a>
-[2] Barnett, V., & Lewis, T. (1994). *Outliers in Statistical Data*, 3rd edition. Wiley, Chichester. [https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945](https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945). ISBN 978-0-471-93094-5.<br>
+[2] Barnett, V., & Lewis, T. (1994). [*Outliers in Statistical Data*](https://www.wiley.com/en-us/Outliers+in+Statistical+Data,+3rd+Edition-p-9780471930945), 3rd edition. Wiley, Chichester. ISBN 978-0-471-93094-5.<br>
 <a id="ref-3"></a>
 [3] Fox, A. J. (1972). [Outliers in Time Series](https://doi.org/10.1111/j.2517-6161.1972.tb00912.x). *Journal of the Royal Statistical Society: Series B*, 34(3), 350–363.<br>
 <a id="ref-4"></a>
@@ -497,15 +509,15 @@ findings and only the second survives a change in the choices above.
 <a id="ref-10"></a>
 [10] Hubert, M., & Vandervieren, E. (2008). [An Adjusted Boxplot for Skewed Distributions](https://doi.org/10.1016/j.csda.2007.11.008). *Computational Statistics and Data Analysis*, 52(12), 5186–5201.<br>
 <a id="ref-11"></a>
-[11] Mahalanobis, P. C. (1936). On the Generalised Distance in Statistics. *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55. [https://www.insa.nic.in](https://www.insa.nic.in).<br>
+[11] Mahalanobis, P. C. (1936). [On the Generalised Distance in Statistics](https://www.insa.nic.in). *Proceedings of the National Institute of Sciences of India*, 2(1), 49–55.<br>
 <a id="ref-12"></a>
 [12] Shiffler, R. E. (1988). [Maximum Z Scores and Outliers](https://doi.org/10.1080/00031305.1988.10475530). *The American Statistician*, 42(1), 79–80.<br>
 <a id="ref-13"></a>
 [13] Rosner, B. (1983). [Percentage Points for a Generalized ESD Many-Outlier Procedure](https://doi.org/10.1080/00401706.1983.10487848). *Technometrics*, 25(2), 165–172.<br>
 <a id="ref-14"></a>
-[14] Iglewicz, B., & Hoaglin, D. C. (1993). *How to Detect and Handle Outliers*. The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. [https://asq.org/quality-press](https://asq.org/quality-press). ISBN 978-0-87389-247-6.<br>
+[14] Iglewicz, B., & Hoaglin, D. C. (1993). [*How to Detect and Handle Outliers*](https://asq.org/quality-press). The ASQC Basic References in Quality Control: Statistical Techniques, Vol. 16. ASQC Quality Press, Milwaukee. ISBN 978-0-87389-247-6.<br>
 <a id="ref-15"></a>
-[15] ISO 16269-4:2010, *Statistical interpretation of data — Part 4: Detection and treatment of outliers*. International Organization for Standardization. [https://www.iso.org/standard/44396.html](https://www.iso.org/standard/44396.html)<br>
+[15] ISO 16269-4:2010, [*Statistical interpretation of data — Part 4: Detection and treatment of outliers*](https://www.iso.org/standard/44396.html). International Organization for Standardization.<br>
 <a id="ref-16"></a>
 [16] Rousseeuw, P. J., & Van Driessen, K. (1999). [A Fast Algorithm for the Minimum Covariance Determinant Estimator](https://doi.org/10.1080/00401706.1999.10485670). *Technometrics*, 41(3), 212–223.<br>
 <a id="ref-17"></a>
@@ -525,7 +537,7 @@ findings and only the second survives a change in the choices above.
 <a id="ref-24"></a>
 [24] Batzner, K., Heckler, L., & König, R. (2024). [EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies](https://arxiv.org/abs/2303.14535). *Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision*, 128–138.<br>
 <a id="ref-25"></a>
-[25] AEC-Q001 Rev-D (2011), *Guidelines for Part Average Testing*. Automotive Electronics Council. [http://www.aecouncil.com/AECDocuments.html](http://www.aecouncil.com/AECDocuments.html)<br>
+[25] AEC-Q001 Rev-D (2011), [*Guidelines for Part Average Testing*](http://www.aecouncil.com/AECDocuments.html). Automotive Electronics Council.<br>
 <a id="ref-26"></a>
 [26] Hsu, C.-Y., Chien, C.-F., & Lin, K.-Y. (2012). [Semiconductor Fault Detection and Classification for Yield Enhancement and Manufacturing Intelligence](https://doi.org/10.1007/s10696-012-9161-4). *Flexible Services and Manufacturing Journal*, 24(3), 358–378.
 
@@ -594,7 +606,9 @@ from, what it costs against a z-score, and where the rule stops working.
 [Tukey (1977)](#ref-1) drew two pairs of fences rather than one. The inner pair is the rule of section 3.2,
 and the outer pair sits at three interquartile ranges instead of one and a half.
 
-$$Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}$$
+```math
+Q_1 - c \cdot \mathrm{IQR} \ \le \ x_i \ \le \ Q_3 + c \cdot \mathrm{IQR}
+```
 
 - $c$ — the multiple that places the fences, 1.5 for the inner pair and 3 for the outer pair.
 - $Q_1$, $Q_3$, $\mathrm{IQR}$ — as in section 3.2.
@@ -642,7 +656,9 @@ The adjusted boxplot of [Hubert and Vandervieren (2008)](#ref-10) repairs this b
 fence according to how skewed the sample is, measured by the medcouple of
 [Brys, Hubert and Struyf (2004)](#ref-9).
 
-$$\left[ \ Q_1 - 1.5 e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]$$
+```math
+\left[ \ Q_1 - 1.5 e^{a \cdot \mathrm{MC}} \cdot \mathrm{IQR}, \quad Q_3 + 1.5 e^{b \cdot \mathrm{MC}} \cdot \mathrm{IQR} \ \right]
+```
 
 - $\mathrm{MC}$ — the medcouple, a robust skewness measure between $-1$ and $1$ that is 0 for a symmetric sample.
 - $a$, $b$ — $-4$ and $3$ when $\mathrm{MC} \ge 0$, and $-3$ and $4$ when it is negative, so the fence on the long side moves out and the one on the short side moves in.
@@ -665,7 +681,9 @@ components, and it is built on the plan of section 3.3: the robust mean is the m
 robust sigma is the interquartile range divided by 1.35. A part is retained when it falls inside
 the interval below.
 
-$$\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}$$
+```math
+\tilde{x} \pm k \cdot \frac{\mathrm{IQR}}{1.35}
+```
 
 - $\tilde{x}$ — the median of the parameter across the parts being judged, which the standard calls the robust mean.
 - $\mathrm{IQR}$ — their interquartile range, and $\mathrm{IQR}/1.35$ is what the standard calls the robust sigma.
