@@ -1,5 +1,5 @@
 # Agile Software Development
-Rev. 3 | Created: 2026-09-13 | Updated: 2026-09-13 12:49 CDT
+Rev. 4 | Created: 2026-09-13 | Updated: 2026-09-13 13:07 CDT
 
 ## 1. Purpose
 
@@ -16,18 +16,6 @@ Agile 자체는 말하기는 짧고 확인하기는 어렵다. 거대한 계획 
 ## 3. Taxonomy and its Hierarchy
 
 세 층은 각자가 답하는 질문으로 갈리고, 서로의 안에 포개진다. 한 단계 내려가면 정하는 대상이 좁아지고 구체적이 되며, 한 단계 올라가면 아래 층이 빠뜨린 것이 더해진다. Agile 은 팀이 어떻게 일하고 협업할 것인가에 답하고, DevOps 는 개발과 운영이 어떻게 두 개의 조직이기를 그만두는가에 답하며, CI/CD 는 그 가운데 무엇을 기계가 수행하는가에 답한다.
-
-Table 1. The three layers and what each one decides
-
-| Concept | Role | Perspective |
-| --- | --- | --- |
-| Agile | 개발 철학 및 진행 방식 | 빠른 피드백과 변화 유연성 (way of working) |
-| DevOps | 조직 문화 및 협업 방식 | 개발 (Dev) 과 운영 (Ops) 의 통합 및 자동화 (culture) |
-| CI/CD | 기술적 실천 및 자동화 도구 | build, test, 배포 절차의 자동화 (technical practice) |
-
-Agile 은 "어떻게 일하고 협업할 것인가" 에 대한 framework 이며, 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 주기 단위로 개발하고 개선하고 배포한다. DevOps 는 "개발 (Dev) 과 운영 (Ops) 의 경계를 없애고 어떻게 지체 없이 가치를 전달할 것인가" 에 대한 문화다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기는 pipeline 이며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
-
-CI/CD 가 그 포함 관계의 맨 아래에 놓이는 까닭은 그것이 거대한 체계의 기술적 구성 요소 하나이지 체계 자체가 아니기 때문이다.
 
 세 층과 각 층이 답하는 질문, 그리고 각 층이 아래 층에 더하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
@@ -51,6 +39,18 @@ Agile (superset)  >  DevOps (superset)  >  CI/CD (subset)
 
 <a id="fig-1"></a>
 Fig 1. The three layers, what each one answers, and what each one adds
+
+Table 1. The three layers and what each one decides
+
+| Concept | Role | Perspective |
+| --- | --- | --- |
+| Agile | 개발 철학 및 진행 방식 | 빠른 피드백과 변화 유연성 (way of working) |
+| DevOps | 조직 문화 및 협업 방식 | 개발 (Dev) 과 운영 (Ops) 의 통합 및 자동화 (culture) |
+| CI/CD | 기술적 실천 및 자동화 도구 | build, test, 배포 절차의 자동화 (technical practice) |
+
+Agile 은 "어떻게 일하고 협업할 것인가" 에 대한 framework 이며, 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 주기 단위로 개발하고 개선하고 배포한다. DevOps 는 "개발 (Dev) 과 운영 (Ops) 의 경계를 없애고 어떻게 지체 없이 가치를 전달할 것인가" 에 대한 문화다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기는 pipeline 이며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
+
+CI/CD 가 그 포함 관계의 맨 아래에 놓이는 까닭은 그것이 거대한 체계의 기술적 구성 요소 하나이지 체계 자체가 아니기 때문이다.
 
 ### 3.1 Values
 

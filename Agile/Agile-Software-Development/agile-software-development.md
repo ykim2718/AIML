@@ -1,5 +1,5 @@
 # Agile Software Development
-Rev. 3 | Created: 2026-09-13 | Updated: 2026-09-13 12:49 CDT
+Rev. 4 | Created: 2026-09-13 | Updated: 2026-09-13 13:07 CDT
 
 ## 1. Purpose
 
@@ -16,18 +16,6 @@ Agile itself is short to state and hard to check. It builds a product in short c
 ## 3. Taxonomy and its Hierarchy
 
 The three layers are told apart by the question each one answers, and they nest inside one another. A step down narrows what is being decided and makes it concrete; a step up adds what the layer below leaves out. Agile answers how the team works and collaborates, DevOps answers how development and operation stop being two separate organizations, and CI/CD answers which part of that is carried out by machines.
-
-Table 1. The three layers and what each one decides
-
-| Concept | Role | Perspective |
-| --- | --- | --- |
-| Agile | Development philosophy and way of running the work | Fast feedback and flexibility toward change (way of working) |
-| DevOps | Organizational culture and mode of collaboration | Integration and automation of development (Dev) and operation (Ops) (culture) |
-| CI/CD | Technical practice and automation tooling | Automation of build, test and deployment (technical practice) |
-
-Agile is a framework for the question "how will we work and collaborate", and it cuts requirements into small pieces that are developed, improved and deployed in short cycles called sprints. DevOps is a culture for the question "how do we remove the boundary between development (Dev) and operation (Ops) and deliver value without delay". CI/CD is the pipeline that verifies code, builds it, and carries it safely into the service environment, which is what makes the other two visible in practice.
-
-CI/CD sits at the bottom of that containment because it is one technical component of the larger system rather than the system itself.
 
 The three layers, the question each one answers, and what each one adds to the layer below are drawn in [Fig 1](#fig-1).
 
@@ -51,6 +39,18 @@ Agile (superset)  >  DevOps (superset)  >  CI/CD (subset)
 
 <a id="fig-1"></a>
 Fig 1. The three layers, what each one answers, and what each one adds
+
+Table 1. The three layers and what each one decides
+
+| Concept | Role | Perspective |
+| --- | --- | --- |
+| Agile | Development philosophy and way of running the work | Fast feedback and flexibility toward change (way of working) |
+| DevOps | Organizational culture and mode of collaboration | Integration and automation of development (Dev) and operation (Ops) (culture) |
+| CI/CD | Technical practice and automation tooling | Automation of build, test and deployment (technical practice) |
+
+Agile is a framework for the question "how will we work and collaborate", and it cuts requirements into small pieces that are developed, improved and deployed in short cycles called sprints. DevOps is a culture for the question "how do we remove the boundary between development (Dev) and operation (Ops) and deliver value without delay". CI/CD is the pipeline that verifies code, builds it, and carries it safely into the service environment, which is what makes the other two visible in practice.
+
+CI/CD sits at the bottom of that containment because it is one technical component of the larger system rather than the system itself.
 
 ### 3.1 Values
 
