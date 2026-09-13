@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 29 | Created: 2026-08-25 | Updated: 2026-09-13 10:47 CDT
+Rev. 30 | Created: 2026-08-25 | Updated: 2026-09-13 10:49 CDT
 
 > Methods that find observations departing from the pattern the rest of the data follows,
 > arranged by what each one assumes, so that a method follows from the shape of the data rather
@@ -47,12 +47,13 @@ Outlier detection
         +-- autoencoder | adversarial and diffusion | patch feature memory
 ```
 
+<a id="fig-1"></a>
 **Fig 1. The taxonomy of outliers and the hierarchy of methods**
 
 ## 2. Taxonomy of Outliers
 
-The eight subsections are eight axes, not eight categories: an observation has a position on every
-one at once. One measurement can be a point outlier, local rather than global, caused by a recording
+The eight subsections are the eight axes of [Fig 1](#fig-1), not eight categories: an observation
+has a position on every one at once. One measurement can be a point outlier, local rather than global, caused by a recording
 error, discordant without being a contaminant, and high-leverage in its regression.
 
 A method answers one axis and says nothing on the others. Section 3.2 places every method here on
@@ -152,8 +153,8 @@ shift against temporary change.
 
 ## 3. Hierarchy of Methods
 
-The three families of method form a hierarchy of assumptions given up. Each step down handles data
-the step above cannot read, and each step down weakens what the answer may claim.
+The three families of [Fig 1](#fig-1) form a hierarchy of assumptions given up. Each step down
+handles data the step above cannot read, and each step down weakens what the answer may claim.
 
 ### 3.1. The Three Families
 

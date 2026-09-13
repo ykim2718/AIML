@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 12 | Created: 2026-09-09 | Updated: 2026-09-13 10:47 CDT
+Rev. 13 | Created: 2026-09-09 | Updated: 2026-09-13 10:49 CDT
 
 > 나머지 데이터가 따르는 pattern 에서 벗어난 관측을 찾는 방법들을, 각각이 무엇을 가정하는지에
 > 따라 정리했다. 방법이 관행이 아니라 데이터의 모양에서 따라 나오게 하려는 것이다.
@@ -39,11 +39,12 @@ Outlier detection
         +-- autoencoder | adversarial and diffusion | patch feature memory
 ```
 
+<a id="fig-1"></a>
 **Fig 1. The taxonomy of outliers and the hierarchy of methods**
 
 ## 2. Taxonomy of Outliers
 
-아래 여덟 꼭지는 여덟 개의 category 가 아니라 여덟 개의 축이며, 한 관측은 그 모두에 동시에 자리를 가진다. 한 번의 측정이 point outlier 이면서 global 이 아니라 local 이고, 기록 오류에서 왔으며, contaminant 는 아니면서 discordant 이고, 자기 regression 에서 leverage 가 높을 수 있다.
+아래 여덟 꼭지는 category 가 아니라 [Fig 1](#fig-1) 의 여덟 개 축이며, 한 관측은 그 모두에 동시에 자리를 가진다. 한 번의 측정이 point outlier 이면서 global 이 아니라 local 이고, 기록 오류에서 왔으며, contaminant 는 아니면서 discordant 이고, 자기 regression 에서 leverage 가 높을 수 있다.
 
 방법은 한 축에 답하고 나머지 축에 대해서는 아무 말도 하지 않는다. 꼭지 3.2 가 이 문서의 모든 방법을 그 축 위에 놓는다.
 
@@ -124,7 +125,7 @@ Masking 은 outlier 하나가 중심이나 척도를 부풀려 두 번째 outlie
 
 ## 3. Hierarchy of Methods
 
-세 가지 방법 family 는 가정을 하나씩 내려놓는 계층을 이룬다. 한 단계 내려갈 때마다 위 단계가 읽지 못하는 데이터를 다룰 수 있게 되고, 그만큼 답이 주장할 수 있는 것이 약해진다.
+[Fig 1](#fig-1) 의 세 가지 방법 family 는 가정을 하나씩 내려놓는 계층을 이룬다. 한 단계 내려갈 때마다 위 단계가 읽지 못하는 데이터를 다룰 수 있게 되고, 그만큼 답이 주장할 수 있는 것이 약해진다.
 
 ### 3.1. The Three Families
 
