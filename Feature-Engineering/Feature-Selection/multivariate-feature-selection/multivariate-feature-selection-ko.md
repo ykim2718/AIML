@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 5 | Created: 2026-09-12 | Updated: 2026-09-12 22:31 CDT
+Rev. 6 | Created: 2026-09-12 | Updated: 2026-09-12 22:43 CDT
 
 ## 1. Purpose
 
@@ -86,6 +86,19 @@ Lasso 는 손실 함수에 계수 절댓값의 합 $\lambda \sum |\beta_i|$ 을 
 
 Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다.
 
+### 3.4 Comparison
+
+세 방식은 계산 비용과 상호작용 반영 정도가 서로 반대 방향으로 움직인다.
+
+Table 1. Comparison of the three approaches
+
+| Aspect | Multivariate filter | Wrapper | Embedded |
+| --- | --- | --- | --- |
+| 계산 복잡도 | 낮음 | 매우 높음 | 중간 |
+| 과적합 위험 | 낮음 | 높음 | 중간 |
+| Model 의존성 | 없음 (model-agnostic) | 선택한 model 에 종속 | 해당 model 에 내장 |
+| 상호작용 반영 | 제한적 (주로 1:1 중복 제거) | 매우 잘 반영 | 잘 반영 |
+
 ## 4. Interaction-based Methods
 
 같은 기법을 상호작용을 어떻게 다루는가로 다시 묶으면 section 2 의 둘째 갈래가 된다. 한 기법이 두 갈래에 걸치기도 하며, 그때는 그 기법이 각 갈래에서 무엇을 하는지로 갈라 적는다.
@@ -114,20 +127,7 @@ Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 
 - RFE 의 목표 feature 개수: 남길 차원을 직접 지정
 - Tree-based importance 의 문턱값: 평균 중요도 같은 기준으로 자를 자리를 정함
 
-## 5. Comparison
-
-세 방식은 계산 비용과 상호작용 반영 정도가 서로 반대 방향으로 움직인다.
-
-Table 1. Comparison of the three approaches
-
-| Aspect | Multivariate filter | Wrapper | Embedded |
-| --- | --- | --- | --- |
-| 계산 복잡도 | 낮음 | 매우 높음 | 중간 |
-| 과적합 위험 | 낮음 | 높음 | 중간 |
-| Model 의존성 | 없음 (model-agnostic) | 선택한 model 에 종속 | 해당 model 에 내장 |
-| 상호작용 반영 | 제한적 (주로 1:1 중복 제거) | 매우 잘 반영 | 잘 반영 |
-
-## 6. Workflow
+## 5. Workflow
 
 비용이 낮은 기법으로 후보를 줄인 뒤 비싼 기법을 쓴다. Wrapper 의 비용은 남은 feature 개수에 따라 커지므로, 그 앞에 두 단계를 둔다.
 
@@ -149,7 +149,7 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 6 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. Embedded 단계는 tree-based importance 를 쓴다.
+scikit-learn 으로 section 5 의 세 단계를 실행하는 class 다. 세 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. Embedded 단계는 tree-based importance 를 쓴다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 으로, 표본 569 개와 feature 30 개를 가지며 feature 사이의 중복이 크다. 모든 feature 는 `StandardScaler` 로 표준화한다.
 
