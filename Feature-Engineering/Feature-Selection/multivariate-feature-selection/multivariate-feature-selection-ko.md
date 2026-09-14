@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 51 | Created: 2026-09-12 | Updated: 2026-09-14 12:50 CDT
+Rev. 52 | Created: 2026-09-12 | Updated: 2026-09-14 12:53 CDT
 
 ## 1. Purpose
 
@@ -47,6 +47,8 @@ Multivariate feature selection taxonomy
 ```
 
 Fig 1. Two hierarchies of multivariate feature selection
+
+두 갈래와 나란히, y 를 보는지로도 갈린다. 상관 filter 와 VIF 는 X 안의 상관만 계산하여 y 없이 돌아가고, mRMR 과 ReliefF 와 embedded 와 wrapper 는 모두 y 와의 관계를 재어 고른다.
 
 ## 3. Approach-based Methods
 
@@ -133,17 +135,17 @@ Table 1. Comparison of the three approaches
 
 Table 2. What each method changes when the target is regression instead of classification
 
-| Section                  | Method                         | Classification target           | Regression target                       |
-| :----------------------: | :----------------------------: | :-----------------------------: | :-------------------------------------: |
-| 3.1 Filter               | corr, VIF                      | Correlation among X only        | Correlation among X only                |
-| 3.1 Filter               | mRMR                           | `mutual_info_classif`           | `mutual_info_regression`                |
-| 3.1 Filter / 4.2 Synergy | ReliefF                        | hit/miss contrast               | None (RReliefF is a separate algorithm) |
-| 3.3 Embedded             | random forest, LightGBM        | Classifier                      | Regressor                               |
-| 3.3 Embedded             | lasso, elastic net             | Regression fit on the 0/1 label | Regression fit on y                     |
-| 3.2 Wrapper              | RFE, forward/backward, genetic | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
+| Section                  | Method                         | Uses y | Classification target           | Regression target                       |
+| :----------------------: | :----------------------------: | :----: | :-----------------------------: | :-------------------------------------: |
+| 3.1 Filter               | corr, VIF                      | No     | Correlation among X only        | Correlation among X only                |
+| 3.1 Filter               | mRMR                           | Yes    | `mutual_info_classif`           | `mutual_info_regression`                |
+| 3.1 Filter / 4.2 Synergy | ReliefF                        | Yes    | hit/miss contrast               | None (RReliefF is a separate algorithm) |
+| 3.3 Embedded             | random forest, LightGBM        | Yes    | Classifier                      | Regressor                               |
+| 3.3 Embedded             | lasso, elastic net             | Yes    | Regression fit on the 0/1 label | Regression fit on y                     |
+| 3.2 Wrapper              | RFE, forward/backward, genetic | Yes    | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
 
-- Target 을 보지 않는 method (corr, VIF): 두 target 에서 같은 답. X 안의 상관만 계산
-- Target 과의 관계를 재는 method (mRMR, embedded, wrapper): 추정량과 model 만 회귀용으로 교체
+- `Uses y` 가 No 인 행: 두 target 에서 같은 계산
+- `Uses y` 가 Yes 인 행: 추정량과 model 만 회귀용으로 교체
 - ReliefF: 회귀에서 쓸 수 있는 대응물이 없어 알고리즘 자체가 갈림
 
 ## 6. Workflow
