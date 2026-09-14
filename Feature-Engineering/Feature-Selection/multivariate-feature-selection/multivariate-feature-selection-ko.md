@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 31 | Created: 2026-09-12 | Updated: 2026-09-14 09:36 CDT
+Rev. 32 | Created: 2026-09-12 | Updated: 2026-09-14 09:39 CDT
 
 ## 1. Purpose
 
@@ -520,10 +520,10 @@ Table 2. Cross validation score of each wrapper subset of the breast cancer exam
 
 | Wrapper | Features it keeps<br>(input) | 10-fold accuracy<br>(output) | Selected features<br>(output) |
 | :---: | :---: | :---: | :---: |
-| rfe | 5 | 0.949 ± 0.025 | `area error`<br>`worst area`<br>`worst concave points`<br>`worst perimeter`<br>`worst radius` |
-| forward | 5 | 0.954 ± 0.037 | `mean concavity`<br>`worst area`<br>`worst concave points`<br>`worst perimeter`<br>`worst radius` |
-| backward | 5 | 0.954 ± 0.037 | `mean concavity`<br>`worst area`<br>`worst concave points`<br>`worst perimeter`<br>`worst radius` |
-| genetic | 5 | 0.953 ± 0.039 | `area error`<br>`mean concave points`<br>`mean concavity`<br>`worst area`<br>`worst concave points` |
+| rfe | 5 | 0.949 ± 0.025 | `area error`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
+| forward | 5 | 0.954 ± 0.037 | `mean concavity`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
+| backward | 5 | 0.954 ± 0.037 | `mean concavity`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
+| genetic | 5 | 0.953 ± 0.039 | `area error`, `mean concave points`, `mean concavity`, `worst area`, `worst concave points` |
 
 네 wrapper 는 목표 개수를 인자로 받으며, 이 예제는 `final_count=5` 다. 그래서 네 집합의 크기가 같지만 다르게 골랐기에 점수 차이가 발생한다. 그 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
 
