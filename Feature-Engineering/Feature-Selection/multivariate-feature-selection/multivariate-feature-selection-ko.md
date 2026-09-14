@@ -1,11 +1,11 @@
 # Multivariate Feature Selection
-Rev. 55 | Created: 2026-09-12 | Updated: 2026-09-14 14:20 CDT
+Rev. 56 | Created: 2026-09-12 | Updated: 2026-09-14 18:23 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: Feature 를 하나씩만 평가하면 두 feature 가 결합해야 드러나는 신호를 놓치고, 같은 정보를 담은 feature 가 함께 남는다.
-- **Goal**: Feature 사이의 상호작용과 중복성을 함께 보는 선택 기법을 접근 방식별로 갈라 놓아, 주어진 data 크기와 계산 예산에서 어느 기법을 쓸지 독자가 고를 수 있게 한다.
-- **Non-Goal**: Feature 를 하나씩 검정하는 기법은 다루지 않는다. 그것은 [Univariate Feature Selection](../univariate-feature-selection/univariate-feature-selection-ko.md) 의 주제다.
+- **Problem Statement**: Feature 의 개별 평가는 feature 간의 결합 정보와 중복 정보를 처리하지 못해 feature 의 최적화를 하지 못한다.
+- **Goal**: Feature 사이의 상호작용과 중복성을 함께 보는 선택 기법에 대한 taxonomy 와 hierarchy 를 세우고 정리하여, 상황에 맞춰 적용하거나 빠른 지침 (rule of thumb) 으로 쓰게 한다.
+- **Non-Goal**: Feature 의 개별 검증은 [Univariate Feature Selection](../univariate-feature-selection/univariate-feature-selection-ko.md) 에서 다룬다.
 
 ### 1.1 Motivation
 
