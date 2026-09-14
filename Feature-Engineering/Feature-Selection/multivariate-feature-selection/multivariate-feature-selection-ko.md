@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 18 | Created: 2026-09-12 | Updated: 2026-09-14 01:21 CDT
+Rev. 19 | Created: 2026-09-12 | Updated: 2026-09-14 02:22 CDT
 
 ## 1. Purpose
 
@@ -452,95 +452,6 @@ if __name__ == "__main__":
 
     draw_matrix(kept=kept, names=names, columns=varying, path=FIGURE_PATH)
     print(f"\nchart written to {FIGURE_PATH}")
-```
-
-실행 결과는 다음과 같다.
-
-```text
-input: 569 samples, 31 features
-
-input (31 features)
-  area error, compactness error, concave points error, concavity error, constant probe, fractal
-  dimension error, mean area, mean compactness, mean concave points, mean concavity, mean fractal
-  dimension, mean perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter
-  error, radius error, smoothness error, symmetry error, texture error, worst area, worst
-  compactness, worst concave points, worst concavity, worst fractal dimension, worst perimeter,
-  worst radius, worst smoothness, worst symmetry, worst texture
-
-left by the constant filter (30 features)
-  area error, compactness error, concave points error, concavity error, fractal dimension error,
-  mean area, mean compactness, mean concave points, mean concavity, mean fractal dimension, mean
-  perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter error, radius
-  error, smoothness error, symmetry error, texture error, worst area, worst compactness, worst
-  concave points, worst concavity, worst fractal dimension, worst perimeter, worst radius, worst
-  smoothness, worst symmetry, worst texture
-
-filter by corr (23 features)
-  compactness error, concave points error, concavity error, fractal dimension error, mean
-  compactness, mean concave points, mean concavity, mean fractal dimension, mean radius, mean
-  smoothness, mean symmetry, mean texture, radius error, smoothness error, symmetry error, texture
-  error, worst compactness, worst concave points, worst concavity, worst fractal dimension, worst
-  smoothness, worst symmetry, worst texture
-
-filter by vif (17 features)
-  compactness error, concave points error, concavity error, fractal dimension error, mean concave
-  points, mean fractal dimension, mean smoothness, mean symmetry, mean texture, perimeter error,
-  smoothness error, symmetry error, texture error, worst area, worst fractal dimension, worst
-  smoothness, worst symmetry
-
-filter by mrmr (10 features)
-  area error, mean concave points, perimeter error, symmetry error, worst concave points, worst
-  concavity, worst perimeter, worst smoothness, worst symmetry, worst texture
-
-filter by relieff (10 features)
-  mean area, mean concave points, mean concavity, mean perimeter, mean radius, worst area, worst
-  concave points, worst perimeter, worst radius, worst texture
-
-embedded by random_forest (9 features)
-  area error, mean area, mean concave points, mean concavity, mean perimeter, worst area, worst
-  concave points, worst perimeter, worst radius
-
-embedded by lightgbm (6 features)
-  mean concave points, worst area, worst concave points, worst perimeter, worst radius, worst
-  texture
-
-embedded by lasso (12 features)
-  concavity error, mean concave points, mean fractal dimension, mean texture, radius error,
-  smoothness error, worst concave points, worst concavity, worst radius, worst smoothness, worst
-  symmetry, worst texture
-
-wrapper by rfe, out of the random forest columns (5 features)
-  area error, worst area, worst concave points, worst perimeter, worst radius
-
-wrapper by forward, out of the random forest columns (5 features)
-  mean concavity, worst area, worst concave points, worst perimeter, worst radius
-
-wrapper by backward, out of the random forest columns (5 features)
-  mean concavity, worst area, worst concave points, worst perimeter, worst radius
-
-varying step of the workflow (30 features)
-  area error, compactness error, concave points error, concavity error, fractal dimension error,
-  mean area, mean compactness, mean concave points, mean concavity, mean fractal dimension, mean
-  perimeter, mean radius, mean smoothness, mean symmetry, mean texture, perimeter error, radius
-  error, smoothness error, symmetry error, texture error, worst area, worst compactness, worst
-  concave points, worst concavity, worst fractal dimension, worst perimeter, worst radius, worst
-  smoothness, worst symmetry, worst texture
-
-filter step of the workflow (23 features)
-  compactness error, concave points error, concavity error, fractal dimension error, mean
-  compactness, mean concave points, mean concavity, mean fractal dimension, mean radius, mean
-  smoothness, mean symmetry, mean texture, radius error, smoothness error, symmetry error, texture
-  error, worst compactness, worst concave points, worst concavity, worst fractal dimension, worst
-  smoothness, worst symmetry, worst texture
-
-embedded step of the workflow (6 features)
-  mean concave points, mean concavity, mean radius, radius error, worst concave points, worst
-  concavity
-
-wrapper step of the workflow (5 features)
-  mean concavity, mean radius, radius error, worst concave points, worst concavity
-
-chart written to multivariate-feature-selection-ko_fig/fig2.png
 ```
 
 상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 세 embedded 는 9, 6, 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
