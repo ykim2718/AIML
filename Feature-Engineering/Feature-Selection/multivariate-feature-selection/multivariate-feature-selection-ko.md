@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 57 | Created: 2026-09-12 | Updated: 2026-09-14 18:27 CDT
+Rev. 58 | Created: 2026-09-12 | Updated: 2026-09-14 18:48 CDT
 
 ## 1. Purpose
 
@@ -52,7 +52,7 @@ Fig 1. Two hierarchies of multivariate feature selection
 
 ## 3. Approach-based Methods
 
-접근 방식은 계산 비용과 답의 성질을 정한다. Filter 는 자료의 성질을, wrapper 는 그 model 과 탐색의 성질을, embedded 는 적합된 model 의 성질을 답으로 내놓는다.
+어느 갈래를 고르느냐가 계산 비용과 selection criterion 을 함께 정하고, 그 criterion 이 고른 집합의 model dependence 를 정한다. Filter 의 집합은 data 에만, wrapper 의 집합은 채점 estimator 와 탐색에, embedded 의 집합은 적합된 model 에 조건부다.
 
 ### 3.1 Multivariate Filter Methods
 

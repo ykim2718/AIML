@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 0 | Created: 2026-09-14 | Updated: 2026-09-14 18:27 CDT
+Rev. 1 | Created: 2026-09-14 | Updated: 2026-09-14 18:48 CDT
 
 ## 1. Purpose
 
@@ -52,7 +52,7 @@ Alongside the two hierarchies runs one more line, whether y is read. The correla
 
 ## 3. Approach-based Methods
 
-The approach fixes the computational cost and the nature of the answer. A filter returns a property of the data, a wrapper a property of that model and its search, an embedded method a property of the fitted model.
+The branch chosen fixes the computational cost and the selection criterion together, and that criterion fixes the model dependence of the chosen set. A filter's set is conditional on the data alone, a wrapper's on the scoring estimator and its search, an embedded method's on the fitted model.
 
 ### 3.1 Multivariate Filter Methods
 
