@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 11 | Created: 2026-09-12 | Updated: 2026-09-13 23:41 CDT
+Rev. 12 | Created: 2026-09-12 | Updated: 2026-09-13 23:45 CDT
 
 ## 1. Purpose
 
@@ -62,14 +62,14 @@ $\epsilon^\top \epsilon$ 이 성분의 제곱합이 되는 까닭은 [Appendix C
 
 $RSS(\beta)$ 를 최소화하는 점은 $\beta$ 에 대한 미분이 0 이 되는 지점이다. 식 (3) 을 전개하면 $\beta$ 의 이차식이 되고, 그 경사도를 0 으로 두면 연립방정식 하나가 남는다.
 
-식 (3) 의 전개는 다음과 같다.
+식 (3) 의 전개는 다음과 같으며, 그 과정은 [Appendix D](#appendix-d-expanding-the-residual-sum-of-squares) 에 있다.
 
 ```math
 RSS(\beta) = y^\top y - 2\beta^\top X^\top y + \beta^\top X^\top X \beta
 \hspace{19em} (4)
 ```
 
-$\beta$ 에 대해 미분하여 0 으로 설정한다. 여기에 쓴 벡터 미분 규칙은 [Appendix D](#appendix-d-vector-derivatives-for-the-gradient) 에 있다.
+$\beta$ 에 대해 미분하여 0 으로 설정한다. 여기에 쓴 벡터 미분 규칙은 [Appendix E](#appendix-e-vector-derivatives-for-the-gradient) 에 있다.
 
 ```math
 \frac{\partial RSS}{\partial \beta} = -2X^\top y + 2X^\top X\beta = 0
@@ -136,6 +136,7 @@ $X^\top X$ 의 역행렬이 존재할 때 해 $\hat{\beta}$ 는 유일하게 결
 - **residual**: 관측값과 model 예측값의 차이.
 - **RSS**: Residual Sum of Squares. 잔차의 제곱합.
 - **symmetric matrix**: 전치해도 자기 자신인 정방행렬.
+- **transpose**: 행과 열을 맞바꾼 행렬. 합에서는 그대로, 곱에서는 차례가 뒤집힌다.
 
 ## Appendix B. Computation
 
@@ -238,7 +239,34 @@ v^\top v =
 
 식 (3) 의 $\epsilon^\top \epsilon$ 은 식 (8) 의 $v$ 자리에 잔차 벡터 $\epsilon$ 을 넣은 것이므로 $\sum e_i^2$ 과 같다.
 
-## Appendix D. Vector Derivatives for the Gradient
+## Appendix D. Expanding the Residual Sum of Squares
+
+식 (4) 는 식 (3) 의 곱을 풀어 쓴 것이며, 전치의 두 규칙과 스칼라의 성질 하나를 쓴다.
+
+전치는 합을 그대로 따라가고 ($(A + B)^\top = A^\top + B^\top$), 곱에서는 차례를 뒤집는다 ($(AB)^\top = B^\top A^\top$). 이를 $(y - X\beta)$ 에 적용한다.
+
+```math
+(y - X\beta)^\top = y^\top - \beta^\top X^\top
+\hspace{19em} (9)
+```
+
+식 (9) 를 식 (3) 에 넣고 두 괄호를 분배하면 항이 넷 나온다.
+
+```math
+(y - X\beta)^\top (y - X\beta) = y^\top y - y^\top X\beta - \beta^\top X^\top y + \beta^\top X^\top X \beta
+\hspace{19em} (10)
+```
+
+가운데 두 항은 같은 값이다. $y^\top X\beta$ 는 $(1 \times n)(n \times (p+1))((p+1) \times 1)$ 의 곱이라 $1 \times 1$ 스칼라이고, 스칼라는 전치해도 자기 자신이므로 전치를 취해 순서를 뒤집어도 값이 바뀌지 않는다.
+
+```math
+y^\top X\beta = (y^\top X\beta)^\top = \beta^\top X^\top y
+\hspace{19em} (11)
+```
+
+식 (11) 로 가운데 두 항을 합치면 $-2\beta^\top X^\top y$ 가 되고, 식 (10) 은 식 (4) 가 된다.
+
+## Appendix E. Vector Derivatives for the Gradient
 
 식 (5) 는 세 가지 규칙에서 나온다. 상수항의 미분, 일차형 (linear form) 의 미분, 이차형 (quadratic form) 의 미분이며, 여기서 미분은 $\beta$ 의 각 성분에 대한 편미분을 모아 놓은 열벡터를 뜻한다.
 
@@ -249,28 +277,28 @@ v^\top v =
 \vdots \\
 \partial f / \partial \beta_p
 \end{bmatrix}
-\hspace{19em} (9)
+\hspace{19em} (12)
 ```
 
 첫째, 상수의 미분은 0 이다. $y^\top y$ 에는 $\beta$ 가 들어 있지 않다.
 
 ```math
 \frac{\partial (y^\top y)}{\partial \beta} = 0
-\hspace{19em} (10)
+\hspace{19em} (13)
 ```
 
 둘째, 일차형 $\beta^\top a$ 는 성분으로 쓰면 $\sum_j \beta_j a_j$ 이므로, $\beta_k$ 로 미분하면 $a_k$ 하나만 남는다. 성분을 다시 모으면 벡터 $a$ 가 된다.
 
 ```math
 \frac{\partial (\beta^\top a)}{\partial \beta} = a
-\hspace{19em} (11)
+\hspace{19em} (14)
 ```
 
 셋째, 이차형 $\beta^\top A \beta$ 는 성분으로 쓰면 $\sum_i \sum_j \beta_i A_{ij} \beta_j$ 이다. $\beta_k$ 로 미분하면 $i = k$ 인 항에서 $\sum_j A_{kj} \beta_j$ 가, $j = k$ 인 항에서 $\sum_i \beta_i A_{ik}$ 가 남으며, 이는 $(A + A^\top)\beta$ 의 $k$ 번째 성분이다.
 
 ```math
 \frac{\partial (\beta^\top A \beta)}{\partial \beta} = (A + A^\top)\beta
-\hspace{19em} (12)
+\hspace{19em} (15)
 ```
 
 $A$ 가 대칭이면 두 항이 같아 $2A\beta$ 가 된다. $X^\top X$ 는 전치가 $(X^\top X)^\top = X^\top (X^\top)^\top = X^\top X$ 로 자기 자신이므로 대칭이다.
@@ -281,6 +309,6 @@ Table 2. The three terms of equation (4) under the rules
 
 | Term of equation (4) | Rule | Derivative |
 | --- | --- | --- |
-| $y^\top y$ | 식 (10) | $0$ |
-| $-2\beta^\top X^\top y$ | 식 (11), $a = X^\top y$ | $-2X^\top y$ |
-| $\beta^\top X^\top X \beta$ | 식 (12), $A = X^\top X$ 는 대칭 | $2X^\top X \beta$ |
+| $y^\top y$ | 식 (13) | $0$ |
+| $-2\beta^\top X^\top y$ | 식 (14), $a = X^\top y$ | $-2X^\top y$ |
+| $\beta^\top X^\top X \beta$ | 식 (15), $A = X^\top X$ 는 대칭 | $2X^\top X \beta$ |
