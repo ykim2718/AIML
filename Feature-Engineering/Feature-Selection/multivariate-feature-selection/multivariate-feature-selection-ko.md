@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 26 | Created: 2026-09-12 | Updated: 2026-09-14 09:15 CDT
+Rev. 27 | Created: 2026-09-12 | Updated: 2026-09-14 09:16 CDT
 
 ## 1. Purpose
 
@@ -516,7 +516,7 @@ Method 마다 최대화하려는 양이 달라 남는 열이 갈린다. corr 은
 
 갈린 답이 실제로 다른 성능을 뜻하는 경우는 드물다. 자료에 서로 대체 가능한 feature 가 많으면 여러 집합이 거의 같은 점수를 내고, 그 가운데 누구를 남길지는 신호가 아니라 각 기준의 tie-break 규칙이 정한다. 이 예제의 breast cancer data 는 feature 30 개 가운데 상관 0.9 이상인 쌍이 21 개이고 `mean radius` 와 `mean perimeter` 는 0.998 로 사실상 같은 열이다.
 
-Table 2 의 개수 열이 모두 5 인 것은 `final_count=5` 가 남길 개수를 미리 정하기 때문이다.
+네 wrapper 는 모두 `final_count=5` 를 받아 다섯 개를 남긴다.
 
 Table 2. Cross validation score of each wrapper subset of the breast cancer example
 
