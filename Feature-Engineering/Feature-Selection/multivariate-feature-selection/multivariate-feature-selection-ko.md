@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 41 | Created: 2026-09-12 | Updated: 2026-09-14 10:03 CDT
+Rev. 42 | Created: 2026-09-12 | Updated: 2026-09-14 10:05 CDT
 
 ## 1. Purpose
 
@@ -510,7 +510,7 @@ Fig 2. Which features each selection method keeps
 - 열 이름 아래 괄호 안 숫자는 그 method 가 남긴 feature 수이며, wrapper 세 열은 random forest 가 남긴 9 개 위에서 돌린 결과다.
 - `mean concave points` 는 열두 열 가운데 아홉에서, `worst concave points` 는 열하나에서 채워진다. 반대로 `worst compactness` 는 corr 한 열에만 남는다.
 
-### B.1 Choosing Among Answers
+### B.1 Choosing Among Answers 🥑
 
 Method 마다 최대화하려는 양이 달라 남는 열이 갈린다. corr 은 상관이 기준을 넘는 쌍에서 열 순서상 뒤를 버리고, VIF 는 나머지로 잘 설명되는 쪽을 버리며, mRMR 은 이미 고른 것과의 중복을, ReliefF 는 이웃까지의 거리를, Lasso 는 무리에서 하나만 남기는 penalty 를, ElasticNet 은 무리를 함께 남기는 penalty 를, tree 계열은 분할 이득을, wrapper 는 그 model 의 cross validation 점수를 본다. 무엇을 쓸지는 선택에 쓰지 않은 분할에서의 검증 점수로 정한다.
 
@@ -530,5 +530,3 @@ Table 2. Cross validation score of each wrapper subset of the breast cancer exam
 1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. `worst concave points` 는 Table 2 의 네 집합 모두에 들어 있다<br>
 2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
 3️⃣ Step 3 (actionability): 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
-
-🥑
