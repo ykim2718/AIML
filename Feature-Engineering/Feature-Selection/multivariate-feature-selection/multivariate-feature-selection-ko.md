@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 33 | Created: 2026-09-12 | Updated: 2026-09-14 09:42 CDT
+Rev. 34 | Created: 2026-09-12 | Updated: 2026-09-14 09:44 CDT
 
 ## 1. Purpose
 
@@ -527,6 +527,6 @@ Table 2. Cross validation score of each wrapper subset of the breast cancer exam
 
 네 wrapper 는 목표 개수를 인자로 받으며, 이 예제는 `final_count=5` 다. 그래서 네 집합의 크기가 같지만 다르게 골랐기에 점수 차이가 발생한다. 그 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
 
-1️⃣ 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. Fig 2 의 `worst concave points` 가 그런 자리다<br>
-2️⃣ 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
-3️⃣ 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
+1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. Fig 2 의 `worst concave points` 가 그런 자리다<br>
+2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
+3️⃣ Step 3 (actionability): 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
