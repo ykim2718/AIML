@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 28 | Created: 2026-09-12 | Updated: 2026-09-14 09:20 CDT
+Rev. 29 | Created: 2026-09-12 | Updated: 2026-09-14 09:27 CDT
 
 ## 1. Purpose
 
@@ -518,12 +518,12 @@ Method 마다 최대화하려는 양이 달라 남는 열이 갈린다. corr 은
 
 Table 2. Cross validation score of each wrapper subset of the breast cancer example
 
-| Wrapper | Features it keeps | 10-fold accuracy |
-| --- | --- | --- |
-| rfe | 5 | 0.944 ± 0.032 |
-| forward | 5 | 0.949 ± 0.023 |
-| backward | 5 | 0.949 ± 0.023 |
-| genetic | 5 | 0.949 ± 0.027 |
+| Wrapper | Features it keeps<br>(input) | 10-fold accuracy<br>(output) | Selected features<br>(output) |
+| --- | --- | --- | --- |
+| rfe | 5 | 0.949 ± 0.025 | `area error`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
+| forward | 5 | 0.954 ± 0.037 | `mean concavity`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
+| backward | 5 | 0.954 ± 0.037 | `mean concavity`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
+| genetic | 5 | 0.953 ± 0.039 | `area error`, `mean concave points`, `mean concavity`, `worst area`, `worst concave points` |
 
 네 wrapper 는 멈출 자리를 자료에서 찾지 않고 목표 개수를 인자로 받으며, 이 예제가 준 값이 `final_count=5` 다. 그래서 네 집합의 크기가 같고 점수 차이는 어느 다섯 개를 골랐는가에서만 온다. 그 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
 
