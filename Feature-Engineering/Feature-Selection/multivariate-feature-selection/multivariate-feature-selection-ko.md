@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 45 | Created: 2026-09-12 | Updated: 2026-09-14 11:02 CDT
+Rev. 46 | Created: 2026-09-12 | Updated: 2026-09-14 11:14 CDT
 
 ## 1. Purpose
 
@@ -149,13 +149,13 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 그 별칭 한 곳에만 적고 class attribute 인 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.4.2+20260914"
+__version__ = "0.4.3+20260914"
 
 import pathlib
 import textwrap
@@ -179,18 +179,13 @@ FIGSIZE: tuple = (9.0, 9.0)
 REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
 
-FilterMethod: TypeAlias = Literal["corr", "vif", "mrmr", "relieff"]
-EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "lasso", "elasticnet"]
-WrapperMethod: TypeAlias = Literal["rfe", "forward", "backward", "genetic"]
-Direction: TypeAlias = Literal["forward", "backward"]
-
 
 class MultivariateFeatureSelector:
     """Run the three steps of the workflow on one dataset, keeping the original column indices.
 
     Each step takes a method name typed by the Literal alias of that branch, which is where the
-    members are declared; the tuples below derive from it. A name outside the alias raises
-    ValueError.
+    members are declared on the class; the tuples beside them derive from it. A name outside the
+    alias raises ValueError.
 
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
@@ -207,6 +202,11 @@ class MultivariateFeatureSelector:
         final_count: number of features the wrapper step leaves.
         random_state: seed of the random forest and of the mutual information estimates.
     """
+
+    FilterMethod: TypeAlias = Literal["corr", "vif", "mrmr", "relieff"]
+    EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "lasso", "elasticnet"]
+    WrapperMethod: TypeAlias = Literal["rfe", "forward", "backward", "genetic"]
+    Direction: TypeAlias = Literal["forward", "backward"]
 
     FILTER_METHODS: Final[tuple[FilterMethod, ...]] = get_args(FilterMethod)
     EMBEDDED_METHODS: Final[tuple[EmbeddedMethod, ...]] = get_args(EmbeddedMethod)
