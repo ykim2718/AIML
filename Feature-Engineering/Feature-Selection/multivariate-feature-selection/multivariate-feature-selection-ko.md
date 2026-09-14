@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 36 | Created: 2026-09-12 | Updated: 2026-09-14 09:52 CDT
+Rev. 37 | Created: 2026-09-12 | Updated: 2026-09-14 09:54 CDT
 
 ## 1. Purpose
 
@@ -92,12 +92,12 @@ Multivariate filter, wrapper, embedded 는 계산 비용과 상호작용 반영 
 
 Table 1. Comparison of the three approaches
 
-| Aspect | Multivariate filter | Wrapper | Embedded |
-| --- | --- | --- | --- |
-| 계산 복잡도 | 낮음 | 매우 높음 | 중간 |
-| 과적합 위험 | 낮음 | 높음 | 중간 |
-| Model 의존성 | 없음 (model-agnostic) | 선택한 model 에 종속 | 해당 model 에 내장 |
-| 상호작용 반영 | 제한적 (주로 1:1 중복 제거) | 매우 잘 반영 | 잘 반영 |
+| #   | Aspect        | Multivariate filter         | Wrapper              | Embedded           |
+| --- | ------------- | --------------------------- | -------------------- | ------------------ |
+| 1   | 계산 복잡도   | 낮음                        | 매우 높음            | 중간               |
+| 2   | 과적합 위험   | 낮음                        | 높음                 | 중간               |
+| 3   | Model 의존성  | 없음 (model-agnostic)       | 선택한 model 에 종속 | 해당 model 에 내장 |
+| 4   | 상호작용 반영 | 제한적 (주로 1:1 중복 제거) | 매우 잘 반영         | 잘 반영            |
 
 ## 4. Interaction-based Methods
 
