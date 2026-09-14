@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 27 | Created: 2026-09-12 | Updated: 2026-09-14 09:16 CDT
+Rev. 28 | Created: 2026-09-12 | Updated: 2026-09-14 09:20 CDT
 
 ## 1. Purpose
 
@@ -516,8 +516,6 @@ Method 마다 최대화하려는 양이 달라 남는 열이 갈린다. corr 은
 
 갈린 답이 실제로 다른 성능을 뜻하는 경우는 드물다. 자료에 서로 대체 가능한 feature 가 많으면 여러 집합이 거의 같은 점수를 내고, 그 가운데 누구를 남길지는 신호가 아니라 각 기준의 tie-break 규칙이 정한다. 이 예제의 breast cancer data 는 feature 30 개 가운데 상관 0.9 이상인 쌍이 21 개이고 `mean radius` 와 `mean perimeter` 는 0.998 로 사실상 같은 열이다.
 
-네 wrapper 는 모두 `final_count=5` 를 받아 다섯 개를 남긴다.
-
 Table 2. Cross validation score of each wrapper subset of the breast cancer example
 
 | Wrapper | Features it keeps | 10-fold accuracy |
@@ -527,7 +525,7 @@ Table 2. Cross validation score of each wrapper subset of the breast cancer exam
 | backward | 5 | 0.949 ± 0.023 |
 | genetic | 5 | 0.949 ± 0.027 |
 
-네 집합의 점수 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
+네 wrapper 는 멈출 자리를 자료에서 찾지 않고 목표 개수를 인자로 받으며, 이 예제가 준 값이 `final_count=5` 다. 그래서 네 집합의 크기가 같고 점수 차이는 어느 다섯 개를 골랐는가에서만 온다. 그 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
 
 1️⃣ 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. Fig 2 의 `worst concave points` 가 그런 자리다<br>
 2️⃣ 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
