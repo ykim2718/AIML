@@ -1,5 +1,5 @@
 # Univariate Feature Selection
-Rev. 8 | Created: 2026-09-12 | Updated: 2026-09-14 12:55 CDT
+Rev. 9 | Created: 2026-09-12 | Updated: 2026-09-14 12:56 CDT
 
 ## 1. Purpose
 
@@ -43,6 +43,15 @@ Fig 1. Dropping the constant features, then scoring each of the rest and taking 
 
 지표는 입력과 target 이 각각 연속형인지 범주형인지에 따라 갈린다.
 
+Table 1. The four univariate metrics
+
+| Metric             | Input type | Target type        | Uses y |
+| :----------------: | :--------: | :----------------: | :----: |
+| Chi-square         | 범주형     | 범주형             | Yes    |
+| ANOVA F            | 연속형     | 범주형 또는 연속형 | Yes    |
+| Pearson            | 연속형     | 연속형             | Yes    |
+| Mutual information | 모든 type  | 모든 type          | Yes    |
+
 ### 4.1 Chi-square Test
 
 - 적용 조건: 범주형 입력 + 범주형 target
@@ -71,15 +80,15 @@ F = \frac{\sigma_{\mathrm{between}}^2}{\sigma_{\mathrm{within}}^2} \hspace{19em}
 
 장점은 비용과 단순성에서 오고, 단점은 feature 를 하나씩만 본다는 전제에서 온다.
 
-Table 1. Pros and cons of univariate feature selection
+Table 2. Pros and cons of univariate feature selection
 
-| Category | Item | Detail |
-| --- | --- | --- |
-| Pros | 계산 효율성 | $O(N)$ 의 시간 복잡도. 대용량·고차원 dataset 에서 빠름 |
-| Pros | 단순성 | Model 의존성 없음. 전처리 단계에 직관적으로 적용 |
-| Pros | 오버피팅 방지 | 학습 model 의 특성에 종속되지 않는 범용 filtering |
-| Cons | 상호작용 무시 | $X_1$ 과 $X_2$ 가 결합해야 드러나는 pattern 을 감지하지 못함 |
-| Cons | 다중공선성 미반영 | 서로 같은 정보를 담은 두 변수가 함께 선택됨 |
+| Category | Item              | Detail                                                       |
+| :------: | :---------------: | :----------------------------------------------------------: |
+| Pros     | 계산 효율성       | $O(N)$ 의 시간 복잡도. 대용량·고차원 dataset 에서 빠름       |
+| Pros     | 단순성            | Model 의존성 없음. 전처리 단계에 직관적으로 적용             |
+| Pros     | 오버피팅 방지     | 학습 model 의 특성에 종속되지 않는 범용 filtering            |
+| Cons     | 상호작용 무시     | $X_1$ 과 $X_2$ 가 결합해야 드러나는 pattern 을 감지하지 못함 |
+| Cons     | 다중공선성 미반영 | 서로 같은 정보를 담은 두 변수가 함께 선택됨                  |
 
 ---
 
