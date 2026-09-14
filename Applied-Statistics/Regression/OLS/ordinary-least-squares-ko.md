@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 10 | Created: 2026-09-12 | Updated: 2026-09-12 13:30 CDT
+Rev. 11 | Created: 2026-09-12 | Updated: 2026-09-13 23:41 CDT
 
 ## 1. Purpose
 
@@ -69,7 +69,7 @@ RSS(\beta) = y^\top y - 2\beta^\top X^\top y + \beta^\top X^\top X \beta
 \hspace{19em} (4)
 ```
 
-$\beta$ 에 대해 미분하여 0 으로 설정한다.
+$\beta$ 에 대해 미분하여 0 으로 설정한다. 여기에 쓴 벡터 미분 규칙은 [Appendix D](#appendix-d-vector-derivatives-for-the-gradient) 에 있다.
 
 ```math
 \frac{\partial RSS}{\partial \beta} = -2X^\top y + 2X^\top X\beta = 0
@@ -128,11 +128,14 @@ $X^\top X$ 의 역행렬이 존재할 때 해 $\hat{\beta}$ 는 유일하게 결
 - **fitting**: 자료가 지시하는 최적의 계수 값을 구하는 과정.
 - **intercept**: Design matrix 의 1 로 채워진 첫 열에 대응하는 계수 $\beta_0$.
 - **L2 norm**: 벡터 원소의 제곱합의 제곱근.
+- **linear form**: $\beta^\top a$ 처럼 계수의 1 차 항만으로 이루어진 스칼라 함수.
 - **normal equation**: $RSS$ 의 경사도를 0 으로 두어 얻은 연립방정식 $X^\top X \beta = X^\top y$.
 - **orthogonal projection**: 한 벡터에서 어떤 공간에 내린 수선의 발. 그 공간 안에서 원래 벡터에 가장 가까운 점이다.
 - **perpendicular**: 한 점에서 직선이나 평면에 90° 로 내리그은 선분. 그것이 닿는 점이 수선의 발이다.
+- **quadratic form**: $\beta^\top A \beta$ 처럼 계수의 2 차 항으로 이루어진 스칼라 함수.
 - **residual**: 관측값과 model 예측값의 차이.
 - **RSS**: Residual Sum of Squares. 잔차의 제곱합.
+- **symmetric matrix**: 전치해도 자기 자신인 정방행렬.
 
 ## Appendix B. Computation
 
@@ -234,3 +237,50 @@ v^\top v =
 이 값은 $v$ 의 L2 norm 의 제곱 $\|v\|_2^2$ 이며, 모든 성분이 0 일 때만 0 이고 그 밖에는 언제나 양수다.
 
 식 (3) 의 $\epsilon^\top \epsilon$ 은 식 (8) 의 $v$ 자리에 잔차 벡터 $\epsilon$ 을 넣은 것이므로 $\sum e_i^2$ 과 같다.
+
+## Appendix D. Vector Derivatives for the Gradient
+
+식 (5) 는 세 가지 규칙에서 나온다. 상수항의 미분, 일차형 (linear form) 의 미분, 이차형 (quadratic form) 의 미분이며, 여기서 미분은 $\beta$ 의 각 성분에 대한 편미분을 모아 놓은 열벡터를 뜻한다.
+
+```math
+\frac{\partial f}{\partial \beta} =
+\begin{bmatrix}
+\partial f / \partial \beta_0 \\
+\vdots \\
+\partial f / \partial \beta_p
+\end{bmatrix}
+\hspace{19em} (9)
+```
+
+첫째, 상수의 미분은 0 이다. $y^\top y$ 에는 $\beta$ 가 들어 있지 않다.
+
+```math
+\frac{\partial (y^\top y)}{\partial \beta} = 0
+\hspace{19em} (10)
+```
+
+둘째, 일차형 $\beta^\top a$ 는 성분으로 쓰면 $\sum_j \beta_j a_j$ 이므로, $\beta_k$ 로 미분하면 $a_k$ 하나만 남는다. 성분을 다시 모으면 벡터 $a$ 가 된다.
+
+```math
+\frac{\partial (\beta^\top a)}{\partial \beta} = a
+\hspace{19em} (11)
+```
+
+셋째, 이차형 $\beta^\top A \beta$ 는 성분으로 쓰면 $\sum_i \sum_j \beta_i A_{ij} \beta_j$ 이다. $\beta_k$ 로 미분하면 $i = k$ 인 항에서 $\sum_j A_{kj} \beta_j$ 가, $j = k$ 인 항에서 $\sum_i \beta_i A_{ik}$ 가 남으며, 이는 $(A + A^\top)\beta$ 의 $k$ 번째 성분이다.
+
+```math
+\frac{\partial (\beta^\top A \beta)}{\partial \beta} = (A + A^\top)\beta
+\hspace{19em} (12)
+```
+
+$A$ 가 대칭이면 두 항이 같아 $2A\beta$ 가 된다. $X^\top X$ 는 전치가 $(X^\top X)^\top = X^\top (X^\top)^\top = X^\top X$ 로 자기 자신이므로 대칭이다.
+
+식 (4) 의 세 항에 이 규칙을 차례로 넣은 것이 식 (5) 이다.
+
+Table 2. The three terms of equation (4) under the rules
+
+| Term of equation (4) | Rule | Derivative |
+| --- | --- | --- |
+| $y^\top y$ | 식 (10) | $0$ |
+| $-2\beta^\top X^\top y$ | 식 (11), $a = X^\top y$ | $-2X^\top y$ |
+| $\beta^\top X^\top X \beta$ | 식 (12), $A = X^\top X$ 는 대칭 | $2X^\top X \beta$ |
