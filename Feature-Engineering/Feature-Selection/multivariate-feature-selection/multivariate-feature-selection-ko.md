@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 40 | Created: 2026-09-12 | Updated: 2026-09-14 10:02 CDT
+Rev. 41 | Created: 2026-09-12 | Updated: 2026-09-14 10:03 CDT
 
 ## 1. Purpose
 
@@ -530,3 +530,5 @@ Table 2. Cross validation score of each wrapper subset of the breast cancer exam
 1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. `worst concave points` 는 Table 2 의 네 집합 모두에 들어 있다<br>
 2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
 3️⃣ Step 3 (actionability): 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
+
+🥑
