@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 29 | Created: 2026-09-12 | Updated: 2026-09-14 09:27 CDT
+Rev. 30 | Created: 2026-09-12 | Updated: 2026-09-14 09:31 CDT
 
 ## 1. Purpose
 
@@ -519,7 +519,7 @@ Method 마다 최대화하려는 양이 달라 남는 열이 갈린다. corr 은
 Table 2. Cross validation score of each wrapper subset of the breast cancer example
 
 | Wrapper | Features it keeps<br>(input) | 10-fold accuracy<br>(output) | Selected features<br>(output) |
-| --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: |
 | rfe | 5 | 0.949 ± 0.025 | `area error`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
 | forward | 5 | 0.954 ± 0.037 | `mean concavity`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
 | backward | 5 | 0.954 ± 0.037 | `mean concavity`, `worst area`, `worst concave points`, `worst perimeter`, `worst radius` |
