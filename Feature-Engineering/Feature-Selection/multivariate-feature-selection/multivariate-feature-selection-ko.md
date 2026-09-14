@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 17 | Created: 2026-09-12 | Updated: 2026-09-14 00:20 CDT
+Rev. 18 | Created: 2026-09-12 | Updated: 2026-09-14 01:21 CDT
 
 ## 1. Purpose
 
@@ -156,13 +156,16 @@ scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` �
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.1.0+20260914"
+__version__ = "0.2.0+20260914"
 
+import pathlib
 import textwrap
 from typing import Literal
 
+import matplotlib
 import numpy as np
 from lightgbm import LGBMClassifier
+from matplotlib import pyplot as plt
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
@@ -170,6 +173,14 @@ from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSe
 from sklearn.linear_model import Lasso, LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
+
+FIGURE_PATH = pathlib.Path("multivariate-feature-selection-ko_fig/fig2.png")
+FIGSIZE: tuple = (9.0, 9.0)
+REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
+BASE_FONT_SIZE: float = 9.0
+FILTER_METHODS: tuple = ("corr", "vif", "mrmr", "relieff")
+EMBEDDED_METHODS: tuple = ("random_forest", "lightgbm", "lasso")
+WRAPPER_METHODS: tuple = ("rfe", "forward", "backward")
 
 
 class MultivariateFeatureSelector:
@@ -363,6 +374,42 @@ class MultivariateFeatureSelector:
         return {"varying": varying, "filter": filtered, "embedded": embedded, "wrapper": wrapped}
 
 
+def draw_matrix(kept: dict, names: np.ndarray, columns: np.ndarray, path: pathlib.Path) -> None:
+    """Draw one cell per (feature, method) pair, filled where that method kept the feature.
+
+    Args:
+        kept: method name mapped to the column indices that method kept.
+        names: feature name of every column of X.
+        columns: the columns that reach the methods, drawn as the rows of the chart.
+        path: file the chart is written to.
+    """
+    order = columns[np.argsort(names[columns])]
+    methods = list(kept)
+    grid = np.array([[1.0 if column in set(kept[method]) else 0.0 for method in methods] for column in order])
+
+    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
+    fig, axes = plt.subplots(figsize=FIGSIZE)
+    axes.imshow(grid, aspect="auto", vmin=0.0, vmax=1.0,
+                cmap=matplotlib.colors.ListedColormap(["#f2f2f2", matplotlib.colors.TABLEAU_COLORS["tab:blue"]]))
+    axes.set_xticks(range(len(methods)),
+                    [f"{method}\n({len(kept[method])})" for method in methods],
+                    rotation=45, ha="right", fontsize=font_size)
+    axes.set_yticks(range(len(order)), names[order], fontsize=font_size)
+    axes.set_xticks(np.arange(len(methods) + 1) - 0.5, minor=True)
+    axes.set_yticks(np.arange(len(order) + 1) - 0.5, minor=True)
+    axes.grid(which="minor", color="white", linewidth=1.5)
+    axes.tick_params(which="minor", length=0)
+    for boundary in np.cumsum([len(FILTER_METHODS), len(EMBEDDED_METHODS)]) - 0.5:
+        axes.axvline(boundary, color="white", linewidth=5.0)
+    for spine in axes.spines.values():
+        spine.set_visible(False)
+    axes.set_xlabel("Selection method, with the number of features it keeps", fontsize=font_size)
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=300)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     data = load_breast_cancer()
     # Append a column that never changes, to show the first step removing it
@@ -382,24 +429,29 @@ if __name__ == "__main__":
     varying = selector.drop_constant(X=X)
     show(label="left by the constant filter", columns=varying)
 
-    for filter_method in ("corr", "vif", "mrmr", "relieff"):
-        show(label=f"filter by {filter_method}",
-             columns=selector.filter_step(X=X, y=data.target, columns=varying, method=filter_method))
+    kept = {}
+    for filter_method in FILTER_METHODS:
+        kept[filter_method] = selector.filter_step(X=X, y=data.target, columns=varying, method=filter_method)
+        show(label=f"filter by {filter_method}", columns=kept[filter_method])
 
-    for embedded_method in ("random_forest", "lightgbm", "lasso"):
-        show(label=f"embedded by {embedded_method}",
-             columns=selector.embedded_step(X=X, y=data.target, columns=varying, method=embedded_method))
+    for embedded_method in EMBEDDED_METHODS:
+        kept[embedded_method] = selector.embedded_step(X=X, y=data.target, columns=varying,
+                                                       method=embedded_method)
+        show(label=f"embedded by {embedded_method}", columns=kept[embedded_method])
 
-    forest_columns = selector.embedded_step(X=X, y=data.target, columns=varying, method="random_forest")
-    for wrapper_method in ("rfe", "forward", "backward"):
+    for wrapper_method in WRAPPER_METHODS:
+        kept[wrapper_method] = selector.wrapper_step(X=X, y=data.target, columns=kept["random_forest"],
+                                                     method=wrapper_method)
         show(label=f"wrapper by {wrapper_method}, out of the random forest columns",
-             columns=selector.wrapper_step(X=X, y=data.target, columns=forest_columns,
-                                           method=wrapper_method))
+             columns=kept[wrapper_method])
 
     workflow = selector.run(X=X, y=data.target, filter_method="corr",
                             embedded_method="random_forest", wrapper_method="rfe")
     for step_name, step_columns in workflow.items():
         show(label=f"{step_name} step of the workflow", columns=step_columns)
+
+    draw_matrix(kept=kept, names=names, columns=varying, path=FIGURE_PATH)
+    print(f"\nchart written to {FIGURE_PATH}")
 ```
 
 실행 결과는 다음과 같다.
@@ -487,6 +539,18 @@ embedded step of the workflow (6 features)
 
 wrapper step of the workflow (5 features)
   mean concavity, mean radius, radius error, worst concave points, worst concavity
+
+chart written to multivariate-feature-selection-ko_fig/fig2.png
 ```
 
-상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 세 embedded 는 남은 30 개에서 9, 6, 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 세 embedded 는 9, 6, 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+
+어느 method 가 어느 feature 를 남겼는지는 Fig 2 에 있다.
+
+<img src="multivariate-feature-selection-ko_fig/fig2.png" width="800" style="max-width: 100%;" alt="Fig 2">
+
+Fig 2. Which features each selection method keeps
+
+- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 10 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
+- 열 이름 아래 괄호 안 숫자는 그 method 가 남긴 feature 수이며, wrapper 세 열은 random forest 가 남긴 9 개 위에서 돌린 결과다.
+- `mean concave points` 는 filter 와 embedded 일곱 열에서 모두 채워지고, `worst concave points` 는 열 열 가운데 아홉에서 채워진다. 반대로 `mean compactness` 와 `worst compactness` 는 corr 한 열에만 남는다.
