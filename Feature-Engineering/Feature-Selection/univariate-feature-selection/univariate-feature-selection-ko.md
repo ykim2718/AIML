@@ -1,5 +1,5 @@
 # Univariate Feature Selection
-Rev. 7 | Created: 2026-09-12 | Updated: 2026-09-14 00:20 CDT
+Rev. 8 | Created: 2026-09-12 | Updated: 2026-09-14 12:55 CDT
 
 ## 1. Purpose
 
@@ -14,6 +14,7 @@ Univariate feature selection 은 각 feature 를 다른 feature 와의 연관을
 - 계산 위치: model 학습 이전 단계에 적용하는 filter method
 - 계산 비용: feature 하나에 검정 한 번
 - 다변량 기법과의 차이: 전체 feature 집합의 상호작용을 부분집합 단위로 보는 방식과 달리, 각 변수를 1차원 scalar 값의 통계적 유의성으로 평가
+- y 사용 여부: section 4 의 네 지표가 모두 y 와의 관계를 잼. y 없이 도는 단계는 section 3 의 상수 제거뿐
 
 ## 3. Principle
 
