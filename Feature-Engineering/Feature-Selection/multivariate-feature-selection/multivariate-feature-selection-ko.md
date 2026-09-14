@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 20 | Created: 2026-09-12 | Updated: 2026-09-14 02:28 CDT
+Rev. 21 | Created: 2026-09-12 | Updated: 2026-09-14 03:19 CDT
 
 ## 1. Purpose
 
@@ -82,7 +82,7 @@ Greedy search 는 feature 를 하나씩 추가 (forward) 하거나 제거 (backw
 
 Model 의 학습 algorithm 안에 feature 선택 과정이 들어 있다.
 
-Lasso 는 손실 함수에 계수 절댓값의 합 $\lambda \sum |\beta_i|$ 을 penalty 로 더하여, 불필요한 feature 의 계수를 정확히 0 으로 보낸다.
+Lasso 는 손실 함수에 계수 절댓값의 합 $\lambda \sum |\beta_i|$ 을 penalty 로 더하여, 불필요한 feature 의 계수를 정확히 0 으로 보낸다. ElasticNet 은 거기에 계수 제곱합을 섞어, 서로 상관된 feature 가운데 하나만 남기는 lasso 와 달리 그 무리를 함께 남긴다.
 
 Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다. 구현으로는 random forest 와 gradient boosting 계열의 XGBoost, LightGBM 이 있으며, 셋 다 분할 기여도를 내놓으므로 `SelectFromModel` 에 그대로 들어간다.
 
@@ -150,13 +150,13 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 세 이름 (`random_forest`, `lightgbm`, `lasso`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.2.1+20260914"
+__version__ = "0.3.0+20260914"
 
 import pathlib
 import textwrap
@@ -170,7 +170,7 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
                                        mutual_info_classif, mutual_info_regression)
-from sklearn.linear_model import Lasso, LogisticRegression
+from sklearn.linear_model import ElasticNet, Lasso, LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -179,7 +179,7 @@ FIGSIZE: tuple = (9.0, 9.0)
 REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
 FILTER_METHODS: tuple = ("corr", "vif", "mrmr", "relieff")
-EMBEDDED_METHODS: tuple = ("random_forest", "lightgbm", "lasso")
+EMBEDDED_METHODS: tuple = ("random_forest", "lightgbm", "lasso", "elasticnet")
 WRAPPER_METHODS: tuple = ("rfe", "forward", "backward")
 
 
@@ -192,7 +192,8 @@ class MultivariateFeatureSelector:
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
         vif_limit: variance inflation factor above which a feature is dropped, one at a time.
-        lasso_alpha: weight of the lasso penalty of the embedded step.
+        penalty_alpha: weight of the lasso and elastic net penalty of the embedded step.
+        elasticnet_ratio: share of the elastic net penalty that is L1, the rest being L2.
         filter_count: number of features the ranking filters (mrmr, relieff) keep.
         neighbour_count: number of hits and misses relieff compares per sample.
         forest_size: number of trees of the random forest used by the embedded step.
@@ -202,22 +203,26 @@ class MultivariateFeatureSelector:
     """
 
     def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
-                 lasso_alpha: float = 0.01, filter_count: int = 10, neighbour_count: int = 10,
+                 penalty_alpha: float = 0.01, elasticnet_ratio: float = 0.5,
+                 filter_count: int = 10, neighbour_count: int = 10,
                  forest_size: int = 200, fold_count: int = 5, final_count: int = 5,
                  random_state: int = 0) -> None:
         if not 0.0 < correlation_limit < 1.0:
             raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
         if vif_limit <= 1.0:
             raise ValueError(f"vif_limit must exceed 1: {vif_limit=}")
-        if lasso_alpha <= 0.0:
-            raise ValueError(f"lasso_alpha must be positive: {lasso_alpha=}")
+        if penalty_alpha <= 0.0:
+            raise ValueError(f"penalty_alpha must be positive: {penalty_alpha=}")
+        if not 0.0 < elasticnet_ratio <= 1.0:
+            raise ValueError(f"elasticnet_ratio must lie in (0, 1]: {elasticnet_ratio=}")
         if fold_count < 2:
             raise ValueError(f"fold_count must be at least 2: {fold_count=}")
         if filter_count < 1 or neighbour_count < 1 or final_count < 1:
             raise ValueError(f"counts must be at least 1: {filter_count=}, {neighbour_count=}, {final_count=}")
         self.correlation_limit = correlation_limit
         self.vif_limit = vif_limit
-        self.lasso_alpha = lasso_alpha
+        self.penalty_alpha = penalty_alpha
+        self.elasticnet_ratio = elasticnet_ratio
         self.filter_count = filter_count
         self.neighbour_count = neighbour_count
         self.forest_size = forest_size
@@ -304,14 +309,17 @@ class MultivariateFeatureSelector:
         return np.abs(source[:, None, :] - pool[neighbours]).sum(axis=(0, 1))
 
     def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                      method: Literal["random_forest", "lightgbm", "lasso"] = "random_forest") -> np.ndarray:
+                      method: Literal["random_forest", "lightgbm", "lasso",
+                                      "elasticnet"] = "random_forest") -> np.ndarray:
         """Return the columns the named embedded model keeps, as indices into the columns of X."""
         if method == "random_forest":
             return self._by_forest(X=X, y=y, columns=columns)
         if method == "lightgbm":
             return self._by_lightgbm(X=X, y=y, columns=columns)
         if method == "lasso":
-            return self._by_lasso(X=X, y=y, columns=columns)
+            return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=1.0)
+        if method == "elasticnet":
+            return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=self.elasticnet_ratio)
         raise ValueError(f"unknown embedded method: {method=}")
 
     def _by_forest(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
@@ -327,10 +335,17 @@ class MultivariateFeatureSelector:
         selector = SelectFromModel(estimator=booster, threshold="mean").fit(X[:, columns], y)
         return columns[selector.get_support()]
 
-    def _by_lasso(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
-        """Keep the columns whose lasso coefficient stays off zero, reading the class label as 0 or 1."""
-        lasso = Lasso(alpha=self.lasso_alpha, random_state=self.random_state)
-        selector = SelectFromModel(estimator=lasso, threshold=1e-10).fit(X[:, columns], y)
+    def _by_penalty(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
+                    l1_ratio: float) -> np.ndarray:
+        """Keep the columns whose penalized coefficient stays off zero, reading the class label as 0 or 1.
+
+        An L1 share of 1 is the lasso; a smaller share adds the L2 term of the elastic net, which keeps
+        correlated features together instead of picking one of them.
+        """
+        estimator = (Lasso(alpha=self.penalty_alpha, random_state=self.random_state) if l1_ratio == 1.0
+                     else ElasticNet(alpha=self.penalty_alpha, l1_ratio=l1_ratio,
+                                     random_state=self.random_state))
+        selector = SelectFromModel(estimator=estimator, threshold=1e-10).fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
@@ -361,7 +376,8 @@ class MultivariateFeatureSelector:
 
     def run(self, X: np.ndarray, y: np.ndarray,
             filter_method: Literal["corr", "vif", "mrmr", "relieff"] = "corr",
-            embedded_method: Literal["random_forest", "lightgbm", "lasso"] = "random_forest",
+            embedded_method: Literal["random_forest", "lightgbm", "lasso",
+                                     "elasticnet"] = "random_forest",
             wrapper_method: Literal["rfe", "forward", "backward"] = "rfe") -> dict:
         """Return the surviving column indices of each step, keyed by step name.
 
@@ -435,7 +451,7 @@ if __name__ == "__main__":
           f"{len(workflow['wrapper'])} out; chart written to {FIGURE_PATH}")
 ```
 
-상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 세 embedded 는 9, 6, 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 네 embedded 는 9, 6, 12, 18 개를 남겨 서로 다른 답을 내며, L2 를 섞은 `elasticnet` 이 상관된 무리를 함께 남겨 `lasso` 보다 6 개를 더 든다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
 
 어느 method 가 어느 feature 를 남겼는지는 Fig 2 에 있다.
 
@@ -443,6 +459,6 @@ if __name__ == "__main__":
 
 Fig 2. Which features each selection method keeps
 
-- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 10 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
+- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 11 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
 - 열 이름 아래 괄호 안 숫자는 그 method 가 남긴 feature 수이며, wrapper 세 열은 random forest 가 남긴 9 개 위에서 돌린 결과다.
-- `mean concave points` 는 filter 와 embedded 일곱 열에서 모두 채워지고, `worst concave points` 는 열 열 가운데 아홉에서 채워진다. 반대로 `mean compactness` 와 `worst compactness` 는 corr 한 열에만 남는다.
+- `mean concave points` 는 filter 와 embedded 여덟 열에서 모두 채워지고, `worst concave points` 는 열한 열 가운데 열에서 채워진다. 반대로 `worst compactness` 는 corr 한 열에만 남는다.
