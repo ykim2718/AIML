@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 50 | Created: 2026-09-12 | Updated: 2026-09-14 12:49 CDT
+Rev. 51 | Created: 2026-09-12 | Updated: 2026-09-14 12:50 CDT
 
 ## 1. Purpose
 
@@ -135,11 +135,11 @@ Table 2. What each method changes when the target is regression instead of class
 
 | Section                  | Method                         | Classification target           | Regression target                       |
 | :----------------------: | :----------------------------: | :-----------------------------: | :-------------------------------------: |
-| 3.1 Filter               | corr, VIF                      | Same (y not used)               | Same                                    |
+| 3.1 Filter               | corr, VIF                      | Correlation among X only        | Correlation among X only                |
 | 3.1 Filter               | mRMR                           | `mutual_info_classif`           | `mutual_info_regression`                |
 | 3.1 Filter / 4.2 Synergy | ReliefF                        | hit/miss contrast               | None (RReliefF is a separate algorithm) |
 | 3.3 Embedded             | random forest, LightGBM        | Classifier                      | Regressor                               |
-| 3.3 Embedded             | lasso, elastic net             | Regression as is (label as 0/1) | Same                                    |
+| 3.3 Embedded             | lasso, elastic net             | Regression fit on the 0/1 label | Regression fit on y                     |
 | 3.2 Wrapper              | RFE, forward/backward, genetic | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
 
 - Target 을 보지 않는 method (corr, VIF): 두 target 에서 같은 답. X 안의 상관만 계산
