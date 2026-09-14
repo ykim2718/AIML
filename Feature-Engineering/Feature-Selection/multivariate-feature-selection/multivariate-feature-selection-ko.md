@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 52 | Created: 2026-09-12 | Updated: 2026-09-14 12:53 CDT
+Rev. 53 | Created: 2026-09-12 | Updated: 2026-09-14 12:59 CDT
 
 ## 1. Purpose
 
@@ -170,33 +170,33 @@ Table 2. What each method changes when the target is regression instead of class
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 6 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 6 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다. 생성자가 받는 `task` 는 각 단계 뒤에 설 model 을 Table 2 대로 고르며, 회귀에서 `relieff` 를 부르면 `ValueError` 와 함께 그 task 가 쓸 수 있는 filter 목록을 돌려준다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다. Label 이 이진이므로 예제는 분류 model 로 짰고, 회귀 target 이면 Table 2 의 오른쪽 열로 바꾼다.
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.4.4+20260914"
+__version__ = "0.5.0+20260914"
 
 import pathlib
 from typing import Final, Literal, TypeAlias, get_args
 
 import matplotlib
 import numpy as np
-from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier, LGBMRegressor
 from matplotlib import pyplot as plt
 from sklearn.datasets import load_breast_cancer
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
                                        mutual_info_classif, mutual_info_regression)
-from sklearn.linear_model import ElasticNet, Lasso, LogisticRegression
+from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 FIGURE_PATH = pathlib.Path("multivariate-feature-selection-ko_fig/fig2.png")
 FIGSIZE: tuple = (9.0, 9.0)
-REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
+REFERENCE_WIDTH: float = 9.0  # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
 
 
@@ -207,7 +207,13 @@ class MultivariateFeatureSelector:
     members are declared on the class; the tuples beside them derive from it. A name outside the
     alias raises ValueError.
 
+    The task decides which model stands behind a method: a classifier and the class label mutual
+    information for classification, a regressor and the regression mutual information for
+    regression. relieff compares hits and misses of a class label, so it has no regression form
+    and refuses that task; filter_methods lists the filters the task supports.
+
     Args:
+        task: whether y holds class labels or a continuous value.
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
         vif_limit: variance inflation factor above which a feature is dropped, one at a time.
         penalty_alpha: weight of the lasso and elastic net penalty of the embedded step.
@@ -227,17 +233,23 @@ class MultivariateFeatureSelector:
     EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "lasso", "elasticnet"]
     WrapperMethod: TypeAlias = Literal["rfe", "forward", "backward", "genetic"]
     Direction: TypeAlias = Literal["forward", "backward"]
+    Task: TypeAlias = Literal["classification", "regression"]
 
     FILTER_METHODS: Final[tuple[FilterMethod, ...]] = get_args(FilterMethod)
     EMBEDDED_METHODS: Final[tuple[EmbeddedMethod, ...]] = get_args(EmbeddedMethod)
     WRAPPER_METHODS: Final[tuple[WrapperMethod, ...]] = get_args(WrapperMethod)
+    TASKS: Final[tuple[Task, ...]] = get_args(Task)
+    CLASS_ONLY_FILTERS: Final[tuple[FilterMethod, ...]] = ("relieff",)
 
-    def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
+    def __init__(self, task: Task = "classification",
+                 correlation_limit: float = 0.95, vif_limit: float = 10.0,
                  penalty_alpha: float = 0.01, elasticnet_ratio: float = 0.5,
                  filter_count: int = 10, neighbour_count: int = 10,
                  forest_size: int = 200, fold_count: int = 5, population_size: int = 20,
                  generation_count: int = 10, mutation_rate: float = 0.2,
                  final_count: int = 5, random_state: int = 0) -> None:
+        if task not in self.TASKS:
+            raise ValueError(f"unknown task: {task=}, {self.TASKS=}")
         if not 0.0 < correlation_limit < 1.0:
             raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
         if vif_limit <= 1.0:
@@ -255,6 +267,10 @@ class MultivariateFeatureSelector:
             raise ValueError(f"mutation_rate must lie between 0 and 1: {mutation_rate=}")
         if filter_count < 1 or neighbour_count < 1 or final_count < 1:
             raise ValueError(f"counts must be at least 1: {filter_count=}, {neighbour_count=}, {final_count=}")
+        self.task = task
+        self.filter_methods: tuple = tuple(
+            method for method in self.FILTER_METHODS
+            if task == "classification" or method not in self.CLASS_ONLY_FILTERS)
         self.correlation_limit = correlation_limit
         self.vif_limit = vif_limit
         self.penalty_alpha = penalty_alpha
@@ -318,7 +334,8 @@ class MultivariateFeatureSelector:
     def _by_mrmr(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Add the feature of the largest relevance minus mean redundancy, until filter_count are held."""
         subset = X[:, columns]
-        relevance = mutual_info_classif(subset, y, random_state=self.random_state)
+        relevance_of = mutual_info_classif if self.task == "classification" else mutual_info_regression
+        relevance = relevance_of(subset, y, random_state=self.random_state)
         selected = [int(np.argmax(relevance))]
         while len(selected) < min(self.filter_count, len(columns)):
             rest = [position for position in range(len(columns)) if position not in selected]
@@ -331,6 +348,9 @@ class MultivariateFeatureSelector:
 
     def _by_relieff(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the features whose value separates nearest misses from nearest hits the most."""
+        if self.task != "classification":
+            raise ValueError(f"relieff compares hits and misses of a class label, so it has no form "
+                             f"for {self.task=}; use one of {self.filter_methods}")
         subset = X[:, columns]
         span = np.ptp(subset, axis=0)
         score = np.zeros(len(columns))
@@ -362,22 +382,25 @@ class MultivariateFeatureSelector:
 
     def _by_forest(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns whose random forest importance is above the mean importance."""
-        forest = RandomForestClassifier(n_estimators=self.forest_size, random_state=self.random_state)
+        forest_of = RandomForestClassifier if self.task == "classification" else RandomForestRegressor
+        forest = forest_of(n_estimators=self.forest_size, random_state=self.random_state)
         selector = SelectFromModel(estimator=forest, threshold="mean").fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def _by_lightgbm(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns whose gradient boosting split gain is above the mean gain."""
-        booster = LGBMClassifier(n_estimators=self.forest_size, importance_type="gain",
-                                 random_state=self.random_state, verbose=-1)
+        booster_of = LGBMClassifier if self.task == "classification" else LGBMRegressor
+        booster = booster_of(n_estimators=self.forest_size, importance_type="gain",
+                             random_state=self.random_state, verbose=-1)
         selector = SelectFromModel(estimator=booster, threshold="mean").fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def _by_penalty(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
                     l1_ratio: float) -> np.ndarray:
-        """Keep the columns whose penalized coefficient stays off zero, reading the class label as 0 or 1.
+        """Keep the columns whose penalized coefficient stays off zero.
 
-        An L1 share of 1 is the lasso; a smaller share adds the L2 term of the elastic net, which keeps
+        The penalized fit is a regression either way: a class label enters as 0 or 1. An L1 share
+        of 1 is the lasso; a smaller share adds the L2 term of the elastic net, which keeps
         correlated features together instead of picking one of them.
         """
         estimator = (Lasso(alpha=self.penalty_alpha, random_state=self.random_state) if l1_ratio == 1.0
@@ -400,16 +423,20 @@ class MultivariateFeatureSelector:
             return self._by_genetic(X=X, y=y, columns=columns)
         raise ValueError(f"unknown wrapper method: {method=}, {self.WRAPPER_METHODS=}")
 
+    def _wrapper_estimator(self):
+        """Return the linear model the wrapper searches score with: logistic for a label, least squares else."""
+        return LogisticRegression(max_iter=5000) if self.task == "classification" else LinearRegression()
+
     def _by_rfe(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns left after dropping the smallest coefficient one feature at a time."""
-        estimator = LogisticRegression(max_iter=5000)
+        estimator = self._wrapper_estimator()
         selector = RFE(estimator=estimator, n_features_to_select=self.final_count).fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def _by_sequential(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
                        direction: Direction) -> np.ndarray:
         """Keep the columns a greedy search holds, adding or removing one by cross validation score."""
-        estimator = LogisticRegression(max_iter=5000)
+        estimator = self._wrapper_estimator()
         selector = SequentialFeatureSelector(estimator=estimator, n_features_to_select=self.final_count,
                                              direction=direction, cv=self.fold_count).fit(X[:, columns], y)
         return columns[selector.get_support()]
@@ -434,7 +461,7 @@ class MultivariateFeatureSelector:
 
     def _fitness_of(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> float:
         """Return the mean cross validation score of a model fitted on the given columns."""
-        estimator = LogisticRegression(max_iter=5000)
+        estimator = self._wrapper_estimator()
         return float(np.mean(cross_val_score(estimator, X[:, columns], y, cv=self.fold_count)))
 
     def _child_of(self, parents: list, position_count: int, rng: np.random.Generator) -> np.ndarray:
@@ -486,8 +513,10 @@ def draw_matrix(kept: dict, names: np.ndarray, columns: np.ndarray, path: pathli
     axes.set_yticks(np.arange(len(order) + 1) - 0.5, minor=True)
     axes.grid(which="minor", color="white", linewidth=1.5)
     axes.tick_params(which="minor", length=0)
-    for boundary in np.cumsum([len(MultivariateFeatureSelector.FILTER_METHODS),
-                               len(MultivariateFeatureSelector.EMBEDDED_METHODS)]) - 0.5:
+    # Separate the three branches where the given methods change branch, whichever members are present
+    filter_count = sum(method in MultivariateFeatureSelector.FILTER_METHODS for method in methods)
+    embedded_count = sum(method in MultivariateFeatureSelector.EMBEDDED_METHODS for method in methods)
+    for boundary in np.cumsum([filter_count, embedded_count]) - 0.5:
         axes.axvline(boundary, color="white", linewidth=5.0)
     for spine in axes.spines.values():
         spine.set_visible(False)
