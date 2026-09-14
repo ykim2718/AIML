@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 49 | Created: 2026-09-12 | Updated: 2026-09-14 12:48 CDT
+Rev. 50 | Created: 2026-09-12 | Updated: 2026-09-14 12:49 CDT
 
 ## 1. Purpose
 
@@ -133,14 +133,14 @@ Table 1. Comparison of the three approaches
 
 Table 2. What each method changes when the target is regression instead of classification
 
-| Section                  | Method                         | Classification target          | Regression target                |
-| :----------------------: | :----------------------------: | :----------------------------: | :------------------------------: |
-| 3.1 Filter               | corr, VIF                      | 동일 (y 를 안 봄)              | 동일                             |
-| 3.1 Filter               | mRMR                           | `mutual_info_classif`          | `mutual_info_regression`         |
-| 3.1 Filter / 4.2 Synergy | ReliefF                        | hit/miss 비교                  | 없음 (RReliefF 는 별도 알고리즘) |
-| 3.3 Embedded             | random forest, LightGBM        | Classifier                     | Regressor                        |
-| 3.3 Embedded             | lasso, elastic net             | 원래 회귀 (label 을 0/1 로)    | 동일                             |
-| 3.2 Wrapper              | RFE, forward·backward, genetic | `LogisticRegression` 으로 채점 | `LinearRegression` 으로 채점     |
+| Section                  | Method                         | Classification target           | Regression target                       |
+| :----------------------: | :----------------------------: | :-----------------------------: | :-------------------------------------: |
+| 3.1 Filter               | corr, VIF                      | Same (y not used)               | Same                                    |
+| 3.1 Filter               | mRMR                           | `mutual_info_classif`           | `mutual_info_regression`                |
+| 3.1 Filter / 4.2 Synergy | ReliefF                        | hit/miss contrast               | None (RReliefF is a separate algorithm) |
+| 3.3 Embedded             | random forest, LightGBM        | Classifier                      | Regressor                               |
+| 3.3 Embedded             | lasso, elastic net             | Regression as is (label as 0/1) | Same                                    |
+| 3.2 Wrapper              | RFE, forward/backward, genetic | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
 
 - Target 을 보지 않는 method (corr, VIF): 두 target 에서 같은 답. X 안의 상관만 계산
 - Target 과의 관계를 재는 method (mRMR, embedded, wrapper): 추정량과 model 만 회귀용으로 교체
