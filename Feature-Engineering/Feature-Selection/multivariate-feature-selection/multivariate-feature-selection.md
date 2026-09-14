@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 1 | Created: 2026-09-14 | Updated: 2026-09-14 18:48 CDT
+Rev. 2 | Created: 2026-09-14 | Updated: 2026-09-14 18:49 CDT
 
 ## 1. Purpose
 
@@ -131,7 +131,7 @@ The branch that trades the number of kept dimensions against signal, which decid
 
 ## 5. Target Kind
 
-Classification and regression are properties of the target, orthogonal to the approach hierarchy of section 3 and to the interaction hierarchy of section 4. One method keeps its criterion and changes only the model standing behind it.
+Classification and regression are properties of the target, orthogonal to the approach hierarchy of section 3 and to the interaction hierarchy of section 4. One method keeps its criterion and substitutes only the estimator that matches the target.
 
 Table 2. What each method changes when the target is regression instead of classification
 
@@ -155,12 +155,12 @@ Selection instability is the property that the kept columns change when the data
 - Interchangeable features: an equivalence class of columns so correlated that swapping them leaves the performance where it was
 - Sampling noise: correlation and importance ranks wobbling from one resample to the next, which flips the features that sat near the threshold
 
-The remedies all refuse to trust one run of the selection.
+The remedies replace one run of the selection with a selection frequency over repeats or with a treatment applied per correlated group.
 
 - Stability selection: the selection repeated on every bootstrap sample, keeping the features whose selection frequency passes a threshold (0.6, say)
 - Cluster representative: the features clustered by correlation and one member kept per cluster, which removes the swapping inside a cluster
-- Group-wise keeping: a correlated group kept together by ElasticNet or group lasso, which stops one member from standing for the group
-- Frequency reported: the selection frequency of every feature written beside the chosen set, which shows the columns that can stand in for one another
+- Group-wise selection: a correlated group kept together by ElasticNet or group lasso, which stops one member from standing for the group
+- Selection frequency reporting: the selection frequency of every feature written beside the chosen set, which shows the columns that can stand in for one another
 
 ## 7. Workflow
 
@@ -596,6 +596,6 @@ Table 3. Cross validation score of each wrapper subset of the breast cancer exam
 
 The four wrappers take the target count as an argument, and this example gives `final_count=5`. The four subsets are therefore the same size and the score differs only through what was chosen. That difference falls inside the standard deviation, so the score alone cannot pick one on this data. The order below takes over then.
 
-1️⃣ Step 1 (agreement): trust the features several methods chose in common first. `worst concave points` is in all four subsets of Table 3<br>
+1️⃣ Step 1 (agreement): keep the features several methods chose in common first. `worst concave points` is in all four subsets of Table 3<br>
 2️⃣ Step 2 (stability): take the side that returns the same subset when the data is resampled. How it is measured is in section 6<br>
 3️⃣ Step 3 (actionability): where a tie is left, take the feature the process can act on or a reader can make sense of

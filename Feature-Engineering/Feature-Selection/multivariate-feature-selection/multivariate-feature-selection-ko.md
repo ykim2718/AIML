@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 58 | Created: 2026-09-12 | Updated: 2026-09-14 18:48 CDT
+Rev. 59 | Created: 2026-09-12 | Updated: 2026-09-14 18:49 CDT
 
 ## 1. Purpose
 
@@ -131,7 +131,7 @@ Table 1. Comparison of the three approaches
 
 ## 5. Target Kind
 
-분류와 회귀는 target 의 성질이고, section 3 의 approach 갈래와 section 4 의 interaction 갈래 어느 쪽과도 직교한다. 같은 method 가 target 종류에 따라 뒤에 붙는 model 만 바꿔 단다.
+분류와 회귀는 target 의 성질이고, section 3 의 approach 갈래와 section 4 의 interaction 갈래 어느 쪽과도 직교한다. 같은 method 가 criterion 을 유지한 채 estimator 만 target 에 맞는 것으로 교체한다.
 
 Table 2. What each method changes when the target is regression instead of classification
 
@@ -155,12 +155,12 @@ Selection instability 는 자료나 method 를 조금만 바꿔도 고른 열이
 - Interchangeable features: 상관이 높아 서로 바꿔 써도 성능이 같은 열들의 equivalence class
 - Sampling noise: 재표본마다 상관과 중요도 순위가 흔들려, 문턱 가까이 있던 feature 의 당락이 뒤집힘
 
-대책은 한 번의 선택을 믿지 않는 쪽으로 간다.
+대책은 한 번의 선택 대신 반복 선택의 빈도나 상관 무리 단위의 처리를 쓴다.
 
 - Stability selection: bootstrap 표본마다 선택을 되풀이하고, 선택 빈도가 문턱 (예: 0.6) 을 넘는 feature 만 남김
-- 무리의 대표: 상관으로 feature 를 clustering 한 뒤 무리마다 하나를 대표로 남겨, 무리 안의 교체를 없앰
-- 무리째 남기기: ElasticNet 이나 group lasso 로 상관된 무리를 함께 남겨, 하나만 뽑히는 것을 막음
-- 빈도까지 보고: 고른 집합 하나가 아니라 feature 마다의 선택 빈도를 함께 적어, 바꿔 쓸 수 있는 열을 드러냄
+- Cluster representative: 상관으로 feature 를 clustering 한 뒤 무리마다 하나를 대표로 남겨, 무리 안의 교체를 없앰
+- Group-wise selection: ElasticNet 이나 group lasso 로 상관된 무리를 함께 남겨, 하나만 뽑히는 것을 막음
+- Selection frequency reporting: 고른 집합 하나가 아니라 feature 마다의 선택 빈도를 함께 적어, 바꿔 쓸 수 있는 열을 드러냄
 
 ## 7. Workflow
 
@@ -595,6 +595,6 @@ Table 3. Cross validation score of each wrapper subset of the breast cancer exam
 
 네 wrapper 는 목표 개수를 인자로 받으며, 이 예제는 `final_count=5` 다. 그래서 네 집합의 크기가 같지만 다르게 골랐기에 점수 차이가 발생한다. 그 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
 
-1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. `worst concave points` 는 Table 3 의 네 집합 모두에 들어 있다<br>
+1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 남긴다. `worst concave points` 는 Table 3 의 네 집합 모두에 들어 있다<br>
 2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽을 고른다. 재는 방법은 section 6 에 있다<br>
 3️⃣ Step 3 (actionability): 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
