@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 44 | Created: 2026-09-12 | Updated: 2026-09-14 10:56 CDT
+Rev. 45 | Created: 2026-09-12 | Updated: 2026-09-14 11:02 CDT
 
 ## 1. Purpose
 
@@ -149,13 +149,13 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 그 별칭 한 곳에만 적고 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 그 별칭 한 곳에만 적고 class attribute 인 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.4.1+20260914"
+__version__ = "0.4.2+20260914"
 
 import pathlib
 import textwrap
@@ -184,16 +184,12 @@ EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "lasso", "elast
 WrapperMethod: TypeAlias = Literal["rfe", "forward", "backward", "genetic"]
 Direction: TypeAlias = Literal["forward", "backward"]
 
-FILTER_METHODS: Final[tuple[FilterMethod, ...]] = get_args(FilterMethod)
-EMBEDDED_METHODS: Final[tuple[EmbeddedMethod, ...]] = get_args(EmbeddedMethod)
-WRAPPER_METHODS: Final[tuple[WrapperMethod, ...]] = get_args(WrapperMethod)
-
 
 class MultivariateFeatureSelector:
     """Run the three steps of the workflow on one dataset, keeping the original column indices.
 
     Each step takes a method name typed by the Literal alias of that branch, which is where the
-    members are declared; the tuples above derive from it. A name outside the alias raises
+    members are declared; the tuples below derive from it. A name outside the alias raises
     ValueError.
 
     Args:
@@ -211,6 +207,10 @@ class MultivariateFeatureSelector:
         final_count: number of features the wrapper step leaves.
         random_state: seed of the random forest and of the mutual information estimates.
     """
+
+    FILTER_METHODS: Final[tuple[FilterMethod, ...]] = get_args(FilterMethod)
+    EMBEDDED_METHODS: Final[tuple[EmbeddedMethod, ...]] = get_args(EmbeddedMethod)
+    WRAPPER_METHODS: Final[tuple[WrapperMethod, ...]] = get_args(WrapperMethod)
 
     def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
                  penalty_alpha: float = 0.01, elasticnet_ratio: float = 0.5,
@@ -267,7 +267,7 @@ class MultivariateFeatureSelector:
             return self._by_mrmr(X=X, y=y, columns=columns)
         if method == "relieff":
             return self._by_relieff(X=X, y=y, columns=columns)
-        raise ValueError(f"unknown filter method: {method=}, {FILTER_METHODS=}")
+        raise ValueError(f"unknown filter method: {method=}, {self.FILTER_METHODS=}")
 
     def _by_correlation(self, X: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Drop the later feature of every pair whose absolute correlation exceeds the limit."""
@@ -338,7 +338,7 @@ class MultivariateFeatureSelector:
             return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=1.0)
         if method == "elasticnet":
             return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=self.elasticnet_ratio)
-        raise ValueError(f"unknown embedded method: {method=}, {EMBEDDED_METHODS=}")
+        raise ValueError(f"unknown embedded method: {method=}, {self.EMBEDDED_METHODS=}")
 
     def _by_forest(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns whose random forest importance is above the mean importance."""
@@ -378,7 +378,7 @@ class MultivariateFeatureSelector:
             return self._by_sequential(X=X, y=y, columns=columns, direction=method)
         if method == "genetic":
             return self._by_genetic(X=X, y=y, columns=columns)
-        raise ValueError(f"unknown wrapper method: {method=}, {WRAPPER_METHODS=}")
+        raise ValueError(f"unknown wrapper method: {method=}, {self.WRAPPER_METHODS=}")
 
     def _by_rfe(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns left after dropping the smallest coefficient one feature at a time."""
@@ -466,7 +466,8 @@ def draw_matrix(kept: dict, names: np.ndarray, columns: np.ndarray, path: pathli
     axes.set_yticks(np.arange(len(order) + 1) - 0.5, minor=True)
     axes.grid(which="minor", color="white", linewidth=1.5)
     axes.tick_params(which="minor", length=0)
-    for boundary in np.cumsum([len(FILTER_METHODS), len(EMBEDDED_METHODS)]) - 0.5:
+    for boundary in np.cumsum([len(MultivariateFeatureSelector.FILTER_METHODS),
+                               len(MultivariateFeatureSelector.EMBEDDED_METHODS)]) - 0.5:
         axes.axvline(boundary, color="white", linewidth=5.0)
     for spine in axes.spines.values():
         spine.set_visible(False)
@@ -486,12 +487,12 @@ if __name__ == "__main__":
     varying = selector.drop_constant(X=X)
 
     kept = {}
-    for filter_method in FILTER_METHODS:
+    for filter_method in selector.FILTER_METHODS:
         kept[filter_method] = selector.filter_step(X=X, y=data.target, columns=varying, method=filter_method)
-    for embedded_method in EMBEDDED_METHODS:
+    for embedded_method in selector.EMBEDDED_METHODS:
         kept[embedded_method] = selector.embedded_step(X=X, y=data.target, columns=varying,
                                                        method=embedded_method)
-    for wrapper_method in WRAPPER_METHODS:
+    for wrapper_method in selector.WRAPPER_METHODS:
         kept[wrapper_method] = selector.wrapper_step(X=X, y=data.target, columns=kept["random_forest"],
                                                      method=wrapper_method)
 
