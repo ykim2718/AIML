@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 54 | Created: 2026-09-12 | Updated: 2026-09-14 14:15 CDT
+Rev. 55 | Created: 2026-09-12 | Updated: 2026-09-14 14:20 CDT
 
 ## 1. Purpose
 
@@ -152,8 +152,8 @@ Table 2. What each method changes when the target is regression instead of class
 
 Selection instability 는 자료나 method 를 조금만 바꿔도 고른 열이 바뀌는 성질이며, 점수는 거의 그대로인 채 이름만 갈린다. 원인은 둘이다.
 
-- 대체 가능한 feature: 상관이 높아 서로 바꿔 써도 성능이 같은 열들의 equivalence class
-- 표본 잡음: 재표본마다 상관과 중요도 순위가 흔들려, 문턱 가까이 있던 feature 의 당락이 뒤집힘
+- Interchangeable features: 상관이 높아 서로 바꿔 써도 성능이 같은 열들의 equivalence class
+- Sampling noise: 재표본마다 상관과 중요도 순위가 흔들려, 문턱 가까이 있던 feature 의 당락이 뒤집힘
 
 대책은 한 번의 선택을 믿지 않는 쪽으로 간다.
 
