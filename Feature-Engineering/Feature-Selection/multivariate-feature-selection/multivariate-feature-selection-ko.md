@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 43 | Created: 2026-09-12 | Updated: 2026-09-14 10:20 CDT
+Rev. 44 | Created: 2026-09-12 | Updated: 2026-09-14 10:56 CDT
 
 ## 1. Purpose
 
@@ -149,17 +149,17 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 그 별칭 한 곳에만 적고 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.4.0+20260914"
+__version__ = "0.4.1+20260914"
 
 import pathlib
 import textwrap
-from typing import Literal
+from typing import Final, Literal, TypeAlias, get_args
 
 import matplotlib
 import numpy as np
@@ -178,16 +178,23 @@ FIGURE_PATH = pathlib.Path("multivariate-feature-selection-ko_fig/fig2.png")
 FIGSIZE: tuple = (9.0, 9.0)
 REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
-FILTER_METHODS: tuple = ("corr", "vif", "mrmr", "relieff")
-EMBEDDED_METHODS: tuple = ("random_forest", "lightgbm", "lasso", "elasticnet")
-WRAPPER_METHODS: tuple = ("rfe", "forward", "backward", "genetic")
+
+FilterMethod: TypeAlias = Literal["corr", "vif", "mrmr", "relieff"]
+EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "lasso", "elasticnet"]
+WrapperMethod: TypeAlias = Literal["rfe", "forward", "backward", "genetic"]
+Direction: TypeAlias = Literal["forward", "backward"]
+
+FILTER_METHODS: Final[tuple[FilterMethod, ...]] = get_args(FilterMethod)
+EMBEDDED_METHODS: Final[tuple[EmbeddedMethod, ...]] = get_args(EmbeddedMethod)
+WRAPPER_METHODS: Final[tuple[WrapperMethod, ...]] = get_args(WrapperMethod)
 
 
 class MultivariateFeatureSelector:
     """Run the three steps of the workflow on one dataset, keeping the original column indices.
 
-    Each step takes a method name whose Literal lists the members of that branch, so the code says
-    which one is applied. A name outside that list raises ValueError.
+    Each step takes a method name typed by the Literal alias of that branch, which is where the
+    members are declared; the tuples above derive from it. A name outside the alias raises
+    ValueError.
 
     Args:
         correlation_limit: absolute correlation above which one feature of a pair is dropped.
@@ -250,7 +257,7 @@ class MultivariateFeatureSelector:
         return varying
 
     def filter_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                    method: Literal["corr", "vif", "mrmr", "relieff"] = "corr") -> np.ndarray:
+                    method: FilterMethod = "corr") -> np.ndarray:
         """Return the subset of columns the named filter keeps, as indices into the columns of X."""
         if method == "corr":
             return self._by_correlation(X=X, columns=columns)
@@ -260,7 +267,7 @@ class MultivariateFeatureSelector:
             return self._by_mrmr(X=X, y=y, columns=columns)
         if method == "relieff":
             return self._by_relieff(X=X, y=y, columns=columns)
-        raise ValueError(f"unknown filter method: {method=}")
+        raise ValueError(f"unknown filter method: {method=}, {FILTER_METHODS=}")
 
     def _by_correlation(self, X: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Drop the later feature of every pair whose absolute correlation exceeds the limit."""
@@ -321,8 +328,7 @@ class MultivariateFeatureSelector:
         return np.abs(source[:, None, :] - pool[neighbours]).sum(axis=(0, 1))
 
     def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                      method: Literal["random_forest", "lightgbm", "lasso",
-                                      "elasticnet"] = "random_forest") -> np.ndarray:
+                      method: EmbeddedMethod = "random_forest") -> np.ndarray:
         """Return the columns the named embedded model keeps, as indices into the columns of X."""
         if method == "random_forest":
             return self._by_forest(X=X, y=y, columns=columns)
@@ -332,7 +338,7 @@ class MultivariateFeatureSelector:
             return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=1.0)
         if method == "elasticnet":
             return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=self.elasticnet_ratio)
-        raise ValueError(f"unknown embedded method: {method=}")
+        raise ValueError(f"unknown embedded method: {method=}, {EMBEDDED_METHODS=}")
 
     def _by_forest(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns whose random forest importance is above the mean importance."""
@@ -361,7 +367,7 @@ class MultivariateFeatureSelector:
         return columns[selector.get_support()]
 
     def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                     method: Literal["rfe", "forward", "backward", "genetic"] = "rfe") -> np.ndarray:
+                     method: WrapperMethod = "rfe") -> np.ndarray:
         """Return the columns the named search keeps, as indices into the columns of X."""
         if len(columns) < self.final_count:
             raise ValueError(f"the wrapper step got fewer columns than it must keep: "
@@ -372,7 +378,7 @@ class MultivariateFeatureSelector:
             return self._by_sequential(X=X, y=y, columns=columns, direction=method)
         if method == "genetic":
             return self._by_genetic(X=X, y=y, columns=columns)
-        raise ValueError(f"unknown wrapper method: {method=}")
+        raise ValueError(f"unknown wrapper method: {method=}, {WRAPPER_METHODS=}")
 
     def _by_rfe(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
         """Keep the columns left after dropping the smallest coefficient one feature at a time."""
@@ -381,7 +387,7 @@ class MultivariateFeatureSelector:
         return columns[selector.get_support()]
 
     def _by_sequential(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                       direction: Literal["forward", "backward"]) -> np.ndarray:
+                       direction: Direction) -> np.ndarray:
         """Keep the columns a greedy search holds, adding or removing one by cross validation score."""
         estimator = LogisticRegression(max_iter=5000)
         selector = SequentialFeatureSelector(estimator=estimator, n_features_to_select=self.final_count,
@@ -422,10 +428,8 @@ class MultivariateFeatureSelector:
         return np.sort(child)
 
     def run(self, X: np.ndarray, y: np.ndarray,
-            filter_method: Literal["corr", "vif", "mrmr", "relieff"] = "corr",
-            embedded_method: Literal["random_forest", "lightgbm", "lasso",
-                                     "elasticnet"] = "random_forest",
-            wrapper_method: Literal["rfe", "forward", "backward", "genetic"] = "rfe") -> dict:
+            filter_method: FilterMethod = "corr", embedded_method: EmbeddedMethod = "random_forest",
+            wrapper_method: WrapperMethod = "rfe") -> dict:
         """Return the surviving column indices of each step, keyed by step name.
 
         The constant features go first: they carry nothing any later step can weigh.
