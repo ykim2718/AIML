@@ -1,5 +1,5 @@
 # Univariate Feature Selection
-Rev. 6 | Created: 2026-09-12 | Updated: 2026-09-14 00:10 CDT
+Rev. 7 | Created: 2026-09-12 | Updated: 2026-09-14 00:20 CDT
 
 ## 1. Purpose
 
@@ -99,7 +99,7 @@ scikit-learn 의 `SelectKBest` 로 section 3 의 네 단계를 실행하는 clas
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.0.1+20260913"
+__version__ = "0.1.0+20260913"
 
 import textwrap
 from typing import Literal
