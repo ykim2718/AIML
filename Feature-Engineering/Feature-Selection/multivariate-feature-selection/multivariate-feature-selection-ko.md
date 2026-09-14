@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 53 | Created: 2026-09-12 | Updated: 2026-09-14 12:59 CDT
+Rev. 54 | Created: 2026-09-12 | Updated: 2026-09-14 14:15 CDT
 
 ## 1. Purpose
 
@@ -148,7 +148,21 @@ Table 2. What each method changes when the target is regression instead of class
 - `Uses y` 가 Yes 인 행: 추정량과 model 만 회귀용으로 교체
 - ReliefF: 회귀에서 쓸 수 있는 대응물이 없어 알고리즘 자체가 갈림
 
-## 6. Workflow
+## 6. Selection Instability
+
+Selection instability 는 자료나 method 를 조금만 바꿔도 고른 열이 바뀌는 성질이며, 점수는 거의 그대로인 채 이름만 갈린다. 원인은 둘이다.
+
+- 대체 가능한 feature: 상관이 높아 서로 바꿔 써도 성능이 같은 열들의 equivalence class
+- 표본 잡음: 재표본마다 상관과 중요도 순위가 흔들려, 문턱 가까이 있던 feature 의 당락이 뒤집힘
+
+대책은 한 번의 선택을 믿지 않는 쪽으로 간다.
+
+- Stability selection: bootstrap 표본마다 선택을 되풀이하고, 선택 빈도가 문턱 (예: 0.6) 을 넘는 feature 만 남김
+- 무리의 대표: 상관으로 feature 를 clustering 한 뒤 무리마다 하나를 대표로 남겨, 무리 안의 교체를 없앰
+- 무리째 남기기: ElasticNet 이나 group lasso 로 상관된 무리를 함께 남겨, 하나만 뽑히는 것을 막음
+- 빈도까지 보고: 고른 집합 하나가 아니라 feature 마다의 선택 빈도를 함께 적어, 바꿔 쓸 수 있는 열을 드러냄
+
+## 7. Workflow
 
 비용이 낮은 기법으로 후보를 줄인 뒤 비싼 기법을 쓴다. Wrapper 의 비용은 남은 feature 개수에 따라 커지므로, 그 앞에 세 단계를 둔다.
 
@@ -170,7 +184,7 @@ Table 2. What each method changes when the target is regression instead of class
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 6 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다. 생성자가 받는 `task` 는 각 단계 뒤에 설 model 을 Table 2 대로 고르며, 회귀에서 `relieff` 를 부르면 `ValueError` 와 함께 그 task 가 쓸 수 있는 filter 목록을 돌려준다.
+scikit-learn 으로 section 7 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다. 생성자가 받는 `task` 는 각 단계 뒤에 설 model 을 Table 2 대로 고르며, 회귀에서 `relieff` 를 부르면 `ValueError` 와 함께 그 task 가 쓸 수 있는 filter 목록을 돌려준다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다. Label 이 이진이므로 예제는 분류 model 로 짰고, 회귀 target 이면 Table 2 의 오른쪽 열로 바꾼다.
 
@@ -582,5 +596,5 @@ Table 3. Cross validation score of each wrapper subset of the breast cancer exam
 네 wrapper 는 목표 개수를 인자로 받으며, 이 예제는 `final_count=5` 다. 그래서 네 집합의 크기가 같지만 다르게 골랐기에 점수 차이가 발생한다. 그 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
 
 1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. `worst concave points` 는 Table 3 의 네 집합 모두에 들어 있다<br>
-2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
+2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽을 고른다. 재는 방법은 section 6 에 있다<br>
 3️⃣ Step 3 (actionability): 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
