@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 24 | Created: 2026-09-12 | Updated: 2026-09-14 08:57 CDT
+Rev. 25 | Created: 2026-09-12 | Updated: 2026-09-14 09:07 CDT
 
 ## 1. Purpose
 
@@ -512,7 +512,7 @@ Fig 2. Which features each selection method keeps
 
 ### B.1 Choosing Among Answers
 
-서로 다른 method 가 서로 다른 집합을 내는 것은 정상이며, 무엇을 쓸지는 method 의 이름이 아니라 선택에 쓰지 않은 분할에서의 검증 점수로 정한다. 기준마다 무엇을 최적화하는지가 다르기 때문에 답이 갈린다. corr 은 상관이 기준을 넘는 쌍에서 열 순서상 뒤를 버리고, VIF 는 나머지로 잘 설명되는 쪽을 버리며, mRMR 은 이미 고른 것과의 중복을, ReliefF 는 이웃까지의 거리를, Lasso 는 무리에서 하나만 남기는 penalty 를, ElasticNet 은 무리를 함께 남기는 penalty 를, tree 계열은 분할 이득을, wrapper 는 그 model 의 cross validation 점수를 본다.
+Method 마다 최대화하려는 양이 달라 남는 열이 갈린다. corr 은 상관이 기준을 넘는 쌍에서 열 순서상 뒤를 버리고, VIF 는 나머지로 잘 설명되는 쪽을 버리며, mRMR 은 이미 고른 것과의 중복을, ReliefF 는 이웃까지의 거리를, Lasso 는 무리에서 하나만 남기는 penalty 를, ElasticNet 은 무리를 함께 남기는 penalty 를, tree 계열은 분할 이득을, wrapper 는 그 model 의 cross validation 점수를 본다. 무엇을 쓸지는 선택에 쓰지 않은 분할에서의 검증 점수로 정한다.
 
 갈린 답이 실제로 다른 성능을 뜻하는 경우는 드물다. 자료에 서로 대체 가능한 feature 가 많으면 여러 집합이 거의 같은 점수를 내고, 그 가운데 누구를 남길지는 신호가 아니라 각 기준의 tie-break 규칙이 정한다. 이 예제의 breast cancer data 는 feature 30 개 가운데 상관 0.9 이상인 쌍이 21 개이고 `mean radius` 와 `mean perimeter` 는 0.998 로 사실상 같은 열이다.
 
