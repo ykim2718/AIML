@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 48 | Created: 2026-09-12 | Updated: 2026-09-14 12:20 CDT
+Rev. 49 | Created: 2026-09-12 | Updated: 2026-09-14 12:48 CDT
 
 ## 1. Purpose
 
@@ -48,19 +48,6 @@ Multivariate feature selection taxonomy
 
 Fig 1. Two hierarchies of multivariate feature selection
 
-분류와 회귀는 target 의 성질이고, section 3 의 approach 갈래와 section 4 의 interaction 갈래 어느 쪽과도 직교한다. 같은 method 가 target 종류에 따라 뒤에 붙는 model 만 바꿔 단다.
-
-Table 1. What each method changes when the target is regression instead of classification
-
-| Section                  | Method                         | Classification target          | Regression target                |
-| :----------------------: | :----------------------------: | :----------------------------: | :------------------------------: |
-| 3.1 Filter               | corr, VIF                      | 동일 (y 를 안 봄)              | 동일                             |
-| 3.1 Filter               | mRMR                           | `mutual_info_classif`          | `mutual_info_regression`         |
-| 3.1 Filter / 4.2 Synergy | ReliefF                        | hit/miss 비교                  | 없음 (RReliefF 는 별도 알고리즘) |
-| 3.3 Embedded             | random forest, LightGBM        | Classifier                     | Regressor                        |
-| 3.3 Embedded             | lasso, elastic net             | 원래 회귀 (label 을 0/1 로)    | 동일                             |
-| 3.2 Wrapper              | RFE, forward·backward, genetic | `LogisticRegression` 으로 채점 | `LinearRegression` 으로 채점     |
-
 ## 3. Approach-based Methods
 
 접근 방식은 계산 비용과 답의 성질을 정한다. Filter 는 자료의 성질을, wrapper 는 그 model 과 탐색의 성질을, embedded 는 적합된 model 의 성질을 답으로 내놓는다.
@@ -103,7 +90,7 @@ Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 
 
 Multivariate filter, wrapper, embedded 는 계산 비용과 상호작용 반영 정도가 서로 반대 방향으로 움직인다.
 
-Table 2. Comparison of the three approaches
+Table 1. Comparison of the three approaches
 
 | #   | Aspect        | Multivariate filter         | Wrapper              | Embedded           |
 | :-: | :-----------: | :-------------------------: | :------------------: | :----------------: |
@@ -140,7 +127,26 @@ Table 2. Comparison of the three approaches
 - RFE 의 목표 feature 개수: 남길 차원을 직접 지정
 - Tree-based importance 의 문턱값: 평균 중요도 같은 기준으로 자를 자리를 정함
 
-## 5. Workflow
+## 5. Target Kind
+
+분류와 회귀는 target 의 성질이고, section 3 의 approach 갈래와 section 4 의 interaction 갈래 어느 쪽과도 직교한다. 같은 method 가 target 종류에 따라 뒤에 붙는 model 만 바꿔 단다.
+
+Table 2. What each method changes when the target is regression instead of classification
+
+| Section                  | Method                         | Classification target          | Regression target                |
+| :----------------------: | :----------------------------: | :----------------------------: | :------------------------------: |
+| 3.1 Filter               | corr, VIF                      | 동일 (y 를 안 봄)              | 동일                             |
+| 3.1 Filter               | mRMR                           | `mutual_info_classif`          | `mutual_info_regression`         |
+| 3.1 Filter / 4.2 Synergy | ReliefF                        | hit/miss 비교                  | 없음 (RReliefF 는 별도 알고리즘) |
+| 3.3 Embedded             | random forest, LightGBM        | Classifier                     | Regressor                        |
+| 3.3 Embedded             | lasso, elastic net             | 원래 회귀 (label 을 0/1 로)    | 동일                             |
+| 3.2 Wrapper              | RFE, forward·backward, genetic | `LogisticRegression` 으로 채점 | `LinearRegression` 으로 채점     |
+
+- Target 을 보지 않는 method (corr, VIF): 두 target 에서 같은 답. X 안의 상관만 계산
+- Target 과의 관계를 재는 method (mRMR, embedded, wrapper): 추정량과 model 만 회귀용으로 교체
+- ReliefF: 회귀에서 쓸 수 있는 대응물이 없어 알고리즘 자체가 갈림
+
+## 6. Workflow
 
 비용이 낮은 기법으로 후보를 줄인 뒤 비싼 기법을 쓴다. Wrapper 의 비용은 남은 feature 개수에 따라 커지므로, 그 앞에 세 단계를 둔다.
 
@@ -162,9 +168,9 @@ Table 2. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 6 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
-입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다. Label 이 이진이므로 예제는 분류 model 로 짰고, 회귀 target 이면 Table 1 의 오른쪽 열로 바꾼다.
+입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다. Label 이 이진이므로 예제는 분류 model 로 짰고, 회귀 target 이면 Table 2 의 오른쪽 열로 바꾼다.
 
 ```python
 __author__ = "yRocket"
