@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 19 | Created: 2026-09-12 | Updated: 2026-09-14 02:22 CDT
+Rev. 20 | Created: 2026-09-12 | Updated: 2026-09-14 02:28 CDT
 
 ## 1. Purpose
 
@@ -156,7 +156,7 @@ scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` �
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.2.0+20260914"
+__version__ = "0.2.1+20260914"
 
 import pathlib
 import textwrap
@@ -416,42 +416,23 @@ if __name__ == "__main__":
     X = np.column_stack([StandardScaler().fit_transform(data.data), np.full(len(data.data), 1.0)])
     names = np.asarray(list(data.feature_names) + ["constant probe"])
     selector = MultivariateFeatureSelector(correlation_limit=0.95, final_count=5)
-
-    def show(label: str, columns: np.ndarray) -> None:
-        """Print the label with the count, then the feature names in alphabetical order."""
-        print(f"\n{label} ({len(columns)} features)")
-        print(textwrap.fill(", ".join(sorted(names[columns])), width=100,
-                            initial_indent="  ", subsequent_indent="  "))
-
-    print(f"input: {X.shape[0]} samples, {X.shape[1]} features")
-    show(label="input", columns=np.arange(X.shape[1]))
-
     varying = selector.drop_constant(X=X)
-    show(label="left by the constant filter", columns=varying)
 
     kept = {}
     for filter_method in FILTER_METHODS:
         kept[filter_method] = selector.filter_step(X=X, y=data.target, columns=varying, method=filter_method)
-        show(label=f"filter by {filter_method}", columns=kept[filter_method])
-
     for embedded_method in EMBEDDED_METHODS:
         kept[embedded_method] = selector.embedded_step(X=X, y=data.target, columns=varying,
                                                        method=embedded_method)
-        show(label=f"embedded by {embedded_method}", columns=kept[embedded_method])
-
     for wrapper_method in WRAPPER_METHODS:
         kept[wrapper_method] = selector.wrapper_step(X=X, y=data.target, columns=kept["random_forest"],
                                                      method=wrapper_method)
-        show(label=f"wrapper by {wrapper_method}, out of the random forest columns",
-             columns=kept[wrapper_method])
 
     workflow = selector.run(X=X, y=data.target, filter_method="corr",
                             embedded_method="random_forest", wrapper_method="rfe")
-    for step_name, step_columns in workflow.items():
-        show(label=f"{step_name} step of the workflow", columns=step_columns)
-
     draw_matrix(kept=kept, names=names, columns=varying, path=FIGURE_PATH)
-    print(f"\nchart written to {FIGURE_PATH}")
+    print(f"{X.shape[0]} samples and {X.shape[1]} features in, "
+          f"{len(workflow['wrapper'])} out; chart written to {FIGURE_PATH}")
 ```
 
 상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 세 embedded 는 9, 6, 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
