@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 21 | Created: 2026-09-12 | Updated: 2026-09-14 03:16 CDT
+Rev. 22 | Created: 2026-09-12 | Updated: 2026-09-14 03:18 CDT
 
 ## 1. Purpose
 
@@ -76,7 +76,7 @@ RFE (Recursive Feature Elimination) 의 절차는 다음과 같다.
 - 계수나 feature 중요도가 가장 낮은 feature 를 제거
 - 목표 feature 개수에 닿을 때까지 반복
 
-Greedy search 는 feature 를 하나씩 추가 (forward) 하거나 제거 (backward) 하며 cross validation 점수의 변화를 추적한다.
+Greedy search 는 feature 를 하나씩 추가 (forward) 하거나 제거 (backward) 하며 cross validation 점수의 변화를 추적한다. Genetic algorithm 은 subset 여럿을 한 세대로 두고, 점수가 높은 것들을 섞고 일부를 바꿔 가며 다음 세대를 만들어, 순차 탐색이 닿지 않는 조합까지 훑는다.
 
 ### 3.3 Embedded Methods
 
@@ -150,13 +150,13 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.3.0+20260914"
+__version__ = "0.4.0+20260914"
 
 import pathlib
 import textwrap
@@ -171,6 +171,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
                                        mutual_info_classif, mutual_info_regression)
 from sklearn.linear_model import ElasticNet, Lasso, LogisticRegression
+from sklearn.model_selection import cross_val_score
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -180,7 +181,7 @@ REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
 FILTER_METHODS: tuple = ("corr", "vif", "mrmr", "relieff")
 EMBEDDED_METHODS: tuple = ("random_forest", "lightgbm", "lasso", "elasticnet")
-WRAPPER_METHODS: tuple = ("rfe", "forward", "backward")
+WRAPPER_METHODS: tuple = ("rfe", "forward", "backward", "genetic")
 
 
 class MultivariateFeatureSelector:
@@ -197,7 +198,10 @@ class MultivariateFeatureSelector:
         filter_count: number of features the ranking filters (mrmr, relieff) keep.
         neighbour_count: number of hits and misses relieff compares per sample.
         forest_size: number of trees of the random forest used by the embedded step.
-        fold_count: number of cross validation folds the sequential wrapper scores on.
+        fold_count: number of cross validation folds the sequential and genetic wrappers score on.
+        population_size: number of subsets the genetic search holds in one generation.
+        generation_count: number of generations the genetic search runs.
+        mutation_rate: probability that a child of the genetic search has one feature swapped.
         final_count: number of features the wrapper step leaves.
         random_state: seed of the random forest and of the mutual information estimates.
     """
@@ -205,8 +209,9 @@ class MultivariateFeatureSelector:
     def __init__(self, correlation_limit: float = 0.95, vif_limit: float = 10.0,
                  penalty_alpha: float = 0.01, elasticnet_ratio: float = 0.5,
                  filter_count: int = 10, neighbour_count: int = 10,
-                 forest_size: int = 200, fold_count: int = 5, final_count: int = 5,
-                 random_state: int = 0) -> None:
+                 forest_size: int = 200, fold_count: int = 5, population_size: int = 20,
+                 generation_count: int = 10, mutation_rate: float = 0.2,
+                 final_count: int = 5, random_state: int = 0) -> None:
         if not 0.0 < correlation_limit < 1.0:
             raise ValueError(f"correlation_limit must lie between 0 and 1: {correlation_limit=}")
         if vif_limit <= 1.0:
@@ -217,6 +222,11 @@ class MultivariateFeatureSelector:
             raise ValueError(f"elasticnet_ratio must lie in (0, 1]: {elasticnet_ratio=}")
         if fold_count < 2:
             raise ValueError(f"fold_count must be at least 2: {fold_count=}")
+        if population_size < 4 or generation_count < 1:
+            raise ValueError(f"the genetic search needs a population and a generation: "
+                             f"{population_size=}, {generation_count=}")
+        if not 0.0 <= mutation_rate <= 1.0:
+            raise ValueError(f"mutation_rate must lie between 0 and 1: {mutation_rate=}")
         if filter_count < 1 or neighbour_count < 1 or final_count < 1:
             raise ValueError(f"counts must be at least 1: {filter_count=}, {neighbour_count=}, {final_count=}")
         self.correlation_limit = correlation_limit
@@ -227,6 +237,9 @@ class MultivariateFeatureSelector:
         self.neighbour_count = neighbour_count
         self.forest_size = forest_size
         self.fold_count = fold_count
+        self.population_size = population_size
+        self.generation_count = generation_count
+        self.mutation_rate = mutation_rate
         self.final_count = final_count
         self.random_state = random_state
 
@@ -349,7 +362,7 @@ class MultivariateFeatureSelector:
         return columns[selector.get_support()]
 
     def wrapper_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                     method: Literal["rfe", "forward", "backward"] = "rfe") -> np.ndarray:
+                     method: Literal["rfe", "forward", "backward", "genetic"] = "rfe") -> np.ndarray:
         """Return the columns the named search keeps, as indices into the columns of X."""
         if len(columns) < self.final_count:
             raise ValueError(f"the wrapper step got fewer columns than it must keep: "
@@ -358,6 +371,8 @@ class MultivariateFeatureSelector:
             return self._by_rfe(X=X, y=y, columns=columns)
         if method in ("forward", "backward"):
             return self._by_sequential(X=X, y=y, columns=columns, direction=method)
+        if method == "genetic":
+            return self._by_genetic(X=X, y=y, columns=columns)
         raise ValueError(f"unknown wrapper method: {method=}")
 
     def _by_rfe(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
@@ -374,11 +389,44 @@ class MultivariateFeatureSelector:
                                              direction=direction, cv=self.fold_count).fit(X[:, columns], y)
         return columns[selector.get_support()]
 
+    def _by_genetic(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Keep the subset of the wanted size that a genetic search scores highest.
+
+        Every individual is a subset of exactly final_count features, so the generations compare
+        subsets of one size instead of trading size against score.
+        """
+        rng = np.random.default_rng(self.random_state)
+        parent_count = max(2, self.population_size // 2)
+        population = [np.sort(rng.choice(len(columns), size=self.final_count, replace=False))
+                      for _ in range(self.population_size)]
+        for _ in range(self.generation_count):
+            parents = sorted(population, key=lambda held: -self._fitness_of(X=X, y=y, columns=columns[held]))
+            parents = parents[:parent_count]
+            population = parents + [self._child_of(parents=parents, position_count=len(columns), rng=rng)
+                                    for _ in range(self.population_size - parent_count)]
+        best = max(population, key=lambda held: self._fitness_of(X=X, y=y, columns=columns[held]))
+        return columns[np.sort(best)]
+
+    def _fitness_of(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> float:
+        """Return the mean cross validation score of a model fitted on the given columns."""
+        estimator = LogisticRegression(max_iter=5000)
+        return float(np.mean(cross_val_score(estimator, X[:, columns], y, cv=self.fold_count)))
+
+    def _child_of(self, parents: list, position_count: int, rng: np.random.Generator) -> np.ndarray:
+        """Draw a child from the union of two parents, then swap one of its features at random."""
+        first, second = rng.choice(len(parents), size=2, replace=False)
+        pool = np.union1d(parents[first], parents[second])
+        child = rng.choice(pool, size=self.final_count, replace=False)
+        outside = np.setdiff1d(np.arange(position_count), child)
+        if rng.random() < self.mutation_rate and len(outside) > 0:
+            child[rng.integers(len(child))] = rng.choice(outside)
+        return np.sort(child)
+
     def run(self, X: np.ndarray, y: np.ndarray,
             filter_method: Literal["corr", "vif", "mrmr", "relieff"] = "corr",
             embedded_method: Literal["random_forest", "lightgbm", "lasso",
                                      "elasticnet"] = "random_forest",
-            wrapper_method: Literal["rfe", "forward", "backward"] = "rfe") -> dict:
+            wrapper_method: Literal["rfe", "forward", "backward", "genetic"] = "rfe") -> dict:
         """Return the surviving column indices of each step, keyed by step name.
 
         The constant features go first: they carry nothing any later step can weigh.
@@ -451,7 +499,7 @@ if __name__ == "__main__":
           f"{len(workflow['wrapper'])} out; chart written to {FIGURE_PATH}")
 ```
 
-상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 네 embedded 는 9, 6, 12, 18 개를 남겨 서로 다른 답을 내며, L2 를 섞은 `elasticnet` 이 상관된 무리를 함께 남겨 `lasso` 보다 6 개를 더 든다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 네 embedded 는 9, 6, 12, 18 개를 남겨 서로 다른 답을 내며, L2 를 섞은 `elasticnet` 이 상관된 무리를 함께 남겨 `lasso` 보다 6 개를 더 든다. 네 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 와 `genetic` 은 저마다 다른 조합을 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
 
 어느 method 가 어느 feature 를 남겼는지는 Fig 2 에 있다.
 
@@ -459,6 +507,6 @@ if __name__ == "__main__":
 
 Fig 2. Which features each selection method keeps
 
-- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 11 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
+- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 12 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
 - 열 이름 아래 괄호 안 숫자는 그 method 가 남긴 feature 수이며, wrapper 세 열은 random forest 가 남긴 9 개 위에서 돌린 결과다.
-- `mean concave points` 는 filter 와 embedded 여덟 열에서 모두 채워지고, `worst concave points` 는 열한 열 가운데 열에서 채워진다. 반대로 `worst compactness` 는 corr 한 열에만 남는다.
+- `mean concave points` 는 열두 열 가운데 아홉에서, `worst concave points` 는 열하나에서 채워진다. 반대로 `worst compactness` 는 corr 한 열에만 남는다.
