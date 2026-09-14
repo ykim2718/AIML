@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 22 | Created: 2026-09-12 | Updated: 2026-09-14 03:18 CDT
+Rev. 23 | Created: 2026-09-12 | Updated: 2026-09-14 03:21 CDT
 
 ## 1. Purpose
 
@@ -135,6 +135,27 @@ Table 1. Comparison of the three approaches
 - Step 2 (pre-filtering): univariate 통계량 또는 VIF 로 상관계수 0.95 이상인 중복 feature 를 1차 제거
 - Step 3 (embedded selection): Lasso 또는 random forest, XGBoost, LightGBM 기반으로 중요 feature 후보군 2차 선별
 - Step 4 (fine-tuning via wrapper): 후보군이 줄어든 뒤 RFE 나 sequential feature selection 으로 최종 subset 결정
+
+## 6. Choosing Among Answers
+
+서로 다른 method 가 서로 다른 집합을 내는 것은 정상이며, 무엇을 쓸지는 method 의 이름이 아니라 선택에 쓰지 않은 분할에서의 검증 점수로 정한다. 기준마다 무엇을 최적화하는지가 다르기 때문에 답이 갈린다. corr 은 상관이 기준을 넘는 쌍에서 열 순서상 뒤를 버리고, VIF 는 나머지로 잘 설명되는 쪽을 버리며, mRMR 은 이미 고른 것과의 중복을, ReliefF 는 이웃까지의 거리를, Lasso 는 무리에서 하나만 남기는 penalty 를, ElasticNet 은 무리를 함께 남기는 penalty 를, tree 계열은 분할 이득을, wrapper 는 그 model 의 cross validation 점수를 본다.
+
+갈린 답이 실제로 다른 성능을 뜻하는 경우는 드물다. 자료에 서로 대체 가능한 feature 가 많으면 여러 집합이 거의 같은 점수를 내고, 그 가운데 누구를 남길지는 신호가 아니라 각 기준의 tie-break 규칙이 정한다. Appendix B 의 breast cancer data 는 feature 30 개 가운데 상관 0.9 이상인 쌍이 21 개이고 `mean radius` 와 `mean perimeter` 는 0.998 로 사실상 같은 열이다.
+
+Table 2. Cross validation score of each wrapper subset of the breast cancer example
+
+| Wrapper | Features it keeps | 10-fold accuracy |
+| --- | --- | --- |
+| rfe | 5 | 0.944 ± 0.032 |
+| forward | 5 | 0.949 ± 0.023 |
+| backward | 5 | 0.949 ± 0.023 |
+| genetic | 5 | 0.949 ± 0.027 |
+
+네 집합의 점수 차이가 표준편차 안에 들어오므로, 이 자료에서는 점수만으로 하나를 고를 수 없다. 그럴 때는 아래 순서로 내려간다.
+
+1️⃣ 여러 method 가 공통으로 고른 feature 를 먼저 믿는다. Fig 2 에서 `worst concave points` 는 열두 열 가운데 열하나에서 살아남는다<br>
+2️⃣ 자료를 재표본해도 같은 집합이 나오는 쪽, 곧 더 안정적인 쪽을 고른다<br>
+3️⃣ 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
 
 ---
 
