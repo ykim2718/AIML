@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 14 | Created: 2026-09-12 | Updated: 2026-09-13 00:24 CDT
+Rev. 15 | Created: 2026-09-12 | Updated: 2026-09-14 00:07 CDT
 
 ## 1. Purpose
 
@@ -38,7 +38,7 @@ Multivariate feature selection taxonomy
 |   |
 |   +-- Embedded methods
 |       +-- Lasso (L1) / ElasticNet
-|       +-- Tree-based importance ......... random forest, XGBoost
+|       +-- Tree-based importance ......... random forest, XGBoost, LightGBM
 |
 +-- 2. Interaction-based hierarchy
     +-- Redundancy reduction ............... removing duplicated information
@@ -84,7 +84,7 @@ Model 의 학습 algorithm 안에 feature 선택 과정이 들어 있다.
 
 Lasso 는 손실 함수에 계수 절댓값의 합 $\lambda \sum |\beta_i|$ 을 penalty 로 더하여, 불필요한 feature 의 계수를 정확히 0 으로 보낸다.
 
-Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다.
+Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다. 구현으로는 random forest 와 gradient boosting 계열의 XGBoost, LightGBM 이 있으며, 셋 다 분할 기여도를 내놓으므로 `SelectFromModel` 에 그대로 들어간다.
 
 ### 3.4 Comparison
 
@@ -133,7 +133,7 @@ Table 1. Comparison of the three approaches
 
 - Step 1 (constant removal): 모든 표본에서 값이 같은 feature 를 먼저 제거. 상관도 중요도도 정의되지 않고, 뒤 단계가 가릴 것이 없음
 - Step 2 (pre-filtering): univariate 통계량 또는 VIF 로 상관계수 0.95 이상인 중복 feature 를 1차 제거
-- Step 3 (embedded selection): Lasso 또는 random forest, XGBoost 기반으로 중요 feature 후보군 2차 선별
+- Step 3 (embedded selection): Lasso 또는 random forest, XGBoost, LightGBM 기반으로 중요 feature 후보군 2차 선별
 - Step 4 (fine-tuning via wrapper): 후보군이 줄어든 뒤 RFE 나 sequential feature selection 으로 최종 subset 결정
 
 ---
@@ -150,7 +150,7 @@ Table 1. Comparison of the three approaches
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 두 이름 (`random_forest`, `lasso`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
+scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 `Literal` 로 받아 그 갈래의 members 를 함께 적어 두므로, 무엇이 적용되었는지 서명에서 읽힌다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 세 이름 (`random_forest`, `lightgbm`, `lasso`) 을, wrapper 단계는 세 이름 (`rfe`, `forward`, `backward`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다.
 
@@ -162,6 +162,7 @@ import textwrap
 from typing import Literal
 
 import numpy as np
+from lightgbm import LGBMClassifier
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
@@ -292,10 +293,12 @@ class MultivariateFeatureSelector:
         return np.abs(source[:, None, :] - pool[neighbours]).sum(axis=(0, 1))
 
     def embedded_step(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray,
-                      method: Literal["random_forest", "lasso"] = "random_forest") -> np.ndarray:
+                      method: Literal["random_forest", "lightgbm", "lasso"] = "random_forest") -> np.ndarray:
         """Return the columns the named embedded model keeps, as indices into the columns of X."""
         if method == "random_forest":
             return self._by_forest(X=X, y=y, columns=columns)
+        if method == "lightgbm":
+            return self._by_lightgbm(X=X, y=y, columns=columns)
         if method == "lasso":
             return self._by_lasso(X=X, y=y, columns=columns)
         raise ValueError(f"unknown embedded method: {method=}")
@@ -304,6 +307,13 @@ class MultivariateFeatureSelector:
         """Keep the columns whose random forest importance is above the mean importance."""
         forest = RandomForestClassifier(n_estimators=self.forest_size, random_state=self.random_state)
         selector = SelectFromModel(estimator=forest, threshold="mean").fit(X[:, columns], y)
+        return columns[selector.get_support()]
+
+    def _by_lightgbm(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Keep the columns whose gradient boosting split gain is above the mean gain."""
+        booster = LGBMClassifier(n_estimators=self.forest_size, importance_type="gain",
+                                 random_state=self.random_state, verbose=-1)
+        selector = SelectFromModel(estimator=booster, threshold="mean").fit(X[:, columns], y)
         return columns[selector.get_support()]
 
     def _by_lasso(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
@@ -340,7 +350,7 @@ class MultivariateFeatureSelector:
 
     def run(self, X: np.ndarray, y: np.ndarray,
             filter_method: Literal["corr", "vif", "mrmr", "relieff"] = "corr",
-            embedded_method: Literal["random_forest", "lasso"] = "random_forest",
+            embedded_method: Literal["random_forest", "lightgbm", "lasso"] = "random_forest",
             wrapper_method: Literal["rfe", "forward", "backward"] = "rfe") -> dict:
         """Return the surviving column indices of each step, keyed by step name.
 
@@ -376,7 +386,7 @@ if __name__ == "__main__":
         show(label=f"filter by {filter_method}",
              columns=selector.filter_step(X=X, y=data.target, columns=varying, method=filter_method))
 
-    for embedded_method in ("random_forest", "lasso"):
+    for embedded_method in ("random_forest", "lightgbm", "lasso"):
         show(label=f"embedded by {embedded_method}",
              columns=selector.embedded_step(X=X, y=data.target, columns=varying, method=embedded_method))
 
@@ -438,6 +448,10 @@ embedded by random_forest (9 features)
   area error, mean area, mean concave points, mean concavity, mean perimeter, worst area, worst
   concave points, worst perimeter, worst radius
 
+embedded by lightgbm (6 features)
+  mean concave points, worst area, worst concave points, worst perimeter, worst radius, worst
+  texture
+
 embedded by lasso (12 features)
   concavity error, mean concave points, mean fractal dimension, mean texture, radius error,
   smoothness error, worst concave points, worst concavity, worst radius, worst smoothness, worst
@@ -475,4 +489,4 @@ wrapper step of the workflow (5 features)
   mean concavity, mean radius, radius error, worst concave points, worst concavity
 ```
 
-상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 두 embedded 는 feature 30 개 전체에서 9 개와 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 세 embedded 는 남은 30 개에서 9, 6, 12 개를 남겨 서로 다른 답을 낸다. 세 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 만 다른 하나를 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
