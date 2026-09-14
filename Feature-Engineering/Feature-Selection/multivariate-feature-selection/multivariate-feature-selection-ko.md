@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 46 | Created: 2026-09-12 | Updated: 2026-09-14 11:08 CDT
+Rev. 47 | Created: 2026-09-12 | Updated: 2026-09-14 11:11 CDT
 
 ## 1. Purpose
 
@@ -155,10 +155,9 @@ scikit-learn 으로 section 5 의 네 단계를 실행하는 class 다. `run` �
 
 ```python
 __author__ = "yRocket"
-__version__ = "0.4.3+20260914"
+__version__ = "0.4.4+20260914"
 
 import pathlib
-import textwrap
 from typing import Final, Literal, TypeAlias, get_args
 
 import matplotlib
