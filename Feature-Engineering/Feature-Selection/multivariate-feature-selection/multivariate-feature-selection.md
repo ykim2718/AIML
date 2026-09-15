@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 3 | Created: 2026-09-14 | Updated: 2026-09-14 19:11 CDT
+Rev. 4 | Created: 2026-09-14 | Updated: 2026-09-14 19:12 CDT
 
 ## 1. Purpose
 
@@ -123,7 +123,7 @@ The branch that keeps joint signal, which shows only when features are scored as
 
 ### 4.3 Dimensionality Tradeoff
 
-The branch that trades the number of kept dimensions against signal, which decides where to cut the ranking the first two branches produced.
+The branch that trades the number of kept dimensions against signal, a cut-off that places the cut on a ranking or a penalty path already produced. It therefore needs a criterion that produces a ranking first, and it usually sits on the ranking of section 4.1 and section 4.2. The $\lambda$ of lasso is the exception, where one penalty fixes the ranking and the cut-off together.
 
 - $\lambda$ of lasso: the larger the value, the more coefficients reach zero and the fewer dimensions remain
 - Target feature count of RFE: the kept dimension given directly

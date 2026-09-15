@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 60 | Created: 2026-09-12 | Updated: 2026-09-14 19:11 CDT
+Rev. 61 | Created: 2026-09-12 | Updated: 2026-09-14 19:12 CDT
 
 ## 1. Purpose
 
@@ -123,7 +123,7 @@ Table 1. Comparison of the three approaches
 
 ### 4.3 Dimensionality Tradeoff
 
-남길 차원 수를 신호와 맞바꾸는 갈래이며, 앞의 두 갈래가 매긴 순위를 어디서 자를지를 정한다.
+남길 차원 수를 신호와 맞바꾸는 갈래이며, 이미 매겨진 순위나 penalty path 위에서 자를 자리를 정하는 cut-off 다. 그래서 순위를 내는 기준이 먼저 있어야 적용되며, 보통 section 4.1 과 section 4.2 의 순위 위에 붙는다. Lasso 의 $\lambda$ 는 예외로, 같은 penalty 가 순위와 cut-off 를 함께 정한다.
 
 - Lasso 의 $\lambda$: 값이 클수록 0 이 되는 계수가 늘어 차원이 줄어듦
 - RFE 의 목표 feature 개수: 남길 차원을 직접 지정
