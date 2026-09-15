@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 4 | Created: 2026-09-14 | Updated: 2026-09-14 19:12 CDT
+Rev. 5 | Created: 2026-09-14 | Updated: 2026-09-14 19:13 CDT
 
 ## 1. Purpose
 
@@ -52,7 +52,9 @@ Alongside the two hierarchies runs one more line, whether y is read. The correla
 
 ## 3. Approach-based Methods
 
-The branch chosen fixes the computational cost and the selection criterion together, and that criterion fixes the model dependence of the chosen set. A filter uses no model and reads statistics of X and y alone, a wrapper holds a model as an external scorer and refits it for every candidate subset, and an embedded method lets the penalty or the split gain select inside a single fit. A filter's set is therefore conditional on the data alone, a wrapper's on the scoring estimator and its search, an embedded method's on the fitted model.
+- 3.1 Filter: statistics of X and y computed without a model
+- 3.2 Wrapper: a model held as an external scorer and refitted for every candidate subset, the scores compared (fits = candidates)
+- 3.3 Embedded: the selection carried out by the penalty or the split gain inside a single fit (fits = 1)
 
 ### 3.1 Multivariate Filter Methods
 

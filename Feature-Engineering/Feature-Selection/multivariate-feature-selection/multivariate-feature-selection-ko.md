@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 61 | Created: 2026-09-12 | Updated: 2026-09-14 19:12 CDT
+Rev. 62 | Created: 2026-09-12 | Updated: 2026-09-14 19:13 CDT
 
 ## 1. Purpose
 
@@ -52,7 +52,9 @@ Fig 1. Two hierarchies of multivariate feature selection
 
 ## 3. Approach-based Methods
 
-어느 갈래를 고르느냐가 계산 비용과 selection criterion 을 함께 정하고, 그 criterion 이 고른 집합의 model dependence 를 정한다. Filter 는 model 없이 X 와 y 의 통계량만 쓰고, wrapper 는 model 을 외부 채점기로 두어 후보 subset 마다 다시 적합하며, embedded 는 한 번의 적합 안에서 penalty 나 split gain 이 선택을 수행한다. 그래서 filter 의 집합은 data 에만, wrapper 의 집합은 채점 estimator 와 탐색에, embedded 의 집합은 적합된 model 에 조건부다.
+- 3.1 Filter: model 없이 X 와 y 의 통계량만 계산
+- 3.2 Wrapper: model 을 외부 채점기로 두고, 후보 subset 마다 다시 적합하여 점수를 비교 (적합 횟수 = 후보 수)
+- 3.3 Embedded: 한 번의 적합 안에서 penalty 나 split gain 이 선택을 수행 (적합 횟수 = 1)
 
 ### 3.1 Multivariate Filter Methods
 
