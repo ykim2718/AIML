@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 62 | Created: 2026-09-12 | Updated: 2026-09-14 19:13 CDT
+Rev. 63 | Created: 2026-09-12 | Updated: 2026-09-14 22:48 CDT
 
 ## 1. Purpose
 
@@ -68,7 +68,7 @@ mRMR (Minimum Redundancy Maximum Relevance) 는 target 과의 mutual information
 \hspace{10em} (1)
 ```
 
-VIF (Variance Inflation Factor) 는 한 feature 를 나머지 feature 로 회귀하여 그 설명력을 측정한다. $\mathrm{VIF} \gt 10$ 인 feature 를 순차적으로 제거한다.
+VIF (Variance Inflation Factor) 는 한 feature 를 나머지 feature 로 회귀하여 그 설명력을 측정한다. $\mathrm{VIF} \gt 10$ 인 feature 를 순차적으로 제거한다. 정의와 제거 절차는 [Appendix C](#appendix-c-variance-inflation-factor) 에 있다.
 
 ### 3.2 Wrapper Methods
 
@@ -600,3 +600,39 @@ Table 3. Cross validation score of each wrapper subset of the breast cancer exam
 1️⃣ Step 1 (agreement): 여러 method 가 공통으로 고른 feature 를 먼저 남긴다. `worst concave points` 는 Table 3 의 네 집합 모두에 들어 있다<br>
 2️⃣ Step 2 (stability): 자료를 재표본해도 같은 집합이 나오는 쪽을 고른다. 재는 방법은 section 6 에 있다<br>
 3️⃣ Step 3 (actionability): 그래도 남으면 공정에서 손댈 수 있거나 뜻이 읽히는 feature 를 고른다
+
+## Appendix C. Variance Inflation Factor
+
+VIF 는 feature $x_i$ 를 나머지 feature 전체로 회귀했을 때의 결정계수 $R_i^2$ 로 정의되며, 그 feature 가 나머지의 선형 결합으로 얼마나 재현되는지를 잰다.
+
+```math
+\mathrm{VIF}_i = \frac{1}{1 - R_i^2} \hspace{19em} (2)
+```
+
+- $R_i^2$: $x_i$ 를 나머지 feature 로 회귀한 결정계수
+- 값의 범위: $R_i^2 = 0$ 이면 1, $R_i^2$ 가 1 에 가까울수록 커지고 완전 공선성에서 무한대
+- 이름의 유래: 회귀 계수 $\hat{\beta}_i$ 의 분산이 공선성 없는 경우의 VIF 배가 됨
+
+제거는 한 번에 하나씩 되풀이한다.
+
+- 남은 feature 마다 식 (2) 의 값을 계산
+- 가장 큰 값이 한계를 넘으면 그 feature 하나를 제거
+- 남은 feature 의 값을 다시 계산하여, 모두 한계 아래로 내려올 때까지 되풀이
+
+한 번에 하나만 빼는 이유는 서로를 부풀리던 쌍에서 하나가 빠지면 남은 쪽의 값도 함께 내려가기 때문이며, 여럿을 한꺼번에 빼면 남겨도 될 feature 까지 잃는다.
+
+Table 4. Reading of a VIF value
+
+| VIF     | Reading                              |
+| :-----: | :----------------------------------: |
+| 1       | 나머지 feature 로 설명되지 않음      |
+| 1–5     | 약한 공선성, 보통 그대로 둠          |
+| 5–10    | 중간 공선성, 자료와 목적에 따라 판단 |
+| &gt; 10 | 강한 공선성, 제거 대상               |
+| ∞       | 완전 공선성, 나머지의 선형 결합      |
+
+상관 filter 와 갈리는 자리는 보는 단위다. 상관 filter 는 feature 쌍의 상관만 보므로 셋 이상이 합쳐 만드는 공선성을 지나치고, VIF 는 나머지 전체에 대한 다중 회귀이므로 그 경우를 잡는다. 대신 feature 마다 회귀를 한 번씩 풀고 제거할 때마다 다시 풀어야 하므로 비용이 크다.
+
+- 범주형 dummy: 한 변수에서 나온 dummy 들은 서로 공선이므로 값이 늘 높게 나오며, 기준 범주를 뺀 뒤 변수 단위로 읽음
+- 완전 공선성: $R_i^2 = 1$ 이면 값이 무한대이고, Appendix B 의 `_vif_of` 는 그 자리를 `float("inf")` 로 돌려주어 다음 제거 대상이 되게 함
+- Target 과의 무관: 식 (2) 에 $y$ 가 들어가지 않으므로 Table 2 의 `Uses y` 가 No 인 자리에 있음

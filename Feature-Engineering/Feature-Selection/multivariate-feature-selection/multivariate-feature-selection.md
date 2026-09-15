@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 5 | Created: 2026-09-14 | Updated: 2026-09-14 19:13 CDT
+Rev. 6 | Created: 2026-09-14 | Updated: 2026-09-14 22:48 CDT
 
 ## 1. Purpose
 
@@ -68,7 +68,7 @@ mRMR (Minimum Redundancy Maximum Relevance) is solved as an optimization that ma
 \hspace{10em} (1)
 ```
 
-VIF (Variance Inflation Factor) regresses one feature on the remaining features and measures how well they explain it. Features with $\mathrm{VIF} \gt 10$ are removed one at a time.
+VIF (Variance Inflation Factor) regresses one feature on the remaining features and measures how well they explain it. Features with $\mathrm{VIF} \gt 10$ are removed one at a time. The definition and the removal procedure are in [Appendix C](#appendix-c-variance-inflation-factor).
 
 ### 3.2 Wrapper Methods
 
@@ -601,3 +601,39 @@ The four wrappers take the target count as an argument, and this example gives `
 1️⃣ Step 1 (agreement): keep the features several methods chose in common first. `worst concave points` is in all four subsets of Table 3<br>
 2️⃣ Step 2 (stability): take the side that returns the same subset when the data is resampled. How it is measured is in section 6<br>
 3️⃣ Step 3 (actionability): where a tie is left, take the feature the process can act on or a reader can make sense of
+
+## Appendix C. Variance Inflation Factor
+
+VIF is defined by the coefficient of determination $R_i^2$ of the regression of feature $x_i$ on all the remaining features, and measures how far that feature is reproduced by a linear combination of the rest.
+
+```math
+\mathrm{VIF}_i = \frac{1}{1 - R_i^2} \hspace{19em} (2)
+```
+
+- $R_i^2$: the coefficient of determination of $x_i$ regressed on the remaining features
+- Range: 1 where $R_i^2 = 0$, growing as $R_i^2$ approaches 1 and infinite under perfect collinearity
+- Origin of the name: the variance of the coefficient $\hat{\beta}_i$ is VIF times what it would be without collinearity
+
+The removal repeats one feature at a time.
+
+- Compute the value of equation (2) for every remaining feature
+- Remove the single feature whose value is the largest, where that value passes the limit
+- Recompute the values of the remaining features and repeat until all of them fall under the limit
+
+One at a time is what keeps usable features: where a pair inflated each other, dropping one brings the value of the other down as well, and removing several at once loses features that would have stayed.
+
+Table 4. Reading of a VIF value
+
+| VIF     | Reading                                                   |
+| :-----: | :-------------------------------------------------------: |
+| 1       | Not explained by the remaining features                   |
+| 1–5     | Weak collinearity, usually left in place                  |
+| 5–10    | Moderate collinearity, judged by the data and the purpose |
+| &gt; 10 | Strong collinearity, a candidate for removal              |
+| ∞       | Perfect collinearity, a linear combination of the rest    |
+
+The unit each one reads is where VIF parts from the correlation filter. The correlation filter reads the correlation of a pair and passes over the collinearity three or more features build together, while VIF regresses on all the rest and catches that case. It pays for this with one regression per feature, solved again after every removal.
+
+- Categorical dummies: dummies from one variable are collinear with each other and always score high, so the reference category is dropped and the reading is made per variable
+- Perfect collinearity: the value is infinite where $R_i^2 = 1$, and `_vif_of` of Appendix B returns `float("inf")` there so that the feature becomes the next removal
+- Independence from the target: $y$ does not enter equation (2), which puts VIF among the `Uses y` No rows of Table 2
