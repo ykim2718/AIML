@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 24 | Created: 2026-06-23 | Updated: 2026-09-16 17:03 CDT
+Rev. 25 | Created: 2026-06-23 | Updated: 2026-09-16 17:05 CDT
 
 ## 1. Overview
 
@@ -75,7 +75,7 @@ Trustworthy data. Missing values are handled, noise and outliers are removed, an
 
 ### 3.4 Reshaped Data (Silver)
 
-The same values reshaped to the model's input specification. The two-dimensional (2D) form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
+The same values laid out on the axes a model reads. The two-dimensional (2D) form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
 
 ### 3.5 Transformed Data (Silver)
 

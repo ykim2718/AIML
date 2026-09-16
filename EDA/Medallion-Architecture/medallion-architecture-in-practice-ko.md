@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 9 | Created: 2026-09-08 | Updated: 2026-09-16 17:03 CDT
+Rev. 10 | Created: 2026-09-08 | Updated: 2026-09-16 17:05 CDT
 
 ## 1. Overview
 
@@ -75,7 +75,7 @@ Reshaped Data 와 Transformed Data 는 과도기적이다. model 에 무관한 �
 
 ### 3.4 Reshaped Data (Silver)
 
-같은 값을 model 의 입력 규격에 맞춰 재배치한 것이다. 이차원 (2D) 형태는 XGBoost (eXtreme Gradient Boosting) 같은 고전 model 을 위한 [samples, features] 표이다. 삼차원 (3D) tensor 형태는 Convolutional Neural Network (CNN) 이나 Long Short-Term Memory (LSTM) 같은 deep model 을 위해 시계열 window 를 적용하여 [samples, timesteps, features] 를 만든다. group key 를 함께 넘겨서 나중에 보지 않은 group 으로 model 을 검증할 수 있게 한다.
+같은 값을 model 이 읽는 축에 맞춰 늘어놓은 것이다. 이차원 (2D) 형태는 XGBoost (eXtreme Gradient Boosting) 같은 고전 model 을 위한 [samples, features] 표이다. 삼차원 (3D) tensor 형태는 Convolutional Neural Network (CNN) 이나 Long Short-Term Memory (LSTM) 같은 deep model 을 위해 시계열 window 를 적용하여 [samples, timesteps, features] 를 만든다. group key 를 함께 넘겨서 나중에 보지 않은 group 으로 model 을 검증할 수 있게 한다.
 
 ### 3.5 Transformed Data (Silver)
 
