@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 23 | Created: 2026-06-23 | Updated: 2026-09-16 13:21 CDT
+Rev. 24 | Created: 2026-06-23 | Updated: 2026-09-16 17:03 CDT
 
 ## 1. Overview
 
@@ -39,7 +39,7 @@ Fig 2 names the transform between the stages and shows the two paths into Transf
 ```text
            BRONZE                                      SILVER                                 GOLD
   ┌───────────┬───────────┐     ┌───────────┐     ┌─────────────┐     ┌─────────────┐     ┌───────────┐
-  │  Original │    Raw    │ ──> │   Clean   │ ──> │  Structured │ ──> │ Transformed │ ──> │  Feature  │
+  │  Original │    Raw    │ ──> │   Clean   │ ──> │   Reshaped  │ ──> │ Transformed │ ──> │  Feature  │
   └───────────┴───────────┘     └─────┬─────┘     └─────────────┘     └──────^──────┘     └───────────┘
         └── parse ──┘      clean      │     reshape              scale       │     features
                                       └──────────────────────────────────────┘
@@ -47,17 +47,17 @@ Fig 2 names the transform between the stages and shows the two paths into Transf
 
 Fig 2. The six stages, the transform between them, and the layers they fall into
 
-Transformed Data reads Structured Data, and reads Clean Data directly when the table needs no reshape. Feature Data reads Transformed Data alone.
+Transformed Data reads Reshaped Data, and reads Clean Data directly when the table needs no reshape. Feature Data reads Transformed Data alone.
 
 Table 1. Medallion layers and the stages they hold
 
 | Layer | Stages | State | Purpose |
 | --- | --- | --- | --- |
 | Bronze | Original + Raw | Landed as-is; format mismatch and unstructured content included | Preserve the historical record |
-| Silver | Clean + Structured + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data, and model-ready when no new feature is needed |
+| Silver | Clean + Reshaped + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data, and model-ready when no new feature is needed |
 | Gold | Feature | Fully engineered, highest maturity | Drop straight into a model |
 
-Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver. A model that needs no engineered feature can be trained on the Silver output directly, because Transformed Data already carries both the input shape a model reads and its scale.
+Reshaped Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver. A model that needs no engineered feature can be trained on the Silver output directly, because Transformed Data already carries both the input shape a model reads and its scale.
 
 ## 3. Pipeline Stages
 
@@ -73,13 +73,13 @@ The same data conformed to one schema. Originals are parsed into standardized co
 
 Trustworthy data. Missing values are handled, noise and outliers are removed, and timestamps are aligned across sources. This is the first stage that can be queried with confidence. One caution: a transient spike and a genuine distribution change — dataset shift [[2](#ref-2)] — can look statistically similar, so removal rules should be set with domain review to avoid discarding real signal.
 
-### 3.4 Structured Data (Silver)
+### 3.4 Reshaped Data (Silver)
 
 The same values reshaped to the model's input specification. The two-dimensional (2D) form is a [samples, features] table for classical models such as XGBoost (eXtreme Gradient Boosting). The three-dimensional (3D) tensor form applies a time-series window for deep models — a Convolutional Neural Network (CNN) or Long Short-Term Memory (LSTM) — giving [samples, timesteps, features]. Group keys are carried through so the model can later be validated against unseen groups.
 
 ### 3.5 Transformed Data (Silver)
 
-The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[3](#ref-3)].
+The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Reshaped Data: one changes how the values are laid out, the other changes the values themselves. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[3](#ref-3)].
 
 ### 3.6 Feature Data (Gold)
 

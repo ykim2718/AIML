@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 8 | Created: 2026-09-08 | Updated: 2026-09-16 13:21 CDT
+Rev. 9 | Created: 2026-09-08 | Updated: 2026-09-16 17:03 CDT
 
 ## 1. Overview
 
@@ -39,7 +39,7 @@ Fig 2 는 stage 사이 transform 의 이름과 Transformed Data 로 들어가는
 ```text
            BRONZE                                      SILVER                                 GOLD
   ┌───────────┬───────────┐     ┌───────────┐     ┌─────────────┐     ┌─────────────┐     ┌───────────┐
-  │  Original │    Raw    │ ──> │   Clean   │ ──> │  Structured │ ──> │ Transformed │ ──> │  Feature  │
+  │  Original │    Raw    │ ──> │   Clean   │ ──> │   Reshaped  │ ──> │ Transformed │ ──> │  Feature  │
   └───────────┴───────────┘     └─────┬─────┘     └─────────────┘     └──────^──────┘     └───────────┘
         └── parse ──┘      clean      │     reshape              scale       │     features
                                       └──────────────────────────────────────┘
@@ -47,17 +47,17 @@ Fig 2 는 stage 사이 transform 의 이름과 Transformed Data 로 들어가는
 
 Fig 2. The six stages, the transform between them, and the layers they fall into
 
-Transformed Data 는 Structured Data 를 읽고, 표를 다시 배치할 필요가 없으면 Clean Data 를 바로 읽는다. Feature Data 는 Transformed Data 만 읽는다.
+Transformed Data 는 Reshaped Data 를 읽고, 표를 다시 배치할 필요가 없으면 Clean Data 를 바로 읽는다. Feature Data 는 Transformed Data 만 읽는다.
 
 Table 1. Medallion layers and the stages they hold
 
 | Layer | Stages | State | Purpose |
 | --- | --- | --- | --- |
 | Bronze | Original + Raw | 도착한 그대로. 형식 불일치와 비정형 내용 포함 | 원본 기록 보존 |
-| Silver | Clean + Structured + Transformed | 정제·정규화 후 model 입력 형태로 재배치하고 model 이 읽는 척도로 다시 표현 | 신뢰할 수 있고 조회 가능한 데이터. 새 feature 가 필요 없으면 model 에도 그대로 투입 |
+| Silver | Clean + Reshaped + Transformed | 정제·정규화 후 model 입력 형태로 재배치하고 model 이 읽는 척도로 다시 표현 | 신뢰할 수 있고 조회 가능한 데이터. 새 feature 가 필요 없으면 model 에도 그대로 투입 |
 | Gold | Feature | 완전히 가공된 최고 성숙도 | model 에 그대로 투입 |
 
-Structured Data 와 Transformed Data 는 과도기적이다. model 에 무관한 작업 — 단순 재배치, 표준 windowing, 표준 scaling — 은 여러 model 이 함께 쓸 수 있으므로 Silver 에 남고, 특정 model 에만 맞춘 재배치나 encoding 은 Gold 쪽으로 기운다. 여러 model 이 같은 산출물을 재사용한다면 Silver 에 고정하는 것이 낫다. 새로 만들 feature 가 필요 없는 model 은 Silver 산출물로 바로 훈련할 수 있다. Transformed Data 가 그 model 이 읽는 입력 형태와 척도를 함께 갖추고 있기 때문이다.
+Reshaped Data 와 Transformed Data 는 과도기적이다. model 에 무관한 작업 — 단순 재배치, 표준 windowing, 표준 scaling — 은 여러 model 이 함께 쓸 수 있으므로 Silver 에 남고, 특정 model 에만 맞춘 재배치나 encoding 은 Gold 쪽으로 기운다. 여러 model 이 같은 산출물을 재사용한다면 Silver 에 고정하는 것이 낫다. 새로 만들 feature 가 필요 없는 model 은 Silver 산출물로 바로 훈련할 수 있다. Transformed Data 가 그 model 이 읽는 입력 형태와 척도를 함께 갖추고 있기 때문이다.
 
 ## 3. Pipeline Stages
 
@@ -73,13 +73,13 @@ Structured Data 와 Transformed Data 는 과도기적이다. model 에 무관한
 
 믿을 수 있는 데이터이다. 결측값을 처리하고 잡음과 이상치를 제거하며 source 간 timestamp 를 정렬한다. 확신을 갖고 조회할 수 있는 첫 stage 이다. 한 가지 주의할 점이 있다. 일시적인 spike 와 실제 분포 변화 — dataset shift [[2](#ref-2)] — 는 통계적으로 비슷해 보일 수 있으므로, 제거 규칙은 도메인 검토를 거쳐 정해야 실제 신호를 버리지 않는다.
 
-### 3.4 Structured Data (Silver)
+### 3.4 Reshaped Data (Silver)
 
 같은 값을 model 의 입력 규격에 맞춰 재배치한 것이다. 이차원 (2D) 형태는 XGBoost (eXtreme Gradient Boosting) 같은 고전 model 을 위한 [samples, features] 표이다. 삼차원 (3D) tensor 형태는 Convolutional Neural Network (CNN) 이나 Long Short-Term Memory (LSTM) 같은 deep model 을 위해 시계열 window 를 적용하여 [samples, timesteps, features] 를 만든다. group key 를 함께 넘겨서 나중에 보지 않은 group 으로 model 을 검증할 수 있게 한다.
 
 ### 3.5 Transformed Data (Silver)
 
-같은 값을 model 이 읽는 척도로 다시 표현한 것이다. 수치 열은 scaling 하고 범주 열은 encoding 하며 치우친 열은 단조 변환을 거친다. 표의 배치는 건드리지 않으며, 이것이 Structured Data 와 갈리는 지점이다. 한쪽은 값이 놓이는 방식을 바꾸고 다른 쪽은 값 자체를 바꾼다. 여기서 적합하는 parameter — scaler 의 평균과 분산, encoder 의 범주 목록 — 는 훈련 행에서만 얻어 dataset 과 함께 저장한다. serving 시점에 다시 적합하는 것은 train/serve skew [[3](#ref-3)] 로 가는 알려진 길이기 때문이다.
+같은 값을 model 이 읽는 척도로 다시 표현한 것이다. 수치 열은 scaling 하고 범주 열은 encoding 하며 치우친 열은 단조 변환을 거친다. 표의 배치는 건드리지 않으며, 이것이 Reshaped Data 와 갈리는 지점이다. 한쪽은 값이 놓이는 방식을 바꾸고 다른 쪽은 값 자체를 바꾼다. 여기서 적합하는 parameter — scaler 의 평균과 분산, encoder 의 범주 목록 — 는 훈련 행에서만 얻어 dataset 과 함께 저장한다. serving 시점에 다시 적합하는 것은 train/serve skew [[3](#ref-3)] 로 가는 알려진 길이기 때문이다.
 
 ### 3.6 Feature Data (Gold)
 
