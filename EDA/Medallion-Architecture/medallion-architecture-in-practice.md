@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 22 | Created: 2026-06-23 | Updated: 2026-09-08 18:18 CDT
+Rev. 23 | Created: 2026-06-23 | Updated: 2026-09-16 13:21 CDT
 
 ## 1. Overview
 
@@ -11,7 +11,7 @@ Databricks defines the architecture as a data design pattern for organizing data
 - Silver holds those same records cleansed, enriched, and conformed to one specification, an intermediate state between the source and the consumer.
 - Gold holds the aggregated and modeled result, shaped for the consumer that reads it: a star schema for BI (Business Intelligence) reporting, a feature table for model training.
 
-Each layer makes one guarantee about the data it holds, and that guarantee is what the layer is for.
+Fig 1 states the guarantee each layer makes.
 
 ```text
            BRONZE                         SILVER                          GOLD
@@ -32,20 +32,22 @@ Bronze guarantees that the record is what arrived, Silver that the values can be
 
 ## 2. Medallion Architecture Mapping
 
-The six stages fall into the three layers of the Medallion architecture, the de facto standard for sorting data by quality and maturity. Fig 2 names the transform at each layer boundary, so that a boundary can be read as the work that crosses it, and shows Clean branching into two Silver forms that rejoin at Feature.
+The six stages fall into the three layers of the Medallion architecture, the de facto standard for sorting data by quality and maturity.
+
+Fig 2 names the transform between the stages and shows the two paths into Transformed Data.
 
 ```text
-        BRONZE                               SILVER                       GOLD
-                                                  ┌─────────────┐
-                                              ┌─> │  Structured │─┐
-  ┌───────────┬───────────┐    ┌───────────┐  │   └─────────────┘ │   ┌───────────┐
-  │  Original │    Raw    │──> │   Clean   │ ─┤                   ├──>│  Feature  │
-  └───────────┴───────────┘    └───────────┘  │   ┌─────────────┐ │   └───────────┘
-        └── parse ──┘            clean        └─> │ Transformed │─┘     features
-                                                  └─────────────┘
+           BRONZE                                      SILVER                                 GOLD
+  ┌───────────┬───────────┐     ┌───────────┐     ┌─────────────┐     ┌─────────────┐     ┌───────────┐
+  │  Original │    Raw    │ ──> │   Clean   │ ──> │  Structured │ ──> │ Transformed │ ──> │  Feature  │
+  └───────────┴───────────┘     └─────┬─────┘     └─────────────┘     └──────^──────┘     └───────────┘
+        └── parse ──┘      clean      │     reshape              scale       │     features
+                                      └──────────────────────────────────────┘
 ```
 
 Fig 2. The six stages, the transform between them, and the layers they fall into
+
+Transformed Data reads Structured Data, and reads Clean Data directly when the table needs no reshape. Feature Data reads Transformed Data alone.
 
 Table 1. Medallion layers and the stages they hold
 
@@ -55,7 +57,7 @@ Table 1. Medallion layers and the stages they hold
 | Silver | Clean + Structured + Transformed | Cleaned and conformed, then reshaped to a model-input form and re-expressed on the scale a model reads | Trusted, query-ready data, and model-ready when no new feature is needed |
 | Gold | Feature | Fully engineered, highest maturity | Drop straight into a model |
 
-Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver. A model that needs no engineered feature can be trained on the Silver output directly, because Structured Data already carries the input shape it reads and Transformed Data the scale.
+Structured Data and Transformed Data are transitional. Model-agnostic work — plain reshape, standard windowing, standard scaling — stays in Silver because many models can share it, while model-specific shaping or encoding leans toward Gold. When several models reuse the same output, it is best pinned to Silver. A model that needs no engineered feature can be trained on the Silver output directly, because Transformed Data already carries both the input shape a model reads and its scale.
 
 ## 3. Pipeline Stages
 
@@ -77,11 +79,11 @@ The same values reshaped to the model's input specification. The two-dimensional
 
 ### 3.5 Transformed Data (Silver)
 
-The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. Neither stage reads the other and both read Clean Data, so they can be built in either order. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[3](#ref-3)].
+The same values re-expressed on the scale a model reads. Numeric columns are scaled, categorical columns are encoded, and a skewed column is put through a monotone transform. The arrangement of the table is untouched, which is what separates this stage from Structured Data: one changes how the values are laid out, the other changes the values themselves. The parameters they fit — a scaler's mean and variance, an encoder's category list — are taken from training rows only and stored with the dataset, because refitting them at serving time is a known route to train/serve skew [[3](#ref-3)].
 
 ### 3.6 Feature Data (Gold)
 
-The optimized dataset. Domain knowledge converts the columns it reads into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[4](#ref-4)]. Feature definitions are versioned to prevent train/serve skew [[3](#ref-3)].
+The optimized dataset. Domain knowledge converts the Transformed Data columns into the variables a model learns from — moving averages, frequency components, embeddings — alongside dimensionality reduction. When features outnumber samples ($p \gg n$), feature reduction is essential rather than optional [[4](#ref-4)]. Feature definitions are versioned to prevent train/serve skew [[3](#ref-3)].
 
 ## 4. Key Principles
 
