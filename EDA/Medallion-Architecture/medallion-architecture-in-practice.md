@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 25 | Created: 2026-06-23 | Updated: 2026-09-16 17:05 CDT
+Rev. 26 | Created: 2026-06-23 | Updated: 2026-09-16 22:59 CDT
 
 ## 1. Overview
 
@@ -40,8 +40,8 @@ Fig 2 names the transform between the stages and shows the two paths into Transf
            BRONZE                                      SILVER                                 GOLD
   ┌───────────┬───────────┐     ┌───────────┐     ┌─────────────┐     ┌─────────────┐     ┌───────────┐
   │  Original │    Raw    │ ──> │   Clean   │ ──> │   Reshaped  │ ──> │ Transformed │ ──> │  Feature  │
-  └───────────┴───────────┘     └─────┬─────┘     └─────────────┘     └──────^──────┘     └───────────┘
-        └── parse ──┘      clean      │     reshape              scale       │     features
+  └───────────┴───────────┘     └─────┬─────┘     └─────────────┘     └──────┴──────┘     └───────────┘
+        └── parse ──┘      clean      │     reshape              scale       ^     features
                                       └──────────────────────────────────────┘
 ```
 
