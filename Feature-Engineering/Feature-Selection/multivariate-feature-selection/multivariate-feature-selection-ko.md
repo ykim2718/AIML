@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 64 | Created: 2026-09-12 | Updated: 2026-09-17 09:16 CDT
+Rev. 65 | Created: 2026-09-12 | Updated: 2026-09-17 09:26 CDT
 
 ## 1. Purpose
 
@@ -137,14 +137,14 @@ Table 1. Comparison of the three approaches
 
 Table 2. What each method changes when the target is regression instead of classification
 
-| Section                  | Method                         | Uses y | Classification target           | Regression target                       |
-| :----------------------: | :----------------------------: | :----: | :-----------------------------: | :-------------------------------------: |
-| 3.1 Filter               | corr, VIF                      | No     | Correlation among X only        | Correlation among X only                |
-| 3.1 Filter               | mRMR                           | Yes    | `mutual_info_classif`           | `mutual_info_regression`                |
-| 3.1 Filter / 4.2 Synergy | ReliefF                        | Yes    | hit/miss contrast               | None (RReliefF is a separate algorithm) |
-| 3.3 Embedded             | random forest, LightGBM        | Yes    | Classifier                      | Regressor                               |
-| 3.3 Embedded             | lasso, elastic net             | Yes    | Regression fit on the 0/1 label | Regression fit on y                     |
-| 3.2 Wrapper              | RFE, forward/backward, genetic | Yes    | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
+| Section                  | Method                                     | Uses y | Classification target           | Regression target                       |
+| :----------------------: | :----------------------------------------: | :----: | :-----------------------------: | :-------------------------------------: |
+| 3.1 Filter               | corr, VIF                                  | No     | Correlation among X only        | Correlation among X only                |
+| 3.1 Filter               | mRMR                                       | Yes    | `mutual_info_classif`           | `mutual_info_regression`                |
+| 3.1 Filter / 4.2 Synergy | ReliefF                                    | Yes    | hit/miss contrast               | None (RReliefF is a separate algorithm) |
+| 3.3 Embedded             | random forest, LightGBM, gradient boosting | Yes    | Classifier                      | Regressor                               |
+| 3.3 Embedded             | lasso, elastic net                         | Yes    | Regression fit on the 0/1 label | Regression fit on y                     |
+| 3.2 Wrapper              | RFE, forward/backward, genetic             | Yes    | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
 
 - `Uses y` 가 No 인 행: 두 target 에서 같은 계산
 - `Uses y` 가 Yes 인 행: 추정량과 model 만 회귀용으로 교체
@@ -186,13 +186,13 @@ Selection instability 는 자료나 method 를 조금만 바꿔도 고른 열이
 
 ## Appendix B. Implementation
 
-scikit-learn 으로 section 7 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 네 이름 (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다. 생성자가 받는 `task` 는 각 단계 뒤에 설 model 을 Table 2 대로 고르며, 회귀에서 `relieff` 를 부르면 `ValueError` 와 함께 그 task 가 쓸 수 있는 filter 목록을 돌려준다.
+scikit-learn 으로 section 7 의 네 단계를 실행하는 class 다. `run` 은 상수 feature 를 먼저 떨어뜨린 뒤 남은 column 에만 나머지 세 단계를 돌린다. 각 단계의 기준값을 생성자로 받고, 각 단계는 원본 column 번호를 그대로 돌려주어 마지막에 고른 feature 의 이름을 찾을 수 있게 한다. 단계마다 method 이름을 그 갈래의 `Literal` 별칭으로 받으며, members 는 class 안의 그 별칭 한 곳에만 적고, 곁에 둔 목록 tuple 은 `get_args` 로 파생시킨다. Filter 단계는 네 이름 (`corr`, `vif`, `mrmr`, `relieff`) 을, embedded 단계는 다섯 이름 (`random_forest`, `lightgbm`, `gradient_boosting`, `lasso`, `elasticnet`) 을, wrapper 단계는 네 이름 (`rfe`, `forward`, `backward`, `genetic`) 을 모두 구현하며, 목록에 없는 이름은 `ValueError` 로 막는다. 생성자가 받는 `task` 는 각 단계 뒤에 설 model 을 Table 2 대로 고르며, 회귀에서 `relieff` 를 부르면 `ValueError` 와 함께 그 task 가 쓸 수 있는 filter 목록을 돌려준다.
 
 입력은 scikit-learn 에 들어 있는 breast cancer dataset 이며, 상수 제거 단계가 보이도록 값이 늘 1.0 인 column 하나를 덧붙여 표본 569 개와 feature 31 개로 만들었다. 원래의 feature 30 개는 서로 중복이 크고, 모두 `StandardScaler` 로 표준화한다. Label 이 이진이므로 예제는 분류 model 로 짰고, 회귀 target 이면 Table 2 의 오른쪽 열로 바꾼다.
 
 Class 는 [src/multivariate_feature_selection.py](src/multivariate_feature_selection.py) 에 있으며, `python src/multivariate_feature_selection.py` 로 돌리면 Fig 2 를 다시 그린다.
 
-상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 네 embedded 는 9, 6, 12, 18 개를 남겨 서로 다른 답을 내며, L2 를 섞은 `elasticnet` 이 상관된 무리를 함께 남겨 `lasso` 보다 6 개를 더 든다. 네 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 와 `genetic` 은 저마다 다른 조합을 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
+상수 column 은 첫 단계에서 떨어져 어느 filter 에도 닿지 않는다. 남은 30 개에서 네 filter 는 23, 17, 10, 10 개를, 다섯 embedded 는 9, 6, 5, 12, 18 개를 남겨 서로 다른 답을 내며, L2 를 섞은 `elasticnet` 이 상관된 무리를 함께 남겨 `lasso` 보다 6 개를 더 든다. 네 wrapper 는 random forest 가 남긴 9 개에서 저마다 5 개를 고르는데, `forward` 와 `backward` 는 같은 조합에 닿고 `rfe` 와 `genetic` 은 저마다 다른 조합을 집는다. `run` 이 기본값으로 받는 `corr` → `random_forest` → `rfe` 로 이어 가면 feature 수가 31, 30, 23, 6, 5 로 줄고, 비용이 가장 큰 wrapper 는 6 개만 남은 자리에서 돈다.
 
 어느 method 가 어느 feature 를 남겼는지는 Fig 2 에 있다.
 
@@ -200,9 +200,9 @@ Class 는 [src/multivariate_feature_selection.py](src/multivariate_feature_selec
 
 Fig 2. Which features each selection method keeps
 
-- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 12 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
-- 열 이름 아래 괄호 안 숫자는 그 method 가 남긴 feature 수이며, wrapper 세 열은 random forest 가 남긴 9 개 위에서 돌린 결과다.
-- `mean concave points` 는 열두 열 가운데 아홉에서, `worst concave points` 는 열하나에서 채워진다. 반대로 `worst compactness` 는 corr 한 열에만 남는다.
+- 행은 상수 제거 뒤 남은 feature 30 개를 이름순으로, 열은 method 13 개를 filter, embedded, wrapper 순으로 두고, 세 갈래 사이는 열 간격을 넓혀 갈랐다. 칸이 채워진 것은 그 method 가 그 feature 를 남겼다는 뜻이다.
+- 열 이름 아래 괄호 안 숫자는 그 method 가 남긴 feature 수이며, wrapper 네 열은 random forest 가 남긴 9 개 위에서 돌린 결과다.
+- `mean concave points` 는 열세 열 가운데 열에서, `worst concave points` 는 열둘에서 채워진다. 반대로 `worst compactness` 는 corr 한 열에만 남는다.
 
 ### B.1 Choosing Among Answers 🥑
 

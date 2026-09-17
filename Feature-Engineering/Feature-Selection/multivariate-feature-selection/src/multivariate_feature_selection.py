@@ -1,5 +1,13 @@
 __author__ = "yRocket"
-__version__ = "0.5.1+20260917"
+__version__ = "0.6.0+20260917"
+
+"""Multivariate feature selection: filter, embedded and wrapper methods on one dataset.
+
+Changelog:
+- 0.6.0+20260917: gradient_boosting joins the embedded methods, the sklearn boosting beside lightgbm.
+- 0.5.0+20260914: task="regression" swaps the class models for their regression forms; relieff
+  refuses a regression task; draw_matrix places the separators from the methods it is given.
+"""
 
 import pathlib
 from typing import Final, Literal, TypeAlias, get_args
@@ -9,7 +17,8 @@ import numpy as np
 from lightgbm import LGBMClassifier, LGBMRegressor
 from matplotlib import pyplot as plt
 from sklearn.datasets import load_breast_cancer
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import (GradientBoostingClassifier, GradientBoostingRegressor,
+                              RandomForestClassifier, RandomForestRegressor)
 from sklearn.feature_selection import (RFE, SelectFromModel, SequentialFeatureSelector,
                                        mutual_info_classif, mutual_info_regression)
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, LogisticRegression
@@ -43,7 +52,7 @@ class MultivariateFeatureSelector:
         elasticnet_ratio: share of the elastic net penalty that is L1, the rest being L2.
         filter_count: number of features the ranking filters (mrmr, relieff) keep.
         neighbour_count: number of hits and misses relieff compares per sample.
-        forest_size: number of trees of the random forest used by the embedded step.
+        forest_size: number of trees of the random forest and of the boostings of the embedded step.
         fold_count: number of cross validation folds the sequential and genetic wrappers score on.
         population_size: number of subsets the genetic search holds in one generation.
         generation_count: number of generations the genetic search runs.
@@ -53,7 +62,7 @@ class MultivariateFeatureSelector:
     """
 
     FilterMethod: TypeAlias = Literal["corr", "vif", "mrmr", "relieff"]
-    EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "lasso", "elasticnet"]
+    EmbeddedMethod: TypeAlias = Literal["random_forest", "lightgbm", "gradient_boosting", "lasso", "elasticnet"]
     WrapperMethod: TypeAlias = Literal["rfe", "forward", "backward", "genetic"]
     Direction: TypeAlias = Literal["forward", "backward"]
     Task: TypeAlias = Literal["classification", "regression"]
@@ -197,6 +206,8 @@ class MultivariateFeatureSelector:
             return self._by_forest(X=X, y=y, columns=columns)
         if method == "lightgbm":
             return self._by_lightgbm(X=X, y=y, columns=columns)
+        if method == "gradient_boosting":
+            return self._by_gradient_boosting(X=X, y=y, columns=columns)
         if method == "lasso":
             return self._by_penalty(X=X, y=y, columns=columns, l1_ratio=1.0)
         if method == "elasticnet":
@@ -215,6 +226,13 @@ class MultivariateFeatureSelector:
         booster_of = LGBMClassifier if self.task == "classification" else LGBMRegressor
         booster = booster_of(n_estimators=self.forest_size, importance_type="gain",
                              random_state=self.random_state, verbose=-1)
+        selector = SelectFromModel(estimator=booster, threshold="mean").fit(X[:, columns], y)
+        return columns[selector.get_support()]
+
+    def _by_gradient_boosting(self, X: np.ndarray, y: np.ndarray, columns: np.ndarray) -> np.ndarray:
+        """Keep the columns whose sklearn gradient boosting impurity importance is above the mean."""
+        booster_of = GradientBoostingClassifier if self.task == "classification" else GradientBoostingRegressor
+        booster = booster_of(n_estimators=self.forest_size, random_state=self.random_state)
         selector = SelectFromModel(estimator=booster, threshold="mean").fit(X[:, columns], y)
         return columns[selector.get_support()]
 

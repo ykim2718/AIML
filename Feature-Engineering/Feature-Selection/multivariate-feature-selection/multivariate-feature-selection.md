@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 7 | Created: 2026-09-14 | Updated: 2026-09-17 09:16 CDT
+Rev. 8 | Created: 2026-09-14 | Updated: 2026-09-17 09:26 CDT
 
 ## 1. Purpose
 
@@ -137,14 +137,14 @@ Classification and regression are properties of the target, orthogonal to the ap
 
 Table 2. What each method changes when the target is regression instead of classification
 
-| Section                  | Method                         | Uses y | Classification target           | Regression target                       |
-| :----------------------: | :----------------------------: | :----: | :-----------------------------: | :-------------------------------------: |
-| 3.1 Filter               | corr, VIF                      | No     | Correlation among X only        | Correlation among X only                |
-| 3.1 Filter               | mRMR                           | Yes    | `mutual_info_classif`           | `mutual_info_regression`                |
-| 3.1 Filter / 4.2 Synergy | ReliefF                        | Yes    | hit/miss contrast               | None (RReliefF is a separate algorithm) |
-| 3.3 Embedded             | random forest, LightGBM        | Yes    | Classifier                      | Regressor                               |
-| 3.3 Embedded             | lasso, elastic net             | Yes    | Regression fit on the 0/1 label | Regression fit on y                     |
-| 3.2 Wrapper              | RFE, forward/backward, genetic | Yes    | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
+| Section                  | Method                                     | Uses y | Classification target           | Regression target                       |
+| :----------------------: | :----------------------------------------: | :----: | :-----------------------------: | :-------------------------------------: |
+| 3.1 Filter               | corr, VIF                                  | No     | Correlation among X only        | Correlation among X only                |
+| 3.1 Filter               | mRMR                                       | Yes    | `mutual_info_classif`           | `mutual_info_regression`                |
+| 3.1 Filter / 4.2 Synergy | ReliefF                                    | Yes    | hit/miss contrast               | None (RReliefF is a separate algorithm) |
+| 3.3 Embedded             | random forest, LightGBM, gradient boosting | Yes    | Classifier                      | Regressor                               |
+| 3.3 Embedded             | lasso, elastic net                         | Yes    | Regression fit on the 0/1 label | Regression fit on y                     |
+| 3.2 Wrapper              | RFE, forward/backward, genetic             | Yes    | Scored by `LogisticRegression`  | Scored by `LinearRegression`            |
 
 - Rows whose `Uses y` is No: the same computation under both targets
 - Rows whose `Uses y` is Yes: the estimator and the model swapped for their regression form
@@ -187,13 +187,13 @@ Cheap methods cut the candidates down before the expensive ones run. The cost of
 
 ## Appendix B. Implementation
 
-The class below runs the four steps of section 7 with scikit-learn. `run` drops the constant features first and passes only the remaining columns through the other three steps. Each step takes its threshold from the constructor and returns the original column indices, so the names of the chosen features can be recovered at the end. Each step takes its method name as the `Literal` alias of that branch, whose members are declared on the class once and whose tuple of names is derived beside it with `get_args`. The filter step implements four names (`corr`, `vif`, `mrmr`, `relieff`), the embedded step four (`random_forest`, `lightgbm`, `lasso`, `elasticnet`) and the wrapper step four (`rfe`, `forward`, `backward`, `genetic`); a name outside a list raises `ValueError`. The `task` the constructor takes picks the model behind every step as Table 2 has it, and calling `relieff` under regression raises `ValueError` together with the filters that task can use.
+The class below runs the four steps of section 7 with scikit-learn. `run` drops the constant features first and passes only the remaining columns through the other three steps. Each step takes its threshold from the constructor and returns the original column indices, so the names of the chosen features can be recovered at the end. Each step takes its method name as the `Literal` alias of that branch, whose members are declared on the class once and whose tuple of names is derived beside it with `get_args`. The filter step implements four names (`corr`, `vif`, `mrmr`, `relieff`), the embedded step five (`random_forest`, `lightgbm`, `gradient_boosting`, `lasso`, `elasticnet`) and the wrapper step four (`rfe`, `forward`, `backward`, `genetic`); a name outside a list raises `ValueError`. The `task` the constructor takes picks the model behind every step as Table 2 has it, and calling `relieff` under regression raises `ValueError` together with the filters that task can use.
 
 The input is the breast cancer dataset shipped with scikit-learn, with one column holding 1.0 throughout appended so that the constant removal step is visible, giving 569 samples and 31 features. The original 30 features overlap heavily and all of them are standardized with `StandardScaler`. The label is binary, so the example is written with classification models; for a regression target the right column of Table 2 takes over.
 
 The class is in [src/multivariate_feature_selection.py](src/multivariate_feature_selection.py), and `python src/multivariate_feature_selection.py` redraws Fig 2.
 
-The constant column drops at the first step and reaches no filter. Of the 30 that remain the four filters keep 23, 17, 10 and 10, and the four embedded methods keep 9, 6, 12 and 18, so their answers differ; `elasticnet`, which mixes in L2, keeps a correlated group together and holds 6 more than `lasso`. The four wrappers each pick 5 out of the 9 the random forest left, where `forward` and `backward` reach the same combination while `rfe` and `genetic` each take their own. Following the `corr` → `random_forest` → `rfe` that `run` takes by default, the feature count falls 31, 30, 23, 6, 5, and the costliest step runs where only 6 are left.
+The constant column drops at the first step and reaches no filter. Of the 30 that remain the four filters keep 23, 17, 10 and 10, and the five embedded methods keep 9, 6, 5, 12 and 18, so their answers differ; `elasticnet`, which mixes in L2, keeps a correlated group together and holds 6 more than `lasso`. The four wrappers each pick 5 out of the 9 the random forest left, where `forward` and `backward` reach the same combination while `rfe` and `genetic` each take their own. Following the `corr` → `random_forest` → `rfe` that `run` takes by default, the feature count falls 31, 30, 23, 6, 5, and the costliest step runs where only 6 are left.
 
 Which method kept which feature is in Fig 2.
 
@@ -201,9 +201,9 @@ Which method kept which feature is in Fig 2.
 
 Fig 2. Which features each selection method keeps
 
-- The rows are the 30 features left after constant removal, in name order, and the columns are the 12 methods in filter, embedded and wrapper order, with a wider gap between the three branches. A filled cell means that method kept that feature.
+- The rows are the 30 features left after constant removal, in name order, and the columns are the 13 methods in filter, embedded and wrapper order, with a wider gap between the three branches. A filled cell means that method kept that feature.
 - The number in brackets under a column name is how many features that method kept, and the wrapper columns ran on the 9 the random forest left.
-- `mean concave points` is filled in nine of the twelve columns and `worst concave points` in eleven. `worst compactness`, in contrast, survives in the corr column alone.
+- `mean concave points` is filled in ten of the thirteen columns and `worst concave points` in twelve. `worst compactness`, in contrast, survives in the corr column alone.
 
 ### B.1 Choosing Among Answers 🥑
 
