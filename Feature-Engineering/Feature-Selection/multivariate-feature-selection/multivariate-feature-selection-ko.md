@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 65 | Created: 2026-09-12 | Updated: 2026-09-17 09:26 CDT
+Rev. 66 | Created: 2026-09-12 | Updated: 2026-09-19 16:54 CDT
 
 ## 1. Purpose
 
@@ -88,7 +88,7 @@ Model 의 학습 algorithm 안에 feature 선택 과정이 들어 있다.
 
 Lasso 는 손실 함수에 계수 절댓값의 합 $\lambda \sum |\beta_i|$ 을 penalty 로 더하여, 불필요한 feature 의 계수를 정확히 0 으로 보낸다. ElasticNet 은 거기에 계수 제곱합을 섞어, 서로 상관된 feature 가운데 하나만 남기는 lasso 와 달리 그 무리를 함께 남긴다.
 
-Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다. 구현으로는 random forest 와 gradient boosting 계열의 XGBoost, LightGBM 이 있으며, 셋 다 분할 기여도를 내놓으므로 `SelectFromModel` 에 그대로 들어간다.
+Tree-based importance 는 tree model 의 node 분할 기여도 (MDI) 나 값을 무작위로 섞었을 때의 성능 저하 폭 (permutation importance) 으로 다변량 관점의 중요도를 계산한다. 구현으로는 random forest 와 gradient boosting 계열의 XGBoost, LightGBM 이 있으며, 셋 다 분할 기여도를 내놓으므로 `SelectFromModel` 에 그대로 들어간다. Gradient boosting 의 적합과 importance 는 [Appendix D](#appendix-d-gradient-boosting) 에 있다.
 
 ### 3.4 Comparison
 
@@ -260,3 +260,31 @@ Table 4. Reading of a VIF value
 - 범주형 dummy: 한 변수에서 나온 dummy 들은 서로 공선이므로 값이 늘 높게 나오며, 기준 범주를 뺀 뒤 변수 단위로 읽음
 - 완전 공선성: $R_i^2 = 1$ 이면 값이 무한대이고, Appendix B 의 `_vif_of` 는 그 자리를 `float("inf")` 로 돌려주어 다음 제거 대상이 되게 함
 - Target 과의 무관: 식 (2) 에 $y$ 가 들어가지 않으므로 Table 2 의 `Uses y` 가 No 인 자리에 있음
+
+## Appendix D. Gradient Boosting
+
+Gradient boosting 은 얕은 tree 를 한 그루씩 더해 가는 model 이며, 각 tree 는 앞 단계까지의 예측이 남긴 손실의 음의 기울기를 target 으로 적합된다. $m$ 단계의 예측은 앞 단계 예측에 새 tree 를 learning rate $\nu$ 만큼 섞어 만든다.
+
+```math
+F_m(x) = F_{m-1}(x) + \nu\, h_m(x) \hspace{19em} (3)
+```
+
+- $h_m$: $m$ 단계에서 손실의 음의 기울기에 적합된 tree
+- $\nu$: learning rate. 작을수록 tree 수가 많아지는 대신 한 그루의 잘못이 덜 실림
+- Random forest 와의 차이: random forest 는 독립으로 기른 tree 를 평균 내고, gradient boosting 은 앞 tree 가 남긴 것을 다음 tree 가 받아 순차로 줄임
+
+선택은 이 model 이 내놓는 importance 를 문턱으로 자른다. `_by_gradient_boosting` 은 `GradientBoostingClassifier` (회귀 target 이면 `GradientBoostingRegressor`) 를 `forest_size` 그루로 적합한 뒤 `SelectFromModel(threshold="mean")` 에 넣어, 평균보다 큰 importance 를 가진 feature 만 남긴다. Importance 는 그 feature 가 쓰인 분할이 줄인 불순도의 합 (MDI) 을 tree 수로 나눈 값이다.
+
+Table 5. The three tree-based embedded methods of the breast cancer example
+
+| Method            | Library      | Importance                                  | Features kept |
+| :---------------: | :----------: | :-----------------------------------------: | :-----------: |
+| random_forest     | scikit-learn | MDI averaged over independent trees         | 9             |
+| lightgbm          | LightGBM     | Total split gain (`importance_type="gain"`) | 6             |
+| gradient_boosting | scikit-learn | MDI averaged over stage-wise trees          | 5             |
+
+셋 다 분할 기여도를 쓰지만 남기는 개수가 갈린다. 순차로 적합하는 gradient boosting 은 앞 tree 가 이미 설명한 신호를 뒤 tree 가 다시 쓰지 않으므로 importance 가 소수의 feature 에 몰리고, 평균 문턱을 넘는 feature 가 다섯으로 가장 적다. 남은 다섯은 `mean concave points`, `worst concave points`, `worst perimeter`, `worst radius`, `worst texture` 이며, 여섯을 남기는 `lightgbm` 과는 `worst area` 하나가 다르다.
+
+- 상관된 feature: 한 무리에서 먼저 쓰인 feature 가 이득을 가져가고 나머지는 낮아지므로, 무리째 남기려면 section 6 의 group-wise selection 을 씀
+- Importance 의 치우침: MDI 는 분할 후보가 많은 연속형과 고유값이 많은 feature 를 높게 매기므로, 같은 model 에서도 permutation importance 와 순위가 다를 수 있음
+- 비용: tree 를 순차로 기르므로 random forest 처럼 병렬로 기를 수 없고, `forest_size` 가 커질수록 시간이 선형으로 늘어남

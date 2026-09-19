@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 8 | Created: 2026-09-14 | Updated: 2026-09-17 09:26 CDT
+Rev. 9 | Created: 2026-09-14 | Updated: 2026-09-19 16:54 CDT
 
 ## 1. Purpose
 
@@ -88,7 +88,7 @@ Feature selection sits inside the learning algorithm of the model.
 
 Lasso adds the sum of the absolute coefficients $\lambda \sum |\beta_i|$ to the loss as a penalty, driving the coefficients of unneeded features exactly to zero. ElasticNet mixes in the sum of the squared coefficients, so a group of correlated features is kept together where lasso leaves one member of it.
 
-Tree-based importance reads a multivariate importance from the node split contribution of a tree model (MDI) or from the drop in performance when the values are shuffled (permutation importance). Random forest and the gradient boosting family XGBoost and LightGBM implement it, and all three report split contributions, so they go straight into `SelectFromModel`.
+Tree-based importance reads a multivariate importance from the node split contribution of a tree model (MDI) or from the drop in performance when the values are shuffled (permutation importance). Random forest and the gradient boosting family XGBoost and LightGBM implement it, and all three report split contributions, so they go straight into `SelectFromModel`. The fit and the importance of gradient boosting are in [Appendix D](#appendix-d-gradient-boosting).
 
 ### 3.4 Comparison
 
@@ -261,3 +261,31 @@ The unit each one reads is where VIF parts from the correlation filter. The corr
 - Categorical dummies: dummies from one variable are collinear with each other and always score high, so the reference category is dropped and the reading is made per variable
 - Perfect collinearity: the value is infinite where $R_i^2 = 1$, and `_vif_of` of Appendix B returns `float("inf")` there so that the feature becomes the next removal
 - Independence from the target: $y$ does not enter equation (2), which puts VIF among the `Uses y` No rows of Table 2
+
+## Appendix D. Gradient Boosting
+
+Gradient boosting is a model built by adding one shallow tree at a time, each tree fitted to the negative gradient of the loss left by the prediction so far. The prediction of stage $m$ mixes the new tree into the previous prediction by the learning rate $\nu$.
+
+```math
+F_m(x) = F_{m-1}(x) + \nu\, h_m(x) \hspace{19em} (3)
+```
+
+- $h_m$: the tree fitted at stage $m$ to the negative gradient of the loss
+- $\nu$: the learning rate; a smaller one asks for more trees and carries less of any single tree's error
+- Difference from random forest: a random forest averages trees grown independently, while gradient boosting hands what one tree left to the next and reduces it in sequence
+
+The selection cuts the importance this model reports at a threshold. `_by_gradient_boosting` fits a `GradientBoostingClassifier` (a `GradientBoostingRegressor` for a regression target) with `forest_size` trees and passes it to `SelectFromModel(threshold="mean")`, keeping the features whose importance is above the mean. The importance is the impurity the splits on that feature removed (MDI), divided by the number of trees.
+
+Table 5. The three tree-based embedded methods of the breast cancer example
+
+| Method            | Library      | Importance                                  | Features kept |
+| :---------------: | :----------: | :-----------------------------------------: | :-----------: |
+| random_forest     | scikit-learn | MDI averaged over independent trees         | 9             |
+| lightgbm          | LightGBM     | Total split gain (`importance_type="gain"`) | 6             |
+| gradient_boosting | scikit-learn | MDI averaged over stage-wise trees          | 5             |
+
+All three read a split contribution, and the counts they keep still differ. Fitting in sequence, gradient boosting lets no later tree reuse the signal an earlier one has already explained, so its importance concentrates on few features and only five pass the mean threshold. The five are `mean concave points`, `worst concave points`, `worst perimeter`, `worst radius` and `worst texture`, which differ from the six of `lightgbm` by `worst area` alone.
+
+- Correlated features: the member used first takes the gain and the rest score lower, so keeping a group together asks for the group-wise selection of section 6
+- Bias of the importance: MDI favours continuous features and features with many distinct values, so the ranking can differ from permutation importance on the same model
+- Cost: the trees are grown in sequence rather than in parallel as in a random forest, and the time grows linearly with `forest_size`
