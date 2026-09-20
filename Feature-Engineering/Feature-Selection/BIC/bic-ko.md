@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 0 | Created: 2026-09-20 | Updated: 2026-09-20 07:13 CDT
+Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 08:45 CDT
 
 ## 1. Purpose
 
@@ -72,7 +72,7 @@ Gaussian error 를 가정한 linear model 에서 maximized likelihood 는 residu
 \mathrm{BIC} = n \ln \frac{\mathrm{RSS}}{n} + k \ln n + n (\ln 2\pi + 1) \hspace{19em} (4)
 ```
 
-마지막 항은 같은 $n$ 개의 관측에 적합한 모든 후보에서 같은 값이므로 비교할 때마다 상쇄되고, 대부분의 구현이 마지막 항을 뺀 값을 내놓는다. 마지막 항을 뺀 점수와 남긴 library 의 점수는 서로 견줄 수 없다.
+마지막 항은 같은 $n$ 개의 관측에 적합한 모든 후보에서 같은 값이므로 비교할 때마다 상쇄되고, 대부분의 구현이 마지막 항을 뺀 값을 내놓는다. 마지막 항을 뺀 점수와 남긴 library 의 점수는 서로 견줄 수 없다. Gaussian likelihood 에서 이 형태까지의 단계는 [Appendix C](#appendix-c-the-deviance-of-a-gaussian-linear-model) 에 있다.
 
 ### 4.2 Use In Feature Selection
 
@@ -135,9 +135,43 @@ Table 3. The two criteria against each other
 
 AIC 는 적합한 model 이 같은 크기의 새 표본에서 낼 deviance 를 추정하므로 예측 기준이다 [[2](#ref-2)]. BIC 는 model 의 posterior probability 를 추정하므로 식별 기준이다 [[1](#ref-1)]. 같은 적합에 대해 서로 다른 질문에 답하므로, 두 기준이 엇갈리면 둘 중 어느 질문을 하고 있었는지로 읽는다.
 
-Penalty 는 $n = e^2 \approx 7.4$ 에서 교차하며, $n = 8$ 부터는 BIC 가 AIC 보다 parameter 하나당 더 많이 물린다. 그래서 같은 nested 경로에서 BIC 가 고르는 크기는 AIC 가 고르는 크기보다 커지지 않는다. [Appendix C](#appendix-c-worked-example) 는 크기 차이를 설계 하나에서 잰다.
+Penalty 는 $n = e^2 \approx 7.4$ 에서 교차하며, $n = 8$ 부터는 BIC 가 AIC 보다 parameter 하나당 더 많이 물린다. 그래서 같은 nested 경로에서 BIC 가 고르는 크기는 AIC 가 고르는 크기보다 커지지 않는다. [Appendix D](#appendix-d-worked-example) 는 크기 차이를 설계 하나에서 잰다.
 
-## Appendix C. Worked Example
+## Appendix C. The Deviance Of A Gaussian Linear Model
+
+식 (4) 가 담은 deviance 는 least squares 추정값과 likelihood 를 최대로 만드는 noise variance 에서 Gaussian likelihood 를 계산한 값이다.
+
+독립인 Gaussian error 를 가정한 linear model 은 관측 $n$ 개의 결합 밀도를 곱으로 적으며, 그 지수부는 residual sum of squares $\mathrm{RSS}(\beta) = \sum_i (y_i - x_i^{\top} \beta)^2$ 로 모인다.
+
+```math
+L(\beta, \sigma^2) = (2\pi\sigma^2)^{-n/2} \exp\left(-\frac{\mathrm{RSS}(\beta)}{2\sigma^2}\right) \hspace{19em} (6)
+```
+
+Log 를 취하면 곱이 세 항의 합이 된다.
+
+```math
+\ln L(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln \sigma^2 - \frac{\mathrm{RSS}(\beta)}{2\sigma^2} \hspace{19em} (7)
+```
+
+계수 vector $\beta$ 는 $\mathrm{RSS}(\beta)$ 를 통해서만 들어오므로 likelihood 를 최대로 만드는 $\beta$ 는 least squares 추정값이고, 아래의 $\mathrm{RSS}$ 는 least squares 추정값의 잔차 제곱합이다. $\sigma^2$ 에 대한 미분을 0 으로 두면 likelihood 를 최대로 만드는 variance 가 나온다.
+
+```math
+\frac{\partial \ln L}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{\mathrm{RSS}}{2\sigma^4} = 0
+\quad \Longrightarrow \quad
+\hat{\sigma}^2 = \frac{\mathrm{RSS}}{n} \hspace{19em} (8)
+```
+
+$\hat{\sigma}^2$ 을 식 (7) 에 되넣으면 마지막 항이 $n / 2$ 가 되고 가운데 항이 $\ln(\mathrm{RSS} / n)$ 이 되며, 여기에 $-2$ 를 곱하면 deviance 가 남는다.
+
+```math
+-2 \ln \hat{L} = n \left(\ln 2\pi + \ln \frac{\mathrm{RSS}}{n} + 1\right) \hspace{19em} (9)
+```
+
+식 (9) 에 $k \ln n$ 을 더하면 식 (4) 가 된다. Table 4 의 세 번째 행은 $\mathrm{RSS} = 218.3$ 과 $n = 200$ 이며, 식 (9) 에 넣으면 585.1 이 나온다.
+
+Gaussian 계열 밖의 model 은 식 (1) 을 그대로 두고, 식 (9) 자리에 자기 likelihood 가 내는 deviance 를 넣는다. 적합 library 는 그 deviance 를 적합한 parameter 와 함께 보고한다.
+
+## Appendix D. Worked Example
 
 [`src/bic_model_selection.py`](src/bic_model_selection.py) 의 class 는 어느 feature 가 자료를 만들었는지 아는 data 를 만들고, linear model 을 feature 하나씩 키우며, 크기마다 두 기준으로 채점한다. 이 folder 에서 `python3 src/bic_model_selection.py` 를 실행하면 아래 표를 출력하고, 반복 추출에서 각 기준이 생성 feature 를 되찾는 횟수를 세며, Fig 2 를 쓴다.
 

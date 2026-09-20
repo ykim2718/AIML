@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 0 | Created: 2026-09-20 | Updated: 2026-09-20 07:13 CDT
+Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 08:45 CDT
 
 ## 1. Purpose
 
@@ -72,7 +72,7 @@ For a linear model with Gaussian errors, the maximized likelihood is a function 
 \mathrm{BIC} = n \ln \frac{\mathrm{RSS}}{n} + k \ln n + n (\ln 2\pi + 1) \hspace{19em} (4)
 ```
 
-The trailing term is the same for every candidate fitted to the same $n$ observations, so it cancels in every comparison and is dropped by most implementations. A score that omits it is therefore not comparable with a score from a library that keeps it.
+The trailing term is the same for every candidate fitted to the same $n$ observations, so it cancels in every comparison and is dropped by most implementations. A score that omits it is therefore not comparable with a score from a library that keeps it. The step from the Gaussian likelihood to that form is in [Appendix C](#appendix-c-the-deviance-of-a-gaussian-linear-model).
 
 ### 4.2 Use In Feature Selection
 
@@ -135,9 +135,43 @@ Table 3. The two criteria against each other
 
 AIC estimates the deviance the fitted model would reach on a fresh sample of the same size, which makes it a prediction criterion [[2](#ref-2)]. BIC estimates the posterior probability of the model, which makes it an identification criterion [[1](#ref-1)]. The two answer different questions on the same fit, so a disagreement between them is read by asking which of the two questions was being asked.
 
-The penalties cross at $n = e^2 \approx 7.4$, so from $n = 8$ upward BIC charges more per parameter than AIC, and along one nested path the size BIC selects is never larger than the size AIC selects. [Appendix C](#appendix-c-worked-example) measures the size difference on one design.
+The penalties cross at $n = e^2 \approx 7.4$, so from $n = 8$ upward BIC charges more per parameter than AIC, and along one nested path the size BIC selects is never larger than the size AIC selects. [Appendix D](#appendix-d-worked-example) measures the size difference on one design.
 
-## Appendix C. Worked Example
+## Appendix C. The Deviance Of A Gaussian Linear Model
+
+The deviance that equation (4) carries is the Gaussian likelihood evaluated at the least squares estimate and at the noise variance that maximizes the likelihood.
+
+A linear model with independent Gaussian errors writes the joint density of $n$ observations as a product whose exponent collects into the residual sum of squares $\mathrm{RSS}(\beta) = \sum_i (y_i - x_i^{\top} \beta)^2$.
+
+```math
+L(\beta, \sigma^2) = (2\pi\sigma^2)^{-n/2} \exp\left(-\frac{\mathrm{RSS}(\beta)}{2\sigma^2}\right) \hspace{19em} (6)
+```
+
+The log turns the product into a sum of three terms.
+
+```math
+\ln L(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln \sigma^2 - \frac{\mathrm{RSS}(\beta)}{2\sigma^2} \hspace{19em} (7)
+```
+
+The coefficient vector $\beta$ enters through $\mathrm{RSS}(\beta)$ alone, so the maximizing $\beta$ is the least squares estimate and $\mathrm{RSS}$ below is the residual sum of squares at that estimate. Setting the derivative in $\sigma^2$ to zero gives the maximizing variance.
+
+```math
+\frac{\partial \ln L}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{\mathrm{RSS}}{2\sigma^4} = 0
+\quad \Longrightarrow \quad
+\hat{\sigma}^2 = \frac{\mathrm{RSS}}{n} \hspace{19em} (8)
+```
+
+Putting $\hat{\sigma}^2$ back into equation (7) turns the last term into $n / 2$ and the middle term into $\ln(\mathrm{RSS} / n)$, and multiplying by $-2$ leaves the deviance.
+
+```math
+-2 \ln \hat{L} = n \left(\ln 2\pi + \ln \frac{\mathrm{RSS}}{n} + 1\right) \hspace{19em} (9)
+```
+
+Adding $k \ln n$ to equation (9) gives equation (4). The third row of Table 4, with $\mathrm{RSS} = 218.3$ and $n = 200$, returns 585.1 from equation (9).
+
+A model outside the Gaussian family keeps equation (1) unchanged and puts the deviance of its own likelihood in place of equation (9). A fitting library reports that deviance beside the fitted parameters.
+
+## Appendix D. Worked Example
 
 The class in [`src/bic_model_selection.py`](src/bic_model_selection.py) builds a dataset whose generating features are known, grows a linear model one feature at a time, and scores every size with both criteria. Running `python3 src/bic_model_selection.py` from this folder prints the table below, counts how often each criterion recovers the generating features over repeated draws, and writes Fig 2.
 
