@@ -1,5 +1,5 @@
 # Bayesian Statistics
-Rev. 3 | Created: 2026-09-20 | Updated: 2026-09-20 15:15 CDT
+Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-20 15:45 CDT
 
 ## 1. Purpose
 
@@ -17,7 +17,7 @@ Bayes 통계학이 언제나 낫다고 말할 수는 없다. 적분이 닫힌 �
 
 ## 3. Taxonomy and its Hierarchy
 
-Model 과 자료를 두고 세울 수 있는 조건부 확률이 둘이며, 어느 쪽을 구하는가가 두 계열을 가른다. 아래 <a href="#fig-1">Fig 1</a> 이 그 갈림과 각 계열이 딸려 요구하는 것을 한 장에 담는다.
+Model 과 자료를 두고 세울 수 있는 조건부 확률이 둘이며, 어느 쪽을 구하는가가 고전 통계학과 Bayes 통계학을 가른다. 아래 <a href="#fig-1">Fig 1</a> 이 그 갈림과 각 계열이 딸려 요구하는 것을 한 장에 담는다.
 
 ```text
 A question about a model and the data it might produce
@@ -107,8 +107,9 @@ Table 2. Terms of Bayes' rule
 P(\mathrm{Bob\ wins} \mid p) = (1 - p)^3 \hspace{19em} (4)
 ```
 
-식 (4) 에는 관측되지 않은 $p$ 가 남아 있다. 두 계열이 갈리는 자리가 여기이며, 5.3 과 5.4 가 이 $p$ 를
-서로 다르게 처리한다.
+식 (4) 의 유도는 [Appendix B](#appendix-b-derivations) 에 있다. 식 (4) 에는 관측되지 않은 $p$ 가
+남아 있고, 고전 통계학과 Bayes 통계학이 갈리는 자리가 여기이며, 5.3 과 5.4 가 이 $p$ 를 서로 다르게
+처리한다.
 
 ### 5.2 The Prior
 
@@ -161,7 +162,7 @@ P(p \mid A = 5,\, B = 3) \propto p^5 (1 - p)^3 \hspace{19em} (8)
 f(p) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\, \Gamma(\beta)}\, p^{\alpha - 1} (1 - p)^{\beta - 1} \hspace{19em} (9)
 ```
 
-식 (6) 의 적분을 [Appendix B](#appendix-b-evaluation-of-the-expectation) 가 풀어 아래를 낸다.
+식 (6) 의 적분을 [Appendix B](#appendix-b-derivations) 가 풀어 아래를 낸다.
 
 ```math
 E = \frac{1}{11} \approx 0.091 \hspace{19em} (10)
@@ -208,9 +209,10 @@ Bayes 통계학을 고전 통계학보다 낫다고 단정할 수 없게 만드�
 
 ## Appendix A. Terminology
 
-- **binomial distribution**: 성공 확률이 같은 시행을 여러 번 되풀이했을 때 성공 횟수가 따르는 분포.
+- **Bernoulli trial**: 결과가 둘뿐이고 성공 확률이 매번 같은 시행.
 - **beta distribution**: 식 (9) 의 밀도를 갖는 0 과 1 사이의 분포. Uniform prior 와 binomial likelihood 의 posterior 가 이 분포이다.
-- **beta integral**: 식 (12) 의 적분. Gamma function 의 비로 닫힌 형태로 풀린다.
+- **beta integral**: 식 (13) 의 적분. Gamma function 의 비로 닫힌 형태로 풀린다.
+- **binomial distribution**: 성공 확률이 같은 시행을 여러 번 되풀이했을 때 성공 횟수가 따르는 분포.
 - **evidence**: Bayes 정리의 분모. Posterior 를 확률분포로 만드는 정규화 상수이다.
 - **Gamma function**: 계승을 실수로 확장한 함수. 자연수에서 $\Gamma(n+1) = n!$ 이다.
 - **likelihood**: Parameter 를 고정했을 때 관측이 나올 확률.
@@ -219,23 +221,41 @@ Bayes 통계학을 고전 통계학보다 낫다고 단정할 수 없게 만드�
 - **prior**: 관측을 보기 전 parameter 에 두는 분포.
 - **total probability**: 한 사건의 확률을 서로 배타적인 조건들에 걸쳐 나누어 합하는 공식.
 - **uniform distribution**: 주어진 구간 안에서 밀도가 일정한 분포.
+## Appendix B. Derivations
 
-## Appendix B. Evaluation of the Expectation
+### B.1 Bob's Win Probability at a Given p
+
+5.1 의 식 (4) 를 세운다. 앨리스가 5 점, 밥이 3 점인 상태에서 앨리스는 한 판만 더 가져가면 6 점에 닿고,
+밥은 세 판을 더 가져가야 6 점에 닿는다. 따라서 밥이 최종 승리하는 경우는 남은 세 판을 모두 가져가는
+하나뿐이다. 셋 중 한 판이라도 앨리스가 가져가면 그 자리에서 앨리스가 6 점에 닿아 게임이 끝나기
+때문이다.
+
+$p$ 가 주어지면 각 판은 밥이 이길 확률이 $1 - p$ 인 서로 독립인 Bernoulli trial 이므로, 세 판의
+결합확률은 곱으로 분해된다.
+
+```math
+P(\mathrm{Bob\ wins} \mid p) = P(R_1 = R_2 = R_3 = \mathrm{Bob} \mid p) = (1-p)(1-p)(1-p) = (1-p)^3 \hspace{19em} (11)
+```
+
+독립이 성립하는 근거는 기준선이 게임 내내 움직이지 않는다는 데 있다. 기준선이 정해 준 $p$ 를 조건으로
+걸고 나면 판과 판 사이에 남는 연결이 없으므로, 앞 판의 결과가 뒤 판의 확률을 바꾸지 않는다.
+
+### B.2 Evaluation of the Expectation
 
 식 (6) 에 식 (7) 을 넣으면 분자와 분모가 모두 $p$ 에 대한 적분이 된다. Likelihood 는 여덟 판 가운데 다섯 판을 앨리스가 가져간 확률이므로 $P(A = 5, B = 3 \mid p) = \binom{8}{5} p^5 (1-p)^3$ 이고, 이항계수와 상수 prior 는 분자와 분모에 함께 있어 약분된다. 남는 것은 아래와 같다.
 
 ```math
-E = \frac{\int_{0}^{1} p^5 (1-p)^3 (1-p)^3\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} = \frac{\int_{0}^{1} p^5 (1-p)^6\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} \hspace{19em} (11)
+E = \frac{\int_{0}^{1} p^5 (1-p)^3 (1-p)^3\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} = \frac{\int_{0}^{1} p^5 (1-p)^6\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} \hspace{19em} (12)
 ```
 
 두 적분은 Euler 의 beta integral 이며, Gamma function 으로 닫힌 형태로 풀린다 [[4](#ref-4)].
 
 ```math
-\int_{0}^{1} p^{m-1} (1-p)^{n-1}\, dp = \frac{\Gamma(m)\, \Gamma(n)}{\Gamma(m+n)} \hspace{19em} (12)
+\int_{0}^{1} p^{m-1} (1-p)^{n-1}\, dp = \frac{\Gamma(m)\, \Gamma(n)}{\Gamma(m+n)} \hspace{19em} (13)
 ```
 
 분자는 $m = 6$, $n = 7$ 이고 분모는 $m = 6$, $n = 4$ 이다. $\Gamma(n+1) = n!$ 을 써서 정리하면 값이 나온다.
 
 ```math
-E = \frac{\Gamma(6)\Gamma(7) / \Gamma(13)}{\Gamma(6)\Gamma(4) / \Gamma(10)} = \frac{5!\, 6! / 12!}{5!\, 3! / 9!} = \frac{6!}{3!} \cdot \frac{9!}{12!} = \frac{120}{1320} = \frac{1}{11} \hspace{19em} (13)
+E = \frac{\Gamma(6)\Gamma(7) / \Gamma(13)}{\Gamma(6)\Gamma(4) / \Gamma(10)} = \frac{5!\, 6! / 12!}{5!\, 3! / 9!} = \frac{6!}{3!} \cdot \frac{9!}{12!} = \frac{120}{1320} = \frac{1}{11} \hspace{19em} (14)
 ```
