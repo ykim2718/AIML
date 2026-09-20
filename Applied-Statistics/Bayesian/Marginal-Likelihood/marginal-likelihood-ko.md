@@ -1,5 +1,5 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 0 | Created: 2026-09-20 | Updated: 2026-09-20 10:55 CDT
+Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 11:45 CDT
 
 ## 1. Purpose
 
@@ -60,6 +60,8 @@ Marginal likelihood 는 model 이 자료를 낼 확률을 prior 의 가중치로
 p(\theta \mid D) = \frac{p(D \mid \theta)\, p(\theta)}{p(D)} \hspace{19em} (1)
 ```
 
+식 (1) 에서 $D$ 는 관측한 자료 전체이고, $\theta$ 는 그 자료를 설명하는 model 의 parameter 를 모은 vector 이다. $\theta$ 의 성분 수를 $d$, $D$ 가 담은 관측의 수를 $n$ 으로 두며, 두 값은 식 (3) 과 식 (4) 에서 다시 쓰인다. Model 을 하나 정한다는 것은 $\theta$ 가 어떤 성분으로 이루어지는지와 $p(D \mid \theta)$ 가 어떤 함수인지를 정한다는 뜻이다.
+
 Table 2. Terms of Bayes' theorem
 
 | #   | Term                | Symbol             | Reading                                  |
@@ -94,7 +96,7 @@ p(D) = \int p(D, \theta)\, d\theta = \int p(D \mid \theta)\, p(\theta)\, d\theta
 
 ## 5. Laplace Approximation
 
-Laplace approximation 은 log posterior 를 MAP 점 $\hat\theta$ 둘레에서 2차까지 전개해 적분 대상을 Gaussian 으로 바꾸고, 그 Gaussian 적분을 닫힌 형태로 푼다. 결과는 아래와 같으며, $d$ 는 $\theta$ 의 차원, $A$ 는 $\hat\theta$ 에서의 음의 Hessian 이다. 유도는 [Appendix B](#appendix-b-derivation-of-equations-3-and-4) 에 있다.
+Laplace approximation 은 log posterior 를 MAP 점 $\hat\theta$ 둘레에서 2차까지 전개해 적분 대상을 Gaussian 으로 바꾸고, 그 Gaussian 적분을 닫힌 형태로 푼다. 결과는 아래와 같으며, $A$ 는 $\hat\theta$ 에서의 음의 Hessian 이다. 유도는 [Appendix B](#appendix-b-derivation-of-equations-3-and-4) 에 있다.
 
 ```math
 \log p(D) \approx \log p(D \mid \hat\theta) + \log p(\hat\theta) + \frac{d}{2}\log 2\pi - \frac{1}{2}\log |A| \hspace{19em} (3)
@@ -102,7 +104,7 @@ Laplace approximation 은 log posterior 를 MAP 점 $\hat\theta$ 둘레에서 2�
 
 우변의 네 항이 각각 하는 일이 다르다. 첫 항은 봉우리에서의 적합도, 둘째 항은 그 자리에 prior 가 주는 가중치, 셋째와 넷째 항은 봉우리 둘레에서 posterior 가 차지하는 부피다. 부피 항이 Occam factor 를 담는다. 봉우리가 뾰족하면 $|A|$ 가 커져 값이 깎이고, 넓으면 덜 깎인다.
 
-표본 수 $n$ 이 커지면 $A$ 가 $n$ 에 비례해 $\log|A| \approx d \log n$ 이 되고, $n$ 에 따라 커지지 않는 항을 버리면 식 (3) 이 BIC 로 줄어든다 [[3](#ref-3)].
+관측 수 $n$ 이 커지면 $A$ 가 $n$ 에 비례해 $\log|A| \approx d \log n$ 이 되고, $n$ 에 따라 커지지 않는 항을 버리면 식 (3) 이 BIC 로 줄어든다 [[3](#ref-3)].
 
 ```math
 \mathrm{BIC} = -2 \log p(D \mid \hat\theta) + d \log n \hspace{19em} (4)
