@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 2 | Created: 2026-09-20 | Updated: 2026-09-20 09:50 CDT
+Rev. 3 | Created: 2026-09-20 | Updated: 2026-09-20 10:35 CDT
 
 ## 1. Purpose
 
@@ -45,13 +45,13 @@ Bayesian 비교는 data $D$ 가 주어졌을 때의 posterior probability 로 �
 p(M \mid D) \propto p(D \mid M)\, p(M) \hspace{19em} (2)
 ```
 
-Marginal likelihood $p(D \mid M)$ 는 parameter 의 prior 에 대해 likelihood 를 적분한 값이다. 적분 안의 log 를 maximum likelihood 추정값 둘레에서 2 차까지 전개하고 그 Gaussian 을 적분하면 (Laplace approximation), $n$ 과 함께 커지는 항과 유계로 남는 나머지가 갈린다.
+Marginal likelihood $p(D \mid M)$ 는 parameter 의 prior 에 대해 likelihood 를 적분한 값이다. 적분 안의 log 를 maximum likelihood 추정값 둘레에서 2 차까지 전개하고 그 Gaussian 을 적분하면 (Laplace approximation), $n$ 과 함께 커지는 항과 bounded 로 남는 나머지, 곧 $n$ 이 커져도 상수에 머무는 나머지가 갈린다.
 
 ```math
 -2 \ln p(D \mid M) = -2 \ln \hat{L} + k \ln n + O(1) \hspace{19em} (3)
 ```
 
-Schwarz 는 식 (3) 의 형태로 기준을 유도하고 유계인 나머지를 버렸다 [[1](#ref-1)]. 후보들의 prior probability 가 같으면, 식 (1) 의 순위는 $n$ 과 함께 커지지 않는 항을 빼고 posterior probability 의 순위와 같다. 식 (2) 에서 식 (3) 까지의 단계는 [Appendix B](#appendix-b-the-derivation-of-the-criterion) 에 있다.
+Schwarz 는 식 (3) 의 형태로 기준을 유도하고 bounded 한 나머지를 버렸다 [[1](#ref-1)]. 후보들의 prior probability 가 같으면, 식 (1) 의 순위는 $n$ 과 함께 커지지 않는 항을 빼고 posterior probability 의 순위와 같다. 식 (2) 에서 식 (3) 까지의 단계는 [Appendix B](#appendix-b-the-derivation-of-the-criterion) 에 있다.
 
 ### 3.2 Conditions
 
@@ -111,6 +111,7 @@ Table 2. What a BIC difference in favour of the smaller score is worth
 ## Appendix A. Terminology
 
 - **Bayes factor**: 같은 data 에서 두 후보 model 의 marginal likelihood 비.
+- **Bounded**: 표본이 아무리 커져도 어떤 상수 아래에 머무는 양.
 - **Consistency**: Data 를 만든 model 이 후보 안에 있을 때, 표본이 커질수록 그 model 을 고를 확률이 1 로 가는 성질.
 - **Deviance**: 적합이 끝난 model 의 maximized log-likelihood 에 $-2$ 를 곱한 값.
 - **Efficiency**: 표본이 커질수록 고른 model 의 예측 오차가 후보 가운데 가장 좋은 것의 오차로 가는 성질.
@@ -120,7 +121,7 @@ Table 2. What a BIC difference in favour of the smaller score is worth
 
 ## Appendix B. The Derivation Of The Criterion
 
-식 (1) 은 식 (3) 에서 유계인 항을 버린 것이고, 둘 사이에 있는 것이 marginal likelihood 의 Laplace approximation 이다.
+식 (1) 은 식 (3) 에서 bounded 한 항을 버린 것이고, 둘 사이에 있는 것이 marginal likelihood 의 Laplace approximation 이다.
 
 가정: Parameter $k$ 개가 maximum likelihood 추정값 $\hat{\theta}$ 에서 양이고 연속인 prior 밀도 $\pi(\theta)$ 를 가지며, model 이 regular 하고, $n$ 이 커지는 동안 $k$ 가 고정된다.
 
@@ -148,9 +149,9 @@ p(D \mid M) \approx \hat{L}\, \pi(\hat{\theta}) \left(\frac{2\pi}{n}\right)^{k/2
 -2 \ln p(D \mid M) \approx -2 \ln \hat{L} + k \ln n - k \ln 2\pi + \ln \left| I(\hat{\theta}) \right| - 2 \ln \pi(\hat{\theta}) \hspace{19em} (8)
 ```
 
-식 (8) 의 마지막 세 항은 $n$ 이 커져도 유계로 남는다. $k \ln 2\pi$ 와 $-2 \ln \pi(\hat{\theta})$ 는 $n$ 에 의존하지 않고, $\ln | I(\hat{\theta}) |$ 는 관측당 Fisher information 의 log determinant 로 수렴한다. 세 항이 식 (3) 의 $O(1)$ 이며, 이것을 버리면 식 (1) 이 남는다.
+식 (8) 의 마지막 세 항은 $n$ 이 커져도 상수에 머문다. $k \ln 2\pi$ 와 $-2 \ln \pi(\hat{\theta})$ 는 $n$ 에 의존하지 않고, $\ln | I(\hat{\theta}) |$ 는 관측당 Fisher information 의 log determinant 로 수렴한다. 세 항이 식 (3) 의 $O(1)$ 이며, 이것을 버리면 식 (1) 이 남는다.
 
-Prior 는 버린 항에만 들어오므로 BIC 는 prior 를 정하지 않고도 읽힌다. 같은 이유로 정확도도 정해진다. BIC 가 내는 순위는 posterior probability 의 순위와 유계인 오차만큼 다르며, 그 오차는 0 으로 가지 않는다.
+Prior 는 버린 항에만 들어오므로 BIC 는 prior 를 정하지 않고도 읽힌다. 같은 이유로 정확도도 정해진다. BIC 가 내는 순위는 posterior probability 의 순위와 bounded 한 오차만큼 다르며, 그 오차는 0 으로 가지 않는다.
 
 ## Appendix C. AIC And BIC
 
