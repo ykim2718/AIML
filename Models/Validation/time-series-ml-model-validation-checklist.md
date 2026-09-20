@@ -1,5 +1,5 @@
 # Time-Series ML Model Validation Checklist
-Rev. 0 | Created: 2026-09-20 | Updated: 2026-09-20 18:07 CDT
+Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 18:35 CDT
 
 ## 1. Purpose
 
@@ -72,6 +72,15 @@ Table 1. Placement of each check in the modeling pipeline
 | Reproducibility and latency   | General     | Deployment          |
 
 분할 단계의 두 항목이 표의 맨 위에 있다. 분할이 어긋난 채로 얻은 점수는 뒤 단계의 점검을 모두 통과해도 운영에서 재현되지 않는다.
+
+Fig 2 는 표의 단계를 순서대로 놓고 각 단계의 항목을 그 아래에 붙인 것이다.
+
+<img src="time-series-ml-model-validation-checklist_fig/pipeline-stages.png" width="900" style="max-width: 100%;" alt="Fig 2">
+
+<a id="fig-2"></a>
+Fig 2. Placement of the twelve checks on the six pipeline stages
+
+마커의 색이 Level 을 가른다. 파란색 일곱 항목이 time-series level 이고, 주황색 다섯 항목이 general level 이다.
 
 ## 4. General ML Check
 
