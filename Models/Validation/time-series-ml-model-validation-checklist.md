@@ -1,5 +1,5 @@
 # Time-Series ML Model Validation Checklist
-Rev. 3 | Created: 2026-09-20 | Updated: 2026-09-20 18:55 CDT
+Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-20 19:10 CDT
 
 ## 1. Purpose
 
@@ -134,6 +134,9 @@ Data 자체가 시간에 따라 무엇을 하는지 확인한다. Mean 과 varia
 - **Stationarity & Differencing**
   - Trend 와 seasonality 로 인한 mean 과 variance 의 시간 변화.
   - 필요 시 differencing 또는 log 변환 적용 여부.
+  - Check 결과가 정하는 것: differencing 차수 $d$ 와 seasonal differencing 차수 $D$, model 계열, validation 점수의 해석.
+  - Linear model (ARMA, VAR, linear regression): stationarity 를 전제. 비정상 series 두 개를 그대로 회귀하면 spurious regression 으로 $R^2$ 와 t 통계량이 부풀려지므로, differencing 이나 cointegration 확인 뒤 적합.
+  - Non-linear model (gradient boosting, neural network): stationarity 를 요구하지 않음. Train segment 밖의 값을 외삽하지 못하므로, trend 가 남으면 differencing 이나 detrending 으로 target 범위를 맞춤.
 - **Concept Drift & Covariate Shift**
   - 과거 수집 기간과 예측 대상 기간 사이의 구조적 변화. 시장 상황, 규제, exogenous variable.
   - 예시: 코로나19 이전과 이후의 data 분포 변화.
@@ -145,11 +148,14 @@ Data 자체가 시간에 따라 무엇을 하는지 확인한다. Mean 과 varia
 
 ## Appendix A. Terminology
 
+- **cointegration**: 두 비정상 series 의 선형 결합이 정상이 되는 관계.
 - **concept drift**: 입력과 target 의 관계가 시간에 따라 바뀌는 현상.
 - **covariate shift**: Target 과의 관계는 그대로인 채 입력 분포만 바뀌는 현상.
 - **data availability time**: 어떤 값이 실제로 조회 가능해지는 시각. 그 값이 가리키는 시점보다 늦다.
+- **detrending**: Trend 성분을 추정해 빼는 변환.
 - **expanding window**: Train segment 의 시작을 고정하고 끝만 뒤로 미는 split. Fold 가 진행될수록 train data 가 늘어난다.
 - **look-ahead bias**: 예측 시점에 아직 조회할 수 없는 값을 feature 로 써서 성능이 높게 나오는 bias.
 - **PR-AUC**: Precision-recall curve 아래 면적. 양성 class 가 드문 data 에서 accuracy 대신 쓴다.
+- **spurious regression**: 비정상 series 끼리의 회귀에서 실제 관계 없이 $R^2$ 와 t 통계량이 높게 나오는 현상.
 - **stationarity**: Mean 과 variance 가 시간에 따라 변하지 않는 성질.
 - **walk-forward validation**: Train segment 와 예측 segment 를 시간 축을 따라 한 칸씩 밀며 반복하는 validation.
