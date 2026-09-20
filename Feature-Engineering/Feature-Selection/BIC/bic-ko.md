@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 08:45 CDT
+Rev. 2 | Created: 2026-09-20 | Updated: 2026-09-20 09:50 CDT
 
 ## 1. Purpose
 
@@ -31,7 +31,7 @@ Fig 1 은 같은 deviance 에 parameter 하나당 2 를 물리는 AIC 를 BIC �
 
 Fig 1. AIC and BIC as one fit term under two penalties
 
-AIC 는 표본 크기와 무관하게 parameter 하나당 2 를 물리고 BIC 는 $\ln n$ 을 물리므로, 두 값은 $\ln n = 2$ 인 자리에서 교차한다. 두 기준의 대조는 [Appendix B](#appendix-b-aic-and-bic) 에 두고, 본문은 BIC 를 따라간다.
+AIC 는 표본 크기와 무관하게 parameter 하나당 2 를 물리고 BIC 는 $\ln n$ 을 물리므로, 두 값은 $\ln n = 2$ 인 자리에서 교차한다. 두 기준의 대조는 [Appendix C](#appendix-c-aic-and-bic) 에 두고, 본문은 BIC 를 따라간다.
 
 ## 3. Principle
 
@@ -51,7 +51,7 @@ Marginal likelihood $p(D \mid M)$ 는 parameter 의 prior 에 대해 likelihood 
 -2 \ln p(D \mid M) = -2 \ln \hat{L} + k \ln n + O(1) \hspace{19em} (3)
 ```
 
-Schwarz 는 식 (3) 의 형태로 기준을 유도하고 유계인 나머지를 버렸다 [[1](#ref-1)]. 후보들의 prior probability 가 같으면, 식 (1) 의 순위는 $n$ 과 함께 커지지 않는 항을 빼고 posterior probability 의 순위와 같다.
+Schwarz 는 식 (3) 의 형태로 기준을 유도하고 유계인 나머지를 버렸다 [[1](#ref-1)]. 후보들의 prior probability 가 같으면, 식 (1) 의 순위는 $n$ 과 함께 커지지 않는 항을 빼고 posterior probability 의 순위와 같다. 식 (2) 에서 식 (3) 까지의 단계는 [Appendix B](#appendix-b-the-derivation-of-the-criterion) 에 있다.
 
 ### 3.2 Conditions
 
@@ -72,7 +72,7 @@ Gaussian error 를 가정한 linear model 에서 maximized likelihood 는 residu
 \mathrm{BIC} = n \ln \frac{\mathrm{RSS}}{n} + k \ln n + n (\ln 2\pi + 1) \hspace{19em} (4)
 ```
 
-마지막 항은 같은 $n$ 개의 관측에 적합한 모든 후보에서 같은 값이므로 비교할 때마다 상쇄되고, 대부분의 구현이 마지막 항을 뺀 값을 내놓는다. 마지막 항을 뺀 점수와 남긴 library 의 점수는 서로 견줄 수 없다. Gaussian likelihood 에서 이 형태까지의 단계는 [Appendix C](#appendix-c-the-deviance-of-a-gaussian-linear-model) 에 있다.
+마지막 항은 같은 $n$ 개의 관측에 적합한 모든 후보에서 같은 값이므로 비교할 때마다 상쇄되고, 대부분의 구현이 마지막 항을 뺀 값을 내놓는다. 마지막 항을 뺀 점수와 남긴 library 의 점수는 서로 견줄 수 없다. Gaussian likelihood 에서 이 형태까지의 단계는 [Appendix D](#appendix-d-the-deviance-of-a-gaussian-linear-model) 에 있다.
 
 ### 4.2 Use In Feature Selection
 
@@ -118,12 +118,46 @@ Table 2. What a BIC difference in favour of the smaller score is worth
 - **Marginal likelihood**: Parameter 를 그 prior 에 대해 적분하여 없앤 model 아래에서의 data 의 likelihood.
 - **Regular model**: Maximum likelihood 추정값에서 Fisher information matrix 가 특이하지 않게 유지되는 model.
 
-## Appendix B. AIC And BIC
+## Appendix B. The Derivation Of The Criterion
+
+식 (1) 은 식 (3) 에서 유계인 항을 버린 것이고, 둘 사이에 있는 것이 marginal likelihood 의 Laplace approximation 이다.
+
+가정: Parameter $k$ 개가 maximum likelihood 추정값 $\hat{\theta}$ 에서 양이고 연속인 prior 밀도 $\pi(\theta)$ 를 가지며, model 이 regular 하고, $n$ 이 커지는 동안 $k$ 가 고정된다.
+
+식 (2) 의 marginal likelihood 는 likelihood $L(\theta)$ 를 그 prior 에 대해 적분한 값이다.
+
+```math
+p(D \mid M) = \int L(\theta)\, \pi(\theta)\, d\theta \hspace{19em} (5)
+```
+
+Log-likelihood 는 $\hat{\theta}$ 에서 gradient 가 0 이므로 2 차 전개에 이차항 하나만 남으며, 여기서는 관측당 observed information $I(\hat{\theta}) = -\frac{1}{n} \nabla^2 \ln L(\hat{\theta})$ 로 적는다.
+
+```math
+\ln L(\theta) \approx \ln \hat{L} - \frac{n}{2} (\theta - \hat{\theta})^{\top} I(\hat{\theta}) (\theta - \hat{\theta}) \hspace{19em} (6)
+```
+
+그러면 적분 안은 $\theta$ 에 대한 Gaussian 이어서 적분값이 닫힌 형태로 나오고, posterior 질량이 $\hat{\theta}$ 둘레의 $n^{-1/2}$ 로 줄어드는 영역에 모이므로 prior 는 $\hat{\theta}$ 에서의 값만 남긴다.
+
+```math
+p(D \mid M) \approx \hat{L}\, \pi(\hat{\theta}) \left(\frac{2\pi}{n}\right)^{k/2} \left| I(\hat{\theta}) \right|^{-1/2} \hspace{19em} (7)
+```
+
+식 (7) 의 log 에 $-2$ 를 곱하면 표본 크기를 담은 두 항이 나머지와 갈린다.
+
+```math
+-2 \ln p(D \mid M) \approx -2 \ln \hat{L} + k \ln n - k \ln 2\pi + \ln \left| I(\hat{\theta}) \right| - 2 \ln \pi(\hat{\theta}) \hspace{19em} (8)
+```
+
+식 (8) 의 마지막 세 항은 $n$ 이 커져도 유계로 남는다. $k \ln 2\pi$ 와 $-2 \ln \pi(\hat{\theta})$ 는 $n$ 에 의존하지 않고, $\ln | I(\hat{\theta}) |$ 는 관측당 Fisher information 의 log determinant 로 수렴한다. 세 항이 식 (3) 의 $O(1)$ 이며, 이것을 버리면 식 (1) 이 남는다.
+
+Prior 는 버린 항에만 들어오므로 BIC 는 prior 를 정하지 않고도 읽힌다. 같은 이유로 정확도도 정해진다. BIC 가 내는 순위는 posterior probability 의 순위와 유계인 오차만큼 다르며, 그 오차는 0 으로 가지 않는다.
+
+## Appendix C. AIC And BIC
 
 두 기준은 같은 deviance 로 model 을 채점하고, parameter 하나의 값이 얼마인지에서 갈린다 [[5](#ref-5)].
 
 ```math
-\mathrm{AIC} = -2 \ln \hat{L} + 2k \hspace{19em} (5)
+\mathrm{AIC} = -2 \ln \hat{L} + 2k \hspace{19em} (9)
 ```
 
 Table 3. The two criteria against each other
@@ -135,22 +169,24 @@ Table 3. The two criteria against each other
 
 AIC 는 적합한 model 이 같은 크기의 새 표본에서 낼 deviance 를 추정하므로 예측 기준이다 [[2](#ref-2)]. BIC 는 model 의 posterior probability 를 추정하므로 식별 기준이다 [[1](#ref-1)]. 같은 적합에 대해 서로 다른 질문에 답하므로, 두 기준이 엇갈리면 둘 중 어느 질문을 하고 있었는지로 읽는다.
 
-Penalty 는 $n = e^2 \approx 7.4$ 에서 교차하며, $n = 8$ 부터는 BIC 가 AIC 보다 parameter 하나당 더 많이 물린다. 그래서 같은 nested 경로에서 BIC 가 고르는 크기는 AIC 가 고르는 크기보다 커지지 않는다. [Appendix D](#appendix-d-worked-example) 는 크기 차이를 설계 하나에서 잰다.
+Penalty 는 $n = e^2 \approx 7.4$ 에서 교차하며, $n = 8$ 부터는 BIC 가 AIC 보다 parameter 하나당 더 많이 물린다. 그래서 같은 nested 경로에서 BIC 가 고르는 크기는 AIC 가 고르는 크기보다 커지지 않는다. [Appendix E](#appendix-e-worked-example) 는 크기 차이를 설계 하나에서 잰다.
 
-## Appendix C. The Deviance Of A Gaussian Linear Model
+## Appendix D. The Deviance Of A Gaussian Linear Model
 
 식 (4) 가 담은 deviance 는 least squares 추정값과 likelihood 를 최대로 만드는 noise variance 에서 Gaussian likelihood 를 계산한 값이다.
 
-독립인 Gaussian error 를 가정한 linear model 은 관측 $n$ 개의 결합 밀도를 곱으로 적으며, 그 지수부는 residual sum of squares $\mathrm{RSS}(\beta) = \sum_i (y_i - x_i^{\top} \beta)^2$ 로 모인다.
+Linear model 은 관측 $n$ 개의 결합 밀도를 곱으로 적으며, 그 지수부는 residual sum of squares $\mathrm{RSS}(\beta) = \sum_i (y_i - x_i^{\top} \beta)^2$ 로 모인다.
+
+가정: 관측 $n$ 개가 독립이고, error 가 하나의 variance 를 공유하여 $\varepsilon_i \sim N(0, \sigma^2)$ 이며, design matrix 의 열이 full rank 다.
 
 ```math
-L(\beta, \sigma^2) = (2\pi\sigma^2)^{-n/2} \exp\left(-\frac{\mathrm{RSS}(\beta)}{2\sigma^2}\right) \hspace{19em} (6)
+L(\beta, \sigma^2) = (2\pi\sigma^2)^{-n/2} \exp\left(-\frac{\mathrm{RSS}(\beta)}{2\sigma^2}\right) \hspace{19em} (10)
 ```
 
 Log 를 취하면 곱이 세 항의 합이 된다.
 
 ```math
-\ln L(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln \sigma^2 - \frac{\mathrm{RSS}(\beta)}{2\sigma^2} \hspace{19em} (7)
+\ln L(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln \sigma^2 - \frac{\mathrm{RSS}(\beta)}{2\sigma^2} \hspace{19em} (11)
 ```
 
 계수 vector $\beta$ 는 $\mathrm{RSS}(\beta)$ 를 통해서만 들어오므로 likelihood 를 최대로 만드는 $\beta$ 는 least squares 추정값이고, 아래의 $\mathrm{RSS}$ 는 least squares 추정값의 잔차 제곱합이다. $\sigma^2$ 에 대한 미분을 0 으로 두면 likelihood 를 최대로 만드는 variance 가 나온다.
@@ -158,20 +194,20 @@ Log 를 취하면 곱이 세 항의 합이 된다.
 ```math
 \frac{\partial \ln L}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{\mathrm{RSS}}{2\sigma^4} = 0
 \quad \Longrightarrow \quad
-\hat{\sigma}^2 = \frac{\mathrm{RSS}}{n} \hspace{19em} (8)
+\hat{\sigma}^2 = \frac{\mathrm{RSS}}{n} \hspace{19em} (12)
 ```
 
-$\hat{\sigma}^2$ 을 식 (7) 에 되넣으면 마지막 항이 $n / 2$ 가 되고 가운데 항이 $\ln(\mathrm{RSS} / n)$ 이 되며, 여기에 $-2$ 를 곱하면 deviance 가 남는다.
+$\hat{\sigma}^2$ 을 식 (11) 에 되넣으면 마지막 항이 $n / 2$ 가 되고 가운데 항이 $\ln(\mathrm{RSS} / n)$ 이 되며, 여기에 $-2$ 를 곱하면 deviance 가 남는다.
 
 ```math
--2 \ln \hat{L} = n \left(\ln 2\pi + \ln \frac{\mathrm{RSS}}{n} + 1\right) \hspace{19em} (9)
+-2 \ln \hat{L} = n \left(\ln 2\pi + \ln \frac{\mathrm{RSS}}{n} + 1\right) \hspace{19em} (13)
 ```
 
-식 (9) 에 $k \ln n$ 을 더하면 식 (4) 가 된다. Table 4 의 세 번째 행은 $\mathrm{RSS} = 218.3$ 과 $n = 200$ 이며, 식 (9) 에 넣으면 585.1 이 나온다.
+식 (13) 에 $k \ln n$ 을 더하면 식 (4) 가 된다. Table 4 의 세 번째 행은 $\mathrm{RSS} = 218.3$ 과 $n = 200$ 이며, 식 (13) 에 넣으면 585.1 이 나온다.
 
-Gaussian 계열 밖의 model 은 식 (1) 을 그대로 두고, 식 (9) 자리에 자기 likelihood 가 내는 deviance 를 넣는다. 적합 library 는 그 deviance 를 적합한 parameter 와 함께 보고한다.
+Gaussian 계열 밖의 model 은 식 (1) 을 그대로 두고, 식 (13) 자리에 자기 likelihood 가 내는 deviance 를 넣는다. 적합 library 는 그 deviance 를 적합한 parameter 와 함께 보고한다.
 
-## Appendix D. Worked Example
+## Appendix E. Worked Example
 
 [`src/bic_model_selection.py`](src/bic_model_selection.py) 의 class 는 어느 feature 가 자료를 만들었는지 아는 data 를 만들고, linear model 을 feature 하나씩 키우며, 크기마다 두 기준으로 채점한다. 이 folder 에서 `python3 src/bic_model_selection.py` 를 실행하면 아래 표를 출력하고, 반복 추출에서 각 기준이 생성 feature 를 되찾는 횟수를 세며, Fig 2 를 쓴다.
 

@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 08:45 CDT
+Rev. 2 | Created: 2026-09-20 | Updated: 2026-09-20 09:50 CDT
 
 ## 1. Purpose
 
@@ -31,7 +31,7 @@ Fig 1 puts the criterion beside AIC, which charges a fixed 2 per parameter on th
 
 Fig 1. AIC and BIC as one fit term under two penalties
 
-AIC charges 2 per parameter at every sample size and BIC charges $\ln n$, so the two charges cross where $\ln n = 2$. [Appendix B](#appendix-b-aic-and-bic) sets the two criteria against each other; the rest of this document stays on BIC.
+AIC charges 2 per parameter at every sample size and BIC charges $\ln n$, so the two charges cross where $\ln n = 2$. [Appendix C](#appendix-c-aic-and-bic) sets the two criteria against each other; the rest of this document stays on BIC.
 
 ## 3. Principle
 
@@ -51,7 +51,7 @@ The marginal likelihood $p(D \mid M)$ integrates the likelihood over the prior o
 -2 \ln p(D \mid M) = -2 \ln \hat{L} + k \ln n + O(1) \hspace{19em} (3)
 ```
 
-Schwarz derived the criterion in the form of equation (3) and dropped the bounded remainder [[1](#ref-1)]. Under equal prior probability over the candidates, the ranking by equation (1) is the ranking by posterior probability up to terms that do not grow with $n$.
+Schwarz derived the criterion in the form of equation (3) and dropped the bounded remainder [[1](#ref-1)]. Under equal prior probability over the candidates, the ranking by equation (1) is the ranking by posterior probability up to terms that do not grow with $n$. The steps from equation (2) to equation (3) are in [Appendix B](#appendix-b-the-derivation-of-the-criterion).
 
 ### 3.2 Conditions
 
@@ -72,7 +72,7 @@ For a linear model with Gaussian errors, the maximized likelihood is a function 
 \mathrm{BIC} = n \ln \frac{\mathrm{RSS}}{n} + k \ln n + n (\ln 2\pi + 1) \hspace{19em} (4)
 ```
 
-The trailing term is the same for every candidate fitted to the same $n$ observations, so it cancels in every comparison and is dropped by most implementations. A score that omits it is therefore not comparable with a score from a library that keeps it. The step from the Gaussian likelihood to that form is in [Appendix C](#appendix-c-the-deviance-of-a-gaussian-linear-model).
+The trailing term is the same for every candidate fitted to the same $n$ observations, so it cancels in every comparison and is dropped by most implementations. A score that omits it is therefore not comparable with a score from a library that keeps it. The step from the Gaussian likelihood to that form is in [Appendix D](#appendix-d-the-deviance-of-a-gaussian-linear-model).
 
 ### 4.2 Use In Feature Selection
 
@@ -118,12 +118,46 @@ A gap under 2 leaves the two candidates tied, and the candidate with fewer param
 - **Marginal likelihood**: The likelihood of the data under a model with its parameters integrated out over their prior.
 - **Regular model**: A model whose Fisher information matrix stays non-singular at the maximum likelihood estimate.
 
-## Appendix B. AIC And BIC
+## Appendix B. The Derivation Of The Criterion
+
+Equation (1) is equation (3) with the bounded terms dropped, and the Laplace approximation of the marginal likelihood is what stands between the two.
+
+Assumption: the $k$ parameters carry a prior density $\pi(\theta)$ that is positive and continuous at the maximum likelihood estimate $\hat{\theta}$, the model is regular, and $k$ stays fixed while $n$ grows.
+
+The marginal likelihood of equation (2) integrates the likelihood $L(\theta)$ over that prior.
+
+```math
+p(D \mid M) = \int L(\theta)\, \pi(\theta)\, d\theta \hspace{19em} (5)
+```
+
+The log-likelihood has a vanishing gradient at $\hat{\theta}$, so its second-order expansion keeps one quadratic term, written here with the observed information per observation $I(\hat{\theta}) = -\frac{1}{n} \nabla^2 \ln L(\hat{\theta})$.
+
+```math
+\ln L(\theta) \approx \ln \hat{L} - \frac{n}{2} (\theta - \hat{\theta})^{\top} I(\hat{\theta}) (\theta - \hat{\theta}) \hspace{19em} (6)
+```
+
+The integrand is then a Gaussian in $\theta$ whose integral is available in closed form, and the posterior mass concentrates in a neighbourhood of $\hat{\theta}$ that shrinks at rate $n^{-1/2}$, which leaves the prior contributing its value at $\hat{\theta}$.
+
+```math
+p(D \mid M) \approx \hat{L}\, \pi(\hat{\theta}) \left(\frac{2\pi}{n}\right)^{k/2} \left| I(\hat{\theta}) \right|^{-1/2} \hspace{19em} (7)
+```
+
+Multiplying the log of equation (7) by $-2$ separates the two terms that carry the sample size from the rest.
+
+```math
+-2 \ln p(D \mid M) \approx -2 \ln \hat{L} + k \ln n - k \ln 2\pi + \ln \left| I(\hat{\theta}) \right| - 2 \ln \pi(\hat{\theta}) \hspace{19em} (8)
+```
+
+The last three terms of equation (8) stay bounded as $n$ grows: $k \ln 2\pi$ and $-2 \ln \pi(\hat{\theta})$ do not depend on $n$, and $\ln | I(\hat{\theta}) |$ converges to the log determinant of the Fisher information per observation. They are the $O(1)$ of equation (3), and dropping them leaves equation (1).
+
+The prior enters only through the dropped terms, which is why BIC is read without one being specified, and it also fixes the accuracy: the ranking BIC produces is the ranking by posterior probability up to a bounded error, not up to a vanishing one.
+
+## Appendix C. AIC And BIC
 
 Both criteria score a model by the same deviance and differ in what one parameter costs [[5](#ref-5)].
 
 ```math
-\mathrm{AIC} = -2 \ln \hat{L} + 2k \hspace{19em} (5)
+\mathrm{AIC} = -2 \ln \hat{L} + 2k \hspace{19em} (9)
 ```
 
 Table 3. The two criteria against each other
@@ -135,22 +169,24 @@ Table 3. The two criteria against each other
 
 AIC estimates the deviance the fitted model would reach on a fresh sample of the same size, which makes it a prediction criterion [[2](#ref-2)]. BIC estimates the posterior probability of the model, which makes it an identification criterion [[1](#ref-1)]. The two answer different questions on the same fit, so a disagreement between them is read by asking which of the two questions was being asked.
 
-The penalties cross at $n = e^2 \approx 7.4$, so from $n = 8$ upward BIC charges more per parameter than AIC, and along one nested path the size BIC selects is never larger than the size AIC selects. [Appendix D](#appendix-d-worked-example) measures the size difference on one design.
+The penalties cross at $n = e^2 \approx 7.4$, so from $n = 8$ upward BIC charges more per parameter than AIC, and along one nested path the size BIC selects is never larger than the size AIC selects. [Appendix E](#appendix-e-worked-example) measures the size difference on one design.
 
-## Appendix C. The Deviance Of A Gaussian Linear Model
+## Appendix D. The Deviance Of A Gaussian Linear Model
 
 The deviance that equation (4) carries is the Gaussian likelihood evaluated at the least squares estimate and at the noise variance that maximizes the likelihood.
 
-A linear model with independent Gaussian errors writes the joint density of $n$ observations as a product whose exponent collects into the residual sum of squares $\mathrm{RSS}(\beta) = \sum_i (y_i - x_i^{\top} \beta)^2$.
+A linear model writes the joint density of $n$ observations as a product whose exponent collects into the residual sum of squares $\mathrm{RSS}(\beta) = \sum_i (y_i - x_i^{\top} \beta)^2$.
+
+Assumption: the $n$ observations are independent, the errors share one variance with $\varepsilon_i \sim N(0, \sigma^2)$, and the design matrix has full column rank.
 
 ```math
-L(\beta, \sigma^2) = (2\pi\sigma^2)^{-n/2} \exp\left(-\frac{\mathrm{RSS}(\beta)}{2\sigma^2}\right) \hspace{19em} (6)
+L(\beta, \sigma^2) = (2\pi\sigma^2)^{-n/2} \exp\left(-\frac{\mathrm{RSS}(\beta)}{2\sigma^2}\right) \hspace{19em} (10)
 ```
 
 The log turns the product into a sum of three terms.
 
 ```math
-\ln L(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln \sigma^2 - \frac{\mathrm{RSS}(\beta)}{2\sigma^2} \hspace{19em} (7)
+\ln L(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln \sigma^2 - \frac{\mathrm{RSS}(\beta)}{2\sigma^2} \hspace{19em} (11)
 ```
 
 The coefficient vector $\beta$ enters through $\mathrm{RSS}(\beta)$ alone, so the maximizing $\beta$ is the least squares estimate and $\mathrm{RSS}$ below is the residual sum of squares at that estimate. Setting the derivative in $\sigma^2$ to zero gives the maximizing variance.
@@ -158,20 +194,20 @@ The coefficient vector $\beta$ enters through $\mathrm{RSS}(\beta)$ alone, so th
 ```math
 \frac{\partial \ln L}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{\mathrm{RSS}}{2\sigma^4} = 0
 \quad \Longrightarrow \quad
-\hat{\sigma}^2 = \frac{\mathrm{RSS}}{n} \hspace{19em} (8)
+\hat{\sigma}^2 = \frac{\mathrm{RSS}}{n} \hspace{19em} (12)
 ```
 
-Putting $\hat{\sigma}^2$ back into equation (7) turns the last term into $n / 2$ and the middle term into $\ln(\mathrm{RSS} / n)$, and multiplying by $-2$ leaves the deviance.
+Putting $\hat{\sigma}^2$ back into equation (11) turns the last term into $n / 2$ and the middle term into $\ln(\mathrm{RSS} / n)$, and multiplying by $-2$ leaves the deviance.
 
 ```math
--2 \ln \hat{L} = n \left(\ln 2\pi + \ln \frac{\mathrm{RSS}}{n} + 1\right) \hspace{19em} (9)
+-2 \ln \hat{L} = n \left(\ln 2\pi + \ln \frac{\mathrm{RSS}}{n} + 1\right) \hspace{19em} (13)
 ```
 
-Adding $k \ln n$ to equation (9) gives equation (4). The third row of Table 4, with $\mathrm{RSS} = 218.3$ and $n = 200$, returns 585.1 from equation (9).
+Adding $k \ln n$ to equation (13) gives equation (4). The third row of Table 4, with $\mathrm{RSS} = 218.3$ and $n = 200$, returns 585.1 from equation (13).
 
-A model outside the Gaussian family keeps equation (1) unchanged and puts the deviance of its own likelihood in place of equation (9). A fitting library reports that deviance beside the fitted parameters.
+A model outside the Gaussian family keeps equation (1) unchanged and puts the deviance of its own likelihood in place of equation (13). A fitting library reports that deviance beside the fitted parameters.
 
-## Appendix D. Worked Example
+## Appendix E. Worked Example
 
 The class in [`src/bic_model_selection.py`](src/bic_model_selection.py) builds a dataset whose generating features are known, grows a linear model one feature at a time, and scores every size with both criteria. Running `python3 src/bic_model_selection.py` from this folder prints the table below, counts how often each criterion recovers the generating features over repeated draws, and writes Fig 2.
 
