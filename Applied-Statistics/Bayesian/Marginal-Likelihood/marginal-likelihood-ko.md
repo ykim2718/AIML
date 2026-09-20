@@ -1,5 +1,5 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 3 | Created: 2026-09-20 | Updated: 2026-09-20 13:25 CDT
+Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-20 13:50 CDT
 
 ## 1. Purpose
 
@@ -39,16 +39,18 @@ Fig 1. Method families for the marginal likelihood and the assumption each makes
 
 ### 3.1 Placement
 
+Placement 는 <a href="#fig-1">Fig 1</a> 이 세운 축과 계층 위에서 각 방법이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 posterior 에 두는 가정, 값 하나를 얻는 비용, 내놓는 산출의 세 가지로 적으며, 손에 있는 model 에 어느 방법을 쓸지는 이 표에서 고른다.
+
 Table 1. Methods for the marginal likelihood
 
-| #   | Method                | Assumption on the posterior      | Cost                      | Output            |
-| :-: | :-------------------: | :------------------------------: | :-----------------------: | :---------------: |
-| 1   | Conjugate closed form | Prior 와 likelihood 가 conjugate | 없음                      | 정확한 값         |
-| 2   | Laplace approximation | 단봉. 표본이 충분                | 최적화 1 회, Hessian 1 회 | 근사값            |
-| 3   | BIC                   | 단봉. 표본이 충분                | 최적화 1 회               | 대략값            |
-| 4   | Variational inference | 고른 분포족으로 근사 가능        | 반복 최적화               | 하한값            |
-| 5   | Bridge sampling       | 모양에 가정 없음                 | 표본 다수                 | 근사값            |
-| 6   | Nested sampling       | 모양에 가정 없음                 | 표본 다수                 | 근사값, 증거 구간 |
+| #   | Method                | Assumption on the posterior                          | Cost                      | Output            |
+| :-: | :-------------------: | :--------------------------------------------------: | :-----------------------: | :---------------: |
+| 1   | Conjugate closed form | Prior 와 likelihood 가 conjugate                     | 없음                      | 정확한 값         |
+| 2   | Laplace approximation | 단봉. 표본이 충분                                    | 최적화 1 회, Hessian 1 회 | 근사값            |
+| 3   | BIC                   | 단봉. 표본이 충분                                    | 최적화 1 회               | 대략값            |
+| 4   | Variational inference | 고른 분포족 (family of distributions) 으로 근사 가능 | 반복 최적화               | 하한값            |
+| 5   | Bridge sampling       | 모양에 가정 없음                                     | 표본 다수                 | 근사값            |
+| 6   | Nested sampling       | 모양에 가정 없음                                     | 표본 다수                 | 근사값, 증거 구간 |
 
 1 행은 Gaussian likelihood 와 Gaussian prior 처럼 지수의 어깨를 완전제곱으로 묶을 수 있는 경우에만 성립한다. 2 행과 3 행은 같은 전개에서 나오며 3 행이 2 행에서 표본 수에 따라 커지지 않는 항을 버린 것이다. 4 행이 내는 값은 $p(D)$ 자체가 아니라 그 하한이므로, 서로 다른 model 의 하한을 견주는 일은 하한의 느슨한 정도가 model 마다 다를 때 뒤집힌다. 5 행과 6 행은 posterior 의 모양을 묻지 않는 대신 표본 수가 비용을 정하고, 수렴을 따로 진단해야 한다 [[1](#ref-1)].
 
@@ -141,7 +143,7 @@ Laplace approximation 은 log posterior 를 MAP 점 $\hat\theta$ 둘레에서 2�
 - **bridge sampling**: 보조 분포를 하나 두고 두 분포의 표본으로 marginal likelihood 의 비를 추정하는 방법.
 - **conjugate**: Prior 와 posterior 가 같은 분포족에 속하게 만드는 prior 와 likelihood 의 짝.
 - **evidence**: Marginal likelihood 의 다른 이름. Model 선택의 맥락에서 이 이름을 쓴다.
-- **Gaussian process**: 임의의 유한 개 입력점에서의 함수값이 결합 정규분포를 이루는 확률과정.
+- **Gaussian process**: 임의의 유한 개 입력점에서의 함수값이 결합 정규분포 (joint normal distribution) 를 이루는 확률과정.
 - **Hessian**: 다변수 함수의 2차 편도함수를 모은 행렬.
 - **identifiable**: 서로 다른 parameter 값이 서로 다른 분포를 내는 성질. 깨지면 봉우리가 한 점이 아니라 능선이 된다.
 - **MAP**: Posterior 를 최대로 만드는 parameter 값.
