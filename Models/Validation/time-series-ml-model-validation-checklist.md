@@ -1,5 +1,5 @@
 # Time-Series ML Model Validation Checklist
-Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 18:35 CDT
+Rev. 2 | Created: 2026-09-20 | Updated: 2026-09-20 18:45 CDT
 
 ## 1. Purpose
 
@@ -9,9 +9,9 @@ Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 18:35 CDT
 
 ## 2. Summary
 
-점검은 두 층이고, 시계열 층이 일반 층 위에 더해진다. 아래 층은 시간의 순서와 무관하게 모든 model 이 받는 점검이고, 위 층은 순서 (order), 추세 (trend), 계절성 (seasonality) 이 있는 자료에만 더 붙는 점검이다.
+점검의 두 층은 general ML check 와 time-series specific check 이다. 이 두 층에서 점검이 나뉘어, general ML check 는 시간의 순서와 무관하게 모든 model 이 받고, time-series specific check 는 순서 (order), 추세 (trend), 계절성 (seasonality) 이 있는 자료에만 더 붙는다.
 
-시계열 층의 세 축은 모두 한 가지를 막는다. 예측 시점 $t$ 이후의 정보가 학습과 전처리에 닿는 것이다.
+Time-series specific check 의 세 축은 모두 한 가지를 막는다. 예측 시점 $t$ 이후의 정보가 학습과 전처리에 닿는 것이다.
 
 - **분할**: 무작위 shuffle K-Fold 를 쓰지 않고, 과거로 학습하고 미래를 예측하는 Time-Series Split 을 쓴다.
 - **전처리**: Scaler 와 imputation 은 train 구간의 통계량만으로 fit 한다.
