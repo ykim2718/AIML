@@ -1,5 +1,5 @@
 # Bayesian Statistics
-Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-20 15:45 CDT
+Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-20 16:20 CDT
 
 ## 1. Purpose
 
@@ -13,7 +13,9 @@ Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-20 15:45 CDT
 
 5 꼭지의 당구대 문제에서 고전 통계학은 어느 점추정값을 고르는가에 따라 약 18 : 1 이나 7 : 1 을 내고, Bayes 통계학은 10 : 1 하나를 낸다. 같은 자료에서 밥이 이길 확률이 $27/512$, $1/8$, $1/11$ 로 갈린다.
 
-Bayes 통계학이 언제나 낫다고 말할 수는 없다. 적분이 닫힌 형태로 풀리지 않는 경우가 많고, prior 를 무엇으로 둘지의 가정이 타당하지 않으면 결과를 믿을 수 없으며, model 을 확률변수로 다루는 용법 자체에 이견이 있다. 6 꼭지가 이 셋을 적는다.
+6 꼭지의 동전 예제는 prior 가 선택일 때를 다룬다. 100 번의 던지기에서는 서로 다른 네 prior 가 거의 같은 posterior 를 내며, prior 의 선택이 답을 정하는 것은 자료가 적을 때이다.
+
+Bayes 통계학이 언제나 낫다고 말할 수는 없다. 적분이 닫힌 형태로 풀리지 않는 경우가 많고, prior 를 무엇으로 둘지의 가정이 타당하지 않으면 결과를 믿을 수 없으며, model 을 확률변수로 다루는 용법 자체에 이견이 있다. 7 꼭지가 이 셋을 적는다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -186,12 +188,96 @@ Table 3. Three routes to the same question
 3 행만이 $p$ 를 하나로 고르지 않고 자료가 남긴 분포를 그대로 들고 가므로, 고를 것이 없어 답이 하나로
 정해진다.
 
-## 6. Limits
+## 6. The Coin Example
+
+5 꼭지에서 prior 는 게임의 규칙이 정해 주었다. Prior 를 분석자가 골라야 할 때 그 선택이 답을 얼마나
+움직이는지는 동전 던지기 예제가 보여 준다.
+
+### 6.1 Setup
+
+한쪽에 0, 다른 쪽에 1 이 적힌 동전을 100 번 던져 1 이 57 번, 0 이 43 번 나왔다. 1 이 나올 확률
+$\theta$ 는 얼마이며, 이 동전은 공정한가를 묻는다.
+
+가장 단순한 답은 관측 비율 $57/100 = 0.57$ 이다. 이 값이 $0.5$ 에서 얼마나 떨어져 있어야 공정하지
+않다고 할 수 있는지는 이 값 하나만으로 말할 수 없다.
+
+### 6.2 The Maximum Likelihood Estimate
+
+한 번의 던지기에서 1 이 나올 확률이 $\theta$ 이고 0 이 나올 확률이 $1 - \theta$ 이다.
+
+```math
+p(1 \mid \theta) = \theta, \qquad p(0 \mid \theta) = 1 - \theta \hspace{19em} (11)
+```
+
+던지기가 서로 독립이므로 100 번의 결합확률은 각 던지기의 곱이고, 순서와 무관하게 1 과 0 의 개수만
+남는다.
+
+```math
+p(\mathrm{data} \mid \theta) = \theta^{57} (1 - \theta)^{43} \hspace{19em} (12)
+```
+
+식 (12) 를 최대로 만드는 $\theta$ 가 maximum likelihood 추정값이며, 그 값은 $0.57$ 로 관측 비율과
+같다. 두 값이 같아지는 것은 이 model 에서 그럴 뿐이고 언제나 그런 것은 아니다.
+
+### 6.3 The Prior as a Choice
+
+Bayes 쪽으로 가려면 $\theta$ 에 prior 를 얹어야 한다. $\theta$ 가 확률이므로 prior 는 구간 $[0, 1]$
+위의 분포여야 하고, 그 조건만 지키면 어떤 모양이든 둘 수 있다. Beta distribution 이 이 모양들을 한
+족으로 묶는다.
+
+```math
+f(\theta \mid a, b) = \frac{1}{\mathrm{B}(a, b)}\, \theta^{a-1} (1 - \theta)^{b-1}, \qquad \mathrm{B}(a, b) = \int_{0}^{1} \theta^{a-1} (1 - \theta)^{b-1}\, d\theta \hspace{19em} (13)
+```
+
+$\mathrm{B}(a, b)$ 는 밀도의 적분을 1 로 만드는 정규화 상수이며, 식 (17) 의 beta integral 과 같은
+적분이다. 아래 네 쌍이 서로 다른 믿음을 같은 족 안에서 나타낸다.
+
+Table 4. Prior beliefs and the beta parameters that express them
+
+| #   | Prior belief             | Parameters $(a, b)$ | Shape                     |
+| :-: | :----------------------: | :-----------------: | :-----------------------: |
+| 1   | 공정에 가깝다            | $(10, 10)$          | $0.5$ 에서 뾰족한 봉우리  |
+| 2   | 0 쪽으로 치우쳤다        | $(1, 10)$           | 0 에서 급히 내려가는 모양 |
+| 3   | 0 이나 1 쪽으로 치우쳤다 | $(0.5, 0.5)$        | 양 끝이 솟은 U 자         |
+| 4   | 아무것도 모른다          | $(1, 1)$            | 평평한 uniform            |
+
+속이려는 상대를 가정하지 않는다면 1 행과 4 행 사이의 완만한 모양이면 충분하다. 여기서는
+$\mathrm{Beta}(2, 2)$ 를 골랐고, 이는 $0.5$ 에 완만한 봉우리를 둔 prior 이다.
+
+### 6.4 The Posterior
+
+식 (12) 의 likelihood 에 $\mathrm{Beta}(2, 2)$ prior 를 곱하면 지수가 하나씩 올라간 같은 꼴이 된다.
+
+```math
+p(\theta \mid \mathrm{data}) \propto \theta^{57} (1 - \theta)^{43} \cdot \theta (1 - \theta) = \theta^{58} (1 - \theta)^{44} \hspace{19em} (14)
+```
+
+이것은 $\mathrm{Beta}(59, 45)$ 의 밀도이며, prior 와 posterior 가 같은 족에 남는 이 성질이 conjugate
+이다. Conjugate 이면 식 (13) 의 $\mathrm{B}(a, b)$ 가 정규화 상수를 맡으므로, Bayes 정리의 분모를 따로
+적분하지 않아도 posterior 가 닫힌 형태로 나온다.
+
+Posterior 의 최빈값과 평균은 모두 $0.57$ 부근으로 maximum likelihood 추정값과 겹친다. 점 하나가 아니라
+분포이므로 구간도 함께 나오며, 양쪽 꼬리를 같게 잡은 99 % credible interval 은 $[0.441, 0.688]$ 이다.
+공정한가라는 물음에는 posterior 의 $8.4\,\%$ 가 $0.5$ 아래에 있다고 답한다. 공정한 동전을 배제할 만큼
+작지 않으므로, 가르려면 더 던져야 한다.
+
+### 6.5 What Enough Data Does
+
+Table 4 의 네 prior 를 모두 넣어도 posterior 는 넷 다 $0.57$ 부근에 몰린 비슷한 모양이 된다. 관측이
+100 개이면 식 (12) 의 likelihood 가 prior 의 차이를 덮기 때문이며, 실제로 이 자료를 만든 값은 $0.55$
+였다. Prior 의 선택이 답을 정하는 것은 자료가 적을 때이고, 자료가 쌓이면 posterior 는 prior 가 무엇이든
+같은 곳으로 모인다.
+
+이 예제가 5 꼭지에 더하는 것이 셋이다. 첫째, prior 를 고를 수 있으면 아는 것을 계산에 넣을 수 있고
+아는 것이 없으면 평평한 prior 를 둔다. 둘째, 답이 값 하나가 아니라 분포여서 상한과 하한이 함께 나온다.
+셋째, 자료가 충분하면 그 답이 maximum likelihood 추정값으로 다가간다.
+
+## 7. Limits
 
 Bayes 통계학을 고전 통계학보다 낫다고 단정할 수 없게 만드는 것이 셋이다.
 
 - **계산**: 적분이 닫힌 형태로 풀리는 경우가 드물다. 이 문서의 예제는 beta integral 로 떨어지는 드문 경우이며, 일반적으로는 수치 기법이 필요하고 정밀도를 확보하기 어렵다.
-- **가정**: Prior 가 결과를 움직인다. 5.2 가 $P(p)$ 를 uniform 으로 둔 것이 그 예이며, 그 가정이 타당하지 않으면 뒤따르는 값도 믿을 수 없다.
+- **가정**: Prior 가 결과를 움직인다. 5.2 가 $P(p)$ 를 uniform 으로 둔 것과 6.3 이 $\mathrm{Beta}(2, 2)$ 를 고른 것이 그 예이며, 자료가 적을수록 그 선택이 답에 더 많이 남는다.
 - **해석**: Model 을 확률변수로 다루는 용법 자체에 이견이 있다. Parameter 에 분포를 얹는 것이 무엇을 뜻하는지가 명확하게 정해지지 않아, 이 용법을 받아들이지 않는 쪽이 있다 [[3](#ref-3)].
 
 ## References
@@ -211,11 +297,14 @@ Bayes 통계학을 고전 통계학보다 낫다고 단정할 수 없게 만드�
 
 - **Bernoulli trial**: 결과가 둘뿐이고 성공 확률이 매번 같은 시행.
 - **beta distribution**: 식 (9) 의 밀도를 갖는 0 과 1 사이의 분포. Uniform prior 와 binomial likelihood 의 posterior 가 이 분포이다.
-- **beta integral**: 식 (13) 의 적분. Gamma function 의 비로 닫힌 형태로 풀린다.
+- **beta integral**: 식 (17) 의 적분. Gamma function 의 비로 닫힌 형태로 풀린다.
 - **binomial distribution**: 성공 확률이 같은 시행을 여러 번 되풀이했을 때 성공 횟수가 따르는 분포.
+- **conjugate**: Prior 와 posterior 가 같은 분포족에 남게 만드는 prior 와 likelihood 의 짝.
+- **credible interval**: Posterior 의 확률이 정해진 만큼 담기는 구간.
 - **evidence**: Bayes 정리의 분모. Posterior 를 확률분포로 만드는 정규화 상수이다.
 - **Gamma function**: 계승을 실수로 확장한 함수. 자연수에서 $\Gamma(n+1) = n!$ 이다.
 - **likelihood**: Parameter 를 고정했을 때 관측이 나올 확률.
+- **maximum likelihood**: Likelihood 를 최대로 만드는 parameter 값을 고르는 추정 방법.
 - **point estimate**: Parameter 를 분포가 아니라 값 하나로 나타낸 추정값.
 - **posterior**: 관측을 반영해 갱신한 parameter 의 분포.
 - **prior**: 관측을 보기 전 parameter 에 두는 분포.
@@ -234,7 +323,7 @@ $p$ 가 주어지면 각 판은 밥이 이길 확률이 $1 - p$ 인 서로 독�
 결합확률은 곱으로 분해된다.
 
 ```math
-P(\mathrm{Bob\ wins} \mid p) = P(R_1 = R_2 = R_3 = \mathrm{Bob} \mid p) = (1-p)(1-p)(1-p) = (1-p)^3 \hspace{19em} (11)
+P(\mathrm{Bob\ wins} \mid p) = P(R_1 = R_2 = R_3 = \mathrm{Bob} \mid p) = (1-p)(1-p)(1-p) = (1-p)^3 \hspace{19em} (15)
 ```
 
 독립이 성립하는 근거는 기준선이 게임 내내 움직이지 않는다는 데 있다. 기준선이 정해 준 $p$ 를 조건으로
@@ -245,17 +334,17 @@ P(\mathrm{Bob\ wins} \mid p) = P(R_1 = R_2 = R_3 = \mathrm{Bob} \mid p) = (1-p)(
 식 (6) 에 식 (7) 을 넣으면 분자와 분모가 모두 $p$ 에 대한 적분이 된다. Likelihood 는 여덟 판 가운데 다섯 판을 앨리스가 가져간 확률이므로 $P(A = 5, B = 3 \mid p) = \binom{8}{5} p^5 (1-p)^3$ 이고, 이항계수와 상수 prior 는 분자와 분모에 함께 있어 약분된다. 남는 것은 아래와 같다.
 
 ```math
-E = \frac{\int_{0}^{1} p^5 (1-p)^3 (1-p)^3\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} = \frac{\int_{0}^{1} p^5 (1-p)^6\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} \hspace{19em} (12)
+E = \frac{\int_{0}^{1} p^5 (1-p)^3 (1-p)^3\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} = \frac{\int_{0}^{1} p^5 (1-p)^6\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} \hspace{19em} (16)
 ```
 
 두 적분은 Euler 의 beta integral 이며, Gamma function 으로 닫힌 형태로 풀린다 [[4](#ref-4)].
 
 ```math
-\int_{0}^{1} p^{m-1} (1-p)^{n-1}\, dp = \frac{\Gamma(m)\, \Gamma(n)}{\Gamma(m+n)} \hspace{19em} (13)
+\int_{0}^{1} p^{m-1} (1-p)^{n-1}\, dp = \frac{\Gamma(m)\, \Gamma(n)}{\Gamma(m+n)} \hspace{19em} (17)
 ```
 
 분자는 $m = 6$, $n = 7$ 이고 분모는 $m = 6$, $n = 4$ 이다. $\Gamma(n+1) = n!$ 을 써서 정리하면 값이 나온다.
 
 ```math
-E = \frac{\Gamma(6)\Gamma(7) / \Gamma(13)}{\Gamma(6)\Gamma(4) / \Gamma(10)} = \frac{5!\, 6! / 12!}{5!\, 3! / 9!} = \frac{6!}{3!} \cdot \frac{9!}{12!} = \frac{120}{1320} = \frac{1}{11} \hspace{19em} (14)
+E = \frac{\Gamma(6)\Gamma(7) / \Gamma(13)}{\Gamma(6)\Gamma(4) / \Gamma(10)} = \frac{5!\, 6! / 12!}{5!\, 3! / 9!} = \frac{6!}{3!} \cdot \frac{9!}{12!} = \frac{120}{1320} = \frac{1}{11} \hspace{19em} (18)
 ```
