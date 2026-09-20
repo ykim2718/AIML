@@ -1,5 +1,5 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 2 | Created: 2026-09-20 | Updated: 2026-09-20 13:05 CDT
+Rev. 3 | Created: 2026-09-20 | Updated: 2026-09-20 13:25 CDT
 
 ## 1. Purpose
 
@@ -71,7 +71,7 @@ Table 2. Terms of Bayes' theorem
 | 3   | Posterior           | $p(\theta \mid D)$ | 자료를 본 뒤 $\theta$ 에 두는 분포       |
 | 4   | Marginal likelihood | $p(D)$             | $\theta$ 를 적분해 없앤 자료의 확률      |
 
-1 행과 2 행이 입력이고 3 행이 출력이며, 4 행은 출력을 확률분포로 만드는 분모다. 4 행에 붙은 marginal 은 결합분포에서 $\theta$ 를 적분해 없앴다는 뜻이고, likelihood 는 남은 값이 model 하나를 놓고 잰 자료의 확률이라는 뜻이다. Model 을 비교할 때 이 값이 likelihood 의 자리에 들어간다.
+1 행과 2 행이 입력이고 3 행이 출력이며, 4 행은 출력을 확률분포 (probability distribution) 로 만드는 분모다. 4 행에 붙은 marginal 은 결합분포 (joint distribution) 에서 $\theta$ 를 적분해 없앴다는 뜻이고, likelihood 는 남은 값이 model 하나를 놓고 잰 자료의 확률이라는 뜻이다. Model 을 비교할 때 이 값이 likelihood 의 자리에 들어간다.
 
 2 행의 이름에는 조건이 하나 붙는다. $p(D \mid \theta)$ 라는 식은 하나이지만, 무엇을 변수로 두는가에 따라 이름이 갈린다. $\theta$ 를 고정하고 $D$ 를 변수로 보면 자료에 대한 확률분포이고, $D$ 에 대해 적분하면 1 이 된다. $D$ 를 관측된 값으로 고정하고 $\theta$ 를 변수로 보면 그것이 likelihood 이며, 어느 $\theta$ 가 그 자료를 더 잘 내놓는지를 재는 $\theta$ 의 함수다. Bayes 정리 안에서는 $D$ 가 이미 관측된 값이므로 언제나 뒤쪽 읽기이고, 이때 $\theta$ 에 대한 적분은 1 이 되지 않는다. Likelihood 를 분포가 아니라 함수라 부르는 이유가 이것이다.
 
