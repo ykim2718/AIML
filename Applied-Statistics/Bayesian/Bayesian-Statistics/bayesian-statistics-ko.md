@@ -1,5 +1,5 @@
 # Bayesian Statistics
-Rev. 0 | Created: 2026-09-20 | Updated: 2026-09-20 12:20 CDT
+Rev. 1 | Created: 2026-09-20 | Updated: 2026-09-20 14:15 CDT
 
 ## 1. Purpose
 
@@ -134,7 +134,7 @@ Table 3. Two answers to the betting problem
 | 1   | 고전 통계학. $p$ 를 $0.5$ 로 고정      | $1/8$                 | 7 : 1     |
 | 2   | Bayes 통계학. $p$ 를 posterior 로 평균 | $1/11$                | 10 : 1    |
 
-두 값의 차이는 5 : 3 이라는 자료를 쓰는가 쓰지 않는가에서 온다. 1 행은 $p$ 를 자료와 무관하게 $0.5$ 로 놓아 앨리스가 앞서 있다는 사실을 버리고, 2 행은 그 사실로 $p$ 의 분포를 앨리스 쪽으로 옮긴 뒤 평균낸다. 그래서 2 행이 밥의 승률을 더 낮게 본다.
+두 값의 차이는 5 : 3 이라는 자료를 쓰는가 쓰지 않는가에서 온다. 1 행은 $p$ 를 자료와 무관하게 $0.5$ 로 놓아 앨리스가 앞서 있다는 사실을 버리고, 2 행은 그 사실로 $p$ 의 분포를 앨리스 쪽으로 옮긴 뒤 평균낸다. 그래서 2 행이 밥의 승률을 더 낮게 본다. Prior 가 uniform 인 근거, 점추정값을 달리 골랐을 때의 값, posterior 의 이름과 parameter 는 [Appendix C](#appendix-c-the-pool-table-problem-in-detail) 에 있다.
 
 ## 6. Limits
 
@@ -159,13 +159,16 @@ Bayes 통계학을 고전 통계학보다 낫다고 단정할 수 없게 만드�
 
 ## Appendix A. Terminology
 
+- **beta distribution**: 식 (13) 의 밀도를 갖는 0 과 1 사이의 분포. Uniform prior 와 binomial likelihood 의 posterior 가 이 분포이다.
 - **beta integral**: 식 (9) 의 적분. Gamma function 의 비로 닫힌 형태로 풀린다.
 - **evidence**: Bayes 정리의 분모. Posterior 를 확률분포로 만드는 정규화 상수이다.
 - **Gamma function**: 계승을 실수로 확장한 함수. 자연수에서 $\Gamma(n+1) = n!$ 이다.
 - **likelihood**: Parameter 를 고정했을 때 관측이 나올 확률.
+- **point estimate**: Parameter 를 분포가 아니라 값 하나로 나타낸 추정값.
 - **posterior**: 관측을 반영해 갱신한 parameter 의 분포.
 - **prior**: 관측을 보기 전 parameter 에 두는 분포.
 - **total probability**: 한 사건의 확률을 서로 배타적인 조건들에 걸쳐 나누어 합하는 공식.
+- **uniform distribution**: 주어진 구간 안에서 밀도가 일정한 분포.
 
 ## Appendix B. Evaluation of the Expectation
 
@@ -186,3 +189,67 @@ E = \frac{\int_{0}^{1} p^5 (1-p)^3 (1-p)^3\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} 
 ```math
 E = \frac{\Gamma(6)\Gamma(7) / \Gamma(13)}{\Gamma(6)\Gamma(4) / \Gamma(10)} = \frac{5!\, 6! / 12!}{5!\, 3! / 9!} = \frac{6!}{3!} \cdot \frac{9!}{12!} = \frac{120}{1320} = \frac{1}{11} \hspace{19em} (10)
 ```
+
+## Appendix C. The Pool Table Problem in Detail
+
+5 꼭지가 두 답을 견주는 데 필요한 만큼만 적은 자리를, 여기서 단계별로 푼다. 이 문제는 Bayesian
+billiards problem 이라는 이름으로도 불린다.
+
+### C.1 The Prior
+
+두 사람이 보지 못하는 상태에서 제 3 자가 첫 공을 굴려 멈춘 자리에 기준선을 긋는다. 공이 서는 자리가
+무작위이므로 기준선도 당구대 위에 고르게 퍼져 있고, 따라서 앨리스 쪽 영역이 차지하는 비율 $p$ 는 0 과
+1 사이에서 uniform distribution 을 따른다. 5.3 이 $P(p)$ 를 상수로 둔 근거가 이것이며, 상수라는 가정이
+임의로 고른 것이 아니라 공을 굴리는 방식에서 나온 것임을 여기서 확인한다.
+
+### C.2 The Point Estimate Route
+
+빈도주의는 $p$ 를 자료에서 추정해 하나의 값으로 고정한다. 가장 단순한 추정값은 관측한 득점 비율
+$\hat{p} = 5/8$ 이고, 이때 밥이 이길 확률은 아래와 같다.
+
+```math
+P(\mathrm{Bob\ wins}) = (1 - \hat{p})^3 = \left(\frac{3}{8}\right)^3 = \frac{27}{512} \approx 0.053 \hspace{19em} (11)
+```
+
+5.2 가 쓴 $0.5$ 는 같은 계열 안의 다른 선택이며 $1/8$ 을 낸다. 두 값이 두 배 넘게 갈리는 것은 어느
+점추정값을 고르는가가 답을 정하기 때문이고, 값 하나로 고정하는 순간 그 선택이 얼마나 불확실한지는
+답에 들어가지 않는다.
+
+### C.3 The Posterior
+
+Uniform prior 에 binomial likelihood 를 곱하면 posterior 는 beta distribution 이 된다. 상수 배를 빼면
+posterior 는 likelihood 의 모양을 그대로 따른다.
+
+```math
+P(p \mid A = 5,\, B = 3) \propto p^5 (1 - p)^3 \hspace{19em} (12)
+```
+
+이 모양은 아래 밀도에서 $\alpha = 6$, $\beta = 4$ 인 경우와 같다. 즉 posterior 는 $\mathrm{Beta}(6, 4)$
+이며, 일반적으로 uniform prior 아래 앨리스가 $a$ 판, 밥이 $b$ 판을 가져가면 $\mathrm{Beta}(a+1,\, b+1)$
+이 된다.
+
+```math
+f(p) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\, \Gamma(\beta)}\, p^{\alpha - 1} (1 - p)^{\beta - 1} \hspace{19em} (13)
+```
+
+문헌에 따라 $p$ 를 밥의 득점 확률로 두기도 한다. 그때 likelihood 는 $p^3 (1 - p)^5$, posterior 는
+$\mathrm{Beta}(4, 6)$, 밥의 승리 확률은 $p^3$ 이 된다. 두 규약은 $p$ 와 $1 - p$ 를 맞바꾼 것이어서 답은
+같다.
+
+### C.4 The Answer
+
+밥이 역전하려면 남은 세 판을 모두 가져가야 하므로 그 확률은 $(1 - p)^3$ 이고, 이것을 $\mathrm{Beta}(6, 4)$
+에 걸쳐 평균낸 것이 식 (5) 다. [Appendix B](#appendix-b-evaluation-of-the-expectation) 가 그 적분을 풀어
+$1/11$ 을 낸다.
+
+Table 4. Three routes to the same question
+
+| #   | Route                | Value used for $p$    | Bob's win probability  | Fair odds |
+| :-: | :------------------: | :-------------------: | :--------------------: | :-------: |
+| 1   | 점추정, 관측 비율    | $5/8$                 | $27/512 \approx 0.053$ | 약 18 : 1 |
+| 2   | 점추정, prior 기댓값 | $0.5$                 | $1/8 = 0.125$          | 7 : 1     |
+| 3   | Posterior 평균       | $\mathrm{Beta}(6, 4)$ | $1/11 \approx 0.091$   | 10 : 1    |
+
+1 행과 2 행은 같은 자료에서 서로 다른 값을 고른 결과이고, 그 선택을 바꾸면 답이 세 배 가까이 움직인다.
+3 행만이 $p$ 를 하나로 고르지 않고 자료가 남긴 분포를 그대로 들고 가므로, 고를 것이 없어 답이 하나로
+정해진다.
