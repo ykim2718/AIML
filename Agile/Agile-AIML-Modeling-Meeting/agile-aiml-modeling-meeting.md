@@ -1,15 +1,15 @@
-# AI/ML Modeling Meeting
-Rev. 1 | Created: 2026-09-21 | Updated: 2026-09-21 10:29 CDT
+# Agile AI/ML Modeling Meeting
+Rev. 2 | Created: 2026-09-21 | Updated: 2026-09-21 10:38 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: A modeling meeting run like an ordinary development meeting ends on "I will give it a try", because the room has no name for the things it is exchanging and therefore no way to say which of them is missing.
-- **Goal**: Give the meeting ten named terms in four classes, so that a practitioner can say in one sentence what is on the table, what is missing, and what grade of checking the missing part has to reach.
+- **Goal**: Give the meeting ten named terms in four classes and place them on the agile practices the cycle already runs, so that a practitioner can say in one sentence what is on the table, what is missing, what grade of checking the missing part has to reach, and which sprint artifact it becomes.
 - **Non-Goal**: Configuring an experiment tracker (MLflow, Weights & Biases) or running a ticket system is not covered.
 
 ## 2. Summary
 
-An AI/ML modeling meeting exchanges ten things, and naming them is what keeps the meeting from ending without a decision. The ten fall into four classes — Premise, Claim, Product, Decision — and the classes run in that order, which is also the agenda.
+An AI/ML modeling meeting exchanges ten things, and naming them is what keeps the meeting from ending without a decision. The ten fall into four classes — Premise, Claim, Product, Decision — and the classes run in that order, which is also the agenda. The meeting sits on a sprint boundary: it closes the cycle whose Product is on the table and opens the next one.
 
 Each class assumes the class before it is settled. A room discussing a Product while its Premise is open is measuring a quantity nobody defined, and the three habits that most often end a modeling meeting without a decision are each a missing term from one of the four classes.
 
@@ -49,6 +49,7 @@ The grade ladder applies to every term that carries a number. E0 is spoken only 
 
 ### 3.1 Placement
 
+<a id="table-1"></a>
 Table 1. The ten terms, and what each one takes to be settled
 
 | Term       | Class    | Required grade                                        | What carries it                                            |
@@ -80,7 +81,7 @@ Premise is what must already be true for this cycle's number to mean anything, a
 
 ### 4.2 Claim
 
-Claim is the single assertion this cycle tests, and it has exactly one term, Hypothesis. It is built on domain knowledge rather than on a list of untried algorithms, and it has three parts: one change, the physical reason for it, and what the metric does if that reason holds.
+Claim is the single assertion this cycle tests, and it has exactly one term, Hypothesis. It is built on domain knowledge rather than on a list of untried algorithms, and it has three parts: one change, the physical reason for it, and what the metric does if that reason holds. One Hypothesis per modeler is the work-in-progress limit of the cycle, it carries a timebox fixed before the run starts, and research-shaped work that cannot state its three parts is moved off the board as a spike.
 
 Two examples show the form. Multicollinearity among sensors is severe, so the run uses Elastic Net instead of Lasso to carry the group effect. Time warping distorts the signal, so a 1D-CNN autoencoder reduces the dimension through representation learning rather than through a fixed transform.
 
@@ -90,7 +91,7 @@ A Hypothesis without a physical reason cannot produce an Insight, because there 
 
 Product is what the cycle actually made, and the four terms are graded rather than described. Run, Evidence, Insight and Readiness are read from artifacts on the screen, not from memory.
 
-**Run** is one tracked execution carrying its parameters, dataset version, code commit and metric. **Evidence** is the grade that Run has reached, said aloud beside the number, so that the room knows whether it is hearing E1 or E3.
+**Run** is one tracked execution carrying its parameters, dataset version, code commit and metric. **Evidence** is the grade that Run has reached, said aloud beside the number, so that the room knows whether it is hearing E1 or E3. The required grade of each term in [Table 1](#table-1) is the definition of done for a modeling ticket.
 
 **Insight** is the explained cause of a metric move. "XGBoost comes out better" is a Run with no Insight; "feature importance puts the chamber 3 pressure sensor at the top, and removing it returns the score to the Baseline" is an Insight at E3. The loss curve, the confusion matrix and the latent space of the reduced dimensions go on the screen, since a result described in speech stays at E0.
 
@@ -102,7 +103,7 @@ Decision is what leaves the room, and it has two terms that are always issued to
 
 **Verdict** is accepted, rework or stop, issued on the Hypothesis and said aloud. Accepted requires Insight at E3; promoting a model to serving requires Readiness at E4; rework names the evidence that was missing; stop names the reason and is kept where the next team will read it.
 
-**Handoff** is the owner, the due date and the ticket id for the next cycle, together with the engineering work the Verdict implies. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
+**Handoff** is the owner, the due date and the ticket id for the next cycle, together with the engineering work the Verdict implies. It is the next sprint backlog item, written as a Hypothesis rather than as a task. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
 
 ## 5. Agenda
 
@@ -111,6 +112,9 @@ The agenda is the four classes in order, one stage per class, and each stage end
 The stages, the class each one settles, and the items each one puts on the table are drawn in [Fig 2](#fig-2).
 
 ```text
+[ Sprint N ends ]           the cycle whose Product is on the table
+        |
+        v
 [ 1. Premise Check ]        settles   Target, Provenance, Baseline
         |
         +--> Missing / Outlier ....... How NaN and outliers in the raw rows were handled
@@ -138,6 +142,9 @@ The stages, the class each one settles, and the items each one puts on the table
         +--> Verdict ................. Accepted, rework or stop, said aloud
         +--> Handoff ................. Owner, due date and ticket id
         +--> Engineering Sync ........ Code review and pipeline work named here
+        |
+        v
+[ Sprint N+1 begins ]       Handoff becomes the next sprint backlog item
 ```
 
 <a id="fig-2"></a>
@@ -159,11 +166,32 @@ Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
            by <DATE>, ticket <TICKET_ID>."
 ```
 
-## 6. Anti-patterns
+## 6. Agile Practice
+
+Each agile practice below keeps the name a software team already uses and changes only what it holds. A team adopting this meeting adds vocabulary to the ceremonies it already runs rather than new ceremonies.
+
+Table 2. Where each agile practice lands in the modeling cycle
+
+| Practice       | What it carries here                                        | What changes for modeling                                       |
+| :------------: | :---------------------------------------------------------: | :-------------------------------------------------------------: |
+| Sprint         | The cycle one meeting closes and the next opens             | Length set by how long one experiment takes to reproduce        |
+| Sprint backlog | The Hypothesis, one per cycle                               | A backlog item is a claim to test, not a feature to build       |
+| WIP limit      | One Hypothesis in flight per modeler                        | Two changes at once leave the Insight unattributable            |
+| Timeboxing     | The clock on the experiment                                 | The experiment closes at its limit, whatever it has found       |
+| Spike          | Research-shaped work moved off the delivery board           | Its output is a decision, not a model                           |
+| Sprint review  | Stage 3, Product Review                                     | The demo is the tracked run and the analysis plot               |
+| Retrospective  | The Insight, and the reason behind a rework or stop Verdict | The process finding and the modeling finding are recorded apart |
+| DoD            | The required Evidence grade of every term                   | Done is a grade on the ladder, not a checkbox                   |
+| Increment      | Readiness at E4                                             | The increment is a model that can be promoted, or nothing       |
+| BKM            | Where a stop Verdict and its reason are kept                | A direction closed is knowledge the next team reads             |
+
+Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the cycle moved more than one thing and the room cannot say which one it is judging. Without the DoD written as a grade, a number is refused by argument rather than by rule, and the argument outlasts the meeting.
+
+## 7. Anti-patterns
 
 Three habits end a modeling meeting without a Verdict, and each one is a term of [Fig 1](#fig-1) that nobody supplied. Naming the missing term is faster than debating the habit.
 
-Table 2. What ends a meeting without a Verdict
+Table 3. What ends a meeting without a Verdict
 
 | Habit                                  | Missing term         | What to bring instead                                      |
 | :------------------------------------: | :------------------: | :--------------------------------------------------------: |
@@ -171,11 +199,11 @@ Table 2. What ends a meeting without a Verdict
 | "Let us catch defects with AI"         | Target               | Y and its threshold, written, before the meeting opens     |
 | "It came out roughly fine"             | Evidence, left at E0 | The tracked run at E2 and the analysis plot on the screen  |
 
-## 7. Roles
+## 8. Roles
 
 Three roles supply the classes, and no role supplies all of them. A meeting missing one role is missing the class that role carries.
 
-Table 3. Which role supplies which class
+Table 4. Which role supplies which class
 
 | Role           | Supplies                                                                       | Class             |
 | :------------: | :----------------------------------------------------------------------------: | :---------------: |
@@ -185,7 +213,7 @@ Table 3. Which role supplies which class
 
 The domain expert says that two sensors are symmetric and must be grouped by topology; the data scientist answers with the 1D-CNN filter size that carries that topology into the model.
 
-## 8. Record
+## 9. Record
 
 The minutes carry three of the ten terms — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other seven live in the tracker and the ticket, which the three lines point at.
 
@@ -225,18 +253,27 @@ The same three lines fill the model card that ships with the model, which record
 ## Appendix A. Terminology
 
 - **1D-CNN autoencoder**: a convolutional network over a one-dimensional signal, trained to rebuild its own input, used here to reduce the dimension of a process trace.
+- **BKM (Best Known Method)**: the team document holding the best method known so far for a task, updated from retrospectives.
 - **Confusion matrix**: the table of predicted against actual classes, read to see which class a classifier confuses with which.
 - **Data leakage**: information reaching the model that would not be available when it serves, which raises the offline score without raising the online one.
+- **DoD (Definition of Done)**: the explicit bar a team agrees on, which a task must clear to be called done.
 - **Elastic Net**: a linear model penalised by both the L1 and the L2 norm, which keeps correlated variables together rather than selecting one of them.
 - **EVT (Extreme Value Theory)**: the statistics of the tail of a distribution, used here to set a threshold from how extreme a sensor value is.
 - **Feature importance**: the score a fitted model attaches to each input, read to see which input moved the prediction.
+- **Increment**: the working product one sprint produces.
 - **Latent space**: the reduced coordinates an encoder maps its input onto.
 - **Loss curve**: the training and validation loss plotted against training step.
 - **MLOps**: the practice that carries a model from experiment into operation and keeps it there.
 - **Model card**: the document recording a model's summary, measured performance and training data.
 - **Multicollinearity**: a near-linear dependence among input variables, which makes individual coefficients unstable.
 - **Representation learning**: learning the features themselves from the data rather than specifying them by hand.
+- **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Sliding window augmentation**: cutting overlapping windows out of a continuous record to make more training samples, which shares rows between windows.
+- **Spike**: a separately ticketed investigation, carried off the delivery board because its outcome is unknown.
+- **Sprint**: one iteration of the agile cycle.
+- **Sprint backlog**: the work a team commits to finish in one sprint.
 - **Time warping**: a distortion of the time axis that shifts or stretches a signal between records of the same process.
+- **Timeboxing**: fixing in advance how long a task may run, and closing it at that limit whatever it has reached.
 - **Train/serve skew**: a difference between the preprocessing applied during training and the preprocessing applied when serving.
+- **WIP (Work In Progress)**: work currently under way, limited in number so that each item can be finished before the next starts.
 - **Yield**: the fraction of produced units that meet specification.
