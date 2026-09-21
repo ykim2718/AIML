@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 8 | Created: 2026-09-21 | Updated: 2026-09-21 11:49 CDT
+Rev. 9 | Created: 2026-09-21 | Updated: 2026-09-21 11:54 CDT
 
 ## 1. Purpose
 
@@ -72,7 +72,7 @@ Premise Check 는 이번 sprint 의 metric 이 뜻을 가지려면 이미 참이
 
 **Target** 은 Y 의 정의와 임계값을 한 줄로 적은 것이다. 수율 98 % 미만, 또는 EVT 기반 임계값을 넘는 센서 값은 target 이고 "AI 로 불량을 잡자" 는 target 이 아니다. 후자 위에서 연 sprint 는 팀이 정의한 적 없는 양을 잰다. 도메인 엔지니어가 대며, 회의 중이 아니라 첫 회의 이전에 고정한다.
 
-**Provenance** 는 행이 어디서 왔고 거기에 무엇을 했는가이다. Split 규칙, 결측치와 이상치 처리, 누수 차단, dataset 버전 hash 가 그것이다. Sliding window 증강이 차단을 잃는 흔한 자리인데, 겹치는 window 가 split 을 가로질러 행을 나누어 갖기 때문이다. 누수는 열일곱 분야 294편의 논문에서 여덟 가지 형태로 기록되어 있어, 가끔이 아니라 상시 항목이다 [[3](#ref-3)].
+**Provenance** 는 행이 어디서 왔고 거기에 무엇을 했는가이다. Split 규칙, 결측치와 이상치 처리, 누수 차단, dataset 버전 hash 가 그것이다. Sliding window augmentation 이 차단을 잃는 흔한 자리인데, 겹치는 window 가 split 을 가로질러 행을 나누어 갖기 때문이다. 누수는 열일곱 분야 294편의 논문에서 여덟 가지 형태로 기록되어 있어, 가끔이 아니라 상시 항목이다 [[3](#ref-3)].
 
 **Baseline** 은 가장 단순한 model — 선형 회귀나 고전 통계 — 의 점수이며, 그렇게 태그한 추적 도구의 run 이 담는다. 첫 model 을 단순하게 두는 것은 확립된 출발점이고 [[5](#ref-5)], 태그가 없으면 뒤에 오는 모든 주장이 기대는 그 비교를 다시 찾지 못한다.
 
