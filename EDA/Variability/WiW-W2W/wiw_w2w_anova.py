@@ -17,10 +17,11 @@ Changelog:
 - 0.10.0: take the components over an expanding window instead of a sliding one.
 - 0.11.0: screen each wafer against the expanding within-wafer component of the wafers before it.
 - 0.12.0: keep the flagged wafers out of the running baseline and draw the screen instead of the components.
+- 0.13.0: drop the sigma_total over root Nn trace from the cumulative figure.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.12.4.2026.9.21"
+__version__ = "0.13.0.2026.9.21"
 
 import argparse
 import pathlib
@@ -343,8 +344,6 @@ class WaferMeasurements:
                   label=r"eq (12) right term:  $\sqrt{s_\mu^2(1..n)}$")
         axes.plot(self.order, left_term, color=COLOR_LEFT_TERM, lw=2.2, ls=(0, (6, 4)), zorder=5,
                   label=r"eq (12) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
-        axes.plot(self.order, terms['sigma_total'] / np.sqrt(self.site_count * self.order), color=COLOR_TREND,
-                  lw=2.0, ls=(0, (6, 4)), zorder=3, label=r"$\sigma_{total}(1..n)/\sqrt{Nn}$")
         axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
                      label=r"eq (12)  $\sigma_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
         axes.axvline(detection, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
