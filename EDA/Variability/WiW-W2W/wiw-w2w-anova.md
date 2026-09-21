@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 54 | Created: 2026-09-01 | Updated: 2026-09-21 17:36 CDT
+Rev. 55 | Created: 2026-09-01 | Updated: 2026-09-21 17:55 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -101,43 +101,51 @@ Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 
 
 ### 4.1 Formula and Its Closed Forms
 
-처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. 측정값을 wafer 간의 변동과 wafer 내의 변동으로 가르면 그 값이 따라 나온다.<br> Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
+처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
 
-$$X_{ij} = \mu_i + e_{ij}, \qquad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (6)$$
+$$X_{ij} = \mu_i + e_{ij} \hspace{19em} (6)$$
 
-Wafer 평균에서는 site 오차가 $`N`$ 개 평균되므로 그 분산이 $`N`$ 분의 1 로 줄어든다.
+$`e_{ij}`$ 는 평균이 0 이고, $`\mu_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다.
 
-$$\bar{X}_i = \mu_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (7)$$
+$$\mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
+
+같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\mu_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나오고, 뒤의 세 항은 $`e_{ij}`$ 의 독립성으로 0 이 되며, 남는 $`\mathrm{Var}(\mu_i)`$ 를 이 모형은 $`\sigma_{between}^2`$ 이라 부른다.
+
+$$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\mu_i, \mu_i) + \mathrm{Cov}(\mu_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \mu_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Var}(\mu_i) = \sigma_{between}^2 \hspace{19em} (8)$$
+
+Wafer 평균에서는 within-wafer site 오차가 $`N`$ 개 평균되므로 그 분산이 $`N`$ 분의 1 로 줄어든다.
+
+$$\bar{X}_i = \mu_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (9)$$
 
 $`\mu_i`$ 와 $`\bar{e}_i`$ 는 독립이므로 처음 $`n`$ 장의 wafer 평균의 분산은 두 분산의 합이고, 여기서 $`s_{\mu}(1..n)`$ 은 처음 $`n`$ 장의 wafer 고유 수준의 표준편차이다.
 
-$$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{within}^2}{N} \hspace{19em} (8)$$
+$$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{within}^2}{N} \hspace{19em} (10)$$
 
 제곱근을 취하면 관측값을 설명하는 식이 된다.
 
-$$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (9)$$
+$$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (11)$$
 
-식 (9) 는 모든 $`n`$ 에서 성립한다. 식 (10) 은 처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같은 $`n`$, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 인 $`n`$ 에서만 성립하며, 그 등식 아래에서 식 (9) 를 전체 표준편차만으로 다시 쓴 것이다. $`n = K`$ 는 wafer 전체를 담아 정의상 그 등식을 만족하므로, 식 (10) 은 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
+식 (11) 은 모든 $`n`$ 에서 성립한다. 식 (12) 는 처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같은 $`n`$, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 인 $`n`$ 에서만 성립하며, 그 등식 아래에서 식 (11) 을 전체 표준편차만으로 다시 쓴 것이다. $`n = K`$ 는 wafer 전체를 담아 정의상 그 등식을 만족하므로, 식 (12) 는 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
 
-$$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (10)$$
+$$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (12)$$
 
 Table 2 의 wafer-to-wafer 성분 $`\sigma_{between}`$ 에 대해 $`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$ 이므로, 같은 식을 within 대신 between 으로도 적을 수 있고, 그 과정은 [Appendix C](#appendix-c-derivation-of-the-between-component-form) 에 적었다.
 
-$$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (11)$$
+$$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (13)$$
 
-식 (6) 에서 같은 wafer 의 두 site 는 $`\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Var}(\mu_i) = \sigma_{between}^2`$ 이므로, ICC 는 같은 wafer 두 site 사이의 covariance 를 $`S_{\mathrm{total}}^2`$ 로 나눈 값이고, ICC = 0 과 그 covariance 가 0 이라는 것은 서로를 함의한다. 서로 다른 wafer 의 site 사이는 식 (6) 이 애초에 0 으로 둔다. Wafer 평균이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (11) 의 둘째 항이 사라져 wafer 평균의 산포는 표준오차만 남는다.
+식 (8) 이 같은 wafer 두 site 사이의 covariance 를 $`\sigma_{between}^2`$ 으로 주므로, ICC 는 그 covariance 를 $`S_{\mathrm{total}}^2`$ 로 나눈 값이고, ICC = 0 과 그 covariance 가 0 이라는 것은 서로를 함의한다. 서로 다른 wafer 의 site 사이는 모형이 애초에 0 으로 둔다. Wafer 평균이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (13) 의 둘째 항이 사라져 wafer 평균의 산포는 표준오차만 남는다.
 
-$$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (12)$$
+$$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (14)$$
 
 이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이며, 이 자료에서는 32.50/√13 = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
 
 ### 4.2 W2W Detection Point
 
-식 (9) 의 두 항은 서로 다른 것을 잰다. 왼쪽 항 $`\sigma_{within}(1..n)/\sqrt{N}`$ 은 site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. 오른쪽 항 $`s_{\mu}(1..n)`$ 은 wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 관측되는 wafer 평균의 산포는 이 둘의 제곱합의 제곱근이므로, 둘 중 어느 쪽이 큰가가 그 산포를 무엇으로 읽을지를 정한다.
+식 (11) 의 두 항은 서로 다른 것을 잰다. 왼쪽 항 $`\sigma_{within}(1..n)/\sqrt{N}`$ 은 site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. 오른쪽 항 $`s_{\mu}(1..n)`$ 은 wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 관측되는 wafer 평균의 산포는 이 둘의 제곱합의 제곱근이므로, 둘 중 어느 쪽이 큰가가 그 산포를 무엇으로 읽을지를 정한다.
 
-$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 식 (10) 과 식 (11) 이 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
+$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 식 (12) 와 식 (13) 이 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
-Fig 2 는 식 (9) 의 두 항을 함께 보인다. 식 (9) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 모든 곡선은 각 $`n`$ 에서 처음 $`n`$ 장만으로 계산했다. $`n`$ 뒤의 wafer 를 끌어다 쓰면 그 $`n`$ 에서 아직 알 수 없는 값을 쓰는 것이 되기 때문이며, 그래서 왼쪽 항도 상수가 아니라 곡선이다. $`\sigma_{within}(1..n)`$ 은 처음 5 장에서 7.28 로 낮았다가 $`n = 50`$ 에서 15.75, $`n = K`$ 에서 15.87 로 자리를 잡는다.
+Fig 2 는 식 (11) 의 두 항을 함께 보인다. 식 (11) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 모든 곡선은 각 $`n`$ 에서 처음 $`n`$ 장만으로 계산했다. $`n`$ 뒤의 wafer 를 끌어다 쓰면 그 $`n`$ 에서 아직 알 수 없는 값을 쓰는 것이 되기 때문이며, 그래서 왼쪽 항도 상수가 아니라 곡선이다. $`\sigma_{within}(1..n)`$ 은 처음 5 장에서 7.28 로 낮았다가 $`n = 50`$ 에서 15.75, $`n = K`$ 에서 15.87 로 자리를 잡는다.
 
 이 자료는 $`N = 13`$ 이므로 왼쪽 항의 제곱은 `sigma_within`²/13 = 19.38 로 수렴하고, 그 제곱근 4.40 이 Fig 2 에서 왼쪽 항이 다다르는 값이다. $`n = 261`$ 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_between` 과 일치한다. 따라서 관측 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_between`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
@@ -153,9 +161,9 @@ Fig 2 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며
 
 Wafer 한 장의 산포가 그때까지 본 wafer 내 산포에서 크게 벗어나면 그 wafer 를 WiW excursion 으로 본다. Wafer $`i`$ 를 판정할 때 앞선 wafer 만으로 구한 $`\sigma_{within}(1..i-1)`$ 을 기준선으로 두고, 그 wafer 의 site 표준편차 $`s_i`$ 가 아래 한계를 넘는지 본다. 한계는 표본표준편차의 분포에서 나오며, 유도는 [Appendix D](#appendix-d-derivation-of-the-screening-limit) 에 적었다.
 
-$$s_i \gt \sigma_{within}(1..i-1) \sqrt{\frac{\chi^2_{p, N-1}}{N-1}} \hspace{19em} (13)$$
+$$s_i \gt \sigma_{within}(1..i-1) \sqrt{\frac{\chi^2_{p, N-1}}{N-1}} \hspace{19em} (15)$$
 
-Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선이 기준선, 빨간 선이 식 (13) 의 한계이고, 한계를 넘은 wafer 를 빨간 점으로 표시했다. 세 값 모두 site 값의 표준편차라 단위가 같으므로 오른쪽 축을 따로 두지 않고 한 축에 겹쳐 그렸다.
+Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선이 기준선, 빨간 선이 식 (15) 의 한계이고, 한계를 넘은 wafer 를 빨간 점으로 표시했다. 세 값 모두 site 값의 표준편차라 단위가 같으므로 오른쪽 축을 따로 두지 않고 한 축에 겹쳐 그렸다.
 
 <img src="wiw-w2w-anova_fig/wafer_screening.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
@@ -175,7 +183,7 @@ $`N = 13`$, $`p = 0.999`$ 에서 계수는 1.656 이고, 판정한 241 장 중 4
 - **ICC**: intraclass correlation. 전체 분산 중 group 간 분산이 차지하는 비율. 같은 group 에서 뽑은 두 관측치가 얼마나 닮았는지를 0 에서 1 사이로 나타내며, 이 문서의 group 은 wafer 이다. 이 문서가 쓰는 것은 one-way random effects model 의 ICC(1) 이며, two-way model 의 ICC 와는 값이 다르다.
 - **run order**: 자료 파일의 행 순서. 측정 순서를 따르므로 시간 축으로 사용.
 - **running baseline**: wafer 한 장을 판정할 때 쓰는 기준선. 그 wafer 앞에 있으면서 excursion 으로 판정되지 않은 wafer 만으로 구한 within-wafer 성분이다.
-- **sigma_between**: wafer 간 분산성분의 표준편차. Table 2 의 wafer-to-wafer 값이며, wafer 평균의 표본표준편차 $`S_{\mathrm{between}}`$ 과 달리 site 오차의 몫을 뺀 값이다.
+- **sigma_between**: wafer 간 분산성분의 표준편차. Table 2 의 wafer-to-wafer 값이며, wafer 평균의 표본표준편차 $`S_{\mathrm{between}}`$ 과 달리 within-wafer site 오차의 몫을 뺀 값이다.
 - **sigma_within**: wafer 내 분산성분의 표준편차. MS within 의 제곱근이다.
 - **site**: 한 wafer 위의 측정 지점. 열 `S1`~`S13` 에 해당.
 - **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
@@ -188,47 +196,47 @@ $`N = 13`$, $`p = 0.999`$ 에서 계수는 1.656 이고, 판정한 241 장 중 4
 
 Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래와 같다.
 
-$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (14)$$
+$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (16)$$
 
 분자와 분모가 모두 $`KN`$ 에서 시작하므로, 1 에서 얼마나 모자라는지를 보는 편이 빠르다.
 
-$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (15)$$
+$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (17)$$
 
 두 결손항은 각각 한쪽 크기에만 매인다. $`1-a`$ 의 분자와 분모를 $`K`$ 로, $`1-b`$ 의 분자와 분모를 $`N`$ 으로 나누면 아래 꼴이 된다.
 
-$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (16)$$
+$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (18)$$
 
 $`K`$ 를 아무리 키워도 $`1-a`$ 는 $`1/N`$ 에서 멈추고, $`N`$ 을 아무리 키워도 $`1-b`$ 는 $`1/K`$ 에서 멈춘다.
 
-$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (17)$$
+$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (19)$$
 
 곧 한쪽만 키운 극한에서 계수는 1 이 아니라 아래 값에 멈춘다.
 
-$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (18)$$
+$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (20)$$
 
 따라서 $`a`$ 를 1 로 보내는 것은 wafer 당 site 수 $`N`$ 이고, $`b`$ 를 1 로 보내는 것은 wafer 수 $`K`$ 이며, 둘이 함께 커져야 두 계수가 같이 1 이 된다.
 
-$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (19)$$
+$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (21)$$
 
 이 문서의 $`K = 261`$, $`N = 13`$ 에서는 $`1 - a = 260/3392 = 0.0767`$ 로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/3392 = 0.0035`$ 로 $`1/K = 0.0038`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 251.98`$ 과 $`S_{\mathrm{between}}^2 = 823.46`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 32.79`$ 가 되어 관측값 32.45 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
 
 ## Appendix C. Derivation of the Between-Component Form
 
-식 (10) 은 within 성분으로 적혀 있다.
+식 (12) 는 within 성분으로 적혀 있다.
 
-$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (20)$$
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (22)$$
 
 성분 분해에서 $`S_{\mathrm{total}}^2 = \sigma_{within}^2 + \sigma_{between}^2`$ 이므로 within 성분을 나머지 둘로 바꿀 수 있다.
 
-$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (21)$$
+$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (23)$$
 
 이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래와 같다.
 
-$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (22)$$
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (24)$$
 
-ICC 의 정의 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 를 넣어 $`\sigma_{between}^2`$ 을 지우면 두 번째 형태가 나오고, 제곱근을 취한 것이 식 (11) 이다.
+ICC 의 정의 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 를 넣어 $`\sigma_{between}^2`$ 을 지우면 두 번째 형태가 나오고, 제곱근을 취한 것이 식 (13) 이다.
 
-$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (23)$$
+$$\sigma_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (25)$$
 
 $`N = 1`$ 이면 두 형태 모두 $`\sigma_{\mu_K} = S_{\mathrm{total}}`$ 이 되고, $`N`$ 이 커지면 $`\sigma_{\mu_K}`$ 는 $`\sigma_{between}`$ 으로 수렴한다. site 를 많이 잴수록 wafer 평균에서 within 성분이 지워진다는 뜻이다.
 
@@ -236,34 +244,34 @@ $`N = 1`$ 이면 두 형태 모두 $`\sigma_{\mu_K} = S_{\mathrm{total}}`$ 이 �
 
 아래에서 $`i`$ 는 wafer 번호, $`j`$ 는 그 wafer 위의 site 번호로 section 1.1 의 표기를 그대로 쓴다. 곧 $`X_{ij}`$ 는 wafer $`i`$ 의 $`j`$ 번째 site 측정값이고, $`\bar{X}_i`$ 는 그 wafer 의 평균, $`s_i^2`$ 은 그 wafer 안 site 값의 표본분산이다. 한 wafer 안의 site 값이 서로 독립이고 같은 정규분포를 따른다고 둔다.
 
-$$X_{ij} \sim \mathcal{N}(\mu_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (24)$$
+$$X_{ij} \sim \mathcal{N}(\mu_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (26)$$
 
 한계를 세우려면 $`s_i`$ 가 우연만으로 얼마나 커질 수 있는지 알아야 한다. 같은 공정에서 나온 wafer 라도 site $`N`$ 점을 어디서 뽑느냐에 따라 $`s_i`$ 는 매번 달라지므로, 그 흔들림의 분포를 알아야 어디부터가 우연으로 보기 어려운 값인지 정할 수 있다. 그 분포가 카이제곱이며, 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값의 분포로 $`m`$ 이 그 자유도이다. 그러므로 $`s_i^2`$ 의 분포를 아는 일은 그것을 표준정규 몇 개의 제곱합으로 적을 수 있는지를 세는 일이 된다. 측정값에서 그 wafer 의 고유 수준 $`\mu_i`$ 를 빼고 표준편차로 나누면 표준정규가 된다.
 
-$$Z_{ij} = \frac{X_{ij} - \mu_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (25)$$
+$$Z_{ij} = \frac{X_{ij} - \mu_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (27)$$
 
-$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (24) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 각 항을 $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ 로 풀고 $`j = 1`$ 부터 $`N`$ 까지 더하면 세 조각이 된다. 첫 조각은 그대로 $`\sum_j Z_{ij}^2`$ 이고, 둘째 조각은 $`\bar{Z}_i`$ 가 $`j`$ 에 따라 변하지 않는 상수라 합 밖으로 빠져 $`-2 \bar{Z}_i \sum_j Z_{ij}`$ 가 되며, 셋째 조각은 그 상수를 $`N`$ 번 더한 $`N \bar{Z}_i^2`$ 이다.
+$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (26) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 각 항을 $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ 로 풀고 $`j = 1`$ 부터 $`N`$ 까지 더하면 세 조각이 된다. 첫 조각은 그대로 $`\sum_j Z_{ij}^2`$ 이고, 둘째 조각은 $`\bar{Z}_i`$ 가 $`j`$ 에 따라 변하지 않는 상수라 합 밖으로 빠져 $`-2 \bar{Z}_i \sum_j Z_{ij}`$ 가 되며, 셋째 조각은 그 상수를 $`N`$ 번 더한 $`N \bar{Z}_i^2`$ 이다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - 2 \bar{Z}_i \sum_{j=1}^{N} Z_{ij} + N \bar{Z}_i^2 \hspace{19em} (26)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - 2 \bar{Z}_i \sum_{j=1}^{N} Z_{ij} + N \bar{Z}_i^2 \hspace{19em} (28)$$
 
 평균의 정의에서 $`\sum_{j} Z_{ij} = N \bar{Z}_i`$ 이므로 가운데 항은 $`2 N \bar{Z}_i^2`$ 이 되고, 마지막 항과 합치면 $`N \bar{Z}_i^2`$ 하나만 남는다. 곧 표준정규 제곱합에서 평균의 몫을 뺀 꼴이다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_i^2 + N \bar{Z}_i^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (27)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_i^2 + N \bar{Z}_i^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (29)$$
 
 우변의 첫 항은 표준정규 $`N`$ 개의 제곱합이므로 정의에 따라 $`\chi^2_N`$ 이다. $`\bar{Z}_i`$ 는 평균 0, 분산 $`1/N`$ 의 정규분포를 따라 $`\sqrt{N}\,\bar{Z}_i`$ 가 표준정규이므로 둘째 항은 $`\chi^2_1`$ 이다. 정규 표본에서 표본평균과 표본분산은 서로 독립이라 두 몫이 겹치지 않으므로, 자유도는 그대로 빼진다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (28)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (30)$$
 
 자유도가 $`N`$ 이 아니라 $`N-1`$ 인 까닭은 편차 $`X_{ij} - \bar{X}_i`$ 가 합이 0 이라는 제약 하나에 묶여 $`N`$ 개 중 $`N-1`$ 개만 자유롭기 때문이다.
 
-$`\chi^2_{p,\,N-1}`$ 을 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그보다 작을 확률이 $`p`$ 인 점으로 두면, 식 (28) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
+$`\chi^2_{p,\,N-1}`$ 을 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그보다 작을 확률이 $`p`$ 인 점으로 두면, 식 (30) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
 
-$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 - p \hspace{19em} (29)$$
+$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 - p \hspace{19em} (31)$$
 
-괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (13) 이 된다. 곧 식 (13) 을 넘은 wafer 는, 그 wafer 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 wafer 이다.
+괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (15) 가 된다. 곧 식 (15) 를 넘은 wafer 는, 그 wafer 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 wafer 이다.
 
 기준선은 참값이 아니라 앞선 wafer 로 추정한 값이므로, 엄밀하게는 두 분산의 비가 F 분포를 따른다. 기준선이 wafer $`m`$ 장 위에 서 있으면 그 자유도는 $`\nu = m(N-1)`$ 이다.
 
-$$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (30)$$
+$$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (32)$$
 
-$`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (13) 을 그대로 쓸 수 있다. 이 자료의 $`N = 13`$, $`p = 0.999`$ 에서 계수는 카이제곱으로 1.656 이고, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
+$`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (15) 를 그대로 쓸 수 있다. 이 자료의 $`N = 13`$, $`p = 0.999`$ 에서 계수는 카이제곱으로 1.656 이고, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
