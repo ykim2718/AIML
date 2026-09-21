@@ -1,11 +1,11 @@
 # Time-Series ML Model Validation Checklist
-Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-20 19:25 CDT
+Rev. 6 | Created: 2026-09-20 | Updated: 2026-09-20 19:55 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: 시계열 data 를 random split 과 전체 구간 preprocessing 으로 validation 하면 예측 시점 이후의 정보가 training 에 섞여, validation 성능이 production 성능보다 높게 나온다.
+- **Problem Statement**: 시계열 data 를 random split 과 전체 segment preprocessing 으로 validation 하면 예측 시점 이후의 정보가 training 에 섞여, validation 성능이 production 성능보다 높게 나온다.
 - **Goal**: 시계열 model 을 deploy 하기 전의 check 를 general ML level 과 time-series level 로 나누고, 각 check 가 modeling pipeline 의 어느 stage 에서 무엇을 확인하는지 정한다.
-- **Non-Goal**: model 계열별 algorithm 선택과 hyperparameter 조정은 다루지 않는다. 어긋난 check 를 고치는 retraining 절차도 다루지 않는다.
+- **Non-Goal**: model family 별 algorithm 선택과 hyperparameter 조정은 다루지 않는다. 어긋난 check 를 고치는 retraining 절차도 다루지 않는다.
 
 ## 2. Summary
 
@@ -91,7 +91,7 @@ Marker 의 색이 Level 을 가른다. 파란색 일곱 check 가 time-series le
   - Parameter 수 대비 data 수. 부족하면 overfitting.
 - **Metric Selection**
   - Classification: class imbalance 에서 accuracy 대신 F1-score, PR-AUC.
-  - Regression: outlier 영향도에 따라 RMSE, MAE, MAPE, Huber loss 중 선택.
+  - Regression: outlier sensitivity 에 따라 RMSE, MAE, MAPE, Huber loss 중 선택.
 - **Feature Leakage**
   - 예측 시점에 알 수 없는 미래 정보가 들어간 feature.
   - Target 값 자체가 들어간 feature.
@@ -118,7 +118,7 @@ Data split 은 시간을 따라야 한다. Random K-Fold 는 미래 data 로 tra
 
 ### 5.2 Preprocessing and Feature Engineering Leakage
 
-Preprocessing 과 feature engineering 은 train segment 안에서만 계산한다. 전체 구간의 statistics 와 미래 시점의 값이 preprocessing 과 feature engineering 으로 들어온다.
+Preprocessing 과 feature engineering 은 train segment 안에서만 계산한다. 전체 segment 의 statistics 와 미래 시점의 값이 preprocessing 과 feature engineering 으로 들어온다.
 
 - **Scaling & Imputation**
   - Scaler (MinMax, Standard) 의 fit segment. 전체 data 가 아닌 train segment 의 mean, standard deviation.
@@ -129,13 +129,13 @@ Preprocessing 과 feature engineering 은 train segment 안에서만 계산한�
 
 ### 5.3 Data Properties
 
-Data 자체가 시간에 따라 무엇을 하는지 확인한다. Mean 과 variance 의 이동, 분포의 구조적 변화, data 가 실제로 조회 가능해지는 시각이 data properties 에 속한다. 세 check 의 용어 정의는 [Appendix A](#appendix-a-terminology) 에 있다.
+Data 자체가 시간에 따라 무엇을 하는지 확인한다. Mean 과 variance 의 이동, 분포의 구조적 변화, data availability time 이 data properties 에 속한다. 세 check 의 용어 정의는 [Appendix A](#appendix-a-terminology) 에 있다.
 
 - **Stationarity & Differencing**
   - Trend 와 seasonality 로 인한 mean 과 variance 의 시간 변화.
   - 필요 시 differencing 또는 log 변환 적용 여부.
-  - Check 결과가 정하는 것: differencing 차수 $d$ 와 seasonal differencing 차수 $D$, model 계열, validation 점수의 해석.
-  - Linear model (ARMA, VAR, linear regression): stationarity 를 전제. 서로 관계가 없는 non-stationary series 두 개를 그대로 회귀하면 spurious regression 으로 $R^2$ 와 t 통계량이 부풀려지므로, differencing 이나 cointegration 확인 뒤 적합.
+  - Check 결과가 정하는 것: differencing order $d$ 와 seasonal differencing order $D$, model family, validation 점수의 해석.
+  - Linear model (ARMA, VAR, linear regression): stationarity 를 전제. 서로 관계가 없는 non-stationary series 두 개를 그대로 회귀하면 spurious regression 으로 $R^2$ 와 t 통계량이 부풀려지므로, differencing 이나 cointegration 확인 뒤 fit.
   - Non-linear model (gradient boosting, neural network): stationarity 를 요구하지 않음. Train segment 밖의 값을 외삽하지 못하므로, trend 가 남으면 differencing 이나 detrending 으로 target 범위를 맞춤.
 - **Concept Drift & Covariate Shift**
   - 과거 수집 기간과 예측 대상 기간 사이의 구조적 변화. 시장 상황, 규제, exogenous variable.
@@ -151,7 +151,7 @@ Data 자체가 시간에 따라 무엇을 하는지 확인한다. Mean 과 varia
 - **cointegration**: 두 non-stationary series 의 선형 결합이 stationary 가 되는 관계.
 - **concept drift**: 입력과 target 의 관계가 시간에 따라 바뀌는 현상.
 - **covariate shift**: Target 과의 관계는 그대로인 채 입력 분포만 바뀌는 현상.
-- **data availability time**: 어떤 값이 실제로 조회 가능해지는 시각. 그 값이 가리키는 시점보다 늦다.
+- **data availability time**: 어떤 값이 실제로 조회 가능해지는 시점. 그 값이 가리키는 시점보다 늦다.
 - **detrending**: Trend 성분을 추정해 빼는 변환.
 - **expanding window**: Train segment 의 시작을 고정하고 끝만 뒤로 미는 split. Fold 가 진행될수록 train data 가 늘어난다.
 - **look-ahead bias**: 예측 시점에 아직 조회할 수 없는 값을 feature 로 써서 성능이 높게 나오는 bias.
