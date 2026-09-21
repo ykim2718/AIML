@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 14 | Created: 2026-09-21 | Updated: 2026-09-21 16:09 CDT
+Rev. 15 | Created: 2026-09-21 | Updated: 2026-09-21 16:11 CDT
 
 ## 1. Purpose
 
@@ -77,7 +77,7 @@ Premise Check settles what must already be true for this sprint's metric to mean
 
 ### 4.2 Claim Setting
 
-Claim Setting settles the single assertion this sprint tests, and its one item is the Hypothesis. It is built on domain knowledge rather than on a list of untried algorithms, and it has three parts: one change, the physical reason for it, and what the metric does if that reason holds. One Hypothesis per modeler is the work-in-progress limit of the sprint, it carries a timebox fixed before the run starts, and research-shaped work that cannot state its three parts is moved off the board as a spike.
+Claim Setting settles the single assertion this sprint tests, and its one item is the Hypothesis. It is built on domain knowledge rather than on a list of untried algorithms, and it has three parts: one change, the physical reason for it, and what the metric does if that reason holds. One Hypothesis per modeler is the work-in-progress limit of the sprint, it carries a timebox fixed before the run starts, and research-shaped work that cannot state its three parts is taken as a spike rather than as a Hypothesis.
 
 Two examples show the form. Multicollinearity among sensors is severe, so the run uses Elastic Net instead of Lasso to carry the group effect. Time warping distorts the signal, so a 1D-CNN autoencoder reduces the dimension through representation learning rather than through a fixed transform.
 
@@ -136,7 +136,7 @@ Table 2. Where each agile practice lands in the modeling sprint
 | Sprint backlog  | The Hypothesis, one per sprint                                | A backlog item is a claim to test, not a feature to build                                    |
 | WIP limit       | One Hypothesis in flight per modeler                          | Two changes at once leave the Insight unattributable                                         |
 | Timeboxing      | The clock on the experiment and on the meeting                | The experiment closes at its limit, whatever it has found                                    |
-| Spike           | Research-shaped work moved off the delivery board             | Its output is a decision, not a model                                                        |
+| Spike           | Research-shaped work taken as its own backlog item            | Its output is a decision, not a model                                                        |
 | Daily standup   | Blockers on the running experiment                            | Raised the day they appear, not at the sprint boundary                                       |
 | Sprint review   | Stage 3, Product Review                                       | The demo is the tracked run and the analysis plot                                            |
 | Retrospective   | The process finding of stage 4                                | Recorded apart from the Insight, which is a finding about the model                          |
@@ -241,7 +241,7 @@ The same three lines fill the model card that ships with the model, which record
 - **Representation learning**: learning the features themselves from the data rather than specifying them by hand.
 - **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Sliding window augmentation**: cutting overlapping windows out of a continuous record to make more training samples, which shares rows between windows.
-- **Spike**: an investigation carried as its own backlog item, off the delivery board because its outcome is unknown.
+- **Spike**: an investigation carried as its own backlog item, which returns a decision rather than an increment.
 - **Sprint**: the fixed-length span that carries one Hypothesis, from the meeting that opens it to the meeting that issues its Verdict.
 - **Sprint backlog**: the work a team commits to finish in one sprint.
 - **Story point**: a relative estimate of the size of a backlog item.

@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 14 | Created: 2026-09-21 | Updated: 2026-09-21 16:09 CDT
+Rev. 15 | Created: 2026-09-21 | Updated: 2026-09-21 16:11 CDT
 
 ## 1. Purpose
 
@@ -77,7 +77,7 @@ Premise Check 는 이번 sprint 의 metric 이 뜻을 가지려면 이미 참이
 
 ### 4.2 Claim Setting
 
-Claim Setting 은 이번 sprint 가 검증하는 단 하나의 주장을 확정하며, 항목은 Hypothesis 하나다. 아직 써 보지 않은 algorithm 의 목록이 아니라 도메인 지식 위에 세우고, 세 부분으로 이루어진다. 바꾸는 하나, 그것의 물리적 근거, 그 근거가 서면 metric 이 어떻게 움직이는가이다. Modeler 한 사람당 Hypothesis 하나가 이 sprint 의 WIP limit 이고, 실행 전에 고정한 timebox 를 달고 있으며, 세 부분을 말하지 못하는 연구 성격의 작업은 spike 로 board 밖에 둔다.
+Claim Setting 은 이번 sprint 가 검증하는 단 하나의 주장을 확정하며, 항목은 Hypothesis 하나다. 아직 써 보지 않은 algorithm 의 목록이 아니라 도메인 지식 위에 세우고, 세 부분으로 이루어진다. 바꾸는 하나, 그것의 물리적 근거, 그 근거가 서면 metric 이 어떻게 움직이는가이다. Modeler 한 사람당 Hypothesis 하나가 이 sprint 의 WIP limit 이고, 실행 전에 고정한 timebox 를 달고 있으며, 세 부분을 말하지 못하는 연구 성격의 작업은 Hypothesis 대신 spike 로 잡는다.
 
 두 가지 예가 그 형식을 보여 준다. 센서 간 multicollinearity 가 심하므로 이번 실행은 Lasso 대신 Elastic Net 을 써서 그룹 효과를 담는다. Time warping 이 신호를 일그러뜨리므로 고정된 변환 대신 1D-CNN autoencoder 가 representation learning 으로 차원을 줄인다.
 
@@ -136,7 +136,7 @@ Table 2. Where each agile practice lands in the modeling sprint
 | Sprint backlog  | Hypothesis. Sprint 당 하나                                              | Backlog 항목이 만들 기능이 아니라 검증할 주장                                                       |
 | WIP limit       | Modeler 한 사람당 진행 중인 Hypothesis 하나                             | 둘을 한꺼번에 바꾸면 Insight 의 귀속이 불가능해짐                                                   |
 | Timeboxing      | 실험에 붙인 시계, 그리고 회의에 붙인 시계                               | 무엇을 찾았든 한계에서 실험을 닫음                                                                  |
-| Spike           | 배포 board 밖으로 들어낸 연구 성격의 작업                               | 산출물이 model 이 아니라 결정                                                                       |
+| Spike           | 제 backlog item 으로 잡은 연구 성격의 작업                              | 산출물이 model 이 아니라 결정                                                                       |
 | Daily standup   | 진행 중인 실험의 blocker                                                | Sprint 경계가 아니라 생긴 날에 드러냄                                                               |
 | Sprint review   | 3단계 Product Review                                                    | 시연 대상이 추적된 run 과 분석 그림                                                                 |
 | Retrospective   | 4단계의 process finding                                                 | Model 에 대한 발견인 Insight 와 따로 기록                                                           |
@@ -241,7 +241,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Representation learning**: feature 를 사람이 지정하는 대신 데이터에서 학습하는 것.
 - **Retrospective**: Sprint 끝에 process 를 되짚고 무엇을 고칠지 정하는 회의.
 - **Sliding window augmentation**: 연속 기록에서 겹치는 window 를 잘라 학습 표본을 늘리는 것. window 끼리 행을 나누어 갖는다.
-- **Spike**: 결과를 알 수 없어 배포 board 밖으로 들어낸, 제 backlog item 으로 다루는 조사.
+- **Spike**: 제 backlog item 으로 다루는 조사. 돌려주는 것이 increment 가 아니라 결정이다.
 - **Sprint**: 길이가 고정된 구간. Hypothesis 하나를 여는 회의부터 그 Verdict 를 내는 회의까지 나른다.
 - **Sprint backlog**: 한 sprint 안에 끝내기로 한 작업.
 - **Story point**: Backlog 항목의 크기를 상대적으로 매긴 추정값.
