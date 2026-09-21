@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 11 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
+Rev. 12 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
 
 ## 1. Purpose
 
@@ -36,7 +36,7 @@ STAGE                    ITEM          WHAT IT FIXES
       |   every item done before
       v
 4  Decision         >    Verdict       Accepted, rework or stop, issued on the Hypothesis
-                         Handoff       Owner, due date and ticket for the next sprint
+                         Handoff       Owner, due date and backlog item for the next sprint
 ```
 
 <a id="fig-1"></a>
@@ -51,15 +51,15 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 
 | Item       | Settled at       | Done when                                                           | What carries it                                    |
 | :--------: | :--------------: | :-----------------------------------------------------------------: | :------------------------------------------------: |
-| Target     | 1 Premise Check  | Sprint 을 열기 전에 합의된, 임계값이 붙은 하나의 양으로 적힘        | Ticket 의 한 줄                                    |
+| Target     | 1 Premise Check  | Sprint 을 열기 전에 합의된, 임계값이 붙은 하나의 양으로 적힘        | Backlog item 의 한 줄                              |
 | Provenance | 1 Premise Check  | Split 규칙, 결측치와 이상치 처리, dataset hash 가 기록됨            | 추적 도구의 run 과 데이터 버전 도구                |
 | Baseline   | 1 Premise Check  | Baseline 으로 태그된 run. 이후의 주장이 견주는 점수를 담음          | Baseline tag 가 붙은 추적 도구의 run               |
-| Hypothesis | 2 Claim Setting  | 바꾸는 하나, 물리적 근거, 예상되는 움직임이 모두 말해짐             | 이번 sprint 로 연 ticket                           |
+| Hypothesis | 2 Claim Setting  | 바꾸는 하나, 물리적 근거, 예상되는 움직임이 모두 말해짐             | Sprint backlog item                                |
 | Run        | 3 Product Review | Parameter, dataset 버전, code commit, metric 이 모두 추적됨         | 추적 도구의 항목                                   |
 | Insight    | 3 Product Review | Metric 을 움직인 원인이 새 checkout 에서 재현됨                     | Feature importance 또는 오차 분석. 그림으로 내보냄 |
 | Readiness  | 3 Product Review | Latency, skew, fallback, monitoring 을 지금 서빙 중인 model 과 견줌 | Model registry 항목과 monitoring dashboard         |
 | Verdict    | 4 Decision       | Product owner 가 Hypothesis 에 대고 소리 내어 말함                  | 회의록의 한 줄                                     |
-| Handoff    | 4 Decision       | 다음 sprint 를 위한 담당자, 기한, ticket id 가 발행됨               | Id 가 붙은 ticket                                  |
+| Handoff    | 4 Decision       | 다음 sprint 를 위한 담당자, 기한, item id 가 발행됨                 | Tracker 에서 id 가 붙은 backlog item               |
 
 ## 4. Items
 
@@ -67,7 +67,7 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 
 ### 4.1 Premise Check
 
-Premise Check 는 이번 sprint 의 metric 이 뜻을 가지려면 이미 참이어야 하는 것을 확정하며, 세 항목은 논쟁이 아니라 확인의 대상이다. 셋이 함께 modeling ticket 의 definition of ready 다. 그 가운데 하나가 확정되지 않은 채 연 sprint 는 아무것도 판정하지 못하는 metric 을 낸다.
+Premise Check 는 이번 sprint 의 metric 이 뜻을 가지려면 이미 참이어야 하는 것을 확정하며, 세 항목은 논쟁이 아니라 확인의 대상이다. 셋이 함께 modeling backlog item 의 definition of ready 다. 그 가운데 하나가 확정되지 않은 채 연 sprint 는 아무것도 판정하지 못하는 metric 을 낸다.
 
 **Target** 은 Y 의 정의와 임계값을 한 줄로 적은 것이다. 수율 98 % 미만, 또는 EVT 기반 임계값을 넘는 센서 값은 target 이고 "AI 로 불량을 잡자" 는 target 이 아니다. 후자 위에서 연 sprint 는 팀이 정의한 적 없는 양을 잰다. 도메인 엔지니어가 대며, 회의 중이 아니라 첫 회의 이전에 고정한다.
 
@@ -99,7 +99,7 @@ Decision 은 방을 떠나는 것을 확정하며, 두 항목은 언제나 함�
 
 **Verdict** 는 accepted, rework, stop 가운데 하나이며, product owner 가 Hypothesis 에 대고 소리 내어 말한다. Increment 를 받아들이는 일은 backlog 의 순서를 소유한 역할의 몫이기 때문이다. Accepted 는 재현된 Insight 를 요구하고, model 을 serving 으로 승격하려면 견주어진 Readiness 가 있어야 한다. Rework 는 제 기준에 못 미친 항목을 이름 붙이고, stop 은 그 이유를 적어 다음 팀이 읽을 자리에 남긴다.
 
-**Handoff** 는 다음 sprint 의 담당자, 기한, ticket id 이며, Verdict 가 함의하는 engineering 작업도 함께 담는다. Handoff 가 다음 sprint backlog 항목이며, 할 일이 아니라 Hypothesis 의 형태로 적는다. 그것에 밀린 Hypothesis 들은 다음 Insight 가 무엇을 판정하는가의 순서로 product backlog 에 남는다. Code review 배정과 pipeline 연동을 여기서만 이름 붙여, modeling 논의가 일정 조율에 끊기지 않게 한다.
+**Handoff** 는 다음 sprint 의 담당자, 기한, item id 이며, Verdict 가 함의하는 engineering 작업도 함께 담는다. Handoff 가 다음 sprint backlog 항목이며, 할 일이 아니라 Hypothesis 의 형태로 적는다. 그것에 밀린 Hypothesis 들은 다음 Insight 가 무엇을 판정하는가의 순서로 product backlog 에 남는다. Code review 배정과 pipeline 연동을 여기서만 이름 붙여, modeling 논의가 일정 조율에 끊기지 않게 한다.
 
 ## 5. Agenda
 
@@ -118,7 +118,7 @@ Stage 3   "<METRIC> moved <FROM> to <TO>, run <RUN_ID>, spread <SPREAD> over
            <N> seeds. Insight: <ANALYSIS>, reproduced from a clean checkout."
 
 Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
-           by <DATE>, ticket <TICKET_ID>."
+           by <DATE>, backlog item <ITEM_ID>."
 ```
 
 회의 자체가 sprint 의 경계에 놓이므로, 4단계는 이번 sprint 를 닫으면서 다음 sprint 를 연다. 두 회의 사이에서 진행 중인 실험의 blocker 는 경계까지 쥐고 있지 않고 daily standup 에서 드러낸다.
@@ -176,12 +176,12 @@ Table 4. Which role supplies which items
 
 ## 9. Record
 
-회의록은 아홉 항목 가운데 Verdict, Insight, Handoff 셋을 담으며, 그 셋을 채우지 못한 회의는 끝난 것이 아니다. 나머지 여섯은 추적 도구와 ticket 에 남고, 세 줄이 그것을 가리킨다. 같은 회의의 process finding 은 따로, BKM 을 갱신하는 retrospective note 에 적는다. 둘을 섞은 기록은 어느 쪽으로도 읽히지 않기 때문이다.
+회의록은 아홉 항목 가운데 Verdict, Insight, Handoff 셋을 담으며, 그 셋을 채우지 못한 회의는 끝난 것이 아니다. 나머지 여섯은 추적 도구와 backlog item 에 남고, 세 줄이 그것을 가리킨다. 같은 회의의 process finding 은 따로, BKM 을 갱신하는 retrospective note 에 적는다. 둘을 섞은 기록은 어느 쪽으로도 읽히지 않기 때문이다.
 
 ```text
 Verdict : <ACCEPTED|REWORK|STOP> on <HYPOTHESIS>
 Insight : <what moved the metric, and what it was read from>
-Handoff : <OWNER> runs <EXPERIMENT> by <DATE>, ticket <TICKET_ID>
+Handoff : <OWNER> runs <EXPERIMENT> by <DATE>, backlog item <ITEM_ID>
 ```
 
 한 sprint 를 채워 넣으면 세 줄은 아래와 같이 읽힌다. 각 줄이 양을 하나씩 대고 있어, 석 달 뒤의 독자도 무엇이 시도되었는지가 아니라 무엇이 확립되었는지를 가릴 수 있다.
@@ -191,7 +191,7 @@ Verdict : ACCEPTED on "1D-CNN autoencoder reduces the trace to 200 dimensions"
 Insight : Gas flow variation over the first 2,000 rows moves the final yield
           prediction most, by XGBoost feature importance. Reconstruction error 0.02
 Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
-          features, target 95 % yield classification accuracy, by 06-28, ticket <TICKET_ID>
+          features, target 95 % yield classification accuracy, by 06-28, backlog item <ITEM_ID>
 ```
 
 같은 세 줄이 model 과 함께 나가는 model card 를 채운다. Model card 는 model 의 개요, 측정된 성능, 학습에 쓴 데이터를 기록한다 [[4](#ref-4)]. 이 workflow 를 agile process 안에 접어 넣은 팀도 그것을 여전히 자기 단계의 연속으로 돌린다 [[1](#ref-1)].
@@ -216,6 +216,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 ## Appendix A. Terminology
 
 - **1D-CNN autoencoder**: 1차원 신호 위의 convolutional network 로, 자기 입력을 다시 만들도록 학습한다. 여기서는 공정 trace 의 차원을 줄이는 데 쓴다.
+- **Backlog item**: Backlog 안의 작업 한 단위. 팀의 tracker 에 id 를 달고 놓인다.
 - **BKM (Best Known Method)**: 어떤 작업에 대해 현재까지 알려진 최선의 방법을 담은 팀 문서. 회고에서 갱신된다.
 - **Blocker**: 실험이 다음 단계로 나가지 못하게 막는 기술적·행정적 걸림돌.
 - **Confusion matrix**: 예측 class 와 실제 class 를 교차시킨 표. 어느 class 를 어느 class 와 혼동하는지 읽는다.
@@ -238,7 +239,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Representation learning**: feature 를 사람이 지정하는 대신 데이터에서 학습하는 것.
 - **Retrospective**: Sprint 끝에 process 를 되짚고 무엇을 고칠지 정하는 회의.
 - **Sliding window augmentation**: 연속 기록에서 겹치는 window 를 잘라 학습 표본을 늘리는 것. window 끼리 행을 나누어 갖는다.
-- **Spike**: 결과를 알 수 없어 배포 board 밖으로 들어낸, 따로 ticket 을 받은 조사.
+- **Spike**: 결과를 알 수 없어 배포 board 밖으로 들어낸, 제 backlog item 으로 다루는 조사.
 - **Sprint**: 길이가 고정된 구간. Hypothesis 하나를 여는 회의부터 그 Verdict 를 내는 회의까지 나른다.
 - **Sprint backlog**: 한 sprint 안에 끝내기로 한 작업.
 - **Story point**: Backlog 항목의 크기를 상대적으로 매긴 추정값.

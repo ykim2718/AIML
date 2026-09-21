@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 11 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
+Rev. 12 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
 
 ## 1. Purpose
 
@@ -36,7 +36,7 @@ STAGE                    ITEM          WHAT IT FIXES
       |   every item done before
       v
 4  Decision         >    Verdict       Accepted, rework or stop, issued on the Hypothesis
-                         Handoff       Owner, due date and ticket for the next sprint
+                         Handoff       Owner, due date and backlog item for the next sprint
 ```
 
 <a id="fig-1"></a>
@@ -51,15 +51,15 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 
 | Item       | Settled at       | Done when                                                                          | What carries it                                            |
 | :--------: | :--------------: | :--------------------------------------------------------------------------------: | :--------------------------------------------------------: |
-| Target     | 1 Premise Check  | Written as one quantity with its threshold, agreed before the sprint opens         | One line in the ticket                                     |
+| Target     | 1 Premise Check  | Written as one quantity with its threshold, agreed before the sprint opens         | One line in the backlog item                               |
 | Provenance | 1 Premise Check  | Split rule, missing value and outlier handling, and dataset hash recorded          | The tracker run and the data version tool                  |
 | Baseline   | 1 Premise Check  | A run tagged as the baseline, carrying the score later claims are compared against | A tracker run with the baseline tag                        |
-| Hypothesis | 2 Claim Setting  | One change, its physical reason and the expected movement, all stated              | The ticket opened for this sprint                          |
+| Hypothesis | 2 Claim Setting  | One change, its physical reason and the expected movement, all stated              | The sprint backlog item                                    |
 | Run        | 3 Product Review | Parameters, dataset version, code commit and metric all tracked                    | The tracker entry                                          |
 | Insight    | 3 Product Review | The cause of the metric move reproduced from a clean checkout                      | Feature importance or error analysis, exported as a figure |
 | Readiness  | 3 Product Review | Latency, skew, fallback and monitoring compared against the model now serving      | The model registry entry and the monitoring dashboard      |
 | Verdict    | 4 Decision       | Said aloud by the product owner, on the Hypothesis                                 | One line in the minutes                                    |
-| Handoff    | 4 Decision       | Owner, due date and ticket id issued for the next sprint                           | A ticket with an id                                        |
+| Handoff    | 4 Decision       | Owner, due date and item id issued for the next sprint                             | A backlog item with an id in the tracker                   |
 
 ## 4. Items
 
@@ -67,7 +67,7 @@ Each stage is worked through below in the order of [Fig 1](#fig-1), since a prac
 
 ### 4.1 Premise Check
 
-Premise Check settles what must already be true for this sprint's metric to mean anything, and its three items are checked rather than debated. Together they are the definition of ready for a modeling ticket: a sprint that opens while one of them is unsettled produces a number that decides nothing.
+Premise Check settles what must already be true for this sprint's metric to mean anything, and its three items are checked rather than debated. Together they are the definition of ready for a modeling backlog item: a sprint that opens while one of them is unsettled produces a number that decides nothing.
 
 **Target** is the definition of Y with its threshold, written in one line. Yield below 98 %, or a sensor value crossing an EVT-based threshold, are targets; "catch defects with AI" is not, and a sprint opened on it measures a quantity the team never defined. The domain expert supplies it, and it is fixed before the first meeting rather than during one.
 
@@ -99,7 +99,7 @@ Decision settles what leaves the room, and its two items are always issued toget
 
 **Verdict** is accepted, rework or stop, issued on the Hypothesis and said aloud by the product owner, since accepting an increment belongs to the role that owns the order of the backlog. Accepted requires a reproduced Insight; promoting a model to serving requires a compared Readiness; rework names the item that fell short of its bar; stop names the reason and is kept where the next team will read it.
 
-**Handoff** is the owner, the due date and the ticket id for the next sprint, together with the engineering work the Verdict implies. It is the next sprint backlog item, written as a Hypothesis rather than as a task, and the hypotheses it outranks stay in the product backlog in the order the next Insight would decide. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
+**Handoff** is the owner, the due date and the item id for the next sprint, together with the engineering work the Verdict implies. It is the next sprint backlog item, written as a Hypothesis rather than as a task, and the hypotheses it outranks stay in the product backlog in the order the next Insight would decide. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
 
 ## 5. Agenda
 
@@ -118,7 +118,7 @@ Stage 3   "<METRIC> moved <FROM> to <TO>, run <RUN_ID>, spread <SPREAD> over
            <N> seeds. Insight: <ANALYSIS>, reproduced from a clean checkout."
 
 Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
-           by <DATE>, ticket <TICKET_ID>."
+           by <DATE>, backlog item <ITEM_ID>."
 ```
 
 The meeting itself sits on the sprint boundary, so stage 4 opens the next sprint as it closes this one. Between two meetings the blockers on the running experiment are raised at the daily standup rather than held for the boundary.
@@ -176,12 +176,12 @@ The domain expert says that two sensors are symmetric and must be grouped by top
 
 ## 9. Record
 
-The minutes carry three of the nine items — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other six live in the tracker and the ticket, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
+The minutes carry three of the nine items — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other six live in the tracker and the backlog item, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
 
 ```text
 Verdict : <ACCEPTED|REWORK|STOP> on <HYPOTHESIS>
 Insight : <what moved the metric, and what it was read from>
-Handoff : <OWNER> runs <EXPERIMENT> by <DATE>, ticket <TICKET_ID>
+Handoff : <OWNER> runs <EXPERIMENT> by <DATE>, backlog item <ITEM_ID>
 ```
 
 Filled from one sprint, the three lines read as below. Each names a quantity, so that a reader three months later can tell what was established rather than what was attempted.
@@ -191,7 +191,7 @@ Verdict : ACCEPTED on "1D-CNN autoencoder reduces the trace to 200 dimensions"
 Insight : Gas flow variation over the first 2,000 rows moves the final yield
           prediction most, by XGBoost feature importance. Reconstruction error 0.02
 Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
-          features, target 95 % yield classification accuracy, by 06-28, ticket <TICKET_ID>
+          features, target 95 % yield classification accuracy, by 06-28, backlog item <ITEM_ID>
 ```
 
 The same three lines fill the model card that ships with the model, which records its summary, its measured performance and the data it was trained on [[4](#ref-4)]. A team that has folded this workflow into its agile process still runs it as its own sequence of stages [[1](#ref-1)].
@@ -216,6 +216,7 @@ The same three lines fill the model card that ships with the model, which record
 ## Appendix A. Terminology
 
 - **1D-CNN autoencoder**: a convolutional network over a one-dimensional signal, trained to rebuild its own input, used here to reduce the dimension of a process trace.
+- **Backlog item**: one unit of work in a backlog, held in the team's tracker under an id.
 - **BKM (Best Known Method)**: the team document holding the best method known so far for a task, updated from retrospectives.
 - **Blocker**: a technical or administrative obstacle that stops an experiment from moving to its next step.
 - **Confusion matrix**: the table of predicted against actual classes, read to see which class a classifier confuses with which.
@@ -238,7 +239,7 @@ The same three lines fill the model card that ships with the model, which record
 - **Representation learning**: learning the features themselves from the data rather than specifying them by hand.
 - **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Sliding window augmentation**: cutting overlapping windows out of a continuous record to make more training samples, which shares rows between windows.
-- **Spike**: a separately ticketed investigation, carried off the delivery board because its outcome is unknown.
+- **Spike**: an investigation carried as its own backlog item, off the delivery board because its outcome is unknown.
 - **Sprint**: the fixed-length span that carries one Hypothesis, from the meeting that opens it to the meeting that issues its Verdict.
 - **Sprint backlog**: the work a team commits to finish in one sprint.
 - **Story point**: a relative estimate of the size of a backlog item.
