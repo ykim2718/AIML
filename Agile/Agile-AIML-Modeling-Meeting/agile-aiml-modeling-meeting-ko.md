@@ -1,22 +1,22 @@
 # Agile AI/ML Modeling Meeting
-Rev. 3 | Created: 2026-09-21 | Updated: 2026-09-21 10:45 CDT
+Rev. 4 | Created: 2026-09-21 | Updated: 2026-09-21 11:12 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: Modeling 회의를 일반적인 개발 회의처럼 진행하면 "한 번 해볼게요" 로 끝난다. 방이 주고받는 것에 이름이 없어, 그 가운데 무엇이 빠졌는지를 말할 방법이 없기 때문이다.
-- **Goal**: 회의에 네 갈래로 묶은 열 개의 이름을 주고 그것을 주기가 이미 돌리고 있는 agile 기법 위에 얹어, 실무자가 지금 상 위에 무엇이 있고 무엇이 빠졌으며 빠진 것이 어느 검증 등급까지 가야 하고 어느 sprint 산출물이 되는지를 한 문장으로 말할 수 있게 한다.
+- **Goal**: 회의에 네 갈래로 묶은 열 개의 이름을 주고 그것을 sprint 가 이미 돌리고 있는 agile 기법 위에 얹어, 실무자가 지금 상 위에 무엇이 있고 무엇이 빠졌으며 빠진 것이 어느 검증 등급까지 가야 하고 어느 sprint 산출물이 되는지를 한 문장으로 말할 수 있게 한다.
 - **Non-Goal**: 실험 추적 도구 (MLflow, Weights & Biases) 의 설정과 ticket system 운영은 다루지 않는다.
 - **Non-Goal**: Hypothesis 를 story point 로 추정하고 velocity 를 재는 일은 두지 않는다. 실험이 얼마나 도는지는 돌려 보기 전에는 알 수 없기 때문이다.
 
 ## 2. Summary
 
-AI/ML modeling 회의는 열 가지를 주고받으며, 그것에 이름을 붙이는 일이 회의를 결정 없이 끝나지 않게 한다. 열 개는 Premise, Claim, Product, Decision 네 갈래로 묶이고, 그 갈래의 차례가 곧 회의의 차례다. 회의는 sprint 의 경계에 놓여, Product 가 상 위에 올라온 주기를 닫고 다음 주기를 연다.
+AI/ML modeling 회의는 열 가지를 주고받으며, 그것에 이름을 붙이는 일이 회의를 결정 없이 끝나지 않게 한다. 열 개는 Premise, Claim, Product, Decision 네 갈래로 묶이고, 그 갈래의 차례가 곧 회의의 차례다. 회의는 sprint 의 경계에 놓여, Product 가 상 위에 올라온 sprint 를 닫고 다음 sprint 를 연다.
 
 각 갈래는 앞 갈래가 정해졌다고 가정한다. Premise 가 열린 채로 Product 를 논의하는 방은 아무도 정의하지 않은 양을 재고 있으며, modeling 회의를 결정 없이 끝내는 습관 세 가지는 각각 네 갈래 가운데 하나에서 빠진 이름이다.
 
 ## 3. Taxonomy and its Hierarchy
 
-열 개의 이름은 무엇을 고정하는가로 분류되고, 무엇을 가정하는가로 순서가 매겨진다. Premise 는 이번 주기 이전에 참인 것을 고정한다. 여기서 주기는 하나의 sprint 이며, Hypothesis 하나를 그것을 여는 회의에서 그 Verdict 를 내는 회의까지 나르는 구간이다. Claim 은 주기가 주장하는 것을, Product 는 주기가 만들어 낸 것을, Decision 은 방을 떠나는 것을 고정한다.
+열 개의 이름은 무엇을 고정하는가로 분류되고, 무엇을 가정하는가로 순서가 매겨진다. Premise 는 이번 sprint 이전에 참인 것을 고정한다. Sprint 는 길이가 고정된 구간이며, Hypothesis 하나를 그것을 여는 회의에서 그 Verdict 를 내는 회의까지 나른다. Claim 은 sprint 가 주장하는 것을, Product 는 sprint 가 만들어 낸 것을, Decision 은 방을 떠나는 것을 고정한다.
 
 네 갈래와 열 개의 이름, 그리고 수치가 어디까지 검증되었는지를 말하는 등급 사다리는 [Fig 1](#fig-1) 에 그렸다.
 
@@ -38,7 +38,7 @@ Product       >   Run           One tracked execution
     |   judged into
     v
 Decision      >   Verdict       Accepted, rework or stop, issued on the Hypothesis
-                  Handoff       Owner, due date and ticket, issued for the next cycle
+                  Handoff       Owner, due date and ticket, issued for the next sprint
 
 GRADE LADDER      E0 assertion < E1 number < E2 run-backed < E3 reproduced < E4 compared
 ```
@@ -58,7 +58,7 @@ Table 1. The ten terms, and what each one takes to be settled
 | Target     | Premise  | E1. 첫 회의 이전에 문서로               | Ticket 의 한 줄. 그 양과 임계값                    |
 | Provenance | Premise  | E2                                      | 추적 도구의 run 과 dataset 버전 hash               |
 | Baseline   | Premise  | E2                                      | Baseline 으로 태그한 추적 도구의 run               |
-| Hypothesis | Claim    | 수치가 아님. 바꾸는 하나와 그 근거      | 이번 주기로 연 ticket                              |
+| Hypothesis | Claim    | 수치가 아님. 바꾸는 하나와 그 근거      | 이번 sprint 로 연 ticket                           |
 | Run        | Product  | E2                                      | Parameter, 데이터 버전, commit 을 단 추적 항목     |
 | Evidence   | Product  | 등급 자체. 수치와 함께 소리 내어 말함   | 모든 지표 옆에 적는 등급                           |
 | Insight    | Product  | E3                                      | Feature importance 또는 오차 분석. 그림으로 내보냄 |
@@ -72,9 +72,9 @@ Table 1. The ten terms, and what each one takes to be settled
 
 ### 4.1 Premise
 
-Premise 는 이번 주기의 수치가 뜻을 가지려면 이미 참이어야 하는 것이며, 논쟁이 아니라 확인의 대상이다. 세 이름은 Target, Provenance, Baseline 이고, 셋이 함께 modeling ticket 의 definition of ready 다. 그 가운데 하나가 정해지지 않은 채 연 주기는 아무것도 판정하지 못하는 수치를 낸다.
+Premise 는 이번 sprint 의 수치가 뜻을 가지려면 이미 참이어야 하는 것이며, 논쟁이 아니라 확인의 대상이다. 세 이름은 Target, Provenance, Baseline 이고, 셋이 함께 modeling ticket 의 definition of ready 다. 그 가운데 하나가 정해지지 않은 채 연 sprint 는 아무것도 판정하지 못하는 수치를 낸다.
 
-**Target** 은 Y 의 정의와 임계값을 한 줄로 적은 것이다. 수율 98 % 미만, 또는 EVT 기반 임계값을 넘는 센서 값은 target 이고 "AI 로 불량을 잡자" 는 target 이 아니다. 후자 위에서 연 주기는 팀이 정의한 적 없는 양을 잰다. 도메인 엔지니어가 대며, 회의 중이 아니라 첫 회의 이전에 고정한다.
+**Target** 은 Y 의 정의와 임계값을 한 줄로 적은 것이다. 수율 98 % 미만, 또는 EVT 기반 임계값을 넘는 센서 값은 target 이고 "AI 로 불량을 잡자" 는 target 이 아니다. 후자 위에서 연 sprint 는 팀이 정의한 적 없는 양을 잰다. 도메인 엔지니어가 대며, 회의 중이 아니라 첫 회의 이전에 고정한다.
 
 **Provenance** 는 행이 어디서 왔고 거기에 무엇을 했는가이다. Split 규칙, 결측치와 이상치 처리, 누수 차단, dataset 버전 hash 가 그것이다. Sliding window 증강이 차단을 잃는 흔한 자리인데, 겹치는 window 가 split 을 가로질러 행을 나누어 갖기 때문이다. 누수는 열일곱 분야 294편의 논문에서 여덟 가지 형태로 기록되어 있어, 가끔이 아니라 상시 항목이다 [[3](#ref-3)].
 
@@ -82,7 +82,7 @@ Premise 는 이번 주기의 수치가 뜻을 가지려면 이미 참이어야 �
 
 ### 4.2 Claim
 
-Claim 은 이번 주기가 검증하는 단 하나의 주장이며, 이름도 Hypothesis 하나다. 아직 써 보지 않은 algorithm 의 목록이 아니라 도메인 지식 위에 세우고, 세 부분으로 이루어진다. 바꾸는 하나, 그것의 물리적 근거, 그 근거가 서면 지표가 어떻게 움직이는가이다. Modeler 한 사람당 Hypothesis 하나가 이 주기의 WIP limit 이고, 실행 전에 고정한 timebox 를 달고 있으며, 세 부분을 말하지 못하는 연구 성격의 작업은 spike 로 board 밖에 둔다.
+Claim 은 이번 sprint 가 검증하는 단 하나의 주장이며, 이름도 Hypothesis 하나다. 아직 써 보지 않은 algorithm 의 목록이 아니라 도메인 지식 위에 세우고, 세 부분으로 이루어진다. 바꾸는 하나, 그것의 물리적 근거, 그 근거가 서면 지표가 어떻게 움직이는가이다. Modeler 한 사람당 Hypothesis 하나가 이 sprint 의 WIP limit 이고, 실행 전에 고정한 timebox 를 달고 있으며, 세 부분을 말하지 못하는 연구 성격의 작업은 spike 로 board 밖에 둔다.
 
 두 가지 예가 그 형식을 보여 준다. 센서 간 multicollinearity 가 심하므로 이번 실행은 Lasso 대신 Elastic Net 을 써서 그룹 효과를 담는다. Time warping 이 신호를 일그러뜨리므로 고정된 변환 대신 1D-CNN autoencoder 가 representation learning 으로 차원을 줄인다.
 
@@ -90,7 +90,7 @@ Claim 은 이번 주기가 검증하는 단 하나의 주장이며, 이름도 Hy
 
 ### 4.3 Product
 
-Product 는 이번 주기가 실제로 만든 것이며, 네 이름은 서술이 아니라 등급을 받는다. Run, Evidence, Insight, Readiness 는 기억이 아니라 화면 위의 산출물에서 읽는다.
+Product 는 이번 sprint 가 실제로 만든 것이며, 네 이름은 서술이 아니라 등급을 받는다. Run, Evidence, Insight, Readiness 는 기억이 아니라 화면 위의 산출물에서 읽는다.
 
 **Run** 은 parameter, dataset 버전, code commit, 지표를 달고 있는 하나의 추적된 실행이다. **Evidence** 는 그 Run 이 닿은 등급이며, 수치 옆에서 소리 내어 말한다. 그래야 방이 지금 듣는 것이 E1 인지 E3 인지 안다. [Table 1](#table-1) 의 이름마다 적힌 요구 등급이 modeling ticket 의 DoD 다.
 
@@ -104,7 +104,7 @@ Decision 은 방을 떠나는 것이며, 언제나 함께 발행되는 두 이�
 
 **Verdict** 는 accepted, rework, stop 가운데 하나이며, product owner 가 Hypothesis 에 대고 소리 내어 말한다. Increment 를 받아들이는 일은 backlog 의 순서를 소유한 역할의 몫이기 때문이다. Accepted 는 Insight 가 E3 이어야 하고, model 을 serving 으로 승격하려면 Readiness 가 E4 여야 한다. Rework 는 빠진 근거를 이름 붙이고, stop 은 그 이유를 적어 다음 팀이 읽을 자리에 남긴다.
 
-**Handoff** 는 다음 주기의 담당자, 기한, ticket id 이며, Verdict 가 함의하는 engineering 작업도 함께 담는다. 그것이 다음 sprint backlog 항목이며, 할 일이 아니라 Hypothesis 의 형태로 적는다. 그것에 밀린 Hypothesis 들은 다음 Insight 가 무엇을 판정하는가의 순서로 product backlog 에 남는다. Code review 배정과 pipeline 연동을 여기서만 이름 붙여, modeling 논의가 일정 조율에 끊기지 않게 한다.
+**Handoff** 는 다음 sprint 의 담당자, 기한, ticket id 이며, Verdict 가 함의하는 engineering 작업도 함께 담는다. 그것이 다음 sprint backlog 항목이며, 할 일이 아니라 Hypothesis 의 형태로 적는다. 그것에 밀린 Hypothesis 들은 다음 Insight 가 무엇을 판정하는가의 순서로 product backlog 에 남는다. Code review 배정과 pipeline 연동을 여기서만 이름 붙여, modeling 논의가 일정 조율에 끊기지 않게 한다.
 
 ## 5. Agenda
 
@@ -113,7 +113,7 @@ Agenda 는 네 갈래를 순서대로 놓은 것이며 갈래마다 한 단계�
 각 단계와 그 단계가 정하는 갈래, 그리고 상 위에 올리는 항목은 [Fig 2](#fig-2) 에 그렸다.
 
 ```text
-[ Sprint N ends ]           the cycle whose Product is on the table
+[ Sprint N ends ]           its Product is what the meeting reviews
         |
         v
 [ 1. Premise Check ]        settles   Target, Provenance, Baseline
@@ -125,7 +125,7 @@ Agenda 는 네 갈래를 순서대로 놓은 것이며 갈래마다 한 단계�
         v
 [ 2. Claim Setting ]        settles   Hypothesis
         |
-        +--> One Change .............. The single thing that moves in this cycle
+        +--> One Change .............. The single thing that moves in this sprint
         +--> Domain Reason ........... The physical ground the change rests on
         +--> Expected Effect ......... What the metric does if the reason holds
         |
@@ -142,7 +142,7 @@ Agenda 는 네 갈래를 순서대로 놓은 것이며 갈래마다 한 단계�
         |
         +--> Verdict ................. Accepted, rework or stop, said aloud
         +--> Handoff ................. Owner, due date and ticket id
-        +--> Process Finding ......... What to change in how the cycle itself is run
+        +--> Process Finding ......... What to change in how the sprint itself is run
         +--> Engineering Sync ........ Code review and pipeline work named here
         |
         v
@@ -175,25 +175,25 @@ Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
 
 아래의 agile 기법은 software 팀이 이미 쓰는 이름을 그대로 두고 담는 것만 바꾼다. 이 회의를 들이는 팀은 새 ceremony 가 아니라 이미 돌리는 ceremony 에 용어를 더한다.
 
-Table 2. Where each agile practice lands in the modeling cycle
+Table 2. Where each agile practice lands in the modeling sprint
 
-| Practice        | What it carries here                         | What changes for modeling                                            |
-| :-------------: | :------------------------------------------: | :------------------------------------------------------------------: |
-| Sprint          | 한 회의가 닫고 다음 회의가 여는 주기         | 달력이 아니라 실험 하나를 재현하는 데 걸리는 시간으로 길이를 정함    |
-| Product backlog | 아직 주기에 들지 않은 Hypothesis 를 순서대로 | 전달한 가치가 아니라 다음 Insight 가 무엇을 판정하는가로 순서를 매김 |
-| Sprint backlog  | Hypothesis. 주기당 하나                      | Backlog 항목이 만들 기능이 아니라 검증할 주장                        |
-| WIP limit       | Modeler 한 사람당 진행 중인 Hypothesis 하나  | 둘을 한꺼번에 바꾸면 Insight 의 귀속이 불가능해짐                    |
-| Timeboxing      | 실험에 붙인 시계, 그리고 회의에 붙인 시계    | 무엇을 찾았든 한계에서 실험을 닫음                                   |
-| Spike           | 배포 board 밖으로 들어낸 연구 성격의 작업    | 산출물이 model 이 아니라 결정                                        |
-| Daily standup   | 진행 중인 실험의 blocker                     | Sprint 경계가 아니라 생긴 날에 드러냄                                |
-| Sprint review   | 3단계 Product Review                         | 시연 대상이 추적된 run 과 분석 그림                                  |
-| Retrospective   | 4단계의 process finding                      | Model 에 대한 발견인 Insight 와 따로 기록                            |
-| DoR             | 주기를 열기 전에 확인하는 Premise 갈래       | Ready 는 Target 이 E1, Provenance 와 Baseline 이 E2                  |
-| DoD             | 모든 이름이 받아야 할 Evidence 등급          | 완료가 점검란이 아니라 사다리 위의 등급                              |
-| Increment       | E4 의 Readiness                              | Increment 는 승격할 수 있는 model 이거나 아무것도 아님               |
-| BKM             | Stop Verdict 와 그 이유를 두는 자리          | 닫은 방향이 다음 팀이 읽는 지식이 됨                                 |
+| Practice        | What it carries here                                  | What changes for modeling                                            |
+| :-------------: | :---------------------------------------------------: | :------------------------------------------------------------------: |
+| Sprint          | 검토 중인 Hypothesis. Premise Check 부터 Verdict 까지 | 달력이 아니라 실험 하나를 재현하는 데 걸리는 시간으로 길이를 정함    |
+| Product backlog | 아직 sprint 에 들지 않은 Hypothesis 를 순서대로       | 전달한 가치가 아니라 다음 Insight 가 무엇을 판정하는가로 순서를 매김 |
+| Sprint backlog  | Hypothesis. Sprint 당 하나                            | Backlog 항목이 만들 기능이 아니라 검증할 주장                        |
+| WIP limit       | Modeler 한 사람당 진행 중인 Hypothesis 하나           | 둘을 한꺼번에 바꾸면 Insight 의 귀속이 불가능해짐                    |
+| Timeboxing      | 실험에 붙인 시계, 그리고 회의에 붙인 시계             | 무엇을 찾았든 한계에서 실험을 닫음                                   |
+| Spike           | 배포 board 밖으로 들어낸 연구 성격의 작업             | 산출물이 model 이 아니라 결정                                        |
+| Daily standup   | 진행 중인 실험의 blocker                              | Sprint 경계가 아니라 생긴 날에 드러냄                                |
+| Sprint review   | 3단계 Product Review                                  | 시연 대상이 추적된 run 과 분석 그림                                  |
+| Retrospective   | 4단계의 process finding                               | Model 에 대한 발견인 Insight 와 따로 기록                            |
+| DoR             | Sprint 를 열기 전에 확인하는 Premise 갈래             | Ready 는 Target 이 E1, Provenance 와 Baseline 이 E2                  |
+| DoD             | 모든 이름이 받아야 할 Evidence 등급                   | 완료가 점검란이 아니라 사다리 위의 등급                              |
+| Increment       | E4 의 Readiness                                       | Increment 는 승격할 수 있는 model 이거나 아무것도 아님               |
+| BKM             | Stop Verdict 와 그 이유를 두는 자리                   | 닫은 방향이 다음 팀이 읽는 지식이 됨                                 |
 
-두 기법이 회의를 닫을 수 있는지를 가른다. WIP limit 이 없으면 Hypothesis 에 Verdict 를 낼 수 없다. 주기가 하나보다 많이 움직여, 방이 지금 무엇을 판정하는지 말하지 못하기 때문이다. 등급으로 적은 DoD 가 없으면 수치를 규칙이 아니라 논쟁으로 물리게 되고, 그 논쟁은 회의보다 오래간다.
+두 기법이 회의를 닫을 수 있는지를 가른다. WIP limit 이 없으면 Hypothesis 에 Verdict 를 낼 수 없다. Sprint 가 하나보다 많이 움직여, 방이 지금 무엇을 판정하는지 말하지 못하기 때문이다. 등급으로 적은 DoD 가 없으면 수치를 규칙이 아니라 논쟁으로 물리게 되고, 그 논쟁은 회의보다 오래간다.
 
 ## 7. Anti-patterns
 
@@ -232,7 +232,7 @@ Insight : <what moved the metric, and what it was read from>
 Handoff : <OWNER> runs <EXPERIMENT> by <DATE>, ticket <TICKET_ID>
 ```
 
-한 주기를 채워 넣으면 세 줄은 아래와 같이 읽힌다. 각 줄이 양을 하나씩 대고 있어, 석 달 뒤의 독자도 무엇이 시도되었는지가 아니라 무엇이 확립되었는지를 가릴 수 있다.
+한 sprint 를 채워 넣으면 세 줄은 아래와 같이 읽힌다. 각 줄이 양을 하나씩 대고 있어, 석 달 뒤의 독자도 무엇이 시도되었는지가 아니라 무엇이 확립되었는지를 가릴 수 있다.
 
 ```text
 Verdict : ACCEPTED on "1D-CNN autoencoder reduces the trace to 200 dimensions"
@@ -242,7 +242,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
           features, target 95 % yield classification accuracy, by 06-28, ticket <TICKET_ID>
 ```
 
-같은 세 줄이 model 과 함께 나가는 model card 를 채운다. Model card 는 model 의 개요, 측정된 성능, 학습에 쓴 데이터를 기록한다 [[4](#ref-4)]. 이 workflow 를 agile 주기 안에 접어 넣은 팀도 그것을 여전히 자기 단계의 연속으로 돌린다 [[1](#ref-1)].
+같은 세 줄이 model 과 함께 나가는 model card 를 채운다. Model card 는 model 의 개요, 측정된 성능, 학습에 쓴 데이터를 기록한다 [[4](#ref-4)]. 이 workflow 를 agile process 안에 접어 넣은 팀도 그것을 여전히 자기 단계의 연속으로 돌린다 [[1](#ref-1)].
 
 ## References
 
@@ -265,11 +265,10 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **BKM (Best Known Method)**: 어떤 작업에 대해 현재까지 알려진 최선의 방법을 담은 팀 문서. 회고에서 갱신된다.
 - **Blocker**: 실험이 다음 단계로 나가지 못하게 막는 기술적·행정적 걸림돌.
 - **Confusion matrix**: 예측 class 와 실제 class 를 교차시킨 표. 어느 class 를 어느 class 와 혼동하는지 읽는다.
-- **Cycle**: 하나의 sprint. Hypothesis 를 여는 회의부터 그 Verdict 를 내는 회의까지의 구간.
 - **Daily standup**: 진행 중인 일의 blocker 를 드러내는 짧은 일일 회의.
 - **Data leakage**: serving 시점에는 얻을 수 없는 정보가 model 에 닿는 것. offline 점수만 올리고 online 점수는 올리지 않는다.
 - **DoD (Definition of Done)**: 팀이 합의한 명시적 기준. 작업이 완료로 불리려면 이것을 넘어야 한다.
-- **DoR (Definition of Ready)**: 팀이 어떤 작업을 주기 안으로 들이기 전에 그것이 넘어야 할 기준.
+- **DoR (Definition of Ready)**: 팀이 어떤 작업을 sprint 안으로 들이기 전에 그것이 넘어야 할 기준.
 - **Elastic Net**: L1 과 L2 norm 을 함께 쓰는 선형 model. 상관된 변수 가운데 하나만 고르지 않고 함께 남긴다.
 - **EVT (Extreme Value Theory)**: 분포 꼬리의 통계. 여기서는 센서 값이 얼마나 극단인지로 임계값을 정하는 데 쓴다.
 - **Feature importance**: 학습된 model 이 각 입력에 붙이는 점수. 어느 입력이 예측을 움직였는지 읽는다.
@@ -279,13 +278,12 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **MLOps**: model 을 실험에서 운영으로 옮기고 거기에 머물게 하는 실천.
 - **Model card**: model 의 개요, 측정된 성능, 학습 데이터를 기록한 문서.
 - **Multicollinearity**: 입력 변수 사이의 거의 선형인 종속. 개별 계수를 불안정하게 만든다.
-- **Product backlog**: 아직 주기 안으로 들이지 않은 작업의 순서 매긴 목록.
+- **Product backlog**: 아직 sprint 안으로 들이지 않은 작업의 순서 매긴 목록.
 - **Product owner**: Backlog 의 순서를 소유하고 increment 를 받아들이는 역할.
 - **Representation learning**: feature 를 사람이 지정하는 대신 데이터에서 학습하는 것.
 - **Retrospective**: Sprint 끝에 process 를 되짚고 무엇을 고칠지 정하는 회의.
 - **Sliding window augmentation**: 연속 기록에서 겹치는 window 를 잘라 학습 표본을 늘리는 것. window 끼리 행을 나누어 갖는다.
 - **Spike**: 결과를 알 수 없어 배포 board 밖으로 들어낸, 따로 ticket 을 받은 조사.
-- **Sprint**: Agile 주기의 한 반복.
 - **Sprint backlog**: 한 sprint 안에 끝내기로 한 작업.
 - **Story point**: Backlog 항목의 크기를 상대적으로 매긴 추정값.
 - **Time warping**: 시간 축의 일그러짐. 같은 공정의 기록 사이에서 신호를 밀거나 늘인다.
