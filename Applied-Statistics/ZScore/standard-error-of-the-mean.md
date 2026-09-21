@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
+Rev. 4 | Created: 2026-08-30 | Updated: 2026-09-21 16:40 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -14,7 +14,8 @@ size. They are connected by the sample size alone.
 
 This document states that connection, gives what it means for each of the two quantities, and
 separates the symbols that share the name sigma. The derivation is in
-[Appendix B](#appendix-b-derivation).
+[Appendix B](#appendix-b-derivation), and the terms are defined in
+[Appendix A](#appendix-a-terminology).
 
 ## 2. Relation
 
@@ -24,25 +25,29 @@ Let a sample of size $n$ be drawn independently from a population with standard 
 $\sigma$, and let $\bar{X}$ be the mean of that sample. The standard deviation of $\bar{X}$ is
 written $\sigma_{\bar{X}}$ and is called the standard error of the mean.
 
-$$\sigma_{\bar{X}} = \frac{\sigma}{\sqrt{n}}$$
+```math
+\sigma_{\bar{X}} = \frac{\sigma}{\sqrt{n}} \hspace{19em} (1)
+```
 
 Here $n$ is the count of individual observations drawn, so the relation holds the two standard
-deviations and nothing else besides that count.
+deviations and nothing else besides that count. It assumes independent draws from a single
+population; [Appendix B](#appendix-b-derivation) gives the two cases that break that
+assumption.
 
 ### 2.2. What the Two Describe
 
 Table 1. The two standard deviations compared.
 
-| Aspect | Population standard deviation | Standard error of the mean |
-|---|---|---|
-| Symbol | $\sigma$ | $\sigma_{\bar{X}}$ |
+| Aspect          | Population standard deviation       | Standard error of the mean         |
+| :-------------: | :---------------------------------: | :--------------------------------: |
+| Symbol          | $\sigma$                            | $\sigma_{\bar{X}}$                 |
 | Object measured | Individual values of the population | Sample means over repeated samples |
-| Sample size | Not involved | Present as a factor $1/\sqrt{n}$ |
-| Relative size | Larger | Smaller, for $n \gt 1$ |
+| Sample size     | Not involved                        | Present as a factor $1/\sqrt{n}$   |
+| Relative size   | Larger                              | Smaller, for $n \gt 1$             |
 
-The second is smaller because averaging cancels. A single draw can land far out in either tail
-with nothing to offset it. A mean moves that far only when the extremes agree with each other,
-and agreement is rarer than one extreme draw.
+Averaging cancels the extremes. A single draw can land far out in either tail with no other value
+to offset it, while a mean moves that far only when several draws agree in direction, and such
+agreement is rarer than one extreme draw.
 
 ## 3. Effect of the Sample Size
 
@@ -52,20 +57,20 @@ Table 2 gives the factor by which it falls.
 Table 2. Standard error as a fraction of the population standard deviation.
 
 | Sample size | Square root | Standard error |
-|---:|---:|---:|
-| 1 | 1.000 | 1.000 |
-| 2 | 1.414 | 0.707 |
-| 4 | 2.000 | 0.500 |
-| 9 | 3.000 | 0.333 |
-| 16 | 4.000 | 0.250 |
-| 25 | 5.000 | 0.200 |
-| 100 | 10.000 | 0.100 |
+| :---------: | :---------: | :------------: |
+| 1           | 1.000       | 1.000          |
+| 2           | 1.414       | 0.707          |
+| 4           | 2.000       | 0.500          |
+| 9           | 3.000       | 0.333          |
+| 16          | 4.000       | 0.250          |
+| 25          | 5.000       | 0.200          |
+| 100         | 10.000      | 0.100          |
 
 Two rows carry the whole of the behaviour. At $n = 1$ the mean is the single observation itself,
 so the standard error equals the population standard deviation and the two quantities coincide. At
-$n = 100$ the standard error is one tenth of it.
+$n = 100$ the standard error is one tenth of the population standard deviation.
 
-The square root is what makes precision expensive. Halving the standard error costs four times the
+The square root sets the price of precision. Halving the standard error costs four times the
 sample, and reducing it by a factor of ten costs a hundred times the sample. Against that, the
 relation also says that the sample mean is a sharper statement about the population mean than any
 single observation is, and that its sharpness is known in advance from $n$ and $\sigma$ without
@@ -73,24 +78,32 @@ looking at the data.
 
 ## 4. Symbols Read as Sigma
 
-Three of the symbols below are spoken as sigma, and the fourth is the one that is reached for when
-a sigma is not wanted. They are not interchangeable.
+Table 3 lists four symbols. Three of them are spoken as sigma, and the fourth, Latin $s$, carries
+the spread of individual values computed from one sample. Each names a different quantity, so one
+cannot stand in for another.
 
 Table 3. Symbols read as sigma.
 
-| Symbol | Name | Meaning |
-|---|---|---|
-| $\sum$ | Capital sigma | Summation operator, an instruction to add terms |
-| $\sigma$ | Lower-case sigma | Standard deviation of a population |
-| $s$ | Latin s | Standard deviation computed from one sample |
-| $\sigma_{\bar{X}}$ | Sigma with a subscript | Standard deviation of the sample mean |
+| Symbol             | Name                   | Meaning                                         |
+| :----------------: | :--------------------: | :---------------------------------------------: |
+| $\sum$             | Capital sigma          | Summation operator, an instruction to add terms |
+| $\sigma$           | Lower-case sigma       | Standard deviation of a population              |
+| $s$                | Latin s                | Standard deviation computed from one sample     |
+| $\sigma_{\bar{X}}$ | Sigma with a subscript | Standard deviation of the sample mean           |
 
 The distinction between $\sigma$ and $s$ is the one that is most often lost. Both measure the
 spread of individual values, but $\sigma$ is a property of the population and is unknown in
 practice, while $s$ is computed from the observations at hand and changes from sample to sample.
 When $\sigma$ is unknown, the standard error is estimated by replacing it with $s$, which gives
-$s/\sqrt{n}$; this is an estimate and carries its own uncertainty, whereas $\sigma/\sqrt{n}$ does
-not.
+$s/\sqrt{n}$.
+
+```math
+\hat{\sigma}_{\bar{X}} = \frac{s}{\sqrt{n}} \hspace{19em} (2)
+```
+
+Equation (2) is an estimate and carries its own uncertainty, which is why an interval built on it
+uses the $t$ distribution with $n - 1$ degrees of freedom rather than the normal quantiles that
+equation (1) admits [[1](#ref-1)].
 
 ## References
 
@@ -117,39 +130,53 @@ Let $X_1, \ldots, X_n$ be drawn independently from a population with mean $\mu$ 
 $\sigma^2$, so that each draw has the same distribution and no draw carries information about
 another.
 
-$$E[X_i] = \mu, \qquad \mathrm{Var}[X_i] = \sigma^{2}, \qquad i = 1, \ldots, n$$
+```math
+E[X_i] = \mu, \qquad \mathrm{Var}[X_i] = \sigma^{2}, \qquad i = 1, \ldots, n \hspace{19em} (3)
+```
 
 The sample mean is their sum divided by the count.
 
-$$\bar{X} = \frac{1}{n} \sum_{i=1}^{n} X_i$$
+```math
+\bar{X} = \frac{1}{n} \sum_{i=1}^{n} X_i \hspace{19em} (4)
+```
 
 Two properties of the variance are needed. Scaling a variable by a constant scales its variance by
 the square of that constant, and the variance of a sum of independent variables is the sum of
 their variances.
 
-$$\mathrm{Var}[aY] = a^{2} \mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i]$$
+```math
+\mathrm{Var}[aY] = a^{2} \mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i] \hspace{19em} (5)
+```
 
-Apply the first with $a = 1/n$, then the second.
+Apply the first property of equation (5) with $a = 1/n$, then the second.
 
-$$\mathrm{Var}\left[ \bar{X} \right] = \frac{1}{n^{2}} \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \frac{1}{n^{2}} \sum_{i=1}^{n} \sigma^{2} = \frac{n\sigma^{2}}{n^{2}} = \frac{\sigma^{2}}{n}$$
+```math
+\mathrm{Var}\left[ \bar{X} \right] = \frac{1}{n^{2}} \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \frac{1}{n^{2}} \sum_{i=1}^{n} \sigma^{2} = \frac{n\sigma^{2}}{n^{2}} = \frac{\sigma^{2}}{n} \hspace{19em} (6)
+```
 
-The standard deviation is the positive square root of the variance, which gives the relation of
-section 2.1.
+The standard deviation is the positive square root of the variance, which gives equation (1).
 
-$$\sigma_{\bar{X}} = \sqrt{\mathrm{Var}\left[ \bar{X} \right]} = \frac{\sigma}{\sqrt{n}}$$
+```math
+\sigma_{\bar{X}} = \sqrt{\mathrm{Var}\left[ \bar{X} \right]} = \frac{\sigma}{\sqrt{n}} \hspace{19em} (7)
+```
 
-Taking expectations of the same sum shows that the sample mean is centred on the population mean,
-which is what makes the standard error a statement about accuracy rather than about bias
-[[1](#ref-1)].
+Taking expectations of equation (4) shows that the sample mean is centred on the population mean,
+so equation (7) measures spread alone [[1](#ref-1)].
 
-$$E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \mu$$
+```math
+E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \mu \hspace{19em} (8)
+```
 
-The derivation uses independence only at the second variance property. Two cases break it.
-Correlated draws add covariance terms that the sum of variances omits, and the result no longer
-holds. Sampling without replacement from a finite population of size $N$ makes the draws slightly
-dependent, and the variance acquires the finite population correction factor [[2](#ref-2)].
+The derivation uses independence only at the second property of equation (5). Two cases break that
+independence. Correlated draws add covariance terms that the sum of variances omits, and equation
+(6) no longer holds. Sampling without replacement from a finite population of size $N$ makes the
+draws slightly dependent, and the variance acquires the finite population correction factor
+[[2](#ref-2)].
 
-$$\mathrm{Var}\left[ \bar{X} \right] = \frac{\sigma^{2}}{n} \cdot \frac{N-n}{N-1}$$
+```math
+\mathrm{Var}\left[ \bar{X} \right] = \frac{\sigma^{2}}{n} \cdot \frac{N-n}{N-1} \hspace{19em} (9)
+```
 
-The factor tends to one as $N$ grows with $n$ fixed, so the plain relation is the limiting case of
-a population large enough that removing $n$ items does not change it.
+The factor tends to one as $N$ grows with $n$ fixed, so equation (1) is the limiting case of a
+population large enough that removing $n$ items does not change it. At $N = 1000$ and $n = 100$ the
+factor is 0.901, so the standard error is 0.949 times what equation (1) gives.
