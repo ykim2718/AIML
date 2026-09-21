@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 7 | Created: 2026-08-30 | Updated: 2026-09-21 17:14 CDT
+Rev. 8 | Created: 2026-08-30 | Updated: 2026-09-21 17:20 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -231,10 +231,16 @@ product of the means $\mu_i = E[X_i]$ and $\mu_j = E[X_j]$.
 \hspace{19em} (13)
 ```
 
-A covariance of zero sets the last line of equation (13) to zero, and moving $\mu_i \mu_j$ to the
-other side splits the expectation of the product into the product of the expectations. Equation
-(12) reaches the same split from independent draws, which is the stronger assumption.
+With a covariance of zero, the last line of equation (13) is zero.
 
 ```math
-\mathrm{Cov}(X_i, X_j) = 0 \quad \Longleftrightarrow \quad E[X_i X_j] = E[X_i] \cdot E[X_j] \hspace{19em} (14)
+E[X_i X_j] - \mu_i \mu_j = 0 \hspace{19em} (14)
+```
+
+Moving $\mu_i \mu_j$ to the other side splits the expectation of the product into the product of
+the expectations. Equation (12) reaches the same split from independent draws, which is the
+stronger assumption.
+
+```math
+E[X_i X_j] = E[X_i] \cdot E[X_j] \hspace{19em} (15)
 ```
