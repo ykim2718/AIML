@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 57 | Created: 2026-09-01 | Updated: 2026-09-21 18:10 CDT
+Rev. 58 | Created: 2026-09-01 | Updated: 2026-09-21 18:12 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -100,9 +100,11 @@ Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 
 
 ### 4.1 Formula and Its Closed Forms
 
-처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. Wafer $`i`$ 의 고유 수준을 $`\mu_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
+처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. Wafer $`i`$ 의 고유 수준 (wafer effect) 을 $`\mu_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
 
 $$X_{ij} = \mu_i + e_{ij} \hspace{19em} (6)$$
+
+$`\mu_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이다. 장마다 공정 조건이 달라 $`\mu_i`$ 도 wafer 마다 다르며, one-way random effects model 은 $`\mu_i`$ 를 고정된 상수가 아니라 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\mu_i)`$ 라는 양이 서고, 관측한 wafer 평균 $`\bar{X}_i`$ 는 $`\mu_i`$ 자체가 아니라 거기에 $`\bar{e}_i`$ 가 얹힌 값이다.
 
 $`e_{ij}`$ 는 평균이 0 이고, $`\mu_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다.
 
@@ -189,6 +191,7 @@ $`N = 13`$, $`p = 0.999`$ 에서 계수는 1.656 이고, 판정한 241 장 중 4
 - **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
 - **w2w detection point**: 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
+- **wafer effect**: wafer 한 장의 고유 수준 $`\mu_i`$. Site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 참 평균이며, one-way random effects model 에서는 wafer 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 - **WiW excursion**: site 표준편차가 running baseline 이 세운 한계를 넘은 wafer.
 
