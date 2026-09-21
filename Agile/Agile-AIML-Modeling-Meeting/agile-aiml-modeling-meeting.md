@@ -1,11 +1,12 @@
 # Agile AI/ML Modeling Meeting
-Rev. 2 | Created: 2026-09-21 | Updated: 2026-09-21 10:38 CDT
+Rev. 3 | Created: 2026-09-21 | Updated: 2026-09-21 10:45 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: A modeling meeting run like an ordinary development meeting ends on "I will give it a try", because the room has no name for the things it is exchanging and therefore no way to say which of them is missing.
 - **Goal**: Give the meeting ten named terms in four classes and place them on the agile practices the cycle already runs, so that a practitioner can say in one sentence what is on the table, what is missing, what grade of checking the missing part has to reach, and which sprint artifact it becomes.
 - **Non-Goal**: Configuring an experiment tracker (MLflow, Weights & Biases) or running a ticket system is not covered.
+- **Non-Goal**: Estimating a Hypothesis in story points and tracking velocity are left out, since how long an experiment runs is unknown until it has run.
 
 ## 2. Summary
 
@@ -15,7 +16,7 @@ Each class assumes the class before it is settled. A room discussing a Product w
 
 ## 3. Taxonomy and its Hierarchy
 
-The ten terms are classified by what they fix, and they are ordered by what they assume. Premise fixes what is true before this cycle, Claim fixes what the cycle asserts, Product fixes what the cycle produced, and Decision fixes what leaves the room.
+The ten terms are classified by what they fix, and they are ordered by what they assume. Premise fixes what is true before this cycle. A cycle here is one sprint, carrying a single Hypothesis from the meeting that opens it to the meeting that issues its Verdict. Claim fixes what the cycle asserts, Product fixes what the cycle produced, and Decision fixes what leaves the room.
 
 The four classes, the ten terms, and the grade ladder that says how far a number has been checked are drawn in [Fig 1](#fig-1).
 
@@ -71,7 +72,7 @@ Each class is worked through below in the order of [Fig 1](#fig-1), since a prac
 
 ### 4.1 Premise
 
-Premise is what must already be true for this cycle's number to mean anything, and it is checked rather than debated. The three terms are Target, Provenance and Baseline.
+Premise is what must already be true for this cycle's number to mean anything, and it is checked rather than debated. The three terms are Target, Provenance and Baseline, and together they are the definition of ready for a modeling ticket: a cycle that opens while one of them is unsettled produces a number that decides nothing.
 
 **Target** is the definition of Y with its threshold, written in one line. Yield below 98 %, or a sensor value crossing an EVT-based threshold, are targets; "catch defects with AI" is not, and a cycle opened on it measures a quantity the team never defined. The domain expert supplies it, and it is fixed before the first meeting rather than during one.
 
@@ -101,13 +102,13 @@ Product is what the cycle actually made, and the four terms are graded rather th
 
 Decision is what leaves the room, and it has two terms that are always issued together. A meeting that produces one without the other returns to the queue unchanged.
 
-**Verdict** is accepted, rework or stop, issued on the Hypothesis and said aloud. Accepted requires Insight at E3; promoting a model to serving requires Readiness at E4; rework names the evidence that was missing; stop names the reason and is kept where the next team will read it.
+**Verdict** is accepted, rework or stop, issued on the Hypothesis and said aloud by the product owner, since accepting an increment belongs to the role that owns the order of the backlog. Accepted requires Insight at E3; promoting a model to serving requires Readiness at E4; rework names the evidence that was missing; stop names the reason and is kept where the next team will read it.
 
-**Handoff** is the owner, the due date and the ticket id for the next cycle, together with the engineering work the Verdict implies. It is the next sprint backlog item, written as a Hypothesis rather than as a task. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
+**Handoff** is the owner, the due date and the ticket id for the next cycle, together with the engineering work the Verdict implies. It is the next sprint backlog item, written as a Hypothesis rather than as a task, and the hypotheses it outranks stay in the product backlog in the order the next Insight would decide. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
 
 ## 5. Agenda
 
-The agenda is the four classes in order, one stage per class, and each stage ends when its terms can be said in one sentence. Running the stages out of order returns the room to a class of [Fig 1](#fig-1) it has already passed.
+The agenda is the four classes in order, one stage per class, and each stage ends when its terms can be said in one sentence. The meeting is timeboxed like every other ceremony, and stage 4 is protected: an earlier stage that overruns loses depth rather than taking the time the Verdict needs. Running the stages out of order returns the room to a class of [Fig 1](#fig-1) it has already passed.
 
 The stages, the class each one settles, and the items each one puts on the table are drawn in [Fig 2](#fig-2).
 
@@ -141,10 +142,14 @@ The stages, the class each one settles, and the items each one puts on the table
         |
         +--> Verdict ................. Accepted, rework or stop, said aloud
         +--> Handoff ................. Owner, due date and ticket id
+        +--> Process Finding ......... What to change in how the cycle itself is run
         +--> Engineering Sync ........ Code review and pipeline work named here
         |
         v
 [ Sprint N+1 begins ]       Handoff becomes the next sprint backlog item
+        |
+        v
+[ Daily standup ]           Blockers on the running experiment, raised daily
 ```
 
 <a id="fig-2"></a>
@@ -172,18 +177,21 @@ Each agile practice below keeps the name a software team already uses and change
 
 Table 2. Where each agile practice lands in the modeling cycle
 
-| Practice       | What it carries here                                        | What changes for modeling                                       |
-| :------------: | :---------------------------------------------------------: | :-------------------------------------------------------------: |
-| Sprint         | The cycle one meeting closes and the next opens             | Length set by how long one experiment takes to reproduce        |
-| Sprint backlog | The Hypothesis, one per cycle                               | A backlog item is a claim to test, not a feature to build       |
-| WIP limit      | One Hypothesis in flight per modeler                        | Two changes at once leave the Insight unattributable            |
-| Timeboxing     | The clock on the experiment                                 | The experiment closes at its limit, whatever it has found       |
-| Spike          | Research-shaped work moved off the delivery board           | Its output is a decision, not a model                           |
-| Sprint review  | Stage 3, Product Review                                     | The demo is the tracked run and the analysis plot               |
-| Retrospective  | The Insight, and the reason behind a rework or stop Verdict | The process finding and the modeling finding are recorded apart |
-| DoD            | The required Evidence grade of every term                   | Done is a grade on the ladder, not a checkbox                   |
-| Increment      | Readiness at E4                                             | The increment is a model that can be promoted, or nothing       |
-| BKM            | Where a stop Verdict and its reason are kept                | A direction closed is knowledge the next team reads             |
+| Practice        | What it carries here                                | What changes for modeling                                           |
+| :-------------: | :-------------------------------------------------: | :-----------------------------------------------------------------: |
+| Sprint          | The cycle one meeting closes and the next opens     | Length set by how long one experiment takes to reproduce            |
+| Product backlog | The hypotheses not yet taken into a cycle, in order | Ordered by what the next Insight would decide                       |
+| Sprint backlog  | The Hypothesis, one per cycle                       | A backlog item is a claim to test, not a feature to build           |
+| WIP limit       | One Hypothesis in flight per modeler                | Two changes at once leave the Insight unattributable                |
+| Timeboxing      | The clock on the experiment and on the meeting      | The experiment closes at its limit, whatever it has found           |
+| Spike           | Research-shaped work moved off the delivery board   | Its output is a decision, not a model                               |
+| Daily standup   | Blockers on the running experiment                  | Raised the day they appear, not at the sprint boundary              |
+| Sprint review   | Stage 3, Product Review                             | The demo is the tracked run and the analysis plot                   |
+| Retrospective   | The process finding of stage 4                      | Recorded apart from the Insight, which is a finding about the model |
+| DoR             | The Premise class, checked before a cycle opens     | Ready is Target at E1, Provenance and Baseline at E2                |
+| DoD             | The required Evidence grade of every term           | Done is a grade on the ladder, not a checkbox                       |
+| Increment       | Readiness at E4                                     | The increment is a model that can be promoted, or nothing           |
+| BKM             | Where a stop Verdict and its reason are kept        | A direction closed is knowledge the next team reads                 |
 
 Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the cycle moved more than one thing and the room cannot say which one it is judging. Without the DoD written as a grade, a number is refused by argument rather than by rule, and the argument outlasts the meeting.
 
@@ -201,12 +209,13 @@ Table 3. What ends a meeting without a Verdict
 
 ## 8. Roles
 
-Three roles supply the classes, and no role supplies all of them. A meeting missing one role is missing the class that role carries.
+Four roles supply the classes, and no role supplies all of them. A meeting missing one role is missing the class that role carries.
 
 Table 4. Which role supplies which class
 
 | Role           | Supplies                                                                       | Class             |
 | :------------: | :----------------------------------------------------------------------------: | :---------------: |
+| Product owner  | The order of the hypotheses in the backlog, and the Verdict                    | Claim, Decision   |
 | Domain expert  | Target, the physical reason inside Hypothesis, the physical reading of Insight | Premise, Claim    |
 | Data scientist | Provenance, Baseline, Run, Evidence, Insight                                   | Premise, Product  |
 | MLOps engineer | Readiness, and the engineering work inside Handoff                             | Product, Decision |
@@ -215,7 +224,7 @@ The domain expert says that two sensors are symmetric and must be grouped by top
 
 ## 9. Record
 
-The minutes carry three of the ten terms — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other seven live in the tracker and the ticket, which the three lines point at.
+The minutes carry three of the ten terms — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other seven live in the tracker and the ticket, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
 
 ```text
 Verdict : <ACCEPTED|REWORK|STOP> on <HYPOTHESIS>
@@ -254,9 +263,13 @@ The same three lines fill the model card that ships with the model, which record
 
 - **1D-CNN autoencoder**: a convolutional network over a one-dimensional signal, trained to rebuild its own input, used here to reduce the dimension of a process trace.
 - **BKM (Best Known Method)**: the team document holding the best method known so far for a task, updated from retrospectives.
+- **Blocker**: a technical or administrative obstacle that stops an experiment from moving to its next step.
 - **Confusion matrix**: the table of predicted against actual classes, read to see which class a classifier confuses with which.
+- **Cycle**: one sprint, from the meeting that opens a Hypothesis to the meeting that issues its Verdict.
+- **Daily standup**: the short daily meeting at which blockers on the running work are raised.
 - **Data leakage**: information reaching the model that would not be available when it serves, which raises the offline score without raising the online one.
 - **DoD (Definition of Done)**: the explicit bar a team agrees on, which a task must clear to be called done.
+- **DoR (Definition of Ready)**: the bar a work item must clear before a team takes it into a cycle.
 - **Elastic Net**: a linear model penalised by both the L1 and the L2 norm, which keeps correlated variables together rather than selecting one of them.
 - **EVT (Extreme Value Theory)**: the statistics of the tail of a distribution, used here to set a threshold from how extreme a sensor value is.
 - **Feature importance**: the score a fitted model attaches to each input, read to see which input moved the prediction.
@@ -266,14 +279,18 @@ The same three lines fill the model card that ships with the model, which record
 - **MLOps**: the practice that carries a model from experiment into operation and keeps it there.
 - **Model card**: the document recording a model's summary, measured performance and training data.
 - **Multicollinearity**: a near-linear dependence among input variables, which makes individual coefficients unstable.
+- **Product backlog**: the ordered list of work not yet taken into a cycle.
+- **Product owner**: the role that owns the order of the backlog and accepts the increment.
 - **Representation learning**: learning the features themselves from the data rather than specifying them by hand.
 - **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Sliding window augmentation**: cutting overlapping windows out of a continuous record to make more training samples, which shares rows between windows.
 - **Spike**: a separately ticketed investigation, carried off the delivery board because its outcome is unknown.
 - **Sprint**: one iteration of the agile cycle.
 - **Sprint backlog**: the work a team commits to finish in one sprint.
+- **Story point**: a relative estimate of the size of a backlog item.
 - **Time warping**: a distortion of the time axis that shifts or stretches a signal between records of the same process.
 - **Timeboxing**: fixing in advance how long a task may run, and closing it at that limit whatever it has reached.
 - **Train/serve skew**: a difference between the preprocessing applied during training and the preprocessing applied when serving.
+- **Velocity**: the number of story points a team completes in one sprint.
 - **WIP (Work In Progress)**: work currently under way, limited in number so that each item can be finished before the next starts.
 - **Yield**: the fraction of produced units that meet specification.
