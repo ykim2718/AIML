@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 63 | Created: 2026-09-01 | Updated: 2026-09-21 18:41 CDT
+Rev. 64 | Created: 2026-09-01 | Updated: 2026-09-21 18:44 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -134,7 +134,7 @@ $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspa
 
 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (13) 은 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
 
-$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 $`n`$ 과 무관하게 성립하는 항등식이다. 이 항등식을 식 (12) 에 넣어 $`\sigma_{between}^2`$ 자리를 전체 표준편차로 바꾼 것이 식 (13) 이다.
+$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 $`n`$ 과 무관하게 성립하는 항등식이다. 이 항등식을 식 (12) 에 넣어 $`\sigma_{between}^2`$ 자리를 전체 표준편차로 바꾼 것이 식 (13) 이다. 식 (13) 의 오른쪽 형태는 section 3 의 ICC 를 쓴 것이며, 그 정의는 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 이다.
 
 $$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (13)$$
 
