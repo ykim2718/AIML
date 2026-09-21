@@ -1,78 +1,74 @@
 # Agile AI/ML Modeling Meeting
-Rev. 4 | Created: 2026-09-21 | Updated: 2026-09-21 11:12 CDT
+Rev. 5 | Created: 2026-09-21 | Updated: 2026-09-21 11:16 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: A modeling meeting run like an ordinary development meeting ends on "I will give it a try", because the room has no name for the things it is exchanging and therefore no way to say which of them is missing.
-- **Goal**: Give the meeting ten named terms in four classes and place them on the agile practices the sprint already runs, so that a practitioner can say in one sentence what is on the table, what is missing, what grade of checking the missing part has to reach, and which sprint artifact it becomes.
+- **Problem Statement**: A modeling meeting run like an ordinary development meeting ends on "I will give it a try", because the room has no name for the things it settles and therefore no way to say which of them is missing.
+- **Goal**: Name the nine items a modeling meeting settles, fix the stage that settles each and the definition of done it must pass, so that a practitioner can say in one sentence what is on the table, what is missing, and what the missing part has to show.
 - **Non-Goal**: Configuring an experiment tracker (MLflow, Weights & Biases) or running a ticket system is not covered.
 - **Non-Goal**: Estimating a Hypothesis in story points and tracking velocity are left out, since how long an experiment runs is unknown until it has run.
 
 ## 2. Summary
 
-An AI/ML modeling meeting exchanges ten things, and naming them is what keeps the meeting from ending without a decision. The ten fall into four classes — Premise, Claim, Product, Decision — and the classes run in that order, which is also the agenda. The meeting sits on a sprint boundary, closing the sprint whose Product is on the table and opening the next.
+An AI/ML modeling meeting settles nine items, and each item belongs to one of four stages that run in order. The meeting sits on a sprint boundary, closing the sprint whose result is on the table and opening the next.
 
-Each class assumes the class before it is settled. A room discussing a Product while its Premise is open is measuring a quantity nobody defined, and the three habits that most often end a modeling meeting without a decision are each a missing term from one of the four classes.
+An item is settled when it passes its own definition of done, written per item rather than as one bar for the whole meeting. The habits that end a meeting without a decision are each an item nobody supplied.
 
 ## 3. Taxonomy and its Hierarchy
 
-The ten terms are classified by what they fix, and they are ordered by what they assume. Premise fixes what is true before this sprint, the fixed-length span that carries a single Hypothesis from the meeting that opens it to the meeting that issues its Verdict. Claim fixes what the sprint asserts, Product fixes what the sprint produced, and Decision fixes what leaves the room.
+The nine items are classified by the stage that settles them, and the four stages are ordered: a stage assumes every item of the stage before it is already done.
 
-The four classes, the ten terms, and the grade ladder that says how far a number has been checked are drawn in [Fig 1](#fig-1).
+The four stages, the items each one settles, and what each item fixes are drawn in [Fig 1](#fig-1).
 
 ```text
-CLASS             TERM          WHAT IT FIXES
+STAGE                    ITEM          WHAT IT FIXES
 
-Premise       >   Target        What counts as the answer: Y and its threshold
-                  Provenance    Where the rows came from, and what was done to them
-                  Baseline      The score to beat, with the run that produced it
-    |   assumed by
-    v
-Claim         >   Hypothesis    One change, its physical reason, the movement expected
-    |   tested by
-    v
-Product       >   Run           One tracked execution
-                  Evidence      How far a Run has been checked, on the grade ladder
-                  Insight       The explained cause of a metric move
-                  Readiness     Latency, train/serve skew, fallback, monitoring
-    |   judged into
-    v
-Decision      >   Verdict       Accepted, rework or stop, issued on the Hypothesis
-                  Handoff       Owner, due date and ticket, issued for the next sprint
-
-GRADE LADDER      E0 assertion < E1 number < E2 run-backed < E3 reproduced < E4 compared
+1  Premise Check    >    Target        What counts as the answer: Y and its threshold
+                         Provenance    Where the rows came from, and what was done to them
+                         Baseline      The score to beat, with the run that produced it
+      |   every item done before
+      v
+2  Claim Setting    >    Hypothesis    One change, its physical reason, the movement expected
+      |   every item done before
+      v
+3  Product Review   >    Run           One tracked execution
+                         Insight       The explained cause of a metric move
+                         Readiness     Latency, train/serve skew, fallback, monitoring
+      |   every item done before
+      v
+4  Decision         >    Verdict       Accepted, rework or stop, issued on the Hypothesis
+                         Handoff       Owner, due date and ticket for the next sprint
 ```
 
 <a id="fig-1"></a>
-Fig 1. The ten terms of a modeling meeting, their four classes, and the evidence grade ladder
+Fig 1. The nine items a modeling meeting settles, and the stage that settles each
 
-The grade ladder applies to every term that carries a number. E0 is spoken only and is not admissible, E1 is a value with no run behind it, E2 carries the run id with its parameters and data version, E3 is an E2 reproduced from a clean checkout inside the stated spread, and E4 is an E3 set beside the Baseline or the live model on the same split.
+What closes an item is its definition of done, and that bar differs from item to item.
 
 ### 3.1 Placement
 
 <a id="table-1"></a>
-Table 1. The ten terms, and what each one takes to be settled
+Table 1. The nine items, the stage that settles each, and its definition of done
 
-| Term       | Class    | Required grade                                        | What carries it                                            |
-| :--------: | :------: | :---------------------------------------------------: | :--------------------------------------------------------: |
-| Target     | Premise  | E1, written before the first meeting                  | One line in the ticket: the quantity and its threshold     |
-| Provenance | Premise  | E2                                                    | The tracker run and the dataset version hash               |
-| Baseline   | Premise  | E2                                                    | A tracker run tagged as the baseline                       |
-| Hypothesis | Claim    | Not a number; one change plus its reason              | The ticket opened for this sprint                          |
-| Run        | Product  | E2                                                    | The tracker entry with parameters, data version and commit |
-| Evidence   | Product  | The grade itself, said aloud with the number          | The grade stated beside every metric                       |
-| Insight    | Product  | E3                                                    | Feature importance or error analysis, exported as a figure |
-| Readiness  | Product  | E4                                                    | The model registry entry and the monitoring dashboard      |
-| Verdict    | Decision | Requires Insight at E3, or Readiness at E4 to promote | One line in the minutes                                    |
-| Handoff    | Decision | Owner and date, no grade                              | A ticket with an id                                        |
+| Item       | Settled at       | Done when                                                                          | What carries it                                            |
+| :--------: | :--------------: | :--------------------------------------------------------------------------------: | :--------------------------------------------------------: |
+| Target     | 1 Premise Check  | Written as one quantity with its threshold, agreed before the sprint opens         | One line in the ticket                                     |
+| Provenance | 1 Premise Check  | Split rule, missing value and outlier handling, and dataset hash recorded          | The tracker run and the data version tool                  |
+| Baseline   | 1 Premise Check  | A run tagged as the baseline, carrying the score later claims are compared against | A tracker run with the baseline tag                        |
+| Hypothesis | 2 Claim Setting  | One change, its physical reason and the expected movement, all three stated        | The ticket opened for this sprint                          |
+| Run        | 3 Product Review | Parameters, dataset version, code commit and metric all tracked                    | The tracker entry                                          |
+| Insight    | 3 Product Review | The cause of the metric move reproduced from a clean checkout                      | Feature importance or error analysis, exported as a figure |
+| Readiness  | 3 Product Review | Latency, skew, fallback and monitoring compared against the model now serving      | The model registry entry and the monitoring dashboard      |
+| Verdict    | 4 Decision       | Said aloud by the product owner, on the Hypothesis                                 | One line in the minutes                                    |
+| Handoff    | 4 Decision       | Owner, due date and ticket id issued for the next sprint                           | A ticket with an id                                        |
 
-## 4. Terms
+## 4. Items
 
-Each class is worked through below in the order of [Fig 1](#fig-1), since a practitioner reads them in the order the meeting needs them.
+Each stage is worked through below in the order of [Fig 1](#fig-1), since a practitioner meets the items in that order.
 
-### 4.1 Premise
+### 4.1 Premise Check
 
-Premise is what must already be true for this sprint's number to mean anything, and it is checked rather than debated. The three terms are Target, Provenance and Baseline, and together they are the definition of ready for a modeling ticket: a sprint that opens while one of them is unsettled produces a number that decides nothing.
+Premise Check settles what must already be true for this sprint's number to mean anything, and its three items are checked rather than debated. Together they are the definition of ready for a modeling ticket: a sprint that opens while one of them is unsettled produces a number that decides nothing.
 
 **Target** is the definition of Y with its threshold, written in one line. Yield below 98 %, or a sensor value crossing an EVT-based threshold, are targets; "catch defects with AI" is not, and a sprint opened on it measures a quantity the team never defined. The domain expert supplies it, and it is fixed before the first meeting rather than during one.
 
@@ -80,82 +76,37 @@ Premise is what must already be true for this sprint's number to mean anything, 
 
 **Baseline** is the score of the simplest model — a linear regression or a classical statistic — carried by a tracker run tagged as such. Keeping the first model simple is the established starting point [[5](#ref-5)], and without the tag the comparison every later claim rests on cannot be found again.
 
-### 4.2 Claim
+### 4.2 Claim Setting
 
-Claim is the single assertion this sprint tests, and it has exactly one term, Hypothesis. It is built on domain knowledge rather than on a list of untried algorithms, and it has three parts: one change, the physical reason for it, and what the metric does if that reason holds. One Hypothesis per modeler is the work-in-progress limit of the sprint, it carries a timebox fixed before the run starts, and research-shaped work that cannot state its three parts is moved off the board as a spike.
+Claim Setting settles the single assertion this sprint tests, and its one item is the Hypothesis. It is built on domain knowledge rather than on a list of untried algorithms, and it has three parts: one change, the physical reason for it, and what the metric does if that reason holds. One Hypothesis per modeler is the work-in-progress limit of the sprint, it carries a timebox fixed before the run starts, and research-shaped work that cannot state its three parts is moved off the board as a spike.
 
 Two examples show the form. Multicollinearity among sensors is severe, so the run uses Elastic Net instead of Lasso to carry the group effect. Time warping distorts the signal, so a 1D-CNN autoencoder reduces the dimension through representation learning rather than through a fixed transform.
 
 A Hypothesis without a physical reason cannot produce an Insight, because there is nothing for the result to confirm or contradict.
 
-### 4.3 Product
+### 4.3 Product Review
 
-Product is what the sprint actually made, and the four terms are graded rather than described. Run, Evidence, Insight and Readiness are read from artifacts on the screen, not from memory.
+Product Review settles what the sprint made, and its three items are read from artifacts on the screen rather than from memory. Each carries a different bar, which is why [Table 1](#table-1) states them one by one.
 
-**Run** is one tracked execution carrying its parameters, dataset version, code commit and metric. **Evidence** is the grade that Run has reached, said aloud beside the number, so that the room knows whether it is hearing E1 or E3. The required grade of each term in [Table 1](#table-1) is the definition of done for a modeling ticket.
+**Run** is one tracked execution carrying its parameters, dataset version, code commit and metric. A number quoted without its run id is a number the room cannot return to, so it closes nothing.
 
-**Insight** is the explained cause of a metric move. "XGBoost comes out better" is a Run with no Insight; "feature importance puts the chamber 3 pressure sensor at the top, and removing it returns the score to the Baseline" is an Insight at E3. The loss curve, the confusion matrix and the latent space of the reduced dimensions go on the screen, since a result described in speech stays at E0.
+**Insight** is the explained cause of a metric move. "XGBoost comes out better" is a Run with no Insight; "feature importance puts the chamber 3 pressure sensor at the top, and removing it returns the score to the Baseline" is an Insight, and it is done once a clean checkout reproduces it. The loss curve, the confusion matrix and the latent space of the reduced dimensions go on the screen, since a result described in speech cannot be checked by the room.
 
 **Readiness** is latency against its budget, train/serve skew, the fallback for a low-confidence answer, and the monitoring hookup. Promotion compares the candidate against the model already serving, and the rubric for that comparison is a checklist of specific tests rather than a judgement [[2](#ref-2)].
 
 ### 4.4 Decision
 
-Decision is what leaves the room, and it has two terms that are always issued together. A meeting that produces one without the other returns to the queue unchanged.
+Decision settles what leaves the room, and its two items are always issued together. A meeting that produces one without the other returns to the queue unchanged.
 
-**Verdict** is accepted, rework or stop, issued on the Hypothesis and said aloud by the product owner, since accepting an increment belongs to the role that owns the order of the backlog. Accepted requires Insight at E3; promoting a model to serving requires Readiness at E4; rework names the evidence that was missing; stop names the reason and is kept where the next team will read it.
+**Verdict** is accepted, rework or stop, issued on the Hypothesis and said aloud by the product owner, since accepting an increment belongs to the role that owns the order of the backlog. Accepted requires a reproduced Insight; promoting a model to serving requires a compared Readiness; rework names the item that fell short of its bar; stop names the reason and is kept where the next team will read it.
 
 **Handoff** is the owner, the due date and the ticket id for the next sprint, together with the engineering work the Verdict implies. It is the next sprint backlog item, written as a Hypothesis rather than as a task, and the hypotheses it outranks stay in the product backlog in the order the next Insight would decide. Code review assignments and pipeline integration are named here and nowhere else, so that the modeling discussion is not interrupted by scheduling.
 
 ## 5. Agenda
 
-The agenda is the four classes in order, one stage per class, and each stage ends when its terms can be said in one sentence. The meeting is timeboxed like every other ceremony, and stage 4 is protected: an earlier stage that overruns loses depth rather than taking the time the Verdict needs. Running the stages out of order returns the room to a class of [Fig 1](#fig-1) it has already passed.
+The agenda is the four stages of [Fig 1](#fig-1) in order, and each stage ends when its items can be said in one sentence. The meeting is timeboxed like every other ceremony, and stage 4 is protected: an earlier stage that overruns loses depth rather than taking the time the Verdict needs.
 
-The stages, the class each one settles, and the items each one puts on the table are drawn in [Fig 2](#fig-2).
-
-```text
-[ Sprint N ends ]           its Product is what the meeting reviews
-        |
-        v
-[ 1. Premise Check ]        settles   Target, Provenance, Baseline
-        |
-        +--> Missing / Outlier ....... How NaN and outliers in the raw rows were handled
-        +--> Leakage Check ........... Sliding window augmentation checked for leakage
-        +--> Baseline Score .......... The simplest model's score, with its run id
-        |
-        v
-[ 2. Claim Setting ]        settles   Hypothesis
-        |
-        +--> One Change .............. The single thing that moves in this sprint
-        +--> Domain Reason ........... The physical ground the change rests on
-        +--> Expected Effect ......... What the metric does if the reason holds
-        |
-        v
-[ 3. Product Review ]       settles   Run, Evidence, Insight, Readiness
-        |
-        +--> Tracked Run ............. Metric read from the tracker, not from memory
-        +--> Evidence Grade .......... How far the number has been checked, E0 to E4
-        +--> Why It Moved ............ Feature importance or error analysis behind it
-        +--> Shown On Screen ......... Loss curve, confusion matrix, latent space plot
-        |
-        v
-[ 4. Decision ]             settles   Verdict, Handoff
-        |
-        +--> Verdict ................. Accepted, rework or stop, said aloud
-        +--> Handoff ................. Owner, due date and ticket id
-        +--> Process Finding ......... What to change in how the sprint itself is run
-        +--> Engineering Sync ........ Code review and pipeline work named here
-        |
-        v
-[ Sprint N+1 begins ]       Handoff becomes the next sprint backlog item
-        |
-        v
-[ Daily standup ]           Blockers on the running experiment, raised daily
-```
-
-<a id="fig-2"></a>
-Fig 2. The four stages of the meeting and the class each one settles
-
-Each stage closes on one sentence, and the four templates below are what a practitioner reads out to close it. A stage whose sentence cannot be completed has not finished, whatever else was discussed.
+The four sentences below are what a practitioner reads out to close each stage. A stage whose sentence cannot be completed has not finished, whatever else was discussed.
 
 ```text
 Stage 1   "Target is <TARGET>. Provenance: split by <RULE>, data <HASH>.
@@ -165,11 +116,13 @@ Stage 2   "We change <ONE_THING> because <PHYSICAL_REASON>.
            If it holds, <METRIC> moves <DIRECTION> by at least <AMOUNT>."
 
 Stage 3   "<METRIC> moved <FROM> to <TO>, run <RUN_ID>, spread <SPREAD> over
-           <N> seeds. Insight: <ANALYSIS>. Evidence grade E<GRADE>."
+           <N> seeds. Insight: <ANALYSIS>, reproduced from a clean checkout."
 
 Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
            by <DATE>, ticket <TICKET_ID>."
 ```
+
+The meeting itself sits on the sprint boundary, so stage 4 opens the next sprint as it closes this one. Between two meetings the blockers on the running experiment are raised at the daily standup rather than held for the boundary.
 
 ## 6. Agile Practice
 
@@ -177,54 +130,54 @@ Each agile practice below keeps the name a software team already uses and change
 
 Table 2. Where each agile practice lands in the modeling sprint
 
-| Practice        | What it carries here                                       | What changes for modeling                                           |
-| :-------------: | :--------------------------------------------------------: | :-----------------------------------------------------------------: |
-| Sprint          | The Hypothesis under review, from Premise Check to Verdict | Length set by how long one experiment takes to reproduce            |
-| Product backlog | The hypotheses not yet taken into a sprint, in order       | Ordered by what the next Insight would decide                       |
-| Sprint backlog  | The Hypothesis, one per sprint                             | A backlog item is a claim to test, not a feature to build           |
-| WIP limit       | One Hypothesis in flight per modeler                       | Two changes at once leave the Insight unattributable                |
-| Timeboxing      | The clock on the experiment and on the meeting             | The experiment closes at its limit, whatever it has found           |
-| Spike           | Research-shaped work moved off the delivery board          | Its output is a decision, not a model                               |
-| Daily standup   | Blockers on the running experiment                         | Raised the day they appear, not at the sprint boundary              |
-| Sprint review   | Stage 3, Product Review                                    | The demo is the tracked run and the analysis plot                   |
-| Retrospective   | The process finding of stage 4                             | Recorded apart from the Insight, which is a finding about the model |
-| DoR             | The Premise class, checked before a sprint opens           | Ready is Target at E1, Provenance and Baseline at E2                |
-| DoD             | The required Evidence grade of every term                  | Done is a grade on the ladder, not a checkbox                       |
-| Increment       | Readiness at E4                                            | The increment is a model that can be promoted, or nothing           |
-| BKM             | Where a stop Verdict and its reason are kept               | A direction closed is knowledge the next team reads                 |
+| Practice        | What it carries here                                          | What changes for modeling                                           |
+| :-------------: | :-----------------------------------------------------------: | :-----------------------------------------------------------------: |
+| Sprint          | The Hypothesis under review, from Premise Check to Verdict    | Length set by how long one experiment takes to reproduce            |
+| Product backlog | The hypotheses not yet taken into a sprint, in order          | Ordered by what the next Insight would decide                       |
+| Sprint backlog  | The Hypothesis, one per sprint                                | A backlog item is a claim to test, not a feature to build           |
+| WIP limit       | One Hypothesis in flight per modeler                          | Two changes at once leave the Insight unattributable                |
+| Timeboxing      | The clock on the experiment and on the meeting                | The experiment closes at its limit, whatever it has found           |
+| Spike           | Research-shaped work moved off the delivery board             | Its output is a decision, not a model                               |
+| Daily standup   | Blockers on the running experiment                            | Raised the day they appear, not at the sprint boundary              |
+| Sprint review   | Stage 3, Product Review                                       | The demo is the tracked run and the analysis plot                   |
+| Retrospective   | The process finding of stage 4                                | Recorded apart from the Insight, which is a finding about the model |
+| DoR             | Stage 1 done: Target written, Provenance and Baseline tracked | Ready is three items, not one reviewer's judgement                  |
+| DoD             | The done-when column of [Table 1](#table-1)                   | Done is written per item, not as one bar for the sprint             |
+| Increment       | Readiness compared against the model now serving              | The increment is a model that can be promoted, or nothing           |
+| BKM             | Where a stop Verdict and its reason are kept                  | A direction closed is knowledge the next team reads                 |
 
-Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the sprint moved more than one thing and the room cannot say which one it is judging. Without the DoD written as a grade, a number is refused by argument rather than by rule, and the argument outlasts the meeting.
+Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the sprint moved more than one thing and the room cannot say which one it is judging. Without a done-when written per item, a number is refused by argument rather than by rule, and the argument outlasts the meeting.
 
 ## 7. Anti-patterns
 
-Three habits end a modeling meeting without a Verdict, and each one is a term of [Fig 1](#fig-1) that nobody supplied. Naming the missing term is faster than debating the habit.
+Three habits end a modeling meeting without a Verdict, and each one is an item of [Fig 1](#fig-1) that nobody supplied. Naming the missing item is faster than debating the habit.
 
 Table 3. What ends a meeting without a Verdict
 
-| Habit                                  | Missing term         | What to bring instead                                      |
-| :------------------------------------: | :------------------: | :--------------------------------------------------------: |
-| "Let us put all the data in and train" | Hypothesis           | One change with its physical reason, stated before the run |
-| "Let us catch defects with AI"         | Target               | Y and its threshold, written, before the meeting opens     |
-| "It came out roughly fine"             | Evidence, left at E0 | The tracked run at E2 and the analysis plot on the screen  |
+| Habit                                  | Missing item | What to bring instead                                      |
+| :------------------------------------: | :----------: | :--------------------------------------------------------: |
+| "Let us put all the data in and train" | Hypothesis   | One change with its physical reason, stated before the run |
+| "Let us catch defects with AI"         | Target       | Y and its threshold, written, before the meeting opens     |
+| "It came out roughly fine"             | Run          | The tracked run and the analysis plot on the screen        |
 
 ## 8. Roles
 
-Four roles supply the classes, and no role supplies all of them. A meeting missing one role is missing the class that role carries.
+Four roles supply the items, and no role supplies all of them. A meeting missing one role is missing the items that role carries.
 
-Table 4. Which role supplies which class
+Table 4. Which role supplies which items
 
-| Role           | Supplies                                                                       | Class             |
-| :------------: | :----------------------------------------------------------------------------: | :---------------: |
-| Product owner  | The order of the hypotheses in the backlog, and the Verdict                    | Claim, Decision   |
-| Domain expert  | Target, the physical reason inside Hypothesis, the physical reading of Insight | Premise, Claim    |
-| Data scientist | Provenance, Baseline, Run, Evidence, Insight                                   | Premise, Product  |
-| MLOps engineer | Readiness, and the engineering work inside Handoff                             | Product, Decision |
+| Role           | Supplies                                                                       | Stage   |
+| :------------: | :----------------------------------------------------------------------------: | :-----: |
+| Product owner  | The order of the hypotheses in the backlog, and the Verdict                    | 2, 4    |
+| Domain expert  | Target, the physical reason inside Hypothesis, the physical reading of Insight | 1, 2, 3 |
+| Data scientist | Provenance, Baseline, Run, Insight                                             | 1, 3    |
+| MLOps engineer | Readiness, and the engineering work inside Handoff                             | 3, 4    |
 
 The domain expert says that two sensors are symmetric and must be grouped by topology; the data scientist answers with the 1D-CNN filter size that carries that topology into the model.
 
 ## 9. Record
 
-The minutes carry three of the ten terms — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other seven live in the tracker and the ticket, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
+The minutes carry three of the nine items — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other six live in the tracker and the ticket, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
 
 ```text
 Verdict : <ACCEPTED|REWORK|STOP> on <HYPOTHESIS>
@@ -267,7 +220,7 @@ The same three lines fill the model card that ships with the model, which record
 - **Confusion matrix**: the table of predicted against actual classes, read to see which class a classifier confuses with which.
 - **Daily standup**: the short daily meeting at which blockers on the running work are raised.
 - **Data leakage**: information reaching the model that would not be available when it serves, which raises the offline score without raising the online one.
-- **DoD (Definition of Done)**: the explicit bar a team agrees on, which a task must clear to be called done.
+- **DoD (Definition of Done)**: the explicit bar a work item must clear to be called done.
 - **DoR (Definition of Ready)**: the bar a work item must clear before a team takes it into a sprint.
 - **Elastic Net**: a linear model penalised by both the L1 and the L2 norm, which keeps correlated variables together rather than selecting one of them.
 - **EVT (Extreme Value Theory)**: the statistics of the tail of a distribution, used here to set a threshold from how extreme a sensor value is.
@@ -284,6 +237,7 @@ The same three lines fill the model card that ships with the model, which record
 - **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Sliding window augmentation**: cutting overlapping windows out of a continuous record to make more training samples, which shares rows between windows.
 - **Spike**: a separately ticketed investigation, carried off the delivery board because its outcome is unknown.
+- **Sprint**: the fixed-length span that carries one Hypothesis, from the meeting that opens it to the meeting that issues its Verdict.
 - **Sprint backlog**: the work a team commits to finish in one sprint.
 - **Story point**: a relative estimate of the size of a backlog item.
 - **Time warping**: a distortion of the time axis that shifts or stretches a signal between records of the same process.
