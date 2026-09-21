@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 10 | Created: 2026-09-21 | Updated: 2026-09-21 15:35 CDT
+Rev. 11 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
 
 ## 1. Purpose
 
@@ -54,7 +54,7 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 | Target     | 1 Premise Check  | Written as one quantity with its threshold, agreed before the sprint opens         | One line in the ticket                                     |
 | Provenance | 1 Premise Check  | Split rule, missing value and outlier handling, and dataset hash recorded          | The tracker run and the data version tool                  |
 | Baseline   | 1 Premise Check  | A run tagged as the baseline, carrying the score later claims are compared against | A tracker run with the baseline tag                        |
-| Hypothesis | 2 Claim Setting  | One change, its physical reason and the expected movement, all three stated        | The ticket opened for this sprint                          |
+| Hypothesis | 2 Claim Setting  | One change, its physical reason and the expected movement, all stated              | The ticket opened for this sprint                          |
 | Run        | 3 Product Review | Parameters, dataset version, code commit and metric all tracked                    | The tracker entry                                          |
 | Insight    | 3 Product Review | The cause of the metric move reproduced from a clean checkout                      | Feature importance or error analysis, exported as a figure |
 | Readiness  | 3 Product Review | Latency, skew, fallback and monitoring compared against the model now serving      | The model registry entry and the monitoring dashboard      |

@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 10 | Created: 2026-09-21 | Updated: 2026-09-21 15:35 CDT
+Rev. 11 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
 
 ## 1. Purpose
 
@@ -54,7 +54,7 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 | Target     | 1 Premise Check  | Sprint 을 열기 전에 합의된, 임계값이 붙은 하나의 양으로 적힘        | Ticket 의 한 줄                                    |
 | Provenance | 1 Premise Check  | Split 규칙, 결측치와 이상치 처리, dataset hash 가 기록됨            | 추적 도구의 run 과 데이터 버전 도구                |
 | Baseline   | 1 Premise Check  | Baseline 으로 태그된 run. 이후의 주장이 견주는 점수를 담음          | Baseline tag 가 붙은 추적 도구의 run               |
-| Hypothesis | 2 Claim Setting  | 바꾸는 하나, 물리적 근거, 예상되는 움직임 셋이 모두 말해짐          | 이번 sprint 로 연 ticket                           |
+| Hypothesis | 2 Claim Setting  | 바꾸는 하나, 물리적 근거, 예상되는 움직임이 모두 말해짐             | 이번 sprint 로 연 ticket                           |
 | Run        | 3 Product Review | Parameter, dataset 버전, code commit, metric 이 모두 추적됨         | 추적 도구의 항목                                   |
 | Insight    | 3 Product Review | Metric 을 움직인 원인이 새 checkout 에서 재현됨                     | Feature importance 또는 오차 분석. 그림으로 내보냄 |
 | Readiness  | 3 Product Review | Latency, skew, fallback, monitoring 을 지금 서빙 중인 model 과 견줌 | Model registry 항목과 monitoring dashboard         |
