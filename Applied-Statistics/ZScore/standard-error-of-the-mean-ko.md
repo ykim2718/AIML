@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 6 | Created: 2026-08-30 | Updated: 2026-09-21 17:01 CDT
+Rev. 7 | Created: 2026-08-30 | Updated: 2026-09-21 17:14 CDT
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -196,7 +196,32 @@ standard error 는 식 (1) 이 주는 값의 0.949 배가 된다. $n = N$ 이면
 
 Independent 인 draw 에서는 곱의 기댓값이 기댓값의 곱으로 갈라지고 각 편차의 기댓값이 0 이므로,
 대각 밖의 항이 모두 사라지고 식 (11) 에는 식 (5) 의 뒤의 성질만 남는다.
+[B.2](#b2-covariance-and-the-product-of-expectations) 는 뒤의 성질이 실제로 요구하는 것,
+곧 covariance 가 0 이라는 것만으로 같은 갈라짐에 이른다.
 
 ```math
 \mathrm{Cov}(X_i, X_j) = E\left[ (X_i - \mu)(X_j - \mu) \right] = E[X_i - \mu] \cdot E[X_j - \mu] = 0, \qquad i \ne j \hspace{19em} (12)
+```
+
+### B.2 Covariance and the Product of Expectations
+
+Covariance 의 정의를 펼친 뒤 $E[\cdot]$ 의 linearity 로 항마다 기댓값을 취하면 곱의 기댓값과
+평균의 곱만 남는다. 여기서 $\mu_i = E[X_i]$ 이고 $\mu_j = E[X_j]$ 이다.
+
+```math
+\begin{aligned}
+\mathrm{Cov}(X_i, X_j) &= E\left[ (X_i - \mu_i)(X_j - \mu_j) \right] \\
+&= E\left[ X_i X_j - \mu_j X_i - \mu_i X_j + \mu_i \mu_j \right] \\
+&= E[X_i X_j] - \mu_j E[X_i] - \mu_i E[X_j] + \mu_i \mu_j \\
+&= E[X_i X_j] - \mu_i \mu_j
+\end{aligned}
+\hspace{19em} (13)
+```
+
+Covariance 가 0 이면 식 (13) 의 마지막 줄이 0 이고, $\mu_i \mu_j$ 를 반대편으로 옮기면 곱의
+기댓값이 기댓값의 곱으로 갈라진다. 식 (12) 는 covariance 가 0 이라는 것보다 강한 independent
+전제에서 같은 갈라짐에 이른다.
+
+```math
+\mathrm{Cov}(X_i, X_j) = 0 \quad \Longleftrightarrow \quad E[X_i X_j] = E[X_i] \cdot E[X_j] \hspace{19em} (14)
 ```

@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 6 | Created: 2026-08-30 | Updated: 2026-09-21 17:01 CDT
+Rev. 7 | Created: 2026-08-30 | Updated: 2026-09-21 17:14 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -208,7 +208,33 @@ the diagonal and the covariances off it.
 Independent draws split the expectation of a product into the product of the expectations, and
 each deviation has expectation zero, so every term off the diagonal vanishes and equation (11)
 leaves the second property of equation (5).
+[B.2](#b2-covariance-and-the-product-of-expectations) reaches the same split from a zero
+covariance, which is all that the second property needs.
 
 ```math
 \mathrm{Cov}(X_i, X_j) = E\left[ (X_i - \mu)(X_j - \mu) \right] = E[X_i - \mu] \cdot E[X_j - \mu] = 0, \qquad i \ne j \hspace{19em} (12)
+```
+
+### B.2 Covariance and the Product of Expectations
+
+Multiplying out the definition of the covariance and then taking the expectation term by term,
+which the linearity of $E[\cdot]$ allows, leaves the expectation of the product against the
+product of the means $\mu_i = E[X_i]$ and $\mu_j = E[X_j]$.
+
+```math
+\begin{aligned}
+\mathrm{Cov}(X_i, X_j) &= E\left[ (X_i - \mu_i)(X_j - \mu_j) \right] \\
+&= E\left[ X_i X_j - \mu_j X_i - \mu_i X_j + \mu_i \mu_j \right] \\
+&= E[X_i X_j] - \mu_j E[X_i] - \mu_i E[X_j] + \mu_i \mu_j \\
+&= E[X_i X_j] - \mu_i \mu_j
+\end{aligned}
+\hspace{19em} (13)
+```
+
+A covariance of zero sets the last line of equation (13) to zero, and moving $\mu_i \mu_j$ to the
+other side splits the expectation of the product into the product of the expectations. Equation
+(12) reaches the same split from independent draws, which is the stronger assumption.
+
+```math
+\mathrm{Cov}(X_i, X_j) = 0 \quad \Longleftrightarrow \quad E[X_i X_j] = E[X_i] \cdot E[X_j] \hspace{19em} (14)
 ```
