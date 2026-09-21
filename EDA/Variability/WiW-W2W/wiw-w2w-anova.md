@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 66 | Created: 2026-09-01 | Updated: 2026-09-21 18:47 CDT
+Rev. 67 | Created: 2026-09-01 | Updated: 2026-09-21 18:48 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -124,7 +124,7 @@ $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{wi
 
 제곱근을 취하면 관측값을 설명하는 식이 된다.
 
-$$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (11)$$
+$$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (11) 🌳$$
 
 식 (11) 은 모든 $`n`$ 에서 성립한다.
 
