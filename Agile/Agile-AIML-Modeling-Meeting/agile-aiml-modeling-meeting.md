@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 13 | Created: 2026-09-21 | Updated: 2026-09-21 15:53 CDT
+Rev. 14 | Created: 2026-09-21 | Updated: 2026-09-21 16:09 CDT
 
 ## 1. Purpose
 
@@ -254,7 +254,7 @@ The same three lines fill the model card that ships with the model, which record
 
 ## Appendix B. Experiment Priority
 
-Brute force — "let us just run everything and see" — is the habit that spends a sprint of compute and returns no Insight, since a run nobody framed answers no question. An idea reaches the product backlog only after passing three filters, and its order inside the backlog comes from an ICE score.
+Brute force — "let us just run everything and see" — is the habit that spends a sprint of compute and returns no Insight, since a run nobody framed answers no question. An idea reaches the product backlog only after passing three filters, and its order inside the backlog comes from an ICE score whose weakest term is measured by a spike before the order is trusted.
 
 ### B.1 Three Filters
 
@@ -282,10 +282,15 @@ Table 5. The three filters and what each one rejects
        | passed
        v
 [ Product backlog, ordered by ICE score ]
+       |
+       +--> low C, high I --> [ Spike ] --> C re-scored, backlog re-ordered
+       |
+       v
+[ Sprint backlog: one Hypothesis for the next sprint ]
 ```
 
 <a id="fig-2"></a>
-Fig 2. The three filters an idea passes before it reaches the product backlog
+Fig 2. The path from a proposed idea to one Hypothesis in the sprint backlog
 
 **Domain alignment** asks the question first, before the library is chosen. Lasso on sensors with deep mutual correlation drops all but one of a correlated group, so Ridge or Elastic Net comes first. A random forest that shuffles row order is the wrong main model for a continuous process whose causality runs along the time axis, where a 1D-CNN or a time-series model belongs.
 
@@ -313,7 +318,13 @@ Equation (1) holds when the third letter is scored as Ease, where 5 is easiest. 
 
 A **quick win** scores high on all three: adjusting the stride of an existing sliding window to augment the data is implemented in an afternoon and its effect is known in advance. A **long-term** item scores low on Ease and Confidence together: fine-tuning a large time-series foundation model is weeks of work whose outcome nobody can predict, so it waits behind the quick wins rather than opening the sprint.
 
-### B.3 Hypothesis Rule
+### B.3 Spike Before Scoring
+
+Confidence is a guess until something measures it, so an item with high Impact and low Confidence goes to a spike rather than to a rank. The spike is timeboxed before it starts and its scope is fixed so that it closes in half a day rather than in a week: a subsample of the rows, few epochs, one seed, and the same split the Baseline used.
+
+What a spike returns is a decision rather than a model. The measured result re-scores Confidence, the backlog is ordered again, and the item either enters the next sprint as a Hypothesis or leaves the top of the backlog with the reason recorded.
+
+### B.4 Hypothesis Rule
 
 No Hypothesis, no experiment. A proposal that cannot be said as a Hypothesis — one change, its physical reason, the expected movement — stays out of the next sprint, whatever its novelty.
 

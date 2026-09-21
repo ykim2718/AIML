@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 13 | Created: 2026-09-21 | Updated: 2026-09-21 15:53 CDT
+Rev. 14 | Created: 2026-09-21 | Updated: 2026-09-21 16:09 CDT
 
 ## 1. Purpose
 
@@ -254,7 +254,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 
 ## Appendix B. Experiment Priority
 
-"일단 다 돌려보죠" 는 sprint 만큼의 연산 자원을 쓰고 Insight 는 남기지 못하는 습관이다. 아무도 틀을 잡아 주지 않은 실행은 어떤 질문에도 답하지 않기 때문이다. 아이디어는 세 filter 를 통과한 뒤에야 product backlog 에 오르고, backlog 안에서의 순서는 ICE score 가 정한다.
+"일단 다 돌려보죠" 는 sprint 만큼의 연산 자원을 쓰고 Insight 는 남기지 못하는 습관이다. 아무도 틀을 잡아 주지 않은 실행은 어떤 질문에도 답하지 않기 때문이다. 아이디어는 세 filter 를 통과한 뒤에야 product backlog 에 오르고, backlog 안에서의 순서는 ICE score 가 정하며, 그 점수의 가장 약한 항은 순서를 믿기 전에 spike 가 재어 준다.
 
 ### B.1 Three Filters
 
@@ -282,10 +282,15 @@ Table 5. The three filters and what each one rejects
        | passed
        v
 [ Product backlog, ordered by ICE score ]
+       |
+       +--> low C, high I --> [ Spike ] --> C re-scored, backlog re-ordered
+       |
+       v
+[ Sprint backlog: one Hypothesis for the next sprint ]
 ```
 
 <a id="fig-2"></a>
-Fig 2. The three filters an idea passes before it reaches the product backlog
+Fig 2. The path from a proposed idea to one Hypothesis in the sprint backlog
 
 **Domain alignment** 는 library 를 고르기 전에 질문을 먼저 던진다. 센서 간 상관이 깊은데 Lasso 를 쓰면 상관된 무리에서 하나만 남기므로 Ridge 나 Elastic Net 이 먼저다. 시간 축을 따라 인과가 흐르는 연속 공정에서 행 순서를 섞는 random forest 를 주력으로 두는 것은 맞지 않으며, 그 자리는 1D-CNN 이나 시계열 model 의 것이다.
 
@@ -313,7 +318,13 @@ Table 6. The three letters of an ICE score
 
 **Quick win** 은 셋 모두에서 높은 점수를 받는다. 이미 있는 sliding window 의 보폭만 조절해 데이터를 늘리는 일은 반나절이면 구현되고 그 효과도 미리 안다. **Long-term** 항목은 Ease 와 Confidence 가 함께 낮다. 대형 시계열 foundation model 을 fine-tuning 하는 일은 몇 주가 들고 결과를 아무도 예측하지 못하므로, sprint 를 여는 대신 quick win 뒤에서 기다린다.
 
-### B.3 Hypothesis Rule
+### B.3 Spike Before Scoring
+
+Confidence 는 무엇인가가 재기 전까지는 추측이므로, Impact 가 크고 Confidence 가 낮은 항목은 순위가 아니라 spike 로 보낸다. Spike 는 시작 전에 timebox 를 받고, 한 주가 아니라 반나절에 닫히도록 범위를 고정한다. 행의 부분 표본, 적은 epoch, seed 하나, 그리고 Baseline 이 쓴 것과 같은 split 이 그것이다.
+
+Spike 가 돌려주는 것은 model 이 아니라 결정이다. 측정된 결과가 Confidence 를 다시 매기고, backlog 를 다시 정렬하며, 그 항목은 Hypothesis 로 다음 sprint 에 들어가거나 이유를 기록한 채 backlog 윗자리에서 내려온다.
+
+### B.4 Hypothesis Rule
 
 Hypothesis 가 없으면 실험도 없다. Hypothesis 의 형태로 — 바꾸는 하나, 물리적 근거, 예상되는 움직임 — 말하지 못하는 제안은 아무리 새롭더라도 다음 sprint 에 들지 않는다.
 
