@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 9 | Created: 2026-08-30 | Updated: 2026-09-21 17:21 CDT
+Rev. 10 | Created: 2026-08-30 | Updated: 2026-09-21 17:23 CDT
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -27,8 +27,8 @@ $\bar{X}$ 라 하자. $\bar{X}$ 의 표준편차는 $\sigma_{\bar{X}}$ 로 적�
 ```
 
 여기서 $n$ 은 뽑아낸 개별 관측값의 개수이므로, 이 관계에 들어 있는 것은 두 표준편차와 그
-개수뿐이다. 이 관계는 하나의 모집단에서 독립으로 뽑는 것을 전제로 하며, 그 전제가 깨지는 두
-경우는 [Appendix B](#appendix-b-derivation) 에 둔다.
+개수뿐이다. 이 관계는 하나의 모집단에서 independent 로 뽑는 것을 전제로 하며, 그 전제가 깨지는
+두 경우는 [Appendix B](#appendix-b-derivation) 에 둔다.
 
 ### 2.2. What the Two Describe
 
@@ -62,8 +62,9 @@ Table 2. Standard error as a fraction of the population standard deviation.
 | 25          | 5.000       | 0.200          |
 | 100         | 10.000      | 0.100          |
 
-두 행이 이 관계의 전부를 말한다. $n = 1$ 에서는 평균이 곧 그 하나의 관측값이므로 standard
-error 가 모집단의 표준편차와 같아지고 두 양이 겹친다. $n = 100$ 에서는 모집단 표준편차의 10분의 1 이 된다.
+$n = 1$ 과 $n = 100$ 의 두 행이 이 표의 전부를 말한다. $n = 1$ 에서는 평균이 곧 그 하나의
+관측값이므로 standard error 가 모집단의 표준편차와 같아지고 두 양이 겹친다. $n = 100$ 에서는
+모집단 표준편차의 10분의 1 이 된다.
 
 제곱근이 정밀도의 값을 정한다. Standard error 를 반으로 줄이려면 표본이 네 배로 들고, 10분의
 1 로 줄이려면 100 배로 든다. 그 대신 이 관계는 표본평균이 어떤 개별 관측값보다 모평균에 대해
@@ -162,11 +163,11 @@ E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \
 ```
 
 두 전제는 쓰이는 자리가 다르다. Identically distributed 는 식 (6) 이 합의 모든 항에 같은
-$\sigma^{2}$ 를 넣게 해 주고, independent 는 식 (5) 의 두 번째 성질이 요구하는 것이되 draw
-사이의 covariance 가 0 이라는 데까지만 쓰인다. Covariance 가 0 이 아니게 되는 경우가 둘
-있다. 1) Draw 끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이
-성립하지 않는다. 2) 비복원으로 뽑을 때, 곧 뽑은 값을 모집단에 되돌리지 않고 다음 draw 를 뽑을
-때는 뒤의 draw 가 고를 값이 줄어, 앞의 draw 가 뒤의 draw 의 분포를 바꾼다. 그러면 크기 $N$ 의
+$\sigma^{2}$ 를 넣게 해 주고, 식 (5) 의 두 번째 성질은 independent 를 요구하되 draw 사이의
+covariance 가 0 이라는 데까지만 쓴다. Covariance 가 0 이 아니게 되는 경우가 둘 있다.
+1) Draw 끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이 성립하지
+않는다. 2) 비복원으로 뽑을 때, 곧 뽑은 값을 모집단에 되돌리지 않고 다음 draw 를 뽑을 때는
+뒤의 draw 가 고를 값이 줄어, 앞의 draw 가 뒤의 draw 의 분포를 바꾼다. 그러면 크기 $N$ 의
 모집단에 대해 평균의 variance 에 finite population correction 인자 $(N-n)/(N-1)$ 이 붙는다
 [[2](#ref-2)].
 

@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 9 | Created: 2026-08-30 | Updated: 2026-09-21 17:21 CDT
+Rev. 10 | Created: 2026-08-30 | Updated: 2026-09-21 17:23 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -66,9 +66,10 @@ Table 2. Standard error as a fraction of the population standard deviation.
 | 25          | 5.000       | 0.200          |
 | 100         | 10.000      | 0.100          |
 
-Two rows carry the whole of the behaviour. At $n = 1$ the mean is the single observation itself,
-so the standard error equals the population standard deviation and the two quantities coincide. At
-$n = 100$ the standard error is one tenth of the population standard deviation.
+The rows at $n = 1$ and $n = 100$ carry the whole of the behaviour. At $n = 1$ the mean is the
+single observation itself, so the standard error equals the population standard deviation and the
+two quantities coincide. At $n = 100$ the standard error is one tenth of the population standard
+deviation.
 
 The square root sets the price of precision. Halving the standard error costs four times the
 sample, and reducing it by a factor of ten costs a hundred times the sample. Against that, the
@@ -170,10 +171,10 @@ E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \
 ```
 
 The two assumptions are used in different places. Identically distributed is what lets equation
-(6) put the same $\sigma^{2}$ in every term of the sum, and independent is what the second
-property of equation (5) needs, and only as far as a zero covariance between draws.
-Two cases give a covariance other than zero. 1) Correlated draws add the covariance terms that
-the sum of variances omits, and equation (6) no longer holds. 2) Sampling without replacement,
+(6) put the same $\sigma^{2}$ in every term of the sum, and the second property of equation (5)
+needs independent, and only as far as a zero covariance between draws. Two cases give a covariance
+other than zero. 1) Correlated draws add the covariance terms that the sum of variances omits, and
+equation (6) no longer holds. 2) Sampling without replacement,
 where a drawn item is held out instead of being returned to the population, leaves fewer values
 for the draws that follow, so each draw shifts the distribution of the next one. The variance of
 the mean then carries the finite population correction factor $(N-n)/(N-1)$, for a population of
