@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 64 | Created: 2026-09-01 | Updated: 2026-09-21 18:44 CDT
+Rev. 65 | Created: 2026-09-01 | Updated: 2026-09-21 18:45 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -142,7 +142,7 @@ Table 2 의 wafer-to-wafer 성분 $`\sigma_{between}`$ 에 대해 $`\sigma_{with
 
 $$\sigma_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (14)$$
 
-식 (8) 이 같은 wafer 두 site 사이의 covariance 를 $`\sigma_{between}^2`$ 으로 주므로, ICC 는 그 covariance 를 $`S_{\mathrm{total}}^2`$ 로 나눈 값이고, ICC = 0 과 그 covariance 가 0 이라는 것은 서로를 함의한다. 서로 다른 wafer 의 site 사이는 모형이 애초에 0 으로 둔다. Wafer 평균이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (14) 의 둘째 항이 사라져 wafer 평균의 산포는 표준오차만 남는다.
+Wafer 평균이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (14) 의 둘째 항이 사라져 wafer 평균의 산포는 표준오차만 남는다.
 
 $$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (15)$$
 
