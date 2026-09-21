@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 5 | Created: 2026-08-30 | Updated: 2026-09-21 16:52 CDT
+Rev. 6 | Created: 2026-08-30 | Updated: 2026-09-21 17:01 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -117,6 +117,7 @@ ISBN 978-0-534-24312-8.<br>
 
 ## Appendix A. Terminology
 
+- **Covariance**: the expected product of the deviations of two variables from their means.
 - **Draw**: one observation taken from the population, or the act of taking it.
 - **Population**: the complete set of values about which a statement is to be made.
 - **Sample**: a subset of the population that is actually observed.
@@ -127,9 +128,9 @@ ISBN 978-0-534-24312-8.<br>
 
 ## Appendix B. Derivation
 
-Let $X_1, \ldots, X_n$ be drawn independently from a population with mean $\mu$ and variance
-$\sigma^2$, so that each draw has the same distribution and no draw carries information about
-another.
+Let $X_1, \ldots, X_n$ be drawn from a population with mean $\mu$ and variance $\sigma^2$, with
+every draw following the same distribution (identically distributed) and no draw carrying
+information about another (independent).
 
 ```math
 E[X_i] = \mu, \qquad \mathrm{Var}[X_i] = \sigma^{2}, \qquad i = 1, \ldots, n \hspace{19em} (3)
@@ -143,7 +144,7 @@ The sample mean is their sum divided by the count.
 
 Two properties of the variance are needed. Scaling a variable by a constant scales its variance by
 the square of that constant, and the variance of a sum of independent variables is the sum of
-their variances.
+their variances. [B.1](#b1-the-two-variance-properties) derives both.
 
 ```math
 \mathrm{Var}[aY] = a^{2} \mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i] \hspace{19em} (5)
@@ -168,11 +169,15 @@ so equation (7) measures spread alone [[1](#ref-1)].
 E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \mu \hspace{19em} (8)
 ```
 
-The derivation uses independence only at the second property of equation (5). Two cases break that
-independence. Correlated draws add covariance terms that the sum of variances omits, and equation
-(6) no longer holds. Sampling without replacement from a finite population of size $N$ makes the
-draws slightly dependent, and the variance acquires the finite population correction factor
-[[2](#ref-2)].
+The two assumptions are used in different places. Identically distributed is what lets equation
+(6) put the same $\sigma^{2}$ in every term of the sum, and independent is what the second
+property of equation (5) needs, and only as far as a zero covariance between draws.
+Two cases give a covariance other than zero. 1) Correlated draws add the covariance terms that
+the sum of variances omits, and equation (6) no longer holds. 2) Sampling without replacement,
+where a drawn item is held out instead of being returned to the population, leaves fewer values
+for the draws that follow, so each draw shifts the distribution of the next one. The variance of
+the mean then carries the finite population correction factor $(N-n)/(N-1)$, for a population of
+size $N$ [[2](#ref-2)].
 
 ```math
 \mathrm{Var}\left[ \bar{X} \right] = \frac{\sigma^{2}}{n} \cdot \frac{N-n}{N-1} \hspace{19em} (9)
@@ -180,4 +185,30 @@ draws slightly dependent, and the variance acquires the finite population correc
 
 The factor tends to one as $N$ grows with $n$ fixed, so equation (1) is the limiting case of a
 population large enough that removing $n$ items does not change it. At $N = 1000$ and $n = 100$ the
-factor is 0.901, so the standard error is 0.949 times what equation (1) gives.
+factor is 0.901, so the standard error is 0.949 times what equation (1) gives. At $n = N$ the
+factor is zero, since a sample that holds the whole population leaves the sample mean equal to the
+population mean with nothing left to vary.
+
+### B.1 The Two Variance Properties
+
+Both properties of equation (5) follow from the definition of the variance,
+$\mathrm{Var}[Y] = E[(Y - E[Y])^{2}]$. Taking the constant out of the square gives the first.
+
+```math
+\mathrm{Var}[aY] = E\left[ (aY - aE[Y])^{2} \right] = a^{2} E\left[ (Y - E[Y])^{2} \right] = a^{2} \mathrm{Var}[Y] \hspace{19em} (10)
+```
+
+Expanding the square of the sum leaves every pair of terms, which collect into the variances on
+the diagonal and the covariances off it.
+
+```math
+\mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \sum_{j=1}^{n} \mathrm{Cov}(X_i, X_j) = \sum_{i=1}^{n} \mathrm{Var}[X_i] + \sum_{i \ne j} \mathrm{Cov}(X_i, X_j) \hspace{19em} (11)
+```
+
+Independent draws split the expectation of a product into the product of the expectations, and
+each deviation has expectation zero, so every term off the diagonal vanishes and equation (11)
+leaves the second property of equation (5).
+
+```math
+\mathrm{Cov}(X_i, X_j) = E\left[ (X_i - \mu)(X_j - \mu) \right] = E[X_i - \mu] \cdot E[X_j - \mu] = 0, \qquad i \ne j \hspace{19em} (12)
+```

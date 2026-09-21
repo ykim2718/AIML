@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 5 | Created: 2026-08-30 | Updated: 2026-09-21 16:52 CDT
+Rev. 6 | Created: 2026-08-30 | Updated: 2026-09-21 17:01 CDT
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -18,7 +18,7 @@ Rev. 5 | Created: 2026-08-30 | Updated: 2026-09-21 16:52 CDT
 
 ### 2.1. Statement
 
-표준편차가 $\sigma$ 인 모집단에서 크기 $n$ 의 표본을 독립으로 뽑고, 그 표본의 평균을
+표준편차가 $\sigma$ 인 모집단에서 크기 $n$ 의 표본을 independent 로 뽑고, 그 표본의 평균을
 $\bar{X}$ 라 하자. $\bar{X}$ 의 표준편차는 $\sigma_{\bar{X}}$ 로 적고 standard error 라
 부른다.
 
@@ -109,6 +109,7 @@ ISBN 978-0-534-24312-8.<br>
 
 ## Appendix A. Terminology
 
+- **Covariance**: 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값.
 - **Draw**: 모집단에서 관측값 하나를 뽑는 행위, 또는 그렇게 뽑힌 값 하나.
 - **Population**: 진술의 대상이 되는 값의 전체 집합.
 - **Sample**: 실제로 관측한 population 의 부분집합.
@@ -119,8 +120,9 @@ ISBN 978-0-534-24312-8.<br>
 
 ## Appendix B. Derivation
 
-평균이 $\mu$ 이고 variance 가 $\sigma^2$ 인 모집단에서 $X_1, \ldots, X_n$ 을 독립으로 뽑는다고
-하자. 각 draw 는 같은 분포를 따르며, 어느 draw 도 다른 draw 에 대한 정보를 지니지 않는다.
+평균이 $\mu$ 이고 variance 가 $\sigma^2$ 인 모집단에서 $X_1, \ldots, X_n$ 을 뽑되, 각 draw 가
+같은 분포를 따르고 (identically distributed) 어느 draw 도 다른 draw 에 대한 정보를 지니지
+않는다고 (independent) 하자.
 
 ```math
 E[X_i] = \mu, \qquad \mathrm{Var}[X_i] = \sigma^{2}, \qquad i = 1, \ldots, n \hspace{19em} (3)
@@ -133,7 +135,8 @@ E[X_i] = \mu, \qquad \mathrm{Var}[X_i] = \sigma^{2}, \qquad i = 1, \ldots, n \hs
 ```
 
 Variance 의 성질 두 가지가 필요하다. 확률변수에 상수를 곱하면 variance 는 그 상수의 제곱만큼
-커지고, 독립인 확률변수를 더한 것의 variance 는 각 variance 의 합이다.
+커지고, independent 인 확률변수를 더한 것의 variance 는 각 variance 의 합이다. 둘의 유도는
+[B.1](#b1-the-two-variance-properties) 에 둔다.
 
 ```math
 \mathrm{Var}[aY] = a^{2} \mathrm{Var}[Y], \qquad \mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathrm{Var}[X_i] \hspace{19em} (5)
@@ -158,10 +161,14 @@ Variance 의 성질 두 가지가 필요하다. 확률변수에 상수를 곱하
 E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \mu \hspace{19em} (8)
 ```
 
-이 유도에서 독립성은 식 (5) 의 두 번째 성질에서만 쓰인다. 독립성이 깨지는 경우가 둘 있다.
-Draw 끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이 성립하지
-않는다. 크기 $N$ 의 유한 모집단에서 비복원으로 뽑으면 draw 가 조금씩 종속되고, variance 에
-finite population correction 인자가 붙는다 [[2](#ref-2)].
+두 전제는 쓰이는 자리가 다르다. Identically distributed 는 식 (6) 이 합의 모든 항에 같은
+$\sigma^{2}$ 를 넣게 해 주고, independent 는 식 (5) 의 두 번째 성질이 요구하는 것이되 draw
+사이의 covariance 가 0 이라는 데까지만 쓰인다. Covariance 가 0 이 아니게 되는 경우가 둘
+있다. 1) Draw 끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이
+성립하지 않는다. 2) 비복원으로 뽑을 때, 곧 뽑은 값을 모집단에 되돌리지 않고 다음 draw 를 뽑을
+때는 뒤의 draw 가 고를 값이 줄어, 앞의 draw 가 뒤의 draw 의 분포를 바꾼다. 그러면 크기 $N$ 의
+모집단에 대해 평균의 variance 에 finite population correction 인자 $(N-n)/(N-1)$ 이 붙는다
+[[2](#ref-2)].
 
 ```math
 \mathrm{Var}\left[ \bar{X} \right] = \frac{\sigma^{2}}{n} \cdot \frac{N-n}{N-1} \hspace{19em} (9)
@@ -169,4 +176,27 @@ finite population correction 인자가 붙는다 [[2](#ref-2)].
 
 $n$ 을 고정한 채 $N$ 이 커지면 이 인자는 1 로 간다. 식 (1) 은 $n$ 개를 덜어내도 달라지지
 않을 만큼 모집단이 큰 극한인 셈이다. $N = 1000$ 이고 $n = 100$ 이면 인자가 0.901 이므로
-standard error 는 식 (1) 이 주는 값의 0.949 배가 된다.
+standard error 는 식 (1) 이 주는 값의 0.949 배가 된다. $n = N$ 이면 인자가 0 이다. 표본이
+모집단 전체를 담아 표본평균이 곧 모평균이고, 흩어질 것이 남지 않는다.
+
+### B.1 The Two Variance Properties
+
+식 (5) 의 두 성질은 variance 의 정의 $\mathrm{Var}[Y] = E[(Y - E[Y])^{2}]$ 에서 나온다. 제곱
+밖으로 상수를 빼면 앞의 성질이 나온다.
+
+```math
+\mathrm{Var}[aY] = E\left[ (aY - aE[Y])^{2} \right] = a^{2} E\left[ (Y - E[Y])^{2} \right] = a^{2} \mathrm{Var}[Y] \hspace{19em} (10)
+```
+
+합의 제곱을 펼치면 모든 항의 쌍이 남고, 대각의 variance 와 대각 밖의 covariance 로 모인다.
+
+```math
+\mathrm{Var}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \sum_{j=1}^{n} \mathrm{Cov}(X_i, X_j) = \sum_{i=1}^{n} \mathrm{Var}[X_i] + \sum_{i \ne j} \mathrm{Cov}(X_i, X_j) \hspace{19em} (11)
+```
+
+Independent 인 draw 에서는 곱의 기댓값이 기댓값의 곱으로 갈라지고 각 편차의 기댓값이 0 이므로,
+대각 밖의 항이 모두 사라지고 식 (11) 에는 식 (5) 의 뒤의 성질만 남는다.
+
+```math
+\mathrm{Cov}(X_i, X_j) = E\left[ (X_i - \mu)(X_j - \mu) \right] = E[X_i - \mu] \cdot E[X_j - \mu] = 0, \qquad i \ne j \hspace{19em} (12)
+```
