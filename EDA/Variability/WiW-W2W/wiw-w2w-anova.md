@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 55 | Created: 2026-09-01 | Updated: 2026-09-21 17:55 CDT
+Rev. 56 | Created: 2026-09-01 | Updated: 2026-09-21 17:57 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -68,10 +68,10 @@ Wafer 를 인자로 둔 일원 ANOVA 로 wafer 간 성분과 wafer 내 성분을
 
 Table 1. One-way ANOVA with wafer as the factor
 
-| Source | SS | df | MS | F | p |
-|---|---:|---:|---:|---:|---:|
-| Between wafer | 2,783,290 | 260 | 10,705.0 | 42.48 | ~0 |
-| Within wafer | 789,202 | 3132 | 252.0 | | |
+| Source | SS | df | MS | F | p | Sigma component |
+|---|---:|---:|---:|---:|---:|---:|
+| Between wafer | 2,783,290 | 260 | 10,705.0 | 42.48 | ~0 | $`\sigma_{between} = \sqrt{(10705.0 - 252.0)/13} = 28.36`$ |
+| Within wafer | 789,202 | 3132 | 252.0 | | | $`\sigma_{within} = \sqrt{252.0} = 15.87`$ |
 
 표의 각 열이 뜻하는 바는 아래와 같다.
 
@@ -80,8 +80,7 @@ Table 1. One-way ANOVA with wafer as the factor
 - MS: mean square. SS 를 df 로 나눈 값이며 분산의 추정치. Within 의 252.0 은 site 한 점의 산포, between 의 10,705.0 은 wafer 평균의 산포에 site 산포가 얹힌 크기.
 - F: 두 MS 의 비. 여기서는 10,705.0 / 252.0 = 42.48. wafer 사이에 차이가 없다면 1 근처에 머무는 값.
 - p: wafer 사이에 차이가 없다는 가정 아래 그만큼 큰 F 가 나올 확률. 여기서는 0 에 가까워, 차이가 없다는 가정을 버린다.
-
-분산성분은 `sigma_within` = 15.87, `sigma_between` = 28.36 이다. 앞의 것은 MS within 의 제곱근이고, 뒤의 것은 between 의 MS 에서 within 의 MS 를 빼고 site 수 13 으로 나눈 뒤 제곱근을 취한 값이다.
+- Sigma component: 그 행이 내는 분산성분의 표준편차. Within 은 MS within 의 제곱근이고, between 은 MS between 에서 MS within 을 빼고 site 수 13 으로 나눈 뒤 제곱근을 취한 값이다.
 
 Table 2. Variance components
 
@@ -180,6 +179,7 @@ $`N = 13`$, $`p = 0.999`$ 에서 계수는 1.656 이고, 판정한 241 장 중 4
 ## Appendix A. Terminology
 
 - **ANOVA**: analysis of variance. 전체 제곱합을 원인별 제곱합으로 나누고, 각각을 자유도로 나눈 평균제곱의 비로 원인의 유의성을 판정하는 방법.
+- **bilinear**: 두 인자 각각에 대해 linear 인 성질. Covariance 는 $`\mathrm{Cov}(aX + bY, Z) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(Y, Z)`$ 이고 두 번째 인자에서도 같으므로, 합으로 이루어진 두 변수의 covariance 를 항마다 펼칠 수 있다.
 - **ICC**: intraclass correlation. 전체 분산 중 group 간 분산이 차지하는 비율. 같은 group 에서 뽑은 두 관측치가 얼마나 닮았는지를 0 에서 1 사이로 나타내며, 이 문서의 group 은 wafer 이다. 이 문서가 쓰는 것은 one-way random effects model 의 ICC(1) 이며, two-way model 의 ICC 와는 값이 다르다.
 - **run order**: 자료 파일의 행 순서. 측정 순서를 따르므로 시간 축으로 사용.
 - **running baseline**: wafer 한 장을 판정할 때 쓰는 기준선. 그 wafer 앞에 있으면서 excursion 으로 판정되지 않은 wafer 만으로 구한 within-wafer 성분이다.
