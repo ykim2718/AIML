@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 6 | Created: 2026-09-21 | Updated: 2026-09-21 11:23 CDT
+Rev. 7 | Created: 2026-09-21 | Updated: 2026-09-21 11:45 CDT
 
 ## 1. Purpose
 
@@ -16,7 +16,7 @@ An item is settled when it passes its own definition of done, written per item r
 
 ## 3. Taxonomy and its Hierarchy
 
-The nine items fall into four stages, and each item is settled in the stage it belongs to. The stages run in order: a stage assumes every item of the stage before it is already done.
+A stage opens only once the stage before it has closed, and a number produced while an earlier stage is still open settles nothing. The nine items are grouped by the stage that settles them, and the four stages run in that order.
 
 The four stages, the items each one settles, and what each item fixes are drawn in [Fig 1](#fig-1).
 
