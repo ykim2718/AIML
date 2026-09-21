@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 58 | Created: 2026-09-01 | Updated: 2026-09-21 18:12 CDT
+Rev. 59 | Created: 2026-09-01 | Updated: 2026-09-21 18:22 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -37,7 +37,7 @@ $$\overline{S_{\mathrm{within}}^2} = \frac{1}{K} \sum_{i=1}^{K} s_i^2, \qquad S_
 
 $$S_{\mathrm{total}}^2 = \frac{K(N-1)}{M-1} \overline{S_{\mathrm{within}}^2} + \frac{N(K-1)}{M-1} S_{\mathrm{between}}^2 \hspace{19em} (4)$$
 
-두 계수는 $`K`$ 와 $`N`$ 이 커질수록 1 에 가까워지므로, 흔히 쓰는 형태는 계수를 떼어낸 아래 근사식이다. 계수가 1 로 가는 과정은 [Appendix B](#appendix-b-limits-of-the-decomposition-coefficients) 에 적었다.
+두 계수는 $`K`$ 와 $`N`$ 이 커질수록 1 에 가까워지므로, 흔히 쓰는 형태는 계수를 떼어낸 아래 근사식이다. 계수가 1 로 가는 과정은 [B.1](#b1-the-two-coefficients) 에 적었다.
 
 $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2} \hspace{19em} (5)$$
 
@@ -189,13 +189,16 @@ $`N = 13`$, $`p = 0.999`$ 에서 계수는 1.656 이고, 판정한 241 장 중 4
 - **sigma_within**: wafer 내 분산성분의 표준편차. MS within 의 제곱근이다.
 - **site**: 한 wafer 위의 측정 지점. 열 `S1`~`S13` 에 해당.
 - **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
+- **variogram**: 두 지점의 값 차이가 갖는 분산을 두 지점 사이 거리의 함수로 나타낸 것. 거리에 따라 값이 얼마나 닮는지를 재는 데 쓴다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
 - **w2w detection point**: 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
 - **wafer effect**: wafer 한 장의 고유 수준 $`\mu_i`$. Site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 참 평균이며, one-way random effects model 에서는 wafer 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 - **WiW excursion**: site 표준편차가 running baseline 이 세운 한계를 넘은 wafer.
 
-## Appendix B. Limits of the Decomposition Coefficients
+## Appendix B. Limits of the Decomposition
+
+### B.1 The Two Coefficients
 
 Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래와 같다.
 
@@ -222,6 +225,16 @@ $$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \f
 $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (21)$$
 
 이 문서의 $`K = 261`$, $`N = 13`$ 에서는 $`1 - a = 260/3392 = 0.0767`$ 로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/3392 = 0.0035`$ 로 $`1/K = 0.0038`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 251.98`$ 과 $`S_{\mathrm{between}}^2 = 823.46`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 32.79`$ 가 되어 관측값 32.45 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
+
+### B.2 Correlated Sites Within a Wafer
+
+식 (8) 은 같은 wafer 의 서로 다른 두 site 오차가 독립이라고 두어 $`\mathrm{Cov}(e_{ij}, e_{ij'})`$ 을 0 으로 지운다. 실제 wafer 는 radial pattern 이나 edge roll-off 처럼 site 위치를 따라 함께 움직이는 성분을 지녀 그 covariance 가 0 이 아니며, 식 (6) 의 모형은 site 를 자리와 무관한 반복으로 보아 그 공간 구조를 $`e_{ij}`$ 안에 묻는다.
+
+두 site 오차의 상관을 $`\rho`$ 로 두면 wafer 평균에 남는 잡음은 $`\mathrm{Var}(\bar{e}_i) = \sigma_{within}^2 [1 + (N-1)\rho] / N`$ 이며, 식 (9) 는 $`\rho = 0`$ 인 경우이다. $`\rho \gt 0`$ 이면 실제 잡음 바닥이 식 (11) 의 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 보다 크고, 덜 빼는 만큼 오른쪽 항 $`s_{\mu}(1..n)`$ 이 부풀려져 section 4.2 의 w2w detection point 가 실제보다 이른 $`n`$ 에서 잡힌다.
+
+같은 상관이 section 4.3 의 한계에도 걸린다. 식 (30) 이 자유도 $`N-1`$ 의 $`\chi^2`$ 를 쓰는 것은 한 wafer 의 site $`N`$ 개가 독립한 정보 $`N-1`$ 개를 낸다는 뜻인데, site 끼리 닮으면 실효 자유도가 그보다 작아 한계가 좁게 잡히고 WiW excursion 판정이 실제보다 민감해진다.
+
+$`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 필요하며, 이 문서의 자료로는 그 값을 대지 않았다.
 
 ## Appendix C. Derivation of the Between-Component Form
 
