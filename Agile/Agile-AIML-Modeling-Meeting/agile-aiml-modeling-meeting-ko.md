@@ -1,18 +1,17 @@
 # Agile AI/ML Modeling Meeting
-Rev. 9 | Created: 2026-09-21 | Updated: 2026-09-21 11:54 CDT
+Rev. 10 | Created: 2026-09-21 | Updated: 2026-09-21 15:35 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: Modeling 회의를 일반적인 개발 회의처럼 진행하면 "한 번 해볼게요" 로 끝난다. 회의가 확정하는 항목에 이름이 없어, 그 가운데 무엇이 빠졌는지를 말할 방법이 없기 때문이다.
-- **Goal**: Modeling 회의가 확정하는 아홉 항목에 이름을 붙이고, 각 항목을 확정하는 단계와 그 항목이 통과해야 할 definition of done 을 고정하여, 실무자가 지금 상 위에 무엇이 있고 무엇이 빠졌으며 빠진 것이 무엇을 보여야 하는지를 한 문장으로 말할 수 있게 한다.
-- **Non-Goal**: 실험 추적 도구 (MLflow, Weights & Biases) 의 설정과 ticket system 운영은 다루지 않는다.
-- **Non-Goal**: Hypothesis 를 story point 로 추정하고 velocity 를 재는 일은 두지 않는다. 실험이 얼마나 도는지는 돌려 보기 전에는 알 수 없기 때문이다.
+- **Problem Statement**: Agile development 을 AI/ML 에 적용하는 예시가 모호하여, 실무자는 그 framework 이 modeling 팀에게 무엇을 요구하는지 손에 쥐지 못한다.
+- **Goal**: Scrum Guide [[5](#ref-5)] 를 AI/ML modeling 단계별로 적용하여, 실무자에게 agile model development 를 돌리는 방법을 제시한다.
+- **Non-Goal**: Process flow 를 제시하며, modeling 자체는 하지 않는다.
 
 ## 2. Summary
 
-AI/ML modeling 회의는 아홉 항목을 확정하며, 각 항목은 순서대로 도는 네 단계 가운데 하나에 속한다. 회의는 sprint 의 경계에 놓여, 결과가 상 위에 올라온 sprint 를 닫고 다음 sprint 를 연다.
+Agile AI/ML model development 는 sprint 마다 한 번 도는 네 단계로 진행되며, 한 단계는 그 단계가 확정하는 항목이 저마다 definition of done 을 통과했을 때에만 닫힌다. 확정하는 항목은 모두 아홉이고, sprint 경계의 회의가 마지막 단계로 이번 sprint 를 닫고 다음 sprint 를 여는 자리다.
 
-항목은 자기 몫의 definition of done 을 통과했을 때 확정되며, 그 기준은 회의 전체에 하나로 걸지 않고 항목마다 따로 적는다. 회의를 결정 없이 끝내는 습관은 각각 아무도 대지 않은 항목 하나다.
+네 단계는 Scrum Guide 의 event, artifact, commitment 를 대체하지 않고 그대로 나른다 [[5](#ref-5)]. Hypothesis 가 sprint backlog 항목이고, 항목마다의 done-when 이 Increment 에 붙은 commitment 이며, 승격할 수 있는 model 이 곧 Increment 다. Sprint 를 결정 없이 끝내는 습관은 각각 아무도 대지 않은 항목 하나다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -74,7 +73,7 @@ Premise Check 는 이번 sprint 의 metric 이 뜻을 가지려면 이미 참이
 
 **Provenance** 는 행이 어디서 왔고 거기에 무엇을 했는가이다. Split 규칙, 결측치와 이상치 처리, 누수 차단, dataset 버전 hash 가 그것이다. Sliding window augmentation 이 차단을 잃는 흔한 자리인데, 겹치는 window 가 split 을 가로질러 행을 나누어 갖기 때문이다. 누수는 열일곱 분야 294편의 논문에서 여덟 가지 형태로 기록되어 있어, 가끔이 아니라 상시 항목이다 [[3](#ref-3)].
 
-**Baseline** 은 가장 단순한 model — 선형 회귀나 고전 통계 — 의 점수이며, 그렇게 태그한 추적 도구의 run 이 담는다. 첫 model 을 단순하게 두는 것은 확립된 출발점이고 [[5](#ref-5)], 태그가 없으면 뒤에 오는 모든 주장이 기대는 그 비교를 다시 찾지 못한다.
+**Baseline** 은 가장 단순한 model — 선형 회귀나 고전 통계 — 의 점수이며, 그렇게 태그한 추적 도구의 run 이 담는다. 첫 model 을 단순하게 두는 것은 확립된 출발점이고 [[6](#ref-6)], 태그가 없으면 뒤에 오는 모든 주장이 기대는 그 비교를 다시 찾지 못한다.
 
 ### 4.2 Claim Setting
 
@@ -126,25 +125,25 @@ Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
 
 ## 6. Agile Practice
 
-아래의 agile 기법은 software 팀이 이미 쓰는 이름을 그대로 두고 담는 것만 바꾼다. 이 회의를 들이는 팀은 새 ceremony 가 아니라 이미 돌리는 ceremony 에 용어를 더한다.
+아래의 기법은 Scrum Guide 가 붙인 이름을 그대로 두고 담는 것만 바꾼다 [[5](#ref-5)]. 이 회의를 들이는 팀은 새 ceremony 가 아니라 이미 돌리는 event, artifact, commitment 에 용어를 더한다. Story point 와 velocity 는 표에서 뺐다. 실험이 얼마나 도는지는 돌려 보기 전에는 알 수 없기 때문이다.
 
 Table 2. Where each agile practice lands in the modeling sprint
 
-| Practice        | What it carries here                                                    | What changes for modeling                                            |
-| :-------------: | :---------------------------------------------------------------------: | :------------------------------------------------------------------: |
-| Sprint          | 검토 중인 Hypothesis. Premise Check 부터 Verdict 까지                   | 달력이 아니라 실험 하나를 재현하는 데 걸리는 시간으로 길이를 정함    |
-| Product backlog | 아직 sprint 에 들지 않은 Hypothesis 를 순서대로                         | 전달한 가치가 아니라 다음 Insight 가 무엇을 판정하는가로 순서를 매김 |
-| Sprint backlog  | Hypothesis. Sprint 당 하나                                              | Backlog 항목이 만들 기능이 아니라 검증할 주장                        |
-| WIP limit       | Modeler 한 사람당 진행 중인 Hypothesis 하나                             | 둘을 한꺼번에 바꾸면 Insight 의 귀속이 불가능해짐                    |
-| Timeboxing      | 실험에 붙인 시계, 그리고 회의에 붙인 시계                               | 무엇을 찾았든 한계에서 실험을 닫음                                   |
-| Spike           | 배포 board 밖으로 들어낸 연구 성격의 작업                               | 산출물이 model 이 아니라 결정                                        |
-| Daily standup   | 진행 중인 실험의 blocker                                                | Sprint 경계가 아니라 생긴 날에 드러냄                                |
-| Sprint review   | 3단계 Product Review                                                    | 시연 대상이 추적된 run 과 분석 그림                                  |
-| Retrospective   | 4단계의 process finding                                                 | Model 에 대한 발견인 Insight 와 따로 기록                            |
-| DoR             | 1단계가 done 인 상태. Target 이 적히고 Provenance 와 Baseline 이 추적됨 | Ready 가 검토자 한 사람의 판단이 아니라 세 항목                      |
-| DoD             | [Table 1](#table-1) 의 done-when 열                                     | 완료를 sprint 전체에 하나로 걸지 않고 항목마다 적음                  |
-| Increment       | 지금 서빙 중인 model 과 견주어진 Readiness                              | Increment 는 승격할 수 있는 model 이거나 아무것도 아님               |
-| BKM             | Stop Verdict 와 그 이유를 두는 자리                                     | 닫은 방향이 다음 팀이 읽는 지식이 됨                                 |
+| Practice        | What it carries here                                                    | What changes for modeling                                                                           |
+| :-------------: | :---------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
+| Sprint          | 검토 중인 Hypothesis. Premise Check 부터 Verdict 까지                   | 달력이 아니라 실험 하나를 재현하는 데 걸리는 시간으로 길이를 정함                                   |
+| Product backlog | 아직 sprint 에 들지 않은 Hypothesis 를 순서대로                         | 전달한 가치가 아니라 다음 Insight 가 무엇을 판정하는가로 순서를 매김                                |
+| Sprint backlog  | Hypothesis. Sprint 당 하나                                              | Backlog 항목이 만들 기능이 아니라 검증할 주장                                                       |
+| WIP limit       | Modeler 한 사람당 진행 중인 Hypothesis 하나                             | 둘을 한꺼번에 바꾸면 Insight 의 귀속이 불가능해짐                                                   |
+| Timeboxing      | 실험에 붙인 시계, 그리고 회의에 붙인 시계                               | 무엇을 찾았든 한계에서 실험을 닫음                                                                  |
+| Spike           | 배포 board 밖으로 들어낸 연구 성격의 작업                               | 산출물이 model 이 아니라 결정                                                                       |
+| Daily standup   | 진행 중인 실험의 blocker                                                | Sprint 경계가 아니라 생긴 날에 드러냄                                                               |
+| Sprint review   | 3단계 Product Review                                                    | 시연 대상이 추적된 run 과 분석 그림                                                                 |
+| Retrospective   | 4단계의 process finding                                                 | Model 에 대한 발견인 Insight 와 따로 기록                                                           |
+| DoR             | 1단계가 done 인 상태. Target 이 적히고 Provenance 와 Baseline 이 추적됨 | Scrum Guide 밖의 용어. Guide 는 한 sprint 안에 Done 될 수 있는 항목을 ready for selection 이라 부름 |
+| DoD             | [Table 1](#table-1) 의 done-when 열                                     | Scrum Guide 가 Increment 에 붙인 commitment. Sprint 전체에 하나로 걸지 않고 항목마다 적음           |
+| Increment       | 지금 서빙 중인 model 과 견주어진 Readiness                              | Increment 는 승격할 수 있는 model 이거나 아무것도 아님                                              |
+| BKM             | Stop Verdict 와 그 이유를 두는 자리                                     | 닫은 방향이 다음 팀이 읽는 지식이 됨                                                                |
 
 두 기법이 회의를 닫을 수 있는지를 가른다. WIP limit 이 없으면 Hypothesis 에 Verdict 를 낼 수 없다. Sprint 가 하나보다 많이 움직여, 방이 지금 무엇을 판정하는지 말하지 못하기 때문이다. 항목마다 적은 done-when 이 없으면 metric 을 규칙이 아니라 논쟁으로 물리게 되고, 그 논쟁은 회의보다 오래간다.
 
@@ -208,7 +207,9 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 <a id="ref-4"></a>
 [4] Mitchell, M., Wu, S., Zaldivar, A., Barnes, P., Vasserman, L., Hutchinson, B., Spitzer, E., Raji, I. D., & Gebru, T. (2019). [Model Cards for Model Reporting](https://doi.org/10.1145/3287560.3287596). *Proceedings of the Conference on Fairness, Accountability, and Transparency (FAT\* '19)*.<br>
 <a id="ref-5"></a>
-[5] Zinkevich, M. [Rules of Machine Learning: Best Practices for ML Engineering](https://developers.google.com/machine-learning/guides/rules-of-ml). Google for Developers.
+[5] Schwaber, K., & Sutherland, J. (2020). [The Scrum Guide](https://scrumguides.org/scrum-guide.html). November 2020.<br>
+<a id="ref-6"></a>
+[6] Zinkevich, M. [Rules of Machine Learning: Best Practices for ML Engineering](https://developers.google.com/machine-learning/guides/rules-of-ml). Google for Developers.
 
 ---
 
@@ -221,7 +222,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Daily standup**: 진행 중인 일의 blocker 를 드러내는 짧은 일일 회의.
 - **Data leakage**: serving 시점에는 얻을 수 없는 정보가 model 에 닿는 것. offline 점수만 올리고 online 점수는 올리지 않는다.
 - **DoD (Definition of Done)**: 작업이 완료로 불리려면 넘어야 하는 명시적 기준.
-- **DoR (Definition of Ready)**: 팀이 어떤 작업을 sprint 안으로 들이기 전에 그 작업이 넘어야 할 기준.
+- **DoR (Definition of Ready)**: 팀이 어떤 작업을 sprint 안으로 들이기 전에 그 작업이 넘어야 할 기준. 현장에서 쓰이지만 Scrum Guide 에는 없다.
 - **Elastic Net**: L1 과 L2 norm 을 함께 쓰는 선형 model. 상관된 변수 가운데 하나만 고르지 않고 함께 남긴다.
 - **EVT (Extreme Value Theory)**: 분포 꼬리의 통계. 여기서는 센서 값이 얼마나 극단인지로 임계값을 정하는 데 쓴다.
 - **Feature importance**: 학습된 model 이 각 입력에 붙이는 점수. 어느 입력이 예측을 움직였는지 읽는다.
