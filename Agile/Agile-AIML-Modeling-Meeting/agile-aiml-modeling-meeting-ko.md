@@ -1,10 +1,10 @@
 # Agile AI/ML Modeling Meeting
-Rev. 5 | Created: 2026-09-21 | Updated: 2026-09-21 11:16 CDT
+Rev. 6 | Created: 2026-09-21 | Updated: 2026-09-21 11:23 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: Modeling 회의를 일반적인 개발 회의처럼 진행하면 "한 번 해볼게요" 로 끝난다. 방이 무엇을 확정하는 자리인지 그것들에 이름이 없어, 그 가운데 무엇이 빠졌는지를 말할 방법이 없기 때문이다.
-- **Goal**: Modeling 회의가 확정하는 아홉 항목에 이름을 붙이고, 각 항목을 확정하는 단계와 그것이 통과해야 할 definition of done 을 고정하여, 실무자가 지금 상 위에 무엇이 있고 무엇이 빠졌으며 빠진 것이 무엇을 보여야 하는지를 한 문장으로 말할 수 있게 한다.
+- **Problem Statement**: Modeling 회의를 일반적인 개발 회의처럼 진행하면 "한 번 해볼게요" 로 끝난다. 회의가 확정하는 항목에 이름이 없어, 그 가운데 무엇이 빠졌는지를 말할 방법이 없기 때문이다.
+- **Goal**: Modeling 회의가 확정하는 아홉 항목에 이름을 붙이고, 각 항목을 확정하는 단계와 그 항목이 통과해야 할 definition of done 을 고정하여, 실무자가 지금 상 위에 무엇이 있고 무엇이 빠졌으며 빠진 것이 무엇을 보여야 하는지를 한 문장으로 말할 수 있게 한다.
 - **Non-Goal**: 실험 추적 도구 (MLflow, Weights & Biases) 의 설정과 ticket system 운영은 다루지 않는다.
 - **Non-Goal**: Hypothesis 를 story point 로 추정하고 velocity 를 재는 일은 두지 않는다. 실험이 얼마나 도는지는 돌려 보기 전에는 알 수 없기 때문이다.
 
@@ -16,7 +16,7 @@ AI/ML modeling 회의는 아홉 항목을 확정하며, 각 항목은 순서대�
 
 ## 3. Taxonomy and its Hierarchy
 
-아홉 항목은 그것을 확정하는 단계로 분류되고, 네 단계는 순서를 가진다. 한 단계는 앞 단계의 모든 항목이 이미 done 이라고 가정한다.
+아홉 항목은 네 단계로 나뉘며, 각 항목은 자기가 속한 단계에서 확정된다. 단계에는 차례가 있고, 한 단계는 앞 단계의 모든 항목이 이미 done 이라고 가정한다.
 
 네 단계와 각 단계가 확정하는 항목, 그리고 각 항목이 고정하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
@@ -100,7 +100,7 @@ Decision 은 방을 떠나는 것을 확정하며, 두 항목은 언제나 함�
 
 **Verdict** 는 accepted, rework, stop 가운데 하나이며, product owner 가 Hypothesis 에 대고 소리 내어 말한다. Increment 를 받아들이는 일은 backlog 의 순서를 소유한 역할의 몫이기 때문이다. Accepted 는 재현된 Insight 를 요구하고, model 을 serving 으로 승격하려면 견주어진 Readiness 가 있어야 한다. Rework 는 제 기준에 못 미친 항목을 이름 붙이고, stop 은 그 이유를 적어 다음 팀이 읽을 자리에 남긴다.
 
-**Handoff** 는 다음 sprint 의 담당자, 기한, ticket id 이며, Verdict 가 함의하는 engineering 작업도 함께 담는다. 그것이 다음 sprint backlog 항목이며, 할 일이 아니라 Hypothesis 의 형태로 적는다. 그것에 밀린 Hypothesis 들은 다음 Insight 가 무엇을 판정하는가의 순서로 product backlog 에 남는다. Code review 배정과 pipeline 연동을 여기서만 이름 붙여, modeling 논의가 일정 조율에 끊기지 않게 한다.
+**Handoff** 는 다음 sprint 의 담당자, 기한, ticket id 이며, Verdict 가 함의하는 engineering 작업도 함께 담는다. Handoff 가 다음 sprint backlog 항목이며, 할 일이 아니라 Hypothesis 의 형태로 적는다. 그것에 밀린 Hypothesis 들은 다음 Insight 가 무엇을 판정하는가의 순서로 product backlog 에 남는다. Code review 배정과 pipeline 연동을 여기서만 이름 붙여, modeling 논의가 일정 조율에 끊기지 않게 한다.
 
 ## 5. Agenda
 
@@ -221,7 +221,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Daily standup**: 진행 중인 일의 blocker 를 드러내는 짧은 일일 회의.
 - **Data leakage**: serving 시점에는 얻을 수 없는 정보가 model 에 닿는 것. offline 점수만 올리고 online 점수는 올리지 않는다.
 - **DoD (Definition of Done)**: 작업이 완료로 불리려면 넘어야 하는 명시적 기준.
-- **DoR (Definition of Ready)**: 팀이 어떤 작업을 sprint 안으로 들이기 전에 그것이 넘어야 할 기준.
+- **DoR (Definition of Ready)**: 팀이 어떤 작업을 sprint 안으로 들이기 전에 그 작업이 넘어야 할 기준.
 - **Elastic Net**: L1 과 L2 norm 을 함께 쓰는 선형 model. 상관된 변수 가운데 하나만 고르지 않고 함께 남긴다.
 - **EVT (Extreme Value Theory)**: 분포 꼬리의 통계. 여기서는 센서 값이 얼마나 극단인지로 임계값을 정하는 데 쓴다.
 - **Feature importance**: 학습된 model 이 각 입력에 붙이는 점수. 어느 입력이 예측을 움직였는지 읽는다.
@@ -237,7 +237,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Retrospective**: Sprint 끝에 process 를 되짚고 무엇을 고칠지 정하는 회의.
 - **Sliding window augmentation**: 연속 기록에서 겹치는 window 를 잘라 학습 표본을 늘리는 것. window 끼리 행을 나누어 갖는다.
 - **Spike**: 결과를 알 수 없어 배포 board 밖으로 들어낸, 따로 ticket 을 받은 조사.
-- **Sprint**: 길이가 고정된 구간. Hypothesis 하나를 그것을 여는 회의부터 그 Verdict 를 내는 회의까지 나른다.
+- **Sprint**: 길이가 고정된 구간. Hypothesis 하나를 여는 회의부터 그 Verdict 를 내는 회의까지 나른다.
 - **Sprint backlog**: 한 sprint 안에 끝내기로 한 작업.
 - **Story point**: Backlog 항목의 크기를 상대적으로 매긴 추정값.
 - **Time warping**: 시간 축의 일그러짐. 같은 공정의 기록 사이에서 신호를 밀거나 늘인다.
