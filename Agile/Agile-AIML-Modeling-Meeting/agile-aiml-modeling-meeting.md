@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 15 | Created: 2026-09-21 | Updated: 2026-09-21 16:11 CDT
+Rev. 16 | Created: 2026-09-21 | Updated: 2026-09-21 16:20 CDT
 
 ## 1. Purpose
 
@@ -11,7 +11,7 @@ Rev. 15 | Created: 2026-09-21 | Updated: 2026-09-21 16:11 CDT
 
 Agile AI/ML model development runs as four stages that repeat once a sprint, and a stage closes only when the items it settles have each passed their definition of done. Nine items are settled in total, and the meeting on the sprint boundary is where the last stage closes one sprint and opens the next.
 
-The four stages carry the Scrum Guide's events, artifacts and commitments rather than replacing them [[5](#ref-5)]: the Hypothesis is the sprint backlog item, the done-when of each item is the commitment attached to the Increment, and a promotable model is the Increment itself. The habits that end a sprint without a decision are each an item nobody supplied.
+The four stages carry the Scrum Guide's events, artifacts and commitments rather than replacing them [[5](#ref-5)]: the Hypothesis is the sprint backlog item, the done-when of each item is the commitment attached to the Increment, and a promotable model is the Increment itself. The habits that end a meeting without a Verdict are each an item nobody supplied.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -44,22 +44,20 @@ Fig 1. The nine items a modeling meeting settles, and the stage that settles eac
 
 What closes an item is its definition of done, and that bar differs from item to item.
 
-### 3.1 Placement
-
 <a id="table-1"></a>
 Table 1. The nine items, the stage that settles each, and its definition of done
 
 | Item       | Settled at       | Done when                                                                          | What carries it                                            |
 | :--------: | :--------------: | :--------------------------------------------------------------------------------: | :--------------------------------------------------------: |
 | Target     | 1 Premise Check  | Written as one quantity with its threshold, agreed before the sprint opens         | One line in the backlog item                               |
-| Provenance | 1 Premise Check  | Split rule, missing value and outlier handling, and dataset hash recorded          | The tracker run and the data version tool                  |
-| Baseline   | 1 Premise Check  | A run tagged as the baseline, carrying the score later claims are compared against | A tracker run with the baseline tag                        |
+| Provenance | 1 Premise Check  | Split rule, missing value and outlier handling, and dataset hash recorded          | The experiment tracker run and the data version tool       |
+| Baseline   | 1 Premise Check  | A run tagged as the baseline, carrying the score later claims are compared against | An experiment tracker run with the baseline tag            |
 | Hypothesis | 2 Claim Setting  | One change, its physical reason and the expected movement, all stated              | The sprint backlog item                                    |
-| Run        | 3 Product Review | Parameters, dataset version, code commit and metric all tracked                    | The tracker entry                                          |
+| Run        | 3 Product Review | Parameters, dataset version, code commit and metric all tracked                    | The experiment tracker entry                               |
 | Insight    | 3 Product Review | The cause of the metric move reproduced from a clean checkout                      | Feature importance or error analysis, exported as a figure |
 | Readiness  | 3 Product Review | Latency, skew, fallback and monitoring compared against the model now serving      | The model registry entry and the monitoring dashboard      |
 | Verdict    | 4 Decision       | Said aloud by the product owner, on the Hypothesis                                 | One line in the minutes                                    |
-| Handoff    | 4 Decision       | Owner, due date and item id issued for the next sprint                             | A backlog item with an id in the tracker                   |
+| Handoff    | 4 Decision       | Owner, due date and item id issued for the next sprint                             | A backlog item with an id in the work tracker              |
 
 ## 4. Items
 
@@ -73,7 +71,7 @@ Premise Check settles what must already be true for this sprint's metric to mean
 
 **Provenance** is where the rows came from and what was done to them: the split rule, the handling of missing values and outliers, the leakage barrier, and the dataset version hash. Sliding window augmentation is the usual place a barrier is lost, since overlapping windows share rows across the split. Leakage is recorded in eight distinct forms across 294 papers in seventeen fields, which is why it is a standing item rather than an occasional one [[3](#ref-3)].
 
-**Baseline** is the score of the simplest model — a linear regression or a classical statistic — carried by a tracker run tagged as such. Keeping the first model simple is the established starting point [[6](#ref-6)], and without the tag the comparison every later claim rests on cannot be found again.
+**Baseline** is the score of the simplest model — a linear regression or a classical statistic — carried by an experiment tracker run tagged as such. Keeping the first model simple is the established starting point [[6](#ref-6)], and without the tag the comparison every later claim rests on cannot be found again.
 
 ### 4.2 Claim Setting
 
@@ -103,7 +101,7 @@ Decision settles what leaves the room, and its two items are always issued toget
 
 ## 5. Agenda
 
-The agenda is the four stages of [Fig 1](#fig-1) in order, and each stage ends when its items can be said in one sentence. The meeting is timeboxed like every other ceremony, and stage 4 is protected: an earlier stage that overruns loses depth rather than taking the time the Verdict needs.
+The agenda is the four stages of [Fig 1](#fig-1) in order, and each stage ends when its items can be said in one sentence. The meeting is timeboxed like every other event, and stage 4 is protected: an earlier stage that overruns loses depth rather than taking the time the Verdict needs.
 
 The four sentences below are what a practitioner reads out to close each stage. A stage whose sentence cannot be completed has not finished, whatever else was discussed.
 
@@ -121,29 +119,29 @@ Stage 4   "Verdict <ACCEPTED|REWORK|STOP>. Handoff: <OWNER> runs <EXPERIMENT>
            by <DATE>, backlog item <ITEM_ID>."
 ```
 
-The meeting itself sits on the sprint boundary, so stage 4 opens the next sprint as it closes this one. Between two meetings the blockers on the running experiment are raised at the daily standup rather than held for the boundary.
+The meeting itself sits on the sprint boundary, so stage 4 opens the next sprint as it closes this one. Between two meetings the blockers on the running experiment are raised at the Daily Scrum rather than held for the boundary.
 
 ## 6. Agile Practice
 
-Each practice below keeps the name the Scrum Guide gives it and changes only what it holds [[5](#ref-5)]. A team adopting this meeting adds vocabulary to the events, artifacts and commitments it already runs rather than new ceremonies. Story points and velocity are left out of the table, since how long an experiment runs is unknown until it has run.
+Each practice below keeps the name it already carries and changes only what it holds. The Scrum Guide names most of them — Sprint, the two backlogs, the Daily Scrum, the sprint review, the sprint retrospective, the Increment, the definition of done and the timebox on each event [[5](#ref-5)] — and WIP limit, spike, DoR and BKM come from the practice built around it. A team adopting this meeting adds vocabulary to the events, artifacts and commitments it already runs rather than new ones. Story points and velocity are left out of the table, since how long an experiment runs is unknown until it has run.
 
 Table 2. Where each agile practice lands in the modeling sprint
 
-| Practice        | What it carries here                                          | What changes for modeling                                                                    |
-| :-------------: | :-----------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
-| Sprint          | The Hypothesis under review, from Premise Check to Verdict    | Length set by how long one experiment takes to reproduce                                     |
-| Product backlog | The hypotheses not yet taken into a sprint, in order          | Ordered by what the next Insight would decide                                                |
-| Sprint backlog  | The Hypothesis, one per sprint                                | A backlog item is a claim to test, not a feature to build                                    |
-| WIP limit       | One Hypothesis in flight per modeler                          | Two changes at once leave the Insight unattributable                                         |
-| Timeboxing      | The clock on the experiment and on the meeting                | The experiment closes at its limit, whatever it has found                                    |
-| Spike           | Research-shaped work taken as its own backlog item            | Its output is a decision, not a model                                                        |
-| Daily standup   | Blockers on the running experiment                            | Raised the day they appear, not at the sprint boundary                                       |
-| Sprint review   | Stage 3, Product Review                                       | The demo is the tracked run and the analysis plot                                            |
-| Retrospective   | The process finding of stage 4                                | Recorded apart from the Insight, which is a finding about the model                          |
-| DoR             | Stage 1 done: Target written, Provenance and Baseline tracked | Outside the Scrum Guide, which calls an item ready for selection when one sprint can Done it |
-| DoD             | The done-when column of [Table 1](#table-1)                   | The Scrum Guide's commitment for the Increment, written per item rather than as one bar      |
-| Increment       | Readiness compared against the model now serving              | The increment is a model that can be promoted, or nothing                                    |
-| BKM             | Where a stop Verdict and its reason are kept                  | A direction closed is knowledge the next team reads                                          |
+| Practice             | What it carries here                                          | What changes for modeling                                                                      |
+| :------------------: | :-----------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+| Sprint               | The Hypothesis under review, from Premise Check to Verdict    | Length set by how long one experiment takes to reproduce                                       |
+| Product backlog      | The hypotheses not yet taken into a sprint, in order          | Ordered by what the next Insight would decide                                                  |
+| Sprint backlog       | The Hypothesis, one per sprint                                | A backlog item is a claim to test, not a feature to build                                      |
+| WIP limit            | One Hypothesis in flight per modeler                          | Two changes at once leave the Insight unattributable                                           |
+| Timeboxing           | The clock on the experiment and on the meeting                | The experiment closes at its limit, whatever it has found                                      |
+| Spike                | Research-shaped work taken as its own backlog item            | Its output is a decision, not a model                                                          |
+| Daily Scrum          | Blockers on the running experiment                            | Raised the day they appear, not at the sprint boundary                                         |
+| Sprint review        | Stage 3, Product Review                                       | The demo is the tracked run and the analysis plot                                              |
+| Sprint retrospective | The process finding of stage 4                                | Recorded apart from the Insight, which is a finding about the model                            |
+| DoR                  | Stage 1 done: Target written, Provenance and Baseline tracked | Outside the Scrum Guide, which deems an item ready for selection when one sprint can finish it |
+| DoD                  | The done-when column of [Table 1](#table-1)                   | The Scrum Guide's commitment for the Increment, written per item rather than as one bar        |
+| Increment            | Readiness compared against the model now serving              | The increment is a model that can be promoted, or nothing                                      |
+| BKM                  | Where a stop Verdict and its reason are kept                  | A direction closed is knowledge the next team reads                                            |
 
 Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the sprint moved more than one thing and the room cannot say which one it is judging. Without a done-when written per item, a metric is refused by argument rather than by rule, and the argument outlasts the meeting.
 
@@ -176,7 +174,7 @@ The domain expert says that two sensors are symmetric and must be grouped by top
 
 ## 9. Record
 
-The minutes carry three of the nine items — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other six live in the tracker and the backlog item, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
+The minutes carry three of the nine items — Verdict, Insight and Handoff — and a meeting that cannot fill them has not finished. The other six live in the experiment tracker and the backlog item, which the three lines point at. The process finding of the same meeting is recorded apart, in the retrospective note that updates the BKM, since a record mixing the two reads as neither.
 
 ```text
 Verdict : <ACCEPTED|REWORK|STOP> on <HYPOTHESIS>
@@ -216,20 +214,22 @@ The same three lines fill the model card that ships with the model, which record
 ## Appendix A. Terminology
 
 - **1D-CNN autoencoder**: a convolutional network over a one-dimensional signal, trained to rebuild its own input, used here to reduce the dimension of a process trace.
-- **Backlog item**: one unit of work in a backlog, held in the team's tracker under an id.
-- **BKM (Best Known Method)**: the team document holding the best method known so far for a task, updated from retrospectives.
+- **Backlog item**: one unit of work in a backlog, held under an id in the team's work tracker.
+- **BKM (Best Known Method)**: the team document holding the best method known so far for a task, updated from the sprint retrospective.
 - **Blocker**: a technical or administrative obstacle that stops an experiment from moving to its next step.
 - **Confusion matrix**: the table of predicted against actual classes, read to see which class a classifier confuses with which.
-- **Daily standup**: the short daily meeting at which blockers on the running work are raised.
+- **Daily Scrum**: the short daily meeting at which blockers on the running work are raised, also called the daily standup.
 - **Data leakage**: information reaching the model that would not be available when it serves, which raises the offline score without raising the online one.
 - **DoD (Definition of Done)**: the explicit bar a work item must clear to be called done.
 - **DoR (Definition of Ready)**: the bar a work item must clear before a team takes it into a sprint, used in practice but absent from the Scrum Guide.
 - **Elastic Net**: a linear model penalised by both the L1 and the L2 norm, which keeps correlated variables together rather than selecting one of them.
 - **EVT (Extreme Value Theory)**: the statistics of the tail of a distribution, used here to set a threshold from how extreme a sensor value is.
+- **Experiment tracker**: the system that records each run's parameters, dataset version, code commit and metric.
 - **Feature importance**: the score a fitted model attaches to each input, read to see which input moved the prediction.
 - **Foundation model**: a large model pre-trained on broad data, adapted to a task by fine-tuning rather than trained from scratch.
 - **ICE score**: an ordering score for a backlog item, from impact, confidence and ease.
 - **Increment**: the working product one sprint produces.
+- **Lasso**: a linear model penalised by the L1 norm, which drives coefficients to zero and so keeps one variable out of a correlated group.
 - **Latent space**: the reduced coordinates an encoder maps its input onto.
 - **Loss curve**: the training and validation loss plotted against training step.
 - **Metric**: the value a run reports for the target quantity, such as accuracy, F1-score or RMSE.
@@ -239,17 +239,19 @@ The same three lines fill the model card that ships with the model, which record
 - **Product backlog**: the ordered list of work not yet taken into a sprint.
 - **Product owner**: the role that owns the order of the backlog and accepts the increment.
 - **Representation learning**: learning the features themselves from the data rather than specifying them by hand.
-- **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
+- **Ridge**: a linear model penalised by the L2 norm, which shrinks correlated coefficients together rather than dropping any of them.
 - **Sliding window augmentation**: cutting overlapping windows out of a continuous record to make more training samples, which shares rows between windows.
 - **Spike**: an investigation carried as its own backlog item, which returns a decision rather than an increment.
 - **Sprint**: the fixed-length span that carries one Hypothesis, from the meeting that opens it to the meeting that issues its Verdict.
 - **Sprint backlog**: the work a team commits to finish in one sprint.
+- **Sprint retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Story point**: a relative estimate of the size of a backlog item.
 - **Time warping**: a distortion of the time axis that shifts or stretches a signal between records of the same process.
 - **Timeboxing**: fixing in advance how long a task may run, and closing it at that limit whatever it has reached.
 - **Train/serve skew**: a difference between the preprocessing applied during training and the preprocessing applied when serving.
 - **Velocity**: the number of story points a team completes in one sprint.
 - **WIP (Work In Progress)**: work currently under way, limited in number so that each item can be finished before the next starts.
+- **Work tracker**: the system that holds backlog items under an id, with their owner and due date.
 - **Yield**: the fraction of produced units that meet specification.
 
 ## Appendix B. Experiment Priority
@@ -300,7 +302,7 @@ Fig 2. The path from a proposed idea to one Hypothesis in the sprint backlog
 
 ### B.2 ICE Score
 
-When the room diverges, each member scores the idea from 1 to 5 on three letters and the average orders the backlog. The score is a way to make disagreement explicit rather than a measurement.
+When the room diverges, each member scores the idea from 1 to 5 on three letters, and the three averaged letters are multiplied into the score that orders the backlog. The score is a way to make disagreement explicit rather than a measurement.
 
 Table 6. The three letters of an ICE score
 
