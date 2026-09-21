@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 8 | Created: 2026-08-30 | Updated: 2026-09-21 17:20 CDT
+Rev. 9 | Created: 2026-08-30 | Updated: 2026-09-21 17:21 CDT
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -218,7 +218,7 @@ Covariance 의 정의를 펼친 뒤 $E[\cdot]$ 의 linearity 로 항마다 기�
 \hspace{19em} (13)
 ```
 
-Covariance 가 0 인 경우에 식 (13) 의 마지막 줄은 0 이 된다.
+Covariance 가 0 인 경우에 식 (13) 은 0 이 된다.
 
 ```math
 E[X_i X_j] - \mu_i \mu_j = 0 \hspace{19em} (14)

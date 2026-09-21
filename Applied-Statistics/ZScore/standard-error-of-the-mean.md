@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 8 | Created: 2026-08-30 | Updated: 2026-09-21 17:20 CDT
+Rev. 9 | Created: 2026-08-30 | Updated: 2026-09-21 17:21 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -231,7 +231,7 @@ product of the means $\mu_i = E[X_i]$ and $\mu_j = E[X_j]$.
 \hspace{19em} (13)
 ```
 
-With a covariance of zero, the last line of equation (13) is zero.
+With a covariance of zero, equation (13) is zero.
 
 ```math
 E[X_i X_j] - \mu_i \mu_j = 0 \hspace{19em} (14)
