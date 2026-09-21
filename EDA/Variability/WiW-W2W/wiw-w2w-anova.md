@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 62 | Created: 2026-09-01 | Updated: 2026-09-21 18:39 CDT
+Rev. 63 | Created: 2026-09-01 | Updated: 2026-09-21 18:41 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -128,13 +128,13 @@ $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{
 
 식 (11) 은 모든 $`n`$ 에서 성립한다.
 
-처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같을 경우, 곧 아래 조건이 성립하는 $`n`$ 에서 식 (13) 이 된다.
+처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같을 경우, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 일 경우에 식 (11) 의 오른쪽 항을 $`\sigma_{between}^2`$ 으로 바꿔 쓸 수 있다.
 
-$$s_{\mu}^2(1..n) = \sigma_{between}^2 \hspace{19em} (12)$$
+$$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspace{19em} (12)$$
 
 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (13) 은 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
 
-$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 $`n`$ 과 무관하게 성립하는 항등식이다. 조건을 만족하는 $`n`$ 에서 이 항등식을 식 (11) 에 넣어 $`s_{\mu}^2(1..n)`$ 자리를 전체 표준편차로 바꾼 것이 식 (13) 이다.
+$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 $`n`$ 과 무관하게 성립하는 항등식이다. 이 항등식을 식 (12) 에 넣어 $`\sigma_{between}^2`$ 자리를 전체 표준편차로 바꾼 것이 식 (13) 이다.
 
 $$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (13)$$
 
