@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 4 | Created: 2026-08-30 | Updated: 2026-09-21 16:40 CDT
+Rev. 5 | Created: 2026-08-30 | Updated: 2026-09-21 16:52 CDT
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that
@@ -46,8 +46,8 @@ Table 1. The two standard deviations compared.
 | Relative size   | Larger                              | Smaller, for $n \gt 1$             |
 
 Averaging cancels the extremes. A single draw can land far out in either tail with no other value
-to offset it, while a mean moves that far only when several draws agree in direction, and such
-agreement is rarer than one extreme draw.
+to offset it, while a mean moves that far only when several of the $X_1, \ldots, X_n$ that make
+up a sample of size $n$ lean the same way, and such leaning is rarer than one extreme draw.
 
 ## 3. Effect of the Sample Size
 
@@ -117,6 +117,7 @@ ISBN 978-0-534-24312-8.<br>
 
 ## Appendix A. Terminology
 
+- **Draw**: one observation taken from the population, or the act of taking it.
 - **Population**: the complete set of values about which a statement is to be made.
 - **Sample**: a subset of the population that is actually observed.
 - **Sample mean**: the arithmetic mean of the observations in one sample, written $\bar{X}$.

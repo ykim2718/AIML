@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 4 | Created: 2026-08-30 | Updated: 2026-09-21 16:40 CDT
+Rev. 5 | Created: 2026-08-30 | Updated: 2026-09-21 16:52 CDT
 
 > 본래 분포의 표준편차와 거기에서 뽑은 표본의 평균이 갖는 표준편차 사이의 관계, 표본 크기가
 > 그 관계에 미치는 영향, 그리고 모두 sigma 로 읽히는 여러 기호의 구분에 대한 기록.
@@ -42,8 +42,8 @@ Table 1. The two standard deviations compared.
 | Relative size   | 더 큼                         | $n \gt 1$ 이면 더 작음          |
 
 평균은 극단값을 상쇄한다. 한 번 뽑은 값은 상쇄할 다른 값 없이 어느 쪽 꼬리로든 멀리 떨어질
-수 있으나, 평균이 그만큼 움직이려면 여러 추출의 방향이 맞아야 하고, 그렇게 맞는 일은 극단값
-하나가 나오는 일보다 드물다.
+수 있으나, 평균이 그만큼 움직이려면 크기 $n$ 의 표본을 이루는 $X_1, \ldots, X_n$ 가운데
+여럿이 같은 쪽으로 치우쳐야 하고, 그렇게 치우치는 일은 극단값 하나가 나오는 일보다 드물다.
 
 ## 3. Effect of the Sample Size
 
@@ -109,6 +109,7 @@ ISBN 978-0-534-24312-8.<br>
 
 ## Appendix A. Terminology
 
+- **Draw**: 모집단에서 관측값 하나를 뽑는 행위, 또는 그렇게 뽑힌 값 하나.
 - **Population**: 진술의 대상이 되는 값의 전체 집합.
 - **Sample**: 실제로 관측한 population 의 부분집합.
 - **Sample mean**: 한 sample 안의 관측값을 산술평균한 값이며 $\bar{X}$ 로 적는다.
@@ -119,7 +120,7 @@ ISBN 978-0-534-24312-8.<br>
 ## Appendix B. Derivation
 
 평균이 $\mu$ 이고 variance 가 $\sigma^2$ 인 모집단에서 $X_1, \ldots, X_n$ 을 독립으로 뽑는다고
-하자. 각 추출은 같은 분포를 따르며, 어느 추출도 다른 추출에 대한 정보를 지니지 않는다.
+하자. 각 draw 는 같은 분포를 따르며, 어느 draw 도 다른 draw 에 대한 정보를 지니지 않는다.
 
 ```math
 E[X_i] = \mu, \qquad \mathrm{Var}[X_i] = \sigma^{2}, \qquad i = 1, \ldots, n \hspace{19em} (3)
@@ -158,8 +159,8 @@ E\left[ \bar{X} \right] = \frac{1}{n} \sum_{i=1}^{n} E[X_i] = \frac{n\mu}{n} = \
 ```
 
 이 유도에서 독립성은 식 (5) 의 두 번째 성질에서만 쓰인다. 독립성이 깨지는 경우가 둘 있다.
-추출끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이 성립하지
-않는다. 크기 $N$ 의 유한 모집단에서 비복원으로 뽑으면 추출이 조금씩 종속되고, variance 에
+Draw 끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이 성립하지
+않는다. 크기 $N$ 의 유한 모집단에서 비복원으로 뽑으면 draw 가 조금씩 종속되고, variance 에
 finite population correction 인자가 붙는다 [[2](#ref-2)].
 
 ```math
