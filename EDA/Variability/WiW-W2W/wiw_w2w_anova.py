@@ -20,7 +20,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.12.2.2026.9.21"
+__version__ = "0.12.3.2026.9.21"
 
 import argparse
 import pathlib
@@ -346,7 +346,7 @@ class WaferMeasurements:
         axes.plot(self.order, terms['sigma_total'] / np.sqrt(self.site_count * self.order), color=COLOR_TREND,
                   lw=2.0, ls=(0, (6, 4)), zorder=3, label=r"$\sigma_{total}(1..n)/\sqrt{Nn}$")
         axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
-                     label=r"$\sigma_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
+                     label=r"eq (12)  $\sigma_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
         axes.axvline(detection, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
                      label=f"w2w detection point (n = {detection})")
         axes.annotate(f"n = {detection}", (detection, observed[detection - 1]), textcoords="offset points",
