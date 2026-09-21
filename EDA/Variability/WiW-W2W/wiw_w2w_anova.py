@@ -20,7 +20,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.12.1.2026.9.21"
+__version__ = "0.12.2.2026.9.21"
 
 import argparse
 import pathlib
@@ -310,7 +310,7 @@ class WaferMeasurements:
         axes.scatter(self.order[exceeded], screen['sd_within'][exceeded], s=26, color=COLOR_MARK, zorder=6,
                      label=f"WiW excursion ({int(exceeded.sum())} wafers)")
         axes.plot(self.order, screen['limit'], color=COLOR_MARK, lw=1.8, zorder=5,
-                  label=r"eq (15) limit  $\sigma_{within}(1..i-1)\,\sqrt{\chi^2_{p,N-1}/(N-1)}$"
+                  label=r"eq (16) limit  $\sigma_{within}(1..i-1)\,\sqrt{\chi^2_{p,N-1}/(N-1)}$"
                         f"  at p = {confidence}")
         axes.plot(self.order, screen['baseline'], color=COLOR_LEFT_TERM, lw=2.4, zorder=5,
                   label=r"running baseline  $\sigma_{within}$(1..i-1), excursions left out")
@@ -321,7 +321,7 @@ class WaferMeasurements:
         # leave the top of the axes to the legend so that it never sits on a spike
         axes.set_ylim(0, screen['sd_within'].max() * 1.35)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
-        self._finish(axes=axes, title="Per-wafer spread against the running within-wafer limit of eq (15)",
+        self._finish(axes=axes, title="Per-wafer spread against the running within-wafer limit of eq (16)",
                      xlabel="i  (wafer index, run order)", ylabel=r"standard deviation of the site values",
                      legend_location='upper left')
         figure.tight_layout()
