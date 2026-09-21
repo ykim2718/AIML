@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 59 | Created: 2026-09-01 | Updated: 2026-09-21 18:22 CDT
+Rev. 60 | Created: 2026-09-01 | Updated: 2026-09-21 18:30 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -126,7 +126,9 @@ $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{wi
 
 $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (11)$$
 
-식 (11) 은 모든 $`n`$ 에서 성립한다. 식 (12) 는 처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같은 $`n`$, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 인 $`n`$ 에서만 성립하며, 그 등식 아래에서 식 (11) 을 전체 표준편차만으로 다시 쓴 것이다. $`n = K`$ 는 wafer 전체를 담아 정의상 그 등식을 만족하므로, 식 (12) 는 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
+식 (11) 은 모든 $`n`$ 에서 성립한다. 식 (12) 가 요구하는 조건은 하나, 처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같다는 것, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 이다. $`n = K`$ 는 wafer 전체를 담아 정의상 그 조건을 만족하므로, 식 (12) 는 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
+
+$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 $`n`$ 과 무관하게 성립하는 항등식이다. 식 (6) 의 $`\mu_i`$ 와 $`e_{ij}`$ 가 독립이라 variance 가 그대로 더해져 $`S_{\mathrm{total}}^2 = \sigma_{between}^2 + \sigma_{within}^2`$ 이며, Table 2 의 804.1 + 252.0 = 1056.1 이 그 값이다. 조건을 만족하는 $`n`$ 에서 이 항등식을 식 (11) 에 넣어 $`s_{\mu}^2(1..n)`$ 자리를 전체 표준편차로 바꾼 것이 식 (12) 이다.
 
 $$\sigma_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (12)$$
 
