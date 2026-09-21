@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-07 19:20 CDT
+Rev. 18 | Created: 2026-09-07 | Updated: 2026-09-20 20:20 CDT
 
 > 계측 데이터의 정상성 (stationarity) 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로
@@ -17,7 +17,7 @@ Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-07 19:20 CDT
 계산 쪽에서 오지 않으므로, 전제는 자료를 보기 전에 따로 확인해야 한다.
 
 이 문서는 그 전제를 정리한다. 통계적 정의와 그 물리적 대응, 실무에서 만나는 정상성의 형태, 정상성이
-해석에 되돌려 주는 것, 유한한 기록 하나로 그것을 판정하는 방법, 그리고 비정상 기록을 다루는 방법을
+해석에 되돌려 주는 것, 유한한 기록 하나로 그것을 판정하는 방법, 그리고 non-stationary 기록을 다루는 방법을
 차례로 다룬다. 분야마다 무엇을 불변이라고 가정하는지는
 [Appendix B](#appendix-b-the-same-assumption-in-three-domains) 에 따로 두었고, 본문에서 정의 없이 쓴
 용어는 [Appendix A](#appendix-a-terminology) 에 모았다.
@@ -31,11 +31,11 @@ Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-07 19:20 CDT
 
 $$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + h, \ldots, t_k + h) \hspace{19em} (1)$$
 
-이 조건은 유한한 기록으로 확인할 수 없다. 모든 차수의 결합분포를 요구하는데 손에 있는 것은 한 개의
+이 조건은 유한한 기록으로 확인할 수 없다. 모든 order 의 결합분포를 요구하는데 손에 있는 것은 한 개의
 실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이며, 이것을 weak
 stationarity 또는 wide-sense stationarity 라 한다. 여기서 2차 통계량은 평균 같은 1차 moment 와 분산이나
 autocovariance 같은 2차 moment 를 함께 이르는 말이다. Skewness 나 kurtosis 처럼 3차 이상의 moment 는
-여기에 들지 않으므로, 그것들은 시각에 따라 움직여도 무방하다. 조건은 세 가지다.
+여기에 들지 않으므로, 그것들은 시점에 따라 움직여도 무방하다. 조건은 세 가지다.
 
 #### Constant Mean
 
@@ -54,7 +54,7 @@ $$\mathrm{Var}\big(x(t)\big) = E\big[(x(t)-\mu)^2\big] = \sigma^2 \lt \infty \hs
 
 $$R(t,\, t+\tau) = E\big[(x(t)-\mu)\,(x(t+\tau)-\mu)\big] = R(\tau) \hspace{19em} (4)$$
 
-두 시점 사이의 공분산이 절대 시각 $t$ 가 아니라 시차 (lag) $\tau$ 로만 정해진다. $t = 1$ 과 $t = 3$
+두 시점 사이의 공분산이 절대 시점 $t$ 가 아니라 시차 (lag) $\tau$ 로만 정해진다. $t = 1$ 과 $t = 3$
 사이의 관계가 $t = 100$ 과 $t = 102$ 사이의 관계와 같아야 한다는 뜻이다.
 
 Table 1. The three conditions of weak stationarity
@@ -67,9 +67,9 @@ Table 1. The three conditions of weak stationarity
 
 세 조건이 나란히 놓이지만 둘째는 셋째에 딸려 있다. 식 (3) 은 식 (4) 에서 $\tau = 0$ 인 자리이므로,
 식 (4) 가 서면 식 (3) 은 따라 선다. 그런데도 따로 적는 것은 평균과 분산 둘만 확인하고 멈추는 일이
-흔하기 때문이다. 그렇게 멈추면 $\tau \neq 0$ 인 나머지 시차가 통째로 빠지고, 상관 구조가 시각에 따라
+흔하기 때문이다. 그렇게 멈추면 $\tau \neq 0$ 인 나머지 시차가 통째로 빠지고, 상관 구조가 시점에 따라
 변하는 신호를 정상으로 읽게 된다. 그런 신호에 스펙트럼 해석을 걸면 결과는 나오지만 그 결과가 어느
-시각의 것인지 말할 수 없다.
+시점의 것인지 말할 수 없다.
 
 Gaussian process 에서는 이 구별이 사라진다. 결합분포가 평균 vector (1차 moment) 와 covariance matrix
 (2차 moment) 의 2차 통계량으로 완전히 결정되므로, weak stationarity 가 곧 strict stationarity 이다
@@ -84,14 +84,14 @@ Gaussian process 에서는 이 구별이 사라진다. 결합분포가 평균 ve
 
 읽는 방법을 하나 더 붙이면 시간 불변성 (time-invariance) 이다. 측정을 언제 시작했는가가 결과에 아무런
 영향을 주지 않는 상태를 말한다. $t = 0$ 에서 10 초를 재든 $t = 100$ 에서 10 초를 재든 두 기록의 확률적
-성질이 같으면, 시작 시각은 자료의 어느 수치에도 나타나지 않는다.
+성질이 같으면, 시작 시점은 자료의 어느 수치에도 나타나지 않는다.
 
 Table 2. Stationary and non-stationary states
 
 | State | Example |
 |-------|---------|
 | Stationary | 정속 운전 중인 회전기계의 진동. 일정 유량에서의 난류 압력. 고정된 채널의 열잡음. 세기가 고른 바람 |
-| Non-stationary | 시동과 가속 구간의 진동 transient. 지진파. 마모로 서서히 나빠지는 장비. 조건이 자리를 잡아 가는 중인 공정 |
+| Non-stationary | 시동과 가속 segment 의 진동 transient. 지진파. 마모로 서서히 나빠지는 장비. 조건이 자리를 잡아 가는 중인 공정 |
 
 같은 구별을 기록 위에서 보면 Fig 1 과 같다. 네 기록은 같은 innovation 열 하나에서 만든 것이어서 서로
 다른 점은 그 열을 어떻게 다루었는가뿐이며, (a) 만 정상이고 나머지 셋은 각각 평균과 산포와 누적 구조에서
@@ -118,7 +118,7 @@ Fig 1. One stationary record and three ways a record stops being one
   다른 상수 offset 을 갖는 과정은 정상이면서 ergodic 이 아니다. 한 기록을 아무리 길게 재도 그 offset 은
   평균되어 사라지지 않는다.
 - 규격과의 구별: 정상성은 계가 어제와 같은가에 대한 것이고, 규격은 값이 허용 범위 안에 있는가에 대한
-  것이다. 규격 안에 있으면서 비정상인 공정이 있고, 규격을 벗어나 있으면서 정상인 공정도 있다.
+  것이다. 규격 안에 있으면서 non-stationary 인 공정이 있고, 규격을 벗어나 있으면서 정상인 공정도 있다.
 
 ## 3. Forms of Stationarity
 
@@ -178,9 +178,9 @@ $$\sigma^2 = R(0) = \int_{-\infty}^{\infty} S(f)\, df \hspace{19em} (9)$$
 $S(f)$ 가 보여 주므로, 어느 대역이 진동 에너지를 얼마나 갖고 있는지를 그대로 읽을 수 있다.
 
 그 전제가 깨졌을 때 무너지는 것이 무엇인지는 정확히 말해 둘 필요가 있다. 유한한 기록의 DFT 는 언제나
-계산되고 그래프도 그려진다. 무너지는 것은 계산이 아니라 해석이다. 식 (8) 의 $R(\tau)$ 가 시각에 따라
-달라지면 추정한 스펙트럼이 어느 시각의 스펙트럼인지 말할 수 없게 되고, 기록을 길게 잡을수록 추정이
-좋아진다는 보장도 사라진다. 그래서 비정상 신호에는 창을 짧게 끊어 각 창을 정상으로 보는 STFT 나
+계산되고 그래프도 그려진다. 무너지는 것은 계산이 아니라 해석이다. 식 (8) 의 $R(\tau)$ 가 시점에 따라
+달라지면 추정한 스펙트럼이 어느 시점의 스펙트럼인지 말할 수 없게 되고, 기록을 길게 잡을수록 추정이
+좋아진다는 보장도 사라진다. 그래서 non-stationary 신호에는 창을 짧게 끊어 각 창을 정상으로 보는 STFT 나
 wavelet 같은 시간-주파수 기법을 쓴다.
 
 ### 4.3 Transfer of a Model Across Time
@@ -193,8 +193,8 @@ wavelet 같은 시간-주파수 기법을 쓴다.
 
 ### 5.1 The Observation Window
 
-판정에 앞서 창의 길이를 정해야 한다. 정상성은 자료가 절대적으로 갖는 성질이 아니라 관측 구간에
-상대적인 성질이기 때문이다. 1 초 창에서 정상인 진동이 8 시간 창에서는 온도 drift 때문에 비정상이 되고,
+판정에 앞서 창의 길이를 정해야 한다. 정상성은 자료가 절대적으로 갖는 성질이 아니라 관측 segment 에
+상대적인 성질이기 때문이다. 1 초 창에서 정상인 진동이 8 시간 창에서는 온도 drift 때문에 non-stationary 가 되고,
 한 lot 안에서 정상인 계측값이 분기 단위로 보면 추세를 갖는다. "이 신호는 정상인가" 는 답할 수 없는
 물음이고, "이 신호는 이 창에서 정상인가" 가 답할 수 있는 물음이다.
 
@@ -205,13 +205,13 @@ Table 4. Checks for stationarity on a single record
 | # | Check | Null hypothesis | What it catches |
 |---|-------|-----------------|-----------------|
 | 1 | Run chart | 없음. 육안 판정 | 수준 이동. 눈에 띄는 분산 변화 |
-| 2 | Split-record comparison | 두 구간의 평균과 분산과 스펙트럼이 동일 | 느린 drift |
+| 2 | Split-record comparison | 두 segment 의 평균과 분산과 스펙트럼이 동일 | 느린 drift |
 | 3 | Reverse arrangements test | 값의 순서가 무작위 | 단조 추세 |
-| 4 | ADF test | Unit root 존재. 즉 비정상 | 확률적 추세 |
+| 4 | ADF test | Unit root 존재. 즉 non-stationary | 확률적 추세 |
 | 5 | KPSS test | 정상 | ADF 단독으로는 갈리지 않는 경우 |
 
 Split-record comparison 은 도구가 없어도 되는 검사이므로 먼저 한다. 기록을 앞뒤로 나누어 평균과 분산,
-그리고 스펙트럼을 겹쳐 보는 것으로 대부분의 실무적 비정상은 드러난다. Fig 1 의 각 panel 이 적어 둔
+그리고 스펙트럼을 겹쳐 보는 것으로 대부분의 실무적 non-stationarity 는 드러난다. Fig 1 의 각 panel 이 적어 둔
 전후 반씩의 평균과 표준편차가 그 비교이며, (b) 와 (d) 는 평균에서, (c) 는 표준편차에서 갈린다. 전후가
 모두 붙는 것은 (a) 뿐이다. Reverse arrangements test 는 그 육안 판정을 추세에 대해 수치화한 것이다
 [[1](#ref-1)].
@@ -231,12 +231,12 @@ $\gamma = 0$ 이면 식 (5) 의 누적 구조가 남아 있다는 뜻이므로, 
 ### 5.3 Power of the Tests
 
 검정 결과를 자료의 성질로 곧바로 읽지 않도록 주의한다. 이 검정들의 검정력은 기록 길이에 크게 좌우되어,
-짧은 기록에서는 비정상을 놓치기 쉽고 매우 긴 기록에서는 실무적으로 무시할 만한 drift 도 유의하게
+짧은 기록에서는 non-stationarity 를 놓치기 쉽고 매우 긴 기록에서는 실무적으로 무시할 만한 drift 도 유의하게
 나온다. 검정은 육안 판정과 공정 지식을 대체하는 것이 아니라 그것에 수치를 붙이는 도구이다.
 
 ## 6. Handling of a Non-stationary Record
 
-비정상이 확인되었다고 해서 기록을 버리지는 않는다. 비정상의 원인이 무엇인지에 따라 처방이 정해진다.
+non-stationarity 가 확인되었다고 해서 기록을 버리지는 않는다. non-stationarity 의 원인이 무엇인지에 따라 처방이 정해진다.
 
 Table 5. Cause of non-stationarity and the corresponding treatment
 
@@ -245,12 +245,12 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 | 1 | 결정론적 추세 | 추세 회귀 후 잔차 사용 |
 | 2 | Unit root drift | 차분 [[7](#ref-7)] |
 | 3 | 수준에 비례하는 분산 | 로그 변환 또는 Box-Cox 변환 |
-| 4 | 운전 조건의 변화 | 조건별 분할 후 구간마다 별도 해석 |
+| 4 | 운전 조건의 변화 | 조건별 분할 후 segment 마다 별도 해석 |
 | 5 | 회전수 변동 | Order tracking 으로 각도축에서 다시 sampling |
 | 6 | 본질적인 시변 구조 | STFT, wavelet, evolutionary spectrum [[3](#ref-3)] |
 
-마지막으로 방향을 하나 뒤집어 둔다. 비정상성은 제거해야 할 결함만이 아니라 그 자체가 정보인 경우가
-많다. 시동 구간의 transient 는 정속 운전에서 보이지 않는 공진을 드러내고, 계측값의 완만한 drift 는
+마지막으로 방향을 하나 뒤집어 둔다. non-stationarity 는 제거해야 할 결함만이 아니라 그 자체가 정보인 경우가
+많다. 시동 segment 의 transient 는 정속 운전에서 보이지 않는 공진을 드러내고, 계측값의 완만한 drift 는
 소모품의 수명을 알려 준다. 정상성을 확인하는 일의 목적은 자료를 정상으로 만드는 데 있지 않고, 지금
 보고 있는 것이 계의 안정된 특성인지 아니면 계가 변하고 있다는 증거인지를 가르는 데 있다.
 
@@ -281,7 +281,7 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 - **ADF test**: Unit root 의 존재를 귀무가설로 놓는 검정. 기각이 정상성 쪽의 증거가 된다.
 - **AR(1)**: 직전 한 시점의 값에만 의존하는 1차 자기회귀 과정.
 - **autocovariance**: 한 신호의 두 시점 값 사이의 공분산. 정상 과정, 곧 통계적 성질이 시간이 지나도 달라지지 않는 과정에서는 두 시점이 어디인지와 무관하게 그 시차만의 함수가 된다.
-- **Box-Cox transform**: 분산이 수준에 따라 변하는 자료를 거듭제곱 계열의 변환으로 안정시키는 처리.
+- **Box-Cox transform**: 분산이 수준에 따라 변하는 자료를 거듭제곱 family 의 변환으로 안정시키는 처리.
 - **cyclostationarity**: 통계량이 시간에 대해 주기적으로 변하는 성질.
 - **DFT**: 유한한 길이의 이산 신호를 주파수 성분으로 분해하는 변환.
 - **difference-stationary**: 차분한 뒤에 정상이 되는 성질. Unit root 를 갖는 과정이 이에 해당한다.
@@ -289,24 +289,24 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 - **dynamic equilibrium**: 유입 에너지와 소산 에너지가 통계적으로 균형을 이루어 계의 통계적 상태가 고정된 상태.
 - **envelope spectrum**: 신호의 포락선을 취한 뒤 구한 스펙트럼. 반복되는 충격 성분을 드러낸다.
 - **ergodicity**: 하나의 실현을 오래 관측한 시간 평균이 여러 실현의 집단 평균과 일치하는 성질.
-- **evolutionary spectrum**: 시각에 따라 달라지는 스펙트럼. 비정상 과정에 스펙트럼 개념을 확장한 것이다.
+- **evolutionary spectrum**: 시점에 따라 달라지는 스펙트럼. non-stationary 과정에 스펙트럼 개념을 확장한 것이다.
 - **Gaussian process**: 임의의 유한 개 시점을 뽑아도 그 결합분포가 정규분포인 확률과정.
 - **innovation**: 확률과정의 각 시점에 새로 들어오는, 과거와 무관한 무작위 입력.
 - **KPSS test**: 정상성을 귀무가설로 놓는 검정. ADF test 와 반대 방향에서 같은 물음을 본다.
-- **moment**: 분포의 모양을 차수별로 요약한 값. 1차는 평균이고, 평균을 중심으로 잰 2차는 분산, 3차는 skewness, 4차는 kurtosis 이다.
+- **moment**: 분포의 모양을 order 별로 요약한 값. 1차는 평균이고, 평균을 중심으로 잰 2차는 분산, 3차는 skewness, 4차는 kurtosis 이다.
 - **order tracking**: 회전수 변동을 없애기 위해 신호를 시간축이 아니라 회전 각도축에서 다시 sampling 하는 처리.
 - **power spectral density**: 신호의 분산이 주파수축 위에 어떻게 분포하는지를 나타내는 함수.
-- **quasi-stationarity**: 짧은 구간 안에서만 근사적으로 정상인 성질.
+- **quasi-stationarity**: 짧은 segment 안에서만 근사적으로 정상인 성질.
 - **random vibration**: 시간 이력이 아니라 확률적 성질로 규정되는 진동 하중.
 - **reverse arrangements test**: 값의 순서가 무작위라는 귀무가설 아래 단조 추세의 유무를 세어 판정하는 검정.
 - **run chart**: 관측값을 시간 순서로 찍어 추세와 수준 이동을 눈으로 보는 그림.
-- **sea state**: 파고와 주기가 고른 것으로 보는 해상 조건의 구간.
-- **split-record comparison**: 기록을 구간으로 나누어 구간별 평균과 분산과 스펙트럼을 맞대어 보는 검사.
+- **sea state**: 파고와 주기가 고른 것으로 보는 해상 조건의 segment.
+- **split-record comparison**: 기록을 segment 로 나누어 segment 별 평균과 분산과 스펙트럼을 맞대어 보는 검사.
 - **steady-state operation**: 회전수와 부하가 일정하게 유지되는 설비의 운전 상태.
 - **STFT**: 신호를 짧은 창으로 끊어 창마다 스펙트럼을 구하는 시간-주파수 해석.
 - **strict stationarity**: 모든 유한 차원 결합분포가 시간 이동에 대해 불변인 성질.
-- **time-invariance**: 측정을 시작한 시각이 결과의 확률적 성질에 영향을 주지 않는 성질.
-- **transient**: Steady-state operation 에 이르기 전이나 조건이 바뀌는 동안 나타나는 과도 구간의 신호.
+- **time-invariance**: 측정을 시작한 시점이 결과의 확률적 성질에 영향을 주지 않는 성질.
+- **transient**: Steady-state operation 에 이르기 전이나 조건이 바뀌는 동안 나타나는 과도 segment 의 신호.
 - **trend-stationary**: 결정론적 추세를 제거한 뒤에 정상이 되는 성질.
 - **unit root**: 충격이 감쇠하지 않고 누적되는 자기회귀 구조. 식 (5) 가 그 기본형이다.
 - **wavelet**: 시간과 주파수를 함께 국소화한 기저로 신호를 분해하는 해석.
@@ -317,7 +317,7 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 ## Appendix B. The Same Assumption in Three Domains
 
 분야마다 부르는 이름이 다를 뿐, 정상성이 요구하는 것은 하나다. 해석의 근거로 삼은 통계량이 관측
-구간 내내 같은 값이어야 한다는 것이다. 무엇을 그 통계량으로 삼는지가 분야를 가른다.
+segment 내내 같은 값이어야 한다는 것이다. 무엇을 그 통계량으로 삼는지가 분야를 가른다.
 
 ### B.1 Signal Processing and Communications
 
@@ -325,7 +325,7 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 최적 필터를 한 번만 설계하면 된다. Wiener filter 의 계수는 신호와 잡음의 2차 통계량에서 나오므로,
 그 통계량이 불변인 동안에는 같은 계수가 계속 최적이다.
 
-채널이 비정상이면 설계 시점의 통계로 만든 필터가 현재의 채널과 어긋나고, 어긋난 만큼 잡음이 남아
+채널이 non-stationary 이면 설계 시점의 통계로 만든 필터가 현재의 채널과 어긋나고, 어긋난 만큼 잡음이 남아
 복호 성능이 떨어진다. 대응은 필터를 시간에 따라 다시 맞추는 것이며, 적응 필터가 하는 일이 그것이다.
 
 ### B.2 Vibration and Condition Monitoring
@@ -348,7 +348,7 @@ spectral density 로부터 피로 손상을 누적한다.
 
 이 계산은 과거 자료가 미래를 대표한다는 가정 위에서만 성립한다. 그런데 파랑과 바람에는 계절 주기가
 있어 수십 년 기록 전체를 하나의 정상 과정으로 보기 어렵다. 실무는 그래서 자료를 sea state 처럼
-조건이 고른 구간으로 나누어 각 구간을 정상으로 취급하고, 구간별 손상을 발생 빈도로 가중해 합친다.
+조건이 고른 segment 로 나누어 각 segment 를 정상으로 취급하고, segment 별 손상을 발생 빈도로 가중해 합친다.
 
 Table 6. What each domain assumes to be time-invariant
 
