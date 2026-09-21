@@ -20,7 +20,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.12.3.2026.9.21"
+__version__ = "0.12.4.2026.9.21"
 
 import argparse
 import pathlib
@@ -340,9 +340,9 @@ class WaferMeasurements:
         axes.plot(self.order, observed, color=COLOR_OBSERVED, lw=3.0, zorder=4,
                   label=r"observed  $\sigma_{\mu_n}$  (stdev of wafer means 1..n)")
         axes.plot(self.order, terms['right_term'], color=COLOR_RIGHT_TERM, lw=1.6, ls=(0, (5, 3)), zorder=6,
-                  label=r"eq (11) right term:  $\sqrt{s_\mu^2(1..n)}$")
+                  label=r"eq (12) right term:  $\sqrt{s_\mu^2(1..n)}$")
         axes.plot(self.order, left_term, color=COLOR_LEFT_TERM, lw=2.2, ls=(0, (6, 4)), zorder=5,
-                  label=r"eq (11) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
+                  label=r"eq (12) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
         axes.plot(self.order, terms['sigma_total'] / np.sqrt(self.site_count * self.order), color=COLOR_TREND,
                   lw=2.0, ls=(0, (6, 4)), zorder=3, label=r"$\sigma_{total}(1..n)/\sqrt{Nn}$")
         axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
@@ -364,7 +364,7 @@ class WaferMeasurements:
         axes.grid(which='both', color='#ebeae5', lw=0.9)
         self._finish(
             axes=axes,
-            title="Cumulative stdev of the wafer means and the two terms of eq (11), each from the first n wafers",
+            title="Cumulative stdev of the wafer means and the two terms of eq (12), each from the first n wafers",
             xlabel="n  (cumulative wafer count, run order) - log",
             ylabel="standard deviation - log", legend_location='lower right')
         figure.tight_layout()

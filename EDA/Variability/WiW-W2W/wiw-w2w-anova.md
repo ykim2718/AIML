@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 68 | Created: 2026-09-01 | Updated: 2026-09-21 18:50 CDT
+Rev. 69 | Created: 2026-09-01 | Updated: 2026-09-21 18:52 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -148,17 +148,17 @@ $$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (15)$$
 
 ### 4.2 W2W Detection Point
 
-식 (11) 의 두 항은 서로 다른 것을 잰다. 왼쪽 항 $`\sigma_{within}(1..n)/\sqrt{N}`$ 은 site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. 오른쪽 항 $`s_{\mu}(1..n)`$ 은 wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 관측되는 wafer 평균의 산포는 이 둘의 제곱합의 제곱근이므로, 둘 중 어느 쪽이 큰가가 그 산포를 무엇으로 읽을지를 정한다.
+식 (12) 의 두 항은 서로 다른 것을 잰다. 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 은 site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. 오른쪽 항 $`\sigma_{between}`$ 은 wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 관측되는 wafer 평균의 산포는 이 둘의 제곱합의 제곱근이므로, 둘 중 어느 쪽이 큰가가 그 산포를 무엇으로 읽을지를 정한다.
 
 $`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 식 (13) 과 식 (14) 가 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
-Fig 2 는 식 (11) 의 두 항을 함께 보인다. 식 (11) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 모든 곡선은 각 $`n`$ 에서 처음 $`n`$ 장만으로 계산했다. $`n`$ 뒤의 wafer 를 끌어다 쓰면 그 $`n`$ 에서 아직 알 수 없는 값을 쓰는 것이 되기 때문이며, 그래서 왼쪽 항도 상수가 아니라 곡선이다. $`\sigma_{within}(1..n)`$ 은 처음 5 장에서 7.28 로 낮았다가 $`n = 50`$ 에서 15.75, $`n = K`$ 에서 15.87 로 자리를 잡는다.
+Fig 2 는 식 (12) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보이며, 오른쪽 항 자리에는 $`\sigma_{between}`$ 대신 그 $`n`$ 까지의 $`s_{\mu}(1..n)`$ 이 든다. 식 (12) 자체를 그리면 $`s_{\mu}(1..n)`$ 을 자료에서 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 로 얻으므로 관측 곡선과 겹치며, 대신 그 두 항을 나눠 그리면 관측값이 둘의 제곱합의 제곱근임이 보인다. 모든 곡선은 각 $`n`$ 에서 처음 $`n`$ 장만으로 계산했다. $`n`$ 뒤의 wafer 를 끌어다 쓰면 그 $`n`$ 에서 아직 알 수 없는 값을 쓰는 것이 되기 때문이며, 그래서 왼쪽 항도 상수가 아니라 곡선이다. $`\sigma_{within}(1..n)`$ 은 처음 5 장에서 7.28 로 낮았다가 $`n = 50`$ 에서 15.75, $`n = K`$ 에서 15.87 로 자리를 잡는다.
 
 이 자료는 $`N = 13`$ 이므로 왼쪽 항의 제곱은 `sigma_within`²/13 = 19.38 로 수렴하고, 그 제곱근 4.40 이 Fig 2 에서 왼쪽 항이 다다르는 값이다. $`n = 261`$ 에서 √(28.70² − 4.40²) = 28.36 이 나와 section 3 의 `sigma_between` 과 일치한다. 따라서 관측 곡선은 아래로 4.40 에 갇히고 위로 √(`sigma_between`² + `sigma_within`²/13) = 28.70 으로 수렴한다.
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (9) and the w2w detection point, each computed from the first n wafers only
+Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (12) and the w2w detection point, each computed from the first n wafers only
 
 Fig 2 에서 그 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). 그 앞의 $`n \le 4`$ 에서는 오른쪽 항이 왼쪽 항과 같은 크기 ($`n = 4`$ 에서 2.18 대 1.97) 이고 $`n = 3`$ 에서는 관측값이 왼쪽 항보다도 작아 아예 정의되지 않으니, 그 구간의 흔들림은 측정 잡음만으로 설명되고 wafer 사이에 진짜 차이가 있는지 가릴 수 없다. $`n = 5`$ 부터는 오른쪽 항이 10.95 로 왼쪽 항 2.02 의 5.4 배가 되고 $`n = 6`$ 에서 10 배를 넘어, 이후 관측 곡선은 사실상 wafer 고유 수준의 산포 그 자체이다.
 
