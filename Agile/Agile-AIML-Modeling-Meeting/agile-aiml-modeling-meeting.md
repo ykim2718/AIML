@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 7 | Created: 2026-09-21 | Updated: 2026-09-21 11:45 CDT
+Rev. 8 | Created: 2026-09-21 | Updated: 2026-09-21 11:49 CDT
 
 ## 1. Purpose
 
@@ -16,7 +16,7 @@ An item is settled when it passes its own definition of done, written per item r
 
 ## 3. Taxonomy and its Hierarchy
 
-A stage opens only once the stage before it has closed, and a number produced while an earlier stage is still open settles nothing. The nine items are grouped by the stage that settles them, and the four stages run in that order.
+A stage opens only once the stage before it has closed, and a metric produced while an earlier stage is still open settles nothing. The nine items are grouped by the stage that settles them, and the four stages run in that order.
 
 The four stages, the items each one settles, and what each item fixes are drawn in [Fig 1](#fig-1).
 
@@ -68,7 +68,7 @@ Each stage is worked through below in the order of [Fig 1](#fig-1), since a prac
 
 ### 4.1 Premise Check
 
-Premise Check settles what must already be true for this sprint's number to mean anything, and its three items are checked rather than debated. Together they are the definition of ready for a modeling ticket: a sprint that opens while one of them is unsettled produces a number that decides nothing.
+Premise Check settles what must already be true for this sprint's metric to mean anything, and its three items are checked rather than debated. Together they are the definition of ready for a modeling ticket: a sprint that opens while one of them is unsettled produces a number that decides nothing.
 
 **Target** is the definition of Y with its threshold, written in one line. Yield below 98 %, or a sensor value crossing an EVT-based threshold, are targets; "catch defects with AI" is not, and a sprint opened on it measures a quantity the team never defined. The domain expert supplies it, and it is fixed before the first meeting rather than during one.
 
@@ -88,7 +88,7 @@ A Hypothesis without a physical reason cannot produce an Insight, because there 
 
 Product Review settles what the sprint made, and its three items are read from artifacts on the screen rather than from memory. Each carries a different bar, which is why [Table 1](#table-1) states them one by one.
 
-**Run** is one tracked execution carrying its parameters, dataset version, code commit and metric. A number quoted without its run id is a number the room cannot return to, so it closes nothing.
+**Run** is one tracked execution carrying its parameters, dataset version, code commit and metric. A metric quoted without its run id is one the room cannot return to, so it closes nothing.
 
 **Insight** is the explained cause of a metric move. "XGBoost comes out better" is a Run with no Insight; "feature importance puts the chamber 3 pressure sensor at the top, and removing it returns the score to the Baseline" is an Insight, and it is done once a clean checkout reproduces it. The loss curve, the confusion matrix and the latent space of the reduced dimensions go on the screen, since a result described in speech cannot be checked by the room.
 
@@ -146,7 +146,7 @@ Table 2. Where each agile practice lands in the modeling sprint
 | Increment       | Readiness compared against the model now serving              | The increment is a model that can be promoted, or nothing           |
 | BKM             | Where a stop Verdict and its reason are kept                  | A direction closed is knowledge the next team reads                 |
 
-Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the sprint moved more than one thing and the room cannot say which one it is judging. Without a done-when written per item, a number is refused by argument rather than by rule, and the argument outlasts the meeting.
+Two of the practices decide whether the meeting can close at all. Without the WIP limit no Verdict can be issued on the Hypothesis, since the sprint moved more than one thing and the room cannot say which one it is judging. Without a done-when written per item, a metric is refused by argument rather than by rule, and the argument outlasts the meeting.
 
 ## 7. Anti-patterns
 
@@ -228,6 +228,7 @@ The same three lines fill the model card that ships with the model, which record
 - **Increment**: the working product one sprint produces.
 - **Latent space**: the reduced coordinates an encoder maps its input onto.
 - **Loss curve**: the training and validation loss plotted against training step.
+- **Metric**: the value a run reports for the target quantity, such as accuracy, F1-score or RMSE.
 - **MLOps**: the practice that carries a model from experiment into operation and keeps it there.
 - **Model card**: the document recording a model's summary, measured performance and training data.
 - **Multicollinearity**: a near-linear dependence among input variables, which makes individual coefficients unstable.

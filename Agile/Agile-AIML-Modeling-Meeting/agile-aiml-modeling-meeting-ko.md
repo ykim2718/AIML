@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 7 | Created: 2026-09-21 | Updated: 2026-09-21 11:45 CDT
+Rev. 8 | Created: 2026-09-21 | Updated: 2026-09-21 11:49 CDT
 
 ## 1. Purpose
 
@@ -16,7 +16,7 @@ AI/ML modeling 회의는 아홉 항목을 확정하며, 각 항목은 순서대�
 
 ## 3. Taxonomy and its Hierarchy
 
-한 단계는 앞 단계가 닫힌 뒤에야 열리며, 앞 단계가 열려 있는 동안 나온 수치는 아무것도 판정하지 못한다. 아홉 항목은 확정되는 단계에 따라 묶이고, 네 단계는 그 차례로 돈다.
+한 단계는 앞 단계가 닫힌 뒤에야 열리며, 앞 단계가 열려 있는 동안 나온 metric 은 아무것도 판정하지 못한다. 아홉 항목은 확정되는 단계에 따라 묶이고, 네 단계는 그 차례로 돈다.
 
 네 단계와 각 단계가 확정하는 항목, 그리고 각 항목이 고정하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
@@ -56,8 +56,8 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 | Provenance | 1 Premise Check  | Split 규칙, 결측치와 이상치 처리, dataset hash 가 기록됨            | 추적 도구의 run 과 데이터 버전 도구                |
 | Baseline   | 1 Premise Check  | Baseline 으로 태그된 run. 이후의 주장이 견주는 점수를 담음          | Baseline tag 가 붙은 추적 도구의 run               |
 | Hypothesis | 2 Claim Setting  | 바꾸는 하나, 물리적 근거, 예상되는 움직임 셋이 모두 말해짐          | 이번 sprint 로 연 ticket                           |
-| Run        | 3 Product Review | Parameter, dataset 버전, code commit, 지표가 모두 추적됨            | 추적 도구의 항목                                   |
-| Insight    | 3 Product Review | 지표를 움직인 원인이 새 checkout 에서 재현됨                        | Feature importance 또는 오차 분석. 그림으로 내보냄 |
+| Run        | 3 Product Review | Parameter, dataset 버전, code commit, metric 이 모두 추적됨         | 추적 도구의 항목                                   |
+| Insight    | 3 Product Review | Metric 을 움직인 원인이 새 checkout 에서 재현됨                     | Feature importance 또는 오차 분석. 그림으로 내보냄 |
 | Readiness  | 3 Product Review | Latency, skew, fallback, monitoring 을 지금 서빙 중인 model 과 견줌 | Model registry 항목과 monitoring dashboard         |
 | Verdict    | 4 Decision       | Product owner 가 Hypothesis 에 대고 소리 내어 말함                  | 회의록의 한 줄                                     |
 | Handoff    | 4 Decision       | 다음 sprint 를 위한 담당자, 기한, ticket id 가 발행됨               | Id 가 붙은 ticket                                  |
@@ -68,7 +68,7 @@ Table 1. The nine items, the stage that settles each, and its definition of done
 
 ### 4.1 Premise Check
 
-Premise Check 는 이번 sprint 의 수치가 뜻을 가지려면 이미 참이어야 하는 것을 확정하며, 세 항목은 논쟁이 아니라 확인의 대상이다. 셋이 함께 modeling ticket 의 definition of ready 다. 그 가운데 하나가 확정되지 않은 채 연 sprint 는 아무것도 판정하지 못하는 수치를 낸다.
+Premise Check 는 이번 sprint 의 metric 이 뜻을 가지려면 이미 참이어야 하는 것을 확정하며, 세 항목은 논쟁이 아니라 확인의 대상이다. 셋이 함께 modeling ticket 의 definition of ready 다. 그 가운데 하나가 확정되지 않은 채 연 sprint 는 아무것도 판정하지 못하는 metric 을 낸다.
 
 **Target** 은 Y 의 정의와 임계값을 한 줄로 적은 것이다. 수율 98 % 미만, 또는 EVT 기반 임계값을 넘는 센서 값은 target 이고 "AI 로 불량을 잡자" 는 target 이 아니다. 후자 위에서 연 sprint 는 팀이 정의한 적 없는 양을 잰다. 도메인 엔지니어가 대며, 회의 중이 아니라 첫 회의 이전에 고정한다.
 
@@ -78,7 +78,7 @@ Premise Check 는 이번 sprint 의 수치가 뜻을 가지려면 이미 참이�
 
 ### 4.2 Claim Setting
 
-Claim Setting 은 이번 sprint 가 검증하는 단 하나의 주장을 확정하며, 항목은 Hypothesis 하나다. 아직 써 보지 않은 algorithm 의 목록이 아니라 도메인 지식 위에 세우고, 세 부분으로 이루어진다. 바꾸는 하나, 그것의 물리적 근거, 그 근거가 서면 지표가 어떻게 움직이는가이다. Modeler 한 사람당 Hypothesis 하나가 이 sprint 의 WIP limit 이고, 실행 전에 고정한 timebox 를 달고 있으며, 세 부분을 말하지 못하는 연구 성격의 작업은 spike 로 board 밖에 둔다.
+Claim Setting 은 이번 sprint 가 검증하는 단 하나의 주장을 확정하며, 항목은 Hypothesis 하나다. 아직 써 보지 않은 algorithm 의 목록이 아니라 도메인 지식 위에 세우고, 세 부분으로 이루어진다. 바꾸는 하나, 그것의 물리적 근거, 그 근거가 서면 metric 이 어떻게 움직이는가이다. Modeler 한 사람당 Hypothesis 하나가 이 sprint 의 WIP limit 이고, 실행 전에 고정한 timebox 를 달고 있으며, 세 부분을 말하지 못하는 연구 성격의 작업은 spike 로 board 밖에 둔다.
 
 두 가지 예가 그 형식을 보여 준다. 센서 간 multicollinearity 가 심하므로 이번 실행은 Lasso 대신 Elastic Net 을 써서 그룹 효과를 담는다. Time warping 이 신호를 일그러뜨리므로 고정된 변환 대신 1D-CNN autoencoder 가 representation learning 으로 차원을 줄인다.
 
@@ -88,9 +88,9 @@ Claim Setting 은 이번 sprint 가 검증하는 단 하나의 주장을 확정�
 
 Product Review 는 이번 sprint 가 만든 것을 확정하며, 세 항목은 기억이 아니라 화면 위의 산출물에서 읽는다. 셋이 저마다 다른 기준을 달고 있어, [Table 1](#table-1) 이 그것을 하나씩 적는다.
 
-**Run** 은 parameter, dataset 버전, code commit, 지표를 달고 있는 하나의 추적된 실행이다. Run id 없이 말해진 수치는 방이 되짚어 갈 수 없는 수치이므로 아무것도 닫지 못한다.
+**Run** 은 parameter, dataset 버전, code commit, metric 을 달고 있는 하나의 추적된 실행이다. Run id 없이 말해진 metric 은 방이 되짚어 갈 수 없으므로 아무것도 닫지 못한다.
 
-**Insight** 는 지표가 움직인 까닭을 설명한 것이다. "XGBoost 가 잘 나옵니다" 는 Insight 없는 Run 이고, "Feature importance 가 chamber 3 압력 센서를 맨 위에 두고, 그것을 빼면 점수가 Baseline 으로 돌아온다" 는 Insight 이며, 새 checkout 이 그것을 재현하면 done 이다. Loss curve, confusion matrix, 축소된 차원의 latent space 를 화면에 올린다. 말로 서술된 결과는 방이 확인할 수 없기 때문이다.
+**Insight** 는 metric 이 움직인 까닭을 설명한 것이다. "XGBoost 가 잘 나옵니다" 는 Insight 없는 Run 이고, "Feature importance 가 chamber 3 압력 센서를 맨 위에 두고, 그것을 빼면 점수가 Baseline 으로 돌아온다" 는 Insight 이며, 새 checkout 이 그것을 재현하면 done 이다. Loss curve, confusion matrix, 축소된 차원의 latent space 를 화면에 올린다. 말로 서술된 결과는 방이 확인할 수 없기 때문이다.
 
 **Readiness** 는 제 한계에 대고 잰 latency, train/serve skew, low confidence 결과의 fallback, monitoring 연동이다. 승격은 후보 model 을 이미 서빙 중인 model 과 견주는 일이며, 그 비교를 재는 척도는 판단이 아니라 구체적인 test 의 점검표다 [[2](#ref-2)].
 
@@ -146,7 +146,7 @@ Table 2. Where each agile practice lands in the modeling sprint
 | Increment       | 지금 서빙 중인 model 과 견주어진 Readiness                              | Increment 는 승격할 수 있는 model 이거나 아무것도 아님               |
 | BKM             | Stop Verdict 와 그 이유를 두는 자리                                     | 닫은 방향이 다음 팀이 읽는 지식이 됨                                 |
 
-두 기법이 회의를 닫을 수 있는지를 가른다. WIP limit 이 없으면 Hypothesis 에 Verdict 를 낼 수 없다. Sprint 가 하나보다 많이 움직여, 방이 지금 무엇을 판정하는지 말하지 못하기 때문이다. 항목마다 적은 done-when 이 없으면 수치를 규칙이 아니라 논쟁으로 물리게 되고, 그 논쟁은 회의보다 오래간다.
+두 기법이 회의를 닫을 수 있는지를 가른다. WIP limit 이 없으면 Hypothesis 에 Verdict 를 낼 수 없다. Sprint 가 하나보다 많이 움직여, 방이 지금 무엇을 판정하는지 말하지 못하기 때문이다. 항목마다 적은 done-when 이 없으면 metric 을 규칙이 아니라 논쟁으로 물리게 되고, 그 논쟁은 회의보다 오래간다.
 
 ## 7. Anti-patterns
 
@@ -228,6 +228,7 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Increment**: 한 sprint 가 만들어 낸 작동하는 산출물.
 - **Latent space**: encoder 가 입력을 옮겨 놓은 축소된 좌표.
 - **Loss curve**: 학습 단계에 대해 그린 학습 loss 와 검증 loss.
+- **Metric**: Run 이 목표 양에 대해 내놓는 값. accuracy, F1-score, RMSE 같은 것이다.
 - **MLOps**: model 을 실험에서 운영으로 옮기고 거기에 머물게 하는 실천.
 - **Model card**: model 의 개요, 측정된 성능, 학습 데이터를 기록한 문서.
 - **Multicollinearity**: 입력 변수 사이의 거의 선형인 종속. 개별 계수를 불안정하게 만든다.
