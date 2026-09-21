@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 12 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
+Rev. 13 | Created: 2026-09-21 | Updated: 2026-09-21 15:53 CDT
 
 ## 1. Purpose
 
@@ -227,6 +227,8 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Elastic Net**: L1 과 L2 norm 을 함께 쓰는 선형 model. 상관된 변수 가운데 하나만 고르지 않고 함께 남긴다.
 - **EVT (Extreme Value Theory)**: 분포 꼬리의 통계. 여기서는 센서 값이 얼마나 극단인지로 임계값을 정하는 데 쓴다.
 - **Feature importance**: 학습된 model 이 각 입력에 붙이는 점수. 어느 입력이 예측을 움직였는지 읽는다.
+- **Foundation model**: 넓은 데이터로 미리 학습해 두고, 처음부터 학습하는 대신 fine-tuning 으로 과제에 맞추는 큰 model.
+- **ICE score**: Impact, Confidence, Ease 로 backlog item 의 순서를 매기는 점수.
 - **Increment**: 한 sprint 가 만들어 낸 작동하는 산출물.
 - **Latent space**: encoder 가 입력을 옮겨 놓은 축소된 좌표.
 - **Loss curve**: 학습 단계에 대해 그린 학습 loss 와 검증 loss.
@@ -249,3 +251,72 @@ Handoff : <OWNER> runs Elastic Net and supervised 1D-CNN on the 200 compressed
 - **Velocity**: 한 sprint 에서 팀이 끝낸 story point 의 수.
 - **WIP (Work In Progress)**: 현재 진행 중인 작업. 다음 것을 시작하기 전에 끝낼 수 있도록 개수를 제한한다.
 - **Yield**: 생산된 단위 가운데 규격을 만족하는 비율.
+
+## Appendix B. Experiment Priority
+
+"일단 다 돌려보죠" 는 sprint 만큼의 연산 자원을 쓰고 Insight 는 남기지 못하는 습관이다. 아무도 틀을 잡아 주지 않은 실행은 어떤 질문에도 답하지 않기 때문이다. 아이디어는 세 filter 를 통과한 뒤에야 product backlog 에 오르고, backlog 안에서의 순서는 ICE score 가 정한다.
+
+### B.1 Three Filters
+
+제안은 code 를 쓰기 전에 걸러지며, 여기서 기각하는 데 드는 몇 분이 실험으로 갔을 때의 몇 주를 대신한다.
+
+Table 5. The three filters and what each one rejects
+
+| Filter                        | Question                                                                 | Rejected when                                 |
+| :---------------------------: | :----------------------------------------------------------------------: | :-------------------------------------------: |
+| Domain alignment              | 이 algorithm 의 수학적 성질이 공정 데이터의 물리적 성질과 맞는가         | 공정에 대해 알려진 사실과 어긋나는 선택       |
+| Cost-benefit                  | 드는 시간과 연산 자원에 대해 metric 의 return 이 확실한가                | 싼 baseline 대비 1점을 얻는 데 3주            |
+| Explainability and deployment | 출력이 공정 엔지니어를 납득시키고, model 이 serving pipeline 에 얹히는가 | Black box 이거나, 현장이 돌리기에 너무 무거움 |
+
+```text
+[ Proposed idea ]
+       |
+       v
+[ 1. Domain alignment ]   --> rejected
+       | passed
+       v
+[ 2. Cost-benefit ]       --> rejected
+       | passed
+       v
+[ 3. Explainability ]     --> rejected
+       | passed
+       v
+[ Product backlog, ordered by ICE score ]
+```
+
+<a id="fig-2"></a>
+Fig 2. The three filters an idea passes before it reaches the product backlog
+
+**Domain alignment** 는 library 를 고르기 전에 질문을 먼저 던진다. 센서 간 상관이 깊은데 Lasso 를 쓰면 상관된 무리에서 하나만 남기므로 Ridge 나 Elastic Net 이 먼저다. 시간 축을 따라 인과가 흐르는 연속 공정에서 행 순서를 섞는 random forest 를 주력으로 두는 것은 맞지 않으며, 그 자리는 1D-CNN 이나 시계열 model 의 것이다.
+
+**Cost-benefit** 은 이미 서 있는 가장 싼 model 에 대고 return 을 견준다. 정확도 91 % 의 가벼운 XGBoost 가 92 % 를 겨냥해 설계하는 대형 Transformer 보다 앞서며, 싼 baseline 을 끌어올리는 일이 마지막이 아니라 첫 번째 선택이다.
+
+**Explainability and deployment** 는 점수가 무엇이든 지켜야 하는 제약이다. Ensemble 의 ensemble 은 실시간 가상 simulation 안에서 답하지 못하므로, offline 점수가 아무리 좋아도 backlog 의 윗자리에서 내려온다.
+
+### B.2 ICE Score
+
+방의 의견이 갈릴 때는 각자가 세 글자에 1 부터 5 까지 점수를 매기고 그 평균이 backlog 의 순서를 정한다. 이 점수는 측정이 아니라 견해차를 드러내 놓는 방법이다.
+
+Table 6. The three letters of an ICE score
+
+| Letter | Name       | Question                                                        |
+| :----: | :--------: | :-------------------------------------------------------------: |
+| I      | Impact     | 이 Hypothesis 가 서면 metric 이 얼마나 움직이는가               |
+| C      | Confidence | 발표된 연구나 이전 공정 데이터에 비추어 그것이 설 확률이 높은가 |
+| E      | Ease       | 전처리와 구현이 얼마나 적게 드는가                              |
+
+```math
+\mathrm{ICE} = I \times C \times E \hspace{19em} (1)
+```
+
+식 (1) 은 셋째 글자를 Ease 로, 5 를 가장 쉬움으로 매길 때 성립한다. Effort 로 매겨 5 를 가장 어려움으로 두는 팀은 곱하는 대신 나누며, 같은 순서를 읽는다.
+
+**Quick win** 은 셋 모두에서 높은 점수를 받는다. 이미 있는 sliding window 의 보폭만 조절해 데이터를 늘리는 일은 반나절이면 구현되고 그 효과도 미리 안다. **Long-term** 항목은 Ease 와 Confidence 가 함께 낮다. 대형 시계열 foundation model 을 fine-tuning 하는 일은 몇 주가 들고 결과를 아무도 예측하지 못하므로, sprint 를 여는 대신 quick win 뒤에서 기다린다.
+
+### B.3 Hypothesis Rule
+
+Hypothesis 가 없으면 실험도 없다. Hypothesis 의 형태로 — 바꾸는 하나, 물리적 근거, 예상되는 움직임 — 말하지 못하는 제안은 아무리 새롭더라도 다음 sprint 에 들지 않는다.
+
+> 기각: "요즘 LightGBM 이 유행이라는데 이것도 한번 돌려보죠."
+
+> 채택: "센서 데이터에 noise 가 많아 선형 model 이 overfitting 하는 것으로 보입니다. Tree 기반의 LightGBM 은 결측치와 noise 에 robust 하므로, 현재 Baseline 보다 정확도가 3점 이상 오른다는 가설입니다. 이것을 검증하겠습니다."

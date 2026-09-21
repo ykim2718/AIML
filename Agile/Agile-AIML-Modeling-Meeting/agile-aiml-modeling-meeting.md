@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 12 | Created: 2026-09-21 | Updated: 2026-09-21 15:44 CDT
+Rev. 13 | Created: 2026-09-21 | Updated: 2026-09-21 15:53 CDT
 
 ## 1. Purpose
 
@@ -227,6 +227,8 @@ The same three lines fill the model card that ships with the model, which record
 - **Elastic Net**: a linear model penalised by both the L1 and the L2 norm, which keeps correlated variables together rather than selecting one of them.
 - **EVT (Extreme Value Theory)**: the statistics of the tail of a distribution, used here to set a threshold from how extreme a sensor value is.
 - **Feature importance**: the score a fitted model attaches to each input, read to see which input moved the prediction.
+- **Foundation model**: a large model pre-trained on broad data, adapted to a task by fine-tuning rather than trained from scratch.
+- **ICE score**: an ordering score for a backlog item, from impact, confidence and ease.
 - **Increment**: the working product one sprint produces.
 - **Latent space**: the reduced coordinates an encoder maps its input onto.
 - **Loss curve**: the training and validation loss plotted against training step.
@@ -249,3 +251,72 @@ The same three lines fill the model card that ships with the model, which record
 - **Velocity**: the number of story points a team completes in one sprint.
 - **WIP (Work In Progress)**: work currently under way, limited in number so that each item can be finished before the next starts.
 - **Yield**: the fraction of produced units that meet specification.
+
+## Appendix B. Experiment Priority
+
+Brute force — "let us just run everything and see" — is the habit that spends a sprint of compute and returns no Insight, since a run nobody framed answers no question. An idea reaches the product backlog only after passing three filters, and its order inside the backlog comes from an ICE score.
+
+### B.1 Three Filters
+
+A proposal is screened before any code is written, and a filter that rejects it costs minutes where the experiment would have cost weeks.
+
+Table 5. The three filters and what each one rejects
+
+| Filter                        | Question                                                                                  | Rejected when                                              |
+| :---------------------------: | :---------------------------------------------------------------------------------------: | :--------------------------------------------------------: |
+| Domain alignment              | Do the mathematical properties of this algorithm match the physics of the process data?   | The choice contradicts what the process is known to do     |
+| Cost-benefit                  | Is the metric return certain against the time and compute the model costs?                | Three weeks of work buys one point over a cheap baseline   |
+| Explainability and deployment | Does the output convince a process engineer, and does the model fit the serving pipeline? | The model is a black box, or too heavy for the line to run |
+
+```text
+[ Proposed idea ]
+       |
+       v
+[ 1. Domain alignment ]   --> rejected
+       | passed
+       v
+[ 2. Cost-benefit ]       --> rejected
+       | passed
+       v
+[ 3. Explainability ]     --> rejected
+       | passed
+       v
+[ Product backlog, ordered by ICE score ]
+```
+
+<a id="fig-2"></a>
+Fig 2. The three filters an idea passes before it reaches the product backlog
+
+**Domain alignment** asks the question first, before the library is chosen. Lasso on sensors with deep mutual correlation drops all but one of a correlated group, so Ridge or Elastic Net comes first. A random forest that shuffles row order is the wrong main model for a continuous process whose causality runs along the time axis, where a 1D-CNN or a time-series model belongs.
+
+**Cost-benefit** compares the return against the cheapest model already standing. A light XGBoost reaching 91 % accuracy outranks a large Transformer designed to reach 92 %, and raising the cheap baseline is the first call rather than the last.
+
+**Explainability and deployment** is a constraint that holds whatever the score says. An ensemble of ensembles cannot answer inside a real-time virtual simulation, so it leaves the top of the backlog however well it scores offline.
+
+### B.2 ICE Score
+
+When the room diverges, each member scores the idea from 1 to 5 on three letters and the average orders the backlog. The score is a way to make disagreement explicit rather than a measurement.
+
+Table 6. The three letters of an ICE score
+
+| Letter | Name       | Question                                                                           |
+| :----: | :--------: | :--------------------------------------------------------------------------------: |
+| I      | Impact     | How far does the metric move if this Hypothesis holds?                             |
+| C      | Confidence | How likely is it to hold, judged from published work or from earlier process data? |
+| E      | Ease       | How little preprocessing and implementation does it take?                          |
+
+```math
+\mathrm{ICE} = I \times C \times E \hspace{19em} (1)
+```
+
+Equation (1) holds when the third letter is scored as Ease, where 5 is easiest. A team that prefers to score Effort, where 5 is hardest, divides by it instead and reads the same ordering.
+
+A **quick win** scores high on all three: adjusting the stride of an existing sliding window to augment the data is implemented in an afternoon and its effect is known in advance. A **long-term** item scores low on Ease and Confidence together: fine-tuning a large time-series foundation model is weeks of work whose outcome nobody can predict, so it waits behind the quick wins rather than opening the sprint.
+
+### B.3 Hypothesis Rule
+
+No Hypothesis, no experiment. A proposal that cannot be said as a Hypothesis — one change, its physical reason, the expected movement — stays out of the next sprint, whatever its novelty.
+
+> Rejected: "LightGBM is popular at the moment, let us give it a run too."
+
+> Accepted: "The sensor data carries noise the linear model appears to be overfitting. A tree-based LightGBM is robust to missing values and noise, so the hypothesis is that accuracy rises by three points or more over the current Baseline. We will test that."
