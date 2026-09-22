@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 74 | Created: 2026-09-01 | Updated: 2026-09-21 19:04 CDT
+Rev. 75 | Created: 2026-09-01 | Updated: 2026-09-21 19:11 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -14,6 +14,7 @@ Wafer $`K`$ 장을 장당 $`N`$ 개 site 에서 재면 관측치는 $`M = K N`$ 
 - $`X_{ij}`$: $`i`$ 번째 wafer 의 $`j`$ 번째 site 측정값.
 - $`\bar{X}_i`$: $`i`$ 번째 wafer 의 평균.
 - $`\bar{X}`$: 전체 $`M`$ 개의 총평균.
+- $`s_i`$: $`i`$ 번째 wafer 한 장의 site 값 $`N`$ 개로 계산한 표본표준편차.
 - $`s_i^2`$: $`i`$ 번째 wafer 안 site 값의 표본분산. within-wafer 성분.
 - $`S_{\mathrm{total}}^2`$: 전체 $`M`$ 개의 표본분산.
 
@@ -164,7 +165,7 @@ Fig 2 에서 두 항의 크기가 뒤집히는 곳을 w2w detection point 라 �
 
 ### 4.3 WiW Excursion Detection
 
-Wafer 한 장의 산포가 그때까지 본 wafer 내 산포에서 크게 벗어나면 그 wafer 를 WiW excursion 으로 본다. Wafer $`i`$ 를 판정할 때 앞선 wafer 만으로 구한 $`\sigma_{within}(1..i-1)`$ 을 기준선으로 두고, 그 wafer 의 site 표준편차 $`s_i`$ 가 아래 한계를 넘는지 본다. 한계는 표본표준편차의 분포에서 나오며, 유도는 [Appendix D](#appendix-d-derivation-of-the-screening-limit) 에 적었다.
+Wafer 한 장의 산포가 그때까지 본 wafer 내 산포에서 크게 벗어나면 그 wafer 를 WiW excursion 으로 본다. Wafer $`i`$ 를 판정할 때 앞선 wafer 만으로 구한 $`\sigma_{within}(1..i-1)`$ 을 기준선으로 두고, 그 wafer 한 장의 site 표준편차 $`s_i`$ 가 아래 한계를 넘는지 본다. 한계는 표본표준편차의 분포에서 나오며, 유도는 [Appendix D](#appendix-d-derivation-of-the-screening-limit) 에 적었다.
 
 $$s_i \gt \sigma_{within}(1..i-1) \sqrt{\frac{\chi^2_{p, N-1}}{N-1}} \hspace{19em} (16)$$
 
