@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 115 | Created: 2026-09-01 | Updated: 2026-09-22 10:44 CDT
+Rev. 116 | Created: 2026-09-01 | Updated: 2026-09-22 10:50 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -75,7 +75,7 @@ Wafer 를 인자로 둔 one-way ANOVA 로 wafer 간 성분과 wafer 내 성분�
 - 첫째, SS: 식 (2) 로 전체 제곱합을 wafer 간 제곱합과 wafer 내 제곱합으로 가른다.
 - 둘째, df: 각 제곱합이 담은 독립한 정보의 개수를 센다. Between 은 wafer 평균 $`K`$ 개에서 총평균 하나를 뺀 $`K-1`$ 이고, within 은 wafer 마다 site $`N`$ 개에서 제 평균 하나를 뺀 $`N-1`$ 을 $`K`$ 배 한 $`K(N-1)`$ 이다.
 - 셋째, MS 와 F: 각 제곱합을 제 자유도로 나눠 평균제곱을 얻고, 두 평균제곱의 비를 F 통계량으로 삼는다.
-- 넷째, p: wafer 사이에 차이가 없다는 가정 아래 그 F 가 따르는 $`F(K-1,\ K(N-1))`$ 분포에서 그보다 큰 값이 나올 확률을 구한다.
+- 넷째, p: wafer 사이에 차이가 없다는 가정 아래 F 통계량은 $`F(K-1,\ K(N-1))`$ 분포를 따른다. p 는 그 분포에서 셋째 단계가 낸 F 값보다 큰 값이 나올 확률이다.
 
 이렇게 얻은 값을 Table 1 에 정리했다.
 
