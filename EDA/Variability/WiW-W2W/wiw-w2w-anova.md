@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 75 | Created: 2026-09-01 | Updated: 2026-09-21 19:11 CDT
+Rev. 76 | Created: 2026-09-01 | Updated: 2026-09-21 19:11 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -173,11 +173,9 @@ Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선�
 
 <img src="wiw-w2w-anova_fig/wafer_screening.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-Fig 3. Site value spread of each wafer against the running baseline and the screening limit of equation (13)
+Fig 3. Site value spread of each wafer against the running baseline and the screening limit of equation (16)
 
-$`N = 13`$, $`p = 0.999`$ 에서 계수는 1.656 이고, 판정한 241 장 중 42 장 (17.4%) 이 한계를 넘는다. 기준선은 판정을 시작하는 wafer 21 에서 16.44 로 출발해 11.14 까지 내려갔다가 12.07 로 끝나고, 한계는 그에 따라 18.45 에서 27.23 사이를 움직인다. 한계를 처음 넘는 것은 wf0041 로 $`s_i`$ = 49.52 가 그 시점의 한계 22.26 의 2.22 배이며, 가장 크게 벗어난 wf0125 는 42.39 로 한계 18.67 의 2.27 배이다. $`p`$ 는 오경보를 얼마나 허용할지로 정한다. 241 번 판정하므로 $`p = 0.999`$ 에서 우연히 걸리는 wafer 는 0.24 장이지만, $`p = 0.99`$ 로 낮추면 2.4 장이 되어 걸린 wafer 중 몇 장은 헛것이 된다.
-
-판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, 이상이 잦을수록 자가 스스로 무뎌진다. 261 장을 다 담은 pooled `sigma_within` 15.87 과 견주면 이렇게 얻은 기준선은 12.07 로 3.8 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
+판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, 이상이 잦을수록 자가 스스로 무뎌진다. 261 장을 다 담은 pooled `sigma_within` 15.87 과 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 12.07 로 3.8 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
 
 처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장 위에 선 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 uniformity 가 가장 나빴던 wf0011 이 $`s_i`$ = 55.04 로 이 자료에서 가장 큰 산포인데도 판정 대상에서 빠진다.
 
