@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 109 | Created: 2026-09-01 | Updated: 2026-09-22 02:28 CDT
+Rev. 110 | Created: 2026-09-01 | Updated: 2026-09-22 10:05 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -156,7 +156,7 @@ Wafer effect 가 모두 0 일 경우에, $`\sigma_{between} = 0`$, 곧 ICC = 0 �
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (16)$$
 
-이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.797 이라 식 (16) 이 서지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`33.36/\sqrt{13}`$ = 9.25 로 관측한 30.06 의 3 분의 1 도 되지 않는다.
+이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.797 이라 식 (16) 이 성립하지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`33.36/\sqrt{13}`$ = 9.25 로 관측한 30.06 의 3 분의 1 도 되지 않는다.
 
 ### 4.2 W2W Detection Point
 
@@ -190,7 +190,7 @@ Fig 3. Site value spread of each wafer against the running baseline and the scre
 
 판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, excursion 이 잦을수록 판정이 둔해진다. 200 장을 다 담은 pooled `sigma_within` 15.04 와 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 11.54 로 3.50 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
 
-처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장 위에 선 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 앞선 wafer 가 세운 한계를 넘었을 wf0010 과 wf0011 두 장이 판정 대상에서 빠진다.
+처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장으로 구한 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 앞선 wafer 가 세운 한계를 넘었을 wf0010 과 wf0011 두 장이 판정 대상에서 빠진다.
 
 ---
 
@@ -275,7 +275,7 @@ $`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 �
 
 ### C.3 Wafers as a Sample of One Process
 
-식 (6) 은 $`\alpha_i`$ 를 평균 0, variance $`\sigma_{between}^2`$ 인 한 분포에서 wafer 마다 독립으로 뽑는다고 둔다. 이 가정 위에서만 200 장이 공정의 표본이 되고, $`\sigma_{between}`$ 이 그 200 장을 넘어 앞으로 나올 wafer 에도 적용된다. 같은 자료를 fixed effects 로 두면 $`\alpha_i`$ 가 저마다 모수라 결론이 그 200 장에 머물고, wafer-to-wafer 성분이라는 하나의 수가 서지 않는다.
+식 (6) 은 $`\alpha_i`$ 를 평균 0, variance $`\sigma_{between}^2`$ 인 한 분포에서 wafer 마다 독립으로 뽑는다고 둔다. 이 가정 위에서만 200 장이 공정의 표본이 되고, $`\sigma_{between}`$ 이 그 200 장을 넘어 앞으로 나올 wafer 에도 적용된다. 같은 자료를 fixed effects 로 두면 $`\alpha_i`$ 가 저마다 모수라 결론이 그 200 장에 머물고, wafer-to-wafer 성분이라는 하나의 수가 나오지 않는다.
 
 이 자료는 그 가정에서 벗어난다. Wafer 평균은 앞 50 장에서 610.2 이고 뒤 50 장에서 630.9 로, 한 분포에서 독립으로 뽑았다면 두 구간이 이만큼 갈리지 않는다. 뒤쪽 wafer 의 $`\alpha_i`$ 가 앞쪽과 다른 수준에 있다는 뜻이다.
 
@@ -333,7 +333,7 @@ $$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 
 
 괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (17) 이 된다. 곧 식 (17) 을 넘은 wafer 는, 그 wafer 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 wafer 이다.
 
-기준선은 참값이 아니라 앞선 wafer 로 추정한 값이므로, 엄밀하게는 두 분산의 비가 F 분포를 따른다. 기준선이 wafer $`m`$ 장 위에 서 있으면 그 자유도는 $`\nu = m(N-1)`$ 이다.
+기준선은 참값이 아니라 앞선 wafer 로 추정한 값이므로, 엄밀하게는 두 분산의 비가 F 분포를 따른다. 기준선을 wafer $`m`$ 장으로 구했으면 그 자유도는 $`\nu = m(N-1)`$ 이다.
 
 $$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (38)$$
 
