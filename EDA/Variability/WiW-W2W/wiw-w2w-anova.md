@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 112 | Created: 2026-09-01 | Updated: 2026-09-22 10:26 CDT
+Rev. 113 | Created: 2026-09-01 | Updated: 2026-09-22 10:32 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -142,7 +142,7 @@ $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspace{19em} (13) 🌳$$
 
-식 (5) 와 식 (13) 이 갈리는 곳은 within 성분 하나이다. Site 를 $`N`$ 개 평균하면 site 오차 $`e_{ij}`$ 는 서로 독립이라 상쇄되어 분산이 $`N`$ 분의 1 로 줄지만, wafer effect $`\alpha_i`$ 는 그 wafer 의 site $`N`$ 개가 모두 똑같이 지니는 항이라 아무리 평균해도 줄지 않는다.
+식 (5) 는 site 값 한 점의 산포를 재고, 식 (13) 은 wafer 평균 한 점의 산포를 잰다. 두 식이 갈리는 곳은 within 성분 하나이다. Site 를 $`N`$ 개 평균하면 site 오차 $`e_{ij}`$ 는 서로 독립이라 상쇄되어 분산이 $`N`$ 분의 1 로 줄지만, wafer effect $`\alpha_i`$ 는 그 wafer 의 site $`N`$ 개가 모두 똑같이 지니는 항이라 아무리 평균해도 줄지 않는다.
 
 $`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 식 (9) 를 옮겨 적은 것이라 $`n`$ 과 무관하게 성립한다. 이 항등식을 식 (13) 에 넣으면 $`\sigma_{between}^2`$ 자리가 전체 표준편차로 바뀐다. 그 결과를 짧게 적는 데 쓰는 ICC 는 전체 분산 중 wafer 간 분산이 차지하는 비율이다.
 
