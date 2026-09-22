@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 71 | Created: 2026-09-01 | Updated: 2026-09-21 18:59 CDT
+Rev. 72 | Created: 2026-09-01 | Updated: 2026-09-21 19:01 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -147,10 +147,6 @@ $$\sigma_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (15)$$
 이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이며, 이 자료에서는 32.50/√13 = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
 
 ### 4.2 W2W Detection Point
-
-식 (12) 의 두 항은 서로 다른 것을 잰다. 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 은 site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. 오른쪽 항 $`\sigma_{between}`$ 은 wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 관측되는 wafer 평균의 산포는 이 둘의 제곱합의 제곱근이므로, 둘 중 어느 쪽이 큰가가 그 산포를 무엇으로 읽을지를 정한다.
-
-$`S_{\mathrm{total}} = 32.50`$, $`\sigma_{within} = 15.87`$, $`\sigma_{between} = 28.36`$, ICC = 0.761 을 넣으면 식 (13) 과 식 (14) 가 모두 28.70 으로, 관측한 $`\sigma_{\mu_{261}}`$ 과 같다. 앞쪽 $`n`$ 장에 drift 나 계단이 섞여 $`s_{\mu}(1..n)`$ 이 $`\sigma_{between}`$ 과 어긋나면 그 $`n`$ 에서는 이렇게 쓸 수 없다.
 
 Fig 2 는 식 (12) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래와 같다.
 
