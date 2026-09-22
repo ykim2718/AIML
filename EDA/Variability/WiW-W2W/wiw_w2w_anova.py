@@ -21,10 +21,11 @@ Changelog:
 - 0.14.0: rename the w2w detection point to the w2w threshold.
 - 0.15.0: give the WiW excursion screen its own class.
 - 0.16.0: rename running_screen to excursion.
+- 1.0.0: settle the public names W2WThreshold, threshold, WiWExcursion and excursion, and the excursion.csv output.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.16.1.2026.9.22"
+__version__ = "1.0.0.2026.9.22"
 
 import argparse
 import pathlib
