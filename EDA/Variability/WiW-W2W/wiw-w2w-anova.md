@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 98 | Created: 2026-09-01 | Updated: 2026-09-22 01:05 CDT
+Rev. 99 | Created: 2026-09-01 | Updated: 2026-09-22 01:52 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -55,14 +55,14 @@ $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm
 
 ## 2. Data
 
-측정 자료는 [example.csv](example.csv) 이며 261 행 14 열이다. 한 행이 한 장의 wafer 이고, 열 `wafer_id` 는 `wf0001` 부터 `wf0261` 까지의 일련번호로 파일의 행 순서, 곧 run order 를 나타낸다. 나머지 열 `S1`~`S13` 은 그 wafer 위의 13 개 site 이다. 결측은 없고 전체 관측치는 3393 개이다.
+측정 자료는 [example.csv](example.csv) 이며 261 행 14 열이다. 이 표는 wafer 마다 고유 수준을 하나 뽑고 거기에 site 잡음을 얹어 만든 것이다. 여기에 run order 를 따라 수준과 site 잡음이 함께 커지는 drift 를 두고, 수준이 크게 벗어난 wafer 여섯 장과 site 잡음이 부풀려진 wafer 스무 장을 넣었으며, seed 를 고정해 늘 같은 표가 나온다. 한 행이 한 장의 wafer 이고, 열 `wafer_id` 는 `wf0001` 부터 `wf0261` 까지의 일련번호로 파일의 행 순서, 곧 run order 를 나타낸다. 나머지 열 `S1`~`S13` 은 그 wafer 위의 13 개 site 이다. 결측은 없고 전체 관측치는 3393 개이다.
 
-- 전체 site 값: 평균 622.1, 표준편차 32.45, 최소 435.10, 최대 734.68.
-- Wafer 평균: 최소 452.9, 최대 705.0, 표준편차 28.70.
-- Within-wafer range: 평균 41.32, 최대 123.46.
-- Wafer uniformity $`s_i / \bar{X}_i`$: 중앙값 1.81%, 최소 0.87% (wf0033), 최대 8.62% (wf0011).
+- 전체 site 값: 평균 622.6, 표준편차 32.24, 최소 444.45, 최대 745.02.
+- Wafer 평균: 최소 478.8, 최대 707.4, 표준편차 28.79.
+- Within-wafer range: 평균 46.61, 최대 165.01.
+- Wafer uniformity $`s_i / \bar{X}_i`$: 중앙값 1.96%, 최소 0.94% (wf0012), 최대 7.18% (wf0131).
 
-Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 610 대에 모여 있다가 뒤쪽에서 650 근처까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. Wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 선은 wafer 평균을 이은 것으로, 위치가 wafer 마다 얼마나 튀는지 보여준다.
+Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 600 근처에 모여 있다가 뒤쪽에서 640 대까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. Wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 선은 wafer 평균을 이은 것으로, 위치가 wafer 마다 얼마나 튀는지 보여준다.
 
 <img src="wiw-w2w-anova_fig/site_value_violin.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
@@ -76,15 +76,15 @@ Table 1. One-way ANOVA with wafer as the factor
 
 | Source | SS | df | MS | F | p | Sigma component |
 |---|---:|---:|---:|---:|---:|---:|
-| Between wafer | 2,783,290 | 260 | 10,705.0 | 42.48 | ~0 | $`\sigma_{between} = \sqrt{(10705.0 - 252.0)/13} = 28.36`$ |
-| Within wafer | 789,202 | 3132 | 252.0 | | | $`\sigma_{within} = \sqrt{252.0} = 15.87`$ |
+| Between wafer | 2,800,744 | 260 | 10,772.1 | 46.56 | ~0 | $`\sigma_{between} = \sqrt{(10772.1 - 231.4)/13} = 28.47`$ |
+| Within wafer | 724,627 | 3132 | 231.4 | | | $`\sigma_{within} = \sqrt{231.4} = 15.21`$ |
 
 표의 각 열이 뜻하는 바는 아래와 같다.
 
-- SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 3,572,492 가 된다.
+- SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 3,525,371 이 된다.
 - df: degrees of freedom. 그 제곱합이 담은 독립한 정보의 개수. Wafer 261 장이므로 between 은 260, wafer 마다 site 13 개에서 평균 하나를 뺀 12 를 261 배 하여 within 은 3132.
-- MS: mean square. SS 를 df 로 나눈 값이며 분산의 추정치. Within 의 252.0 은 site 한 점의 산포, between 의 10,705.0 은 wafer 평균의 산포에 site 산포가 얹힌 크기.
-- F: 두 MS 의 비. 여기서는 10,705.0 / 252.0 = 42.48. wafer 사이에 차이가 없다면 1 근처에 머무는 값.
+- MS: mean square. SS 를 df 로 나눈 값이며 분산의 추정치. Within 의 231.4 는 site 한 점의 산포, between 의 10,772.1 은 wafer 평균의 산포에 site 산포가 얹힌 크기.
+- F: 두 MS 의 비. 여기서는 10,772.1 / 231.4 = 46.56. wafer 사이에 차이가 없다면 1 근처에 머무는 값.
 - p: wafer 사이에 차이가 없다는 가정 아래 그만큼 큰 F 가 나올 확률. 여기서는 0 에 가까워, 차이가 없다는 가정을 버린다.
 - Sigma component: 그 행이 내는 분산성분의 표준편차. Within 은 MS within 의 제곱근이고, between 은 MS between 에서 MS within 을 빼고 site 수 13 으로 나눈 뒤 제곱근을 취한 값이다.
 
@@ -92,15 +92,15 @@ Table 2. Variance components
 
 | Component | Sigma | Variance | Share |
 |---|---:|---:|---:|
-| Wafer-to-wafer | 28.36 | 804.1 | 76.1% |
-| Within-wafer | 15.87 | 252.0 | 23.9% |
-| Total | 32.50 | 1056.1 | 100% |
+| Wafer-to-wafer | 28.47 | 810.8 | 77.8% |
+| Within-wafer | 15.21 | 231.4 | 22.2% |
+| Total | 32.28 | 1042.2 | 100% |
 
-두 성분을 더한 32.50 은 section 2 의 관측 표준편차 32.45 와 0.05 만큼 다르다. Section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
+두 성분을 더한 32.28 은 section 2 의 관측 표준편차 32.24 와 0.04 만큼 다르다. Section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
 
-ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 804.1 / 1056.1 = 0.761 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.761 은 site 한 점의 산포 중 76.1% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
+ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 810.8 / 1042.2 = 0.778 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.778 은 site 한 점의 산포 중 77.8% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 
-Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, 창의 왼쪽 끝을 첫 wafer 에 고정하고 오른쪽 끝만 한 장씩 늘리며 (expanding window) 창마다 두 성분을 다시 구하면 그 값이 몇 장째에 자리를 잡는지 보인다. 두 성분 모두 앞쪽 몇십 장에서 크게 흔들리다가 (w2w 는 $`n = 14`$ 에서 36.55 까지 치솟는다) 표본이 쌓이면서 잦아들어, $`n = 261`$ 에서 각각 28.36 과 15.87 로 Table 2 의 값에 닿는다. $`n \ge 100`$ 에서 WiW 는 12.78~15.88 안에 머물러 일찍 안정되지만, w2w 는 18.28 에서 28.36 으로 계속 올라간다 — 뒤쪽 wafer 가 앞쪽과 다른 수준에 있었다는 뜻이며, 그래서 wafer 간 산포는 표본을 더 모을수록 커진다.
+Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, 창의 왼쪽 끝을 첫 wafer 에 고정하고 오른쪽 끝만 한 장씩 늘리며 (expanding window) 창마다 두 성분을 다시 구하면 그 값이 몇 장째에 자리를 잡는지 보인다. w2w 는 wafer 네 장에서 5.11 로 낮다가 열 장에서 20.12 로 뛰고 $`n = 46`$ 에서 32.41 까지 올랐다가, $`n \ge 100`$ 에서 26.19~29.28 안에 들어 $`n = 261`$ 의 28.47 에 닿는다. WiW 는 $`n = 5`$ 의 7.67 에서 꾸준히 올라 $`n \ge 100`$ 에서 12.77~15.21 안에 머물며 15.21 로 끝나는데, 뒤쪽 wafer 의 site 잡음이 앞쪽보다 크다. 두 성분 모두 앞쪽 수십 장에서는 표본이 모자라 Table 2 의 값과 크게 어긋난다.
 
 ## 4. Cumulative Standard Deviation and WiW Excursion Detection
 
@@ -154,7 +154,7 @@ Wafer effect 가 모두 0 일 경우에, $`\sigma_{between} = 0`$, 곧 ICC = 0 �
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (16)$$
 
-이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.761 이라 식 (16) 이 서지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`32.50/\sqrt{13}`$ = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
+이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.778 이라 식 (16) 이 서지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`32.28/\sqrt{13}`$ = 8.95 로 관측한 28.79 의 3 분의 1 도 되지 않는다.
 
 ### 4.2 W2W Detection Point
 
@@ -168,7 +168,7 @@ Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인
 
 Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (13) and the w2w detection point, each computed from the first n wafers only
 
-Fig 2 에서 두 항의 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). w2w detection point 이후 관측 곡선은 사실상 wafer effect 의 산포 그 자체이다.
+Fig 2 에서 두 항의 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 9`$ 이다 ($`n = 8`$ 에서 96%, $`n = 9`$ 에서 98%). w2w detection point 이후 관측 곡선은 사실상 wafer effect 의 산포 그 자체이다.
 
 공정 관리로 옮기면 w2w detection point 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
 
@@ -186,9 +186,9 @@ Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선�
 
 Fig 3. Site value spread of each wafer against the running baseline and the screening limit of equation (17)
 
-판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, excursion 이 잦을수록 판정이 둔해진다. 261 장을 다 담은 pooled `sigma_within` 15.87 과 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 12.07 로 3.8 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
+판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, excursion 이 잦을수록 판정이 둔해진다. 261 장을 다 담은 pooled `sigma_within` 15.21 과 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 12.55 로 2.67 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
 
-처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장 위에 선 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 uniformity 가 가장 나빴던 wf0011 이 $`s_i`$ = 55.04 로 이 자료에서 가장 큰 산포인데도 판정 대상에서 빠진다.
+처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장 위에 선 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 앞선 wafer 가 세운 한계를 넘었을 wf0015 한 장이 판정 대상에서 빠진다.
 
 ---
 
@@ -239,7 +239,7 @@ $$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \f
 
 $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (23)$$
 
-이 문서의 $`K = 261`$, $`N = 13`$ 에서는 $`1 - a = 260/3392 = 0.0767`$ 로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/3392 = 0.0035`$ 로 $`1/K = 0.0038`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 251.98`$ 과 $`S_{\mathrm{between}}^2 = 823.46`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 32.79`$ 가 되어 관측값 32.45 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
+이 문서의 $`K = 261`$, $`N = 13`$ 에서는 $`1 - a = 260/3392 = 0.0767`$ 로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/3392 = 0.0035`$ 로 $`1/K = 0.0038`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 231.36`$ 과 $`S_{\mathrm{between}}^2 = 828.62`$ 를 그냥 더하면 $`S_{\mathrm{total}} = 32.56`$ 이 되어 관측값 32.24 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
 
 ### B.2 Correlated Sites Within a Wafer
 
@@ -255,7 +255,7 @@ $`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 �
 
 식 (6) 은 $`\alpha_i`$ 를 평균 0, variance $`\sigma_{between}^2`$ 인 한 분포에서 wafer 마다 독립으로 뽑는다고 둔다. 이 가정 위에서만 261 장이 공정의 표본이 되고, $`\sigma_{between}`$ 이 그 261 장을 넘어 앞으로 나올 wafer 에도 적용된다. 같은 자료를 fixed effects 로 두면 $`\alpha_i`$ 가 저마다 모수라 결론이 그 261 장에 머물고, wafer-to-wafer 성분이라는 하나의 수가 서지 않는다.
 
-이 자료는 그 가정에서 벗어난다. Section 3 의 expanding window 에서 w2w 성분이 $`n \ge 100`$ 에서도 18.28 에서 28.36 으로 계속 오르는데, 한 분포에서 독립으로 뽑은 표본이라면 쌓일수록 한 값에 잦아들어야 한다. 뒤쪽 wafer 의 $`\alpha_i`$ 가 앞쪽과 다른 수준에 있다는 뜻이다.
+이 자료는 그 가정에서 벗어난다. Wafer 평균은 앞 50 장에서 603.9 이고 뒤 50 장에서 639.3 으로, 한 분포에서 독립으로 뽑았다면 두 구간이 이만큼 갈리지 않는다. 뒤쪽 wafer 의 $`\alpha_i`$ 가 앞쪽과 다른 수준에 있다는 뜻이다.
 
 그래서 이 문서의 $`\sigma_{between}`$ 은 한 공정 수준 둘레의 산포가 아니라 261 장에 걸친 drift 까지 담은 값이다. 그 값으로 세운 관리 한계선은 drift 를 공정이 늘 내는 산포로 받아들이므로 새 wafer 에 적용하면 실제보다 넓다.
 
@@ -315,7 +315,7 @@ $$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 
 
 $$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (34)$$
 
-$`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (17) 을 그대로 쓸 수 있다. 식 (17) 의 계수 1.656 과 견주면, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
+$`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (17) 을 그대로 쓸 수 있다. 식 (17) 의 계수 1.656 과 견주면, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.659 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
 
 ## Appendix E. Covariance With a Repeated Argument
 
