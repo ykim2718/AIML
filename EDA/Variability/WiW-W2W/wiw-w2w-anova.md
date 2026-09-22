@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 86 | Created: 2026-09-01 | Updated: 2026-09-21 23:06 CDT
+Rev. 87 | Created: 2026-09-01 | Updated: 2026-09-21 23:10 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -106,7 +106,7 @@ Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 
 
 ### 4.1 Formula and Its Closed Forms
 
-처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. 총평균을 $`\mu`$, wafer $`i`$ 의 wafer effect 를 $`\alpha_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 세 항의 합이다. 이것이 one-way random effects model 의 표준 표기이며, 총평균과 group 의 몫을 갈라 적는다.
+처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. One-way random effects model 의 표준 표기로, 총평균과 group 의 몫을 갈라 적는다. 총평균을 $`\mu`$, wafer $`i`$ 의 wafer effect 를 $`\alpha_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 세 항의 합이다.
 
 $$X_{ij} = \mu + \alpha_i + e_{ij} \hspace{19em} (6)$$
 
