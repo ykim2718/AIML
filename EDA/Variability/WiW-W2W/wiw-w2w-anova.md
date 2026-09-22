@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 116 | Created: 2026-09-01 | Updated: 2026-09-22 10:50 CDT
+Rev. 117 | Created: 2026-09-01 | Updated: 2026-09-22 10:58 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -169,7 +169,7 @@ $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (17)$
 
 이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.797 이라 식 (17) 이 성립하지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`33.36/\sqrt{13}`$ = 9.25 로 관측한 30.06 의 3 분의 1 도 되지 않는다.
 
-### 4.2 W2W Detection Point
+### 4.2 W2W Threshold
 
 Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래와 같다.
 
@@ -179,11 +179,11 @@ Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (13) and the w2w detection point, each computed from the first n wafers only
+Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (13) and the w2w threshold, each computed from the first n wafers only
 
-Fig 2 에서 오른쪽 항이 관측 곡선에 겹치기 시작하는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 9`$ 이다 ($`n = 8`$ 에서 96%, $`n = 9`$ 에서 98%). w2w detection point 이후 관측 곡선은 사실상 wafer effect 의 산포 그 자체이다.
+Fig 2 에서 오른쪽 항이 관측 곡선에 겹치기 시작하는 곳을 w2w threshold 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 9`$ 이다 ($`n = 8`$ 에서 96%, $`n = 9`$ 에서 98%). w2w threshold 이후 관측 곡선은 사실상 wafer effect 의 산포 그 자체이다.
 
-공정 관리로 옮기면 w2w detection point 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
+공정 관리로 옮기면 w2w threshold 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
 
 ### 4.3 WiW Excursion Detection
 
@@ -220,7 +220,7 @@ Fig 3. Site value spread of each wafer against the running baseline and the scre
 - **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
 - **variogram**: 두 지점의 값 차이가 갖는 분산을 두 지점 사이 거리의 함수로 나타낸 것. 거리에 따라 값이 얼마나 닮는지를 재는 데 쓴다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
-- **w2w detection point**: 식 (13) 의 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
+- **w2w threshold**: 식 (13) 의 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
 - **wafer effect**: wafer $`i`$ 의 참 평균이 총평균에서 벗어난 양 $`\alpha_i`$. One-way random effects model 에서는 평균 0 으로 wafer 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 - **WiW excursion**: site 표준편차가 running baseline 이 세운 한계를 넘은 wafer.
@@ -279,7 +279,7 @@ $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N
 
 식 (8) 은 같은 wafer 의 서로 다른 두 site 오차가 독립이라고 두어 $`\mathrm{Cov}(e_{ij}, e_{ij'})`$ 을 0 으로 지운다. 실제 wafer 는 radial pattern 이나 edge roll-off 처럼 site 위치를 따라 함께 움직이는 성분을 지녀 그 covariance 가 0 이 아니며, 식 (6) 의 모형은 site 를 자리와 무관한 반복으로 보아 그 공간 구조를 $`e_{ij}`$ 안에 묻는다.
 
-두 site 오차의 상관을 $`\rho`$ 로 두면 wafer 평균에 남는 잡음은 $`\mathrm{Var}(\bar{e}_i) = \sigma_{within}^2 [1 + (N-1)\rho] / N`$ 이며, 식 (10) 은 $`\rho = 0`$ 인 경우이다. $`\rho \gt 0`$ 이면 실제 잡음 바닥이 식 (13) 의 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 보다 크고, 덜 빼는 만큼 오른쪽 항 $`s_{\mu}(1..n)`$ 이 부풀려져 section 4.2 의 w2w detection point 가 실제보다 이른 $`n`$ 에서 잡힌다.
+두 site 오차의 상관을 $`\rho`$ 로 두면 wafer 평균에 남는 잡음은 $`\mathrm{Var}(\bar{e}_i) = \sigma_{within}^2 [1 + (N-1)\rho] / N`$ 이며, 식 (10) 은 $`\rho = 0`$ 인 경우이다. $`\rho \gt 0`$ 이면 실제 잡음 바닥이 식 (13) 의 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 보다 크고, 덜 빼는 만큼 오른쪽 항 $`s_{\mu}(1..n)`$ 이 부풀려져 section 4.2 의 w2w threshold 가 실제보다 이른 $`n`$ 에서 잡힌다.
 
 같은 상관이 section 4.3 의 한계에도 걸린다. 식 (37) 가 자유도 $`N-1`$ 의 $`\chi^2`$ 를 쓰는 것은 한 wafer 의 site $`N`$ 개가 독립한 정보 $`N-1`$ 개를 낸다는 뜻인데, site 끼리 닮으면 실효 자유도가 그보다 작아 한계가 좁게 잡히고 WiW excursion 판정이 실제보다 민감해진다.
 

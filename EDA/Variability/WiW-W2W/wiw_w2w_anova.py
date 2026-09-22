@@ -18,10 +18,11 @@ Changelog:
 - 0.11.0: screen each wafer against the expanding within-wafer component of the wafers before it.
 - 0.12.0: keep the flagged wafers out of the running baseline and draw the screen instead of the components.
 - 0.13.0: drop the sigma_total over root Nn trace from the cumulative figure.
+- 0.14.0: rename the w2w detection point to the w2w threshold.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.13.5.2026.9.22"
+__version__ = "0.14.0.2026.9.22"
 
 import argparse
 import pathlib
@@ -37,12 +38,12 @@ from matplotlib.colors import TABLEAU_COLORS
 from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
 from scipy import stats
 
-__all__ = ['VarianceComponents', 'W2WDetectionPoint', 'WaferMeasurements']
+__all__ = ['VarianceComponents', 'W2WThreshold', 'WaferMeasurements']
 
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
 VIOLIN_WIDTH: float = 1.6                # width of one wafer's violin in wafer index units
-DETECTION_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
+THRESHOLD_RATIO: float = 0.98            # the right term counts as the whole spread above this share of it
 ALPHA: float = 0.05                      # family-wise error rate of the within-wafer variance test
 SCREEN_CONFIDENCE: float = 0.999         # confidence of the chi-square limit a wafer is screened against
 SCREEN_WARMUP: int = 20                  # wafers the running baseline is built on before any wafer is judged
@@ -80,14 +81,14 @@ class VarianceComponents:
         return self.sigma_between ** 2 / (self.sigma_between ** 2 + self.sigma_within ** 2)
 
 
-class W2WDetectionPoint:
+class W2WThreshold:
     """The first n from which the wafer-level term carries the whole spread of the wafer means.
 
     Below that n the site error still accounts for a visible share of the observed spread, so the
     wafer-to-wafer part cannot be told apart from it. The cumulative terms are injected once.
     """
 
-    def __init__(self, terms: pd.DataFrame, ratio: float = DETECTION_RATIO) -> None:
+    def __init__(self, terms: pd.DataFrame, ratio: float = THRESHOLD_RATIO) -> None:
         for column in ('observed', 'right_term'):
             if column not in terms.columns:
                 raise ValueError(f"the cumulative terms have no '{column}' column; columns are {list(terms.columns)}")
@@ -103,7 +104,7 @@ class W2WDetectionPoint:
 
     @property
     def n(self) -> int:
-        """The wafer count at the detection point."""
+        """The wafer count at the w2w threshold."""
         reached = np.flatnonzero(np.nan_to_num(self.share.to_numpy()) >= self.ratio)
         if reached.size == 0:
             raise ValueError(f"the right term never reaches {self.ratio:.0%} of the observed spread")
@@ -238,9 +239,9 @@ class WaferMeasurements:
         return pd.DataFrame({'sd_within': np.sqrt(site_variance), 'baseline': baseline,
                              'limit': baseline * factor, 'exceeded': exceeded}, index=self.frame.index)
 
-    def detection_point(self, ratio: float = DETECTION_RATIO) -> int:
-        """Return the wafer count at the w2w detection point of this table."""
-        return W2WDetectionPoint(terms=self.cumulative_terms(), ratio=ratio).n
+    def threshold(self, ratio: float = THRESHOLD_RATIO) -> int:
+        """Return the wafer count at the w2w threshold of this table."""
+        return W2WThreshold(terms=self.cumulative_terms(), ratio=ratio).n
 
     def wafer_report(self, alpha: float = ALPHA) -> pd.DataFrame:
         """Report each wafer and flag the ones whose within-wafer variance exceeds the pooled one.
@@ -348,7 +349,7 @@ class WaferMeasurements:
         terms = self.cumulative_terms()
         observed = terms['observed'].to_numpy()
         left_term = terms['left_term'].to_numpy()
-        detection = self.detection_point()
+        threshold = self.threshold()
 
         font_size = self._font_size()
         figure, axes = plt.subplots(figsize=FIGSIZE)
@@ -360,9 +361,9 @@ class WaferMeasurements:
                   label=r"eq (13) left term  $\sigma_{within}/\sqrt{N}$")
         axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
                      label=r"eq (13)  $\hat{\sigma}_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
-        axes.axvline(detection, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
-                     label=f"w2w detection point (n = {detection})")
-        axes.annotate(f"n = {detection}", (detection, observed[detection - 1]), textcoords="offset points",
+        axes.axvline(threshold, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
+                     label=f"w2w threshold (n = {threshold})")
+        axes.annotate(f"n = {threshold}", (threshold, observed[threshold - 1]), textcoords="offset points",
                       xytext=(8, -4), fontsize=font_size, color=COLOR_MARK)
         axes.set_xscale('log')
         axes.set_yscale('log')
@@ -412,7 +413,7 @@ if __name__ == '__main__':
     report = measurements.wafer_report()
     report.to_csv(args.output_folder / 'wafer_report.csv')
     print(f"wafers with inflated within-wafer variance: {int(report['flagged'].sum())}")
-    print(f"w2w detection point: n = {measurements.detection_point()}")
+    print(f"w2w threshold: n = {measurements.threshold()}")
     screen = measurements.running_screen()
     screen.to_csv(args.output_folder / 'running_screen.csv')
     judged = int(screen['limit'].notna().sum())
