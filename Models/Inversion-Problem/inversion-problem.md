@@ -1,7 +1,7 @@
 # Inverse Problem and Model Inversion
-Rev. 30 | Created: 2026-08-28 | Updated: 2026-09-22 15:20 CDT
+Rev. 31 | Created: 2026-08-28 | Updated: 2026-09-22 16:05 CDT
 
-학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
+학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
 ## 1. Definition
 
@@ -217,7 +217,19 @@ Random forest 와 gradient boosting 은 조각별 상수 함수이므로 입력�
 
 Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가장 범용이다. 잔차를 목적 함수로 삼고, 유효 영역과 물리적 한계를 제약으로 걸어 최적화기를 돌린다. Gradient 를 쓸 수 있으면 쓰고 없으면 derivative-free 방법으로 바꾸기만 하면 되므로, 앞의 모든 계열에 대해 대안이 된다. 대가는 비용과 국소해이다. 목적 함수가 여러 골짜기를 가지면 시작점에 따라 다른 해에 닿으므로, 여러 시작점에서 반복하고 얻은 해들을 함께 보고하는 편이 안전하다. 구현은 [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 에 있다.
 
-## 5. Solution Validity
+## 5. Inversion without Model Access
+
+Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y}_i)$ 이 있으면 inversion 은 풀린다. Model 의 구조 대신 그 쌍이 담은 입출력 관계를 쓰는 것이며, 쓸 수 있는 방법은 셋이다.
+
+- Surrogate 재학습: 가진 쌍으로 $\hat{y}$ 를 맞추는 새 model 을 세우고, 그 surrogate 를 4 의 방법으로 뒤집는다. 원 model 의 예측을 정답으로 삼아 다른 model 로 옮기는 것이므로 model distillation 이며, 해의 오차는 원 model 의 잔차가 아니라 surrogate 의 재현 오차가 정한다.
+- Learned inverse map: $\hat{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 그 쌍으로 바로 학습한다 (2.3). 추론이 한 번의 forward 로 끝나는 대신 다중해를 평균으로 뭉갠다.
+- Nearest-sample lookup: 목표에 가장 가까운 $\hat{y}_i$ 를 가진 $\mathbf{x}_i$ 를 뽑고 그 이웃에서 보간한다. 가장 싸지만 쌍이 덮은 영역 밖으로는 나가지 못한다.
+
+유효 영역은 세 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 6 의 검증을 그대로 쓴다.
+
+한계는 쌍이 덮는 영역이다. Surrogate 와 inverse map 은 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다.
+
+## 6. Solution Validity
 
 Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므로, 실행 전에 다음 네 가지를 확인한다.
 
@@ -226,7 +238,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 규격을 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 이 판단이 불가능하므로 별도의 검증이 필요하다.
 - 검증과 갱신: 얻은 입력은 실험이나 시뮬레이션으로 확인하고, 그 결과를 데이터에 더해 model 을 다시 학습하는 폐루프를 둔다. 이 되먹임이 없으면 model 의 오차가 그대로 설계 오차가 된다.
 
-## 6. Tools and Libraries
+## 7. Tools and Libraries
 
 Table 3. Libraries for model inversion
 
@@ -300,6 +312,7 @@ Table 3. Libraries for model inversion
 - **Mahalanobis distance**: 각 방향의 산포로 나누어 재는 거리이며, 중심에서 표준편차 몇 배만큼 떨어졌는지를 나타낸다.
 - **MCMC**: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
 - **Minimum-norm solution**: 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다.
+- **Model distillation**: 원 model 의 예측을 정답으로 삼아 다른 model 을 학습시켜 그 입출력 관계를 옮기는 방법이다.
 - **Model inversion**: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
 - **Normalizing flow**: 가역 변환의 합성으로 분포를 다른 분포로 옮기는 생성 model 이다.
 - **Null space**: 예측 출력을 바꾸지 않는 입력 또는 score 의 방향이 이루는 부분공간이다.
@@ -497,4 +510,4 @@ Fig 6. Constrained solution against the validity limits
 - (a) 는 `x2`–`x4` 평면이다. 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 놓여 목표 1.0 을 맞추고, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 놓이며 값도 0.65 에 그친다.
 - (b) 는 두 해의 통계량을 각자의 상한으로 나눈 값이다. $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이고, $T^{2}$ 는 두 해 모두 상한 아래이다.
 
-$T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
+$T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 6 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
