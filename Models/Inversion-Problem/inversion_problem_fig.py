@@ -1,6 +1,6 @@
 """Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.10.0.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.11.1.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -25,6 +25,7 @@ APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
 APPENDIX_D_ROWS: int = 100
 APPENDIX_D_TARGET: float = 18.0
+APPENDIX_D_STARTS: int = 5
 
 matplotlib.use('Agg')
 
@@ -395,11 +396,13 @@ def build_appendix_d_model() -> tuple:
     c = rng.normal(3.0, 0.8, n)                 # measured context
     d = 0.7 * c + rng.normal(0.0, 0.2, n)       # D follows C
     e = rng.normal(2.0, 0.5, n)
-    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 0.6, n)
+    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 2.5, n)
     data = pd.DataFrame({'A': a, 'B': b, 'C': c, 'D': d, 'E': e, 'T': t})
 
     features = data[APPENDIX_D_FEATURES].to_numpy()
-    vendor_model = GradientBoostingRegressor(random_state=0).fit(features, data['T'].to_numpy())
+    # shallow and short, so it fits the signal in T instead of memorising the noise
+    vendor_model = GradientBoostingRegressor(random_state=0, n_estimators=20, max_depth=2).fit(
+        features, data['T'].to_numpy())
     data['P'] = vendor_model.predict(features)
     del vendor_model                            # the model still exists, but nothing below reaches it
 
@@ -432,16 +435,17 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     def objective(free_values: np.ndarray) -> float:
         return float((surrogate.predict(assemble(free_values)[None, :])[0] - APPENDIX_D_TARGET) ** 2)
 
-    start = data.iloc[int((data['P'] - APPENDIX_D_TARGET).abs().idxmin())]
-    x_start = start[APPENDIX_D_FREE].to_numpy(dtype=float)
-    result = minimize(objective, x0=x_start, method='COBYLA',
-                      constraints=[{'type': 'ineq', 'fun': lambda v: t2_limit - t2(assemble(v))},
-                                   {'type': 'ineq', 'fun': lambda v: spe_limit - spe(assemble(v))}],
-                      options={'maxiter': 3000})
-    x_solved = result.x
+    # a boosted tree is piecewise constant, so one start alone can stall on a flat box
+    starts = data.iloc[(data['P'] - APPENDIX_D_TARGET).abs().nsmallest(APPENDIX_D_STARTS).index]
+    constraints = [{'type': 'ineq', 'fun': lambda v: t2_limit - t2(assemble(v))},
+                   {'type': 'ineq', 'fun': lambda v: spe_limit - spe(assemble(v))}]
+    results = [minimize(objective, x0=row[APPENDIX_D_FREE].to_numpy(dtype=float), method='COBYLA',
+                        constraints=constraints, options={'maxiter': 3000})
+               for _, row in starts.iterrows()]
+    best = min(results, key=lambda r: r.fun)
+    x_starts = starts[APPENDIX_D_FREE].to_numpy(dtype=float)
+    x_solved = best.x
     p_solved = float(surrogate.predict(assemble(x_solved)[None, :])[0])
-    # the start read at the context mean, so both markers sit on the surface the panel draws
-    p_start = float(surrogate.predict(assemble(x_start)[None, :])[0])
 
     # the surrogate's prediction over the A-B plane, with C, D, E held at the context
     grid_a, grid_b = np.mgrid[data['A'].min():data['A'].max():120j,
@@ -476,10 +480,10 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
                              colors=COLORS[0], linewidths=1.8)
     ax.clabel(target_line, fmt=f'P = {APPENDIX_D_TARGET:.0f}', fontsize=font_size(0.8))
     ax.scatter(data['A'], data['B'], s=8, color='0.55', label='100 samples')
-    ax.scatter([x_start[0]], [x_start[1]], s=70, marker='X', color=COLORS[1],
-               label=f'nearest sample start, P = {p_start:.2f}')
+    ax.scatter(x_starts[:, 0], x_starts[:, 1], s=60, marker='X', color=COLORS[1],
+               label=f'{APPENDIX_D_STARTS} nearest sample starts')
     ax.scatter([x_solved[0]], [x_solved[1]], s=110, marker='*', color=COLORS[2],
-               label=f'solved A, B, P = {p_solved:.2f}')
+               label=f'best solution, P = {p_solved:.2f}')
     ax.set_xlabel('A', fontsize=font_size())
     ax.set_ylabel('B', fontsize=font_size())
     ax.tick_params(labelsize=font_size(0.9))
@@ -501,7 +505,7 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
     panel_caption(fig, [axes[0]], f'(a) the hidden model against T, R2 = {r2_hidden:.3f}')
     panel_caption(fig, [axes[1]], '(b) the search moves A and B onto the target line')
-    panel_caption(fig, [axes[2]], f'(c) the surrogate reproduces P, R2 = {r2_surrogate:.3f}')
+    panel_caption(fig, [axes[2]], f'(c) the surrogate reproduces P, R2 = {r2_surrogate:.4f}')
     out_path = out_folder / 'appendix-d-inversion.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
@@ -511,7 +515,8 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     sample_path = out_folder / 'appendix-d-samples.csv'
     data.assign(P_surrogate=p_surrogate).to_csv(sample_path, index=False, float_format='%.6f')
     print(f'wrote {out_path}, hidden model R2 on T={r2_hidden:.4f}, surrogate R2 on P={r2_surrogate:.4f}')
-    print(f'  start  A, B = {np.round(x_start, 3)}, P={p_start:.4f}')
+    print('  P from each start = '
+          f'{[round(float(surrogate.predict(assemble(r.x)[None, :])[0]), 3) for r in results]}')
     print(f'  solved A, B = {np.round(x_solved, 3)}, P={p_solved:.4f}, '
           f'T2={t2(assemble(x_solved)):.2f}/{t2_limit:.2f}, '
           f'SPE={spe(assemble(x_solved)):.3f}/{spe_limit:.3f}')

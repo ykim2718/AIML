@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 36 | Created: 2026-08-28 | Updated: 2026-09-22 18:30 CDT
+Rev. 37 | Created: 2026-08-28 | Updated: 2026-09-22 19:00 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -527,7 +527,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 FEATURES = ["A", "B", "C", "D", "E"]
 FREE = ["A", "B"]
-N_ROWS, P_TARGET = 100, 18.0
+N_ROWS, P_TARGET, N_STARTS = 100, 18.0, 5
 
 
 def make_dataset(n_rows: int = N_ROWS, seed: int = 0) -> pd.DataFrame:
@@ -538,7 +538,7 @@ def make_dataset(n_rows: int = N_ROWS, seed: int = 0) -> pd.DataFrame:
     c = rng.normal(3.0, 0.8, n_rows)            # measured context
     d = 0.7 * c + rng.normal(0.0, 0.2, n_rows)  # D follows C
     e = rng.normal(2.0, 0.5, n_rows)
-    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 0.6, n_rows)
+    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 2.5, n_rows)
     return pd.DataFrame({"A": a, "B": b, "C": c, "D": d, "E": e, "T": t})
 
 
@@ -546,7 +546,9 @@ data = make_dataset()
 X = data[FEATURES].to_numpy()
 
 # the model we may call once: it leaves behind the column P, not itself
-vendor_model = GradientBoostingRegressor(random_state=0).fit(X, data["T"].to_numpy())
+# shallow and short, so it fits the signal in T instead of memorising the noise
+vendor_model = GradientBoostingRegressor(random_state=0, n_estimators=20, max_depth=2).fit(
+    X, data["T"].to_numpy())
 data["P"] = vendor_model.predict(X)
 del vendor_model             # the model still exists, but nothing below can reach it
 
@@ -585,27 +587,30 @@ def objective(free_values: np.ndarray) -> float:
     return float((surrogate.predict(assemble(free_values)[None, :])[0] - P_TARGET) ** 2)
 
 
-# 2. nearest-sample lookup supplies the starting A, B
-start = data.iloc[int((data["P"] - P_TARGET).abs().idxmin())]
+# 2. nearest-sample lookup supplies the starting points
+starts = data.iloc[(data["P"] - P_TARGET).abs().nsmallest(N_STARTS).index]
 
-# 3. derivative-free search over A and B, held inside the validity domain
-result = minimize(
-    objective,
-    x0=start[FREE].to_numpy(dtype=float),
-    method="COBYLA",
-    constraints=[
-        {"type": "ineq", "fun": lambda v: t2_limit - t2(assemble(v))},
-        {"type": "ineq", "fun": lambda v: spe_limit - spe(assemble(v))},
-    ],
-    options={"maxiter": 3000},
-)
+# 3. derivative-free search from each start, held inside the validity domain.
+#    A boosted tree is piecewise constant, so one start alone can stall on a flat box.
+constraints = [
+    {"type": "ineq", "fun": lambda v: t2_limit - t2(assemble(v))},
+    {"type": "ineq", "fun": lambda v: spe_limit - spe(assemble(v))},
+]
+results = [
+    minimize(objective, x0=row[FREE].to_numpy(dtype=float), method="COBYLA",
+             constraints=constraints, options={"maxiter": 3000})
+    for _, row in starts.iterrows()
+]
+best = min(results, key=lambda r: r.fun)
 
-solution = assemble(result.x)
+solution = assemble(best.x)
+r2_hidden = 1.0 - float(np.sum((data["T"] - data["P"]) ** 2) / np.sum((data["T"] - data["T"].mean()) ** 2))
 print("rows              :", len(data))
 print("P range           :", round(float(data["P"].min()), 2), "to", round(float(data["P"].max()), 2))
+print("hidden R2 on T    :", round(r2_hidden, 4))
 print("surrogate R2 on P :", round(float(surrogate.score(X, data["P"].to_numpy())), 4))
-print("start A, B        :", np.round(start[FREE].to_numpy(dtype=float), 3))
-print("solved A, B       :", np.round(result.x, 3))
+print("P from each start :", [round(float(surrogate.predict(assemble(r.x)[None, :])[0]), 3) for r in results])
+print("solved A, B       :", np.round(best.x, 3))
 print("P at solution     :", round(float(surrogate.predict(solution[None, :])[0]), 4))
 print("T2                :", round(t2(solution), 2), "limit", round(t2_limit, 2))
 print("SPE               :", round(spe(solution), 3), "limit", round(spe_limit, 3))
@@ -615,18 +620,19 @@ print("SPE               :", round(spe(solution), 3), "limit", round(spe_limit, 
 
 ```text
 rows              : 100
-P range           : 12.51 to 23.33
-surrogate R2 on P : 0.999
-start A, B        : [11.392  4.894]
-solved A, B       : [10.432  4.616]
-P at solution     : 18.0627
-T2                : 0.02 limit 5.99
-SPE               : 0.118 limit 3.678
+P range           : 13.6 to 21.72
+hidden R2 on T    : 0.7038
+surrogate R2 on P : 0.9996
+P from each start : [18.286, 18.045, 18.045, 18.288, 17.927]
+solved A, B       : [9.569 5.014]
+P at solution     : 18.0452
+T2                : 0.09 limit 5.99
+SPE               : 0.007 limit 3.678
 ```
 
 `vendor_model` 은 `P` 열을 남긴 뒤 `del` 로 가려진다. 그 뒤의 계산은 표의 `A`–`E` 와 `P` 만 읽으므로, model 은 그대로 있되 이 code 에서 닿을 수 없는 상황이 된다.
 
-세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.999$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 18.0 에 가장 가까운 행에서 출발점 `A` = 11.392, `B` = 4.894 를 준다. 그 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 가 `A` = 10.432, `B` = 4.616 으로 옮겨 `P` = 18.063 을 맞춘다.
+세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.9996$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 18.0 에 가장 가까운 다섯 행에서 출발점을 준다. 각 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 를 돌려 얻은 `P` 는 17.927 에서 18.288 까지 흩어지며, 그중 가장 가까운 `A` = 9.569, `B` = 5.014 가 `P` = 18.045 를 낸다.
 
 이 결과를 Fig 7 에 그린다.
 
@@ -634,12 +640,14 @@ SPE               : 0.118 limit 3.678
 
 Fig 7. Appendix D hidden model against T, the search in the A–B plane, and the surrogate against P
 
-- (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.998$ 이다. 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
-- (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 18.0 의 등위선이다. 출발점은 `P` = 18.84 로 그 선 위쪽에 있고, 해는 선 위에 놓인다.
-- (c) 는 surrogate 의 parity plot 이다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.999$ 로 점이 1:1 선에 붙어 있다.
+- (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.704$ 이다. 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
+- (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 18.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.
+- (c) 는 surrogate 의 parity plot 이다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.9996$ 로 점이 1:1 선에 붙어 있다.
 
 (c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
 등고선이 계단 모양이다. Tree 하나는 입력 공간을 문턱값으로 잘라 상자로 나누고 상자마다 저장된 값 하나를 돌려주며, gradient boosting 은 그런 tree 의 값을 더한다. 그래서 예측은 문턱값을 넘을 때만 바뀌고 문턱값 사이에서는 상수이며, 4.3 이 말한 대로 gradient 가 0 이거나 정의되지 않아 탐색으로 푼다.
 
-해는 유효 영역 안에 있다. $T^{2}$ 는 0.02 로 상한 5.99 보다, SPE 는 0.118 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
+출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 17.927 이나 18.288 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
+
+해는 유효 영역 안에 있다. $T^{2}$ 는 0.09 로 상한 5.99 보다, SPE 는 0.007 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
