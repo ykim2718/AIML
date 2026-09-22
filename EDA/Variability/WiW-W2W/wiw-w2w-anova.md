@@ -1,141 +1,141 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 121 | Created: 2026-09-01 | Updated: 2026-09-22 11:34 CDT
+Rev. 0 | Created: 2026-09-22 | Updated: 2026-09-22 11:42 CDT
 
-> ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
+> ANOVA (analysis of variance) divides the total spread of the observations into a few causes and shows in numbers how much each cause contributes.
 
-관측값이 여러 층으로 묶여 있을 때 각 층이 산포에 얼마나 기여하는지는 눈으로 가려낼 수 없다. ANOVA 는 전체 제곱합을 층별 제곱합으로 쪼개어 이 물음에 답한다. 한 층 안에서 값이 흩어진 정도와 층 사이에서 평균이 벌어진 정도를 각각의 자유도로 나누어 평균제곱으로 만들고, 그 비를 F 통계량으로 삼아 층 사이의 차이가 층 안의 산포만으로 설명되는지 판정한다. Section 1 은 group 과 member 라는 일반 용어로 그 분해를 세우고, section 2 는 wafer 를 group 으로, site 를 member 로 두어 두 값을 구한다. 하나는 wafer 간 산포가 측정 잡음에서 갈라져 보이기 시작하는 wafer 장수인 w2w threshold 이고, 다른 하나는 site 산포가 앞선 wafer 로 구한 한계를 넘은 wafer 인 WiW excursion 이다.
+When measurements are nested in layers, the eye cannot tell how much each layer contributes to the spread. ANOVA answers that question by cutting the total sum of squares into the sums of squares of the layers. It divides the spread of the values inside a layer and the spread of the means between layers by their own degrees of freedom to make mean squares, and takes their ratio as the F statistic to judge whether the difference between layers is explained by the spread inside a layer alone. Section 1 builds the decomposition in the general terms group and member, and section 2 puts wafer for group and site for member to obtain two values. One is the w2w threshold, the wafer count from which the spread between wafers separates from the measurement noise, and the other is the WiW excursion, a wafer whose site spread exceeds the limit obtained from the wafers before it.
 
 ## 1. One-Way Variance Components
 
-인자 하나로 묶인 자료에서 전체 산포를 group 간 성분과 group 내 성분으로 가르고, 그 두 성분으로 group 평균의 산포와 group 하나의 산포 한계를 적는다. 이 꼭지는 group 과 member 라는 일반 용어만 쓰며, 그것이 무엇을 가리키는지는 section 2 가 정한다.
+For a table nested by a single factor, the total spread is cut into a between-group component and a within-group component, and those two components give the spread of a group mean and the limit on the spread of one group. This section uses the general terms group and member alone; what they stand for is fixed in section 2.
 
 ### 1.1 Notation
 
-Group 을 개당 여러 member 에서 재어 얻은 표를 아래 기호로 적는다. 항목마다 그 값이 어디서 오는지를 설계값, 측정값, 관측값, 계산값으로 적었다. 측정값은 표에 실린 $`X_{ij}`$ 하나이고, 관측값은 그것을 단순 계산한 것이며, 계산값은 분산성분 모형을 거친 것이다.
+A table measured at several members of each group is written with the symbols below. Each entry carries where its value comes from: a design value, a measured value, an observed value or a computed value. The measured value is the single $`X_{ij}`$ the table holds, an observed value is a plain calculation on it, and a computed value passes through the variance-component model.
 
-- $`K`$: group 개수. 설계값.
-- $`N`$: group 하나에 든 member 개수. 설계값.
-- $`M`$: 전체 관측치 개수이며 $`M = K N`$ 이다. 설계값.
-- $`X_{ij}`$: $`i`$ 번째 group 의 $`j`$ 번째 member 에서 읽은 값. 측정값.
-- $`\bar{X}_i`$: $`i`$ 번째 group 의 평균. 관측값.
-- $`\bar{X}`$: 전체 $`M`$ 개의 총평균. 관측값.
-- $`s_i`$: $`i`$ 번째 group 하나의 member 값 $`N`$ 개로 계산한 표본표준편차. 관측값.
-- $`\sigma_{\mu_n}`$: 처음 $`n`$ 개의 group 평균을 표본표준편차로 잰 값. 관측값.
-- $`\hat{\sigma}_{\mu_K}`$: group 평균의 산포를 분산성분에서 얻은 값. 식 (13), 식 (15), 식 (16), 식 (17) 의 좌변이다. 계산값.
-- $`s_i^2`$: $`i`$ 번째 group 안 member 값의 표본분산. within-group 성분. 관측값.
-- $`S_{\mathrm{total}}^2`$: 전체 $`M`$ 개의 표본분산. 관측값.
+- $`K`$: number of groups. Design value.
+- $`N`$: number of members in one group. Design value.
+- $`M`$: number of observations in all, $`M = K N`$. Design value.
+- $`X_{ij}`$: the value read at the $`j`$ th member of the $`i`$ th group. Measured value.
+- $`\bar{X}_i`$: the mean of the $`i`$ th group. Observed value.
+- $`\bar{X}`$: the grand mean of all $`M`$ values. Observed value.
+- $`s_i`$: the sample standard deviation of the $`N`$ member values of the $`i`$ th group. Observed value.
+- $`\sigma_{\mu_n}`$: the sample standard deviation of the first $`n`$ group means. Observed value.
+- $`\hat{\sigma}_{\mu_K}`$: the spread of a group mean obtained from the variance components. It is the left side of equations (13), (15), (16) and (17). Computed value.
+- $`s_i^2`$: the sample variance of the member values inside the $`i`$ th group, the within-group component. Observed value.
+- $`S_{\mathrm{total}}^2`$: the sample variance of all $`M`$ values. Observed value.
 
 ### 1.2 Decomposition Identity
 
-전체 제곱합은 group 안의 편차와 group 평균의 편차로 남김없이 갈라진다. 이것이 ANOVA 가 딛는 항등식이다.
+The total sum of squares splits, with nothing left over, into the deviations inside the groups and the deviations of the group means. This is the identity ANOVA stands on.
 
 $$\mathrm{SST} = \mathrm{SSW} + \mathrm{SSB} \hspace{19em} (1)$$
 
-- SST: total sum of squares. 전체 변동. 모든 관측치가 총평균에서 벗어난 정도.
-- SSW: within-group sum of squares. group 내 변동. 각 member 값이 제 group 평균에서 벗어난 정도. 모형이 설명하지 못하고 남은 몫이므로 SSE (error sum of squares) 로도 쓴다.
-- SSB: between-group sum of squares. group 간 변동. 각 group 평균이 총평균에서 벗어난 정도. 인자가 설명하는 몫이므로 SSA (factor sum of squares) 로도 쓴다.
+- SST: total sum of squares. The total variation, how far every observation lies from the grand mean.
+- SSW: within-group sum of squares. The variation inside the groups, how far each member value lies from its own group mean. It is the share the model leaves unexplained, so it is also written SSE (error sum of squares).
+- SSB: between-group sum of squares. The variation between the groups, how far each group mean lies from the grand mean. It is the share the factor explains, so it is also written SSA (factor sum of squares).
 
-세 제곱합을 풀어쓰면 아래와 같으며, 이 항등식의 유도는 [Appendix B](#appendix-b-decomposition-of-the-total-sum-of-squares) 에 적었다.
+Written out, the three sums of squares are as below; the derivation of this identity is in [Appendix B](#appendix-b-decomposition-of-the-total-sum-of-squares).
 
 $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2 + N \sum_{i} (\bar{X}_i - \bar{X})^2 \hspace{19em} (2)$$
 
-각 제곱합을 제 자유도로 나누면 평균제곱 (mean square, MS) 이 되고, 그것이 곧 분산이다. 우변의 두 항을 각각 within-group 분산의 평균과 group 평균의 분산으로 바꾸면 아래와 같다.
+Each sum of squares divided by its own degrees of freedom is a mean square (MS), and that is a variance. Turning the two terms on the right into the average within-group variance and the variance of the group means gives the forms below.
 
 $$\overline{S_{\mathrm{within}}^2} = \frac{1}{K} \sum_{i=1}^{K} s_i^2, \qquad S_{\mathrm{between}}^2 = \frac{1}{K-1} \sum_{i=1}^{K} (\bar{X}_i - \bar{X})^2 \hspace{19em} (3)$$
 
 $$S_{\mathrm{total}}^2 = \frac{K(N-1)}{M-1} \overline{S_{\mathrm{within}}^2} + \frac{N(K-1)}{M-1} S_{\mathrm{between}}^2 \hspace{19em} (4)$$
 
-두 계수는 $`K`$ 와 $`N`$ 이 커질수록 1 에 가까워지므로, 흔히 쓰는 형태는 계수를 떼어낸 아래 근사식이다. 계수가 1 로 가는 과정은 [C.1](#c1-the-two-coefficients) 에 적었다.
+The two coefficients approach 1 as $`K`$ and $`N`$ grow, so the form in common use drops them and keeps the approximation below. How the coefficients go to 1 is in [C.1](#c1-the-two-coefficients).
 
 $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2} \hspace{19em} (5) 🌳$$
 
-두 성분의 크기에 따라 전체 표준편차가 갈리는 두 경우는 아래와 같다.
+The two cases in which the size of the components sets the total standard deviation are below.
 
-- $`S_{\mathrm{between}}^2 = 0`$ 일 때: group 평균이 모두 같은 경우이며, 전체 표준편차는 group 내 표준편차의 제곱평균제곱근으로 줄어든다.
-- $`S_{\mathrm{between}}^2 \gt 0`$ 일 때: group 내 표준편차가 아무리 작아도 group 평균이 서로 벌어져 있으면 전체 표준편차는 개별 group 의 표준편차보다 훨씬 커진다.
+- $`S_{\mathrm{between}}^2 = 0`$: the group means are all alike, and the total standard deviation falls to the root mean square of the within-group standard deviations.
+- $`S_{\mathrm{between}}^2 \gt 0`$: however small the within-group standard deviation is, group means that lie apart make the total standard deviation far larger than the standard deviation of a single group.
 
 ### 1.3 Random Effects Model
 
-One-way random effects model 의 표준 표기로, 총평균과 group 의 몫을 갈라 적는다. 총평균을 $`\mu`$, group $`i`$ 의 group effect 를 $`\alpha_i`$, group 안 member 오차를 $`e_{ij}`$ 로 두면 측정값은 세 항의 합이다.
+In the standard notation of the one-way random effects model, the grand mean and the share of the group are written apart. With $`\mu`$ for the grand mean, $`\alpha_i`$ for the group effect of group $`i`$ and $`e_{ij}`$ for the member error inside a group, a measured value is the sum of three terms.
 
 $$X_{ij} = \mu + \alpha_i + e_{ij} \hspace{19em} (6)$$
 
-$`\mu`$ 는 group 과 무관한 상수이고, $`\mu + \alpha_i`$ 는 group $`i`$ 하나의 참 평균, 곧 member 오차가 없었다면 그 group 의 모든 member 가 가리켰을 값이고, $`\alpha_i`$ 는 그 값이 총평균에서 벗어난 양이다. 조건이 달라 $`\alpha_i`$ 가 group 마다 다르며, one-way random effects model 은 $`\alpha_i`$ 를 고정된 상수가 아니라 평균 0 으로 group 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\alpha_i)`$ 라는 양이 정의된다.
+$`\mu`$ is a constant that does not depend on the group, $`\mu + \alpha_i`$ is the true mean of group $`i`$, the value every member of that group would have pointed to had there been no member error, and $`\alpha_i`$ is how far that value lies from the grand mean. Conditions differ, so $`\alpha_i`$ differs from group to group, and the one-way random effects model takes $`\alpha_i`$ not as a fixed constant but as a random variable drawn afresh for each group with mean 0. That is what makes the quantity $`\mathrm{Var}(\alpha_i)`$ defined.
 
-$`\alpha_i`$ 와 $`e_{ij}`$ 는 각각 평균이 0 이고, $`e_{ij}`$ 는 $`\alpha_i`$ 와도 같은 group 의 다른 member 오차와도 독립이다. 두 확률변수의 variance 가 이 문서가 나누려는 두 성분이다.
+$`\alpha_i`$ and $`e_{ij}`$ each have mean 0, and $`e_{ij}`$ is independent both of $`\alpha_i`$ and of the error at another member of the same group. The variances of these two random variables are the two components this document separates.
 
 $$E[\alpha_i] = 0, \quad \mathrm{Var}(\alpha_i) = \sigma_{between}^2, \qquad E[e_{ij}] = 0, \quad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
 
-식 (7) 이 붙인 $`\sigma_{between}^2`$ 이라는 이름을 자료에서 재려면 관측되는 양과 이어야 하며, $`\alpha_i`$ 는 관측되지 않으므로 그 연결을 같은 group 두 member 값의 covariance 에서 찾는다. 총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 group 의 두 member $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 member 오차가 group effect 와 독립이라 0 이고, 넷째 항은 같은 group 의 서로 다른 두 member 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이다. 두 인자가 같은 covariance 가 variance 가 되는 과정은 [Appendix F](#appendix-f-covariance-with-a-repeated-argument) 에 적었다.
+To measure from the data the name $`\sigma_{between}^2`$ that equation (7) gives, it must be tied to an observable quantity, and since $`\alpha_i`$ is not observed the tie is found in the covariance of two member values of the same group. The grand mean $`\mu`$ is a constant and does not enter a covariance, so the only term two members $`j`$ and $`j'`$ of the same group carry alike is $`\alpha_i`$. Expanding the covariance as a bilinear form gives four terms. The second and the third are 0 because the member error is independent of the group effect, and the fourth is 0 because the errors at two different members of the same group are independent of each other. What remains is the first term, $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$. How a covariance with a repeated argument becomes a variance is in [Appendix F](#appendix-f-covariance-with-a-repeated-argument).
 
 $$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) + \mathrm{Cov}(\alpha_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \alpha_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i) = \sigma_{between}^2 \hspace{19em} (8)$$
 
-식 (8) 은 같은 group 의 두 member 가 얼마나 닮았는지를 재지만, 그 값이 곧 group 끼리 얼마나 벌어졌는지를 재는 값이다. $`\mathrm{Var}(\alpha_i)`$ 는 $`i`$ 가 바뀔 때, 곧 group 이 바뀔 때 $`\alpha_i`$ 가 흩어지는 양이며, 한 group 안에서 $`\alpha_i`$ 는 고정된 한 값이다. 그 group 의 $`\alpha_i`$ 가 크면 두 member 값은 둘 다 같은 크기만큼 총평균 위로 올라가고, 작으면 둘 다 같은 크기만큼 내려간다. 두 값을 갈라놓는 것은 각자의 member 오차 $`e_{ij}`$ 와 $`e_{ij'}`$ 뿐이다. 따라서 $`\alpha_i`$ 의 산포가 member 오차보다 클수록 두 값은 공통으로 움직인 몫이 커져 더 닮는다. 그래서 식 (14) 의 ICC 는 한 group 안 두 member 의 상관계수이면서 동시에 전체 분산 중 group 간 분산의 비율이다.
+Equation (8) measures how alike two members of the same group are, yet that value is what measures how far the groups lie apart. $`\mathrm{Var}(\alpha_i)`$ is the amount by which $`\alpha_i`$ scatters as $`i`$ changes, that is, as the group changes, and inside one group $`\alpha_i`$ is a single fixed value. When the $`\alpha_i`$ of that group is large, both member values rise above the grand mean by the same amount, and when it is small both fall by the same amount. All that separates the two values is their own member errors $`e_{ij}`$ and $`e_{ij'}`$. So the larger the spread of $`\alpha_i`$ against the member error, the larger the share the two values move in common and the more alike they are. That is why the ICC of equation (14) is at once the correlation of two members inside a group and the share of the total variance that the between-group variance holds.
 
-$`\alpha_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 식 (7) 의 두 variance 의 합이다.
+Since $`\alpha_i`$ and $`e_{ij}`$ are independent, the variance of a measured value is the sum of the two variances of equation (7).
 
 $$S_{\mathrm{total}}^2 = \sigma_{between}^2 + \sigma_{within}^2 \hspace{19em} (9)$$
 
-관측한 group 평균은 group 의 참 평균 $`\mu + \alpha_i`$ 에 member 오차의 평균 $`\bar{e}_i`$ 가 얹힌 값이다. 그 오차는 member $`N`$ 개를 평균한 것이라 분산이 $`N`$ 분의 1 로 줄어든다.
+An observed group mean is the true mean of the group $`\mu + \alpha_i`$ with the average member error $`\bar{e}_i`$ laid on it. That error is the average of $`N`$ members, so its variance falls by a factor of $`N`$.
 
 $$\bar{X}_i = \mu + \alpha_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (10)$$
 
 ### 1.4 Spread of a Group Mean
 
-$`\alpha_i`$ 와 $`\bar{e}_i`$ 는 독립이므로 처음 $`n`$ 개의 group 평균의 분산은 두 분산의 합이고, 여기서 $`s_{\mu}(1..n)`$ 은 처음 $`n`$ 개의 group effect 의 표준편차이다.
+Since $`\alpha_i`$ and $`\bar{e}_i`$ are independent, the variance of the first $`n`$ group means is the sum of the two variances, where $`s_{\mu}(1..n)`$ is the standard deviation of the group effects of the first $`n`$ groups.
 
 $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{within}^2}{N} \hspace{19em} (11)$$
 
-제곱근을 취하면 관측값을 설명하는 식이 된다.
+Taking the square root gives the form that accounts for the observed value.
 
 $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (12)$$
 
-처음 $`n`$ 개에서 얻은 관측값 $`s_{\mu}(1..n)`$ 이 전체에서 얻은 계산값 $`\sigma_{between}`$ 과 같을 경우, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 일 경우에 식 (12) 의 오른쪽 항을 $`\sigma_{between}^2`$ 으로 바꿔 쓸 수 있다. 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (13) 은 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
+When the observed value $`s_{\mu}(1..n)`$ from the first $`n`$ groups equals the computed value $`\sigma_{between}`$ from the whole table, that is, when $`s_{\mu}^2(1..n) = \sigma_{between}^2`$, the right term of equation (12) may be written as $`\sigma_{between}^2`$. Taking the $`n`$ that meets this condition as $`K`$, equation (13) writes its subscript as $`\mu_K`$ rather than $`\mu_n`$.
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspace{19em} (13) 🌳$$
 
-식 (5) 는 member 값 한 점의 산포를 재고, 식 (13) 은 group 평균 한 점의 산포를 잰다. 두 식이 갈리는 곳은 within 성분 하나이다. Member 를 $`N`$ 개 평균하면 member 오차 $`e_{ij}`$ 는 서로 독립이라 상쇄되어 분산이 $`N`$ 분의 1 로 줄지만, group effect $`\alpha_i`$ 는 그 group 의 member $`N`$ 개가 모두 똑같이 지니는 항이라 아무리 평균해도 줄지 않는다.
+Equation (5) measures the spread of one member value, and equation (13) measures the spread of one group mean. The two part at the within component alone. Averaging $`N`$ members cancels the member error $`e_{ij}`$, which is independent from member to member, and its variance falls by a factor of $`N`$; the group effect $`\alpha_i`$, which all $`N`$ members of that group carry alike, does not fall however much is averaged.
 
-$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 식 (9) 를 옮겨 적은 것이라 $`n`$ 과 무관하게 성립한다. 이 항등식을 식 (13) 에 넣으면 $`\sigma_{between}^2`$ 자리가 전체 표준편차로 바뀐다. 그 결과를 짧게 적는 데 쓰는 ICC 는 전체 분산 중 group 간 분산이 차지하는 비율이다.
+$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ is equation (9) rewritten, so it holds for any $`n`$. Putting this identity into equation (13) turns the place of $`\sigma_{between}^2`$ into the total standard deviation. The ICC that writes the result short is the share of the total variance that the between-group variance holds.
 
 $$\mathrm{ICC} = \frac{\sigma_{between}^2}{S_{\mathrm{total}}^2} \hspace{19em} (14)$$
 
-식 (14) 를 넣어 $`\sigma_{between}^2`$ 을 지운 것이 식 (15) 의 오른쪽 형태이다.
+Putting equation (14) in to remove $`\sigma_{between}^2`$ gives the right-hand form of equation (15).
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2} = S_{\mathrm{total}} \sqrt{\mathrm{ICC} + \frac{1 - \mathrm{ICC}}{N}} \hspace{19em} (15)$$
 
-$`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$ 이므로 같은 식을 within 대신 between 으로도 적을 수 있고, 그 과정은 [Appendix D](#appendix-d-derivation-of-the-between-component-form) 에 적었다.
+Since $`\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2`$, the same formula can be written with the between component in place of the within one, and that is carried out in [Appendix D](#appendix-d-derivation-of-the-between-component-form).
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (16)$$
 
-Group effect 가 모두 0 일 경우에, $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (15) 와 식 (16) 에서 group 평균의 산포는 표준오차만 남는다. 관측한 group 평균은 이때도 member 잡음만큼 흩어지므로 0 이 아니다.
+When the group effects are all 0, that is $`\sigma_{between} = 0`$ and hence ICC = 0, equations (15) and (16) leave the spread of the group means as the standard error alone. The observed group means still scatter by the member noise, so the spread is not 0.
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (17)$$
 
-이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이며, ICC 가 0 보다 크면 성립하지 않는다.
+This is the $`\sqrt{N}`$ rule commonly expected, and it does not hold once the ICC is greater than 0.
 
 ### 1.5 Limit on a Group's Sample Spread
 
-Group 하나의 산포가 앞서 본 group 내 산포에서 크게 벗어났는지는 표본표준편차의 분포로 판정한다. Group $`i`$ 를 판정할 때 앞선 group 만으로 구한 $`\sigma_{within}(1..i-1)`$ 을 기준선으로 두고, 그 group 하나의 member 표준편차 $`s_i`$ 가 아래 한계를 넘는지 본다. 유도는 [Appendix E](#appendix-e-derivation-of-the-screening-limit) 에 적었다.
+Whether the spread of one group departs far from the within-group spread seen so far is judged from the distribution of the sample standard deviation. To judge group $`i`$, the $`\sigma_{within}(1..i-1)`$ obtained from the groups before it is taken as the baseline, and the member standard deviation $`s_i`$ of that one group is tested against the limit below. The derivation is in [Appendix E](#appendix-e-derivation-of-the-screening-limit).
 
 $$s_i \gt \sigma_{within}(1..i-1) \sqrt{\frac{\chi^2_{p, N-1}}{N-1}} \hspace{19em} (18)$$
 
-$`\chi^2_{p,\,N-1}`$ 은 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그 분포에서 값이 그보다 작을 확률이 $`p`$ 인 점이며, 그 분포 자체는 [Appendix G](#appendix-g-the-chi-square-distribution) 에 적었다. 아래 첨자의 $`p`$ 는 확률이고 $`N-1`$ 은 group 하나의 member $`N`$ 개가 내는 자유도이다.
+$`\chi^2_{p,\,N-1}`$ is the $`p`$ quantile of the chi-square distribution with $`N-1`$ degrees of freedom, the point a value of that distribution falls below with probability $`p`$; the distribution itself is in [Appendix G](#appendix-g-the-chi-square-distribution). The subscript $`p`$ is the probability and $`N-1`$ is the degrees of freedom the $`N`$ members of one group carry.
 
 ## 2. Application to Wafer Measurements
 
-Wafer 를 group 으로, site 를 member 로 두면 section 1 의 두 성분이 wafer 간 산포와 wafer 내 산포가 된다. 전체 산포를 wafer 내 균일도 문제와 wafer 간 재현성 문제로 갈라 원인을 찾는 것이 공정 관리에서의 쓰임이다.
+With wafer for group and site for member, the two components of section 1 become the spread between wafers and the spread within a wafer. Cutting the total spread into a within-wafer uniformity problem and a wafer-to-wafer reproducibility problem to find the cause is what process control uses this for.
 
 ### 2.1 Data
 
-자료는 [example.csv](example.csv) 이며 200 행 14 열이다. 이 표는 wafer 마다 고유 수준을 하나 뽑고 거기에 site 잡음을 얹어 만든 것이다. 여기에 run order 를 따라 수준과 site 잡음이 함께 커지는 drift 를 두고, 수준이 크게 벗어난 wafer 여섯 장과 site 잡음이 부풀려진 wafer 스무 장을 넣었으며, seed 를 고정해 늘 같은 표가 나온다. 한 행이 한 장의 wafer 이고, 열 `wafer_id` 는 `wf0001` 부터 `wf0200` 까지의 일련번호로 파일의 행 순서, 곧 run order 를 나타낸다. 나머지 열 `S1`~`S13` 은 그 wafer 위의 13 개 site 이다. 결측은 없고 전체 관측치는 2600 개이다.
+The data is [example.csv](example.csv), 200 rows by 14 columns. The table was built by drawing one level of its own for each wafer and laying site noise on top of it. Over that sit a drift along run order that raises the level and the site noise together, six wafers whose level departs far from the drift, and twenty wafers whose site noise is inflated; the seed is fixed, so the same table comes out every time. One row is one wafer, and the column `wafer_id` is a serial number from `wf0001` to `wf0200` that carries the row order of the file, that is, the run order. The remaining columns `S1`~`S13` are the 13 sites on that wafer. There are no missing values and 2600 observations in all.
 
-- 전체 site 값: 평균 619.8, 표준편차 33.29, 최소 460.34, 최대 797.64.
-- Wafer 평균: 최소 470.4, 최대 767.5, 표준편차 30.06.
-- Within-wafer range: 평균 43.85, 최대 212.81.
-- Wafer uniformity $`s_i / \bar{X}_i`$: 중앙값 1.82%, 최소 0.94% (wf0018), 최대 8.77% (wf0185).
+- All site values: mean 619.8, standard deviation 33.29, minimum 460.34, maximum 797.64.
+- Wafer means: minimum 470.4, maximum 767.5, standard deviation 30.06.
+- Within-wafer range: mean 43.85, maximum 212.81.
+- Wafer uniformity $`s_i / \bar{X}_i`$: median 1.82%, minimum 0.94% (wf0018), maximum 8.77% (wf0185).
 
-Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 600 근처에 모여 있다가 뒤쪽에서 630 대까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. Wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 선은 wafer 평균을 이은 것으로, 위치가 wafer 마다 얼마나 튀는지 보여준다.
+Drawing one violin per wafer along run order shows the position and the width of the distribution moving together from wafer to wafer. The early wafers gather near 600 and rise into the 630s later on, and a wafer that hangs alone below means the values there were far lower. With only 13 sites per wafer the shape of a violin is coarse, so the 13 site values are drawn on top of it as points. The line drawn across joins the wafer means and shows how much the position jumps from wafer to wafer.
 
 <img src="wiw-w2w-anova_fig/site_value_violin.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
@@ -143,14 +143,14 @@ Fig 1. Distribution of the site values on each wafer along run order, with the w
 
 ### 2.2 Variance Decomposition
 
-Wafer 를 인자로 둔 one-way ANOVA 로 wafer 간 성분과 wafer 내 성분을 나눈다. 계산은 네 단계로 이루어진다.
+A one-way ANOVA with wafer as the factor separates the between-wafer component from the within-wafer component. The calculation runs in four steps.
 
-- 첫째, SS: 식 (2) 로 전체 제곱합을 wafer 간 제곱합과 wafer 내 제곱합으로 가른다.
-- 둘째, df: 각 제곱합이 담은 독립한 정보의 개수를 센다. Between 은 wafer 평균 $`K`$ 개에서 총평균 하나를 뺀 $`K-1`$ 이고, within 은 wafer 마다 site $`N`$ 개에서 제 평균 하나를 뺀 $`N-1`$ 을 $`K`$ 배 한 $`K(N-1)`$ 이다.
-- 셋째, MS 와 F: 각 제곱합을 제 자유도로 나눠 평균제곱을 얻고, 두 평균제곱의 비를 F 통계량으로 삼는다.
-- 넷째, p: wafer 사이에 차이가 없다는 가정 아래 F 통계량은 $`F(K-1,\ K(N-1))`$ 분포를 따른다. p 는 그 분포에서 셋째 단계가 낸 F 값보다 큰 값이 나올 확률이다.
+- First, SS: equation (2) cuts the total sum of squares into the between-wafer and the within-wafer sums of squares.
+- Second, df: the count of independent pieces of information each sum of squares holds. Between is $`K-1`$, the $`K`$ wafer means less the one grand mean, and within is $`K(N-1)`$, the $`N`$ sites of a wafer less its own mean, taken $`K`$ times.
+- Third, MS and F: each sum of squares divided by its own degrees of freedom gives a mean square, and the ratio of the two mean squares is the F statistic.
+- Fourth, p: under the assumption that the wafers do not differ, the F statistic follows the $`F(K-1,\ K(N-1))`$ distribution. p is the probability that this distribution yields a value larger than the F the third step produced.
 
-이렇게 얻은 값을 Table 1 에 정리했다.
+The values so obtained are collected in Table 1.
 
 Table 1. One-way ANOVA with wafer as the factor
 
@@ -159,14 +159,14 @@ Table 1. One-way ANOVA with wafer as the factor
 | Between wafer | 2,338,049 | 199 | 11,749.0 | 51.92 | ~0 | $`\sigma_{between} = \sqrt{(\mathrm{MS}_{between} - \mathrm{MS}_{within})/N} = 29.77`$ |
 | Within wafer | 543,060 | 2400 | 226.3 | | | $`\sigma_{within} = \sqrt{\mathrm{MS}_{within}} = 15.04`$ |
 
-표의 각 열이 뜻하는 바는 아래와 같다.
+What each column of the table means is below.
 
-- SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 2,881,109 가 된다.
-- df: degrees of freedom. 그 제곱합이 담은 독립한 정보의 개수. Wafer 200 장이므로 between 은 199, wafer 마다 site 13 개에서 평균 하나를 뺀 12 를 200 배 하여 within 은 2400.
-- MS: mean square. SS 를 df 로 나눈 값이며 분산의 추정치. Within 의 226.3 은 site 한 점의 산포, between 의 11,749.0 은 wafer 평균의 산포에 site 산포가 얹힌 크기.
-- F: 두 MS 의 비. 여기서는 11,749.0 / 226.3 = 51.92. wafer 사이에 차이가 없다면 1 근처에 머무는 값.
-- p: wafer 사이에 차이가 없다는 가정 아래 그만큼 큰 F 가 나올 확률. 여기서는 0 에 가까워, 차이가 없다는 가정을 버린다.
-- Sigma component: 그 행이 내는 분산성분의 표준편차. Within 은 MS within 의 제곱근이고, between 은 MS between 에서 MS within 을 빼고 site 수 13 으로 나눈 뒤 제곱근을 취한 값이다.
+- SS: sum of squares. The between wafer row is the SSB of section 1.2 and the within wafer row the SSW; added together they make the SST, 2,881,109.
+- df: degrees of freedom. The count of independent pieces of information that sum of squares holds. With 200 wafers between is 199, and the 13 sites of a wafer less its one mean, 12, taken 200 times makes within 2400.
+- MS: mean square. SS divided by df, an estimate of a variance. The within value 226.3 is the spread of one site value, and the between value 11,749.0 is the spread of the wafer means with the site spread laid on it.
+- F: the ratio of the two MS values. Here 11,749.0 / 226.3 = 51.92. A value that stays near 1 if the wafers do not differ.
+- p: the probability of an F that large under the assumption that the wafers do not differ. Here it is close to 0, so that assumption is dropped.
+- Sigma component: the standard deviation of the variance component that row carries. Within is the square root of MS within, and between is MS between less MS within, divided by the site count 13, square-rooted.
 
 Table 2. Variance components
 
@@ -176,210 +176,210 @@ Table 2. Variance components
 | Within-wafer | 15.04 | 226.3 | 20.3% |
 | Total | 33.36 | 1112.6 | 100% |
 
-두 성분을 더한 33.36 은 section 2 의 관측 표준편차 33.29 보다 조금 크다. Section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
+The two components added, 33.36, is a little larger than the observed standard deviation of section 2, 33.29. As section 1.2 showed, the plain sum of the two components is an approximation, and the exact relation carries coefficients smaller than 1.
 
-ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율이며, 그 정의는 식 (14) 이다. 이 자료에서는 886.4 / 1112.6 = 0.797 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.797 은 site 한 점의 산포 중 79.7% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
+The ICC (intraclass correlation) is the share of the total variance that the between-wafer variance holds, and its definition is equation (14). For this data it is 886.4 / 1112.6 = 0.797. The closer the value is to 1 the more two site values drawn from the same wafer resemble each other, and the closer it is to 0 the less knowing which wafer they came from helps in predicting the value. 0.797 says that 79.7% of the spread of one site value is set by the wafer it sits on, so to reduce the spread the wafer-level conditions come before site-level uniformity.
 
-ICC 가 0 이 아니므로 식 (17) 의 $`\sqrt{N}`$ 법칙은 이 자료에서 성립하지 않는다. $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`33.36/\sqrt{13}`$ = 9.25 로 관측한 wafer 평균 산포 30.06 의 3 분의 1 도 되지 않는다.
+Since the ICC is not 0, the $`\sqrt{N}`$ rule of equation (17) does not hold for this data. Using $`S_{\mathrm{total}}/\sqrt{N}`$ as it stands gives $`33.36/\sqrt{13}`$ = 9.25, not even a third of the observed spread of the wafer means, 30.06.
 
-Table 2 의 두 성분은 200 장 전체를 한 번에 본 값이다. Wafer 한 장에서는 wafer 간 변동을 잴 수 없으므로, 창의 왼쪽 끝을 첫 wafer 에 고정하고 오른쪽 끝만 한 장씩 늘리며 (expanding window) 창마다 두 성분을 다시 구하면 그 값이 몇 장째에 자리를 잡는지 보인다. w2w 는 wafer 네 장에서 7.77 로 낮다가 열 장에서 20.53 으로 뛰고, $`n \ge 100`$ 에서 27.29~30.32 안에 들어 $`n = 200`$ 의 29.77 에 닿는다. WiW 는 $`n = 5`$ 의 7.60 에서 꾸준히 올라 $`n \ge 100`$ 에서 11.38~15.14 안에 머문다. 뒤쪽 wafer 의 site 잡음이 앞쪽보다 크다. 두 성분 모두 앞쪽 수십 장에서는 표본이 모자라 Table 2 의 값과 크게 어긋난다.
+The two components of Table 2 are from all 200 wafers seen at once. A single wafer carries no between-wafer variation, so fixing the left edge of a window at the first wafer and extending only its right edge one wafer at a time (expanding window), then recomputing the two components in each window, shows at which wafer count the values settle. The w2w component is as low as 7.77 at four wafers, jumps to 20.53 at ten, and for $`n \ge 100`$ stays within 27.29~30.32 before reaching 29.77 at $`n = 200`$. The WiW component rises steadily from 7.60 at $`n = 5`$ and stays within 11.38~15.14 for $`n \ge 100`$. The site noise of the later wafers is larger than that of the earlier ones. Over the first few dozen wafers both components depart far from the values of Table 2 for want of sample.
 
 ### 2.3 W2W Threshold
 
-Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래와 같다.
+Fig 2 draws the two terms of equation (13), each computed from the first $`n`$ wafers. The three curves are obtained as below.
 
-- 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$: wafer 마다의 site 분산 $`s_i^2`$ 를 처음 $`n`$ 장까지 평균한 $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$ 을 $`\sqrt{N}`$ 으로 나눈 값. Site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. Wafer 평균을 쓰지 않으므로 자료에서 바로 나온다.
-- 관측 곡선 $`\sigma_{\mu_n}`$: 처음 $`n`$ 장의 wafer 평균의 표본표준편차.
-- 오른쪽 항 $`\sigma_{between}`$: 식 (13) 을 뒤집은 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 이며, $`\sigma_{between}`$ 자리에 드는 $`s_{\mu}(1..n)`$ 이 그 값이다. Wafer 마다 다른 wafer effect 의 산포, 곧 wafer 간의 변동 그 자체이다. 제곱근 안이 음수인 $`n`$ 에서는 정의되지 않아 그리지 않으며, 이 자료에는 그런 $`n`$ 이 없다.
+- Left term $`\sigma_{within}/\sqrt{N}`$: the per-wafer site variance $`s_i^2`$ averaged over the first $`n`$ wafers as $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$, divided by $`\sqrt{N}`$. It is the measurement noise that remains in a wafer mean even after averaging $`N`$ sites, a floor that does not vanish even if the wafers are all alike. It comes straight from the data, since it does not use the wafer means.
+- Observed curve $`\sigma_{\mu_n}`$: the sample standard deviation of the first $`n`$ wafer means.
+- Right term $`\sigma_{between}`$: equation (13) inverted, $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$, which is the $`s_{\mu}(1..n)`$ that stands in the place of $`\sigma_{between}`$. It is the spread of the wafer effects that differ from wafer to wafer, that is, the between-wafer variation itself. Where the term under the square root is negative it is undefined and not drawn, and this data has no such $`n`$.
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
 Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (13) and the w2w threshold, each computed from the first n wafers only
 
-Fig 2 에서 오른쪽 항이 관측 곡선에 겹치기 시작하는 곳을 w2w threshold 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 9`$ 이다 ($`n = 8`$ 에서 96%, $`n = 9`$ 에서 98%). w2w threshold 이후 관측 곡선은 사실상 wafer effect 의 산포 그 자체이다.
+The place in Fig 2 where the right term begins to lie on the observed curve is called the w2w threshold; taken as the first $`n`$ at which the right term exceeds 98% of the observed value, it is $`n = 9`$ for this data (96% at $`n = 8`$, 98% at $`n = 9`$). Past the w2w threshold the observed curve is in effect the spread of the wafer effects itself.
 
-공정 관리로 옮기면 w2w threshold 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
+Carried over to process control, the w2w threshold is the smallest sample a judgement needs. A spread measured before it cannot see the wafer-to-wafer part, so a control limit built on that value is set far too low, and only past this point does the judgement "this spread comes from wafer-level conditions, not from site uniformity" hold. Conversely, a small spread over the stretch before it must not be read as a settled process — all that can be seen there is the measurement noise.
 
 ### 2.4 WiW Excursion
 
-Wafer 한 장의 산포가 그때까지 본 wafer 내 산포에서 크게 벗어나면 그 wafer 를 WiW excursion 으로 본다. 판정은 section 1.5 의 식 (18) 을 쓰며, 기준선은 그 wafer 앞에 있으면서 excursion 으로 판정되지 않은 wafer 만으로 구한 $`\sigma_{within}(1..i-1)`$ 이다. 이 자료의 $`N = 13`$, $`p = 0.999`$ 에서 $`\chi^2_{0.999,\,12} = 32.91`$ 이므로 식 (18) 의 계수는 $`\sqrt{32.91/12} = 1.656`$ 이다.
+When the spread of one wafer departs far from the within-wafer spread seen so far, that wafer is taken as a WiW excursion. The judgement uses equation (18) of section 1.5, and the baseline is the $`\sigma_{within}(1..i-1)`$ obtained from the wafers before it that were not judged excursions. With $`N = 13`$ and $`p = 0.999`$ for this data, $`\chi^2_{0.999,\,12} = 32.91`$, so the coefficient of equation (18) is $`\sqrt{32.91/12} = 1.656`$.
 
-Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선이 기준선, 빨간 선이 식 (18) 의 한계이고, 한계를 넘은 wafer 를 빨간 점으로 표시했다. 세 값 모두 site 값의 표준편차라 단위가 같으므로 오른쪽 축을 따로 두지 않고 한 축에 겹쳐 그렸다.
+Fig 3 is that judgement. The grey points are the $`s_i`$ of one wafer, the green line is the baseline, the red line is the limit of equation (18), and the wafers past the limit are marked as red points. All three are standard deviations of site values and share a unit, so they are drawn on one axis rather than on a second axis of their own.
 
 <img src="wiw-w2w-anova_fig/wafer_screening.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Site value spread of each wafer against the running baseline and the screening limit of equation (18)
 
-판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, excursion 이 잦을수록 판정이 둔해진다. 200 장을 다 담은 pooled `sigma_within` 15.04 와 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 11.54 로 3.50 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
+A wafer so judged is left out of the baseline update. Taken in as it is, an excursion would raise the baseline and hide the excursions after it, so the more frequent the excursions the blunter the judgement. Against the pooled `sigma_within` of 15.04 over all 200 wafers, the baseline obtained this way is 11.54 at the last wafer, 3.50 lower, and that difference is the share the excursions load onto the pooled value.
 
-처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장으로 구한 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 앞선 wafer 가 세운 한계를 넘었을 wf0010 과 wf0011 두 장이 판정 대상에서 빠진다.
+The first 20 wafers are used only to build the baseline and are not judged. A baseline resting on a few wafers swings widely on its own and leaves the judgement to chance, and the price is that wf0010 and wf0011, the two that would have exceeded the limit set by the wafers before them, fall outside the judgement.
 
 ---
 
 ## Appendix A. Terminology
 
-- **ANOVA**: analysis of variance. 전체 제곱합을 원인별 제곱합으로 나누고, 각각을 자유도로 나눈 평균제곱의 비로 원인의 유의성을 판정하는 방법.
-- **bilinear**: 두 인자 각각에 대해 linear 인 성질. Covariance 에서는 첫 인자에 대해 $`\mathrm{Cov}(aX + bY, Z) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(Y, Z)`$ 이고, 둘째 인자에 대해 $`\mathrm{Cov}(X, aZ + bW) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(X, W)`$ 이다.
-- **Covariance**: 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값. 두 인자가 같으면 $`\mathrm{Cov}(Y, Y) = \mathrm{Var}(Y)`$ 이며, 그 과정은 [Appendix F](#appendix-f-covariance-with-a-repeated-argument) 에 적었다.
-- **group effect**: group $`i`$ 의 참 평균이 총평균에서 벗어난 양 $`\alpha_i`$. One-way random effects model 에서는 평균 0 으로 group 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다. 이 문서의 group 은 wafer 이다.
-- **ICC**: intraclass correlation. 전체 분산 중 group 간 분산이 차지하는 비율. 같은 group 에서 뽑은 두 관측치가 얼마나 닮았는지를 0 에서 1 사이로 나타내며, 이 문서의 group 은 wafer 이다. 이 문서가 쓰는 것은 one-way random effects model 의 ICC(1) 이며, two-way model 의 ICC 와는 값이 다르다.
-- **one-way ANOVA**: 인자 하나로 group 을 나눈 ANOVA. 전체 제곱합을 group 간 제곱합과 group 내 제곱합 둘로만 가르며, 이 문서의 인자는 wafer 이다.
-- **run order**: 자료 파일의 행 순서. 측정 순서를 따르므로 시간 축으로 사용.
-- **running baseline**: wafer 한 장을 판정할 때 쓰는 기준선. 그 wafer 앞에 있으면서 excursion 으로 판정되지 않은 wafer 만으로 구한 within-wafer 성분이다.
-- **sigma_between**: wafer 간 분산성분의 표준편차. Table 2 의 wafer-to-wafer 값이며, wafer 평균의 표본표준편차 $`S_{\mathrm{between}}`$ 과 달리 within-wafer site 오차의 몫을 뺀 값이다.
-- **sigma_within**: wafer 내 분산성분의 표준편차. MS within 의 제곱근이다.
-- **site**: 한 wafer 위의 측정 지점. 열 `S1`~`S13` 에 해당.
-- **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
-- **variogram**: 두 지점의 값 차이가 갖는 분산을 두 지점 사이 거리의 함수로 나타낸 것. 거리에 따라 값이 얼마나 닮는지를 재는 데 쓴다.
-- **w2w**: wafer-to-wafer. wafer 사이의 변동.
-- **w2w threshold**: 식 (13) 의 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
-- **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
-- **WiW excursion**: site 표준편차가 running baseline 이 세운 한계를 넘은 wafer.
+- **ANOVA**: analysis of variance. A method that divides the total sum of squares into the sums of squares of the causes and judges the significance of a cause by the ratio of the mean squares, each divided by its degrees of freedom.
+- **bilinear**: the property of being linear in each of the two arguments. For a covariance it is $`\mathrm{Cov}(aX + bY, Z) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(Y, Z)`$ in the first argument and $`\mathrm{Cov}(X, aZ + bW) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(X, W)`$ in the second.
+- **Covariance**: the expected product of the deviations of two random variables from their own means. With a repeated argument $`\mathrm{Cov}(Y, Y) = \mathrm{Var}(Y)`$, and that is carried out in [Appendix F](#appendix-f-covariance-with-a-repeated-argument).
+- **group effect**: the amount $`\alpha_i`$ by which the true mean of group $`i`$ departs from the grand mean. In the one-way random effects model it is a random variable drawn afresh for each group with mean 0, and its variance is $`\sigma_{between}^2`$. The group of this document is the wafer.
+- **ICC**: intraclass correlation. The share of the total variance that the between-group variance holds. It states between 0 and 1 how alike two observations drawn from the same group are, and the group of this document is the wafer. What this document uses is the ICC(1) of the one-way random effects model, whose value differs from the ICC of a two-way model.
+- **one-way ANOVA**: an ANOVA whose groups are set by a single factor. It cuts the total sum of squares into a between-group and a within-group sum of squares and no further, and the factor of this document is the wafer.
+- **run order**: the row order of the data file. It follows the measurement order and is used as the time axis.
+- **running baseline**: the baseline used when judging one wafer. It is the within-wafer component obtained from the wafers before it that were not judged excursions.
+- **sigma_between**: the standard deviation of the between-wafer variance component. It is the wafer-to-wafer value of Table 2 and, unlike the sample standard deviation of the wafer means $`S_{\mathrm{between}}`$, has the share of the within-wafer site error removed.
+- **sigma_within**: the standard deviation of the within-wafer variance component. It is the square root of MS within.
+- **site**: a measurement point on one wafer, matching the columns `S1`~`S13`.
+- **Var**: variance. The average of the squared departures of the values from their own mean, the square of the standard deviation. For a sample of $`m`$ observations it is computed as $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$.
+- **variogram**: the variance of the difference between the values at two points, written as a function of the distance between them. It is used to measure how alike values are with distance.
+- **w2w**: wafer-to-wafer. The variation between wafers.
+- **w2w threshold**: the first $`n`$ at which the right term of equation (13) exceeds 98% of the observed spread of the wafer means. Before it the difference between wafers is buried in the measurement noise and does not separate.
+- **WiW**: within-wafer. The variation between the sites inside one wafer.
+- **WiW excursion**: a wafer whose site standard deviation exceeds the limit set by the running baseline.
 
 ## Appendix B. Decomposition of the Total Sum of Squares
 
-식 (2) 는 총평균에서 잰 편차를 두 조각으로 갈라 적는 데에서 나온다. 한 조각은 site 값이 제 wafer 평균에서 벗어난 양이고, 다른 조각은 그 wafer 평균이 총평균에서 벗어난 양이다.
+Equation (2) comes from writing the deviation from the grand mean as two pieces. One piece is how far a member value lies from its own group mean, and the other is how far that group mean lies from the grand mean.
 
 $$X_{ij} - \bar{X} = (X_{ij} - \bar{X}_i) + (\bar{X}_i - \bar{X}) \hspace{19em} (19)$$
 
-양변을 제곱하여 $`i`$ 와 $`j`$ 에 대해 모두 더하면 세 항이 나온다. 앞의 두 항이 SSW 와 SSB 이고, 셋째 항은 두 조각을 곱한 교차항이며, $`\bar{X}_i - \bar{X}`$ 가 $`j`$ 에 따라 변하지 않으므로 안쪽 합 밖으로 빠진다.
+Squaring both sides and summing over $`i`$ and $`j`$ gives three terms. The first two are SSW and SSB, and the third is the cross term of the two pieces, in which $`\bar{X}_i - \bar{X}`$ does not change with $`j`$ and so comes out of the inner sum.
 
 $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2 + \sum_{i}\sum_{j} (\bar{X}_i - \bar{X})^2 + 2 \sum_{i} (\bar{X}_i - \bar{X}) \sum_{j} (X_{ij} - \bar{X}_i) \hspace{19em} (20)$$
 
-식 (20) 의 셋째 항에 든 안쪽 합은 group $`i`$ 의 member 값이 제 평균에서 벗어난 양을 모두 더한 것이다. 평균의 정의가 $`\sum_{j} X_{ij} = N \bar{X}_i`$ 이므로 그 합은 식 (21) 과 같이 0 이 되고, 식 (20) 의 셋째 항 전체가 사라진다.
+The inner sum in the third term of equation (20) adds up how far the member values of group $`i`$ lie from their own mean. Since the definition of the mean is $`\sum_{j} X_{ij} = N \bar{X}_i`$, that sum is 0 as equation (21) shows, and the whole third term of equation (20) vanishes.
 
 $$\sum_{j=1}^{N} (X_{ij} - \bar{X}_i) = \sum_{j=1}^{N} X_{ij} - N \bar{X}_i = 0 \hspace{19em} (21)$$
 
-식 (20) 에서 셋째 항을 지우고, $`j`$ 에 대해 같은 값을 $`N`$ 번 더한 둘째 항을 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 으로 바꾼 뒤 남은 세 제곱합에 이름을 붙인 것이 식 (22) 이다.
+Removing the third term from equation (20), rewriting the second term, which adds the same value $`N`$ times over $`j`$, as $`N \sum_i (\bar{X}_i - \bar{X})^2`$, and naming the three sums of squares that remain gives equation (22).
 
 $$\underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2}_{\mathrm{SST}} = \underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2}_{\mathrm{SSW}} + \underbrace{N \sum_{i} (\bar{X}_i - \bar{X})^2}_{\mathrm{SSB}} \hspace{19em} (22)$$
 
-식 (22) 의 제곱합을 그대로 읽으면 식 (2) 이고, 아래에 붙인 이름으로 읽으면 식 (1) 이다. 이 유도는 자료에 아무 가정도 두지 않으므로, 식 (1) 은 어느 표에서나 성립한다.
+Read as the sums of squares, equation (22) is equation (2); read by the names braced under them, it is equation (1). This derivation puts no assumption on the data, so equation (1) holds for any table.
 
 ## Appendix C. Limits of the Decomposition
 
 ### C.1 The Two Coefficients
 
-Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래와 같다.
+Writing the two coefficients of section 1.2 as $`a`$ and $`b`$ gives the forms below.
 
 $$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (23)$$
 
-분자와 분모가 모두 $`KN`$ 에서 시작하므로, 1 에서 얼마나 모자라는지를 보는 편이 빠르다.
+Both the numerator and the denominator start from $`KN`$, so it is quicker to look at how far each falls short of 1.
 
 $$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (24)$$
 
-두 결손항은 각각 한쪽 크기에만 매인다. $`1-a`$ 의 분자와 분모를 $`K`$ 로, $`1-b`$ 의 분자와 분모를 $`N`$ 으로 나누면 아래 꼴이 된다.
+Each shortfall is tied to one size alone. Dividing the numerator and the denominator of $`1-a`$ by $`K`$ and those of $`1-b`$ by $`N`$ gives the forms below.
 
 $$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (25)$$
 
-$`K`$ 를 아무리 키워도 $`1-a`$ 는 $`1/N`$ 에서 멈추고, $`N`$ 을 아무리 키워도 $`1-b`$ 는 $`1/K`$ 에서 멈춘다.
+However large $`K`$ grows, $`1-a`$ stops at $`1/N`$, and however large $`N`$ grows, $`1-b`$ stops at $`1/K`$.
 
 $$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (26)$$
 
-곧 한쪽만 키운 극한에서 계수는 아래 값에 멈춘다.
+In the limit of growing one side alone, then, the coefficients stop at the values below.
 
 $$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (27)$$
 
-따라서 $`a`$ 를 1 로 보내는 것은 group 당 member 수 $`N`$ 이고, $`b`$ 를 1 로 보내는 것은 group 수 $`K`$ 이며, 둘이 함께 커져야 두 계수가 같이 1 이 된다.
+So what drives $`a`$ to 1 is the member count per group $`N`$, what drives $`b`$ to 1 is the group count $`K`$, and both must grow for the two coefficients to reach 1 together.
 
 $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (28)$$
 
-이 문서의 $`K = 200`$, $`N = 13`$ 에서는 $`1 - a = 199/2599 = 0.0766`$ 으로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/2599 = 0.0046`$ 으로 $`1/K = 0.0050`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 226.27`$ 과 $`S_{\mathrm{between}}^2 = 903.77`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 33.62`$ 가 되어 관측값 33.29 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
+At the $`K = 200`$ and $`N = 13`$ of this document, $`1 - a = 199/2599 = 0.0766`$ is all but equal to $`1/N = 0.0769`$, and $`1 - b = 12/2599 = 0.0046`$ is all but equal to $`1/K = 0.0050`$. That is, $`b`$ may already be taken as 1 while $`a`$ falls 7.7% short, and as long as only 13 sites are measured this shortfall does not shrink however many more wafers are measured. Adding $`\overline{S_{\mathrm{within}}^2} = 226.27`$ and $`S_{\mathrm{between}}^2 = 903.77`$ of this data as they are gives $`S_{\mathrm{total}} = 33.62`$, above the observed 33.29, while attaching the two coefficients brings it to the observed value.
 
 ### C.2 Correlated Sites Within a Wafer
 
-식 (8) 은 같은 wafer 의 서로 다른 두 site 오차가 독립이라고 두어 $`\mathrm{Cov}(e_{ij}, e_{ij'})`$ 을 0 으로 지운다. 실제 wafer 는 radial pattern 이나 edge roll-off 처럼 site 위치를 따라 함께 움직이는 성분을 지녀 그 covariance 가 0 이 아니며, 식 (6) 의 모형은 site 를 자리와 무관한 반복으로 보아 그 공간 구조를 $`e_{ij}`$ 안에 묻는다.
+Equation (8) takes the errors at two different sites of the same wafer as independent and so erases $`\mathrm{Cov}(e_{ij}, e_{ij'})`$ to 0. A real wafer carries components that move together along the site position, such as a radial pattern or edge roll-off, so that covariance is not 0, and the model of equation (6), which treats a site as a repetition unrelated to its place, buries that spatial structure inside $`e_{ij}`$.
 
-두 site 오차의 상관을 $`\rho`$ 로 두면 wafer 평균에 남는 잡음은 $`\mathrm{Var}(\bar{e}_i) = \sigma_{within}^2 [1 + (N-1)\rho] / N`$ 이며, 식 (10) 은 $`\rho = 0`$ 인 경우이다. $`\rho \gt 0`$ 이면 실제 잡음 바닥이 식 (13) 의 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 보다 크고, 덜 빼는 만큼 오른쪽 항 $`s_{\mu}(1..n)`$ 이 부풀려져 section 2.3 의 w2w threshold 가 실제보다 이른 $`n`$ 에서 잡힌다.
+Writing the correlation of two site errors as $`\rho`$, the noise left in a wafer mean is $`\mathrm{Var}(\bar{e}_i) = \sigma_{within}^2 [1 + (N-1)\rho] / N`$, of which equation (10) is the case $`\rho = 0`$. For $`\rho \gt 0`$ the real noise floor is larger than the left term $`\sigma_{within}/\sqrt{N}`$ of equation (13), and the less that is subtracted the more the right term $`s_{\mu}(1..n)`$ is inflated, so the w2w threshold of section 2.3 is caught at an earlier $`n`$ than it should be.
 
-같은 상관이 section 2.4 의 한계에도 걸린다. 식 (37) 가 자유도 $`N-1`$ 의 $`\chi^2`$ 를 쓰는 것은 한 wafer 의 site $`N`$ 개가 독립한 정보 $`N-1`$ 개를 낸다는 뜻인데, site 끼리 닮으면 실효 자유도가 그보다 작아 한계가 좁게 잡히고 WiW excursion 판정이 실제보다 민감해진다.
+The same correlation bears on the limit of section 2.4. Equation (37) uses a $`\chi^2`$ with $`N-1`$ degrees of freedom because the $`N`$ sites of one wafer yield $`N-1`$ independent pieces of information, and when the sites resemble each other the effective degrees of freedom are fewer, the limit is set too narrow, and the WiW excursion judgement is more sensitive than it should be.
 
-$`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 필요하며, 이 문서의 자료로는 그 값을 대지 않았다.
+Measuring $`\rho`$ needs a model with the site coordinates as a factor, or a variogram, and this document does not put a value on it from this data.
 
 ### C.3 Wafers as a Sample of One Process
 
-식 (6) 은 $`\alpha_i`$ 를 평균 0, variance $`\sigma_{between}^2`$ 인 한 분포에서 group 마다 독립으로 뽑는다고 둔다. 이 문서의 group 은 wafer 이다. 이 가정 위에서만 200 장이 공정의 표본이 되고, $`\sigma_{between}`$ 이 그 200 장을 넘어 앞으로 나올 wafer 에도 적용된다. 같은 자료를 fixed effects 로 두면 $`\alpha_i`$ 가 저마다 모수라 결론이 그 200 장에 머물고, wafer-to-wafer 성분이라는 하나의 수가 나오지 않는다.
+Equation (6) takes $`\alpha_i`$ as drawn independently for each group from one distribution with mean 0 and variance $`\sigma_{between}^2`$. The group of this document is the wafer. Only on this assumption are the 200 wafers a sample of the process, and only then does $`\sigma_{between}`$ apply beyond those 200 to the wafers still to come. Taking the same data as fixed effects makes each $`\alpha_i`$ a parameter of its own, so the conclusion stays with those 200 wafers and no single number called a wafer-to-wafer component comes out.
 
-이 자료는 그 가정에서 벗어난다. Wafer 평균은 앞 50 장에서 610.2 이고 뒤 50 장에서 630.9 로, 한 분포에서 독립으로 뽑았다면 두 구간이 이만큼 갈리지 않는다. 뒤쪽 wafer 의 $`\alpha_i`$ 가 앞쪽과 다른 수준에 있다는 뜻이다.
+This data departs from that assumption. The wafer mean is 610.2 over the first 50 wafers and 630.9 over the last 50, and two stretches drawn independently from one distribution would not part this far. The $`\alpha_i`$ of the later wafers sit at a different level from the earlier ones.
 
-그래서 이 문서의 $`\sigma_{between}`$ 은 한 공정 수준 둘레의 산포가 아니라 200 장에 걸친 drift 까지 담은 값이다. 그 값으로 세운 관리 한계선은 drift 를 공정이 늘 내는 산포로 받아들이므로 새 wafer 에 적용하면 실제보다 넓다.
+So the $`\sigma_{between}`$ of this document is not the spread around one process level but a value that also holds the drift across the 200 wafers. A control limit built on it takes the drift as spread the process always carries, and applied to a new wafer it is wider than it should be.
 
-둘을 가르려면 run order 를 인자로 둔 모형이 필요하다. 시간 추세항을 뺀 잔차에서 $`\sigma_{between}`$ 을 다시 구하거나, 구간을 나눠 각 구간 안에서 성분을 구하는 방법이 있으며, 이 문서는 그 분리를 하지 않았다.
+Separating the two needs a model with run order as a factor. One may recompute $`\sigma_{between}`$ from the residuals after removing a time trend term, or split the run into stretches and take the components inside each, and this document does not carry out that separation.
 
 ## Appendix D. Derivation of the Between-Component Form
 
-식 (15) 는 within 성분으로 적혀 있다.
+Equation (15) is written with the within component.
 
 $$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (29)$$
 
-식 (9) 에서 $`S_{\mathrm{total}}^2 = \sigma_{within}^2 + \sigma_{between}^2`$ 이므로 within 성분을 나머지 둘로 바꿀 수 있다.
+Equation (9) gives $`S_{\mathrm{total}}^2 = \sigma_{within}^2 + \sigma_{between}^2`$, so the within component can be replaced by the other two.
 
 $$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (30)$$
 
-이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래와 같다.
+Substituting this and collecting the coefficient of $`S_{\mathrm{total}}^2`$ gives the form below.
 
 $$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (31)$$
 
-식 (14) 의 ICC 를 넣어 $`\sigma_{between}^2`$ 을 지우면 두 번째 형태가 나오고, 제곱근을 취한 것이 식 (16) 이다.
+Putting in the ICC of equation (14) to remove $`\sigma_{between}^2`$ gives the second form, and taking its square root gives equation (16).
 
 $$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (32)$$
 
-$`N = 1`$ 이면 두 형태 모두 $`\hat{\sigma}_{\mu_K} = S_{\mathrm{total}}`$ 이 되고, $`N`$ 이 커지면 $`\hat{\sigma}_{\mu_K}`$ 는 $`\sigma_{between}`$ 으로 수렴한다. member 를 많이 잴수록 group 평균에서 within 성분이 지워진다는 뜻이다.
+At $`N = 1`$ both forms give $`\hat{\sigma}_{\mu_K} = S_{\mathrm{total}}`$, and as $`N`$ grows $`\hat{\sigma}_{\mu_K}`$ converges to $`\sigma_{between}`$. The more members are measured, the more the within component is erased from a group mean.
 
 ## Appendix E. Derivation of the Screening Limit
 
-아래에서 $`i`$ 는 group 번호, $`j`$ 는 그 group 안의 member 번호로 section 1.1 의 표기를 그대로 쓴다. 곧 $`X_{ij}`$ 는 group $`i`$ 의 $`j`$ 번째 member 측정값이고, $`\bar{X}_i`$ 는 그 group 의 평균, $`s_i^2`$ 은 그 group 안 member 값의 표본분산이다. 한 group 안의 member 값이 서로 독립이고 같은 정규분포를 따른다고 둔다.
+Below, $`i`$ is the group number and $`j`$ the member number inside that group, keeping the notation of section 1.1. That is, $`X_{ij}`$ is the measured value at the $`j`$ th member of group $`i`$, $`\bar{X}_i`$ is the mean of that group, and $`s_i^2`$ is the sample variance of the member values inside it. The member values inside one group are taken as independent and as following the same normal distribution.
 
 $$X_{ij} \sim \mathcal{N}(\mu + \alpha_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (33)$$
 
-한계를 세우려면 $`s_i`$ 가 우연만으로 얼마나 커질 수 있는지 알아야 한다. 같은 조건에서 나온 group 이라도 member $`N`$ 점을 어디서 뽑느냐에 따라 $`s_i`$ 는 매번 달라지므로, 그 흔들림의 분포를 알아야 어디부터가 우연으로 보기 어려운 값인지 정할 수 있다. 그 분포가 카이제곱이며, 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값의 분포로 $`m`$ 이 그 자유도이다. 그러므로 $`s_i^2`$ 의 분포를 아는 일은 그것을 표준정규 몇 개의 제곱합으로 적을 수 있는지를 세는 일이 된다. 측정값에서 그 group 의 참 평균 $`\mu + \alpha_i`$ 를 빼고 표준편차로 나누면 표준정규가 된다.
+Setting a limit needs to know how large $`s_i`$ can grow by chance alone. Even for groups from the same conditions $`s_i`$ differs every time with where the $`N`$ members are drawn, so the distribution of that wobble is what fixes the point from which a value is hard to take as chance. That distribution is the chi-square, the distribution of the sum of the squares of $`m`$ independent standard normal variables, where $`m`$ is its degrees of freedom. Knowing the distribution of $`s_i^2`$ therefore becomes a matter of counting how many standard normal squares it can be written as. Subtracting the true mean $`\mu + \alpha_i`$ of that group from a measured value and dividing by the standard deviation gives a standard normal.
 
 $$Z_{ij} = \frac{X_{ij} - \mu - \alpha_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (34)$$
 
-$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (33) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 각 항을 $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ 로 풀고 $`j = 1`$ 부터 $`N`$ 까지 더하면 세 조각이 된다. 첫 조각은 그대로 $`\sum_j Z_{ij}^2`$ 이고, 둘째 조각은 $`\bar{Z}_i`$ 가 $`j`$ 에 따라 변하지 않는 상수라 합 밖으로 빠져 $`-2 \bar{Z}_i \sum_j Z_{ij}`$ 가 되며, 셋째 조각은 그 상수를 $`N`$ 번 더한 $`N \bar{Z}_i^2`$ 이다.
+Since $`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$, the sum of squares in equation (33) turns into a sum of squares of $`Z`$. Expanding each term as $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ and summing from $`j = 1`$ to $`N`$ gives three pieces. The first is $`\sum_j Z_{ij}^2`$ as it stands, the second is $`-2 \bar{Z}_i \sum_j Z_{ij}`$ because $`\bar{Z}_i`$ is a constant that does not change with $`j`$ and comes out of the sum, and the third is $`N \bar{Z}_i^2`$, that constant added $`N`$ times.
 
 $$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - 2 \bar{Z}_i \sum_{j=1}^{N} Z_{ij} + N \bar{Z}_i^2 \hspace{19em} (35)$$
 
-평균의 정의에서 $`\sum_{j} Z_{ij} = N \bar{Z}_i`$ 이므로 가운데 항은 $`2 N \bar{Z}_i^2`$ 이 되고, 마지막 항과 합치면 $`N \bar{Z}_i^2`$ 하나만 남는다. 곧 표준정규 제곱합에서 평균의 몫을 뺀 꼴이다.
+From the definition of the mean, $`\sum_{j} Z_{ij} = N \bar{Z}_i`$, so the middle term becomes $`2 N \bar{Z}_i^2`$, and joined with the last term it leaves a single $`N \bar{Z}_i^2`$. That is, a sum of standard normal squares less the share of the mean.
 
 $$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_i^2 + N \bar{Z}_i^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (36)$$
 
-우변의 첫 항은 표준정규 $`N`$ 개의 제곱합이므로 정의에 따라 $`\chi^2_N`$ 이다. $`\bar{Z}_i`$ 는 평균 0, 분산 $`1/N`$ 의 정규분포를 따라 $`\sqrt{N}\,\bar{Z}_i`$ 가 표준정규이므로 둘째 항은 $`\chi^2_1`$ 이다. 정규 표본에서 표본평균과 표본분산은 서로 독립이라 두 몫이 겹치지 않으므로, 자유도는 그대로 빼진다.
+The first term on the right is the sum of the squares of $`N`$ standard normals and so is $`\chi^2_N`$ by definition. $`\bar{Z}_i`$ follows a normal distribution with mean 0 and variance $`1/N`$, so $`\sqrt{N}\,\bar{Z}_i`$ is a standard normal and the second term is $`\chi^2_1`$. In a normal sample the sample mean and the sample variance are independent, so the two shares do not overlap and the degrees of freedom subtract as they are.
 
 $$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (37)$$
 
-식 (21) 이 보인 제약, 곧 편차 $`X_{ij} - \bar{X}_i`$ 의 합이 0 이라는 제약 하나에 묶여 $`N`$ 개 중 $`N-1`$ 개만 자유로우므로, 자유도가 $`N-1`$ 이다.
+Bound by the one constraint equation (21) shows, that the deviations $`X_{ij} - \bar{X}_i`$ sum to 0, only $`N-1`$ of the $`N`$ are free, so the degrees of freedom are $`N-1`$.
 
-Section 1.5 의 $`\chi^2_{p,\,N-1}`$ 을 쓰면, 식 (37) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
+Taking the $`\chi^2_{p,\,N-1}`$ of section 1.5, the probability that the left side of equation (37) exceeds that point is the remainder, $`1-p`$.
 
 $$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 - p \hspace{19em} (38)$$
 
-괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (18) 이 된다. 곧 식 (18) 을 넘은 group 은, 그 group 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 group 이다.
+Solving the bracket for $`s_i`$ and putting the running baseline in the place of the true $`\sigma_{within}`$ gives equation (18). A group past equation (18), then, is a group that produced a value which, had its spread equalled the baseline, would arise with probability $`1-p`$ only.
 
-기준선은 참값이 아니라 앞선 group 으로 추정한 값이므로, 엄밀하게는 두 분산의 비가 F 분포를 따른다. 기준선을 group $`m`$ 개로 구했으면 그 자유도는 $`\nu = m(N-1)`$ 이다.
+The baseline is not the true value but an estimate from the groups before it, so strictly the ratio of the two variances follows an F distribution. If the baseline was obtained from $`m`$ groups, its degrees of freedom are $`\nu = m(N-1)`$.
 
 $$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (39)$$
 
-$`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (18) 을 그대로 쓸 수 있다. 식 (18) 의 계수 1.656 과 견주면, 판정을 시작하는 21 번째 group 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 group 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
+As $`\nu`$ grows, the $`p`$ quantile of $`F(N-1, \nu)`$ converges to $`\chi^2_{p,\,N-1}/(N-1)`$, so equation (18) may be used as it stands. Against the coefficient 1.656 of equation (18), the F with $`\nu = 240`$ at the 21st group, where judging begins, gives 1.696, and at the last group 1.660. Setting the limit 2.4% low early in the run is the price of using the chi-square.
 
 ## Appendix F. Covariance With a Repeated Argument
 
-Covariance 의 두 인자에 같은 확률변수를 넣으면 곱해지는 두 편차가 같은 값이라 제곱이 되고, 그 기댓값은 variance 의 정의 그대로이다.
+Putting the same random variable into both arguments of a covariance makes the two deviations multiplied together the same value, so it becomes a square, and its expectation is the definition of the variance itself.
 
 $$\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y) \hspace{19em} (40)$$
 
-식 (8) 의 첫째 항이 그 꼴이므로 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이고, 식 (7) 이 그 값을 $`\sigma_{between}^2`$ 으로 둔다.
+The first term of equation (8) is of that shape, so $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$, and equation (7) sets that value as $`\sigma_{between}^2`$.
 
 ## Appendix G. The Chi-Square Distribution
 
-식 (18) 의 한계는 카이제곱 분포의 분위에서 나온다. 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값이 따르는 분포이고, 그 $`m`$ 을 자유도라 부른다.
+The limit of equation (18) comes from a quantile of the chi-square distribution. The chi-square distribution is the distribution followed by the sum of the squares of $`m`$ independent standard normal variables, and that $`m`$ is called its degrees of freedom.
 
 $$\chi^2_m = \sum_{k=1}^{m} Z_k^2, \qquad Z_k \sim \mathcal{N}(0, 1) \hspace{19em} (41)$$
 
-제곱을 더한 값이라 음수가 되지 않고, 분포는 오른쪽으로 긴 꼬리를 지닌다. 평균과 분산은 자유도만으로 정해진다.
+Being a sum of squares it is never negative, and the distribution carries a long tail to the right. Its mean and variance are set by the degrees of freedom alone.
 
 $$E[\chi^2_m] = m, \qquad \mathrm{Var}(\chi^2_m) = 2m \hspace{19em} (42)$$
 
-자유도가 커질수록 평균 대비 산포 $`\sqrt{2m}/m = \sqrt{2/m}`$ 이 줄어 분포가 평균 둘레로 모이고 좌우 대칭에 가까워진다. 이 자료의 $`m = N-1 = 12`$ 에서는 $`\sqrt{2/m} = 0.408`$ 이라 평균 12 에 표준편차 $`\sqrt{24} = 4.90`$ 이며, 식 (18) 이 쓰는 $`p = 0.999`$ 분위 32.91 은 평균에서 표준편차의 4.27 배만큼 떨어진 오른쪽 꼬리에 있다.
+As the degrees of freedom grow, the spread against the mean $`\sqrt{2m}/m = \sqrt{2/m}`$ shrinks, the distribution gathers around the mean and comes closer to symmetric. At the $`m = N-1 = 12`$ of this data, $`\sqrt{2/m} = 0.408`$, so the mean 12 carries a standard deviation of $`\sqrt{24} = 4.90`$, and the $`p = 0.999`$ quantile 32.91 that equation (18) uses lies in the right tail, 4.27 standard deviations from the mean.
 
-[Appendix E](#appendix-e-derivation-of-the-screening-limit) 는 한 group 의 member 값이 서로 독립이고 같은 정규분포를 따를 때 $`(N-1) s_i^2 / \sigma_{within}^2`$ 이 자유도 $`N-1`$ 의 카이제곱 분포를 따름을 보인다. 그래서 $`s_i`$ 의 한계를 그 분포의 분위로 정한다.
+[Appendix E](#appendix-e-derivation-of-the-screening-limit) shows that when the member values of one group are independent and follow the same normal distribution, $`(N-1) s_i^2 / \sigma_{within}^2`$ follows a chi-square distribution with $`N-1`$ degrees of freedom. That is why the limit on $`s_i`$ is set from a quantile of that distribution.
