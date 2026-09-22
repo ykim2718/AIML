@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 92 | Created: 2026-09-01 | Updated: 2026-09-21 23:44 CDT
+Rev. 93 | Created: 2026-09-01 | Updated: 2026-09-21 23:48 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -119,6 +119,8 @@ $$E[\alpha_i] = 0, \quad \mathrm{Var}(\alpha_i) = \sigma_{between}^2, \qquad E[e
 총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다. 두 인자가 같은 covariance 가 variance 가 되는 과정은 [Appendix E](#appendix-e-covariance-with-a-repeated-argument) 에 적었다.
 
 $$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) + \mathrm{Cov}(\alpha_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \alpha_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i) = \sigma_{between}^2 \hspace{19em} (8)$$
+
+식 (8) 은 같은 wafer 의 두 site 가 얼마나 닮았는지를 재지만, 그 값이 곧 wafer 끼리 얼마나 벌어졌는지를 재는 값이다. $`\mathrm{Var}(\alpha_i)`$ 는 $`i`$ 가 바뀔 때, 곧 wafer 가 바뀔 때 $`\alpha_i`$ 가 흩어지는 양이며, 한 wafer 안에서 $`\alpha_i`$ 는 고정된 한 값이다. Wafer 수준이 장마다 크게 흔들릴수록 한 장 안의 두 site 는 그 흔들린 수준을 함께 타고 있어 더 닮는다. 그래서 section 3 의 ICC 는 한 wafer 안 두 site 의 상관계수이면서 동시에 전체 분산 중 wafer 간 분산의 비율 $`\sigma_{between}^2 / S_{\mathrm{total}}^2`$ 이다.
 
 $`\alpha_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 식 (7) 의 두 variance 의 합이다.
 
