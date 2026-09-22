@@ -21,7 +21,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.13.4.2026.9.22"
+__version__ = "0.13.5.2026.9.22"
 
 import argparse
 import pathlib
@@ -117,6 +117,20 @@ class WaferMeasurements:
     """
 
     def __init__(self, frame: pd.DataFrame) -> None:
+        """Hold the measurement table of shape (K, N): K wafer rows by N site columns.
+
+        The index carries the wafer id, each column carries one site, and a cell is the value that
+        site read on that wafer. Every cell must be a number; a missing one is refused, because the
+        decomposition needs the same site count on every wafer.
+
+        Example of such a frame for K = 3 wafers and N = 4 sites:
+
+                          S1       S2       S3       S4
+            wafer_id
+            wf0001   589.396  595.174  606.677  581.274
+            wf0002   607.029  604.269  588.589  588.836
+            wf0003   595.319  589.758  594.013  606.208
+        """
         if frame.empty:
             raise ValueError("the measurement table is empty")
         missing = int(frame.isna().sum().sum())
