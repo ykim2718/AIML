@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 85 | Created: 2026-09-01 | Updated: 2026-09-21 21:17 CDT
+Rev. 86 | Created: 2026-09-01 | Updated: 2026-09-21 23:06 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -60,7 +60,7 @@ $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm
 - 전체 site 값: 평균 622.1, 표준편차 32.45, 최소 435.10, 최대 734.68.
 - Wafer 평균: 최소 452.9, 최대 705.0, 표준편차 28.70.
 - Within-wafer range: 평균 41.32, 최대 123.46.
-- Wafer uniformity $`s_i / \mu_i`$: 중앙값 1.81%, 최소 0.87% (wf0033), 최대 8.62% (wf0011).
+- Wafer uniformity $`s_i / \bar{X}_i`$: 중앙값 1.81%, 최소 0.87% (wf0033), 최대 8.62% (wf0011).
 
 Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 610 대에 모여 있다가 뒤쪽에서 650 근처까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 선은 wafer 평균을 이은 것으로, 위치가 wafer 마다 얼마나 튀는지 보여준다.
 
@@ -106,29 +106,29 @@ Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 
 
 ### 4.1 Formula and Its Closed Forms
 
-처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. Wafer $`i`$ 의 고유 수준 (wafer effect) 을 $`\mu_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 두 항의 합이다.
+처음 $`n`$ 장의 wafer 평균으로 계산한 표준편차 $`\sigma_{\mu_n}`$ 을 구하려고 한다. 총평균을 $`\mu`$, wafer $`i`$ 의 wafer effect 를 $`\alpha_i`$, within-wafer site 오차를 $`e_{ij}`$ 로 두면 측정값은 세 항의 합이다. 이것이 one-way random effects model 의 표준 표기이며, 총평균과 group 의 몫을 갈라 적는다.
 
-$$X_{ij} = \mu_i + e_{ij} \hspace{19em} (6)$$
+$$X_{ij} = \mu + \alpha_i + e_{ij} \hspace{19em} (6)$$
 
-$`\mu_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이다. 장마다 공정 조건이 달라 $`\mu_i`$ 도 wafer 마다 다르며, one-way random effects model 은 $`\mu_i`$ 를 고정된 상수가 아니라 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\mu_i)`$ 라는 양이 서고, 관측한 wafer 평균 $`\bar{X}_i`$ 는 $`\mu_i`$ 자체가 아니라 거기에 $`\bar{e}_i`$ 가 얹힌 값이다.
+$`\mu`$ 는 wafer 와 무관한 상수이고, $`\mu + \alpha_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이고, $`\alpha_i`$ 는 그 값이 총평균에서 벗어난 양이다. 장마다 공정 조건이 달라 $`\alpha_i`$ 가 wafer 마다 다르며, one-way random effects model 은 $`\alpha_i`$ 를 고정된 상수가 아니라 평균 0 으로 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\alpha_i)`$ 라는 양이 서고, 관측한 wafer 평균 $`\bar{X}_i`$ 는 $`\mu + \alpha_i`$ 자체가 아니라 거기에 $`\bar{e}_i`$ 가 얹힌 값이다.
 
-$`e_{ij}`$ 는 평균이 0 이고, $`\mu_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다.
+$`e_{ij}`$ 는 평균이 0 이고, $`\alpha_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다.
 
 $$\mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
 
-같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\mu_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer 고유 수준과 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\mu_i, \mu_i) = \mathrm{Var}(\mu_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다.
+총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다.
 
-$$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\mu_i, \mu_i) + \mathrm{Cov}(\mu_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \mu_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Var}(\mu_i) = \sigma_{between}^2 \hspace{19em} (8)$$
+$$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) + \mathrm{Cov}(\alpha_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \alpha_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Var}(\alpha_i) = \sigma_{between}^2 \hspace{19em} (8)$$
 
-$`\mu_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 두 성분의 합이며, 식 (7) 이 뒤 항을, 식 (8) 이 앞 항을 준다.
+$`\alpha_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 두 성분의 합이며, 식 (7) 이 뒤 항을, 식 (8) 이 앞 항을 준다.
 
 $$S_{\mathrm{total}}^2 = \sigma_{between}^2 + \sigma_{within}^2 \hspace{19em} (9)$$
 
 Wafer 평균에서는 within-wafer site 오차가 $`N`$ 개 평균되므로 그 분산이 $`N`$ 분의 1 로 줄어든다.
 
-$$\bar{X}_i = \mu_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (10)$$
+$$\bar{X}_i = \mu + \alpha_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (10)$$
 
-$`\mu_i`$ 와 $`\bar{e}_i`$ 는 독립이므로 처음 $`n`$ 장의 wafer 평균의 분산은 두 분산의 합이고, 여기서 $`s_{\mu}(1..n)`$ 은 처음 $`n`$ 장의 wafer 고유 수준의 표준편차이다.
+$`\alpha_i`$ 와 $`\bar{e}_i`$ 는 독립이므로 처음 $`n`$ 장의 wafer 평균의 분산은 두 분산의 합이고, 여기서 $`s_{\mu}(1..n)`$ 은 처음 $`n`$ 장의 wafer effect 의 표준편차이다.
 
 $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{within}^2}{N} \hspace{19em} (11)$$
 
@@ -148,7 +148,7 @@ Table 2 의 wafer-to-wafer 성분 $`\sigma_{between}`$ 에 대해 $`\sigma_{with
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (15)$$
 
-Wafer 의 고유 수준이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (14) 와 식 (15) 에서 wafer 평균의 산포는 표준오차만 남는다. 관측한 wafer 평균은 이때도 site 잡음만큼 흩어지므로 0 이 아니다.
+Wafer effect 가 모두 0 이라 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (14) 와 식 (15) 에서 wafer 평균의 산포는 표준오차만 남는다. 관측한 wafer 평균은 이때도 site 잡음만큼 흩어지므로 0 이 아니다.
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (16)$$
 
@@ -160,13 +160,13 @@ Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인
 
 - 왼쪽 항: wafer 마다의 site 분산 $`s_i^2`$ 를 처음 $`n`$ 장까지 평균한 $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$ 을 $`\sqrt{N}`$ 으로 나눈 값. Site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. Wafer 평균을 쓰지 않으므로 자료에서 바로 나온다.
 - 관측 곡선: 처음 $`n`$ 장의 wafer 평균의 표본표준편차 $`\sigma_{\mu_n}`$.
-- 오른쪽 항: 식 (13) 을 뒤집은 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 이며, $`\sigma_{between}`$ 자리에 드는 $`s_{\mu}(1..n)`$ 이 그 값이다. Wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 제곱근 안이 음수인 $`n`$ 에서는 정의되지 않아 그리지 않으며, 이 자료에서는 $`n = 3`$ 이 그렇다.
+- 오른쪽 항: 식 (13) 을 뒤집은 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 이며, $`\sigma_{between}`$ 자리에 드는 $`s_{\mu}(1..n)`$ 이 그 값이다. Wafer 마다 다른 wafer effect 의 산포, 곧 wafer 간의 변동 그 자체이다. 제곱근 안이 음수인 $`n`$ 에서는 정의되지 않아 그리지 않으며, 이 자료에서는 $`n = 3`$ 이 그렇다.
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
 Fig 2. Cumulative standard deviation of the wafer means with the two terms of equation (13) and the w2w detection point, each computed from the first n wafers only
 
-Fig 2 에서 두 항의 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). w2w detection point 이후 관측 곡선은 사실상 wafer 고유 수준의 산포 그 자체이다.
+Fig 2 에서 두 항의 크기가 뒤집히는 곳을 w2w detection point 라 부르며, 오른쪽 항이 관측값의 98% 를 넘는 첫 $`n`$ 으로 잡으면 이 자료에서는 $`n = 5`$ 이다 ($`n = 4`$ 에서 74%, $`n = 5`$ 에서 98%). w2w detection point 이후 관측 곡선은 사실상 wafer effect 의 산포 그 자체이다.
 
 공정 관리로 옮기면 w2w detection point 는 판단에 필요한 최소 표본이다. 그 앞에서 잰 산포는 wafer-to-wafer 를 볼 수 없으므로 그 값으로 관리 한계선을 세우면 산포를 크게 낮춰 잡게 되고, 이 점을 넘어서야 "이 산포는 site 균일도가 아니라 wafer 단위 조건에서 온다" 는 판정이 성립한다. 거꾸로 그 앞 구간에서 산포가 작게 나왔다고 공정이 안정된 것으로 읽으면 안 된다 — 아직 볼 수 있는 것이 측정 잡음뿐이기 때문이다.
 
@@ -202,7 +202,7 @@ Fig 3. Site value spread of each wafer against the running baseline and the scre
 - **variogram**: 두 지점의 값 차이가 갖는 분산을 두 지점 사이 거리의 함수로 나타낸 것. 거리에 따라 값이 얼마나 닮는지를 재는 데 쓴다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
 - **w2w detection point**: 식 (13) 의 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
-- **wafer effect**: wafer 한 장의 고유 수준 $`\mu_i`$. Site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 참 평균이며, one-way random effects model 에서는 wafer 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다.
+- **wafer effect**: wafer $`i`$ 의 참 평균이 총평균에서 벗어난 양 $`\alpha_i`$. One-way random effects model 에서는 평균 0 으로 wafer 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 - **WiW excursion**: site 표준편차가 running baseline 이 세운 한계를 넘은 wafer.
 
@@ -270,11 +270,11 @@ $`N = 1`$ 이면 두 형태 모두 $`\hat{\sigma}_{\mu_K} = S_{\mathrm{total}}`$
 
 아래에서 $`i`$ 는 wafer 번호, $`j`$ 는 그 wafer 위의 site 번호로 section 1.1 의 표기를 그대로 쓴다. 곧 $`X_{ij}`$ 는 wafer $`i`$ 의 $`j`$ 번째 site 측정값이고, $`\bar{X}_i`$ 는 그 wafer 의 평균, $`s_i^2`$ 은 그 wafer 안 site 값의 표본분산이다. 한 wafer 안의 site 값이 서로 독립이고 같은 정규분포를 따른다고 둔다.
 
-$$X_{ij} \sim \mathcal{N}(\mu_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (28)$$
+$$X_{ij} \sim \mathcal{N}(\mu + \alpha_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (28)$$
 
-한계를 세우려면 $`s_i`$ 가 우연만으로 얼마나 커질 수 있는지 알아야 한다. 같은 공정에서 나온 wafer 라도 site $`N`$ 점을 어디서 뽑느냐에 따라 $`s_i`$ 는 매번 달라지므로, 그 흔들림의 분포를 알아야 어디부터가 우연으로 보기 어려운 값인지 정할 수 있다. 그 분포가 카이제곱이며, 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값의 분포로 $`m`$ 이 그 자유도이다. 그러므로 $`s_i^2`$ 의 분포를 아는 일은 그것을 표준정규 몇 개의 제곱합으로 적을 수 있는지를 세는 일이 된다. 측정값에서 그 wafer 의 고유 수준 $`\mu_i`$ 를 빼고 표준편차로 나누면 표준정규가 된다.
+한계를 세우려면 $`s_i`$ 가 우연만으로 얼마나 커질 수 있는지 알아야 한다. 같은 공정에서 나온 wafer 라도 site $`N`$ 점을 어디서 뽑느냐에 따라 $`s_i`$ 는 매번 달라지므로, 그 흔들림의 분포를 알아야 어디부터가 우연으로 보기 어려운 값인지 정할 수 있다. 그 분포가 카이제곱이며, 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값의 분포로 $`m`$ 이 그 자유도이다. 그러므로 $`s_i^2`$ 의 분포를 아는 일은 그것을 표준정규 몇 개의 제곱합으로 적을 수 있는지를 세는 일이 된다. 측정값에서 그 wafer 의 참 평균 $`\mu + \alpha_i`$ 를 빼고 표준편차로 나누면 표준정규가 된다.
 
-$$Z_{ij} = \frac{X_{ij} - \mu_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (29)$$
+$$Z_{ij} = \frac{X_{ij} - \mu - \alpha_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (29)$$
 
 $`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (28) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 각 항을 $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ 로 풀고 $`j = 1`$ 부터 $`N`$ 까지 더하면 세 조각이 된다. 첫 조각은 그대로 $`\sum_j Z_{ij}^2`$ 이고, 둘째 조각은 $`\bar{Z}_i`$ 가 $`j`$ 에 따라 변하지 않는 상수라 합 밖으로 빠져 $`-2 \bar{Z}_i \sum_j Z_{ij}`$ 가 되며, 셋째 조각은 그 상수를 $`N`$ 번 더한 $`N \bar{Z}_i^2`$ 이다.
 
