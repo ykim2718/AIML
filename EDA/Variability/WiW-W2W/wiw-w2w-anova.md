@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 80 | Created: 2026-09-01 | Updated: 2026-09-21 20:58 CDT
+Rev. 81 | Created: 2026-09-01 | Updated: 2026-09-21 21:04 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -131,8 +131,6 @@ $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{wi
 제곱근을 취하면 관측값을 설명하는 식이 된다.
 
 $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (11)$$
-
-식 (11) 은 모든 $`n`$ 에서 성립한다.
 
 처음 $`n`$ 장의 wafer 고유 수준의 표준편차가 전체 wafer-to-wafer 성분과 같을 경우, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 일 경우에 식 (11) 의 오른쪽 항을 $`\sigma_{between}^2`$ 으로 바꿔 쓸 수 있다. 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (12) 는 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
 
