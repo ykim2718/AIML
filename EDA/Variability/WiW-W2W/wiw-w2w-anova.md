@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 105 | Created: 2026-09-01 | Updated: 2026-09-22 01:58 CDT
+Rev. 106 | Created: 2026-09-01 | Updated: 2026-09-22 02:03 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -225,11 +225,11 @@ $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^
 
 $$\sum_{j=1}^{N} (X_{ij} - \bar{X}_i) = \sum_{j=1}^{N} X_{ij} - N \bar{X}_i = 0 \hspace{19em} (20)$$
 
-둘째 항의 $`j`$ 에 대한 합은 같은 값을 $`N`$ 번 더한 것이라 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 이 된다. 남는 두 항이 식 (2) 의 우변이다. 유도는 여기서 끝나고, 아래 식 (21) 은 그 세 제곱합에 이름을 붙이는 정의이다.
+둘째 항의 $`j`$ 에 대한 합은 같은 값을 $`N`$ 번 더한 것이라 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 이 된다. 남는 두 항에 SST, SSW, SSB 라는 이름을 붙여 적은 것이 식 (21) 이다.
 
-$$\mathrm{SST} = \sum_{i}\sum_{j} (X_{ij} - \bar{X})^2, \qquad \mathrm{SSW} = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2, \qquad \mathrm{SSB} = N \sum_{i} (\bar{X}_i - \bar{X})^2 \hspace{19em} (21)$$
+$$\underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2}_{\mathrm{SST}} = \underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2}_{\mathrm{SSW}} + \underbrace{N \sum_{i} (\bar{X}_i - \bar{X})^2}_{\mathrm{SSB}} \hspace{19em} (21)$$
 
-식 (21) 의 세 이름을 식 (2) 에 넣으면 식 (1) 이 된다. 이 유도는 자료에 아무 가정도 두지 않으므로, 식 (1) 은 어느 표에서나 성립한다.
+식 (21) 의 제곱합을 그대로 읽으면 식 (2) 이고, 아래에 붙인 이름으로 읽으면 식 (1) 이다. 이 유도는 자료에 아무 가정도 두지 않으므로, 식 (1) 은 어느 표에서나 성립한다.
 
 ## Appendix C. Limits of the Decomposition
 
