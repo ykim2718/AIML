@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 117 | Created: 2026-09-01 | Updated: 2026-09-22 10:58 CDT
+Rev. 118 | Created: 2026-09-01 | Updated: 2026-09-22 11:06 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -55,7 +55,7 @@ $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm
 
 ## 2. Data
 
-측정 자료는 [example.csv](example.csv) 이며 200 행 14 열이다. 이 표는 wafer 마다 고유 수준을 하나 뽑고 거기에 site 잡음을 얹어 만든 것이다. 여기에 run order 를 따라 수준과 site 잡음이 함께 커지는 drift 를 두고, 수준이 크게 벗어난 wafer 여섯 장과 site 잡음이 부풀려진 wafer 스무 장을 넣었으며, seed 를 고정해 늘 같은 표가 나온다. 한 행이 한 장의 wafer 이고, 열 `wafer_id` 는 `wf0001` 부터 `wf0200` 까지의 일련번호로 파일의 행 순서, 곧 run order 를 나타낸다. 나머지 열 `S1`~`S13` 은 그 wafer 위의 13 개 site 이다. 결측은 없고 전체 관측치는 2600 개이다.
+자료는 [example.csv](example.csv) 이며 200 행 14 열이다. 이 표는 wafer 마다 고유 수준을 하나 뽑고 거기에 site 잡음을 얹어 만든 것이다. 여기에 run order 를 따라 수준과 site 잡음이 함께 커지는 drift 를 두고, 수준이 크게 벗어난 wafer 여섯 장과 site 잡음이 부풀려진 wafer 스무 장을 넣었으며, seed 를 고정해 늘 같은 표가 나온다. 한 행이 한 장의 wafer 이고, 열 `wafer_id` 는 `wf0001` 부터 `wf0200` 까지의 일련번호로 파일의 행 순서, 곧 run order 를 나타낸다. 나머지 열 `S1`~`S13` 은 그 wafer 위의 13 개 site 이다. 결측은 없고 전체 관측치는 2600 개이다.
 
 - 전체 site 값: 평균 619.8, 표준편차 33.29, 최소 460.34, 최대 797.64.
 - Wafer 평균: 최소 470.4, 최대 767.5, 표준편차 30.06.
@@ -88,7 +88,7 @@ Table 1. One-way ANOVA with wafer as the factor
 
 표의 각 열이 뜻하는 바는 아래와 같다.
 
-- SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 2,881,108 이 된다.
+- SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 2,881,109 가 된다.
 - df: degrees of freedom. 그 제곱합이 담은 독립한 정보의 개수. Wafer 200 장이므로 between 은 199, wafer 마다 site 13 개에서 평균 하나를 뺀 12 를 200 배 하여 within 은 2400.
 - MS: mean square. SS 를 df 로 나눈 값이며 분산의 추정치. Within 의 226.3 은 site 한 점의 산포, between 의 11,749.0 은 wafer 평균의 산포에 site 산포가 얹힌 크기.
 - F: 두 MS 의 비. 여기서는 11,749.0 / 226.3 = 51.92. wafer 사이에 차이가 없다면 1 근처에 머무는 값.
