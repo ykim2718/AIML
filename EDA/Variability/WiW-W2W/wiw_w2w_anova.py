@@ -21,7 +21,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.13.2.2026.9.21"
+__version__ = "0.13.3.2026.9.22"
 
 import argparse
 import pathlib
@@ -339,11 +339,11 @@ class WaferMeasurements:
         font_size = self._font_size()
         figure, axes = plt.subplots(figsize=FIGSIZE)
         axes.plot(self.order, observed, color=COLOR_OBSERVED, lw=3.0, zorder=4,
-                  label=r"observed  $\sigma_{\mu_n}$  (stdev of wafer means 1..n)")
+                  label=r"eq (13) observed curve  $\sigma_{\mu_n}$")
         axes.plot(self.order, terms['right_term'], color=COLOR_RIGHT_TERM, lw=1.6, ls=(0, (5, 3)), zorder=6,
-                  label=r"eq (13) right term:  $\sqrt{s_\mu^2(1..n)}$")
+                  label=r"eq (13) right term  $\sigma_{between}$")
         axes.plot(self.order, left_term, color=COLOR_LEFT_TERM, lw=2.2, ls=(0, (6, 4)), zorder=5,
-                  label=r"eq (13) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
+                  label=r"eq (13) left term  $\sigma_{within}/\sqrt{N}$")
         axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
                      label=r"eq (13)  $\hat{\sigma}_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
         axes.axvline(detection, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
