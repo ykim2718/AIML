@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 102 | Created: 2026-09-01 | Updated: 2026-09-22 02:40 CDT
+Rev. 103 | Created: 2026-09-01 | Updated: 2026-09-22 01:44 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -11,8 +11,8 @@ Rev. 102 | Created: 2026-09-01 | Updated: 2026-09-22 02:40 CDT
 
 Wafer 를 장당 여러 site 에서 재어 얻은 표를 아래 기호로 적는다. 항목마다 그 값이 어디서 오는지를 설계값, 측정값, 관측값, 계산값으로 적었다. 측정값은 표에 실린 $`X_{ij}`$ 하나이고, 관측값은 그것을 단순 계산한 것이며, 계산값은 분산성분 모형을 거친 것이다.
 
-- $`K`$: wafer 장수. 이 자료에서는 200. 설계값.
-- $`N`$: wafer 한 장에서 재는 site 개수. 이 자료에서는 13. 설계값.
+- $`K`$: wafer 장수. 설계값.
+- $`N`$: wafer 한 장에서 재는 site 개수. 설계값.
 - $`M`$: 전체 관측치 개수이며 $`M = K N`$ 이다. 설계값.
 - $`X_{ij}`$: $`i`$ 번째 wafer 의 $`j`$ 번째 site 에서 읽은 값. 측정값.
 - $`\bar{X}_i`$: $`i`$ 번째 wafer 의 평균. 관측값.
