@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 37 | Created: 2026-08-28 | Updated: 2026-09-22 19:00 CDT
+Rev. 38 | Created: 2026-08-28 | Updated: 2026-09-22 19:20 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -203,7 +203,7 @@ Kernel 계열은 특징 공간에서는 선형이지만 그 공간의 점에 대
 
 ### 4.3 Tree ensembles
 
-Random forest 와 gradient boosting 은 조각별 상수 함수이므로 입력에 대한 gradient 가 0 이거나 정의되지 않는다. 따라서 gradient 대신 탐색을 쓴다. 격자 탐색, genetic algorithm, CMA-ES 같은 derivative-free 방법이 그대로 쓰이며, 학습된 tree 자체를 빠른 surrogate 로 두고 그 위에서 탐색을 돌린다. TreeSHAP 은 한 점 주변에서 각 입력의 기여도를 정확히 계산하므로, 국소 선형 근사를 얻어 탐색의 방향을 정하는 데 쓸 수 있다 [[13](#ref-13)].
+Random forest 와 gradient boosting 은 tree 를 base learner 로 쓴다. Tree 하나는 입력 공간을 문턱값으로 잘라 상자로 나누고 상자마다 저장된 값 하나를 돌려주며, 그런 함수를 여럿 더하거나 평균해도 조각별 상수 함수이다. 그래서 입력에 대한 gradient 가 상자 안에서는 0 이고 문턱값 위에서는 정의되지 않아, gradient 대신 탐색을 쓴다. 이 성질은 boosting 이나 bagging 이 아니라 base learner 가 정하며, base learner 를 선형 model 로 두면 합도 선형이 되어 gradient 가 살아난다. 격자 탐색, genetic algorithm, CMA-ES 같은 derivative-free 방법이 그대로 쓰이며, 학습된 tree 자체를 빠른 surrogate 로 두고 그 위에서 탐색을 돌린다. TreeSHAP 은 한 점 주변에서 각 입력의 기여도를 정확히 계산하므로, 국소 선형 근사를 얻어 탐색의 방향을 정하는 데 쓸 수 있다 [[13](#ref-13)].
 
 ### 4.4 Neural networks
 
@@ -646,7 +646,7 @@ Fig 7. Appendix D hidden model against T, the search in the A–B plane, and the
 
 (c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
-등고선이 계단 모양이다. Tree 하나는 입력 공간을 문턱값으로 잘라 상자로 나누고 상자마다 저장된 값 하나를 돌려주며, gradient boosting 은 그런 tree 의 값을 더한다. 그래서 예측은 문턱값을 넘을 때만 바뀌고 문턱값 사이에서는 상수이며, 4.3 이 말한 대로 gradient 가 0 이거나 정의되지 않아 탐색으로 푼다.
+등고선이 계단 모양이다. Surrogate 가 4.3 의 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
 
 출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 17.927 이나 18.288 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
