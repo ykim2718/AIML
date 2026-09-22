@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 113 | Created: 2026-09-01 | Updated: 2026-09-22 10:32 CDT
+Rev. 114 | Created: 2026-09-01 | Updated: 2026-09-22 10:38 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -70,7 +70,14 @@ Fig 1. Distribution of the site values on each wafer along run order, with the w
 
 ## 3. Variance Decomposition
 
-Wafer 를 인자로 둔 one-way ANOVA 로 wafer 간 성분과 wafer 내 성분을 나눈다. 계산은 네 단계로 이루어진다. 먼저 식 (2) 로 전체 제곱합을 wafer 간 제곱합과 wafer 내 제곱합으로 가른다. 다음으로 각 제곱합이 담은 독립한 정보의 개수를 세는데, wafer 평균 $`K`$ 개에서 총평균 하나를 뺀 $`K-1`$ 이 between 의 자유도이고, wafer 마다 site $`N`$ 개에서 제 평균 하나를 뺀 $`N-1`$ 을 $`K`$ 배 한 $`K(N-1)`$ 이 within 의 자유도이다. 각 제곱합을 제 자유도로 나누면 평균제곱이 되고, 두 평균제곱의 비가 F 통계량이다. 끝으로 wafer 사이에 차이가 없다는 가정 아래 그 F 가 따르는 $`F(K-1,\ K(N-1))`$ 분포에서 그보다 큰 값이 나올 확률을 구한 것이 p 이다. 이렇게 얻은 값을 Table 1 에 정리했다.
+Wafer 를 인자로 둔 one-way ANOVA 로 wafer 간 성분과 wafer 내 성분을 나눈다. 계산은 네 단계로 이루어진다.
+
+- 첫째, SS: 식 (2) 로 전체 제곱합을 wafer 간 제곱합과 wafer 내 제곱합으로 가른다.
+- 둘째, df: 각 제곱합이 담은 독립한 정보의 개수를 센다. Between 은 wafer 평균 $`K`$ 개에서 총평균 하나를 뺀 $`K-1`$ 이고, within 은 wafer 마다 site $`N`$ 개에서 제 평균 하나를 뺀 $`N-1`$ 을 $`K`$ 배 한 $`K(N-1)`$ 이다.
+- 셋째, MS 와 F: 각 제곱합을 제 자유도로 나눠 평균제곱을 얻고, 두 평균제곱의 비를 F 통계량으로 삼는다.
+- 넷째, p: wafer 사이에 차이가 없다는 가정 아래 그 F 가 따르는 $`F(K-1,\ K(N-1))`$ 분포에서 그보다 큰 값이 나올 확률을 구한다.
+
+이렇게 얻은 값을 Table 1 에 정리했다.
 
 Table 1. One-way ANOVA with wafer as the factor
 
