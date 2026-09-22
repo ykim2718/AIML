@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 108 | Created: 2026-09-01 | Updated: 2026-09-22 02:18 CDT
+Rev. 109 | Created: 2026-09-01 | Updated: 2026-09-22 02:28 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -141,6 +141,8 @@ $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{
 처음 $`n`$ 장에서 얻은 관측값 $`s_{\mu}(1..n)`$ 이 전체에서 얻은 계산값 $`\sigma_{between}`$ 과 같을 경우, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 일 경우에 식 (12) 의 오른쪽 항을 $`\sigma_{between}^2`$ 으로 바꿔 쓸 수 있다. 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (13) 은 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspace{19em} (13) 🌳$$
+
+식 (5) 와 식 (13) 이 갈리는 곳은 within 성분 하나이다. Site 를 $`N`$ 개 평균하면 site 오차 $`e_{ij}`$ 는 서로 독립이라 상쇄되어 분산이 $`N`$ 분의 1 로 줄지만, wafer effect $`\alpha_i`$ 는 그 wafer 의 site $`N`$ 개가 모두 똑같이 지니는 항이라 아무리 평균해도 줄지 않는다.
 
 $`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ 은 식 (9) 를 옮겨 적은 것이라 $`n`$ 과 무관하게 성립한다. 이 항등식을 식 (13) 에 넣어 $`\sigma_{between}^2`$ 자리를 전체 표준편차로 바꾼 것이 식 (14) 이다. 식 (14) 의 오른쪽 형태는 section 3 의 ICC 를 쓴 것이며, 그 정의는 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 이다.
 
