@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 38 | Created: 2026-08-28 | Updated: 2026-09-22 19:20 CDT
+Rev. 39 | Created: 2026-08-28 | Updated: 2026-09-22 19:50 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -515,7 +515,7 @@ $T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 
 
 ## Appendix D. Python Example: Inversion without Model Access
 
-5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 버리고, 남은 표만으로 `P` 가 목표값이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 운전 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
+5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 운전 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
 
 ```python
 import numpy as np
@@ -527,18 +527,19 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 FEATURES = ["A", "B", "C", "D", "E"]
 FREE = ["A", "B"]
-N_ROWS, P_TARGET, N_STARTS = 100, 18.0, 5
+N_ROWS, P_TARGET, N_STARTS = 100, 19.0, 5
 
 
 def make_dataset(n_rows: int = N_ROWS, seed: int = 0) -> pd.DataFrame:
     """Return the historical table with columns A, B, C, D, E, T and a RangeIndex."""
     rng = np.random.default_rng(seed)
-    a = rng.normal(10.0, 2.0, n_rows)           # knob
-    b = rng.normal(5.0, 1.0, n_rows)            # knob
-    c = rng.normal(3.0, 0.8, n_rows)            # measured context
+    # the knob means put the true value near the target, the spreads keep it there
+    a = rng.normal(10.0, 1.2, n_rows)           # knob
+    b = rng.normal(5.8, 0.6, n_rows)            # knob
+    c = rng.normal(3.0, 0.5, n_rows)            # measured context
     d = 0.7 * c + rng.normal(0.0, 0.2, n_rows)  # D follows C
-    e = rng.normal(2.0, 0.5, n_rows)
-    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 2.5, n_rows)
+    e = rng.normal(2.0, 0.3, n_rows)
+    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 1.5, n_rows)
     return pd.DataFrame({"A": a, "B": b, "C": c, "D": d, "E": e, "T": t})
 
 
@@ -620,34 +621,37 @@ print("SPE               :", round(spe(solution), 3), "limit", round(spe_limit, 
 
 ```text
 rows              : 100
-P range           : 13.6 to 21.72
-hidden R2 on T    : 0.7038
-surrogate R2 on P : 0.9996
-P from each start : [18.286, 18.045, 18.045, 18.288, 17.927]
-solved A, B       : [9.569 5.014]
-P at solution     : 18.0452
-T2                : 0.09 limit 5.99
-SPE               : 0.007 limit 3.678
+P range           : 16.54 to 21.4
+hidden R2 on T    : 0.7078
+surrogate R2 on P : 0.9995
+P from each start : [18.786, 18.999, 19.047, 19.047, 18.99]
+solved A, B       : [10.788  5.494]
+P at solution     : 18.9985
+T2                : 0.34 limit 5.99
+SPE               : 0.091 limit 1.345
 ```
 
 `vendor_model` 은 `P` 열을 남긴 뒤 `del` 로 가려진다. 그 뒤의 계산은 표의 `A`–`E` 와 `P` 만 읽으므로, model 은 그대로 있되 이 code 에서 닿을 수 없는 상황이 된다.
 
-세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.9996$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 18.0 에 가장 가까운 다섯 행에서 출발점을 준다. 각 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 를 돌려 얻은 `P` 는 17.927 에서 18.288 까지 흩어지며, 그중 가장 가까운 `A` = 9.569, `B` = 5.014 가 `P` = 18.045 를 낸다.
+세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.9995$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 19.0 에 가장 가까운 다섯 행에서 출발점을 준다. 각 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 를 돌려 얻은 `P` 는 18.786 에서 19.047 까지 흩어지며, 그중 가장 가까운 `A` = 10.788, `B` = 5.494 가 `P` = 18.999 를 낸다.
 
 이 결과를 Fig 7 에 그린다.
 
-<img src="inversion-problem-ko_fig/appendix-d-inversion.png" width="1200" style="max-width: 100%;" alt="Fig 7">
+<img src="inversion-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 7">
 
-Fig 7. Appendix D hidden model against T, the search in the A–B plane, and the surrogate against P
+Fig 7. Appendix D hidden model against T, the search in the A–B plane, and the surrogate against P and T
 
-- (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.704$ 이다. 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
-- (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 18.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.
-- (c) 는 surrogate 의 parity plot 이다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.9996$ 로 점이 1:1 선에 붙어 있다.
+- (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.708$ 이다. 표본이 목표 19.0 을 중심으로 몰려 있어 목표가 데이터 안에 있고, 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
+- (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 19.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.
+- (c) 는 surrogate 가 `P` 를 얼마나 따라가는지 보인다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.9995$ 로 점이 1:1 선에 붙어 있다.
+- (d) 는 같은 surrogate 를 참값 `T` 에 대고 그린 것이다. 가로축이 `T`, 세로축이 surrogate 의 예측이며 $R^{2} = 0.699$ 이다.
 
 (c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
+(d) 의 0.699 는 (a) 의 0.708 에서 (c) 의 재현 오차만큼 깎인 값이다. Surrogate 를 거쳐도 참값에 대한 정확도가 거의 그대로라는 뜻이며, 두 오차 가운데 큰 쪽이 결과를 정한다. 가려진 model 자체가 참값을 $R^{2} = 0.708$ 까지밖에 설명하지 못하므로, surrogate 를 아무리 잘 맞춰도 (d) 는 그 위로 올라가지 못한다.
+
 등고선이 계단 모양이다. Surrogate 가 4.3 의 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
 
-출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 17.927 이나 18.288 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
+출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.786 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
-해는 유효 영역 안에 있다. $T^{2}$ 는 0.09 로 상한 5.99 보다, SPE 는 0.007 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
+해는 유효 영역 안에 있다. $T^{2}$ 는 0.34 로 상한 5.99 보다, SPE 는 0.091 로 상한 1.345 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
