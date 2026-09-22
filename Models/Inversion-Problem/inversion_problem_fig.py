@@ -1,6 +1,6 @@
 """Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.9.0.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.9.1.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -386,7 +386,7 @@ def build_appendix_d_model() -> tuple:
 
     Returns (data, surrogate, pca, t2_limit, spe_limit). data is a pd.DataFrame with a RangeIndex
     and the columns A, B, C, D, E, T, P; P is what the vendor model left behind before it was
-    dropped, and the surrogate is re-fitted on P, never on T.
+    hidden, and the surrogate is re-fitted on P, never on T.
     """
     rng = np.random.default_rng(0)
     n = APPENDIX_D_ROWS
@@ -401,7 +401,7 @@ def build_appendix_d_model() -> tuple:
     features = data[APPENDIX_D_FEATURES].to_numpy()
     vendor_model = GradientBoostingRegressor(random_state=0).fit(features, data['T'].to_numpy())
     data['P'] = vendor_model.predict(features)
-    del vendor_model                            # from here on only the table is available
+    del vendor_model                            # the model still exists, but nothing below reaches it
 
     surrogate = GradientBoostingRegressor(random_state=0).fit(features, data['P'].to_numpy())
     pca = PCA(n_components=2).fit(features)
@@ -412,7 +412,7 @@ def build_appendix_d_model() -> tuple:
 
 
 def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 7: the surrogate replaces the dropped model and the search lands on the target line."""
+    """Fig 7: the surrogate replaces the hidden model and the search lands on the target line."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
     context = features.mean(axis=0)
@@ -477,7 +477,7 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
                label=f'inversion target {APPENDIX_D_TARGET:.1f}')
     ax.set_xlim(span)
     ax.set_ylim(span)
-    ax.set_xlabel('P left behind by the dropped model', fontsize=font_size())
+    ax.set_xlabel('P left behind by the hidden model', fontsize=font_size())
     ax.set_ylabel('surrogate prediction', fontsize=font_size())
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.8), loc='upper left')
