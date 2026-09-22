@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 89 | Created: 2026-09-01 | Updated: 2026-09-21 23:18 CDT
+Rev. 90 | Created: 2026-09-01 | Updated: 2026-09-21 23:37 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -192,6 +192,7 @@ Fig 3. Site value spread of each wafer against the running baseline and the scre
 
 - **ANOVA**: analysis of variance. 전체 제곱합을 원인별 제곱합으로 나누고, 각각을 자유도로 나눈 평균제곱의 비로 원인의 유의성을 판정하는 방법.
 - **bilinear**: 두 인자 각각에 대해 linear 인 성질. Covariance 에서는 첫 인자에 대해 $`\mathrm{Cov}(aX + bY, Z) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(Y, Z)`$ 이고, 둘째 인자에 대해 $`\mathrm{Cov}(X, aZ + bW) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(X, W)`$ 이다.
+- **Covariance**: 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값. 두 인자가 같으면 $`\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y)`$ 이므로, 식 (8) 의 첫째 항은 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이다.
 - **ICC**: intraclass correlation. 전체 분산 중 group 간 분산이 차지하는 비율. 같은 group 에서 뽑은 두 관측치가 얼마나 닮았는지를 0 에서 1 사이로 나타내며, 이 문서의 group 은 wafer 이다. 이 문서가 쓰는 것은 one-way random effects model 의 ICC(1) 이며, two-way model 의 ICC 와는 값이 다르다.
 - **run order**: 자료 파일의 행 순서. 측정 순서를 따르므로 시간 축으로 사용.
 - **running baseline**: wafer 한 장을 판정할 때 쓰는 기준선. 그 wafer 앞에 있으면서 excursion 으로 판정되지 않은 wafer 만으로 구한 within-wafer 성분이다.
