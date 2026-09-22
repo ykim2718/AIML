@@ -20,10 +20,11 @@ Changelog:
 - 0.13.0: drop the sigma_total over root Nn trace from the cumulative figure.
 - 0.14.0: rename the w2w detection point to the w2w threshold.
 - 0.15.0: give the WiW excursion screen its own class.
+- 0.16.0: rename running_screen to excursion.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.15.0.2026.9.22"
+__version__ = "0.16.0.2026.9.22"
 
 import argparse
 import pathlib
@@ -265,7 +266,7 @@ class WaferMeasurements:
         return pd.DataFrame({'sigma_within': within, 'sigma_between': between},
                             index=pd.Index(right_edge, name='n'))
 
-    def running_screen(self, confidence: float = SCREEN_CONFIDENCE, warmup: int = SCREEN_WARMUP) -> pd.DataFrame:
+    def excursion(self, confidence: float = SCREEN_CONFIDENCE, warmup: int = SCREEN_WARMUP) -> pd.DataFrame:
         """Flag each wafer whose site standard deviation exceeds the limit set by the wafers before it."""
         excursion = WiWExcursion(site_variance=self.values.var(axis=1, ddof=1), site_count=self.site_count,
                                  confidence=confidence, warmup=warmup)
@@ -346,7 +347,7 @@ class WaferMeasurements:
 
     def draw_screening(self, figure_path: pathlib.Path, confidence: float = SCREEN_CONFIDENCE) -> None:
         """Draw each wafer's site spread against the running baseline and the limit that judges it."""
-        screen = self.running_screen(confidence=confidence)
+        screen = self.excursion(confidence=confidence)
         warmup = int(screen['limit'].isna().sum())
         exceeded = screen['exceeded'].to_numpy()
 
@@ -446,7 +447,7 @@ if __name__ == '__main__':
     report.to_csv(args.output_folder / 'wafer_report.csv')
     print(f"wafers with inflated within-wafer variance: {int(report['flagged'].sum())}")
     print(f"w2w threshold: n = {measurements.threshold()}")
-    screen = measurements.running_screen()
+    screen = measurements.excursion()
     screen.to_csv(args.output_folder / 'running_screen.csv')
     judged = int(screen['limit'].notna().sum())
     print(f"wafers over the running limit: {int(screen['exceeded'].sum())} of {judged} judged")
