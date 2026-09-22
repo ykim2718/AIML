@@ -1,6 +1,6 @@
 """Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.9.1.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.10.0.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -412,7 +412,7 @@ def build_appendix_d_model() -> tuple:
 
 
 def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 7: the surrogate replaces the hidden model and the search lands on the target line."""
+    """Fig 7: the hidden model against T, the search in the A-B plane, and the surrogate against P."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
     context = features.mean(axis=0)
@@ -449,8 +449,27 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     flat = np.column_stack([grid_a.ravel(), grid_b.ravel()])
     surface = surrogate.predict(np.array([assemble(pair) for pair in flat])).reshape(grid_a.shape)
 
-    fig, axes = plt.subplots(1, 2, figsize=FIGSIZE)
+    p_column = data['P'].to_numpy()
+    t_column = data['T'].to_numpy()
+    p_surrogate = surrogate.predict(features)
+    r2_hidden = 1.0 - float(np.sum((t_column - p_column) ** 2) / np.sum((t_column - t_column.mean()) ** 2))
+    r2_surrogate = float(surrogate.score(features, p_column))
+
+    fig, axes = plt.subplots(1, 3, figsize=(13.0, 4.2))
     ax = axes[0]
+    span = [min(t_column.min(), p_column.min()) - 0.3, max(t_column.max(), p_column.max()) + 0.3]
+    ax.plot(span, span, color='0.5', linestyle='--', linewidth=1.0, label='1:1 line')
+    ax.scatter(t_column, p_column, s=18, color=COLORS[0], label='100 samples')
+    ax.axhline(APPENDIX_D_TARGET, color=COLORS[3], linestyle=':', linewidth=1.2,
+               label=f'inversion target {APPENDIX_D_TARGET:.1f}')
+    ax.set_xlim(span)
+    ax.set_ylim(span)
+    ax.set_xlabel('true value T', fontsize=font_size())
+    ax.set_ylabel('P left behind by the hidden model', fontsize=font_size())
+    ax.tick_params(labelsize=font_size(0.9))
+    ax.legend(fontsize=font_size(0.8), loc='upper left')
+
+    ax = axes[1]
     lines = ax.contour(grid_a, grid_b, surface, levels=8, colors='0.75', linewidths=0.8)
     ax.clabel(lines, fmt='%.0f', fontsize=font_size(0.75))
     target_line = ax.contour(grid_a, grid_b, surface, levels=[APPENDIX_D_TARGET],
@@ -466,10 +485,7 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.8), loc='lower left')
 
-    ax = axes[1]
-    p_column = data['P'].to_numpy()
-    p_surrogate = surrogate.predict(features)
-    r2 = float(surrogate.score(features, p_column))
+    ax = axes[2]
     span = [min(p_column.min(), p_surrogate.min()) - 0.3, max(p_column.max(), p_surrogate.max()) + 0.3]
     ax.plot(span, span, color='0.5', linestyle='--', linewidth=1.0, label='1:1 line')
     ax.scatter(p_column, p_surrogate, s=18, color=COLORS[0], label='100 samples')
@@ -483,8 +499,9 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     ax.legend(fontsize=font_size(0.8), loc='upper left')
 
     fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
-    panel_caption(fig, [axes[0]], '(a) the search moves A and B onto the target line')
-    panel_caption(fig, [axes[1]], f'(b) the surrogate reproduces P, R2 = {r2:.3f}')
+    panel_caption(fig, [axes[0]], f'(a) the hidden model against T, R2 = {r2_hidden:.3f}')
+    panel_caption(fig, [axes[1]], '(b) the search moves A and B onto the target line')
+    panel_caption(fig, [axes[2]], f'(c) the surrogate reproduces P, R2 = {r2_surrogate:.3f}')
     out_path = out_folder / 'appendix-d-inversion.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
@@ -493,7 +510,7 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     # the samples the contours and the parity plot received
     sample_path = out_folder / 'appendix-d-samples.csv'
     data.assign(P_surrogate=p_surrogate).to_csv(sample_path, index=False, float_format='%.6f')
-    print(f'wrote {out_path}, surrogate R2 on P={r2:.4f}')
+    print(f'wrote {out_path}, hidden model R2 on T={r2_hidden:.4f}, surrogate R2 on P={r2_surrogate:.4f}')
     print(f'  start  A, B = {np.round(x_start, 3)}, P={p_start:.4f}')
     print(f'  solved A, B = {np.round(x_solved, 3)}, P={p_solved:.4f}, '
           f'T2={t2(assemble(x_solved)):.2f}/{t2_limit:.2f}, '

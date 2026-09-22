@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 35 | Created: 2026-08-28 | Updated: 2026-09-22 18:05 CDT
+Rev. 36 | Created: 2026-08-28 | Updated: 2026-09-22 18:30 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -632,11 +632,14 @@ SPE               : 0.118 limit 3.678
 
 <img src="inversion-problem-ko_fig/appendix-d-inversion.png" width="1200" style="max-width: 100%;" alt="Fig 7">
 
-Fig 7. Appendix D search in the A–B plane and the surrogate that replaces the hidden model
+Fig 7. Appendix D hidden model against T, the search in the A–B plane, and the surrogate against P
 
-- (a) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 18.0 의 등위선이다. 출발점은 `P` = 18.84 로 그 선 위쪽에 있고, 해는 선 위에 놓인다.
-- (b) 는 surrogate 의 parity plot 이다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.999$ 로 점이 1:1 선에 붙어 있다.
+- (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.998$ 이다. 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
+- (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 18.0 의 등위선이다. 출발점은 `P` = 18.84 로 그 선 위쪽에 있고, 해는 선 위에 놓인다.
+- (c) 는 surrogate 의 parity plot 이다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.999$ 로 점이 1:1 선에 붙어 있다.
+
+(c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
 등고선이 계단 모양이다. Tree 하나는 입력 공간을 문턱값으로 잘라 상자로 나누고 상자마다 저장된 값 하나를 돌려주며, gradient boosting 은 그런 tree 의 값을 더한다. 그래서 예측은 문턱값을 넘을 때만 바뀌고 문턱값 사이에서는 상수이며, 4.3 이 말한 대로 gradient 가 0 이거나 정의되지 않아 탐색으로 푼다.
 
-해는 유효 영역 안에 있다. $T^{2}$ 는 0.02 로 상한 5.99 보다, SPE 는 0.118 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 원 model 이 이 조건에서 실제로 낼 값과는 (b) 가 보이는 재현 오차만큼 벌어질 수 있다.
+해는 유효 영역 안에 있다. $T^{2}$ 는 0.02 로 상한 5.99 보다, SPE 는 0.118 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
