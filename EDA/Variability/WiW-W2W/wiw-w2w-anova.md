@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 82 | Created: 2026-09-01 | Updated: 2026-09-21 21:04 CDT
+Rev. 83 | Created: 2026-09-01 | Updated: 2026-09-21 21:06 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -132,7 +132,7 @@ $$\mathrm{Var}(\bar{X}_1, \dots, \bar{X}_n) = s_{\mu}^2(1..n) + \frac{\sigma_{wi
 
 $$\sigma_{\mu_n} = \sqrt{\frac{\sigma_{within}^2}{N} + s_{\mu}^2(1..n)} \hspace{19em} (11)$$
 
-처음 $`n`$ 장에서 얻은 관측값 $`s_{\mu}(1..n)`$ 이 261 장 전체에서 얻은 계산값 $`\sigma_{between}`$ 과 같을 경우, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 일 경우에 식 (11) 의 오른쪽 항을 $`\sigma_{between}^2`$ 으로 바꿔 쓸 수 있다. 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (12) 는 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
+처음 $`n`$ 장에서 얻은 관측값 $`s_{\mu}(1..n)`$ 이 전체에서 얻은 계산값 $`\sigma_{between}`$ 과 같을 경우, 곧 $`s_{\mu}^2(1..n) = \sigma_{between}^2`$ 일 경우에 식 (11) 의 오른쪽 항을 $`\sigma_{between}^2`$ 으로 바꿔 쓸 수 있다. 이때 이 조건을 만족하는 $`n`$ 을 $`K`$ 로 하여, 식 (12) 는 아래 첨자를 $`\mu_n`$ 이 아니라 $`\mu_K`$ 로 쓴다.
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspace{19em} (12) 🌳$$
 
