@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 29 | Created: 2026-08-28 | Updated: 2026-09-04 20:10 UTC
+Rev. 30 | Created: 2026-08-28 | Updated: 2026-09-22 15:20 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리한다.
 
@@ -9,7 +9,7 @@ Rev. 29 | Created: 2026-08-28 | Updated: 2026-09-04 20:10 UTC
 
 Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{y} \in \mathbb{R}^M$ 을 계산하는 문제이며, 물리 model 이든 데이터로 학습한 model 이든 $\mathbf{y} = f(\mathbf{x})$ 로 쓴다. Inverse problem 은 그 반대 방향으로, 관측되었거나 목표로 정한 $\mathbf{y}^{\ast}$ 가 주어졌을 때 그것을 만들어 내는 $\mathbf{x}$ 를 찾는 문제이다.
 
-두 문제는 방향만 다른 것이 아니라 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
+두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
 
 - 관측형 inverse problem 은 측정된 $\mathbf{y}^{\ast}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
 - 설계형 inverse problem 은 목표 품질 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 품질을 내는 조건을 찾는다. Product design 과 inverse design 이 여기에 속한다.
@@ -30,18 +30,18 @@ Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 
 
 Table 1. Terms adjacent to model inversion
 
-| # | Term | Question it answers | Difference from model inversion |
-| --- | --- | --- | --- |
-| 1 | Model inversion | 목표 출력을 내는 입력은 무엇인가 | 기준이 되는 문제이다 |
-| 2 | Inverse design | 목표 성능을 갖는 설계안은 무엇인가 | 문제의 이름이며, model inversion 은 그 해법 중 하나이다 |
-| 3 | Calibration | 관측을 설명하는 model parameter 는 무엇인가 | 되찾는 대상이 입력이 아니라 model parameter 이다 |
-| 4 | Optimization | 목적 함수를 가장 좋게 하는 입력은 무엇인가 | 목표값 추종이 아니라 극값 탐색이며, 잔차를 목적 함수로 두면 inversion 을 포함한다 |
-| 5 | Attribution | 출력이 어느 입력에 얼마나 반응하는가 | 국소 기여도를 설명할 뿐 목표를 만족하는 입력을 제시하지 않는다 |
-| 6 | Model inversion attack | 학습 데이터에 무엇이 있었는가 | 목적이 설계가 아니라 privacy 침해이며, 복원 대상이 학습 표본이다 |
+|   #   |          Term          |             Question it answers             |                     Difference from model inversion                     |
+| :---: | :--------------------: | :-----------------------------------------: | :---------------------------------------------------------------------: |
+|   1   |    Model inversion     |      목표 출력을 내는 입력은 무엇인가       |                            기준이 되는 문제                             |
+|   2   |     Inverse design     |     목표 성능을 갖는 설계안은 무엇인가      |            문제의 이름이며, model inversion 은 그 해법 하나             |
+|   3   |      Calibration       | 관측을 설명하는 model parameter 는 무엇인가 |                되찾는 대상이 입력이 아닌 model parameter                |
+|   4   |      Optimization      | 목적 함수를 가장 좋게 하는 입력은 무엇인가  | 목표값 추종이 아닌 극값 탐색. 잔차를 목적 함수로 두면 inversion 을 포함 |
+|   5   |      Attribution       |    출력이 어느 입력에 얼마나 반응하는가     |        국소 기여도의 설명. 목표를 만족하는 입력은 제시하지 않음         |
+|   6   | Model inversion attack |        학습 데이터에 무엇이 있었는가        |         목적이 설계가 아닌 privacy 침해. 복원 대상은 학습 표본          |
 
 ## 2. Taxonomy
 
-Inverse problem 의 해법은 Fig 1 의 다섯 축으로 나뉜다. 한 방법은 각 축에서 하나씩 고른 조합이며, 축은 서로 배타적이지 않다.
+Inverse problem 의 해법을 가르는 축을 Fig 1 에 정리한다.
 
 ```
 Inverse problem (given a target y*, find the input x)
@@ -74,15 +74,21 @@ Inverse problem (given a target y*, find the input x)
 
 Fig 1. Taxonomy of inverse problem solution approaches
 
+한 방법은 다섯 축에서 하나씩 고른 조합이며, 축은 서로 배타적이지 않다. 이어지는 다섯 절이 축마다 그 선택지를 설명한다.
+
 ### 2.1 Formulation (How to pose)
 
 Deterministic 정식화는 잔차를 최소화하는 제약 최적화로 문제를 적는다.
 
-$$\hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2} + \lambda R(\mathbf{x})$$
+```math
+\hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2} + \lambda R(\mathbf{x}) \hspace{19em} (1)
+```
 
 여기서 $R$ 은 regularization 항이고 $\lambda$ 는 그 세기이다. Bayesian 정식화는 하나의 해 대신 사후분포를 구한다.
 
-$$p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x}) p(\mathbf{x})$$
+```math
+p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x}) p(\mathbf{x}) \hspace{19em} (2)
+```
 
 두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [[3](#ref-3)]. Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 다중해와 불확실성을 그대로 보여 준다.
 
@@ -113,18 +119,26 @@ PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 �
 
 PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
 
-$$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F}$$
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
+```
 
 목표 품질 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
 
-$$\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$$
+```math
+\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
+```
 
 $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
 
 - Null space 는 품질을 바꾸지 않고 움직일 수 있는 운전 자유도이다. 원가, 처리량, 에너지 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [[5](#ref-5)].
 
-$$T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2}$$
+```math
+T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
+```
+
+두 상한이 score 평면에서 null space 를 어디까지 허용하는지를 Fig 2 에 그린다.
 
 ```
         t2
@@ -146,7 +160,7 @@ $$T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVe
 
 Fig 2. Null space and the validity region in the score plane
 
-이 절차를 그대로 실행하는 예시는 [Appendix B](#appendix-b-python-example-pls-model-inversion) 에 있다.
+타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖의 몫은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix B](#appendix-b-python-example-pls-model-inversion) 에 있다.
 
 ### 3.2 Design space and product transfer
 
@@ -159,27 +173,29 @@ Fig 2. Null space and the validity region in the score plane
 
 ## 4. Model-Specific Inversion Methods
 
-Model 을 어떻게 뒤집을 수 있는지는 그 model 의 구조가 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 그 어느 쪽도 아닌 model 은 탐색에 기댄다. Table 2 가 model 별 방법을 정리하고, 이어지는 절이 계열별로 설명한다.
+Model 별 inversion 방법을 Table 2 에 정리한다.
 
 Table 2. Inversion method by model family
 
-| # | Model | Inversion method | Characteristics |
-| --- | --- | --- | --- |
-| 1 | PLS / PCR | 해석적 역해와 null space | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다 |
-| 2 | OLS / Ridge | Pseudo-inverse | 잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다 |
-| 3 | PCA | Pre-image problem | 출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다 |
-| 4 | Kernel PLS | Latent space 역해와 pre-image | 비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다 |
-| 5 | GP | 사후분포 기반 역설계 | 불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다 |
-| 6 | Random forest / GBM | Surrogate search, TreeSHAP 기반 국소 선형화 | 미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다 |
-| 7 | Neural network | 입력에 대한 역전파 | 가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다 |
-| 8 | Autoencoder / VAE | Latent space 탐색 후 디코딩 | 생성 model 방식의 역설계이며 제조 분야로 확산 중이다 |
-| 9 | Invertible NN / Normalizing flow | 구조적으로 양방향 | cINN 은 사후분포를 한 번의 forward 로 준다 |
-| 10 | Diffusion model | 사후 sampling | 잡음이 있는 비선형 문제에서 다중해를 표본으로 얻는다 |
-| 11 | Model-agnostic | 수치 최적화 $\min \lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ 와 제약 | 어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다 |
+|   #   |              Model               |              Inversion method               |                                                                          Characteristics                                                                          |
+| :---: | :------------------------------: | :-----------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|   1   |            PLS / PCR             |          해석적 역해와 null space           | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다 |
+|   2   |           OLS / Ridge            |               Pseudo-inverse                |                                    잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                    |
+|   3   |               PCA                |              Pre-image problem              |                                출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                 |
+|   4   |            Kernel PLS            |        Latent space 역해와 pre-image        |                                          비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                           |
+|   5   |                GP                |            사후분포 기반 역설계             |                                                    불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                    |
+|   6   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |  미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다   |
+|   7   |          Neural network          |             입력에 대한 역전파              |                                       가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                        |
+|   8   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                       생성 model 방식의 역설계이며 제조 분야로 확산 중이다                                                        |
+|   9   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                            cINN 은 사후분포를 한 번의 forward 로 준다                                                             |
+|  10   |         Diffusion model          |                사후 sampling                |                                                       잡음이 있는 비선형 문제에서 다중해를 표본으로 얻는다                                                        |
+|  11   |          Model-agnostic          |     제약이 있는 numerical optimization      |              어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다              |
+
+Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 이어지는 여섯 절이 계열별로 설명한다.
 
 ### 4.1 Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 결정적인 차이는 해가 놓이는 자리에 있다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 공정에서 OLS 역해가 물리적으로 불가능한 조합을 내놓는 이유가 여기에 있다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 결정적인 차이는 해가 놓이는 자리에 있다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 공정에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
 
 ### 4.2 Kernel and Gaussian process models
 
@@ -203,7 +219,7 @@ Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가�
 
 ## 5. Solution Validity
 
-Inversion 의 결과는 model 이 참이라는 가정 아래의 제안이며, 그대로 실행할 답이 아니다. 다음 네 가지를 확인해야 한다.
+Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므로, 실행 전에 다음 네 가지를 확인한다.
 
 - 외삽: model 은 historical data 가 덮은 영역에서만 신뢰할 수 있다. $T^{2}$ 는 그 영역 안에서 중심으로부터 얼마나 멀리 있는지를, SPE 는 영역이 이루는 면에서 얼마나 떨어졌는지를 잰다. 둘 중 하나만 보면 상관 구조가 깨진 해를 놓친다.
 - 다중해: 답이 하나가 아니면 하나만 골라 보고하지 않는다. Null space 구간이나 사후분포처럼 답의 집합을 보여 주는 편이 판단에 도움이 된다.
@@ -214,15 +230,15 @@ Inversion 의 결과는 model 이 참이라는 가정 아래의 제안이며, �
 
 Table 3. Libraries for model inversion
 
-| Library | Role | Note |
-| --- | --- | --- |
-| NumPy / SciPy | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
-| scikit-learn | Latent variable model 과 유효 영역 | `PLSRegression`, `PCA`, `GaussianProcessRegressor` |
-| PyTorch | 입력에 대한 gradient | 입력 tensor 에 gradient 를 켜고 역전파한다 |
-| BoTorch / GPyTorch | GP 기반 Bayesian optimization | Acquisition function 최적화를 제공한다 |
-| SHAP | Tree model 의 국소 선형화 | TreeSHAP 으로 기여도를 정확히 계산한다 |
-| FrEIA | Invertible neural network | cINN 구조를 조립한다 |
-| PyMC / emcee | 사후분포 sampling | Bayesian 정식화의 표본 기반 해법이다 |
+|      Library       |                  Role                   |                                   Note                                    |
+| :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
+|   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
+|    scikit-learn    |   Latent variable model 과 유효 영역    |            `PLSRegression`, `PCA`, `GaussianProcessRegressor`             |
+|      PyTorch       |          입력에 대한 gradient           |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
+| BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |                  Acquisition function 최적화를 제공한다                   |
+|        SHAP        |        Tree model 의 국소 선형화        |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
+|       FrEIA        |        Invertible neural network        |                           cINN 구조를 조립한다                            |
+|    PyMC / emcee    |            사후분포 sampling            |                   Bayesian 정식화의 표본 기반 해법이다                    |
 
 ## References
 
@@ -364,25 +380,28 @@ Fig 3 (b) 는 같은 표본의 두 process input 을 그린 것이다. 등고선
 
 Fig 3 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
-이 예시의 model 은 $R^{2} = 0.518$, RMSE 1.38 로 잘 맞는 편이 아니다. 잔차의 큰 몫은 (a) 의 추세이며, model 이 보지 못하는 변수가 있으면 이렇게 남는다. 목표 2.0 은 표본이 덮는 $-4.1$ 에서 $6.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
+이 예시의 model 은 $R^{2} = 0.518$, RMSE 1.38 이다. 잔차의 큰 몫은 (a) 의 추세이며, model 이 보지 못하는 변수가 있으면 그만큼 설명되지 않고 남는다. 목표 2.0 은 표본이 덮는 $-4.1$ 에서 $6.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
-Code 가 만든 `x_alt` 37 개는 두 성분이 모두 다른 입력이지만 예측값은 전부 2.000 이다.
+Code 가 만든 `x_alt` 37 개를 Fig 4 에 그린다.
 
 <img src="inversion-problem_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Predicted value and inputs along the null space
 
-Fig 4 는 이 결과를 그린 것이다. 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다. 왼쪽의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이며, 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표에 붙어 있다. 오른쪽은 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, minimum-norm solution 은 그 직선 위의 한 점일 뿐이다.
+두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다.
+
+- (a) 의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이다. 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표 2.000 에 붙어 있다.
+- (b) 는 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, 주황으로 표시한 minimum-norm solution 은 그 직선 위의 한 점이다.
 
 Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
 
-공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 특별히 좋은 해라서가 아니라 유일하게 정해지는 기준점이라 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 4 처럼 null space 를 따라 옮겨 간다.
+공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 4 처럼 null space 를 따라 옮겨 간다.
 
-Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 4 오른쪽의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
+Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 4 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
-해집합이 직선을 이루는 것은 model 이 입력에 대해 선형이기 때문이다. 예측은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다. 세 이름의 관계는 해집합 = minimum-norm solution + null space 이다. Null space 는 원점을 지나는 방향의 집합이고, 그것을 $\mathbf{x}^{\ast}$ 만큼 평행이동한 직선이 해집합이며, minimum-norm solution 은 그 직선 위의 한 점이다.
+Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다. 세 이름의 관계는 해집합 = minimum-norm solution + null space 이다. Null space 는 원점을 지나는 방향의 집합이고, 그것을 $\mathbf{x}^{\ast}$ 만큼 평행이동한 직선이 해집합이며, minimum-norm solution 은 그 직선 위의 한 점이다.
 
-Fig 3 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 인데, 그 예측에는 sample order 가 들어 있지 않기 때문이다. 추세는 잔차로 남아 Fig 3 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
+해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 3 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 3 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
 
 입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix B 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
 
@@ -467,12 +486,15 @@ Fig 5 (a) 는 측정값을 순서대로 그린 것이다. Appendix B 와 같은 
 
 Fig 5 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
 
-Fig 5 (c) 는 gradient boosting model 의 parity plot 이다. $R^{2} = 0.951$, RMSE 0.44 로 Appendix B 의 PLS 보다 훨씬 잘 맞는데, 같은 값을 tree 가 학습 표본에 맞춰 잘게 나누어 담기 때문이다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 이보다 낮다.
+Fig 5 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix B 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
 
-SPE 제약을 빼면 탐색이 입력들의 상관을 깨는 쪽으로 빠져나간다. 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다.
+두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 6 에 나란히 그린다.
 
 <img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 6">
 
 Fig 6. Constrained solution against the validity limits
 
-Fig 6 이 그 차이를 보인다. 왼쪽의 `x2`–`x4` 평면에서 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 앉아 목표 1.0 을 맞추지만, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 서고 값도 0.65 에 그친다. 오른쪽은 두 해의 통계량을 각자의 상한으로 나눈 값이며, $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이다. $T^{2}$ 는 두 해 모두 상한 아래이므로, 그 하나만 보면 이 이탈을 잡아내지 못한다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
+- (a) 는 `x2`–`x4` 평면이다. 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 놓여 목표 1.0 을 맞추고, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 놓이며 값도 0.65 에 그친다.
+- (b) 는 두 해의 통계량을 각자의 상한으로 나눈 값이다. $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이고, $T^{2}$ 는 두 해 모두 상한 아래이다.
+
+$T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
