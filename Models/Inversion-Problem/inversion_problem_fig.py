@@ -1,6 +1,6 @@
 """Draw the Appendix B and Appendix C figures of inversion-problem.md."""
 __author__ = 'yRocket'
-__version__ = "0.8.0.2026.8.29"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.8.1.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -22,7 +22,7 @@ __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'panel_caption',
 
 matplotlib.use('Agg')
 
-DEFAULT_OUTPUT_FOLDER: pathlib.Path = pathlib.Path(__file__).parent / 'inversion-problem_fig'
+DEFAULT_OUTPUT_FOLDER: pathlib.Path = pathlib.Path(__file__).parent / 'inversion-problem-ko_fig'
 FIGSIZE: tuple = (9.0, 4.0)
 REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0

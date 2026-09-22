@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 31 | Created: 2026-08-28 | Updated: 2026-09-22 16:05 CDT
+Rev. 32 | Created: 2026-08-28 | Updated: 2026-09-22 16:40 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -227,7 +227,7 @@ Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y
 
 유효 영역은 세 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 6 의 검증을 그대로 쓴다.
 
-한계는 쌍이 덮는 영역이다. Surrogate 와 inverse map 은 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다.
+한계는 쌍이 덮는 영역이다. Surrogate 와 inverse map 은 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다. 세 방법을 이어 붙인 예시는 [Appendix D](#appendix-d-python-example-inversion-without-model-access) 에 있다.
 
 ## 6. Solution Validity
 
@@ -298,6 +298,7 @@ Table 3. Libraries for model inversion
 - **Bayesian optimization**: 사후분포를 가진 surrogate model 과 acquisition function 으로 blackbox 함수의 최적점을 반복 탐색하는 방법이다.
 - **cINN**: 조건을 입력으로 받는 invertible neural network 이며, 조건부 사후분포에서 표본을 뽑는다.
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
+- **COBYLA**: 선형 근사를 갱신하며 제약이 있는 문제를 푸는 derivative-free optimization 방법이며 constrained optimization by linear approximations 의 약자이다.
 - **Derivative-free optimization**: 목적 함수의 gradient 없이 함수값만으로 해를 찾는 최적화이다.
 - **Design space**: 품질 규격을 만족하는 것으로 확인된 입력 영역이다.
 - **Forward problem**: 입력에서 출력을 계산하는 문제이다.
@@ -335,7 +336,7 @@ Table 3. Libraries for model inversion
 
 ## Appendix B. Python Example: PLS Model Inversion
 
-3.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix B 와 Appendix C 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 만 있으면 그대로 돌아간다.
+3.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix B, C, D 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix D 의 pandas 만 있으면 그대로 돌아간다.
 
 ```python
 import numpy as np
@@ -381,7 +382,7 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 뒤집기 전에 뒤집을 model 부터 본다.
 
-<img src="inversion-problem_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 3">
+<img src="inversion-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
@@ -397,7 +398,7 @@ Fig 3 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 
 
 Code 가 만든 `x_alt` 37 개를 Fig 4 에 그린다.
 
-<img src="inversion-problem_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 4">
+<img src="inversion-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Predicted value and inputs along the null space
 
@@ -491,7 +492,7 @@ print("x_sol       :", np.round(x_sol, 3))
 
 뒤집기 전에 이 예시의 데이터도 같은 방식으로 본다.
 
-<img src="inversion-problem_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 5">
+<img src="inversion-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 5">
 
 Fig 5. Appendix C measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
@@ -503,7 +504,7 @@ Fig 5 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, R
 
 두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 6 에 나란히 그린다.
 
-<img src="inversion-problem_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 6">
+<img src="inversion-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 6">
 
 Fig 6. Constrained solution against the validity limits
 
@@ -511,3 +512,120 @@ Fig 6. Constrained solution against the validity limits
 - (b) 는 두 해의 통계량을 각자의 상한으로 나눈 값이다. $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이고, $T^{2}$ 는 두 해 모두 상한 아래이다.
 
 $T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 6 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
+
+## Appendix D. Python Example: Inversion without Model Access
+
+5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 버리고, 남은 표만으로 `P` 가 목표값이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 운전 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.optimize import minimize
+from scipy.stats import chi2
+from sklearn.decomposition import PCA
+from sklearn.ensemble import GradientBoostingRegressor
+
+FEATURES = ["A", "B", "C", "D", "E"]
+FREE = ["A", "B"]
+N_ROWS, P_TARGET = 100, 18.0
+
+
+def make_dataset(n_rows: int = N_ROWS, seed: int = 0) -> pd.DataFrame:
+    """Return the historical table with columns A, B, C, D, E, T and a RangeIndex."""
+    rng = np.random.default_rng(seed)
+    a = rng.normal(10.0, 2.0, n_rows)           # knob
+    b = rng.normal(5.0, 1.0, n_rows)            # knob
+    c = rng.normal(3.0, 0.8, n_rows)            # measured context
+    d = 0.7 * c + rng.normal(0.0, 0.2, n_rows)  # D follows C
+    e = rng.normal(2.0, 0.5, n_rows)
+    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 0.6, n_rows)
+    return pd.DataFrame({"A": a, "B": b, "C": c, "D": d, "E": e, "T": t})
+
+
+data = make_dataset()
+X = data[FEATURES].to_numpy()
+
+# the model we may call once: it leaves behind the column P, not itself
+vendor_model = GradientBoostingRegressor(random_state=0).fit(X, data["T"].to_numpy())
+data["P"] = vendor_model.predict(X)
+del vendor_model
+
+# 1. surrogate re-fitting: learn P from the pairs, not T
+surrogate = GradientBoostingRegressor(random_state=0).fit(X, data["P"].to_numpy())
+
+# the validity domain comes from the inputs alone, so it needs no model access
+pca = PCA(n_components=2).fit(X)
+t2_limit = chi2.ppf(0.95, df=2)
+spe_limit = float(np.quantile(np.sum((X - pca.inverse_transform(pca.transform(X))) ** 2, axis=1), 0.95))
+
+
+def t2(x: np.ndarray) -> float:
+    """Distance from the centre inside the model plane."""
+    return float(np.sum(pca.transform(x[None, :])[0] ** 2 / pca.explained_variance_))
+
+
+def spe(x: np.ndarray) -> float:
+    """Squared distance to the model plane: broken input correlation."""
+    return float(np.sum((x - pca.inverse_transform(pca.transform(x[None, :]))[0]) ** 2))
+
+
+# the context C, D, E is held at the condition we run at; only A and B are ours to set
+context = X.mean(axis=0)
+free_index = [FEATURES.index(name) for name in FREE]
+
+
+def assemble(free_values: np.ndarray) -> np.ndarray:
+    """Put the free A, B back into a full A..E row, the context features held at their mean."""
+    row = context.copy()
+    row[free_index] = free_values
+    return row
+
+
+def objective(free_values: np.ndarray) -> float:
+    return float((surrogate.predict(assemble(free_values)[None, :])[0] - P_TARGET) ** 2)
+
+
+# 2. nearest-sample lookup supplies the starting A, B
+start = data.iloc[int((data["P"] - P_TARGET).abs().idxmin())]
+
+# 3. derivative-free search over A and B, held inside the validity domain
+result = minimize(
+    objective,
+    x0=start[FREE].to_numpy(dtype=float),
+    method="COBYLA",
+    constraints=[
+        {"type": "ineq", "fun": lambda v: t2_limit - t2(assemble(v))},
+        {"type": "ineq", "fun": lambda v: spe_limit - spe(assemble(v))},
+    ],
+    options={"maxiter": 3000},
+)
+
+solution = assemble(result.x)
+print("rows              :", len(data))
+print("P range           :", round(float(data["P"].min()), 2), "to", round(float(data["P"].max()), 2))
+print("surrogate R2 on P :", round(float(surrogate.score(X, data["P"].to_numpy())), 4))
+print("start A, B        :", np.round(start[FREE].to_numpy(dtype=float), 3))
+print("solved A, B       :", np.round(result.x, 3))
+print("P at solution     :", round(float(surrogate.predict(solution[None, :])[0]), 4))
+print("T2                :", round(t2(solution), 2), "limit", round(t2_limit, 2))
+print("SPE               :", round(spe(solution), 3), "limit", round(spe_limit, 3))
+```
+
+실행 결과는 아래와 같다.
+
+```text
+rows              : 100
+P range           : 12.51 to 23.33
+surrogate R2 on P : 0.999
+start A, B        : [11.392  4.894]
+solved A, B       : [10.432  4.616]
+P at solution     : 18.0627
+T2                : 0.02 limit 5.99
+SPE               : 0.118 limit 3.678
+```
+
+`vendor_model` 은 `P` 열을 남기고 `del` 로 버려진다. 그 뒤의 계산은 표의 `A`–`E` 와 `P` 만 읽으므로, 원 model 이 어떤 구조였는지 알 수 없는 상황과 같다.
+
+세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.999$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 18.0 에 가장 가까운 행에서 출발점 `A` = 11.392, `B` = 4.894 를 준다. 그 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 가 `A` = 10.432, `B` = 4.616 으로 옮겨 `P` = 18.063 을 맞춘다.
+
+해는 유효 영역 안에 있다. $T^{2}$ 는 0.02 로 상한 5.99 보다, SPE 는 0.118 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 원 model 이 이 조건에서 실제로 낼 값과는 surrogate 의 재현 오차만큼 벌어질 수 있다.
