@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 95 | Created: 2026-09-01 | Updated: 2026-09-21 23:55 CDT
+Rev. 96 | Created: 2026-09-01 | Updated: 2026-09-22 00:01 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -150,7 +150,7 @@ Table 2 의 wafer-to-wafer 성분 $`\sigma_{between}`$ 에 대해 $`\sigma_{with
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N}} = S_{\mathrm{total}} \sqrt{\frac{1 + (N-1) \mathrm{ICC}}{N}} \hspace{19em} (15)$$
 
-Wafer effect 가 모두 0 이라 $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (14) 와 식 (15) 에서 wafer 평균의 산포는 표준오차만 남는다. 관측한 wafer 평균은 이때도 site 잡음만큼 흩어지므로 0 이 아니다.
+Wafer effect 가 모두 0 일 경우에, $`\sigma_{between} = 0`$, 곧 ICC = 0 이면 식 (14) 와 식 (15) 에서 wafer 평균의 산포는 표준오차만 남는다. 관측한 wafer 평균은 이때도 site 잡음만큼 흩어지므로 0 이 아니다.
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (16)$$
 
