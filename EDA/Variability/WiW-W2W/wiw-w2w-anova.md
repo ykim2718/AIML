@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 103 | Created: 2026-09-01 | Updated: 2026-09-22 01:44 CDT
+Rev. 104 | Created: 2026-09-01 | Updated: 2026-09-22 01:52 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -225,7 +225,11 @@ $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^
 
 $$\sum_{j=1}^{N} (X_{ij} - \bar{X}_i) = \sum_{j=1}^{N} X_{ij} - N \bar{X}_i = 0 \hspace{19em} (20)$$
 
-둘째 항의 $`j`$ 에 대한 합은 같은 값을 $`N`$ 번 더한 것이라 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 이 된다. 남는 두 항이 식 (2) 의 우변이고, 그 세 제곱합에 이름을 붙인 것이 식 (1) 이다. 이 유도는 자료에 아무 가정도 두지 않으므로, 식 (1) 은 어느 표에서나 성립한다.
+둘째 항의 $`j`$ 에 대한 합은 같은 값을 $`N`$ 번 더한 것이라 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 이 된다. 남는 두 항이 식 (2) 의 우변이다. 세 제곱합에는 아래 이름이 붙는다.
+
+$$\mathrm{SST} = \sum_{i}\sum_{j} (X_{ij} - \bar{X})^2, \qquad \mathrm{SSW} = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2, \qquad \mathrm{SSB} = N \sum_{i} (\bar{X}_i - \bar{X})^2 \hspace{19em} (21)$$
+
+식 (21) 의 세 이름을 식 (2) 에 넣으면 식 (1) 이 된다. 이 유도는 자료에 아무 가정도 두지 않으므로, 식 (1) 은 어느 표에서나 성립한다.
 
 ## Appendix C. Limits of the Decomposition
 
@@ -233,27 +237,27 @@ $$\sum_{j=1}^{N} (X_{ij} - \bar{X}_i) = \sum_{j=1}^{N} X_{ij} - N \bar{X}_i = 0 
 
 Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래와 같다.
 
-$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (21)$$
+$$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (22)$$
 
 분자와 분모가 모두 $`KN`$ 에서 시작하므로, 1 에서 얼마나 모자라는지를 보는 편이 빠르다.
 
-$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (22)$$
+$$1 - a = \frac{K-1}{KN-1}, \qquad 1 - b = \frac{N-1}{KN-1} \hspace{19em} (23)$$
 
 두 결손항은 각각 한쪽 크기에만 매인다. $`1-a`$ 의 분자와 분모를 $`K`$ 로, $`1-b`$ 의 분자와 분모를 $`N`$ 으로 나누면 아래 꼴이 된다.
 
-$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (23)$$
+$$1 - a = \frac{1 - 1/K}{N - 1/K}, \qquad 1 - b = \frac{1 - 1/N}{K - 1/N} \hspace{19em} (24)$$
 
 $`K`$ 를 아무리 키워도 $`1-a`$ 는 $`1/N`$ 에서 멈추고, $`N`$ 을 아무리 키워도 $`1-b`$ 는 $`1/K`$ 에서 멈춘다.
 
-$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (24)$$
+$$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (25)$$
 
 곧 한쪽만 키운 극한에서 계수는 아래 값에 멈춘다.
 
-$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (25)$$
+$$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (26)$$
 
 따라서 $`a`$ 를 1 로 보내는 것은 wafer 당 site 수 $`N`$ 이고, $`b`$ 를 1 로 보내는 것은 wafer 수 $`K`$ 이며, 둘이 함께 커져야 두 계수가 같이 1 이 된다.
 
-$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (26)$$
+$$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N \to \infty} S_{\mathrm{total}}^2 = \overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2 \hspace{19em} (27)$$
 
 이 문서의 $`K = 200`$, $`N = 13`$ 에서는 $`1 - a = 199/2599 = 0.0766`$ 으로 $`1/N = 0.0769`$ 에 거의 같고, $`1 - b = 12/2599 = 0.0046`$ 으로 $`1/K = 0.0050`$ 에 거의 같다. 즉 $`b`$ 는 이미 1 로 보아도 되지만 $`a`$ 는 7.7% 모자라며, site 를 13 개만 재는 한 이 결손은 wafer 를 아무리 더 재도 줄지 않는다. 이 자료에서 $`\overline{S_{\mathrm{within}}^2} = 226.27`$ 과 $`S_{\mathrm{between}}^2 = 903.77`$ 을 그냥 더하면 $`S_{\mathrm{total}} = 33.62`$ 가 되어 관측값 33.29 를 넘지만, 두 계수를 붙이면 관측값과 같아진다.
 
@@ -263,7 +267,7 @@ $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N
 
 두 site 오차의 상관을 $`\rho`$ 로 두면 wafer 평균에 남는 잡음은 $`\mathrm{Var}(\bar{e}_i) = \sigma_{within}^2 [1 + (N-1)\rho] / N`$ 이며, 식 (10) 은 $`\rho = 0`$ 인 경우이다. $`\rho \gt 0`$ 이면 실제 잡음 바닥이 식 (13) 의 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$ 보다 크고, 덜 빼는 만큼 오른쪽 항 $`s_{\mu}(1..n)`$ 이 부풀려져 section 4.2 의 w2w detection point 가 실제보다 이른 $`n`$ 에서 잡힌다.
 
-같은 상관이 section 4.3 의 한계에도 걸린다. 식 (35) 가 자유도 $`N-1`$ 의 $`\chi^2`$ 를 쓰는 것은 한 wafer 의 site $`N`$ 개가 독립한 정보 $`N-1`$ 개를 낸다는 뜻인데, site 끼리 닮으면 실효 자유도가 그보다 작아 한계가 좁게 잡히고 WiW excursion 판정이 실제보다 민감해진다.
+같은 상관이 section 4.3 의 한계에도 걸린다. 식 (36) 가 자유도 $`N-1`$ 의 $`\chi^2`$ 를 쓰는 것은 한 wafer 의 site $`N`$ 개가 독립한 정보 $`N-1`$ 개를 낸다는 뜻인데, site 끼리 닮으면 실효 자유도가 그보다 작아 한계가 좁게 잡히고 WiW excursion 판정이 실제보다 민감해진다.
 
 $`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 필요하며, 이 문서의 자료로는 그 값을 대지 않았다.
 
@@ -281,19 +285,19 @@ $`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 �
 
 식 (14) 는 within 성분으로 적혀 있다.
 
-$$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (27)$$
+$$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^2 \hspace{19em} (28)$$
 
 식 (9) 에서 $`S_{\mathrm{total}}^2 = \sigma_{within}^2 + \sigma_{between}^2`$ 이므로 within 성분을 나머지 둘로 바꿀 수 있다.
 
-$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (28)$$
+$$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (29)$$
 
 이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래와 같다.
 
-$$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (29)$$
+$$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (30)$$
 
 ICC 의 정의 $`\mathrm{ICC} = \sigma_{between}^2 / S_{\mathrm{total}}^2`$ 를 넣어 $`\sigma_{between}^2`$ 을 지우면 두 번째 형태가 나오고, 제곱근을 취한 것이 식 (15) 이다.
 
-$$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (30)$$
+$$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \frac{1 + (N-1) \mathrm{ICC}}{N} \hspace{19em} (31)$$
 
 $`N = 1`$ 이면 두 형태 모두 $`\hat{\sigma}_{\mu_K} = S_{\mathrm{total}}`$ 이 되고, $`N`$ 이 커지면 $`\hat{\sigma}_{\mu_K}`$ 는 $`\sigma_{between}`$ 으로 수렴한다. site 를 많이 잴수록 wafer 평균에서 within 성분이 지워진다는 뜻이다.
 
@@ -301,35 +305,35 @@ $`N = 1`$ 이면 두 형태 모두 $`\hat{\sigma}_{\mu_K} = S_{\mathrm{total}}`$
 
 아래에서 $`i`$ 는 wafer 번호, $`j`$ 는 그 wafer 위의 site 번호로 section 1.1 의 표기를 그대로 쓴다. 곧 $`X_{ij}`$ 는 wafer $`i`$ 의 $`j`$ 번째 site 측정값이고, $`\bar{X}_i`$ 는 그 wafer 의 평균, $`s_i^2`$ 은 그 wafer 안 site 값의 표본분산이다. 한 wafer 안의 site 값이 서로 독립이고 같은 정규분포를 따른다고 둔다.
 
-$$X_{ij} \sim \mathcal{N}(\mu + \alpha_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (31)$$
+$$X_{ij} \sim \mathcal{N}(\mu + \alpha_i,\ \sigma_{within}^2), \qquad s_i^2 = \frac{1}{N-1} \sum_{j=1}^{N} (X_{ij} - \bar{X}_i)^2 \hspace{19em} (32)$$
 
 한계를 세우려면 $`s_i`$ 가 우연만으로 얼마나 커질 수 있는지 알아야 한다. 같은 공정에서 나온 wafer 라도 site $`N`$ 점을 어디서 뽑느냐에 따라 $`s_i`$ 는 매번 달라지므로, 그 흔들림의 분포를 알아야 어디부터가 우연으로 보기 어려운 값인지 정할 수 있다. 그 분포가 카이제곱이며, 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값의 분포로 $`m`$ 이 그 자유도이다. 그러므로 $`s_i^2`$ 의 분포를 아는 일은 그것을 표준정규 몇 개의 제곱합으로 적을 수 있는지를 세는 일이 된다. 측정값에서 그 wafer 의 참 평균 $`\mu + \alpha_i`$ 를 빼고 표준편차로 나누면 표준정규가 된다.
 
-$$Z_{ij} = \frac{X_{ij} - \mu - \alpha_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (32)$$
+$$Z_{ij} = \frac{X_{ij} - \mu - \alpha_i}{\sigma_{within}} \sim \mathcal{N}(0, 1) \hspace{19em} (33)$$
 
-$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (31) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 각 항을 $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ 로 풀고 $`j = 1`$ 부터 $`N`$ 까지 더하면 세 조각이 된다. 첫 조각은 그대로 $`\sum_j Z_{ij}^2`$ 이고, 둘째 조각은 $`\bar{Z}_i`$ 가 $`j`$ 에 따라 변하지 않는 상수라 합 밖으로 빠져 $`-2 \bar{Z}_i \sum_j Z_{ij}`$ 가 되며, 셋째 조각은 그 상수를 $`N`$ 번 더한 $`N \bar{Z}_i^2`$ 이다.
+$`X_{ij} - \bar{X}_i = \sigma_{within}(Z_{ij} - \bar{Z}_i)`$ 이므로 식 (32) 의 제곱합은 $`Z`$ 의 제곱합으로 바뀐다. 각 항을 $`(Z_{ij} - \bar{Z}_i)^2 = Z_{ij}^2 - 2 Z_{ij} \bar{Z}_i + \bar{Z}_i^2`$ 로 풀고 $`j = 1`$ 부터 $`N`$ 까지 더하면 세 조각이 된다. 첫 조각은 그대로 $`\sum_j Z_{ij}^2`$ 이고, 둘째 조각은 $`\bar{Z}_i`$ 가 $`j`$ 에 따라 변하지 않는 상수라 합 밖으로 빠져 $`-2 \bar{Z}_i \sum_j Z_{ij}`$ 가 되며, 셋째 조각은 그 상수를 $`N`$ 번 더한 $`N \bar{Z}_i^2`$ 이다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - 2 \bar{Z}_i \sum_{j=1}^{N} Z_{ij} + N \bar{Z}_i^2 \hspace{19em} (33)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} (Z_{ij} - \bar{Z}_i)^2 = \sum_{j=1}^{N} Z_{ij}^2 - 2 \bar{Z}_i \sum_{j=1}^{N} Z_{ij} + N \bar{Z}_i^2 \hspace{19em} (34)$$
 
 평균의 정의에서 $`\sum_{j} Z_{ij} = N \bar{Z}_i`$ 이므로 가운데 항은 $`2 N \bar{Z}_i^2`$ 이 되고, 마지막 항과 합치면 $`N \bar{Z}_i^2`$ 하나만 남는다. 곧 표준정규 제곱합에서 평균의 몫을 뺀 꼴이다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_i^2 + N \bar{Z}_i^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (34)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_i^2 + N \bar{Z}_i^2 = \sum_{j=1}^{N} Z_{ij}^2 - N \bar{Z}_i^2 \hspace{19em} (35)$$
 
 우변의 첫 항은 표준정규 $`N`$ 개의 제곱합이므로 정의에 따라 $`\chi^2_N`$ 이다. $`\bar{Z}_i`$ 는 평균 0, 분산 $`1/N`$ 의 정규분포를 따라 $`\sqrt{N}\,\bar{Z}_i`$ 가 표준정규이므로 둘째 항은 $`\chi^2_1`$ 이다. 정규 표본에서 표본평균과 표본분산은 서로 독립이라 두 몫이 겹치지 않으므로, 자유도는 그대로 빼진다.
 
-$$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (35)$$
+$$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (36)$$
 
 식 (20) 이 보인 제약, 곧 편차 $`X_{ij} - \bar{X}_i`$ 의 합이 0 이라는 제약 하나에 묶여 $`N`$ 개 중 $`N-1`$ 개만 자유로우므로, 자유도가 $`N-1`$ 이다.
 
-Section 4.3 의 $`\chi^2_{p,\,N-1}`$ 을 쓰면, 식 (35) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
+Section 4.3 의 $`\chi^2_{p,\,N-1}`$ 을 쓰면, 식 (36) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
 
-$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 - p \hspace{19em} (36)$$
+$$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 - p \hspace{19em} (37)$$
 
 괄호 안을 $`s_i`$ 에 대해 풀고 참값 $`\sigma_{within}`$ 자리에 running baseline 을 놓으면 식 (17) 이 된다. 곧 식 (17) 을 넘은 wafer 는, 그 wafer 의 산포가 기준선과 같았다면 $`1-p`$ 의 확률로만 나올 값을 낸 wafer 이다.
 
 기준선은 참값이 아니라 앞선 wafer 로 추정한 값이므로, 엄밀하게는 두 분산의 비가 F 분포를 따른다. 기준선이 wafer $`m`$ 장 위에 서 있으면 그 자유도는 $`\nu = m(N-1)`$ 이다.
 
-$$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (37)$$
+$$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (38)$$
 
 $`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (17) 을 그대로 쓸 수 있다. 식 (17) 의 계수 1.656 과 견주면, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
 
@@ -337,6 +341,6 @@ $`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-
 
 Covariance 의 두 인자에 같은 확률변수를 넣으면 곱해지는 두 편차가 같은 값이라 제곱이 되고, 그 기댓값은 variance 의 정의 그대로이다.
 
-$$\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y) \hspace{19em} (38)$$
+$$\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y) \hspace{19em} (39)$$
 
 식 (8) 의 첫째 항이 그 꼴이므로 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이고, 식 (7) 이 그 값을 $`\sigma_{between}^2`$ 으로 둔다.
