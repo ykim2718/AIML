@@ -21,7 +21,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.13.1.2026.9.21"
+__version__ = "0.13.2.2026.9.21"
 
 import argparse
 import pathlib
@@ -311,7 +311,7 @@ class WaferMeasurements:
         axes.scatter(self.order[exceeded], screen['sd_within'][exceeded], s=26, color=COLOR_MARK, zorder=6,
                      label=f"WiW excursion ({int(exceeded.sum())} wafers)")
         axes.plot(self.order, screen['limit'], color=COLOR_MARK, lw=1.8, zorder=5,
-                  label=r"eq (16) limit  $\sigma_{within}(1..i-1)\,\sqrt{\chi^2_{p,N-1}/(N-1)}$"
+                  label=r"eq (17) limit  $\sigma_{within}(1..i-1)\,\sqrt{\chi^2_{p,N-1}/(N-1)}$"
                         f"  at p = {confidence}")
         axes.plot(self.order, screen['baseline'], color=COLOR_LEFT_TERM, lw=2.4, zorder=5,
                   label=r"running baseline  $\sigma_{within}$(1..i-1), excursions left out")
@@ -322,7 +322,7 @@ class WaferMeasurements:
         # leave the top of the axes to the legend so that it never sits on a spike
         axes.set_ylim(0, screen['sd_within'].max() * 1.35)
         axes.grid(axis='y', color='#ebeae5', lw=0.9)
-        self._finish(axes=axes, title="Per-wafer spread against the running within-wafer limit of eq (16)",
+        self._finish(axes=axes, title="Per-wafer spread against the running within-wafer limit of eq (17)",
                      xlabel="i  (wafer index, run order)", ylabel=r"standard deviation of the site values",
                      legend_location='upper left')
         figure.tight_layout()
@@ -341,11 +341,11 @@ class WaferMeasurements:
         axes.plot(self.order, observed, color=COLOR_OBSERVED, lw=3.0, zorder=4,
                   label=r"observed  $\sigma_{\mu_n}$  (stdev of wafer means 1..n)")
         axes.plot(self.order, terms['right_term'], color=COLOR_RIGHT_TERM, lw=1.6, ls=(0, (5, 3)), zorder=6,
-                  label=r"eq (12) right term:  $\sqrt{s_\mu^2(1..n)}$")
+                  label=r"eq (13) right term:  $\sqrt{s_\mu^2(1..n)}$")
         axes.plot(self.order, left_term, color=COLOR_LEFT_TERM, lw=2.2, ls=(0, (6, 4)), zorder=5,
-                  label=r"eq (12) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
+                  label=r"eq (13) left term:  $\sqrt{\sigma_{within}^2(1..n)/N}$")
         axes.axhline(observed[-1], color=COLOR_INK, lw=1.5, ls=(0, (2, 3)), zorder=2,
-                     label=r"eq (12)  $\hat{\sigma}_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
+                     label=r"eq (13)  $\hat{\sigma}_{\mu_K}$ = %.2f  (value at n = K)" % observed[-1])
         axes.axvline(detection, color=COLOR_MARK, lw=1.6, ls=(0, (4, 3)), zorder=7,
                      label=f"w2w detection point (n = {detection})")
         axes.annotate(f"n = {detection}", (detection, observed[detection - 1]), textcoords="offset points",
@@ -363,7 +363,7 @@ class WaferMeasurements:
         axes.grid(which='both', color='#ebeae5', lw=0.9)
         self._finish(
             axes=axes,
-            title="Cumulative stdev of the wafer means and the two terms of eq (12), each from the first n wafers",
+            title="Cumulative stdev of the wafer means and the two terms of eq (13), each from the first n wafers",
             xlabel="n  (cumulative wafer count, run order) - log",
             ylabel="standard deviation - log", legend_location='lower right')
         figure.tight_layout()
