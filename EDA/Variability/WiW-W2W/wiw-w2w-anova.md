@@ -1,9 +1,9 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 83 | Created: 2026-09-01 | Updated: 2026-09-21 21:06 CDT
+Rev. 84 | Created: 2026-09-01 | Updated: 2026-09-21 21:07 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
-측정값이 여러 층으로 묶여 있을 때 각 층이 산포에 얼마나 기여하는지는 눈으로 가려낼 수 없다. ANOVA 는 전체 제곱합을 층별 제곱합으로 쪼개어 이 물음에 답한다. 한 층 안에서 값이 흩어진 정도와 층 사이에서 평균이 벌어진 정도를 각각의 자유도로 나누어 평균제곱으로 만들고, 그 비를 F 통계량으로 삼아 층 사이의 차이가 층 안의 산포만으로 설명되는지 판정한다. 이 문서는 wafer 를 층으로 두어 measurement 산포를 within-wafer 성분과 wafer-to-wafer 성분으로 나눈다.
+측정값이 여러 층으로 묶여 있을 때 각 층이 산포에 얼마나 기여하는지는 눈으로 가려낼 수 없다. ANOVA 는 전체 제곱합을 층별 제곱합으로 쪼개어 이 물음에 답한다. 한 층 안에서 값이 흩어진 정도와 층 사이에서 평균이 벌어진 정도를 각각의 자유도로 나누어 평균제곱으로 만들고, 그 비를 F 통계량으로 삼아 층 사이의 차이가 층 안의 산포만으로 설명되는지 판정한다. 이 문서는 wafer 를 층으로 두어 측정값의 산포를 within-wafer 성분과 wafer-to-wafer 성분으로 나눈다.
 
 ## 1. Theory
 
@@ -19,7 +19,7 @@ Wafer 를 장당 여러 site 에서 재어 얻은 표를 아래 기호로 적는
 - $`\bar{X}`$: 전체 $`M`$ 개의 총평균. 관측값.
 - $`s_i`$: $`i`$ 번째 wafer 한 장의 site 값 $`N`$ 개로 계산한 표본표준편차. 관측값.
 - $`\sigma_{\mu_n}`$: 처음 $`n`$ 장의 wafer 평균을 표본표준편차로 잰 값. 관측값.
-- $`\hat{\sigma}_{\mu_K}`$: 같은 산포를 분산성분에서 얻은 값. 식 (12) 부터 식 (15) 까지의 좌변이다. 계산값.
+- $`\hat{\sigma}_{\mu_K}`$: wafer 평균의 산포를 분산성분에서 얻은 값. 식 (12) 부터 식 (15) 까지의 좌변이다. 계산값.
 - $`s_i^2`$: $`i`$ 번째 wafer 안 site 값의 표본분산. within-wafer 성분. 관측값.
 - $`S_{\mathrm{total}}^2`$: 전체 $`M`$ 개의 표본분산. 관측값.
 
@@ -148,14 +148,14 @@ Wafer 의 고유 수준이 모두 같아 $`\sigma_{between} = 0`$, 곧 ICC = 0 �
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (15)$$
 
-이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이며, 이 자료에서는 32.50/√13 = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
+이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.761 이라 식 (15) 가 서지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 32.50/√13 = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
 
 ### 4.2 W2W Detection Point
 
 Fig 2 는 식 (12) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래와 같다.
 
 - 왼쪽 항: wafer 마다의 site 분산 $`s_i^2`$ 를 처음 $`n`$ 장까지 평균한 $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$ 을 $`\sqrt{N}`$ 으로 나눈 값. Site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. Wafer 평균을 쓰지 않으므로 자료에서 바로 나온다.
-- 관측값: 처음 $`n`$ 장의 wafer 평균의 표본표준편차 $`\sigma_{\mu_n}`$.
+- 관측 곡선: 처음 $`n`$ 장의 wafer 평균의 표본표준편차 $`\sigma_{\mu_n}`$.
 - 오른쪽 항: 식 (12) 를 뒤집은 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 이며, $`\sigma_{between}`$ 자리에 드는 $`s_{\mu}(1..n)`$ 이 그 값이다. Wafer 마다 다른 고유 수준의 산포, 곧 wafer 간의 변동 그 자체이다. 제곱근 안이 음수인 $`n`$ 에서는 정의되지 않아 그리지 않으며, 이 자료에서는 $`n = 3`$ 이 그렇다.
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
@@ -197,7 +197,7 @@ Fig 3. Site value spread of each wafer against the running baseline and the scre
 - **Var**: variance. 값이 제 평균에서 벗어난 정도를 제곱하여 평균한 값이며, 표준편차의 제곱이다. 관측 수 $`m`$ 인 표본에서는 $`\mathrm{Var}(Y) = \frac{1}{m-1} \sum_{i=1}^{m} (Y_i - \bar{Y})^2`$ 로 계산한다.
 - **variogram**: 두 지점의 값 차이가 갖는 분산을 두 지점 사이 거리의 함수로 나타낸 것. 거리에 따라 값이 얼마나 닮는지를 재는 데 쓴다.
 - **w2w**: wafer-to-wafer. wafer 사이의 변동.
-- **w2w detection point**: 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
+- **w2w detection point**: 식 (12) 의 오른쪽 항이 관측된 wafer 평균 산포의 98% 를 넘는 첫 $`n`$. 그 앞에서는 wafer 사이의 차이가 측정 잡음에 묻혀 분리되지 않는다.
 - **wafer effect**: wafer 한 장의 고유 수준 $`\mu_i`$. Site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 참 평균이며, one-way random effects model 에서는 wafer 마다 새로 뽑히는 확률변수이고 그 variance 가 $`\sigma_{between}^2`$ 이다.
 - **WiW**: within-wafer. 한 wafer 안 site 사이의 변동.
 - **WiW excursion**: site 표준편차가 running baseline 이 세운 한계를 넘은 wafer.
