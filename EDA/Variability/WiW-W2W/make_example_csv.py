@@ -10,7 +10,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.0+20260922"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.1+20260922"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -18,7 +18,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 
-WAFER_COUNT = 261
+WAFER_COUNT = 200
 SITE_COUNT = 13
 SEED = 137
 
