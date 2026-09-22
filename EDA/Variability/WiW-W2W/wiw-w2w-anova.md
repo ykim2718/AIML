@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 106 | Created: 2026-09-01 | Updated: 2026-09-22 02:03 CDT
+Rev. 107 | Created: 2026-09-01 | Updated: 2026-09-22 02:10 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -221,11 +221,11 @@ $$X_{ij} - \bar{X} = (X_{ij} - \bar{X}_i) + (\bar{X}_i - \bar{X}) \hspace{19em} 
 
 $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2 + \sum_{i}\sum_{j} (\bar{X}_i - \bar{X})^2 + 2 \sum_{i} (\bar{X}_i - \bar{X}) \sum_{j} (X_{ij} - \bar{X}_i) \hspace{19em} (19)$$
 
-교차항의 안쪽 합은 wafer $`i`$ 의 site 값이 제 평균에서 벗어난 양을 모두 더한 것이다. 평균의 정의가 $`\sum_{j} X_{ij} = N \bar{X}_i`$ 이므로 그 합은 0 이고, 교차항 전체가 사라진다.
+식 (19) 의 셋째 항에 든 안쪽 합은 wafer $`i`$ 의 site 값이 제 평균에서 벗어난 양을 모두 더한 것이다. 평균의 정의가 $`\sum_{j} X_{ij} = N \bar{X}_i`$ 이므로 그 합은 식 (20) 과 같이 0 이 되고, 식 (19) 의 셋째 항 전체가 사라진다.
 
 $$\sum_{j=1}^{N} (X_{ij} - \bar{X}_i) = \sum_{j=1}^{N} X_{ij} - N \bar{X}_i = 0 \hspace{19em} (20)$$
 
-둘째 항의 $`j`$ 에 대한 합은 같은 값을 $`N`$ 번 더한 것이라 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 이 된다. 남는 두 항에 SST, SSW, SSB 라는 이름을 붙여 적은 것이 식 (21) 이다.
+식 (19) 의 둘째 항은 $`j`$ 에 대해 같은 값을 $`N`$ 번 더한 것이라 $`N \sum_i (\bar{X}_i - \bar{X})^2`$ 이 된다. 식 (19) 에서 셋째 항을 지우고 둘째 항을 이렇게 고쳐 쓴 뒤 남은 세 제곱합에 이름을 붙인 것이 식 (21) 이다.
 
 $$\underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2}_{\mathrm{SST}} = \underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2}_{\mathrm{SSW}} + \underbrace{N \sum_{i} (\bar{X}_i - \bar{X})^2}_{\mathrm{SSB}} \hspace{19em} (21)$$
 
