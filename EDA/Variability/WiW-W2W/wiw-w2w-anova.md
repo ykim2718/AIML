@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 88 | Created: 2026-09-01 | Updated: 2026-09-21 23:12 CDT
+Rev. 89 | Created: 2026-09-01 | Updated: 2026-09-21 23:18 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -110,21 +110,21 @@ Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 
 
 $$X_{ij} = \mu + \alpha_i + e_{ij} \hspace{19em} (6)$$
 
-$`\mu`$ 는 wafer 와 무관한 상수이고, $`\mu + \alpha_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이고, $`\alpha_i`$ 는 그 값이 총평균에서 벗어난 양이다. 장마다 공정 조건이 달라 $`\alpha_i`$ 가 wafer 마다 다르며, one-way random effects model 은 $`\alpha_i`$ 를 고정된 상수가 아니라 평균 0 으로 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\alpha_i)`$ 라는 양이 정의되고, 관측한 wafer 평균 $`\bar{X}_i`$ 는 $`\mu + \alpha_i`$ 자체가 아니라 거기에 $`\bar{e}_i`$ 가 얹힌 값이다.
+$`\mu`$ 는 wafer 와 무관한 상수이고, $`\mu + \alpha_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이고, $`\alpha_i`$ 는 그 값이 총평균에서 벗어난 양이다. 장마다 공정 조건이 달라 $`\alpha_i`$ 가 wafer 마다 다르며, one-way random effects model 은 $`\alpha_i`$ 를 고정된 상수가 아니라 평균 0 으로 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\alpha_i)`$ 라는 양이 정의된다.
 
-$`e_{ij}`$ 는 평균이 0 이고, $`\alpha_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다.
+$`\alpha_i`$ 와 $`e_{ij}`$ 는 각각 평균이 0 이고, $`e_{ij}`$ 는 $`\alpha_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다. 두 확률변수의 variance 가 이 문서가 나누려는 두 성분이다.
 
-$$\mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
+$$E[\alpha_i] = 0, \quad \mathrm{Var}(\alpha_i) = \sigma_{between}^2, \qquad E[e_{ij}] = 0, \quad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
 
 총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다.
 
 $$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) + \mathrm{Cov}(\alpha_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \alpha_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Var}(\alpha_i) = \sigma_{between}^2 \hspace{19em} (8)$$
 
-$`\alpha_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 두 성분의 합이며, 식 (7) 이 뒤 항을, 식 (8) 이 앞 항을 준다.
+$`\alpha_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 식 (7) 의 두 variance 의 합이다.
 
 $$S_{\mathrm{total}}^2 = \sigma_{between}^2 + \sigma_{within}^2 \hspace{19em} (9)$$
 
-Wafer 평균에서는 within-wafer site 오차가 $`N`$ 개 평균되므로 그 분산이 $`N`$ 분의 1 로 줄어든다.
+관측한 wafer 평균은 $`\mu + \alpha_i`$ 자체가 아니라 거기에 site 오차의 평균 $`\bar{e}_i`$ 가 얹힌 값이다. 그 오차는 site $`N`$ 개를 평균한 것이라 분산이 $`N`$ 분의 1 로 줄어든다.
 
 $$\bar{X}_i = \mu + \alpha_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (10)$$
 
