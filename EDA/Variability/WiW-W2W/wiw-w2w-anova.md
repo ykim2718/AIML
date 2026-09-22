@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 87 | Created: 2026-09-01 | Updated: 2026-09-21 23:10 CDT
+Rev. 88 | Created: 2026-09-01 | Updated: 2026-09-21 23:12 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -110,7 +110,7 @@ Table 2 의 두 성분은 261 장 전체를 한 번에 본 값이다. Wafer 한 
 
 $$X_{ij} = \mu + \alpha_i + e_{ij} \hspace{19em} (6)$$
 
-$`\mu`$ 는 wafer 와 무관한 상수이고, $`\mu + \alpha_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이고, $`\alpha_i`$ 는 그 값이 총평균에서 벗어난 양이다. 장마다 공정 조건이 달라 $`\alpha_i`$ 가 wafer 마다 다르며, one-way random effects model 은 $`\alpha_i`$ 를 고정된 상수가 아니라 평균 0 으로 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\alpha_i)`$ 라는 양이 서고, 관측한 wafer 평균 $`\bar{X}_i`$ 는 $`\mu + \alpha_i`$ 자체가 아니라 거기에 $`\bar{e}_i`$ 가 얹힌 값이다.
+$`\mu`$ 는 wafer 와 무관한 상수이고, $`\mu + \alpha_i`$ 는 wafer $`i`$ 한 장의 참 평균, 곧 site 오차가 없었다면 그 wafer 의 모든 site 가 가리켰을 값이고, $`\alpha_i`$ 는 그 값이 총평균에서 벗어난 양이다. 장마다 공정 조건이 달라 $`\alpha_i`$ 가 wafer 마다 다르며, one-way random effects model 은 $`\alpha_i`$ 를 고정된 상수가 아니라 평균 0 으로 wafer 마다 새로 뽑히는 확률변수로 둔다. 그래서 $`\mathrm{Var}(\alpha_i)`$ 라는 양이 정의되고, 관측한 wafer 평균 $`\bar{X}_i`$ 는 $`\mu + \alpha_i`$ 자체가 아니라 거기에 $`\bar{e}_i`$ 가 얹힌 값이다.
 
 $`e_{ij}`$ 는 평균이 0 이고, $`\alpha_i`$ 와도 같은 wafer 의 다른 site 오차와도 독립이다.
 
@@ -245,6 +245,16 @@ $$\lim_{N \to \infty} a = 1, \qquad \lim_{K \to \infty} b = 1, \qquad \lim_{K, N
 같은 상관이 section 4.3 의 한계에도 걸린다. 식 (32) 가 자유도 $`N-1`$ 의 $`\chi^2`$ 를 쓰는 것은 한 wafer 의 site $`N`$ 개가 독립한 정보 $`N-1`$ 개를 낸다는 뜻인데, site 끼리 닮으면 실효 자유도가 그보다 작아 한계가 좁게 잡히고 WiW excursion 판정이 실제보다 민감해진다.
 
 $`\rho`$ 를 재려면 site 좌표를 인자로 둔 모형이나 variogram 이 필요하며, 이 문서의 자료로는 그 값을 대지 않았다.
+
+### B.3 Wafers as a Sample of One Process
+
+식 (6) 은 $`\alpha_i`$ 를 평균 0, variance $`\sigma_{between}^2`$ 인 한 분포에서 wafer 마다 독립으로 뽑는다고 둔다. 이 가정 위에서만 261 장이 공정의 표본이 되고, $`\sigma_{between}`$ 이 그 261 장을 넘어 앞으로 나올 wafer 에도 적용된다. 같은 자료를 fixed effects 로 두면 $`\alpha_i`$ 가 저마다 모수라 결론이 그 261 장에 머물고, wafer-to-wafer 성분이라는 하나의 수가 서지 않는다.
+
+이 자료는 그 가정에서 벗어난다. Section 3 의 expanding window 에서 w2w 성분이 $`n \ge 100`$ 에서도 18.28 에서 28.36 으로 계속 오르는데, 한 분포에서 독립으로 뽑은 표본이라면 쌓일수록 한 값에 잦아들어야 한다. 뒤쪽 wafer 의 $`\alpha_i`$ 가 앞쪽과 다른 수준에 있다는 뜻이다.
+
+그래서 이 문서의 $`\sigma_{between}`$ 은 한 공정 수준 둘레의 산포가 아니라 261 장에 걸친 drift 까지 담은 값이다. 그 값으로 세운 관리 한계선은 drift 를 공정이 늘 내는 산포로 받아들이므로 새 wafer 에 적용하면 실제보다 넓다.
+
+둘을 가르려면 run order 를 인자로 둔 모형이 필요하다. 시간 추세항을 뺀 잔차에서 $`\sigma_{between}`$ 을 다시 구하거나, 구간을 나눠 각 구간 안에서 성분을 구하는 방법이 있으며, 이 문서는 그 분리를 하지 않았다.
 
 ## Appendix C. Derivation of the Between-Component Form
 
