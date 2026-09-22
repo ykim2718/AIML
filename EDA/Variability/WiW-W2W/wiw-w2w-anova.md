@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 91 | Created: 2026-09-01 | Updated: 2026-09-21 23:39 CDT
+Rev. 92 | Created: 2026-09-01 | Updated: 2026-09-21 23:44 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -116,7 +116,7 @@ $`\alpha_i`$ 와 $`e_{ij}`$ 는 각각 평균이 0 이고, $`e_{ij}`$ 는 $`\alp
 
 $$E[\alpha_i] = 0, \quad \mathrm{Var}(\alpha_i) = \sigma_{between}^2, \qquad E[e_{ij}] = 0, \quad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
 
-총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다.
+총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다. 두 인자가 같은 covariance 가 variance 가 되는 과정은 [Appendix E](#appendix-e-covariance-with-a-repeated-argument) 에 적었다.
 
 $$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) + \mathrm{Cov}(\alpha_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \alpha_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i) = \sigma_{between}^2 \hspace{19em} (8)$$
 
@@ -192,7 +192,7 @@ Fig 3. Site value spread of each wafer against the running baseline and the scre
 
 - **ANOVA**: analysis of variance. 전체 제곱합을 원인별 제곱합으로 나누고, 각각을 자유도로 나눈 평균제곱의 비로 원인의 유의성을 판정하는 방법.
 - **bilinear**: 두 인자 각각에 대해 linear 인 성질. Covariance 에서는 첫 인자에 대해 $`\mathrm{Cov}(aX + bY, Z) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(Y, Z)`$ 이고, 둘째 인자에 대해 $`\mathrm{Cov}(X, aZ + bW) = a \, \mathrm{Cov}(X, Z) + b \, \mathrm{Cov}(X, W)`$ 이다.
-- **Covariance**: 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값. 두 인자가 같으면 $`\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y)`$ 이므로, 식 (8) 의 첫째 항은 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이다.
+- **Covariance**: 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값. 두 인자가 같으면 $`\mathrm{Cov}(Y, Y) = \mathrm{Var}(Y)`$ 이며, 그 과정은 [Appendix E](#appendix-e-covariance-with-a-repeated-argument) 에 적었다.
 - **ICC**: intraclass correlation. 전체 분산 중 group 간 분산이 차지하는 비율. 같은 group 에서 뽑은 두 관측치가 얼마나 닮았는지를 0 에서 1 사이로 나타내며, 이 문서의 group 은 wafer 이다. 이 문서가 쓰는 것은 one-way random effects model 의 ICC(1) 이며, two-way model 의 ICC 와는 값이 다르다.
 - **run order**: 자료 파일의 행 순서. 측정 순서를 따르므로 시간 축으로 사용.
 - **running baseline**: wafer 한 장을 판정할 때 쓰는 기준선. 그 wafer 앞에 있으면서 excursion 으로 판정되지 않은 wafer 만으로 구한 within-wafer 성분이다.
@@ -312,3 +312,11 @@ $$P\left( \frac{(N-1) s_i^2}{\sigma_{within}^2} \gt \chi^2_{p, N-1} \right) = 1 
 $$\frac{s_i^2}{\sigma_{within}^2(1..i-1)} \sim F(N-1,\ \nu) \hspace{19em} (34)$$
 
 $`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-1)`$ 로 수렴하므로 식 (17) 을 그대로 쓸 수 있다. 이 자료의 $`N = 13`$, $`p = 0.999`$ 에서 계수는 카이제곱으로 1.656 이고, 판정을 시작하는 wafer 21 에서 $`\nu = 240`$ 을 넣은 F 로는 1.696, 마지막 wafer 에서는 1.660 이다. 곧 판정 초반에 한계를 2.4% 낮게 잡는 것이 카이제곱을 쓰는 대가이다.
+
+## Appendix E. Covariance With a Repeated Argument
+
+Covariance 는 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값이다. 두 인자에 같은 확률변수를 넣으면 곱해지는 두 편차가 같은 값이라 제곱이 되고, 그 기댓값은 variance 의 정의 그대로이다.
+
+$$\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y) \hspace{19em} (35)$$
+
+식 (8) 의 첫째 항이 그 꼴이므로 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이고, 식 (7) 이 그 값을 $`\sigma_{between}^2`$ 으로 둔다.
