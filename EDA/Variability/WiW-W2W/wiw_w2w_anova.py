@@ -24,7 +24,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.16.0.2026.9.22"
+__version__ = "0.16.1.2026.9.22"
 
 import argparse
 import pathlib
@@ -448,7 +448,7 @@ if __name__ == '__main__':
     print(f"wafers with inflated within-wafer variance: {int(report['flagged'].sum())}")
     print(f"w2w threshold: n = {measurements.threshold()}")
     screen = measurements.excursion()
-    screen.to_csv(args.output_folder / 'running_screen.csv')
+    screen.to_csv(args.output_folder / 'excursion.csv')
     judged = int(screen['limit'].notna().sum())
     print(f"wafers over the running limit: {int(screen['exceeded'].sum())} of {judged} judged")
     measurements.draw_site_value_violin(figure_path=args.output_folder / 'site_value_violin.png',
