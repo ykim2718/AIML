@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 32 | Created: 2026-08-28 | Updated: 2026-09-22 16:40 CDT
+Rev. 33 | Created: 2026-08-28 | Updated: 2026-09-22 17:10 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -221,7 +221,7 @@ Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가�
 
 Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y}_i)$ 이 있으면 inversion 은 풀린다. Model 의 구조 대신 그 쌍이 담은 입출력 관계를 쓰는 것이며, 쓸 수 있는 방법은 셋이다.
 
-- Surrogate 재학습: 가진 쌍으로 $\hat{y}$ 를 맞추는 새 model 을 세우고, 그 surrogate 를 4 의 방법으로 뒤집는다. 원 model 의 예측을 정답으로 삼아 다른 model 로 옮기는 것이므로 model distillation 이며, 해의 오차는 원 model 의 잔차가 아니라 surrogate 의 재현 오차가 정한다.
+- Surrogate re-fitting: 가진 쌍으로 $\hat{y}$ 를 맞추는 새 model 을 세우고, 그 surrogate 를 4 의 방법으로 뒤집는다. 원 model 의 예측을 정답으로 삼아 다른 model 로 옮기는 것이므로 model distillation 이며, 해의 오차는 원 model 의 잔차가 아니라 surrogate 의 재현 오차가 정한다.
 - Learned inverse map: $\hat{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 그 쌍으로 바로 학습한다 (2.3). 추론이 한 번의 forward 로 끝나는 대신 다중해를 평균으로 뭉갠다.
 - Nearest-sample lookup: 목표에 가장 가까운 $\hat{y}_i$ 를 가진 $\mathbf{x}_i$ 를 뽑고 그 이웃에서 보간한다. 가장 싸지만 쌍이 덮은 영역 밖으로는 나가지 못한다.
 
@@ -628,4 +628,13 @@ SPE               : 0.118 limit 3.678
 
 세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.999$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 18.0 에 가장 가까운 행에서 출발점 `A` = 11.392, `B` = 4.894 를 준다. 그 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 가 `A` = 10.432, `B` = 4.616 으로 옮겨 `P` = 18.063 을 맞춘다.
 
-해는 유효 영역 안에 있다. $T^{2}$ 는 0.02 로 상한 5.99 보다, SPE 는 0.118 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 원 model 이 이 조건에서 실제로 낼 값과는 surrogate 의 재현 오차만큼 벌어질 수 있다.
+이 결과를 Fig 7 에 그린다.
+
+<img src="inversion-problem-ko_fig/appendix-d-inversion.png" width="1200" style="max-width: 100%;" alt="Fig 7">
+
+Fig 7. Appendix D search in the A–B plane and the surrogate that replaces the dropped model
+
+- (a) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 18.0 의 등위선이다. 출발점은 `P` = 18.84 로 그 선 위쪽에 있고, 해는 선 위에 놓인다. 등고선이 계단 모양인 것은 gradient boosting 이 조각별 상수 함수이기 때문이며, 그래서 4.3 대로 gradient 없이 탐색으로 푼다.
+- (b) 는 surrogate 의 parity plot 이다. 가로축은 버려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.999$ 로 점이 1:1 선에 붙어 있다.
+
+해는 유효 영역 안에 있다. $T^{2}$ 는 0.02 로 상한 5.99 보다, SPE 는 0.118 로 상한 3.678 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 원 model 이 이 조건에서 실제로 낼 값과는 (b) 가 보이는 재현 오차만큼 벌어질 수 있다.
