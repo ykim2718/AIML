@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 122 | Created: 2026-09-01 | Updated: 2026-09-22 11:42 CDT
+Rev. 123 | Created: 2026-09-01 | Updated: 2026-09-22 11:54 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -176,7 +176,7 @@ Table 2. Variance components
 | Within-wafer | 15.04 | 226.3 | 20.3% |
 | Total | 33.36 | 1112.6 | 100% |
 
-두 성분을 더한 33.36 은 section 2 의 관측 표준편차 33.29 보다 조금 크다. Section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
+두 성분을 더한 33.36 은 section 2.1 의 관측 표준편차 33.29 보다 조금 크다. Section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
 
 ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율이며, 그 정의는 식 (14) 이다. 이 자료에서는 886.4 / 1112.6 = 0.797 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.797 은 site 한 점의 산포 중 79.7% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 

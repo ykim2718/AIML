@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 0 | Created: 2026-09-22 | Updated: 2026-09-22 11:42 CDT
+Rev. 1 | Created: 2026-09-22 | Updated: 2026-09-22 11:54 CDT
 
 > ANOVA (analysis of variance) divides the total spread of the observations into a few causes and shows in numbers how much each cause contributes.
 
@@ -94,9 +94,9 @@ When the observed value $`s_{\mu}(1..n)`$ from the first $`n`$ groups equals the
 
 $$\hat{\sigma}_{\mu_K} = \sqrt{\frac{\sigma_{within}^2}{N} + \sigma_{between}^2} \hspace{19em} (13) 🌳$$
 
-Equation (5) measures the spread of one member value, and equation (13) measures the spread of one group mean. The two part at the within component alone. Averaging $`N`$ members cancels the member error $`e_{ij}`$, which is independent from member to member, and its variance falls by a factor of $`N`$; the group effect $`\alpha_i`$, which all $`N`$ members of that group carry alike, does not fall however much is averaged.
+Equation (5) measures the spread of one member value, and equation (13) measures the spread of one group mean. The two differ in the within component alone. Averaging $`N`$ members cancels the member error $`e_{ij}`$, which is independent from member to member, and its variance falls by a factor of $`N`$; the group effect $`\alpha_i`$, which all $`N`$ members of that group carry alike, does not fall however much is averaged.
 
-$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ is equation (9) rewritten, so it holds for any $`n`$. Putting this identity into equation (13) turns the place of $`\sigma_{between}^2`$ into the total standard deviation. The ICC that writes the result short is the share of the total variance that the between-group variance holds.
+$`\sigma_{between}^2 = S_{\mathrm{total}}^2 - \sigma_{within}^2`$ is equation (9) rewritten, so it holds for any $`n`$. Putting this identity into equation (13) turns the place of $`\sigma_{between}^2`$ into the total standard deviation. The ICC used to write that result short is the share of the total variance that the between-group variance holds.
 
 $$\mathrm{ICC} = \frac{\sigma_{between}^2}{S_{\mathrm{total}}^2} \hspace{19em} (14)$$
 
@@ -124,7 +124,7 @@ $`\chi^2_{p,\,N-1}`$ is the $`p`$ quantile of the chi-square distribution with $
 
 ## 2. Application to Wafer Measurements
 
-With wafer for group and site for member, the two components of section 1 become the spread between wafers and the spread within a wafer. Cutting the total spread into a within-wafer uniformity problem and a wafer-to-wafer reproducibility problem to find the cause is what process control uses this for.
+With wafer for group and site for member, the two components of section 1 become the spread between wafers and the spread within a wafer. Process control uses this to cut the total spread into a within-wafer uniformity problem and a wafer-to-wafer reproducibility problem and so find the cause.
 
 ### 2.1 Data
 
@@ -176,7 +176,7 @@ Table 2. Variance components
 | Within-wafer | 15.04 | 226.3 | 20.3% |
 | Total | 33.36 | 1112.6 | 100% |
 
-The two components added, 33.36, is a little larger than the observed standard deviation of section 2, 33.29. As section 1.2 showed, the plain sum of the two components is an approximation, and the exact relation carries coefficients smaller than 1.
+Adding the two components gives 33.36, a little larger than the observed standard deviation of section 2.1, 33.29. As section 1.2 showed, the plain sum of the two components is an approximation, and the exact relation carries coefficients smaller than 1.
 
 The ICC (intraclass correlation) is the share of the total variance that the between-wafer variance holds, and its definition is equation (14). For this data it is 886.4 / 1112.6 = 0.797. The closer the value is to 1 the more two site values drawn from the same wafer resemble each other, and the closer it is to 0 the less knowing which wafer they came from helps in predicting the value. 0.797 says that 79.7% of the spread of one site value is set by the wafer it sits on, so to reduce the spread the wafer-level conditions come before site-level uniformity.
 
