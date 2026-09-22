@@ -1,6 +1,6 @@
 """Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.12.0.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.13.0.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -26,6 +26,7 @@ APPENDIX_D_FREE: list = ['A', 'B']
 APPENDIX_D_ROWS: int = 100
 APPENDIX_D_TARGET: float = 19.0
 APPENDIX_D_STARTS: int = 5
+APPENDIX_D_TOLERANCE: float = 0.02
 
 matplotlib.use('Agg')
 
@@ -392,12 +393,12 @@ def build_appendix_d_model() -> tuple:
     rng = np.random.default_rng(0)
     n = APPENDIX_D_ROWS
     # the knob means put the true value near the target, the spreads keep it there
-    a = rng.normal(10.0, 1.2, n)                # knob
-    b = rng.normal(5.8, 0.6, n)                 # knob
-    c = rng.normal(3.0, 0.5, n)                 # measured context
-    d = 0.7 * c + rng.normal(0.0, 0.2, n)       # D follows C
-    e = rng.normal(2.0, 0.3, n)
-    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 1.5, n)
+    a = rng.normal(10.0, 0.7, n)                # knob
+    b = rng.normal(5.8, 0.35, n)                # knob
+    c = rng.normal(3.0, 0.3, n)                 # measured context
+    d = 0.7 * c + rng.normal(0.0, 0.12, n)      # D follows C
+    e = rng.normal(2.0, 0.2, n)
+    t = 0.9 * a + 1.4 * b + 0.6 * c - 0.5 * e + 0.02 * a * b + rng.normal(0.0, 0.85, n)
     data = pd.DataFrame({'A': a, 'B': b, 'C': c, 'D': d, 'E': e, 'T': t})
 
     features = data[APPENDIX_D_FEATURES].to_numpy()
@@ -416,7 +417,8 @@ def build_appendix_d_model() -> tuple:
 
 
 def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 7: the hidden model against T, the search in the A-B plane, and the surrogate against P and T."""
+    """Fig 7: the hidden model against T, the search in the A-B plane, the surrogate against P,
+    and the rows that were actually run within 2% of the solved A and B."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
     context = features.mean(axis=0)
@@ -459,7 +461,6 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     p_surrogate = surrogate.predict(features)
     r2_hidden = 1.0 - float(np.sum((t_column - p_column) ** 2) / np.sum((t_column - t_column.mean()) ** 2))
     r2_surrogate = float(surrogate.score(features, p_column))
-    r2_chain = 1.0 - float(np.sum((t_column - p_surrogate) ** 2) / np.sum((t_column - t_column.mean()) ** 2))
 
     fig, axes = plt.subplots(1, 4, figsize=(17.0, 4.2))
     ax = axes[0]
@@ -504,10 +505,17 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.8), loc='upper left')
 
+    # the historical rows that were actually run within 2% of the solved A and B
+    near = data[(np.abs(data['A'] - x_solved[0]) <= APPENDIX_D_TOLERANCE * abs(x_solved[0]))
+                & (np.abs(data['B'] - x_solved[1]) <= APPENDIX_D_TOLERANCE * abs(x_solved[1]))]
+    near_t = near['T'].to_numpy()
+    near_pred = surrogate.predict(near[APPENDIX_D_FEATURES].to_numpy())
+
     ax = axes[3]
-    span = [min(t_column.min(), p_surrogate.min()) - 0.3, max(t_column.max(), p_surrogate.max()) + 0.3]
+    span = [min(near_t.min(), near_pred.min()) - 0.6, max(near_t.max(), near_pred.max()) + 0.6]
     ax.plot(span, span, color='0.5', linestyle='--', linewidth=1.0, label='1:1 line')
-    ax.scatter(t_column, p_surrogate, s=18, color=COLORS[0], label='100 samples')
+    ax.scatter(near_t, near_pred, s=60, color=COLORS[2],
+               label=f'{len(near)} rows within {APPENDIX_D_TOLERANCE:.0%} of the solution')
     ax.axhline(APPENDIX_D_TARGET, color=COLORS[3], linestyle=':', linewidth=1.2,
                label=f'inversion target {APPENDIX_D_TARGET:.1f}')
     ax.set_xlim(span)
@@ -521,7 +529,7 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     panel_caption(fig, [axes[0]], f'(a) the hidden model against T, R2 = {r2_hidden:.3f}')
     panel_caption(fig, [axes[1]], '(b) the search moves A and B onto the target line')
     panel_caption(fig, [axes[2]], f'(c) the surrogate reproduces P, R2 = {r2_surrogate:.4f}')
-    panel_caption(fig, [axes[3]], f'(d) the surrogate against T, R2 = {r2_chain:.3f}')
+    panel_caption(fig, [axes[3]], f'(d) the rows run within {APPENDIX_D_TOLERANCE:.0%} of the solution')
     out_path = out_folder / 'appendix-d-inversion.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
@@ -531,7 +539,9 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     sample_path = out_folder / 'appendix-d-samples.csv'
     data.assign(P_surrogate=p_surrogate).to_csv(sample_path, index=False, float_format='%.6f')
     print(f'wrote {out_path}, hidden model R2 on T={r2_hidden:.4f}, '
-          f'surrogate R2 on P={r2_surrogate:.4f}, surrogate R2 on T={r2_chain:.4f}')
+          f'surrogate R2 on P={r2_surrogate:.4f}')
+    print(f'  rows within {APPENDIX_D_TOLERANCE:.0%} = {len(near)}, '
+          f'their true T = {np.round(np.sort(near_t), 2)}')
     print('  P from each start = '
           f'{[round(float(surrogate.predict(assemble(r.x)[None, :])[0]), 3) for r in results]}')
     print(f'  solved A, B = {np.round(x_solved, 3)}, P={p_solved:.4f}, '
