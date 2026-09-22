@@ -19,10 +19,11 @@ Changelog:
 - 0.12.0: keep the flagged wafers out of the running baseline and draw the screen instead of the components.
 - 0.13.0: drop the sigma_total over root Nn trace from the cumulative figure.
 - 0.14.0: rename the w2w detection point to the w2w threshold.
+- 0.15.0: give the WiW excursion screen its own class.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.14.0.2026.9.22"
+__version__ = "0.15.0.2026.9.22"
 
 import argparse
 import pathlib
@@ -38,7 +39,7 @@ from matplotlib.colors import TABLEAU_COLORS
 from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
 from scipy import stats
 
-__all__ = ['VarianceComponents', 'W2WThreshold', 'WaferMeasurements']
+__all__ = ['VarianceComponents', 'W2WThreshold', 'WaferMeasurements', 'WiWExcursion']
 
 WAFER_ID_COLUMN: str = 'wafer_id'
 SITE_COLUMN_PATTERN: str = r'^S\d+$'
@@ -109,6 +110,58 @@ class W2WThreshold:
         if reached.size == 0:
             raise ValueError(f"the right term never reaches {self.ratio:.0%} of the observed spread")
         return int(self.terms.index[reached[0]])
+
+
+class WiWExcursion:
+    """The wafers whose site standard deviation exceeds the limit the wafers before them set.
+
+    The baseline at a wafer is the within-wafer component of the wafers before it that were not
+    flagged, so a wafer is judged neither against itself nor against anything measured after it,
+    and an excursion does not raise the baseline the wafers after it are judged against. The site
+    variances are injected once.
+    """
+
+    def __init__(self, site_variance: np.ndarray, site_count: int,
+                 confidence: float = SCREEN_CONFIDENCE, warmup: int = SCREEN_WARMUP) -> None:
+        if site_variance.ndim != 1:
+            raise ValueError(f"site_variance must be one variance per wafer; got shape {site_variance.shape}")
+        if site_count < 2:
+            raise ValueError(f"site_count must be at least 2 to carry a within-wafer spread; got {site_count}")
+        if not 0.0 < confidence < 1.0:
+            raise ValueError(f"confidence {confidence} is outside (0, 1)")
+        if not 2 <= warmup < site_variance.size:
+            raise ValueError(f"warmup {warmup} is outside [2, {site_variance.size})")
+        self.site_variance = site_variance
+        self.site_count = site_count
+        self.confidence = confidence
+        self.warmup = warmup
+
+    @property
+    def factor(self) -> float:
+        """Ratio of the limit to the baseline, from the chi-square quantile of the site count."""
+        return float(np.sqrt(stats.chi2.ppf(self.confidence, self.site_count - 1) / (self.site_count - 1)))
+
+    def screen(self, index: pd.Index) -> pd.DataFrame:
+        """Return the judgement of every wafer, indexed by the caller's wafer ids.
+
+        Returns a pd.DataFrame with columns `sd_within`, `baseline`, `limit` and `exceeded`; the
+        baseline and the limit are NaN over the warm-up wafers, which are left unjudged because
+        their baseline rests on too few wafers.
+        """
+        if len(index) != self.site_variance.size:
+            raise ValueError(f"index carries {len(index)} wafers but {self.site_variance.size} variances were given")
+        wafer_count = self.site_variance.size
+        factor = self.factor
+        accepted = list(self.site_variance[:self.warmup])
+        baseline = np.full(wafer_count, np.nan)
+        exceeded = np.zeros(wafer_count, dtype=bool)
+        for position in range(self.warmup, wafer_count):
+            baseline[position] = np.sqrt(np.mean(accepted))
+            exceeded[position] = np.sqrt(self.site_variance[position]) > baseline[position] * factor
+            if not exceeded[position]:
+                accepted.append(self.site_variance[position])
+        return pd.DataFrame({'sd_within': np.sqrt(self.site_variance), 'baseline': baseline,
+                             'limit': baseline * factor, 'exceeded': exceeded}, index=index)
 
 
 class WaferMeasurements:
@@ -213,31 +266,10 @@ class WaferMeasurements:
                             index=pd.Index(right_edge, name='n'))
 
     def running_screen(self, confidence: float = SCREEN_CONFIDENCE, warmup: int = SCREEN_WARMUP) -> pd.DataFrame:
-        """Flag each wafer whose site standard deviation exceeds the limit set by the wafers before it.
-
-        The baseline at wafer n is the within-wafer component of the wafers before it that were not flagged,
-        so a wafer is judged neither against itself nor against anything measured after it, and an excursion
-        does not raise the baseline the wafers after it are judged against. The limit is that baseline times
-        the chi-square factor of the site count. Returns a pd.DataFrame indexed by the table's wafer id with
-        columns `sd_within`, `baseline`, `limit` and `exceeded`; the baseline and the limit are NaN over the
-        warm-up wafers, which are left unjudged because their baseline rests on too few wafers.
-        """
-        if not 0.0 < confidence < 1.0:
-            raise ValueError(f"confidence {confidence} is outside (0, 1)")
-        if not 2 <= warmup < self.wafer_count:
-            raise ValueError(f"warmup {warmup} is outside [2, {self.wafer_count})")
-        site_variance = self.values.var(axis=1, ddof=1)
-        factor = np.sqrt(stats.chi2.ppf(confidence, self.site_count - 1) / (self.site_count - 1))
-        accepted = list(site_variance[:warmup])
-        baseline = np.full(self.wafer_count, np.nan)
-        exceeded = np.zeros(self.wafer_count, dtype=bool)
-        for index in range(warmup, self.wafer_count):
-            baseline[index] = np.sqrt(np.mean(accepted))
-            exceeded[index] = np.sqrt(site_variance[index]) > baseline[index] * factor
-            if not exceeded[index]:
-                accepted.append(site_variance[index])
-        return pd.DataFrame({'sd_within': np.sqrt(site_variance), 'baseline': baseline,
-                             'limit': baseline * factor, 'exceeded': exceeded}, index=self.frame.index)
+        """Flag each wafer whose site standard deviation exceeds the limit set by the wafers before it."""
+        excursion = WiWExcursion(site_variance=self.values.var(axis=1, ddof=1), site_count=self.site_count,
+                                 confidence=confidence, warmup=warmup)
+        return excursion.screen(index=self.frame.index)
 
     def threshold(self, ratio: float = THRESHOLD_RATIO) -> int:
         """Return the wafer count at the w2w threshold of this table."""
