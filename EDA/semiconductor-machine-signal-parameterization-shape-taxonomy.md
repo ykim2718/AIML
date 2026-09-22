@@ -1,6 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
 
-Rev. 178 | Created: 2026-08-01 | Updated: 2026-08-10 22:17 CDT
+Rev. 179 | Created: 2026-08-01 | Updated: 2026-09-22 17:35 CDT
 
 > 상위 문서: [README](./README.md)
 >
@@ -1033,7 +1033,7 @@ alpha, omega_c = slope and knee of log P vs log f regression  (O4)
 **무엇을 검출하는가** — 세그먼트 회귀계수 `(절편, 기울기)`가 바뀌는 지점이다.
 준위 점프(`S`의 계단, `R`의 on/off)와 기울기 변화(`S1`의 전이 시작·끝, `T`의
 정점)가 같은 기준으로 잡힌다. 세그먼트를 이어 붙이는 연결형(continuous)
-모델을 쓰면 `L`의 불연속 점프가 뭉개지므로 **세그먼트마다 독립 직선
+모델을 쓰면 `L`의 불연속 점프가 연속한 기울기 변화로 바뀌므로 **세그먼트마다 독립 직선
 (비연결형)** 이어야 한다.
 
 ```

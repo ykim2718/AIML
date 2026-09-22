@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 33 | Created: 2026-08-28 | Updated: 2026-09-22 17:10 CDT
+Rev. 34 | Created: 2026-08-28 | Updated: 2026-09-22 17:35 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -100,7 +100,7 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 
 - Analytical inverse 는 선형 model 에서 pseudo-inverse 로 해를 닫힌 형태로 준다. 가장 싸지만 비선형 model 에는 쓸 수 없다.
 - Numerical optimization 은 $f$ 를 그대로 두고 잔차를 줄인다. 미분이 되면 gradient 를, 안 되면 derivative-free 탐색을 쓴다.
-- Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 따로 학습한다. 추론이 한 번의 forward 로 끝나지만, 다중해를 평균으로 뭉개면 어느 쪽도 아닌 답을 낸다 [[4](#ref-4)].
+- Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 따로 학습한다. 추론이 한 번의 forward 로 끝나지만, 같은 $\mathbf{y}$ 에 여러 $\mathbf{x}$ 가 대응하면 그 조건부 평균 하나를 내놓아 어느 해에도 맞지 않는 답이 된다 [[4](#ref-4)].
 - Posterior sampling 은 해를 표본으로 뽑아 다중해를 그대로 드러낸다. 비용이 가장 크다.
 
 ### 2.4 Ambiguity handling (What fixes the answer)
@@ -222,7 +222,7 @@ Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가�
 Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y}_i)$ 이 있으면 inversion 은 풀린다. Model 의 구조 대신 그 쌍이 담은 입출력 관계를 쓰는 것이며, 쓸 수 있는 방법은 셋이다.
 
 - Surrogate re-fitting: 가진 쌍으로 $\hat{y}$ 를 맞추는 새 model 을 세우고, 그 surrogate 를 4 의 방법으로 뒤집는다. 원 model 의 예측을 정답으로 삼아 다른 model 로 옮기는 것이므로 model distillation 이며, 해의 오차는 원 model 의 잔차가 아니라 surrogate 의 재현 오차가 정한다.
-- Learned inverse map: $\hat{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 그 쌍으로 바로 학습한다 (2.3). 추론이 한 번의 forward 로 끝나는 대신 다중해를 평균으로 뭉갠다.
+- Learned inverse map: $\hat{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 그 쌍으로 바로 학습한다 (2.3). 추론이 한 번의 forward 로 끝나는 것이 이점이다. 같은 $\hat{y}$ 를 내는 $\mathbf{x}$ 가 여럿이면 잔차 제곱합을 최소화하는 학습이 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다.
 - Nearest-sample lookup: 목표에 가장 가까운 $\hat{y}_i$ 를 가진 $\mathbf{x}_i$ 를 뽑고 그 이웃에서 보간한다. 가장 싸지만 쌍이 덮은 영역 밖으로는 나가지 못한다.
 
 유효 영역은 세 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 6 의 검증을 그대로 쓴다.
