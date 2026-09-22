@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 96 | Created: 2026-09-01 | Updated: 2026-09-22 00:01 CDT
+Rev. 97 | Created: 2026-09-01 | Updated: 2026-09-22 00:53 CDT
 
 > ANOVA (analysis of variance) 는 관측치의 전체 산포를 몇 개의 원인으로 나누어, 어느 원인이 얼마나 기여하는지 수치로 보이는 방법이다.
 
@@ -62,7 +62,7 @@ $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm
 - Within-wafer range: 평균 41.32, 최대 123.46.
 - Wafer uniformity $`s_i / \bar{X}_i`$: 중앙값 1.81%, 최소 0.87% (wf0033), 최대 8.62% (wf0011).
 
-Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 610 대에 모여 있다가 뒤쪽에서 650 근처까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 선은 wafer 평균을 이은 것으로, 위치가 wafer 마다 얼마나 튀는지 보여준다.
+Wafer 한 장을 violin 하나로 두고 run order 로 늘어놓으면, 분포의 위치와 폭이 wafer 마다 함께 움직이는 것이 보인다. 앞쪽 wafer 는 610 대에 모여 있다가 뒤쪽에서 650 근처까지 올라가고, 아래로 홀로 처진 wafer 는 그 자리에서 값이 크게 낮았다는 뜻이다. Wafer 당 site 가 13 개뿐이라 violin 의 모양 자체는 거칠어서 site 값 13 점을 그대로 겹쳐 찍었다. 겹쳐 그린 선은 wafer 평균을 이은 것으로, 위치가 wafer 마다 얼마나 튀는지 보여준다.
 
 <img src="wiw-w2w-anova_fig/site_value_violin.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
@@ -96,7 +96,7 @@ Table 2. Variance components
 | Within-wafer | 15.87 | 252.0 | 23.9% |
 | Total | 32.50 | 1056.1 | 100% |
 
-두 성분을 더한 32.50 은 section 2 의 관측 표준편차 32.45 와 0.05 만큼 다르다. section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
+두 성분을 더한 32.50 은 section 2 의 관측 표준편차 32.45 와 0.05 만큼 다르다. Section 1.2 에서 본 대로 두 성분의 단순 합은 근사식이고, 정확한 관계에는 1 보다 작은 계수가 붙기 때문이다.
 
 ICC (intraclass correlation) 는 전체 분산 중 wafer 간 분산이 차지하는 비율로, 804.1 / 1056.1 = 0.761 이다. 값이 1 에 가까울수록 같은 wafer 에서 뽑은 두 site 값이 서로 닮았다는 뜻이고, 0 에 가까울수록 어느 wafer 에서 뽑았는지가 값을 예측하는 데 도움이 되지 않는다는 뜻이다. 0.761 은 site 한 점의 산포 중 76.1% 를 그 점이 놓인 wafer 가 결정한다는 것이므로, 산포를 줄이려면 site 단위 균일도보다 wafer 단위 조건을 먼저 봐야 한다.
 
@@ -116,17 +116,17 @@ $`\alpha_i`$ 와 $`e_{ij}`$ 는 각각 평균이 0 이고, $`e_{ij}`$ 는 $`\alp
 
 $$E[\alpha_i] = 0, \quad \mathrm{Var}(\alpha_i) = \sigma_{between}^2, \qquad E[e_{ij}] = 0, \quad \mathrm{Var}(e_{ij}) = \sigma_{within}^2 \hspace{19em} (7)$$
 
-식 (7) 이 붙인 $`\sigma_{between}^2`$ 이라는 이름을 자료에서 재려면 관측되는 양과 이어야 하며, $`\alpha_i`$ 는 관측되지 않으므로 그 연결을 같은 wafer 두 site 값의 covariance 에서 찾는다. 총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이며, 이 모형은 그 값을 $`\sigma_{between}^2`$ 이라 부른다. 두 인자가 같은 covariance 가 variance 가 되는 과정은 [Appendix E](#appendix-e-covariance-with-a-repeated-argument) 에 적었다.
+식 (7) 이 붙인 $`\sigma_{between}^2`$ 이라는 이름을 자료에서 재려면 관측되는 양과 이어야 하며, $`\alpha_i`$ 는 관측되지 않으므로 그 연결을 같은 wafer 두 site 값의 covariance 에서 찾는다. 총평균 $`\mu`$ 는 상수라 covariance 에 들어가지 않으므로, 같은 wafer 의 두 site $`j`$ 와 $`j'`$ 가 함께 지니는 항은 $`\alpha_i`$ 뿐이다. Covariance 를 bilinear 로 펼치면 네 항이 나온다. 둘째와 셋째 항은 within-wafer site 오차가 wafer effect 와 독립이라 0 이고, 넷째 항은 같은 wafer 의 서로 다른 두 site 오차가 서로 독립이라 0 이다. 남는 것은 첫째 항 $`\mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i)`$ 이다. 두 인자가 같은 covariance 가 variance 가 되는 과정은 [Appendix E](#appendix-e-covariance-with-a-repeated-argument) 에 적었다.
 
 $$\mathrm{Cov}(X_{ij}, X_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) + \mathrm{Cov}(\alpha_i, e_{ij'}) + \mathrm{Cov}(e_{ij}, \alpha_i) + \mathrm{Cov}(e_{ij}, e_{ij'}) = \mathrm{Cov}(\alpha_i, \alpha_i) = \mathrm{Var}(\alpha_i) = \sigma_{between}^2 \hspace{19em} (8)$$
 
-식 (8) 은 같은 wafer 의 두 site 가 얼마나 닮았는지를 재지만, 그 값이 곧 wafer 끼리 얼마나 벌어졌는지를 재는 값이다. $`\mathrm{Var}(\alpha_i)`$ 는 $`i`$ 가 바뀔 때, 곧 wafer 가 바뀔 때 $`\alpha_i`$ 가 흩어지는 양이며, 한 wafer 안에서 $`\alpha_i`$ 는 고정된 한 값이다. 같은 wafer 에 놓인 두 site 값은 공통으로 지닌 항이 $`\alpha_i`$ 하나이므로, 그 wafer 의 $`\alpha_i`$ 가 크면 둘 다 같은 크기만큼 총평균 위로 올라가고 작으면 둘 다 같은 크기만큼 내려간다. 두 값을 갈라놓는 것은 각자의 site 오차 $`e_{ij}`$ 와 $`e_{ij'}`$ 뿐이다. 따라서 $`\alpha_i`$ 의 산포가 site 오차보다 클수록 두 값은 공통으로 움직인 몫이 커져 더 닮는다. 그래서 section 3 의 ICC 는 한 wafer 안 두 site 의 상관계수이면서 동시에 전체 분산 중 wafer 간 분산의 비율 $`\sigma_{between}^2 / S_{\mathrm{total}}^2`$ 이다.
+식 (8) 은 같은 wafer 의 두 site 가 얼마나 닮았는지를 재지만, 그 값이 곧 wafer 끼리 얼마나 벌어졌는지를 재는 값이다. $`\mathrm{Var}(\alpha_i)`$ 는 $`i`$ 가 바뀔 때, 곧 wafer 가 바뀔 때 $`\alpha_i`$ 가 흩어지는 양이며, 한 wafer 안에서 $`\alpha_i`$ 는 고정된 한 값이다. 그 wafer 의 $`\alpha_i`$ 가 크면 두 site 값은 둘 다 같은 크기만큼 총평균 위로 올라가고, 작으면 둘 다 같은 크기만큼 내려간다. 두 값을 갈라놓는 것은 각자의 site 오차 $`e_{ij}`$ 와 $`e_{ij'}`$ 뿐이다. 따라서 $`\alpha_i`$ 의 산포가 site 오차보다 클수록 두 값은 공통으로 움직인 몫이 커져 더 닮는다. 그래서 section 3 의 ICC 는 한 wafer 안 두 site 의 상관계수이면서 동시에 전체 분산 중 wafer 간 분산의 비율 $`\sigma_{between}^2 / S_{\mathrm{total}}^2`$ 이다.
 
 $`\alpha_i`$ 와 $`e_{ij}`$ 가 독립이므로 측정값의 variance 는 식 (7) 의 두 variance 의 합이다.
 
 $$S_{\mathrm{total}}^2 = \sigma_{between}^2 + \sigma_{within}^2 \hspace{19em} (9)$$
 
-관측한 wafer 평균은 $`\mu + \alpha_i`$ 자체가 아니라 거기에 site 오차의 평균 $`\bar{e}_i`$ 가 얹힌 값이다. 그 오차는 site $`N`$ 개를 평균한 것이라 분산이 $`N`$ 분의 1 로 줄어든다.
+관측한 wafer 평균은 wafer 의 참 평균 $`\mu + \alpha_i`$ 에 site 오차의 평균 $`\bar{e}_i`$ 가 얹힌 값이다. 그 오차는 site $`N`$ 개를 평균한 것이라 분산이 $`N`$ 분의 1 로 줄어든다.
 
 $$\bar{X}_i = \mu + \alpha_i + \bar{e}_i, \qquad \mathrm{Var}(\bar{e}_i) = \frac{\sigma_{within}^2}{N} \hspace{19em} (10)$$
 
@@ -154,15 +154,15 @@ Wafer effect 가 모두 0 일 경우에, $`\sigma_{between} = 0`$, 곧 ICC = 0 �
 
 $$\hat{\sigma}_{\mu_K} = \frac{S_{\mathrm{total}}}{\sqrt{N}} \hspace{19em} (16)$$
 
-이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.761 이라 식 (16) 이 서지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 32.50/√13 = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
+이것이 흔히 기대하는 $`\sqrt{N}`$ 법칙이다. 이 자료는 ICC = 0.761 이라 식 (16) 이 서지 않는데, 그래도 $`S_{\mathrm{total}}/\sqrt{N}`$ 을 그대로 쓰면 $`32.50/\sqrt{13}`$ = 9.01 로 관측한 28.70 의 3 분의 1 도 되지 않는다.
 
 ### 4.2 W2W Detection Point
 
 Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래와 같다.
 
-- 왼쪽 항: wafer 마다의 site 분산 $`s_i^2`$ 를 처음 $`n`$ 장까지 평균한 $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$ 을 $`\sqrt{N}`$ 으로 나눈 값. Site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. Wafer 평균을 쓰지 않으므로 자료에서 바로 나온다.
-- 관측 곡선: 처음 $`n`$ 장의 wafer 평균의 표본표준편차 $`\sigma_{\mu_n}`$.
-- 오른쪽 항: 식 (13) 을 뒤집은 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 이며, $`\sigma_{between}`$ 자리에 드는 $`s_{\mu}(1..n)`$ 이 그 값이다. Wafer 마다 다른 wafer effect 의 산포, 곧 wafer 간의 변동 그 자체이다. 제곱근 안이 음수인 $`n`$ 에서는 정의되지 않아 그리지 않으며, 이 자료에서는 $`n = 3`$ 이 그렇다.
+- 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$: wafer 마다의 site 분산 $`s_i^2`$ 를 처음 $`n`$ 장까지 평균한 $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$ 을 $`\sqrt{N}`$ 으로 나눈 값. Site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. Wafer 평균을 쓰지 않으므로 자료에서 바로 나온다.
+- 관측 곡선 $`\sigma_{\mu_n}`$: 처음 $`n`$ 장의 wafer 평균의 표본표준편차.
+- 오른쪽 항 $`\sigma_{between}`$: 식 (13) 을 뒤집은 $`\sqrt{\sigma_{\mu_n}^2 - \sigma_{within}^2(1..n)/N}`$ 이며, $`\sigma_{between}`$ 자리에 드는 $`s_{\mu}(1..n)`$ 이 그 값이다. Wafer 마다 다른 wafer effect 의 산포, 곧 wafer 간의 변동 그 자체이다. 제곱근 안이 음수인 $`n`$ 에서는 정의되지 않아 그리지 않으며, 이 자료에서는 $`n = 3`$ 이 그렇다.
 
 <img src="wiw-w2w-anova_fig/cum_stdev.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
@@ -184,7 +184,7 @@ Fig 3 이 그 판정이다. 회색 점이 wafer 한 장의 $`s_i`$, 초록 선�
 
 Fig 3. Site value spread of each wafer against the running baseline and the screening limit of equation (17)
 
-판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, 이상이 잦을수록 자가 스스로 무뎌진다. 261 장을 다 담은 pooled `sigma_within` 15.87 과 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 12.07 로 3.8 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
+판정된 wafer 는 기준선 갱신에서 뺀다. 그대로 담으면 excursion 이 기준선을 끌어올려 뒤의 excursion 을 가리므로, excursion 이 잦을수록 판정이 둔해진다. 261 장을 다 담은 pooled `sigma_within` 15.87 과 견주면 이렇게 얻은 기준선은 마지막 wafer 에서 12.07 로 3.8 이 낮은데, 그 차이가 excursion 이 pooled 값에 실어 놓은 몫이다.
 
 처음 20 장은 기준선을 쌓는 데만 쓰고 판정하지 않는다. 표본 몇 장 위에 선 기준선은 그 자체가 크게 흔들려 판정이 우연에 좌우되기 때문이며, 그 대가로 uniformity 가 가장 나빴던 wf0011 이 $`s_i`$ = 55.04 로 이 자료에서 가장 큰 산포인데도 판정 대상에서 빠진다.
 
@@ -229,7 +229,7 @@ $`K`$ 를 아무리 키워도 $`1-a`$ 는 $`1/N`$ 에서 멈추고, $`N`$ 을 �
 
 $$\lim_{K \to \infty} (1 - a) = \frac{1}{N}, \qquad \lim_{N \to \infty} (1 - b) = \frac{1}{K} \hspace{19em} (21)$$
 
-곧 한쪽만 키운 극한에서 계수는 1 이 아니라 아래 값에 멈춘다.
+곧 한쪽만 키운 극한에서 계수는 아래 값에 멈춘다.
 
 $$\lim_{K \to \infty} a = 1 - \frac{1}{N}, \qquad \lim_{N \to \infty} b = 1 - \frac{1}{K} \hspace{19em} (22)$$
 
@@ -301,7 +301,7 @@ $$\frac{(N-1) s_i^2}{\sigma_{within}^2} = \sum_{j=1}^{N} Z_{ij}^2 - 2 N \bar{Z}_
 
 $$\frac{(N-1) s_i^2}{\sigma_{within}^2} \sim \chi^2_{N-1} \hspace{19em} (32)$$
 
-자유도가 $`N`$ 이 아니라 $`N-1`$ 인 까닭은 편차 $`X_{ij} - \bar{X}_i`$ 가 합이 0 이라는 제약 하나에 묶여 $`N`$ 개 중 $`N-1`$ 개만 자유롭기 때문이다.
+편차 $`X_{ij} - \bar{X}_i`$ 는 합이 0 이라는 제약 하나에 묶여 $`N`$ 개 중 $`N-1`$ 개만 자유로우므로, 자유도가 $`N-1`$ 이다.
 
 $`\chi^2_{p,\,N-1}`$ 을 자유도 $`N-1`$ 인 카이제곱 분포의 $`p`$ 분위, 곧 그보다 작을 확률이 $`p`$ 인 점으로 두면, 식 (32) 의 좌변이 그 점을 넘을 확률은 나머지인 $`1-p`$ 이다.
 
@@ -317,7 +317,7 @@ $`\nu`$ 가 커지면 $`F(N-1, \nu)`$ 의 $`p`$ 분위는 $`\chi^2_{p,\,N-1}/(N-
 
 ## Appendix E. Covariance With a Repeated Argument
 
-Covariance 는 두 확률변수가 각자의 평균에서 벗어난 양을 곱해 기댓값을 취한 값이다. 두 인자에 같은 확률변수를 넣으면 곱해지는 두 편차가 같은 값이라 제곱이 되고, 그 기댓값은 variance 의 정의 그대로이다.
+Covariance 의 두 인자에 같은 확률변수를 넣으면 곱해지는 두 편차가 같은 값이라 제곱이 되고, 그 기댓값은 variance 의 정의 그대로이다.
 
 $$\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(Y) \hspace{19em} (35)$$
 
