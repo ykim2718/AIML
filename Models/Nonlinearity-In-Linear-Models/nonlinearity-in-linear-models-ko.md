@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 0 | Created: 2026-09-23 | Updated: 2026-09-23 00:55 CDT
+Rev. 1 | Created: 2026-09-23 | Updated: 2026-09-23 01:20 CDT
 
 ## 1. Purpose
 
@@ -85,6 +85,8 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 - 변수 $x$ 기준: 비선형 모델 (곡선 및 상호작용 곡면 표현 가능)
 - 가중치 $\beta$ 기준: 선형 모델 (최소제곱법, Ridge/Lasso 규제 등 기존 알고리즘 그대로 적용)
+
+선형대수학의 선형성과 공학에서 쓰는 선형성이 갈리는 지점은 [Appendix C](#appendix-c-two-views-of-linearity) 에 있습니다.
 
 식 (3) 의 계수는 확장 전의 계수와 같은 방식으로 읽습니다. $\beta_3$ 은 $x_1$ 의 곡률이고 $\beta_5$ 는 두 변수가 함께 움직일 때의 기여이며, 둘 다 최소제곱법이 정합니다.
 
@@ -181,3 +183,8 @@ approach A coefficients: {'x1': np.float64(1.963), 'x2': np.float64(-1.015), 'x1
 ```
 
 계수 네 개는 data 를 만든 식의 계수 2, -1, 1.5, 0.8 을 되찾았고, 식에 없던 $x_2^2$ 의 계수는 0.005 로 남았습니다.
+
+## Appendix C. Two Views of Linearity
+
+- 선형대수학의 선형성: 가산성 ($f(x+y)=f(x)+f(y)$) 과 동차성 ($f(cx)=cf(x)$) 을 만족해야 하며, 반드시 원점을 지나야 함 ($y=ax+b$ 에서 $b \neq 0$ 이면 아핀 변환).
+- 도메인/공학에서의 선형성: 직선 및 비례 관계를 의미하며, 선형대수의 엄밀한 정의보다 확장된 의미로 사용됨.
