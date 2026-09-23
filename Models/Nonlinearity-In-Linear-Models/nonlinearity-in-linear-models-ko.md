@@ -1,17 +1,17 @@
 # Nonlinearity in Linear Models
-Rev. 2 | Created: 2026-09-23 | Updated: 2026-09-23 01:35 CDT
+Rev. 3 | Created: 2026-09-23 | Updated: 2026-09-23 03:10 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: 선형 model 은 예측 경계가 1차 평면이어서, data 에 곡선 관계나 변수 사이의 interaction 이 있으면 그것을 담지 못하고 underfitting 이 발생합니다.
-- **Goal**: 비선형성을 분석가가 feature 로 담는 경우와 algorithm 이 model 내부에서 담는 경우를 가르고, 두 접근의 수학적 근거와 고르는 기준을 정합니다.
-- **Non-Goal**: Model 별 hyperparameter 조정 절차는 다루지 않습니다. 확장한 열의 개수가 행 수에 근접할 때의 차원 문제도 다루지 않습니다.
+- **Problem Statement**: 수리통계와 machine learning model 의 선형성 (linearity) 과 비선형성 (non-linearity), 그리고 data 의 선형 특성 (linear property) 과 비선형 특성 (non-linear property) 의 차이에 대한 이해가 부족하여 modeling 전략이 혼란하다.
+- **Goal**: 수리통계학적 선형성 (linearity) 을 바탕으로, machine learning 에서 변수 사이의 상호작용 (feature interaction) 과 비선형 data 특성을 다루는 modeling 전략을 비교 분석한다.
+- **Non-Goal**: Model 상세는 다루지 않는다.
 
 ## 2. Summary
 
-비선형성을 누가 담당하는지가 두 접근을 가릅니다. 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 선형 model 에 넣는 접근 A 와, 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근 B 입니다.
+Model 의 선형성과 data 의 비선형 특성은 서로 다른 대상입니다. 선형성은 가중치 $\beta$ 에 대한 1차성이고, 비선형 특성은 $x$ 와 $y$ 사이 관계의 곡률과 변수 사이의 interaction 입니다. 그래서 입력을 비선형으로 변환해도 $\beta$ 에 대한 1차 구조는 남고, 최소제곱법과 Ridge, Lasso, PLS 의 해법을 그대로 사용합니다 (4.2 절).
 
-선형 model 의 선형성은 가중치 $\beta$ 에 대한 1차성이므로, 입력을 비선형으로 변환해도 최소제곱법과 Ridge, Lasso, PLS 의 해법을 그대로 사용합니다 (4.2 절).
+비선형 data 특성을 누가 담당하는지가 두 modeling 전략을 가릅니다. 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 선형 model 에 넣는 접근 A 와, 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근 B 입니다.
 
 두 접근이 같은 data 에서 비슷한 정확도에 이르는 경우가 있습니다. [Appendix B](#appendix-b-python-implementation) 의 실행에서 원본 열만 쓴 Ridge 는 $R^2$ 가 0.4735 였고, degree 2 로 확장한 Ridge 는 0.9782, 같은 원본 열을 쓴 HistGradientBoostingRegressor 는 0.9689 였습니다. 갈리는 것은 정확도가 아니라 읽어 낼 수 있는 것과, 비선형의 형태를 미리 알아야 하는지입니다 (3.1 절).
 
