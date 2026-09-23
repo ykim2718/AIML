@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 1 | Created: 2026-09-23 | Updated: 2026-09-23 09:35 CDT
+Rev. 2 | Created: 2026-09-23 | Updated: 2026-09-23 09:47 CDT
 
 ## 1. Purpose
 
@@ -13,42 +13,42 @@ The linearity of a model and the non-linear property of the data are two differe
 
 Who handles the non-linear property of the data splits the two modeling strategies.
 
-- **Linear model + non-linear feature (feature engineering approach)**: "Keep the model simple (linear) and make the data (feature) complex." A linear model fed with columns such as $x^2$ and $x_1 x_2$ that the analyst builds.
-- **Non-linear model + linear feature (algorithm approach)**: "Leave the data (feature) as it is (linear, original) and make the model complex (non-linear)." An approach where the original columns go in unchanged and a tree ensemble or a neural network learns the shape inside.
+- **Linear model + non-linear feature (the Feature-Intensive Model)**: "Keep the model simple (linear) and make the data (feature) complex." A linear model fed with columns such as $x^2$ and $x_1 x_2$ that the analyst builds.
+- **Non-linear model + linear feature (the Algorithm-Intensive Model)**: "Leave the data (feature) as it is (linear, original) and make the model complex (non-linear)." An approach where the original columns go in unchanged and a tree ensemble or a neural network learns the shape inside.
 
 ## 3. Taxonomy and its Hierarchy
 
-Nonlinearity splits on three axes: the linearity of the model, the linearity of the feature, and the value you read out. The feature engineering approach puts non-linear features into a linear model and reads the coefficient of each term, and the algorithm approach puts linear features into a non-linear model and reads variable importance. [Fig 1](#fig-1) is those three axes and the methods on each side.
+Nonlinearity splits on three axes: the linearity of the model, the linearity of the feature, and the value you read out. The Feature-Intensive Model puts non-linear features into a linear model and reads the coefficient of each term, and the Algorithm-Intensive Model puts linear features into a non-linear model and reads variable importance. [Fig 1](#fig-1) is those three axes and the methods on each side.
 
 ```text
 Nonlinearity in a model
 |
-+-- Approach A: linear model + non-linear feature .. feature engineering
++-- Feature-Intensive Model ........................ linear model + non-linear feature
 |     +-- Power term: x^2, x^3 ..................... curvature of one variable
 |     +-- Interaction term: x1 * x2 ................ joint effect of two variables
 |     +-- Basis expansion: spline, RBF ............. local shape without a global degree
 |
-+-- Approach B: non-linear model + linear feature .. algorithm
++-- Algorithm-Intensive Model ...................... non-linear model + linear feature
       +-- Tree ensemble ............................ split points cut the input space
       +-- Neural network ........................... activation function bends the response
       +-- Kernel method ............................ inner product in an implicit feature space
 ```
 
 <a id="fig-1"></a>
-Fig 1. The model and the feature of each approach, and the methods on each side
+Fig 1. The composition of the two models and the methods on each side
 
-The hierarchy of the two approaches descends by the strength of the assumption. Approach A writes the shape of the nonlinearity down as terms in advance, and in return reads the coefficient of each term directly. Approach B leaves the shape unwritten, and in return cannot read from a single coefficient which range of which variable moved the prediction.
+The hierarchy of the two models descends by the strength of the assumption. The Feature-Intensive Model writes the shape of the nonlinearity down as terms in advance, and in return reads the coefficient of each term directly. The Algorithm-Intensive Model leaves the shape unwritten, and in return cannot read from a single coefficient which range of which variable moved the prediction.
 
 ### 3.1 Placement
 
-Table 1. Where each approach sits on the three axes
+Table 1. Where each model sits on the three axes
 
-| Approach               | Model      | Feature                          | What you read out                | Breaks when                                         |
-| :--------------------: | :--------: | :------------------------------: | :------------------------------: | :-------------------------------------------------: |
-| A. Feature engineering | Linear     | Non-linear (transformed columns) | Coefficient $\beta$ of each term | The shape of the nonlinearity is unknown in advance |
-| B. Algorithm           | Non-linear | Linear (original columns)        | Variable importance              | The extrapolation range and a small sample          |
+| Model                     | Linearity  | Feature                          | What you read out                | Breaks when                                         |
+| :-----------------------: | :--------: | :------------------------------: | :------------------------------: | :-------------------------------------------------: |
+| Feature-Intensive Model   | Linear     | Non-linear (transformed columns) | Coefficient $\beta$ of each term | The shape of the nonlinearity is unknown in advance |
+| Algorithm-Intensive Model | Non-linear | Linear (original columns)        | Variable importance              | The extrapolation range and a small sample          |
 
-Approach A has the analyst decide which terms to build, so there has to be ground for guessing which curve and which interaction the data holds. Approach B fits without that ground, but a tree ensemble cannot extrapolate beyond the train data and a neural network overfits when the samples are few.
+The Feature-Intensive Model has the analyst decide which terms to build, so there has to be ground for guessing which curve and which interaction the data holds. The Algorithm-Intensive Model fits without that ground, but a tree ensemble cannot extrapolate beyond the train data and a neural network overfits when the samples are few.
 
 ## 4. Principle
 
@@ -93,25 +93,25 @@ The coefficients of equation (3) are read the same way as the coefficients befor
 
 ## 5. Application
 
-The approach splits by who handles the nonlinearity. In approach A the analyst adds the non-linear and interaction terms with `PolynomialFeatures` and the like, and then fits a linear model (Ridge, PLS and so on). Approach B feeds the original data ($x_1$, $x_2$) unchanged and lets a tree-based ensemble (XGBoost, Random Forest) or a neural network learn the non-linear pattern inside, through its splits and its activation functions.
+The approach splits by who handles the nonlinearity. In the Feature-Intensive Model the analyst adds the non-linear and interaction terms with `PolynomialFeatures` and the like, and then fits a linear model (Ridge, PLS and so on). The Algorithm-Intensive Model feeds the original data ($x_1$, $x_2$) unchanged and lets a tree-based ensemble (XGBoost, Random Forest) or a neural network learn the non-linear pattern inside, through its splits and its activation functions.
 
-The model of approach A is linear in $\beta$ only. It carries the intercept $\beta_0$, so by the definition of linear algebra it is an affine transform, and the linearity used in engineering covers that affine case as well ([Appendix C](#appendix-c-two-views-of-linearity)). The model of approach B is linear neither in $x$ nor in $\beta$, so reading a contribution off a single coefficient does not hold at all.
+The Feature-Intensive Model is linear in $\beta$ only. It carries the intercept $\beta_0$, so by the definition of linear algebra it is an affine transform, and the linearity used in engineering covers that affine case as well ([Appendix C](#appendix-c-two-views-of-linearity)). The Algorithm-Intensive Model is linear neither in $x$ nor in $\beta$, so reading a contribution off a single coefficient does not hold at all.
 
-### 5.1 Approach A: Linear Model with Non-Linear Features
+### 5.1 Feature-Intensive Model
 
 - **Assumption**: The shape of the nonlinearity to be held can be written as terms. Degree 2 reaches the square of one variable and the product of two.
 - **Settings**: `PolynomialFeatures(degree=2, include_bias=False)` and the regularization strength `alpha`. The expanded columns differ in scale, so Ridge or Lasso bounds the coefficients.
 - **Breaks when**: The true relation lies outside the terms that were written down, and underfitting remains after the expansion. Raising the degree to catch it grows the column count fast and the coefficients become unstable.
 - **Where you meet it**: A place where physical ground, process variables for one, lets you guess the curvature and the interaction, and the coefficients have to be reported.
 
-### 5.2 Approach B: Non-Linear Model with Linear Features
+### 5.2 Algorithm-Intensive Model
 
 - **Assumption**: The samples are many enough to fix the split structure. A tree ensemble fits a constant per range, so the sample count inside a range fixes the accuracy.
 - **Settings**: `max_depth` and the learning rate of the tree ensemble, the layer count and the activation function of the neural network.
 - **Breaks when**: For an input outside the train data a tree ensemble returns the constant of the last range and cannot extrapolate. A neural network overfits when the samples are few.
 - **Where you meet it**: A place where the variables are too many to write the terms one by one, and the prediction accuracy comes before reading the coefficients.
 
-A run comparing the accuracy of the two approaches on the same data is in [Appendix B](#appendix-b-python-implementation).
+A run comparing the accuracy of the two models on the same data is in [Appendix B](#appendix-b-python-implementation).
 
 ## 6. Further Work
 
@@ -134,7 +134,7 @@ A run comparing the accuracy of the two approaches on the same data is in [Appen
 
 ## Appendix B. Python Implementation
 
-The two approaches are applied to the same data and their accuracy compared.
+The two models are applied to the same data and their accuracy compared.
 
 ```python
 import numpy as np
@@ -158,31 +158,32 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 # the baseline: a linear model on the original columns
 plain = Ridge(alpha=1.0).fit(X_train, y_train)
 
-# approach A: the analyst adds the power and interaction columns
-approach_a = make_pipeline(
+# the feature-intensive model: the analyst adds the power and interaction columns
+feature_intensive = make_pipeline(
     PolynomialFeatures(degree=2, include_bias=False), Ridge(alpha=1.0)
 ).fit(X_train, y_train)
 
-# approach B: the algorithm splits the original columns on its own
-approach_b = HistGradientBoostingRegressor(max_depth=3, random_state=0).fit(X_train, y_train)
+# the algorithm-intensive model: the algorithm splits the original columns on its own
+algorithm_intensive = HistGradientBoostingRegressor(max_depth=3, random_state=0).fit(X_train, y_train)
 
 for name, model in (("linear model, original columns", plain),
-                    ("approach A: Ridge on degree-2 columns", approach_a),
-                    ("approach B: HistGradientBoostingRegressor", approach_b)):
-    print(f"{name:42s} R2 = {r2_score(y_test, model.predict(X_test)):.4f}")
+                    ("feature-intensive: Ridge on degree-2 columns", feature_intensive),
+                    ("algorithm-intensive: HistGradientBoostingRegressor", algorithm_intensive)):
+    print(f"{name:50s} R2 = {r2_score(y_test, model.predict(X_test)):.4f}")
 
-# the coefficients approach A reads out, one per term of equation (3)
-term_names = approach_a[0].get_feature_names_out(["x1", "x2"])
-print("approach A coefficients:", dict(zip(term_names, np.round(approach_a[1].coef_, 3))))
+# the coefficients the feature-intensive model reads out, one per term of equation (3)
+term_names = feature_intensive[0].get_feature_names_out(["x1", "x2"])
+print("feature-intensive coefficients:",
+      dict(zip(term_names, np.round(feature_intensive[1].coef_, 3))))
 ```
 
-The first three lines are the held-out $R^2$ of the three models, and the last line is the coefficient of each term that approach A reads out.
+The first three lines are the held-out $R^2$ of the three models, and the last line is the coefficient of each term that the Feature-Intensive Model reads out.
 
 ```text
-linear model, original columns             R2 = 0.4735
-approach A: Ridge on degree-2 columns      R2 = 0.9782
-approach B: HistGradientBoostingRegressor  R2 = 0.9689
-approach A coefficients: {'x1': np.float64(1.963), 'x2': np.float64(-1.015), 'x1^2': np.float64(1.516), 'x1 x2': np.float64(0.76), 'x2^2': np.float64(0.005)}
+linear model, original columns                     R2 = 0.4735
+feature-intensive: Ridge on degree-2 columns       R2 = 0.9782
+algorithm-intensive: HistGradientBoostingRegressor R2 = 0.9689
+feature-intensive coefficients: {'x1': np.float64(1.963), 'x2': np.float64(-1.015), 'x1^2': np.float64(1.516), 'x1 x2': np.float64(0.76), 'x2^2': np.float64(0.005)}
 ```
 
 Four coefficients recovered 2, -1, 1.5 and 0.8, the coefficients of the expression that made the data, and the coefficient of $x_2^2$, which that expression does not carry, stayed at 0.005.
