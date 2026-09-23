@@ -1,5 +1,5 @@
-# Nonlinearity in Linear Models
-Rev. 5 | Created: 2026-09-23 | Updated: 2026-09-23 09:54 CDT
+# Modeling Strategies for Non-Linear Data Properties
+Rev. 6 | Created: 2026-09-23 | Updated: 2026-09-23 09:56 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -62,7 +62,7 @@ Table 1. Where each model sits on the three axes
 | Feature-Intensive Model   | Linear     | Non-linear (transformed columns) | Coefficient $\beta$ of each term | The shape of the nonlinearity is unknown in advance |
 | Algorithm-Intensive Model | Non-linear | Linear (original columns)        | Variable importance              | The extrapolation range and a small sample          |
 
-The Feature-Intensive Model has the analyst decide which terms to build, so there has to be ground for guessing which curve and which interaction the data holds. The Algorithm-Intensive Model fits without that ground, but a tree ensemble cannot extrapolate beyond the train data and a neural network overfits when the samples are few.
+The Feature-Intensive Model has the analyst decide which terms to build, so there has to be ground for guessing which curve and which interaction the data holds. The Algorithm-Intensive Model fits without that ground, but its accuracy drops in the extrapolation range and on a small sample (section 5.2).
 
 ## 4. Principle
 
@@ -113,7 +113,7 @@ The approach splits by who handles the nonlinearity. In the Feature-Intensive Mo
 
 `Ridge`, `Lasso` and `PLSRegression` do the fitting, and the three methods of [Fig 1](#fig-1) decide in front of them which columns go in.
 
-- **Power term**: the $x^2$ and $x^3$ columns of one variable. `PolynomialFeatures(degree=3)` builds every term up to the degree at once.
+- **Power term**: the $x^2$ and $x^3$ columns of one variable. `PolynomialFeatures(degree=3)` builds every term up to the third degree, and the ones holding a single variable are the power terms.
 - **Interaction term**: the product column $x_1 x_2$ of two variables. When only the product is wanted, `PolynomialFeatures(interaction_only=True)` drops the power terms.
 - **Basis expansion**: a spline, which joins a polynomial per interval at the points that divide them, and RBF, which builds columns from the distance to a center. `n_knots` of `SplineTransformer` sets the interval count, and the curve of one interval changes without raising the degree.
 

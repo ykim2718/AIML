@@ -1,5 +1,5 @@
-# Nonlinearity in Linear Models
-Rev. 10 | Created: 2026-09-23 | Updated: 2026-09-23 09:54 CDT
+# Modeling Strategies for Non-Linear Data Properties
+Rev. 11 | Created: 2026-09-23 | Updated: 2026-09-23 09:56 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -62,7 +62,7 @@ Table 1. Where each model sits on the three axes
 | Feature-Intensive Model   | 선형      | 비선형 (변환된 열) | 항마다의 계수 $\beta$ | 비선형의 형태를 미리 알 수 없을 때 |
 | Algorithm-Intensive Model | 비선형    | 선형 (원본 열)     | 변수 중요도           | 외삽 구간과 적은 표본에서          |
 
-Feature-Intensive Model 은 어떤 항을 만들지를 분석가가 정하므로, 자료에 어떤 곡선과 어떤 interaction 이 있는지 짐작할 근거가 있어야 합니다. Algorithm-Intensive Model 은 그 근거 없이도 적합하지만, tree ensemble 은 train data 밖의 값을 외삽하지 못하고 neural network 는 표본이 적으면 과적합합니다.
+Feature-Intensive Model 은 어떤 항을 만들지를 분석가가 정하므로, 자료에 어떤 곡선과 어떤 interaction 이 있는지 짐작할 근거가 있어야 합니다. Algorithm-Intensive Model 은 그 근거 없이도 적합하지만, 외삽 구간과 적은 표본에서 정확도가 떨어집니다 (5.2 절).
 
 ## 4. Principle
 
@@ -113,7 +113,7 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 적합은 `Ridge`, `Lasso`, `PLSRegression` 이 맡고, [Fig 1](#fig-1) 의 세 방법이 그 앞에서 넣을 열을 정합니다.
 
-- **Power term**: 한 변수의 $x^2$, $x^3$ 열. `PolynomialFeatures(degree=3)` 이 degree 까지의 항을 한 번에 만듭니다.
+- **Power term**: 한 변수의 $x^2$, $x^3$ 열. `PolynomialFeatures(degree=3)` 이 3 차까지의 항을 모두 만들며, 그 가운데 변수 하나만 든 항이 power term 입니다.
 - **Interaction term**: 두 변수의 곱 $x_1 x_2$ 열. 곱만 필요하면 `PolynomialFeatures(interaction_only=True)` 가 제곱 항을 뺍니다.
 - **Basis expansion**: 구간을 나누는 점마다 다항식을 잇는 spline 과, 중심에서의 거리로 열을 만드는 RBF. `SplineTransformer` 의 `n_knots` 가 구간 수를 정하며, degree 를 올리지 않고 한 구간의 곡선만 바꿉니다.
 
