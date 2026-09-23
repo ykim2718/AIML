@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 41 | Created: 2026-08-28 | Updated: 2026-09-22 20:40 CDT
+Rev. 42 | Created: 2026-08-28 | Updated: 2026-09-22 20:55 CDT
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -527,7 +527,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 FEATURES = ["A", "B", "C", "D", "E"]
 FREE = ["A", "B"]
-N_ROWS, P_TARGET, N_STARTS, TOLERANCE = 100, 19.0, 5, 0.01
+N_ROWS, P_TARGET, N_STARTS, TOLERANCE = 100, 19.0, 5, 0.02
 
 
 def make_dataset(n_rows: int = N_ROWS, seed: int = 0) -> pd.DataFrame:
@@ -616,10 +616,10 @@ print("P at solution     :", round(float(surrogate.predict(solution[None, :])[0]
 print("T2                :", round(t2(solution), 2), "limit", round(t2_limit, 2))
 print("SPE               :", round(spe(solution), 3), "limit", round(spe_limit, 3))
 
-# 4. check the solution against the rows that were actually run within 1% of it
+# 4. check the solution against the rows that were actually run near it
 near = data[(np.abs(data["A"] - best.x[0]) <= TOLERANCE * abs(best.x[0]))
             & (np.abs(data["B"] - best.x[1]) <= TOLERANCE * abs(best.x[1]))]
-print("rows within 1%    :", len(near))
+print("rows within 2%    :", len(near))
 print("their true T      :", np.round(np.sort(near["T"].to_numpy()), 2))
 ```
 
@@ -635,8 +635,8 @@ solved A, B       : [10.066  5.531]
 P at solution     : 19.0017
 T2                : 0.0 limit 5.99
 SPE               : 0.063 limit 0.468
-rows within 1%    : 2
-their true T      : [18.56 19.01]
+rows within 2%    : 4
+their true T      : [17.85 18.56 19.01 19.8 ]
 ```
 
 `vendor_model` 은 `P` 열을 남긴 뒤 `del` 로 가려진다. 그 뒤의 계산은 표의 `A`–`E` 와 `P` 만 읽으므로, model 은 그대로 있되 이 code 에서 닿을 수 없는 상황이 된다.
@@ -647,16 +647,16 @@ their true T      : [18.56 19.01]
 
 <img src="inversion-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 7">
 
-Fig 7. Appendix D hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 1% of the solution
+Fig 7. Appendix D hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
 
 - (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.712$ 이다. `T` 는 평균 19.1, 표준편차 1.3 으로 목표 19.0 을 중심에 두고 몰려 있어 100 행 가운데 51 행이 목표에서 1 이내에 들며, 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
 - (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 19.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.
 - (c) 는 surrogate 가 `P` 를 얼마나 따라가는지 보인다. 가로축은 가려진 model 이 남긴 `P` 열이고 세로축은 surrogate 의 예측이며, $R^{2} = 0.9995$ 로 점이 1:1 선에 붙어 있다.
-- (d) 는 해의 `A` = 10.066, `B` = 5.531 에서 1% 안에 든 historical 행만 그린 것이다. 가로축이 그 행의 참값 `T`, 세로축이 surrogate 의 예측이며, 그런 행은 2 개이고 참값은 18.56 과 19.01 이다.
+- (d) 는 해의 `A` = 10.066, `B` = 5.531 에서 2% 안에 든 historical 행만 그린 것이다. 가로축이 그 행의 참값 `T`, 세로축이 surrogate 의 예측이며, 그런 행은 4 개이고 참값은 17.85, 18.56, 19.01, 19.80 이다.
 
 (c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
-(d) 는 해를 실제와 맞대어 본 것이다. 두 행의 surrogate 예측은 모두 19.0 부근인데 참값은 18.56 과 19.01 이어서, 같은 조건을 실제로 운전해도 목표를 그대로 얻지는 못한다. 1% 라는 좁은 창에 historical data 가 두 행밖에 없다는 것 자체도 읽을 거리이며, 해 주변의 실측이 이만큼 드물면 검증에 쓸 근거가 그만큼 얇다. 이 퍼짐은 (a) 가 보인 가려진 model 의 $R^{2} = 0.712$ 에서 온다. Surrogate 는 그 model 을 $R^{2} = 0.9995$ 로 따라가지만 그 model 이 참값을 설명하지 못하는 몫까지 메워 주지는 못하므로, 두 오차 가운데 큰 쪽이 결과를 정한다. 6 의 검증 항목이 말한 대로 얻은 조건을 실험으로 확인하고 그 결과를 데이터에 더해야 하는 이유가 (d) 에 그대로 보인다.
+(d) 는 해를 실제와 맞대어 본 것이다. 네 행의 surrogate 예측은 모두 19.0 부근인데 참값은 17.85 에서 19.80 까지 퍼져 있어, 같은 조건을 실제로 운전해도 목표를 그대로 얻지는 못한다. 이 퍼짐은 (a) 가 보인 가려진 model 의 $R^{2} = 0.712$ 에서 온다. Surrogate 는 그 model 을 $R^{2} = 0.9995$ 로 따라가지만 그 model 이 참값을 설명하지 못하는 몫까지 메워 주지는 못하므로, 두 오차 가운데 큰 쪽이 결과를 정한다. 6 의 검증 항목이 말한 대로 얻은 조건을 실험으로 확인하고 그 결과를 데이터에 더해야 하는 이유가 (d) 에 그대로 보인다.
 
 등고선이 계단 모양이다. Surrogate 가 4.3 의 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
 
