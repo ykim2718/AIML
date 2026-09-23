@@ -1,5 +1,19 @@
 # Nonlinearity in Linear Models
-Rev. 3 | Created: 2026-09-23 | Updated: 2026-09-23 09:40 CDT
+Rev. 4 | Created: 2026-09-23 | Updated: 2026-09-23 09:50 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
+- [4. Principle](#4-principle)
+  - [4.1 Linear Model Mechanics and Limits](#41-linear-model-mechanics-and-limits)
+  - [4.2 Nonlinear Features in a Linear Model](#42-nonlinear-features-in-a-linear-model)
+- [5. Application](#5-application)
+  - [5.1 Feature-Intensive Model](#51-feature-intensive-model)
+  - [5.2 Algorithm-Intensive Model](#52-algorithm-intensive-model)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Implementation](#appendix-b-python-implementation)
+- [Appendix C. Two Views of Linearity](#appendix-c-two-views-of-linearity)
 
 ## 1. Purpose
 
@@ -87,7 +101,7 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 - On the variable $x$: a non-linear model (a curve and an interaction surface are expressible)
 - On the weight $\beta$: a linear model (least squares, Ridge/Lasso regularization and the other existing algorithms apply unchanged)
 
-Where the linearity of linear algebra and the linearity used in engineering part is in [Appendix C](#appendix-c-two-views-of-linearity).
+The model of equation (3) carries the intercept $\beta_0$, so by the definition of linear algebra it is an affine transform, and the linearity used in engineering covers that affine case as well ([Appendix C](#appendix-c-two-views-of-linearity)).
 
 The coefficients of equation (3) are read the same way as the coefficients before the expansion. $\beta_3$ is the curvature of $x_1$ and $\beta_5$ is the contribution of the two variables moving together, and least squares fixes both.
 
@@ -95,30 +109,37 @@ The coefficients of equation (3) are read the same way as the coefficients befor
 
 The approach splits by who handles the nonlinearity. In the Feature-Intensive Model the analyst adds the non-linear and interaction terms with `PolynomialFeatures` and the like, and then fits a linear model (Ridge, PLS and so on). The Algorithm-Intensive Model feeds the original data ($x_1$, $x_2$) unchanged and lets a tree-based ensemble (XGBoost, Random Forest) or a neural network learn the non-linear pattern inside, through its splits and its activation functions.
 
-The Feature-Intensive Model is linear in $\beta$ only. It carries the intercept $\beta_0$, so by the definition of linear algebra it is an affine transform, and the linearity used in engineering covers that affine case as well ([Appendix C](#appendix-c-two-views-of-linearity)). The Algorithm-Intensive Model is linear neither in $x$ nor in $\beta$, so reading a contribution off a single coefficient does not hold at all.
-
 ### 5.1 Feature-Intensive Model
 
-- **Assumption**: The shape of the nonlinearity to be held can be written as terms. Degree 2 reaches the square of one variable and the product of two.
-- **Settings**: `PolynomialFeatures(degree=2, include_bias=False)` and the regularization strength `alpha`. The expanded columns differ in scale, so Ridge or Lasso bounds the coefficients.
+`Ridge`, `Lasso` and `PLSRegression` do the fitting, and the three methods of [Fig 1](#fig-1) decide in front of them which columns go in.
+
+- **Power term**: the $x^2$ and $x^3$ columns of one variable. `PolynomialFeatures(degree=3)` builds every term up to the degree at once.
+- **Interaction term**: the product column $x_1 x_2$ of two variables. When only the product is wanted, `PolynomialFeatures(interaction_only=True)` drops the power terms.
+- **Basis expansion**: a spline, which joins a polynomial per interval at the points that divide them, and RBF, which builds columns from the distance to a center. `n_knots` of `SplineTransformer` sets the interval count, and the curve of one interval changes without raising the degree.
+
+The three methods share the conditions below.
+
+- **Assumption**: The shape of the nonlinearity to be held can be written as terms in advance.
+- **Settings**: The regularization strength `alpha`. The expanded columns differ in scale, so Ridge or Lasso bounds the coefficients.
 - **Breaks when**: The true relation lies outside the terms that were written down, and underfitting remains after the expansion. Raising the degree to catch it grows the column count fast and the coefficients become unstable.
 - **Where you meet it**: A place where physical ground, process variables for one, lets you guess the curvature and the interaction, and the coefficients have to be reported.
 
 ### 5.2 Algorithm-Intensive Model
 
-- **Assumption**: The samples are many enough to fix the split structure. A tree ensemble fits a constant per range, so the sample count inside a range fixes the accuracy.
-- **Settings**: `max_depth` and the learning rate of the tree ensemble, the layer count and the activation function of the neural network.
-- **Breaks when**: For an input outside the train data a tree ensemble returns the constant of the last range and cannot extrapolate. A neural network overfits when the samples are few.
+The original columns go in unchanged, and the three methods of [Fig 1](#fig-1) build the nonlinearity inside the model.
+
+- **Tree ensemble**: it cuts the input space by splits and fits a constant per range. `RandomForestRegressor`, `HistGradientBoostingRegressor`, XGBoost and LightGBM belong here.
+- **Neural network**: the activation function bends the response at every layer and makes a continuous surface. `MLPRegressor` is the implementation.
+- **Kernel method**: instead of growing the columns it stands in for the expanded space through the inner product between samples. `SVR(kernel='rbf')` and `KernelRidge` are the implementations.
+
+The three methods share the conditions below.
+
+- **Assumption**: The samples are many enough to fix the split positions and the weights. A tree ensemble fits a constant per range, so the sample count inside a range fixes the accuracy.
+- **Settings**: `max_depth` and the learning rate of the tree ensemble, the layer count and the activation function of the neural network, `gamma` and `C` of the kernel method.
+- **Breaks when**: For an input outside the train data a tree ensemble returns the constant of the last range and cannot extrapolate. A neural network overfits when the samples are few, and the work of a kernel method grows with the square of the sample count when they are many.
 - **Where you meet it**: A place where the variables are too many to write the terms one by one, and the prediction accuracy comes before reading the coefficients.
 
 A run comparing the accuracy of the two models on the same data is in [Appendix B](#appendix-b-python-implementation).
-
-## 6. Further Work
-
-- **Comparison of basis expansions**
-  - What it does: Compare the spline and RBF bases with the degree-2 expansion on the same data, and measure the column count and the accuracy when a local curve is held.
-  - Why now: `SplineTransformer` takes the same place as `PolynomialFeatures` inside a pipeline from scikit-learn 1.0 on.
-  - What is needed: Two data sets whose curves differ in locality, and a validation split under the same condition.
 
 ---
 
@@ -129,6 +150,7 @@ A run comparing the accuracy of the two models on the same data is in [Appendix 
 - **interaction**: A contribution that appears only when two variables move together. It is held by the product column $x_1 x_2$.
 - **kernel method**: A method that holds a non-linear relation through the inner product between two samples instead of transforming the input itself.
 - **RBF**: Radial basis function. A basis function whose value is fixed by the distance from a center.
+- **spline**: A function that joins low-degree polynomials at the points that divide the intervals.
 - **tree ensemble**: A model that collects the predictions of several decision trees. Random Forest and gradient boosting belong here.
 - **underfitting**: A state where the model lacks the capacity to express the relation and the error is large even on the training data.
 

@@ -1,5 +1,19 @@
 # Nonlinearity in Linear Models
-Rev. 8 | Created: 2026-09-23 | Updated: 2026-09-23 09:40 CDT
+Rev. 9 | Created: 2026-09-23 | Updated: 2026-09-23 09:50 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
+- [4. Principle](#4-principle)
+  - [4.1 Linear Model Mechanics and Limits](#41-linear-model-mechanics-and-limits)
+  - [4.2 Nonlinear Features in a Linear Model](#42-nonlinear-features-in-a-linear-model)
+- [5. Application](#5-application)
+  - [5.1 Feature-Intensive Model](#51-feature-intensive-model)
+  - [5.2 Algorithm-Intensive Model](#52-algorithm-intensive-model)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Implementation](#appendix-b-python-implementation)
+- [Appendix C. Two Views of Linearity](#appendix-c-two-views-of-linearity)
 
 ## 1. Purpose
 
@@ -87,7 +101,7 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 - 변수 $x$ 기준: 비선형 모델 (곡선 및 상호작용 곡면 표현 가능)
 - 가중치 $\beta$ 기준: 선형 모델 (최소제곱법, Ridge/Lasso 규제 등 기존 알고리즘 그대로 적용)
 
-선형대수학의 선형성과 공학에서 쓰는 선형성이 갈리는 지점은 [Appendix C](#appendix-c-two-views-of-linearity) 에 있습니다.
+식 (3) 의 model 은 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine 변환이고, 공학에서 쓰는 선형은 그 affine 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)).
 
 식 (3) 의 계수는 확장 전의 계수와 같은 방식으로 읽습니다. $\beta_3$ 은 $x_1$ 의 곡률이고 $\beta_5$ 는 두 변수가 함께 움직일 때의 기여이며, 둘 다 최소제곱법이 정합니다.
 
@@ -95,30 +109,37 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 비선형성 처리 주체에 따라 접근법이 갈립니다. Feature-Intensive Model 은 분석가가 직접 `PolynomialFeatures` 등을 활용해 비선형/상호작용 항을 추가한 뒤 선형 모델 (Ridge, PLS 등) 에 학습시킵니다. Algorithm-Intensive Model 은 원본 데이터 ($x_1$, $x_2$) 를 그대로 입력하고, 트리 기반 앙상블 (XGBoost, Random Forest) 이나 신경망 모델 내부에서 분기 (Split) 및 활성화 함수를 통해 비선형 패턴을 자동 학습하도록 합니다.
 
-Feature-Intensive Model 은 $\beta$ 에 대해서만 선형입니다. 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine 변환이고, 공학에서 쓰는 선형은 그 affine 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)). Algorithm-Intensive Model 은 $x$ 로도 $\beta$ 로도 선형이 아니므로, 계수 하나로 기여를 읽는 방식 자체가 성립하지 않습니다.
-
 ### 5.1 Feature-Intensive Model
 
-- **가정**: 담을 비선형의 형태를 항으로 적을 수 있습니다. Degree 2 이면 한 변수의 제곱과 두 변수의 곱까지입니다.
-- **설정값**: `PolynomialFeatures(degree=2, include_bias=False)` 와 regularization 강도 `alpha`. 확장한 열은 규모가 달라지므로 Ridge 나 Lasso 로 계수를 제한합니다.
+적합은 `Ridge`, `Lasso`, `PLSRegression` 이 맡고, [Fig 1](#fig-1) 의 세 방법이 그 앞에서 넣을 열을 정합니다.
+
+- **Power term**: 한 변수의 $x^2$, $x^3$ 열. `PolynomialFeatures(degree=3)` 이 degree 까지의 항을 한 번에 만듭니다.
+- **Interaction term**: 두 변수의 곱 $x_1 x_2$ 열. 곱만 필요하면 `PolynomialFeatures(interaction_only=True)` 가 제곱 항을 뺍니다.
+- **Basis expansion**: 구간을 나누는 점마다 다항식을 잇는 spline 과, 중심에서의 거리로 열을 만드는 RBF. `SplineTransformer` 의 `n_knots` 가 구간 수를 정하며, degree 를 올리지 않고 한 구간의 곡선만 바꿉니다.
+
+세 방법에 공통인 조건입니다.
+
+- **가정**: 담을 비선형의 형태를 항으로 미리 적을 수 있습니다.
+- **설정값**: Regularization 강도 `alpha`. 확장한 열은 규모가 달라지므로 Ridge 나 Lasso 로 계수를 제한합니다.
 - **깨지는 조건**: 참된 관계가 적어 둔 항 밖에 있으면 확장 후에도 underfitting 이 남습니다. Degree 를 높여 맞추면 열 수가 급히 늘어 계수가 흔들립니다.
 - **만나는 자리**: 공정 변수처럼 물리적 근거로 곡률과 interaction 을 짐작할 수 있고, 계수를 보고해야 하는 자리입니다.
 
 ### 5.2 Algorithm-Intensive Model
 
-- **가정**: 표본이 분기 구조를 정할 만큼 많습니다. Tree ensemble 은 구간마다 상수를 적합하므로 구간 안의 표본 수가 정확도를 정합니다.
-- **설정값**: Tree ensemble 의 `max_depth` 와 learning rate, neural network 의 층 수와 활성화 함수.
-- **깨지는 조건**: Train data 밖의 입력에서 tree ensemble 은 마지막 구간의 상수를 그대로 내놓아 외삽하지 못합니다. 표본이 적으면 neural network 가 과적합합니다.
+원본 열을 그대로 받고, [Fig 1](#fig-1) 의 세 방법이 model 안에서 비선형을 만듭니다.
+
+- **Tree ensemble**: 입력 공간을 분기로 잘라 구간마다 상수를 적합합니다. `RandomForestRegressor`, `HistGradientBoostingRegressor`, XGBoost, LightGBM 이 여기에 속합니다.
+- **Neural network**: 활성화 함수가 층마다 응답을 굽혀 연속한 곡면을 만듭니다. `MLPRegressor` 가 그 구현입니다.
+- **Kernel method**: 열을 늘리는 대신 표본 사이의 내적으로 확장한 공간을 대신합니다. `SVR(kernel='rbf')` 와 `KernelRidge` 가 그 구현입니다.
+
+세 방법에 공통인 조건입니다.
+
+- **가정**: 표본이 분기 위치와 가중치를 정할 만큼 많습니다. Tree ensemble 은 구간마다 상수를 적합하므로 구간 안의 표본 수가 정확도를 정합니다.
+- **설정값**: Tree ensemble 의 `max_depth` 와 learning rate, neural network 의 층 수와 활성화 함수, kernel method 의 `gamma` 와 `C`.
+- **깨지는 조건**: Train data 밖의 입력에서 tree ensemble 은 마지막 구간의 상수를 그대로 내놓아 외삽하지 못합니다. 표본이 적으면 neural network 가 과적합하고, 표본이 많으면 kernel method 의 계산량이 표본 수의 제곱으로 늘어납니다.
 - **만나는 자리**: 변수 수가 많아 항을 일일이 적기 어렵고, 예측 정확도가 계수 해석보다 앞서는 자리입니다.
 
 두 model 의 정확도를 같은 data 에서 비교한 실행이 [Appendix B](#appendix-b-python-implementation) 에 있습니다.
-
-## 6. Further Work
-
-- **Basis expansion 의 비교**
-  - 무엇을 하는가: Spline 과 RBF basis 를 degree 2 확장과 같은 data 에서 비교하여, 국소적인 곡선을 담을 때의 열 수와 정확도를 잰다.
-  - 왜 지금인가: `SplineTransformer` 가 scikit-learn 1.0 부터 pipeline 안에서 `PolynomialFeatures` 와 같은 자리에 들어간다.
-  - 무엇이 필요한가: 곡선의 국소성이 다른 data set 두 개와, 같은 조건의 validation split.
 
 ---
 
@@ -129,6 +150,7 @@ Feature-Intensive Model 은 $\beta$ 에 대해서만 선형입니다. 절편 $\b
 - **interaction**: 두 변수가 함께 움직일 때만 나타나는 기여. 곱한 열 $x_1 x_2$ 로 담는다.
 - **kernel method**: 입력을 직접 변환하지 않고 두 표본 사이의 내적으로 비선형 관계를 담는 방법.
 - **RBF**: Radial basis function. 중심에서의 거리로 값이 정해지는 기저 함수.
+- **spline**: 구간을 나누는 점마다 낮은 차수의 다항식을 이어 붙인 함수.
 - **tree ensemble**: 여러 결정 tree 의 예측을 모아 쓰는 model. Random Forest 와 gradient boosting 이 여기에 속한다.
 - **underfitting**: Model 의 표현력이 모자라 training data 에서도 오차가 큰 상태.
 
