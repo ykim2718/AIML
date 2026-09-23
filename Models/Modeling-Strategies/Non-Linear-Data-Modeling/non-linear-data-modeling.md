@@ -1,5 +1,5 @@
-# Modeling Strategies for Non-Linear Data Properties
-Rev. 7 | Created: 2026-09-23 | Updated: 2026-09-23 10:18 CDT
+# Non-Linear Data Modeling
+Rev. 8 | Created: 2026-09-23 | Updated: 2026-09-23 10:25 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
