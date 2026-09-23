@@ -1,5 +1,5 @@
 # Modeling Strategies for Non-Linear Data Properties
-Rev. 11 | Created: 2026-09-23 | Updated: 2026-09-23 09:56 CDT
+Rev. 12 | Created: 2026-09-23 | Updated: 2026-09-23 10:18 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -213,5 +213,5 @@ feature-intensive coefficients: {'x1': np.float64(1.963), 'x2': np.float64(-1.01
 
 ## Appendix C. Two Views of Linearity
 
-- 선형대수학의 선형성: 가산성 ($f(x+y)=f(x)+f(y)$) 과 동차성 ($f(cx)=cf(x)$) 을 만족해야 하며, 반드시 원점을 지나야 함 ($y=ax+b$ 에서 $b \neq 0$ 이면 아핀 변환).
+- 선형대수학의 선형성: 가산성 ($f(x+y)=f(x)+f(y)$) 과 동차성 ($f(cx)=cf(x)$) 을 만족해야 하며, 반드시 원점을 지나야 함 ($y=ax+b$ 에서 $b \neq 0$ 이면 affine transform).
 - 도메인/공학에서의 선형성: 직선 및 비례 관계를 의미하며, 선형대수의 엄밀한 정의보다 확장된 의미로 사용됨.
