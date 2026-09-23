@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 0 | Created: 2026-09-23 | Updated: 2026-09-23 09:33 CDT
+Rev. 1 | Created: 2026-09-23 | Updated: 2026-09-23 09:35 CDT
 
 ## 1. Purpose
 
@@ -13,8 +13,8 @@ The linearity of a model and the non-linear property of the data are two differe
 
 Who handles the non-linear property of the data splits the two modeling strategies.
 
-- **Linear model + non-linear feature (feature engineering approach)**: "Keep the model simple (linear) and make the data (feature) complex." Approach A, where the analyst builds columns such as $x^2$ and $x_1 x_2$ and feeds them to a linear model.
-- **Non-linear model + linear feature (algorithm approach)**: "Leave the data (feature) as it is (linear, original) and make the model complex (non-linear)." Approach B, where the original columns go in unchanged and a tree ensemble or a neural network learns the shape inside.
+- **Linear model + non-linear feature (feature engineering approach)**: "Keep the model simple (linear) and make the data (feature) complex." A linear model fed with columns such as $x^2$ and $x_1 x_2$ that the analyst builds.
+- **Non-linear model + linear feature (algorithm approach)**: "Leave the data (feature) as it is (linear, original) and make the model complex (non-linear)." An approach where the original columns go in unchanged and a tree ensemble or a neural network learns the shape inside.
 
 ## 3. Taxonomy and its Hierarchy
 
