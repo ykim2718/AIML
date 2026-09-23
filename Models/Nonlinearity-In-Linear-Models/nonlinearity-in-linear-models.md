@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 4 | Created: 2026-09-23 | Updated: 2026-09-23 09:50 CDT
+Rev. 5 | Created: 2026-09-23 | Updated: 2026-09-23 09:54 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -145,6 +145,7 @@ A run comparing the accuracy of the two models on the same data is in [Appendix 
 
 ## Appendix A. Terminology
 
+- **affine transform**: A linear transform with a constant shift added. $y = ax + b$ with $b \neq 0$ belongs here.
 - **basis expansion**: A transform that turns the input variables into the values of predetermined functions and so grows the columns. Power terms, splines and RBF belong here.
 - **closed-form solution**: A solution obtained from one expression without iteration. The normal equation of least squares is an example.
 - **interaction**: A contribution that appears only when two variables move together. It is held by the product column $x_1 x_2$.

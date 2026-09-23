@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 9 | Created: 2026-09-23 | Updated: 2026-09-23 09:50 CDT
+Rev. 10 | Created: 2026-09-23 | Updated: 2026-09-23 09:54 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -101,7 +101,7 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 - 변수 $x$ 기준: 비선형 모델 (곡선 및 상호작용 곡면 표현 가능)
 - 가중치 $\beta$ 기준: 선형 모델 (최소제곱법, Ridge/Lasso 규제 등 기존 알고리즘 그대로 적용)
 
-식 (3) 의 model 은 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine 변환이고, 공학에서 쓰는 선형은 그 affine 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)).
+식 (3) 의 model 은 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine transform 이고, 공학에서 쓰는 선형은 그 affine transform 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)).
 
 식 (3) 의 계수는 확장 전의 계수와 같은 방식으로 읽습니다. $\beta_3$ 은 $x_1$ 의 곡률이고 $\beta_5$ 는 두 변수가 함께 움직일 때의 기여이며, 둘 다 최소제곱법이 정합니다.
 
@@ -145,6 +145,7 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 ## Appendix A. Terminology
 
+- **affine transform**: 선형 변환에 상수 이동을 더한 변환. $y = ax + b$ 에서 $b \neq 0$ 이면 여기에 속한다.
 - **basis expansion**: 입력 변수를 미리 정한 함수의 값으로 바꾸어 열을 늘리는 변환. Power term, spline, RBF 가 여기에 속한다.
 - **closed-form solution**: 반복 없이 식 하나로 얻는 해. 최소제곱법의 정규방정식이 그 예이다.
 - **interaction**: 두 변수가 함께 움직일 때만 나타나는 기여. 곱한 열 $x_1 x_2$ 로 담는다.
