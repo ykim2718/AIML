@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 10 | Created: 2026-09-23 | Updated: 2026-09-23 14:58 CDT
+Rev. 11 | Created: 2026-09-23 | Updated: 2026-09-23 15:12 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -8,6 +8,7 @@ Rev. 10 | Created: 2026-09-23 | Updated: 2026-09-23 14:58 CDT
 - [4. Principle](#4-principle)
   - [4.1 Linear Model Mechanics and Limits](#41-linear-model-mechanics-and-limits)
   - [4.2 Nonlinear Features in a Linear Model](#42-nonlinear-features-in-a-linear-model)
+  - [4.3 Comparison of the Two Models](#43-comparison-of-the-two-models)
 - [5. Application](#5-application)
   - [5.1 Feature-Intensive Model](#51-feature-intensive-model)
   - [5.2 Algorithm-Intensive Model](#52-algorithm-intensive-model)
@@ -107,6 +108,20 @@ The model of equation (3) carries the intercept $\beta_0$, so by the definition 
 
 The coefficients of equation (3) are read the same way as the coefficients before the expansion. $\beta_3$ is the curvature of $x_1$ and $\beta_5$ is the contribution of the two variables moving together, and least squares fixes both.
 
+### 4.3 Comparison of the Two Models
+
+The two models differ in where the nonlinearity is held, in whether a coefficient can be read out, and in what drives the overfitting risk up.
+
+Table 2. The two models compared on five criteria
+
+| Criterion                | Feature-Intensive Model                                                  | Algorithm-Intensive Model                                               |
+| :----------------------: | :----------------------------------------------------------------------: | :---------------------------------------------------------------------: |
+| Core mechanism           | Transform terms such as $x_1^2$ and $x_1 x_2$, added explicitly          | Automatic search by tree splits and activation functions                |
+| Explainability (XAI)     | Very high. Coefficient $\beta$ of each term, read directly               | Moderate to low. SHAP, variable importance and other added tools needed |
+| Computational efficiency | Good while the variables are few. Columns growing fast in high dimension | Optimized for a large dataset                                           |
+| Overfitting risk         | Rising sharply as the degree goes up                                     | Contained by hyperparameter tuning                                      |
+| Recommended when         | Small data, with interpretation and root cause mattering                 | Sufficient data, with prediction accuracy first                         |
+
 ## 5. Application
 
 The approach splits by who handles the nonlinearity. In the Feature-Intensive Model the analyst adds the non-linear and interaction terms with `PolynomialFeatures` and the like, and then fits a linear model (Ridge, PLS and so on). The Algorithm-Intensive Model feeds the original data ($x_1$, $x_2$) unchanged and lets a tree-based ensemble (XGBoost, Random Forest) or a neural network learn the non-linear pattern inside, through its splits and its activation functions.
@@ -153,9 +168,11 @@ A run comparing the accuracy of the two models on the same data is in [Appendix 
 - **interaction**: A contribution that appears only when two variables move together. It is held by the product column $x_1 x_2$.
 - **kernel method**: A method that holds a non-linear relation through the inner product between two samples instead of transforming the input itself.
 - **RBF**: Radial basis function. A basis function whose value is fixed by the distance from a center.
+- **SHAP**: SHapley Additive exPlanations. An XAI method that splits the contribution of each variable to one prediction as a Shapley value.
 - **spline**: A function that joins low-degree polynomials at the points that divide the intervals.
 - **tree ensemble**: A model that collects the predictions of several decision trees. Random Forest and gradient boosting belong here.
 - **underfitting**: A state where the model lacks the capacity to express the relation and the error is large even on the training data.
+- **XAI**: Explainable AI. A method that makes the ground of a prediction readable by a person.
 
 ## Appendix B. Python Implementation
 

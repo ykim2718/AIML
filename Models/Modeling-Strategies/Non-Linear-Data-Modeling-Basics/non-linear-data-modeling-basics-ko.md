@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 15 | Created: 2026-09-23 | Updated: 2026-09-23 14:58 CDT
+Rev. 16 | Created: 2026-09-23 | Updated: 2026-09-23 15:12 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -8,6 +8,7 @@ Rev. 15 | Created: 2026-09-23 | Updated: 2026-09-23 14:58 CDT
 - [4. Principle](#4-principle)
   - [4.1 Linear Model Mechanics and Limits](#41-linear-model-mechanics-and-limits)
   - [4.2 Nonlinear Features in a Linear Model](#42-nonlinear-features-in-a-linear-model)
+  - [4.3 Comparison of the Two Models](#43-comparison-of-the-two-models)
 - [5. Application](#5-application)
   - [5.1 Feature-Intensive Model](#51-feature-intensive-model)
   - [5.2 Algorithm-Intensive Model](#52-algorithm-intensive-model)
@@ -107,6 +108,20 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 식 (3) 의 계수는 확장 전의 계수와 같은 방식으로 읽습니다. $\beta_3$ 은 $x_1$ 의 곡률이고 $\beta_5$ 는 두 변수가 함께 움직일 때의 기여이며, 둘 다 최소제곱법이 정합니다.
 
+### 4.3 Comparison of the Two Models
+
+두 model 은 비선형을 담는 자리, 계수를 읽어 낼 수 있는지, 과적합이 늘어나는 원인에서 갈립니다.
+
+Table 2. The two models compared on five criteria
+
+| Criterion         | Feature-Intensive Model                         | Algorithm-Intensive Model                          |
+| :---------------: | :---------------------------------------------: | :------------------------------------------------: |
+| 핵심 메커니즘     | $x_1^2$, $x_1 x_2$ 등 변환 항을 명시적으로 추가 | Tree 분기와 활성화 함수로 자동 탐색                |
+| 설명 가능성 (XAI) | 매우 높음. 항마다의 계수 $\beta$ 를 직접 확인   | 보통에서 낮음. SHAP, 변수 중요도 등 부가 도구 필요 |
+| 연산 효율성       | 변수 수가 적을 때 우수. 고차원에서 열 수가 급증 | 대용량 dataset 처리에 최적화                       |
+| 과적합 위험       | 차수 (degree) 가 오르면 급격히 증가             | Hyperparameter 조절로 완화 가능                    |
+| 추천 상황         | 데이터 양이 적고 해석과 원인 규명이 중요한 경우 | 데이터 양이 충분하고 예측 성능이 최우선인 경우     |
+
 ## 5. Application
 
 비선형성 처리 주체에 따라 접근법이 갈립니다. Feature-Intensive Model 은 분석가가 직접 `PolynomialFeatures` 등을 활용해 비선형/상호작용 항을 추가한 뒤 선형 모델 (Ridge, PLS 등) 에 학습시킵니다. Algorithm-Intensive Model 은 원본 데이터 ($x_1$, $x_2$) 를 그대로 입력하고, 트리 기반 앙상블 (XGBoost, Random Forest) 이나 신경망 모델 내부에서 분기 (Split) 및 활성화 함수를 통해 비선형 패턴을 자동 학습하도록 합니다.
@@ -153,9 +168,11 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 - **interaction**: 두 변수가 함께 움직일 때만 나타나는 기여. 곱한 열 $x_1 x_2$ 로 담는다.
 - **kernel method**: 입력을 직접 변환하지 않고 두 표본 사이의 내적으로 비선형 관계를 담는 방법.
 - **RBF**: Radial basis function. 중심에서의 거리로 값이 정해지는 기저 함수.
+- **SHAP**: SHapley Additive exPlanations. 각 변수가 한 예측에 기여한 몫을 Shapley value 로 나누어 내놓는 XAI 방법.
 - **spline**: 구간을 나누는 점마다 낮은 차수의 다항식을 이어 붙인 함수.
 - **tree ensemble**: 여러 결정 tree 의 예측을 모아 쓰는 model. Random Forest 와 gradient boosting 이 여기에 속한다.
 - **underfitting**: Model 의 표현력이 모자라 training data 에서도 오차가 큰 상태.
+- **XAI**: Explainable AI. Model 이 내놓은 예측의 근거를 사람이 읽을 수 있게 하는 방법.
 
 ## Appendix B. Python Implementation
 
