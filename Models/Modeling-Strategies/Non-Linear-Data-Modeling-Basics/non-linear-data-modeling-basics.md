@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 11 | Created: 2026-09-23 | Updated: 2026-09-23 15:12 CDT
+Rev. 12 | Created: 2026-09-23 | Updated: 2026-09-23 15:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -110,17 +110,15 @@ The coefficients of equation (3) are read the same way as the coefficients befor
 
 ### 4.3 Comparison of the Two Models
 
-The two models differ in where the nonlinearity is held, in whether a coefficient can be read out, and in what drives the overfitting risk up.
+The two models differ in where the nonlinearity is held, in whether a coefficient can be read out, and in how the work grows with the variable count.
 
-Table 2. The two models compared on five criteria
+Table 2. The two models compared on three criteria
 
 | Criterion                | Feature-Intensive Model                                                  | Algorithm-Intensive Model                                               |
 | :----------------------: | :----------------------------------------------------------------------: | :---------------------------------------------------------------------: |
 | Core mechanism           | Transform terms such as $x_1^2$ and $x_1 x_2$, added explicitly          | Automatic search by tree splits and activation functions                |
 | Explainability (XAI)     | Very high. Coefficient $\beta$ of each term, read directly               | Moderate to low. SHAP, variable importance and other added tools needed |
 | Computational efficiency | Good while the variables are few. Columns growing fast in high dimension | Optimized for a large dataset                                           |
-| Overfitting risk         | Rising sharply as the degree goes up                                     | Contained by hyperparameter tuning                                      |
-| Recommended when         | Small data, with interpretation and root cause mattering                 | Sufficient data, with prediction accuracy first                         |
 
 ## 5. Application
 
@@ -138,8 +136,8 @@ The three methods share the conditions below.
 
 - **Assumption**: The shape of the nonlinearity to be held can be written as terms in advance.
 - **Settings**: The regularization strength `alpha`. The expanded columns differ in scale, so Ridge or Lasso bounds the coefficients.
-- **Breaks when**: The true relation lies outside the terms that were written down, and underfitting remains after the expansion. Raising the degree to catch it grows the column count fast and the coefficients become unstable.
-- **Where you meet it**: A place where physical ground, process variables for one, lets you guess the curvature and the interaction, and the coefficients have to be reported.
+- **Breaks when**: The true relation lies outside the terms that were written down, and underfitting remains after the expansion. Raising the degree to catch it grows the column count fast, the overfitting risk rises sharply and the coefficients become unstable.
+- **Where you meet it**: A place where the data is small, physical ground, process variables for one, lets you guess the curvature and the interaction, and interpretation and root cause come before prediction accuracy.
 
 ### 5.2 Algorithm-Intensive Model
 
@@ -153,8 +151,8 @@ The three methods share the conditions below.
 
 - **Assumption**: The samples are many enough to fix the split positions and the weights. A tree ensemble fits a constant per range, so the sample count inside a range fixes the accuracy.
 - **Settings**: `max_depth` and the learning rate of the tree ensemble, the layer count and the activation function of the neural network, `gamma` and `C` of the kernel method.
-- **Breaks when**: For an input outside the train data a tree ensemble returns the constant of the last range and cannot extrapolate. A neural network overfits when the samples are few, and the work of a kernel method grows with the square of the sample count when they are many.
-- **Where you meet it**: A place where the variables are too many to write the terms one by one, and the prediction accuracy comes before reading the coefficients.
+- **Breaks when**: For an input outside the train data a tree ensemble returns the constant of the last range and cannot extrapolate. A neural network overfits when the samples are few, a risk contained by hyperparameter tuning, and the work of a kernel method grows with the square of the sample count when they are many.
+- **Where you meet it**: A place where the data is sufficient, the variables are too many to write the terms one by one, and the prediction accuracy comes before reading the coefficients.
 
 A run comparing the accuracy of the two models on the same data is in [Appendix B](#appendix-b-python-implementation).
 

@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 16 | Created: 2026-09-23 | Updated: 2026-09-23 15:12 CDT
+Rev. 17 | Created: 2026-09-23 | Updated: 2026-09-23 15:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -110,17 +110,15 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 ### 4.3 Comparison of the Two Models
 
-두 model 은 비선형을 담는 자리, 계수를 읽어 낼 수 있는지, 과적합이 늘어나는 원인에서 갈립니다.
+두 model 은 비선형을 담는 자리, 계수를 읽어 낼 수 있는지, 변수 수에 따른 연산량에서 갈립니다.
 
-Table 2. The two models compared on five criteria
+Table 2. The two models compared on three criteria
 
 | Criterion         | Feature-Intensive Model                         | Algorithm-Intensive Model                          |
 | :---------------: | :---------------------------------------------: | :------------------------------------------------: |
 | 핵심 메커니즘     | $x_1^2$, $x_1 x_2$ 등 변환 항을 명시적으로 추가 | Tree 분기와 활성화 함수로 자동 탐색                |
 | 설명 가능성 (XAI) | 매우 높음. 항마다의 계수 $\beta$ 를 직접 확인   | 보통에서 낮음. SHAP, 변수 중요도 등 부가 도구 필요 |
 | 연산 효율성       | 변수 수가 적을 때 우수. 고차원에서 열 수가 급증 | 대용량 dataset 처리에 최적화                       |
-| 과적합 위험       | 차수 (degree) 가 오르면 급격히 증가             | Hyperparameter 조절로 완화 가능                    |
-| 추천 상황         | 데이터 양이 적고 해석과 원인 규명이 중요한 경우 | 데이터 양이 충분하고 예측 성능이 최우선인 경우     |
 
 ## 5. Application
 
@@ -138,8 +136,8 @@ Table 2. The two models compared on five criteria
 
 - **가정**: 담을 비선형의 형태를 항으로 미리 적을 수 있습니다.
 - **설정값**: Regularization 강도 `alpha`. 확장한 열은 규모가 달라지므로 Ridge 나 Lasso 로 계수를 제한합니다.
-- **깨지는 조건**: 참된 관계가 적어 둔 항 밖에 있으면 확장 후에도 underfitting 이 남습니다. Degree 를 높여 맞추면 열 수가 급히 늘어 계수가 흔들립니다.
-- **만나는 자리**: 공정 변수처럼 물리적 근거로 곡률과 interaction 을 짐작할 수 있고, 계수를 보고해야 하는 자리입니다.
+- **깨지는 조건**: 참된 관계가 적어 둔 항 밖에 있으면 확장 후에도 underfitting 이 남습니다. Degree 를 높여 맞추면 열 수가 급히 늘어 과적합 위험이 급격히 커지고 계수가 흔들립니다.
+- **만나는 자리**: 데이터 양이 적고, 공정 변수처럼 물리적 근거로 곡률과 interaction 을 짐작할 수 있으며, 해석과 원인 규명이 예측 정확도보다 앞서는 자리입니다.
 
 ### 5.2 Algorithm-Intensive Model
 
@@ -153,8 +151,8 @@ Table 2. The two models compared on five criteria
 
 - **가정**: 표본이 분기 위치와 가중치를 정할 만큼 많습니다. Tree ensemble 은 구간마다 상수를 적합하므로 구간 안의 표본 수가 정확도를 정합니다.
 - **설정값**: Tree ensemble 의 `max_depth` 와 learning rate, neural network 의 층 수와 활성화 함수, kernel method 의 `gamma` 와 `C`.
-- **깨지는 조건**: Train data 밖의 입력에서 tree ensemble 은 마지막 구간의 상수를 그대로 내놓아 외삽하지 못합니다. 표본이 적으면 neural network 가 과적합하고, 표본이 많으면 kernel method 의 계산량이 표본 수의 제곱으로 늘어납니다.
-- **만나는 자리**: 변수 수가 많아 항을 일일이 적기 어렵고, 예측 정확도가 계수 해석보다 앞서는 자리입니다.
+- **깨지는 조건**: Train data 밖의 입력에서 tree ensemble 은 마지막 구간의 상수를 그대로 내놓아 외삽하지 못합니다. 표본이 적으면 neural network 가 과적합하며, 그 위험은 hyperparameter 조절로 완화합니다. 표본이 많으면 kernel method 의 계산량이 표본 수의 제곱으로 늘어납니다.
+- **만나는 자리**: 데이터 양이 충분하고, 변수 수가 많아 항을 일일이 적기 어려우며, 예측 정확도가 계수 해석보다 앞서는 자리입니다.
 
 두 model 의 정확도를 같은 data 에서 비교한 실행이 [Appendix B](#appendix-b-python-implementation) 에 있습니다.
 
