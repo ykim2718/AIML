@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 3 | Created: 2026-09-23 | Updated: 2026-09-23 03:10 CDT
+Rev. 4 | Created: 2026-09-23 | Updated: 2026-09-23 09:29 CDT
 
 ## 1. Purpose
 
@@ -11,30 +11,33 @@ Rev. 3 | Created: 2026-09-23 | Updated: 2026-09-23 03:10 CDT
 
 Model 의 선형성과 data 의 비선형 특성은 서로 다른 대상입니다. 선형성은 가중치 $\beta$ 에 대한 1차성이고, 비선형 특성은 $x$ 와 $y$ 사이 관계의 곡률과 변수 사이의 interaction 입니다. 그래서 입력을 비선형으로 변환해도 $\beta$ 에 대한 1차 구조는 남고, 최소제곱법과 Ridge, Lasso, PLS 의 해법을 그대로 사용합니다 (4.2 절).
 
-비선형 data 특성을 누가 담당하는지가 두 modeling 전략을 가릅니다. 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 선형 model 에 넣는 접근 A 와, 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근 B 입니다.
+비선형 data 특성을 누가 담당하는지가 두 modeling 전략을 가릅니다.
+
+- **선형 모델 + 비선형 Feature (특성 공학 접근법, feature engineering)**: "모델은 단순 (선형) 하게 두고, 데이터 (Feature) 를 복잡하게 만든다." 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 선형 model 에 넣는 접근 A 입니다.
+- **비선형 모델 + 선형 Feature (알고리즘 접근법)**: "데이터 (Feature) 는 있는 그대로 (선형/원본) 두고, 모델을 복잡 (비선형) 하게 만든다." 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근 B 입니다.
 
 두 접근이 같은 data 에서 비슷한 정확도에 이르는 경우가 있습니다. [Appendix B](#appendix-b-python-implementation) 의 실행에서 원본 열만 쓴 Ridge 는 $R^2$ 가 0.4735 였고, degree 2 로 확장한 Ridge 는 0.9782, 같은 원본 열을 쓴 HistGradientBoostingRegressor 는 0.9689 였습니다. 갈리는 것은 정확도가 아니라 읽어 낼 수 있는 것과, 비선형의 형태를 미리 알아야 하는지입니다 (3.1 절).
 
 ## 3. Taxonomy and its Hierarchy
 
-비선형성은 담당 주체, 입력 열, 읽어 내는 값의 세 축으로 갈립니다. 담당 주체가 분석가이면 입력 열은 변환된 열이고 읽어 내는 값은 항마다의 계수이며, 담당 주체가 algorithm 이면 입력 열은 원본 열이고 읽어 내는 값은 변수 중요도입니다. [Fig 1](#fig-1) 이 그 세 축과 각 접근에 속한 방법입니다.
+비선형성은 model 의 선형성, feature 의 선형성, 읽어 내는 값의 세 축으로 갈립니다. 특성 공학 접근법은 선형 model 에 비선형 feature 를 넣어 항마다의 계수를 읽고, 알고리즘 접근법은 비선형 model 에 선형 feature 를 넣어 변수 중요도를 읽습니다. [Fig 1](#fig-1) 이 그 세 축과 각 접근에 속한 방법입니다.
 
 ```text
 Nonlinearity in a model
 |
-+-- Approach A: analyst-driven .......... linear model + transformed columns
-|     +-- Power term: x^2, x^3 .......... curvature of one variable
-|     +-- Interaction term: x1 * x2 ..... joint effect of two variables
-|     +-- Basis expansion: spline, RBF .. local shape without a global degree
++-- Approach A: linear model + non-linear feature .. feature engineering
+|     +-- Power term: x^2, x^3 ..................... curvature of one variable
+|     +-- Interaction term: x1 * x2 ................ joint effect of two variables
+|     +-- Basis expansion: spline, RBF ............. local shape without a global degree
 |
-+-- Approach B: algorithm-driven ........ non-linear model + original columns
-      +-- Tree ensemble ................. split points cut the input space
-      +-- Neural network ................ activation function bends the response
-      +-- Kernel method ................. inner product in an implicit feature space
++-- Approach B: non-linear model + linear feature .. algorithm
+      +-- Tree ensemble ............................ split points cut the input space
+      +-- Neural network ........................... activation function bends the response
+      +-- Kernel method ............................ inner product in an implicit feature space
 ```
 
 <a id="fig-1"></a>
-Fig 1. Who models the nonlinearity, and the methods on each side
+Fig 1. The model and the feature of each approach, and the methods on each side
 
 두 접근의 계층은 가정의 강도로 내려갑니다. 접근 A 는 비선형의 형태를 항으로 미리 적어 두는 대신 그 항의 계수를 그대로 읽습니다. 접근 B 는 형태를 적지 않아도 되는 대신, 어느 변수의 어느 구간이 예측을 움직였는지를 계수 하나로 읽지 못합니다.
 
@@ -42,10 +45,10 @@ Fig 1. Who models the nonlinearity, and the methods on each side
 
 Table 1. Where each approach sits on the three axes
 
-| Approach            | Who models it | Input columns | What you read out     | Breaks when                        |
-| :-----------------: | :-----------: | :-----------: | :-------------------: | :--------------------------------: |
-| A. Analyst-driven   | 분석가        | 변환된 열     | 항마다의 계수 $\beta$ | 비선형의 형태를 미리 알 수 없을 때 |
-| B. Algorithm-driven | Algorithm     | 원본 열       | 변수 중요도           | 외삽 구간과 적은 표본에서          |
+| Approach               | Model  | Feature            | What you read out     | Breaks when                        |
+| :--------------------: | :----: | :----------------: | :-------------------: | :--------------------------------: |
+| A. Feature engineering | 선형   | 비선형 (변환된 열) | 항마다의 계수 $\beta$ | 비선형의 형태를 미리 알 수 없을 때 |
+| B. Algorithm           | 비선형 | 선형 (원본 열)     | 변수 중요도           | 외삽 구간과 적은 표본에서          |
 
 접근 A 는 어떤 항을 만들지를 분석가가 정하므로, 자료에 어떤 곡선과 어떤 interaction 이 있는지 짐작할 근거가 있어야 합니다. 접근 B 는 그 근거 없이도 적합하지만, tree ensemble 은 train data 밖의 값을 외삽하지 못하고 neural network 는 표본이 적으면 과적합합니다.
 
@@ -96,14 +99,14 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 접근 A 의 model 은 $\beta$ 에 대해서만 선형입니다. 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine 변환이고, 공학에서 쓰는 선형은 그 affine 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)). 접근 B 의 model 은 $x$ 로도 $\beta$ 로도 선형이 아니므로, 계수 하나로 기여를 읽는 방식 자체가 성립하지 않습니다.
 
-### 5.1 Approach A: Analyst-Driven
+### 5.1 Approach A: Linear Model with Non-Linear Features
 
 - **가정**: 담을 비선형의 형태를 항으로 적을 수 있습니다. Degree 2 이면 한 변수의 제곱과 두 변수의 곱까지입니다.
 - **설정값**: `PolynomialFeatures(degree=2, include_bias=False)` 와 regularization 강도 `alpha`. 확장한 열은 규모가 달라지므로 Ridge 나 Lasso 로 계수를 제한합니다.
 - **깨지는 조건**: 참된 관계가 적어 둔 항 밖에 있으면 확장 후에도 underfitting 이 남습니다. Degree 를 높여 맞추면 열 수가 급히 늘어 계수가 흔들립니다.
 - **만나는 자리**: 공정 변수처럼 물리적 근거로 곡률과 interaction 을 짐작할 수 있고, 계수를 보고해야 하는 자리입니다.
 
-### 5.2 Approach B: Algorithm-Driven
+### 5.2 Approach B: Non-Linear Model with Linear Features
 
 - **가정**: 표본이 분기 구조를 정할 만큼 많습니다. Tree ensemble 은 구간마다 상수를 적합하므로 구간 안의 표본 수가 정확도를 정합니다.
 - **설정값**: Tree ensemble 의 `max_depth` 와 learning rate, neural network 의 층 수와 활성화 함수.
