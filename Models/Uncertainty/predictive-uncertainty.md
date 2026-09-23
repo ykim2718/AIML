@@ -1,5 +1,5 @@
 # Predictive Uncertainty
-Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-23 11:08 CDT
+Rev. 5 | Created: 2026-09-10 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

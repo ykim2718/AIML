@@ -1,5 +1,5 @@
-# Design of Experiments (Korean)
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+# Design of Experiments
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Design of Experiments](#1-design-of-experiments)
 - [2. Full Factorial Designs](#2-full-factorial-designs)

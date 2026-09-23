@@ -1,5 +1,5 @@
 # Design of Experiments
-Rev. 4 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+Rev. 5 | Created: 2026-08-30 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Design of Experiments](#1-design-of-experiments)
 - [2. Full Factorial Designs](#2-full-factorial-designs)

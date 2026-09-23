@@ -1,5 +1,5 @@
 # Regression Metrics
-Rev. 42 | Created: 2026-04-08 | Updated: 2026-09-23 11:08 CDT
+Rev. 43 | Created: 2026-04-08 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Metric Hierarchy](#2-metric-hierarchy)

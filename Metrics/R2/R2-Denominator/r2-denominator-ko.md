@@ -1,5 +1,5 @@
-# Referenced R² — Choosing the Baseline in the R² Denominator (Korean)
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+# Referenced R² — Choosing the Baseline in the R² Denominator
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Question](#1-question)
 - [2. Structure](#2-structure)

@@ -1,5 +1,5 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 13 | Created: 2026-08-15 | Updated: 2026-09-23 11:08 CDT
+Rev. 14 | Created: 2026-08-15 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Question](#1-question)
 - [2. Structure](#2-structure)

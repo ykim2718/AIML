@@ -1,5 +1,5 @@
-# Polynomial Feature Expansion (Korean)
-Rev. 86 | Created: 2026-09-07 | Updated: 2026-09-23 11:08 CDT
+# Polynomial Feature Expansion
+Rev. 87 | Created: 2026-09-07 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

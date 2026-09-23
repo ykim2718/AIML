@@ -1,5 +1,5 @@
 # The Wafer Uniformity Index
-Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
 
 - [1. Scope](#1-scope)
 - [2. Measurement Basis](#2-measurement-basis)
