@@ -1,0 +1,183 @@
+# Nonlinearity in Linear Models
+Rev. 0 | Created: 2026-09-23 | Updated: 2026-09-23 00:55 CDT
+
+## 1. Purpose
+
+- **Problem Statement**: 선형 model 은 예측 경계가 1차 평면이어서, data 에 곡선 관계나 변수 사이의 interaction 이 있으면 그것을 담지 못하고 underfitting 이 발생합니다.
+- **Goal**: 비선형성을 분석가가 feature 로 담는 경우와 algorithm 이 model 내부에서 담는 경우를 가르고, 두 접근의 수학적 근거와 고르는 기준을 정합니다.
+- **Non-Goal**: Model 별 hyperparameter 조정 절차는 다루지 않습니다. 확장한 열의 개수가 행 수에 근접할 때의 차원 문제도 다루지 않습니다.
+
+## 2. Summary
+
+비선형성을 누가 담당하는지가 두 접근을 가릅니다. 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 선형 model 에 넣는 접근 A 와, 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근 B 입니다.
+
+선형 model 의 선형성은 가중치 $\beta$ 에 대한 1차성이므로, 입력을 비선형으로 변환해도 최소제곱법과 Ridge, Lasso, PLS 의 해법을 그대로 사용합니다 (4.2 절).
+
+두 접근이 같은 data 에서 비슷한 정확도에 이르는 경우가 있습니다. [Appendix B](#appendix-b-python-implementation) 의 실행에서 원본 열만 쓴 Ridge 는 $R^2$ 가 0.4735 였고, degree 2 로 확장한 Ridge 는 0.9782, 같은 원본 열을 쓴 HistGradientBoostingRegressor 는 0.9689 였습니다. 갈리는 것은 정확도가 아니라 읽어 낼 수 있는 것과, 비선형의 형태를 미리 알아야 하는지입니다 (3.1 절).
+
+## 3. Taxonomy and its Hierarchy
+
+비선형성은 담당 주체, 입력 열, 읽어 내는 값의 세 축으로 갈립니다. 담당 주체가 분석가이면 입력 열은 변환된 열이고 읽어 내는 값은 항마다의 계수이며, 담당 주체가 algorithm 이면 입력 열은 원본 열이고 읽어 내는 값은 변수 중요도입니다. [Fig 1](#fig-1) 이 그 세 축과 각 접근에 속한 방법입니다.
+
+```text
+Nonlinearity in a model
+|
++-- Approach A: analyst-driven .......... linear model + transformed columns
+|     +-- Power term: x^2, x^3 .......... curvature of one variable
+|     +-- Interaction term: x1 * x2 ..... joint effect of two variables
+|     +-- Basis expansion: spline, RBF .. local shape without a global degree
+|
++-- Approach B: algorithm-driven ........ non-linear model + original columns
+      +-- Tree ensemble ................. split points cut the input space
+      +-- Neural network ................ activation function bends the response
+      +-- Kernel method ................. inner product in an implicit feature space
+```
+
+<a id="fig-1"></a>
+Fig 1. Who models the nonlinearity, and the methods on each side
+
+두 접근의 계층은 가정의 강도로 내려갑니다. 접근 A 는 비선형의 형태를 항으로 미리 적어 두는 대신 그 항의 계수를 그대로 읽습니다. 접근 B 는 형태를 적지 않아도 되는 대신, 어느 변수의 어느 구간이 예측을 움직였는지를 계수 하나로 읽지 못합니다.
+
+### 3.1 Placement
+
+Table 1. Where each approach sits on the three axes
+
+| Approach            | Who models it | Input columns | What you read out     | Breaks when                        |
+| :-----------------: | :-----------: | :-----------: | :-------------------: | :--------------------------------: |
+| A. Analyst-driven   | 분석가        | 변환된 열     | 항마다의 계수 $\beta$ | 비선형의 형태를 미리 알 수 없을 때 |
+| B. Algorithm-driven | Algorithm     | 원본 열       | 변수 중요도           | 외삽 구간과 적은 표본에서          |
+
+접근 A 는 어떤 항을 만들지를 분석가가 정하므로, 자료에 어떤 곡선과 어떤 interaction 이 있는지 짐작할 근거가 있어야 합니다. 접근 B 는 그 근거 없이도 적합하지만, tree ensemble 은 train data 밖의 값을 외삽하지 못하고 neural network 는 표본이 적으면 과적합합니다.
+
+## 4. Principle
+
+### 4.1 Linear Model Mechanics and Limits
+
+선형 회귀, Ridge, Lasso, PLS (Partial Least Squares) 등의 모델은 입력 변수 $X$ 와 타겟 변수 $Y$ 의 관계를 선형 결합 (Linear Combination) 으로 가정합니다.
+
+```math
+y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p + \epsilon \hspace{19em} (1)
+```
+
+- 장점
+  - 모델이 단순하여 과적합 (Overfitting) 위험이 적고, 파라미터 수렴 속도가 매우 빠릅니다.
+  - 계수 $\beta_i$ 를 통해 어떤 변수가 타겟 변화에 얼마큼 기여했는지 직관적으로 해석 가능합니다.
+- 한계
+  - 데이터에 곡선 (Non-linear) 관계가 존재하거나 변수 간 상호작용 (Interaction) 이 있을 경우, 1차 평면 형태의 예측 경계 (Decision Boundary) 로는 이를 적합할 수 없어 언더피팅 (Underfitting) 이 발생합니다.
+
+### 4.2 Nonlinear Features in a Linear Model
+
+선형 모델에서 '선형 (Linearity)' 의 수학적 정의는 입력 변수 $x$ 에 대한 1차식이 아니라, 최적화 대상인 가중치 파라미터 $\beta$ 에 대해 1차식임을 의미합니다.
+
+따라서 입력 공간을 비선형 변환하여 확장하더라도, $\beta$ 에 대한 1차 구조는 유지되므로 선형 모델의 해법 (Closed-form solution) 을 그대로 사용할 수 있습니다.
+
+원래 입력 데이터가 $x_1$, $x_2$ 일 때, 비선형 차수 항을 추가하여 새로운 기저 (Basis) 로 매핑합니다.
+
+```math
+\phi(x_1, x_2) = [1, x_1, x_2, x_1^2, x_2^2, x_1 x_2]^T \hspace{19em} (2)
+```
+
+이후 이 확장된 공간에서 선형 모델을 적합합니다.
+
+```math
+y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_5 (x_1 x_2) \hspace{14em} (3)
+```
+
+- 변수 $x$ 기준: 비선형 모델 (곡선 및 상호작용 곡면 표현 가능)
+- 가중치 $\beta$ 기준: 선형 모델 (최소제곱법, Ridge/Lasso 규제 등 기존 알고리즘 그대로 적용)
+
+식 (3) 의 계수는 확장 전의 계수와 같은 방식으로 읽습니다. $\beta_3$ 은 $x_1$ 의 곡률이고 $\beta_5$ 는 두 변수가 함께 움직일 때의 기여이며, 둘 다 최소제곱법이 정합니다.
+
+## 5. Application
+
+비선형성 처리 주체에 따라 접근법이 갈립니다. 접근법 A 는 분석가가 직접 `PolynomialFeatures` 등을 활용해 비선형/상호작용 항을 추가한 뒤 선형 모델 (Ridge, PLS 등) 에 학습시킵니다. 접근법 B 는 원본 데이터 ($x_1$, $x_2$) 를 그대로 입력하고, 트리 기반 앙상블 (XGBoost, Random Forest) 이나 신경망 모델 내부에서 분기 (Split) 및 활성화 함수를 통해 비선형 패턴을 자동 학습하도록 합니다.
+
+### 5.1 Approach A: Analyst-Driven
+
+- **가정**: 담을 비선형의 형태를 항으로 적을 수 있습니다. Degree 2 이면 한 변수의 제곱과 두 변수의 곱까지입니다.
+- **설정값**: `PolynomialFeatures(degree=2, include_bias=False)` 와 regularization 강도 `alpha`. 확장한 열은 규모가 달라지므로 Ridge 나 Lasso 로 계수를 제한합니다.
+- **깨지는 조건**: 참된 관계가 적어 둔 항 밖에 있으면 확장 후에도 underfitting 이 남습니다. Degree 를 높여 맞추면 열 수가 급히 늘어 계수가 흔들립니다.
+- **만나는 자리**: 공정 변수처럼 물리적 근거로 곡률과 interaction 을 짐작할 수 있고, 계수를 보고해야 하는 자리입니다.
+
+### 5.2 Approach B: Algorithm-Driven
+
+- **가정**: 표본이 분기 구조를 정할 만큼 많습니다. Tree ensemble 은 구간마다 상수를 적합하므로 구간 안의 표본 수가 정확도를 정합니다.
+- **설정값**: Tree ensemble 의 `max_depth` 와 learning rate, neural network 의 층 수와 활성화 함수.
+- **깨지는 조건**: Train data 밖의 입력에서 tree ensemble 은 마지막 구간의 상수를 그대로 내놓아 외삽하지 못합니다. 표본이 적으면 neural network 가 과적합합니다.
+- **만나는 자리**: 변수 수가 많아 항을 일일이 적기 어렵고, 예측 정확도가 계수 해석보다 앞서는 자리입니다.
+
+두 접근의 정확도를 같은 data 에서 비교한 실행이 [Appendix B](#appendix-b-python-implementation) 에 있습니다.
+
+## 6. Further Work
+
+- **Basis expansion 의 비교**
+  - 무엇을 하는가: Spline 과 RBF basis 를 degree 2 확장과 같은 data 에서 비교하여, 국소적인 곡선을 담을 때의 열 수와 정확도를 잰다.
+  - 왜 지금인가: `SplineTransformer` 가 scikit-learn 1.0 부터 pipeline 안에서 `PolynomialFeatures` 와 같은 자리에 들어간다.
+  - 무엇이 필요한가: 곡선의 국소성이 다른 data set 두 개와, 같은 조건의 validation split.
+
+---
+
+## Appendix A. Terminology
+
+- **basis expansion**: 입력 변수를 미리 정한 함수의 값으로 바꾸어 열을 늘리는 변환. Power term, spline, RBF 가 여기에 속한다.
+- **closed-form solution**: 반복 없이 식 하나로 얻는 해. 최소제곱법의 정규방정식이 그 예이다.
+- **interaction**: 두 변수가 함께 움직일 때만 나타나는 기여. 곱한 열 $x_1 x_2$ 로 담는다.
+- **kernel method**: 입력을 직접 변환하지 않고 두 표본 사이의 내적으로 비선형 관계를 담는 방법.
+- **RBF**: Radial basis function. 중심에서의 거리로 값이 정해지는 기저 함수.
+- **tree ensemble**: 여러 결정 tree 의 예측을 모아 쓰는 model. Random Forest 와 gradient boosting 이 여기에 속한다.
+- **underfitting**: Model 의 표현력이 모자라 training data 에서도 오차가 큰 상태.
+
+## Appendix B. Python Implementation
+
+두 접근을 같은 data 에 적용해 정확도를 비교합니다.
+
+```python
+import numpy as np
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.linear_model import Ridge
+from sklearn.metrics import r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+
+# --- synthetic data with one curvature term and one interaction term ---
+rng = np.random.default_rng(0)
+n_samples = 400
+x1 = rng.uniform(-3, 3, size=n_samples)
+x2 = rng.uniform(-3, 3, size=n_samples)
+y = 3 + 2 * x1 - x2 + 1.5 * x1 ** 2 + 0.8 * x1 * x2 + rng.normal(0, 1.0, size=n_samples)
+
+X = np.column_stack([x1, x2])
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+
+# the baseline: a linear model on the original columns
+plain = Ridge(alpha=1.0).fit(X_train, y_train)
+
+# approach A: the analyst adds the power and interaction columns
+approach_a = make_pipeline(
+    PolynomialFeatures(degree=2, include_bias=False), Ridge(alpha=1.0)
+).fit(X_train, y_train)
+
+# approach B: the algorithm splits the original columns on its own
+approach_b = HistGradientBoostingRegressor(max_depth=3, random_state=0).fit(X_train, y_train)
+
+for name, model in (("linear model, original columns", plain),
+                    ("approach A: Ridge on degree-2 columns", approach_a),
+                    ("approach B: HistGradientBoostingRegressor", approach_b)):
+    print(f"{name:42s} R2 = {r2_score(y_test, model.predict(X_test)):.4f}")
+
+# the coefficients approach A reads out, one per term of equation (3)
+term_names = approach_a[0].get_feature_names_out(["x1", "x2"])
+print("approach A coefficients:", dict(zip(term_names, np.round(approach_a[1].coef_, 3))))
+```
+
+첫 세 줄이 세 model 의 held-out $R^2$ 이고, 마지막 줄이 접근 A 가 읽어 내는 항마다의 계수입니다.
+
+```text
+linear model, original columns             R2 = 0.4735
+approach A: Ridge on degree-2 columns      R2 = 0.9782
+approach B: HistGradientBoostingRegressor  R2 = 0.9689
+approach A coefficients: {'x1': np.float64(1.963), 'x2': np.float64(-1.015), 'x1^2': np.float64(1.516), 'x1 x2': np.float64(0.76), 'x2^2': np.float64(0.005)}
+```
+
+계수 네 개는 data 를 만든 식의 계수 2, -1, 1.5, 0.8 을 되찾았고, 식에 없던 $x_2^2$ 의 계수는 0.005 로 남았습니다.
