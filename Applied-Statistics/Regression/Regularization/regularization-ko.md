@@ -1,5 +1,19 @@
 # Regularization
-Rev. 2 | Created: 2026-09-12 | Updated: 2026-09-12 14:24 CDT
+Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Cause of the Problem](#3-cause-of-the-problem)
+  - [3.1 Singular Matrix](#31-singular-matrix)
+  - [3.2 High Multicollinearity](#32-high-multicollinearity)
+- [4. Penalized Loss](#4-penalized-loss)
+  - [4.1 Ridge Regression](#41-ridge-regression)
+  - [4.2 Lasso Regression](#42-lasso-regression)
+  - [4.3 ElasticNet](#43-elasticnet)
+- [5. Comparison](#5-comparison)
+- [6. Dimension Reduction and Variable Removal](#6-dimension-reduction-and-variable-removal)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Worked Example](#appendix-b-worked-example)
 
 ## 1. Purpose
 

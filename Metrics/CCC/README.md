@@ -1,5 +1,34 @@
 # 📊 CCC & Bland-Altman Analysis Guide
-Rev. 2 | Created: 2026-04-09 | Updated: 2026-08-10 22:02 CDT
+Rev. 3 | Created: 2026-04-09 | Updated: 2026-09-23 11:08 CDT
+
+- [Table of Contents](#table-of-contents)
+- [What is CCC?](#what-is-ccc)
+  - [Formula](#formula)
+  - [Key Difference from Pearson r](#key-difference-from-pearson-r)
+- [CCC Components](#ccc-components)
+- [Interpretation Benchmarks](#interpretation-benchmarks)
+  - [Five Bias Scenarios](#five-bias-scenarios)
+- [Bland-Altman Plot](#bland-altman-plot)
+  - [Key Statistics](#key-statistics)
+  - [Detecting Proportional Bias](#detecting-proportional-bias)
+- [Combined CCC + Bland-Altman Analysis](#combined-ccc-bland-altman-analysis)
+- [Data Concentration Problem & Alternative Metrics](#data-concentration-problem-alternative-metrics)
+  - [Problem: Data Clustered in a Narrow Range](#problem-data-clustered-in-a-narrow-range)
+  - [Alternative Metrics (Range-Independent)](#alternative-metrics-range-independent)
+  - [Diagnostic Checklist](#diagnostic-checklist)
+  - [Recommended Combinations](#recommended-combinations)
+- [Applications in AI/ML](#applications-in-aiml)
+  - [1. Regression Model Evaluation](#1-regression-model-evaluation)
+  - [2. Key Application Domains](#2-key-application-domains)
+- [Python Code Examples](#python-code-examples)
+  - [Basic CCC Implementation](#basic-ccc-implementation)
+  - [With Confidence Intervals (Fisher's Z + Bootstrap)](#with-confidence-intervals-fishers-z-bootstrap)
+  - [Alternative Metrics for Concentrated Data](#alternative-metrics-for-concentrated-data)
+  - [Full CCC + Bland-Altman Report](#full-ccc-bland-altman-report)
+- [Metric Selection Guide](#metric-selection-guide)
+  - [Recommended Reporting Checklist](#recommended-reporting-checklist)
+- [References](#references)
+- [License](#license)
 
 > A comprehensive guide to **Concordance Correlation Coefficient (CCC)** + **Bland-Altman Plot**  
 > A statistical toolkit for evaluating agreement between two measurement methods

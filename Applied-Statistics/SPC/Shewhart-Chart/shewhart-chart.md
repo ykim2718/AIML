@@ -1,5 +1,18 @@
 # The Shewhart Control Chart
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Chart Structure](#2-chart-structure)
+  - [2.1. Centre Line and Control Limits](#21-centre-line-and-control-limits)
+  - [2.2. Why Three Sigma](#22-why-three-sigma)
+- [3. Chart Types](#3-chart-types)
+- [4. Detection Performance](#4-detection-performance)
+  - [4.1. Average Run Length](#41-average-run-length)
+  - [4.2. Run Rules](#42-run-rules)
+- [5. Control and Capability](#5-control-and-capability)
+- [6. Application](#6-application)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > 공정의 변동을 우연원인과 이상원인으로 갈라내기 위한 관리도에 대한 기록. 관리한계가 어떻게 정해지고
 > 왜 3 sigma 인지, 어떤 종류가 있고 이상을 얼마나 빨리 잡아내는지를 다룬다.

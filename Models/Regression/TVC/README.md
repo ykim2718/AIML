@@ -1,5 +1,22 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 33 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
+Rev. 34 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Why The Coefficient Moves](#2-why-the-coefficient-moves)
+- [3. Forms Of The Coefficient](#3-forms-of-the-coefficient)
+  - [3.1 Parametric Form](#31-parametric-form)
+  - [3.2 Spline And GAM](#32-spline-and-gam)
+  - [3.3 Random Walk In A State Space](#33-random-walk-in-a-state-space)
+- [4. Estimation By Kalman Filter](#4-estimation-by-kalman-filter)
+  - [4.1 State-Space Form](#41-state-space-form)
+  - [4.2 The Loop](#42-the-loop)
+  - [4.3 Filtering And Smoothing](#43-filtering-and-smoothing)
+- [5. Strengths And Limits](#5-strengths-and-limits)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Applying TVP To A PLS Model](#appendix-b-applying-tvp-to-a-pls-model)
+- [Appendix C. Where It Is Used](#appendix-c-where-it-is-used)
+- [Appendix D. How Much Noise The Kalman Filter Removes](#appendix-d-how-much-noise-the-kalman-filter-removes)
 
 Constant-coefficient regression 은 계수를 상수 하나로 고정한다. TVC 는 그 계수를 시간의 함수 $\beta(t)$ 로 확장한 model 이며, 같은 $X$ 라도 그것이 언제 있었느냐에 따라 결과에 미치는 영향이 달라지는 자료를 위한 것이다.
 

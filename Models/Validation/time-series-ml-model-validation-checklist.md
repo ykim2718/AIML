@@ -1,5 +1,16 @@
 # Time-Series ML Model Validation Checklist
-Rev. 6 | Created: 2026-09-20 | Updated: 2026-09-20 19:55 CDT
+Rev. 7 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
+- [4. General ML Check](#4-general-ml-check)
+- [5. Time-Series Specific Check](#5-time-series-specific-check)
+  - [5.1 Validation Strategy](#51-validation-strategy)
+  - [5.2 Preprocessing and Feature Engineering Leakage](#52-preprocessing-and-feature-engineering-leakage)
+  - [5.3 Data Properties](#53-data-properties)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 

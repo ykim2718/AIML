@@ -1,5 +1,24 @@
 # The 1.5 Sigma Shift Between Long-Term and Short-Term Capability
-Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
+Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Two Estimates of Sigma](#2-two-estimates-of-sigma)
+  - [2.1. Within-Subgroup and Overall Variation](#21-within-subgroup-and-overall-variation)
+  - [2.2. Sigma Level and the Shift](#22-sigma-level-and-the-shift)
+- [3. Shift Model](#3-shift-model)
+  - [3.1. Statement](#31-statement)
+  - [3.2. Tail Probability](#32-tail-probability)
+- [4. Inflation Model](#4-inflation-model)
+  - [4.1. Statement](#41-statement)
+  - [4.2. Why the Two Models Differ](#42-why-the-two-models-differ)
+- [5. Origin of the Constant](#5-origin-of-the-constant)
+  - [5.1. Control Chart Detection Limit](#51-control-chart-detection-limit)
+  - [5.2. Tolerance Stack-Up](#52-tolerance-stack-up)
+  - [5.3. Reverse Reading of 3.4 DPMO](#53-reverse-reading-of-34-dpmo)
+- [6. Limits of the Constant](#6-limits-of-the-constant)
+- [7. Practice](#7-practice)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A note on why a Six Sigma capability statement subtracts 1.5 from the short-term sigma level,
 > what model that subtraction assumes, where the constant came from, and what the constant cannot

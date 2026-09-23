@@ -1,5 +1,12 @@
 # PCA Modern Lineage
-Rev. 2 | Created: 2026-08-11 | Updated: 2026-08-11 14:52 CDT
+Rev. 3 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Reading The Map](#1-reading-the-map)
+- [2. Collapse Prevention And Whitening](#2-collapse-prevention-and-whitening)
+- [3. Reading Learned Representations](#3-reading-learned-representations)
+- [4. Functional Data And Deep Learning Hybrids](#4-functional-data-and-deep-learning-hybrids)
+- [5. Supervised Directions](#5-supervised-directions)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > PCA was not pushed aside when representation learning arrived; it was rewritten inside it.
 > This document records what remains of PCA where neural representations are handled, and what the recent branches that combine functional data, deep learning, and the target variable are aiming at.

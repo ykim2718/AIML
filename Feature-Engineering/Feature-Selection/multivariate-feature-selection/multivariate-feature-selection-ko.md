@@ -1,5 +1,26 @@
 # Multivariate Feature Selection
-Rev. 66 | Created: 2026-09-12 | Updated: 2026-09-19 16:54 CDT
+Rev. 67 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+  - [1.1 Motivation](#11-motivation)
+- [2. Taxonomy](#2-taxonomy)
+- [3. Approach-based Methods](#3-approach-based-methods)
+  - [3.1 Multivariate Filter Methods](#31-multivariate-filter-methods)
+  - [3.2 Wrapper Methods](#32-wrapper-methods)
+  - [3.3 Embedded Methods](#33-embedded-methods)
+  - [3.4 Comparison](#34-comparison)
+- [4. Interaction-based Methods](#4-interaction-based-methods)
+  - [4.1 Redundancy Reduction](#41-redundancy-reduction)
+  - [4.2 Feature Synergy](#42-feature-synergy)
+  - [4.3 Dimensionality Tradeoff](#43-dimensionality-tradeoff)
+- [5. Target Kind](#5-target-kind)
+- [6. Selection Instability](#6-selection-instability)
+- [7. Workflow](#7-workflow)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Implementation](#appendix-b-implementation)
+  - [B.1 Choosing Among Answers 🥑](#b1-choosing-among-answers)
+- [Appendix C. Variance Inflation Factor](#appendix-c-variance-inflation-factor)
+- [Appendix D. Gradient Boosting](#appendix-d-gradient-boosting)
 
 ## 1. Purpose
 

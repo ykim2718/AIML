@@ -1,5 +1,23 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 73 | Created: 2026-08-07 | Updated: 2026-08-15 23:53 CDT
+Rev. 74 | Created: 2026-08-07 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Manifest Files](#1-manifest-files)
+- [2. Catalog](#2-catalog)
+- [3. Column Config](#3-column-config)
+- [4. Column Class](#4-column-class)
+  - [4.1 Axis](#41-axis)
+  - [4.2 Activity](#42-activity)
+  - [4.3 Value Type](#43-value-type)
+  - [4.4 Cell Structure](#44-cell-structure)
+  - [4.5 Array Length](#45-array-length)
+  - [4.6 Trace Quantum](#46-trace-quantum)
+  - [4.7 Trace Shape](#47-trace-shape)
+  - [4.8 Trace Sequence](#48-trace-sequence)
+  - [4.9 File Format](#49-file-format)
+- [5. Column Profile](#5-column-profile)
+- [6. Integrity Rules](#6-integrity-rules)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Structure Example](#appendix-b-structure-example)
 
 이 문서가 다루는 데이터는 structured data 이다. Cell 하나가 단일 값이 아니라 배열일 수 있고, 그때에도 데이터 전체는 행과 열의 틀에 들어간다. Manifest 가 기록하는 단위는 열이므로, 열로 나눌 수 없는 image directory 나 layout file 은 이 문서의 대상이 아니다.
 

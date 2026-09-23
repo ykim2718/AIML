@@ -1,5 +1,17 @@
 # Agile AI/ML Development
-Rev. 0 | Created: 2026-09-13 | Updated: 2026-09-13 13:20 CDT
+Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+- [4. Lifecycle](#4-lifecycle)
+- [5. Practices](#5-practices)
+  - [5.1 Timeboxing And Spike](#51-timeboxing-and-spike)
+  - [5.2 Data-Centric AI](#52-data-centric-ai)
+  - [5.3 Shadow Deployment](#53-shadow-deployment)
+- [6. Definition Of Done](#6-definition-of-done)
+  - [6.1 Operating The Checklist](#61-operating-the-checklist)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 

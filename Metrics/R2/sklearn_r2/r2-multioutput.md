@@ -1,5 +1,14 @@
 # The multioutput Argument of r2_score
-Rev. 0 | Created: 2026-09-05 | Updated: 2026-09-05 00:15 CDT
+Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Definitions](#2-definitions)
+- [3. Settings](#3-settings)
+- [4. Worked Example](#4-worked-example)
+- [5. Constant Output](#5-constant-output)
+- [6. Choosing](#6-choosing)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A note on what `sklearn.metrics.r2_score` does when the target has several columns, and on why
 > the same predictions return anything from $-1.17$ to $0.99$ depending on one keyword.

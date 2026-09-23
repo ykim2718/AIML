@@ -1,5 +1,27 @@
 # Feature Importance
-Rev. 3 | Created: 2026-08-31 | Updated: 2026-09-04 20:10 UTC
+Rev. 4 | Created: 2026-08-31 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Axes Of The Question](#2-axes-of-the-question)
+  - [2.1. Object](#21-object)
+  - [2.2. Scope](#22-scope)
+  - [2.3. Effect Measured](#23-effect-measured)
+  - [2.4. Conditioning](#24-conditioning)
+  - [2.5. Data](#25-data)
+  - [2.6. Unit](#26-unit)
+  - [2.7. Guarantee](#27-guarantee)
+- [3. Hierarchy](#3-hierarchy)
+- [4. Data-Only Association](#4-data-only-association)
+- [5. Model-Internal Structure](#5-model-internal-structure)
+- [6. Perturbation And Removal](#6-perturbation-and-removal)
+- [7. Gradient Attribution](#7-gradient-attribution)
+- [8. Game-Theoretic Attribution](#8-game-theoretic-attribution)
+- [9. Variance-Based Sensitivity](#9-variance-based-sensitivity)
+- [10. Error-Controlled Selection](#10-error-controlled-selection)
+- [11. Selection Guide](#11-selection-guide)
+- [12. Failure Modes](#12-failure-modes)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A survey of the methods that put a number on a feature, arranged by what the number is computed
 > from, so that a method is chosen from the question being asked rather than from whichever library

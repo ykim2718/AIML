@@ -1,5 +1,26 @@
 # Agile AI/ML Modeling Meeting
-Rev. 16 | Created: 2026-09-21 | Updated: 2026-09-21 16:20 CDT
+Rev. 17 | Created: 2026-09-21 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+- [4. Items](#4-items)
+  - [4.1 Premise Check](#41-premise-check)
+  - [4.2 Claim Setting](#42-claim-setting)
+  - [4.3 Product Review](#43-product-review)
+  - [4.4 Decision](#44-decision)
+- [5. Agenda](#5-agenda)
+- [6. Agile Practice](#6-agile-practice)
+- [7. Anti-patterns](#7-anti-patterns)
+- [8. Roles](#8-roles)
+- [9. Record](#9-record)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Experiment Priority](#appendix-b-experiment-priority)
+  - [B.1 Three Filters](#b1-three-filters)
+  - [B.2 ICE Score](#b2-ice-score)
+  - [B.3 Spike Before Scoring](#b3-spike-before-scoring)
+  - [B.4 Hypothesis Rule](#b4-hypothesis-rule)
 
 ## 1. Purpose
 

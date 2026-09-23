@@ -1,5 +1,42 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 9 | Created: 2026-08-17 | Updated: 2026-09-04 20:10 UTC
+Rev. 10 | Created: 2026-08-17 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Principle](#2-principle)
+  - [2.1. Extreme Studentized Deviate](#21-extreme-studentized-deviate)
+  - [2.2. Masking and Swamping](#22-masking-and-swamping)
+  - [2.3. Design Consequence](#23-design-consequence)
+- [3. Procedure](#3-procedure)
+  - [3.1. Assumptions](#31-assumptions)
+  - [3.2. Test Statistic](#32-test-statistic)
+  - [3.3. Critical Values](#33-critical-values)
+  - [3.4. Decision Rule](#34-decision-rule)
+- [4. Parameters](#4-parameters)
+  - [4.1. Upper Bound](#41-upper-bound)
+  - [4.2. Significance Level](#42-significance-level)
+- [5. Treatment](#5-treatment)
+- [6. Limits](#6-limits)
+- [7. Comparison](#7-comparison)
+- [8. Summary](#8-summary)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Reference Implementation](#appendix-b-reference-implementation)
+  - [B.1. Implementation](#b1-implementation)
+  - [B.2. Design Notes](#b2-design-notes)
+  - [B.3. Invocation](#b3-invocation)
+- [Appendix C. Worked Example of Masking](#appendix-c-worked-example-of-masking)
+  - [C.1. Sample](#c1-sample)
+  - [C.2. Steps](#c2-steps)
+  - [C.3. Masking Made Visible](#c3-masking-made-visible)
+  - [C.4. Effect of Removal](#c4-effect-of-removal)
+  - [C.5. Summary](#c5-summary)
+- [Appendix D. Worked Example of a Borderline Flag](#appendix-d-worked-example-of-a-borderline-flag)
+  - [D.1. Sample](#d1-sample)
+  - [D.2. Decision at Two Levels](#d2-decision-at-two-levels)
+  - [D.3. Scale Collapse](#d3-scale-collapse)
+  - [D.4. Normality of the Sample](#d4-normality-of-the-sample)
+  - [D.5. Independent Checks](#d5-independent-checks)
+  - [D.6. Reading](#d6-reading)
 
 > A note on the generalized extreme studentized deviate procedure specified in the informative
 > Annex A of ISO 16269-4:2010, organized as principle, procedure, parameters, treatment, and limits.

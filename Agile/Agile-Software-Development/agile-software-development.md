@@ -1,5 +1,21 @@
 # Agile Software Development
-Rev. 5 | Created: 2026-09-13 | Updated: 2026-09-13 13:20 CDT
+Rev. 6 | Created: 2026-09-13 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Values](#31-values)
+  - [3.2 Placement](#32-placement)
+- [4. Iteration Cycle](#4-iteration-cycle)
+- [5. Completion And Release](#5-completion-and-release)
+  - [5.1 Definition Of Done](#51-definition-of-done)
+  - [5.2 Deployment And Release](#52-deployment-and-release)
+  - [5.3 Retrospective And BKM](#53-retrospective-and-bkm)
+- [6. Team Vocabulary](#6-team-vocabulary)
+  - [6.1 Knowledge And Standard](#61-knowledge-and-standard)
+  - [6.2 Feature Control](#62-feature-control)
+  - [6.3 Work State](#63-work-state)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 

@@ -1,5 +1,16 @@
 # The s Control Chart
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. The s Statistic](#2-the-s-statistic)
+  - [2.1. Definition](#21-definition)
+  - [2.2. Bias and the c4 Constant](#22-bias-and-the-c4-constant)
+- [3. Control Limits](#3-control-limits)
+- [4. Comparison with the R Chart](#4-comparison-with-the-r-chart)
+- [5. The xbar and s Pair](#5-the-xbar-and-s-pair)
+- [6. Application](#6-application)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > 부분군의 표준편차를 찍어 공정의 산포를 관리하는 s 관리도에 대한 기록. 관리한계가 어떻게 나오는지,
 > 왜 $\bar{s}$ 를 그대로 쓰지 않고 $c_4$ 로 나누는지, 그리고 언제 R 관리도 대신 이것을 쓰는지를 다룬다.

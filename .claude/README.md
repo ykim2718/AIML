@@ -1,5 +1,13 @@
 # Claude Rules Setup
-Rev. 9 | Created: 2026-08-03 | Updated: 2026-08-31 22:49 CDT
+Rev. 10 | Created: 2026-08-03 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Layout](#1-layout)
+- [2. Settings](#2-settings)
+- [3. Session Start Hook](#3-session-start-hook)
+- [4. Setup For Another Repository](#4-setup-for-another-repository)
+- [5. Update](#5-update)
+- [6. Caution](#6-caution)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 이 폴더는 세션이 시작될 때마다 공용 규칙이 실리도록 구성되어 있다. 규칙의 실체는 `ykim2718/Claude-Configuration` 의 `yrocket-md-doc` 과 `yrocket-coding` plugin 이고, 그 repo 가 marketplace catalog 도 함께 담는다. 이 repo 는 그 plugin 을 켜는 설정과 그것을 설치하는 hook 을 가진다.
 

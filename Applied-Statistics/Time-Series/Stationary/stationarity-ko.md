@@ -1,5 +1,27 @@
 # Stationarity in Engineering Data
-Rev. 19 | Created: 2026-09-07 | Updated: 2026-09-20 20:45 CDT
+Rev. 20 | Created: 2026-09-07 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Definition](#2-definition)
+  - [2.1 Strict and Weak Stationarity](#21-strict-and-weak-stationarity)
+  - [2.2 The Physical Reading](#22-the-physical-reading)
+  - [2.3 Distinctions](#23-distinctions)
+- [3. Forms of Stationarity](#3-forms-of-stationarity)
+- [4. Consequences for Analysis](#4-consequences-for-analysis)
+  - [4.1 Ergodicity](#41-ergodicity)
+  - [4.2 Spectral Analysis](#42-spectral-analysis)
+  - [4.3 Transfer of a Model Across Time](#43-transfer-of-a-model-across-time)
+- [5. Assessment on a Finite Record](#5-assessment-on-a-finite-record)
+  - [5.1 The Observation Window](#51-the-observation-window)
+  - [5.2 Checks](#52-checks)
+  - [5.3 Power of the Tests](#53-power-of-the-tests)
+- [6. Handling of a Non-stationary Record](#6-handling-of-a-non-stationary-record)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. The Same Assumption in Three Domains](#appendix-b-the-same-assumption-in-three-domains)
+  - [B.1 Signal Processing and Communications](#b1-signal-processing-and-communications)
+  - [B.2 Vibration and Condition Monitoring](#b2-vibration-and-condition-monitoring)
+  - [B.3 Structural and Reliability Engineering](#b3-structural-and-reliability-engineering)
 
 > 계측 데이터의 stationarity 에 대한 기록. 통계적 정의와 물리적 읽기, 실무에서 만나는 여러
 > 형태, 신호처리와 상태진단과 구조신뢰성 각각에서 그것이 무엇을 보장하는지, 그리고 유한한 기록 하나로

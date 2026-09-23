@@ -1,5 +1,23 @@
 # The xbar-s Control Chart
-Rev. 12 | Created: 2026-09-05 | Updated: 2026-09-05 08:58 CDT
+Rev. 13 | Created: 2026-09-05 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. The Chart Pair](#2-the-chart-pair)
+  - [2.1. Statistics and Limits](#21-statistics-and-limits)
+  - [2.2. Reading Order](#22-reading-order)
+- [3. How Dispersion Reaches the Mean Chart](#3-how-dispersion-reaches-the-mean-chart)
+  - [3.1. Structural Coupling](#31-structural-coupling)
+  - [3.2. Statistical Independence](#32-statistical-independence)
+  - [3.3. Diagnostics](#33-diagnostics)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivation of Equations (1) to (6)](#appendix-b-derivation-of-equations-1-to-6)
+  - [B.1. The Divisor of Equation (1)](#b1-the-divisor-of-equation-1)
+  - [B.2. The c4 Constant of Equation (2)](#b2-the-c4-constant-of-equation-2)
+  - [B.3. The Chart Constants of Equations (3) and (4)](#b3-the-chart-constants-of-equations-3-and-4)
+  - [B.4. The Signal Probabilities of Equations (5) and (6)](#b4-the-signal-probabilities-of-equations-5-and-6)
+- [Appendix C. Case Study](#appendix-c-case-study)
+  - [C.1. Is an Abrupt Spread Increase at a Constant Mean an Excursion?](#c1-is-an-abrupt-spread-increase-at-a-constant-mean-an-excursion)
 
 > 부분군의 평균과 표준편차를 두 장으로 함께 관리하는 xbar-s 관리도에 대한 기록. 두 관리도가 서로에게
 > 무엇을 하는지, 산포가 평균에 닿는 경로를 어떻게 가려내는지, 그리고 평균이 그대로인 채 산포만 갑자기

@@ -1,5 +1,15 @@
 # FPCA Worked Example
-Rev. 3 | Created: 2026-08-14 | Updated: 2026-09-04 23:53 CDT
+Rev. 4 | Created: 2026-08-14 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Notation](#1-notation)
+- [2. The Planted Curves](#2-the-planted-curves)
+- [3. Mean And Centering](#3-mean-and-centering)
+- [4. The Covariance Surface](#4-the-covariance-surface)
+- [5. Eigenvalues And Eigenfunctions](#5-eigenvalues-and-eigenfunctions)
+- [6. Scores](#6-scores)
+- [7. Reconstruction](#7-reconstruction)
+- [8. From The Example To Real Data](#8-from-the-example-to-real-data)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > Every number in this document can be recomputed by hand: four curves are built from a known mean and two known eigenfunctions, and the FPCA pipeline is run on them step by step.
 > The point is to watch each stage transform the numbers — data, mean, covariance, eigenpairs — until the pipeline hands back exactly the scores that were planted.

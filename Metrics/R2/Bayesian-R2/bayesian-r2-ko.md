@@ -1,5 +1,33 @@
 # Bayesian R² — Obtaining R² as a Distribution Instead of a Point (Korean)
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 14:57 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Motivation](#1-motivation)
+- [2. Core Idea](#2-core-idea)
+- [3. Definition](#3-definition)
+  - [3.1. Divergence Problem of the Standard Form](#31-divergence-problem-of-the-standard-form)
+  - [3.2. Gelman Formulation](#32-gelman-formulation)
+  - [3.3. Choice of Residual Variance](#33-choice-of-residual-variance)
+- [4. Computation](#4-computation)
+  - [4.1. Procedure](#41-procedure)
+  - [4.2. Implementation](#42-implementation)
+- [5. Interpretation](#5-interpretation)
+  - [5.1. Point Estimate and Credible Interval](#51-point-estimate-and-credible-interval)
+  - [5.2. Uncertainty Decomposition](#52-uncertainty-decomposition)
+- [6. Tools](#6-tools)
+- [7. Prerequisites](#7-prerequisites)
+  - [7.1. Applicable Models](#71-applicable-models)
+  - [7.2. Inapplicable Models](#72-inapplicable-models)
+- [8. Comparison](#8-comparison)
+- [9. Pitfalls](#9-pitfalls)
+- [10. Summary](#10-summary)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Worked Example](#appendix-b-worked-example)
+  - [B.1. Data and Reference Fit](#b1-data-and-reference-fit)
+  - [B.2. Posterior Draws](#b2-posterior-draws)
+  - [B.3. Credible Interval](#b3-credible-interval)
+  - [B.4. Constructed Predictors and the Range Boundary](#b4-constructed-predictors-and-the-range-boundary)
+  - [B.5. Summary of the Comparison](#b5-summary-of-the-comparison)
 
 > Posterior draw 마다 R² 를 하나씩 계산하여 R² 를 분포로 얻는 방법에 대한 기록이며, 정의, 계산,
 > 해석, 적용 범위의 차례로 정리한다.

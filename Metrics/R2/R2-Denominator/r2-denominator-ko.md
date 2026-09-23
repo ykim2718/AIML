@@ -1,5 +1,18 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator (Korean)
-Rev. 1 | Created: 2026-09-04 | Updated: 2026-09-04 14:57 CDT
+Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Question](#1-question)
+- [2. Structure](#2-structure)
+- [3. Variants](#3-variants)
+  - [3.1. Fixed Reference Point](#31-fixed-reference-point)
+  - [3.2. Fixed Reference Dispersion](#32-fixed-reference-dispersion)
+  - [3.3. Baseline Model](#33-baseline-model)
+- [4. Meaning and Reporting](#4-meaning-and-reporting)
+- [5. Cautions](#5-cautions)
+- [6. Summary](#6-summary)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Reference Implementation](#appendix-b-reference-implementation)
 
 > 이 문서는 표준 R² 의 분모를 자료에서 계산하지 않고 바깥에서 정한 기준으로 바꿀 수 있는지,
 > 그리고 그렇게 바꾸고 나면 그 수가 무엇을 뜻하게 되는지를 묻는다.

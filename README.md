@@ -1,5 +1,20 @@
 # AIML
-Rev. 90 | Created: 2026-08-07 | Updated: 2026-09-21 16:20 CDT
+Rev. 91 | Created: 2026-08-07 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Repository Map](#2-repository-map)
+- [3. Documents](#3-documents)
+  - [3.1 EDA](#31-eda)
+  - [3.2 Feature Engineering](#32-feature-engineering)
+  - [3.3 Metrics](#33-metrics)
+  - [3.4 Automation](#34-automation)
+  - [3.5 Models](#35-models)
+  - [3.6 Applied Statistics](#36-applied-statistics)
+  - [3.7 Scripts](#37-scripts)
+  - [3.8 Agile](#38-agile)
+- [4. Order Of Use](#4-order-of-use)
+- [5. Conventions](#5-conventions)
+- [6. Running The Code](#6-running-the-code)
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.

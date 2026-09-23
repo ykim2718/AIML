@@ -1,5 +1,18 @@
 # Referenced R² — Choosing the Baseline in the R² Denominator
-Rev. 12 | Created: 2026-08-15 | Updated: 2026-09-04 14:57 CDT
+Rev. 13 | Created: 2026-08-15 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Question](#1-question)
+- [2. Structure](#2-structure)
+- [3. Variants](#3-variants)
+  - [3.1. Fixed Reference Point](#31-fixed-reference-point)
+  - [3.2. Fixed Reference Dispersion](#32-fixed-reference-dispersion)
+  - [3.3. Baseline Model](#33-baseline-model)
+- [4. Meaning and Reporting](#4-meaning-and-reporting)
+- [5. Cautions](#5-cautions)
+- [6. Summary](#6-summary)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Reference Implementation](#appendix-b-reference-implementation)
 
 > This document asks whether the denominator of the standard R² can be replaced
 > by a reference stated from outside rather than computed from the data, and

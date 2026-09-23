@@ -1,5 +1,23 @@
 # Single Predicted Value From Two Models
-Rev. 27 | Created: 2026-09-11 | Updated: 2026-09-11 20:20 CDT
+Rev. 28 | Created: 2026-09-11 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Principle](#3-principle)
+  - [3.1 Weighted Soft Voting](#31-weighted-soft-voting)
+  - [3.2 Multi-Class Extension](#32-multi-class-extension)
+  - [3.3 Single Predicted Value](#33-single-predicted-value)
+- [4. Optimal Weight Search](#4-optimal-weight-search)
+  - [4.1 Grid Search](#41-grid-search)
+  - [4.2 Metric Selection](#42-metric-selection)
+- [5. Cautions](#5-cautions)
+- [6. Further Work](#6-further-work)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Implementation](#appendix-b-python-implementation)
+  - [B.1 Single Predicted Value](#b1-single-predicted-value)
+  - [B.2 Optimal Weight Search](#b2-optimal-weight-search)
+  - [B.3 Execution Example](#b3-execution-example)
 
 ## 1. Purpose
 

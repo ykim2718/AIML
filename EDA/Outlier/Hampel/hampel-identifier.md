@@ -1,5 +1,26 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 39 | Created: 2026-08-17 | Updated: 2026-09-04 20:10 UTC
+Rev. 40 | Created: 2026-08-17 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Modified z-score](#2-modified-z-score)
+  - [2.1. Definition](#21-definition)
+  - [2.2. Consistency Constant](#22-consistency-constant)
+  - [2.3. Outlier Flag](#23-outlier-flag)
+  - [2.4. Retained Interval](#24-retained-interval)
+- [3. Robustness](#3-robustness)
+  - [3.1. Assumptions](#31-assumptions)
+  - [3.2. Contaminated Scale](#32-contaminated-scale)
+  - [3.3. Breakdown Point](#33-breakdown-point)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Reference Implementation](#appendix-b-reference-implementation)
+- [Appendix C. Worked Example](#appendix-c-worked-example)
+  - [C.1. Sample](#c1-sample)
+  - [C.2. Normality](#c2-normality)
+- [Appendix D. Consistency Constant of the MAD](#appendix-d-consistency-constant-of-the-mad)
+  - [D.1. Derivation](#d1-derivation)
+  - [D.2. Finite Samples](#d2-finite-samples)
+  - [D.3. Other Distributions](#d3-other-distributions)
 
 > A note on the modified z-score built from the median and the median absolute deviation,
 > organized as the score and then the robustness that the score rests on.

@@ -1,5 +1,22 @@
 # Overfitting In Wide Data
-Rev. 2 | Created: 2026-09-06 | Updated: 2026-09-07 16:33 CDT
+Rev. 3 | Created: 2026-09-06 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Principle](#3-principle)
+  - [3.1 Three Sources](#31-three-sources)
+  - [3.2 Evidence From A Simulation](#32-evidence-from-a-simulation)
+- [4. Application](#4-application)
+  - [4.1 Families Of Defense](#41-families-of-defense)
+  - [4.2 Random Subspace Method](#42-random-subspace-method)
+  - [4.3 Regularization](#43-regularization)
+  - [4.4 Projection Before Regression](#44-projection-before-regression)
+  - [4.5 Feature Selection Without Selection Bias](#45-feature-selection-without-selection-bias)
+  - [4.6 Validation Protocol](#46-validation-protocol)
+- [5. Comparison](#5-comparison)
+- [6. Further Work](#6-further-work)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 

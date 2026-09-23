@@ -1,5 +1,30 @@
 # Semiconductor Sensor Trace Wide-to-Narrow Conversion
-Rev. 2 | Created: 2026-07-29 | Updated: 2026-08-15 08:26 CDT
+Rev. 3 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Problem Definition](#1-problem-definition)
+  - [1.1 Data Structure and Scale](#11-data-structure-and-scale)
+  - [1.2 Definition of Narrow Data](#12-definition-of-narrow-data)
+  - [1.3 Information Preservation Criteria](#13-information-preservation-criteria)
+- [2. Method Map](#2-method-map)
+- [3. Summary Statistics and Segmentation](#3-summary-statistics-and-segmentation)
+  - [3.1 Per-Sensor Summary Statistics](#31-per-sensor-summary-statistics)
+  - [3.2 Recipe Step Segmentation](#32-recipe-step-segmentation)
+  - [3.3 Downsampling and PAA](#33-downsampling-and-paa)
+- [4. Linear Projection](#4-linear-projection)
+  - [4.1 Unfolding and PCA](#41-unfolding-and-pca)
+  - [4.2 Supervised Projection with PLS](#42-supervised-projection-with-pls)
+  - [4.3 Basis Expansion and FPCA](#43-basis-expansion-and-fpca)
+- [5. Automated Feature Library](#5-automated-feature-library)
+  - [5.1 Feature Libraries](#51-feature-libraries)
+  - [5.2 Feature Selection](#52-feature-selection)
+- [6. Tensor Decomposition](#6-tensor-decomposition)
+- [7. Random Convolution Kernels](#7-random-convolution-kernels)
+- [8. Deep Representation Learning](#8-deep-representation-learning)
+- [9. Foundation Model Embeddings](#9-foundation-model-embeddings)
+- [10. Method Selection for This Scale](#10-method-selection-for-this-scale)
+- [11. References](#11-references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Further Development](#appendix-b-further-development)
 
 반도체 장비의 sensor 시계열 data는 [wafer, feature, trace] 구조의 3-way 배열이며, wafer 하나에 딸린 열의 수가 표본 수를 압도하는 wide data ($p \gg n$) 다. 이 문서는 정보를 최대한 유지하면서 이 wide data를 narrow data ($p \lesssim n$) 로 바꾸는 방법을 쉬운 방법부터 어려운 방법, 최신 방법 순으로 정리한다.
 

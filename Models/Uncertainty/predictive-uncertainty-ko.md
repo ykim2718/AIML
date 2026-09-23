@@ -1,5 +1,28 @@
 # Predictive Uncertainty (Korean)
-Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-10 19:14 CDT
+Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy](#3-taxonomy)
+- [4. Hierarchy](#4-hierarchy)
+- [5. Probabilistic Regression](#5-probabilistic-regression)
+  - [5.1 What The Boosting Libraries Provide](#51-what-the-boosting-libraries-provide)
+  - [5.2 The Variance Head Overfits](#52-the-variance-head-overfits)
+- [6. Quantile Regression](#6-quantile-regression)
+- [7. Bootstrap And Resampling](#7-bootstrap-and-resampling)
+- [8. Tree And Ensemble Family](#8-tree-and-ensemble-family)
+- [9. Linear Family](#9-linear-family)
+- [10. Weighting An Ensemble](#10-weighting-an-ensemble)
+- [11. Calibration](#11-calibration)
+- [12. Selection](#12-selection)
+- [13. Further Work](#13-further-work)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Worked Example](#appendix-b-worked-example)
+  - [B.1 The Variance Head](#b1-the-variance-head)
+  - [B.2 Quantile Regression In Four Libraries](#b2-quantile-regression-in-four-libraries)
+  - [B.3 The Two Forest Routes](#b3-the-two-forest-routes)
+  - [B.4 Weighting Two Members By Their Variances](#b4-weighting-two-members-by-their-variances)
 
 ## 1. Purpose
 

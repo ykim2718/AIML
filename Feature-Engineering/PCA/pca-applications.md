@@ -1,5 +1,16 @@
 # PCA Applications
-Rev. 13 | Created: 2026-08-11 | Updated: 2026-09-04 16:10 CDT
+Rev. 14 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Four Directions Of Extension](#1-four-directions-of-extension)
+- [2. Semiconductor Measurement Data](#2-semiconductor-measurement-data)
+  - [2.1 Wafer Metrology](#21-wafer-metrology)
+  - [2.2 FDC Trace 🎈](#22-fdc-trace)
+  - [2.3 Wafer Map](#23-wafer-map)
+  - [2.4 Multiple Tools And Chambers](#24-multiple-tools-and-chambers)
+  - [2.5 Drift Over Time](#25-drift-over-time)
+- [3. Selection Map](#3-selection-map)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. FPCA And Extrapolation](#appendix-b-fpca-and-extrapolation)
 
 > Knowing the lineage and deciding what to run are two different jobs.
 > This document first groups the directions the extensions took, then walks through the measurement data a fab produces and the assumption each kind of it breaks, and closes with a table that goes from a data condition to a method.

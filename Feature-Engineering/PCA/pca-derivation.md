@@ -1,5 +1,17 @@
 # PCA Derivation
-Rev. 7 | Created: 2026-08-11 | Updated: 2026-09-04 16:10 CDT
+Rev. 8 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Notation](#1-notation)
+- [2. The Objective](#2-the-objective)
+- [3. The Lagrange Condition](#3-the-lagrange-condition)
+- [4. The Choice Among Stationary Points](#4-the-choice-among-stationary-points)
+- [5. The Later Components](#5-the-later-components)
+- [6. The Reconstruction View](#6-the-reconstruction-view)
+- [7. The Bridge To The SVD](#7-the-bridge-to-the-svd)
+- [8. A Worked Example](#8-a-worked-example)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. The Worked Example Drawn](#appendix-b-the-worked-example-drawn)
+- [Appendix C. The Column-wise Orthonormal Matrix](#appendix-c-the-column-wise-orthonormal-matrix)
 
 > The procedure can be followed without knowing why its answer is right, and most uses never need to ask.
 > This document is for when the question comes up: it derives, from the requirement of keeping as much variance as possible, that the axes PCA returns must be eigenvectors of the covariance matrix.

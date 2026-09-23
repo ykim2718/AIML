@@ -1,5 +1,29 @@
 # The Chi-Squared Distribution
-Rev. 6 | Created: 2026-09-03 | Updated: 2026-09-04 20:10 UTC
+Rev. 7 | Created: 2026-09-03 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Definition](#2-definition)
+  - [2.1. Construction from Normal Variables](#21-construction-from-normal-variables)
+  - [2.2. Density Function](#22-density-function)
+- [3. Properties](#3-properties)
+  - [3.1. Moments](#31-moments)
+  - [3.2. Additivity](#32-additivity)
+  - [3.3. Shape](#33-shape)
+- [4. Relation to Other Distributions](#4-relation-to-other-distributions)
+- [5. Role in Sampling](#5-role-in-sampling)
+  - [5.1. Sample Variance of a Normal Population](#51-sample-variance-of-a-normal-population)
+  - [5.2. Degrees of Freedom](#52-degrees-of-freedom)
+- [6. Tests Built on the Distribution](#6-tests-built-on-the-distribution)
+  - [6.1. Goodness of Fit](#61-goodness-of-fit)
+  - [6.2. Independence in a Contingency Table](#62-independence-in-a-contingency-table)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivations](#appendix-b-derivations)
+  - [B.1. Square of a Normal Variable](#b1-square-of-a-normal-variable)
+  - [B.2. Moment Generating Function](#b2-moment-generating-function)
+  - [B.3. Mean and Variance](#b3-mean-and-variance)
+  - [B.4. Loss of One Degree of Freedom](#b4-loss-of-one-degree-of-freedom)
+- [Appendix C. Computation](#appendix-c-computation)
 
 > A note on the distribution of a sum of squared standard normal variables: how it is built, what
 > its density and moments are, how it relates to the other sampling distributions, and why it turns

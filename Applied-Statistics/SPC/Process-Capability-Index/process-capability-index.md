@@ -1,5 +1,22 @@
 # Process Capability Indices
-Rev. 14 | Created: 2026-09-04 | Updated: 2026-09-04 21:20 CDT
+Rev. 15 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Definitions](#2-definitions)
+  - [2.1. Potential Capability](#21-potential-capability)
+  - [2.2. Centring](#22-centring)
+  - [2.3. Achieved Capability](#23-achieved-capability)
+- [3. Physical Meaning](#3-physical-meaning)
+  - [3.1. Defect Rate](#31-defect-rate)
+  - [3.2. Reading the Three Together](#32-reading-the-three-together)
+- [4. Application](#4-application)
+  - [4.1. Short-Term and Long-Term](#41-short-term-and-long-term)
+  - [4.2. Assumptions](#42-assumptions)
+  - [4.3. In the Fab](#43-in-the-fab)
+  - [4.4. Priority Classes](#44-priority-classes)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivation of Equation (5)](#appendix-b-derivation-of-equation-5)
 
 > A note on the three indices that compare a process against its specification: $C_p$ for the
 > spread, $k$ for the centring, and $C_{pk}$ for what the two produce together.

@@ -1,5 +1,14 @@
 # Regression Metrics
-Rev. 41 | Created: 2026-04-08 | Updated: 2026-09-05 00:04 CDT
+Rev. 42 | Created: 2026-04-08 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Executive Summary](#1-executive-summary)
+- [2. Metric Hierarchy](#2-metric-hierarchy)
+  - [2.1. Variance Index](#21-variance-index)
+  - [2.2. Mean Index](#22-mean-index)
+  - [2.3. Agreement Index](#23-agreement-index)
+- [3. Comparative Summary](#3-comparative-summary)
+- [4. Recommendation For Engineering Teams](#4-recommendation-for-engineering-teams)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A taxonomy of regression evaluation metrics split into variance-based,
 > mean-based, and agreement-based families, read against the $y=x$ line and

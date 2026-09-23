@@ -1,5 +1,22 @@
 # Process Capability Indices (Korean)
-Rev. 13 | Created: 2026-09-04 | Updated: 2026-09-04 21:20 CDT
+Rev. 14 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Definitions](#2-definitions)
+  - [2.1. Potential Capability](#21-potential-capability)
+  - [2.2. Centring](#22-centring)
+  - [2.3. Achieved Capability](#23-achieved-capability)
+- [3. Physical Meaning](#3-physical-meaning)
+  - [3.1. Defect Rate](#31-defect-rate)
+  - [3.2. Reading the Three Together](#32-reading-the-three-together)
+- [4. Application](#4-application)
+  - [4.1. Short-Term and Long-Term](#41-short-term-and-long-term)
+  - [4.2. Assumptions](#42-assumptions)
+  - [4.3. In the Fab](#43-in-the-fab)
+  - [4.4. Priority Classes](#44-priority-classes)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivation of Equation (5)](#appendix-b-derivation-of-equation-5)
 
 > 공정을 규격에 견주는 세 지표에 대한 기록. 산포를 보는 $C_p$, 치우침을 보는 $k$, 그리고 그 둘이 함께
 > 만들어내는 $C_{pk}$ 를 다룬다.

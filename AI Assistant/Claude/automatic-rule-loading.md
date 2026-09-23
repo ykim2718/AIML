@@ -1,7 +1,37 @@
 > ⚠️ **This is an auto-synced copy. Do not edit here.**
 
 # Automatic Rule Loading via Plugin Marketplace
-Rev. 196 | Created: 2026-08-16 | Updated: 2026-09-06 17:04 UTC
+Rev. 197 | Created: 2026-08-16 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Goal](#1-goal)
+- [2. Architecture](#2-architecture)
+  - [2.1 Plugin Marketplace and Copies](#21-plugin-marketplace-and-copies)
+  - [2.2 Plugin Marketplace in Git Repository 🌳](#22-plugin-marketplace-in-git-repository)
+- [3. Bootstrap](#3-bootstrap)
+  - [3.1 Settings.json in Desktop Interface](#31-settingsjson-in-desktop-interface)
+  - [3.2 Session Start Hook in Desktop Interface](#32-session-start-hook-in-desktop-interface)
+  - [3.3 Settings.json in Web Interface](#33-settingsjson-in-web-interface)
+- [4. Verification](#4-verification)
+  - [4.1 Session Command (Desktop)](#41-session-command-desktop)
+  - [4.2 Claude CLI (Desktop)](#42-claude-cli-desktop)
+  - [4.3 Session Content (Web)](#43-session-content-web)
+- [5. Extension](#5-extension)
+- [6. Constraints](#6-constraints)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Claude CLI (Desktop)](#appendix-b-claude-cli-desktop)
+  - [B.1 CLI Installation](#b1-cli-installation)
+  - [B.2 CLI Commands](#b2-cli-commands)
+- [Appendix C. Prompt Command](#appendix-c-prompt-command)
+- [Appendix D. Skill](#appendix-d-skill)
+  - [D.1 Skill](#d1-skill)
+  - [D.2 Reference File](#d2-reference-file)
+- [Appendix E. Plugin State Files (Desktop)](#appendix-e-plugin-state-files-desktop)
+- [Appendix F. Manual Add and Install](#appendix-f-manual-add-and-install)
+- [Appendix G. Obsidian](#appendix-g-obsidian)
+  - [G.1 Vault Placement](#g1-vault-placement)
+  - [G.2 Link Style](#g2-link-style)
+  - [G.3 File Hygiene](#g3-file-hygiene)
+  - [G.4 Sync](#g4-sync)
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 

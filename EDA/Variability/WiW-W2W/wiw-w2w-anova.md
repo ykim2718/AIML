@@ -1,5 +1,27 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 1 | Created: 2026-09-22 | Updated: 2026-09-22 11:54 CDT
+Rev. 2 | Created: 2026-09-22 | Updated: 2026-09-23 11:08 CDT
+
+- [1. One-Way Variance Components](#1-one-way-variance-components)
+  - [1.1 Notation](#11-notation)
+  - [1.2 Decomposition Identity](#12-decomposition-identity)
+  - [1.3 Random Effects Model](#13-random-effects-model)
+  - [1.4 Spread of a Group Mean](#14-spread-of-a-group-mean)
+  - [1.5 Limit on a Group's Sample Spread](#15-limit-on-a-groups-sample-spread)
+- [2. Application to Wafer Measurements](#2-application-to-wafer-measurements)
+  - [2.1 Data](#21-data)
+  - [2.2 Variance Decomposition](#22-variance-decomposition)
+  - [2.3 W2W Threshold](#23-w2w-threshold)
+  - [2.4 WiW Excursion](#24-wiw-excursion)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Decomposition of the Total Sum of Squares](#appendix-b-decomposition-of-the-total-sum-of-squares)
+- [Appendix C. Limits of the Decomposition](#appendix-c-limits-of-the-decomposition)
+  - [C.1 The Two Coefficients](#c1-the-two-coefficients)
+  - [C.2 Correlated Sites Within a Wafer](#c2-correlated-sites-within-a-wafer)
+  - [C.3 Wafers as a Sample of One Process](#c3-wafers-as-a-sample-of-one-process)
+- [Appendix D. Derivation of the Between-Component Form](#appendix-d-derivation-of-the-between-component-form)
+- [Appendix E. Derivation of the Screening Limit](#appendix-e-derivation-of-the-screening-limit)
+- [Appendix F. Covariance With a Repeated Argument](#appendix-f-covariance-with-a-repeated-argument)
+- [Appendix G. The Chi-Square Distribution](#appendix-g-the-chi-square-distribution)
 
 > ANOVA (analysis of variance) divides the total spread of the observations into a few causes and shows in numbers how much each cause contributes.
 

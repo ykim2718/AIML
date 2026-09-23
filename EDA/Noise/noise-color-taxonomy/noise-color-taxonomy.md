@@ -1,5 +1,17 @@
 # Noise Color Taxonomy
-Rev. 10 | Created: 2026-08-20 | Updated: 2026-09-04 20:10 UTC
+Rev. 11 | Created: 2026-08-20 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Waveform](#1-waveform)
+- [2. Spectral Slope](#2-spectral-slope)
+- [3. Auditory Character](#3-auditory-character)
+- [4. Spatial Pattern](#4-spatial-pattern)
+- [5. Naming](#5-naming)
+- [6. Application](#6-application)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Decibel and Ratio](#appendix-b-decibel-and-ratio)
+- [Appendix C. Slope in Decibel per Decade](#appendix-c-slope-in-decibel-per-decade)
+- [Appendix D. Application to Semiconductor Equipment Signals](#appendix-d-application-to-semiconductor-equipment-signals)
 
 노이즈에 붙은 색 이름은 주파수 대역에 에너지가 어떻게 나뉘어 있는지를 가리킨다. 저주파에 에너지가 몰릴수록 붉은 계열로 부르고, 고주파에 몰릴수록 푸른 계열로 부른다. 이 문서는 네 가지 색을 파형, 기울기, 청각, 공간 패턴, 활용의 순서로 정리한다.
 

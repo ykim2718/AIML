@@ -1,5 +1,17 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology) (Korean)
-Rev. 2 | Created: 2026-09-06 | Updated: 2026-09-07 00:27 CDT
+Rev. 3 | Created: 2026-09-06 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Why The Two Are Combined](#2-why-the-two-are-combined)
+- [3. The Expanded Input Matrix](#3-the-expanded-input-matrix)
+- [4. Fitting And Choosing The Component Count](#4-fitting-and-choosing-the-component-count)
+- [5. Recovering The Surface](#5-recovering-the-surface)
+- [6. What The Combination Buys](#6-what-the-combination-buys)
+- [7. Where It Is Used](#7-where-it-is-used)
+- [8. Cautions](#8-cautions)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Example](#appendix-b-python-example)
 
 RSM 은 공정 조건을 2차 다항식으로 근사하고 그 곡면의 정류점에서 최적 조건을 읽는 방법이며, Box 와 Wilson 이 세운 뒤로 공정 최적화의 기본형으로 남아 있다 [[1](#ref-1)]. PLS 는 예측변수를 응답과의 공분산이 큰 방향으로 투영하여, 변수가 서로 얽혀 있거나 관측보다 많을 때에도 회귀와 축약을 한 번에 끝낸다 [[3](#ref-3)]. 이 문서가 다루는 PLS-RSM 은 그 둘을 겹쳐 쓰는 방식, 곧 2차로 확장한 입력 행렬에 OLS 대신 PLS 를 적합하는 구성이다.
 

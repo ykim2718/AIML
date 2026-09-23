@@ -1,5 +1,26 @@
 # Wide-to-Narrow Practice
-Rev. 3 | Created: 2026-07-29 | Updated: 2026-09-04 16:10 CDT
+Rev. 4 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope and Premise](#1-scope-and-premise)
+- [2. Weight-Shared Channel-Independent Encoding](#2-weight-shared-channel-independent-encoding)
+  - [2.1 Parameter Arithmetic](#21-parameter-arithmetic)
+  - [2.2 Why One Encoder Suffices](#22-why-one-encoder-suffices)
+  - [2.3 Implementation](#23-implementation)
+  - [2.4 Stepwise Requirements](#24-stepwise-requirements)
+  - [2.5 Limitations](#25-limitations)
+- [3. Sparse Sensor Selection](#3-sparse-sensor-selection)
+  - [3.1 Group Lasso](#31-group-lasso)
+  - [3.2 Sparse Group Lasso](#32-sparse-group-lasso)
+  - [3.3 Stability Selection](#33-stability-selection)
+  - [3.4 Sparse PCA](#34-sparse-pca)
+  - [3.5 Selection Workflow](#35-selection-workflow)
+- [4. PLS Supervised Reduction](#4-pls-supervised-reduction)
+  - [4.1 Objective Contrast with PCA](#41-objective-contrast-with-pca)
+  - [4.2 Multi-Response PLS2](#42-multi-response-pls2)
+  - [4.3 Choosing the Component Count](#43-choosing-the-component-count)
+  - [4.4 Diagnostics](#44-diagnostics)
+- [5. References](#5-references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 반도체 장비 sensor trace의 wide data를 narrow data로 바꾸는 방법 가운데 세 가지 — 가중치 공유 encoding, sparsity 기반 sensor 선택, PLS 지도적 축약 — 의 구현 세부를 다룬다. 각 방법이 왜 동작하는지, 구현에서 무엇이 필수인지, 어떤 함정이 있는지를 적는다.
 

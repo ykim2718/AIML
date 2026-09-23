@@ -1,5 +1,32 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Quantized Signals
-Rev. 5 | Created: 2026-08-01 | Updated: 2026-08-20 01:11 CDT
+Rev. 6 | Created: 2026-08-01 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope And Framing](#1-scope-and-framing)
+  - [1.1 When This Document Applies](#11-when-this-document-applies)
+  - [1.2 The Two Requirements In Tension](#12-the-two-requirements-in-tension)
+  - [1.3 Output Contract](#13-output-contract)
+- [2. The Index Domain](#2-the-index-domain)
+  - [2.1 Why The Level Count Must Not Enter The Dimension](#21-why-the-level-count-must-not-enter-the-dimension)
+  - [2.2 The Parameter Count Result](#22-the-parameter-count-result)
+- [3. Ladder Identification](#3-ladder-identification)
+  - [3.1 Recovering The Pitch](#31-recovering-the-pitch)
+  - [3.2 Recovering The Level Count](#32-recovering-the-level-count)
+  - [3.3 Non-Uniform Ladders](#33-non-uniform-ladders)
+  - [3.4 Locating The Transitions](#34-locating-the-transitions)
+  - [3.5 Selection Guide](#35-selection-guide)
+- [4. The Minimal Parameter Set](#4-the-minimal-parameter-set)
+  - [4.1 Block B, The Descriptor Summary](#41-block-b-the-descriptor-summary)
+  - [4.2 The Core Five](#42-the-core-five)
+  - [4.3 Block A, The Reconstruction Payload](#43-block-a-the-reconstruction-payload)
+  - [4.4 Summary Format](#44-summary-format)
+- [5. Reconstruction Tiers](#5-reconstruction-tiers)
+- [6. Feature-Table Rules](#6-feature-table-rules)
+  - [6.1 Parameters That Carry Hidden Configuration](#61-parameters-that-carry-hidden-configuration)
+  - [6.2 Naming And Units](#62-naming-and-units)
+  - [6.3 Redundancy Among Parameters](#63-redundancy-among-parameters)
+  - [6.4 Failure Modes](#64-failure-modes)
+- [7. Industry Practice By Field](#7-industry-practice-by-field)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A quantized signal does not vary continuously. It rests on a ladder of discrete levels and jumps between them, and the number of levels is usually not known in advance.
 > This document defines the parameter row for that case, built so that the row width never depends on the level count and so that the original waveform can be rebuilt from what the row stores.

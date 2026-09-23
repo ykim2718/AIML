@@ -1,5 +1,29 @@
 # Bayesian Statistics
-Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-20 16:20 CDT
+Rev. 6 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
+- [4. Conditional Probability and Bayes' Rule](#4-conditional-probability-and-bayes-rule)
+- [5. The Pool Table Problem](#5-the-pool-table-problem)
+  - [5.1 Setup](#51-setup)
+  - [5.2 The Prior](#52-the-prior)
+  - [5.3 The Classical Answer](#53-the-classical-answer)
+  - [5.4 The Bayesian Answer](#54-the-bayesian-answer)
+  - [5.5 Comparison](#55-comparison)
+- [6. The Coin Example](#6-the-coin-example)
+  - [6.1 Setup](#61-setup)
+  - [6.2 The Maximum Likelihood Estimate](#62-the-maximum-likelihood-estimate)
+  - [6.3 The Prior as a Choice](#63-the-prior-as-a-choice)
+  - [6.4 The Posterior](#64-the-posterior)
+  - [6.5 What Enough Data Does](#65-what-enough-data-does)
+- [7. Limits](#7-limits)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivations](#appendix-b-derivations)
+  - [B.1 Bob's Win Probability at a Given p](#b1-bobs-win-probability-at-a-given-p)
+  - [B.2 Evaluation of the Expectation](#b2-evaluation-of-the-expectation)
 
 ## 1. Purpose
 

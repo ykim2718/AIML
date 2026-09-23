@@ -1,5 +1,15 @@
 # Noise in LSB
-Rev. 6 | Created: 2026-08-22 | Updated: 2026-09-04 20:10 UTC
+Rev. 7 | Created: 2026-08-22 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Definition](#1-definition)
+- [2. Physical Meaning](#2-physical-meaning)
+  - [2.1. Resolution](#21-resolution)
+  - [2.2. Bit Stability](#22-bit-stability)
+  - [2.3. Effective Resolution](#23-effective-resolution)
+- [3. Reference Values](#3-reference-values)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Application to Semiconductor Equipment Signals](#appendix-b-application-to-semiconductor-equipment-signals)
 
 신호의 표준편차를 LSB 하나의 크기로 나눈 값은 ADC 와 DAC 를 다루는 분야에서 noise in LSB 또는 LSB rms noise 라고 부른다. 잡음을 volt 로 적으면 장치마다 입력 범위와 비트 수가 달라 서로 견줄 수 없지만, 이 값은 잡음을 그 장치의 분해능으로 잰 것이므로 장치가 달라도 같은 뜻으로 읽힌다. 이 문서는 이 값의 정의, 물리적 의미, 값에 따른 해석을 정리한다.
 

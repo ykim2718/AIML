@@ -1,5 +1,23 @@
 # The Wafer Uniformity Index (Korean)
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
+Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Measurement Basis](#2-measurement-basis)
+  - [2.1. Measurement Pattern and Edge Exclusion](#21-measurement-pattern-and-edge-exclusion)
+  - [2.2. What the Index Normalises](#22-what-the-index-normalises)
+- [3. Standard Definitions](#3-standard-definitions)
+  - [3.1. Range Method](#31-range-method)
+  - [3.2. Standard Deviation Method](#32-standard-deviation-method)
+  - [3.3. Choosing Between Them](#33-choosing-between-them)
+- [4. Physical Meaning](#4-physical-meaning)
+  - [4.1. What the Index Cannot See](#41-what-the-index-cannot-see)
+  - [4.2. Dependence on the Point Count](#42-dependence-on-the-point-count)
+- [5. Application](#5-application)
+  - [5.1. Process Steps](#51-process-steps)
+  - [5.2. Use in Process Control](#52-use-in-process-control)
+  - [5.3. Reporting](#53-reporting)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > 반도체 공정 관리에서 층이 웨이퍼 위에서 얼마나 변하는지를 하나의 수로 요약하는 지표에 대한 기록.
 > 표준 산출 방식 두 가지, 그 수가 담는 것과 담지 못하는 것, 그리고 증착·식각·CMP 에서의 쓰임을 다룬다.

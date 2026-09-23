@@ -1,5 +1,17 @@
 # Ordinary Least Squares
-Rev. 12 | Created: 2026-09-12 | Updated: 2026-09-13 23:45 CDT
+Rev. 13 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Design Matrix](#3-design-matrix)
+- [4. Least Squares Criterion](#4-least-squares-criterion)
+- [5. Normal Equation](#5-normal-equation)
+- [6. Fitting](#6-fitting)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Computation](#appendix-b-computation)
+- [Appendix C. Self Inner Product of a Vector](#appendix-c-self-inner-product-of-a-vector)
+- [Appendix D. Expanding the Residual Sum of Squares](#appendix-d-expanding-the-residual-sum-of-squares)
+- [Appendix E. Vector Derivatives for the Gradient](#appendix-e-vector-derivatives-for-the-gradient)
 
 ## 1. Purpose
 

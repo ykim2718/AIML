@@ -1,5 +1,19 @@
 # Variance Components in $R^2$ (Korean)
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 23:51 CDT
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Executive Summary](#1-executive-summary)
+- [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
+- [3. The Impact Of Increased Error Variance](#3-the-impact-of-increased-error-variance)
+  - [3.1. The Mathematical Mechanism](#31-the-mathematical-mechanism)
+  - [3.2. Conceptual Interpretation](#32-conceptual-interpretation)
+- [4. The Impact Of Increased Predictor Variance](#4-the-impact-of-increased-predictor-variance)
+  - [4.1. The Expansion Of The Denominator](#41-the-expansion-of-the-denominator)
+  - [4.2. The Strength Of The Trend](#42-the-strength-of-the-trend)
+- [5. Summary Of Variance Effects On $R^2$](#5-summary-of-variance-effects-on-r2)
+- [6. Practical Implications For Machine Learning Models](#6-practical-implications-for-machine-learning-models)
+- [7. Conclusion](#7-conclusion)
+- [8. Variation With Sample Distributions Along The 1-To-1 Line](#8-variation-with-sample-distributions-along-the-1-to-1-line)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > $R^2$ 가 잔차의 분산과 예측변수의 분산을 따라 움직이는 이유, 그리고 그것을 정확도의 절대 척도가
 > 아니라 비율로 읽는 법에 대한 기록.

@@ -1,5 +1,34 @@
 # Inverse Problem and Model Inversion
-Rev. 42 | Created: 2026-08-28 | Updated: 2026-09-22 20:55 CDT
+Rev. 43 | Created: 2026-08-28 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Definition](#1-definition)
+  - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
+  - [1.2 Ill-posedness](#12-ill-posedness)
+  - [1.3 Model inversion](#13-model-inversion)
+- [2. Taxonomy](#2-taxonomy)
+  - [2.1 Formulation (How to pose)](#21-formulation-how-to-pose)
+  - [2.2 Search space (Where to search)](#22-search-space-where-to-search)
+  - [2.3 Solution method (How to solve)](#23-solution-method-how-to-solve)
+  - [2.4 Ambiguity handling (What fixes the answer)](#24-ambiguity-handling-what-fixes-the-answer)
+  - [2.5 Answer form (What to return)](#25-answer-form-what-to-return)
+- [3. Latent Variable Model Inversion](#3-latent-variable-model-inversion)
+  - [3.1 PLS inversion and the null space](#31-pls-inversion-and-the-null-space)
+  - [3.2 Design space and product transfer](#32-design-space-and-product-transfer)
+- [4. Model-Specific Inversion Methods](#4-model-specific-inversion-methods)
+  - [4.1 Linear projection models](#41-linear-projection-models)
+  - [4.2 Kernel and Gaussian process models](#42-kernel-and-gaussian-process-models)
+  - [4.3 Tree ensembles](#43-tree-ensembles)
+  - [4.4 Neural networks](#44-neural-networks)
+  - [4.5 Generative and invertible models](#45-generative-and-invertible-models)
+  - [4.6 Model-agnostic numerical optimization](#46-model-agnostic-numerical-optimization)
+- [5. Inversion without Model Access](#5-inversion-without-model-access)
+- [6. Solution Validity](#6-solution-validity)
+- [7. Tools and Libraries](#7-tools-and-libraries)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Example: PLS Model Inversion](#appendix-b-python-example-pls-model-inversion)
+- [Appendix C. Python Example: Constrained Numerical Inversion](#appendix-c-python-example-constrained-numerical-inversion)
+- [Appendix D. Python Example: Inversion without Model Access](#appendix-d-python-example-inversion-without-model-access)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 

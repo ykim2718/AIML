@@ -1,5 +1,27 @@
 # Design of Experiments
-Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
+Rev. 4 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Design of Experiments](#1-design-of-experiments)
+- [2. Full Factorial Designs](#2-full-factorial-designs)
+  - [2.1. Multilevel Designs](#21-multilevel-designs)
+  - [2.2. Two-Level Designs](#22-two-level-designs)
+- [3. Fractional Factorial Designs](#3-fractional-factorial-designs)
+  - [3.1. Introduction](#31-introduction)
+  - [3.2. Plackett-Burman Designs](#32-plackett-burman-designs)
+  - [3.3. General Fractional Designs](#33-general-fractional-designs)
+- [4. Response Surface Designs](#4-response-surface-designs)
+  - [4.1. Introduction](#41-introduction)
+  - [4.2. Central Composite Designs](#42-central-composite-designs)
+  - [4.3. Box-Behnken Designs](#43-box-behnken-designs)
+- [5. D-Optimal Designs](#5-d-optimal-designs)
+  - [5.1. Introduction](#51-introduction)
+  - [5.2. Generating D-Optimal Designs](#52-generating-d-optimal-designs)
+  - [5.3. Augmenting D-Optimal Designs](#53-augmenting-d-optimal-designs)
+  - [5.4. Specifying Fixed Covariate Factors](#54-specifying-fixed-covariate-factors)
+  - [5.5. Specifying Categorical Factors](#55-specifying-categorical-factors)
+  - [5.6. Specifying Candidate Sets](#56-specifying-candidate-sets)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > The design families of the MathWorks Statistics and Machine Learning Toolbox chapter on design of
 > experiments [[1](#ref-1)], with the same organisation and with every construction implemented in

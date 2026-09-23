@@ -1,5 +1,14 @@
 # Bayesian Optimization for Semiconductor Process Tuning
-Rev. 1 | Created: 2026-08-27 | Updated: 2026-09-04 20:10 UTC
+Rev. 2 | Created: 2026-08-27 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Problem Setting](#1-problem-setting)
+- [2. Method](#2-method)
+- [3. Acquisition Function](#3-acquisition-function)
+- [4. Comparison with Classical DOE](#4-comparison-with-classical-doe)
+- [5. Practice in Semiconductor](#5-practice-in-semiconductor)
+- [6. Relation to Active Learning](#6-relation-to-active-learning)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 공정 조건 하나를 시험하려면 장비를 세우고 wafer 를 걸어야 하므로 시도할 수 있는 횟수가 수십 회에 그친다. Grid 로 훑거나 무작위로 뿌리는 방법은 그 예산 안에서 답에 닿지 못한다. Bayesian optimization 은 지금까지의 결과로 아직 해 보지 않은 조건의 결과를 확률로 그려 두고, 그 그림을 근거로 다음 한 점을 고른다. 이 문서는 그 방법이 무엇을 가정하고 어떻게 도는지, 그리고 fab 이 그 위에 얹는 제약이 무엇인지 정리한다.
 

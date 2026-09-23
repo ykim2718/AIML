@@ -1,5 +1,27 @@
 # Feature Importance (Korean)
-Rev. 1 | Created: 2026-08-31 | Updated: 2026-09-04 20:10 UTC
+Rev. 2 | Created: 2026-08-31 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Axes Of The Question](#2-axes-of-the-question)
+  - [2.1. Object](#21-object)
+  - [2.2. Scope](#22-scope)
+  - [2.3. Effect Measured](#23-effect-measured)
+  - [2.4. Conditioning](#24-conditioning)
+  - [2.5. Data](#25-data)
+  - [2.6. Unit](#26-unit)
+  - [2.7. Guarantee](#27-guarantee)
+- [3. Hierarchy](#3-hierarchy)
+- [4. Data-Only Association](#4-data-only-association)
+- [5. Model-Internal Structure](#5-model-internal-structure)
+- [6. Perturbation And Removal](#6-perturbation-and-removal)
+- [7. Gradient Attribution](#7-gradient-attribution)
+- [8. Game-Theoretic Attribution](#8-game-theoretic-attribution)
+- [9. Variance-Based Sensitivity](#9-variance-based-sensitivity)
+- [10. Error-Controlled Selection](#10-error-controlled-selection)
+- [11. Selection Guide](#11-selection-guide)
+- [12. Failure Modes](#12-failure-modes)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > Feature 에 숫자를 매기는 방법들을 그 숫자가 어디서 나오는가로 나누어 정리한 글이며, 이미
 > import 해 둔 library 가 아니라 묻고 있는 물음에서 방법이 골라지도록 하려는 것이다.

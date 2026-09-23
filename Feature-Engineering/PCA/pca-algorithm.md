@@ -1,5 +1,14 @@
 # PCA Algorithm
-Rev. 7 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
+Rev. 8 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Notation](#1-notation)
+- [2. The Procedure](#2-the-procedure)
+- [3. Two Routes To The Same Answer](#3-two-routes-to-the-same-answer)
+- [4. What Comes Out](#4-what-comes-out)
+- [5. Choosing The Component Count](#5-choosing-the-component-count)
+- [6. Applying It To New Data](#6-applying-it-to-new-data)
+- [7. Conventions And Numerical Details](#7-conventions-and-numerical-details)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > The other documents in this folder say which variant to reach for. This one says what the plain procedure actually does.
 > It fixes the notation, walks the steps in order, states what each step produces, and lists the conventions that decide whether two implementations agree.

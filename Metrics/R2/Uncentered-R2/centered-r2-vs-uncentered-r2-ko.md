@@ -1,5 +1,33 @@
 # Centered R² vs Uncentered R² (Korean)
-Rev. 2 | Created: 2026-09-05 | Updated: 2026-09-05 21:47 CDT
+Rev. 3 | Created: 2026-09-05 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Introduction: R² and Its Relation to RSQ](#1-introduction-r²-and-its-relation-to-rsq)
+- [2. Comparison of the Two Formulas](#2-comparison-of-the-two-formulas)
+- [3. Pros and Cons](#3-pros-and-cons)
+  - [3.1 Centered R²](#31-centered-r²)
+  - [3.2 Uncentered R²](#32-uncentered-r²)
+- [4. Applications](#4-applications)
+  - [4.1 Centered R²](#41-centered-r²)
+  - [4.2 Uncentered R²](#42-uncentered-r²)
+- [5. Derivation of Uncentered R²](#5-derivation-of-uncentered-r²)
+  - [5.1 Sum of Squares Decomposition](#51-sum-of-squares-decomposition)
+  - [5.2 Ordinary Least Squares (OLS) Orthogonality Condition](#52-ordinary-least-squares-ols-orthogonality-condition)
+  - [5.3 Uncentered Decomposition](#53-uncentered-decomposition)
+  - [5.4 Definition of Uncentered R²](#54-definition-of-uncentered-r²)
+  - [5.5 Relation to Centered R²](#55-relation-to-centered-r²)
+- [6. Geometric Interpretation](#6-geometric-interpretation)
+  - [6.1 Vector Space Setup](#61-vector-space-setup)
+  - [6.2 OLS as Orthogonal Projection](#62-ols-as-orthogonal-projection)
+  - [6.3 Uncentered Decomposition as the Pythagorean Theorem](#63-uncentered-decomposition-as-the-pythagorean-theorem)
+  - [6.4 Centered R²: Subtracting the Mean Vector](#64-centered-r²-subtracting-the-mean-vector)
+  - [6.5 Geometric Distinction Between the Two R²](#65-geometric-distinction-between-the-two-r²)
+  - [6.6 Comparison Table](#66-comparison-table)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Code](#appendix-b-python-code)
+  - [B.1 Centered R²](#b1-centered-r²)
+  - [B.2 Uncentered R²](#b2-uncentered-r²)
+  - [B.3 Integrated Evaluation for 1:1-Line Agreement](#b3-integrated-evaluation-for-11-line-agreement)
 
 ## 1. Introduction: R² and Its Relation to RSQ
 

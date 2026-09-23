@@ -1,5 +1,23 @@
 # The Wafer Uniformity Index
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
+Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Measurement Basis](#2-measurement-basis)
+  - [2.1. Measurement Pattern and Edge Exclusion](#21-measurement-pattern-and-edge-exclusion)
+  - [2.2. What the Index Normalises](#22-what-the-index-normalises)
+- [3. Standard Definitions](#3-standard-definitions)
+  - [3.1. Range Method](#31-range-method)
+  - [3.2. Standard Deviation Method](#32-standard-deviation-method)
+  - [3.3. Choosing Between Them](#33-choosing-between-them)
+- [4. Physical Meaning](#4-physical-meaning)
+  - [4.1. What the Index Cannot See](#41-what-the-index-cannot-see)
+  - [4.2. Dependence on the Point Count](#42-dependence-on-the-point-count)
+- [5. Application](#5-application)
+  - [5.1. Process Steps](#51-process-steps)
+  - [5.2. Use in Process Control](#52-use-in-process-control)
+  - [5.3. Reporting](#53-reporting)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A note on the scalar index that semiconductor process control uses to summarise how much a layer
 > varies across a wafer: the two standard formulas, what the number does and does not carry, and how

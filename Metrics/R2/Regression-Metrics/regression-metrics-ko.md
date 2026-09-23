@@ -1,5 +1,14 @@
 # Regression Metrics (Korean)
-Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-05 00:04 CDT
+Rev. 2 | Created: 2026-09-05 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Executive Summary](#1-executive-summary)
+- [2. Metric Hierarchy](#2-metric-hierarchy)
+  - [2.1. Variance Index](#21-variance-index)
+  - [2.2. Mean Index](#22-mean-index)
+  - [2.3. Agreement Index](#23-agreement-index)
+- [3. Comparative Summary](#3-comparative-summary)
+- [4. Recommendation For Engineering Teams](#4-recommendation-for-engineering-teams)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > 회귀 평가 지표를 variance-based, mean-based, agreement-based 세 갈래로 나눈 분류이며,
 > $y=x$ 선에 견주어, 그리고 그 가운데 여럿을 무너뜨리는 low variance effect 에 견주어

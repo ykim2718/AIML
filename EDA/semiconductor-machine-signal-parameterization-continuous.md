@@ -1,5 +1,37 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Continuous Signals
-Rev. 8 | Created: 2026-07-31 | Updated: 2026-08-20 01:11 CDT
+Rev. 9 | Created: 2026-07-31 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope And Framing](#1-scope-and-framing)
+  - [1.1 Two Regimes](#11-two-regimes)
+  - [1.2 Output Contract](#12-output-contract)
+- [2. Small-Signal Parameters](#2-small-signal-parameters)
+  - [2.1 The Three Core Parameters 🌳](#21-the-three-core-parameters)
+  - [2.2 Time-Domain Parameters](#22-time-domain-parameters)
+  - [2.3 Frequency-Domain Parameters 🌈](#23-frequency-domain-parameters)
+  - [2.4 Linear-Response Parameters](#24-linear-response-parameters)
+  - [2.5 Summary Format](#25-summary-format)
+- [3. Large-Signal Parameters](#3-large-signal-parameters)
+  - [3.1 Analysis Viewpoint](#31-analysis-viewpoint)
+  - [3.2 Distortion And Non-linearity](#32-distortion-and-non-linearity)
+  - [3.3 Power And Dynamic Limits](#33-power-and-dynamic-limits)
+  - [3.4 Amplitude And Operating Point](#34-amplitude-and-operating-point)
+  - [3.5 Summary Format](#35-summary-format)
+- [4. Regime Comparison](#4-regime-comparison)
+- [5. Regime Decomposition](#5-regime-decomposition)
+  - [5.1 Time-Domain Decomposition](#51-time-domain-decomposition)
+  - [5.2 Time-Frequency Decomposition](#52-time-frequency-decomposition)
+  - [5.3 Statistical And Threshold Decomposition](#53-statistical-and-threshold-decomposition)
+  - [5.4 Learned Decomposition](#54-learned-decomposition)
+  - [5.5 Selection Guide](#55-selection-guide)
+- [6. Building The Feature Table](#6-building-the-feature-table)
+  - [6.1 Row And Window Definition](#61-row-and-window-definition)
+  - [6.2 Naming And Units](#62-naming-and-units)
+  - [6.3 Parameters That Carry Hidden Configuration](#63-parameters-that-carry-hidden-configuration)
+  - [6.4 Missing And Undefined Values](#64-missing-and-undefined-values)
+  - [6.5 Redundancy Among Parameters](#65-redundancy-among-parameters)
+  - [6.6 Normalization Across Machines](#66-normalization-across-machines)
+  - [6.7 Modeling The Two Regimes Together](#67-modeling-the-two-regimes-together)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A raw machine waveform cannot enter a model as it is. It must first be reduced to a fixed-width row of numbers.
 > This document defines that reduction for the small-signal regime, for the large-signal regime, and for the case where both regimes occupy the same record.

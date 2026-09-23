@@ -1,5 +1,17 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 10 | Created: 2026-08-30 | Updated: 2026-09-21 17:23 CDT
+Rev. 11 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Relation](#2-relation)
+  - [2.1. Statement](#21-statement)
+  - [2.2. What the Two Describe](#22-what-the-two-describe)
+- [3. Effect of the Sample Size](#3-effect-of-the-sample-size)
+- [4. Symbols Read as Sigma](#4-symbols-read-as-sigma)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivation](#appendix-b-derivation)
+  - [B.1 The Two Variance Properties](#b1-the-two-variance-properties)
+  - [B.2 Covariance and the Product of Expectations](#b2-covariance-and-the-product-of-expectations)
 
 > A note on the relation between the standard deviation of an original distribution and the
 > standard deviation of the mean of a sample drawn from it, on what the sample size does to that

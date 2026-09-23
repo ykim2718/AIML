@@ -1,5 +1,18 @@
 # Ceiling of the Classical z-Score
-Rev. 3 | Created: 2026-08-18 | Updated: 2026-09-04 20:10 UTC
+Rev. 4 | Created: 2026-08-18 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Bound](#2-bound)
+  - [2.1. Statement](#21-statement)
+  - [2.2. Derivation](#22-derivation)
+  - [2.3. Equality](#23-equality)
+- [3. Consequence](#3-consequence)
+  - [3.1. Cut-offs a Small Sample Cannot Reach](#31-cut-offs-a-small-sample-cannot-reach)
+  - [3.2. Divisor of the Scale](#32-divisor-of-the-scale)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Reference Implementation](#appendix-b-reference-implementation)
+- [Appendix C. Worked Example](#appendix-c-worked-example)
 
 > A note on the largest absolute z-score a sample of a given size can produce, the derivation of
 > that bound, and what it costs a rule that flags observations by comparing a z-score against a

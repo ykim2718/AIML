@@ -1,5 +1,21 @@
 # Bayesian Information Criterion
-Rev. 3 | Created: 2026-09-20 | Updated: 2026-09-20 10:35 CDT
+Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Principle](#3-principle)
+  - [3.1 From The Marginal Likelihood](#31-from-the-marginal-likelihood)
+  - [3.2 Conditions](#32-conditions)
+- [4. Application](#4-application)
+  - [4.1 Linear Regression Form](#41-linear-regression-form)
+  - [4.2 Use In Feature Selection](#42-use-in-feature-selection)
+  - [4.3 Reading A Difference](#43-reading-a-difference)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. The Derivation Of The Criterion](#appendix-b-the-derivation-of-the-criterion)
+- [Appendix C. AIC And BIC](#appendix-c-aic-and-bic)
+- [Appendix D. The Deviance Of A Gaussian Linear Model](#appendix-d-the-deviance-of-a-gaussian-linear-model)
+- [Appendix E. Worked Example](#appendix-e-worked-example)
 
 ## 1. Purpose
 

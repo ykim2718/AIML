@@ -1,5 +1,32 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 23 | Created: 2026-07-29 | Updated: 2026-09-04 16:10 CDT
+Rev. 24 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Integral Statistics](#1-integral-statistics)
+  - [1.1 Plain AUC Carries No Information](#11-plain-auc-carries-no-information)
+  - [1.2 AUC Variants That Add Information](#12-auc-variants-that-add-information)
+  - [1.3 Phase Features from Cumulative AUC Quantiles](#13-phase-features-from-cumulative-auc-quantiles)
+  - [1.4 Domain Physics AUC](#14-domain-physics-auc)
+  - [1.5 Golden Reference Construction](#15-golden-reference-construction)
+  - [1.6 Slope of the Cumulative AUC Curve](#16-slope-of-the-cumulative-auc-curve)
+  - [1.7 Block AUC Slope](#17-block-auc-slope)
+  - [1.8 Run-to-Run AUC Slope on the Wafer Axis](#18-run-to-run-auc-slope-on-the-wafer-axis)
+- [2. Failure Modes and Mitigations](#2-failure-modes-and-mitigations)
+  - [2.1 Baseline Drift](#21-baseline-drift)
+  - [2.2 Timestamp Accuracy](#22-timestamp-accuracy)
+  - [2.3 Value of Dimensionless Features](#23-value-of-dimensionless-features)
+- [3. Dimensionality Control](#3-dimensionality-control)
+  - [3.1 Channel Pruning](#31-channel-pruning)
+  - [3.2 Taxonomy Group Pooling](#32-taxonomy-group-pooling)
+  - [3.3 Supervised Final Reduction](#33-supervised-final-reduction)
+- [4. Recommended Feature Set](#4-recommended-feature-set)
+- [5. Implementation](#5-implementation)
+- [6. Validation Protocol](#6-validation-protocol)
+  - [6.1 Redundancy Checks before Adding Features](#61-redundancy-checks-before-adding-features)
+  - [6.2 Performance Criteria](#62-performance-criteria)
+  - [6.3 Dimensionality Gate](#63-dimensionality-gate)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Feature Definitions](#appendix-b-feature-definitions)
+- [Appendix C. Feature-Moment Correspondence](#appendix-c-feature-moment-correspondence)
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자로 정의되는 AUC 계열 특징의 정의, 수학적 성질, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 

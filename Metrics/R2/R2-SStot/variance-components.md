@@ -1,5 +1,19 @@
 # Variance Components in $R^2$
-Rev. 12 | Created: 2026-04-08 | Updated: 2026-09-04 23:51 CDT
+Rev. 13 | Created: 2026-04-08 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Executive Summary](#1-executive-summary)
+- [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
+- [3. The Impact Of Increased Error Variance](#3-the-impact-of-increased-error-variance)
+  - [3.1. The Mathematical Mechanism](#31-the-mathematical-mechanism)
+  - [3.2. Conceptual Interpretation](#32-conceptual-interpretation)
+- [4. The Impact Of Increased Predictor Variance](#4-the-impact-of-increased-predictor-variance)
+  - [4.1. The Expansion Of The Denominator](#41-the-expansion-of-the-denominator)
+  - [4.2. The Strength Of The Trend](#42-the-strength-of-the-trend)
+- [5. Summary Of Variance Effects On $R^2$](#5-summary-of-variance-effects-on-r2)
+- [6. Practical Implications For Machine Learning Models](#6-practical-implications-for-machine-learning-models)
+- [7. Conclusion](#7-conclusion)
+- [8. Variation With Sample Distributions Along The 1-To-1 Line](#8-variation-with-sample-distributions-along-the-1-to-1-line)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > A note on why $R^2$ moves with the variance of the residuals and with the variance of the
 > predictor, and on reading it as a ratio rather than as an absolute measure of accuracy.

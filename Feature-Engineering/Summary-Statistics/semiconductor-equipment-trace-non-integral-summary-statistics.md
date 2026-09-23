@@ -1,5 +1,28 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 27 | Created: 2026-07-29 | Updated: 2026-09-04 16:10 CDT
+Rev. 28 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Non-Integral Statistics](#1-non-integral-statistics)
+  - [1.1 Closed-Form Statistics](#11-closed-form-statistics)
+  - [1.2 Event-Counting Features](#12-event-counting-features)
+  - [1.3 Short-Term Sigma and Roughness](#13-short-term-sigma-and-roughness)
+- [2. Failure Modes and Mitigations](#2-failure-modes-and-mitigations)
+  - [2.1 Baseline Drift](#21-baseline-drift)
+  - [2.2 Timestamp and Missing Samples](#22-timestamp-and-missing-samples)
+  - [2.3 Unit Dependence](#23-unit-dependence)
+- [3. Dimensionality Control](#3-dimensionality-control)
+  - [3.1 Channel Pruning](#31-channel-pruning)
+  - [3.2 Taxonomy Group Pooling](#32-taxonomy-group-pooling)
+  - [3.3 Supervised Final Reduction](#33-supervised-final-reduction)
+- [4. Feature Selection](#4-feature-selection)
+- [5. Validation Protocol](#5-validation-protocol)
+  - [5.1 Redundancy Checks before Adding Features](#51-redundancy-checks-before-adding-features)
+  - [5.2 Performance Criteria](#52-performance-criteria)
+  - [5.3 Dimensionality Gate](#53-dimensionality-gate)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Feature Definitions](#appendix-b-feature-definitions)
+- [Appendix C. Lag-1 Autocorrelation](#appendix-c-lag-1-autocorrelation)
+- [Appendix D. Roughness](#appendix-d-roughness)
+- [Appendix E. Implementation](#appendix-e-implementation)
 
 장비 trace 시계열을 wafer당 고정 길이 vector로 변환하는 특징 가운데, 적분 연산자를 쓰지 않는 non-integral 특징의 정의, 실패 모드, 차원 통제, 검증 규약을 정리한다.
 

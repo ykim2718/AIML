@@ -1,5 +1,25 @@
 # TPLS (Temporal Partial Least Squares)
-Rev. 2 | Created: 2026-08-30 | Updated: 2026-09-04 20:10 UTC
+Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Where Time Enters](#2-where-time-enters)
+- [3. Static PLS As The Baseline](#3-static-pls-as-the-baseline)
+- [4. Lag Structure Within A Sample](#4-lag-structure-within-a-sample)
+  - [4.1 Lagged Augmentation](#41-lagged-augmentation)
+  - [4.2 Dynamic Inner Relation](#42-dynamic-inner-relation)
+- [5. Trajectory As A Mode](#5-trajectory-as-a-mode)
+  - [5.1 Batch-Wise Unfolding](#51-batch-wise-unfolding)
+  - [5.2 Variable-Wise Unfolding](#52-variable-wise-unfolding)
+  - [5.3 Trilinear Decomposition](#53-trilinear-decomposition)
+- [6. Adaptation Across Arrival](#6-adaptation-across-arrival)
+  - [6.1 Recursive PLS](#61-recursive-pls)
+  - [6.2 Moving Window](#62-moving-window)
+  - [6.3 What Adaptation Costs](#63-what-adaptation-costs)
+- [7. Component Selection And Validation](#7-component-selection-and-validation)
+- [8. Monitoring In The Latent Space](#8-monitoring-in-the-latent-space)
+- [9. Choosing Among Them](#9-choosing-among-them)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 PLS 는 예측변수 $X$ 를 응답 $y$ 와의 공분산이 큰 방향으로 투영하여, 변수 수가 관측 수를 넘는 자료에서도 회귀와 축약을 한 번에 끝내는 방법이다 [[1](#ref-1)]. 이 문서가 다루는 temporal PLS 는 그 자료에 시간이 개입할 때 무엇이 달라지는지를 정리한 것이다. 시간은 세 가지 서로 다른 자리로 들어오며, 어느 자리인지에 따라 쓰는 방법도 검증 방식도 갈리므로, 방법을 고르기 전에 그 자리를 먼저 정해야 한다.
 

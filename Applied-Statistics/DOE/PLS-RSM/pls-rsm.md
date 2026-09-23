@@ -1,5 +1,17 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 2 | Created: 2026-09-06 | Updated: 2026-09-07 00:27 CDT
+Rev. 3 | Created: 2026-09-06 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Why The Two Are Combined](#2-why-the-two-are-combined)
+- [3. The Expanded Input Matrix](#3-the-expanded-input-matrix)
+- [4. Fitting And Choosing The Component Count](#4-fitting-and-choosing-the-component-count)
+- [5. Recovering The Surface](#5-recovering-the-surface)
+- [6. What The Combination Buys](#6-what-the-combination-buys)
+- [7. Where It Is Used](#7-where-it-is-used)
+- [8. Cautions](#8-cautions)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Example](#appendix-b-python-example)
 
 RSM approximates a process response by a second-order polynomial and reads the best operating condition off the stationary point of that surface; it has been the standard form of process optimization since Box and Wilson set it out [[1](#ref-1)]. PLS projects the predictors onto the directions of largest covariance with the response, so that regression and reduction finish in one pass even where the variables are entangled or outnumber the observations [[3](#ref-3)]. PLS-RSM, the subject of this document, is the two laid over each other: PLS rather than OLS fitted to an input matrix expanded to second order.
 

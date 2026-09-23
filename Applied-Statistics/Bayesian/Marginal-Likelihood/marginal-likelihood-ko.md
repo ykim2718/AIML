@@ -1,5 +1,18 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-20 13:50 CDT
+Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
+- [4. Marginal Likelihood](#4-marginal-likelihood)
+  - [4.1 Derivation](#41-derivation)
+  - [4.2 Why the Integral Resists](#42-why-the-integral-resists)
+- [5. Laplace Approximation](#5-laplace-approximation)
+  - [5.1 Conditions](#51-conditions)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivation of Equations (3) and (4)](#appendix-b-derivation-of-equations-3-and-4)
 
 ## 1. Purpose
 

@@ -1,5 +1,18 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 11 | Created: 2026-09-08 | Updated: 2026-09-16 22:59 CDT
+Rev. 12 | Created: 2026-09-08 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Overview](#1-overview)
+- [2. Medallion Architecture Mapping](#2-medallion-architecture-mapping)
+- [3. Pipeline Stages](#3-pipeline-stages)
+  - [3.1 Original Data (Bronze)](#31-original-data-bronze)
+  - [3.2 Raw Data (Bronze)](#32-raw-data-bronze)
+  - [3.3 Clean Data (Silver)](#33-clean-data-silver)
+  - [3.4 Reshaped Data (Silver)](#34-reshaped-data-silver)
+  - [3.5 Transformed Data (Silver)](#35-transformed-data-silver)
+  - [3.6 Feature Data (Gold)](#36-feature-data-gold)
+- [4. Key Principles](#4-key-principles)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Overview
 

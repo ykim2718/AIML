@@ -1,5 +1,29 @@
 # Overfitting In Long Data
-Rev. 15 | Created: 2026-09-07 | Updated: 2026-09-10 10:32 UTC
+Rev. 16 | Created: 2026-09-07 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Principle](#3-principle)
+  - [3.1 Three Paths](#31-three-paths)
+  - [3.2 Model Capacity](#32-model-capacity)
+  - [3.3 Dependent Rows](#33-dependent-rows)
+  - [3.4 Leakage](#34-leakage)
+  - [3.5 Where The Paths Come From In The Process](#35-where-the-paths-come-from-in-the-process)
+- [4. Application](#4-application)
+  - [4.1 Capacity Control](#41-capacity-control)
+  - [4.2 Splitting That Matches The Grouping](#42-splitting-that-matches-the-grouping)
+  - [4.3 Growing The Sample In The Right Direction](#43-growing-the-sample-in-the-right-direction)
+  - [4.4 Leakage Control](#44-leakage-control)
+  - [4.5 Test Set Discipline](#45-test-set-discipline)
+  - [4.6 Applying The Three Devices To Semiconductor Data](#46-applying-the-three-devices-to-semiconductor-data)
+- [5. Detection](#5-detection)
+- [6. Comparison](#6-comparison)
+- [7. Further Work](#7-further-work)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Case Study Of A Train-Test Gap](#appendix-b-case-study-of-a-train-test-gap)
+- [Appendix C. What A Grouped Row Looks Like](#appendix-c-what-a-grouped-row-looks-like)
+- [Appendix D. Estimating The Intracluster Correlation](#appendix-d-estimating-the-intracluster-correlation)
 
 ## 1. Purpose
 

@@ -1,5 +1,19 @@
 # Time Series Inference Server
-Rev. 32 | Created: 2026-08-28 | Updated: 2026-09-04 20:10 UTC
+Rev. 33 | Created: 2026-08-28 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+- [2. Structure](#2-structure)
+- [3. Model Capability](#3-model-capability)
+- [4. Server Capability](#4-server-capability)
+  - [4.1 Server Requirements](#41-server-requirements)
+  - [4.2 Caller Interface](#42-caller-interface)
+- [5. Deployment Patterns](#5-deployment-patterns)
+- [6. Platforms](#6-platforms)
+- [7. Selection](#7-selection)
+- [8. Operational Pitfalls](#8-operational-pitfalls)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Case: Fault Detection And Classification](#appendix-b-case-fault-detection-and-classification)
 
 시계열 model 은 적합이 끝난 뒤에도 그 자체로는 아무 답도 내놓지 못한다. 관측이 계속 도착하는 환경에서 model 을 실제 답으로 잇는 장치가 inference server 이며, 이 리포트는 그 장치를 구성, model 의 몫, server 의 몫의 순서로 정리한다. 읽는 이는 시계열 model 을 적합해 본 적은 있으나 그것을 운영에 올려 본 적은 없는 사람을 상정한다.
 

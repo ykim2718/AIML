@@ -1,5 +1,19 @@
 # PCA Classical Lineage
-Rev. 4 | Created: 2026-08-11 | Updated: 2026-08-20 01:11 CDT
+Rev. 5 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Reading The Map](#1-reading-the-map)
+- [2. Root](#2-root)
+- [3. Computation Branch](#3-computation-branch)
+- [4. Probabilistic Branch](#4-probabilistic-branch)
+- [5. Online And Incremental Branch](#5-online-and-incremental-branch)
+- [6. Robustness Branch](#6-robustness-branch)
+- [7. Sparsity And Interpretability Branch](#7-sparsity-and-interpretability-branch)
+- [8. Non-linear Branch](#8-non-linear-branch)
+- [9. High-Dimensional Asymptotics Branch](#9-high-dimensional-asymptotics-branch)
+- [10. Data Structure Branch](#10-data-structure-branch)
+- [11. Supervised And Contrastive Branch](#11-supervised-and-contrastive-branch)
+- [12. Distributed And Private Branch](#12-distributed-and-private-branch)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > PCA is not one technique but a lineage that branched from a single root.
 > This document arranges those branches along one axis — which assumption of the original PCA each of them relaxed — and records what every branch gains and what it gives up.

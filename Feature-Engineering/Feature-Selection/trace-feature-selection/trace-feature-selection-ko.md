@@ -1,5 +1,26 @@
 # Trace Feature Selection
-Rev. 3 | Created: 2026-09-10 | Updated: 2026-09-13 00:25 CDT
+Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Hierarchy](#3-hierarchy)
+  - [3.1 The Boundary Between Embedded And Post-Hoc](#31-the-boundary-between-embedded-and-post-hoc)
+  - [3.2 The Two Methods Under Tree Importance](#32-the-two-methods-under-tree-importance)
+  - [3.3 The Place Of Variance Thresholding](#33-the-place-of-variance-thresholding)
+  - [3.4 The Division Inside The Filter Branch](#34-the-division-inside-the-filter-branch)
+- [4. Mechanism Axis](#4-mechanism-axis)
+  - [4.1 Filter](#41-filter)
+  - [4.2 Wrapper](#42-wrapper)
+  - [4.3 Embedded](#43-embedded)
+  - [4.4 Post-Hoc Ranking](#44-post-hoc-ranking)
+  - [4.5 Error-Controlled Selection](#45-error-controlled-selection)
+- [5. Selection Unit Axis](#5-selection-unit-axis)
+- [6. Stability Axis](#6-stability-axis)
+- [7. Selection Guide](#7-selection-guide)
+- [8. Failure Modes](#8-failure-modes)
+- [9. Further Work](#9-further-work)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > 반도체 장비 trace 가 만들어 내는 수천 개의 feature 가운데 무엇이 target 을 움직이는가, 그리고
 > 그에 답하는 방법이 세 축 — model 을 언제 참조하는가, 무엇을 단위로 고르는가, wafer 가 바뀌어도

@@ -1,5 +1,17 @@
 # Univariate Feature Selection
-Rev. 10 | Created: 2026-09-12 | Updated: 2026-09-17 09:22 CDT
+Rev. 11 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Overview](#2-overview)
+- [3. Principle](#3-principle)
+- [4. Statistical Metrics](#4-statistical-metrics)
+  - [4.1 Chi-square Test](#41-chi-square-test)
+  - [4.2 ANOVA F-Test](#42-anova-f-test)
+  - [4.3 Pearson Correlation](#43-pearson-correlation)
+  - [4.4 Mutual Information](#44-mutual-information)
+- [5. Pros And Cons](#5-pros-and-cons)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Implementation](#appendix-b-implementation)
 
 ## 1. Purpose
 

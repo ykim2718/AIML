@@ -1,5 +1,34 @@
 # Polynomial Feature Expansion
-Rev. 82 | Created: 2026-09-09 | Updated: 2026-09-12 07:20 CDT
+Rev. 83 | Created: 2026-09-09 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Objective](#3-objective)
+  - [3.1 Power Term](#31-power-term)
+  - [3.2 Interaction Term](#32-interaction-term)
+- [4. Mechanism](#4-mechanism)
+  - [4.1 Expansion](#41-expansion)
+  - [4.2 Standardization](#42-standardization)
+  - [4.3 Conditioning](#43-conditioning)
+  - [4.4 Heredity](#44-heredity)
+- [5. Caution](#5-caution)
+  - [5.1 Dimensionality And Overfitting](#51-dimensionality-and-overfitting)
+  - [5.2 Regularization](#52-regularization)
+  - [5.3 Evidence](#53-evidence)
+  - [5.4 Failure Modes](#54-failure-modes)
+  - [5.5 Diagnostics](#55-diagnostics)
+- [6. Further Work](#6-further-work)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Covariance](#appendix-b-covariance)
+- [Appendix C. Correlation Of A Variable And Its Square](#appendix-c-correlation-of-a-variable-and-its-square)
+- [Appendix D. Term Count Derivation](#appendix-d-term-count-derivation)
+- [Appendix E. Ridge And Lasso On Expanded Columns](#appendix-e-ridge-and-lasso-on-expanded-columns)
+- [Appendix F. Implementation](#appendix-f-implementation)
+  - [F.1 Options](#f1-options)
+  - [F.2 Pipeline](#f2-pipeline)
+  - [F.3 Cost](#f3-cost)
+  - [F.4 Selective Expansion](#f4-selective-expansion)
 
 Polynomial feature expansion is the operation that builds both the powers of one variable and the products of distinct variables. This document covers modelling the non-linear behaviour of numeric tabular data with those two kinds of column.
 

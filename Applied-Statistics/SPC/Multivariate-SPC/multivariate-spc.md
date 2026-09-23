@@ -1,5 +1,20 @@
 # Multivariate Statistical Process Control
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-04 20:10 UTC
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+
+- [1. Scope](#1-scope)
+  - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
+  - [1.2. Correlation Blindness](#12-correlation-blindness)
+- [2. Hotelling's T-Squared Chart](#2-hotellings-t-squared-chart)
+  - [2.1. Definition](#21-definition)
+  - [2.2. Control Limit](#22-control-limit)
+- [3. PCA-Based Monitoring](#3-pca-based-monitoring)
+  - [3.1. Why Principal Components](#31-why-principal-components)
+  - [3.2. Two Statistics](#32-two-statistics)
+  - [3.3. What Each One Catches](#33-what-each-one-catches)
+- [4. Diagnosis](#4-diagnosis)
+- [5. Application](#5-application)
+- [References](#references)
+- [Appendix A. Terminology](#appendix-a-terminology)
 
 > 웨이퍼 결과물 하나가 아니라 장비 센서 수십~수백 개의 조합을 한꺼번에 추적하는 기법에 대한 기록.
 > Hotelling $T^2$ 관리도와 PCA 기반 SPE 통계량이 각각 무엇을 보고, 왜 둘이 함께 필요한지를 다룬다.
