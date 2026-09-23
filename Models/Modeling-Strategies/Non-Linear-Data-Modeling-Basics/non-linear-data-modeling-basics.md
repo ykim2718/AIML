@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 9 | Created: 2026-09-23 | Updated: 2026-09-23 10:32 CDT
+Rev. 10 | Created: 2026-09-23 | Updated: 2026-09-23 14:58 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,7 +18,7 @@ Rev. 9 | Created: 2026-09-23 | Updated: 2026-09-23 10:32 CDT
 ## 1. Purpose
 
 - **Problem Statement**: The linearity and the non-linearity of mathematical statistics and of a machine learning model, and the linear property and the non-linear property of the data, are not told apart, and the modeling strategy is confused as a result.
-- **Goal**: On the ground of linearity as mathematical statistics defines it, compare the modeling strategies that handle feature interaction and non-linear data properties in machine learning.
+- **Goal**: On the ground of linearity as mathematical statistics defines it, compare the modeling strategies that handle the non-linear data properties of machine learning, feature interaction included.
 - **Non-Goal**: The detail of each model is not covered.
 
 ## 2. Summary
@@ -100,6 +100,8 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 - On the variable $x$: a non-linear model (a curve and an interaction surface are expressible)
 - On the weight $\beta$: a linear model (least squares, Ridge/Lasso regularization and the other existing algorithms apply unchanged)
+
+The interaction term $x_1 x_2$ is non-linear in $x$. It is a product of two inputs, so it fails $f(a x + b z) = a f(x) + b f(z)$, and the response surface turns from a plane into a saddle.
 
 The model of equation (3) carries the intercept $\beta_0$, so by the definition of linear algebra it is an affine transform, and the linearity used in engineering covers that affine case as well ([Appendix C](#appendix-c-two-views-of-linearity)).
 

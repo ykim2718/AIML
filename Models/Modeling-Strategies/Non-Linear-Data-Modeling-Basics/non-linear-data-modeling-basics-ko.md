@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 14 | Created: 2026-09-23 | Updated: 2026-09-23 10:32 CDT
+Rev. 15 | Created: 2026-09-23 | Updated: 2026-09-23 14:58 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,7 +18,7 @@ Rev. 14 | Created: 2026-09-23 | Updated: 2026-09-23 10:32 CDT
 ## 1. Purpose
 
 - **Problem Statement**: 수리통계와 machine learning model 의 선형성 (linearity) 과 비선형성 (non-linearity), 그리고 data 의 선형 특성 (linear property) 과 비선형 특성 (non-linear property) 의 차이에 대한 이해가 부족하여 modeling 전략이 혼란하다.
-- **Goal**: 수리통계학적 선형성 (linearity) 을 바탕으로, machine learning 에서 변수 사이의 상호작용 (feature interaction) 과 비선형 data 특성을 다루는 modeling 전략을 비교 분석한다.
+- **Goal**: 수리통계학적 선형성 (linearity) 을 바탕으로, machine learning 에서 변수 사이의 상호작용 (feature interaction) 을 포함하는 비선형 data 특성을 다루는 modeling 전략을 비교 분석한다.
 - **Non-Goal**: Model 상세는 다루지 않는다.
 
 ## 2. Summary
@@ -100,6 +100,8 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 
 - 변수 $x$ 기준: 비선형 모델 (곡선 및 상호작용 곡면 표현 가능)
 - 가중치 $\beta$ 기준: 선형 모델 (최소제곱법, Ridge/Lasso 규제 등 기존 알고리즘 그대로 적용)
+
+상호작용 항 $x_1 x_2$ 는 $x$ 에 대해 비선형입니다. 두 입력의 곱이므로 $f(a x + b z) = a f(x) + b f(z)$ 를 만족하지 않고, 반응면이 평면에서 안장 모양의 곡면으로 바뀝니다.
 
 식 (3) 의 model 은 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine transform 이고, 공학에서 쓰는 선형은 그 affine transform 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)).
 
