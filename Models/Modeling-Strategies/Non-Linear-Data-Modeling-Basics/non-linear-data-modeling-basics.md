@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 12 | Created: 2026-09-23 | Updated: 2026-09-23 15:26 CDT
+Rev. 13 | Created: 2026-09-23 | Updated: 2026-09-23 15:41 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -79,7 +79,7 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p + \epsilon \hspace
   - The model is simple, so the risk of overfitting is small and the parameters converge very fast.
   - The coefficient $\beta_i$ tells directly how much each variable contributed to the change of the target.
 - Limit
-  - When the data holds a non-linear relation or an interaction between variables, a decision boundary shaped as a first-order plane cannot fit it, and underfitting follows.
+  - When the data holds a non-linear relation or an interaction between variables, a decision boundary shaped as a first-order plane cannot fit that relation, and underfitting follows.
 
 ### 4.2 Nonlinear Features in a Linear Model
 
@@ -121,8 +121,6 @@ Table 2. The two models compared on three criteria
 | Computational efficiency | Good while the variables are few. Columns growing fast in high dimension | Optimized for a large dataset                                           |
 
 ## 5. Application
-
-The approach splits by who handles the nonlinearity. In the Feature-Intensive Model the analyst adds the non-linear and interaction terms with `PolynomialFeatures` and the like, and then fits a linear model (Ridge, PLS and so on). The Algorithm-Intensive Model feeds the original data ($x_1$, $x_2$) unchanged and lets a tree-based ensemble (XGBoost, Random Forest) or a neural network learn the non-linear pattern inside, through its splits and its activation functions.
 
 ### 5.1 Feature-Intensive Model
 

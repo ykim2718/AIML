@@ -1,5 +1,5 @@
 # Non-Linear Data Modeling Basics
-Rev. 17 | Created: 2026-09-23 | Updated: 2026-09-23 15:26 CDT
+Rev. 18 | Created: 2026-09-23 | Updated: 2026-09-23 15:41 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -69,25 +69,25 @@ Feature-Intensive Model 은 어떤 항을 만들지를 분석가가 정하므로
 
 ### 4.1 Linear Model Mechanics and Limits
 
-선형 회귀, Ridge, Lasso, PLS (Partial Least Squares) 등의 모델은 입력 변수 $X$ 와 타겟 변수 $Y$ 의 관계를 선형 결합 (Linear Combination) 으로 가정합니다.
+선형 회귀, Ridge, Lasso, PLS (Partial Least Squares) 등의 모델은 입력 변수 $X$ 와 target 변수 $Y$ 의 관계를 선형 결합 (Linear Combination) 으로 가정합니다.
 
 ```math
 y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p + \epsilon \hspace{19em} (1)
 ```
 
 - 장점
-  - 모델이 단순하여 과적합 (Overfitting) 위험이 적고, 파라미터 수렴 속도가 매우 빠릅니다.
-  - 계수 $\beta_i$ 를 통해 어떤 변수가 타겟 변화에 얼마큼 기여했는지 직관적으로 해석 가능합니다.
+  - 모델이 단순하여 과적합 (Overfitting) 위험이 적고, parameter 수렴 속도가 매우 빠릅니다.
+  - 계수 $\beta_i$ 를 통해 어떤 변수가 target 변화에 얼마큼 기여했는지 직관적으로 해석 가능합니다.
 - 한계
-  - 데이터에 곡선 (Non-linear) 관계가 존재하거나 변수 간 상호작용 (Interaction) 이 있을 경우, 1차 평면 형태의 예측 경계 (Decision Boundary) 로는 이를 적합할 수 없어 언더피팅 (Underfitting) 이 발생합니다.
+  - 데이터에 곡선 관계가 존재하거나 변수 사이에 interaction 이 있으면, 1 차 평면 형태의 예측 경계 (Decision Boundary) 로는 그 관계를 적합할 수 없어 underfitting 이 발생합니다.
 
 ### 4.2 Nonlinear Features in a Linear Model
 
-선형 모델에서 '선형 (Linearity)' 의 수학적 정의는 입력 변수 $x$ 에 대한 1차식이 아니라, 최적화 대상인 가중치 파라미터 $\beta$ 에 대해 1차식임을 의미합니다.
+선형 모델에서 '선형 (Linearity)' 의 수학적 정의는 입력 변수 $x$ 에 대한 1차식이 아니라, 최적화 대상인 가중치 $\beta$ 에 대해 1차식임을 의미합니다.
 
 따라서 입력 공간을 비선형 변환하여 확장하더라도, $\beta$ 에 대한 1차 구조는 유지되므로 선형 모델의 해법 (Closed-form solution) 을 그대로 사용할 수 있습니다.
 
-원래 입력 데이터가 $x_1$, $x_2$ 일 때, 비선형 차수 항을 추가하여 새로운 기저 (Basis) 로 매핑합니다.
+원래 입력 데이터가 $x_1$, $x_2$ 일 때, 비선형 차수 항을 추가하여 새로운 기저 (Basis) 로 옮깁니다.
 
 ```math
 \phi(x_1, x_2) = [1, x_1, x_2, x_1^2, x_2^2, x_1 x_2]^T \hspace{19em} (2)
@@ -121,8 +121,6 @@ Table 2. The two models compared on three criteria
 | 연산 효율성       | 변수 수가 적을 때 우수. 고차원에서 열 수가 급증 | 대용량 dataset 처리에 최적화                       |
 
 ## 5. Application
-
-비선형성 처리 주체에 따라 접근법이 갈립니다. Feature-Intensive Model 은 분석가가 직접 `PolynomialFeatures` 등을 활용해 비선형/상호작용 항을 추가한 뒤 선형 모델 (Ridge, PLS 등) 에 학습시킵니다. Algorithm-Intensive Model 은 원본 데이터 ($x_1$, $x_2$) 를 그대로 입력하고, 트리 기반 앙상블 (XGBoost, Random Forest) 이나 신경망 모델 내부에서 분기 (Split) 및 활성화 함수를 통해 비선형 패턴을 자동 학습하도록 합니다.
 
 ### 5.1 Feature-Intensive Model
 
