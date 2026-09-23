@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 13 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+Rev. 14 | Created: 2026-09-12 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -147,7 +147,6 @@ $X^\top X$ 의 역행렬이 존재할 때 해 $\hat{\beta}$ 는 유일하게 결
 - **quadratic form**: $\beta^\top A \beta$ 처럼 계수의 2 차 항으로 이루어진 스칼라 함수.
 - **residual**: 관측값과 model 예측값의 차이.
 - **RSS**: Residual Sum of Squares. 잔차의 제곱합.
-- **symmetric matrix**: 전치해도 자기 자신인 정방행렬.
 - **transpose**: 행과 열을 맞바꾼 행렬. 합에서는 그대로, 곱에서는 차례가 뒤집힌다.
 
 ## Appendix B. Computation

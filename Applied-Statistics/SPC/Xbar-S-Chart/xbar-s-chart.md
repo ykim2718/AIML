@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 13 | Created: 2026-09-05 | Updated: 2026-09-23 11:08 CDT
+Rev. 14 | Created: 2026-09-05 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. The Chart Pair](#2-the-chart-pair)
@@ -202,17 +202,14 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **Baseline**: 관리한계를 추정한 기준 기간과 그 기간의 통계량.
 - **Chart constant**: 관리한계를 통계량의 평균에 대한 배수로 적기 위해 부분군 크기마다 표로 주어지는
   수이며, $B_3$, $B_4$, $A_3$ 가 그것이다.
-- **Chi-square distribution**: 독립인 표준정규 확률변수를 제곱하여 더한 값이 따르는 분포이며,
   자유도는 더한 개수이다.
 - **Control limit**: 공정 자료에서 추정한, 관리도의 위아래 경계.
 - **Cp**: 규격 폭을 공정 산포 $6\sigma$ 로 나눈 공정능력지수이며, 중심의 위치는 보지 않는다.
-- **Cpk**: 중심이 규격 가운데에서 벗어난 정도까지 반영한 공정능력지수이며, 두 규격까지의 거리
   가운데 가까운 쪽으로 정해진다.
 - **CV**: Coefficient of Variation. 표준편차를 평균으로 나눈 값.
 - **Excursion**: 공정이 확립된 거동에서 벗어난 상태이며, 생산을 멈추고 원인을 찾아 제거한 뒤 그
   구간의 생산물을 따로 처분해야 하는 사건.
 - **Gauge R&R**: 측정계의 반복성과 재현성을 나누어 측정 산포를 추정하는 절차.
-- **Geometric distribution**: 성공확률이 일정한 시행을 되풀이할 때 첫 성공이 나오는 시행 번호가
   따르는 분포이며, 기댓값은 성공확률의 역수이다.
 - **In control**: 관리도에 excursion 의 신호가 없는 상태.
 - **Levene test**: 여러 집단의 분산이 같은지 검정하는 방법.
@@ -220,7 +217,6 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **ppm**: parts per million. 백만 개당 개수로 적은 불량률.
 - **Standard normal cdf**: 평균 0, 표준편차 1 인 정규분포의 누적분포함수이며 $\Phi$ 로 적는다.
 - **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
-- **Unbiased estimator**: 기댓값이 추정 대상과 같은 추정량.
 
 ## Appendix B. Derivation of Equations (1) to (6)
 

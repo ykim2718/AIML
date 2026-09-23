@@ -1,5 +1,5 @@
 # Regularization
-Rev. 3 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+Rev. 4 | Created: 2026-09-12 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -133,7 +133,6 @@ Penalty 를 더하는 대신 변수 자체를 줄이는 방법이 두 가지 있
 
 ## Appendix A. Terminology
 
-- **contour**: 같은 $RSS$ 값을 주는 계수 조합들이 그리는 선.
 - **determinant**: 정방행렬에 대응하는 스칼라 값. 0 이면 역행렬이 존재하지 않는다.
 - **full rank**: 행렬의 rank 가 그 행렬이 가질 수 있는 최댓값과 같은 상태.
 - **L1 norm**: 벡터 원소의 절댓값 합.

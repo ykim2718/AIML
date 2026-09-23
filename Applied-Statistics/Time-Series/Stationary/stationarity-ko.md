@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 20 | Created: 2026-09-07 | Updated: 2026-09-23 11:08 CDT
+Rev. 21 | Created: 2026-09-07 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)
@@ -299,11 +299,9 @@ Table 5. Cause of non-stationarity and the corresponding treatment
 
 ## Appendix A. Terminology
 
-- **adaptive filter**: 신호와 잡음의 통계량이 변하는 동안 계수를 계속 갱신하는 필터.
 - **ADF test**: Unit root 의 존재를 귀무가설로 놓는 검정. 기각이 stationarity 쪽의 증거가 된다.
 - **AR(1)**: 직전 한 시점의 값에만 의존하는 1차 자기회귀 과정.
 - **autocovariance**: 한 신호의 두 시점 값 사이의 공분산. stationary 과정, 곧 통계적 성질이 시간이 지나도 달라지지 않는 과정에서는 두 시점이 어디인지와 무관하게 그 시차만의 함수가 된다.
-- **Box-Cox transform**: 분산이 수준에 따라 변하는 자료를 거듭제곱 family 의 변환으로 안정시키는 처리.
 - **cyclostationarity**: 통계량이 시간에 대해 주기적으로 변하는 성질.
 - **DFT**: 유한한 길이의 이산 신호를 주파수 성분으로 분해하는 변환.
 - **difference-stationary**: 차분한 뒤에 stationary 가 되는 성질. Unit root 를 갖는 과정이 이에 해당한다.

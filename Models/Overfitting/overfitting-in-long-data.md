@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 16 | Created: 2026-09-07 | Updated: 2026-09-23 11:08 CDT
+Rev. 17 | Created: 2026-09-07 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -248,7 +248,6 @@ Table 5. The same failure from two different causes
 - **covariate shift**: 설명변수의 분포가 학습과 추론에서 달라지는 일. 응답과 설명변수의 관계 자체는 그대로이다.
 - **cross-validation**: 자료를 여러 fold 로 나누어 한 fold 를 남기고 학습한 뒤 그 fold 로 평가하는 일을 돌아가며 반복하는 절차.
 - **drift**: 설비의 상태가 시간에 따라 서서히 변하는 일.
-- **early stopping**: Held-out 오차가 더 내려가지 않는 지점에서 학습을 멈추는 방법.
 - **effective sample size**: 서로 독립인 행이 몇 개인 것과 같은지를 나타내는 수. 유효 표본.
 - **extrapolation**: 학습 자료가 덮지 않은 구간에서 예측하는 일.
 - **gradient boosting**: 앞의 model 이 남긴 잔차를 다음 model 이 맞추도록 차례로 쌓는 ensemble.
@@ -260,14 +259,11 @@ Table 5. The same failure from two different causes
 - **learning curve**: 학습에 쓴 행의 수에 따른 오차의 변화를 그린 곡선.
 - **long data**: 행의 수가 열의 수보다 훨씬 큰 자료.
 - **lot**: 함께 이동하며 같은 공정 이력을 겪는 wafer 묶음.
-- **measurement site**: Wafer 위에서 계측이 이루어지는 지점. 측점.
 - **nested cross-validation**: 바깥 loop 이 성능을 재고 안쪽 loop 이 hyperparameter 를 고르는 cross-validation.
 - **offset**: Group 마다 다르게 더해지는 값. 그 group 의 행 전체를 위나 아래로 옮긴다.
-- **out-of-fold prediction**: Cross-validation 에서 그 행이 학습에 쓰이지 않은 fold 의 model 로 낸 예측.
 - **overfitting**: Model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
 - **permutation test**: 응답을 무작위로 섞은 자료에 같은 절차를 돌려 성능이 우연 수준인지 확인하는 검정.
 - **preventive maintenance**: 설비를 정기적으로 정비하여 상태를 되돌리는 일.
-- **R-squared**: 응답의 분산 가운데 model 이 설명한 몫이며, 기호는 $R^2$ 이다. 분모가 그 자료의 분산이므로 자료가 바뀌면 같은 model 도 다른 값을 낸다.
 - **regularization**: Model 이 학습 자료를 지나치게 따라가지 못하도록 학습에 제약을 더하는 장치. 계수의 크기를 벌하거나, 학습을 일찍 멈추거나, 신경망이라면 일부 unit 을 학습 중에 꺼 두는 방식이 여기에 든다.
 - **rework**: 규격을 벗어난 wafer 를 되돌려 다시 처리하는 일. 재작업.
 - **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.

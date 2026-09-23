@@ -1,5 +1,5 @@
 # Overfitting In Wide Data
-Rev. 3 | Created: 2026-09-06 | Updated: 2026-09-23 11:08 CDT
+Rev. 4 | Created: 2026-09-06 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -213,7 +213,6 @@ Table 4. Method by the shape of the data
 - **held-out error**: 학습에 쓰지 않은 자료에서 잰 오차.
 - **hyperparameter**: 학습으로 정해지지 않고 밖에서 정해 주는 값.
 - **lasso**: 절대값 벌점을 두어 일부 계수를 0 으로 만드는 정칙화.
-- **latent factor**: 여러 열이 함께 따르는, 관측되지 않는 소수의 변수.
 - **learning curve**: 학습에 쓴 행의 수에 따른 오차의 변화를 그린 곡선.
 - **nested cross-validation**: 바깥 loop 이 성능을 재고 안쪽 loop 이 hyperparameter 를 고르는 cross-validation.
 - **overfitting**: model 이 학습 자료의 우연한 특징까지 따라가 새 자료에서 성능이 떨어지는 현상.
@@ -223,6 +222,5 @@ Table 4. Method by the shape of the data
 - **random forest**: 행 추출과 node 마다의 열 추출을 함께 쓰는 tree ensemble.
 - **random subspace method**: 열만 무작위로 뽑아 학습시킨 model 여럿을 합치는 방법.
 - **ridge**: 제곱 벌점을 두어 계수의 크기를 줄이는 정칙화.
-- **RMSE**: Root Mean Squared Error. 오차 제곱의 평균에 제곱근을 취한 값.
 - **wide data**: 열의 수가 행의 수에 견주어 크거나 더 큰 자료.
 - **wrapper selection**: model 성능을 기준으로 열 조합을 탐색하는 방식.

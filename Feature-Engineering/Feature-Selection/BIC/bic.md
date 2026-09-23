@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 4 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -130,7 +130,6 @@ A gap under 2 leaves the two candidates tied, and the candidate with fewer param
 - **Bounded**: A quantity that stays below a fixed constant however large the sample grows.
 - **Consistency**: The property that the probability of selecting the data-generating model tends to 1 as the sample grows, when that model is among the candidates.
 - **Deviance**: Minus twice the maximized log-likelihood of a fitted model.
-- **Efficiency**: The property that the prediction error of the selected model tends to the error of the best available candidate as the sample grows.
 - **Laplace approximation**: The value of an integral obtained by expanding the log integrand to second order around its maximum and integrating the resulting Gaussian.
 - **Marginal likelihood**: The likelihood of the data under a model with its parameters integrated out over their prior.
 - **Regular model**: A model whose Fisher information matrix stays non-singular at the maximum likelihood estimate.

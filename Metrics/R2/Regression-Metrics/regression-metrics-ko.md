@@ -1,5 +1,5 @@
 # Regression Metrics
-Rev. 3 | Created: 2026-09-05 | Updated: 2026-09-23 11:09 CDT
+Rev. 4 | Created: 2026-09-05 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Metric Hierarchy](#2-metric-hierarchy)
@@ -187,7 +187,6 @@ sensor 는 흔히 좁고 안정한 범위에서 도는데, 그 영역에서는 P
 
 ## Appendix A. Terminology
 
-- **Adjusted R²**: 조정 결정계수. 예측변수의 개수로 보정한 결정계수이며, 예측변수를 더한다고 해서 그
   자체로 점수가 오르지 않게 한다.
 - **Huber**: 후버 손실. 잔차가 작으면 제곱, 크면 선형인 손실이며, 이상값을 버리지 않으면서 그것이 끄는
   힘을 제한한다.

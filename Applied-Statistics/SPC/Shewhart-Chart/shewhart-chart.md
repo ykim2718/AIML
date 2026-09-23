@@ -1,5 +1,5 @@
 # The Shewhart Control Chart
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Chart Structure](#2-chart-structure)
@@ -185,6 +185,4 @@ ISBN 978-1-119-72309-7.
 - **Common cause**: 공정에 늘 존재하는 다수의 작은 원인이 만드는 변동.
 - **Control limit**: 공정 자료에서 추정한, 관리도의 위아래 경계.
 - **In control**: 관리도에 이상원인의 신호가 없는 상태.
-- **Rational subgroup**: 그 안에 우연원인만 들어가도록 뽑은 표본.
 - **Special cause**: 특정할 수 있는 사건이 만드는 변동.
-- **Specification limit**: 제품이 만족해야 하는, 설계에서 정한 경계.

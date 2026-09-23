@@ -1,5 +1,5 @@
 # Feature Importance
-Rev. 3 | Created: 2026-08-31 | Updated: 2026-09-23 11:09 CDT
+Rev. 4 | Created: 2026-08-31 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Axes Of The Question](#2-axes-of-the-question)
@@ -494,7 +494,6 @@ Table 10. Question and the family that answers it
 - **ALE**: Accumulated local effects 이며, model 을 주변분포에 대해 평균낸 것이 아니라 이웃 안의 국소 차분으로 지은 곡선.
 - **Family**: Fig 1 의 최상위 묶음 일곱 가운데 하나이며, 숫자가 같은 출처에서 계산되는 방법들을 담는다. 문헌이 이 층위가 아니라 축에 이름을 붙이고 이 층위에 정해진 낱말이 없어 여기서 쓴다.
 - **FAST**: Fourier amplitude sensitivity test 이며, model 출력의 주파수 해석에 기반한 Sobol 지수의 추정량.
-- **FDR**: False discovery rate 이며, 선택된 집합에서 헛된 것이 차지하는 비율의 기댓값.
 - **HSIC**: Hilbert-Schmidt independence criterion 이며, kernel feature space 에서 계산하는 종속 측도.
 - **LIME**: Local interpretable model-agnostic explanations 이며, 한 행의 이웃에서 black box 에 맞춘 희소 선형 model.
 - **LOCO**: Leave out covariates 이며, 그 feature 없이 model 을 다시 적합했을 때의 예측오차 증가.

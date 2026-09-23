@@ -1,5 +1,5 @@
 # Bayesian R² — Obtaining R² as a Distribution Instead of a Point
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
+Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Motivation](#1-motivation)
 - [2. Core Idea](#2-core-idea)
@@ -284,13 +284,11 @@ interval 을 함께 준다. 그 대가로 draw 를 뽑을 수 있는 Bayesian mo
 - **CRPS**: Continuous Ranked Probability Score. 예측 분포 전체를 관측값 하나에 견주는 점수이며, 작을수록 좋다.
 - **CRPS Skill Score**: CRPS 를 기준 model 의 CRPS 로 정규화하여 `1 − CRPS_model / CRPS_baseline` 의 꼴로 만든 것이며, 클수록 좋다.
 - **deep ensemble**: 초기값이나 자료 순서를 달리하여 따로 학습한 여러 network 로 만든 예측 분포.
-- **epistemic uncertainty**: Model 과 그 parameter 를 아직 특정하지 못한 데서 오는 불확실성이며, 자료가 늘면 줄어든다.
 - **GBM**: Gradient Boosting Machine. 차례로 적합한 tree 의 합으로 만든 점추정 model.
 - **LOO**: Leave-One-Out cross-validation. 관측값을 하나씩 빼 가며 out-of-sample 성능을 추정하는 것.
 - **MC dropout**: 추론 시점에도 dropout 을 켜 둔 채 forward pass 를 되풀이해 예측 표본을 얻는 것.
 - **MCMC**: Markov Chain Monte Carlo. Posterior 분포에서 표본을 뽑는 표준 algorithm 계열.
 - **OLS**: Ordinary Least Squares. 잔차제곱합을 최소화하는 적합.
-- **Pearson R²**: 관측값과 예측값 사이 Pearson 상관계수의 제곱. 그 상관의 두 항이 각각 자기 평균으로 중심화되고 자기 표준편차로 나뉘므로, 기울기가 0 이 아닌 어떤 affine 변환에도 값이 변하지 않는다. 따라서 예측값이 관측값과 발을 맞추어 움직이는지만 보고할 뿐 얼마나 가까운지는 결코 말하지 않으며, 치우침과 척도에 눈이 멀어 있다. 절편이 있는 OLS 적합에서는 표준 R² 와 일치하는데 그래서 둘을 한 양으로 여기기 쉽고, 그 자료의 최소제곱해가 아닌 어떤 예측에서도 표준 R² 와 갈라진다.
 - **posterior distribution**: 자료를 관측한 뒤의 parameter 분포.
 - **posterior draw**: Posterior 분포에서 뽑은 표본 하나.
 - **posterior predictive sample**: Posterior draw 위에 관측 잡음을 더해 만든, 관측값 척도의 표본.

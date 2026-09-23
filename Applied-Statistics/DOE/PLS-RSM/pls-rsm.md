@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 4 | Created: 2026-09-06 | Updated: 2026-09-23 11:09 CDT
+Rev. 5 | Created: 2026-09-06 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -141,12 +141,10 @@ Third, **the gap between the two data sets is far wider than the gap between the
 
 ## Appendix A. Terminology
 
-- **canonical analysis**: the procedure that reads the eigenvalues of $\mathbf{B}$ at the stationary point to say whether that point is a maximum, a minimum or a saddle.
 - **CCD**: central composite design, which estimates a second-order model from factorial points, axial points and centre points.
 - **coded variable**: a dimensionless factor whose experimental region has been shifted so that the centre is 0 and the factorial levels are ±1.
 - **condition number**: the ratio of the largest singular value of a matrix to the smallest; the larger it is, the more the coefficient estimates move with a disturbance of the data.
 - **desirability**: a function that maps several responses each into the interval between 0 and 1 and ties them into one quantity to optimise.
-- **latent variable**: a new variable obtained by projecting the data onto a component direction found by PLS, also called a score.
 - **OLS**: ordinary least squares, the regression that minimises the sum of squared residuals.
 - **rank**: the number of linearly independent columns of a matrix, which caps the PLS component count.
 - **RMSE**: root mean squared error, the square root of the mean squared residual.

@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 33 | Created: 2026-08-28 | Updated: 2026-09-23 11:08 CDT
+Rev. 34 | Created: 2026-08-28 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Structure](#2-structure)
@@ -261,7 +261,6 @@ Table 12. 제약과 그것이 강제하는 선택
 ## Appendix A. Terminology
 
 - **Attribution**: 어느 channel, step, lag 이 그 답을 움직였는지에 대한 설명.
-- **Backfill**: 과거 cut-off 에 대해 serving 경로로 답을 다시 계산하는 일.
 - **Baseline**: 정상 거동으로 삼는 기준. deviation score 는 이것에 대해 잼.
 - **Chamber**: 한 wafer 나 batch 가 처리되는 process tool 의 내부 공간.
 - **Checkpoint**: state 를 나중에 복구할 수 있도록 저장한 사본.
@@ -277,7 +276,6 @@ Table 12. 제약과 그것이 강제하는 선택
 - **Key**: 하나의 계열을 가리키는 식별자.
 - **Keyed state**: stream processor 가 key 별로 들고 checkpoint 에서 복구하는 state.
 - **L**: context 의 길이. 최근 관측 몇 개를 model 에 넣을지를 정함.
-- **Lot**: 공정을 함께 지나가는 wafer 무리.
 - **Metrology**: 공정이 무엇을 만들었는지 보고하는 측정 단계. 공정 뒤에 수행.
 - **Model registry**: version 의 catalog 와, 어느 version 이 어느 key 를 맡을지 정하는 규칙.
 - **Quantile**: 예측 분포의 한 지점. 값 하나 대신 여러 지점을 보고할 때 씀.
@@ -288,7 +286,6 @@ Table 12. 제약과 그것이 강제하는 선택
 - **Scoring**: 나중에 도착한 실측과 답을 맞춰 보는 일.
 - **Segment**: 한 계열의 경계 지어진 구간. 길이나 사건으로 경계를 정함.
 - **Segment index**: 과거 segment 의 embedding 을 담아, forward pass 없이 비교 질문에 답하는 store.
-- **Trace**: 한 run 동안 한 sensor 를 표본으로 기록한 것.
 - **Virtual metrology**: metrology 가 잴 값을, 그 측정이 존재하기 전의 자료로 추정하는 일.
 - **Wafer**: 공정을 지나가며 metrology 가 측정하는 기판.
 - **Watermark**: 그보다 이른 사건은 오지 않는다고 보는 event-time 경계.

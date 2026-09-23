@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -195,7 +195,6 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Loading**: 주성분이 원래 센서들의 어떤 조합인지를 담은 vector.
-- **Mahalanobis distance**: 자료가 흩어진 모양을 기준으로 잰 거리이며, 공분산 행렬의 역행렬로
   가중한다.
 - **Principal component**: 자료의 분산을 가장 많이 담는 방향부터 차례로 잡은 서로 직교인 방향.
 - **Score**: 한 관측값을 주성분 방향에 사영한 값.

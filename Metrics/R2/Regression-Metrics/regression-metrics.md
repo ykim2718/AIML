@@ -1,5 +1,5 @@
 # Regression Metrics
-Rev. 43 | Created: 2026-04-08 | Updated: 2026-09-23 11:09 CDT
+Rev. 44 | Created: 2026-04-08 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Metric Hierarchy](#2-metric-hierarchy)
@@ -210,7 +210,6 @@ predicting within sub-micron accuracy.
 
 ## Appendix A. Terminology
 
-- **Adjusted R²**: 조정 결정계수. A coefficient of determination corrected for the number of
   predictors, so that adding a predictor does not raise the score on its own.
 - **Huber**: 후버 손실. A loss that is squared for small residuals and linear for large ones, which
   limits the pull of an outlier without discarding it.

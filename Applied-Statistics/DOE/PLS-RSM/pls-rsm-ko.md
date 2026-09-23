@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 4 | Created: 2026-09-06 | Updated: 2026-09-23 11:09 CDT
+Rev. 5 | Created: 2026-09-06 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -141,12 +141,10 @@ Table 2. Distance from the located optimum to the true optimum
 
 ## Appendix A. Terminology
 
-- **canonical analysis**: 정류점에서 $\mathbf{B}$ 의 고윳값을 보고 그 점이 극대인지 극소인지 안장점인지 가리는 절차이다.
 - **CCD**: central composite design 이며, 요인배치점과 축점과 중심점으로 2차 모형을 추정하는 설계이다.
 - **coded variable**: 실험 영역의 중심을 0, 요인배치 수준을 ±1 로 옮긴 무차원 인자이다.
 - **condition number**: 행렬의 최대 특이값과 최소 특이값의 비이며, 클수록 계수 추정이 자료의 흔들림에 민감하다.
 - **desirability**: 여러 응답을 각각 0 과 1 사이로 옮긴 뒤 하나로 묶어 최적화하는 함수이다.
-- **latent variable**: PLS 가 찾은 성분 방향으로 자료를 투영해 얻은 새 변수이며, score 라고도 한다.
 - **OLS**: ordinary least squares 이며, 잔차 제곱합을 최소화하는 회귀이다.
 - **rank**: 행렬의 선형독립인 열의 수이며, PLS 성분 수의 상한이다.
 - **RMSE**: root mean squared error 이며, 잔차 제곱 평균의 제곱근이다.

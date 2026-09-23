@@ -1,5 +1,5 @@
 # Feature Importance
-Rev. 5 | Created: 2026-08-31 | Updated: 2026-09-23 11:09 CDT
+Rev. 6 | Created: 2026-08-31 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Axes Of The Question](#2-axes-of-the-question)
@@ -516,7 +516,6 @@ families.
 - **ALE**: Accumulated local effects, a curve built from local differences within a neighborhood instead of an average of the model over the marginal distribution.
 - **Family**: One of the seven top-level groups of Fig 1, holding the methods whose number is computed from the same source. Used here because the literature names the axes rather than the groups, and has no settled word for this level.
 - **FAST**: Fourier amplitude sensitivity test, an estimator of the Sobol indices based on frequency analysis of the model output.
-- **FDR**: False discovery rate, the expected fraction of the selected set that is spurious.
 - **HSIC**: Hilbert-Schmidt independence criterion, a dependence measure computed in a kernel feature space.
 - **LIME**: Local interpretable model-agnostic explanations, a sparse linear model fitted to the black box in the neighborhood of one row.
 - **LOCO**: Leave out covariates, the increase in prediction error when a model is refitted without the feature.

@@ -1,5 +1,5 @@
 # The s Control Chart
-Rev. 2 | Created: 2026-09-04 | Updated: 2026-09-23 11:08 CDT
+Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. The s Statistic](#2-the-s-statistic)
@@ -167,4 +167,3 @@ ASQ 50th anniversary reissue, ISBN 978-0-87389-076-2.
 - **Control limit**: 공정 자료에서 추정한, 관리도의 위아래 경계.
 - **In control**: 관리도에 이상원인의 신호가 없는 상태.
 - **Subgroup**: 한 시점에서 함께 뽑아 하나의 통계량으로 요약하는 관측값의 묶음.
-- **Unbiased estimator**: 기댓값이 추정 대상과 같은 추정량.

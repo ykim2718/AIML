@@ -1,5 +1,5 @@
 # Bayesian Statistics
-Rev. 6 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+Rev. 7 | Created: 2026-09-20 | Updated: 2026-09-23 11:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -332,7 +332,6 @@ Bayes 통계학을 고전 통계학보다 낫다고 단정할 수 없게 만드�
 - **point estimate**: Parameter 를 분포가 아니라 값 하나로 나타낸 추정값.
 - **posterior**: 관측을 반영해 갱신한 parameter 의 분포.
 - **prior**: 관측을 보기 전 parameter 에 두는 분포.
-- **total probability**: 한 사건의 확률을 서로 배타적인 조건들에 걸쳐 나누어 합하는 공식.
 - **uniform distribution**: 주어진 구간 안에서 밀도가 일정한 분포.
 ## Appendix B. Derivations
 
