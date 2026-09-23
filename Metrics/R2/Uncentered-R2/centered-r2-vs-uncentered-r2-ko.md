@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 4 | Created: 2026-09-05 | Updated: 2026-09-23 11:09 CDT
+Rev. 5 | Created: 2026-09-05 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Introduction: R² and Its Relation to RSQ](#1-introduction-r²-and-its-relation-to-rsq)
 - [2. Comparison of the Two Formulas](#2-comparison-of-the-two-formulas)
@@ -279,7 +279,7 @@ centered 각은 그대로이다. 따라서 절대 일치를 평가할 때 uncent
 ## Appendix A. Terminology
 
 - **centered R²**: 표준 R² 이며, 분모가 자료 평균 둘레의 제곱합인 것.
-- **CFD**: Computational Fluid Dynamics. 유체 흐름의 수치 모사.
+- **CFD**: Computational Fluid Dynamics. 유체 흐름의 numerical 모사.
 - **ESS**: Explained Sum of Squares. Uncentered 형태에서는 $\sum \hat{y}_i^2$.
 - **FEM**: Finite Element Method. 이산화된 영역에서 장 문제를 수치로 푸는 방법.
 - **MAE**: Mean Absolute Error. 잔차 절댓값의 평균.

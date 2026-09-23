@@ -1,8 +1,6 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
+Rev. 181 | Created: 2026-08-01 | Updated: 2026-09-23 11:33 CDT
 
-Rev. 180 | Created: 2026-08-01 | Updated: 2026-09-23 11:08 CDT
-
-- [Contents](#contents)
 - [Goals](#goals)
 - [1. Shape Vocabulary](#1-shape-vocabulary)
   - [1.1 Scope](#11-scope)
@@ -57,59 +55,6 @@ Rev. 180 | Created: 2026-08-01 | Updated: 2026-09-23 11:08 CDT
 > 상위 문서: [README](./README.md)
 >
 > 짝 문서: [Continuous Signals](./semiconductor-machine-signal-parameterization-continuous.md) · [Quantized Signals](./semiconductor-machine-signal-parameterization-quantized.md)
-
-## Contents
-
-- [Goals](#goals)
-- [1. Shape Vocabulary](#1-shape-vocabulary)
-  - [1.1 Scope](#11-scope)
-  - [1.2 Chart Class](#12-chart-class)
-  - [1.3 Shape Axis](#13-shape-axis)
-  - [1.4 Mapping Between The Two Vocabularies](#14-mapping-between-the-two-vocabularies)
-  - [1.5 Activity](#15-activity)
-- [2. MTSV](#2-mtsv)
-  - [2.1 Chart Classes And Reconstruction Parameters](#21-chart-classes-and-reconstruction-parameters)
-  - [2.2 Parameter Schematics](#22-parameter-schematics)
-  - [2.3 Cycle Count](#23-cycle-count)
-  - [2.4 Periodic Chart](#24-periodic-chart)
-  - [2.5 Non-Periodic Chart](#25-non-periodic-chart)
-- [3. Chart Classification](#3-chart-classification)
-  - [3.1 Pre-Classification](#31-pre-classification)
-  - [3.2 Notation](#32-notation)
-  - [3.3 Likelihood Model](#33-likelihood-model)
-  - [3.4 Raw Likelihood Alone Is Not a Decision Rule](#34-raw-likelihood-alone-is-not-a-decision-rule)
-  - [3.5 Decision Rule — BIC](#35-decision-rule--bic)
-  - [3.6 Effective Sample Size and Noise Model](#36-effective-sample-size-and-noise-model)
-  - [3.7 STOCHASTIC Class — Whittle Likelihood](#37-stochastic-class--whittle-likelihood)
-  - [3.8 Computation — Change Point Detection](#38-computation--change-point-detection)
-  - [3.9 Outputs](#39-outputs)
-- [4. Parameter Extraction Method](#4-parameter-extraction-method)
-  - [4.1 Reading θ̂ from the Fit](#41-reading-θ-from-the-fit)
-  - [4.2 Derived Diagnostic Parameters](#42-derived-diagnostic-parameters)
-  - [4.3 When the Class Is Ambiguous](#43-when-the-class-is-ambiguous)
-  - [4.4 Parameter Quality Control — Always Store Alongside](#44-parameter-quality-control--always-store-alongside)
-- [5. Class Confidence — Reconstruction-Based Definition](#5-class-confidence--reconstruction-based-definition)
-  - [5.1 Procedure](#51-procedure)
-  - [5.2 Per-Class Reconstruction Models](#52-per-class-reconstruction-models)
-  - [5.3 Ambiguity By-Product](#53-ambiguity-by-product)
-- [6. Class Stability](#6-class-stability)
-- [Appendix A — Terminology](#appendix-a--terminology)
-  - [Definitions](#definitions)
-  - [Details](#details)
-- [Appendix B — Time Series Period Separation](#appendix-b--time-series-period-separation)
-  - [B.1 Autocorrelation Function (ACF)](#b1-autocorrelation-function-acf)
-  - [B.2 Welch Power Spectral Density (PSD)](#b2-welch-power-spectral-density-psd)
-- [Appendix C — Chart Agreement Metrics](#appendix-c--chart-agreement-metrics)
-  - [C.1 NRMSE — Adopted Aggregate Score](#c1-nrmse--adopted-aggregate-score)
-  - [C.2 Alternative Metrics — Reviewed and Kept as Auxiliary](#c2-alternative-metrics--reviewed-and-kept-as-auxiliary)
-- [Appendix D — Oscillation Chart Class](#appendix-d--oscillation-chart-class)
-- [Appendix E — Nested Model Families](#appendix-e--nested-model-families)
-  - [E.1 Where The Nesting Comes From](#e1-where-the-nesting-comes-from)
-  - [E.2 Is The Nesting A Design Flaw?](#e2-is-the-nesting-a-design-flaw)
-  - [E.3 What Screening Removes And What Remains](#e3-what-screening-removes-and-what-remains)
-  - [D.1 Terminology](#d1-terminology)
-  - [D.2 Schematics](#d2-schematics)
-  - [D.3 Reading The Subtype Fit](#d3-reading-the-subtype-fit)
 
 ## Goals
 
@@ -214,8 +159,8 @@ Fig. 1 의 클래스 사이에 남는 형상 경계는 하나다.
 
 | 형상 | `κ` 범위 (센서별 평균) | 판정 |
 |---|---|---|
-| 평탄한 정상 (사각 펄스·사다리꼴) | 0.896 ~ 0.998 | `κ ≥ 0.7` → `R1` |
-| 뾰족한 정상 (삼각·좁은 봉우리) | 0.178 ~ 0.402 | `κ < 0.7` → `T1` |
+| 평탄한 top (사각 펄스·사다리꼴) | 0.896 ~ 0.998 | `κ ≥ 0.7` → `R1` |
+| 뾰족한 top (삼각·좁은 봉우리) | 0.178 ~ 0.402 | `κ < 0.7` → `T1` |
 
 두 무리 사이가 `0.55 ~ 0.89` 로 비어 있으므로 **경계는 `κ = 0.7`** 로 둔다.
 
@@ -571,7 +516,7 @@ y(t) = baseline + A_peak * SUM_{k=1..n} [ sat( (t - t_start,k) / (t_peak,k - t_s
 음수이면 아래로 향하는 톱니다. 한 트레이스 안에서 극성이 사이클마다 바뀌는
 파형은 `T2` 가 아니라 진동이므로 `O` 계열에서 다룬다.
 
-- `n_cycle`, `T_period`, `T_jitter` — 사이클 수·주기·jitter.
+- `n_cycle`, `T_period`, `T_jitter` — 사이클 수·period·jitter.
 - `saw_asym` — `t_rise/(t_rise + t_fall)`. 0.5=삼각, →1=톱니.
 - `A_trend` — 사이클별 정점 진폭의 회귀 기울기 (사이클 간 드리프트).
 - `k_up_cv` — 상승 기울기의 사이클 간 변동계수.
@@ -634,7 +579,7 @@ DETERMINISTIC 이고 저장하는 것도 `q_1` 하나뿐이다(`k = 1`). **진�
 - `O2` 리미트 사이클 — PSD 우세 피크 (prominence > 10 dB), ACF 주기적 피크.
   추출: `f_dom`, 진폭, Q값. **제어 발진 — 실제 이상. PID 튜닝 / 공진.**
 - `O3` 뱅뱅 제어 — 값 히스토그램 이봉(bimodal), 두 준위 간 전이.
-  추출: duty, 전이 횟수, ON/OFF 시간 분포. **정상 동작 — 전이 횟수 급증 = 밸브 chattering.**
+  추출: duty, 전이 횟수, ON/OFF 시간 분포. **Normal 동작 — 전이 횟수 급증 = 밸브 chattering.**
 - `O4` 광대역 잡음 — PSD 피크 없음, 단봉 분포.
   추출: RMS, 포락선. 센서 잡음 또는 실제 난류.
 
@@ -661,7 +606,7 @@ DETERMINISTIC 이고 저장하는 것도 `q_1` 하나뿐이다(`k = 1`). **진�
    `prominence = max(0.25·A, 3·LSB)` (얼마나 솟았는가) 와
    `width = max(3, 0.02·N)` (얼마나 머무는가) 다.
 2. `find_peaks(x, prominence, width)` 로 극대를,
-   `find_peaks(−x, prominence, width)` 로 극소를 뽑는다. 평탄한 정상(plateau)은
+   `find_peaks(−x, prominence, width)` 로 극소를 뽑는다. 평탄한 top (plateau)은
    이 함수가 중앙 1개로 돌려주므로 사각 펄스도 극대 1개다.
 3. 두 목록을 시간순으로 합쳐 **극대·극소가 번갈아 나오는 열**로 정리한다.
    같은 극성이 연달아 나오면 더 극단인 것만 남긴다 (잡음이 만든 중복 극점 제거).
@@ -715,15 +660,15 @@ non-periodic(§2.5)이다. `O` 처럼 극점 경계가 불명확하면 ACF
 
 - `T_period` = mean(Δt), `jitter` = std(Δt)/mean(Δt), `A_trend` = 이벤트
   진폭의 회귀 기울기, `rate` = n / T.
-- **검증 방식 전환**: 주기 요약은 위상(개별 이벤트 시각)을 버리므로 §5의
-  파형 재현 검증이 불가능해진다. `O`처럼 통계 재현(이벤트 수·주기·duty
+- **검증 방식 전환**: Period 요약은 위상(개별 이벤트 시각)을 버리므로 §5의
+  파형 재현 검증이 불가능해진다. `O`처럼 통계 재현(이벤트 수·period·duty
   분포의 일치)으로 confidence를 측정한다.
 
 ### 2.5 Non-Periodic Chart
 
 이벤트 목록 = 이벤트마다 파라미터 튜플을 그대로 저장하는 형태
 (예: `R2`의 `(t_on, t_off, L_top)` × n — 크기가 3n에 비례; 1+3n, 2+3n도 같은
-계열). 불규칙 반복은 주기 요약으로 누르면 재현이 깨지므로,
+계열). 불규칙 반복은 period 요약으로 누르면 재현이 깨지므로,
 목적에 따라 다음 방법 중에서 고른다.
 
 - **방법 A — 이벤트 목록 유지 (기본)**
@@ -731,7 +676,7 @@ non-periodic(§2.5)이다. `O` 처럼 극점 경계가 불명확하면 ACF
     그대로 성립한다. 크기는 3n류.
   - 적용: 타이밍 이동 자체가 FDC 신호인 센서 (`R2` 펄스 열 등).
 - **방법 B — delta encoding (크기 절감 절충)**
-  - 대표 주기 파라미터 + 이벤트별 잔차
+  - 대표 period 파라미터 + 이벤트별 잔차
     `Δt_k = t_k − (t_1 + (k−1)·T_period)` 만 저장한다.
   - 잔차가 샘플링 분해능 이하인 이벤트는 폐기(censored)하고 남는
     이벤트만 저장 — 위상 정보와 크기 절감을 동시에 얻는다.
@@ -998,7 +943,7 @@ LSB 이산 가능도를 쓰거나, 최소한 `σ̂_c = √(σ̂²_c)`에 하한 
 ### 3.7 STOCHASTIC Class — Whittle Likelihood
 
 `O`는 샘플 단위 평균함수가 없어 §3.3의 형태로는 likelihood를 쓸 수 없다.
-주파수 영역에서 정상 확률과정의 log-likelihood를 근사하는 **Whittle
+주파수 영역에서 stationary 확률과정의 log-likelihood를 근사하는 **Whittle
 likelihood**를 쓰면 DETERMINISTIC 클래스와 **같은 축의 값**이 나오므로
 하나의 BIC 비교에 함께 넣을 수 있다.
 
@@ -1020,7 +965,7 @@ likelihood**를 쓰면 DETERMINISTIC 클래스와 **같은 축의 값**이 나�
 
 #### 3.7.1 Spectral Model `S(ω; θ_O)`
 
-`O`의 트레이스를 **느린 중심선 + 정상 확률과정**으로 분해한다.
+`O`의 트레이스를 **느린 중심선 + stationary 확률과정**으로 분해한다.
 
 ```
 x_i = c(t_i; θ_center) + u_i
@@ -1028,7 +973,7 @@ x_i = c(t_i; θ_center) + u_i
 
 - `c(t; θ_center)` — 중심선. Table 8의 `center (n)`, 즉 `n`개 노드를 잇는
   조각선형 궤적이다. 파라미터 수는 `n`.
-- `u_i` — 중심선을 뺀 나머지. 평균 0의 정상 확률과정으로 보고, 이
+- `u_i` — 중심선을 뺀 나머지. 평균 0의 stationary 확률과정으로 보고, 이
   과정의 스펙트럼 밀도가 `S(ω; θ_spec)`다.
 - Whittle likelihood의 `I(ω_j)`는 **`u = x − c` 의 periodogram**을 쓴다.
   중심선을 빼지 않으면 저주파 전력이 백색 바닥 항으로 흡수되어 하위형
@@ -1295,7 +1240,7 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 
 본 문서에서 정의 없이 사용된 용어. 알파벳순.
 
-- **ACF** — Autocorrelation Function. 주기 판별 도구, 정의는 Appendix B.1.
+- **ACF** — Autocorrelation Function. Period 판별 도구, 정의는 Appendix B.1.
 - **Archetype** — chart class가 대표하는 이상화된 파형 원형. Fig. 2의 각 패널이 클래스별 archetype이다.
 - **AUC** — Area Under Curve. `∫(x − baseline) dt`, 총 투입량을 1개 스칼라로 요약하는 피처 (§2.5 방법 D).
 - **Baseline** — 이벤트(엣지·펄스·정점) 전후에 신호가 머무는 기준 준위.
@@ -1330,11 +1275,11 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 - **Periodogram** — 단일 구간 FFT로 얻는 전력 스펙트럼 추정치 (Appendix B.2, §3.7).
 - **Plateau** — 준위가 일정하게 유지되는 평탄 구간.
 - **Polarity** — 정점이 baseline 위에 있는지 아래에 있는지. `A_peak` 의 부호로 적으며, 양수가 봉우리, 음수가 골짜기다. 별도 파라미터가 아니라 `A_peak` 의 부호다 (§2.2.5).
-- **PSD** — Power Spectral Density. Welch 방법의 주기 판별, 정의는 Appendix B.2.
+- **PSD** — Power Spectral Density. Welch 방법의 period 판별, 정의는 Appendix B.2.
 - **Events** — 트레이스 안의 이벤트(엣지·펄스·정점·중심선 knot) 개수, 즉 모델 차수. 1(single) 또는 n(multi) (Table 8). **주기적 반복을 뜻하지 않는다** — 상승부가 두 단계로 꺾인 펄스도 엣지가 2개이므로 Events = 2 지만 cycle count 는 1이다.
 - **Sensor** — 웨이퍼 처리 동안 값을 기록한 계측 항목 하나이며, table 에서는 열 하나에 해당한다.
 - **Trace** — 웨이퍼 1장을 처리하는 동안 센서 1개가 기록한 시계열 `x = (x_1, …, x_N)`. 분류·파라미터 추출·재현의 입력 단위다 (§3.2).
-- **Whittle likelihood** — 주파수 영역에서 정상 확률과정의 log-likelihood를 근사하는 식. STOCHASTIC 클래스를 같은 BIC 축에 올리는 데 쓴다 (§3.7).
+- **Whittle likelihood** — 주파수 영역에서 stationary 확률과정의 log-likelihood를 근사하는 식. STOCHASTIC 클래스를 같은 BIC 축에 올리는 데 쓴다 (§3.7).
 - **ε (허용오차)** — 형상 판정 허용 오차 `max(3·LSB, 0.02·A)`. 재현 합격선의 기준 (Appendix C.1.3).
 
 ### Details
@@ -1388,9 +1333,9 @@ class_stability(s) = max_{c ∈ C}  | { w ∈ W : class(w, s) = c } |  /  |W|
 r(τ) = Σ_t (x_t − x̄)(x_{t+τ} − x̄) / Σ_t (x_t − x̄)²      (r(0) = 1)
 ```
 
-- 주기 `T`인 신호는 `τ = T, 2T, …` 에서 피크가 반복된다. 첫 유의 피크의
+- Period 가 `T` 인 신호는 `τ = T, 2T, …` 에서 피크가 반복된다. 첫 유의 피크의
   위치가 `T_period` 추정치다.
-- 유의한 주기 피크가 없으면 non-periodic으로 판정한다 (§2.3의 보조 판별,
+- 유의한 period 피크가 없으면 non-periodic으로 판정한다 (§2.3의 보조 판별,
   §2.2.7 O2 판별에 사용).
 
 ### B.2 Welch Power Spectral Density (PSD)
@@ -1561,7 +1506,7 @@ x와 y 어긋남을 분리해 보고하려면 metric을 바꾸는 것보다 **�
 하위형 집합은 없다.
 
 - **limit cycle** — 비선형 동역학·제어이론의 표준 용어. Poincaré 가 도입한
-  개념으로, 외부 주기 입력 없이 계 자체가 유지하는 고립된 폐궤도를 뜻한다.
+  개념으로, 외부 periodic 입력 없이 계 자체가 유지하는 고립된 폐궤도를 뜻한다.
   피드백 루프의 이득이 과하거나 위상 여유가 부족하면 발생하므로 `O2` 의 물리
   (PID 발진·공진)와 정확히 맞는다.
 - **bang-bang** — 제어공학의 표준 용어 (bang-bang control = on-off control =

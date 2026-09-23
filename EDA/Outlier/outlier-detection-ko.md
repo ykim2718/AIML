@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 14 | Created: 2026-09-09 | Updated: 2026-09-23 11:08 CDT
+Rev. 15 | Created: 2026-09-09 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. Taxonomy of Outliers](#2-taxonomy-of-outliers)
@@ -63,7 +63,7 @@ Outlier 는 나머지 표본이 따르는 model 과 어긋나는 관측이다. F
 - **Dimension.** 변수 하나, 몇 개, 아니면 거리가 의미를 잃을 만큼 큰 공간.
 - **Distribution.** 모수적 형태를, 무엇보다 정규성을 가정할 수 있는지 여부.
 
-꼭지 2 는 outlier 의 종류를 그것을 이름 대는 축으로 정리하고, 꼭지 3 은 방법을 그 축에 답하는 family 로 정리한다. 꼭지 4 부터 6 까지는 그 family 를 차례로 다루며, 방법마다 무엇을 가정하고 무엇을 정하고 무엇에 무너지고 어디에서 만나는지를 적는다. 유도와 상수, benchmark 수치, 산업 표준 둘, 그리고 현장이 규칙을 마주치는 순서 ([Appendix F](#appendix-f-what-practice-actually-runs)) 는 appendix 에 둔다.
+꼭지 2 는 outlier 의 종류를 그것을 이름 대는 축으로 정리하고, 꼭지 3 은 방법을 그 축에 답하는 family 로 정리한다. 꼭지 4 부터 6 까지는 그 family 를 차례로 다루며, 방법마다 무엇을 가정하고 무엇을 정하고 무엇에 무너지고 어디에서 만나는지를 적는다. 유도와 상수, benchmark 값, 산업 표준 둘, 그리고 현장이 규칙을 마주치는 순서 ([Appendix F](#appendix-f-what-practice-actually-runs)) 는 appendix 에 둔다.
 
 Fig 1 이 그 둘을 펼쳐 놓은 것이다.
 
@@ -104,7 +104,7 @@ Outlier detection
 
 - **Point.** 관측 하나가 그 자체로 극단적이다. 평범한 날씨 기록에 섞인 영하 100 도.
 - **Contextual.** 값 자체는 표본 안에서 평범하고 맥락에서 극단적이다. 2 도는 한 해의 측정값 가운데서는 눈에 띄지 않지만 8 월의 값으로는 틀렸다.
-- **Collective.** 어느 값 하나도 극단적이지 않지만 그것들이 이어진 구간이 함께 극단적이다. 모든 측정값이 정상 범위 안에 있는 심전도의 저전압 구간.
+- **Collective.** 어느 값 하나도 극단적이지 않지만 그것들이 이어진 구간이 함께 극단적이다. 모든 측정값이 normal 범위 안에 있는 심전도의 저전압 구간.
 
 Contextual anomaly 와 collective anomaly 는 값이 담고 있지 않은 것을, 곧 context 변수와 순서를 요구한다. 주변 분포만 보는 방법은 어느 것도 찾지 못한다.
 
@@ -340,7 +340,7 @@ d^2(x) = \left( x - \mu \right)^{T} \Sigma^{-1} \left( x - \mu \right)
 
 ## 5. Machine Learning Methods
 
-정상 영역을 label 없는 데이터에서 배우므로, 출력은 통과 여부가 아니라 순위를 매길 점수이다.
+Normal 영역을 label 없는 데이터에서 배우므로, 출력은 통과 여부가 아니라 순위를 매길 점수이다.
 
 ### 5.1. [Isolation Forest](#ref-19)
 
@@ -358,7 +358,7 @@ One-Class SVM 은 training 데이터가 차지하는 영역을 감싸는 경계�
 - **Assumption.** 깨끗하다고 알려진 training set. 그러면 문제는 novelty detection 이다 (꼭지 2.6).
 - **Setting.** Kernel 과 그 bandwidth, 그리고 경계 밖으로 나가는 training 데이터 비율의 상한 $\nu$.
 - **Breaks when.** Training set 이 깨끗하지 않을 때, 변수의 척도가 다를 때, 표본이 클 때. 적합이 표본 크기에 대해 이차 이상이다.
-- **Met at.** 먼저 고정해 둔 정상 영역이 있고, 그에 견주어 판정할 새 자료가 있을 때.
+- **Met at.** 먼저 고정해 둔 normal 영역이 있고, 그에 견주어 판정할 새 자료가 있을 때.
 
 ### 5.3. LOF (Local Outlier Factor)
 
@@ -384,7 +384,7 @@ ECOD 는 outlier 를 꼬리의 드문 사건으로 보고, 아무것도 적합�
 
 ### 6.1. Autoencoder
 
-Autoencoder 는 입력을 좁은 code 로 압축하고 그로부터 입력을 재구성한다. 정상 데이터만으로 training 하면 자기 용량을 정상 구조에 쓰는 표현을 배우게 되고, 그러면 재구성 오차가 anomaly score 노릇을 한다.
+Autoencoder 는 입력을 좁은 code 로 압축하고 그로부터 입력을 재구성한다. Normal 데이터만으로 training 하면 자기 용량을 normal 구조에 쓰는 표현을 배우게 되고, 그러면 재구성 오차가 anomaly score 노릇을 한다.
 
 - **Assumption.** 깨끗한 training 데이터, 그리고 network 가 입력을 그대로 복사하지 못할 만큼 좁은 bottleneck.
 - **Setting.** Code 의 너비와 재구성 오차에 두는 cut.
@@ -393,11 +393,11 @@ Autoencoder 는 입력을 좁은 code 로 압축하고 그로부터 입력을 �
 
 ### 6.2. Generative Adversarial Network
 
-Adversarial 방식은 정상 데이터와 구별되지 않는 표본을 만들도록 generator 를 training 한다. 채점은 가장 가까운 생성 표본을 찾아 잔차를 읽는 일이다. 정상 관측은 학습된 manifold 위에 놓여 가깝게 맞추어지고 anomaly 는 그렇지 않다.
+Adversarial 방식은 normal 데이터와 구별되지 않는 표본을 만들도록 generator 를 training 한다. 채점은 가장 가까운 생성 표본을 찾아 잔차를 읽는 일이다. Normal 관측은 학습된 manifold 위에 놓여 가깝게 맞추어지고 anomaly 는 그렇지 않다.
 
 이런 종류의 첫 방법인 [AnoGAN](#ref-20) 은 그 잔차에 discriminator feature 항을 더하며, 관측 하나를 forward pass 가 아니라 latent space 의 반복 탐색으로 채점한다. Diffusion model 이 그 뒤 같은 자리를 넘겨받아, 잡음 제거가 관측을 얼마나 옮겨야 하는지로 채점하며 비용은 다시 높다.
 
-- **Assumption.** 꼭지 6.1 과 같으며, generator 가 정상 데이터의 manifold 를 배웠다는 것이 더해진다.
+- **Assumption.** 꼭지 6.1 과 같으며, generator 가 normal 데이터의 manifold 를 배웠다는 것이 더해진다.
 - **Setting.** 채점에 쓰는 latent 탐색 예산과 잔차에 두는 cut.
 - **Breaks when.** Latent 탐색이 수렴하지 않을 때, 또는 관측 하나의 채점 비용이 line 이 허용하는 것을 넘을 때.
 - **Met at.** 꼭지 6.1 의 데이터 가운데 생성 model 이 이미 있고 그 비용을 치를 수 있는 경우.
@@ -471,9 +471,9 @@ Adversarial 방식은 정상 데이터와 구별되지 않는 표본을 만들�
 ## Appendix A. Terminology
 
 - **adjusted boxplot** — 표본의 왜도에 따라 fence 를 옮긴 box plot 으로, 긴 꼬리가 outlier 의 연속으로 읽히지 않게 한다.
-- **anomaly score** — 정상 pattern 에서 얼마나 벗어났는지로 관측의 순위를 매기는 수이며, 그 값 어디에도 명시된 오류율이 붙어 있지 않다.
+- **anomaly score** — Normal pattern 에서 얼마나 벗어났는지로 관측의 순위를 매기는 수이며, 그 값 어디에도 명시된 오류율이 붙어 있지 않다.
 - **AU-PRO** — 영역별 겹침 곡선 아래 면적으로, 결함을 검출했는지가 아니라 얼마나 잘 국소화했는지를 채점한다.
-- **AUROC** — 수신자 조작 특성 곡선 아래 면적으로, 무작위로 고른 anomaly 가 무작위로 고른 정상 관측보다 높은 점수를 받을 확률이다.
+- **AUROC** — 수신자 조작 특성 곡선 아래 면적으로, 무작위로 고른 anomaly 가 무작위로 고른 normal 관측보다 높은 점수를 받을 확률이다.
 - **box plot** — 상자가 interquartile range 를 덮고 수염이라 부르는 선이 상자에서 interquartile range 의 1.5 배 안에 있는 가장 극단적인 관측까지 뻗으며, 그 너머의 것은 따로 점으로 그리는 요약 그림.
 - **breakdown point** — 추정값이 나머지 데이터를 더는 기술하지 못하게 되기까지 망가뜨려야 하는 표본의 비율. 평균은 0%, median 은 50% 이다.
 - **chi-square distribution** — 독립인 표준정규 변수의 제곱합이 따르는 분포로, 항마다 자유도 하나를 가진다. 제곱 거리를 확률로 바꾸는 것이 이것이다.
@@ -488,8 +488,8 @@ Adversarial 방식은 정상 데이터와 구별되지 않는 표본을 만들�
 - **ECOD** — Empirical cumulative distribution 에 기반한 outlier 검출로, 꼭지 5.4 의 방법이다.
 - **ESD** — Extreme studentized deviate 의 줄임말로, 꼭지 4.4 의 generalized ESD 절차의 이름에 쓰였다.
 - **extreme studentized deviate** — 표본 평균으로부터의 가장 큰 절대편차를 표본 표준편차로 나눈 값. Generalized ESD 절차의 각 단계가 계산하는 통계량이다.
-- **false positive rate** — 규칙이 flag 를 붙이는 정상 관측의 비율. 그 규칙이 닿는 검출률에 대해 치르는 값이다.
-- **generator** — Discriminator 가 training 데이터와 가르지 못할 표본을 만들어 내도록 training 하는 network. 일단 training 되면 정상 데이터가 나온 분포를 대신한다.
+- **false positive rate** — 규칙이 flag 를 붙이는 normal 관측의 비율. 그 규칙이 닿는 검출률에 대해 치르는 값이다.
+- **generator** — Discriminator 가 training 데이터와 가르지 못할 표본을 만들어 내도록 training 하는 network. 일단 training 되면 normal 데이터가 나온 분포를 대신한다.
 - **Hotelling's T-squared** — 제곱 z-score 의 다변량 대응물로, model 이 적합한 구조 안에서 관측이 중심으로부터 떨어진 거리를 잰다.
 - **hyperparameter** — 데이터에서 추정하지 않고 방법을 돌리기 전에 정하는 설정값으로, 이웃 크기나 kernel bandwidth 같은 것이다. Label 이 없으면 그것을 맞추어 볼 대상이 없다.
 - **influential observation** — 제거하면 적합된 model 이 눈에 띄게 바뀌는 관측으로, Cook 의 거리로 잰다.
@@ -597,7 +597,7 @@ Static 한 한계값은 과거 데이터에서 한 번 계산하여 모든 lot �
 
 장비 sensor 는 한 공정 단계 내내 압력, 유량, 전력, 온도를 보고한다. [Fault detection and classification](#ref-26) 은 각 trace 를 wafer 마다의 요약 parameter 로 줄이고 그것들을 함께 감시한다. 변수별 한계값은 조합에서만 드러나는 이탈을 놓치기 때문이다.
 
-표준적인 구성은 축소된 공간에서 돌리는 꼭지 4.5 의 multivariate control chart 이다. 정상 생산에서 주성분을 적합하고, 그 공간 안에서는 Hotelling 의 $T^2$ 로, 성분이 설명하지 못한 부분은 squared prediction error 인 $Q$ 통계량으로 채점한다. $T^2$ 는 process 가 평소의 구조 안에서 움직였다고, $Q$ 는 그 구조를 벗어났다고 말한다.
+표준적인 구성은 축소된 공간에서 돌리는 꼭지 4.5 의 multivariate control chart 이다. Normal 생산에서 주성분을 적합하고, 그 공간 안에서는 Hotelling 의 $T^2$ 로, 성분이 설명하지 못한 부분은 squared prediction error 인 $Q$ 통계량으로 채점한다. $T^2$ 는 process 가 평소의 구조 안에서 움직였다고, $Q$ 는 그 구조를 벗어났다고 말한다.
 
 그렇게 나누는 것이 flag 를 움직일 수 있는 것으로 만든다. $T^2$ 나 $Q$ 에 가장 크게 이바지한 loading 이 들여다볼 sensor 를 이름 댄다.
 

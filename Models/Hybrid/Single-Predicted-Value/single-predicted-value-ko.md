@@ -1,5 +1,5 @@
 # Single Predicted Value From Two Models
-Rev. 30 | Created: 2026-09-11 | Updated: 2026-09-23 11:09 CDT
+Rev. 31 | Created: 2026-09-11 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -138,13 +138,13 @@ Table 1. Metrics for the weight search
 식 (1) 의 `p_hybrid` 가 만드는 순위를 모든 임계값에 걸쳐 한꺼번에 잽니다.
 
 - 장점: 임계값을 정할 필요가 없어 동작점을 정하기 전의 탐색에 맞음. 레이블 불균형에 견고.
-- 단점: 확률을 단조 변환해도 값이 그대로라 교정이 어긋난 모델도 통과. 단일 예측값을 재는 지표가 아님.
+- 단점: 확률을 단조 변환해도 값이 그대로라 calibration 이 어긋난 모델도 통과. 단일 예측값을 재는 지표가 아님.
 
 #### `log_loss`
 
 식 (1) 의 `p_hybrid` 를 `y_true` 와 대어, 확률이 정답에서 얼마나 떨어져 있는지로 벌점을 매깁니다.
 
-- 장점: 확률의 눈금까지 채점하는 유일한 지표라, 꼭지 5 가 경고하는 교정 상태가 드러남.
+- 장점: 확률의 눈금까지 채점하는 유일한 지표라, 꼭지 5 가 경고하는 calibration 상태가 드러남.
 - 단점: 확신을 갖고 틀린 한 행의 벌점이 매우 커서 그 행이 w 를 좌우. 확률이 0 이나 1 이면 클리핑 없이는 발산.
 
 ## 5. Cautions
@@ -153,10 +153,10 @@ Table 1. Metrics for the weight search
 
 ## 6. Further Work
 
-- **확률 교정 적용**
-  - 무엇: `IsotonicRegression`이나 `Platt Scaling`을 통한 교정을 두 모델의 확률에 적용한 뒤 가중합.
+- **확률 calibration 적용**
+  - 무엇: `IsotonicRegression`이나 `Platt Scaling`을 통한 calibration 을 두 모델의 확률에 적용한 뒤 가중합.
   - 왜 지금: 꼭지 5 의 조건, 즉 한 모델이 과신하고 다른 모델이 신중한 상태에서는 가중치만으로 영향력의 불균형을 바로잡지 못함.
-  - 무엇이 필요: 교정에 쓸 데이터와, 교정 전후의 최적 w 및 지표 점수 비교.
+  - 무엇이 필요: Calibration 에 쓸 데이터와, calibration 전후의 최적 w 및 지표 점수 비교.
 
 ## References
 

@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 31 | Created: 2026-08-25 | Updated: 2026-09-23 11:08 CDT
+Rev. 32 | Created: 2026-08-25 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. Taxonomy of Outliers](#2-taxonomy-of-outliers)

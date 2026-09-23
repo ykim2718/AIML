@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
+Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -49,7 +49,7 @@ Table 1. Chance that at least one of p univariate charts signals on a healthy pr
 | 50 | 0.1264 |
 | 100 | 0.2369 |
 
-센서 100 개에 3 sigma 관리도를 하나씩 걸면 정상 공정에서도 네 점에 한 번꼴로 어딘가는 울린다. 그
+센서 100 개에 3 sigma 관리도를 하나씩 걸면 normal 공정에서도 네 점에 한 번꼴로 어딘가는 울린다. 그
 상태의 관리도는 아무도 보지 않게 된다.
 
 ### 1.2. Correlation Blindness
@@ -57,13 +57,13 @@ Table 1. Chance that at least one of p univariate charts signals on a healthy pr
 둘째 이유가 더 근본적이다. 장비 센서들은 서로 독립이 아니다. 유량을 올리면 압력이 따라 오르고, 전력을
 올리면 온도가 따라 오른다. 관리도를 따로 두면 각 센서가 자기 범위 안에 있는지만 보고, 센서들 사이의
 그 관계가 깨졌는지는 보지 못한다. 유량이 평소보다 높은데 압력이 따라 오르지 않았다면 두 값 모두
-정상 범위 안에 있어도 무언가 고장난 것인데, 개별 관리도는 그것을 신호로 만들지 못한다.
+Normal 범위 안에 있어도 무언가 고장난 것인데, 개별 관리도는 그것을 신호로 만들지 못한다.
 
 ## 2. Hotelling's T-Squared Chart
 
 ### 2.1. Definition
 
-해법은 $p$ 개의 값을 하나의 거리로 묶는 것이다. 관측 vector 를 $\mathbf{x}$, 정상 운전 자료에서 얻은
+해법은 $p$ 개의 값을 하나의 거리로 묶는 것이다. 관측 vector 를 $\mathbf{x}$, normal 운전 자료에서 얻은
 평균 vector 를 $\boldsymbol{\mu}$, 공분산 행렬을 $\mathbf{S}$ 라 할 때 Hotelling 의 $T^2$ 는 그 둘
 사이의 Mahalanobis 거리의 제곱이다.
 
@@ -79,7 +79,7 @@ $T^2$ 를 상수로 놓으면 $p$ 차원 공간의 타원체가 되며, 이것�
 
 ### 2.2. Control Limit
 
-정상 운전 자료 $m$ 개로 $\boldsymbol{\mu}$ 와 $\mathbf{S}$ 를 추정한 뒤 새 관측값을 감시할 때, 한계는
+Normal 운전 자료 $m$ 개로 $\boldsymbol{\mu}$ 와 $\mathbf{S}$ 를 추정한 뒤 새 관측값을 감시할 때, 한계는
 $F$ 분포에서 나온다.
 
 $$T^{2}_{\mathrm{limit}} = \frac{p(m+1)(m-1)}{m(m-p)} F_{\alpha, p, m-p} \hspace{19em} (3)$$
@@ -91,7 +91,7 @@ $m$ 이 충분히 크면 이 값은 자유도 $p$ 인 chi-squared 분포의 상�
 ### 3.1. Why Principal Components
 
 식 (2) 는 $\mathbf{S}^{-1}$ 을 요구하는데, 센서가 수백 개인 현장에서 이 역행렬은 대개 존재하지 않거나
-믿을 수 없다. 센서들이 강하게 상관되어 공분산 행렬이 거의 특이하고, 정상 운전 자료 개수 $m$ 이 센서
+믿을 수 없다. 센서들이 강하게 상관되어 공분산 행렬이 거의 특이하고, normal 운전 자료 개수 $m$ 이 센서
 개수 $p$ 보다 크지 않은 경우도 흔하기 때문이다.
 
 Principal component analysis 는 이것을 자료가 실제로 놓인 저차원 부분공간을 찾아 푼다. 표준화한 자료
@@ -130,11 +130,11 @@ Table 2. What the two statistics monitor.
 
 | Statistic | Measures | Signals when |
 |---|---|---|
-| $T^2$ | 주성분 부분공간 안의 거리 | 센서들이 평소의 관계는 지키면서 함께 정상 범위를 벗어남 |
+| $T^2$ | 주성분 부분공간 안의 거리 | 센서들이 평소의 관계는 지키면서 함께 normal 범위를 벗어남 |
 | $SPE$ | 주성분 부분공간에서 벗어난 거리 | 센서들 사이의 관계 자체가 깨져 model 로 설명되지 않음 |
 
 $T^2$ 만 커진 것은 공정이 평소 움직이던 방향을 따라 멀리 간 것이므로, 대개 알고 있는 조작 변수가
-움직인 결과이다. $SPE$ 가 커진 것은 정상 자료에서 배운 관계로 설명되지 않는 새로운 무언가가 생겼다는
+움직인 결과이다. $SPE$ 가 커진 것은 normal 자료에서 배운 관계로 설명되지 않는 새로운 무언가가 생겼다는
 뜻이며, 부품 고장이나 누설처럼 model 을 만들 때 본 적 없는 사건이 여기에 해당한다. 현장에서 더 급한
 쪽은 대개 후자이다.
 
@@ -169,13 +169,13 @@ Fig 1 이 section 1.2 의 상황을 그대로 보여 준다. 두 센서의 상�
 벗어난 것으로 잡힌다.
 
 반도체 현장에서 이 구조가 놓이는 자리는 fault detection and classification 이다. 장비가 남기는 시계열을
-step 별로 잘라 요약값을 만들고, 정상 웨이퍼들로 PCA model 을 세운 뒤 새 웨이퍼의 $T^2$ 와 $SPE$ 를
+step 별로 잘라 요약값을 만들고, normal 웨이퍼들로 PCA model 을 세운 뒤 새 웨이퍼의 $T^2$ 와 $SPE$ 를
 계산한다. 웨이퍼 한 장마다 수백 개의 수 대신 두 개의 수를 보게 되므로 사람이 감당할 수 있고, 결과물을
 측정하기 전에 판정이 나온다는 것이 이 방법의 실질적인 이득이다 [[2](#ref-2)].
 
-Model 을 다루는 데는 조건이 둘 있다. 하나는 정상 자료의 정의이다. Model 은 정상 운전 기간의 자료로만
+Model 을 다루는 데는 조건이 둘 있다. 하나는 normal 자료의 정의이다. Model 은 normal 운전 기간의 자료로만
 세워야 하며, 여기에 이상 자료가 섞이면 그 이상이 정상으로 학습된다. 다른 하나는 갱신이다. 장비는
-소모품 교체와 정비를 거치며 정상 상태 자체가 옮겨가므로, model 을 고정해 두면 정비 직후부터 $SPE$ 가
+소모품 교체와 정비를 거치며 normal 상태 자체가 옮겨가므로, model 을 고정해 두면 정비 직후부터 $SPE$ 가
 계속 울린다. 정비 주기에 맞추어 model 을 다시 세우는 절차가 필요하다.
 
 ## References

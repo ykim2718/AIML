@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 67 | Created: 2026-09-12 | Updated: 2026-09-23 11:08 CDT
+Rev. 68 | Created: 2026-09-12 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Purpose](#1-purpose)
   - [1.1 Motivation](#11-motivation)
@@ -36,7 +36,7 @@ Feature 조합이 개별 feature 보다 target 을 더 잘 설명하는 경우�
 
 1️⃣ Feature 사이의 다중공선성 및 중복성 제거<br>
 2️⃣ Feature 사이의 시너지 효과 발굴<br>
-3️⃣ Model 성능 향상과 과적합 방지
+3️⃣ Model 성능 향상과 overfitting 방지
 
 ## 2. Taxonomy
 
@@ -120,7 +120,7 @@ Table 1. Comparison of the three approaches
 | #   | Aspect        | Multivariate filter         | Wrapper              | Embedded           |
 | :-: | :-----------: | :-------------------------: | :------------------: | :----------------: |
 | 1   | 계산 복잡도   | 낮음                        | 매우 높음            | 중간               |
-| 2   | 과적합 위험   | 낮음                        | 높음                 | 중간               |
+| 2   | Overfitting 위험 | 낮음                        | 높음                 | 중간               |
 | 3   | Model 의존성  | 없음 (model-agnostic)       | 선택한 model 에 종속 | 해당 model 에 내장 |
 | 4   | 상호작용 반영 | 제한적 (주로 1:1 중복 제거) | 매우 잘 반영         | 잘 반영            |
 

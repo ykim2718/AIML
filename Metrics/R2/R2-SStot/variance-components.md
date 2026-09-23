@@ -1,5 +1,5 @@
 # Variance Components in $R^2$
-Rev. 14 | Created: 2026-04-08 | Updated: 2026-09-23 11:09 CDT
+Rev. 15 | Created: 2026-04-08 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
@@ -176,5 +176,3 @@ The figure is produced by `sigma_r2.py`, in the folder of this document.
   predicted values.
 - **Residual variance**: 잔차 분산. The variance of the differences between observed and predicted
   values.
-- **Signal-to-noise ratio**: 신호 대 잡음비. A measure that compares the level of a desired signal
-  to the level of background noise.

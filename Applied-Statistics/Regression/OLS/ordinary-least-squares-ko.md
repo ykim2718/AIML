@@ -1,5 +1,5 @@
 # Ordinary Least Squares
-Rev. 14 | Created: 2026-09-12 | Updated: 2026-09-23 11:29 CDT
+Rev. 15 | Created: 2026-09-12 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -230,7 +230,7 @@ Code 에서 짚을 곳은 세 군데다.
 
 - `np.hstack([ones, X_raw])`: 원본 특성 데이터 앞에 1 로 채워진 열을 붙여 만든 design matrix $X$. 그 첫 번째 열이 절편 $\beta_0$ 와 곱해지는 항.
 - `@` 연산자: NumPy 의 행렬 곱셈 (matrix multiplication). `X.T @ X` 는 $X^\top X$.
-- `np.linalg.solve` 와 `np.linalg.inv`: 연립방정식을 푸는 계산과 $(X^\top X)^{-1}$ 역행렬을 직접 구하는 계산. 수치 오차와 속도 측면에서 `np.linalg.solve(A, b)` 형태가 안정적.
+- `np.linalg.solve` 와 `np.linalg.inv`: 연립방정식을 푸는 계산과 $(X^\top X)^{-1}$ 역행렬을 직접 구하는 계산. Numerical 오차와 속도 측면에서 `np.linalg.solve(A, b)` 형태가 안정적.
 
 ## Appendix C. Self Inner Product of a Vector
 

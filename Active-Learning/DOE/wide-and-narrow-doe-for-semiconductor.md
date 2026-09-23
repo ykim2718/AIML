@@ -1,5 +1,5 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 11 | Created: 2026-08-27 | Updated: 2026-09-23 11:08 CDT
+Rev. 12 | Created: 2026-08-27 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Proposition](#1-proposition)
 - [2. Range](#2-range)
@@ -24,17 +24,17 @@ Rev. 11 | Created: 2026-08-27 | Updated: 2026-09-23 11:08 CDT
 
 ## 2. Range
 
-Wide DOE 는 온도, 압력, gas 비율 같은 공정 parameter 를 정상 범위 밖의 극단까지 일부러 흔들어 얻는다. 그렇게 흔드는 것은 process cliff 가 어디에서 시작하는지를 찾기 위해서이다. Process window 를 찾는 것과는 다르다. Window 는 결과가 spec 을 만족하는 범위이므로 spec 이 바뀌면 함께 바뀌고, 좁은 범위에서 잰 것만으로도 model 로 미루어 그릴 수 있다. Cliff 는 응답이 무너지는 자리라 spec 과 무관하게 그 자리에 있고, 그 밖까지 실제로 흔들어 보지 않으면 어디인지 알 수 없다. 범위를 넓혀야 하는 이유는 window 가 아니라 cliff 쪽에 있다. Narrow DOE 는 실제로 제품이 나오는 POR 근처의 좁은 변동 안에서 얻는다.
+Wide DOE 는 온도, 압력, gas 비율 같은 공정 parameter 를 normal 범위 밖의 극단까지 일부러 흔들어 얻는다. 그렇게 흔드는 것은 process cliff 가 어디에서 시작하는지를 찾기 위해서이다. Process window 를 찾는 것과는 다르다. Window 는 결과가 spec 을 만족하는 범위이므로 spec 이 바뀌면 함께 바뀌고, 좁은 범위에서 잰 것만으로도 model 로 미루어 그릴 수 있다. Cliff 는 응답이 무너지는 자리라 spec 과 무관하게 그 자리에 있고, 그 밖까지 실제로 흔들어 보지 않으면 어디인지 알 수 없다. 범위를 넓혀야 하는 이유는 window 가 아니라 cliff 쪽에 있다. Narrow DOE 는 실제로 제품이 나오는 POR 근처의 좁은 변동 안에서 얻는다.
 
 Table 1. Wide DOE and narrow DOE
 
 | Item | Wide DOE | Narrow DOE |
 |------|----------|------------|
-| Range | 정상 범위를 벗어난 극단까지 흔든다 | POR 근처의 좁은 구간에 머문다 |
+| Range | Normal 범위를 벗어난 극단까지 흔든다 | POR 근처의 좁은 구간에 머문다 |
 | Spacing | 점 사이가 넓다 | 점 사이가 촘촘하다 |
 | Purpose | 경계와 물리적 경향을 잡는다 | 양산 영역의 미세한 변화를 맞춘다 |
 | Training | 처음 model 을 세울 때 쓴다 | 양산에 맞추어 fine-tuning 할 때 쓴다 |
-| Inference | 정상 가동에서는 드물다 | 추론의 대부분을 차지한다 |
+| Inference | Normal 가동에서는 드물다 | 추론의 대부분을 차지한다 |
 | When it runs | 장비와 공정을 들일 때 | 양산이 도는 동안 |
 
 <img src="wide-and-narrow-doe-for-semiconductor_fig/fig1_doe_range.png" width="800" style="max-width: 100%;" alt="Fig 1">
@@ -63,19 +63,19 @@ Model 이 학습한 적 없는 영역에서 내는 값은 extrapolation 이고, 
 
 추론은 대부분 narrow 영역에서 일어난다. 양산 중에 장비를 극단 조건으로 돌리지 않기 때문만은 아니다. APC 가 run 마다 결과를 되먹여 공정 parameter 를 목표치로 끌어당기므로, 양산 data 는 스스로 center 근처의 좁은 구간에 쌓인다. 이 되먹임이 곧 PWC 이다. Model 이 만나는 입력의 분포가 narrow DOE 가 덮은 범위와 거의 겹치는 것은 그 제어의 결과이다.
 
-Wide DOE 가 덮은 구간은 process cliff 이다. 그 구간에서는 수율이 급격히 무너지고 defect 가 몰려 나오므로 양산을 그곳에서 돌릴 이유가 없다. 그러므로 양산 중에 그 구간의 값이 들어온다는 것은 공정 제어가 실패했다는 뜻이며, 정상 가동만 놓고 보면 wide 영역을 추론할 일이 없다는 말이 맞다.
+Wide DOE 가 덮은 구간은 process cliff 이다. 그 구간에서는 수율이 급격히 무너지고 defect 가 몰려 나오므로 양산을 그곳에서 돌릴 이유가 없다. 그러므로 양산 중에 그 구간의 값이 들어온다는 것은 공정 제어가 실패했다는 뜻이며, normal 가동만 놓고 보면 wide 영역을 추론할 일이 없다는 말이 맞다.
 
-이상을 가려내는 일이 cliff 의 data 로 이루어진다고 생각하기 쉬우나 그렇지 않다. 정상의 모양을 배워 두고 거기서 벗어난 것을 이상이라 부르는 것이므로, 그 판정에 필요한 것은 정상 data 이지 cliff data 가 아니다. 애초에 cliff data 는 실제 양산에서 거의 생기지 않으므로 그것을 모아 배우는 방법은 쓸 수도 없다. 그러니 벗어났는지 아닌지를 가리는 데까지는 narrow 범위만으로 선다.
+이상을 가려내는 일이 cliff 의 data 로 이루어진다고 생각하기 쉬우나 그렇지 않다. Normal 의 모양을 배워 두고 거기서 벗어난 것을 이상이라 부르는 것이므로, 그 판정에 필요한 것은 normal data 이지 cliff data 가 아니다. 애초에 cliff data 는 실제 양산에서 거의 생기지 않으므로 그것을 모아 배우는 방법은 쓸 수도 없다. 그러니 벗어났는지 아닌지를 가리는 데까지는 narrow 범위만으로 선다.
 
 Table 2. What each task learns from
 
 | Task | What it needs | Where it comes from |
 |------|---------------|---------------------|
-| Detection | 정상의 모양 | Narrow DOE 와 정상 양산 data 만으로 선다 |
+| Detection | Normal 의 모양 | Narrow DOE 와 normal 양산 data 만으로 선다 |
 | Classification | 이상마다의 본보기 | 일부러 고장을 넣어 얻는 wide DOE |
 | Prediction | 그 범위에서 입력과 결과의 관계 | Wide DOE. 없으면 extrapolation 이 된다 |
 
-Wide DOE 가 값을 하는 자리는 Detection 아래의 두 줄이다. 벗어났다는 것까지는 정상 data 로 알 수 있어도, 어느 쪽으로 얼마나 벗어났고 그것이 어떤 고장인지는 그 범위를 본 적이 있어야 말할 수 있다. 이상의 종류를 가르려면 그 이상의 본보기가 있어야 하고, 본보기는 양산을 기다려 얻는 것이 아니라 일부러 고장을 넣어 만든다. Cliff 가 어디인지 알아야 control limit 을 통계가 아니라 물리 위에 놓을 수 있다는 것도 같은 이야기이다.
+Wide DOE 가 값을 하는 자리는 Detection 아래의 두 줄이다. 벗어났다는 것까지는 normal data 로 알 수 있어도, 어느 쪽으로 얼마나 벗어났고 그것이 어떤 고장인지는 그 범위를 본 적이 있어야 말할 수 있다. 이상의 종류를 가르려면 그 이상의 본보기가 있어야 하고, 본보기는 양산을 기다려 얻는 것이 아니라 일부러 고장을 넣어 만든다. Cliff 가 어디인지 알아야 control limit 을 통계가 아니라 물리 위에 놓을 수 있다는 것도 같은 이야기이다.
 
 그러므로 명제는 그대로 두되 그 뜻을 좁혀 읽어야 한다. Wide DOE 의 data 가 추론 입력이 아니라는 것은 맞다. 그 data 의 값어치는 입력이 아닌 다른 셋에 있다. 양산 영역 예측의 정확도, 이상의 종류를 가르는 능력, 그리고 경계를 어디에 그을지의 근거이다.
 

@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 16 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
+Rev. 17 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)

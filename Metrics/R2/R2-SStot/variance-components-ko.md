@@ -1,5 +1,5 @@
 # Variance Components in $R^2$
-Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
+Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
@@ -20,7 +20,7 @@ Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
 
 ## 1. Executive Summary
 
-결정계수 $R^2$ 는 선형회귀 model 의 적합도를 재는 데 가장 널리 쓰이는 지표 가운데 하나이다. 그러나
+Coefficient of determination $R^2$ 는 선형회귀 model 의 적합도를 재는 데 가장 널리 쓰이는 지표 가운데 하나이다. 그러나
 그 해석에는 오해가 잦은데, 특히 이 값이 model 의 옳고 그름만이 아니라 자료의 분포를 따라서도
 흔들린다는 점이 그렇다. 이 문서는 분산의 변화가 — 구체적으로 잔차 분산 ($\sigma^2_{\epsilon}$) 과
 예측변수 분산 ($\sigma^2_{x}$) 이 — 왜 $R^2$ 에 깊은 영향을 미치는지를 수학과 개념 양쪽에서 살핀다.
@@ -64,7 +64,7 @@ $$SS_{res} = \sum (y_i - \hat{y}_i)^2, \qquad SS_{tot} = \sum (y_i - \bar{y})^2 
 커지면 잡음이 신호를 덮는다. 바탕의 model 이 옳더라도, 곧 참인 $\beta_1$ 을 찾아냈더라도 예측력은
 묽어진다.
 
-> 잡음 또는 잔차 분산이 커지면 model 의 설명력이 줄고 $R^2$ 가 낮아진다.
+> 잡음 또는 잔차 분산이 커지면 model 의 explanatory power 가 줄고 $R^2$ 가 낮아진다.
 
 이것은 $R^2$ 가 낮다고 해서 반드시 model 이 틀렸다는 뜻은 아님을 보여 준다. 환경 자체가 본래
 시끄러워 종속변수를 높은 정밀도로 예측하기 어려운 것일 수도 있다.
@@ -98,7 +98,7 @@ $Y$ 의 총산포가 이제 무작위 오차보다 $X$ 의 변화에 더 이끌�
 
 ## 5. Summary Of Variance Effects On $R^2$
 
-아래 표는 분산 성분과 그로부터 나오는 결정계수의 관계를 정리한 것이다.
+아래 표는 분산 성분과 그로부터 나오는 coefficient of determination 의 관계를 정리한 것이다.
 
 Table 1. Variance components and their effect on $R^2$
 
@@ -122,8 +122,8 @@ Machine learning 에서 $R^2$ 하나에만 기대는 것은 이런 분산 의존
 
 ## 7. Conclusion
 
-분산의 변화가 $R^2$ 에 영향을 주는 이유는 $R^2$ 가 비율이기 때문이다. 평균 제곱 오차나 평균 절대
-오차 같은 절대 오차 척도는 오차 자체의 크기를 보고하므로 자료의 산포를 옮겨도 그대로 있다. $R^2$ 는
+분산의 변화가 $R^2$ 에 영향을 주는 이유는 $R^2$ 가 비율이기 때문이다. Mean squared error 나 mean absolute error
+같은 절대 오차 척도는 오차 자체의 크기를 보고하므로 자료의 산포를 옮겨도 그대로 있다. $R^2$ 는
 오차를 총산포에 견주어 보고하므로 그 비의 어느 쪽이 움직이든 함께 움직이며, Table 1 의 모든 경우가
 바로 그것을 적어 놓은 것이다.
 
@@ -152,4 +152,3 @@ Fig 1. $R^2$ against the sigma score for samples placed along the 1-to-1 line
   가진다.
 - **Mean squared error**: 평균 제곱 오차. 관측값과 예측값의 차이를 제곱한 것의 평균.
 - **Residual variance**: 잔차 분산. 관측값과 예측값의 차이가 가지는 분산.
-- **Signal-to-noise ratio**: 신호 대 잡음비. 원하는 신호의 크기를 배경 잡음의 크기에 견주는 척도.

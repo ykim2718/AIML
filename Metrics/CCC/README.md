@@ -1,7 +1,6 @@
 # 📊 CCC & Bland-Altman Analysis Guide
-Rev. 3 | Created: 2026-04-09 | Updated: 2026-09-23 11:08 CDT
+Rev. 4 | Created: 2026-04-09 | Updated: 2026-09-23 11:33 CDT
 
-- [Table of Contents](#table-of-contents)
 - [What is CCC?](#what-is-ccc)
   - [Formula](#formula)
   - [Key Difference from Pearson r](#key-difference-from-pearson-r)
@@ -32,20 +31,6 @@ Rev. 3 | Created: 2026-04-09 | Updated: 2026-09-23 11:08 CDT
 
 > A comprehensive guide to **Concordance Correlation Coefficient (CCC)** + **Bland-Altman Plot**  
 > A statistical toolkit for evaluating agreement between two measurement methods
-
----
-
-## Table of Contents
-
-- [What is CCC?](#what-is-ccc)
-- [CCC Components](#ccc-components)
-- [Interpretation Benchmarks](#interpretation-benchmarks)
-- [Bland-Altman Plot](#bland-altman-plot)
-- [Combined CCC + Bland-Altman Analysis](#combined-ccc--bland-altman-analysis)
-- [Data Concentration Problem & Alternative Metrics](#data-concentration-problem--alternative-metrics)
-- [Applications in AI/ML](#applications-in-aiml)
-- [Python Code Examples](#python-code-examples)
-- [Metric Selection Guide](#metric-selection-guide)
 
 ---
 

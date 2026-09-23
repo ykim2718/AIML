@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 12 | Created: 2026-09-08 | Updated: 2026-09-23 11:08 CDT
+Rev. 13 | Created: 2026-09-08 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Overview](#1-overview)
 - [2. Medallion Architecture Mapping](#2-medallion-architecture-mapping)
@@ -92,7 +92,7 @@ Reshaped Data 와 Transformed Data 는 과도기적이다. model 에 무관한 �
 
 ### 3.5 Transformed Data (Silver)
 
-같은 값을 model 이 읽는 척도로 다시 표현한 것이다. 수치 열은 scaling 하고 범주 열은 encoding 하며 치우친 열은 단조 변환을 거친다. 표의 배치는 건드리지 않으며, 이것이 Reshaped Data 와 갈리는 지점이다. 한쪽은 값이 놓이는 방식을 바꾸고 다른 쪽은 값 자체를 바꾼다. 여기서 적합하는 parameter — scaler 의 평균과 분산, encoder 의 범주 목록 — 는 훈련 행에서만 얻어 dataset 과 함께 저장한다. serving 시점에 다시 적합하는 것은 train/serve skew [[3](#ref-3)] 로 가는 알려진 길이기 때문이다.
+같은 값을 model 이 읽는 척도로 다시 표현한 것이다. Numeric 열은 scaling 하고 범주 열은 encoding 하며 치우친 열은 단조 변환을 거친다. 표의 배치는 건드리지 않으며, 이것이 Reshaped Data 와 갈리는 지점이다. 한쪽은 값이 놓이는 방식을 바꾸고 다른 쪽은 값 자체를 바꾼다. 여기서 적합하는 parameter — scaler 의 평균과 분산, encoder 의 범주 목록 — 는 훈련 행에서만 얻어 dataset 과 함께 저장한다. serving 시점에 다시 적합하는 것은 train/serve skew [[3](#ref-3)] 로 가는 알려진 길이기 때문이다.
 
 ### 3.6 Feature Data (Gold)
 

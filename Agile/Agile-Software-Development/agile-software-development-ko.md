@@ -1,5 +1,5 @@
 # Agile Software Development
-Rev. 6 | Created: 2026-09-13 | Updated: 2026-09-23 11:08 CDT
+Rev. 7 | Created: 2026-09-13 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -64,7 +64,7 @@ Table 1. The three layers and what each one decides
 | DevOps | 조직 문화 및 협업 방식 | 개발 (Dev) 과 운영 (Ops) 의 통합 및 자동화 (culture) |
 | CI/CD | 기술적 실천 및 자동화 도구 | build, test, 배포 절차의 자동화 (technical practice) |
 
-Agile 은 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 주기 단위로 개발하고 개선하고 배포한다. DevOps 는 두 조직 사이의 경계가 전달된 가치 앞에 놓는 지체를 걷어낸다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
+Agile 은 요구사항을 작게 쪼개어 sprint 라 부르는 짧은 cycle 단위로 개발하고 개선하고 배포한다. DevOps 는 두 조직 사이의 경계가 전달된 가치 앞에 놓는 지체를 걷어낸다. CI/CD 는 code 를 검증하고 build 하여 service 환경까지 안전하게 옮기며, 앞의 둘을 현장에서 눈에 보이게 만드는 것이 그것이다.
 
 CI/CD 가 그 포함 관계의 맨 아래에 놓이는 까닭은 그것이 거대한 체계의 기술적 구성 요소 하나이지 체계 자체가 아니기 때문이다.
 
@@ -91,7 +91,7 @@ Table 3. Waterfall and Agile compared
 | --- | --- | --- |
 | 기본 철학 | "처음에 완벽한 계획을 세운다" | "계획은 항상 수정될 수 있다" |
 | 진행 방식 | 기획, 디자인, 개발, 테스트, 배포를 순차적으로 한 번씩 | [기획-개발-테스트-배포] 를 2~4주 단위로 반복 (iteration) |
-| 피드백 시점 | 프로젝트 최후반, 배포 직전 또는 직후 | 매 반복 주기 (sprint) 마다 지속적 피드백 |
+| 피드백 시점 | 프로젝트 최후반, 배포 직전 또는 직후 | 매 반복 cycle (sprint) 마다 지속적 피드백 |
 | 장점 | 예측 가능성이 높고 관리가 체계적 | 시장과 고객의 변화에 매우 신속하게 대응 |
 
 ## 4. Iteration Cycle

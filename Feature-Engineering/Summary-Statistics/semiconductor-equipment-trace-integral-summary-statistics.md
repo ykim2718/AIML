@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 24 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+Rev. 25 | Created: 2026-07-29 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Integral Statistics](#1-integral-statistics)
   - [1.1 Plain AUC Carries No Information](#11-plain-auc-carries-no-information)
@@ -361,7 +361,7 @@ Table 7. Redundancy checks
 - **Epanechnikov kernel**: $1 - u^2$ 에 비례하는 포물선 형태의 kernel 함수다.
 - **FDC (Fault Detection and Classification)**: 장비 신호로 공정 이상을 탐지하고 분류하는 체계다.
 - **GBM (Gradient Boosting Machine)**: 얕은 결정 나무를 순차적으로 더해 가는 ensemble 학습 방법이다.
-- **Golden reference**: 정상 상태를 대표하는 기준 trace다.
+- **Golden reference**: Normal 상태를 대표하는 기준 trace다.
 - **L1**: 절댓값의 합 또는 적분으로 정의되는 norm이다.
 - **MFC (Mass Flow Controller)**: 가스 유량을 제어하는 장치다.
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소화하는 선형 회귀 적합 방법이다.

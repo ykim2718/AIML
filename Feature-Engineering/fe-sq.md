@@ -1,5 +1,5 @@
 # 🗺️ Feature Engineering (FE) — Sequence
-Rev. 1 | Created: 2026-06-27 | Updated: 2026-08-10 22:02 CDT
+Rev. 2 | Created: 2026-06-27 | Updated: 2026-09-23 11:33 CDT
 
 순서형은 행 단위로 독립이 아니라 **시간 순서가 곧 정보**다. 과거 값을 끌어와 변수로 굳히는 방식이 핵심이다.
 
@@ -42,7 +42,7 @@ Time Series FE
 - **Rolling / Window Statistics (이동 통계)**: 최근 N 구간의 평균·표준편차·최댓값 등으로 단기 추세와 변동성을 담음. 누적은 Expanding, 최근 가중은 EWMA
 - **Datetime Decomposition (시간 성분 분해)**: 연·월·일·시·요일·주말·공휴일 추출. 시각·각도처럼 순환하는 값은 sin/cos 로 인코딩해 23시와 0시가 이어지게 함
 - **Differencing (차분)**: `y(t) − y(t-1)` 로 추세를 걷어내 정상성 (stationarity) 확보. STL 로 trend·seasonal·residual 분리
-- **Frequency Domain (주파수 변환)**: FFT·Fourier 항으로 숨은 주기 패턴을 변수화 (센서·신호 데이터에 유효)
+- **Frequency Domain (주파수 변환)**: FFT·Fourier 항으로 숨은 periodic 패턴을 변수화 (센서·신호 데이터에 유효)
 - **Event-based (사건 기준)**: 마지막 사건 이후 경과 시간, 다음 사건까지 남은 시간
 
 > ⚠️ **주의**: 시계열 FE 는 **미래 정보 누수 (data leakage)** 를 막는 게 관건이다. Lag·Rolling 은 반드시 과거 방향으로만 계산하고, train/test 분할은 시간 순서를 지켜 (시점 이후를 test 로) 둔다.
@@ -115,7 +115,7 @@ MTS FE  (W wafers × J sensors × K steps)
 - **Lag**: 직전 웨이퍼(들)의 L1/L2 요약값
 - **Rolling / EWMA over wafers**: 웨이퍼 축으로 굴려 **tool drift** 추적
 - **By chamber / lot**: 챔버·로트별 집계 (장비·배치 차이 반영)
-- **Baseline diff**: golden wafer·정상 기준 대비 차이
+- **Baseline diff**: golden wafer·normal 기준 대비 차이
 
 ### Multi-scale (두 겹)
 

@@ -1,5 +1,5 @@
 # The Wafer Uniformity Index
-Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
+Rev. 7 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. Measurement Basis](#2-measurement-basis)
@@ -126,7 +126,7 @@ Fig 1 의 두 웨이퍼는 section 3 의 어떤 정의로도 구분되지 않지
 등고선 지도나 반지름 방향 추세와 함께 보고하고 그것만 따로 두지 않는 이유가 여기에 있다.
 
 이 지표는 진단에서는 갈라야 할 원인들을 섞어 놓기도 한다. 측정된 산포에는 실제 공정 무늬, 자리마다의
-공정 무작위성, 그리고 계측 장비의 반복성이 함께 들어 있으며, 이들은 분산으로 더해진다.
+공정 무작위성, 그리고 계측 장비의 repeatability 가 함께 들어 있으며, 이들은 분산으로 더해진다.
 
 $$\sigma_{\mathrm{measured}}^{2} = \sigma_{\mathrm{process}}^{2} + \sigma_{\mathrm{metrology}}^{2} \hspace{19em} (4)$$
 
@@ -172,7 +172,7 @@ Table 3. The index by process step.
 | Implant | 면저항 | $1\sigma$ |
 | Lithography | Critical dimension | $3\sigma$ |
 
-물리적 원인은 공정마다 다르고 저마다 고유한 반지름 방향 무늬를 가진다. 증착의 균일도는 가스 유량과
+물리적 원인은 공정마다 다르고 저마다 고유한 radial signature 를 가진다. 증착의 균일도는 가스 유량과
 showerhead 설계, 기판 온도를 따르고, 식각은 plasma 밀도와 온도를 따른다. CMP 는 pad 압력과 slurry
 분포를 따르며, 그 within-wafer non-uniformity 가 문헌에서 가장 깊이 분석된 항이다 [[1](#ref-1)],
 [[2](#ref-2)]. 어느 경우든 관측되는 것은 지표이고 진단이 되는 것은 무늬이다.
@@ -201,7 +201,7 @@ lot 사이의 흐름이 그것이다. 이 지표는 필요한 통계량이지 �
 - 측정 배치: 측정 자리의 개수와 그 배열.
 - Edge exclusion: 제외한 가장자리 띠의 폭.
 - 표준편차의 분모: $n$ 인지 $n-1$ 인지.
-- 계측 장비와 그 반복성. 식 (4) 를 읽으려면 필요하다.
+- 계측 장비와 그 repeatability. 식 (4) 를 읽으려면 필요하다.
 
 ## References
 

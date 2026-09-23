@@ -1,5 +1,5 @@
 # Time Series Inference Server
-Rev. 34 | Created: 2026-08-28 | Updated: 2026-09-23 11:29 CDT
+Rev. 35 | Created: 2026-08-28 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. Structure](#2-structure)
@@ -79,7 +79,7 @@ Table 2. Model 이 낼 수 있는 답과 그 조건
 | # | Question | Model output | Condition on the model |
 |---|----------|--------------|------------------------|
 | 1 | Forecast | 앞으로 `H` step 의 값. quantile 이면 분포의 여러 지점. | 그 horizon 까지 적합되었을 것. quantile 은 전용 head 나 sampling 이 있을 것. |
-| 2 | Anomaly detection | 관측이 기대에서 얼마나 벗어났는지의 deviation score. | 정상 거동의 baseline 을 학습했을 것. |
+| 2 | Anomaly detection | 관측이 기대에서 얼마나 벗어났는지의 deviation score. | Normal 거동의 baseline 을 학습했을 것. |
 | 3 | Classification | segment 별 class 와 그 확률. | label 이 붙은 과거 segment 로 적합되었을 것. |
 | 4 | Retrieval | segment 의 embedding. 거리 비교는 index 가 수행. | encoder 계열이거나, 중간 표현을 꺼낼 수 있을 것. |
 | 5 | Imputation | 결측 구간의 값. | 결측을 포함한 입력으로 적합되었거나 다변량일 것. |
@@ -261,7 +261,7 @@ Table 12. 제약과 그것이 강제하는 선택
 ## Appendix A. Terminology
 
 - **Attribution**: 어느 channel, step, lag 이 그 답을 움직였는지에 대한 설명.
-- **Baseline**: 정상 거동으로 삼는 기준. deviation score 는 이것에 대해 잼.
+- **Baseline**: Normal 거동으로 삼는 기준. deviation score 는 이것에 대해 잼.
 - **Chamber**: 한 wafer 나 batch 가 처리되는 process tool 의 내부 공간.
 - **Checkpoint**: state 를 나중에 복구할 수 있도록 저장한 사본.
 - **Context**: model 이 소비하는 과거 관측의 window. 길이는 model 이 정함.

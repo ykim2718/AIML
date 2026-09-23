@@ -1,5 +1,5 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+Rev. 6 | Created: 2026-09-20 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,7 +22,7 @@ Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
 
 ## 2. Summary
 
-Posterior 가 단봉이고 표본이 충분하면 Laplace approximation 이 $p(D)$ 를 얻는 가장 싼 방법이며, 값은 최적화 한 번과 Hessian 한 번으로 나온다. 정확한 값은 prior 와 likelihood 가 conjugate 인 경우에만 손으로 적을 수 있고, 그 밖에서는 근사나 표본이 유일한 길이다. 수치 적분은 차원이 커지면 격자 점의 수가 감당되지 않아 대안이 되지 못한다.
+Posterior 가 단봉이고 표본이 충분하면 Laplace approximation 이 $p(D)$ 를 얻는 가장 싼 방법이며, 값은 최적화 한 번과 Hessian 한 번으로 나온다. 정확한 값은 prior 와 likelihood 가 conjugate 인 경우에만 손으로 적을 수 있고, 그 밖에서는 근사나 표본이 유일한 길이다. Numerical 적분은 차원이 커지면 격자 점의 수가 감당되지 않아 대안이 되지 못한다.
 
 Laplace approximation 은 posterior 의 봉우리에서 2차까지 전개해 적분 대상을 Gaussian 으로 바꾼다. 그 결과가 식 (3) 이고, 여기서 표본 수에 따라 커지지 않는 항을 버리면 BIC 가 된다. 따라서 BIC 를 쓰는 것은 이미 Laplace approximation 을 쓰되 그 항들을 버린 것과 같다.
 
@@ -109,7 +109,7 @@ p(D) = \int p(D, \theta)\, d\theta = \int p(D \mid \theta)\, p(\theta)\, d\theta
 - **되는 경우**: Gaussian likelihood 와 Gaussian prior. Conjugate 라 지수의 어깨를 완전제곱으로 묶으면 Gaussian 적분 공식이 그대로 적용된다.
 - **안 되는 경우**: Logistic regression 처럼 $\sigma(\theta^{\top} x)$ 가 든 likelihood 와 Gaussian prior. 곱이 어떤 표준 분포 꼴도 아니어서 적을 답이 없다.
 
-수치 적분이 이 벽을 넘지 못하는 이유는 따로 있다. 차원마다 격자를 $m$ 개 두면 점이 $m^d$ 개로 늘어, $d$ 가 열만 넘어도 계산이 불가능해진다. 그래서 근사나 표본으로 우회한다.
+Numerical 적분이 이 벽을 넘지 못하는 이유는 따로 있다. 차원마다 격자를 $m$ 개 두면 점이 $m^d$ 개로 늘어, $d$ 가 열만 넘어도 계산이 불가능해진다. 그래서 근사나 표본으로 우회한다.
 
 ## 5. Laplace Approximation
 

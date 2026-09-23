@@ -1,5 +1,5 @@
 # Ensemble Learning
-Rev. 7 | Created: 2026-09-10 | Updated: 2026-09-23 11:09 CDT
+Rev. 8 | Created: 2026-09-10 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -361,7 +361,7 @@ Appendix B 가 Table 6 의 각 행을 서로 견주어 재고, Appendix E 가 se
 - **boosting**: Member 를 차례로 적합하되 각각을 앞의 것들이 틀린 자리에 맞추는 framework.
 - **Brier score**: 내놓은 확률과 결과의 제곱차 평균.
 - **calibration**: 내놓은 점수를 확률로 옮기는 단조 사상이며, member 가 학습하지 않은 행에서 적합한다.
-- **confidence**: Model 이 label 과 함께 내놓는, 얼마나 확신하는지를 나타내는 수치.
+- **confidence**: Model 이 label 과 함께 내놓는, 얼마나 확신하는지를 나타내는 값.
 - **conformal prediction**: 어떤 model 의 점수든 coverage 가 미리 정해진 예측 집합으로 바꾸는 절차.
 - **coverage**: Abstention 을 두는 ensemble 이 실제로 답하는 행의 비율.
 - **ensemble**: 하나의 결합 규칙으로 함께 쓰이는 여러 개의 적합된 model.

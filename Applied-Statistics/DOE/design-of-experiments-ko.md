@@ -1,5 +1,5 @@
 # Design of Experiments
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
+Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Design of Experiments](#1-design-of-experiments)
 - [2. Full Factorial Designs](#2-full-factorial-designs)
@@ -631,7 +631,7 @@ Covariate 는 run 8 개에 걸쳐 꾸준히 흘러간다. 탐색은 그 흐름�
 
 ### 5.5. Specifying Categorical Factors
 
-Categorical factor 에는 수치 척도가 없으므로 그 수준을 $\pm 1$ 쪽으로 밀 수 없다. 수준이 $L$ 개인
+Categorical factor 에는 numeric 척도가 없으므로 그 수준을 $\pm 1$ 쪽으로 밀 수 없다. 수준이 $L$ 개인
 factor 는 $L - 1$ 개의 부호화된 열로 model 에 들어가고, 탐색은 그 열들 위에서 이루어진다.
 
 ```python

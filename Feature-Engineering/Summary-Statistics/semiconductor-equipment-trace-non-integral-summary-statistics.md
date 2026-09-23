@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 28 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+Rev. 29 | Created: 2026-07-29 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Non-Integral Statistics](#1-non-integral-statistics)
   - [1.1 Closed-Form Statistics](#11-closed-form-statistics)
@@ -123,7 +123,7 @@ Roughness 축의 세 특징도 sampling 주기에 의존한다. 매끄러운 신
 
 `mean`, `median`, `std`, `range`, `iqr`, `sigma_st`, `max_delta` 는 모두 trace의 물리 단위를 그대로 갖는다. 따라서 gain drift나 chamber 간 절대 offset에 취약하고, chamber 교차 검증에서 먼저 무너지는 쪽이 된다.
 
-`slsr`, `zcr`, `peak_time_norm` 은 무차원이라 곱셈적 scale 변화에 불변이므로 이식성이 높다. 변동계수 $s/\bar{x}$ 처럼 비율로 만든 특징도 같은 성질을 갖는다. 다만 `slsr` 과 `zcr` 의 chamber 간 비교는 §2.2의 sampling 주기 조건을 만족할 때만 유효하다. 단위를 갖는 특징과 무차원 특징을 함께 두고, chamber 교차 검증에서 어느 쪽이 살아남는지로 오염 여부를 판정한다.
+`slsr`, `zcr`, `peak_time_norm` 은 무차원이라 곱셈적 scale 변화에 불변이므로 이식성이 높다. 변동계수 $s/\bar{x}$ 처럼 비율로 만든 특징도 같은 성질을 갖는다. 다만 `slsr` 과 `zcr` 의 chamber 간 비교는 §2.2의 sampling period 조건을 만족할 때만 유효하다. 단위를 갖는 특징과 무차원 특징을 함께 두고, chamber 교차 검증에서 어느 쪽이 살아남는지로 오염 여부를 판정한다.
 
 ## 3. Dimensionality Control
 
@@ -258,7 +258,7 @@ $$\hat{\rho}_1 = \frac{\sum_{i=1}^{N-1}(x_i - \bar{x})(x_{i+1} - \bar{x})}{\sum_
 
 #### Relation to SLSR
 
-차분의 제곱을 전개하면 $\mathrm{MSSD}$ 가 $\rho_1$ 으로 표현된다. $x$ 를 평균 0, 분산 $\sigma^2$ 인 정상 신호로 두면
+차분의 제곱을 전개하면 $\mathrm{MSSD}$ 가 $\rho_1$ 으로 표현된다. $x$ 를 평균 0, 분산 $\sigma^2$ 인 stationary 신호로 두면
 
 $$\mathbb{E}\big[(x_{i+1} - x_i)^2\big] = \mathbb{E}[x_{i+1}^2] - 2 \mathbb{E}[x_i x_{i+1}] + \mathbb{E}[x_i^2] = 2\sigma^2 - 2\rho_1 \sigma^2 = 2\sigma^2 (1 - \rho_1)$$
 
@@ -297,7 +297,7 @@ $\sigma_{\text{st}}$ 를 $\sqrt{\mathrm{MSSD}/2}$ 로 정의하는 이유가 여
 
 ## Appendix D. Roughness
 
-Roughness 축의 세 특징이 파형에 따라 어떤 값을 갖는지 보이기 위해, 진폭 1인 sine에 백색잡음을 더해 가며 계산했다. Trace 길이는 300 sample이고, 열은 trace 구간에 담기는 sine의 주기 수, 행은 진폭 대비 잡음 표준편차다. `zcr` 과 `cycle_count` 의 문턱값은 §1.2의 기본값을 그대로 썼다.
+Roughness 축의 세 특징이 파형에 따라 어떤 값을 갖는지 보이기 위해, 진폭 1인 sine에 백색잡음을 더해 가며 계산했다. Trace 길이는 300 sample이고, 열은 trace 구간에 담기는 sine 의 cycle 수, 행은 진폭 대비 잡음 표준편차다. `zcr` 과 `cycle_count` 의 문턱값은 §1.2의 기본값을 그대로 썼다.
 
 ![Fig 1](semiconductor-equipment-trace-non-integral-summary-statistics_fig/fig1.png)
 
@@ -307,15 +307,15 @@ Fig 1. Sine 주파수와 잡음 수준에 따른 Roughness 축 세 특징. 열�
 
 - **첫 행 (잡음 없음)** 에서 값이 0.01에서 0.44까지 오른다. 다섯 파형의 진폭은 모두 1로 같으므로, 이 비가 재는 것은 진폭이 아니라 주파수 구성이다. 순수 sine에서는 $\hat{\rho}_1 = \cos(2\pi f / N)$ 이므로 비가 $\sqrt{1 - \cos(2\pi f / N)}$ 이 되며, $f = 30$, $N = 300$ 을 넣으면 0.44로 실측값과 일치한다.
 - **마지막 행 (잡음 지배)** 에서는 주파수와 무관하게 0.91–1.00에 모인다. 백색잡음의 이론값 1이 실제로 관측되며, 이것이 기준값을 임의로 정하지 않아도 되는 근거다.
-- **행을 따라 내려가면** 같은 주파수에서 값이 단조 증가한다. 1 주기 열은 0.01 → 0.07 → 0.31 → 0.63 → 0.97로, 잡음이 섞이는 정도를 그대로 따라간다.
+- **행을 따라 내려가면** 같은 주파수에서 값이 단조 증가한다. 1 cycle 열은 0.01 → 0.07 → 0.31 → 0.63 → 0.97로, 잡음이 섞이는 정도를 그대로 따라간다.
 
-30 주기 열도 0.44에 그친다. 값이 1을 넘으려면 sample 단위로 부호가 뒤집혀야 하는데, 300 sample에 30 주기면 주기당 10 sample이라 아직 매끄러운 축에 속하기 때문이다. 실제 trace에서 1을 넘는 값이 나오면 공정 진동이 아니라 계측계의 sample 단위 잡음을 의심하는 것이 맞다.
+30 cycle 열도 0.44에 그친다. 값이 1을 넘으려면 sample 단위로 부호가 뒤집혀야 하는데, 300 sample에 30 cycle 이면 cycle 당 10 sample이라 아직 매끄러운 축에 속하기 때문이다. 실제 trace에서 1을 넘는 값이 나오면 공정 진동이 아니라 계측계의 sample 단위 잡음을 의심하는 것이 맞다.
 
-**`cycle_count` 는 위 두 행에서 1, 2, 5, 12, 30을 정확히 복원한다.** 문턱값을 정한 대가로 얻는 것이 이것이다 — `slsr` 의 0.44는 해석이 필요하지만 30이라는 숫자는 그대로 읽힌다. 잡음 0.20에서도 2 주기 이상은 3, 6, 12, 29로 참값 부근을 지킨다.
+**`cycle_count` 는 위 두 행에서 1, 2, 5, 12, 30을 정확히 복원한다.** 문턱값을 정한 대가로 얻는 것이 이것이다 — `slsr` 의 0.44는 해석이 필요하지만 30이라는 숫자는 그대로 읽힌다. 잡음 0.20에서도 2 cycle 이상은 3, 6, 12, 29로 참값 부근을 지킨다.
 
 그러나 잡음 0.60을 넘으면 무너진다. 값이 40, 38, 33, 29, 32로 올라가고 마지막 행에서는 41–56에 이른다. Range가 잡음 outlier로 함께 커지는데도 그 0.25배를 넘는 봉우리가 계속 생기기 때문이다. 잡음이 진폭을 지배하는 구간에서는 이 특징을 쓰지 않는 것이 맞다.
 
-`zcr` 은 그 중간이다. Hysteresis가 기준선 근처의 잡음 교차를 걸러 주므로 5 주기 열이 0.033 → 0.030 → 0.030 → 0.043 → 0.140으로 잡음 0.60까지 거의 유지된다. 같은 열의 `cycle_count` 가 5 → 5 → 6 → 33 → 41로 뛰는 것과 대비된다. 환산식도 잘 맞는다. 첫 행 30 주기에서 $(N-1) \text{zcr}/2 = 299 \times 0.201 / 2 = 30.0$ 이다.
+`zcr` 은 그 중간이다. Hysteresis가 기준선 근처의 잡음 교차를 걸러 주므로 5 cycle 열이 0.033 → 0.030 → 0.030 → 0.043 → 0.140으로 잡음 0.60까지 거의 유지된다. 같은 열의 `cycle_count` 가 5 → 5 → 6 → 33 → 41로 뛰는 것과 대비된다. 환산식도 잘 맞는다. 첫 행 30 cycle 에서 $(N-1) \text{zcr}/2 = 299 \times 0.201 / 2 = 30.0$ 이다.
 
 정리하면 잡음 강건성은 `slsr` 이 가장 높고 `cycle_count` 가 가장 낮으며, 물리적 해석은 그 반대 순서다. §1.2의 맞바꿈이 수치로 확인된다.
 

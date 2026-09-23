@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 74 | Created: 2026-08-07 | Updated: 2026-09-23 11:08 CDT
+Rev. 75 | Created: 2026-08-07 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Manifest Files](#1-manifest-files)
 - [2. Catalog](#2-catalog)
@@ -290,7 +290,7 @@ Table 9. Trace quantum labels
 
 세 label 은 level 개수가 하나, 여럿, 무한인 경우이므로 어떤 trace 든 하나에 들어간다. `infinite` 는 양자화되지 않은 아날로그 신호가 앉는 자리이고, 이것이 없으면 매끄럽게 변하는 압력이 `qn` 으로 잘못 적혀, 있지도 않은 level 을 주장하게 된다.
 
-`q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 수치 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 4.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
+`q1` 은 시간이 지나도 값이 변하지 않는 trace 이므로, 그 trace 가 담은 정보는 값 하나와 같다. 그래도 열 전체가 뜻을 잃는 것은 아니다. 행마다 그 하나의 값이 다르면 열은 `active` 이고, 모든 행이 같은 값이면 `inactive` 이다. 4.2 절이 activity 를 행 사이의 비교로 정한 것은 이 구분을 위해서이다.
 
 `q1` 인 열은 cell 을 그 하나의 값으로 바꾸어 `scalar` 로 축약할 수 있다. 축약하면 행 사이의 차이는 그대로 남고 시간축만 사라지므로 activity 는 바뀌지 않는다.
 
@@ -441,7 +441,7 @@ Table 13. Integrity rules
 
 본문에서 정의하지 않고 쓴 용어를 정리한다.
 
-- **Autocorrelation** 은 신호를 시간축으로 밀어 가며 자기 자신과 곱해 평균한 값이고, 주기 성분이 있으면 그 주기마다 peak 이 나타난다.
+- **Autocorrelation** 은 신호를 시간축으로 밀어 가며 자기 자신과 곱해 평균한 값이고, Periodic 성분이 있으면 그 period 마다 peak 이 나타난다.
 - **Baseline** 은 trace 가 아무 동작도 하지 않을 때 머무는 기준 level 이다.
 - **Cell** 은 table 에서 행 하나와 열 하나가 만나는 자리이다.
 - **Entity** 는 데이터로 관리하는 대상이고, 서로 구별해 저장할 필요가 있는 사람이나 사물이나 개념을 말한다. 관계형 database 에서는 entity 하나가 table 하나로 표현되며, 쇼핑몰이라면 회원과 상품과 주문이 각각 하나의 entity 다. 이 문서에서는 wafer 나 lot 처럼 측정이 귀속되는 단위가 여기에 해당한다.

@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 14 | Created: 2026-09-05 | Updated: 2026-09-23 11:29 CDT
+Rev. 15 | Created: 2026-09-05 | Updated: 2026-09-23 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. The Chart Pair](#2-the-chart-pair)
@@ -351,7 +351,7 @@ Table 1 의 마지막 열이 그 값이며, $n = 5$ 에서 0.363 이다. 부분�
 그대로여도 $s$ 가 커진다.
 
 넷째, baseline 추정의 불확실성이다. 관리한계가 짧은 기간에서 추정되었으면 $\bar{s}$ 자체가 낮게 잡혔을
-수 있고, 그러면 정상 공정도 한계를 넘는다.
+수 있고, 그러면 normal 공정도 한계를 넘는다.
 
 이 넷을 배제하고도 $s$ 가 계속 높으면, 평균이 규격 중심에 그대로 있어도 excursion 이다.
 
