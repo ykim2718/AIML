@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 1 | Created: 2026-09-23 | Updated: 2026-09-23 01:20 CDT
+Rev. 2 | Created: 2026-09-23 | Updated: 2026-09-23 01:35 CDT
 
 ## 1. Purpose
 
@@ -93,6 +93,8 @@ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_
 ## 5. Application
 
 비선형성 처리 주체에 따라 접근법이 갈립니다. 접근법 A 는 분석가가 직접 `PolynomialFeatures` 등을 활용해 비선형/상호작용 항을 추가한 뒤 선형 모델 (Ridge, PLS 등) 에 학습시킵니다. 접근법 B 는 원본 데이터 ($x_1$, $x_2$) 를 그대로 입력하고, 트리 기반 앙상블 (XGBoost, Random Forest) 이나 신경망 모델 내부에서 분기 (Split) 및 활성화 함수를 통해 비선형 패턴을 자동 학습하도록 합니다.
+
+접근 A 의 model 은 $\beta$ 에 대해서만 선형입니다. 절편 $\beta_0$ 를 가지므로 선형대수의 정의로는 affine 변환이고, 공학에서 쓰는 선형은 그 affine 까지 포함합니다 ([Appendix C](#appendix-c-two-views-of-linearity)). 접근 B 의 model 은 $x$ 로도 $\beta$ 로도 선형이 아니므로, 계수 하나로 기여를 읽는 방식 자체가 성립하지 않습니다.
 
 ### 5.1 Approach A: Analyst-Driven
 
