@@ -1,6 +1,6 @@
 """Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.13.0.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.13.1.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -26,7 +26,7 @@ APPENDIX_D_FREE: list = ['A', 'B']
 APPENDIX_D_ROWS: int = 100
 APPENDIX_D_TARGET: float = 19.0
 APPENDIX_D_STARTS: int = 5
-APPENDIX_D_TOLERANCE: float = 0.02
+APPENDIX_D_TOLERANCE: float = 0.01
 
 matplotlib.use('Agg')
 
@@ -418,7 +418,7 @@ def build_appendix_d_model() -> tuple:
 
 def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     """Fig 7: the hidden model against T, the search in the A-B plane, the surrogate against P,
-    and the rows that were actually run within 2% of the solved A and B."""
+    and the rows that were actually run within 1% of the solved A and B."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
     context = features.mean(axis=0)
@@ -505,7 +505,7 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     ax.tick_params(labelsize=font_size(0.9))
     ax.legend(fontsize=font_size(0.8), loc='upper left')
 
-    # the historical rows that were actually run within 2% of the solved A and B
+    # the historical rows that were actually run within 1% of the solved A and B
     near = data[(np.abs(data['A'] - x_solved[0]) <= APPENDIX_D_TOLERANCE * abs(x_solved[0]))
                 & (np.abs(data['B'] - x_solved[1]) <= APPENDIX_D_TOLERANCE * abs(x_solved[1]))]
     near_t = near['T'].to_numpy()
