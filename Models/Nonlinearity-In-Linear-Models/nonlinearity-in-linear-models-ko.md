@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 7 | Created: 2026-09-23 | Updated: 2026-09-23 09:47 CDT
+Rev. 8 | Created: 2026-09-23 | Updated: 2026-09-23 09:40 CDT
 
 ## 1. Purpose
 
@@ -13,8 +13,8 @@ Model 의 선형성과 data 의 비선형 특성은 서로 다른 대상입니�
 
 비선형 data 특성을 누가 담당하는지가 두 modeling 전략을 가릅니다.
 
-- **선형 모델 + 비선형 Feature (특성 공학 접근법, Feature-Intensive Model)**: "모델은 단순 (선형) 하게 두고, 데이터 (Feature) 를 복잡하게 만든다." 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 넣는 선형 모델입니다.
-- **비선형 모델 + 선형 Feature (알고리즘 접근법, Algorithm-Intensive Model)**: "데이터 (Feature) 는 있는 그대로 (선형/원본) 두고, 모델을 복잡 (비선형) 하게 만든다." 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근입니다.
+- **Feature-Intensive Model**: 선형 모델 + 비선형 Feature (특성 공학 접근법). "모델은 단순 (선형) 하게 두고, 데이터 (Feature) 를 복잡하게 만든다." 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 넣는 선형 모델입니다.
+- **Algorithm-Intensive Model**: 비선형 모델 + 선형 Feature (알고리즘 접근법). "데이터 (Feature) 는 있는 그대로 (선형/원본) 두고, 모델을 복잡 (비선형) 하게 만든다." 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근입니다.
 
 ## 3. Taxonomy and its Hierarchy
 
