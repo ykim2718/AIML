@@ -1,5 +1,5 @@
 # Nonlinearity in Linear Models
-Rev. 4 | Created: 2026-09-23 | Updated: 2026-09-23 09:29 CDT
+Rev. 5 | Created: 2026-09-23 | Updated: 2026-09-23 09:33 CDT
 
 ## 1. Purpose
 
@@ -15,8 +15,6 @@ Model 의 선형성과 data 의 비선형 특성은 서로 다른 대상입니�
 
 - **선형 모델 + 비선형 Feature (특성 공학 접근법, feature engineering)**: "모델은 단순 (선형) 하게 두고, 데이터 (Feature) 를 복잡하게 만든다." 분석가가 $x^2$, $x_1 x_2$ 같은 열을 만들어 선형 model 에 넣는 접근 A 입니다.
 - **비선형 모델 + 선형 Feature (알고리즘 접근법)**: "데이터 (Feature) 는 있는 그대로 (선형/원본) 두고, 모델을 복잡 (비선형) 하게 만든다." 원본 열을 그대로 넣고 tree ensemble 이나 neural network 가 내부에서 학습하는 접근 B 입니다.
-
-두 접근이 같은 data 에서 비슷한 정확도에 이르는 경우가 있습니다. [Appendix B](#appendix-b-python-implementation) 의 실행에서 원본 열만 쓴 Ridge 는 $R^2$ 가 0.4735 였고, degree 2 로 확장한 Ridge 는 0.9782, 같은 원본 열을 쓴 HistGradientBoostingRegressor 는 0.9689 였습니다. 갈리는 것은 정확도가 아니라 읽어 낼 수 있는 것과, 비선형의 형태를 미리 알아야 하는지입니다 (3.1 절).
 
 ## 3. Taxonomy and its Hierarchy
 
