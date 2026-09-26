@@ -1,5 +1,5 @@
 # Spec-Driven Development
-Rev. 0 | Created: 2026-09-26 | Updated: 2026-09-26 13:32 CDT
+Rev. 1 | Created: 2026-09-26 | Updated: 2026-09-26 13:38 CDT
 
 ## 1. Purpose
 
@@ -81,9 +81,23 @@ SDD 는 spec 작성, agent 실행, 자가 검증의 세 단계로 진행하며, 
 <a id="fig-2"></a>
 Fig 2. SDD workflow
 
-### 4.1 Phase 1: Spec Writing
+### 4.1 Roles
 
-개발자가 구현할 기능의 spec 을 Markdown 또는 YAML 로 `<feature>.spec.md` 같은 파일에 적는다. 아래는 sensor trace 에 rolling mean feature 를 더하는 함수의 spec 이다.
+SDD 에서 사람은 specifier 와 reviewer 의 두 역할을 맡고, 그 사이의 구현과 검증 명령 실행은 agent 가 맡는다. Specifier 는 무엇을 만들지를 spec 으로 정하고, reviewer 는 agent 가 만든 결과를 그 spec 에 비추어 받아들일지 정한다. 한 사람이 두 역할을 함께 맡을 수 있으며, 역할은 하는 일로 나눈다.
+
+Table 2. Roles in SDD
+
+| Role      | Actor           | Phase        | Output               | Decides                                          |
+| :-------: | :-------------: | :----------: | :------------------: | :----------------------------------------------: |
+| Specifier | 사람            | Phase 1      | Spec 파일            | 범위, data schema, behavior, acceptance criteria |
+| Agent     | AI coding agent | Phase 2, 3   | Code, test 실행 결과 | Spec 안에서의 구현 방법                          |
+| Reviewer  | 사람            | Phase 3 이후 | 수용 또는 반려       | 결과를 받아들일지, spec 을 고칠지                |
+
+Agent 가 acceptance criteria 를 모두 통과한 뒤에 reviewer 가 찾은 결함은 spec 이 그 동작을 정하지 않았다는 뜻이다. 그래서 reviewer 는 code 를 직접 고치지 않고 결과를 specifier 에게 돌려보내며, specifier 는 그 동작을 behavior 항목과 test 로 spec 에 더한다. Code 보다 spec 을 먼저 고쳐야 spec 이 single source of truth 로 남는다.
+
+### 4.2 Phase 1: Spec Writing
+
+Specifier 가 구현할 기능의 spec 을 Markdown 또는 YAML 로 `<feature>.spec.md` 같은 파일에 적는다. 아래는 sensor trace 에 rolling mean feature 를 더하는 함수의 spec 이다.
 
 ````markdown
 # Spec: Rolling mean feature for sensor trace
@@ -126,18 +140,18 @@ def add_rolling_mean(*, df: pd.DataFrame, value_col: str, window: int, time_col:
 
 이 spec 에서 behavior 의 각 항목은 `tests/test_rolling.py` 의 test 하나로 옮겨 적을 수 있다. 옮겨 적을 수 없는 항목은 agent 도 검증할 수 없으므로, 그 항목을 test 할 수 있는 문장으로 고친다.
 
-### 4.2 Phase 2: Agent Execution
+### 4.3 Phase 2: Agent Execution
 
-개발자는 작성한 spec 파일을 coding agent 의 입력으로 준다. Agent 는 spec 을 읽어 작업 단위 (task) 로 나누고, Context & Boundaries 에 적힌 파일만 만들거나 고친다.
+Specifier 는 작성한 spec 파일을 coding agent 의 입력으로 준다. Agent 는 spec 을 읽어 작업 단위 (task) 로 나누고, Context & Boundaries 에 적힌 파일만 만들거나 고친다.
 
-### 4.3 Phase 3: Self-Verification Loop
+### 4.4 Phase 3: Self-Verification Loop
 
 Agent 는 code 를 쓴 뒤 Verification 에 적힌 명령을 스스로 실행한다.
 
 - 실패하면 agent 가 error log 를 읽고 code 를 고친 뒤 명령을 다시 실행한다.
-- 모두 통과하면 agent 가 commit 또는 pull request 를 만들고 개발자에게 돌려준다.
+- 모두 통과하면 agent 가 commit 또는 pull request 를 만들고 reviewer 에게 돌려준다.
 
-개발자는 통과한 결과를 검수하며, spec 에 없던 동작을 찾으면 spec 을 먼저 고친 뒤 agent 를 다시 실행한다.
+Reviewer 는 통과한 결과를 검수하며, spec 에 없던 동작을 찾으면 그 결과를 specifier 에게 돌려보낸다. Specifier 가 spec 을 고친 뒤 agent 를 다시 실행한다.
 
 ## 5. Effects and Limits
 
@@ -169,6 +183,8 @@ SDD 는 agent 의 작업 범위와 판정 기준을 고정하는 대가로, spec
 - **look-ahead leakage**: Feature 를 계산할 때 그 시점 이후의 값이 들어가, 학습 결과가 실제 운용보다 좋게 나오는 오류.
 - **post-condition**: 함수가 끝난 뒤 반드시 성립해야 하는 조건.
 - **pre-condition**: 함수를 호출하기 전에 입력이 만족해야 하는 조건.
+- **reviewer**: Agent 가 넘긴 결과를 spec 에 비추어 검수하고, 받아들일지 specifier 에게 돌려보낼지 정하는 사람의 역할.
 - **single source of truth**: 같은 정보를 한 곳에만 두어, 다른 모든 곳이 그곳을 따르게 하는 원칙.
 - **spec**: 구현할 기능의 범위, data schema, 동작, 검증 조건을 적은 문서.
+- **specifier**: 구현할 기능의 spec 을 쓰고, reviewer 가 돌려보낸 결함에 맞춰 spec 을 고치는 사람의 역할.
 - **TDD**: Test-driven development. 구현보다 test 를 먼저 쓰고, 그 test 를 통과시키는 code 를 쓰는 개발 방식.
