@@ -1,5 +1,5 @@
-# Spec-Driven Development
-Rev. 3 | Created: 2026-09-26 | Updated: 2026-09-26 13:53 CDT
+# Spec-Driven Development (SDD)
+Rev. 4 | Created: 2026-09-26 | Updated: 2026-09-26 16:57 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -7,6 +7,7 @@ Rev. 3 | Created: 2026-09-26 | Updated: 2026-09-26 13:53 CDT
   - [3.1 Placement](#31-placement)
   - [3.2 Spec Components](#32-spec-components)
   - [3.3 Requirement Notation](#33-requirement-notation)
+  - [3.4 Persistence Model](#34-persistence-model)
 - [4. Workflow](#4-workflow)
   - [4.1 Roles](#41-roles)
   - [4.2 Phase 1: Spec Writing](#42-phase-1-spec-writing)
@@ -31,7 +32,7 @@ Spec-Driven Development (SDD) 는 사람이 구조와 명세 (spec) 를 정하�
 
 Specifier 와 reviewer 는 기존 code writer 가 code 를 쓰기 전과 쓴 뒤에 하던 일이, AI 를 사용함으로써 강조된 역할이다. Code writer 는 code 를 쓰기 전에 무엇을 만들지 정하고, 쓴 뒤에 그 code 가 의도대로 동작하는지 검토했다. AI coding agent 가 그 사이의 code 작성을 맡으면서, 사람의 일은 그 앞의 명세 (specifier) 와 그 뒤의 검수 (reviewer) 에 모인다. Specifier 는 spec 으로 agent 의 작업 범위와 통과 기준을 정하고, reviewer 는 구현 전에 agent 의 plan 과 test 를 승인하며, 구현 뒤에는 test 가 가리지 못한 결함을 찾아 agent 나 specifier 에게 돌려보낸다.
 
-GitHub Spec Kit, Kiro, OpenSpec 같은 SDD 도구는 기능마다 spec, plan, tasks 의 세 파일을 두고, 모든 기능에 공통으로 적용할 project 규칙을 constitution 이나 steering 파일에 따로 둔다 [[1](#ref-1)] [[3](#ref-3)] [[4](#ref-4)]. 요구사항은 번호를 붙인 MUST 문장과 Given-When-Then scenario 로 적고, 정하지 못한 자리는 `[NEEDS CLARIFICATION]` 으로 표시하여 agent 가 추측으로 메우지 못하게 한다 [[2](#ref-2)].
+GitHub Spec Kit, Kiro, OpenSpec 같은 SDD 도구는 기능마다 spec, plan, tasks 의 세 파일을 두고, 모든 기능에 공통으로 적용할 project 규칙을 constitution 이나 steering 파일에 따로 둔다 [[1](#ref-1)] [[3](#ref-3)] [[4](#ref-4)]. 요구사항은 번호를 붙인 MUST 문장과 Given-When-Then scenario 로 적고, 정하지 못한 자리는 `[NEEDS CLARIFICATION]` 으로 표시하여 agent 가 추측으로 메우지 못하게 한다 [[2](#ref-2)]. 기능이 끝난 뒤 spec 을 어떻게 다루는가에 따라 SDD 는 spec-first, spec-anchored, spec-as-source 의 세 수준으로 나뉜다 [[5](#ref-5)].
 
 Spec 파일은 대화 이력 대신 single source of truth 가 되어, LLM 의 hallucination 과 context drift 를 줄인다. 같은 spec 에서는 실행마다 결과가 같은 기준으로 판정되므로, 대규모 codebase 에서도 agent 의 결과를 예측할 수 있다.
 
@@ -50,11 +51,12 @@ AI-assisted coding
     │   ├── 3. Behavior              numbered MUST requirements, Given-When-Then scenarios
     │   └── 4. Acceptance Criteria   test and check commands that decide pass or fail
     ├── Plan (plan.md)           how to build it; drafted by the agent, approved by the reviewer
-    └── Tasks (tasks.md)         ordered work items the agent executes
+    ├── Tasks (tasks.md)         ordered work items the agent executes
+    └── Persistence model        spec-first | spec-anchored | spec-as-source
 ```
 
 <a id="fig-1"></a>
-Fig 1. Development styles, SDD files and the four components of a spec
+Fig 1. Development styles, SDD files, the four components of a spec and the persistence models
 
 SDD 의 파일은 위에서 아래로 적용 범위가 좁아진다. Project rules 는 모든 기능에, spec 은 한 기능에, plan 은 그 기능의 구현 방법에, tasks 는 agent 가 한 번에 실행할 작업 하나에 적용된다. 아래 파일은 위 파일을 어길 수 없으며, plan 이 project rules 와 어긋나면 reviewer 가 Phase 2 의 gate 에서 plan 을 반려한다.
 
@@ -115,6 +117,20 @@ Table 2. Requirement notation in SDD tools
 
 Clarification marker 는 Phase 1 의 spec 에만 남을 수 있고, Phase 2 로 넘어가기 전에 specifier 가 모두 풀어야 한다. Delta spec 은 이미 운영 중인 pipeline 을 고칠 때 쓴다. 변경이 끝나면 delta 를 본래 spec 에 합쳐, spec 이 언제나 현재 code 의 동작을 적은 상태로 남게 한다 [[3](#ref-3)]. Executable property 는 data science code 에서 "출력 행 수는 입력 행 수와 같다" 처럼 모든 입력에서 성립해야 하는 조건이며, property-based test 로 무작위 입력을 만들어 검증한다 [[4](#ref-4)].
 
+### 3.4 Persistence Model
+
+SDD 는 구현을 마친 뒤 spec 을 버리는가, code 와 함께 유지하는가, code 대신 spec 만 고치는가에 따라 spec-first, spec-anchored, spec-as-source 의 세 수준으로 나뉜다. Spec Kit 은 martinfowler.com 에 실린 SDD 도구 개관에서 이 분류를 가져와 persistence model 로 소개하며, 어느 수준도 기본값으로 강제하지 않는다 [[5](#ref-5)]. 아래 표는 세 수준을 spec 이 유지되는 범위의 순서로 놓는다.
+
+Table 3. Spec persistence models
+
+| Model          | Spec after implementation          | Who edits code                | Fits when                                            | Use at                                        |
+| :------------: | :--------------------------------: | :---------------------------: | :--------------------------------------------------: | :-------------------------------------------: |
+| Spec-first     | 구현 뒤 버릴 수 있음               | 사람과 agent                  | 중간 결정을 남길 필요가 없는 빠른 반복               | 탐색 분석, 일회성 data 추출                   |
+| Spec-anchored  | 구현과 함께 유지, 이후 변경의 기준 | 사람과 agent                  | 요구사항 변경의 이력과 감사 추적이 필요함            | 운영 중인 feature pipeline, 배포한 model code |
+| Spec-as-source | 사람이 고치는 유일한 원본          | Agent 만, spec 에서 다시 생성 | 제품 계약이 안정되어 요구사항과 구현의 일치가 우선함 | Schema 와 동작이 고정된 data 변환 module      |
+
+Fits when 열은 Spec Kit 문서의 기준을 옮긴 것이고 [[5](#ref-5)], use at 열은 그 기준을 data science 작업에 대응시킨 것이다. 이 문서의 workflow 는 spec-anchored 를 전제로 한다. Section 4.6 의 return to specifier 는 결함을 spec 에 먼저 더하고, section 3.3 의 delta spec 은 변경을 본래 spec 에 합쳐, 구현이 끝난 뒤에도 spec 을 code 와 함께 유지한다. Spec-as-source 는 code 를 언제든 spec 에서 다시 만들 수 있어야 하므로, 사람이 code 를 직접 고친 이력이 있는 pipeline 에는 그 이력을 spec 에 먼저 옮긴 뒤에만 쓸 수 있다.
+
 ## 4. Workflow
 
 SDD 는 specifier 의 spec 작성, agent 가 만든 plan 과 test 의 reviewer 승인, agent 의 구현, agent 의 자가 검증, reviewer 의 검수의 다섯 단계로 진행한다. 자가 검증이 실패하면 agent 가 구현으로 돌아가고, 검수에서 결함이 나오면 reviewer 가 그 원인에 따라 결과를 agent 나 specifier 에게 돌려보낸다. [Fig 2](#fig-2) 는 그 흐름을 보여 준다.
@@ -150,7 +166,7 @@ Phase 4 의 fail loop 는 agent 가 사람 없이 돌리고, Phase 2 와 Phase 5
 
 SDD 에서 사람은 specifier 와 reviewer 의 두 역할을 맡고, 그 사이의 plan 초안, 구현, 검증 명령 실행은 agent 가 맡는다. Specifier 는 무엇을 만들지를 spec 으로 정하고, reviewer 는 구현 전에는 plan 과 test 를, 구현 뒤에는 결과를 그 spec 에 비추어 받아들일지 정한다. 한 사람이 두 역할을 함께 맡을 수 있으며, 역할은 하는 일로 나눈다.
 
-Table 3. Roles in SDD
+Table 4. Roles in SDD
 
 | Role      | Actor           | Phase         | Output                                      | Decides                                                    |
 | :-------: | :-------------: | :-----------: | :-----------------------------------------: | :--------------------------------------------------------: |
@@ -233,7 +249,7 @@ Agent 는 code 를 쓴 뒤 Verification 에 적힌 명령을 스스로 실행한
 
 Reviewer 는 acceptance criteria 가 가리지 못하는 결함을 찾는다. Acceptance criteria 는 spec 에 적힌 명령의 통과 여부만 가리므로, agent 가 test 를 약하게 고쳐 통과시킨 경우, scope 밖의 파일을 고친 경우, spec 에 없는 동작을 넣은 경우는 통과 결과에 드러나지 않는다. Data science code 에서는 test 가 통과해도 look-ahead leakage 나 행 누락으로 결과 수치가 틀릴 수 있어, reviewer 는 작은 표본에 code 를 직접 실행해 값을 확인한다.
 
-Table 4. Review checklist
+Table 5. Review checklist
 
 | Check                | Looks for                                           | Evidence                                       |
 | :------------------: | :-------------------------------------------------: | :--------------------------------------------: |
@@ -245,7 +261,7 @@ Table 4. Review checklist
 
 Scope 와 test integrity 는 diff 만으로 가려지고, 나머지 셋은 reviewer 가 spec 과 code 를 함께 읽어야 가려진다. Reviewer 는 checklist 의 결과로 아래 셋 중 하나를 판정한다.
 
-Table 5. Review decisions
+Table 6. Review decisions
 
 | Decision            | Condition                       | Returns to | Next step                                              |
 | :-----------------: | :-----------------------------: | :--------: | :----------------------------------------------------: |
@@ -282,7 +298,9 @@ SDD 는 agent 의 작업 범위와 판정 기준을 고정하는 대가로, spec
 <a id="ref-3"></a>
 [3] Fission AI. [OpenSpec](https://github.com/Fission-AI/OpenSpec). GitHub repository.<br>
 <a id="ref-4"></a>
-[4] Kiro. [Kiro](https://github.com/kirodotdev/Kiro). GitHub repository.
+[4] Kiro. [Kiro](https://github.com/kirodotdev/Kiro). GitHub repository.<br>
+<a id="ref-5"></a>
+[5] GitHub. [Spec Persistence Models](https://github.com/github/spec-kit/blob/main/docs/concepts/spec-persistence.md). *github/spec-kit* documentation, GitHub repository.
 
 ---
 
