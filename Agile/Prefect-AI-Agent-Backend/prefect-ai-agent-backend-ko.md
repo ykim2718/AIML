@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 22 | Created: 2026-09-27 | Updated: 2026-09-28 00:10 CDT
+Rev. 23 | Created: 2026-09-27 | Updated: 2026-09-28 00:12 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -118,12 +118,12 @@ Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 to
 
 ## 5. Function Comparison
 
-열 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. `Agent framework alone` 열은 agent framework 하나만 쓴 구성이다. Agent framework 는 LLM 호출과 tool 선택 loop 를 팀이 code 로 써 넣는 library 이며, 이 문서는 LangGraph 를 그 예로 든다 [[6](#ref-6)].
+열 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. `Without Prefect` 열은 agent framework 하나만 쓴 구성이고, `With Prefect` 열은 그 같은 framework 위에 Prefect 를 더한 구성이다. Agent framework 는 LLM 호출과 tool 선택 loop 를 팀이 code 로 써 넣는 library 이며, 이 문서는 LangGraph 를 그 예로 든다 [[6](#ref-6)].
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| #   | Function                | Agent framework alone                                      | Self-hosted Prefect added                                           |
+| #   | Function                | Without Prefect                                            | With Prefect                                                        |
 | :-: | :---------------------: | :--------------------------------------------------------: | :-----------------------------------------------------------------: |
 | 1   | Step retry              | 한 graph 실행 안, node 에 붙인 retry policy                | Task 마다 붙는 `retries` 와 `retry_delay_seconds`                   |
 | 2   | Resume after a crash    | Checkpointer 가 thread 를 마지막 super-step 에서 재생      | 같은 checkpoint, 그리고 server 가 쥔 실행 상태                      |

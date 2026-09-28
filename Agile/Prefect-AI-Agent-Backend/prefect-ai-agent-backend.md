@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 22 | Created: 2026-09-27 | Updated: 2026-09-28 00:10 CDT
+Rev. 23 | Created: 2026-09-27 | Updated: 2026-09-28 00:12 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -118,12 +118,12 @@ Prefect fills the same three with a server and a worker, and the agent loop beco
 
 ## 5. Function Comparison
 
-Ten functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. The `Agent framework alone` column is the composition that uses only an agent framework, the library a team writes the LLM call and tool selection loop in, which is LangGraph in this document [[6](#ref-6)].
+Ten functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. The `Without Prefect` column is the composition that uses only an agent framework, and the `With Prefect` column is that same framework with Prefect added on top of it. An agent framework is the library a team writes the LLM call and tool selection loop in, which is LangGraph in this document [[6](#ref-6)].
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| #   | Function                | Agent framework alone                                                        | Self-hosted Prefect added                                                                    |
+| #   | Function                | Without Prefect                                                              | With Prefect                                                                                 |
 | :-: | :---------------------: | :--------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
 | 1   | Step retry              | A retry policy on a node, inside one graph run                               | `retries` and `retry_delay_seconds` on every task                                            |
 | 2   | Resume after a crash    | The checkpointer replays the thread from its last super-step                 | The same checkpoint, and the run state the server holds                                      |
