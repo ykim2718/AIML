@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 44 | Created: 2026-09-27 | Updated: 2026-09-28 11:18 CDT
+Rev. 45 | Created: 2026-09-27 | Updated: 2026-09-28 11:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,7 +27,7 @@ Rev. 44 | Created: 2026-09-27 | Updated: 2026-09-28 11:18 CDT
 
 AI agent backend 에는 무엇이 실행을 시작하는가, 호출을 한 번에 몇 개까지 돌리는가, 무엇이 돌았는가를 정하는 세 책임이 있다. 이 셋을 묶어 orchestrator 라 부르며 [[10](#ref-10)], Prefect 가 이 셋을 맡는 제품이다. Orchestrator 가 backend 안의 어디에 놓이는지는 [Fig 1](#fig-1) 에 그렸다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 이 셋을 backend 엔지니어가 Python code 로 직접 구현한다. [Table 3](#table-3) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 에 orchestrator scope 와 access control 과 inbound events 를 더한 아홉이 benchmarking 자료가 제품을 견주는 항목이다.
 
-Prefect 를 써도 frontend 의 세 역할은 그대로이고, 할 일이 하나 더 붙는다. 멈춘 실행이 기다리는 답을 frontend 가 받아 backend 로 넘긴다. 비교 대상으로 삼은 agent framework 는 LangGraph 다. [Table 3](#table-3) 의 `Without Prefect` 열이 근거로 삼는 checkpointer 와 node 에 붙인 retry policy 를 vendor 문서에서 확인할 수 있어 골랐으며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
+Prefect 를 써도 frontend 의 세 역할은 그대로이고, 할 일이 하나 더 붙는다. 멈춘 실행이 기다리는 답을 frontend 가 받아 backend 로 넘긴다. 비교 대상으로 삼은 agent framework 는 LangGraph 다. [Table 3](#table-3) 의 `Without Prefect` 열이 근거로 삼는 checkpointer 와 node 에 붙인 retry policy 를 vendor 문서에서 확인할 수 있어 골랐으며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 event trigger 를 어떻게 붙이는지 보인다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -55,7 +55,7 @@ Backend   >    Reasoning         Which action the LLM picks next              on
 <a id="fig-1"></a>
 Fig 1. The three frontend roles and the seven backend responsibilities ordered by scope, four of them the agent and three the orchestrator
 
-범위를 한 단계 넓힐 때마다, 앞 범위가 끝난 뒤에도 남아야 하는 상태를 둘 곳이 하나 더 필요하다. 한 단계 범위는 process 밖에 아무것도 필요하지 않고, 한 실행 범위는 process 가 죽어도 내용이 남는 저장소를 필요로 하며, 모든 실행 범위는 process 가 모두 끝난 뒤에도 돌면서 어떤 실행이 있었는지 조회해 주는 service 를 필요로 한다.
+범위가 한 단계 넓어지면, 앞 범위가 끝난 뒤에도 남아야 하는 상태를 둘 자리가 하나 더 있어야 한다. 한 단계 범위는 process 안에서 끝나고, 한 실행 범위는 process 가 죽어도 내용이 남는 저장소를 쓰며, 모든 실행 범위는 process 가 모두 끝난 뒤에도 돌면서 어떤 실행이 있었는지 알려 주는 service 를 쓴다.
 
 ### 3.1 Placement
 
@@ -214,13 +214,13 @@ Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 P
 - **Automation**: 맞는 event 가 닿으면 미리 정한 동작을 시작하는 Prefect 의 규칙.
 - **Checkpointer**: Graph 상태를 단계마다 저장해, 멈춘 실행이 그 자리에서 다시 시작하게 하는 구성 요소.
 - **Deployment**: 어디서·언제·어떻게 돌릴지가 붙은 flow. API 가 관리하는 대상이 된다.
-- **FDC (Fault Detection and Classification)**: 장비 센서 trace 를 지켜보다가 한계를 벗어나면 알람을 내는 fab 쪽 시스템.
+- **FDC (Fault Detection and Classification)**: 장비 센서 trace 를 지켜보다가 한계를 벗어나면 alarm 을 내는 fab 쪽 system.
 - **Flow**: Prefect 가 한 실행으로 다루는 함수.
 - **HITL (Human In The Loop)**: 사람의 입력을 기다린 뒤에 이어 가는 실행.
 - **Idempotency**: 같은 입력으로 다시 돌려도 결과와 부수 효과가 한 번 돌린 것과 같은 성질.
 - **Jinja**: Prefect 가 event 값을 flow 의 parameter 에 끼워 넣는 데 쓰는 template 문법.
 - **K8s (Kubernetes)**: Work pool 이 flow 실행을 올릴 수 있는 container platform.
-- **Orchestrator**: Backend 가운데 한 실행이 아니라 모든 실행을 보는 쪽. 무엇이 실행을 시작하는가, 호출이 몇 개 떠 있는가, 실행 기록이 무엇을 담는가를 진다.
+- **Orchestrator**: Backend 가운데 한 실행이 아니라 모든 실행을 맡는 쪽. 무엇이 실행을 시작하는가, 호출이 한 번에 몇 개 도는가, 실행 기록에 무엇이 남는가를 진다.
 - **Prefect Server**: API, UI, scheduler, 그리고 event 와 automation 을 담은 self-hosted orchestration backend.
 - **RAG (Retrieval Augmented Generation)**: 질문 시점에 찾아온 문서를 질문과 함께 LLM 에 건네어 답하는 것.
 - **Rate limit**: 정해진 시간 안에 나갈 수 있는 호출 수의 상한.
@@ -238,7 +238,7 @@ Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 P
 
 1. 중단된 자리에서 다시 시작: LLM 호출과 tool 호출을 task 단위로 cache 하고, 실패하면 그 자리부터 다시 시작한다 (#2 Resume after a crash, #6 Idempotent rerun).
 2. 재시도와 제한 시간: 호출마다 retry policy 와 timeout 을 건다. LLM API 장애와 tool 오류에 대응한다 (#1 Step retry).
-3. Event 로 자동 실행: FDC 알람이나 drift 감지 같은 event 가 닿으면 agent 를 자동으로 실행한다 (#9 One admission path).
+3. Event 로 자동 실행: FDC alarm 이나 drift 감지 같은 event 가 닿으면 agent 를 자동으로 실행한다 (#9 One admission path).
 4. 정해진 때마다 실행: 정기 분석 agent 와 report agent 를 schedule 에 걸어 실행한다 (#9 One admission path).
 5. 여러 대에 나누어 실행: K8s node 나 GPU worker 에 실행을 나누어 보낸다 (#4 Where a run executes).
 6. 실행 기록 보기: 실행 기록과 log 와 상태를 UI 에서 따라간다 (#8 Per-step observability).
@@ -295,13 +295,13 @@ if __name__ == "__main__":
 
 Table 4. Trigger types
 
-| #   | Type                | Use                                                  | Setting                                       |
-| :-: | :-----------------: | :--------------------------------------------------: | :-------------------------------------------: |
-| 1   | Reactive            | Event 가 닿으면 곧바로 실행                          | 기본값                                        |
-| 2   | Threshold           | Event 가 N 번 쌓이면 실행 (예: 10 분 안에 알람 3 회) | `threshold=3`, `within=timedelta(minutes=10)` |
-| 3   | Proactive           | Event 가 오지 않으면 실행 (예: 데이터 수집 중단)     | `posture="Proactive"`                         |
-| 4   | Compound / Sequence | 여러 event 의 조합이나 순서가 맞으면 실행            | `CompoundTrigger`, `SequenceTrigger`          |
-| 5   | Flow state          | 다른 flow 가 끝나거나 실패하면 이어서 실행           | `expect={"prefect.flow-run.Completed"}` 등    |
+| #   | Type                | Use                                                   | Setting                                       |
+| :-: | :-----------------: | :---------------------------------------------------: | :-------------------------------------------: |
+| 1   | Reactive            | Event 가 닿으면 곧바로 실행                           | 기본값                                        |
+| 2   | Threshold           | Event 가 N 번 쌓이면 실행 (예: 10 분 안에 alarm 3 회) | `threshold=3`, `within=timedelta(minutes=10)` |
+| 3   | Proactive           | Event 가 오지 않으면 실행 (예: 데이터 수집 중단)      | `posture="Proactive"`                         |
+| 4   | Compound / Sequence | 여러 event 의 조합이나 순서가 맞으면 실행             | `CompoundTrigger`, `SequenceTrigger`          |
+| 5   | Flow state          | 다른 flow 가 끝나거나 실패하면 이어서 실행            | `expect={"prefect.flow-run.Completed"}` 등    |
 
 **External systems**
 
@@ -310,7 +310,7 @@ Table 4. Trigger types
 
 **Fab application**
 
-- FDC 알람 → Reactive → 원인 분석 agent
+- FDC alarm → Reactive → 원인 분석 agent
 - VM 오차 초과가 10 분 안에 3 회 → Threshold → 재학습 flow
 - 센서 데이터 30 분 미수신 → Proactive → 장비 점검 알림
 - 재학습 완료 → Flow state → 검증 agent → report 생성
@@ -331,6 +331,6 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph 기반. Azure 와 .NET 환경의 선택                              | 2026-04   |
 | 7   | Pydantic AI               | Type 안전한 Python. V2 가 durable execution 을 담음                | 2026-06   |
 
-#7 Pydantic AI 와 Prefect 는 따로 쓰는 두 제품이고, 그 둘을 잇는 package 가 공개되어 있다 [[5](#ref-5)]. 그것을 설치하면 Pydantic AI 로 쓴 agent 가 Prefect 의 flow 로 돌고 그 agent 의 tool 이 Prefect 의 task 가 되므로, 감싸는 Python code 를 직접 쓸 필요가 없다. 두 제품이 합쳐졌다거나 한쪽이 다른 쪽을 안에서 쓰는 것은 아니다.
+#7 Pydantic AI 와 Prefect 는 따로 쓰는 두 제품이고, 그 둘을 잇는 package 가 공개되어 있다 [[5](#ref-5)]. 그 package 를 설치하면 Pydantic AI 로 쓴 agent 가 Prefect 의 flow 로 돌고 그 agent 의 tool 이 Prefect 의 task 가 되므로, 감싸는 Python code 를 직접 쓸 필요가 없다. 두 제품이 합쳐졌다거나 한쪽이 다른 쪽을 안에서 쓰는 것은 아니다.
 
 일곱 가운데 연계 전용 package 가 나온 것은 #7 Pydantic AI 하나이며, 나머지는 backend 엔지니어가 직접 감싼다. Prefect 는 flow 를 Python 함수로 다루므로 Pydantic AI 와 LangGraph 를 비롯해 Python 으로 된 어떤 agent framework 도 돌린다 [[9](#ref-9)].
