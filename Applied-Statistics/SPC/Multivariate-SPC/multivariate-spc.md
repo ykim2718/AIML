@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 15 | Created: 2026-09-04 | Updated: 2026-09-28 14:57 CDT
+Rev. 16 | Created: 2026-09-04 | Updated: 2026-09-28 15:01 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -30,25 +30,27 @@ Uniformity index 같은 지표는 공정이 끝난 뒤의 결과물 $y$ 를 본�
 그것을 푸는 두 통계량인 Hotelling $T^2$ 와 PCA 기반 SPE 를 정리한다. 본문에서 정의 없이 쓴 용어는
 [Appendix A](#appendix-a-terminology) 에 모았다.
 
-두 통계량이 쓰는 주성분과 거리와 관리한계는 Table 1 과 같다.
+세 통계량이 쓰는 주성분과 거리와 관리한계는 Table 1 과 같다.
 
-Table 1. Principal components, distance and control limit of the two statistics.
+Table 1. Principal components, distance and control limit of the three statistics.
 
-| Statistic       | Principal components                       | Distance             | Control limit                  |
-| :---:           | :---:                                      | :---:                | :---:                          |
-| Hotelling $T^2$ | model 에 넣은 주성분 $1, \ldots, a$        | Mahalanobis distance | $F$ 분포, 식 (3)               |
-| PCA SPE         | model 에 넣지 않은 주성분 $a+1, \ldots, p$ | Euclidean distance   | Jackson–Mudholkar 근사, 식 (7) |
+| #     | Statistic       | Principal components                               | Distance             | Control limit                  |
+| :---: | :---:           | :---:                                              | :---:                | :---:                          |
+| 1     | Hotelling $T^2$ | PCA 없음, 센서 $p$ 개 전부, 식 (2)                 | Mahalanobis distance | $F$ 분포, 식 (3)               |
+| 2     | PCA $T^2$       | model 에 넣은 주성분 $1, \ldots, a$, 식 (5)        | Mahalanobis distance | 식 (3) 에서 $p$ 대신 $a$       |
+| 3     | PCA SPE         | model 에 넣지 않은 주성분 $a+1, \ldots, p$, 식 (6) | Euclidean distance   | Jackson–Mudholkar 근사, 식 (7) |
 
 Distance 는 새 관측값이 normal 운전 자료의 기준점에서 얼마나 떨어져 있는지를 수 하나로 잰 값이다.
-기준점은 $T^2$ 에서 평균 $\boldsymbol{\mu}$ 이고, SPE 에서 PCA model 이 재구성한 값 $\hat{\mathbf{x}}$ 이다.
+기준점은 #1 과 #2 에서 평균이고, #3 에서 PCA model 이 재구성한 값 $\hat{\mathbf{x}}$ 이다.
 Mahalanobis distance 는 공분산의 역행렬로 가중하므로, normal 자료가 넓게 흩어지는 방향의 차이는 작게,
 좁게 흩어지는 방향의 차이는 크게 세어 그 관측값이 normal 에서 얼마나 드문지를 잰다. Euclidean distance
 는 모든 방향을 같은 무게로 센다. 두 거리는 모두 normal 자료에서의 분포를 알 수 있으므로 식 (3) 과 식 (7)
 의 관리한계를 얻는다.
 
-Hotelling $T^2$ 는 section 2 에서 센서 $p$ 개 전부를 공분산으로 가중하여 재고, section 3 에서는 model 에 넣은
-주성분 $a$ 개가 펼치는 부분공간 안에서 같은 Mahalanobis distance 를 잰다. SPE 는 그 부분공간 밖에 남은
-잔차의 크기를 공분산 가중 없이 잰다. $p$ 는 센서 개수이고, $a$ 는 section 3.1 에서 model 에 넣는 주성분의 개수이다.
+#1 은 section 2 에서 센서 $p$ 개 전부를 공분산으로 가중하여 재고, #2 는 section 3 에서 model 에 넣은
+주성분 $a$ 개가 펼치는 부분공간 안에서 같은 Mahalanobis distance 를 재며, $a = p$ 이면 #1 과 같다. #3 은 그
+부분공간 밖에 남은 잔차의 크기를 공분산 가중 없이 잰다. 센서가 많아 $\mathbf{S}^{-1}$ 을 믿을 수 없으면
+#2 와 #3 을 짝으로 쓴다. $p$ 는 센서 개수이고, $a$ 는 section 3.1 에서 model 에 넣는 주성분의 개수이다.
 
 ### 1.1. False Alarm Inflation
 
