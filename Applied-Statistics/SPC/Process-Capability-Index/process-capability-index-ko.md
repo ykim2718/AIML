@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 29 | Created: 2026-09-04 | Updated: 2026-09-28 14:34 CDT
+Rev. 30 | Created: 2026-09-04 | Updated: 2026-09-28 14:36 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -193,7 +193,7 @@ $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, 곧 $1.23 \times 10^{-5}$ ppm �
 환산하면 $C_{pk} \approx 2.23$ 이다. 같은 방법으로 cell 당 1 ppm 은 $C_{pk} \approx 1.58$ 이므로, chip
 하나에 든 cell 의 개수가 수율이 요구하는 $C_{pk}$ 를 1.58 에서 2.23 으로 올린다.
 
-Cell 당 불량률을 $C_{pk}$ 로 환산할 때의 가정은, 그 $C_{pk}$ 를 잰 특성이 spec 을 벗어나면 cell 이 반드시
+⛔ Cell 당 불량률을 $C_{pk}$ 로 환산할 때의 가정은, 그 $C_{pk}$ 를 잰 특성이 spec 을 벗어나면 cell 이 반드시
 불량이 되고 spec 안에 있으면 양품이 된다는 것이다. 여기에 그 특성이 정규분포를 따르고, 먼 쪽 꼬리가
 가까운 쪽 꼬리 옆에서 무시할 만큼 작다는 가정이 더해진다.
 
@@ -303,6 +303,7 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Capability study**: 안정된 공정의 표본에서 지수들을 추정하는 작업.
+- **DPU**: Defects per unit. 제품 하나에 든 불량의 평균 개수이며, part $N$ 개가 각각 불량률 $p$ 이면 $Np$ 이다.
 - **DRAM**: Dynamic Random Access Memory. Cell 하나가 capacitor 의 전하로 1 bit 를 저장하는 memory.
 - **In control**: 통상의 변동 밖에 있는 원인의 신호가 관리도에 나타나지 않는 상태.
 - **Lot**: 공정을 함께 흘러가는 웨이퍼 묶음.

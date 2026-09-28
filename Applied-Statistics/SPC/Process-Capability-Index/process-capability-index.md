@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 30 | Created: 2026-09-04 | Updated: 2026-09-28 14:34 CDT
+Rev. 31 | Created: 2026-09-04 | Updated: 2026-09-28 14:36 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -205,7 +205,7 @@ the near tail rate $\Phi(-3 C_{pk})$ to $C_{pk} \approx 2.23$. The same conversi
 $C_{pk} \approx 1.58$, so the number of cells in one chip raises the $C_{pk}$ that yield demands from
 1.58 to 2.23.
 
-Converting the per-cell defect rate to $C_{pk}$ assumes that a cell is always defective when the
+⛔ Converting the per-cell defect rate to $C_{pk}$ assumes that a cell is always defective when the
 characteristic its $C_{pk}$ measures falls outside the specification, and good when it falls inside. It
 further assumes that the characteristic is normal and that the far tail is small enough beside the near
 tail to be dropped.
@@ -319,6 +319,7 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Capability study**: the exercise of estimating the indices from a sample of a stable process.
+- **DPU**: Defects per unit, the mean number of defects in one product, which is $Np$ for $N$ parts each at defect rate $p$.
 - **DRAM**: Dynamic Random Access Memory, a memory in which each cell stores one bit as charge on a capacitor.
 - **In control**: showing no control chart signal of a cause outside the ordinary variation.
 - **Lot**: the group of wafers that moves through the process together.
