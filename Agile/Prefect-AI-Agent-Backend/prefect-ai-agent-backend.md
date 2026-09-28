@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 43 | Created: 2026-09-27 | Updated: 2026-09-28 11:06 CDT
+Rev. 44 | Created: 2026-09-27 | Updated: 2026-09-28 11:18 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -31,7 +31,7 @@ The frontend keeps its three roles when Prefect is used and gains one duty: the 
 
 ## 3. Taxonomy and its Hierarchy
 
-The boundary between frontend and backend falls after the user's intent is fixed and before the first LLM call, so the reasoning loop belongs to the backend. Ten responsibilities split across the two layers, three on the frontend and seven on the backend, of which admission, throughput and record are the orchestrator. The seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
+The frontend's work ends once it has put the user's request into the form the backend accepts, and the backend takes over at the first LLM call, so the backend runs the reasoning loop. Ten responsibilities split across the two layers, three on the frontend and seven on the backend, of which admission, throughput and record are the orchestrator. The seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
 
 Scope is what decides who carries a responsibility. A framework sees one graph run and covers the one-step and one-run responsibilities; the orchestrator is the part that carries the three every-run responsibilities, namely admission, throughput and record. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
 

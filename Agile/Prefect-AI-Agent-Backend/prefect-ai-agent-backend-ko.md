@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 43 | Created: 2026-09-27 | Updated: 2026-09-28 11:06 CDT
+Rev. 44 | Created: 2026-09-27 | Updated: 2026-09-28 11:18 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -31,7 +31,7 @@ Prefect 를 써도 frontend 의 세 역할은 그대로이고, 할 일이 하나
 
 ## 3. Taxonomy and its Hierarchy
 
-Frontend 와 backend 의 경계는 사용자의 intent 가 확정된 뒤, 첫 LLM 호출 앞에 놓이므로 추론 loop 는 backend 의 몫이다. 열 가지 역할이 두 층에 갈려 frontend 에 셋, backend 에 일곱이 놓이며, 그 일곱 가운데 admission 과 throughput 과 record 가 orchestrator 다. 일곱은 각 책임이 맡는 범위 — 한 단계, 한 실행, 모든 실행 — 의 순서로 늘어선다.
+Frontend 는 사용자의 요청을 backend 가 받는 형태로 만드는 데까지 하고, 첫 LLM 호출부터는 backend 가 한다. 그래서 추론 loop 는 backend 가 돌린다. 열 가지 역할이 두 층에 갈려 frontend 에 셋, backend 에 일곱이 놓이며, 그 일곱 가운데 admission 과 throughput 과 record 가 orchestrator 다. 일곱은 각 책임이 맡는 범위 — 한 단계, 한 실행, 모든 실행 — 의 순서로 늘어선다.
 
 누가 어느 책임을 지는지는 범위가 정한다. Framework 는 한 graph 실행 안에서만 돌므로 한 단계 범위와 한 실행 범위의 책임을 진다. Orchestrator 는 모든 실행 범위의 세 책임, 곧 admission 과 throughput 과 record 를 지는 쪽이다. 열 역할과 각각의 층, 그리고 각 역할이 정하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
