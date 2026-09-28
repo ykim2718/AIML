@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
+Rev. 3 | Created: 2026-09-27 | Updated: 2026-09-27 22:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,6 +12,8 @@ Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
 - [8. Benchmarking](#8-benchmarking)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. What Prefect Does In An Agent Backend](#appendix-b-what-prefect-does-in-an-agent-backend)
+- [Appendix C. How An Event Trigger Is Done In Prefect](#appendix-c-how-an-event-trigger-is-done-in-prefect)
 
 ## 1. Purpose
 
@@ -23,7 +25,7 @@ Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
 
 The orchestrator is the fleet-scoped third of an AI agent's backend, and Prefect supplies that third as a product where a team would otherwise write it. Five of its capabilities — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and the three constraints beside them are what a benchmarking sheet compares one orchestrator against another on.
 
-The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it.
+The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the eight things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -193,7 +195,9 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 <a id="ref-5"></a>
 [5] Pydantic. [Durable execution with Prefect](https://pydantic.dev/docs/ai/integrations/durable_execution/prefect/). Pydantic AI documentation.<br>
 <a id="ref-6"></a>
-[6] LangChain. [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers). LangGraph documentation.
+[6] LangChain. [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers). LangGraph documentation.<br>
+<a id="ref-7"></a>
+[7] Prefect. [Define event triggers](https://docs.prefect.io/v3/concepts/event-triggers). Prefect 3 documentation.
 
 ---
 
@@ -203,15 +207,100 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 - **Automation**: the Prefect rule that starts a preset action when a matching event arrives.
 - **Checkpointer**: the component that saves graph state at each step so that a stopped run resumes from it.
 - **Deployment**: a flow with where, when and how it runs attached, which makes it an entity the API manages.
+- **FDC (Fault Detection and Classification)**: the fab system that watches equipment sensor traces and raises an alarm when one leaves its limits.
 - **Flow**: the function Prefect treats as one run.
 - **HITL (Human In The Loop)**: a run that waits for a person's input before it continues.
 - **Idempotency**: the property that running again with the same input leaves the same result and the same side effects as running once.
+- **Jinja**: the template syntax Prefect substitutes event values into a flow's parameters with.
+- **K8s (Kubernetes)**: the container platform a work pool can run flow runs on.
 - **Orchestrator**: the part of a backend that sees every run rather than one, holding what starts a run, how many calls are in flight, and what the run history keeps.
 - **Prefect Server**: the self-hosted orchestration backend holding the API, the UI, the scheduler, and events and automations.
+- **RAG (Retrieval Augmented Generation)**: answering with documents retrieved at query time and handed to the LLM beside the question.
 - **Rate limit**: the ceiling on how many calls may leave within a span of time.
 - **Result caching**: loading a previous result for an identical input instead of executing again.
 - **Super-step**: the execution unit a graph saves one state snapshot for.
 - **Task**: the unit inside a flow that Prefect retries, caches and records on its own.
 - **Thread**: the unit a checkpointer collects one conversation's state under.
+- **VM (Virtual Metrology)**: predicting a measurement from process sensor data instead of measuring it.
 - **Work pool**: the Prefect setting that names the infrastructure flow runs execute on.
 - **Worker**: the client-side process that polls a work pool and starts each scheduled run on that infrastructure.
+
+## Appendix B. What Prefect Does In An Agent Backend
+
+1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure.
+2. Retry and timeout: it applies a policy per call, against an LLM API outage or a tool error.
+3. Event trigger: it runs an agent automatically when an event such as an FDC alarm or a drift detection arrives.
+4. Scheduling: it runs the regular analysis and report agents on a schedule.
+5. Distributed execution: it distributes work to K8s or GPU workers.
+6. Observability: it tracks run history, logs and state in the UI.
+7. Human-in-the-loop waiting: with `pause_flow_run` it stops until the approval arrives, then resumes.
+8. ML pipeline integration: it operates retraining, deployment and agent execution under one system.
+
+What it does not do itself: the LLM inference logic, memory and RAG, and real-time conversation serving are carried by the agent framework and the API server.
+
+## Appendix C. How An Event Trigger Is Done In Prefect
+
+It takes two steps. `emit_event` publishes the event, and a `DeploymentEventTrigger` or an automation receives it and runs the flow [[7](#ref-7)].
+
+**1. Emit the event** — on the FDC system or the collector side.
+
+```python
+from prefect.events import emit_event
+
+emit_event(
+    event="fdc.alarm.raised",
+    resource={"prefect.resource.id": "tool.ETCH01.TG1"},
+    payload={"wafer_id": "W123", "sensor": "RF_power", "severity": "high"},
+)
+```
+
+**2. Run the agent flow from a trigger**
+
+```python
+from prefect import flow
+from prefect.events import DeploymentEventTrigger
+
+
+@flow
+def fdc_agent(tool_id: str, wafer_id: str, sensor: str):
+    ...  # agent analysis, then the report and the notification
+
+
+if __name__ == "__main__":
+    fdc_agent.serve(
+        name="fdc-agent",
+        triggers=[
+            DeploymentEventTrigger(
+                expect={"fdc.alarm.raised"},
+                match={"prefect.resource.id": "tool.*"},
+                parameters={  # Jinja injects the event values into the flow parameters
+                    "tool_id": "{{ event.resource.id }}",
+                    "wafer_id": "{{ event.payload.wafer_id }}",
+                    "sensor": "{{ event.payload.sensor }}",
+                },
+            )
+        ],
+    )
+```
+
+Table 4. Trigger types
+
+| Type                | Use                                                                    | Setting                                              |
+| :-----------------: | :--------------------------------------------------------------------: | :--------------------------------------------------: |
+| Reactive            | Runs as soon as the event occurs                                       | The default                                          |
+| Threshold           | Runs once N have accumulated, such as three alarms within ten minutes  | `threshold=3`, `within=timedelta(minutes=10)`        |
+| Proactive           | Runs when the event does not arrive, such as collection having stopped | `posture="Proactive"`                                |
+| Compound / Sequence | Runs on a combination or an order of several events                    | `CompoundTrigger`, `SequenceTrigger`                 |
+| Flow state          | Runs in sequence after another flow completes or fails                 | `expect={"prefect.flow-run.Completed"}` and the like |
+
+**External systems**
+
+- Prefect Cloud: a webhook takes an outside HTTP request as an event directly.
+- Self-hosted (OSS): with no webhook, a FastAPI endpoint or a Kafka or MQ consumer calls `emit_event` to bridge it.
+
+**Fab application**
+
+- An FDC alarm, reactively, to the cause analysis agent
+- Three VM error excursions within ten minutes, on threshold, to the retraining flow
+- Sensor data unreceived for thirty minutes, proactively, to the equipment check notice
+- Retraining completed, on flow state, to the validation agent and the report

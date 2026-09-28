@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
+Rev. 3 | Created: 2026-09-27 | Updated: 2026-09-27 22:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,6 +12,8 @@ Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
 - [8. Benchmarking](#8-benchmarking)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. What Prefect Does In An Agent Backend](#appendix-b-what-prefect-does-in-an-agent-backend)
+- [Appendix C. How An Event Trigger Is Done In Prefect](#appendix-c-how-an-event-trigger-is-done-in-prefect)
 
 ## 1. Purpose
 
@@ -23,7 +25,7 @@ Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
 
 Orchestrator 는 AI agent backend 가운데 fleet 범위를 지는 삼분의 일이며, Prefect 는 팀이 직접 지어야 할 그 삼분의 일을 제품으로 내놓는다. 그 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 와 그 곁의 제약 셋이, benchmarking 자료가 orchestrator 를 서로 견주는 행이다.
 
-Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다.
+Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 여덟 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -193,7 +195,9 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 <a id="ref-5"></a>
 [5] Pydantic. [Durable execution with Prefect](https://pydantic.dev/docs/ai/integrations/durable_execution/prefect/). Pydantic AI documentation.<br>
 <a id="ref-6"></a>
-[6] LangChain. [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers). LangGraph documentation.
+[6] LangChain. [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers). LangGraph documentation.<br>
+<a id="ref-7"></a>
+[7] Prefect. [Define event triggers](https://docs.prefect.io/v3/concepts/event-triggers). Prefect 3 documentation.
 
 ---
 
@@ -203,15 +207,100 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 - **Automation**: 맞는 event 가 닿으면 미리 정한 동작을 시작하는 Prefect 의 규칙.
 - **Checkpointer**: Graph 상태를 단계마다 저장해, 멈춘 실행이 그 자리에서 다시 시작하게 하는 구성 요소.
 - **Deployment**: 어디서·언제·어떻게 돌릴지가 붙은 flow. API 가 관리하는 대상이 된다.
+- **FDC (Fault Detection and Classification)**: 장비 센서 trace 를 지켜보다가 한계를 벗어나면 알람을 내는 fab 쪽 시스템.
 - **Flow**: Prefect 가 한 실행으로 다루는 함수.
 - **HITL (Human In The Loop)**: 사람의 입력을 기다린 뒤에 이어 가는 실행.
 - **Idempotency**: 같은 입력으로 다시 돌려도 결과와 부수 효과가 한 번 돌린 것과 같은 성질.
+- **Jinja**: Prefect 가 event 값을 flow 의 parameter 에 끼워 넣는 데 쓰는 template 문법.
+- **K8s (Kubernetes)**: Work pool 이 flow 실행을 올릴 수 있는 container platform.
 - **Orchestrator**: Backend 가운데 한 실행이 아니라 모든 실행을 보는 쪽. 무엇이 실행을 시작하는가, 호출이 몇 개 떠 있는가, 실행 기록이 무엇을 담는가를 진다.
 - **Prefect Server**: API, UI, scheduler, 그리고 event 와 automation 을 담은 self-hosted orchestration backend.
+- **RAG (Retrieval Augmented Generation)**: 질문 시점에 찾아온 문서를 질문과 함께 LLM 에 건네어 답하는 것.
 - **Rate limit**: 정해진 시간 안에 나갈 수 있는 호출 수의 상한.
 - **Result caching**: 입력이 같을 때 다시 돌지 않고 앞선 결과를 불러오는 것.
 - **Super-step**: Graph 가 상태 snapshot 하나를 저장하는 실행 단위.
 - **Task**: Flow 안에서 Prefect 가 따로 재시도하고 cache 하고 기록하는 단위.
 - **Thread**: Checkpointer 가 한 대화의 상태를 모아 두는 단위.
+- **VM (Virtual Metrology)**: 계측하는 대신 공정 센서 데이터로 계측값을 예측하는 것.
 - **Work pool**: Flow 실행이 어느 기반 위에서 돌지 가리키는 Prefect 설정.
 - **Worker**: Work pool 을 살펴 예정된 실행을 그 기반 위에서 시작하는 client 쪽 process.
+
+## Appendix B. What Prefect Does In An Agent Backend
+
+1. Durable 실행: LLM·도구 호출을 task 단위로 캐시하고, 실패하면 그 지점부터 재개합니다.
+2. Retry와 timeout: 호출마다 정책을 적용합니다(LLM API 장애, 도구 오류 대응).
+3. 이벤트 트리거: FDC 알람이나 drift 감지 같은 이벤트가 오면 Agent를 자동 실행합니다.
+4. 스케줄링: 정기 분석과 리포트 Agent를 주기적으로 실행합니다.
+5. 분산 실행: K8s나 GPU worker에 작업을 분배합니다.
+6. 관측성: 실행 이력, 로그, 상태를 UI로 추적합니다.
+7. Human-in-the-loop 대기: `pause_flow_run`으로 승인이 날 때까지 멈췄다가 재개합니다.
+8. ML 파이프라인 통합: 재학습, 배포, Agent 실행을 한 체계에서 운영합니다.
+
+직접 하지 않는 일: LLM 추론 로직, 메모리와 RAG, 실시간 대화 서빙은 Agent 프레임워크와 API 서버가 담당합니다.
+
+## Appendix C. How An Event Trigger Is Done In Prefect
+
+방법은 두 단계입니다. `emit_event` 로 이벤트를 발행하고, `DeploymentEventTrigger` 또는 Automation 으로 그 이벤트를 받아 flow 를 실행합니다 [[7](#ref-7)].
+
+**1. Emit the event** — FDC 시스템이나 수집기 쪽입니다.
+
+```python
+from prefect.events import emit_event
+
+emit_event(
+    event="fdc.alarm.raised",
+    resource={"prefect.resource.id": "tool.ETCH01.TG1"},
+    payload={"wafer_id": "W123", "sensor": "RF_power", "severity": "high"},
+)
+```
+
+**2. Run the agent flow from a trigger**
+
+```python
+from prefect import flow
+from prefect.events import DeploymentEventTrigger
+
+
+@flow
+def fdc_agent(tool_id: str, wafer_id: str, sensor: str):
+    ...  # agent analysis, then the report and the notification
+
+
+if __name__ == "__main__":
+    fdc_agent.serve(
+        name="fdc-agent",
+        triggers=[
+            DeploymentEventTrigger(
+                expect={"fdc.alarm.raised"},
+                match={"prefect.resource.id": "tool.*"},
+                parameters={  # Jinja injects the event values into the flow parameters
+                    "tool_id": "{{ event.resource.id }}",
+                    "wafer_id": "{{ event.payload.wafer_id }}",
+                    "sensor": "{{ event.payload.sensor }}",
+                },
+            )
+        ],
+    )
+```
+
+Table 4. Trigger types
+
+| Type                | Use                                                          | Setting                                       |
+| :-----------------: | :----------------------------------------------------------: | :-------------------------------------------: |
+| Reactive            | 이벤트가 발생하면 즉시 실행합니다                            | 기본값                                        |
+| Threshold           | N회 누적 시 실행합니다 (예: 10분 내 알람 3회)                | `threshold=3`, `within=timedelta(minutes=10)` |
+| Proactive           | 이벤트가 오지 않을 때 실행합니다 (예: 데이터 수집 중단 감지) | `posture="Proactive"`                         |
+| Compound / Sequence | 여러 이벤트의 조합이나 순서를 조건으로 실행합니다            | `CompoundTrigger`, `SequenceTrigger`          |
+| Flow state          | 다른 flow 가 완료되거나 실패하면 연쇄 실행합니다             | `expect={"prefect.flow-run.Completed"}` 등    |
+
+**External systems**
+
+- Prefect Cloud: Webhook 으로 외부 HTTP 요청을 바로 이벤트로 받을 수 있습니다.
+- Self-hosted (OSS): Webhook 이 없으므로 FastAPI endpoint 나 Kafka/MQ consumer 에서 `emit_event` 를 불러 이어 줍니다.
+
+**Fab application**
+
+- FDC 알람 → Reactive → 원인 분석 Agent
+- VM 오차 초과가 10분 내 3회 → Threshold → 재학습 flow
+- 센서 데이터 30분 미수신 → Proactive → 장비 점검 알림
+- 재학습 완료 → Flow state → 검증 Agent → 리포트 생성
