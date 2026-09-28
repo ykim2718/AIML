@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 26 | Created: 2026-09-27 | Updated: 2026-09-28 00:20 CDT
+Rev. 27 | Created: 2026-09-27 | Updated: 2026-09-28 00:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,11 +20,11 @@ Rev. 26 | Created: 2026-09-27 | Updated: 2026-09-28 00:20 CDT
 
 - **Problem Statement**: AI Agent 와 AI Orchestrator 를 구축하는 데 Prefect workflow 를 활용하는 방안과, 그것으로 강점을 만들어 내는 방안이 없다.
 - **Goal**: AI Orchestrator 와 AI agent 의 frontend 와 backend 역할을 가르고, Prefect 가 backend 의 역할에 대해 특별히 무엇을 어떻게 할 수 있는지를 적어, manager 또는 designer 가 benchmarking 자료를 만든다.
-- **Non-Goal**: Agent 의 prompt 와 tool 을 설계하는 방법은 다루지 않고, 구현 code 도 주지 않으며, Prefect 밖의 orchestrator (Airflow, Temporal, Dagster 등) 과 비교하지 않는다.
+- **Non-Goal**: Agent 의 prompt 와 tool 을 설계하는 방법은 다루지 않고, 구현 Python code 도 주지 않으며, Prefect 밖의 orchestrator (Airflow, Temporal, Dagster 등) 과 비교하지 않는다.
 
 ## 2. Summary
 
-Prefect 는 AI agent backend 에서 무엇이 실행을 시작하는가, 호출을 몇 개까지 띄우는가, 무엇이 돌았는가를 맡는 자리를 제품으로 채운다. 그 자리를 묶어 orchestrator 라 부르며, [Fig 1](#fig-1) 이 orchestrator 가 backend 안의 어디에 놓이는지 그린다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 그 자리를 backend 개발자가 직접 쓴다. [Table 2](#table-2) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 과 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
+Prefect 는 AI agent backend 에서 무엇이 실행을 시작하는가, 호출을 몇 개까지 띄우는가, 무엇이 돌았는가를 맡는 자리를 제품으로 채운다. 그 자리를 묶어 orchestrator 라 부르며, [Fig 1](#fig-1) 이 orchestrator 가 backend 안의 어디에 놓이는지 그린다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 그 자리를 backend 엔지니어가 직접 쓴다. [Table 2](#table-2) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 과 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
 
 Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 기준선으로 삼은 agent framework 는 LangGraph 다. [Table 2](#table-2) 의 왼쪽 열이 기대는 두 가지, checkpointer 와 node 에 붙인 retry policy 를 vendor 문서로 확인할 수 있어 고른 것이며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
@@ -74,9 +74,9 @@ Table 1. Each role, the part that holds it, and what fixes it
 | 9   | Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                     |
 | 10  | Record         | Orchestrator | Every run   | 단계마다 남기는 실행 기록                      |
 
-어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 code 를 적는다.
+어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 Python code 를 적는다.
 
-Prefect 는 orchestrator 다. #8 부터 #10 까지를 제품으로 채우고, #4 부터 #7 까지는 agent framework 의 몫으로 남긴다. 겹치는 행이 둘 있다. Tool 호출을 task 로 감싸면 #6 State 와 #7 Recovery 의 재시도와 cache 도 Prefect 가 함께 지지만, LLM 을 불러 다음 동작을 고르는 일과 tool 안의 code 는 agent framework 에 남는다.
+Prefect 는 orchestrator 다. #8 부터 #10 까지를 제품으로 채우고, #4 부터 #7 까지는 agent framework 의 몫으로 남긴다. 겹치는 행이 둘 있다. Tool 호출을 task 로 감싸면 #6 State 와 #7 Recovery 의 재시도와 cache 도 Prefect 가 함께 지지만, LLM 을 불러 다음 동작을 고르는 일과 tool 안의 Python code 는 agent framework 에 남는다.
 
 ## 4. Backend Composition
 
@@ -112,41 +112,41 @@ written by hand beside it:                              v
 <a id="fig-2"></a>
 Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
-Agent framework 는 [Fig 1](#fig-1) 의 안쪽 네 책임을 지고 orchestrator 의 셋을 팀에 남긴다. Checkpointer 는 graph 상태의 snapshot 을 super-step 마다 thread id 아래 저장하여 멈춘 실행을 다시 시작하게 하고 사람이 한 단계를 끊어 들여다보고 승인하게 하며, node 에 붙인 retry policy 는 그 node 를 지수 backoff 로 다시 시도한다 [[6](#ref-6)]. 그러면 scheduler 와 semaphore 와 기록용 표를 직접 쓰게 되고, 그 셋은 팀이 소유하는 구성 요소가 된다.
+Agent framework 는 [Fig 1](#fig-1) 의 안쪽 네 책임을 지고 orchestrator 의 셋을 backend 엔지니어에게 남긴다. Checkpointer 는 graph 상태의 snapshot 을 super-step 마다 thread id 아래 저장하여 멈춘 실행을 다시 시작하게 하고 사람이 한 단계를 끊어 들여다보고 승인하게 하며, node 에 붙인 retry policy 는 그 node 를 지수 backoff 로 다시 시도한다 [[6](#ref-6)]. 그러면 backend 엔지니어가 scheduler 와 semaphore 와 기록용 표를 직접 쓰게 되고, 그 셋은 팀이 소유하는 구성 요소가 된다.
 
-Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 은 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고 schedule 과 UI 와 automation 과 REST API 가 그것을 켜며, work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[1](#ref-1)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Prefect 와 Pydantic AI 사이의 공식 통합이 이 감싸는 일을 해 주므로, backend 개발자가 그 code 를 쓰지 않는다. Tool 이 자동으로 task 가 되어, 호출마다 제 재시도와 제 cache 된 결과와 실행 기록의 제 줄을 갖는다 [[5](#ref-5)].
+Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 은 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고 schedule 과 UI 와 automation 과 REST API 가 그것을 켜며, work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[1](#ref-1)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Prefect 와 Pydantic AI 사이의 공식 통합이 이 감싸는 일을 해 주므로, backend 엔지니어가 그 code 를 쓰지 않는다. Tool 이 자동으로 task 가 되어, 호출마다 제 재시도와 제 cache 된 결과와 실행 기록의 제 줄을 갖는다 [[5](#ref-5)].
 
 ## 5. Function Comparison
 
-열 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. `Without Prefect` 열은 agent framework 하나만 쓴 구성이고, `With Prefect` 열은 그 같은 framework 위에 Prefect 를 더한 구성이다. Agent framework 는 LLM 호출과 tool 선택 loop 를 팀이 code 로 써 넣는 library 이며, 이 문서는 LangGraph 를 그 예로 든다 [[6](#ref-6)].
+열 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. `Without Prefect` 열은 agent framework 하나만 쓴 구성이고, `With Prefect` 열은 그 같은 framework 위에 Prefect 를 더한 구성이다. Agent framework 는 LLM 호출과 tool 선택 loop 를 backend 엔지니어가 Python code 로 써 넣는 library 이며, 이 문서는 LangGraph 를 그 예로 든다 [[6](#ref-6)].
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| #   | Function                | Without Prefect                                            | With Prefect                                                        |
-| :-: | :---------------------: | :--------------------------------------------------------: | :-----------------------------------------------------------------: |
-| 1   | Step retry              | 한 graph 실행 안, node 에 붙인 retry policy                | Task 마다 붙는 `retries` 와 `retry_delay_seconds`                   |
-| 2   | Resume after a crash    | Checkpointer 가 thread 를 마지막 super-step 에서 재생      | Framework 의 checkpointer, 그리고 Prefect server 가 쥔 실행 상태    |
-| 3   | Human approval          | Interrupt, 그리고 backend 개발자가 잇는 resume 호출        | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함              |
-| 4   | Where a run executes    | 요청에 답한 web process                                    | Work pool, 그리고 그것을 살피는 worker                              |
-| 5   | Suspension              | 아무도 놓아주지 않음. Web process 가 thread 를 쥐고 기다림 | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함                |
-| 6   | Idempotent rerun        | Backend 개발자가 건너뛰기 조건을 node 안에 직접 씀         | Result caching 이 앞선 결과를 불러 다시 돌지 않음                   |
-| 7   | Rate limiting           | Backend 개발자가 semaphore 를 직접 써서 호출 수를 묶음     | Global concurrency limit 과 rate limit                              |
-| 8   | Per-step observability  | Backend 개발자가 기록용 표를 만들어 단계마다 직접 남김     | Server 의 UI 에 담긴 모든 flow run 과 task run                      |
-| 9   | One admission path      | Backend 개발자가 실행을 시작하는 web 요청을 직접 이어 붙임 | 요청·schedule·automation 이 켜는 deployment                         |
-| 10  | ML pipeline integration | Backend 개발자가 재학습과 배포를 따로 둔 scheduler 로 돌림 | 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 서로를 켤 수 있음 |
+| #   | Function                | Without Prefect                                              | With Prefect                                                        |
+| :-: | :---------------------: | :----------------------------------------------------------: | :-----------------------------------------------------------------: |
+| 1   | Step retry              | 한 graph 실행 안, node 에 붙인 retry policy                  | Task 마다 붙는 `retries` 와 `retry_delay_seconds`                   |
+| 2   | Resume after a crash    | Checkpointer 가 thread 를 마지막 super-step 에서 재생        | Framework 의 checkpointer, 그리고 Prefect server 가 쥔 실행 상태    |
+| 3   | Human approval          | Interrupt, 그리고 backend 엔지니어가 잇는 resume 호출        | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함              |
+| 4   | Where a run executes    | 요청에 답한 web process                                      | Work pool, 그리고 그것을 살피는 worker                              |
+| 5   | Suspension              | 아무도 놓아주지 않음. Web process 가 thread 를 쥐고 기다림   | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함                |
+| 6   | Idempotent rerun        | Backend 엔지니어가 건너뛰기 조건을 node 안에 직접 씀         | Result caching 이 앞선 결과를 불러 다시 돌지 않음                   |
+| 7   | Rate limiting           | Backend 엔지니어가 semaphore 를 직접 써서 호출 수를 묶음     | Global concurrency limit 과 rate limit                              |
+| 8   | Per-step observability  | Backend 엔지니어가 기록용 표를 만들어 단계마다 직접 남김     | Server 의 UI 에 담긴 모든 flow run 과 task run                      |
+| 9   | One admission path      | Backend 엔지니어가 실행을 시작하는 web 요청을 직접 이어 붙임 | 요청·schedule·automation 이 켜는 deployment                         |
+| 10  | ML pipeline integration | Backend 엔지니어가 재학습과 배포를 따로 둔 scheduler 로 돌림 | 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 서로를 켤 수 있음 |
 
 열 행 가운데 아홉은 `With Prefect` 열에 적힌 Prefect 의 API 호출과 설정만으로 되고, #2 만 agent framework 의 checkpointer 를 함께 쓴다. 어느 행에서도 framework 가 빠지지는 않는다. Prefect 가 감싸는 것이 그 framework 의 loop 와 tool code 이고, 어디서 멈출지, 어느 결과를 cache 해도 되는지, 무엇을 한 단계로 볼지는 framework 쪽이 정한다.
 
 ## 6. Strength
 
-[Table 2](#table-2) 의 #5 부터 #10 까지 여섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. Backend 개발자가 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 여섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
+[Table 2](#table-2) 의 #5 부터 #10 까지 여섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. Backend 엔지니어가 Python code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 여섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
 
 - **Suspension**: `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 process 를 하나도 잡아 두지 않는다.
 - **Idempotent rerun**: Prefect 의 transactional orchestration 이 문맥이 같은 재실행을 다시 돌리지 않고 앞선 결과를 불러온다 [[5](#ref-5)]. 그 idempotency 아래에서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 비용을 두 번 치르지 않는다.
 - **Rate limiting**: Global concurrency limit 이 띄울 수 있는 호출 수를 묶고, rate limit 이 초당 slot 회복량으로 호출 간격을 벌린다 [[3](#ref-3)]. 둘은 flow 밖의 Python code 에서도 쓰여, task 로 감싸지 않은 tool 도 상한 안에 든다.
 - **Per-step observability**: Tool 호출 하나가 task 이므로 하나씩 따로 실행 기록에 보이고 하나씩 따로 다시 시도된다 [[5](#ref-5)]. 보고가 agent 실행이 실패했다는 데서, 어느 tool 호출이 어느 입력에서 실패했는지로 내려간다.
-- **One admission path**: Deployment 하나가 대화형 요청과 야간 schedule 과 event 기반 automation 에 함께 답한다 [[1](#ref-1)]. 야간 일괄 실행과 대화 요청이 두 벌이 아니라 같은 code 를 돌린다.
+- **One admission path**: Deployment 하나가 대화형 요청과 야간 schedule 과 event 기반 automation 에 함께 답한다 [[1](#ref-1)]. 야간 일괄 실행과 대화 요청이 두 벌이 아니라 같은 Python code 를 돌린다.
 - **ML pipeline integration**: 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 앞 flow 가 끝나면 그 상태가 다음 flow 를 켠다 [[7](#ref-7)]. 재학습과 agent 를 두 체계에 나누어 두고 그 사이를 직접 이어 붙일 일이 없다.
 
 ## 7. Application
@@ -173,12 +173,12 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 | 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가            | 앞선 결과를 불러옴               |
 | 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                        | 어떤 Python code 에서도 선언으로 |
 | 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                        | Tool 호출 하나                   |
-| 6   | One admission path      | Trigger 마다 code 경로가 몇 개 드는가              | Deployment 하나                  |
+| 6   | One admission path      | Trigger 마다 Python code 경로가 몇 개 드는가       | Deployment 하나                  |
 | 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가  | 돌림                             |
 | 8   | Access control          | API 와 UI 를 무엇이 지키는가                       | Open source server 에는 없음     |
 | 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가            | Cloud webhook, 또는 relay        |
 
-한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
+한 행에 답하지 못하는 제품은 그 행을 Python code 에 넘기므로, 자료는 그 Python code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 
 ## References
 
@@ -203,7 +203,7 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 
 ## Appendix A. Terminology
 
-- **Agent framework**: LLM 호출과 tool 선택 loop 를 팀이 써 넣는 library. LangGraph 가 그 예다.
+- **Agent framework**: LLM 호출과 tool 선택 loop 를 backend 엔지니어가 Python code 로 써 넣는 library. LangGraph 가 그 예다.
 - **Automation**: 맞는 event 가 닿으면 미리 정한 동작을 시작하는 Prefect 의 규칙.
 - **Checkpointer**: Graph 상태를 단계마다 저장해, 멈춘 실행이 그 자리에서 다시 시작하게 하는 구성 요소.
 - **Deployment**: 어디서·언제·어떻게 돌릴지가 붙은 flow. API 가 관리하는 대상이 된다.
@@ -324,4 +324,4 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph 기반. Azure 와 .NET 환경의 선택                              | 2026-04   |
 | 7   | Pydantic AI               | Type 안전한 Python. V2 가 durable execution 을 담음                | 2026-06   |
 
-#7 Pydantic AI 와 Prefect 는 따로 쓰는 두 제품이고, 그 둘을 잇는 package 가 공개되어 있다 [[5](#ref-5)]. 그것을 설치하면 Pydantic AI 로 쓴 agent 가 Prefect 의 flow 로 돌고 그 agent 의 tool 이 Prefect 의 task 가 되므로, 감싸는 code 를 직접 쓸 필요가 없다. 두 제품이 합쳐졌다거나 한쪽이 다른 쪽을 안에서 쓰는 것은 아니다.
+#7 Pydantic AI 와 Prefect 는 따로 쓰는 두 제품이고, 그 둘을 잇는 package 가 공개되어 있다 [[5](#ref-5)]. 그것을 설치하면 Pydantic AI 로 쓴 agent 가 Prefect 의 flow 로 돌고 그 agent 의 tool 이 Prefect 의 task 가 되므로, 감싸는 Python code 를 직접 쓸 필요가 없다. 두 제품이 합쳐졌다거나 한쪽이 다른 쪽을 안에서 쓰는 것은 아니다.

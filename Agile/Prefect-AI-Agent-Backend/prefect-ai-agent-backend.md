@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 26 | Created: 2026-09-27 | Updated: 2026-09-28 00:20 CDT
+Rev. 27 | Created: 2026-09-27 | Updated: 2026-09-28 00:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,11 +20,11 @@ Rev. 26 | Created: 2026-09-27 | Updated: 2026-09-28 00:20 CDT
 
 - **Problem Statement**: No account exists of how a Prefect workflow is used to build an AI agent or an AI orchestrator, or of where using it creates a strength.
 - **Goal**: Split the frontend and backend roles of an AI orchestrator and an AI agent, and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer produces benchmarking material from it.
-- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation code is not given, and no comparison is made with orchestrators other than Prefect (Airflow, Temporal, Dagster and the like).
+- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation Python code is not given, and no comparison is made with orchestrators other than Prefect (Airflow, Temporal, Dagster and the like).
 
 ## 2. Summary
 
-Prefect fills, as a product, the places in an AI agent backend that decide what starts a run, how many calls may be in flight, and what ran. Those places together are the orchestrator, and [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend developer writes those places by hand. Six of the ten functions in [Table 2](#table-2) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — and three constraints are the rows a benchmarking sheet compares products on.
+Prefect fills, as a product, the places in an AI agent backend that decide what starts a run, how many calls may be in flight, and what ran. Those places together are the orchestrator, and [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend engineer writes those places by hand. Six of the ten functions in [Table 2](#table-2) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — and three constraints are the rows a benchmarking sheet compares products on.
 
 The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The agent framework taken as the baseline is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the left of [Table 2](#table-2) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
@@ -74,9 +74,9 @@ Table 1. Each role, the part that holds it, and what fixes it
 | 9   | Throughput     | Orchestrator | Every run   | The concurrency limit and the call rate     |
 | 10  | Record         | Orchestrator | Every run   | The run history each step writes            |
 
-No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes code on the others.
+No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes Python code on the others.
 
-Prefect is an orchestrator. It fills #8 to #10 as a product and leaves #4 to #7 to the agent framework. Two rows overlap: wrapping a tool call as a task puts the retries and the caching of #6 State and #7 Recovery on Prefect as well, while the LLM call that picks the next action and the code inside a tool stay with the agent framework.
+Prefect is an orchestrator. It fills #8 to #10 as a product and leaves #4 to #7 to the agent framework. Two rows overlap: wrapping a tool call as a task puts the retries and the caching of #6 State and #7 Recovery on Prefect as well, while the LLM call that picks the next action and the Python code inside a tool stay with the agent framework.
 
 ## 4. Backend Composition
 
@@ -112,41 +112,41 @@ written by hand beside it:                              v
 <a id="fig-2"></a>
 Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
-An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the team. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. A scheduler, a semaphore and a log table are then written by hand, and each of the three is a component the team owns.
+An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the backend engineer. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. The backend engineer then writes a scheduler, a semaphore and a log table by hand, and each of the three is a component the team owns.
 
-Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. The official integration between Prefect and Pydantic AI does this wrapping, so the backend developer does not write it: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
+Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. The official integration between Prefect and Pydantic AI does this wrapping, so the backend engineer does not write it: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
 
 ## 5. Function Comparison
 
-Ten functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. The `Without Prefect` column is the composition that uses only an agent framework, and the `With Prefect` column is that same framework with Prefect added on top of it. An agent framework is the library a team writes the LLM call and tool selection loop in, which is LangGraph in this document [[6](#ref-6)].
+Ten functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. The `Without Prefect` column is the composition that uses only an agent framework, and the `With Prefect` column is that same framework with Prefect added on top of it. An agent framework is the Python library a backend engineer writes the LLM call and tool selection loop into, LangGraph in this document [[6](#ref-6)].
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| #   | Function                | Without Prefect                                                              | With Prefect                                                                                 |
-| :-: | :---------------------: | :--------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
-| 1   | Step retry              | A retry policy on a node, inside one graph run                               | `retries` and `retry_delay_seconds` on every task                                            |
-| 2   | Resume after a crash    | The checkpointer replays the thread from its last super-step                 | The framework's checkpointer, and the run state the Prefect server holds                     |
-| 3   | Human approval          | An interrupt, and a resume call the backend developer routes                 | `pause_flow_run` with `wait_for_input`, answered by API                                      |
-| 4   | Where a run executes    | The web process that answered                                                | A work pool, with a worker polling it                                                        |
-| 5   | Suspension              | Nobody releases it: the web process holds the thread and waits               | `suspend_flow_run` exits, and input starts the run again                                     |
-| 6   | Idempotent rerun        | The backend developer writes the skip condition into the node                | Result caching loads the previous result instead of running again                            |
-| 7   | Rate limiting           | The backend developer writes a semaphore to bound the calls                  | A global concurrency limit and a rate limit                                                  |
-| 8   | Per-step observability  | The backend developer builds a log table and writes each step to it          | Every flow run and task run, in the server's UI                                              |
-| 9   | One admission path      | The backend developer wires the web request that starts it                   | A deployment on a request, a schedule or an automation                                       |
-| 10  | ML pipeline integration | The backend developer runs retraining and deployment on a separate scheduler | Retraining, deployment and the agent run as flows on one server, each able to start the next |
+| #   | Function                | Without Prefect                                                             | With Prefect                                                                                 |
+| :-: | :---------------------: | :-------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
+| 1   | Step retry              | A retry policy on a node, inside one graph run                              | `retries` and `retry_delay_seconds` on every task                                            |
+| 2   | Resume after a crash    | The checkpointer replays the thread from its last super-step                | The framework's checkpointer, and the run state the Prefect server holds                     |
+| 3   | Human approval          | An interrupt, and a resume call the backend engineer routes                 | `pause_flow_run` with `wait_for_input`, answered by API                                      |
+| 4   | Where a run executes    | The web process that answered                                               | A work pool, with a worker polling it                                                        |
+| 5   | Suspension              | Nobody releases it: the web process holds the thread and waits              | `suspend_flow_run` exits, and input starts the run again                                     |
+| 6   | Idempotent rerun        | The backend engineer writes the skip condition into the node                | Result caching loads the previous result instead of running again                            |
+| 7   | Rate limiting           | The backend engineer writes a semaphore to bound the calls                  | A global concurrency limit and a rate limit                                                  |
+| 8   | Per-step observability  | The backend engineer builds a log table and writes each step to it          | Every flow run and task run, in the server's UI                                              |
+| 9   | One admission path      | The backend engineer wires the web request that starts it                   | A deployment on a request, a schedule or an automation                                       |
+| 10  | ML pipeline integration | The backend engineer runs retraining and deployment on a separate scheduler | Retraining, deployment and the agent run as flows on one server, each able to start the next |
 
 Nine of the ten rows are met by the Prefect API calls and settings named in the `With Prefect` column alone, and #2 uses the agent framework's checkpointer alongside them. The framework drops out of no row: what Prefect wraps is that framework's loop and its tool code, and the framework side is what decides where a run pauses, which results may be cached, and what counts as one step.
 
 ## 6. Strength
 
-In rows #5 to #10 of [Table 2](#table-2) the agent framework does not do the work itself. The backend developer fills those rows with code written by hand, or leaves them undone. Those six rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
+In rows #5 to #10 of [Table 2](#table-2) the agent framework does not do the work itself. The backend engineer fills those rows with Python code written by hand, or leaves them undone. Those six rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
 
 - **Suspension**: `pause_flow_run` keeps the flow alive while it waits, and `suspend_flow_run` exits so the infrastructure can be taken down, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day occupies no process at all.
 - **Idempotent rerun**: Prefect's transactional orchestration loads the previous result instead of running again when the context is identical [[5](#ref-5)]. Under that idempotency a retried agent run does not pay the LLM twice for the same tool call.
 - **Rate limiting**: a global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second [[3](#ref-3)]. Both work in Python code outside a flow, so a tool never wrapped as a task stays bounded too.
 - **Per-step observability**: each tool call is a task, so each one appears in the run history and is retried on its own [[5](#ref-5)]. The report moves from an agent run having failed to which tool call failed on which input.
-- **One admission path**: one deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)]. The overnight batch and the chat request run the same code rather than two copies.
+- **One admission path**: one deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)]. The overnight batch and the chat request run the same Python code rather than two copies.
 - **ML pipeline integration**: retraining, deployment and the agent run as flows on one server, and the state of a finished flow starts the next [[7](#ref-7)]. Retraining and the agent need not sit in two systems with a bridge written between them.
 
 ## 7. Application
@@ -173,12 +173,12 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 | 3   | Idempotent rerun        | What a rerun pays for work already done                                    | The previous result, loaded       |
 | 4   | Rate limiting           | How the call rate is bounded                                               | Declared, in any Python code      |
 | 5   | Per-step observability  | How far down a failure is located                                          | The one tool call                 |
-| 6   | One admission path      | How many code paths the triggers need                                      | One deployment                    |
+| 6   | One admission path      | How many Python code paths the triggers need                               | One deployment                    |
 | 7   | ML pipeline integration | Whether the same product also runs the retraining and deployment pipelines | It does                           |
 | 8   | Access control          | What guards the API and the UI                                             | Nothing in the open source server |
 | 9   | Inbound events          | How an outside system starts a run                                         | A Cloud webhook, or a relay       |
 
-A product that cannot answer a row leaves that row to code, so the sheet carries the cost of that code beside the product's name.
+A product that cannot answer a row leaves that row to Python code, so the sheet carries the cost of that Python code beside the product's name.
 
 ## References
 
@@ -203,7 +203,7 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 
 ## Appendix A. Terminology
 
-- **Agent framework**: the library a team writes the LLM call and tool selection loop in, such as LangGraph.
+- **Agent framework**: the Python library a backend engineer writes the LLM call and tool selection loop into, such as LangGraph.
 - **Automation**: the Prefect rule that starts a preset action when a matching event arrives.
 - **Checkpointer**: the component that saves graph state at each step so that a stopped run resumes from it.
 - **Deployment**: a flow with where, when and how it runs attached, which makes it an entity the API manages.
@@ -324,4 +324,4 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET estate                                    | 2026-04   |
 | 7   | Pydantic AI               | Type-safe Python. V2 carries durable execution                                         | 2026-06   |
 
-#7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing it runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.
+#7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing it runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping Python code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.
