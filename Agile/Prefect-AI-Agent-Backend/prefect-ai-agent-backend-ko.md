@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 39 | Created: 2026-09-27 | Updated: 2026-09-28 10:08 CDT
+Rev. 40 | Created: 2026-09-27 | Updated: 2026-09-28 10:16 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -128,17 +128,17 @@ Benchmarking 자료는 두 가지를 견준다. 제품을 견주는 항목과 Pr
 <a id="table-2"></a>
 Table 2. The benchmarking criteria, with Prefect's answer to each
 
-| #   | Criterion               | Criterion details                                  | Prefect                         |
-| :-: | :---------------------: | :------------------------------------------------: | :-----------------------------: |
-| 1   | Orchestrator scope      | 모든 실행 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                         |
-| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가        | 없음. Process 가 빠져나감       |
-| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가            | 앞선 결과를 불러옴              |
-| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                        | Python code 어디에서나 선언으로 |
-| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                        | Tool 호출 하나                  |
-| 6   | One admission path      | Trigger 마다 Python code 경로가 몇 개 드는가       | Deployment 하나                 |
-| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가  | 돌림                            |
-| 8   | Access control          | API 와 UI 를 무엇이 지키는가                       | Open source server 에는 없음    |
-| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가            | Cloud webhook, 또는 relay       |
+| #   | Criterion               | Criterion details                                          | Prefect                          |
+| :-: | :---------------------: | :--------------------------------------------------------: | :------------------------------: |
+| 1   | Orchestrator scope      | Admission·throughput·record 가운데 제품이 어느 것을 지는가 | Admission·throughput·record 모두 |
+| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가                | 없음. Process 가 빠져나감        |
+| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가                    | 앞선 결과를 불러옴               |
+| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                                | Python code 어디에서나 선언으로  |
+| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                                | Tool 호출 하나                   |
+| 6   | One admission path      | Trigger 마다 Python code 경로가 몇 개 드는가               | Deployment 하나                  |
+| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가          | 돌림                             |
+| 8   | Access control          | API 와 UI 를 무엇이 지키는가                               | Open source server 에는 없음     |
+| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가                    | Cloud webhook, 또는 relay        |
 
 한 행에 답하지 못하는 제품은 그 행을 Python code 에 넘기므로, 자료는 그 Python code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 

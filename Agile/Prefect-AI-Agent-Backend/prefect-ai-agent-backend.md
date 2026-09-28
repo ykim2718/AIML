@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 39 | Created: 2026-09-27 | Updated: 2026-09-28 10:08 CDT
+Rev. 40 | Created: 2026-09-27 | Updated: 2026-09-28 10:16 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -130,7 +130,7 @@ Table 2. The benchmarking criteria, with Prefect's answer to each
 
 | #   | Criterion               | Criterion details                                                          | Prefect                           |
 | :-: | :---------------------: | :------------------------------------------------------------------------: | :-------------------------------: |
-| 1   | Orchestrator scope      | Which of the every-run three the product carries                           | All three                         |
+| 1   | Orchestrator scope      | Which of admission, throughput and record the product carries              | Admission, throughput and record  |
 | 2   | Suspension              | What a run waiting for a person holds open                                 | Nothing, the process exits        |
 | 3   | Idempotent rerun        | What a rerun pays for work already done                                    | The previous result, loaded       |
 | 4   | Rate limiting           | How the call rate is bounded                                               | Declared, in any Python code      |
