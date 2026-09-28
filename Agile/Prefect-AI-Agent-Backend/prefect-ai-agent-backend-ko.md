@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 42 | Created: 2026-09-27 | Updated: 2026-09-28 10:52 CDT
+Rev. 43 | Created: 2026-09-27 | Updated: 2026-09-28 11:06 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,7 +25,7 @@ Rev. 42 | Created: 2026-09-27 | Updated: 2026-09-28 10:52 CDT
 
 ## 2. Summary
 
-AI agent backend 에는 무엇이 실행을 시작하는가, 호출을 한 번에 몇 개까지 돌리는가, 무엇이 돌았는가를 정하는 세 책임이 있다. 이 셋을 묶어 orchestrator 라 부르며, Prefect 가 이 셋을 맡는 제품이다. Orchestrator 가 backend 안의 어디에 놓이는지는 [Fig 1](#fig-1) 에 그렸다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 이 셋을 backend 엔지니어가 Python code 로 직접 구현한다. [Table 3](#table-3) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 에 orchestrator scope 와 access control 과 inbound events 를 더한 아홉이 benchmarking 자료가 제품을 견주는 항목이다.
+AI agent backend 에는 무엇이 실행을 시작하는가, 호출을 한 번에 몇 개까지 돌리는가, 무엇이 돌았는가를 정하는 세 책임이 있다. 이 셋을 묶어 orchestrator 라 부르며 [[10](#ref-10)], Prefect 가 이 셋을 맡는 제품이다. Orchestrator 가 backend 안의 어디에 놓이는지는 [Fig 1](#fig-1) 에 그렸다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 이 셋을 backend 엔지니어가 Python code 로 직접 구현한다. [Table 3](#table-3) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 에 orchestrator scope 와 access control 과 inbound events 를 더한 아홉이 benchmarking 자료가 제품을 견주는 항목이다.
 
 Prefect 를 써도 frontend 의 세 역할은 그대로이고, 할 일이 하나 더 붙는다. 멈춘 실행이 기다리는 답을 frontend 가 받아 backend 로 넘긴다. 비교 대상으로 삼은 agent framework 는 LangGraph 다. [Table 3](#table-3) 의 `Without Prefect` 열이 근거로 삼는 checkpointer 와 node 에 붙인 retry policy 를 vendor 문서에서 확인할 수 있어 골랐으며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
@@ -202,7 +202,9 @@ Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 P
 <a id="ref-8"></a>
 [8] LangChain. [The best AI agent frameworks in 2026](https://www.langchain.com/resources/ai-agent-frameworks).<br>
 <a id="ref-9"></a>
-[9] Prefect. [The only orchestrator built for AI agents](https://www.prefect.io/solutions/agents).
+[9] Prefect. [The only orchestrator built for AI agents](https://www.prefect.io/solutions/agents).<br>
+<a id="ref-10"></a>
+[10] GitHub. [What is Workflow Orchestration?](https://github.com/resources/articles/what-is-workflow-orchestration).
 
 ---
 

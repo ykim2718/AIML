@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 42 | Created: 2026-09-27 | Updated: 2026-09-28 10:52 CDT
+Rev. 43 | Created: 2026-09-27 | Updated: 2026-09-28 11:06 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,7 +25,7 @@ Rev. 42 | Created: 2026-09-27 | Updated: 2026-09-28 10:52 CDT
 
 ## 2. Summary
 
-An AI agent backend carries three responsibilities that decide what starts a run, how many calls run at once, and what ran. Those three together are the orchestrator, and Prefect is the product that carries them. [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend engineer implements those three in Python code. Six of the ten functions in [Table 3](#table-3) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — together with orchestrator scope, access control and inbound events make the nine criteria a benchmarking sheet compares products on.
+An AI agent backend carries three responsibilities that decide what starts a run, how many calls run at once, and what ran. Those three together are the orchestrator [[10](#ref-10)], and Prefect is the product that carries them. [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend engineer implements those three in Python code. Six of the ten functions in [Table 3](#table-3) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — together with orchestrator scope, access control and inbound events make the nine criteria a benchmarking sheet compares products on.
 
 The frontend keeps its three roles when Prefect is used and gains one duty: the answer a paused run waits for arrives through it. The agent framework the comparison is made against is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the `Without Prefect` column of [Table 3](#table-3) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
@@ -202,7 +202,9 @@ Prefect is favourable for a backend whose agent run continues after the HTTP res
 <a id="ref-8"></a>
 [8] LangChain. [The best AI agent frameworks in 2026](https://www.langchain.com/resources/ai-agent-frameworks).<br>
 <a id="ref-9"></a>
-[9] Prefect. [The only orchestrator built for AI agents](https://www.prefect.io/solutions/agents).
+[9] Prefect. [The only orchestrator built for AI agents](https://www.prefect.io/solutions/agents).<br>
+<a id="ref-10"></a>
+[10] GitHub. [What is Workflow Orchestration?](https://github.com/resources/articles/what-is-workflow-orchestration).
 
 ---
 
