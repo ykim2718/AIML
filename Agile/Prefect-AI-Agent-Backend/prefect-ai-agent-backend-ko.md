@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 29 | Created: 2026-09-27 | Updated: 2026-09-28 00:29 CDT
+Rev. 30 | Created: 2026-09-27 | Updated: 2026-09-28 00:30 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,7 +26,7 @@ Rev. 29 | Created: 2026-09-27 | Updated: 2026-09-28 00:29 CDT
 
 Prefect 는 AI agent backend 에서 무엇이 실행을 시작하는가, 호출을 몇 개까지 띄우는가, 무엇이 돌았는가를 맡는 자리를 제품으로 채운다. 그 자리를 묶어 orchestrator 라 부르며, [Fig 1](#fig-1) 이 orchestrator 가 backend 안의 어디에 놓이는지 그린다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 그 자리를 backend 엔지니어가 직접 쓴다. [Table 2](#table-2) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 과 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
 
-Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 기준선으로 삼은 agent framework 는 LangGraph 다. [Table 2](#table-2) 의 왼쪽 열이 기대는 두 가지, checkpointer 와 node 에 붙인 retry policy 를 vendor 문서로 확인할 수 있어 고른 것이며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
+Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 비교 대상으로 삼은 agent framework 는 LangGraph 다. [Table 2](#table-2) 의 왼쪽 열이 기대는 두 가지, checkpointer 와 node 에 붙인 retry policy 를 vendor 문서로 확인할 수 있어 고른 것이며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -312,7 +312,7 @@ Table 4. Trigger types
 
 ## Appendix D. Agent Frameworks In Use As Of September 2026
 
-이 문서가 기준선으로 쓴 것은 #1 LangGraph 이며, 고른 이유는 꼭지 2 에 적었다. 출시 시점은 각 제품의 공개 발표 시점이다 [[8](#ref-8)].
+이 문서가 비교 대상으로 쓴 것은 #1 LangGraph 이며, 고른 이유는 꼭지 2 에 적었다. 출시 시점은 각 제품의 공개 발표 시점이다 [[8](#ref-8)].
 
 Table 5. Agent frameworks and when each was first announced
 
