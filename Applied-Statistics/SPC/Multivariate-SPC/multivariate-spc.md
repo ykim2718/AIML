@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 8 | Created: 2026-09-04 | Updated: 2026-09-28 14:46 CDT
+Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-28 14:46 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -65,7 +65,7 @@ Normal 범위 안에 있어도 무언가 고장난 것인데, 개별 관리도�
 
 해법은 $p$ 개의 값을 하나의 거리로 묶는 것이다. 관측 vector 를 $\mathbf{x}$, normal 운전 자료에서 얻은
 평균 vector 를 $\boldsymbol{\mu}$, 공분산 행렬을 $\mathbf{S}$ 라 할 때 Hotelling 의 $T^2$ 는 그 둘
-사이의 Mahalanobis 거리의 제곱이다.
+사이의 Mahalanobis distance 의 제곱이다.
 
 $$T^{2} = \left( \mathbf{x} - \boldsymbol{\mu} \right)^{\top} \mathbf{S}^{-1} \left( \mathbf{x} - \boldsymbol{\mu} \right) \hspace{19em} (2)$$
 
