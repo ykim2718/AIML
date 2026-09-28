@@ -1,5 +1,5 @@
 # AIML
-Rev. 95 | Created: 2026-08-07 | Updated: 2026-09-27 22:08 CDT
+Rev. 96 | Created: 2026-08-07 | Updated: 2026-09-28 13:10 CDT
 
 - [1. Scope](#1-scope)
 - [2. Repository Map](#2-repository-map)
@@ -28,7 +28,7 @@ Two kinds of files live side by side.
 Table 1. File kinds and their roles
 
 | Kind | Role |
-|------|------|
+| :---: | :---: |
 | `.md` | It fixes a decision or a taxonomy in prose, so that the same question is not re-argued later. |
 | `.py` | It is a small standalone script that demonstrates one technique end to end, usually with a plot. |
 
@@ -39,13 +39,13 @@ The scripts are not a library. Each one runs on its own and is meant to be read 
 Table 2. Folders and what they hold
 
 | Folder | Description |
-|--------|-------------|
+| :---: | :---: |
 | [EDA](EDA/) | It covers the stage before modeling — the manifest that records and profiles a stored table, the modality taxonomy that names what arrived, the reduction of machine waveforms into fixed-width parameter rows, the detection of outliers under `Outlier/`, one method to a subfolder, and the separation of measurement variability into its within-part and part-to-part components under `Variability/`. |
 | [Feature-Engineering](Feature-Engineering/) | It maps feature engineering across cross-sectional, sequential, and wide time-series data, with a PCA lineage of its own, a wide-to-narrow survey under `Wide-Data/`, a survey of feature importance methods under `Feature-Importance/`, the selection of the trace features that move a target under `Feature-Selection/`, the polynomial expansion of products and powers under `PFE/`, and implementations of Mahalanobis distance, incremental PCA, and smoothing. |
 | [Metrics](Metrics/) | It collects agreement and goodness-of-fit measures — CCC with Bland-Altman, the Center Alignment Index, correlation coefficients, and the relationship between R² and MAPE. |
 | [Models](Models/) | It holds the model itself and what surrounds it — regression recipes with an emphasis on step-like and piecewise responses under `Regression/`, continual learning for time series under `CLTS/`, temporal partial least squares under `Regression/TPLS/`, time-varying coefficients under `Regression/TVC/`, the defenses against overfitting in wide data under `Overfitting/`, the combination of several fitted models under `Ensemble/`, the probability a regression model attaches to its own prediction under `Uncertainty/`, and the server that answers questions from a fitted model under `Inference-Server/`. |
 | [Applied-Statistics](Applied-Statistics/) | It covers statistical process control under `SPC/`, which carries a README of its own over the control charts, the capability indices, the wafer uniformity index and the multivariate statistics; design of experiments under `DOE/`, with response surfaces fitted by partial least squares under `DOE/PLS-RSM/`; distribution fitting, with the chi-squared distribution worked out under `Distributions/Chi-squared/`; hypothesis testing; numerical work; time series work under `Time-Series/`, with a cointegration example on daily price series and the stationarity assumption behind it under `Stationary/`; linear regression under `Regression/`, with the least squares derivation under `Regression/OLS/` and the penalties that answer a singular or unstable cross-product matrix under `Regression/Regularization/`; and the z-score family under `ZScore/` — the ceiling that bounds the classical score, the standard error of the mean, and the 1.5 sigma shift between short-term and long-term capability. |
-| [Agile](Agile/) | It covers the way the work around the model is run rather than the model itself — the three layers of agile practice, the sprint cycle and the vocabulary a team says its status in under `Agile-Software-Development/`, what changes when the deliverable is a model rather than a feature under `Agile-AIML-Development/`, the sprint-boundary meeting that closes one experiment and opens the next under `Agile-AIML-Modeling-Meeting/`, and spec-driven development with an AI coding agent under `SDD/`, and Prefect as the backend of an AI agent under `Prefect-AI-Agent-Backend/`. |
+| [Agile](Agile/) | It covers the way the work around the model is run rather than the model itself — the three layers of agile practice, the sprint cycle and the vocabulary a team says its status in under `Agile-Software-Development/`, what changes when the deliverable is a model rather than a feature under `Agile-AIML-Development/`, the sprint-boundary meeting that closes one experiment and opens the next under `Agile-AIML-Modeling-Meeting/`, spec-driven development with an AI coding agent under `SDD/`, and Prefect as the backend of an AI agent under `Prefect-AI-Agent-Backend/`. |
 | [AI Assistant](AI%20Assistant/) | It documents how Claude Code loads rules automatically from a plugin marketplace. This folder is synced from another repository and is not edited here. |
 | [.claude](.claude/) | It carries the settings that make those rules load in this repository and the hook that installs them, with the note behind that setup kept in the repository the plugin comes from. |
 
@@ -56,7 +56,7 @@ Table 2. Folders and what they hold
 Table 3. EDA documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [EDA/README.md](EDA/README.md) | It indexes the folder and sets the order in which the documents are used. |
 | [EDA/structured-data-manifest-for-semiconductor-machine-data.md](EDA/structured-data-manifest-for-semiconductor-machine-data.md) | It defines the JSON files that record what a stored table is, separating the values a human writes from the values an analysis decides, and fixes the class vocabulary and the integrity rules the manifest is checked against. |
 | [EDA/data-modality-taxonomy.md](EDA/data-modality-taxonomy.md) | It classifies data by the form the information takes, then extends the axes to the semiconductor domain and works through wafer process data as a case study. |
@@ -73,7 +73,7 @@ Table 3. EDA documents
 Table 4. Feature engineering documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [Feature-Engineering/fe-cs.md](Feature-Engineering/fe-cs.md) | It maps feature engineering for cross-sectional data, where rows are independent and row order carries no information. |
 | [Feature-Engineering/fe-sq.md](Feature-Engineering/fe-sq.md) | It maps feature engineering for sequences, where time order is itself the information, covering univariate and multivariate series. |
 | [Feature-Engineering/wts.md](Feature-Engineering/wts.md) | It consolidates techniques for wide time series where features far outnumber samples, grounded in FDC, DOE, and metrology practice. |
@@ -97,7 +97,7 @@ Table 4. Feature engineering documents
 Table 5. Metrics documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [Metrics/CCC/README.md](Metrics/CCC/README.md) | It is a full guide to Lin's Concordance Correlation Coefficient and the Bland-Altman plot, including interpretation benchmarks and a metric selection guide. |
 | [Metrics/CAI/README.md](Metrics/CAI/README.md) | It defines the Center Alignment Index, which scores how closely the centers of two variables sit on the 1:1 line, normalized to be unit-free. |
 | [Metrics/R2/R2-MAPE/r2-vs-mape.md](Metrics/R2/R2-MAPE/r2-vs-mape.md) | It shows by derivation and by experiment that no single universal formula links R² and MAPE, and that an apparent straight line is an artifact of how the data was generated. |
@@ -107,7 +107,7 @@ Table 5. Metrics documents
 Table 6. Automation documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [AI Assistant/Claude/automatic-rule-loading.md](AI%20Assistant/Claude/automatic-rule-loading.md) | It describes managing rules in one repository and loading them into every project through a plugin marketplace, so that skills, hooks, commands, and agents are shared between the desktop and the web interface. |
 | [.claude/README.md](.claude/README.md) | It explains the two files that wire this repository to that marketplace, the catalog and the settings that enable the plugin. |
 
@@ -116,7 +116,7 @@ Table 6. Automation documents
 Table 7. Model documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [Models/CLTS/README.md](Models/CLTS/README.md) | It classifies continual learning for time series by when the model learns, how it learns, what it preserves, and which of several candidates is the one that serves, and it works through the delayed evaluation that a horizon forces on that last decision. |
 | [Models/Regression/TPLS/README.md](Models/Regression/TPLS/README.md) | It organizes partial least squares for data that carries time, by the three places time enters a model — a lag structure inside one sample, a trajectory that is the sample itself, and the arrival order that decides when the model is refitted — and gives the method, the validation split, and the latent-space monitoring statistics that belong to each. |
 | [Models/Regression/TVC/README.md](Models/Regression/TVC/README.md) | It covers regression whose coefficient is a function of time rather than a constant — why a coefficient moves, the parametric, spline, and random-walk forms it is given, the Kalman filter loop that estimates the random-walk form, its use against a violated proportional hazards assumption and in a time-varying VAR, and how the same estimation is laid over PLS scores. |
@@ -132,7 +132,7 @@ Table 7. Model documents
 Table 8. Applied statistics documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [Applied-Statistics/SPC/README.md](Applied-Statistics/SPC/README.md) | It indexes the statistical process control folder, defines the split between common and special cause variation that every method there follows from, and sets the order in which subgrouping, the charts, the capability indices, the wafer uniformity index and the multivariate statistics are applied. |
 | [Applied-Statistics/DOE/design-of-experiments.md](Applied-Statistics/DOE/design-of-experiments.md) | It follows the section order of the MathWorks design of experiments chapter — full factorial, fractional factorial, response surface and D-optimal — and implements every construction in Python, from multilevel and Plackett-Burman designs through central composite and Box-Behnken to coordinate- and row-exchange search with augmentation, covariates, categorical factors and candidate sets. |
 | [Applied-Statistics/DOE/design-of-experiments-ko.md](Applied-Statistics/DOE/design-of-experiments-ko.md) | It is the Korean edition of the design of experiments note, carrying the same sections, tables and code blocks, with the headings and captions left in English. |
@@ -155,7 +155,7 @@ Table 8. Applied statistics documents
 Table 9. Scripts
 
 | Script | Description |
-|--------|-------------|
+| :---: | :---: |
 | [EDA/Variability/WiW-W2W/wiw_w2w_anova.py](EDA/Variability/WiW-W2W/wiw_w2w_anova.py) | It produces every number and figure of the within-wafer and wafer-to-wafer document from one measurement table — the one-way ANOVA and its variance components, the cumulative curves in which each step uses only the wafers reached so far, the wafer count from which the wafer-level spread carries the whole scatter of the wafer means, and a per-wafer report of the within-wafer spread beside a running chi-square screen of it. |
 
 ### 3.8 Agile
@@ -163,12 +163,12 @@ Table 9. Scripts
 Table 10. Agile documents
 
 | Document | Description |
-|----------|-------------|
+| :---: | :---: |
 | [Agile/Agile-Software-Development/agile-software-development.md](Agile/Agile-Software-Development/agile-software-development.md) ([Korean](Agile/Agile-Software-Development/agile-software-development-ko.md)) | It separates Agile, DevOps and CI/CD by the question each one answers and draws the containment they form, sets the four values of the 2001 manifesto and the waterfall comparison against that hierarchy, walks the sprint cycle from planning through retrospective as a diagram of the terms met at each stage, and fixes what a team calls done, how a deployment is held back from being a release, and the vocabulary — BKM, SOP, post-mortem, feature flag, dogfooding, hotfix, WIP, blocker and POC — that the cycle is run in. |
 | [Agile/Agile-AIML-Development/agile-aiml-development.md](Agile/Agile-AIML-Development/agile-aiml-development.md) ([Korean](Agile/Agile-AIML-Development/agile-aiml-development-ko.md)) | It works through the three points at which an AI/ML cycle parts from a software one — a result that is discovered rather than specified, three axes under version control instead of one, and a model that decays after deployment — orders code, data and model by the kind of proof each takes, walks the five stages from problem framing through continuous retraining, gives the timeboxing, data-centric and shadow deployment rules that keep exploration inside a sprint, and closes on a seventeen-check definition of done grouped by what each check protects. |
 | [Agile/Agile-AIML-Modeling-Meeting/agile-aiml-modeling-meeting.md](Agile/Agile-AIML-Modeling-Meeting/agile-aiml-modeling-meeting.md) ([Korean](Agile/Agile-AIML-Modeling-Meeting/agile-aiml-modeling-meeting-ko.md)) | It names the nine items a modeling meeting settles — target, provenance, baseline, hypothesis, run, insight, readiness, verdict and handoff — classifies them by the stage that settles each, and orders the four stages so that none opens while an item of an earlier one is unsettled. Each item carries its own definition of done, from a target that is written to a readiness compared against the model already serving, and the document places the stages on the agile practices a team already runs, gives the sentence that closes each stage, names the missing item behind each habit that ends a meeting without a verdict, and closes on a three-line record filled from one sprint. |
 | [Agile/SDD/spec-driven-development-ko.md](Agile/SDD/spec-driven-development-ko.md) (Korean only) | It sets out spec-driven development for data science code written with an AI coding agent — the project rules, spec, plan and tasks files, the four components of a spec, the requirement notation of current SDD tools, and the spec-first, spec-anchored and spec-as-source persistence models — and walks five phases in which a specifier writes the spec, a reviewer approves the plan and tests before implementation, the agent implements and verifies itself, and the reviewer accepts the result or returns it to the agent or the specifier. |
-| [Agile/Prefect-AI-Agent-Backend/prefect-ai-agent-backend.md](Agile/Prefect-AI-Agent-Backend/prefect-ai-agent-backend.md) ([Korean](Agile/Prefect-AI-Agent-Backend/prefect-ai-agent-backend-ko.md)) | It splits an AI orchestrator and an AI agent into three frontend roles and seven backend responsibilities ordered by the scope each one holds — one step, one run, or every run — and names the outer three the orchestrator. An agent framework carries the inner four through a checkpointer and a node retry policy while a self-hosted Prefect Server carries the orchestrator's three, so the document compares nine functions across the two compositions, names the five capabilities Prefect can specially supply and how it supplies them, states the process it assumes and the missing authentication and Cloud-only webhooks that constrain it, and closes on eight benchmarking rows with Prefect's answer already filled in. |
+| [Agile/Prefect-AI-Agent-Backend/prefect-ai-agent-backend.md](Agile/Prefect-AI-Agent-Backend/prefect-ai-agent-backend.md) ([Korean](Agile/Prefect-AI-Agent-Backend/prefect-ai-agent-backend-ko.md)) | It splits an AI orchestrator and an AI agent into three frontend roles and seven backend responsibilities ordered by the scope each one holds — one step, one run, or every run — and names admission, throughput and record the orchestrator. An agent framework carries the inner four through a checkpointer and a node retry policy while a self-hosted Prefect Server carries the orchestrator's three, so the document sets ten functions side by side in the two compositions, names the six of them Prefect supplies where the framework does not and how it supplies each, states the process it assumes and the missing authentication and Cloud-only webhooks that constrain it, and gives nine benchmarking criteria with Prefect's answer already filled in. |
 
 ## 4. Order Of Use
 
@@ -203,4 +203,4 @@ cd Applied-Statistics/Time-Series
 python "statsmodels - coint - pair trading.py"
 ```
 
-There is no repository-wide license file. The CCC guide declares the MIT License for itself.
+Licensing is declared per document. The CCC guide declares the MIT License for itself, and the repository as a whole carries no license file.
