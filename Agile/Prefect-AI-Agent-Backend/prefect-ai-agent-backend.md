@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 11 | Created: 2026-09-27 | Updated: 2026-09-27 23:27 CDT
+Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -225,15 +225,15 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 
 ## Appendix B. What Prefect Does In An Agent Backend
 
-1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure.
-2. Retry and timeout: it applies a policy per call, against an LLM API outage or a tool error.
-3. Event trigger: it runs an agent automatically when an event such as an FDC alarm or a drift detection arrives.
-4. Scheduling: it runs the regular analysis and report agents on a schedule.
-5. Distributed execution: it distributes work to K8s or GPU workers.
-6. Observability: it tracks run history, logs and state in the UI.
-7. Human-in-the-loop waiting: with `pause_flow_run` it stops until the approval arrives, then resumes.
-8. ML pipeline integration: it operates retraining, deployment and agent execution under one system.
-9. Rate limiting: it bounds the calls in flight and the calls per second by declaration, against an LLM API rate limit.
+1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure (#2 Resume after a crash, #6 Idempotent rerun).
+2. Retry and timeout: it applies a policy per call, against an LLM API outage or a tool error (#1 Step retry).
+3. Event trigger: it runs an agent automatically when an event such as an FDC alarm or a drift detection arrives (#9 One admission path).
+4. Scheduling: it runs the regular analysis and report agents on a schedule (#9 One admission path).
+5. Distributed execution: it distributes work to K8s or GPU workers (#4 Where a run executes).
+6. Observability: it tracks run history, logs and state in the UI (#8 Per-step observability).
+7. Human-in-the-loop waiting: with `pause_flow_run` it stops until the approval arrives, then resumes (#3 Human approval, #5 Suspension).
+8. ML pipeline integration: it operates retraining, deployment and agent execution together (#10 ML pipeline integration).
+9. Rate limiting: it bounds the calls in flight and the calls per second by declaration, against an LLM API rate limit (#7 Rate limiting).
 
 What it does not do itself: the LLM inference logic, memory and RAG, and real-time conversation serving are carried by the agent framework and the API server.
 

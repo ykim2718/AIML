@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 11 | Created: 2026-09-27 | Updated: 2026-09-27 23:27 CDT
+Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -225,15 +225,15 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 
 ## Appendix B. What Prefect Does In An Agent Backend
 
-1. Durable 실행: LLM·도구 호출을 task 단위로 캐시하고, 실패하면 그 지점부터 재개합니다.
-2. Retry와 timeout: 호출마다 정책을 적용합니다(LLM API 장애, 도구 오류 대응).
-3. 이벤트 트리거: FDC 알람이나 drift 감지 같은 이벤트가 오면 Agent를 자동 실행합니다.
-4. 스케줄링: 정기 분석과 리포트 Agent를 주기적으로 실행합니다.
-5. 분산 실행: K8s나 GPU worker에 작업을 분배합니다.
-6. 관측성: 실행 이력, 로그, 상태를 UI로 추적합니다.
-7. Human-in-the-loop 대기: `pause_flow_run`으로 승인이 날 때까지 멈췄다가 재개합니다.
-8. ML 파이프라인 통합: 재학습, 배포, Agent 실행을 한 체계에서 운영합니다.
-9. 호출 속도 제한: 동시 호출 수와 초당 호출 속도를 선언으로 묶습니다(LLM API rate limit 대응).
+1. 중단된 자리에서 다시 시작: LLM·도구 호출을 task 단위로 캐시하고, 실패하면 그 지점부터 재개합니다 (#2 Resume after a crash, #6 Idempotent rerun).
+2. 재시도와 제한 시간: 호출마다 정책을 적용합니다. LLM API 장애와 도구 오류에 대응합니다 (#1 Step retry).
+3. 이벤트로 자동 실행: FDC 알람이나 drift 감지 같은 이벤트가 오면 Agent를 자동 실행합니다 (#9 One admission path).
+4. 정해진 때마다 실행: 정기 분석과 리포트 Agent를 주기적으로 실행합니다 (#9 One admission path).
+5. 여러 기계에 나누어 실행: K8s나 GPU worker에 작업을 분배합니다 (#4 Where a run executes).
+6. 실행 기록 보기: 실행 이력, 로그, 상태를 UI로 추적합니다 (#8 Per-step observability).
+7. 사람의 승인 기다리기: `pause_flow_run`으로 승인이 날 때까지 멈췄다가 재개합니다 (#3 Human approval, #5 Suspension).
+8. ML pipeline 과 한 체계에서 운영: 재학습, 배포, Agent 실행을 함께 돌립니다 (#10 ML pipeline integration).
+9. 호출 속도 제한: 동시 호출 수와 초당 호출 속도를 선언으로 묶습니다. LLM API rate limit 에 대응합니다 (#7 Rate limiting).
 
 직접 하지 않는 일: LLM 추론 로직, 메모리와 RAG, 실시간 대화 서빙은 Agent 프레임워크와 API 서버가 담당합니다.
 
