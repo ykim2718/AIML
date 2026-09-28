@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 33 | Created: 2026-09-27 | Updated: 2026-09-28 08:20 CDT
+Rev. 34 | Created: 2026-09-27 | Updated: 2026-09-28 08:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,22 +123,22 @@ A benchmarking sheet compares two things. [Table 2](#table-2) holds the rows tha
 
 ### 5.1 Products
 
-A benchmarking sheet takes its rows from this document and adds one column per product compared. [Table 2](#table-2) is that row list with the `Prefect` column already filled in; another product is compared by adding a column under its own name and answering the same rows in it.
+A benchmarking sheet takes its criteria from this document and holds one column per product. [Table 2](#table-2) is that sheet: the `Prefect` column is filled in, and `<OTHER PRODUCT>` stands for a column added under a real product's name and answered row by row.
 
 <a id="table-2"></a>
-Table 2. The product rows, with the Prefect column filled in
+Table 2. The benchmarking sheet, with the Prefect column filled in
 
-| #   | Row                     | What it asks                                                               | Prefect                           |
-| :-: | :---------------------: | :------------------------------------------------------------------------: | :-------------------------------: |
-| 1   | Orchestrator scope      | Which of the every-run three the product carries                           | All three                         |
-| 2   | Suspension              | What a run waiting for a person holds open                                 | Nothing, the process exits        |
-| 3   | Idempotent rerun        | What a rerun pays for work already done                                    | The previous result, loaded       |
-| 4   | Rate limiting           | How the call rate is bounded                                               | Declared, in any Python code      |
-| 5   | Per-step observability  | How far down a failure is located                                          | The one tool call                 |
-| 6   | One admission path      | How many Python code paths the triggers need                               | One deployment                    |
-| 7   | ML pipeline integration | Whether the same product also runs the retraining and deployment pipelines | It does                           |
-| 8   | Access control          | What guards the API and the UI                                             | Nothing in the open source server |
-| 9   | Inbound events          | How an outside system starts a run                                         | A Cloud webhook, or a relay       |
+| #   | Criterion               | What it asks                                                               | Prefect                           | <OTHER PRODUCT> |
+| :-: | :---------------------: | :------------------------------------------------------------------------: | :-------------------------------: | :-------------: |
+| 1   | Orchestrator scope      | Which of the every-run three the product carries                           | All three                         | <ANSWER>        |
+| 2   | Suspension              | What a run waiting for a person holds open                                 | Nothing, the process exits        | <ANSWER>        |
+| 3   | Idempotent rerun        | What a rerun pays for work already done                                    | The previous result, loaded       | <ANSWER>        |
+| 4   | Rate limiting           | How the call rate is bounded                                               | Declared, in any Python code      | <ANSWER>        |
+| 5   | Per-step observability  | How far down a failure is located                                          | The one tool call                 | <ANSWER>        |
+| 6   | One admission path      | How many Python code paths the triggers need                               | One deployment                    | <ANSWER>        |
+| 7   | ML pipeline integration | Whether the same product also runs the retraining and deployment pipelines | It does                           | <ANSWER>        |
+| 8   | Access control          | What guards the API and the UI                                             | Nothing in the open source server | <ANSWER>        |
+| 9   | Inbound events          | How an outside system starts a run                                         | A Cloud webhook, or a relay       | <ANSWER>        |
 
 A product that cannot answer a row leaves that row to Python code, so the sheet carries the cost of that Python code beside the product's name.
 
@@ -177,11 +177,11 @@ In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the wor
 
 ## 7. Application
 
-Where a run keeps working through its remaining steps after the response has been sent, Prefect returns more than it costs. Where a run ends with the response, it costs more than it returns. The three conditions below decide which case a design is in.
+Prefect is favourable for a backend whose run keeps going after the answer has gone back to the user, and unfavourable for one whose run ends as that answer is sent. The three conditions below decide which case a design is in.
 
 1. **Assumption**: the backend may own a process of its own. A worker is a client-side process that polls a work pool and starts runs on infrastructure [[1](#ref-1)], so a deployment target that forbids a long-lived process leaves the composition of [Fig 2](#fig-2) without its middle.
 2. **Breaking condition**: authentication. The open source server carries no users and no authentication, so anyone who reaches the UI or the API has full access to it [[4](#ref-4)]; a self-hosted server therefore sits inside a private network or behind an authenticating proxy. Webhooks are a Prefect Cloud feature [[4](#ref-4)], so a self-hosted backend that must start runs from an outside system relays those events to the API itself.
-3. **Exclusion**: an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that ends with the response leaves them no state to hold.
+3. **Exclusion**: an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that ends as the answer is sent leaves them no state to hold.
 
 ## References
 

@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 33 | Created: 2026-09-27 | Updated: 2026-09-28 08:20 CDT
+Rev. 34 | Created: 2026-09-27 | Updated: 2026-09-28 08:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,22 +123,22 @@ Benchmarking 자료는 두 가지를 견준다. 제품과 제품을 견주는 �
 
 ### 5.1 Products
 
-Benchmarking 자료는 행을 이 문서에서 가져오고, 견줄 제품마다 열을 하나씩 더한다. [Table 2](#table-2) 가 그 행 목록이며 `Prefect` 열이 이미 채워져 있다. 다른 제품은 그 제품 이름으로 열을 더해 같은 행에 답을 적어 견준다.
+Benchmarking 자료는 견줄 항목을 이 문서에서 가져오고, 제품마다 열을 하나씩 갖는다. [Table 2](#table-2) 가 그 자료이며, `Prefect` 열은 채워져 있고 `<OTHER PRODUCT>` 는 실제 제품 이름으로 바꾸어 행마다 답을 적을 열이다.
 
 <a id="table-2"></a>
-Table 2. The product rows, with the Prefect column filled in
+Table 2. The benchmarking sheet, with the Prefect column filled in
 
-| #   | Row                     | What it asks                                       | Prefect                          |
-| :-: | :---------------------: | :------------------------------------------------: | :------------------------------: |
-| 1   | Orchestrator scope      | 모든 실행 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          |
-| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가        | 없음. Process 가 빠져나감        |
-| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가            | 앞선 결과를 불러옴               |
-| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                        | 어떤 Python code 에서도 선언으로 |
-| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                        | Tool 호출 하나                   |
-| 6   | One admission path      | Trigger 마다 Python code 경로가 몇 개 드는가       | Deployment 하나                  |
-| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가  | 돌림                             |
-| 8   | Access control          | API 와 UI 를 무엇이 지키는가                       | Open source server 에는 없음     |
-| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가            | Cloud webhook, 또는 relay        |
+| #   | Criterion               | What it asks                                       | Prefect                          | <OTHER PRODUCT> |
+| :-: | :---------------------: | :------------------------------------------------: | :------------------------------: | :-------------: |
+| 1   | Orchestrator scope      | 모든 실행 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          | <ANSWER>        |
+| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가        | 없음. Process 가 빠져나감        | <ANSWER>        |
+| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가            | 앞선 결과를 불러옴               | <ANSWER>        |
+| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                        | 어떤 Python code 에서도 선언으로 | <ANSWER>        |
+| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                        | Tool 호출 하나                   | <ANSWER>        |
+| 6   | One admission path      | Trigger 마다 Python code 경로가 몇 개 드는가       | Deployment 하나                  | <ANSWER>        |
+| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가  | 돌림                             | <ANSWER>        |
+| 8   | Access control          | API 와 UI 를 무엇이 지키는가                       | Open source server 에는 없음     | <ANSWER>        |
+| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가            | Cloud webhook, 또는 relay        | <ANSWER>        |
 
 한 행에 답하지 못하는 제품은 그 행을 Python code 에 넘기므로, 자료는 그 Python code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 
@@ -177,11 +177,11 @@ Table 3. The same function in each composition
 
 ## 7. Application
 
-응답을 보낸 뒤에도 실행이 남은 단계를 계속 도는 backend 에서는 Prefect 로 얻는 것이 드는 비용보다 크다. 응답과 함께 실행이 끝나는 backend 에서는 드는 비용이 얻는 것보다 크다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
+사용자에게 답을 보낸 뒤에도 실행이 계속 도는 backend 에는 Prefect 가 유리하고, 답을 보내면서 실행이 끝나는 backend 에는 불리하다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
 
 1. **Assumption**: Backend 가 제 process 를 가질 수 있다는 것이다. Worker 는 work pool 을 살펴 실행을 infrastructure 위에서 시작하는 client 쪽 process 이므로 [[1](#ref-1)], 오래 사는 process 를 금지하는 배포 대상에서는 [Fig 2](#fig-2) 의 구성이 가운데를 잃는다.
 2. **Breaking condition**: 인증이다. Open source server 에는 사용자도 인증도 없어 UI 나 API 에 닿는 누구나 전체 권한을 갖는다 [[4](#ref-4)]. 그래서 self-hosted server 는 사설망 안에 두거나 인증하는 proxy 뒤에 둔다. Webhook 은 Prefect Cloud 의 기능이므로 [[4](#ref-4)], 외부 system 에서 실행을 시작해야 하는 self-hosted backend 는 그 event 를 API 로 보내는 자리를 스스로 둔다.
-3. **Exclusion**: 실행이 LLM 호출 하나로 끝나고 그 결과를 뒤에 아무도 찾지 않는 agent 다. Server 와 worker 는 운영할 구성 요소 둘이고, 응답과 함께 끝나는 실행은 그 둘이 쥘 상태를 남기지 않는다.
+3. **Exclusion**: 실행이 LLM 호출 하나로 끝나고 그 결과를 뒤에 아무도 찾지 않는 agent 다. Server 와 worker 는 운영할 구성 요소 둘이고, 답을 보내면서 끝나는 실행은 그 둘이 쥘 상태를 남기지 않는다.
 
 ## References
 
