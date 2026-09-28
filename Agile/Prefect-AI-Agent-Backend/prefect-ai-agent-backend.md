@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 7 | Created: 2026-09-27 | Updated: 2026-09-27 22:39 CDT
+Rev. 8 | Created: 2026-09-27 | Updated: 2026-09-27 22:42 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -140,7 +140,7 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-In the last five rows of [Table 2](#table-2) the left cell names something the team wrote, or says that side does not do it. Those five are what a benchmarking sheet separates products on, and each is taken below under the same name, with the mechanism Prefect supplies it with.
+In the last five rows of [Table 2](#table-2) the agent framework does not do the work itself. The team fills those rows with code written by hand, or leaves them undone. Those five rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
 
 **Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits. A held thread instead occupies a process for that whole day.
 
@@ -169,16 +169,16 @@ A benchmarking sheet takes its rows from this document and its columns from the 
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| Row                | What it asks                                        | Prefect's answer                   |
-| :----------------: | :-------------------------------------------------: | :--------------------------------: |
-| Orchestrator scope | Which of the fleet-scoped three the product carries | All three                          |
-| Waiting cost       | What a run waiting for a person holds open          | Nothing, the process exits         |
-| Repeat cost        | What a rerun pays for work already done             | The previous result, loaded        |
-| Call pacing        | How the call rate is bounded                        | Declared, in any Python code       |
-| Failure locality   | How far down a failure is located                   | The one tool call                  |
-| Trigger count      | How many code paths the triggers need               | One deployment                     |
-| Access control     | What guards the API and the UI                      | Nothing, in the open source server |
-| Inbound events     | How an outside system starts a run                  | A Cloud webhook, or a relay        |
+| Row                    | What it asks                                        | Prefect's answer                  |
+| :--------------------: | :-------------------------------------------------: | :-------------------------------: |
+| Orchestrator scope     | Which of the fleet-scoped three the product carries | All three                         |
+| Suspension             | What a run waiting for a person holds open          | Nothing, the process exits        |
+| Idempotent rerun       | What a rerun pays for work already done             | The previous result, loaded       |
+| Rate limiting          | How the call rate is bounded                        | Declared, in any Python code      |
+| Per-step observability | How far down a failure is located                   | The one tool call                 |
+| One admission path     | How many code paths the triggers need               | One deployment                    |
+| Access control         | What guards the API and the UI                      | Nothing in the open source server |
+| Inbound events         | How an outside system starts a run                  | A Cloud webhook, or a relay       |
 
 A product that cannot answer a row leaves that row to code, so the sheet carries the cost of that code beside the product's name.
 

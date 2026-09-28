@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 7 | Created: 2026-09-27 | Updated: 2026-09-27 22:39 CDT
+Rev. 8 | Created: 2026-09-27 | Updated: 2026-09-27 22:42 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -140,7 +140,7 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-[Table 2](#table-2) 의 마지막 다섯 행은 왼쪽 칸이 팀이 직접 쓴 것을 대거나, 그쪽은 그 일을 하지 못한다고 적는다. 그 다섯이 benchmarking 자료에서 제품을 가르는 행이며, 아래에서 같은 이름으로 하나씩 Prefect 가 그것을 내놓는 장치와 함께 다룬다.
+[Table 2](#table-2) 의 마지막 다섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. 팀이 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 다섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
 
 **Suspension** 은 process 를 놓아준다. `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계는 기다리는 동안 아무것도 쓰지 않는다. Thread 를 쥐고 기다리면 그 하루 내내 process 하나를 잡아 둔다.
 
@@ -169,16 +169,16 @@ Benchmarking 자료는 행을 이 문서에서 가져오고 열을 견줄 제품
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| Row                | What it asks                                   | Prefect's answer                 |
-| :----------------: | :--------------------------------------------: | :------------------------------: |
-| Orchestrator scope | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          |
-| Waiting cost       | 사람을 기다리는 실행이 무엇을 붙들고 있는가    | 없음. Process 가 빠져나감        |
-| Repeat cost        | 재실행이 이미 끝난 일에 무엇을 치르는가        | 앞선 결과를 불러옴               |
-| Call pacing        | 호출 속도를 무엇으로 묶는가                    | 어떤 Python code 에서도 선언으로 |
-| Failure locality   | 실패를 어디까지 좁혀 짚는가                    | Tool 호출 하나                   |
-| Trigger count      | Trigger 마다 code 경로가 몇 개 드는가          | Deployment 하나                  |
-| Access control     | API 와 UI 를 무엇이 지키는가                   | Open source server 에는 없음     |
-| Inbound events     | 외부 system 이 실행을 어떻게 시작하는가        | Cloud webhook, 또는 relay        |
+| Row                    | What it asks                                   | Prefect's answer                 |
+| :--------------------: | :--------------------------------------------: | :------------------------------: |
+| Orchestrator scope     | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          |
+| Suspension             | 사람을 기다리는 실행이 무엇을 붙들고 있는가    | 없음. Process 가 빠져나감        |
+| Idempotent rerun       | 재실행이 이미 끝난 일에 무엇을 치르는가        | 앞선 결과를 불러옴               |
+| Rate limiting          | 호출 속도를 무엇으로 묶는가                    | 어떤 Python code 에서도 선언으로 |
+| Per-step observability | 실패를 어디까지 좁혀 짚는가                    | Tool 호출 하나                   |
+| One admission path     | Trigger 마다 code 경로가 몇 개 드는가          | Deployment 하나                  |
+| Access control         | API 와 UI 를 무엇이 지키는가                   | Open source server 에는 없음     |
+| Inbound events         | 외부 system 이 실행을 어떻게 시작하는가        | Cloud webhook, 또는 relay        |
 
 한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 
