@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 4 | Created: 2026-09-27 | Updated: 2026-09-27 22:31 CDT
+Rev. 5 | Created: 2026-09-27 | Updated: 2026-09-27 22:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -140,7 +140,7 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-Five of the nine rows carry no framework feature on their left, only code the team writes or nothing at all. Those five are what a benchmarking sheet separates products on, and each is named below with the mechanism Prefect supplies it with.
+Five of the nine rows in [Table 2](#table-2) carry no framework feature on their left, only code the team writes or nothing at all. Those five are what a benchmarking sheet separates products on, and each is named below with the mechanism Prefect supplies it with.
 
 **Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits. A held thread instead occupies a process for that whole day.
 
