@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 45 | Created: 2026-09-27 | Updated: 2026-09-28 11:52 CDT
+Rev. 46 | Created: 2026-09-27 | Updated: 2026-09-28 12:04 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -180,7 +180,7 @@ Table 3. The same function in each composition
 Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 Prefect 가 유리하고, HTTP 응답과 함께 실행이 끝나는 backend 에는 불리하다. 여기서 HTTP 응답은 frontend 가 보낸 요청 하나에 backend 가 돌려주는 답이며, 그 응답을 보내면 요청의 connection 이 닫히고 요청을 받았던 web process 는 다음 요청으로 넘어간다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
 
 1. **Assumption**: Backend 가 제 process 를 가질 수 있다는 것이다. Worker 는 work pool 을 살펴 실행을 infrastructure 위에서 시작하는 client 쪽 process 이므로 [[1](#ref-1)], 오래 도는 process 를 금지하는 배포 대상에서는 worker 를 둘 수 없어 [Fig 2](#fig-2) 의 구성이 성립하지 않는다.
-2. **Breaking condition**: 인증이다. Open source server 에는 사용자도 인증도 없어 UI 나 API 에 닿는 누구나 전체 권한을 갖는다 [[4](#ref-4)]. 그래서 self-hosted server 는 사설망 안에 두거나 인증하는 proxy 뒤에 둔다. Webhook 은 Prefect Cloud 의 기능이므로 [[4](#ref-4)], 외부 system 에서 실행을 시작해야 하는 self-hosted backend 는 그 event 를 Prefect API 로 보내는 endpoint 를 직접 만든다.
+2. **Breaking condition**: 인증이다. Open source server 에는 사용자도 인증도 없어 UI 나 API 에 닿는 누구나 그 server 에 대한 전체 권한을 갖는다 [[4](#ref-4)]. 그래서 self-hosted server 는 사설망 안에 두거나 인증하는 proxy 뒤에 둔다. Webhook 은 Prefect Cloud 의 기능이므로 [[4](#ref-4)], 외부 system 에서 실행을 시작해야 하는 self-hosted backend 는 그 event 를 Prefect API 로 보내는 endpoint 를 직접 만든다.
 3. **Exclusion**: 실행이 LLM 호출 하나로 끝나고 그 결과를 뒤에 아무도 찾지 않는 agent 다. Server 와 worker 는 운영할 구성 요소 둘이고, HTTP 응답과 함께 끝나는 실행은 그 둘이 맡을 상태를 남기지 않는다.
 
 ## References

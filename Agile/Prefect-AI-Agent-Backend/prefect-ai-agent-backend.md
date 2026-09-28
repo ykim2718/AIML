@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 45 | Created: 2026-09-27 | Updated: 2026-09-28 11:52 CDT
+Rev. 46 | Created: 2026-09-27 | Updated: 2026-09-28 12:04 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,20 +20,20 @@ Rev. 45 | Created: 2026-09-27 | Updated: 2026-09-28 11:52 CDT
 ## 1. Purpose
 
 - **Problem Statement**: No account exists of how a Prefect workflow is used to build an AI agent or an AI orchestrator, or of where using it creates a strength.
-- **Goal**: Split the frontend and backend roles of an AI orchestrator and an AI agent, and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer produces benchmarking material from it.
+- **Goal**: Split the frontend and backend roles of an AI orchestrator and an AI agent, and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer produces benchmarking material from what it states.
 - **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation Python code is not given, and no comparison is made with orchestrators other than Prefect (Airflow, Temporal, Dagster and the like).
 
 ## 2. Summary
 
 An AI agent backend carries three responsibilities that decide what starts a run, how many calls run at once, and what ran. Those three together are the orchestrator [[10](#ref-10)], and Prefect is the product that carries them. [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend engineer implements those three in Python code. Six of the ten functions in [Table 3](#table-3) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — together with orchestrator scope, access control and inbound events make the nine criteria a benchmarking sheet compares products on.
 
-The frontend keeps its three roles when Prefect is used and gains one duty: the answer a paused run waits for arrives through it. The agent framework the comparison is made against is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the `Without Prefect` column of [Table 3](#table-3) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
+The frontend keeps its three roles when Prefect is used and gains one duty: the answer a paused run waits for arrives through the frontend. The agent framework the comparison is made against is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the `Without Prefect` column of [Table 3](#table-3) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
 ## 3. Taxonomy and its Hierarchy
 
 The frontend's work ends once it has put the user's request into the form the backend accepts, and the backend takes over at the first LLM call, so the backend runs the reasoning loop. Ten responsibilities split across the two layers, three on the frontend and seven on the backend, of which admission, throughput and record are the orchestrator. The seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
 
-Scope is what decides who carries a responsibility. A framework sees one graph run and covers the one-step and one-run responsibilities; the orchestrator is the part that carries the three every-run responsibilities, namely admission, throughput and record. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
+Scope is what decides who carries a responsibility. A framework runs inside one graph run, so it covers the one-step and one-run responsibilities; the orchestrator is the part that carries the three every-run responsibilities, namely admission, throughput and record. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
 
 ```text
 LAYER          ROLE              WHAT THE ROLE DECIDES                        SCOPE       PART
@@ -55,7 +55,7 @@ Backend   >    Reasoning         Which action the LLM picks next              on
 <a id="fig-1"></a>
 Fig 1. The three frontend roles and the seven backend responsibilities ordered by scope, four of them the agent and three the orchestrator
 
-Widening the scope by one step needs one more place to keep the state that outlives the previous scope. One-step scope needs nothing beyond the process, one-run scope needs a store the process can die without losing, and every-run scope needs a service that outlives every process and can be asked what happened.
+Each time the scope widens, one more place is needed for the state that has to outlive the previous scope. One-step scope needs nothing beyond the process, one-run scope needs a store the process can die without losing, and every-run scope needs a service that outlives every process and reports which runs there were.
 
 ### 3.1 Placement
 
@@ -81,7 +81,7 @@ Prefect is an orchestrator. It fills rows #8 to #10 of [Table 1](#table-1) as a 
 
 ## 4. Backend Composition
 
-The two compositions run the same reasoning loop and differ in where that loop lives. Without Prefect the loop runs inside the process that answered the request; with Prefect the loop is a flow that a worker starts on its own infrastructure, and the request only asks for it. The two are drawn in [Fig 2](#fig-2).
+The two compositions run the same reasoning loop and differ in where that loop lives. Without Prefect the loop runs inside the process that answered the request; with Prefect the loop is a flow that a worker starts on its own infrastructure, and the request only asks for that flow to start. The two are drawn in [Fig 2](#fig-2).
 
 ```text
 WITHOUT PREFECT                        WITH PREFECT (self-hosted)
@@ -113,9 +113,9 @@ written by hand beside it:                              v
 <a id="fig-2"></a>
 Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
-An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the backend engineer. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. The backend engineer then writes a scheduler, a semaphore and a log table by hand, and each of the three becomes a component the backend engineer maintains.
+An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the backend engineer. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. The backend engineer then writes and maintains a scheduler, a semaphore and a log table.
 
-Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. The official integration between Prefect and Pydantic AI does this wrapping, so the backend engineer does not write it: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
+Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. The official integration between Prefect and Pydantic AI wraps the tools as tasks, so the backend engineer does not write that Python code: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
 
 ## 5. Benchmarking
 
@@ -144,7 +144,7 @@ A row the product does not answer is filled by the backend engineer in Python co
 
 ### 5.2 Comparison
 
-Ten functions are needed in either composition, and [Table 3](#table-3) sets out what holds each one on each side. The `Without Prefect` column is the composition that uses only an agent framework, and the `With Prefect` column is that same framework with Prefect added on top of it. An agent framework is the Python library a backend engineer writes the LLM call and tool selection loop into, LangGraph in this document [[6](#ref-6)].
+Ten functions are needed in either composition, and [Table 3](#table-3) sets out what holds each one on each side. The `Without Prefect` column is the composition that uses only an agent framework, and the `With Prefect` column is that same framework with Prefect added on top of it. An agent framework is the Python library a backend engineer writes the LLM call and tool selection loop into, and this document uses LangGraph as that framework [[6](#ref-6)].
 
 <a id="table-3"></a>
 Table 3. The same function in each composition
@@ -166,7 +166,7 @@ Nine of the ten rows are met by the Prefect API calls and settings named in the 
 
 ## 6. Strength
 
-In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the work itself. The backend engineer fills those rows with Python code written by hand, or leaves them undone. Those six rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
+In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the work itself. The backend engineer fills those rows with Python code written by hand, or leaves them undone. Those six rows are what separates one product from another on a benchmarking sheet, and the six are listed below under the same names, each with what Prefect does in its place.
 
 - **Suspension**: `pause_flow_run` keeps the flow alive while it waits, and `suspend_flow_run` exits so the infrastructure can be taken down, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day occupies no process at all.
 - **Idempotent rerun**: Prefect's transactional orchestration loads the previous result instead of running again when the context is identical [[5](#ref-5)]. Under that idempotency a retried agent run does not pay the LLM twice for the same tool call.
@@ -180,7 +180,7 @@ In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the wor
 Prefect is favourable for a backend whose agent run continues after the HTTP response has gone out, and unfavourable for one whose run ends with that response. The HTTP response here is the backend's reply to one frontend request: sending it closes that request's connection, and the web process that took the request moves on to the next one. The three conditions below decide which case a design is in.
 
 1. **Assumption**: the backend may own a process of its own. A worker is a client-side process that polls a work pool and starts runs on infrastructure [[1](#ref-1)], so a deployment target that forbids a long-lived process cannot host the worker and the composition of [Fig 2](#fig-2) does not hold.
-2. **Breaking condition**: authentication. The open source server carries no users and no authentication, so anyone who reaches the UI or the API has full access to it [[4](#ref-4)]; a self-hosted server therefore sits inside a private network or behind an authenticating proxy. Webhooks are a Prefect Cloud feature [[4](#ref-4)], so a self-hosted backend that must start runs from an outside system writes the endpoint that relays those events to the API itself.
+2. **Breaking condition**: authentication. The open source server carries no users and no authentication, so anyone who reaches the UI or the API has full access to the server [[4](#ref-4)]; a self-hosted server therefore sits inside a private network or behind an authenticating proxy. Webhooks are a Prefect Cloud feature [[4](#ref-4)], so a self-hosted backend that must start runs from an outside system must write the endpoint that relays those events to the API.
 3. **Exclusion**: an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that ends with the HTTP response leaves them no state to hold.
 
 ## References
