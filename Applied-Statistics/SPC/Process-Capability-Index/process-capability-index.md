@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 32 | Created: 2026-09-04 | Updated: 2026-09-28 14:37 CDT
+Rev. 33 | Created: 2026-09-04 | Updated: 2026-09-28 14:44 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -219,7 +219,7 @@ Each part fails independently at the near tail rate. The dashed line is a 90 % y
 the Cpk at which each curve reaches it; the dotted line is the Cpk of a 1 ppm near tail.
 
 As the part count grows from 1 by factors of 1,000, the $C_{pk}$ a 90 % yield needs rises through 0.43,
-1.24 and 1.73, and the 1 GB DRAM with $2^{33}$ cells needs 2.23. At the line of a 1 ppm per-cell defect rate, $C_{pk} = 1.58$, a
+1.24 and 1.73, and the 1 GB DRAM with $2^{33}$ cells needs 2.23. At the line of a 1 ppm defect rate per part (cell), $C_{pk} = 1.58$, a
 one-part product yields nearly 1, a million-part product $e^{-1} \approx 0.37$, and the 1 GB DRAM 0.
 
 ## 4. Application

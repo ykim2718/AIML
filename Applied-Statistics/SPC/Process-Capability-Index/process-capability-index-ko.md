@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 31 | Created: 2026-09-04 | Updated: 2026-09-28 14:37 CDT
+Rev. 32 | Created: 2026-09-04 | Updated: 2026-09-28 14:44 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -206,7 +206,7 @@ Each part fails independently at the near tail rate. The dashed line is a 90 % y
 the Cpk at which each curve reaches it; the dotted line is the Cpk of a 1 ppm near tail.
 
 Part 의 개수가 1 에서 1,000 배씩 늘 때 90 % 수율에 필요한 $C_{pk}$ 는 0.43, 1.24, 1.73 으로 오르고,
-$2^{33}$ 개인 1 GB DRAM 은 2.23 이다. cell 당 불량률 1 ppm 의 선인 $C_{pk} = 1.58$ 에서 part 하나인 제품의 수율은 1 에
+$2^{33}$ 개인 1 GB DRAM 은 2.23 이다. part (cell) 당 불량률 1 ppm 의 선인 $C_{pk} = 1.58$ 에서 part 하나인 제품의 수율은 1 에
 가깝고, part 백만 개인 제품은 $e^{-1} \approx 0.37$ 이며, 1 GB DRAM 은 0 이다.
 
 ## 4. Application
