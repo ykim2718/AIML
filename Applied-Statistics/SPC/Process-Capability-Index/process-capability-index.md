@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 24 | Created: 2026-09-04 | Updated: 2026-09-28 13:49 CDT
+Rev. 25 | Created: 2026-09-04 | Updated: 2026-09-28 13:51 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -113,7 +113,7 @@ LSL = \mu - 3 C_{pk} \sigma & \mathrm{if}\ LSL\ \mathrm{is\ the\ nearer\ limit}
 \hspace{19em} (6)
 ```
 
-$C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
+$C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean, as equation (6) shows. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
 
 Fig 1 draws the near tail of a process with $C_{pk} = 1.00$.
 
@@ -124,6 +124,8 @@ puts the nearer limit 3 standard deviations below the mean and the right column 
 The y axis is the standard normal probability density $\varphi(z)$ of equation (9); its height is not
 a probability, but its area over an interval is the probability of falling in that interval, so the
 shaded area is the near tail rate.
+In the top row the band marks the region beyond the limit, since the area under the curve there is
+too thin to see at full scale; the bottom row magnifies that area.
 
 - (a) The nearer limit is $LSL$, and the distance from the mean to it is $3 C_{pk} = 3$.
 - (b) The nearer limit is $USL$, at the same distance 3 as in (a).

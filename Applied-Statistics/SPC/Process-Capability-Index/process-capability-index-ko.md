@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 23 | Created: 2026-09-04 | Updated: 2026-09-28 13:49 CDT
+Rev. 24 | Created: 2026-09-04 | Updated: 2026-09-28 13:51 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -107,7 +107,7 @@ LSL = \mu - 3 C_{pk} \sigma & \mathrm{if}\ LSL\ \mathrm{is\ the\ nearer\ limit}
 \hspace{19em} (6)
 ```
 
-$C_{pk}$ 는 평균에서 그 한계까지의 거리를 $3\sigma$ 로 나눈 값이므로, 그 한계는 평균에서 표준편차 $3 C_{pk}$ 개만큼 떨어져 있다. 표준정규분포에서 $-3 C_{pk}$ 이하가 나올 확률이 $\Phi(-3 C_{pk})$ 이고, 분포가 좌우 대칭이므로 $+3 C_{pk}$ 이상이 나올 확률도 같다. 따라서 가까운 쪽 한계가 $LSL$ 이든 $USL$ 이든 near tail 의 비율은 $\Phi(-3 C_{pk})$ 이다. 예를 들어 $C_{pk} = 1.00$ 이면 한계가 표준편차 3 개 거리에 있고 $\Phi(-3) = 0.00135$ 이므로, near tail 은 1350 ppm 이다.
+$C_{pk}$ 는 평균에서 그 한계까지의 거리를 $3\sigma$ 로 나눈 값이므로, 그 한계는 식 (6) 처럼 평균에서 표준편차 $3 C_{pk}$ 개만큼 떨어져 있다. 표준정규분포에서 $-3 C_{pk}$ 이하가 나올 확률이 $\Phi(-3 C_{pk})$ 이고, 분포가 좌우 대칭이므로 $+3 C_{pk}$ 이상이 나올 확률도 같다. 따라서 가까운 쪽 한계가 $LSL$ 이든 $USL$ 이든 near tail 의 비율은 $\Phi(-3 C_{pk})$ 이다. 예를 들어 $C_{pk} = 1.00$ 이면 한계가 표준편차 3 개 거리에 있고 $\Phi(-3) = 0.00135$ 이므로, near tail 은 1350 ppm 이다.
 
 Fig 1 은 $C_{pk} = 1.00$ 인 공정의 near tail 을 그린 것이다.
 
@@ -118,6 +118,8 @@ puts the nearer limit 3 standard deviations below the mean and the right column 
 The y axis is the standard normal probability density $\varphi(z)$ of equation (9); its height is not
 a probability, but its area over an interval is the probability of falling in that interval, so the
 shaded area is the near tail rate.
+In the top row the band marks the region beyond the limit, since the area under the curve there is
+too thin to see at full scale; the bottom row magnifies that area.
 
 - (a) 가까운 쪽 한계가 $LSL$ 이며, 평균에서 $LSL$ 까지의 거리가 $3 C_{pk} = 3$ 이다.
 - (b) 가까운 쪽 한계가 $USL$ 이며, 거리는 (a) 와 같은 3 이다.

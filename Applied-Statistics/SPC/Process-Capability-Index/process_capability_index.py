@@ -9,7 +9,7 @@ Changelog:
     0.2.0 Draw the near tail of one Cpk on either side as a third figure.
 """
 __author__ = 'yRocket'
-__version__ = "0.2.0.2026.9.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.2.1.2026.9.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -246,6 +246,8 @@ def draw_near_tail(cpk: float = NEAR_TAIL_CPK, output_path: pathlib.Path = None)
                       bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 1.0})
         whole, tail = axes[0, column], axes[1, column]
         whole.axvline(0.0, color=color, linestyle=':', linewidth=1.2)
+        # the area beyond the limit is too thin to see at full scale, so a band marks the region it lies in
+        whole.axvspan(limit, grid.min() if side < 0 else grid.max(), color=color, alpha=0.15, linewidth=0.0)
         arrow_height = top * 0.62
         whole.annotate('', xy=(limit, arrow_height), xytext=(0.0, arrow_height),
                        arrowprops={'arrowstyle': '<->', 'color': 'black', 'linewidth': 0.9})
