@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 36 | Created: 2026-09-27 | Updated: 2026-09-28 09:34 CDT
+Rev. 37 | Created: 2026-09-27 | Updated: 2026-09-28 09:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -155,11 +155,11 @@ Table 3. The same function in each composition
 | 2   | Resume after a crash    | The checkpointer replays the thread from its last super-step                | The framework's checkpointer, and the run state the Prefect server holds                     |
 | 3   | Human approval          | An interrupt, and a resume call the backend engineer routes                 | `pause_flow_run` with `wait_for_input`, answered by API                                      |
 | 4   | Where a run executes    | The web process that answered                                               | A work pool, with a worker polling it                                                        |
-| 5   | Suspension              | Nobody releases it: the web process holds the thread and waits              | `suspend_flow_run` exits, and input starts the run again                                     |
+| 5   | Suspension              | The web process holds the thread and waits for the person                   | `suspend_flow_run` exits, and the run starts again when the input arrives                    |
 | 6   | Idempotent rerun        | The backend engineer writes the skip condition into the node                | Result caching loads the previous result instead of running again                            |
 | 7   | Rate limiting           | The backend engineer writes a semaphore to bound the calls                  | A global concurrency limit and a rate limit                                                  |
 | 8   | Per-step observability  | The backend engineer builds a log table and writes each step to it          | Every flow run and task run, in the server's UI                                              |
-| 9   | One admission path      | The backend engineer wires the web request that starts it                   | A deployment on a request, a schedule or an automation                                       |
+| 9   | One admission path      | The backend engineer connects each trigger to the run by hand               | One deployment, on a request, a schedule or an automation                                    |
 | 10  | ML pipeline integration | The backend engineer runs retraining and deployment on a separate scheduler | Retraining, deployment and the agent run as flows on one server, each able to start the next |
 
 Nine of the ten rows are met by the Prefect API calls and settings named in the `With Prefect` column alone, and #2 uses the agent framework's checkpointer alongside them. The framework keeps a part in all ten rows: what Prefect wraps is that framework's loop and its tool code, and the framework side is what decides where a run pauses, which results may be cached, and what counts as one step.
