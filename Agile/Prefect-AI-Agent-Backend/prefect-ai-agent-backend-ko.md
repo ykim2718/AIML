@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 8 | Created: 2026-09-27 | Updated: 2026-09-27 22:42 CDT
+Rev. 9 | Created: 2026-09-27 | Updated: 2026-09-27 22:51 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -126,21 +126,21 @@ Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 to
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| Function               | Agent framework alone                                 | Self-hosted Prefect added                              |
-| :--------------------: | :---------------------------------------------------: | :----------------------------------------------------: |
-| Step retry             | 한 graph 실행 안, node 에 붙인 retry policy           | Task 마다 붙는 `retries` 와 `retry_delay_seconds`      |
-| Resume after a crash   | Checkpointer 가 thread 를 마지막 super-step 에서 재생 | 같은 checkpoint, 그리고 server 가 쥔 실행 상태         |
-| Human approval         | Interrupt, 그리고 팀이 잇는 resume 호출               | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함 |
-| Where a run executes   | 요청에 답한 web process                               | Work pool, 그리고 그것을 살피는 worker                 |
-| Suspension             | Process 가 thread 를 쥐고 있음                        | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함   |
-| Idempotent rerun       | Node 안에 직접 씀                                     | Result caching 이 앞선 결과를 불러 다시 돌지 않음      |
-| Rate limiting          | 직접 쓴 semaphore                                     | Global concurrency limit 과 rate limit                 |
-| Per-step observability | 단계마다 남기는 기록이 없음                           | Server 의 UI 에 담긴 모든 flow run 과 task run         |
-| One admission path     | 팀이 이어 붙인 web 요청                               | 요청·schedule·automation 이 켜는 deployment            |
+| #   | Function               | Agent framework alone                                 | Self-hosted Prefect added                              |
+| :-: | :--------------------: | :---------------------------------------------------: | :----------------------------------------------------: |
+| 1   | Step retry             | 한 graph 실행 안, node 에 붙인 retry policy           | Task 마다 붙는 `retries` 와 `retry_delay_seconds`      |
+| 2   | Resume after a crash   | Checkpointer 가 thread 를 마지막 super-step 에서 재생 | 같은 checkpoint, 그리고 server 가 쥔 실행 상태         |
+| 3   | Human approval         | Interrupt, 그리고 팀이 잇는 resume 호출               | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함 |
+| 4   | Where a run executes   | 요청에 답한 web process                               | Work pool, 그리고 그것을 살피는 worker                 |
+| 5   | Suspension             | Process 가 thread 를 쥐고 있음                        | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함   |
+| 6   | Idempotent rerun       | Node 안에 직접 씀                                     | Result caching 이 앞선 결과를 불러 다시 돌지 않음      |
+| 7   | Rate limiting          | 직접 쓴 semaphore                                     | Global concurrency limit 과 rate limit                 |
+| 8   | Per-step observability | 단계마다 남기는 기록이 없음                           | Server 의 UI 에 담긴 모든 flow run 과 task run         |
+| 9   | One admission path     | 팀이 이어 붙인 web 요청                               | 요청·schedule·automation 이 켜는 deployment            |
 
 ## 6. Strength
 
-[Table 2](#table-2) 의 마지막 다섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. 팀이 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 다섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
+[Table 2](#table-2) 의 마지막 다섯 행 (#5, 6, 7, 8, 9) 에서 agent framework 는 그 일을 스스로 하지 못한다. 팀이 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 다섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
 
 **Suspension** 은 process 를 놓아준다. `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계는 기다리는 동안 아무것도 쓰지 않는다. Thread 를 쥐고 기다리면 그 하루 내내 process 하나를 잡아 둔다.
 
