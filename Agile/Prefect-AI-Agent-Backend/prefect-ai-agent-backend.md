@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
+Rev. 13 | Created: 2026-09-27 | Updated: 2026-09-27 23:32 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,6 +14,7 @@ Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. What Prefect Does In An Agent Backend](#appendix-b-what-prefect-does-in-an-agent-backend)
 - [Appendix C. How An Event Trigger Is Done In Prefect](#appendix-c-how-an-event-trigger-is-done-in-prefect)
+- [Appendix D. Agent Frameworks In Use As Of September 2026](#appendix-d-agent-frameworks-in-use-as-of-september-2026)
 
 ## 1. Purpose
 
@@ -25,7 +26,7 @@ Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
 
 The orchestrator is the outer three of an AI agent's seven backend responsibilities, the three that hold every run rather than one, and Prefect supplies them as a product where a team would otherwise write them. Five capabilities it brings — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and the three constraints that come with it are the rows a benchmarking sheet compares products on.
 
-The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
+The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The agent framework taken as the baseline is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the left of [Table 2](#table-2) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -195,7 +196,9 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 <a id="ref-6"></a>
 [6] LangChain. [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers). LangGraph documentation.<br>
 <a id="ref-7"></a>
-[7] Prefect. [Define event triggers](https://docs.prefect.io/v3/concepts/event-triggers). Prefect 3 documentation.
+[7] Prefect. [Define event triggers](https://docs.prefect.io/v3/concepts/event-triggers). Prefect 3 documentation.<br>
+<a id="ref-8"></a>
+[8] LangChain. [The best AI agent frameworks in 2026](https://www.langchain.com/resources/ai-agent-frameworks).
 
 ---
 
@@ -224,6 +227,8 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 - **Worker**: the client-side process that polls a work pool and starts each scheduled run on that infrastructure.
 
 ## Appendix B. What Prefect Does In An Agent Backend
+
+The parenthesis at the end of each item names the [Table 2](#table-2) function it is.
 
 1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure (#2 Resume after a crash, #6 Idempotent rerun).
 2. Retry and timeout: it applies a policy per call, against an LLM API outage or a tool error (#1 Step retry).
@@ -303,3 +308,21 @@ Table 4. Trigger types
 - Three VM error excursions within ten minutes, on threshold, to the retraining flow
 - Sensor data unreceived for thirty minutes, proactively, to the equipment check notice
 - Retraining completed, on flow state, to the validation agent and the report
+
+## Appendix D. Agent Frameworks In Use As Of September 2026
+
+The baseline this document uses is #1 LangGraph, and chapter 2 says why it was chosen. Each date is the product's public announcement [[8](#ref-8)].
+
+Table 5. Agent frameworks and when each was first announced
+
+| #   | Framework                 | What it is                                                                             | Announced |
+| :-: | :-----------------------: | :------------------------------------------------------------------------------------: | :-------: |
+| 1   | LangGraph                 | Holds state as a graph. The default where an audit trail and human approval are needed | 2024-01   |
+| 2   | CrewAI                    | Binds several role-playing agents into a team. Fastest to a prototype                  | 2024-01   |
+| 3   | OpenAI Agents SDK         | The model drives the loop. Least friction if the work is GPT-centred                   | 2025-03   |
+| 4   | Google ADK                | Strong on multimodal. Announced at Google Cloud NEXT 2025                              | 2025-04   |
+| 5   | Claude Agent SDK          | The agent harness behind Claude Code, renamed from the Claude Code SDK                 | 2025-09   |
+| 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET estate                                    | 2026-04   |
+| 7   | Pydantic AI               | Type-safe Python. V2 carries durable execution                                         | 2026-06   |
+
+#7 Pydantic AI is the framework a Prefect integration is published for [[5](#ref-5)], and that integration does the wrapping of an agent as a flow and its tools as tasks.

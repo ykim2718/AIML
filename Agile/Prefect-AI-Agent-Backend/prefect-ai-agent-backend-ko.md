@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
+Rev. 13 | Created: 2026-09-27 | Updated: 2026-09-27 23:32 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,6 +14,7 @@ Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. What Prefect Does In An Agent Backend](#appendix-b-what-prefect-does-in-an-agent-backend)
 - [Appendix C. How An Event Trigger Is Done In Prefect](#appendix-c-how-an-event-trigger-is-done-in-prefect)
+- [Appendix D. Agent Frameworks In Use As Of September 2026](#appendix-d-agent-frameworks-in-use-as-of-september-2026)
 
 ## 1. Purpose
 
@@ -25,7 +26,7 @@ Rev. 12 | Created: 2026-09-27 | Updated: 2026-09-27 23:29 CDT
 
 Orchestrator 는 AI agent backend 의 일곱 책임 가운데 바깥 셋, 곧 한 실행이 아니라 모든 실행을 쥐는 셋이며, Prefect 는 팀이 직접 지어야 할 그 셋을 제품으로 내놓는다. Prefect 가 함께 가져오는 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 와 그에 딸린 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
 
-Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
+Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 기준선으로 삼은 agent framework 는 LangGraph 다. [Table 2](#table-2) 의 왼쪽 열이 기대는 두 가지, checkpointer 와 node 에 붙인 retry policy 를 vendor 문서로 확인할 수 있어 고른 것이며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -195,7 +196,9 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 <a id="ref-6"></a>
 [6] LangChain. [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers). LangGraph documentation.<br>
 <a id="ref-7"></a>
-[7] Prefect. [Define event triggers](https://docs.prefect.io/v3/concepts/event-triggers). Prefect 3 documentation.
+[7] Prefect. [Define event triggers](https://docs.prefect.io/v3/concepts/event-triggers). Prefect 3 documentation.<br>
+<a id="ref-8"></a>
+[8] LangChain. [The best AI agent frameworks in 2026](https://www.langchain.com/resources/ai-agent-frameworks).
 
 ---
 
@@ -224,6 +227,8 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 - **Worker**: Work pool 을 살펴 예정된 실행을 그 infrastructure 위에서 시작하는 client 쪽 process.
 
 ## Appendix B. What Prefect Does In An Agent Backend
+
+각 행의 끝 괄호는 그 항목이 [Table 2](#table-2) 의 어느 function 인지를 가리킨다.
 
 1. 중단된 자리에서 다시 시작: LLM·도구 호출을 task 단위로 캐시하고, 실패하면 그 지점부터 재개합니다 (#2 Resume after a crash, #6 Idempotent rerun).
 2. 재시도와 제한 시간: 호출마다 정책을 적용합니다. LLM API 장애와 도구 오류에 대응합니다 (#1 Step retry).
@@ -303,3 +308,21 @@ Table 4. Trigger types
 - VM 오차 초과가 10분 내 3회 → Threshold → 재학습 flow
 - 센서 데이터 30분 미수신 → Proactive → 장비 점검 알림
 - 재학습 완료 → Flow state → 검증 Agent → 리포트 생성
+
+## Appendix D. Agent Frameworks In Use As Of September 2026
+
+이 문서가 기준선으로 쓴 것은 #1 LangGraph 이며, 고른 이유는 꼭지 2 에 적었다. 출시 시점은 각 제품의 공개 발표 시점이다 [[8](#ref-8)].
+
+Table 5. Agent frameworks and when each was first announced
+
+| #   | Framework                 | What it is                                                         | Announced |
+| :-: | :-----------------------: | :----------------------------------------------------------------: | :-------: |
+| 1   | LangGraph                 | Graph 로 상태를 다룬다. 감사 이력과 사람 승인이 필요한 곳의 기본값 | 2024-01   |
+| 2   | CrewAI                    | 역할을 맡은 agent 여럿을 팀으로 묶는다. Prototype 까지 가장 빠름   | 2024-01   |
+| 3   | OpenAI Agents SDK         | Model 이 loop 를 끌고 간다. GPT 중심이면 마찰이 가장 적음          | 2025-03   |
+| 4   | Google ADK                | Multimodal 에 강하다. Google Cloud NEXT 2025 에서 공개             | 2025-04   |
+| 5   | Claude Agent SDK          | Claude Code 의 agent harness. Claude Code SDK 에서 이름을 바꿈     | 2025-09   |
+| 6   | Microsoft Agent Framework | Graph 기반. Azure 와 .NET 환경의 선택                              | 2026-04   |
+| 7   | Pydantic AI               | Type 안전한 Python. V2 가 durable execution 을 담음                | 2026-06   |
+
+#7 Pydantic AI 는 Prefect 통합이 나와 있는 framework 이며 [[5](#ref-5)], 그 통합은 agent 를 flow 로, tool 을 task 로 감싸는 일을 대신한다.
