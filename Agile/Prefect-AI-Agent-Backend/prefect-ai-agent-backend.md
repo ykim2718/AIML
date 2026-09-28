@@ -1,32 +1,29 @@
 # Prefect As An AI Agent Backend
-Rev. 1 | Created: 2026-09-27 | Updated: 2026-09-27 21:47 CDT
+Rev. 2 | Created: 2026-09-27 | Updated: 2026-09-27 22:08 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
   - [3.1 Placement](#31-placement)
 - [4. Backend Composition](#4-backend-composition)
-  - [4.1 Without Prefect](#41-without-prefect)
-  - [4.2 With Prefect](#42-with-prefect)
 - [5. Function Comparison](#5-function-comparison)
 - [6. Strength](#6-strength)
 - [7. Application](#7-application)
-- [8. Design Record](#8-design-record)
-- [9. Further Work](#9-further-work)
+- [8. Benchmarking](#8-benchmarking)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 
 - **Problem Statement**: No account exists of how a Prefect workflow is used to build an AI agent or an AI orchestrator, or of where using it creates a strength.
-- **Goal**: Split the frontend and backend roles of an AI agent and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer carries the answer into an AI orchestrator design.
-- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation code is not given, and neither is any feature the self-hosted Prefect Server does not carry.
+- **Goal**: Split the frontend and backend roles of an AI orchestrator and an AI agent, and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer produces benchmarking material from it.
+- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation code is not given, and no orchestrator other than Prefect is scored.
 
 ## 2. Summary
 
-The orchestrator is the fleet-scoped third of an AI agent's backend, and Prefect supplies that third as a product where a design would otherwise specify code. A design that names Prefect there gains five capabilities a hand-written orchestrator cannot reach — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and takes on three constraints, of which the authentication the open source server does not carry is the one the design answers first.
+The orchestrator is the fleet-scoped third of an AI agent's backend, and Prefect supplies that third as a product where a team would otherwise write it. Five of its capabilities — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and the three constraints beside them are what a benchmarking sheet compares one orchestrator against another on.
 
-The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The rest of this document is the ten roles and their scopes, the two compositions, the nine functions compared across them, the five strengths, and the six decisions a design records.
+The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -116,17 +113,9 @@ written by hand beside it:                              v
 <a id="fig-2"></a>
 Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
-### 4.1 Without Prefect
+An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the team. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. A scheduler, a semaphore and a log table are then written by hand, and each of the three is a component the team owns.
 
-An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the three outer ones to the team. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step [[6](#ref-6)]. A retry policy attached to a node retries it with exponential backoff [[6](#ref-6)].
-
-What the team writes beside the framework is the fleet-scoped half. Nothing in the framework says what starts a run other than the request that called it, how many LLM calls may be in flight against a rate-limited API, or what ran last night — so a scheduler, a semaphore and a log table are written by hand, and each of the three is a component the team then owns.
-
-### 4.2 With Prefect
-
-Prefect adds a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop from a function called by hand into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API [[1](#ref-1)]. A work pool names the infrastructure, and a worker polls the pool, starts the run on that infrastructure and watches it to completion [[1](#ref-1)].
-
-The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. Wrapping an agent this way is a published integration rather than a pattern a team invents: agent tools are wrapped as tasks automatically, and each tool call then carries its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
+Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)], and wrapping an agent this way is a published integration in which tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
 
 ## 5. Function Comparison
 
@@ -149,11 +138,11 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-Five of the nine differ in kind rather than in degree, and each one is something a design can specify only by naming a product that already carries it.
+Five of the nine differ in kind rather than in degree, so they are the rows on which one orchestrator is compared against another rather than tuned.
 
 **Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits, where a held thread costs a process for the whole day.
 
-**Idempotent rerun** makes a repeat safe. Idempotency comes from Prefect's transactional orchestration, which makes a rerun load a previous result instead of executing again when the context is identical, so a retried agent run does not pay the LLM twice for the same tool call [[5](#ref-5)]. The guard a team writes by hand covers the cases it thought of.
+**Idempotent rerun** makes a repeat safe. Idempotency comes from Prefect's transactional orchestration, which makes a rerun load a previous result instead of executing again when the context is identical, so a retried agent run does not pay the LLM twice for the same tool call [[5](#ref-5)].
 
 **Rate limiting** is declared rather than coded. A global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second; both work in any Python code rather than only inside a flow, so a tool that was never wrapped as a task is still bounded [[3](#ref-3)].
 
@@ -171,29 +160,25 @@ Prefect earns its place when a run outlives the request that started it, and cos
 
 **Exclusion** is an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that finishes in the request it arrived on has no state for them to hold.
 
-## 8. Design Record
+## 8. Benchmarking
 
-A design carries six decisions out of this document, and each one is answered by a named chapter rather than by an implementation. [Table 3](#table-3) is the list a reviewer checks an AI orchestrator design against.
+A benchmarking sheet takes its rows from this document and its columns from the products being compared. [Table 3](#table-3) is that row list, with Prefect's answer already filled in.
 
 <a id="table-3"></a>
-Table 3. What an AI orchestrator design records, and where this document answers it
+Table 3. The benchmarking rows, and Prefect's answer on each
 
-| Decision           | What it fixes                                                  | Answered in                         |
-| :----------------: | :------------------------------------------------------------: | :---------------------------------: |
-| Boundary           | Which side of the frontend and backend line each role sits on  | [Fig 1](#fig-1)                     |
-| Orchestrator scope | Which responsibilities a product carries rather than the code  | [Table 1](#table-1)                 |
-| Composition        | Whether the fleet-scoped three are written by hand or named    | [Chapter 4](#4-backend-composition) |
-| Capability claim   | Which strengths the design is allowed to promise               | [Chapter 6](#6-strength)            |
-| Access             | Where the server sits, given that it carries no authentication | [Chapter 7](#7-application)         |
-| Inbound events     | How an outside system starts a run without webhooks            | [Chapter 7](#7-application)         |
+| Row                | What it asks                                        | Prefect's answer                   |
+| :----------------: | :-------------------------------------------------: | :--------------------------------: |
+| Orchestrator scope | Which of the fleet-scoped three the product carries | All three                          |
+| Waiting cost       | What a run waiting for a person holds open          | Nothing, the process exits         |
+| Repeat cost        | What a rerun pays for work already done             | The previous result, loaded        |
+| Call pacing        | How the call rate is bounded                        | Declared, in any Python code       |
+| Failure locality   | How far down a failure is located                   | The one tool call                  |
+| Trigger count      | How many code paths the triggers need               | One deployment                     |
+| Access control     | What guards the API and the UI                      | Nothing, in the open source server |
+| Inbound events     | How an outside system starts a run                  | A Cloud webhook, or a relay        |
 
-A design that leaves a row empty leaves that decision to whoever implements the part, and the answer then differs between the batch path and the interactive path.
-
-## 9. Further Work
-
-- **Wrap one agent with the published integration**. The integration wraps an agent as a flow and its tools as tasks, and gives LLM calls retries with exponential backoff by default [[5](#ref-5)], which removes the wrapping code this document describes. It needs one agent already written against that framework and a self-hosted server to point it at.
-- **Decide a cache policy per tool**. A rerun loading a cached result instead of calling the LLM again is Prefect's own behaviour under an identical context [[5](#ref-5)], so the remaining decision is which tools are safe to cache. It needs, for each tool, a judgement on whether the same input must return the same output.
-- **Build the event relay**. Webhooks being Cloud only [[4](#ref-4)] leaves a self-hosted backend without an inbound path for outside events, and an automation can only fire on events that reach the API. It needs the list of systems that would start an agent run.
+A product that cannot answer a row leaves that row to code, so the sheet carries the cost of that code beside the product's name.
 
 ## References
 
