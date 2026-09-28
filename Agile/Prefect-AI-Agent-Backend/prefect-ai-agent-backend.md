@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 20 | Created: 2026-09-27 | Updated: 2026-09-28 00:04 CDT
+Rev. 21 | Created: 2026-09-27 | Updated: 2026-09-28 00:07 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -35,50 +35,44 @@ The boundary between frontend and backend falls after the user's intent is fixed
 Scope is what decides who carries a responsibility. A framework sees one graph run and covers the one-step and one-run responsibilities; the orchestrator is the part that sees every run, and the three every-run responsibilities are what define it. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
 
 ```text
-LAYER          ROLE              WHAT IT DECIDES                            SCOPE
+LAYER          ROLE              WHAT IT DECIDES                              SCOPE       PART
 
 Frontend  >    Intent            What the user asked, in the backend's form   one request
                Approval          The answer a paused run is waiting for       one run
                Presentation      What the user sees of the result             one request
       |   one request crosses the boundary
       v
-Backend   >    Reasoning         Which action the LLM picks next              one step
-               Tool execution    The action actually carried out              one step
-      |   the two above are what the agent is
-      v
-               State             The point a stopped run resumes from         one run
-               Recovery          Which failed step is tried again, once only  one run
-      |   the two above are what makes one run survive
-      v
-               Admission         What starts a run: request, schedule, event  every run
-               Throughput        How many calls run at once, and how fast     every run
-               Record            What ran, when, and with which result        every run
-      |
-      +-- the three above are the orchestrator
+Backend   >    Reasoning         Which action the LLM picks next              one step    --+
+               Tool execution    The action actually carried out              one step      |
+               State             The point a stopped run resumes from         one run       |  Agent
+               Recovery          Which failed step is tried again, once only  one run     --+
+               Admission         What starts a run: request, schedule, event  every run   --+
+               Throughput        How many calls run at once, and how fast     every run     |  Orchestrator
+               Record            What ran, when, and with which result        every run   --+
 ```
 
 <a id="fig-1"></a>
-Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
+Fig 1. The three frontend roles and the seven backend responsibilities ordered by scope, four of them the agent and three the orchestrator
 
 Widening the scope by one step needs one more place to keep the state that outlives the previous scope. One-step scope needs nothing beyond the process, one-run scope needs a store the process can die without losing, and every-run scope needs a service that outlives every process and can be asked what happened.
 
 ### 3.1 Placement
 
 <a id="table-1"></a>
-Table 1. Each role, the layer that holds it, and what fixes it
+Table 1. Each role, the part that holds it, and what fixes it
 
-| Role           | Layer        | Scope       | What fixes it                               |
-| :------------: | :----------: | :---------: | :-----------------------------------------: |
-| Intent         | Frontend     | One request | The request schema the backend accepts      |
-| Approval       | Frontend     | One run     | The form that answers a paused run          |
-| Presentation   | Frontend     | One request | The stream or page the user reads           |
-| Reasoning      | Backend      | One step    | The LLM call and the tool choice it returns |
-| Tool execution | Backend      | One step    | The function the chosen tool names          |
-| State          | Backend      | One run     | The checkpoint a resumed run reads          |
-| Recovery       | Backend      | One run     | The retry count, and what a rerun may skip  |
-| Admission      | Orchestrator | Every run   | The deployment and what triggers it         |
-| Throughput     | Orchestrator | Every run   | The concurrency limit and the call rate     |
-| Record         | Orchestrator | Every run   | The run history each step writes            |
+| #   | Role           | Part         | Scope       | What fixes it                               |
+| :-: | :------------: | :----------: | :---------: | :-----------------------------------------: |
+| 1   | Intent         | Frontend     | One request | The request schema the backend accepts      |
+| 2   | Approval       | Frontend     | One run     | The form that answers a paused run          |
+| 3   | Presentation   | Frontend     | One request | The stream or page the user reads           |
+| 4   | Reasoning      | Agent        | One step    | The LLM call and the tool choice it returns |
+| 5   | Tool execution | Agent        | One step    | The function the chosen tool names          |
+| 6   | State          | Agent        | One run     | The checkpoint a resumed run reads          |
+| 7   | Recovery       | Agent        | One run     | The retry count, and what a rerun may skip  |
+| 8   | Admission      | Orchestrator | Every run   | The deployment and what triggers it         |
+| 9   | Throughput     | Orchestrator | Every run   | The concurrency limit and the call rate     |
+| 10  | Record         | Orchestrator | Every run   | The run history each step writes            |
 
 No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes code on the others.
 

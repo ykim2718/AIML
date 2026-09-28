@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 20 | Created: 2026-09-27 | Updated: 2026-09-28 00:04 CDT
+Rev. 21 | Created: 2026-09-27 | Updated: 2026-09-28 00:07 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -35,50 +35,44 @@ Frontend 와 backend 의 경계는 사용자의 뜻이 확정된 뒤, 첫 LLM �
 누가 어느 책임을 지는지는 범위가 정한다. Framework 는 한 graph 실행을 보므로 한 단계 범위와 한 실행 범위의 책임을 진다. Orchestrator 는 모든 실행을 보는 쪽이며, 모든 실행 범위의 세 책임이 곧 그것의 정의다. 열 역할과 각각의 층, 그리고 각 역할이 정하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
 ```text
-LAYER          ROLE              WHAT IT DECIDES                            SCOPE
+LAYER          ROLE              WHAT IT DECIDES                              SCOPE       PART
 
 Frontend  >    Intent            What the user asked, in the backend's form   one request
                Approval          The answer a paused run is waiting for       one run
                Presentation      What the user sees of the result             one request
       |   one request crosses the boundary
       v
-Backend   >    Reasoning         Which action the LLM picks next              one step
-               Tool execution    The action actually carried out              one step
-      |   the two above are what the agent is
-      v
-               State             The point a stopped run resumes from         one run
-               Recovery          Which failed step is tried again, once only  one run
-      |   the two above are what makes one run survive
-      v
-               Admission         What starts a run: request, schedule, event  every run
-               Throughput        How many calls run at once, and how fast     every run
-               Record            What ran, when, and with which result        every run
-      |
-      +-- the three above are the orchestrator
+Backend   >    Reasoning         Which action the LLM picks next              one step    --+
+               Tool execution    The action actually carried out              one step      |
+               State             The point a stopped run resumes from         one run       |  Agent
+               Recovery          Which failed step is tried again, once only  one run     --+
+               Admission         What starts a run: request, schedule, event  every run   --+
+               Throughput        How many calls run at once, and how fast     every run     |  Orchestrator
+               Record            What ran, when, and with which result        every run   --+
 ```
 
 <a id="fig-1"></a>
-Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
+Fig 1. The three frontend roles and the seven backend responsibilities ordered by scope, four of them the agent and three the orchestrator
 
 범위를 한 단계 넓힐 때마다, 앞 범위보다 오래 사는 상태를 둘 곳이 하나 더 필요하다. 한 단계 범위는 process 밖에 아무것도 필요하지 않고, 한 실행 범위는 process 가 죽어도 잃지 않는 저장소를 필요로 하며, 모든 실행 범위는 모든 process 보다 오래 살면서 무엇이 있었는지 물을 수 있는 service 를 필요로 한다.
 
 ### 3.1 Placement
 
 <a id="table-1"></a>
-Table 1. Each role, the layer that holds it, and what fixes it
+Table 1. Each role, the part that holds it, and what fixes it
 
-| Role           | Layer        | Scope       | What fixes it                                  |
-| :------------: | :----------: | :---------: | :--------------------------------------------: |
-| Intent         | Frontend     | One request | Backend 가 받아들이는 요청 schema              |
-| Approval       | Frontend     | One run     | 멈춘 실행에 답하는 양식                        |
-| Presentation   | Frontend     | One request | 사용자가 읽는 stream 또는 page                 |
-| Reasoning      | Backend      | One step    | LLM 호출과 그것이 돌려주는 tool 선택           |
-| Tool execution | Backend      | One step    | 고른 tool 이 가리키는 함수                     |
-| State          | Backend      | One run     | 다시 시작한 실행이 읽는 checkpoint             |
-| Recovery       | Backend      | One run     | 재시도 횟수, 그리고 재실행이 건너뛸 수 있는 것 |
-| Admission      | Orchestrator | Every run   | Deployment 과 그것을 켜는 것                   |
-| Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                     |
-| Record         | Orchestrator | Every run   | 단계마다 남기는 실행 기록                      |
+| #   | Role           | Part         | Scope       | What fixes it                                  |
+| :-: | :------------: | :----------: | :---------: | :--------------------------------------------: |
+| 1   | Intent         | Frontend     | One request | Backend 가 받아들이는 요청 schema              |
+| 2   | Approval       | Frontend     | One run     | 멈춘 실행에 답하는 양식                        |
+| 3   | Presentation   | Frontend     | One request | 사용자가 읽는 stream 또는 page                 |
+| 4   | Reasoning      | Agent        | One step    | LLM 호출과 그것이 돌려주는 tool 선택           |
+| 5   | Tool execution | Agent        | One step    | 고른 tool 이 가리키는 함수                     |
+| 6   | State          | Agent        | One run     | 다시 시작한 실행이 읽는 checkpoint             |
+| 7   | Recovery       | Agent        | One run     | 재시도 횟수, 그리고 재실행이 건너뛸 수 있는 것 |
+| 8   | Admission      | Orchestrator | Every run   | Deployment 과 그것을 켜는 것                   |
+| 9   | Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                     |
+| 10  | Record         | Orchestrator | Every run   | 단계마다 남기는 실행 기록                      |
 
 어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 code 를 적는다.
 
