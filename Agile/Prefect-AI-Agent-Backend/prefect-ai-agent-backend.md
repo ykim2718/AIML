@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 41 | Created: 2026-09-27 | Updated: 2026-09-28 10:38 CDT
+Rev. 42 | Created: 2026-09-27 | Updated: 2026-09-28 10:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -232,7 +232,7 @@ Prefect is favourable for a backend whose agent run continues after the HTTP res
 
 ## Appendix B. What Prefect Does In An Agent Backend
 
-The parenthesis at the end of each item names the [Table 3](#table-3) function it is.
+The parenthesis at the end of each item names the [Table 3](#table-3) function the item belongs to.
 
 1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure (#2 Resume after a crash, #6 Idempotent rerun).
 2. Retry and timeout: it applies a policy per call, against an LLM API outage or a tool error (#1 Step retry).
@@ -293,13 +293,13 @@ if __name__ == "__main__":
 
 Table 4. Trigger types
 
-| Type                | Use                                                                    | Setting                                              |
-| :-----------------: | :--------------------------------------------------------------------: | :--------------------------------------------------: |
-| Reactive            | Runs as soon as the event occurs                                       | The default                                          |
-| Threshold           | Runs once N have accumulated, such as three alarms within ten minutes  | `threshold=3`, `within=timedelta(minutes=10)`        |
-| Proactive           | Runs when the event does not arrive, such as collection having stopped | `posture="Proactive"`                                |
-| Compound / Sequence | Runs on a combination or an order of several events                    | `CompoundTrigger`, `SequenceTrigger`                 |
-| Flow state          | Runs in sequence after another flow completes or fails                 | `expect={"prefect.flow-run.Completed"}` and the like |
+| #   | Type                | Use                                                                    | Setting                                              |
+| :-: | :-----------------: | :--------------------------------------------------------------------: | :--------------------------------------------------: |
+| 1   | Reactive            | Runs as soon as the event occurs                                       | The default                                          |
+| 2   | Threshold           | Runs once N have accumulated, such as three alarms within ten minutes  | `threshold=3`, `within=timedelta(minutes=10)`        |
+| 3   | Proactive           | Runs when the event does not arrive, such as collection having stopped | `posture="Proactive"`                                |
+| 4   | Compound / Sequence | Runs on a combination or an order of several events                    | `CompoundTrigger`, `SequenceTrigger`                 |
+| 5   | Flow state          | Runs in sequence after another flow completes or fails                 | `expect={"prefect.flow-run.Completed"}` and the like |
 
 **External systems**
 

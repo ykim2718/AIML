@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 41 | Created: 2026-09-27 | Updated: 2026-09-28 10:38 CDT
+Rev. 42 | Created: 2026-09-27 | Updated: 2026-09-28 10:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -232,25 +232,25 @@ Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 P
 
 ## Appendix B. What Prefect Does In An Agent Backend
 
-각 행의 끝 괄호는 그 항목이 [Table 3](#table-3) 의 어느 function 인지를 가리킨다.
+각 항목 끝의 괄호는 그 항목이 [Table 3](#table-3) 의 어느 function 인지를 가리킨다.
 
-1. 중단된 자리에서 다시 시작: LLM·도구 호출을 task 단위로 캐시하고, 실패하면 그 지점부터 재개합니다 (#2 Resume after a crash, #6 Idempotent rerun).
-2. 재시도와 제한 시간: 호출마다 정책을 적용합니다. LLM API 장애와 도구 오류에 대응합니다 (#1 Step retry).
-3. 이벤트로 자동 실행: FDC 알람이나 drift 감지 같은 이벤트가 오면 Agent를 자동 실행합니다 (#9 One admission path).
-4. 정해진 때마다 실행: 정기 분석과 리포트 Agent를 주기적으로 실행합니다 (#9 One admission path).
-5. 여러 기계에 나누어 실행: K8s나 GPU worker에 작업을 분배합니다 (#4 Where a run executes).
-6. 실행 기록 보기: 실행 이력, 로그, 상태를 UI로 추적합니다 (#8 Per-step observability).
-7. 사람의 승인 기다리기: `pause_flow_run`으로 승인이 날 때까지 멈췄다가 재개합니다 (#3 Human approval, #5 Suspension).
-8. ML pipeline 과 한 체계에서 운영: 재학습, 배포, Agent 실행을 함께 돌립니다 (#10 ML pipeline integration).
-9. 호출 속도 제한: 동시 호출 수와 초당 호출 속도를 선언으로 묶습니다. LLM API rate limit 에 대응합니다 (#7 Rate limiting).
+1. 중단된 자리에서 다시 시작: LLM 호출과 tool 호출을 task 단위로 cache 하고, 실패하면 그 자리부터 다시 시작한다 (#2 Resume after a crash, #6 Idempotent rerun).
+2. 재시도와 제한 시간: 호출마다 retry policy 와 timeout 을 건다. LLM API 장애와 tool 오류에 대응한다 (#1 Step retry).
+3. Event 로 자동 실행: FDC 알람이나 drift 감지 같은 event 가 닿으면 agent 를 자동으로 실행한다 (#9 One admission path).
+4. 정해진 때마다 실행: 정기 분석 agent 와 report agent 를 schedule 에 걸어 실행한다 (#9 One admission path).
+5. 여러 대에 나누어 실행: K8s node 나 GPU worker 에 실행을 나누어 보낸다 (#4 Where a run executes).
+6. 실행 기록 보기: 실행 기록과 log 와 상태를 UI 에서 따라간다 (#8 Per-step observability).
+7. 사람의 승인 기다리기: `pause_flow_run` 으로 승인이 닿을 때까지 멈췄다가 다시 시작한다 (#3 Human approval, #5 Suspension).
+8. ML pipeline 과 한 체계에서 운영: 재학습과 배포와 agent 실행을 함께 돌린다 (#10 ML pipeline integration).
+9. 호출 속도 제한: 동시 호출 수와 초당 호출 속도를 선언으로 묶는다. LLM API 의 rate limit 에 대응한다 (#7 Rate limiting).
 
-직접 하지 않는 일: LLM 추론 로직, 메모리와 RAG, 실시간 대화 서빙은 Agent 프레임워크와 API 서버가 담당합니다.
+직접 하지 않는 일: LLM 추론 logic, memory 와 RAG, 실시간 대화 serving 은 agent framework 와 API server 가 맡는다.
 
 ## Appendix C. How An Event Trigger Is Done In Prefect
 
-방법은 두 단계입니다. `emit_event` 로 이벤트를 발행하고, `DeploymentEventTrigger` 또는 Automation 으로 그 이벤트를 받아 flow 를 실행합니다 [[7](#ref-7)].
+두 단계로 한다. `emit_event` 가 event 를 내보내고, `DeploymentEventTrigger` 또는 automation 이 그 event 를 받아 flow 를 실행한다 [[7](#ref-7)].
 
-**1. Emit the event** — FDC 시스템이나 수집기 쪽입니다.
+**1. Emit the event** — FDC system 이나 수집기 쪽에서 한다.
 
 ```python
 from prefect.events import emit_event
@@ -293,25 +293,25 @@ if __name__ == "__main__":
 
 Table 4. Trigger types
 
-| Type                | Use                                                          | Setting                                       |
-| :-----------------: | :----------------------------------------------------------: | :-------------------------------------------: |
-| Reactive            | 이벤트가 발생하면 즉시 실행합니다                            | 기본값                                        |
-| Threshold           | N회 누적 시 실행합니다 (예: 10분 내 알람 3회)                | `threshold=3`, `within=timedelta(minutes=10)` |
-| Proactive           | 이벤트가 오지 않을 때 실행합니다 (예: 데이터 수집 중단 감지) | `posture="Proactive"`                         |
-| Compound / Sequence | 여러 이벤트의 조합이나 순서를 조건으로 실행합니다            | `CompoundTrigger`, `SequenceTrigger`          |
-| Flow state          | 다른 flow 가 완료되거나 실패하면 연쇄 실행합니다             | `expect={"prefect.flow-run.Completed"}` 등    |
+| #   | Type                | Use                                                  | Setting                                       |
+| :-: | :-----------------: | :--------------------------------------------------: | :-------------------------------------------: |
+| 1   | Reactive            | Event 가 닿으면 곧바로 실행                          | 기본값                                        |
+| 2   | Threshold           | Event 가 N 번 쌓이면 실행 (예: 10 분 안에 알람 3 회) | `threshold=3`, `within=timedelta(minutes=10)` |
+| 3   | Proactive           | Event 가 오지 않으면 실행 (예: 데이터 수집 중단)     | `posture="Proactive"`                         |
+| 4   | Compound / Sequence | 여러 event 의 조합이나 순서가 맞으면 실행            | `CompoundTrigger`, `SequenceTrigger`          |
+| 5   | Flow state          | 다른 flow 가 끝나거나 실패하면 이어서 실행           | `expect={"prefect.flow-run.Completed"}` 등    |
 
 **External systems**
 
-- Prefect Cloud: Webhook 으로 외부 HTTP 요청을 바로 이벤트로 받을 수 있습니다.
-- Self-hosted (OSS): Webhook 이 없으므로 FastAPI endpoint 나 Kafka/MQ consumer 에서 `emit_event` 를 불러 이어 줍니다.
+- Prefect Cloud: webhook 이 외부 HTTP 요청을 그대로 event 로 받는다.
+- Self-hosted (OSS): webhook 이 없으므로 FastAPI endpoint 나 Kafka·MQ consumer 가 `emit_event` 를 불러 잇는다.
 
 **Fab application**
 
-- FDC 알람 → Reactive → 원인 분석 Agent
-- VM 오차 초과가 10분 내 3회 → Threshold → 재학습 flow
-- 센서 데이터 30분 미수신 → Proactive → 장비 점검 알림
-- 재학습 완료 → Flow state → 검증 Agent → 리포트 생성
+- FDC 알람 → Reactive → 원인 분석 agent
+- VM 오차 초과가 10 분 안에 3 회 → Threshold → 재학습 flow
+- 센서 데이터 30 분 미수신 → Proactive → 장비 점검 알림
+- 재학습 완료 → Flow state → 검증 agent → report 생성
 
 ## Appendix D. Agent Frameworks In Use As Of September 2026
 
