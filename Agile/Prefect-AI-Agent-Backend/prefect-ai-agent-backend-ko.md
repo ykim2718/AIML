@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 3 | Created: 2026-09-27 | Updated: 2026-09-27 22:24 CDT
+Rev. 4 | Created: 2026-09-27 | Updated: 2026-09-27 22:31 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -23,7 +23,7 @@ Rev. 3 | Created: 2026-09-27 | Updated: 2026-09-27 22:24 CDT
 
 ## 2. Summary
 
-Orchestrator 는 AI agent backend 가운데 fleet 범위를 지는 삼분의 일이며, Prefect 는 팀이 직접 지어야 할 그 삼분의 일을 제품으로 내놓는다. 그 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 와 그 곁의 제약 셋이, benchmarking 자료가 orchestrator 를 서로 견주는 행이다.
+Orchestrator 는 AI agent backend 의 일곱 책임 가운데 바깥 셋, 곧 한 실행이 아니라 모든 실행을 쥐는 셋이며, Prefect 는 팀이 직접 지어야 할 그 셋을 제품으로 내놓는다. Prefect 가 함께 가져오는 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 와 그에 딸린 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
 
 Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 여덟 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
@@ -59,7 +59,7 @@ Backend   >    Reasoning         Which action the LLM picks next              on
 <a id="fig-1"></a>
 Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
 
-범위를 한 단계 넓힐 때마다, 앞 범위보다 오래 사는 상태를 둘 자리가 하나 더 든다. 단계 범위는 process 밖에 아무것도 필요하지 않고, 실행 범위는 process 가 죽어도 잃지 않는 저장소를 필요로 하며, fleet 범위는 모든 process 보다 오래 살면서 무엇이 있었는지 물을 수 있는 service 를 필요로 한다.
+범위를 한 단계 넓힐 때마다, 앞 범위보다 오래 사는 상태를 둘 곳이 하나 더 필요하다. 단계 범위는 process 밖에 아무것도 필요하지 않고, 실행 범위는 process 가 죽어도 잃지 않는 저장소를 필요로 하며, fleet 범위는 모든 process 보다 오래 살면서 무엇이 있었는지 물을 수 있는 service 를 필요로 한다.
 
 ### 3.1 Placement
 
@@ -68,7 +68,7 @@ Table 1. Each role, the layer that holds it, and what fixes it
 
 | Role           | Layer        | Scope       | What fixes it                                  |
 | :------------: | :----------: | :---------: | :--------------------------------------------: |
-| Intent         | Frontend     | One request | Backend 이 받아들이는 요청 schema              |
+| Intent         | Frontend     | One request | Backend 가 받아들이는 요청 schema              |
 | Approval       | Frontend     | One run     | 멈춘 실행에 답하는 양식                        |
 | Presentation   | Frontend     | One request | 사용자가 읽는 stream 또는 page                 |
 | Reasoning      | Backend      | One step    | LLM 호출과 그것이 돌려주는 tool 선택           |
@@ -83,7 +83,7 @@ Table 1. Each role, the layer that holds it, and what fixes it
 
 ## 4. Backend Composition
 
-두 구성은 같은 추론 loop 를 돌리며, 그 loop 가 어디에 사는지에서 갈린다. Prefect 가 없으면 loop 는 요청에 답한 process 안에서 돌고, Prefect 가 있으면 loop 는 worker 가 제 기반 위에서 시작하는 flow 이며 요청은 그것을 청하기만 한다. 둘은 [Fig 2](#fig-2) 에 그렸다.
+두 구성은 같은 추론 loop 를 돌리며, 그 loop 가 어디에 사는지에서 갈린다. Prefect 가 없으면 loop 는 요청에 답한 process 안에서 돌고, Prefect 가 있으면 loop 는 worker 가 제 infrastructure 위에서 시작하는 flow 이며 요청은 그것을 청하기만 한다. 둘은 [Fig 2](#fig-2) 에 그렸다.
 
 ```text
 WITHOUT PREFECT                        WITH PREFECT (self-hosted)
@@ -117,11 +117,11 @@ Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
 Agent framework 는 [Fig 1](#fig-1) 의 안쪽 네 책임을 지고 orchestrator 의 셋을 팀에 남긴다. Checkpointer 는 graph 상태의 snapshot 을 super-step 마다 thread id 아래 저장하여 멈춘 실행을 다시 시작하게 하고 사람이 한 단계를 끊어 들여다보고 승인하게 하며, node 에 붙인 retry policy 는 그 node 를 지수 backoff 로 다시 시도한다 [[6](#ref-6)]. 그러면 scheduler 와 semaphore 와 기록용 표를 직접 쓰게 되고, 그 셋은 팀이 소유하는 구성 요소가 된다.
 
-Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 은 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고 schedule 과 UI 와 automation 과 REST API 가 그것을 켜며, work pool 이 기반을 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[1](#ref-1)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담고 [[4](#ref-4)], agent 를 이렇게 감싸는 일은 tool 이 자동으로 task 가 되어 호출마다 제 재시도와 제 cache 된 결과와 실행 기록의 제 줄을 갖는, 이미 나와 있는 통합이다 [[5](#ref-5)].
+Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 은 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고 schedule 과 UI 와 automation 과 REST API 가 그것을 켜며, work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[1](#ref-1)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Agent 를 이렇게 감싸는 통합은 이미 나와 있다. Tool 이 자동으로 task 가 되어, 호출마다 제 재시도와 제 cache 된 결과와 실행 기록의 제 줄을 갖는다 [[5](#ref-5)].
 
 ## 5. Function Comparison
 
-아홉 기능이 두 구성에 모두 있고, 차이는 있느냐가 아니라 무엇이 그것을 지느냐다. [Table 2](#table-2) 는 왼쪽에서 오른쪽으로 같은 요구가 두 번 채워지는 것으로 읽힌다.
+아홉 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. Prefect 쪽 칸은 제품의 기능을 적고, framework 쪽 칸은 제 기능이거나 팀이 직접 쓴 code 이거나 아무것도 없음이다.
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
@@ -140,23 +140,23 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-아홉 가운데 다섯이 정도가 아니라 종류에서 다르므로, 그 다섯이 orchestrator 를 조율하는 행이 아니라 서로 견주는 행이다.
+아홉 행 가운데 다섯은 왼쪽에 framework 의 기능이 없다. 팀이 직접 쓴 code 가 있거나, 아무것도 없다. 그 다섯이 benchmarking 자료에서 제품을 가르는 행이며, 아래에 하나씩 Prefect 가 그것을 내놓는 장치와 함께 적는다.
 
-**Suspension** 은 process 를 놓아준다. `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 기반을 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 기다리는 동안 아무것도 쓰지 않으므로, thread 를 쥐고 있으면 하루 내내 process 하나가 드는 자리와 갈린다.
+**Suspension** 은 process 를 놓아준다. `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계는 기다리는 동안 아무것도 쓰지 않는다. Thread 를 쥐고 기다리면 그 하루 내내 process 하나를 잡아 둔다.
 
-**Idempotent rerun** 은 다시 돌리는 일을 안전하게 만든다. Idempotency 는 Prefect 의 transactional orchestration 에서 오며, 문맥이 같을 때 재실행이 다시 돌지 않고 앞선 결과를 불러오게 하고, 그래서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 값을 두 번 치르지 않는다 [[5](#ref-5)].
+**Idempotent rerun** 은 다시 돌리는 일을 안전하게 만든다. Idempotency 는 Prefect 의 transactional orchestration 에서 오며, 문맥이 같을 때 재실행이 다시 돌지 않고 앞선 결과를 불러오게 하고, 그래서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 비용을 두 번 치르지 않는다 [[5](#ref-5)].
 
-**Rate limiting** 은 code 가 아니라 선언이다. Global concurrency limit 이 띄울 수 있는 호출 수를 묶고, rate limit 이 초당 slot 회복량으로 속도를 고르며, 둘은 flow 안이 아니라 어떤 Python code 에서도 쓰이므로 task 로 감싸지 않은 tool 도 상한 안에 든다 [[3](#ref-3)].
+**Rate limiting** 은 code 가 아니라 선언이다. Global concurrency limit 이 띄울 수 있는 호출 수를 묶고, rate limit 이 초당 slot 회복량으로 호출 간격을 벌리며, 둘은 flow 안이 아니라 어떤 Python code 에서도 쓰이므로 task 로 감싸지 않은 tool 도 상한 안에 든다 [[3](#ref-3)].
 
-**Per-step observability** 는 재시도를 주는 그 감싸기에서 함께 나온다. Tool 호출 하나가 task 이므로 하나씩 따로 실행 기록에 보이고 하나씩 따로 다시 시도된다 [[5](#ref-5)]. Agent 실행이 실패했다는 것을 아는 것과, 어느 tool 호출이 어느 입력에서 실패했는지를 아는 것이 그 차이다.
+**Per-step observability** 는 재시도를 주는 그 감싸기에서 함께 나온다. Tool 호출 하나가 task 이므로 하나씩 따로 실행 기록에 보이고 하나씩 따로 다시 시도된다 [[5](#ref-5)]. 그러면 보고가 agent 실행이 실패했다는 데서, 어느 tool 호출이 어느 입력에서 실패했는지로 내려간다.
 
-**One admission path** 는 모든 방아쇠를 한 자리로 받는다. Deployment 하나가 대화형 요청과 야간 schedule 과 event 기반 automation 에 함께 답하므로 [[1](#ref-1)], 야간 일괄 실행과 대화 요청이 서로 갈라지는 두 벌이 아니라 같은 code 를 돌린다.
+**One admission path** 는 모든 trigger 를 한 자리에서 받는다. Deployment 하나가 대화형 요청과 야간 schedule 과 event 기반 automation 에 함께 답하므로 [[1](#ref-1)], 야간 일괄 실행과 대화 요청이 서로 갈라지는 두 벌이 아니라 같은 code 를 돌린다.
 
 ## 7. Application
 
-Prefect 는 실행이 그것을 시작한 요청보다 오래 살 때 값을 하고, 실행이 요청 안에서 끝날 때는 얻는 것보다 값이 크다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
+Prefect 는 실행이 그것을 시작한 요청보다 오래 살 때 제값을 하고, 실행이 요청 안에서 끝날 때는 드는 비용이 얻는 것보다 크다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
 
-**Assumption** 은 backend 가 제 process 를 가질 수 있다는 것이다. Worker 는 work pool 을 살펴 실행을 기반 위에서 시작하는 client 쪽 process 이므로 [[1](#ref-1)], 오래 사는 process 를 금지하는 배포 대상에서는 [Fig 2](#fig-2) 의 구성이 가운데를 잃는다.
+**Assumption** 은 backend 가 제 process 를 가질 수 있다는 것이다. Worker 는 work pool 을 살펴 실행을 infrastructure 위에서 시작하는 client 쪽 process 이므로 [[1](#ref-1)], 오래 사는 process 를 금지하는 배포 대상에서는 [Fig 2](#fig-2) 의 구성이 가운데를 잃는다.
 
 **Breaking condition** 은 인증이다. Open source server 에는 사용자도 인증도 없어 UI 나 API 에 닿는 누구나 전체 권한을 갖는다 [[4](#ref-4)]. 그래서 self-hosted server 는 사설망 안에 두거나 인증하는 proxy 뒤에 둔다. Webhook 은 Prefect Cloud 의 기능이므로 [[4](#ref-4)], 외부 system 에서 실행을 시작해야 하는 self-hosted backend 는 그 event 를 API 로 보내는 자리를 스스로 둔다.
 
@@ -176,11 +176,11 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 | Repeat cost        | 재실행이 이미 끝난 일에 무엇을 치르는가        | 앞선 결과를 불러옴               |
 | Call pacing        | 호출 속도를 무엇으로 묶는가                    | 어떤 Python code 에서도 선언으로 |
 | Failure locality   | 실패를 어디까지 좁혀 짚는가                    | Tool 호출 하나                   |
-| Trigger count      | 방아쇠마다 code 경로가 몇 개 드는가            | Deployment 하나                  |
-| Access control     | API 와 UI 를 무엇이 지키는가                   | 없음. Open source server 의 경우 |
+| Trigger count      | Trigger 마다 code 경로가 몇 개 드는가          | Deployment 하나                  |
+| Access control     | API 와 UI 를 무엇이 지키는가                   | Open source server 에는 없음     |
 | Inbound events     | 외부 system 이 실행을 어떻게 시작하는가        | Cloud webhook, 또는 relay        |
 
-한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 값을 제품 이름 곁에 함께 적는다.
+한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 
 ## References
 
@@ -222,8 +222,8 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 - **Task**: Flow 안에서 Prefect 가 따로 재시도하고 cache 하고 기록하는 단위.
 - **Thread**: Checkpointer 가 한 대화의 상태를 모아 두는 단위.
 - **VM (Virtual Metrology)**: 계측하는 대신 공정 센서 데이터로 계측값을 예측하는 것.
-- **Work pool**: Flow 실행이 어느 기반 위에서 돌지 가리키는 Prefect 설정.
-- **Worker**: Work pool 을 살펴 예정된 실행을 그 기반 위에서 시작하는 client 쪽 process.
+- **Work pool**: Flow 실행이 어느 infrastructure 위에서 돌지 가리키는 Prefect 설정.
+- **Worker**: Work pool 을 살펴 예정된 실행을 그 infrastructure 위에서 시작하는 client 쪽 process.
 
 ## Appendix B. What Prefect Does In An Agent Backend
 

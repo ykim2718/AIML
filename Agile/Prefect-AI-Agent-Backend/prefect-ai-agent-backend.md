@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 3 | Created: 2026-09-27 | Updated: 2026-09-27 22:24 CDT
+Rev. 4 | Created: 2026-09-27 | Updated: 2026-09-27 22:31 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -23,7 +23,7 @@ Rev. 3 | Created: 2026-09-27 | Updated: 2026-09-27 22:24 CDT
 
 ## 2. Summary
 
-The orchestrator is the fleet-scoped third of an AI agent's backend, and Prefect supplies that third as a product where a team would otherwise write it. Five of its capabilities — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and the three constraints beside them are what a benchmarking sheet compares one orchestrator against another on.
+The orchestrator is the outer three of an AI agent's seven backend responsibilities, the three that hold every run rather than one, and Prefect supplies them as a product where a team would otherwise write them. Five capabilities it brings — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and the three constraints that come with it are the rows a benchmarking sheet compares products on.
 
 The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the eight things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
@@ -59,7 +59,7 @@ Backend   >    Reasoning         Which action the LLM picks next              on
 <a id="fig-1"></a>
 Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
 
-Widening the scope by one step costs a place to put the state that outlives the previous scope. Step scope needs nothing beyond the process, run scope needs a store the process can die without losing, and fleet scope needs a service that outlives every process and can be asked what happened.
+Widening the scope by one step needs one more place to keep the state that outlives the previous scope. Step scope needs nothing beyond the process, run scope needs a store the process can die without losing, and fleet scope needs a service that outlives every process and can be asked what happened.
 
 ### 3.1 Placement
 
@@ -117,11 +117,11 @@ Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
 An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the team. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. A scheduler, a semaphore and a log table are then written by hand, and each of the three is a component the team owns.
 
-Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)], and wrapping an agent this way is a published integration in which tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
+Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. An integration that wraps an agent this way is already published: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
 
 ## 5. Function Comparison
 
-Nine functions are carried in both compositions, and the difference is what holds them rather than whether they exist. [Table 2](#table-2) reads left to right as the same requirement met twice.
+Nine functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. A cell on the Prefect side names a feature of the product; a cell on the framework side names one of its own features, code the team writes, or nothing at all.
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
@@ -140,15 +140,15 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-Five of the nine differ in kind rather than in degree, so they are the rows on which one orchestrator is compared against another rather than tuned.
+Five of the nine rows carry no framework feature on their left, only code the team writes or nothing at all. Those five are what a benchmarking sheet separates products on, and each is named below with the mechanism Prefect supplies it with.
 
-**Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits, where a held thread costs a process for the whole day.
+**Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits. A held thread instead occupies a process for that whole day.
 
 **Idempotent rerun** makes a repeat safe. Idempotency comes from Prefect's transactional orchestration, which makes a rerun load a previous result instead of executing again when the context is identical, so a retried agent run does not pay the LLM twice for the same tool call [[5](#ref-5)].
 
 **Rate limiting** is declared rather than coded. A global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second; both work in any Python code rather than only inside a flow, so a tool that was never wrapped as a task is still bounded [[3](#ref-3)].
 
-**Per-step observability** comes from the same wrapping that gives retries. Because each tool call is a task, each one is separately visible in the run history and separately retryable [[5](#ref-5)], which is the difference between knowing that an agent run failed and knowing which tool call failed on which input.
+**Per-step observability** comes from the same wrapping that gives retries. Because each tool call is a task, each one is separately visible in the run history and separately retryable [[5](#ref-5)], so the report moves from an agent run having failed to which tool call failed on which input.
 
 **One admission path** serves every trigger. A single deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)], so the overnight batch and the chat request run the same code rather than two copies that drift apart.
 
