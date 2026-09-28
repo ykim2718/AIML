@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 27 | Created: 2026-09-04 | Updated: 2026-09-28 14:20 CDT
+Rev. 28 | Created: 2026-09-04 | Updated: 2026-09-28 14:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -179,7 +179,7 @@ Table 2. What the pair of indices indicates.
 1 ppm 이 수율에 주는 뜻은 제품 하나에 든 part 의 개수 $N$ 이 정한다. 불량률 $p$ 로 만든 part $N$ 개가
 모두 양품이어야 제품이 양품이고 part 의 불량이 서로 독립이면, 제품 하나의 불량 part 개수는 binomial
 distribution $B(N, p)$ 를 따르므로 제품의 수율은 불량이 0 개일 확률 $Y = (1 - p)^N$ 이다. $N$ 이 크고
-$p$ 가 작으면 이 분포는 평균 $Np$ 인 Poisson distribution 으로 근사되어 $Y \approx e^{-Np}$ 이다.
+$p$ 가 작으면 이 분포는 평균 $Np$ 인 Poisson distribution 으로 근사되어 $Y \approx e^{-Np}$ 이다. 여기서 $Np$ 는 Defects per unit (DPU) 이다.
 
 제품 하나가 part 하나이면 $N = 1$ 이고, 1 ppm 은 제품 백만 개 가운데 한 개가 불량이라는 뜻이므로 수율이
 99.9999 % 이다.

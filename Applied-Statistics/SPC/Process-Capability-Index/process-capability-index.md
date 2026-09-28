@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 28 | Created: 2026-09-04 | Updated: 2026-09-28 14:20 CDT
+Rev. 29 | Created: 2026-09-04 | Updated: 2026-09-28 14:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -190,7 +190,7 @@ What 1 ppm means for yield is set by the number $N$ of parts in one product. Whe
 only if all $N$ parts made at defect rate $p$ are good, and the parts fail independently, the number of
 defective parts in one product follows the binomial distribution $B(N, p)$, so the product yield is the
 probability of no defect, $Y = (1 - p)^N$. For large $N$ and small $p$ that distribution approaches the
-Poisson distribution with mean $Np$, which gives $Y \approx e^{-Np}$.
+Poisson distribution with mean $Np$, which gives $Y \approx e^{-Np}$. Here $Np$ is the defects per unit (DPU).
 
 When one product is one part, $N = 1$, and 1 ppm means one defective product in a million, a yield of
 99.9999 %.
