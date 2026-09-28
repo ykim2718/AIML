@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 46 | Created: 2026-09-27 | Updated: 2026-09-28 12:04 CDT
+Rev. 47 | Created: 2026-09-27 | Updated: 2026-09-28 12:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -171,7 +171,7 @@ In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the wor
 - **Suspension**: `pause_flow_run` keeps the flow alive while it waits, and `suspend_flow_run` exits so the infrastructure can be taken down, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day occupies no process at all.
 - **Idempotent rerun**: Prefect's transactional orchestration loads the previous result instead of running again when the context is identical [[5](#ref-5)]. Under that idempotency a retried agent run does not pay the LLM twice for the same tool call.
 - **Rate limiting**: a global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second [[3](#ref-3)]. Both work in Python code outside a flow, so a tool never wrapped as a task stays bounded too.
-- **Per-step observability**: each tool call is a task, so each one appears in the run history and is retried on its own [[5](#ref-5)]. The report moves from an agent run having failed to which tool call failed on which input.
+- **Per-step observability**: each tool call is a task, so each one appears in the run history and is retried on its own [[5](#ref-5)]. The failure report carries which tool call failed on which input, not only that an agent run failed.
 - **One admission path**: one deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)]. The overnight batch and the chat request run the same Python code rather than two copies.
 - **ML pipeline integration**: retraining, deployment and the agent run as flows on one server, and the state of a finished flow starts the next [[7](#ref-7)]. Retraining and the agent need not sit in two systems with a bridge written between them.
 
@@ -220,7 +220,7 @@ Prefect is favourable for a backend whose agent run continues after the HTTP res
 - **Idempotency**: the property that running again with the same input leaves the same result and the same side effects as running once.
 - **Jinja**: the template syntax Prefect substitutes event values into a flow's parameters with.
 - **K8s (Kubernetes)**: the container platform a work pool can run flow runs on.
-- **Orchestrator**: the part of a backend that sees every run rather than one, holding what starts a run, how many calls are in flight, and what the run history keeps.
+- **Orchestrator**: the part of a backend that carries every run rather than one: what starts a run, how many calls run at once, and what the run history keeps.
 - **Prefect Server**: the self-hosted orchestration backend holding the API, the UI, the scheduler, and events and automations.
 - **RAG (Retrieval Augmented Generation)**: answering with documents retrieved at query time and handed to the LLM beside the question.
 - **Rate limit**: the ceiling on how many calls may leave within a span of time.
@@ -237,10 +237,10 @@ Prefect is favourable for a backend whose agent run continues after the HTTP res
 The parenthesis at the end of each item names the [Table 3](#table-3) function the item belongs to.
 
 1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure (#2 Resume after a crash, #6 Idempotent rerun).
-2. Retry and timeout: it applies a policy per call, against an LLM API outage or a tool error (#1 Step retry).
+2. Retry and timeout: it applies a retry policy and a timeout per call, against an LLM API outage or a tool error (#1 Step retry).
 3. Event trigger: it runs an agent automatically when an event such as an FDC alarm or a drift detection arrives (#9 One admission path).
 4. Scheduling: it runs the regular analysis and report agents on a schedule (#9 One admission path).
-5. Distributed execution: it distributes work to K8s or GPU workers (#4 Where a run executes).
+5. Distributed execution: it distributes runs to K8s nodes or GPU workers (#4 Where a run executes).
 6. Observability: it tracks run history, logs and state in the UI (#8 Per-step observability).
 7. Human-in-the-loop waiting: with `pause_flow_run` it stops until the approval arrives, then resumes (#3 Human approval, #5 Suspension).
 8. ML pipeline integration: it operates retraining, deployment and agent execution together (#10 ML pipeline integration).
@@ -250,7 +250,7 @@ What it does not do itself: the LLM inference logic, memory and RAG, and real-ti
 
 ## Appendix C. How An Event Trigger Is Done In Prefect
 
-It takes two steps. `emit_event` publishes the event, and a `DeploymentEventTrigger` or an automation receives it and runs the flow [[7](#ref-7)].
+The trigger is set up in two steps. `emit_event` publishes the event, and a `DeploymentEventTrigger` or an automation receives it and runs the flow [[7](#ref-7)].
 
 **1. Emit the event** — on the FDC system or the collector side.
 
@@ -331,6 +331,6 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET estate                                    | 2026-04   |
 | 7   | Pydantic AI               | Type-safe Python. V2 carries durable execution                                         | 2026-06   |
 
-#7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing it runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping Python code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.
+#7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing that package runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping Python code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.
 
 Of the seven, #7 Pydantic AI is the only one with a package dedicated to that join; for the others the backend engineer writes the wrapping. Prefect treats a flow as a Python function, so it runs Pydantic AI, LangGraph and any other Python agent framework [[9](#ref-9)].
