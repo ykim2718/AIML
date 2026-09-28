@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 49 | Created: 2026-09-27 | Updated: 2026-09-28 12:36 CDT
+Rev. 50 | Created: 2026-09-27 | Updated: 2026-09-28 12:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -234,14 +234,14 @@ Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 P
 
 ## Appendix B. What Prefect Does In An Agent Backend
 
-각 항목 끝의 괄호는 그 항목이 [Table 3](#table-3) 의 어느 function 인지를 가리킨다.
+아래 항목은 Prefect 가 agent backend 에서 하는 일이고, 항목 끝의 괄호는 그것이 [Table 3](#table-3) 의 어느 function 인지를 가리킨다.
 
 1. 중단된 자리에서 다시 시작: LLM 호출과 tool 호출을 task 단위로 cache 하고, 실패하면 그 자리부터 다시 시작한다 (#2 Resume after a crash, #6 Idempotent rerun).
 2. 재시도와 제한 시간: 호출마다 retry policy 와 timeout 을 건다. LLM API 장애와 tool 오류에 대응한다 (#1 Step retry).
 3. Event 로 자동 실행: FDC alarm 이나 drift 감지 같은 event 가 닿으면 agent 를 자동으로 실행한다 (#9 One admission path).
 4. 정해진 때마다 실행: 정기 분석 agent 와 report agent 를 schedule 에 걸어 실행한다 (#9 One admission path).
-5. 여러 대에 나누어 실행: K8s node 나 GPU worker 에 실행을 나누어 보낸다 (#4 Where a run executes).
-6. 실행 기록 보기: 실행 기록과 log 와 상태를 UI 에서 따라간다 (#8 Per-step observability).
+5. 여러 node 에 나누어 실행: K8s node 나 GPU worker 에 실행을 나누어 보낸다 (#4 Where a run executes).
+6. 실행 기록 보기: Flow run 과 task run 의 log 와 상태를 UI 에서 따라간다 (#8 Per-step observability).
 7. 사람의 승인 기다리기: `pause_flow_run` 으로 승인이 닿을 때까지 멈췄다가 다시 시작한다 (#3 Human approval, #5 Suspension).
 8. ML pipeline 과 한 체계에서 운영: 재학습과 배포와 agent 실행을 함께 돌린다 (#10 ML pipeline integration).
 9. 호출 속도 제한: 동시 호출 수와 초당 호출 속도를 선언으로 묶는다. LLM API 의 rate limit 에 대응한다 (#7 Rate limiting).
@@ -321,11 +321,11 @@ Table 4. Trigger types
 
 Table 5. Agent frameworks and when each was first announced
 
-| #   | Framework                 | What it is                                                         | Announced |
+| #   | Framework                 | Framework details                                                  | Announced |
 | :-: | :-----------------------: | :----------------------------------------------------------------: | :-------: |
-| 1   | LangGraph                 | Graph 로 상태를 다룬다. 감사 이력과 사람 승인이 필요한 곳의 기본값 | 2024-01   |
+| 1   | LangGraph                 | Graph 로 상태를 다룬다. 실행 기록과 사람 승인이 필요한 곳의 기본값 | 2024-01   |
 | 2   | CrewAI                    | 역할을 맡은 agent 여럿을 팀으로 묶는다. Prototype 까지 가장 빠름   | 2024-01   |
-| 3   | OpenAI Agents SDK         | Model 이 loop 를 끌고 간다. GPT 중심이면 마찰이 가장 적음          | 2025-03   |
+| 3   | OpenAI Agents SDK         | Model 이 loop 를 끌고 간다. GPT 중심이면 손이 가장 덜 감           | 2025-03   |
 | 4   | Google ADK                | Multimodal 에 강하다. Google Cloud NEXT 2025 에서 공개             | 2025-04   |
 | 5   | Claude Agent SDK          | Claude Code 의 agent harness. Claude Code SDK 에서 이름을 바꿈     | 2025-09   |
 | 6   | Microsoft Agent Framework | Graph 기반. Azure 와 .NET 환경의 선택                              | 2026-04   |

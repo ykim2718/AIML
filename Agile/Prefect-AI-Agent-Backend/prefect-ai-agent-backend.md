@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 49 | Created: 2026-09-27 | Updated: 2026-09-28 12:36 CDT
+Rev. 50 | Created: 2026-09-27 | Updated: 2026-09-28 12:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -234,7 +234,7 @@ Prefect is favourable for a backend whose agent run continues after the HTTP res
 
 ## Appendix B. What Prefect Does In An Agent Backend
 
-The parenthesis at the end of each item names the [Table 3](#table-3) function the item belongs to.
+Each item below is something Prefect does inside an agent backend, and the parenthesis at the end names the [Table 3](#table-3) function the item belongs to.
 
 1. Durable execution: it caches LLM and tool calls per task, and resumes from that point on a failure (#2 Resume after a crash, #6 Idempotent rerun).
 2. Retry and timeout: it applies a retry policy and a timeout per call, against an LLM API outage or a tool error (#1 Step retry).
@@ -321,14 +321,14 @@ The framework this document compares against is #1 LangGraph, and chapter 2 says
 
 Table 5. Agent frameworks and when each was first announced
 
-| #   | Framework                 | What it is                                                                             | Announced |
+| #   | Framework                 | Framework details                                                                      | Announced |
 | :-: | :-----------------------: | :------------------------------------------------------------------------------------: | :-------: |
 | 1   | LangGraph                 | Holds state as a graph. The default where an audit trail and human approval are needed | 2024-01   |
 | 2   | CrewAI                    | Binds several role-playing agents into a team. Fastest to a prototype                  | 2024-01   |
-| 3   | OpenAI Agents SDK         | The model drives the loop. Least friction if the work is GPT-centred                   | 2025-03   |
+| 3   | OpenAI Agents SDK         | The model drives the loop. The least extra work if the work is GPT-centred             | 2025-03   |
 | 4   | Google ADK                | Strong on multimodal. Announced at Google Cloud NEXT 2025                              | 2025-04   |
 | 5   | Claude Agent SDK          | The agent harness behind Claude Code, renamed from the Claude Code SDK                 | 2025-09   |
-| 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET estate                                    | 2026-04   |
+| 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET environment                               | 2026-04   |
 | 7   | Pydantic AI               | Type-safe Python. V2 carries durable execution                                         | 2026-06   |
 
 #7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing that package runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping Python code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.
