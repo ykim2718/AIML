@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 47 | Created: 2026-09-27 | Updated: 2026-09-28 12:20 CDT
+Rev. 48 | Created: 2026-09-27 | Updated: 2026-09-28 12:28 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -75,13 +75,13 @@ Table 1. Each role, the part that holds it, and what settles it
 | 9   | Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                              |
 | 10  | Record         | Orchestrator | Every run   | 단계마다 쌓이는 실행 기록                               |
 
-어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 Python code 를 적는다.
+어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품 이름을 적고 나머지 행은 Python code 로 채운다.
 
 Prefect 는 orchestrator 다. [Table 1](#table-1) 의 #8 부터 #10 까지를 제품으로 채우고, #4 부터 #7 까지는 agent framework 의 몫으로 남긴다. 겹치는 행이 둘 있다. Tool 호출을 task 로 감싸면 #6 State 와 #7 Recovery 의 재시도와 cache 도 Prefect 가 함께 지지만, LLM 을 불러 다음 동작을 고르는 일과 tool 안의 Python code 는 agent framework 에 남는다.
 
 ## 4. Backend Composition
 
-두 구성은 같은 추론 loop 를 돌리며, 그 loop 가 어느 process 에서 도는지가 갈린다. Prefect 가 없으면 loop 는 요청에 답한 process 안에서 돌고, Prefect 가 있으면 loop 는 worker 가 제 infrastructure 위에서 시작하는 flow 이며 요청은 그 flow 를 시작해 달라고 요구할 뿐이다. 둘은 [Fig 2](#fig-2) 에 그렸다.
+두 구성은 같은 추론 loop 를 돌리며, 그 loop 가 어느 process 에서 도는지가 갈린다. Prefect 가 없으면 loop 는 요청에 답한 process 안에서 돌고, Prefect 가 있으면 loop 는 worker 가 work pool 이 가리키는 infrastructure 위에서 시작하는 flow 이며 요청은 그 flow 를 시작해 달라고 요구할 뿐이다. 둘은 [Fig 2](#fig-2) 에 그렸다.
 
 ```text
 WITHOUT PREFECT                        WITH PREFECT (self-hosted)
@@ -168,9 +168,9 @@ Table 3. The same function in each composition
 
 [Table 3](#table-3) 의 #5 부터 #10 까지 여섯 행에서 agent framework 는 그 기능을 스스로 갖추지 못한다. Backend 엔지니어가 Python code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 여섯 행이 benchmarking 자료에서 제품을 가른다. 아래에 그 여섯을 같은 이름으로 늘어놓고, 행마다 Prefect 가 무엇을 하는지 적는다.
 
-- **Suspension**: `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 process 를 하나도 잡아 두지 않는다.
-- **Idempotent rerun**: Prefect 의 transactional orchestration 이 문맥이 같은 재실행을 다시 돌리지 않고 앞선 결과를 불러온다 [[5](#ref-5)]. 그 idempotency 아래에서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 비용을 두 번 치르지 않는다.
-- **Rate limiting**: Global concurrency limit 이 띄울 수 있는 호출 수를 묶고, rate limit 이 초당 slot 회복량으로 호출 간격을 벌린다 [[3](#ref-3)]. 둘은 flow 밖의 Python code 에서도 쓰여, task 로 감싸지 않은 tool 도 상한 안에 든다.
+- **Suspension**: `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 꺼 둘 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 process 를 하나도 잡아 두지 않는다.
+- **Idempotent rerun**: Prefect 의 transactional orchestration 이 context 가 같은 재실행을 다시 돌리지 않고 앞선 결과를 불러온다 [[5](#ref-5)]. 그 idempotency 아래에서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 비용을 두 번 치르지 않는다.
+- **Rate limiting**: Global concurrency limit 이 한 번에 도는 호출 수를 묶고, rate limit 이 초당 slot 회복량으로 호출 간격을 벌린다 [[3](#ref-3)]. 둘은 flow 밖의 Python code 에서도 쓰여, task 로 감싸지 않은 tool 도 상한 안에 든다.
 - **Per-step observability**: Tool 호출 하나가 task 이므로 하나씩 따로 실행 기록에 보이고 하나씩 따로 다시 시도된다 [[5](#ref-5)]. 실패 보고에 agent 실행이 실패했다는 것만 남지 않고, 어느 tool 호출이 어느 입력에서 실패했는지가 함께 남는다.
 - **One admission path**: Deployment 하나가 대화형 요청과 야간 schedule 과 event 기반 automation 에 함께 답한다 [[1](#ref-1)]. 야간 일괄 실행과 대화 요청이 두 벌이 아니라 같은 Python code 를 돌린다.
 - **ML pipeline integration**: 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 앞 flow 가 끝나면 그 상태가 다음 flow 를 켠다 [[7](#ref-7)]. 재학습과 agent 를 두 체계에 나누어 두고 그 둘을 잇는 Python code 를 따로 쓸 일이 없다.

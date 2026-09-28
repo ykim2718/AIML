@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 47 | Created: 2026-09-27 | Updated: 2026-09-28 12:20 CDT
+Rev. 48 | Created: 2026-09-27 | Updated: 2026-09-28 12:28 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -81,7 +81,7 @@ Prefect is an orchestrator. It fills rows #8 to #10 of [Table 1](#table-1) as a 
 
 ## 4. Backend Composition
 
-The two compositions run the same reasoning loop and differ in where that loop lives. Without Prefect the loop runs inside the process that answered the request; with Prefect the loop is a flow that a worker starts on its own infrastructure, and the request only asks for that flow to start. The two are drawn in [Fig 2](#fig-2).
+The two compositions run the same reasoning loop and differ in where that loop lives. Without Prefect the loop runs inside the process that answered the request; with Prefect the loop is a flow that a worker starts on the infrastructure its work pool names, and the request only asks for that flow to start. The two are drawn in [Fig 2](#fig-2).
 
 ```text
 WITHOUT PREFECT                        WITH PREFECT (self-hosted)
