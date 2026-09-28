@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 24 | Created: 2026-09-04 | Updated: 2026-09-28 13:51 CDT
+Rev. 25 | Created: 2026-09-04 | Updated: 2026-09-28 13:55 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -9,6 +9,7 @@ Rev. 24 | Created: 2026-09-04 | Updated: 2026-09-28 13:51 CDT
 - [3. Physical Meaning](#3-physical-meaning)
   - [3.1. Defect Rate](#31-defect-rate)
   - [3.2. Reading the Three Together](#32-reading-the-three-together)
+  - [3.3. Parts per Million and Yield](#33-parts-per-million-and-yield)
 - [4. Application](#4-application)
   - [4.1. Short-Term and Long-Term](#41-short-term-and-long-term)
   - [4.2. Assumptions](#42-assumptions)
@@ -173,6 +174,23 @@ Table 2. What the pair of indices indicates.
 대개 하드웨어나 recipe 나 재료를 바꾸는 일이라 비싸다. 식 (4) 는 싼 쪽의 조치가 $1/(1-k)$ 배를 곧바로
 되찾아 준다고 말한다.
 
+### 3.3. Parts per Million and Yield
+
+1 ppm 이 수율에 주는 뜻은 제품 하나에 든 part 의 개수 $N$ 이 정한다. 불량률 $p$ 로 만든 part $N$ 개가
+모두 양품이어야 제품이 양품이고 part 의 불량이 서로 독립이면, 제품의 수율은
+$Y = (1 - p)^N \approx e^{-Np}$ 이다.
+
+제품 하나가 part 하나이면 $N = 1$ 이고, 1 ppm 은 제품 백만 개 가운데 한 개가 불량이라는 뜻이므로 수율이
+99.9999 % 이다.
+
+1 GB DRAM 은 $2^{33} = 8{,}589{,}934{,}592$ bit 를 가지며, cell 하나가 1 bit 를 저장하므로 cell 이 약
+$8.59 \times 10^{9}$ 개이다. Cell 마다 1 ppm 의 불량률이면 chip 하나에 불량 cell 이 평균
+$Np \approx 8590$ 개 생기고, 수율은 $e^{-8590}$ 으로 사실상 0 이다. 모든 cell 이 양품인 chip 을 90 %
+수율로 얻으려면 $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, 곧 $1.23 \times 10^{-5}$ ppm 이
+필요하고, 이를 near tail 비율 $\Phi(-3 C_{pk})$ 로 환산하면 $C_{pk} \approx 2.23$ 이다. 같은 방법으로
+1 ppm 은 $C_{pk} \approx 1.58$ 이므로, chip 하나에 든 cell 의 개수가 수율이 요구하는 $C_{pk}$ 를
+1.58 에서 2.23 으로 올린다.
+
 ## 4. Application
 
 ### 4.1. Short-Term and Long-Term
@@ -267,6 +285,7 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Capability study**: 안정된 공정의 표본에서 지수들을 추정하는 작업.
+- **DRAM**: Dynamic Random Access Memory. Cell 하나가 capacitor 의 전하로 1 bit 를 저장하는 memory.
 - **In control**: 통상의 변동 밖에 있는 원인의 신호가 관리도에 나타나지 않는 상태.
 - **Lot**: 공정을 함께 흘러가는 웨이퍼 묶음.
 - **Parts per million**: 규격을 벗어나는 비율에 $10^{6}$ 을 곱한 값.
@@ -278,6 +297,7 @@ ISBN 978-1-119-72309-7.
   같다.
 - **Specification limit**: 제품이 만족해야 하는 경계이며, 공정에서 추정하는 것이 아니라 설계가
   정한다.
+- **Yield**: 만든 제품 가운데 양품의 비율.
 
 ## Appendix B. Derivation of Equation (5)
 

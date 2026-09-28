@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 25 | Created: 2026-09-04 | Updated: 2026-09-28 13:51 CDT
+Rev. 26 | Created: 2026-09-04 | Updated: 2026-09-28 13:55 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -9,6 +9,7 @@ Rev. 25 | Created: 2026-09-04 | Updated: 2026-09-28 13:51 CDT
 - [3. Physical Meaning](#3-physical-meaning)
   - [3.1. Defect Rate](#31-defect-rate)
   - [3.2. Reading the Three Together](#32-reading-the-three-together)
+  - [3.3. Parts per Million and Yield](#33-parts-per-million-and-yield)
 - [4. Application](#4-application)
   - [4.1. Short-Term and Long-Term](#41-short-term-and-long-term)
   - [4.2. Assumptions](#42-assumptions)
@@ -183,6 +184,23 @@ The order in the last row matters. Centring is usually a setpoint change and is 
 variation usually means changing hardware, recipe or material and is expensive. Equation (4) says
 the cheap move recovers the factor $1/(1-k)$ immediately.
 
+### 3.3. Parts per Million and Yield
+
+What 1 ppm means for yield is set by the number $N$ of parts in one product. When a product is good
+only if all $N$ parts made at defect rate $p$ are good, and the parts fail independently, the product
+yield is $Y = (1 - p)^N \approx e^{-Np}$.
+
+When one product is one part, $N = 1$, and 1 ppm means one defective product in a million, a yield of
+99.9999 %.
+
+A 1 GB DRAM holds $2^{33} = 8{,}589{,}934{,}592$ bits, and each cell stores one bit, so it has about
+$8.59 \times 10^{9}$ cells. At 1 ppm per cell a chip carries on average $Np \approx 8590$ defective
+cells, and its yield is $e^{-8590}$, which is zero in practice. A 90 % yield of chips with every cell
+good needs $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, or $1.23 \times 10^{-5}$ ppm, which
+converts through the near tail rate $\Phi(-3 C_{pk})$ to $C_{pk} \approx 2.23$. The same conversion
+puts 1 ppm at $C_{pk} \approx 1.58$, so the number of cells in one chip raises the $C_{pk}$ that yield
+demands from 1.58 to 2.23.
+
 ## 4. Application
 
 ### 4.1. Short-Term and Long-Term
@@ -280,6 +298,7 @@ ISBN 978-1-119-72309-7.
 ## Appendix A. Terminology
 
 - **Capability study**: the exercise of estimating the indices from a sample of a stable process.
+- **DRAM**: Dynamic Random Access Memory, a memory in which each cell stores one bit as charge on a capacitor.
 - **In control**: showing no control chart signal of a cause outside the ordinary variation.
 - **Lot**: the group of wafers that moves through the process together.
 - **Parts per million**: the fraction outside the specification multiplied by $10^{6}$.
@@ -291,6 +310,7 @@ ISBN 978-1-119-72309-7.
   deviations, equal to $3 C_{pk}$.
 - **Specification limit**: a bound the product must satisfy, set by design rather than estimated
   from the process.
+- **Yield**: The fraction of products made that are good.
 
 ## Appendix B. Derivation of Equation (5)
 
