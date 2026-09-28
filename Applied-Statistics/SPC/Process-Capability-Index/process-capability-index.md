@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 22 | Created: 2026-09-04 | Updated: 2026-09-28 13:46 CDT
+Rev. 23 | Created: 2026-09-04 | Updated: 2026-09-28 13:49 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -103,7 +103,17 @@ Table 1. Defect rate of a centred process, in parts per million.
 | 1.67 | 1.67 | 0 | 5.0 | 0.544 | 0.272 |
 | 2.00 | 2.00 | 0 | 6.0 | 0.00197 | 0.000987 |
 
-A one-side tail does not say which side, while the near tail names the tail at the specification limit nearer the mean. $C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
+A one-side tail does not say which side, while the near tail names the tail at the specification limit nearer the mean.
+
+```math
+\begin{cases}
+USL = \mu + 3 C_{pk} \sigma & \mathrm{if}\ USL\ \mathrm{is\ the\ nearer\ limit} \\
+LSL = \mu - 3 C_{pk} \sigma & \mathrm{if}\ LSL\ \mathrm{is\ the\ nearer\ limit}
+\end{cases}
+\hspace{19em} (6)
+```
+
+$C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
 
 Fig 1 draws the near tail of a process with $C_{pk} = 1.00$.
 
@@ -282,38 +292,38 @@ ISBN 978-1-119-72309-7.
 The process is normal with mean $\mu$ and standard deviation $\sigma$, so its density is the
 following.
 
-$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (6)$$
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (7)$$
 
 A unit is defective when it falls below $LSL$ or above $USL$. The two events cannot both happen, so
 the fraction outside the specification is the sum of the two areas.
 
-$$p = \int_{-\infty}^{LSL} f(x) \mathrm{d}x + \int_{USL}^{\infty} f(x) \mathrm{d}x \hspace{19em} (7)$$
+$$p = \int_{-\infty}^{LSL} f(x) \mathrm{d}x + \int_{USL}^{\infty} f(x) \mathrm{d}x \hspace{19em} (8)$$
 
 Substituting $z = (x - \mu)/\sigma$, so that $x = \mu + \sigma z$ and
 $\mathrm{d}x = \sigma \mathrm{d}z$, turns the integrand into the standard normal density
 $\varphi$, because the $\sigma$ the substitution brings in cancels the one in the denominator.
 
-$$f(x) \mathrm{d}x = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{z^2}{2} \right) \sigma \mathrm{d}z = \varphi(z) \mathrm{d}z, \qquad \Phi(a) = \int_{-\infty}^{a} \varphi(z) \mathrm{d}z \hspace{19em} (8)$$
+$$f(x) \mathrm{d}x = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{z^2}{2} \right) \sigma \mathrm{d}z = \varphi(z) \mathrm{d}z, \qquad \Phi(a) = \int_{-\infty}^{a} \varphi(z) \mathrm{d}z \hspace{19em} (9)$$
 
 The limits move with the substitution, $x = LSL$ becoming $z = (LSL - \mu)/\sigma$ and $x = USL$
-becoming $z = (USL - \mu)/\sigma$, so equation (7) becomes the following.
+becoming $z = (USL - \mu)/\sigma$, so equation (8) becomes the following.
 
-$$p = \int_{-\infty}^{(LSL - \mu)/\sigma} \varphi(z) \mathrm{d}z + \int_{(USL - \mu)/\sigma}^{\infty} \varphi(z) \mathrm{d}z \hspace{19em} (9)$$
+$$p = \int_{-\infty}^{(LSL - \mu)/\sigma} \varphi(z) \mathrm{d}z + \int_{(USL - \mu)/\sigma}^{\infty} \varphi(z) \mathrm{d}z \hspace{19em} (10)$$
 
-The first integral is $\Phi$ by its definition in equation (8). The second runs to $+\infty$ and
+The first integral is $\Phi$ by its definition in equation (9). The second runs to $+\infty$ and
 has to be turned round first. Substituting $u = -z$ in it reverses the limits and leaves the
 integrand unchanged, since $\varphi(-u) = \varphi(u)$, which gives an identity holding for any
 $a$.
 
-$$\int_{a}^{\infty} \varphi(z) \mathrm{d}z = \int_{-\infty}^{-a} \varphi(u) \mathrm{d}u = \Phi(-a) \hspace{19em} (10)$$
+$$\int_{a}^{\infty} \varphi(z) \mathrm{d}z = \int_{-\infty}^{-a} \varphi(u) \mathrm{d}u = \Phi(-a) \hspace{19em} (11)$$
 
-Applying it with $a = (USL - \mu)/\sigma$ puts both terms of equation (9) on the lower side.
+Applying it with $a = (USL - \mu)/\sigma$ puts both terms of equation (10) on the lower side.
 
-$$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (11)$$
+$$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (12)$$
 
 Equation (3) defines $CPL = (\mu - LSL)/(3\sigma)$ and $CPU = (USL - \mu)/(3\sigma)$, which
 rearrange to $(LSL - \mu)/\sigma = -3 CPL$ and $(USL - \mu)/\sigma = 3 CPU$. Substituting the
-two into equation (11) gives equation (5). The $\sigma$ has left the expression because the two
+two into equation (12) gives equation (5). The $\sigma$ has left the expression because the two
 indices already carry it.
 
 The last two columns of Table 1 are the two cases of that result. A centred process has $\mu = m$, so

@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 21 | Created: 2026-09-04 | Updated: 2026-09-28 13:46 CDT
+Rev. 22 | Created: 2026-09-04 | Updated: 2026-09-28 13:49 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -97,7 +97,17 @@ Table 1. Defect rate of a centred process, in parts per million.
 | 1.67 | 1.67 | 0 | 5.0 | 0.544 | 0.272 |
 | 2.00 | 2.00 | 0 | 6.0 | 0.00197 | 0.000987 |
 
-One-side tail 은 어느 쪽인지를 알려 주지 않고, near tail 은 평균에서 가까운 쪽 specification limit 의 tail 을 가리킨다. $C_{pk}$ 는 평균에서 그 한계까지의 거리를 $3\sigma$ 로 나눈 값이므로, 그 한계는 평균에서 표준편차 $3 C_{pk}$ 개만큼 떨어져 있다. 표준정규분포에서 $-3 C_{pk}$ 이하가 나올 확률이 $\Phi(-3 C_{pk})$ 이고, 분포가 좌우 대칭이므로 $+3 C_{pk}$ 이상이 나올 확률도 같다. 따라서 가까운 쪽 한계가 $LSL$ 이든 $USL$ 이든 near tail 의 비율은 $\Phi(-3 C_{pk})$ 이다. 예를 들어 $C_{pk} = 1.00$ 이면 한계가 표준편차 3 개 거리에 있고 $\Phi(-3) = 0.00135$ 이므로, near tail 은 1350 ppm 이다.
+One-side tail 은 어느 쪽인지를 알려 주지 않고, near tail 은 평균에서 가까운 쪽 specification limit 의 tail 을 가리킨다.
+
+```math
+\begin{cases}
+USL = \mu + 3 C_{pk} \sigma & \mathrm{if}\ USL\ \mathrm{is\ the\ nearer\ limit} \\
+LSL = \mu - 3 C_{pk} \sigma & \mathrm{if}\ LSL\ \mathrm{is\ the\ nearer\ limit}
+\end{cases}
+\hspace{19em} (6)
+```
+
+$C_{pk}$ 는 평균에서 그 한계까지의 거리를 $3\sigma$ 로 나눈 값이므로, 그 한계는 평균에서 표준편차 $3 C_{pk}$ 개만큼 떨어져 있다. 표준정규분포에서 $-3 C_{pk}$ 이하가 나올 확률이 $\Phi(-3 C_{pk})$ 이고, 분포가 좌우 대칭이므로 $+3 C_{pk}$ 이상이 나올 확률도 같다. 따라서 가까운 쪽 한계가 $LSL$ 이든 $USL$ 이든 near tail 의 비율은 $\Phi(-3 C_{pk})$ 이다. 예를 들어 $C_{pk} = 1.00$ 이면 한계가 표준편차 3 개 거리에 있고 $\Phi(-3) = 0.00135$ 이므로, near tail 은 1350 ppm 이다.
 
 Fig 1 은 $C_{pk} = 1.00$ 인 공정의 near tail 을 그린 것이다.
 
@@ -268,36 +278,36 @@ ISBN 978-1-119-72309-7.
 
 공정은 평균 $\mu$ 와 표준편차 $\sigma$ 인 정규분포를 따르므로 그 밀도는 아래와 같다.
 
-$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (6)$$
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (7)$$
 
 한 개는 $LSL$ 아래로 내려가거나 $USL$ 위로 올라가면 불량이다. 두 사건은 함께 일어날 수 없으므로
 규격을 벗어나는 비율은 두 넓이의 합이다.
 
-$$p = \int_{-\infty}^{LSL} f(x) \mathrm{d}x + \int_{USL}^{\infty} f(x) \mathrm{d}x \hspace{19em} (7)$$
+$$p = \int_{-\infty}^{LSL} f(x) \mathrm{d}x + \int_{USL}^{\infty} f(x) \mathrm{d}x \hspace{19em} (8)$$
 
 $z = (x - \mu)/\sigma$ 로 치환하면 $x = \mu + \sigma z$ 이고
 $\mathrm{d}x = \sigma \mathrm{d}z$ 이므로, 치환이 데려온 $\sigma$ 가 분모의 $\sigma$ 와 약분되어
 피적분함수가 표준정규분포의 밀도 $\varphi$ 가 된다.
 
-$$f(x) \mathrm{d}x = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{z^2}{2} \right) \sigma \mathrm{d}z = \varphi(z) \mathrm{d}z, \qquad \Phi(a) = \int_{-\infty}^{a} \varphi(z) \mathrm{d}z \hspace{19em} (8)$$
+$$f(x) \mathrm{d}x = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{z^2}{2} \right) \sigma \mathrm{d}z = \varphi(z) \mathrm{d}z, \qquad \Phi(a) = \int_{-\infty}^{a} \varphi(z) \mathrm{d}z \hspace{19em} (9)$$
 
 적분 구간도 치환을 따라 옮겨 가 $x = LSL$ 이 $z = (LSL - \mu)/\sigma$ 가 되고 $x = USL$ 이
-$z = (USL - \mu)/\sigma$ 가 되므로, 식 (7) 은 아래가 된다.
+$z = (USL - \mu)/\sigma$ 가 되므로, 식 (8) 은 아래가 된다.
 
-$$p = \int_{-\infty}^{(LSL - \mu)/\sigma} \varphi(z) \mathrm{d}z + \int_{(USL - \mu)/\sigma}^{\infty} \varphi(z) \mathrm{d}z \hspace{19em} (9)$$
+$$p = \int_{-\infty}^{(LSL - \mu)/\sigma} \varphi(z) \mathrm{d}z + \int_{(USL - \mu)/\sigma}^{\infty} \varphi(z) \mathrm{d}z \hspace{19em} (10)$$
 
-첫 적분은 식 (8) 의 정의에 의해 그대로 $\Phi$ 이다. 두 번째는 위쪽 끝이 $+\infty$ 라 먼저 방향을
+첫 적분은 식 (9) 의 정의에 의해 그대로 $\Phi$ 이다. 두 번째는 위쪽 끝이 $+\infty$ 라 먼저 방향을
 뒤집어야 한다. 거기에 $u = -z$ 를 넣으면 구간이 뒤집히고 $\varphi(-u) = \varphi(u)$ 이므로
 피적분함수는 그대로 남아, 임의의 $a$ 에 대해 성립하는 항등식을 얻는다.
 
-$$\int_{a}^{\infty} \varphi(z) \mathrm{d}z = \int_{-\infty}^{-a} \varphi(u) \mathrm{d}u = \Phi(-a) \hspace{19em} (10)$$
+$$\int_{a}^{\infty} \varphi(z) \mathrm{d}z = \int_{-\infty}^{-a} \varphi(u) \mathrm{d}u = \Phi(-a) \hspace{19em} (11)$$
 
-$a = (USL - \mu)/\sigma$ 로 이것을 적용하면 식 (9) 의 두 항이 모두 아래쪽 꼬리가 된다.
+$a = (USL - \mu)/\sigma$ 로 이것을 적용하면 식 (10) 의 두 항이 모두 아래쪽 꼬리가 된다.
 
-$$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (11)$$
+$$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}{\sigma} \right) \hspace{19em} (12)$$
 
 식 (3) 은 $CPL = (\mu - LSL)/(3\sigma)$ 와 $CPU = (USL - \mu)/(3\sigma)$ 로 정의되며, 이를 옮기면
-$(LSL - \mu)/\sigma = -3 CPL$ 이고 $(USL - \mu)/\sigma = 3 CPU$ 이다. 둘을 식 (11) 에 넣으면 식
+$(LSL - \mu)/\sigma = -3 CPL$ 이고 $(USL - \mu)/\sigma = 3 CPU$ 이다. 둘을 식 (12) 에 넣으면 식
 (5) 가 된다. 두 지수가 이미 $\sigma$ 를 품고 있으므로 식에서 $\sigma$ 가 사라진다.
 
 Table 1 의 마지막 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
