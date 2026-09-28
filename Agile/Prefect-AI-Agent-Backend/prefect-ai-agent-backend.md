@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 13 | Created: 2026-09-27 | Updated: 2026-09-27 23:32 CDT
+Rev. 14 | Created: 2026-09-27 | Updated: 2026-09-27 23:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -118,7 +118,7 @@ Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
 An agent framework covers the four inner responsibilities of [Fig 1](#fig-1) and leaves the orchestrator's three to the team. A checkpointer saves a snapshot of the graph state at every super-step under a thread id, which is what lets a stopped run resume and what lets a human interrupt, inspect and approve a step, and a retry policy attached to a node retries it with exponential backoff [[6](#ref-6)]. A scheduler, a semaphore and a log table are then written by hand, and each of the three is a component the team owns.
 
-Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. An integration that wraps an agent this way is already published: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
+Prefect fills the same three with a server and a worker, and the agent loop becomes a flow whose tool calls are tasks. A deployment states where, when and how the flow runs, which turns the loop into an entity the API manages, triggered by a schedule, the UI, an automation or the REST API, while a work pool names the infrastructure and a worker polls the pool and starts the run on it [[1](#ref-1)]. The self-hosted server carries the API, the UI, scheduling, work pools, and the events and automations engine [[4](#ref-4)]. Pydantic and Prefect publish and co-maintain an integration that does this wrapping, so the backend developer does not write it: tools become tasks automatically, each with its own retries, its own cached result and its own line in the run history [[5](#ref-5)].
 
 ## 5. Function Comparison
 
@@ -325,4 +325,4 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET estate                                    | 2026-04   |
 | 7   | Pydantic AI               | Type-safe Python. V2 carries durable execution                                         | 2026-06   |
 
-#7 Pydantic AI is the framework a Prefect integration is published for [[5](#ref-5)], and that integration does the wrapping of an agent as a flow and its tools as tasks.
+#7 Pydantic AI is the one framework with a Prefect integration that Pydantic and Prefect co-maintain [[5](#ref-5)], which spares the backend developer the code that wraps an agent as a flow and its tools as tasks.
