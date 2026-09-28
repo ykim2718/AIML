@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 21 | Created: 2026-09-27 | Updated: 2026-09-28 00:07 CDT
+Rev. 22 | Created: 2026-09-27 | Updated: 2026-09-28 00:10 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -75,6 +75,8 @@ Table 1. Each role, the part that holds it, and what fixes it
 | 10  | Record         | Orchestrator | Every run   | 단계마다 남기는 실행 기록                      |
 
 어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 code 를 적는다.
+
+Prefect 는 orchestrator 다. #8 부터 #10 까지를 제품으로 채우고, #4 부터 #7 까지는 agent framework 의 몫으로 남긴다. 겹치는 행이 둘 있다. Tool 호출을 task 로 감싸면 #6 State 와 #7 Recovery 의 재시도와 cache 도 Prefect 가 함께 지지만, LLM 을 불러 다음 동작을 고르는 일과 tool 안의 code 는 agent framework 에 남는다.
 
 ## 4. Backend Composition
 
