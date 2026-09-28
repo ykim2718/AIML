@@ -6,9 +6,10 @@ come from one run.
 
 Changelog:
     0.1.0 Draw the foundry priority grades as a second figure.
+    0.2.0 Draw the near tail of one Cpk on either side as a third figure.
 """
 __author__ = 'yRocket'
-__version__ = "0.1.0.2026.9.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.2.0.2026.9.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -21,7 +22,7 @@ from matplotlib.colors import TABLEAU_COLORS
 from scipy import stats
 
 __all__ = ['capability_indices', 'index_table', 'priority_process', 'priority_table',
-           'draw_cases', 'draw_priorities']
+           'draw_cases', 'draw_priorities', 'draw_near_tail']
 
 FIGSIZE: tuple = (12.0, 4.2)
 REFERENCE_WIDTH: float = 12.0    # the width BASE_FONT_SIZE was chosen for
@@ -31,6 +32,7 @@ LOWER_SPEC: float = 90.0
 UPPER_SPEC: float = 110.0
 CASES: tuple = ((102.5, 2.5), (100.0, 2.5), (100.0, 3.3333333333333335))
 INDEX_LEVELS: tuple = (0.67, 1.00, 1.33, 1.67, 2.00)
+NEAR_TAIL_CPK: float = 1.00      # the Cpk the near tail figure is drawn at
 # one row per foundry control priority: grade, control objective, Cpk minimum, k maximum
 PRIORITIES: tuple = ((0, 'Product Yield', 1.67, 0.10),
                      (1, 'Device Performance', 1.50, 0.15),
@@ -203,6 +205,65 @@ def draw_priorities(priorities: tuple, output_path: pathlib.Path, lower_spec: fl
     return output_path
 
 
+def draw_near_tail(cpk: float = NEAR_TAIL_CPK, output_path: pathlib.Path = None) -> pathlib.Path:
+    """Draw the standard normal density with the nearer limit 3 Cpk below and then above the mean.
+
+    The left column puts the nearer limit on the lower side and the right column on the upper side. The
+    top row shows the whole density and the distance 3 Cpk; the bottom row magnifies the area beyond the
+    limit, which is the near tail rate Phi(-3 Cpk) in either case.
+    """
+    if cpk is None or cpk <= 0:
+        raise ValueError(f"cpk must be a positive index; got {cpk}")
+    if output_path is None:
+        raise ValueError('output_path is required; there is nowhere to save the figure.')
+    figsize = (FIGSIZE[0], FIGSIZE[1] * 2.0)
+    font_size = BASE_FONT_SIZE * figsize[0] / REFERENCE_WIDTH
+    distance = 3.0 * cpk
+    reach = max(4.0, distance + 1.0)
+    grid = np.linspace(-reach, reach, 800)
+    top = stats.norm.pdf(0.0) * 1.25
+    rate_ppm = stats.norm.cdf(-distance) * 1e6
+    color = CURVE_COLORS[0]
+    figure, axes = plt.subplots(nrows=2, ncols=2, figsize=figsize)
+    figure.subplots_adjust(bottom=0.14, top=0.97, hspace=0.62, wspace=0.18)
+    for column, side, name in zip(range(2), (-1.0, 1.0), ('LSL', 'USL')):
+        limit = side * distance
+        # the tail is too thin to see at full scale, so the bottom row magnifies the region beyond the limit
+        zoom = np.linspace(limit - side * 0.5, limit + side * 1.5, 400)
+        for axis, x in ((axes[0, column], grid), (axes[1, column], zoom)):
+            density = stats.norm.pdf(x)
+            beyond = x <= limit if side < 0 else x >= limit
+            axis.plot(x, density, color=color, linewidth=1.6)
+            axis.fill_between(x, density, where=beyond, color=color, alpha=0.45, linewidth=0.0)
+            axis.axvline(limit, color='black', linestyle='--', linewidth=0.9)
+            axis.set_xlim(x.min(), x.max())
+            axis.set_ylim(0.0, density.max() * 1.25)
+            axis.tick_params(labelsize=font_size * 0.85)
+            axis.grid(visible=True, alpha=0.25)
+            axis.set_ylabel('Density', fontsize=font_size)
+            # the limit line runs through the label, so the box keeps the line off the letters
+            axis.text(limit, density.max() * 1.25 * 0.92, name, ha='center', fontsize=font_size * 0.85,
+                      bbox={'facecolor': 'white', 'edgecolor': 'none', 'pad': 1.0})
+        whole, tail = axes[0, column], axes[1, column]
+        whole.axvline(0.0, color=color, linestyle=':', linewidth=1.2)
+        arrow_height = top * 0.62
+        whole.annotate('', xy=(limit, arrow_height), xytext=(0.0, arrow_height),
+                       arrowprops={'arrowstyle': '<->', 'color': 'black', 'linewidth': 0.9})
+        whole.text(limit / 2.0, arrow_height + top * 0.03, f'3 Cpk = {distance:.2f}',
+                   ha='center', va='bottom', fontsize=font_size * 0.85)
+        whole.set_xlabel(f'(x - mean) / sigma\nnearer limit {name} at {limit:+.2f}', fontsize=font_size * 0.95)
+        tail.text(limit + side * 0.75, stats.norm.pdf(zoom).max() * 0.55,
+                  f'shaded area {_ppm_text(rate_ppm)} ppm', ha='center', fontsize=font_size * 0.9)
+        tail.set_xlabel(f'(x - mean) / sigma, magnified beyond {name}', fontsize=font_size * 0.95)
+    # (a) to (d) below each panel, one height per row, reading left to right and then down
+    for index, axis in enumerate(axes.flat):
+        position = axis.get_position()
+        figure.text(position.x0 + position.width / 2.0, position.y0 - 0.105, f'({chr(ord("a") + index)})',
+                    ha='center', va='center', fontsize=font_size)
+    figure.savefig(output_path, dpi=DPI)
+    plt.close(figure)
+    return output_path
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -233,6 +294,8 @@ if __name__ == '__main__':
     figure_path = draw_cases(cases=CASES, output_path=args.output_folder / 'process_capability_index.png')
     priority_path = draw_priorities(priorities=PRIORITIES,
                                     output_path=args.output_folder / 'priority_grades.png')
+    near_tail_path = draw_near_tail(cpk=NEAR_TAIL_CPK, output_path=args.output_folder / 'near_tail.png')
+    print(f'figure  {near_tail_path}')
     print(f'figure  {figure_path}')
     print(f'figure  {priority_path}')
     print(f'LSL {LOWER_SPEC}  USL {UPPER_SPEC}')

@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 21 | Created: 2026-09-04 | Updated: 2026-09-28 13:42 CDT
+Rev. 22 | Created: 2026-09-04 | Updated: 2026-09-28 13:46 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -105,6 +105,18 @@ Table 1. Defect rate of a centred process, in parts per million.
 
 A one-side tail does not say which side, while the near tail names the tail at the specification limit nearer the mean. $C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
 
+Fig 1 draws the near tail of a process with $C_{pk} = 1.00$.
+
+<img src="process-capability-index_fig/near_tail.png" width="1000" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Near tail of a process with Cpk = 1.00, drawn on the standard normal density. The left column
+puts the nearer limit 3 standard deviations below the mean and the right column 3 above it.
+
+- (a) The nearer limit is $LSL$, and the distance from the mean to it is $3 C_{pk} = 3$.
+- (b) The nearer limit is $USL$, at the same distance 3 as in (a).
+- (c) The region below $LSL$ in (a), magnified. The shaded area is $\Phi(-3) = 0.00135$, or 1350 ppm.
+- (d) The region above $USL$ in (b), magnified. The shaded area is the same 1350 ppm as in (c).
+
 Every row is a centred process, so $k$ is 0 and equation (4) makes $C_{pk}$ equal to $C_p$. The
 sigma level is the distance from the mean to the nearer limit in standard deviations, which is
 $3 C_{pk}$ and is exactly the number equation (5) hands to $\Phi$. Moving such a process off centre
@@ -124,11 +136,11 @@ the six sigma programme.
 
 ### 3.2. Reading the Three Together
 
-No single index determines the defect rate, and Fig 1 is the demonstration.
+No single index determines the defect rate, and Fig 2 is the demonstration.
 
-<img src="process-capability-index_fig/process_capability_index.png" width="1000" style="max-width: 100%;" alt="Fig 1">
+<img src="process-capability-index_fig/process_capability_index.png" width="1000" style="max-width: 100%;" alt="Fig 2">
 
-Fig 1. Three processes against the same specification, LSL 90 and USL 110, drawn on one density
+Fig 2. Three processes against the same specification, LSL 90 and USL 110, drawn on one density
 scale. The dotted line is the process mean and each panel is labelled with its indices and with the
 fraction outside the specification, which is far too small an area to see at this scale.
 
@@ -218,9 +230,9 @@ satisfies $C_{pk}$ alone by sitting exactly on target at exactly the required wi
 as soon as the mean moves; capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$,
 which is the margin that holds the $C_{pk}$ through the drift the process will have.
 
-<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 2">
+<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 3">
 
-Fig 2. The process that sits exactly on each grade, against the same specification, LSL 90 and
+Fig 3. The process that sits exactly on each grade, against the same specification, LSL 90 and
 USL 110, drawn on one density scale. The dotted line is the process mean, which the $k$ maximum
 holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
 is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far

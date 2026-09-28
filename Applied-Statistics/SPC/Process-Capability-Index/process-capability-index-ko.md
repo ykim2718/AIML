@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 20 | Created: 2026-09-04 | Updated: 2026-09-28 13:42 CDT
+Rev. 21 | Created: 2026-09-04 | Updated: 2026-09-28 13:46 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -99,6 +99,18 @@ Table 1. Defect rate of a centred process, in parts per million.
 
 One-side tail 은 어느 쪽인지를 알려 주지 않고, near tail 은 평균에서 가까운 쪽 specification limit 의 tail 을 가리킨다. $C_{pk}$ 는 평균에서 그 한계까지의 거리를 $3\sigma$ 로 나눈 값이므로, 그 한계는 평균에서 표준편차 $3 C_{pk}$ 개만큼 떨어져 있다. 표준정규분포에서 $-3 C_{pk}$ 이하가 나올 확률이 $\Phi(-3 C_{pk})$ 이고, 분포가 좌우 대칭이므로 $+3 C_{pk}$ 이상이 나올 확률도 같다. 따라서 가까운 쪽 한계가 $LSL$ 이든 $USL$ 이든 near tail 의 비율은 $\Phi(-3 C_{pk})$ 이다. 예를 들어 $C_{pk} = 1.00$ 이면 한계가 표준편차 3 개 거리에 있고 $\Phi(-3) = 0.00135$ 이므로, near tail 은 1350 ppm 이다.
 
+Fig 1 은 $C_{pk} = 1.00$ 인 공정의 near tail 을 그린 것이다.
+
+<img src="process-capability-index_fig/near_tail.png" width="1000" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Near tail of a process with Cpk = 1.00, drawn on the standard normal density. The left column
+puts the nearer limit 3 standard deviations below the mean and the right column 3 above it.
+
+- (a) 가까운 쪽 한계가 $LSL$ 이며, 평균에서 $LSL$ 까지의 거리가 $3 C_{pk} = 3$ 이다.
+- (b) 가까운 쪽 한계가 $USL$ 이며, 거리는 (a) 와 같은 3 이다.
+- (c) (a) 의 $LSL$ 아래를 확대한 것이며, 칠한 넓이가 $\Phi(-3) = 0.00135$, 곧 1350 ppm 이다.
+- (d) (b) 의 $USL$ 위를 확대한 것이며, 칠한 넓이가 (c) 와 같은 1350 ppm 이다.
+
 모든 행은 중심에 있는 공정이므로 $k$ 가 0 이고 식 (4) 에 의해 $C_{pk}$ 가 $C_p$ 와 같다. Sigma
 level 은 평균에서 가까운 쪽 한계까지의 거리를 표준편차로 잰 것이며, $3 C_{pk}$ 이고 식 (5) 가
 $\Phi$ 에 넘기는 바로 그 수이다. 이 공정을 중심에서 밀어내면 먼 쪽 꼬리가 무너지고, 남는 것은 그
@@ -116,11 +128,11 @@ $p = \Phi(-2.01) + \Phi(-2.01)$ 이 되고 $\Phi(-2.01) = 0.0222156$ 이므로, 
 
 ### 3.2. Reading the Three Together
 
-어느 지수 하나도 불량률을 정하지 못하며, Fig 1 이 그 증명이다.
+어느 지수 하나도 불량률을 정하지 못하며, Fig 2 가 그 증명이다.
 
-<img src="process-capability-index_fig/process_capability_index.png" width="1000" style="max-width: 100%;" alt="Fig 1">
+<img src="process-capability-index_fig/process_capability_index.png" width="1000" style="max-width: 100%;" alt="Fig 2">
 
-Fig 1. Three processes against the same specification, LSL 90 and USL 110, drawn on one density
+Fig 2. Three processes against the same specification, LSL 90 and USL 110, drawn on one density
 scale. The dotted line is the process mean and each panel is labelled with its indices and with the
 fraction outside the specification, which is far too small an area to see at this scale.
 
@@ -206,9 +218,9 @@ critical 한 항목의 값이며, 1.67 은 아직 새 공정에 있는 항목의
 요구되는 $C_p$ 가 $C_{pk}/(1 - k)$ 로 올라가며, 그것이 공정이 겪을 흐름을 지나면서도 $C_{pk}$ 를
 지키는 여유이다.
 
-<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 2">
+<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 3">
 
-Fig 2. The process that sits exactly on each grade, against the same specification, LSL 90 and
+Fig 3. The process that sits exactly on each grade, against the same specification, LSL 90 and
 USL 110, drawn on one density scale. The dotted line is the process mean, which the $k$ maximum
 holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
 is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far
