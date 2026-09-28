@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 27 | Created: 2026-09-04 | Updated: 2026-09-28 14:16 CDT
+Rev. 28 | Created: 2026-09-04 | Updated: 2026-09-28 14:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -196,12 +196,14 @@ When one product is one part, $N = 1$, and 1 ppm means one defective product in 
 99.9999 %.
 
 A 1 GB DRAM holds $2^{33} = 8{,}589{,}934{,}592$ bits, and each cell stores one bit, so it has about
-$8.59 \times 10^{9}$ cells. At 1 ppm per cell a chip carries on average $Np \approx 8590$ defective
-cells, and its yield is $e^{-8590}$, which is zero in practice. A 90 % yield of chips with every cell
-good needs $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, or $1.23 \times 10^{-5}$ ppm, which
-converts through the near tail rate $\Phi(-3 C_{pk})$ to $C_{pk} \approx 2.23$. The same conversion
-puts 1 ppm at $C_{pk} \approx 1.58$, so the number of cells in one chip raises the $C_{pk}$ that yield
-demands from 1.58 to 2.23.
+$8.59 \times 10^{9}$ cells. At a per-cell defect rate of 1 ppm a chip carries on average
+$Np \approx 8590$ defective cells, its yield is $e^{-8590}$, which is zero in practice, and its per-chip
+defect rate $1 - Y$ is 1,000,000 ppm in practice. A 90 % yield of chips with every cell good needs a
+per-cell defect rate of $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, or $1.23 \times 10^{-5}$ ppm,
+and the per-chip defect rate is then $1 - 0.9 = 0.1$, or 100,000 ppm. That per-cell rate converts through
+the near tail rate $\Phi(-3 C_{pk})$ to $C_{pk} \approx 2.23$. The same conversion puts 1 ppm per cell at
+$C_{pk} \approx 1.58$, so the number of cells in one chip raises the $C_{pk}$ that yield demands from
+1.58 to 2.23.
 
 Fig 3 draws the relation between yield and $C_{pk}$ for several part counts.
 

@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 26 | Created: 2026-09-04 | Updated: 2026-09-28 14:16 CDT
+Rev. 27 | Created: 2026-09-04 | Updated: 2026-09-28 14:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -185,12 +185,13 @@ $p$ 가 작으면 이 분포는 평균 $Np$ 인 Poisson distribution 으로 근�
 99.9999 % 이다.
 
 1 GB DRAM 은 $2^{33} = 8{,}589{,}934{,}592$ bit 를 가지며, cell 하나가 1 bit 를 저장하므로 cell 이 약
-$8.59 \times 10^{9}$ 개이다. Cell 마다 1 ppm 의 불량률이면 chip 하나에 불량 cell 이 평균
-$Np \approx 8590$ 개 생기고, 수율은 $e^{-8590}$ 으로 사실상 0 이다. 모든 cell 이 양품인 chip 을 90 %
-수율로 얻으려면 $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, 곧 $1.23 \times 10^{-5}$ ppm 이
-필요하고, 이를 near tail 비율 $\Phi(-3 C_{pk})$ 로 환산하면 $C_{pk} \approx 2.23$ 이다. 같은 방법으로
-1 ppm 은 $C_{pk} \approx 1.58$ 이므로, chip 하나에 든 cell 의 개수가 수율이 요구하는 $C_{pk}$ 를
-1.58 에서 2.23 으로 올린다.
+$8.59 \times 10^{9}$ 개이다. Cell 당 불량률이 1 ppm 이면 chip 하나에 불량 cell 이 평균
+$Np \approx 8590$ 개 생기고, 수율은 $e^{-8590}$ 으로 사실상 0 이며, chip 당 불량률 $1 - Y$ 는 사실상
+1,000,000 ppm 이다. 모든 cell 이 양품인 chip 을 90 % 수율로 얻으려면 cell 당 불량률이
+$p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, 곧 $1.23 \times 10^{-5}$ ppm 이어야 하고, 이때 chip 당
+불량률은 $1 - 0.9 = 0.1$, 곧 100,000 ppm 이다. 이 cell 당 불량률을 near tail 비율 $\Phi(-3 C_{pk})$ 로
+환산하면 $C_{pk} \approx 2.23$ 이다. 같은 방법으로 cell 당 1 ppm 은 $C_{pk} \approx 1.58$ 이므로, chip
+하나에 든 cell 의 개수가 수율이 요구하는 $C_{pk}$ 를 1.58 에서 2.23 으로 올린다.
 
 Fig 3 은 part 의 개수에 따라 수율과 $C_{pk}$ 의 관계를 그린 것이다.
 
