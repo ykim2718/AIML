@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 28 | Created: 2026-09-27 | Updated: 2026-09-28 00:25 CDT
+Rev. 29 | Created: 2026-09-27 | Updated: 2026-09-28 00:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -328,4 +328,4 @@ Table 5. Agent frameworks and when each was first announced
 
 #7 Pydantic AI 와 Prefect 는 따로 쓰는 두 제품이고, 그 둘을 잇는 package 가 공개되어 있다 [[5](#ref-5)]. 그것을 설치하면 Pydantic AI 로 쓴 agent 가 Prefect 의 flow 로 돌고 그 agent 의 tool 이 Prefect 의 task 가 되므로, 감싸는 Python code 를 직접 쓸 필요가 없다. 두 제품이 합쳐졌다거나 한쪽이 다른 쪽을 안에서 쓰는 것은 아니다.
 
-일곱 가운데 그 package 가 따로 나온 것은 #7 Pydantic AI 하나이며, 나머지는 backend 엔지니어가 직접 감싼다. Prefect 는 flow 를 Python 함수로 다루므로, Pydantic AI 와 LangGraph 를 포함해 Python 으로 된 어떤 agent framework 와도 쓸 수 있다고 적는다 [[9](#ref-9)].
+일곱 가운데 연계 전용 package 가 나온 것은 #7 Pydantic AI 하나이며, 나머지는 backend 엔지니어가 직접 감싼다. Prefect 는 flow 를 Python 함수로 다루므로 Pydantic AI 와 LangGraph 를 비롯해 Python 으로 된 어떤 agent framework 도 돌린다 [[9](#ref-9)].

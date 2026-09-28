@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 28 | Created: 2026-09-27 | Updated: 2026-09-28 00:25 CDT
+Rev. 29 | Created: 2026-09-27 | Updated: 2026-09-28 00:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -328,4 +328,4 @@ Table 5. Agent frameworks and when each was first announced
 
 #7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing it runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping Python code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.
 
-Of the seven, #7 Pydantic AI is the only one with a separate package for that join; for the others the backend engineer writes the wrapping. Prefect treats a flow as a Python function, and states that it works with Pydantic AI, with LangGraph and with any Python agent framework [[9](#ref-9)].
+Of the seven, #7 Pydantic AI is the only one with a package dedicated to that join; for the others the backend engineer writes the wrapping. Prefect treats a flow as a Python function, so it runs Pydantic AI, LangGraph and any other Python agent framework [[9](#ref-9)].
