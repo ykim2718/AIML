@@ -5,7 +5,7 @@ The figure and the numbers the accompanying document quotes are produced here, s
 the text come from one run.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0.2026.9.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.1.2026.9.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -130,7 +130,7 @@ def draw_monitoring(data: pd.DataFrame, t2: np.ndarray, spe: np.ndarray, t2_limi
     axes[0].tick_params(labelsize=font_size * 0.85)
     axes[0].grid(visible=True, alpha=0.25)
     for axis, series, limit, name in ((axes[1], t2, t2_limit, 'Hotelling $T^2$'),
-                                      (axes[2], spe, spe_limit, 'SPE')):
+                                      (axes[2], spe, spe_limit, 'PCA SPE')):
         axis.plot(data['sample'], series, color=CURVE_COLORS[0], linewidth=1.0, marker='o',
                   markersize=2.5)
         beyond = series > limit
