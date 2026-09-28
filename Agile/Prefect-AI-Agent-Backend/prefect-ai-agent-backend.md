@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 31 | Created: 2026-09-27 | Updated: 2026-09-28 08:09 CDT
+Rev. 32 | Created: 2026-09-27 | Updated: 2026-09-28 08:18 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -177,13 +177,11 @@ In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the wor
 
 ## 7. Application
 
-Prefect earns its place when a run outlives the request that started it, and costs more than it returns when the run ends inside the request. The three conditions below decide which case a design is in.
+Prefect earns its place when a run continues after the response has been sent, and costs more than it returns when the run ends with the response. The three conditions below decide which case a design is in.
 
-**Assumption** is that the backend may own a process of its own. A worker is a client-side process that polls a work pool and starts runs on infrastructure [[1](#ref-1)], so a deployment target that forbids a long-lived process leaves the composition of [Fig 2](#fig-2) without its middle.
-
-**Breaking condition** is authentication. The open source server carries no users and no authentication, so anyone who reaches the UI or the API has full access to it [[4](#ref-4)]; a self-hosted server therefore sits inside a private network or behind an authenticating proxy. Webhooks are a Prefect Cloud feature [[4](#ref-4)], so a self-hosted backend that must start runs from an outside system relays those events to the API itself.
-
-**Exclusion** is an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that finishes in the request it arrived on has no state for them to hold.
+1. **Assumption**: the backend may own a process of its own. A worker is a client-side process that polls a work pool and starts runs on infrastructure [[1](#ref-1)], so a deployment target that forbids a long-lived process leaves the composition of [Fig 2](#fig-2) without its middle.
+2. **Breaking condition**: authentication. The open source server carries no users and no authentication, so anyone who reaches the UI or the API has full access to it [[4](#ref-4)]; a self-hosted server therefore sits inside a private network or behind an authenticating proxy. Webhooks are a Prefect Cloud feature [[4](#ref-4)], so a self-hosted backend that must start runs from an outside system relays those events to the API itself.
+3. **Exclusion**: an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that ends with the response leaves them no state to hold.
 
 ## References
 
