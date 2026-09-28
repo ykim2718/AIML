@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 22 | Created: 2026-09-04 | Updated: 2026-09-28 13:49 CDT
+Rev. 23 | Created: 2026-09-04 | Updated: 2026-09-28 13:49 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -115,6 +115,9 @@ Fig 1 은 $C_{pk} = 1.00$ 인 공정의 near tail 을 그린 것이다.
 
 Fig 1. Near tail of a process with Cpk = 1.00, drawn on the standard normal density. The left column
 puts the nearer limit 3 standard deviations below the mean and the right column 3 above it.
+The y axis is the standard normal probability density $\varphi(z)$ of equation (9); its height is not
+a probability, but its area over an interval is the probability of falling in that interval, so the
+shaded area is the near tail rate.
 
 - (a) 가까운 쪽 한계가 $LSL$ 이며, 평균에서 $LSL$ 까지의 거리가 $3 C_{pk} = 3$ 이다.
 - (b) 가까운 쪽 한계가 $USL$ 이며, 거리는 (a) 와 같은 3 이다.
