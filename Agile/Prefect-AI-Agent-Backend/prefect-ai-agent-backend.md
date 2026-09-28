@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 23 | Created: 2026-09-27 | Updated: 2026-09-28 00:12 CDT
+Rev. 24 | Created: 2026-09-27 | Updated: 2026-09-28 00:17 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -126,7 +126,7 @@ Table 2. The same function in each composition
 | #   | Function                | Without Prefect                                                              | With Prefect                                                                                 |
 | :-: | :---------------------: | :--------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
 | 1   | Step retry              | A retry policy on a node, inside one graph run                               | `retries` and `retry_delay_seconds` on every task                                            |
-| 2   | Resume after a crash    | The checkpointer replays the thread from its last super-step                 | The same checkpoint, and the run state the server holds                                      |
+| 2   | Resume after a crash    | The checkpointer replays the thread from its last super-step                 | The framework's checkpointer, and the run state the Prefect server holds                     |
 | 3   | Human approval          | An interrupt, and a resume call the backend developer routes                 | `pause_flow_run` with `wait_for_input`, answered by API                                      |
 | 4   | Where a run executes    | The web process that answered                                                | A work pool, with a worker polling it                                                        |
 | 5   | Suspension              | Nobody releases it: the web process holds the thread and waits               | `suspend_flow_run` exits, and input starts the run again                                     |
@@ -135,6 +135,8 @@ Table 2. The same function in each composition
 | 8   | Per-step observability  | The backend developer builds a log table and writes each step to it          | Every flow run and task run, in the server's UI                                              |
 | 9   | One admission path      | The backend developer wires the web request that starts it                   | A deployment on a request, a schedule or an automation                                       |
 | 10  | ML pipeline integration | The backend developer runs retraining and deployment on a separate scheduler | Retraining, deployment and the agent run as flows on one server, each able to start the next |
+
+Prefect supplies the mechanism in nine of the ten rows, and #2 uses the agent framework's checkpointer alongside it. The framework drops out of no row: what Prefect wraps is that framework's loop and its tool code, and the framework side is what decides where a run pauses, which results may be cached, and what counts as one step.
 
 ## 6. Strength
 

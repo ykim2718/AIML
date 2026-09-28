@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 23 | Created: 2026-09-27 | Updated: 2026-09-28 00:12 CDT
+Rev. 24 | Created: 2026-09-27 | Updated: 2026-09-28 00:17 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -126,7 +126,7 @@ Table 2. The same function in each composition
 | #   | Function                | Without Prefect                                            | With Prefect                                                        |
 | :-: | :---------------------: | :--------------------------------------------------------: | :-----------------------------------------------------------------: |
 | 1   | Step retry              | 한 graph 실행 안, node 에 붙인 retry policy                | Task 마다 붙는 `retries` 와 `retry_delay_seconds`                   |
-| 2   | Resume after a crash    | Checkpointer 가 thread 를 마지막 super-step 에서 재생      | 같은 checkpoint, 그리고 server 가 쥔 실행 상태                      |
+| 2   | Resume after a crash    | Checkpointer 가 thread 를 마지막 super-step 에서 재생      | Framework 의 checkpointer, 그리고 Prefect server 가 쥔 실행 상태    |
 | 3   | Human approval          | Interrupt, 그리고 backend 개발자가 잇는 resume 호출        | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함              |
 | 4   | Where a run executes    | 요청에 답한 web process                                    | Work pool, 그리고 그것을 살피는 worker                              |
 | 5   | Suspension              | 아무도 놓아주지 않음. Web process 가 thread 를 쥐고 기다림 | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함                |
@@ -135,6 +135,8 @@ Table 2. The same function in each composition
 | 8   | Per-step observability  | Backend 개발자가 기록용 표를 만들어 단계마다 직접 남김     | Server 의 UI 에 담긴 모든 flow run 과 task run                      |
 | 9   | One admission path      | Backend 개발자가 실행을 시작하는 web 요청을 직접 이어 붙임 | 요청·schedule·automation 이 켜는 deployment                         |
 | 10  | ML pipeline integration | Backend 개발자가 재학습과 배포를 따로 둔 scheduler 로 돌림 | 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 서로를 켤 수 있음 |
+
+열 행 가운데 아홉은 Prefect 가 그 장치를 내놓으며, #2 만 agent framework 의 checkpointer 를 함께 쓴다. 어느 행에서도 framework 가 빠지지는 않는다. Prefect 가 감싸는 것이 그 framework 의 loop 와 tool code 이고, 어디서 멈출지, 어느 결과를 cache 해도 되는지, 무엇을 한 단계로 볼지는 framework 쪽이 정한다.
 
 ## 6. Strength
 
