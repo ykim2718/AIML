@@ -1,9 +1,10 @@
 # Agile AI/ML Modeling Meeting
-Rev. 17 | Created: 2026-09-21 | Updated: 2026-09-23 11:08 CDT
+Rev. 18 | Created: 2026-09-21 | Updated: 2026-09-27 21:30 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
 - [4. Items](#4-items)
   - [4.1 Premise Check](#41-premise-check)
   - [4.2 Claim Setting](#42-claim-setting)
@@ -64,6 +65,8 @@ STAGE                    ITEM          WHAT IT FIXES
 Fig 1. The nine items a modeling meeting settles, and the stage that settles each
 
 What closes an item is its definition of done, and that bar differs from item to item.
+
+### 3.1 Placement
 
 <a id="table-1"></a>
 Table 1. The nine items, the stage that settles each, and its definition of done
