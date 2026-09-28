@@ -1,5 +1,5 @@
 # Prefect In An AI Agent Backend
-Rev. 53 | Created: 2026-09-27 | Updated: 2026-09-28 14:12 CDT
+Rev. 54 | Created: 2026-09-27 | Updated: 2026-09-28 14:22 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -77,7 +77,7 @@ Table 1. Each role, the part that holds it, and what settles it
 
 No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes Python code on the others.
 
-Prefect is an orchestrator. It fills rows #8 to #10 of [Table 1](#table-1) as a product and leaves rows #4 to #7 to the agent framework. Two rows overlap: wrapping a tool call as a task puts the retries and the cache of #6 State and #7 Recovery on Prefect as well, while the LLM call that picks the next action and the Python code inside a tool stay with the agent framework.
+Prefect carries all three orchestrator roles — #8 Admission, #9 Throughput and #10 Record — and, once a tool call is wrapped as a task, the retries and the result caching of #6 State and #7 Recovery as well. It does not carry #4 Reasoning or #5 Tool execution, which is why the LLM call that picks the next action and the Python code inside a tool stay with the agent framework.
 
 ## 4. Backend Composition
 
