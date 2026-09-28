@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 14 | Created: 2026-09-04 | Updated: 2026-09-28 14:55 CDT
+Rev. 15 | Created: 2026-09-04 | Updated: 2026-09-28 14:57 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -36,7 +36,7 @@ Table 1. Principal components, distance and control limit of the two statistics.
 
 | Statistic       | Principal components                       | Distance             | Control limit                  |
 | :---:           | :---:                                      | :---:                | :---:                          |
-| Hotelling $T^2$ | 남긴 주성분 $1, \ldots, a$                 | Mahalanobis distance | $F$ 분포, 식 (3)               |
+| Hotelling $T^2$ | model 에 넣은 주성분 $1, \ldots, a$        | Mahalanobis distance | $F$ 분포, 식 (3)               |
 | PCA SPE         | model 에 넣지 않은 주성분 $a+1, \ldots, p$ | Euclidean distance   | Jackson–Mudholkar 근사, 식 (7) |
 
 Distance 는 새 관측값이 normal 운전 자료의 기준점에서 얼마나 떨어져 있는지를 수 하나로 잰 값이다.
@@ -46,9 +46,9 @@ Mahalanobis distance 는 공분산의 역행렬로 가중하므로, normal 자�
 는 모든 방향을 같은 무게로 센다. 두 거리는 모두 normal 자료에서의 분포를 알 수 있으므로 식 (3) 과 식 (7)
 의 관리한계를 얻는다.
 
-Hotelling $T^2$ 는 section 2 에서 센서 $p$ 개 전부를 공분산으로 가중하여 재고, section 3 에서는 남긴
+Hotelling $T^2$ 는 section 2 에서 센서 $p$ 개 전부를 공분산으로 가중하여 재고, section 3 에서는 model 에 넣은
 주성분 $a$ 개가 펼치는 부분공간 안에서 같은 Mahalanobis distance 를 잰다. SPE 는 그 부분공간 밖에 남은
-잔차의 크기를 공분산 가중 없이 잰다. $p$ 는 센서 개수이고, $a$ 는 section 3.1 에서 남기는 주성분의 개수이다.
+잔차의 크기를 공분산 가중 없이 잰다. $p$ 는 센서 개수이고, $a$ 는 section 3.1 에서 model 에 넣는 주성분의 개수이다.
 
 ### 1.1. False Alarm Inflation
 
@@ -126,6 +126,11 @@ $$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (4)$$
 잔차이다. 공정이 정상일 때 관측값은 주성분이 펼치는 부분공간 안에 놓이고, 잔차는 측정 잡음 수준으로
 작다.
 
+이 문서에서 PCA model 은 normal 운전 자료로 정한 표준화의 평균과 표준편차, 그리고 model 에 넣은 주성분
+$a$ 개의 loading $\mathbf{P}$ 와 분산 $\lambda_1, \ldots, \lambda_a$ 로 이루어진다. 식 (4) 의
+$\mathbf{T}\mathbf{P}^{\top}$ 가 이 model 이 재구성하는 부분이고, $\mathbf{E}$ 는 model 에 넣지 않은
+주성분 $a+1, \ldots, p$ 의 방향에 남는 부분이다.
+
 ### 3.2. Two Statistics
 
 이 분해가 감시할 자리를 둘로 나눈다. 하나는 부분공간 **안에서** 얼마나 멀리 갔는지이고, 다른 하나는
@@ -139,7 +144,7 @@ $$T^{2} = \sum_{j=1}^{a} \frac{t_j^{2}}{\lambda_j} \hspace{19em} (5)$$
 
 $$SPE = \left\lVert \mathbf{x} - \hat{\mathbf{x}} \right\rVert^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$
 
-식 (5) 는 score 를 그 주성분의 분산 $\lambda_j$ 로 나누므로, 남긴 주성분 $a$ 개가 펼치는 부분공간 안에서
+식 (5) 는 score 를 그 주성분의 분산 $\lambda_j$ 로 나누므로, model 에 넣은 주성분 $a$ 개가 펼치는 부분공간 안에서
 잰 Mahalanobis distance 의 제곱이다. 식 (6) 은 잔차를 공분산으로 가중하지 않고 더하므로 Euclidean
 distance 의 제곱이다. 주성분을 모두 남겨 $a = p$ 이면 식 (5) 는 식 (2) 와 같아지고 SPE 는 0 이 된다. 두
 통계량은 자료 공간을 주성분 부분공간과 잔차 공간으로 나누어, 앞의 것은 Mahalanobis distance 로, 뒤의
@@ -193,7 +198,7 @@ Fig 1 이 section 1.2 의 상황을 그대로 보여 준다. 두 센서의 상�
 밖으로 한참 나가 있다.
 
 두 다변량 통계량은 모두 이 표본을 잡아낸다. $T^2$ 는 한계 9.746 에 대해 99.051 이 나오고, 주성분 하나를
-남긴 PCA 의 $SPE$ 는 한계 0.5505 에 대해 8.279 가 나온다. 첫 주성분이 전체 분산의 95.8 percent 를
+model 에 넣은 PCA 의 $SPE$ 는 한계 0.5505 에 대해 8.279 가 나온다. 첫 주성분이 전체 분산의 95.8 percent 를
 설명하므로 두 센서가 함께 움직이는 방향은 model 안에 들어가 있고, 서로 어긋난 이 표본은 그 부분공간에서
 벗어난 것으로 잡힌다.
 
