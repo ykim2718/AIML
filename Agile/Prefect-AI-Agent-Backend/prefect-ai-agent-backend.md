@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 6 | Created: 2026-09-27 | Updated: 2026-09-27 22:38 CDT
+Rev. 7 | Created: 2026-09-27 | Updated: 2026-09-27 22:39 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -126,21 +126,21 @@ Nine functions are needed in either composition, and [Table 2](#table-2) sets ou
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| Function                          | Agent framework alone                                        | Self-hosted Prefect added                                         |
-| :-------------------------------: | :----------------------------------------------------------: | :---------------------------------------------------------------: |
-| Step retry                        | A retry policy on a node, inside one graph run               | `retries` and `retry_delay_seconds` on every task                 |
-| Resume after a crash              | The checkpointer replays the thread from its last super-step | The same checkpoint, and the run state the server holds           |
-| Skip work already done            | Written by hand in the node                                  | Result caching loads the previous result instead of running again |
-| Human approval                    | An interrupt, and a resume call the team routes              | `pause_flow_run` with `wait_for_input`, answered by API           |
-| Release the process while waiting | The process holds the thread open                            | `suspend_flow_run` exits, and input starts the run again          |
-| What starts a run                 | The web request the team wires                               | A deployment on a request, a schedule or an automation            |
-| Calls in flight and call rate     | A semaphore written by hand                                  | A global concurrency limit and a rate limit                       |
-| Run history                       | Not held                                                     | Every flow run and task run, in the server's UI                   |
-| Where a run executes              | The web process that answered                                | A work pool, with a worker polling it                             |
+| Function               | Agent framework alone                                        | Self-hosted Prefect added                                         |
+| :--------------------: | :----------------------------------------------------------: | :---------------------------------------------------------------: |
+| Step retry             | A retry policy on a node, inside one graph run               | `retries` and `retry_delay_seconds` on every task                 |
+| Resume after a crash   | The checkpointer replays the thread from its last super-step | The same checkpoint, and the run state the server holds           |
+| Human approval         | An interrupt, and a resume call the team routes              | `pause_flow_run` with `wait_for_input`, answered by API           |
+| Where a run executes   | The web process that answered                                | A work pool, with a worker polling it                             |
+| Suspension             | The process holds the thread open                            | `suspend_flow_run` exits, and input starts the run again          |
+| Idempotent rerun       | Written by hand in the node                                  | Result caching loads the previous result instead of running again |
+| Rate limiting          | A semaphore written by hand                                  | A global concurrency limit and a rate limit                       |
+| Per-step observability | No record kept per step                                      | Every flow run and task run, in the server's UI                   |
+| One admission path     | The web request the team wires                               | A deployment on a request, a schedule or an automation            |
 
 ## 6. Strength
 
-In five of the nine rows of [Table 2](#table-2) the left cell names something the team wrote, or says that side does not do it. Those five are what a benchmarking sheet separates products on, and each is named below with the mechanism Prefect supplies it with.
+In the last five rows of [Table 2](#table-2) the left cell names something the team wrote, or says that side does not do it. Those five are what a benchmarking sheet separates products on, and each is taken below under the same name, with the mechanism Prefect supplies it with.
 
 **Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits. A held thread instead occupies a process for that whole day.
 
