@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 18 | Created: 2026-09-27 | Updated: 2026-09-27 23:54 CDT
+Rev. 19 | Created: 2026-09-27 | Updated: 2026-09-28 00:03 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -32,7 +32,7 @@ The frontend keeps three roles and gains one duty when Prefect is used: the answ
 
 The boundary between frontend and backend falls after the user's intent is fixed and before the first LLM call, so the reasoning loop belongs to the backend. Ten responsibilities split across the two layers, three on the frontend and seven on the backend whose outer three are the orchestrator, and the seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
 
-Scope is what decides who carries a responsibility. A framework sees one graph run and covers the step-scoped and run-scoped responsibilities; the orchestrator is the part that sees every run, and the three fleet-scoped responsibilities are what define it. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
+Scope is what decides who carries a responsibility. A framework sees one graph run and covers the one-step and one-run responsibilities; the orchestrator is the part that sees every run, and the three every-run responsibilities are what define it. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
 
 ```text
 LAYER          ROLE              WHAT IT DECIDES                            SCOPE
@@ -60,7 +60,7 @@ Backend   >    Reasoning         Which action the LLM picks next              on
 <a id="fig-1"></a>
 Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
 
-Widening the scope by one step needs one more place to keep the state that outlives the previous scope. Step scope needs nothing beyond the process, run scope needs a store the process can die without losing, and fleet scope needs a service that outlives every process and can be asked what happened.
+Widening the scope by one step needs one more place to keep the state that outlives the previous scope. One-step scope needs nothing beyond the process, one-run scope needs a store the process can die without losing, and every-run scope needs a service that outlives every process and can be asked what happened.
 
 ### 3.1 Placement
 
@@ -170,7 +170,7 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 
 | #   | Row                     | What it asks                                                               | Prefect's answer                  |
 | :-: | :---------------------: | :------------------------------------------------------------------------: | :-------------------------------: |
-| 1   | Orchestrator scope      | Which of the fleet-scoped three the product carries                        | All three                         |
+| 1   | Orchestrator scope      | Which of the every-run three the product carries                           | All three                         |
 | 2   | Suspension              | What a run waiting for a person holds open                                 | Nothing, the process exits        |
 | 3   | Idempotent rerun        | What a rerun pays for work already done                                    | The previous result, loaded       |
 | 4   | Rate limiting           | How the call rate is bounded                                               | Declared, in any Python code      |

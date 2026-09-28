@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 18 | Created: 2026-09-27 | Updated: 2026-09-27 23:54 CDT
+Rev. 19 | Created: 2026-09-27 | Updated: 2026-09-28 00:03 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -32,7 +32,7 @@ Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나�
 
 Frontend 와 backend 의 경계는 사용자의 뜻이 확정된 뒤, 첫 LLM 호출 앞에 놓이므로 추론 loop 는 backend 의 몫이다. 열 가지 역할이 두 층에 갈려 frontend 에 셋, backend 에 일곱이 놓이며 그 일곱의 바깥 셋이 orchestrator 다. 일곱은 각자가 쥐어야 하는 범위 — 한 단계, 한 실행, 모든 실행 — 의 순서로 늘어선다.
 
-누가 어느 책임을 지는지는 범위가 정한다. Framework 는 한 graph 실행을 보므로 단계 범위와 실행 범위의 책임을 진다. Orchestrator 는 모든 실행을 보는 쪽이며, fleet 범위의 세 책임이 곧 그것의 정의다. 열 역할과 각각의 층, 그리고 각 역할이 정하는 것은 [Fig 1](#fig-1) 에 그렸다.
+누가 어느 책임을 지는지는 범위가 정한다. Framework 는 한 graph 실행을 보므로 한 단계 범위와 한 실행 범위의 책임을 진다. Orchestrator 는 모든 실행을 보는 쪽이며, 모든 실행 범위의 세 책임이 곧 그것의 정의다. 열 역할과 각각의 층, 그리고 각 역할이 정하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
 ```text
 LAYER          ROLE              WHAT IT DECIDES                            SCOPE
@@ -60,7 +60,7 @@ Backend   >    Reasoning         Which action the LLM picks next              on
 <a id="fig-1"></a>
 Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
 
-범위를 한 단계 넓힐 때마다, 앞 범위보다 오래 사는 상태를 둘 곳이 하나 더 필요하다. 단계 범위는 process 밖에 아무것도 필요하지 않고, 실행 범위는 process 가 죽어도 잃지 않는 저장소를 필요로 하며, fleet 범위는 모든 process 보다 오래 살면서 무엇이 있었는지 물을 수 있는 service 를 필요로 한다.
+범위를 한 단계 넓힐 때마다, 앞 범위보다 오래 사는 상태를 둘 곳이 하나 더 필요하다. 한 단계 범위는 process 밖에 아무것도 필요하지 않고, 한 실행 범위는 process 가 죽어도 잃지 않는 저장소를 필요로 하며, 모든 실행 범위는 모든 process 보다 오래 살면서 무엇이 있었는지 물을 수 있는 service 를 필요로 한다.
 
 ### 3.1 Placement
 
@@ -168,17 +168,17 @@ Benchmarking 자료는 행을 이 문서에서 가져오고 열을 견줄 제품
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| #   | Row                     | What it asks                                      | Prefect's answer                 |
-| :-: | :---------------------: | :-----------------------------------------------: | :------------------------------: |
-| 1   | Orchestrator scope      | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가    | 셋 모두                          |
-| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가       | 없음. Process 가 빠져나감        |
-| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가           | 앞선 결과를 불러옴               |
-| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                       | 어떤 Python code 에서도 선언으로 |
-| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                       | Tool 호출 하나                   |
-| 6   | One admission path      | Trigger 마다 code 경로가 몇 개 드는가             | Deployment 하나                  |
-| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가 | 돌림                             |
-| 8   | Access control          | API 와 UI 를 무엇이 지키는가                      | Open source server 에는 없음     |
-| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가           | Cloud webhook, 또는 relay        |
+| #   | Row                     | What it asks                                       | Prefect's answer                 |
+| :-: | :---------------------: | :------------------------------------------------: | :------------------------------: |
+| 1   | Orchestrator scope      | 모든 실행 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          |
+| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가        | 없음. Process 가 빠져나감        |
+| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가            | 앞선 결과를 불러옴               |
+| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                        | 어떤 Python code 에서도 선언으로 |
+| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                        | Tool 호출 하나                   |
+| 6   | One admission path      | Trigger 마다 code 경로가 몇 개 드는가              | Deployment 하나                  |
+| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가  | 돌림                             |
+| 8   | Access control          | API 와 UI 를 무엇이 지키는가                       | Open source server 에는 없음     |
+| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가            | Cloud webhook, 또는 relay        |
 
 한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 
