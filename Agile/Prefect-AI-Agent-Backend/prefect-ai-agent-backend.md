@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 15 | Created: 2026-09-27 | Updated: 2026-09-27 23:37 CDT
+Rev. 16 | Created: 2026-09-27 | Updated: 2026-09-27 23:39 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -325,4 +325,4 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph based. The choice in an Azure and .NET estate                                    | 2026-04   |
 | 7   | Pydantic AI               | Type-safe Python. V2 carries durable execution                                         | 2026-06   |
 
-#7 Pydantic AI has an official Prefect integration [[5](#ref-5)], which spares the backend developer the code that wraps an agent as a flow and its tools as tasks.
+#7 Pydantic AI and Prefect are two products used separately, and a package that joins them is published [[5](#ref-5)]. Installing it runs an agent written with Pydantic AI as a Prefect flow and makes that agent's tools Prefect tasks, so the wrapping code does not have to be written by hand. Neither product has absorbed the other, and neither uses the other inside itself.

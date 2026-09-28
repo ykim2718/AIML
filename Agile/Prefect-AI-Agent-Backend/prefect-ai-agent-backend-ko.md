@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 15 | Created: 2026-09-27 | Updated: 2026-09-27 23:37 CDT
+Rev. 16 | Created: 2026-09-27 | Updated: 2026-09-27 23:39 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -325,4 +325,4 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph 기반. Azure 와 .NET 환경의 선택                              | 2026-04   |
 | 7   | Pydantic AI               | Type 안전한 Python. V2 가 durable execution 을 담음                | 2026-06   |
 
-#7 Pydantic AI 는 Prefect 와의 공식 통합이 있으며 [[5](#ref-5)], 그 통합이 agent 를 flow 로, tool 을 task 로 감싸는 code 를 backend 개발자가 쓰지 않게 해 준다.
+#7 Pydantic AI 와 Prefect 는 따로 쓰는 두 제품이고, 그 둘을 잇는 package 가 공개되어 있다 [[5](#ref-5)]. 그것을 설치하면 Pydantic AI 로 쓴 agent 가 Prefect 의 flow 로 돌고 그 agent 의 tool 이 Prefect 의 task 가 되므로, 감싸는 code 를 직접 쓸 필요가 없다. 두 제품이 합쳐졌다거나 한쪽이 다른 쪽을 안에서 쓰는 것은 아니다.
