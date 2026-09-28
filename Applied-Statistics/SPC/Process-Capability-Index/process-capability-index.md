@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 18 | Created: 2026-09-04 | Updated: 2026-09-28 13:37 CDT
+Rev. 19 | Created: 2026-09-04 | Updated: 2026-09-28 13:52 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -89,7 +89,7 @@ centred process both tails contribute and the fraction follows $C_p$; off centre
 dominates and the fraction follows $C_{pk}$. The derivation is in
 [Appendix B](#appendix-b-derivation-of-equation-5).
 
-$p$ is the fraction of units that fall below $LSL$ or above $USL$, which is the defect rate.
+$p$ is the fraction of units that fall below $LSL$ or above $USL$, which is the defect rate. $\Phi$ is the cumulative distribution function of the standard normal distribution, so $\Phi(a)$ is the probability that a standard normal value is at most $a$.
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
