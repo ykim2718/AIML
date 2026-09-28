@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 25 | Created: 2026-09-27 | Updated: 2026-09-28 00:18 CDT
+Rev. 26 | Created: 2026-09-27 | Updated: 2026-09-28 00:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -136,7 +136,7 @@ Table 2. The same function in each composition
 | 9   | One admission path      | The backend developer wires the web request that starts it                   | A deployment on a request, a schedule or an automation                                       |
 | 10  | ML pipeline integration | The backend developer runs retraining and deployment on a separate scheduler | Retraining, deployment and the agent run as flows on one server, each able to start the next |
 
-Nine of the ten rows are met by the Prefect API calls and settings named in the right-hand cell alone, and #2 uses the agent framework's checkpointer alongside them. The framework drops out of no row: what Prefect wraps is that framework's loop and its tool code, and the framework side is what decides where a run pauses, which results may be cached, and what counts as one step.
+Nine of the ten rows are met by the Prefect API calls and settings named in the `With Prefect` column alone, and #2 uses the agent framework's checkpointer alongside them. The framework drops out of no row: what Prefect wraps is that framework's loop and its tool code, and the framework side is what decides where a run pauses, which results may be cached, and what counts as one step.
 
 ## 6. Strength
 

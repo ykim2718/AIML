@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 25 | Created: 2026-09-27 | Updated: 2026-09-28 00:18 CDT
+Rev. 26 | Created: 2026-09-27 | Updated: 2026-09-28 00:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -136,7 +136,7 @@ Table 2. The same function in each composition
 | 9   | One admission path      | Backend 개발자가 실행을 시작하는 web 요청을 직접 이어 붙임 | 요청·schedule·automation 이 켜는 deployment                         |
 | 10  | ML pipeline integration | Backend 개발자가 재학습과 배포를 따로 둔 scheduler 로 돌림 | 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 서로를 켤 수 있음 |
 
-열 행 가운데 아홉은 오른쪽 칸에 적힌 Prefect 의 API 호출과 설정만으로 되고, #2 만 agent framework 의 checkpointer 를 함께 쓴다. 어느 행에서도 framework 가 빠지지는 않는다. Prefect 가 감싸는 것이 그 framework 의 loop 와 tool code 이고, 어디서 멈출지, 어느 결과를 cache 해도 되는지, 무엇을 한 단계로 볼지는 framework 쪽이 정한다.
+열 행 가운데 아홉은 `With Prefect` 열에 적힌 Prefect 의 API 호출과 설정만으로 되고, #2 만 agent framework 의 checkpointer 를 함께 쓴다. 어느 행에서도 framework 가 빠지지는 않는다. Prefect 가 감싸는 것이 그 framework 의 loop 와 tool code 이고, 어디서 멈출지, 어느 결과를 cache 해도 되는지, 무엇을 한 단계로 볼지는 framework 쪽이 정한다.
 
 ## 6. Strength
 
