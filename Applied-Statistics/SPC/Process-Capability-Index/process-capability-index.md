@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 29 | Created: 2026-09-04 | Updated: 2026-09-28 14:29 CDT
+Rev. 30 | Created: 2026-09-04 | Updated: 2026-09-28 14:34 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -204,6 +204,11 @@ and the per-chip defect rate is then $1 - 0.9 = 0.1$, or 100,000 ppm. That per-c
 the near tail rate $\Phi(-3 C_{pk})$ to $C_{pk} \approx 2.23$. The same conversion puts 1 ppm per cell at
 $C_{pk} \approx 1.58$, so the number of cells in one chip raises the $C_{pk}$ that yield demands from
 1.58 to 2.23.
+
+Converting the per-cell defect rate to $C_{pk}$ assumes that a cell is always defective when the
+characteristic its $C_{pk}$ measures falls outside the specification, and good when it falls inside. It
+further assumes that the characteristic is normal and that the far tail is small enough beside the near
+tail to be dropped.
 
 Fig 3 draws the relation between yield and $C_{pk}$ for several part counts.
 
