@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 17 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
+Rev. 18 | Created: 2026-09-04 | Updated: 2026-09-28 13:37 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -88,6 +88,8 @@ Under the normal model the indices convert directly into a fraction outside the 
 centred process both tails contribute and the fraction follows $C_p$; off centre, the near tail
 dominates and the fraction follows $C_{pk}$. The derivation is in
 [Appendix B](#appendix-b-derivation-of-equation-5).
+
+$p$ is the fraction of units that fall below $LSL$ or above $USL$, which is the defect rate.
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 

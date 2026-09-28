@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 16 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
+Rev. 17 | Created: 2026-09-04 | Updated: 2026-09-28 13:37 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -82,6 +82,8 @@ $$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 정규분포 model 아래에서 이 지수들은 규격을 벗어나는 비율로 바로 환산된다. 중심에 있는 공정은 양쪽
 꼬리가 함께 기여하므로 비율이 $C_p$ 를 따르고, 치우친 공정은 가까운 쪽 꼬리가 지배하므로 비율이
 $C_{pk}$ 를 따른다. 유도는 [Appendix B](#appendix-b-derivation-of-equation-5) 에 있다.
+
+$p$ 는 공정이 만든 개수 가운데 $LSL$ 아래나 $USL$ 위로 벗어나는 개수의 비율, 곧 불량률이다.
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
