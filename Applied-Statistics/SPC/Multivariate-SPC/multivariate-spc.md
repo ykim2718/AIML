@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 9 | Created: 2026-09-04 | Updated: 2026-09-28 14:46 CDT
+Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-28 14:48 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -77,6 +77,9 @@ $\mathbf{S}^{-1}$ 이 하는 일이 핵심이다. 각 방향을 그 방향의 �
 $T^2$ 를 상수로 놓으면 $p$ 차원 공간의 타원체가 되며, 이것이 관리한계이다. 개별 관리도가 만드는
 직육면체와는 모양이 다르고, 그 차이가 section 1.2 의 이상을 잡아내는 자리이다.
 
+Section 3.2 의 PCA 기반 두 통계량 가운데 식 (5) 의 $T^2$ 는 같은 Mahalanobis distance 를 주성분
+부분공간 안에서 잰 것이고, 식 (6) 의 SPE 는 공분산으로 가중하지 않은 Euclidean distance 의 제곱이다.
+
 ### 2.2. Control Limit
 
 Normal 운전 자료 $m$ 개로 $\boldsymbol{\mu}$ 와 $\mathbf{S}$ 를 추정한 뒤 새 관측값을 감시할 때, 한계는
@@ -115,6 +118,12 @@ $$T^{2} = \sum_{j=1}^{a} \frac{t_j^{2}}{\lambda_j} \hspace{19em} (5)$$
 부분공간에서 벗어난 거리는 잔차의 제곱합이며, squared prediction error (SPE) 또는 $Q$ 통계량이라 부른다.
 
 $$SPE = \left\lVert \mathbf{x} - \hat{\mathbf{x}} \right\rVert^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$
+
+식 (5) 는 score 를 그 주성분의 분산 $\lambda_j$ 로 나누므로, 남긴 주성분 $a$ 개가 펼치는 부분공간 안에서
+잰 Mahalanobis distance 의 제곱이다. 식 (6) 은 잔차를 공분산으로 가중하지 않고 더하므로 Euclidean
+distance 의 제곱이다. 주성분을 모두 남겨 $a = p$ 이면 식 (5) 는 식 (2) 와 같아지고 SPE 는 0 이 된다. 두
+통계량은 자료 공간을 주성분 부분공간과 잔차 공간으로 나누어, 앞의 것은 Mahalanobis distance 로, 뒤의
+것은 Euclidean distance 로 잰다.
 
 $SPE$ 의 관리한계는 버린 주성분의 분산 $\lambda_{a+1}, \ldots, \lambda_p$ 로부터 Jackson 과 Mudholkar
 의 근사식으로 얻는다 [[1](#ref-1)]. $\theta_i = \sum_{j=a+1}^{p} \lambda_j^{i}$ 이고
