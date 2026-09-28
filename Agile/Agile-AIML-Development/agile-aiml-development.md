@@ -1,5 +1,5 @@
 # Agile AI/ML Development
-Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-23 11:08 CDT
+Rev. 2 | Created: 2026-09-13 | Updated: 2026-09-27 21:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -16,14 +16,14 @@ Rev. 1 | Created: 2026-09-13 | Updated: 2026-09-23 11:08 CDT
 ## 1. Purpose
 
 - **Problem Statement**: An AI/ML project run under a software team's sprint rules cannot declare a task done, because the same code does not return the same result, because code is no longer the only thing under version control, and because a deployed model loses performance while nothing about it changes.
-- **Goal**: Fix the three points at which an AI/ML cycle parts from a software cycle, and give both the rules that keep exploration inside one sprint and the bar that closes it, as checks a team can run.
+- **Goal**: Fix the three points at which an AI/ML lifecycle parts from a software lifecycle, and give both the rules that keep exploration inside one sprint and the bar that closes it, as checks a team can run.
 - **Non-Goal**: Installing or configuring a particular MLOps tool (MLflow, W&B, DVC) is not covered.
 
 ## 2. Summary
 
-Agile on an AI/ML project builds the simplest baseline model, carries it end to end into the operating environment within one or two weeks, and then improves it a little at a time from the data and the experiments that arrive afterwards. The practice of running that loop is called MLOps (Machine Learning Operations), or agile for AI.
+Agile on an AI/ML project builds the simplest baseline model, carries it end to end into the operating environment within one or two weeks, and then improves it a little at a time from the data and the experiments that arrive afterwards. The practice of running that loop is called MLOps (Machine Learning Operations).
 
-The philosophy is the one every agile team shares — short iterations, fast feedback. What deforms it here is the exploratory nature of the work: the outcome of a sprint is discovered rather than built to specification. The rest of this document is that deformation — two more axes of things to version, a clock on the experiment, a definition of done that asks for a metric and for reproducibility, and a deployment that opens a monitoring period instead of closing the work.
+The philosophy is short iterations and fast feedback, which every agile team shares. What the exploratory nature of the work deforms is the outcome of a sprint, which is discovered rather than built to specification. The rest of this document is the four deformations that follow — two more axes of things to version, a clock on the experiment, a definition of done that asks for a metric and for reproducibility, and a deployment that opens a monitoring period instead of closing the work.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -53,15 +53,16 @@ Cost of proving done     Code  <  Data  <  Model
 <a id="fig-1"></a>
 Fig 1. The three axes under version control and the proof each one takes
 
-That ordering is what the three differences below come from. Each of them is a place where a software team's habit gives the wrong answer on an AI/ML project.
+That ordering is what the three differences of [Table 1](#table-1) come from. Each of them is a place where a software team's habit gives the wrong answer on an AI/ML project.
 
-Table 1. Where an AI/ML cycle parts from a software cycle
+<a id="table-1"></a>
+Table 1. Where an AI/ML lifecycle parts from a software lifecycle
 
-| Difference | What it means | What it forces |
-| --- | --- | --- |
-| Non-determinism | The same code and the same model give a different score once the data or a hyperparameter moves | The work is run as research, with a clock on the experiment |
-| Three axes | Software versions code; AI/ML versions code, data and model together | The bar for done asks about all three, not about the code alone |
-| Drift | A model that worked loses performance as the real data trend moves away from the training set | Deployment opens a monitoring period instead of closing the work |
+| Difference      | What it means                                                                                   | What it forces                                                   |
+| :-------------: | :---------------------------------------------------------------------------------------------: | :--------------------------------------------------------------: |
+| Non-determinism | The same code and the same model give a different score once the data or a hyperparameter moves | The work is run as research, with a clock on the experiment      |
+| Three axes      | Software versions code; AI/ML versions code, data and model together                            | The bar for done asks about all three, not about the code alone  |
+| Drift           | A model that worked loses performance as the real data trend moves away from the training set   | Deployment opens a monitoring period instead of closing the work |
 
 ## 4. Lifecycle
 
@@ -99,7 +100,7 @@ The stages and the terms met at each of them are drawn in [Fig 2](#fig-2).
 [ 5. Monitoring & Retraining ]
         |
         +--> Drift Detection ......... Data and concept drift caught as it appears
-        +--> Continuous Training (CT)  Retraining pipeline running on its own
+        +--> Continuous Training ..... Retraining pipeline running on its own
         +--> Retrospective ........... Findings carried into the next sprint
 ```
 
@@ -114,7 +115,7 @@ Three rules keep the exploratory half of the work inside a sprint, each one answ
 
 ### 5.1 Timeboxing And Spike
 
-An experiment is given a deadline before it is started, because chasing the last percent of a metric routinely costs weeks. Timeboxing states the limit as part of the ticket — "this experiment closes in two days, whatever it has found" — and a spike ticket carries the research-shaped subtask out of the delivery board entirely, so that an unfinished investigation does not hold an otherwise finished sprint open.
+An experiment is given a deadline before it is started, because chasing the last percent of a metric routinely costs weeks. Timeboxing states the limit as part of the backlog item — "this experiment closes in two days, whatever it has found" — and research-shaped work is taken as a spike, its own backlog item, so that an unfinished investigation does not hold an otherwise finished sprint open.
 
 ### 5.2 Data-Centric AI
 
@@ -126,42 +127,44 @@ A new model answers in the background before it answers a customer. The live req
 
 ## 6. Definition Of Done
 
-Done on an AI/ML ticket means the data is trustworthy, the model clears its metric, the system answers fast enough, and the monitoring is attached. The software bar is a subset of it rather than a lighter version of it.
+Done on an AI/ML backlog item means the data is trustworthy, the model clears its metric, the system answers fast enough, and the monitoring is attached. A feature built with its tests passing clears the code axis of [Fig 1](#fig-1) alone, and the data and model axes are what the other three clauses ask for.
 
+<a id="table-2"></a>
 Table 2. The bar for done on each kind of project
 
-| Kind | What it requires |
-| --- | --- |
-| Software DoD | Feature built, test code passing |
-| AI/ML DoD | Feature built, target metric reached (for example F1-score above 0.88), data and model versioned, inference latency within its limit |
+| Kind         | What it requires                                                                                                                     |
+| :----------: | :----------------------------------------------------------------------------------------------------------------------------------: |
+| Software DoD | Feature built, test code passing                                                                                                     |
+| AI/ML DoD    | Feature built, target metric reached (for example F1-score above 0.88), data and model versioned, inference latency within its limit |
 
-The seventeen checks below are the working form of that bar, grouped by what each one protects.
+The seventeen checks of [Table 3](#table-3) are the working form of that bar, grouped by what each one protects.
 
+<a id="table-3"></a>
 Table 3. The AI/ML definition of done, area by area
 
-| Area | Check | What must be true |
-| --- | --- | --- |
-| Data & Feature | Data validation | Missing values, outliers and schema errors, caught automatically in the pipeline |
-| Data & Feature | Label review | A labelling cross-check passed against the agreed consistency bar |
-| Data & Feature | Data versioning | Train, validation and test sets versioned and stored under a unique hash |
-| Data & Feature | Feature store entry | New cleaned features registered in the shared store, reusable by the team |
-| Model & Experimentation | Target metric | The agreed metric above the baseline or above the model now in operation |
-| Model & Experimentation | Fairness and bias | A bias test passed, with no group or class carrying a skewed prediction |
-| Model & Experimentation | Experiment record | Hyperparameters, dataset version, code commit, metrics and plots logged automatically |
-| Model & Experimentation | Reproducibility | The same result under the same random seed and the same parameters |
-| Code & Testing | Code review | A pull request approved by at least one peer engineer |
-| Code & Testing | Unit and integration tests | Pipeline and pre/post-processing code at the agreed coverage |
-| Code & Testing | Model registry entry | The verified model versioned under a staging or candidate tag |
-| Serving & MLOps | Inference performance | The serving SLA met, for example P95 latency under 100 ms |
-| Serving & MLOps | Serving API test | Container and REST or gRPC endpoint passing an integration test |
-| Serving & MLOps | Shadow and A/B readiness | A deployment path that takes part of the traffic or runs behind the live system |
-| Serving & MLOps | Monitoring hookup | Inference data stored, drift detection and infrastructure metrics on a dashboard |
-| Documentation | Model card | Summary, input and output format, limits, measured performance and dataset, updated |
-| Documentation | Failure rule | The fallback for a low-confidence result written down |
+| Area                    | Check                      | What must be true                                                                     |
+| :---------------------: | :------------------------: | :-----------------------------------------------------------------------------------: |
+| Data & Feature          | Data validation            | Missing values, outliers and schema errors, caught automatically in the pipeline      |
+| Data & Feature          | Label review               | A labelling cross-check passed against the agreed consistency bar                     |
+| Data & Feature          | Data versioning            | Train, validation and test sets versioned and stored under a unique hash              |
+| Data & Feature          | Feature store entry        | New cleaned features registered in the shared store, reusable by the team             |
+| Model & Experimentation | Target metric              | The agreed metric above the baseline or above the model now in operation              |
+| Model & Experimentation | Fairness and bias          | A bias test passed, with no group or class carrying a skewed prediction               |
+| Model & Experimentation | Experiment record          | Hyperparameters, dataset version, code commit, metrics and plots logged automatically |
+| Model & Experimentation | Reproducibility            | The same result under the same random seed and the same parameters                    |
+| Code & Testing          | Code review                | A pull request approved by at least one peer engineer                                 |
+| Code & Testing          | Unit and integration tests | Pipeline and pre/post-processing code at the agreed coverage                          |
+| Code & Testing          | Model registry entry       | The verified model versioned under a staging or candidate tag                         |
+| Serving & MLOps         | Inference performance      | The serving SLA met, for example P95 latency under 100 ms                             |
+| Serving & MLOps         | Serving API test           | Container and REST or gRPC endpoint passing an integration test                       |
+| Serving & MLOps         | Shadow and A/B readiness   | A deployment path that takes part of the traffic or runs behind the live system       |
+| Serving & MLOps         | Monitoring hookup          | Inference data stored, drift detection and infrastructure metrics on a dashboard      |
+| Documentation           | Model card                 | Summary, input and output format, limits, measured performance and dataset, updated   |
+| Documentation           | Failure rule               | The fallback for a low-confidence result written down                                 |
 
 ### 6.1 Operating The Checklist
 
-Applying all seventeen checks to every ticket slows the sprint down, so the list is split by the kind of sprint the ticket belongs to — a data sprint answers the first group, a research sprint the second, a serving sprint the fourth. A ticket then meets the checks that protect what it actually changed.
+Applying all seventeen checks to every backlog item slows the sprint down, so the list is split by the kind of sprint the item belongs to — a data sprint answers Data & Feature, a research sprint Model & Experimentation, a serving sprint Serving & MLOps. Code & Testing is answered by every kind, since every kind merges code, and Documentation by the sprint that promotes a model, since the model card ships with it. A backlog item then meets the checks that protect what it actually changed.
 
 The checks that a machine can run are run by the machine. Data validation, code tests, the experiment record and the latency measurement all belong in the CI/CD and continuous training pipeline, where passing or failing is decided on every merge rather than remembered by a person at the end of the sprint.
 
@@ -170,9 +173,11 @@ The checks that a machine can run are run by the machine. Data validation, code 
 ## Appendix A. Terminology
 
 - **A/B testing**: serving two versions to separate slices of live traffic and comparing the result.
+- **Backlog item**: one unit of work in a backlog, held under an id.
 - **Baseline model**: the simplest rule or model, kept as the reference score every later model must beat.
+- **CI/CD (Continuous Integration / Continuous Delivery)**: the pipeline that builds, tests and ships a change on every merge.
 - **Concept drift**: a change in the relationship between input and target, which lowers performance without the input distribution moving.
-- **CT (Continuous Training)**: the pipeline that retrains and redeploys a model without a person starting it.
+- **Continuous training**: the pipeline that retrains and redeploys a model without a person starting it.
 - **Data drift**: a change in the distribution of the input data away from the training set.
 - **Data versioning**: recording each dataset state under a unique hash, so that a result can be traced to the data that produced it.
 - **Data-Centric AI**: the practice of improving the data rather than the model architecture to raise performance.
@@ -181,13 +186,15 @@ The checks that a machine can run are run by the machine. Data validation, code 
 - **Experiment tracking**: the automatic record of hyperparameters, dataset version, code commit and result for each run.
 - **Feature store**: the shared repository of cleaned features, so that one team's feature is reusable by another.
 - **Hyperparameter**: a training setting chosen before fitting, which is not learned from the data.
+- **KPI (Key Performance Indicator)**: the business quantity a project is judged on, agreed before the work starts.
 - **MLOps (Machine Learning Operations)**: the practice that carries a model from experiment to operation and keeps it there.
 - **Model card**: the document that records a model's summary, input and output format, limits, measured performance and training data.
 - **Model registry**: the store that holds trained models under a version and a stage tag.
 - **Model serving**: answering requests from a fitted model, through an API or on a device.
 - **Reproducibility**: the property that the same seed and parameters return the same result.
+- **Retrospective**: the meeting at the end of a sprint that reviews the process and fixes what to change.
 - **Shadow deployment**: running a new model beside the live one on the same input, without its answer reaching the user.
 - **SLA (Service Level Agreement)**: the agreed limit a service must stay within, such as a latency percentile.
-- **Spike**: a separately ticketed investigation, carried out of the delivery board because its outcome is unknown.
-- **Sprint**: one iteration of the agile cycle, normally one to four weeks.
+- **Spike**: an investigation taken as its own backlog item, because its outcome is unknown when it starts.
+- **Sprint**: one iteration of agile development, normally one to four weeks.
 - **Timeboxing**: fixing in advance how long a task may run, and closing it at that limit whatever it has reached.
