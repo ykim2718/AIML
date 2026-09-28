@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 16 | Created: 2026-09-04 | Updated: 2026-09-28 15:01 CDT
+Rev. 17 | Created: 2026-09-04 | Updated: 2026-09-28 15:03 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -191,16 +191,16 @@ smearing 이 일어나기 때문이다.
 <img src="multivariate-spc_fig/multivariate_spc.png" width="1000" style="max-width: 100%;" alt="Fig 1">
 
 Fig 1. Two correlated sensors over 120 samples. The scatter shows the univariate three-sigma box as
-dashed lines and the T-squared limit as the ellipse (a); the T-squared chart (b) and the SPE chart
-(c) follow the same samples on a log scale. The circled sample is the fault.
+dashed lines and the Hotelling T-squared limit as the ellipse (a); the Hotelling T-squared chart (b)
+and the PCA-SPE chart (c) follow the same samples on a log scale. The circled sample is the fault.
 
 Fig 1 이 section 1.2 의 상황을 그대로 보여 준다. 두 센서의 상관은 0.92 이고, 91 번 표본에서 첫 번째
 센서는 평균보다 $2.02\sigma$ 높고 두 번째 센서는 $2.05\sigma$ 낮다. 두 값 모두 3 sigma 관리한계 안에
 있으므로 개별 관리도는 아무 신호도 내지 않는다. 그림 (a) 에서 그 점은 점선 상자 안에 있으면서 타원
 밖으로 한참 나가 있다.
 
-두 다변량 통계량은 모두 이 표본을 잡아낸다. $T^2$ 는 한계 9.746 에 대해 99.051 이 나오고, 주성분 하나를
-model 에 넣은 PCA 의 $SPE$ 는 한계 0.5505 에 대해 8.279 가 나온다. 첫 주성분이 전체 분산의 95.8 percent 를
+두 다변량 통계량은 모두 이 표본을 잡아낸다. Table 1 의 #1 인 Hotelling $T^2$ 는 한계 9.746 에 대해 99.051 이 나오고, 주성분 하나를
+model 에 넣은 #3 의 PCA $SPE$ 는 한계 0.5505 에 대해 8.279 가 나온다. 첫 주성분이 전체 분산의 95.8 percent 를
 설명하므로 두 센서가 함께 움직이는 방향은 model 안에 들어가 있고, 서로 어긋난 이 표본은 그 부분공간에서
 벗어난 것으로 잡힌다.
 
