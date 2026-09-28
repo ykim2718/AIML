@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 38 | Created: 2026-09-27 | Updated: 2026-09-28 10:02 CDT
+Rev. 39 | Created: 2026-09-27 | Updated: 2026-09-28 10:08 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,7 +123,7 @@ Benchmarking 자료는 두 가지를 견준다. 제품을 견주는 항목과 Pr
 
 ### 5.1 Criteria
 
-[Table 2](#table-2) 의 아홉 행이 benchmarking 자료가 제품을 견주는 항목이고, `Prefect` 열에 Prefect 의 답이 적혀 있다. 다른 제품을 함께 놓을 때는 그 제품 이름을 단 열을 오른쪽에 더해 행마다 답을 적는다.
+[Table 2](#table-2) 의 아홉 행이 benchmarking 자료가 제품을 견주는 항목이고, `Prefect` 열에 Prefect 의 답이 적혀 있다.
 
 <a id="table-2"></a>
 Table 2. The benchmarking criteria, with Prefect's answer to each

@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 38 | Created: 2026-09-27 | Updated: 2026-09-28 10:02 CDT
+Rev. 39 | Created: 2026-09-27 | Updated: 2026-09-28 10:08 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,7 +123,7 @@ A benchmarking sheet compares two things. [Table 2](#table-2) holds the criteria
 
 ### 5.1 Criteria
 
-The nine rows of [Table 2](#table-2) are the criteria a benchmarking sheet compares products on, and the `Prefect` column holds Prefect's answer to each. A second product is added as a column under its own name to the right, answered row by row.
+The nine rows of [Table 2](#table-2) are the criteria a benchmarking sheet compares products on, and the `Prefect` column holds Prefect's answer to each.
 
 <a id="table-2"></a>
 Table 2. The benchmarking criteria, with Prefect's answer to each
