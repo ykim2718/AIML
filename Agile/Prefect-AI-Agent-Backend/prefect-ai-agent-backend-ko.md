@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 10 | Created: 2026-09-27 | Updated: 2026-09-27 23:05 CDT
+Rev. 11 | Created: 2026-09-27 | Updated: 2026-09-27 23:27 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,7 +25,7 @@ Rev. 10 | Created: 2026-09-27 | Updated: 2026-09-27 23:05 CDT
 
 Orchestrator 는 AI agent backend 의 일곱 책임 가운데 바깥 셋, 곧 한 실행이 아니라 모든 실행을 쥐는 셋이며, Prefect 는 팀이 직접 지어야 할 그 셋을 제품으로 내놓는다. Prefect 가 함께 가져오는 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 와 그에 딸린 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
 
-Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 여덟 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
+Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -121,26 +121,27 @@ Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 to
 
 ## 5. Function Comparison
 
-아홉 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. `Agent framework alone` 열은 agent framework 하나만 쓴 구성이다. Agent framework 는 LLM 호출과 tool 선택 loop 를 팀이 code 로 써 넣는 library 이며, 이 문서는 LangGraph 를 그 예로 든다 [[6](#ref-6)].
+열 기능은 어느 구성에서든 필요하며, [Table 2](#table-2) 가 그것을 무엇이 지는지 양쪽에 나란히 적는다. `Agent framework alone` 열은 agent framework 하나만 쓴 구성이다. Agent framework 는 LLM 호출과 tool 선택 loop 를 팀이 code 로 써 넣는 library 이며, 이 문서는 LangGraph 를 그 예로 든다 [[6](#ref-6)].
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| #   | Function               | Agent framework alone                                      | Self-hosted Prefect added                              |
-| :-: | :--------------------: | :--------------------------------------------------------: | :----------------------------------------------------: |
-| 1   | Step retry             | 한 graph 실행 안, node 에 붙인 retry policy                | Task 마다 붙는 `retries` 와 `retry_delay_seconds`      |
-| 2   | Resume after a crash   | Checkpointer 가 thread 를 마지막 super-step 에서 재생      | 같은 checkpoint, 그리고 server 가 쥔 실행 상태         |
-| 3   | Human approval         | Interrupt, 그리고 backend 개발자가 잇는 resume 호출        | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함 |
-| 4   | Where a run executes   | 요청에 답한 web process                                    | Work pool, 그리고 그것을 살피는 worker                 |
-| 5   | Suspension             | 아무도 놓아주지 않음. Web process 가 thread 를 쥐고 기다림 | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함   |
-| 6   | Idempotent rerun       | Backend 개발자가 건너뛰기 조건을 node 안에 직접 씀         | Result caching 이 앞선 결과를 불러 다시 돌지 않음      |
-| 7   | Rate limiting          | Backend 개발자가 semaphore 를 직접 써서 호출 수를 묶음     | Global concurrency limit 과 rate limit                 |
-| 8   | Per-step observability | Backend 개발자가 기록용 표를 만들어 단계마다 직접 남김     | Server 의 UI 에 담긴 모든 flow run 과 task run         |
-| 9   | One admission path     | Backend 개발자가 실행을 시작하는 web 요청을 직접 이어 붙임 | 요청·schedule·automation 이 켜는 deployment            |
+| #   | Function                | Agent framework alone                                      | Self-hosted Prefect added                                           |
+| :-: | :---------------------: | :--------------------------------------------------------: | :-----------------------------------------------------------------: |
+| 1   | Step retry              | 한 graph 실행 안, node 에 붙인 retry policy                | Task 마다 붙는 `retries` 와 `retry_delay_seconds`                   |
+| 2   | Resume after a crash    | Checkpointer 가 thread 를 마지막 super-step 에서 재생      | 같은 checkpoint, 그리고 server 가 쥔 실행 상태                      |
+| 3   | Human approval          | Interrupt, 그리고 backend 개발자가 잇는 resume 호출        | `wait_for_input` 을 받는 `pause_flow_run`, API 로 답함              |
+| 4   | Where a run executes    | 요청에 답한 web process                                    | Work pool, 그리고 그것을 살피는 worker                              |
+| 5   | Suspension              | 아무도 놓아주지 않음. Web process 가 thread 를 쥐고 기다림 | `suspend_flow_run` 이 빠져나가고, 입력이 다시 시작함                |
+| 6   | Idempotent rerun        | Backend 개발자가 건너뛰기 조건을 node 안에 직접 씀         | Result caching 이 앞선 결과를 불러 다시 돌지 않음                   |
+| 7   | Rate limiting           | Backend 개발자가 semaphore 를 직접 써서 호출 수를 묶음     | Global concurrency limit 과 rate limit                              |
+| 8   | Per-step observability  | Backend 개발자가 기록용 표를 만들어 단계마다 직접 남김     | Server 의 UI 에 담긴 모든 flow run 과 task run                      |
+| 9   | One admission path      | Backend 개발자가 실행을 시작하는 web 요청을 직접 이어 붙임 | 요청·schedule·automation 이 켜는 deployment                         |
+| 10  | ML pipeline integration | Backend 개발자가 재학습과 배포를 따로 둔 scheduler 로 돌림 | 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 서로를 켤 수 있음 |
 
 ## 6. Strength
 
-[Table 2](#table-2) 의 마지막 다섯 행 (#5, 6, 7, 8, 9) 에서 agent framework 는 그 일을 스스로 하지 못한다. Backend 개발자가 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 다섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
+[Table 2](#table-2) 의 #5 부터 #9 까지 다섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. Backend 개발자가 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 다섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
 
 - **Suspension**: `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 process 를 하나도 잡아 두지 않는다.
 - **Idempotent rerun**: Prefect 의 transactional orchestration 이 문맥이 같은 재실행을 다시 돌리지 않고 앞선 결과를 불러온다 [[5](#ref-5)]. 그 idempotency 아래에서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 비용을 두 번 치르지 않는다.
@@ -165,16 +166,17 @@ Benchmarking 자료는 행을 이 문서에서 가져오고 열을 견줄 제품
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| #   | Row                    | What it asks                                   | Prefect's answer                 |
-| :-: | :--------------------: | :--------------------------------------------: | :------------------------------: |
-| 1   | Orchestrator scope     | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          |
-| 2   | Suspension             | 사람을 기다리는 실행이 무엇을 붙들고 있는가    | 없음. Process 가 빠져나감        |
-| 3   | Idempotent rerun       | 재실행이 이미 끝난 일에 무엇을 치르는가        | 앞선 결과를 불러옴               |
-| 4   | Rate limiting          | 호출 속도를 무엇으로 묶는가                    | 어떤 Python code 에서도 선언으로 |
-| 5   | Per-step observability | 실패를 어디까지 좁혀 짚는가                    | Tool 호출 하나                   |
-| 6   | One admission path     | Trigger 마다 code 경로가 몇 개 드는가          | Deployment 하나                  |
-| 7   | Access control         | API 와 UI 를 무엇이 지키는가                   | Open source server 에는 없음     |
-| 8   | Inbound events         | 외부 system 이 실행을 어떻게 시작하는가        | Cloud webhook, 또는 relay        |
+| #   | Row                    | What it asks                                      | Prefect's answer                 |
+| :-: | :--------------------: | :-----------------------------------------------: | :------------------------------: |
+| 1   | Orchestrator scope     | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가    | 셋 모두                          |
+| 2   | Suspension             | 사람을 기다리는 실행이 무엇을 붙들고 있는가       | 없음. Process 가 빠져나감        |
+| 3   | Idempotent rerun       | 재실행이 이미 끝난 일에 무엇을 치르는가           | 앞선 결과를 불러옴               |
+| 4   | Rate limiting          | 호출 속도를 무엇으로 묶는가                       | 어떤 Python code 에서도 선언으로 |
+| 5   | Per-step observability | 실패를 어디까지 좁혀 짚는가                       | Tool 호출 하나                   |
+| 6   | One admission path     | Trigger 마다 code 경로가 몇 개 드는가             | Deployment 하나                  |
+| 7   | Shared platform        | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가 | 돌림                             |
+| 8   | Access control         | API 와 UI 를 무엇이 지키는가                      | Open source server 에는 없음     |
+| 9   | Inbound events         | 외부 system 이 실행을 어떻게 시작하는가           | Cloud webhook, 또는 relay        |
 
 한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 
@@ -231,6 +233,7 @@ Table 3. The benchmarking rows, and Prefect's answer on each
 6. 관측성: 실행 이력, 로그, 상태를 UI로 추적합니다.
 7. Human-in-the-loop 대기: `pause_flow_run`으로 승인이 날 때까지 멈췄다가 재개합니다.
 8. ML 파이프라인 통합: 재학습, 배포, Agent 실행을 한 체계에서 운영합니다.
+9. 호출 속도 제한: 동시 호출 수와 초당 호출 속도를 선언으로 묶습니다(LLM API rate limit 대응).
 
 직접 하지 않는 일: LLM 추론 로직, 메모리와 RAG, 실시간 대화 서빙은 Agent 프레임워크와 API 서버가 담당합니다.
 
