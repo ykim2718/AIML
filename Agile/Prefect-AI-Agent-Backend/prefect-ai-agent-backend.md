@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 0 | Created: 2026-09-27 | Updated: 2026-09-27 21:33 CDT
+Rev. 1 | Created: 2026-09-27 | Updated: 2026-09-27 21:47 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -11,27 +11,28 @@ Rev. 0 | Created: 2026-09-27 | Updated: 2026-09-27 21:33 CDT
 - [5. Function Comparison](#5-function-comparison)
 - [6. Strength](#6-strength)
 - [7. Application](#7-application)
-- [8. Further Work](#8-further-work)
+- [8. Design Record](#8-design-record)
+- [9. Further Work](#9-further-work)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 
-- **Problem Statement**: An AI agent backend built on an agent framework's own persistence keeps the state inside one conversation, and the team writes by hand what sits outside it: what starts a run, what limits the call rate, and what records the run.
-- **Goal**: Split the frontend and backend roles of an AI agent, and place each backend responsibility in the composition that has Prefect and the one that does not, so that a practitioner can decide whether to add Prefect on their own conditions.
-- **Non-Goal**: Designing an agent's prompt and its tools is not covered, and neither is any feature the self-hosted Prefect Server does not carry.
+- **Problem Statement**: No account exists of how a Prefect workflow is used to build an AI agent or an AI orchestrator, or of where using it creates a strength.
+- **Goal**: Split the frontend and backend roles of an AI agent and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer carries the answer into an AI orchestrator design.
+- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation code is not given, and neither is any feature the self-hosted Prefect Server does not carry.
 
 ## 2. Summary
 
-A backend carries seven responsibilities, an agent framework covers four of them inside one run, and Prefect covers the three that span runs plus the half of recovery that a rerun needs. Adding Prefect moves what a team would write by hand — a scheduler, a semaphore, a log table and a guard against repeated work — into a declaration on the flow and the task.
+The orchestrator is the fleet-scoped third of an AI agent's backend, and Prefect supplies that third as a product where a design would otherwise specify code. A design that names Prefect there gains five capabilities a hand-written orchestrator cannot reach — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and takes on three constraints, of which the authentication the open source server does not carry is the one the design answers first.
 
-The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The rest of this document is the seven responsibilities, the two compositions, and the five places where Prefect's version of a responsibility differs in kind rather than in degree.
+The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The rest of this document is the ten roles and their scopes, the two compositions, the nine functions compared across them, the five strengths, and the six decisions a design records.
 
 ## 3. Taxonomy and its Hierarchy
 
-The boundary between frontend and backend falls after the user's intent is fixed and before the first LLM call, so the reasoning loop belongs to the backend. Ten responsibilities split across the two layers, three on the frontend and seven on the backend, and the seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
+The boundary between frontend and backend falls after the user's intent is fixed and before the first LLM call, so the reasoning loop belongs to the backend. Ten responsibilities split across the two layers, three on the frontend and seven on the backend whose outer three are the orchestrator, and the seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
 
-Scope is what decides who carries a responsibility. A framework sees one graph run and covers the step-scoped and run-scoped responsibilities; an orchestrator sees every run and covers the fleet-scoped ones. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
+Scope is what decides who carries a responsibility. A framework sees one graph run and covers the step-scoped and run-scoped responsibilities; the orchestrator is the part that sees every run, and the three fleet-scoped responsibilities are what define it. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
 
 ```text
 LAYER          ROLE              WHAT IT DECIDES                            SCOPE
@@ -52,10 +53,12 @@ Backend   >    Reasoning         Which action the LLM picks next              on
                Admission         What starts a run: request, schedule, event  every run
                Throughput        How many calls run at once, and how fast     every run
                Record            What ran, when, and with which result        every run
+      |
+      +-- the three above are the orchestrator
 ```
 
 <a id="fig-1"></a>
-Fig 1. The three frontend roles and the seven backend responsibilities, ordered by scope
+Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
 
 Widening the scope by one step costs a place to put the state that outlives the previous scope. Step scope needs nothing beyond the process, run scope needs a store the process can die without losing, and fleet scope needs a service that outlives every process and can be asked what happened.
 
@@ -64,18 +67,20 @@ Widening the scope by one step costs a place to put the state that outlives the 
 <a id="table-1"></a>
 Table 1. Each role, the layer that holds it, and what fixes it
 
-| Role           | Layer    | Scope       | What fixes it                               |
-| :------------: | :------: | :---------: | :-----------------------------------------: |
-| Intent         | Frontend | One request | The request schema the backend accepts      |
-| Approval       | Frontend | One run     | The form that answers a paused run          |
-| Presentation   | Frontend | One request | The stream or page the user reads           |
-| Reasoning      | Backend  | One step    | The LLM call and the tool choice it returns |
-| Tool execution | Backend  | One step    | The function the chosen tool names          |
-| State          | Backend  | One run     | The checkpoint a resumed run reads          |
-| Recovery       | Backend  | One run     | The retry count, and what a rerun may skip  |
-| Admission      | Backend  | Every run   | The deployment and what triggers it         |
-| Throughput     | Backend  | Every run   | The concurrency limit and the call rate     |
-| Record         | Backend  | Every run   | The run history each step writes            |
+| Role           | Layer        | Scope       | What fixes it                               |
+| :------------: | :----------: | :---------: | :-----------------------------------------: |
+| Intent         | Frontend     | One request | The request schema the backend accepts      |
+| Approval       | Frontend     | One run     | The form that answers a paused run          |
+| Presentation   | Frontend     | One request | The stream or page the user reads           |
+| Reasoning      | Backend      | One step    | The LLM call and the tool choice it returns |
+| Tool execution | Backend      | One step    | The function the chosen tool names          |
+| State          | Backend      | One run     | The checkpoint a resumed run reads          |
+| Recovery       | Backend      | One run     | The retry count, and what a rerun may skip  |
+| Admission      | Orchestrator | Every run   | The deployment and what triggers it         |
+| Throughput     | Orchestrator | Every run   | The concurrency limit and the call rate     |
+| Record         | Orchestrator | Every run   | The run history each step writes            |
+
+No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes code on the others.
 
 ## 4. Backend Composition
 
@@ -144,7 +149,7 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-Five of the nine differ in kind: the hand-written version cannot reach them at all.
+Five of the nine differ in kind rather than in degree, and each one is something a design can specify only by naming a product that already carries it.
 
 **Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits, where a held thread costs a process for the whole day.
 
@@ -158,7 +163,7 @@ Five of the nine differ in kind: the hand-written version cannot reach them at a
 
 ## 7. Application
 
-Prefect earns its place when a run outlives the request that started it, and costs more than it returns when the run ends inside the request. The three conditions below decide which case a team is in.
+Prefect earns its place when a run outlives the request that started it, and costs more than it returns when the run ends inside the request. The three conditions below decide which case a design is in.
 
 **Assumption** is that the backend may own a process of its own. A worker is a client-side process that polls a work pool and starts runs on infrastructure [[1](#ref-1)], so a deployment target that forbids a long-lived process leaves the composition of [Fig 2](#fig-2) without its middle.
 
@@ -166,7 +171,25 @@ Prefect earns its place when a run outlives the request that started it, and cos
 
 **Exclusion** is an agent whose run is one LLM call and whose result nobody looks up later. The server and the worker are two components to operate, and a run that finishes in the request it arrived on has no state for them to hold.
 
-## 8. Further Work
+## 8. Design Record
+
+A design carries six decisions out of this document, and each one is answered by a named chapter rather than by an implementation. [Table 3](#table-3) is the list a reviewer checks an AI orchestrator design against.
+
+<a id="table-3"></a>
+Table 3. What an AI orchestrator design records, and where this document answers it
+
+| Decision           | What it fixes                                                  | Answered in                         |
+| :----------------: | :------------------------------------------------------------: | :---------------------------------: |
+| Boundary           | Which side of the frontend and backend line each role sits on  | [Fig 1](#fig-1)                     |
+| Orchestrator scope | Which responsibilities a product carries rather than the code  | [Table 1](#table-1)                 |
+| Composition        | Whether the fleet-scoped three are written by hand or named    | [Chapter 4](#4-backend-composition) |
+| Capability claim   | Which strengths the design is allowed to promise               | [Chapter 6](#6-strength)            |
+| Access             | Where the server sits, given that it carries no authentication | [Chapter 7](#7-application)         |
+| Inbound events     | How an outside system starts a run without webhooks            | [Chapter 7](#7-application)         |
+
+A design that leaves a row empty leaves that decision to whoever implements the part, and the answer then differs between the batch path and the interactive path.
+
+## 9. Further Work
 
 - **Wrap one agent with the published integration**. The integration wraps an agent as a flow and its tools as tasks, and gives LLM calls retries with exponential backoff by default [[5](#ref-5)], which removes the wrapping code this document describes. It needs one agent already written against that framework and a self-hosted server to point it at.
 - **Decide a cache policy per tool**. A rerun loading a cached result instead of calling the LLM again is Prefect's own behaviour under an identical context [[5](#ref-5)], so the remaining decision is which tools are safe to cache. It needs, for each tool, a judgement on whether the same input must return the same output.
@@ -198,6 +221,7 @@ Prefect earns its place when a run outlives the request that started it, and cos
 - **Flow**: the function Prefect treats as one run.
 - **HITL (Human In The Loop)**: a run that waits for a person's input before it continues.
 - **Idempotency**: the property that running again with the same input leaves the same result and the same side effects as running once.
+- **Orchestrator**: the part of a backend that sees every run rather than one, holding what starts a run, how many calls are in flight, and what the run history keeps.
 - **Prefect Server**: the self-hosted orchestration backend holding the API, the UI, the scheduler, and events and automations.
 - **Rate limit**: the ceiling on how many calls may leave within a span of time.
 - **Result caching**: loading a previous result for an identical input instead of executing again.

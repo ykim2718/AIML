@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 0 | Created: 2026-09-27 | Updated: 2026-09-27 21:33 CDT
+Rev. 1 | Created: 2026-09-27 | Updated: 2026-09-27 21:47 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -11,27 +11,28 @@ Rev. 0 | Created: 2026-09-27 | Updated: 2026-09-27 21:33 CDT
 - [5. Function Comparison](#5-function-comparison)
 - [6. Strength](#6-strength)
 - [7. Application](#7-application)
-- [8. Further Work](#8-further-work)
+- [8. Design Record](#8-design-record)
+- [9. Further Work](#9-further-work)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 
-- **Problem Statement**: Agent framework 의 내장 지속성 위에 세운 AI agent backend 는 한 대화 안의 상태를 지키며, 그 밖에 놓이는 것 — 무엇이 실행을 시작하는가, 무엇이 호출 속도를 제한하는가, 무엇이 실행을 기록하는가 — 은 팀이 직접 짓는다.
-- **Goal**: AI agent 의 frontend 와 backend 역할을 가르고, backend 의 책임을 Prefect 가 있는 구성과 없는 구성에 각각 놓아, 실무자가 제 조건에서 Prefect 를 얹을지를 가릴 수 있게 한다.
-- **Non-Goal**: Agent 의 prompt 와 tool 을 설계하는 방법은 다루지 않으며, self-hosted Prefect Server 가 담지 않는 기능도 다루지 않는다.
+- **Problem Statement**: AI Agent 와 AI Orchestrator 를 구축하는 데 Prefect workflow 를 활용하는 방안과, 그것으로 강점을 만들어 내는 방안이 없다.
+- **Goal**: AI agent 의 frontend 와 backend 역할을 가르고, backend 의 역할에 대해 Prefect 가 특별히 무엇을 어떻게 할 수 있는지를 적어, manager 또는 designer 가 그 답을 AI Orchestrator design 에 반영하게 한다.
+- **Non-Goal**: Agent 의 prompt 와 tool 을 설계하는 방법은 다루지 않고, 구현 code 도 주지 않으며, self-hosted Prefect Server 가 담지 않는 기능도 다루지 않는다.
 
 ## 2. Summary
 
-Backend 가 지는 책임은 일곱이고, agent framework 는 한 실행 안에 드는 넷을 지며, Prefect 는 실행을 넘나드는 셋과 재실행이 필요로 하는 recovery 의 절반을 진다. Prefect 를 얹으면 팀이 직접 짓던 것 — scheduler, semaphore, 기록용 표, 이미 끝난 일을 건너뛰게 하는 장치 — 이 flow 와 task 에 붙는 선언으로 옮겨간다.
+Orchestrator 는 AI agent backend 가운데 fleet 범위를 지는 삼분의 일이며, Prefect 는 design 이 code 로 적어야 할 그 삼분의 일을 제품으로 내놓는다. 그 자리에 Prefect 를 적은 design 은 직접 지은 orchestrator 가 닿지 못하는 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 를 얻고, 제약 셋을 진다. 그 가운데 open source server 가 담지 않는 인증이 design 이 먼저 답하는 것이다.
 
-Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 이 문서의 나머지가 그 일곱 책임, 두 구성, 그리고 Prefect 쪽 판이 정도가 아니라 종류에서 다른 다섯 자리다.
+Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 이 문서의 나머지가 열 역할과 그 범위, 두 구성, 그 둘에 걸쳐 견준 아홉 기능, 다섯 강점, 그리고 design 이 적는 여섯 결정이다.
 
 ## 3. Taxonomy and its Hierarchy
 
-Frontend 와 backend 의 경계는 사용자의 뜻이 확정된 뒤, 첫 LLM 호출 앞에 놓이므로 추론 loop 는 backend 의 몫이다. 열 가지 역할이 두 층에 갈려 frontend 에 셋, backend 에 일곱이 놓이고, 그 일곱은 각자가 쥐어야 하는 범위 — 한 단계, 한 실행, 모든 실행 — 의 순서로 늘어선다.
+Frontend 와 backend 의 경계는 사용자의 뜻이 확정된 뒤, 첫 LLM 호출 앞에 놓이므로 추론 loop 는 backend 의 몫이다. 열 가지 역할이 두 층에 갈려 frontend 에 셋, backend 에 일곱이 놓이며 그 일곱의 바깥 셋이 orchestrator 다. 일곱은 각자가 쥐어야 하는 범위 — 한 단계, 한 실행, 모든 실행 — 의 순서로 늘어선다.
 
-누가 어느 책임을 지는지는 범위가 정한다. Framework 는 한 graph 실행을 보므로 단계 범위와 실행 범위의 책임을 지고, orchestrator 는 모든 실행을 보므로 fleet 범위의 책임을 진다. 열 역할과 각각의 층, 그리고 각 역할이 정하는 것은 [Fig 1](#fig-1) 에 그렸다.
+누가 어느 책임을 지는지는 범위가 정한다. Framework 는 한 graph 실행을 보므로 단계 범위와 실행 범위의 책임을 진다. Orchestrator 는 모든 실행을 보는 쪽이며, fleet 범위의 세 책임이 곧 그것의 정의다. 열 역할과 각각의 층, 그리고 각 역할이 정하는 것은 [Fig 1](#fig-1) 에 그렸다.
 
 ```text
 LAYER          ROLE              WHAT IT DECIDES                            SCOPE
@@ -52,10 +53,12 @@ Backend   >    Reasoning         Which action the LLM picks next              on
                Admission         What starts a run: request, schedule, event  every run
                Throughput        How many calls run at once, and how fast     every run
                Record            What ran, when, and with which result        every run
+      |
+      +-- the three above are the orchestrator
 ```
 
 <a id="fig-1"></a>
-Fig 1. The three frontend roles and the seven backend responsibilities, ordered by scope
+Fig 1. The three frontend roles, the seven backend responsibilities ordered by scope, and the three of them that are the orchestrator
 
 범위를 한 단계 넓힐 때마다, 앞 범위보다 오래 사는 상태를 둘 자리가 하나 더 든다. 단계 범위는 process 밖에 아무것도 필요하지 않고, 실행 범위는 process 가 죽어도 잃지 않는 저장소를 필요로 하며, fleet 범위는 모든 process 보다 오래 살면서 무엇이 있었는지 물을 수 있는 service 를 필요로 한다.
 
@@ -64,18 +67,20 @@ Fig 1. The three frontend roles and the seven backend responsibilities, ordered 
 <a id="table-1"></a>
 Table 1. Each role, the layer that holds it, and what fixes it
 
-| Role           | Layer    | Scope       | What fixes it                                  |
-| :------------: | :------: | :---------: | :--------------------------------------------: |
-| Intent         | Frontend | One request | Backend 이 받아들이는 요청 schema              |
-| Approval       | Frontend | One run     | 멈춘 실행에 답하는 양식                        |
-| Presentation   | Frontend | One request | 사용자가 읽는 stream 또는 page                 |
-| Reasoning      | Backend  | One step    | LLM 호출과 그것이 돌려주는 tool 선택           |
-| Tool execution | Backend  | One step    | 고른 tool 이 가리키는 함수                     |
-| State          | Backend  | One run     | 다시 시작한 실행이 읽는 checkpoint             |
-| Recovery       | Backend  | One run     | 재시도 횟수, 그리고 재실행이 건너뛸 수 있는 것 |
-| Admission      | Backend  | Every run   | Deployment 과 그것을 켜는 것                   |
-| Throughput     | Backend  | Every run   | 동시 실행 상한과 호출 속도                     |
-| Record         | Backend  | Every run   | 단계마다 남기는 실행 기록                      |
+| Role           | Layer        | Scope       | What fixes it                                  |
+| :------------: | :----------: | :---------: | :--------------------------------------------: |
+| Intent         | Frontend     | One request | Backend 이 받아들이는 요청 schema              |
+| Approval       | Frontend     | One run     | 멈춘 실행에 답하는 양식                        |
+| Presentation   | Frontend     | One request | 사용자가 읽는 stream 또는 page                 |
+| Reasoning      | Backend      | One step    | LLM 호출과 그것이 돌려주는 tool 선택           |
+| Tool execution | Backend      | One step    | 고른 tool 이 가리키는 함수                     |
+| State          | Backend      | One run     | 다시 시작한 실행이 읽는 checkpoint             |
+| Recovery       | Backend      | One run     | 재시도 횟수, 그리고 재실행이 건너뛸 수 있는 것 |
+| Admission      | Orchestrator | Every run   | Deployment 과 그것을 켜는 것                   |
+| Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                     |
+| Record         | Orchestrator | Every run   | 단계마다 남기는 실행 기록                      |
+
+어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 code 를 적는다.
 
 ## 4. Backend Composition
 
@@ -144,7 +149,7 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-아홉 가운데 다섯이 종류에서 다르다. 직접 쓴 판은 그 다섯에 아예 닿지 못한다.
+아홉 가운데 다섯이 정도가 아니라 종류에서 다르며, 각각은 그것을 이미 담은 제품을 이름으로 적어야만 design 이 명세할 수 있는 것이다.
 
 **Suspension** 은 process 를 놓아준다. `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 기반을 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 기다리는 동안 아무것도 쓰지 않으므로, thread 를 쥐고 있으면 하루 내내 process 하나가 드는 자리와 갈린다.
 
@@ -158,7 +163,7 @@ Table 2. The same function in each composition
 
 ## 7. Application
 
-Prefect 는 실행이 그것을 시작한 요청보다 오래 살 때 값을 하고, 실행이 요청 안에서 끝날 때는 얻는 것보다 값이 크다. 아래 세 조건이 팀이 어느 경우에 있는지를 가른다.
+Prefect 는 실행이 그것을 시작한 요청보다 오래 살 때 값을 하고, 실행이 요청 안에서 끝날 때는 얻는 것보다 값이 크다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
 
 **Assumption** 은 backend 가 제 process 를 가질 수 있다는 것이다. Worker 는 work pool 을 살펴 실행을 기반 위에서 시작하는 client 쪽 process 이므로 [[1](#ref-1)], 오래 사는 process 를 금지하는 배포 대상에서는 [Fig 2](#fig-2) 의 구성이 가운데를 잃는다.
 
@@ -166,7 +171,25 @@ Prefect 는 실행이 그것을 시작한 요청보다 오래 살 때 값을 하
 
 **Exclusion** 은 실행이 LLM 호출 하나로 끝나고 그 결과를 뒤에 아무도 찾지 않는 agent 다. Server 와 worker 는 운영할 구성 요소 둘이고, 도착한 요청 안에서 끝나는 실행은 그 둘이 쥘 상태를 남기지 않는다.
 
-## 8. Further Work
+## 8. Design Record
+
+Design 이 이 문서에서 가져가는 결정은 여섯이며, 각각은 구현이 아니라 이름이 붙은 꼭지가 답한다. [Table 3](#table-3) 이 검토자가 AI Orchestrator design 을 대고 확인하는 목록이다.
+
+<a id="table-3"></a>
+Table 3. What an AI orchestrator design records, and where this document answers it
+
+| Decision           | What it fixes                                        | Answered in                         |
+| :----------------: | :--------------------------------------------------: | :---------------------------------: |
+| Boundary           | 역할마다 frontend 와 backend 의 어느 쪽에 놓이는가   | [Fig 1](#fig-1)                     |
+| Orchestrator scope | 어느 책임을 code 가 아니라 제품이 지는가             | [Table 1](#table-1)                 |
+| Composition        | Fleet 범위의 셋을 직접 짓는가, 이름으로 적는가       | [Chapter 4](#4-backend-composition) |
+| Capability claim   | Design 이 약속해도 되는 강점이 무엇인가              | [Chapter 6](#6-strength)            |
+| Access             | 인증이 없는 server 를 어디에 두는가                  | [Chapter 7](#7-application)         |
+| Inbound events     | Webhook 없이 외부 system 이 실행을 어떻게 시작하는가 | [Chapter 7](#7-application)         |
+
+한 행을 비워 둔 design 은 그 결정을 그 부분을 구현하는 사람에게 넘기며, 그러면 일괄 경로와 대화 경로에서 답이 갈린다.
+
+## 9. Further Work
 
 - **나와 있는 통합으로 agent 하나를 감싸 보기**. 그 통합은 agent 를 flow 로, tool 을 task 로 감싸고 LLM 호출에 지수 backoff 재시도를 기본으로 주므로 [[5](#ref-5)], 이 문서가 적은 감싸기 code 가 없어진다. 그 framework 로 이미 쓴 agent 하나와, 그것을 가리킬 self-hosted server 가 필요하다.
 - **Tool 마다 cache 정책을 정하기**. 재실행이 LLM 을 다시 부르지 않고 cache 된 결과를 불러오는 것은 문맥이 같을 때의 Prefect 기본 동작이므로 [[5](#ref-5)], 남는 판단은 어느 tool 을 cache 해도 되는지다. Tool 마다 같은 입력이 같은 출력을 내야 하는지에 대한 판단이 필요하다.
@@ -198,6 +221,7 @@ Prefect 는 실행이 그것을 시작한 요청보다 오래 살 때 값을 하
 - **Flow**: Prefect 가 한 실행으로 다루는 함수.
 - **HITL (Human In The Loop)**: 사람의 입력을 기다린 뒤에 이어 가는 실행.
 - **Idempotency**: 같은 입력으로 다시 돌려도 결과와 부수 효과가 한 번 돌린 것과 같은 성질.
+- **Orchestrator**: Backend 가운데 한 실행이 아니라 모든 실행을 보는 쪽. 무엇이 실행을 시작하는가, 호출이 몇 개 떠 있는가, 실행 기록이 무엇을 담는가를 진다.
 - **Prefect Server**: API, UI, scheduler, 그리고 event 와 automation 을 담은 self-hosted orchestration backend.
 - **Rate limit**: 정해진 시간 안에 나갈 수 있는 호출 수의 상한.
 - **Result caching**: 입력이 같을 때 다시 돌지 않고 앞선 결과를 불러오는 것.
