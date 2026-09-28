@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 5 | Created: 2026-09-27 | Updated: 2026-09-27 22:34 CDT
+Rev. 6 | Created: 2026-09-27 | Updated: 2026-09-27 22:38 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -140,7 +140,7 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-[Table 2](#table-2) 의 아홉 행 가운데 다섯은 왼쪽 칸에 framework 의 기능이 없다. 팀이 직접 쓴 code 가 있거나, 아무것도 없다. 그 다섯이 benchmarking 자료에서 제품을 가르는 행이며, 아래에 하나씩 Prefect 가 그것을 내놓는 장치와 함께 적는다.
+[Table 2](#table-2) 의 아홉 행 가운데 다섯은 왼쪽 칸이 팀이 직접 쓴 것을 대거나, 그쪽은 그 일을 하지 못한다고 적는다. 그 다섯이 benchmarking 자료에서 제품을 가르는 행이며, 아래에 하나씩 Prefect 가 그것을 내놓는 장치와 함께 적는다.
 
 **Suspension** 은 process 를 놓아준다. `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계는 기다리는 동안 아무것도 쓰지 않는다. Thread 를 쥐고 기다리면 그 하루 내내 process 하나를 잡아 둔다.
 
