@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 14 | Created: 2026-09-27 | Updated: 2026-09-27 23:34 CDT
+Rev. 15 | Created: 2026-09-27 | Updated: 2026-09-27 23:37 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -118,7 +118,7 @@ Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
 Agent framework 는 [Fig 1](#fig-1) 의 안쪽 네 책임을 지고 orchestrator 의 셋을 팀에 남긴다. Checkpointer 는 graph 상태의 snapshot 을 super-step 마다 thread id 아래 저장하여 멈춘 실행을 다시 시작하게 하고 사람이 한 단계를 끊어 들여다보고 승인하게 하며, node 에 붙인 retry policy 는 그 node 를 지수 backoff 로 다시 시도한다 [[6](#ref-6)]. 그러면 scheduler 와 semaphore 와 기록용 표를 직접 쓰게 되고, 그 셋은 팀이 소유하는 구성 요소가 된다.
 
-Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 은 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고 schedule 과 UI 와 automation 과 REST API 가 그것을 켜며, work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[1](#ref-1)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Pydantic 과 Prefect 가 함께 관리하는 통합이 이 감싸는 일을 해 주므로, backend 개발자가 그 code 를 쓰지 않는다. Tool 이 자동으로 task 가 되어, 호출마다 제 재시도와 제 cache 된 결과와 실행 기록의 제 줄을 갖는다 [[5](#ref-5)].
+Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 은 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고 schedule 과 UI 와 automation 과 REST API 가 그것을 켜며, work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[1](#ref-1)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Prefect 와 Pydantic AI 사이의 공식 통합이 이 감싸는 일을 해 주므로, backend 개발자가 그 code 를 쓰지 않는다. Tool 이 자동으로 task 가 되어, 호출마다 제 재시도와 제 cache 된 결과와 실행 기록의 제 줄을 갖는다 [[5](#ref-5)].
 
 ## 5. Function Comparison
 
@@ -325,4 +325,4 @@ Table 5. Agent frameworks and when each was first announced
 | 6   | Microsoft Agent Framework | Graph 기반. Azure 와 .NET 환경의 선택                              | 2026-04   |
 | 7   | Pydantic AI               | Type 안전한 Python. V2 가 durable execution 을 담음                | 2026-06   |
 
-#7 Pydantic AI 는 Pydantic 과 Prefect 가 함께 관리하는 Prefect 통합을 가진 유일한 framework 이며 [[5](#ref-5)], 그 통합이 agent 를 flow 로, tool 을 task 로 감싸는 code 를 backend 개발자가 쓰지 않게 해 준다.
+#7 Pydantic AI 는 Prefect 와의 공식 통합이 있으며 [[5](#ref-5)], 그 통합이 agent 를 flow 로, tool 을 task 로 감싸는 code 를 backend 개발자가 쓰지 않게 해 준다.
