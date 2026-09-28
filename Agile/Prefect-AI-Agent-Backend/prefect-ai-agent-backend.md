@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 9 | Created: 2026-09-27 | Updated: 2026-09-27 22:51 CDT
+Rev. 10 | Created: 2026-09-27 | Updated: 2026-09-27 23:05 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -121,36 +121,32 @@ Prefect fills the same three with a server and a worker, and the agent loop beco
 
 ## 5. Function Comparison
 
-Nine functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. A cell on the Prefect side names a feature of the product; a cell on the framework side names one of its own features, code the team writes, or nothing at all.
+Nine functions are needed in either composition, and [Table 2](#table-2) sets out what holds each one on each side. The `Agent framework alone` column is the composition that uses only an agent framework, the library a team writes the LLM call and tool selection loop in, which is LangGraph in this document [[6](#ref-6)].
 
 <a id="table-2"></a>
 Table 2. The same function in each composition
 
-| #   | Function               | Agent framework alone                                        | Self-hosted Prefect added                                         |
-| :-: | :--------------------: | :----------------------------------------------------------: | :---------------------------------------------------------------: |
-| 1   | Step retry             | A retry policy on a node, inside one graph run               | `retries` and `retry_delay_seconds` on every task                 |
-| 2   | Resume after a crash   | The checkpointer replays the thread from its last super-step | The same checkpoint, and the run state the server holds           |
-| 3   | Human approval         | An interrupt, and a resume call the team routes              | `pause_flow_run` with `wait_for_input`, answered by API           |
-| 4   | Where a run executes   | The web process that answered                                | A work pool, with a worker polling it                             |
-| 5   | Suspension             | The process holds the thread open                            | `suspend_flow_run` exits, and input starts the run again          |
-| 6   | Idempotent rerun       | Written by hand in the node                                  | Result caching loads the previous result instead of running again |
-| 7   | Rate limiting          | A semaphore written by hand                                  | A global concurrency limit and a rate limit                       |
-| 8   | Per-step observability | No record kept per step                                      | Every flow run and task run, in the server's UI                   |
-| 9   | One admission path     | The web request the team wires                               | A deployment on a request, a schedule or an automation            |
+| #   | Function               | Agent framework alone                                               | Self-hosted Prefect added                                         |
+| :-: | :--------------------: | :-----------------------------------------------------------------: | :---------------------------------------------------------------: |
+| 1   | Step retry             | A retry policy on a node, inside one graph run                      | `retries` and `retry_delay_seconds` on every task                 |
+| 2   | Resume after a crash   | The checkpointer replays the thread from its last super-step        | The same checkpoint, and the run state the server holds           |
+| 3   | Human approval         | An interrupt, and a resume call the backend developer routes        | `pause_flow_run` with `wait_for_input`, answered by API           |
+| 4   | Where a run executes   | The web process that answered                                       | A work pool, with a worker polling it                             |
+| 5   | Suspension             | Nobody releases it: the web process holds the thread and waits      | `suspend_flow_run` exits, and input starts the run again          |
+| 6   | Idempotent rerun       | The backend developer writes the skip condition into the node       | Result caching loads the previous result instead of running again |
+| 7   | Rate limiting          | The backend developer writes a semaphore to bound the calls         | A global concurrency limit and a rate limit                       |
+| 8   | Per-step observability | The backend developer builds a log table and writes each step to it | Every flow run and task run, in the server's UI                   |
+| 9   | One admission path     | The backend developer wires the web request that starts it          | A deployment on a request, a schedule or an automation            |
 
 ## 6. Strength
 
-In the last five rows of [Table 2](#table-2) (#5, 6, 7, 8, 9) the agent framework does not do the work itself. The team fills those rows with code written by hand, or leaves them undone. Those five rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
+In the last five rows of [Table 2](#table-2) (#5, 6, 7, 8, 9) the agent framework does not do the work itself. The backend developer fills those rows with code written by hand, or leaves them undone. Those five rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
 
-**Suspension** releases the process. `pause_flow_run` keeps the flow running while it waits, and `suspend_flow_run` exits so the infrastructure can be deprovisioned, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day therefore costs nothing while it waits. A held thread instead occupies a process for that whole day.
-
-**Idempotent rerun** makes a repeat safe. Idempotency comes from Prefect's transactional orchestration, which makes a rerun load a previous result instead of executing again when the context is identical, so a retried agent run does not pay the LLM twice for the same tool call [[5](#ref-5)].
-
-**Rate limiting** is declared rather than coded. A global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second; both work in any Python code rather than only inside a flow, so a tool that was never wrapped as a task is still bounded [[3](#ref-3)].
-
-**Per-step observability** comes from the same wrapping that gives retries. Because each tool call is a task, each one is separately visible in the run history and separately retryable [[5](#ref-5)], so the report moves from an agent run having failed to which tool call failed on which input.
-
-**One admission path** serves every trigger. A single deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)], so the overnight batch and the chat request run the same code rather than two copies that drift apart.
+- **Suspension**: `pause_flow_run` keeps the flow alive while it waits, and `suspend_flow_run` exits so the infrastructure can be taken down, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day occupies no process at all.
+- **Idempotent rerun**: Prefect's transactional orchestration loads the previous result instead of running again when the context is identical [[5](#ref-5)]. Under that idempotency a retried agent run does not pay the LLM twice for the same tool call.
+- **Rate limiting**: a global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second [[3](#ref-3)]. Both work in Python code outside a flow, so a tool never wrapped as a task stays bounded too.
+- **Per-step observability**: each tool call is a task, so each one appears in the run history and is retried on its own [[5](#ref-5)]. The report moves from an agent run having failed to which tool call failed on which input.
+- **One admission path**: one deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)]. The overnight batch and the chat request run the same code rather than two copies.
 
 ## 7. Application
 
@@ -169,16 +165,16 @@ A benchmarking sheet takes its rows from this document and its columns from the 
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| Row                    | What it asks                                        | Prefect's answer                  |
-| :--------------------: | :-------------------------------------------------: | :-------------------------------: |
-| Orchestrator scope     | Which of the fleet-scoped three the product carries | All three                         |
-| Suspension             | What a run waiting for a person holds open          | Nothing, the process exits        |
-| Idempotent rerun       | What a rerun pays for work already done             | The previous result, loaded       |
-| Rate limiting          | How the call rate is bounded                        | Declared, in any Python code      |
-| Per-step observability | How far down a failure is located                   | The one tool call                 |
-| One admission path     | How many code paths the triggers need               | One deployment                    |
-| Access control         | What guards the API and the UI                      | Nothing in the open source server |
-| Inbound events         | How an outside system starts a run                  | A Cloud webhook, or a relay       |
+| #   | Row                    | What it asks                                        | Prefect's answer                  |
+| :-: | :--------------------: | :-------------------------------------------------: | :-------------------------------: |
+| 1   | Orchestrator scope     | Which of the fleet-scoped three the product carries | All three                         |
+| 2   | Suspension             | What a run waiting for a person holds open          | Nothing, the process exits        |
+| 3   | Idempotent rerun       | What a rerun pays for work already done             | The previous result, loaded       |
+| 4   | Rate limiting          | How the call rate is bounded                        | Declared, in any Python code      |
+| 5   | Per-step observability | How far down a failure is located                   | The one tool call                 |
+| 6   | One admission path     | How many code paths the triggers need               | One deployment                    |
+| 7   | Access control         | What guards the API and the UI                      | Nothing in the open source server |
+| 8   | Inbound events         | How an outside system starts a run                  | A Cloud webhook, or a relay       |
 
 A product that cannot answer a row leaves that row to code, so the sheet carries the cost of that code beside the product's name.
 
@@ -203,7 +199,7 @@ A product that cannot answer a row leaves that row to code, so the sheet carries
 
 ## Appendix A. Terminology
 
-- **Agent framework**: the library a team writes the LLM call and tool selection loop in.
+- **Agent framework**: the library a team writes the LLM call and tool selection loop in, such as LangGraph.
 - **Automation**: the Prefect rule that starts a preset action when a matching event arrives.
 - **Checkpointer**: the component that saves graph state at each step so that a stopped run resumes from it.
 - **Deployment**: a flow with where, when and how it runs attached, which makes it an entity the API manages.
