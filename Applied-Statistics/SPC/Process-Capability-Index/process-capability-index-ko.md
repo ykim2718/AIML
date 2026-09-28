@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 25 | Created: 2026-09-04 | Updated: 2026-09-28 13:55 CDT
+Rev. 26 | Created: 2026-09-04 | Updated: 2026-09-28 14:16 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -177,8 +177,9 @@ Table 2. What the pair of indices indicates.
 ### 3.3. Parts per Million and Yield
 
 1 ppm 이 수율에 주는 뜻은 제품 하나에 든 part 의 개수 $N$ 이 정한다. 불량률 $p$ 로 만든 part $N$ 개가
-모두 양품이어야 제품이 양품이고 part 의 불량이 서로 독립이면, 제품의 수율은
-$Y = (1 - p)^N \approx e^{-Np}$ 이다.
+모두 양품이어야 제품이 양품이고 part 의 불량이 서로 독립이면, 제품 하나의 불량 part 개수는 binomial
+distribution $B(N, p)$ 를 따르므로 제품의 수율은 불량이 0 개일 확률 $Y = (1 - p)^N$ 이다. $N$ 이 크고
+$p$ 가 작으면 이 분포는 평균 $Np$ 인 Poisson distribution 으로 근사되어 $Y \approx e^{-Np}$ 이다.
 
 제품 하나가 part 하나이면 $N = 1$ 이고, 1 ppm 은 제품 백만 개 가운데 한 개가 불량이라는 뜻이므로 수율이
 99.9999 % 이다.
@@ -190,6 +191,18 @@ $Np \approx 8590$ 개 생기고, 수율은 $e^{-8590}$ 으로 사실상 0 이다
 필요하고, 이를 near tail 비율 $\Phi(-3 C_{pk})$ 로 환산하면 $C_{pk} \approx 2.23$ 이다. 같은 방법으로
 1 ppm 은 $C_{pk} \approx 1.58$ 이므로, chip 하나에 든 cell 의 개수가 수율이 요구하는 $C_{pk}$ 를
 1.58 에서 2.23 으로 올린다.
+
+Fig 3 은 part 의 개수에 따라 수율과 $C_{pk}$ 의 관계를 그린 것이다.
+
+<img src="process-capability-index_fig/yield_cpk.png" width="1000" style="max-width: 100%;" alt="Fig 3">
+
+Fig 3. Product yield against the Cpk of each part, for products of 1, 1,000, 1,000,000 and 2^33 parts.
+Each part fails independently at the near tail rate. The dashed line is a 90 % yield and a dot marks
+the Cpk at which each curve reaches it; the dotted line is the Cpk of a 1 ppm near tail.
+
+Part 의 개수가 1 에서 1,000 배씩 늘 때 90 % 수율에 필요한 $C_{pk}$ 는 0.43, 1.24, 1.73 으로 오르고,
+$2^{33}$ 개인 1 GB DRAM 은 2.23 이다. 1 ppm 의 선인 $C_{pk} = 1.58$ 에서 part 하나인 제품의 수율은 1 에
+가깝고, part 백만 개인 제품은 $e^{-1} \approx 0.37$ 이며, 1 GB DRAM 은 0 이다.
 
 ## 4. Application
 
@@ -251,9 +264,9 @@ critical 한 항목의 값이며, 1.67 은 아직 새 공정에 있는 항목의
 요구되는 $C_p$ 가 $C_{pk}/(1 - k)$ 로 올라가며, 그것이 공정이 겪을 흐름을 지나면서도 $C_{pk}$ 를
 지키는 여유이다.
 
-<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 3">
+<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 4">
 
-Fig 3. The process that sits exactly on each grade, against the same specification, LSL 90 and
+Fig 4. The process that sits exactly on each grade, against the same specification, LSL 90 and
 USL 110, drawn on one density scale. The dotted line is the process mean, which the $k$ maximum
 holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
 is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far

@@ -7,9 +7,10 @@ come from one run.
 Changelog:
     0.1.0 Draw the foundry priority grades as a second figure.
     0.2.0 Draw the near tail of one Cpk on either side as a third figure.
+    0.3.0 Draw product yield against Cpk for several part counts as a fourth figure.
 """
 __author__ = 'yRocket'
-__version__ = "0.2.1.2026.9.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.3.0.2026.9.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -22,7 +23,8 @@ from matplotlib.colors import TABLEAU_COLORS
 from scipy import stats
 
 __all__ = ['capability_indices', 'index_table', 'priority_process', 'priority_table',
-           'draw_cases', 'draw_priorities', 'draw_near_tail']
+           'draw_cases', 'draw_priorities', 'draw_near_tail',
+           'product_yield', 'cpk_for_yield', 'draw_yield']
 
 FIGSIZE: tuple = (12.0, 4.2)
 REFERENCE_WIDTH: float = 12.0    # the width BASE_FONT_SIZE was chosen for
@@ -33,6 +35,13 @@ UPPER_SPEC: float = 110.0
 CASES: tuple = ((102.5, 2.5), (100.0, 2.5), (100.0, 3.3333333333333335))
 INDEX_LEVELS: tuple = (0.67, 1.00, 1.33, 1.67, 2.00)
 NEAR_TAIL_CPK: float = 1.00      # the Cpk the near tail figure is drawn at
+# one curve per product: number of parts it holds, legend text
+PART_COUNTS: tuple = ((1, '1 part'),
+                      (10**3, '1,000 parts'),
+                      (10**6, '1,000,000 parts'),
+                      (2**33, '1 GB DRAM, 2^33 cells'))
+YIELD_TARGET: float = 0.90
+PART_DEFECT_PPM: float = 1.0     # the per-part rate the yield figure marks
 # one row per foundry control priority: grade, control objective, Cpk minimum, k maximum
 PRIORITIES: tuple = ((0, 'Product Yield', 1.67, 0.10),
                      (1, 'Device Performance', 1.50, 0.15),
@@ -267,6 +276,70 @@ def draw_near_tail(cpk: float = NEAR_TAIL_CPK, output_path: pathlib.Path = None)
     return output_path
 
 
+def product_yield(cpk: np.ndarray = None, part_count: int = None) -> np.ndarray:
+    """Yield of a product that is good only if all its parts are, each part failing at the near tail rate.
+
+    Each part fails independently with p = Phi(-3 Cpk), so the yield is (1 - p) ** part_count, computed
+    through log1p so that a small p is not lost against 1.
+    """
+    if part_count is None or part_count < 1:
+        raise ValueError(f"part_count must be a positive integer; got {part_count}")
+    p = stats.norm.cdf(-3.0 * np.asarray(cpk, dtype=float))
+    return np.exp(part_count * np.log1p(-p))
+
+
+def cpk_for_yield(target: float = YIELD_TARGET, part_count: int = None) -> float:
+    """The Cpk at which a product of part_count parts reaches the target yield."""
+    if not 0.0 < target < 1.0:
+        raise ValueError(f"target must lie in (0, 1); got {target}")
+    if part_count is None or part_count < 1:
+        raise ValueError(f"part_count must be a positive integer; got {part_count}")
+    part_rate = -np.expm1(np.log(target) / part_count)
+    return float(-stats.norm.ppf(part_rate) / 3.0)
+
+
+def draw_yield(part_counts: tuple = PART_COUNTS, target: float = YIELD_TARGET,
+               part_defect_ppm: float = PART_DEFECT_PPM, output_path: pathlib.Path = None) -> pathlib.Path:
+    """Draw product yield against Cpk, one curve per part count, and save the figure.
+
+    Each curve is marked where it reaches the target yield, and a vertical line marks the Cpk whose near
+    tail is part_defect_ppm.
+    """
+    if not part_counts:
+        raise ValueError('part_counts is empty; there is nothing to draw.')
+    if output_path is None:
+        raise ValueError('output_path is required; there is nowhere to save the figure.')
+    if not 0.0 < part_defect_ppm < 1e6:
+        raise ValueError(f"part_defect_ppm must lie in (0, 1e6); got {part_defect_ppm}")
+    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
+    grid = np.linspace(0.3, 2.8, 800)
+    ppm_cpk = float(-stats.norm.ppf(part_defect_ppm * 1e-6) / 3.0)
+    figure, axis = plt.subplots(figsize=(FIGSIZE[0], FIGSIZE[1] * 1.3))
+    figure.subplots_adjust(bottom=0.30)
+    axis.axhline(target, color='gray', linestyle='--', linewidth=0.9)
+    axis.text(grid.max() - 0.02, target - 0.06, f'yield {target:.0%}', ha='right', fontsize=font_size * 0.85,
+              color='dimgray')
+    axis.axvline(ppm_cpk, color='gray', linestyle=':', linewidth=1.0)
+    axis.text(ppm_cpk + 0.02, 0.04, f'{part_defect_ppm:g} ppm per part\nCpk = {ppm_cpk:.2f}',
+              fontsize=font_size * 0.85, color='dimgray')
+    for (count, name), color in zip(part_counts, CURVE_COLORS):
+        cpk = cpk_for_yield(target=target, part_count=count)
+        axis.plot(grid, product_yield(cpk=grid, part_count=count), color=color, linewidth=2.0,
+                  label=f'{name}, Cpk {cpk:.2f} at {target:.0%}')
+        axis.plot([cpk], [target], marker='o', markersize=8, color=color, markeredgecolor='white',
+                  markeredgewidth=2.0)
+    axis.set_xlim(grid.min(), grid.max())
+    axis.set_ylim(0.0, 1.05)
+    axis.set_xlabel('Cpk of each part', fontsize=font_size)
+    axis.set_ylabel('Product yield', fontsize=font_size)
+    axis.tick_params(labelsize=font_size * 0.85)
+    axis.grid(visible=True, alpha=0.25)
+    axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.16), ncol=2, fontsize=font_size * 0.85, frameon=False)
+    figure.savefig(output_path, dpi=DPI)
+    plt.close(figure)
+    return output_path
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=pathlib.Path(__file__).name,
@@ -298,6 +371,10 @@ if __name__ == '__main__':
                                     output_path=args.output_folder / 'priority_grades.png')
     near_tail_path = draw_near_tail(cpk=NEAR_TAIL_CPK, output_path=args.output_folder / 'near_tail.png')
     print(f'figure  {near_tail_path}')
+    yield_path = draw_yield(output_path=args.output_folder / 'yield_cpk.png')
+    print(f'figure  {yield_path}')
+    for count, name in PART_COUNTS:
+        print(f'{name}: Cpk {cpk_for_yield(part_count=count):.4f} for yield {YIELD_TARGET}')
     print(f'figure  {figure_path}')
     print(f'figure  {priority_path}')
     print(f'LSL {LOWER_SPEC}  USL {UPPER_SPEC}')

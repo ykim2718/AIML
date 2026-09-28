@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 26 | Created: 2026-09-04 | Updated: 2026-09-28 13:55 CDT
+Rev. 27 | Created: 2026-09-04 | Updated: 2026-09-28 14:16 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -187,8 +187,10 @@ the cheap move recovers the factor $1/(1-k)$ immediately.
 ### 3.3. Parts per Million and Yield
 
 What 1 ppm means for yield is set by the number $N$ of parts in one product. When a product is good
-only if all $N$ parts made at defect rate $p$ are good, and the parts fail independently, the product
-yield is $Y = (1 - p)^N \approx e^{-Np}$.
+only if all $N$ parts made at defect rate $p$ are good, and the parts fail independently, the number of
+defective parts in one product follows the binomial distribution $B(N, p)$, so the product yield is the
+probability of no defect, $Y = (1 - p)^N$. For large $N$ and small $p$ that distribution approaches the
+Poisson distribution with mean $Np$, which gives $Y \approx e^{-Np}$.
 
 When one product is one part, $N = 1$, and 1 ppm means one defective product in a million, a yield of
 99.9999 %.
@@ -200,6 +202,18 @@ good needs $p = -\ln(0.9)/N \approx 1.23 \times 10^{-11}$, or $1.23 \times 10^{-
 converts through the near tail rate $\Phi(-3 C_{pk})$ to $C_{pk} \approx 2.23$. The same conversion
 puts 1 ppm at $C_{pk} \approx 1.58$, so the number of cells in one chip raises the $C_{pk}$ that yield
 demands from 1.58 to 2.23.
+
+Fig 3 draws the relation between yield and $C_{pk}$ for several part counts.
+
+<img src="process-capability-index_fig/yield_cpk.png" width="1000" style="max-width: 100%;" alt="Fig 3">
+
+Fig 3. Product yield against the Cpk of each part, for products of 1, 1,000, 1,000,000 and 2^33 parts.
+Each part fails independently at the near tail rate. The dashed line is a 90 % yield and a dot marks
+the Cpk at which each curve reaches it; the dotted line is the Cpk of a 1 ppm near tail.
+
+As the part count grows from 1 by factors of 1,000, the $C_{pk}$ a 90 % yield needs rises through 0.43,
+1.24 and 1.73, and the 1 GB DRAM with $2^{33}$ cells needs 2.23. At the 1 ppm line, $C_{pk} = 1.58$, a
+one-part product yields nearly 1, a million-part product $e^{-1} \approx 0.37$, and the 1 GB DRAM 0.
 
 ## 4. Application
 
@@ -263,9 +277,9 @@ satisfies $C_{pk}$ alone by sitting exactly on target at exactly the required wi
 as soon as the mean moves; capping $k$ raises the required $C_p$ to $C_{pk}/(1 - k)$,
 which is the margin that holds the $C_{pk}$ through the drift the process will have.
 
-<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 3">
+<img src="process-capability-index_fig/priority_grades.png" width="1000" style="max-width: 100%;" alt="Fig 4">
 
-Fig 3. The process that sits exactly on each grade, against the same specification, LSL 90 and
+Fig 4. The process that sits exactly on each grade, against the same specification, LSL 90 and
 USL 110, drawn on one density scale. The dotted line is the process mean, which the $k$ maximum
 holds below the midpoint, and each panel carries the indices that process realises. The ppm figure
 is the whole fraction outside the specification, so it exceeds the near tail of Table 3 by the far
