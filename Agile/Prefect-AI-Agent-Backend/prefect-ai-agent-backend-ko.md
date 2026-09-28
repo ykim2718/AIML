@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 16 | Created: 2026-09-27 | Updated: 2026-09-27 23:39 CDT
+Rev. 17 | Created: 2026-09-27 | Updated: 2026-09-27 23:44 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,11 +20,11 @@ Rev. 16 | Created: 2026-09-27 | Updated: 2026-09-27 23:39 CDT
 
 - **Problem Statement**: AI Agent 와 AI Orchestrator 를 구축하는 데 Prefect workflow 를 활용하는 방안과, 그것으로 강점을 만들어 내는 방안이 없다.
 - **Goal**: AI Orchestrator 와 AI agent 의 frontend 와 backend 역할을 가르고, Prefect 가 backend 의 역할에 대해 특별히 무엇을 어떻게 할 수 있는지를 적어, manager 또는 designer 가 benchmarking 자료를 만든다.
-- **Non-Goal**: Agent 의 prompt 와 tool 을 설계하는 방법은 다루지 않고, 구현 code 도 주지 않으며, Prefect 밖의 orchestrator 에 점수를 매기지 않는다.
+- **Non-Goal**: Agent 의 prompt 와 tool 을 설계하는 방법은 다루지 않고, 구현 code 도 주지 않으며, Prefect 밖의 orchestrator (Airflow, Temporal, Dagster 등) 과 비교하지 않는다.
 
 ## 2. Summary
 
-Orchestrator 는 AI agent backend 의 일곱 책임 가운데 바깥 셋, 곧 한 실행이 아니라 모든 실행을 쥐는 셋이며, Prefect 는 팀이 직접 지어야 할 그 셋을 제품으로 내놓는다. Prefect 가 함께 가져오는 다섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path — 와 그에 딸린 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
+Orchestrator 는 AI agent backend 의 일곱 책임 가운데 바깥 셋, 곧 한 실행이 아니라 모든 실행을 쥐는 셋이며, Prefect 는 팀이 직접 지어야 할 그 셋을 제품으로 내놓는다. Prefect 가 함께 가져오는 여섯 가지 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 와 그에 딸린 제약 셋이 benchmarking 자료가 제품을 견주는 행이다.
 
 Frontend 는 세 역할을 그대로 두고, Prefect 를 쓸 때 할 일 하나를 얻는다. 멈춘 실행이 기다리는 답이 frontend 를 지나 들어온다. 기준선으로 삼은 agent framework 는 LangGraph 다. [Table 2](#table-2) 의 왼쪽 열이 기대는 두 가지, checkpointer 와 node 에 붙인 retry policy 를 vendor 문서로 확인할 수 있어 고른 것이며 [[6](#ref-6)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 이벤트 트리거를 어떻게 붙이는지 보인다.
 
@@ -142,13 +142,14 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-[Table 2](#table-2) 의 #5 부터 #9 까지 다섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. Backend 개발자가 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 다섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
+[Table 2](#table-2) 의 #5 부터 #10 까지 여섯 행에서 agent framework 는 그 일을 스스로 하지 못한다. Backend 개발자가 code 를 손으로 써서 채우거나, 그대로 비워 둔다. 그 여섯 행이 benchmarking 자료에서 제품을 가르며, 아래에서 같은 이름으로 하나씩 Prefect 는 대신 무엇을 하는지 적는다.
 
 - **Suspension**: `pause_flow_run` 은 기다리는 동안 flow 를 살려 두고, `suspend_flow_run` 은 빠져나가 infrastructure 를 내릴 수 있게 하며, 입력이 닿으면 실행이 다시 시작된다 [[2](#ref-2)]. 하루를 기다리는 HITL 단계가 process 를 하나도 잡아 두지 않는다.
 - **Idempotent rerun**: Prefect 의 transactional orchestration 이 문맥이 같은 재실행을 다시 돌리지 않고 앞선 결과를 불러온다 [[5](#ref-5)]. 그 idempotency 아래에서 다시 시도한 agent 실행이 같은 tool 호출에 LLM 비용을 두 번 치르지 않는다.
 - **Rate limiting**: Global concurrency limit 이 띄울 수 있는 호출 수를 묶고, rate limit 이 초당 slot 회복량으로 호출 간격을 벌린다 [[3](#ref-3)]. 둘은 flow 밖의 Python code 에서도 쓰여, task 로 감싸지 않은 tool 도 상한 안에 든다.
 - **Per-step observability**: Tool 호출 하나가 task 이므로 하나씩 따로 실행 기록에 보이고 하나씩 따로 다시 시도된다 [[5](#ref-5)]. 보고가 agent 실행이 실패했다는 데서, 어느 tool 호출이 어느 입력에서 실패했는지로 내려간다.
 - **One admission path**: Deployment 하나가 대화형 요청과 야간 schedule 과 event 기반 automation 에 함께 답한다 [[1](#ref-1)]. 야간 일괄 실행과 대화 요청이 두 벌이 아니라 같은 code 를 돌린다.
+- **ML pipeline integration**: 재학습·배포·agent 가 한 server 위의 flow 로 돌고, 앞 flow 가 끝나면 그 상태가 다음 flow 를 켠다 [[7](#ref-7)]. 재학습과 agent 를 두 체계에 나누어 두고 그 사이를 직접 이어 붙일 일이 없다.
 
 ## 7. Application
 
@@ -167,17 +168,17 @@ Benchmarking 자료는 행을 이 문서에서 가져오고 열을 견줄 제품
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| #   | Row                    | What it asks                                      | Prefect's answer                 |
-| :-: | :--------------------: | :-----------------------------------------------: | :------------------------------: |
-| 1   | Orchestrator scope     | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가    | 셋 모두                          |
-| 2   | Suspension             | 사람을 기다리는 실행이 무엇을 붙들고 있는가       | 없음. Process 가 빠져나감        |
-| 3   | Idempotent rerun       | 재실행이 이미 끝난 일에 무엇을 치르는가           | 앞선 결과를 불러옴               |
-| 4   | Rate limiting          | 호출 속도를 무엇으로 묶는가                       | 어떤 Python code 에서도 선언으로 |
-| 5   | Per-step observability | 실패를 어디까지 좁혀 짚는가                       | Tool 호출 하나                   |
-| 6   | One admission path     | Trigger 마다 code 경로가 몇 개 드는가             | Deployment 하나                  |
-| 7   | Shared platform        | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가 | 돌림                             |
-| 8   | Access control         | API 와 UI 를 무엇이 지키는가                      | Open source server 에는 없음     |
-| 9   | Inbound events         | 외부 system 이 실행을 어떻게 시작하는가           | Cloud webhook, 또는 relay        |
+| #   | Row                     | What it asks                                      | Prefect's answer                 |
+| :-: | :---------------------: | :-----------------------------------------------: | :------------------------------: |
+| 1   | Orchestrator scope      | Fleet 범위의 셋 가운데 제품이 어느 것을 지는가    | 셋 모두                          |
+| 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가       | 없음. Process 가 빠져나감        |
+| 3   | Idempotent rerun        | 재실행이 이미 끝난 일에 무엇을 치르는가           | 앞선 결과를 불러옴               |
+| 4   | Rate limiting           | 호출 속도를 무엇으로 묶는가                       | 어떤 Python code 에서도 선언으로 |
+| 5   | Per-step observability  | 실패를 어디까지 좁혀 짚는가                       | Tool 호출 하나                   |
+| 6   | One admission path      | Trigger 마다 code 경로가 몇 개 드는가             | Deployment 하나                  |
+| 7   | ML pipeline integration | 같은 제품이 재학습·배포 pipeline 도 함께 돌리는가 | 돌림                             |
+| 8   | Access control          | API 와 UI 를 무엇이 지키는가                      | Open source server 에는 없음     |
+| 9   | Inbound events          | 외부 system 이 실행을 어떻게 시작하는가           | Cloud webhook, 또는 relay        |
 
 한 행에 답하지 못하는 제품은 그 행을 code 에 넘기므로, 자료는 그 code 를 쓰는 비용을 제품 이름 곁에 함께 적는다.
 

@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 16 | Created: 2026-09-27 | Updated: 2026-09-27 23:39 CDT
+Rev. 17 | Created: 2026-09-27 | Updated: 2026-09-27 23:44 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,11 +20,11 @@ Rev. 16 | Created: 2026-09-27 | Updated: 2026-09-27 23:39 CDT
 
 - **Problem Statement**: No account exists of how a Prefect workflow is used to build an AI agent or an AI orchestrator, or of where using it creates a strength.
 - **Goal**: Split the frontend and backend roles of an AI orchestrator and an AI agent, and state what Prefect can specially do for the backend role and how it does it, so that a manager or a designer produces benchmarking material from it.
-- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation code is not given, and no orchestrator other than Prefect is scored.
+- **Non-Goal**: Designing an agent's prompt and its tools is not covered, the implementation code is not given, and no comparison is made with orchestrators other than Prefect (Airflow, Temporal, Dagster and the like).
 
 ## 2. Summary
 
-The orchestrator is the outer three of an AI agent's seven backend responsibilities, the three that hold every run rather than one, and Prefect supplies them as a product where a team would otherwise write them. Five capabilities it brings — suspension, idempotent rerun, declared rate limiting, per-step observability and one admission path — and the three constraints that come with it are the rows a benchmarking sheet compares products on.
+The orchestrator is the outer three of an AI agent's seven backend responsibilities, the three that hold every run rather than one, and Prefect supplies them as a product where a team would otherwise write them. Six capabilities it brings — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — and the three constraints that come with it are the rows a benchmarking sheet compares products on.
 
 The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The agent framework taken as the baseline is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the left of [Table 2](#table-2) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
@@ -142,13 +142,14 @@ Table 2. The same function in each composition
 
 ## 6. Strength
 
-In rows #5 to #9 of [Table 2](#table-2) the agent framework does not do the work itself. The backend developer fills those rows with code written by hand, or leaves them undone. Those five rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
+In rows #5 to #10 of [Table 2](#table-2) the agent framework does not do the work itself. The backend developer fills those rows with code written by hand, or leaves them undone. Those six rows are what separates one product from another on a benchmarking sheet, and each is taken below under the same name, with what Prefect does instead.
 
 - **Suspension**: `pause_flow_run` keeps the flow alive while it waits, and `suspend_flow_run` exits so the infrastructure can be taken down, with the run started again when the input arrives [[2](#ref-2)]. A HITL step that waits a day occupies no process at all.
 - **Idempotent rerun**: Prefect's transactional orchestration loads the previous result instead of running again when the context is identical [[5](#ref-5)]. Under that idempotency a retried agent run does not pay the LLM twice for the same tool call.
 - **Rate limiting**: a global concurrency limit bounds how many calls are in flight, and a rate limit paces them by a slot decay per second [[3](#ref-3)]. Both work in Python code outside a flow, so a tool never wrapped as a task stays bounded too.
 - **Per-step observability**: each tool call is a task, so each one appears in the run history and is retried on its own [[5](#ref-5)]. The report moves from an agent run having failed to which tool call failed on which input.
 - **One admission path**: one deployment answers an interactive request, a nightly schedule and an event-driven automation [[1](#ref-1)]. The overnight batch and the chat request run the same code rather than two copies.
+- **ML pipeline integration**: retraining, deployment and the agent run as flows on one server, and the state of a finished flow starts the next [[7](#ref-7)]. Retraining and the agent need not sit in two systems with a bridge written between them.
 
 ## 7. Application
 
@@ -167,17 +168,17 @@ A benchmarking sheet takes its rows from this document and its columns from the 
 <a id="table-3"></a>
 Table 3. The benchmarking rows, and Prefect's answer on each
 
-| #   | Row                    | What it asks                                                               | Prefect's answer                  |
-| :-: | :--------------------: | :------------------------------------------------------------------------: | :-------------------------------: |
-| 1   | Orchestrator scope     | Which of the fleet-scoped three the product carries                        | All three                         |
-| 2   | Suspension             | What a run waiting for a person holds open                                 | Nothing, the process exits        |
-| 3   | Idempotent rerun       | What a rerun pays for work already done                                    | The previous result, loaded       |
-| 4   | Rate limiting          | How the call rate is bounded                                               | Declared, in any Python code      |
-| 5   | Per-step observability | How far down a failure is located                                          | The one tool call                 |
-| 6   | One admission path     | How many code paths the triggers need                                      | One deployment                    |
-| 7   | Shared platform        | Whether the same product also runs the retraining and deployment pipelines | It does                           |
-| 8   | Access control         | What guards the API and the UI                                             | Nothing in the open source server |
-| 9   | Inbound events         | How an outside system starts a run                                         | A Cloud webhook, or a relay       |
+| #   | Row                     | What it asks                                                               | Prefect's answer                  |
+| :-: | :---------------------: | :------------------------------------------------------------------------: | :-------------------------------: |
+| 1   | Orchestrator scope      | Which of the fleet-scoped three the product carries                        | All three                         |
+| 2   | Suspension              | What a run waiting for a person holds open                                 | Nothing, the process exits        |
+| 3   | Idempotent rerun        | What a rerun pays for work already done                                    | The previous result, loaded       |
+| 4   | Rate limiting           | How the call rate is bounded                                               | Declared, in any Python code      |
+| 5   | Per-step observability  | How far down a failure is located                                          | The one tool call                 |
+| 6   | One admission path      | How many code paths the triggers need                                      | One deployment                    |
+| 7   | ML pipeline integration | Whether the same product also runs the retraining and deployment pipelines | It does                           |
+| 8   | Access control          | What guards the API and the UI                                             | Nothing in the open source server |
+| 9   | Inbound events          | How an outside system starts a run                                         | A Cloud webhook, or a relay       |
 
 A product that cannot answer a row leaves that row to code, so the sheet carries the cost of that code beside the product's name.
 
