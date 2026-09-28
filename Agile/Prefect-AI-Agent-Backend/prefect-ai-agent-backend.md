@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 40 | Created: 2026-09-27 | Updated: 2026-09-28 10:16 CDT
+Rev. 41 | Created: 2026-09-27 | Updated: 2026-09-28 10:38 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,18 +25,18 @@ Rev. 40 | Created: 2026-09-27 | Updated: 2026-09-28 10:16 CDT
 
 ## 2. Summary
 
-Prefect fills, as a product, the places in an AI agent backend that decide what starts a run, how many calls may be in flight, and what ran. Those places together are the orchestrator, and [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend engineer writes those places by hand. Six of the ten functions in [Table 3](#table-3) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — and three constraints are the rows a benchmarking sheet compares products on.
+An AI agent backend carries three responsibilities that decide what starts a run, how many calls run at once, and what ran. Those three together are the orchestrator, and Prefect is the product that carries them. [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend engineer implements those three in Python code. Six of the ten functions in [Table 3](#table-3) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — together with orchestrator scope, access control and inbound events make the nine criteria a benchmarking sheet compares products on.
 
 The frontend keeps its three roles when Prefect is used and gains one duty: the answer a paused run waits for arrives through it. The agent framework the comparison is made against is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the `Without Prefect` column of [Table 3](#table-3) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
 ## 3. Taxonomy and its Hierarchy
 
-The boundary between frontend and backend falls after the user's intent is fixed and before the first LLM call, so the reasoning loop belongs to the backend. Ten responsibilities split across the two layers, three on the frontend and seven on the backend whose outer three are the orchestrator, and the seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
+The boundary between frontend and backend falls after the user's intent is fixed and before the first LLM call, so the reasoning loop belongs to the backend. Ten responsibilities split across the two layers, three on the frontend and seven on the backend, of which admission, throughput and record are the orchestrator. The seven are ordered by the scope each one has to hold: one step, one run, or every run at once.
 
 Scope is what decides who carries a responsibility. A framework sees one graph run and covers the one-step and one-run responsibilities; the orchestrator is the part that carries the three every-run responsibilities, namely admission, throughput and record. The ten roles, the layer of each, and what each one decides are drawn in [Fig 1](#fig-1).
 
 ```text
-LAYER          ROLE              WHAT IT DECIDES                              SCOPE       PART
+LAYER          ROLE              WHAT THE ROLE DECIDES                        SCOPE       PART
 
 Frontend  >    Intent            What the user asked, in the backend's form   one request
                Approval          The answer a paused run is waiting for       one run
@@ -46,7 +46,7 @@ Frontend  >    Intent            What the user asked, in the backend's form   on
 Backend   >    Reasoning         Which action the LLM picks next              one step    --+
                Tool execution    The action actually carried out              one step      |
                State             The point a stopped run resumes from         one run       |  Agent
-               Recovery          Which failed step is tried again, once only  one run     --+
+               Recovery          Which failed step is retried, and how often  one run     --+
                Admission         What starts a run: request, schedule, event  every run   --+
                Throughput        How many calls run at once, and how fast     every run     |  Orchestrator
                Record            What ran, when, and with which result        every run   --+
@@ -77,7 +77,7 @@ Table 1. Each role, the part that holds it, and what settles it
 
 No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes Python code on the others.
 
-Prefect is an orchestrator. It fills #8 to #10 as a product and leaves #4 to #7 to the agent framework. Two rows overlap: wrapping a tool call as a task puts the retries and the caching of #6 State and #7 Recovery on Prefect as well, while the LLM call that picks the next action and the Python code inside a tool stay with the agent framework.
+Prefect is an orchestrator. It fills rows #8 to #10 of [Table 1](#table-1) as a product and leaves rows #4 to #7 to the agent framework. Two rows overlap: wrapping a tool call as a task puts the retries and the cache of #6 State and #7 Recovery on Prefect as well, while the LLM call that picks the next action and the Python code inside a tool stay with the agent framework.
 
 ## 4. Backend Composition
 
@@ -119,7 +119,7 @@ Prefect fills the same three with a server and a worker, and the agent loop beco
 
 ## 5. Benchmarking
 
-A benchmarking sheet compares two things. [Table 2](#table-2) holds the criteria products are compared on, with Prefect's answer to each, and [Table 3](#table-3) holds the difference between a backend with Prefect and the same backend without it. [Table 2](#table-2) is used with one column added per product compared, and [Table 3](#table-3) is where the answers filled into those columns come from.
+A benchmarking sheet compares two things. [Table 2](#table-2) holds the criteria products are compared on, with Prefect's answer to each, and [Table 3](#table-3) holds the difference between a backend with Prefect and the same backend without it.
 
 ### 5.1 Criteria
 
@@ -140,7 +140,7 @@ Table 2. The benchmarking criteria, with Prefect's answer to each
 | 8   | Access control          | What guards the API and the UI                                             | Nothing in the open source server |
 | 9   | Inbound events          | How an outside system starts a run                                         | A Cloud webhook, or a relay       |
 
-A product that cannot answer a row leaves that row to Python code, so the sheet carries the cost of that Python code beside the product's name.
+A row the product does not answer is filled by the backend engineer in Python code.
 
 ### 5.2 Comparison
 
