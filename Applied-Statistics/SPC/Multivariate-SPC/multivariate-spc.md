@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
+Rev. 7 | Created: 2026-09-04 | Updated: 2026-09-28 14:45 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -17,7 +17,7 @@ Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 > 웨이퍼 결과물 하나가 아니라 장비 센서 수십~수백 개의 조합을 한꺼번에 추적하는 기법에 대한 기록.
-> Hotelling $T^2$ 관리도와 PCA 기반 SPE 통계량이 각각 무엇을 보고, 왜 둘이 함께 필요한지를 다룬다.
+> Hotelling $T^2$ 관리도와 PCA 기반 squared prediction error (SPE) 통계량이 각각 무엇을 보고, 왜 둘이 함께 필요한지를 다룬다.
 
 ## 1. Scope
 
@@ -112,7 +112,7 @@ $$\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (4)$$
 
 $$T^{2} = \sum_{j=1}^{a} \frac{t_j^{2}}{\lambda_j} \hspace{19em} (5)$$
 
-부분공간에서 벗어난 거리는 잔차의 제곱합이며, squared prediction error 또는 $Q$ 통계량이라 부른다.
+부분공간에서 벗어난 거리는 잔차의 제곱합이며, squared prediction error (SPE) 또는 $Q$ 통계량이라 부른다.
 
 $$SPE = \left\lVert \mathbf{x} - \hat{\mathbf{x}} \right\rVert^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$
 
@@ -199,7 +199,7 @@ ISBN 978-1-119-72309-7.
 - **Principal component**: 자료의 분산을 가장 많이 담는 방향부터 차례로 잡은 서로 직교인 방향.
 - **Score**: 한 관측값을 주성분 방향에 사영한 값.
 - **Smearing**: 상관된 센서들 사이에서 한 센서의 고장이 다른 센서의 기여도까지 키우는 현상.
-- **Squared prediction error**: 관측값과 주성분 model 이 재구성한 값 사이의 거리 제곱이며, $Q$
+- **Squared prediction error (SPE)**: 관측값과 주성분 model 이 재구성한 값 사이의 거리 제곱이며, $Q$
   통계량이라고도 한다.
 - **Uniformity index**: 웨이퍼 여러 지점에서 측정한 공정 결과의 산포를 평균으로 나누어 백분율로 적은
   지표이며, 공정이 끝난 뒤의 결과물만 본다.
