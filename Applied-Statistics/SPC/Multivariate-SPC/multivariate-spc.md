@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 13 | Created: 2026-09-04 | Updated: 2026-09-28 14:53 CDT
+Rev. 14 | Created: 2026-09-04 | Updated: 2026-09-28 14:55 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -34,10 +34,10 @@ Uniformity index 같은 지표는 공정이 끝난 뒤의 결과물 $y$ 를 본�
 
 Table 1. Principal components, distance and control limit of the two statistics.
 
-| Statistic       | Principal components         | Distance             | Control limit                  |
-| :---:           | :---:                        | :---:                | :---:                          |
-| Hotelling $T^2$ | 남긴 주성분 $1, \ldots, a$   | Mahalanobis distance | $F$ 분포, 식 (3)               |
-| PCA SPE         | 버린 주성분 $a+1, \ldots, p$ | Euclidean distance   | Jackson–Mudholkar 근사, 식 (7) |
+| Statistic       | Principal components                       | Distance             | Control limit                  |
+| :---:           | :---:                                      | :---:                | :---:                          |
+| Hotelling $T^2$ | 남긴 주성분 $1, \ldots, a$                 | Mahalanobis distance | $F$ 분포, 식 (3)               |
+| PCA SPE         | model 에 넣지 않은 주성분 $a+1, \ldots, p$ | Euclidean distance   | Jackson–Mudholkar 근사, 식 (7) |
 
 Distance 는 새 관측값이 normal 운전 자료의 기준점에서 얼마나 떨어져 있는지를 수 하나로 잰 값이다.
 기준점은 $T^2$ 에서 평균 $\boldsymbol{\mu}$ 이고, SPE 에서 PCA model 이 재구성한 값 $\hat{\mathbf{x}}$ 이다.
@@ -145,7 +145,7 @@ distance 의 제곱이다. 주성분을 모두 남겨 $a = p$ 이면 식 (5) 는
 통계량은 자료 공간을 주성분 부분공간과 잔차 공간으로 나누어, 앞의 것은 Mahalanobis distance 로, 뒤의
 것은 Euclidean distance 로 잰다.
 
-$SPE$ 의 관리한계는 버린 주성분의 분산 $\lambda_{a+1}, \ldots, \lambda_p$ 로부터 Jackson 과 Mudholkar
+$SPE$ 의 관리한계는 model 에 넣지 않은 주성분의 분산 $\lambda_{a+1}, \ldots, \lambda_p$ 로부터 Jackson 과 Mudholkar
 의 근사식으로 얻는다 [[1](#ref-1)]. $\theta_i = \sum_{j=a+1}^{p} \lambda_j^{i}$ 이고
 $h_0 = 1 - 2\theta_1\theta_3 / (3\theta_2^2)$ 일 때 다음과 같다.
 
