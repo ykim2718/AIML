@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 50 | Created: 2026-09-27 | Updated: 2026-09-28 12:46 CDT
+Rev. 51 | Created: 2026-09-27 | Updated: 2026-09-28 12:55 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -98,7 +98,7 @@ WITHOUT PREFECT                        WITH PREFECT (self-hosted)
        v                                                v   run queued in a work pool
 [ Response ]                                      [ Worker polls the pool ]
                                                         |
-written by hand beside it:                              v
+written by hand beside the web process:                 v
    cron or a queue, for schedules             [ Flow: the agent loop ]
    a semaphore, for the call rate                       |
    a log table, for the run history                     +--> Task per tool call
@@ -306,7 +306,7 @@ Table 4. Trigger types
 **External systems**
 
 - Prefect Cloud: a webhook takes an outside HTTP request as an event directly.
-- Self-hosted (OSS): with no webhook, a FastAPI endpoint or a Kafka or MQ consumer calls `emit_event` to bridge it.
+- Self-hosted (OSS): with no webhook, a FastAPI endpoint or a Kafka or MQ consumer calls `emit_event` to turn the request into an event.
 
 **Fab application**
 

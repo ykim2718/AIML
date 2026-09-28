@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 50 | Created: 2026-09-27 | Updated: 2026-09-28 12:46 CDT
+Rev. 51 | Created: 2026-09-27 | Updated: 2026-09-28 12:55 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -98,7 +98,7 @@ WITHOUT PREFECT                        WITH PREFECT (self-hosted)
        v                                                v   run queued in a work pool
 [ Response ]                                      [ Worker polls the pool ]
                                                         |
-written by hand beside it:                              v
+written by hand beside the web process:                 v
    cron or a queue, for schedules             [ Flow: the agent loop ]
    a semaphore, for the call rate                       |
    a log table, for the run history                     +--> Task per tool call
@@ -252,7 +252,7 @@ Agent 실행이 HTTP 응답을 내보낸 뒤에도 이어지는 backend 에는 P
 
 두 단계로 한다. `emit_event` 가 event 를 내보내고, `DeploymentEventTrigger` 또는 automation 이 그 event 를 받아 flow 를 실행한다 [[7](#ref-7)].
 
-**1. Emit the event** — FDC system 이나 수집기 쪽에서 한다.
+**1. Emit the event** — FDC system 이나 collector 쪽에서 한다.
 
 ```python
 from prefect.events import emit_event
@@ -306,7 +306,7 @@ Table 4. Trigger types
 **External systems**
 
 - Prefect Cloud: webhook 이 외부 HTTP 요청을 그대로 event 로 받는다.
-- Self-hosted (OSS): webhook 이 없으므로 FastAPI endpoint 나 Kafka·MQ consumer 가 `emit_event` 를 불러 잇는다.
+- Self-hosted (OSS): webhook 이 없으므로 FastAPI endpoint 나 Kafka·MQ consumer 가 `emit_event` 를 불러 그 요청을 event 로 바꾼다.
 
 **Fab application**
 
