@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-28 14:51 CDT
+Rev. 12 | Created: 2026-09-04 | Updated: 2026-09-28 14:53 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -30,14 +30,14 @@ Uniformity index 같은 지표는 공정이 끝난 뒤의 결과물 $y$ 를 본�
 그것을 푸는 두 통계량인 Hotelling $T^2$ 와 PCA 기반 SPE 를 정리한다. 본문에서 정의 없이 쓴 용어는
 [Appendix A](#appendix-a-terminology) 에 모았다.
 
-두 통계량이 쓰는 주성분과 거리는 Table 1 과 같다.
+두 통계량이 쓰는 주성분과 거리와 관리한계는 Table 1 과 같다.
 
-Table 1. Principal components and distance of the two statistics.
+Table 1. Principal components, distance and control limit of the two statistics.
 
-| Statistic       | Principal components         | Distance             |
-| :---:           | :---:                        | :---:                |
-| Hotelling $T^2$ | 남긴 주성분 $1, \ldots, a$   | Mahalanobis distance |
-| PCA SPE         | 버린 주성분 $a+1, \ldots, p$ | Euclidean distance   |
+| Statistic       | Principal components         | Distance             | Control limit                  |
+| :---:           | :---:                        | :---:                | :---:                          |
+| Hotelling $T^2$ | 남긴 주성분 $1, \ldots, a$   | Mahalanobis distance | $F$ 분포, 식 (3)               |
+| PCA SPE         | 버린 주성분 $a+1, \ldots, p$ | Euclidean distance   | Jackson–Mudholkar 근사, 식 (7) |
 
 Hotelling $T^2$ 는 section 2 에서 센서 $p$ 개 전부를 공분산으로 가중하여 재고, section 3 에서는 남긴
 주성분 $a$ 개가 펼치는 부분공간 안에서 같은 Mahalanobis distance 를 잰다. SPE 는 그 부분공간 밖에 남은
