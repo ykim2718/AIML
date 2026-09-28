@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 19 | Created: 2026-09-27 | Updated: 2026-09-28 00:03 CDT
+Rev. 20 | Created: 2026-09-27 | Updated: 2026-09-28 00:04 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -24,7 +24,7 @@ Rev. 19 | Created: 2026-09-27 | Updated: 2026-09-28 00:03 CDT
 
 ## 2. Summary
 
-Prefect fills, as a product, the places in an AI agent backend that decide what starts a run, how many calls may be in flight, and what ran. Those places together are the orchestrator, and [Fig 1](#fig-1) draws where they sit inside the backend. An agent framework does the work inside one run only, so without Prefect the backend developer writes those places by hand. Six of the ten functions in [Table 2](#table-2) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — and three constraints are the rows a benchmarking sheet compares products on.
+Prefect fills, as a product, the places in an AI agent backend that decide what starts a run, how many calls may be in flight, and what ran. Those places together are the orchestrator, and [Fig 1](#fig-1) draws where the orchestrator sits inside the backend. An agent framework does the work inside one run only, so without Prefect the backend developer writes those places by hand. Six of the ten functions in [Table 2](#table-2) — suspension, idempotent rerun, declared rate limiting, per-step observability, one admission path and ML pipeline integration — and three constraints are the rows a benchmarking sheet compares products on.
 
 The frontend keeps three roles and gains one duty when Prefect is used: the answer a paused run waits for arrives through it. The agent framework taken as the baseline is LangGraph, chosen because its checkpointer and its node retry policy, the two entries the left of [Table 2](#table-2) rests on, are stated in vendor documentation [[6](#ref-6)]; the other frameworks in use are listed in [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026). [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) lists the nine things Prefect does inside an agent backend and the three it leaves to the agent framework and the API server, and [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) shows how the event trigger among them is attached.
 
