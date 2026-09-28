@@ -1,5 +1,5 @@
 # Prefect In An AI Agent Backend
-Rev. 54 | Created: 2026-09-27 | Updated: 2026-09-28 14:22 CDT
+Rev. 55 | Created: 2026-09-27 | Updated: 2026-09-28 14:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,7 +25,7 @@ Rev. 54 | Created: 2026-09-27 | Updated: 2026-09-28 14:22 CDT
 
 ## 2. Summary
 
-AI agent backend 에는 무엇이 실행을 시작하는가, 호출을 한 번에 몇 개까지 돌리는가, 무엇이 돌았는가를 정하는 세 책임이 있다. 이 셋을 묶어 orchestrator 라 부르며 [[1](#ref-1)], Prefect 가 이 셋을 맡는 제품이다. Orchestrator 가 backend 안의 어디에 놓이는지는 [Fig 1](#fig-1) 에 그렸다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 이 셋을 backend 엔지니어가 Python code 로 직접 구현한다. [Table 3](#table-3) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 에 orchestrator scope 와 access control 과 inbound events 를 더한 아홉이 benchmarking 자료가 제품을 견주는 항목이다.
+AI agent backend 에는 무엇이 실행을 시작하는가, 호출을 한 번에 몇 개까지 돌리는가, 무엇이 돌았는가를 정하는 세 책임이 있다. 이 셋을 묶어 orchestrator 라 부르며 [[1](#ref-1)], Prefect 가 이 셋을 맡는 제품이다. Tool 호출을 task 로 감싸면 멈춘 실행이 다시 시작하는 자리와 실패한 단계의 재시도까지 Prefect 가 함께 지지만, LLM 을 불러 다음 동작을 고르는 일과 tool 안의 Python code 는 agent framework 에 남는다. Orchestrator 가 backend 안의 어디에 놓이는지는 [Fig 1](#fig-1) 에 그렸다. Agent framework 는 한 실행 안의 일만 하므로, Prefect 가 없으면 이 셋을 backend 엔지니어가 Python code 로 직접 구현한다. [Table 3](#table-3) 의 열 기능 가운데 여섯 — suspension, idempotent rerun, 선언으로 두는 rate limiting, per-step observability, one admission path, ML pipeline integration — 에 orchestrator scope 와 access control 과 inbound events 를 더한 아홉이 benchmarking 자료가 제품을 견주는 항목이다.
 
 Prefect 를 써도 frontend 의 세 역할은 그대로이고, 할 일이 하나 더 붙는다. 멈춘 실행이 기다리는 답을 frontend 가 받아 backend 로 넘긴다. 비교 대상으로 삼은 agent framework 는 LangGraph 다. [Table 3](#table-3) 의 `Without Prefect` 열이 근거로 삼는 checkpointer 와 node 에 붙인 retry policy 를 vendor 문서에서 확인할 수 있어 골랐으며 [[2](#ref-2)], 지금 쓰이는 다른 framework 는 [Appendix D](#appendix-d-agent-frameworks-in-use-as-of-september-2026) 에 적었다. [Appendix B](#appendix-b-what-prefect-does-in-an-agent-backend) 가 Prefect 가 agent backend 에서 하는 아홉 가지와, agent framework 와 API server 에 남기는 셋을 적고, [Appendix C](#appendix-c-how-an-event-trigger-is-done-in-prefect) 가 그 가운데 event trigger 를 어떻게 붙이는지 보인다.
 
@@ -77,7 +77,7 @@ Table 1. Each role, the part that holds it, and what settles it
 
 어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품 이름을 적고 나머지 행은 Python code 로 채운다.
 
-Prefect 는 orchestrator 셋 (#8 Admission, #9 Throughput, #10 Record) 전부와, agent 넷 가운데 #6 State 와 #7 Recovery 의 재시도와 result caching 을 tool 을 task 로 감쌀 때 함께 진다. #4 Reasoning 과 #5 Tool execution 은 하지 못한다. LLM 을 불러 다음 동작을 고르는 일과 tool 안의 Python code 가 agent framework 에 남는 까닭이다.
+🌳 Prefect 는 orchestrator 셋 (#8 Admission, #9 Throughput, #10 Record) 전부와, agent 넷 가운데 #6 State 와 #7 Recovery 의 재시도와 result caching 을 tool 을 task 로 감쌀 때 함께 진다. #4 Reasoning 과 #5 Tool execution 은 하지 못한다. LLM 을 불러 다음 동작을 고르는 일과 tool 안의 Python code 가 agent framework 에 남는 까닭이다.
 
 ## 4. Backend Composition
 
@@ -115,7 +115,7 @@ Fig 2. The same backend without Prefect and with a self-hosted Prefect Server
 
 Agent framework 는 [Fig 1](#fig-1) 의 안쪽 네 책임을 지고 orchestrator 의 셋을 backend 엔지니어에게 남긴다. Checkpointer 는 graph 상태의 snapshot 을 super-step 마다 thread id 아래 저장하여 멈춘 실행을 다시 시작하게 하고 사람이 한 단계를 끊어 들여다보고 승인하게 하며, node 에 붙인 retry policy 는 그 node 를 지수 backoff 로 다시 시도한다 [[2](#ref-2)]. 그러면 scheduler 와 semaphore 와 기록용 표를 backend 엔지니어가 직접 만들고 운영한다.
 
-Prefect 는 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 는 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고, schedule 과 UI 와 automation 과 REST API 가 그 deployment 를 켠다. Work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[3](#ref-3)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Prefect 와 Pydantic AI 사이의 공식 통합이 tool 을 task 로 감싸는 일을 대신 해 주므로, backend 엔지니어가 그 Python code 를 쓰지 않는다. Tool 이 자동으로 task 가 되어, 호출마다 재시도 설정과 cache 된 결과와 실행 기록 한 줄을 따로 갖는다 [[5](#ref-5)].
+Prefect 는 같은 셋을 server 와 worker 로 채우고, agent loop 는 tool 호출이 task 인 flow 가 된다. Deployment 는 flow 를 어디서·언제·어떻게 돌릴지 적어 loop 를 API 가 관리하는 대상으로 바꾸고, schedule 과 UI 와 automation 과 REST API 가 그 deployment 를 켠다. Work pool 이 infrastructure 를 가리키고 worker 가 그 pool 을 살펴 실행을 그 위에서 시작한다 [[3](#ref-3)]. Self-hosted server 는 API, UI, scheduling, work pool, 그리고 event 와 automation engine 을 담는다 [[4](#ref-4)]. Prefect 와 Pydantic AI 사이의 공식 통합이 tool 을 task 로 감싸는 일을 대신 해 주므로, backend 엔지니어가 그 Python code 를 쓰지 않는다. Tool 이 자동으로 task 가 되어, 호출마다 재시도 설정과 cache 된 결과와 실행 기록 한 줄을 따로 갖는다 [[5](#ref-5)]. [Table 1](#table-1) 의 #6 State 와 #7 Recovery 가 Prefect 쪽으로 함께 오는 자리가 여기다.
 
 ## 5. Benchmarking
 
