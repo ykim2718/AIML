@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 32 | Created: 2026-09-27 | Updated: 2026-09-28 08:18 CDT
+Rev. 33 | Created: 2026-09-27 | Updated: 2026-09-28 08:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -7,7 +7,7 @@ Rev. 32 | Created: 2026-09-27 | Updated: 2026-09-28 08:18 CDT
   - [3.1 Placement](#31-placement)
 - [4. Backend Composition](#4-backend-composition)
 - [5. Benchmarking](#5-benchmarking)
-  - [5.1 Rows](#51-rows)
+  - [5.1 Products](#51-products)
   - [5.2 Comparison](#52-comparison)
 - [6. Strength](#6-strength)
 - [7. Application](#7-application)
@@ -121,14 +121,14 @@ Prefect 는 그 같은 셋을 server 와 worker 로 채우고, agent loop 는 to
 
 Benchmarking 자료는 두 가지를 견준다. 제품과 제품을 견주는 행은 [Table 2](#table-2) 이고, Prefect 를 얹은 구성과 얹지 않은 구성을 견주는 행은 [Table 3](#table-3) 이다. 앞의 것은 열을 견줄 제품으로 채우며, 뒤의 것이 그 답의 근거가 된다.
 
-### 5.1 Rows
+### 5.1 Products
 
-Benchmarking 자료는 행을 이 문서에서 가져오고 열을 견줄 제품에서 가져온다. [Table 2](#table-2) 가 그 행 목록이며, Prefect 의 답이 이미 채워져 있다.
+Benchmarking 자료는 행을 이 문서에서 가져오고, 견줄 제품마다 열을 하나씩 더한다. [Table 2](#table-2) 가 그 행 목록이며 `Prefect` 열이 이미 채워져 있다. 다른 제품은 그 제품 이름으로 열을 더해 같은 행에 답을 적어 견준다.
 
 <a id="table-2"></a>
-Table 2. The benchmarking rows, and Prefect's answer on each
+Table 2. The product rows, with the Prefect column filled in
 
-| #   | Row                     | What it asks                                       | Prefect's answer                 |
+| #   | Row                     | What it asks                                       | Prefect                          |
 | :-: | :---------------------: | :------------------------------------------------: | :------------------------------: |
 | 1   | Orchestrator scope      | 모든 실행 범위의 셋 가운데 제품이 어느 것을 지는가 | 셋 모두                          |
 | 2   | Suspension              | 사람을 기다리는 실행이 무엇을 붙들고 있는가        | 없음. Process 가 빠져나감        |
@@ -177,7 +177,7 @@ Table 3. The same function in each composition
 
 ## 7. Application
 
-Prefect 는 실행이 응답을 보낸 뒤에도 이어질 때 제값을 하고, 응답과 함께 끝나는 실행에는 드는 비용이 얻는 것보다 크다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
+응답을 보낸 뒤에도 실행이 남은 단계를 계속 도는 backend 에서는 Prefect 로 얻는 것이 드는 비용보다 크다. 응답과 함께 실행이 끝나는 backend 에서는 드는 비용이 얻는 것보다 크다. 아래 세 조건이 design 이 어느 경우에 있는지를 가른다.
 
 1. **Assumption**: Backend 가 제 process 를 가질 수 있다는 것이다. Worker 는 work pool 을 살펴 실행을 infrastructure 위에서 시작하는 client 쪽 process 이므로 [[1](#ref-1)], 오래 사는 process 를 금지하는 배포 대상에서는 [Fig 2](#fig-2) 의 구성이 가운데를 잃는다.
 2. **Breaking condition**: 인증이다. Open source server 에는 사용자도 인증도 없어 UI 나 API 에 닿는 누구나 전체 권한을 갖는다 [[4](#ref-4)]. 그래서 self-hosted server 는 사설망 안에 두거나 인증하는 proxy 뒤에 둔다. Webhook 은 Prefect Cloud 의 기능이므로 [[4](#ref-4)], 외부 system 에서 실행을 시작해야 하는 self-hosted backend 는 그 event 를 API 로 보내는 자리를 스스로 둔다.

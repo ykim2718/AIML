@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 32 | Created: 2026-09-27 | Updated: 2026-09-28 08:18 CDT
+Rev. 33 | Created: 2026-09-27 | Updated: 2026-09-28 08:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -7,7 +7,7 @@ Rev. 32 | Created: 2026-09-27 | Updated: 2026-09-28 08:18 CDT
   - [3.1 Placement](#31-placement)
 - [4. Backend Composition](#4-backend-composition)
 - [5. Benchmarking](#5-benchmarking)
-  - [5.1 Rows](#51-rows)
+  - [5.1 Products](#51-products)
   - [5.2 Comparison](#52-comparison)
 - [6. Strength](#6-strength)
 - [7. Application](#7-application)
@@ -121,14 +121,14 @@ Prefect fills the same three with a server and a worker, and the agent loop beco
 
 A benchmarking sheet compares two things. [Table 2](#table-2) holds the rows that compare one product against another, and [Table 3](#table-3) holds the rows that compare a backend with Prefect against the same backend without it. The first takes its columns from the products being compared, and the second is where the answers filled into the first come from.
 
-### 5.1 Rows
+### 5.1 Products
 
-A benchmarking sheet takes its rows from this document and its columns from the products being compared. [Table 2](#table-2) is that row list, with Prefect's answer already filled in.
+A benchmarking sheet takes its rows from this document and adds one column per product compared. [Table 2](#table-2) is that row list with the `Prefect` column already filled in; another product is compared by adding a column under its own name and answering the same rows in it.
 
 <a id="table-2"></a>
-Table 2. The benchmarking rows, and Prefect's answer on each
+Table 2. The product rows, with the Prefect column filled in
 
-| #   | Row                     | What it asks                                                               | Prefect's answer                  |
+| #   | Row                     | What it asks                                                               | Prefect                           |
 | :-: | :---------------------: | :------------------------------------------------------------------------: | :-------------------------------: |
 | 1   | Orchestrator scope      | Which of the every-run three the product carries                           | All three                         |
 | 2   | Suspension              | What a run waiting for a person holds open                                 | Nothing, the process exits        |
@@ -177,7 +177,7 @@ In rows #5 to #10 of [Table 3](#table-3) the agent framework does not do the wor
 
 ## 7. Application
 
-Prefect earns its place when a run continues after the response has been sent, and costs more than it returns when the run ends with the response. The three conditions below decide which case a design is in.
+Where a run keeps working through its remaining steps after the response has been sent, Prefect returns more than it costs. Where a run ends with the response, it costs more than it returns. The three conditions below decide which case a design is in.
 
 1. **Assumption**: the backend may own a process of its own. A worker is a client-side process that polls a work pool and starts runs on infrastructure [[1](#ref-1)], so a deployment target that forbids a long-lived process leaves the composition of [Fig 2](#fig-2) without its middle.
 2. **Breaking condition**: authentication. The open source server carries no users and no authentication, so anyone who reaches the UI or the API has full access to it [[4](#ref-4)]; a self-hosted server therefore sits inside a private network or behind an authenticating proxy. Webhooks are a Prefect Cloud feature [[4](#ref-4)], so a self-hosted backend that must start runs from an outside system relays those events to the API itself.
