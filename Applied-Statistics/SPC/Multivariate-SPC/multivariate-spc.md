@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 10 | Created: 2026-09-04 | Updated: 2026-09-28 14:48 CDT
+Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-28 14:51 CDT
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -30,6 +30,19 @@ Uniformity index 같은 지표는 공정이 끝난 뒤의 결과물 $y$ 를 본�
 그것을 푸는 두 통계량인 Hotelling $T^2$ 와 PCA 기반 SPE 를 정리한다. 본문에서 정의 없이 쓴 용어는
 [Appendix A](#appendix-a-terminology) 에 모았다.
 
+두 통계량이 쓰는 주성분과 거리는 Table 1 과 같다.
+
+Table 1. Principal components and distance of the two statistics.
+
+| Statistic       | Principal components         | Distance             |
+| :---:           | :---:                        | :---:                |
+| Hotelling $T^2$ | 남긴 주성분 $1, \ldots, a$   | Mahalanobis distance |
+| PCA SPE         | 버린 주성분 $a+1, \ldots, p$ | Euclidean distance   |
+
+Hotelling $T^2$ 는 section 2 에서 센서 $p$ 개 전부를 공분산으로 가중하여 재고, section 3 에서는 남긴
+주성분 $a$ 개가 펼치는 부분공간 안에서 같은 Mahalanobis distance 를 잰다. SPE 는 그 부분공간 밖에 남은
+잔차의 크기를 공분산 가중 없이 잰다. $p$ 는 센서 개수이고, $a$ 는 section 3.1 에서 남기는 주성분의 개수이다.
+
 ### 1.1. False Alarm Inflation
 
 첫째 이유는 헛경보가 쌓이는 것이다. 관리도 하나의 헛경보 확률이 $\alpha$ 이고 센서 $p$ 개가 독립이면,
@@ -37,7 +50,7 @@ Uniformity index 같은 지표는 공정이 끝난 뒤의 결과물 $y$ 를 본�
 
 $$\alpha_{\mathrm{total}} = 1 - (1 - \alpha)^{p} \hspace{19em} (1)$$
 
-Table 1. Chance that at least one of p univariate charts signals on a healthy process, alpha = 0.0027.
+Table 2. Chance that at least one of p univariate charts signals on a healthy process, alpha = 0.0027.
 
 | Sensors | False alarm rate |
 |---:|---:|
@@ -135,7 +148,7 @@ $$SPE_{\mathrm{limit}} = \theta_1 \left[ \frac{z_\alpha \sqrt{2\theta_2 h_0^{2}}
 
 두 통계량은 서로 다른 종류의 이상을 잡으며, 그래서 둘 다 필요하다.
 
-Table 2. What the two statistics monitor.
+Table 3. What the two statistics monitor.
 
 | Statistic | Measures | Signals when |
 |---|---|---|
