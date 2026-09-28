@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 37 | Created: 2026-09-27 | Updated: 2026-09-28 09:52 CDT
+Rev. 38 | Created: 2026-09-27 | Updated: 2026-09-28 10:02 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -60,20 +60,20 @@ Widening the scope by one step needs one more place to keep the state that outli
 ### 3.1 Placement
 
 <a id="table-1"></a>
-Table 1. Each role, the part that holds it, and what fixes it
+Table 1. Each role, the part that holds it, and what settles it
 
-| #   | Role           | Part         | Scope       | What fixes it                               |
-| :-: | :------------: | :----------: | :---------: | :-----------------------------------------: |
-| 1   | Intent         | Frontend     | One request | The request schema the backend accepts      |
-| 2   | Approval       | Frontend     | One run     | The form that answers a paused run          |
-| 3   | Presentation   | Frontend     | One request | The stream or page the user reads           |
-| 4   | Reasoning      | Agent        | One step    | The LLM call and the tool choice it returns |
-| 5   | Tool execution | Agent        | One step    | The function the chosen tool names          |
-| 6   | State          | Agent        | One run     | The checkpoint a resumed run reads          |
-| 7   | Recovery       | Agent        | One run     | The retry count, and what a rerun may skip  |
-| 8   | Admission      | Orchestrator | Every run   | The deployment and what triggers it         |
-| 9   | Throughput     | Orchestrator | Every run   | The concurrency limit and the call rate     |
-| 10  | Record         | Orchestrator | Every run   | The run history each step writes            |
+| #   | Role           | Part         | Scope       | Settled by                                                       |
+| :-: | :------------: | :----------: | :---------: | :--------------------------------------------------------------: |
+| 1   | Intent         | Frontend     | One request | The request schema the backend accepts                           |
+| 2   | Approval       | Frontend     | One run     | The input form that carries the answer a paused run waits for    |
+| 3   | Presentation   | Frontend     | One request | The stream or page the user reads                                |
+| 4   | Reasoning      | Agent        | One step    | The LLM call and the tool choice that call returns               |
+| 5   | Tool execution | Agent        | One step    | The Python function the chosen tool names                        |
+| 6   | State          | Agent        | One run     | The checkpoint a resumed run reads                               |
+| 7   | Recovery       | Agent        | One run     | The retry count, and the finished steps a rerun skips            |
+| 8   | Admission      | Orchestrator | Every run   | The deployment and the request, schedule or event that starts it |
+| 9   | Throughput     | Orchestrator | Every run   | The concurrency limit and the call rate                          |
+| 10  | Record         | Orchestrator | Every run   | The run history each step writes                                 |
 
 No agent framework carries the three orchestrator rows, so a design names a product on those rows and writes Python code on the others.
 
@@ -123,7 +123,7 @@ A benchmarking sheet compares two things. [Table 2](#table-2) holds the criteria
 
 ### 5.1 Criteria
 
-A benchmarking sheet takes its criteria from this document and adds one column per product compared. [Table 2](#table-2) holds those criteria with Prefect's answer to each, and a second product is placed beside it as a column under that product name, answered row by row.
+The nine rows of [Table 2](#table-2) are the criteria a benchmarking sheet compares products on, and the `Prefect` column holds Prefect's answer to each. A second product is added as a column under its own name to the right, answered row by row.
 
 <a id="table-2"></a>
 Table 2. The benchmarking criteria, with Prefect's answer to each

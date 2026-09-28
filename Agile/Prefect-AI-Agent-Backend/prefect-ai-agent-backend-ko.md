@@ -1,5 +1,5 @@
 # Prefect As An AI Agent Backend
-Rev. 37 | Created: 2026-09-27 | Updated: 2026-09-28 09:52 CDT
+Rev. 38 | Created: 2026-09-27 | Updated: 2026-09-28 10:02 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -60,20 +60,20 @@ Fig 1. The three frontend roles and the seven backend responsibilities ordered b
 ### 3.1 Placement
 
 <a id="table-1"></a>
-Table 1. Each role, the part that holds it, and what fixes it
+Table 1. Each role, the part that holds it, and what settles it
 
-| #   | Role           | Part         | Scope       | What fixes it                                  |
-| :-: | :------------: | :----------: | :---------: | :--------------------------------------------: |
-| 1   | Intent         | Frontend     | One request | Backend 가 받아들이는 요청 schema              |
-| 2   | Approval       | Frontend     | One run     | 멈춘 실행에 답하는 양식                        |
-| 3   | Presentation   | Frontend     | One request | 사용자가 읽는 stream 또는 page                 |
-| 4   | Reasoning      | Agent        | One step    | LLM 호출과 그것이 돌려주는 tool 선택           |
-| 5   | Tool execution | Agent        | One step    | 고른 tool 이 가리키는 함수                     |
-| 6   | State          | Agent        | One run     | 다시 시작한 실행이 읽는 checkpoint             |
-| 7   | Recovery       | Agent        | One run     | 재시도 횟수, 그리고 재실행이 건너뛸 수 있는 것 |
-| 8   | Admission      | Orchestrator | Every run   | Deployment 과 그것을 켜는 것                   |
-| 9   | Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                     |
-| 10  | Record         | Orchestrator | Every run   | 단계마다 남기는 실행 기록                      |
+| #   | Role           | Part         | Scope       | Settled by                                              |
+| :-: | :------------: | :----------: | :---------: | :-----------------------------------------------------: |
+| 1   | Intent         | Frontend     | One request | Backend 가 받아들이는 요청 schema                       |
+| 2   | Approval       | Frontend     | One run     | 멈춘 실행이 기다리는 답을 받는 input form               |
+| 3   | Presentation   | Frontend     | One request | 사용자가 읽는 stream 또는 page                          |
+| 4   | Reasoning      | Agent        | One step    | LLM 호출과 그 호출이 돌려주는 tool 선택                 |
+| 5   | Tool execution | Agent        | One step    | 고른 tool 이 가리키는 Python 함수                       |
+| 6   | State          | Agent        | One run     | 다시 시작한 실행이 읽는 checkpoint                      |
+| 7   | Recovery       | Agent        | One run     | 재시도 횟수, 그리고 재실행이 건너뛰는 이미 끝난 단계    |
+| 8   | Admission      | Orchestrator | Every run   | Deployment 와 그 deployment 를 켜는 요청·schedule·event |
+| 9   | Throughput     | Orchestrator | Every run   | 동시 실행 상한과 호출 속도                              |
+| 10  | Record         | Orchestrator | Every run   | 단계마다 쌓이는 실행 기록                               |
 
 어느 agent framework 도 orchestrator 세 행을 지지 않으므로, design 은 그 세 행에 제품을 적고 나머지 행에 Python code 를 적는다.
 
@@ -123,7 +123,7 @@ Benchmarking 자료는 두 가지를 견준다. 제품을 견주는 항목과 Pr
 
 ### 5.1 Criteria
 
-Benchmarking 자료는 견줄 항목을 이 문서에서 가져오고, 견줄 제품마다 열을 하나씩 더한다. [Table 2](#table-2) 가 그 항목과 Prefect 의 답이며, 다른 제품을 함께 놓을 때는 그 제품 이름을 단 열을 오른쪽에 더해 행마다 답을 적는다.
+[Table 2](#table-2) 의 아홉 행이 benchmarking 자료가 제품을 견주는 항목이고, `Prefect` 열에 Prefect 의 답이 적혀 있다. 다른 제품을 함께 놓을 때는 그 제품 이름을 단 열을 오른쪽에 더해 행마다 답을 적는다.
 
 <a id="table-2"></a>
 Table 2. The benchmarking criteria, with Prefect's answer to each
