@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 19 | Created: 2026-09-04 | Updated: 2026-09-28 13:52 CDT
+Rev. 20 | Created: 2026-09-04 | Updated: 2026-09-28 13:41 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -102,6 +102,8 @@ Table 1. Defect rate of a centred process, in parts per million.
 | 1.33 | 1.33 | 0 | 4.0 | 66.1 | 33.0 |
 | 1.67 | 1.67 | 0 | 5.0 | 0.544 | 0.272 |
 | 2.00 | 2.00 | 0 | 6.0 | 0.00197 | 0.000987 |
+
+A one-side tail does not say which side, while the near tail names the tail at the specification limit nearer the mean. Its rate is $\Phi(-3 C_{pk})$.
 
 Every row is a centred process, so $k$ is 0 and equation (4) makes $C_{pk}$ equal to $C_p$. The
 sigma level is the distance from the mean to the nearer limit in standard deviations, which is

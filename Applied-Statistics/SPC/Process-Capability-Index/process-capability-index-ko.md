@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 18 | Created: 2026-09-04 | Updated: 2026-09-28 13:52 CDT
+Rev. 19 | Created: 2026-09-04 | Updated: 2026-09-28 13:41 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -96,6 +96,8 @@ Table 1. Defect rate of a centred process, in parts per million.
 | 1.33 | 1.33 | 0 | 4.0 | 66.1 | 33.0 |
 | 1.67 | 1.67 | 0 | 5.0 | 0.544 | 0.272 |
 | 2.00 | 2.00 | 0 | 6.0 | 0.00197 | 0.000987 |
+
+One-side tail 은 어느 쪽인지를 알려 주지 않고, near tail 은 평균에서 가까운 쪽 specification limit 의 tail 을 가리킨다. 그 비율은 $\Phi(-3 C_{pk})$ 이다.
 
 모든 행은 중심에 있는 공정이므로 $k$ 가 0 이고 식 (4) 에 의해 $C_{pk}$ 가 $C_p$ 와 같다. Sigma
 level 은 평균에서 가까운 쪽 한계까지의 거리를 표준편차로 잰 것이며, $3 C_{pk}$ 이고 식 (5) 가
