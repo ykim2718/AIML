@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 37 | Created: 2026-09-04 | Updated: 2026-09-29 11:49 CDT
+Rev. 38 | Created: 2026-09-04 | Updated: 2026-09-29 11:54 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -328,7 +328,7 @@ ISBN 978-1-119-72309-7.
   deviation, written $P_p$ and $P_{pk}$.
 - **Priority class**: a grade assigned to a measured parameter, carrying its own capability
   requirement and its own action on failure.
-- **Sigma level**: the distance from the mean to the nearer specification limit in standard
+- **Sigma level (z-score)**: the distance from the mean to the nearer specification limit in standard
   deviations, equal to $3 C_{pk}$.
 - **Specification limit**: a bound the product must satisfy, set by design rather than estimated
   from the process.

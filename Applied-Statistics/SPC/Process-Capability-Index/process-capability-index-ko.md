@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 36 | Created: 2026-09-04 | Updated: 2026-09-29 11:49 CDT
+Rev. 37 | Created: 2026-09-04 | Updated: 2026-09-29 11:54 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -312,7 +312,7 @@ ISBN 978-1-119-72309-7.
   적는다.
 - **Priority class**: 측정 항목에 매기는 등급이며, 자기 공정능력 요구치와 미달 시의 조치를 함께
   가진다.
-- **Sigma level**: 평균에서 가까운 쪽 specification limit 까지의 거리를 표준편차 단위로 잰 것이며, $3 C_{pk}$ 와
+- **Sigma level (z-score)**: 평균에서 가까운 쪽 specification limit 까지의 거리를 표준편차 단위로 잰 것이며, $3 C_{pk}$ 와
   같다.
 - **Specification limit**: 제품이 만족해야 하는 경계이며, 공정에서 추정하는 것이 아니라 설계가
   정한다.
