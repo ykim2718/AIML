@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 34 | Created: 2026-09-04 | Updated: 2026-09-29 11:33 CDT
+Rev. 35 | Created: 2026-09-04 | Updated: 2026-09-29 11:38 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -79,7 +79,7 @@ $$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 
 Equation (4) is the whole relationship between them. $C_p$ is what the spread makes possible, $k$ is
 the fraction of that potential the off-centring gives away, and $C_{pk}$ is what is left. It follows
-that $C_{pk} \le C_p$ always, with equality only when the process is centred.
+that $C_{pk} \le C_p$ always, with equality only when the process is centred ($k = 0$).
 
 ## 3. Physical Meaning
 

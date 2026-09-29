@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 33 | Created: 2026-09-04 | Updated: 2026-09-29 11:33 CDT
+Rev. 34 | Created: 2026-09-04 | Updated: 2026-09-29 11:38 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -74,7 +74,7 @@ $$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 
 식 (4) 가 셋 사이 관계의 전부이다. $C_p$ 는 산포가 가능하게 하는 것이고, $k$ 는 치우침이 그 잠재력
 가운데 내주는 비율이며, $C_{pk}$ 는 남은 것이다. 따라서 언제나 $C_{pk} \le C_p$ 이고, 등호는 공정이
-중심에 있을 때만 성립한다.
+중심 ($k = 0$) 에 있을 때만 성립한다.
 
 ## 3. Physical Meaning
 
