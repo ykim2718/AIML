@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 32 | Created: 2026-09-04 | Updated: 2026-09-28 14:44 CDT
+Rev. 33 | Created: 2026-09-04 | Updated: 2026-09-29 11:33 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -7,8 +7,8 @@ Rev. 32 | Created: 2026-09-04 | Updated: 2026-09-28 14:44 CDT
   - [2.2. Centring](#22-centring)
   - [2.3. Achieved Capability](#23-achieved-capability)
 - [3. Physical Meaning](#3-physical-meaning)
-  - [3.1. Defect Rate](#31-defect-rate)
-  - [3.2. Reading the Three Together](#32-reading-the-three-together)
+  - [3.1. Reading the Three Together](#31-reading-the-three-together)
+  - [3.2. Defect Rate](#32-defect-rate)
   - [3.3. Parts per Million and Yield](#33-parts-per-million-and-yield)
 - [4. Application](#4-application)
   - [4.1. Short-Term and Long-Term](#41-short-term-and-long-term)
@@ -78,7 +78,39 @@ $$C_{pk} = (1 - k) C_p \hspace{19em} (4)$$
 
 ## 3. Physical Meaning
 
-### 3.1. Defect Rate
+### 3.1. Reading the Three Together
+
+어느 지수 하나도 불량률을 정하지 못하며, Fig 1 이 그 증명이다.
+
+<img src="process-capability-index_fig/process_capability_index.png" width="1000" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Three processes against the same specification, LSL 90 and USL 110, drawn on one density
+scale. The dotted line is the process mean and each panel is labelled with its indices and with the
+fraction outside the specification, which is far too small an area to see at this scale.
+
+(a) 와 (b) 는 $C_p$ 가 1.33 으로 같고 치우침만 다른데, 그 차이가 불량률에서 스무 배를 만든다.
+1350 ppm 과 63 ppm 이다. (a) 에서 문제는 산포가 아니므로 산포를 붙들고 씨름하는 것은 헛일이다. 평균을
+100 으로 되돌리면 공정 변동은 하나도 건드리지 않고 (a) 가 (b) 가 된다.
+
+(a) 와 (c) 는 반대 경우이다. 둘 다 $C_{pk} = 1.00$ 이지만 (a) 는 1350 ppm, (c) 는 2700 ppm 을
+만들며, 필요한 작업이 전혀 다르다. (a) 의 공정은 좁고 어긋나 있으므로 대개 설정값을 조정하면 되는
+문제이다. (c) 의 공정은 중심에 있으면서 너무 넓으므로 변동 자체를 줄여야 하고, 조정으로는 아무것도
+해결되지 않는다. $C_{pk}$ 만 따로 인용하면 이 구별이 감춰진다.
+
+Table 1. What the pair of indices indicates.
+
+| Condition | Reading | Action |
+|---|---|---|
+| $C_p$ 큼, $k$ 는 0 근처 | 능력이 있고 중심에 있음 | 유지 |
+| $C_p$ 큼, $k$ 도 큼 | 능력은 있으나 어긋남 | 평균을 옮김 |
+| $C_p$ 작음, $k$ 는 0 근처 | 중심에 있으나 너무 넓음 | 변동을 줄임 |
+| $C_p$ 작음, $k$ 는 큼 | 둘 다 잘못됨 | 먼저 중심을 맞추고 그 다음 변동을 줄임 |
+
+마지막 행의 순서에는 이유가 있다. 중심을 맞추는 일은 대개 설정값 변경이라 싸고, 변동을 줄이는 일은
+대개 하드웨어나 recipe 나 재료를 바꾸는 일이라 비싸다. 식 (4) 는 싼 쪽의 조치가 $1/(1-k)$ 배를 곧바로
+되찾아 준다고 말한다.
+
+### 3.2. Defect Rate
 
 정규분포 model 아래에서 이 지수들은 규격을 벗어나는 비율로 바로 환산된다. 중심에 있는 공정은 양쪽
 꼬리가 함께 기여하므로 비율이 $C_p$ 를 따르고, 치우친 공정은 가까운 쪽 꼬리가 지배하므로 비율이
@@ -88,7 +120,7 @@ $p$ 는 공정이 만든 개수 가운데 $LSL$ 아래나 $USL$ 위로 벗어나
 
 $$p = \Phi\left( -3 CPL \right) + \Phi\left( -3 CPU \right) \hspace{19em} (5)$$
 
-Table 1. Defect rate of a centred process, in parts per million.
+Table 2. Defect rate of a centred process, in parts per million.
 
 | Cp | Cpk | k | Sigma level | Both tails, ppm | Near tail, ppm |
 |---:|---:|---:|---:|---:|---:|
@@ -110,11 +142,11 @@ LSL = \mu - 3 C_{pk} \sigma & \mathrm{if}\ LSL\ \mathrm{is\ the\ nearer\ limit}
 
 $C_{pk}$ 는 평균에서 그 한계까지의 거리를 $3\sigma$ 로 나눈 값이므로, 그 한계는 식 (6) 처럼 평균에서 표준편차 $3 C_{pk}$ 개만큼 떨어져 있다. 표준정규분포에서 $-3 C_{pk}$ 이하가 나올 확률이 $\Phi(-3 C_{pk})$ 이고, 분포가 좌우 대칭이므로 $+3 C_{pk}$ 이상이 나올 확률도 같다. 따라서 가까운 쪽 한계가 $LSL$ 이든 $USL$ 이든 near tail 의 비율은 $\Phi(-3 C_{pk})$ 이다. 예를 들어 $C_{pk} = 1.00$ 이면 한계가 표준편차 3 개 거리에 있고 $\Phi(-3) = 0.00135$ 이므로, near tail 은 1350 ppm 이다.
 
-Fig 1 은 $C_{pk} = 1.00$ 인 공정의 near tail 을 그린 것이다.
+Fig 2 는 $C_{pk} = 1.00$ 인 공정의 near tail 을 그린 것이다.
 
-<img src="process-capability-index_fig/near_tail.png" width="1000" style="max-width: 100%;" alt="Fig 1">
+<img src="process-capability-index_fig/near_tail.png" width="1000" style="max-width: 100%;" alt="Fig 2">
 
-Fig 1. Near tail of a process with Cpk = 1.00, drawn on the standard normal density. The left column
+Fig 2. Near tail of a process with Cpk = 1.00, drawn on the standard normal density. The left column
 puts the nearer limit 3 standard deviations below the mean and the right column 3 above it.
 The y axis is the standard normal probability density $\varphi(z)$ of equation (9); its height is not
 a probability, but its area over an interval is the probability of falling in that interval, so the
@@ -141,38 +173,6 @@ $p = \Phi(-2.01) + \Phi(-2.01)$ 이 되고 $\Phi(-2.01) = 0.0222156$ 이므로, 
 1.33 행이 $C_p = 1.33$ 이 흔한 최소 요구치가 되고 $C_{pk} = 1.33$ 이 흔한 목표가 된 이유이다.
 평균과 가까운 쪽 한계 사이에 표준편차 네 개를 두어, 실제 공정이 으레 겪는 흐름을 감당할 여유를 남기기
 때문이다. 맨 아래 행은 six sigma 라는 이름 뒤에 있는 산수이다.
-
-### 3.2. Reading the Three Together
-
-어느 지수 하나도 불량률을 정하지 못하며, Fig 2 가 그 증명이다.
-
-<img src="process-capability-index_fig/process_capability_index.png" width="1000" style="max-width: 100%;" alt="Fig 2">
-
-Fig 2. Three processes against the same specification, LSL 90 and USL 110, drawn on one density
-scale. The dotted line is the process mean and each panel is labelled with its indices and with the
-fraction outside the specification, which is far too small an area to see at this scale.
-
-(a) 와 (b) 는 $C_p$ 가 1.33 으로 같고 치우침만 다른데, 그 차이가 불량률에서 스무 배를 만든다.
-1350 ppm 과 63 ppm 이다. (a) 에서 문제는 산포가 아니므로 산포를 붙들고 씨름하는 것은 헛일이다. 평균을
-100 으로 되돌리면 공정 변동은 하나도 건드리지 않고 (a) 가 (b) 가 된다.
-
-(a) 와 (c) 는 반대 경우이다. 둘 다 $C_{pk} = 1.00$ 이지만 (a) 는 1350 ppm, (c) 는 2700 ppm 을
-만들며, 필요한 작업이 전혀 다르다. (a) 의 공정은 좁고 어긋나 있으므로 대개 설정값을 조정하면 되는
-문제이다. (c) 의 공정은 중심에 있으면서 너무 넓으므로 변동 자체를 줄여야 하고, 조정으로는 아무것도
-해결되지 않는다. $C_{pk}$ 만 따로 인용하면 이 구별이 감춰진다.
-
-Table 2. What the pair of indices indicates.
-
-| Condition | Reading | Action |
-|---|---|---|
-| $C_p$ 큼, $k$ 는 0 근처 | 능력이 있고 중심에 있음 | 유지 |
-| $C_p$ 큼, $k$ 도 큼 | 능력은 있으나 어긋남 | 평균을 옮김 |
-| $C_p$ 작음, $k$ 는 0 근처 | 중심에 있으나 너무 넓음 | 변동을 줄임 |
-| $C_p$ 작음, $k$ 는 큼 | 둘 다 잘못됨 | 먼저 중심을 맞추고 그 다음 변동을 줄임 |
-
-마지막 행의 순서에는 이유가 있다. 중심을 맞추는 일은 대개 설정값 변경이라 싸고, 변동을 줄이는 일은
-대개 하드웨어나 recipe 나 재료를 바꾸는 일이라 비싸다. 식 (4) 는 싼 쪽의 조치가 $1/(1-k)$ 배를 곧바로
-되찾아 준다고 말한다.
 
 ### 3.3. Parts per Million and Yield
 
@@ -224,7 +224,7 @@ $2^{33}$ 개인 1 GB DRAM 은 2.23 이다. part (cell) 당 불량률 1 ppm 의 �
 
 ### 4.2. Assumptions
 
-식 (5) 와 Table 1 은 실제 공정이 늘 만족하지는 않는 조건 아래에서만 성립한다.
+식 (5) 와 Table 2 는 실제 공정이 늘 만족하지는 않는 조건 아래에서만 성립한다.
 
 - 정규성: 꼬리 넓이는 정규분포에서 나오며, 치우쳤거나 한쪽이 막힌 특성은 같은 지수 값에서 다른
   불량률을 준다.
@@ -354,7 +354,7 @@ $$p = \Phi\left( \frac{LSL - \mu}{\sigma} \right) + \Phi\left( -\frac{USL - \mu}
 $(LSL - \mu)/\sigma = -3 CPL$ 이고 $(USL - \mu)/\sigma = 3 CPU$ 이다. 둘을 식 (12) 에 넣으면 식
 (5) 가 된다. 두 지수가 이미 $\sigma$ 를 품고 있으므로 식에서 $\sigma$ 가 사라진다.
 
-Table 1 의 마지막 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
+Table 2 의 마지막 두 열은 그 결과의 두 경우이다. 중심에 있는 공정은 $\mu = m$ 이므로 식 (2) 와 식 (3) 에
 의해 $CPU = CPL = C_p$ 이고 두 꼬리가 같아 $p = 2\Phi(-3 C_p)$ 가 된다. 치우친 공정에서는 두 지수
 가운데 작은 쪽이 $C_{pk}$ 이므로 $\Phi(-3 C_{pk})$ 가 가까운 쪽 꼬리 하나이고, 먼 쪽 꼬리는 그
 옆에서 버려도 될 만큼 작다.
