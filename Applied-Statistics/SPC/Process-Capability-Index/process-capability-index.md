@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 36 | Created: 2026-09-04 | Updated: 2026-09-29 11:48 CDT
+Rev. 37 | Created: 2026-09-04 | Updated: 2026-09-29 11:49 CDT
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -148,7 +148,7 @@ LSL = \mu - 3 C_{pk} \sigma & \mathrm{if}\ LSL\ \mathrm{is\ the\ nearer\ limit}
 \hspace{19em} (6)
 ```
 
-$C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean, as equation (6) shows. That is, the sigma level is $3 C_{pk}$. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
+$C_{pk}$ is the distance from the mean to that limit divided by $3\sigma$, so the limit lies $3 C_{pk}$ standard deviations from the mean, as equation (6) shows. That is, the sigma level (z-score) is $3 C_{pk}$. The probability that a standard normal value is at most $-3 C_{pk}$ is $\Phi(-3 C_{pk})$, and because the distribution is symmetric, the probability that it is at least $+3 C_{pk}$ is the same. The near tail rate is therefore $\Phi(-3 C_{pk})$ whether the nearer limit is $LSL$ or $USL$. For example, $C_{pk} = 1.00$ puts the limit three standard deviations away, and $\Phi(-3) = 0.00135$, so the near tail is 1350 ppm.
 
 Fig 2 draws the near tail of a process with $C_{pk} = 1.00$.
 
