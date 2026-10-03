@@ -1,5 +1,5 @@
-# Modeling Elements by P(X), P(Y) and P(Y|X) for Manufacturing Data
-Rev. 28 | Created: 2026-05-29 | Updated: 2026-10-03 07:26 CDT
+# Modeling Elements by Joint Distribution for Manufacturing Data
+Rev. 29 | Created: 2026-05-29 | Updated: 2026-10-03 07:28 CDT
 
 ## 1. Purpose
 
