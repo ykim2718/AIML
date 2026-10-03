@@ -1,10 +1,10 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 31 | Created: 2026-05-29 | Updated: 2026-10-03 07:31 CDT
+Rev. 32 | Created: 2026-05-29 | Updated: 2026-10-03 07:33 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: AI/ML model 개발을 위한 요소를 묶는 체계가 없다.
-- **Goal**: P(X), P(Y), P(Y|X) 를 결합분포 P(X,Y) 로 묶어 제조 데이터 AI/ML model 의 taxonomy 와 physical meaning을 밝힌다.
+- **Goal**: 결합확률분포 $P(X,Y) = P(Y\vert{}X) \cdot P(X)$의 분해를 통해 제조 공정 데이터 기반 AI/ML의 요소(데이터, 모델, 예측)과 현상(Covariate shift, Concept drift, Prior shift)을 명확하게 연결하는 프레임워크를 제시한다.
 - **Non-Goal**: 결합분포 밖에 있는 Model (추정기·최적화) 축과 특정 과제의 진단 수치는 다루지 않는다.
 
 ## 2. Summary
