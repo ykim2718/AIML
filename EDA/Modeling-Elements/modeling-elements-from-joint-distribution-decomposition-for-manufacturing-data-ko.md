@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 63 | Created: 2026-05-29 | Updated: 2026-10-03 10:46 CDT
+Rev. 64 | Created: 2026-05-29 | Updated: 2026-10-03 10:48 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -207,6 +207,7 @@ Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z �
 ## Appendix A. Terminology
 
 - **aleatoric uncertainty**: 데이터 자체가 지닌 산포에서 오는 불확실성. 데이터를 늘려도 줄지 않는다.
+- **covariate**: model 의 입력 변수 X. 이 문서에서는 장비 sensor 등에서 측정한 데이터이며, 그 분포 P(X) 가 학습과 추론 사이에 달라지는 것을 covariate shift 라 한다.
 - **CUSUM (Cumulative Sum)**: 기준값과의 편차를 누적하여 임계값을 넘는 시점을 변화점으로 보는 관리도.
 - **epistemic uncertainty**: 학습 데이터가 부족하여 model 이 지니는 불확실성. 데이터를 늘리면 줄어든다.
 - **I(X;Y)**: 상호정보량 (mutual information). X 와 Y 의 의존성 총량을 나타내는 거시 지표.

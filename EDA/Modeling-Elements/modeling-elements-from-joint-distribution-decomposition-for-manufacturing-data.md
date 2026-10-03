@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 11 | Created: 2026-10-03 | Updated: 2026-10-03 10:46 CDT
+Rev. 12 | Created: 2026-10-03 | Updated: 2026-10-03 10:48 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -207,6 +207,7 @@ Observation methods differ in how directly they look at P(Y|X).
 ## Appendix A. Terminology
 
 - **aleatoric uncertainty**: uncertainty from the spread inherent in the data. More data does not reduce it.
+- **covariate**: an input variable X of the model. In this document it is the data measured by equipment sensors, and a change in its distribution P(X) between training and inference is called covariate shift.
 - **CUSUM (Cumulative Sum)**: a control chart that accumulates deviations from a reference and flags the time the sum crosses a threshold as a change point.
 - **epistemic uncertainty**: uncertainty the model carries because training data is insufficient. More data reduces it.
 - **I(X;Y)**: mutual information. A macro indicator of the total dependence between X and Y.
