@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 14 | Created: 2026-05-29 | Updated: 2026-10-03 01:16 CDT
+Rev. 15 | Created: 2026-05-29 | Updated: 2026-10-03 01:18 CDT
 
 ## 1. Purpose
 
@@ -21,18 +21,18 @@ P(Y)_{\mathrm{pred}} = P(X_{o})_{\mathrm{true}} \cdot P(Y \mid X_{i})_{\mathrm{p
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX \hspace{19em} (2)
 ```
 
-식 (1) 은 출력 주변분포 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 입력이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 입력이다.
+식 (1) 은 출력 주변분포 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다.
 
 식 (1) 이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다. 아래 두 가정 모두에서, X<sub>i</sub> 로 추정한 관계를 X<sub>o</sub> 에 그대로 쓰려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
-- **한 조건에 모인 입력**: P(X<sub>o</sub>)<sub>true</sub> 가 입력 x<sub>o</sub> 에서만 확률 1 이고 다른 모든 입력에서 확률 0 인 분포 (point mass) 이면, 곧 장비 상태와 recipe 가 하나로 고정되면 식 (2) 의 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다.
-- **입력 하나에 대한 해석**: out-of-sample 입력 x<sub>o</sub> 하나에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
+- **한 조건에 모인 추론 데이터**: P(X<sub>o</sub>)<sub>true</sub> 가 추론 데이터 한 건 x<sub>o</sub> 에서만 확률 1 이고 다른 모든 값에서 확률 0 인 분포 (point mass) 이면, 곧 장비 상태와 recipe 가 하나로 고정되면 식 (2) 의 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다.
+- **추론 데이터 한 건에 대한 해석**: 추론 데이터 한 건 x<sub>o</sub> 에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
 
-Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
+Model 은 학습 데이터 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 추론 데이터의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
 
 - **좋은 예측**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
-- **좋은 데이터**: X<sub>i</sub> 는 장비·recipe 의 입력과 wafer 계측값을 짝지은 학습 표본의 입력이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 장비·recipe 가 실제로 내놓는 입력의 분포다. X<sub>o</sub> 가 X<sub>i</sub> 의 범위를 벗어나면 covariate shift 다.
-- **좋은 모델**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 X<sub>i</sub> 로 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
+- **좋은 데이터**: X<sub>i</sub> 는 wafer 계측값과 짝지어 model 학습에 쓰는 장비·recipe 의 학습 데이터이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 장비·recipe 가 실제로 내놓는 추론 데이터의 분포다. X<sub>o</sub> 가 X<sub>i</sub> 의 범위를 벗어나면 covariate shift 다.
+- **좋은 모델**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 학습 데이터 X<sub>i</sub> 로 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
 
 - **Taxonomy**: 반도체 공정 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 입력 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류된다.
 - **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (4)).
@@ -143,6 +143,7 @@ Table 2. Physical meaning of each term
 - **KL (Kullback–Leibler divergence)**: 두 분포의 차이를 정보량으로 잰 값.
 - **KS (Kolmogorov–Smirnov test)**: 두 표본의 누적분포 최대 차이로 분포가 같은지 검정하는 방법.
 - **Page-Hinkley**: 누적 편차와 그 최솟값의 차이가 임계값을 넘으면 평균 변화를 알리는 순차 검정.
+- **point mass**: 한 값에서만 확률 1 이고 다른 모든 값에서 확률 0 인 분포. 그 값 하나만 나온다.
 - **PSI (Population Stability Index)**: 두 시점의 구간별 분포 비율 차이로 분포 이동을 재는 지표.
 - **Spatial decomposition**: wafer 측정 map 을 공간 기저 (다항식) 로 분해하고, 그 계수 (a1, …) 를 예측하는 방법.
 - **temporal CV**: 과거로 학습하고 미래로 검증하는 시간순 교차검증.
