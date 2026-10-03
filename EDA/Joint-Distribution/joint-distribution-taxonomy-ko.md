@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 20 | Created: 2026-05-29 | Updated: 2026-10-03 01:32 CDT
+Rev. 21 | Created: 2026-05-29 | Updated: 2026-10-03 01:34 CDT
 
 ## 1. Purpose
 
@@ -37,7 +37,7 @@ Model 은 학습 데이터 X<sub>i</sub> 와 그 계측값으로 학습하여 �
 - **Taxonomy**: 반도체 공정 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 데이터 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류되며, 식 (1) 에서 각각 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다.
 - **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (4)).
 - **Change**: 세 항목의 변화는 각각 covariate shift, prior shift, concept drift 이다.
-- **Physical meaning**: P(X) 는 장비 sensor 등에서 측정한 데이터 (학습 데이터 X<sub>i</sub>, 추론 데이터 X<sub>o</sub>) 의 분포, P(Y) 는 wafer 계측값의 분포, P(Y|X) 는 측정 데이터에서 계측값을 정하는 공정 물리다.
+- **Physical meaning**: P(X) 는 장비 sensor 등에서 측정한 데이터 (학습 데이터 X<sub>i</sub>, 추론 데이터 X<sub>o</sub>) 의 분포, P(Y) 는 wafer 계측값의 분포, P(Y|X) 는 측정 데이터가 주어졌을 때 계측값의 조건부 분포로, 공정 물리가 측정 데이터와 계측값 사이에 남긴 관계다.
 - **Reading rule**: 장비 교체·recipe 변경은 측정 데이터의 분포와 관계를 함께 이동시키므로, 세 항목을 배타적 분류 대신 **관측·개입 지점** 으로 읽는다.
 
 ## 3. Taxonomy and its Hierarchy
@@ -104,11 +104,11 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 Table 2. Physical meaning of each term
 
-| Term    | Role in eq. (1)                                                | Physical meaning                                | Shift between training and inference                                                           |
-| :-----: | :------------------------------------------------------------: | :---------------------------------------------: | :--------------------------------------------------------------------------------------------: |
-| P(X)    | 좋은 데이터: P(X<sub>i</sub>), P(X<sub>o</sub>)<sub>true</sub> | 장비 sensor 등에서 측정한 데이터의 분포         | Covariate shift: P(X<sub>o</sub>) ≠ P(X<sub>i</sub>) (새 장비, sensor drift, 신규 recipe 유입) |
-| P(Y)    | 좋은 예측: P(Y)<sub>pred</sub>                                 | Wafer 계측값 (측정 map, 공간 분해 계수) 의 분포 | Prior shift: 실제 P(Y) 이동 (target spec·계수 분포 이동)                                       |
-| P(Y\|X) | 좋은 모델: P(Y\|X<sub>i</sub>)<sub>pred</sub>                  | 측정 데이터에서 계측값을 정하는 공정 물리       | Concept drift: 학습 뒤 실제 P(Y\|X) 변화 (chamber 노화 등)                                     |
+| Term    | Role in eq. (1)                                                | Physical meaning                                         | Shift between training and inference                                                           |
+| :-----: | :------------------------------------------------------------: | :------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+| P(X)    | 좋은 데이터: P(X<sub>i</sub>), P(X<sub>o</sub>)<sub>true</sub> | 장비 sensor 등에서 측정한 데이터의 분포                  | Covariate shift: P(X<sub>o</sub>) ≠ P(X<sub>i</sub>) (새 장비, sensor drift, 신규 recipe 유입) |
+| P(Y)    | 좋은 예측: P(Y)<sub>pred</sub>                                 | Wafer 계측값 (측정 map, 공간 분해 계수) 의 분포          | Prior shift: 실제 P(Y) 이동 (target spec·계수 분포 이동)                                       |
+| P(Y\|X) | 좋은 모델: P(Y\|X<sub>i</sub>)<sub>pred</sub>                  | 공정 물리가 측정 데이터와 계측값 사이에 남긴 조건부 관계 | Concept drift: 학습 뒤 실제 P(Y\|X) 변화 (chamber 노화 등)                                     |
 
 ### 4.1 P(X) Covariate Shift
 
