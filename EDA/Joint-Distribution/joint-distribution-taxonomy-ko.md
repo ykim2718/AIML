@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 50 | Created: 2026-05-29 | Updated: 2026-10-03 09:04 CDT
+Rev. 51 | Created: 2026-05-29 | Updated: 2026-10-03 09:07 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -79,7 +79,7 @@ P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
 
 식 (1) 의 양변을 X 에 대해 적분하면 식 (2) 를 얻는다. 좌변 ∫ P(X,Y) dX 는 X 를 적분하여 없앤 Y 의 marginal distribution P(Y) 이고, 우변은 조건부 분포 P(Y|X) 를 X 의 분포 P(X) 로 가중하여 평균한 값이다. 이 적분을 marginalization 이라 하며, 식 (1) 이 결합분포를 두 factor 로 나눈다면 식 (2) 는 두 factor 에서 P(Y) 를 다시 얻는다.
 
-인용구의 세 요소는 식 (1) 의 세 자리에 놓인다.
+꼭지 2 에 있는 인용구의 세 요소는 식 (1) 의 세 자리에 놓인다.
 
 - **$`P(Y)`$ (Good Prediction):** 좋은 예측. 두 factor 의 곱인 결합분포 P(X,Y) 를 X 에 대해 적분하여 얻는 marginal distribution 이다 (식 (2)).
 - **$`P(X)`$ (Good Data):** 좋은 데이터. 식 (1) 의 factor 로, 측정 데이터의 분포다.
@@ -96,7 +96,7 @@ Prior shift 는 식 (3) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 �
 세 항목은 아래 세 전제 위에서 성립한다.
 
 - **불확실성의 출처**: 계측값은 Y<sub>obs</sub> = Y + ε<sub>m</sub>, 측정 데이터는 X<sub>obs</sub> = X + ε<sub>x</sub> 이다. Model 이 학습하는 P(Y<sub>obs</sub>|X<sub>obs</sub>) 의 산포에는 공정 고유 산포, 계측 오차 ε<sub>m</sub> (label noise), sensor 측정 오차 ε<sub>x</sub> 가 함께 들어 있으며, 셋은 데이터를 늘려도 줄지 않는 aleatoric uncertainty 다. ε<sub>x</sub> 는 산포를 키울 뿐 아니라 추정한 관계의 기울기를 0 쪽으로 줄여 (regression dilution) P(Y|X) 추정을 왜곡한다. 학습 데이터가 부족해 생기는 model 의 불확실성 (epistemic uncertainty) 만 데이터로 줄어들며, 좋은 모델이 도달할 수 있는 정확도의 한계는 공정 고유 산포와 두 측정 오차가 정한다.
-- **표본 선택**: 계측은 일부 wafer 만 sampling 하므로, 학습 데이터의 분포 P(X<sub>i</sub>) 는 계측된 wafer 의 분포이며 전체 wafer 의 P(X) 와 다를 수 있다 (selection bias). 추론은 계측하지 않은 wafer 에 하므로, 이 차이는 그대로 covariate shift 가 된다. X 나 Y 의 값에 따라 계측이 누락 (missing) 되면 P(X<sub>i</sub>) 나 학습 데이터의 P(Y) 가 같은 방식으로 치우친다.
+- **표본 선택**: 계측은 일부 wafer 만 sampling 하므로, 학습 데이터 X<sub>i</sub> 의 분포 P(X<sub>i</sub>) 는 계측된 wafer 의 분포이며 전체 wafer 의 P(X) 와 다를 수 있다 (selection bias). 추론은 계측하지 않은 wafer 에 하므로, 이 차이는 그대로 covariate shift 가 된다. X 나 Y 의 값에 따라 계측이 누락 (missing) 되면 P(X<sub>i</sub>) 나 학습 데이터의 P(Y) 가 같은 방식으로 치우친다.
 - **i.i.d. 가정과 계층 구조**: 식 (4) 로 학습 데이터에서 추론 데이터의 예측을 얻는 것은 wafer 가 서로 독립이고 같은 분포에서 나온다 (i.i.d.) 는 가정 위에서다. 공정 데이터에는 시간 자기상관과 lot·chamber 의 계층 구조가 있어 같은 lot·chamber 의 wafer 가 서로 닮으며, 이 구조를 무시하고 학습·검증을 나누면 같은 lot 이 양쪽에 들어가 성능이 실제보다 높게 나온다.
 
 ### 3.1 Placement
@@ -118,7 +118,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 ## 4. Prediction from the Joint Distribution
 
-식 (4) 는 세 요소의 관계를 학습 데이터와 추론 데이터로 나누어 적는다.
+식 (4) 는 세 요소의 관계를 학습 데이터 X<sub>i</sub> 와 추론 데이터 X<sub>o</sub> 로 나누어 적는다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 데이터다.
 
 ```math
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x)_{\mathrm{model}} \cdot P(X_{o} = x)_{\mathrm{true}}\, dx \hspace{19em} (4)
@@ -129,7 +129,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x)_{\mathrm{model}} \cdot P(X_{o} = x)_
 - **$`P(X_o = x)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 가 값 $`x`$ 를 가질 실제 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
 - **$`\int \ldots dx`$ (Marginalization over $`x`$):** 추론 데이터가 가질 수 있는 모든 값 $`x`$ 에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
-식 (4) 는 출력의 marginal distribution 식 (2) 를 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. 식 (4) 가 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
+식 (4) 는 출력의 marginal distribution 식 (2) 를 예측에 옮긴 것이다. 식 (4) 가 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
 식 (4) 의 세 항으로 보면 세 요소는 아래와 같다.
 
@@ -164,7 +164,7 @@ Table 2. Physical meaning of each term
 
 ### 5.3 P(Y|X) Concept Drift
 
-측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (4) 의 P(Y|X)<sub>model</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
+측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (4) 의 P(Y|X)<sub>model</sub> 이 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
 
 공정 물리 관점에서 concept drift 는 관측되지 않은 chamber 상태 변수 Z(t) (노화, 찌꺼기 등) 의 변화로 인해 P(Y|X) 가 시간에 따라 변하는 현상이며, 그 관계는 식 (5) 로 적는다.
 
