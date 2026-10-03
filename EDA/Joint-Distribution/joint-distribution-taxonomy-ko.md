@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 48 | Created: 2026-05-29 | Updated: 2026-10-03 08:15 CDT
+Rev. 49 | Created: 2026-05-29 | Updated: 2026-10-03 08:18 CDT
 
 ## 1. Purpose
 
@@ -32,13 +32,13 @@ P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
 식 (3) 은 세 요소의 관계를 학습 데이터와 추론 데이터로 나누어 적는다.
 
 ```math
-P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (3)
+P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x)_{\mathrm{model}} \cdot P(X_{o} = x)_{\mathrm{true}}\, dx \hspace{19em} (3)
 ```
 
 - **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** out-of-sample 추론 데이터에서 나오리라 기대하는 target 변수 $`Y`$ 의 최종 분포로, 측정 데이터를 적분하여 없앤 marginal distribution 이다.
-- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값이 주어지면 $`Y`$ 의 조건부 분포를 내놓는다. 첨자 `pred` 는 이것이 추정·학습한 함수이며 실제 분포와 다를 수 있음을 나타낸다.
-- **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 를 실제로 만들어 내는 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
-- **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** $`X_o`$ 가 가질 수 있는 모든 값에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
+- **$`P(Y \mid X = x)_{\mathrm{model}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값 $`x`$ 가 주어지면 $`Y`$ 의 조건부 분포를 내놓는다. 첨자 `model` 은 이것이 추정·학습한 함수이며 실제 분포와 다를 수 있음을 나타낸다.
+- **$`P(X_o = x)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 가 값 $`x`$ 를 가질 실제 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
+- **$`\int \ldots dx`$ (Marginalization over $`x`$):** 추론 데이터가 가질 수 있는 모든 값 $`x`$ 에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
 식 (3) 은 출력의 marginal distribution 식 (2) 를 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. 식 (3) 이 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
@@ -46,7 +46,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 
 - **좋은 예측**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
 - **좋은 데이터**: X<sub>i</sub> 는 wafer 계측값과 짝지어 model 학습에 쓰는, 장비 sensor 등에서 측정한 학습 데이터이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 실제로 측정되는 추론 데이터의 분포다. P(X<sub>i</sub>) 가 P(X<sub>o</sub>) 를 덮어야 하며, P(X<sub>o</sub>) 가 P(X<sub>i</sub>) 와 달라지면 covariate shift 다.
-- **좋은 모델**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 학습 데이터 X<sub>i</sub> 로 추정한 조건부 관계다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
+- **좋은 모델**: P(Y|X)<sub>model</sub> 은 model 이 학습 데이터 X<sub>i</sub> 로 추정한 조건부 관계다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
 
 세 항목을 결합분포의 taxonomy 로 정리하면 아래와 같다.
 
@@ -90,7 +90,7 @@ Fig 1. Taxonomy and hierarchy of the joint distribution
 
 - 위층의 P(X) 와 P(Y|X) 는 결합분포를 이루는 두 factor 다.
 - 아래층의 P(Y) 는 두 factor 에서 유도되는 marginal distribution 이므로, P(X) 나 P(Y|X) 가 바뀌면 P(Y) 도 따라 바뀔 수 있다.
-- Model 축은 P(Y|X)<sub>pred</sub> 를 얻는 추정 방법 (algorithm·최적화) 이다. 세 항목은 무엇을 추정하는지를, Model 축은 어떻게 추정하는지를 정하므로 둘은 직교 (orthogonal) 한다.
+- Model 축은 P(Y|X)<sub>model</sub> 을 얻는 추정 방법 (algorithm·최적화) 이다. 세 항목은 무엇을 추정하는지를, Model 축은 어떻게 추정하는지를 정하므로 둘은 직교 (orthogonal) 한다.
 
 결합분포는 식 (1) 과 반대 방향으로도 분해된다.
 
@@ -98,7 +98,7 @@ Fig 1. Taxonomy and hierarchy of the joint distribution
 P(X, Y) = P(X \mid Y) \cdot P(Y) \hspace{19em} (4)
 ```
 
-Prior shift 는 식 (4) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 경우로 정의된다. 이 정의는 Y 가 X 의 원인인 인과 구조 (Y → X) 에서 성립하며, 공정이 진행되어 측정 데이터 X 를 남긴 뒤 계측값 Y 가 나오는 제조 공정은 X → Y 구조다.
+Prior shift 는 식 (4) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 경우로 정의된다. 이 정의는 Y 가 X 의 원인인 인과 구조 (Y → X) 에서 성립하며, 공정이 진행되어 측정 데이터 X 를 남긴 뒤 계측값 Y 가 나오는 제조 공정은 X → Y 구조다. X → Y 구조에서는 공정 변화가 P(Y|X) 와 P(X) 를 통해 P(X|Y) 까지 바꾸므로, P(X|Y) 가 그대로라는 prior shift 의 전제가 깨지는 경우가 많다. 그 경우 prior shift 를 전제로 한 보정 (label shift 보정) 은 근거를 잃는다.
 
 세 항목은 아래 세 전제 위에서 성립한다.
 
@@ -116,7 +116,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | :---------------: | :-----------------------------------------------------------------: | :------------------------------------------: | :---------------------------------------------------------------: |
 | 분포 분해         | 측정 데이터의 marginal distribution                                 | 출력의 marginal distribution                 | 조건부 (관계)                                                     |
 | 분포 변화 (shift) | Covariate shift                                                     | Prior / label shift                          | Concept drift                                                     |
-| 개입 지점         | 데이터 공간                                                         | Target engineering (변환·분해)               | 관계 학습                                                         |
+| 개입 지점         | 데이터 공간                                                         | Target engineering (변환·분해)               | 모델·algorithm 공간 (관계 학습)                                   |
 | 질문 형태         | 추론 데이터 X<sub>o</sub> 가 학습 데이터 X<sub>i</sub> 와 달라졌나? | 계측값 분포가 달라졌나?                      | 학습 뒤 측정 데이터와 계측값의 관계가 달라졌나?                   |
 | 관측 (탐지)       | PSI·KS·KL, domain classifier                                        | 계측값 분포 비교                             | Binning CDT, 시간창별 I(X<sub>k</sub>;Y), 잔차 CUSUM·Page-Hinkley |
 | 대책 (lever)      | Feature 선택·증강, importance weighting, domain adaptation          | Target 변환·분해, group 별 scale, prior 보정 | 재학습 간격, 최신성 가중, detrending, drift 적응                  |
@@ -133,7 +133,7 @@ Table 2. Physical meaning of each term
 | :-----: | :------------------------------------------------------------: | :------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
 | P(X)    | 좋은 데이터: P(X<sub>i</sub>), P(X<sub>o</sub>)<sub>true</sub> | 장비 sensor 등에서 측정한 데이터의 분포                  | Covariate shift: P(X<sub>o</sub>) ≠ P(X<sub>i</sub>) (새 장비, sensor drift, 신규 recipe 유입)      |
 | P(Y)    | 좋은 예측: P(Y)<sub>pred</sub>                                 | Wafer 계측값 (측정 map, 공간 분해 계수) 의 분포          | Prior shift: 실제 P(Y) 이동 (target spec 변경, recipe 변경에 따른 계수 분포 이동)                   |
-| P(Y\|X) | 좋은 모델: P(Y\|X<sub>i</sub>)<sub>pred</sub>                  | 공정 물리가 측정 데이터와 계측값 사이에 남긴 조건부 관계 | Concept drift: 학습 뒤 실제 P(Y\|X) 변화 (관측되지 않은 chamber 상태 Z(t) 의 변화: 노화, 찌꺼기 등) |
+| P(Y\|X) | 좋은 모델: P(Y\|X)<sub>model</sub>                             | 공정 물리가 측정 데이터와 계측값 사이에 남긴 조건부 관계 | Concept drift: 학습 뒤 실제 P(Y\|X) 변화 (관측되지 않은 chamber 상태 Z(t) 의 변화: 노화, 찌꺼기 등) |
 
 ### 4.1 P(X) Covariate Shift
 
@@ -150,7 +150,7 @@ Table 2. Physical meaning of each term
 
 ### 4.3 P(Y|X) Concept Drift
 
-측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (3) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
+측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (3) 의 P(Y|X)<sub>model</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
 
 공정 물리 관점에서 concept drift 는 관측되지 않은 chamber 상태 변수 Z(t) (노화, 찌꺼기 등) 의 변화로 인해 P(Y|X) 가 시간에 따라 변하는 현상이며, 그 관계는 식 (5) 로 적는다.
 
@@ -158,7 +158,7 @@ Table 2. Physical meaning of each term
 P(Y \mid X, t) = \int P(Y \mid X, Z)\, P(Z \mid t)\, dZ \hspace{19em} (5)
 ```
 
-Z 는 잠재 변수 (latent variable) 이다. Chamber 상태가 주어졌을 때의 관계 P(Y|X,Z) 는 시간에 따라 바뀌지 않아도, Z 가 측정 데이터 X 에 들어 있지 않으므로 model 은 P(Z|t) 의 변화를 P(Y|X) 의 변화로만 본다. Concept drift 에는 대응과 관측의 두 가지 길이 있다.
+Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z 가 X 와 독립 (Z ⫫ X | t) 이라는 전제에서 성립하며, 이 전제가 깨지면 P(Z|t) 대신 P(Z|X,t) 로 적분해야 한다. Chamber 상태가 주어졌을 때의 관계 P(Y|X,Z) 는 시간에 따라 바뀌지 않아도, Z 가 측정 데이터 X 에 들어 있지 않으므로 model 은 P(Z|t) 의 변화를 P(Y|X) 의 변화로만 본다. Concept drift 에는 대응과 관측의 두 가지 길이 있다.
 
 - **대응**: detrending, 최신성 sample 가중, 최근 drift windowing. 관계가 변한다고 가정하고 최근 sample 에 가중치를 더 주며, 그 효과는 temporal CV 로 시간순으로 검증한다. 변동 시점은 특정하지 못한다.
 - **관측**: 변화를 측정하고 시점을 특정한다.
@@ -236,7 +236,7 @@ Z 는 잠재 변수 (latent variable) 이다. Chamber 상태가 주어졌을 때
 - **Page-Hinkley**: 예측 잔차의 누적 편차와 그 최솟값의 차이가 임계값을 넘으면 평균 변화를 알린다.
 - **ADWIN (Adaptive Windowing)**: 오차 window 를 두 부분으로 나눠 평균 차이가 유의하면 오래된 부분을 버리고 변화를 알린다.
 - **시간창별 성능 감시**: 시간창마다 R²·RMSE 를 계산하여 성능 저하 시점을 찾는다. 계측값이 있어야 한다.
-- **시간창별 I(X<sub>k</sub>;Y)**: 시간창마다 중요도 상위 K 개 변수 X<sub>k</sub> 와 계측값의 상호정보량을 계산하여 의존성 변화를 추적한다. 고차원 X 전체의 I(X;Y) 는 표본 수에 비해 차원이 커서 시간창마다 정확히 추정하기 어렵다.
+- **시간창별 I(X<sub>k</sub>;Y)**: 시간창마다 중요도 상위 K 개 변수 X<sub>k</sub> 와 계측값의 상호정보량을 계산하여 의존성 변화를 추적한다. 고차원 X 전체의 I(X;Y) 는 표본 수에 비해 차원이 커서 시간창마다 정확히 추정하기 어렵다. I(X<sub>k</sub>;Y) 는 P(X) 이동만으로도 바뀔 수 있으므로, B.1 의 covariate shift 탐지 결과와 함께 해석한다.
 
 ## Appendix C. Benchmarking
 
