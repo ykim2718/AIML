@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 47 | Created: 2026-05-29 | Updated: 2026-10-03 08:12 CDT
+Rev. 48 | Created: 2026-05-29 | Updated: 2026-10-03 08:15 CDT
 
 ## 1. Purpose
 
@@ -35,16 +35,12 @@ P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (3)
 ```
 
-식 (3) 은 출력의 marginal distribution 식 (2) 를 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다.
-
-#### Term-by-Term Breakdown
-
 - **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** out-of-sample 추론 데이터에서 나오리라 기대하는 target 변수 $`Y`$ 의 최종 분포로, 측정 데이터를 적분하여 없앤 marginal distribution 이다.
 - **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값이 주어지면 $`Y`$ 의 조건부 분포를 내놓는다. 첨자 `pred` 는 이것이 추정·학습한 함수이며 실제 분포와 다를 수 있음을 나타낸다.
 - **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 를 실제로 만들어 내는 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
 - **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** $`X_o`$ 가 가질 수 있는 모든 값에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
-식 (3) 이 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
+식 (3) 은 출력의 marginal distribution 식 (2) 를 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. 식 (3) 이 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
 식 (3) 의 세 항으로 보면 세 요소는 아래와 같다.
 
