@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 66 | Created: 2026-05-29 | Updated: 2026-10-03 11:09 CDT
+Rev. 67 | Created: 2026-05-29 | Updated: 2026-10-03 11:13 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -201,9 +201,7 @@ Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z �
 <a id="ref-6"></a>
 [6] Google Cloud. [Introduction to Vertex AI Model Monitoring](https://docs.cloud.google.com/vertex-ai/docs/model-monitoring/overview). *Vertex AI documentation*.<br>
 <a id="ref-7"></a>
-[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.<br>
-<a id="ref-8"></a>
-[8] gaussian37. [확률과 통계 기초](https://gaussian37.github.io/ml-concept-basic_probability_statistics/). *gaussian37 blog*.
+[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.
 
 ---
 
@@ -313,25 +311,20 @@ Table 3. Use of the shift taxonomy in research and industry
 
 ## Appendix D. Prior in Bayes' Theorem
 
-베이즈 정리 (Bayes' theorem) 는 식 (6) 으로 적는다 [[8](#ref-8)].
+베이즈 정리 (Bayes' theorem) 를 이 문서의 변수로 적으면 식 (6) 이다. Model 이 추론하는 미지의 양은 계측값 Y 이고, 측정 데이터 X 는 그 추론에 쓰는 증거다.
 
 ```math
-P(X \mid Y) = \frac{P(Y \mid X) \cdot P(X)}{P(Y)} \hspace{19em} (6)
+P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (6)
 ```
 
-각 항의 뜻은 다음과 같다 [[8](#ref-8)].
+각 항의 뜻은 다음과 같다.
 
-- **Prior**: P(X). 사전 확률이며, 새로운 증거 Y 를 알기 전에 사건 X 에 대해 가지고 있던 믿음이나 확률이다.
-- **Likelihood**: P(Y|X). 가능도이며, 사건 X 가 일어났다는 가정 아래 관측된 사건 Y 가 나타날 확률이다.
-- **Posterior**: P(X|Y). 사후 확률이며, 사건 Y 를 관측한 뒤 갱신된 X 의 확률이다.
+- **Prior**: P(Y). 사전 확률이며, 측정 데이터 X 를 보기 전에 계측값 Y 에 대해 가지고 있던 분포다.
+- **Likelihood**: P(X|Y). 가능도이며, 계측값 Y 가 주어졌다는 가정 아래 측정 데이터 X 가 나타날 확률이다.
+- **Posterior**: P(Y|X). 사후 확률이며, 측정 데이터 X 를 관측한 뒤 갱신된 Y 의 분포로, model 이 추정하려는 조건부 분포다.
+- **Evidence**: P(X). 측정 데이터의 marginal distribution 이며, posterior 를 확률분포로 맞추는 정규화 상수다.
 
-식 (6) 의 prior 는 추론하려는 미지의 사건에 붙는다. 식 (6) 은 X 를 미지의 사건, Y 를 증거로 둔 일반형이며, 이 문서에서는 거꾸로 model 이 추론하는 미지의 양이 계측값 Y 이고 측정 데이터 X 가 증거다. 식 (6) 에서 두 변수의 자리를 바꾸면 식 (7) 이 된다.
-
-```math
-P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (7)
-```
-
-식 (7) 에서 prior 는 계측값의 분포 P(Y), likelihood 는 P(X|Y), posterior 는 model 이 추정하려는 P(Y|X) 다. 식 (7) 의 분자 P(X|Y)·P(Y) 는 식 (3) 의 우변과 같으므로, 식 (3) 에서 P(X|Y) 를 그대로 둔 채 P(Y) 만 바뀌는 prior shift 는 이 prior 가 바뀌는 경우다. Label shift 는 같은 P(Y) 이동을 label Y 쪽에서 부르는 이름이다. 두 이름은 Y 가 X 를 만드는 Y → X 구조의 분류 문제에서 왔으며, X → Y 구조인 제조 공정에서 P(Y) 이동이 대부분 P(X) 나 P(Y|X) 변화의 결과로 나타나는 것은 section 5.2 에 적었다.
+Prior 는 추론하려는 미지의 양인 계측값 Y 에 붙으므로, prior shift 의 prior 는 P(Y) 다. 식 (6) 의 분자 P(X|Y)·P(Y) 는 식 (3) 의 우변과 같으므로, 식 (3) 에서 P(X|Y) 를 그대로 둔 채 P(Y) 만 바뀌는 prior shift 는 이 prior 가 바뀌는 경우다. Label shift 는 같은 P(Y) 이동을 label Y 쪽에서 부르는 이름이다. 두 이름은 Y 가 X 를 만드는 Y → X 구조의 분류 문제에서 왔으며, X → Y 구조인 제조 공정에서 P(Y) 이동이 대부분 P(X) 나 P(Y|X) 변화의 결과로 나타나는 것은 section 5.2 에 적었다.
 
 ## Appendix E. Talk Slides
 

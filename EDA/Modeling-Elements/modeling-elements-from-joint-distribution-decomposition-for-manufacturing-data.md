@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 14 | Created: 2026-10-03 | Updated: 2026-10-03 11:09 CDT
+Rev. 15 | Created: 2026-10-03 | Updated: 2026-10-03 11:13 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -201,9 +201,7 @@ Observation methods differ in how directly they look at P(Y|X).
 <a id="ref-6"></a>
 [6] Google Cloud. [Introduction to Vertex AI Model Monitoring](https://docs.cloud.google.com/vertex-ai/docs/model-monitoring/overview). *Vertex AI documentation*.<br>
 <a id="ref-7"></a>
-[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.<br>
-<a id="ref-8"></a>
-[8] gaussian37. [확률과 통계 기초](https://gaussian37.github.io/ml-concept-basic_probability_statistics/). *gaussian37 blog*.
+[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.
 
 ---
 
@@ -313,25 +311,20 @@ Table 3. Use of the shift taxonomy in research and industry
 
 ## Appendix D. Prior in Bayes' Theorem
 
-Bayes' theorem is written as eq. (6) [[8](#ref-8)].
+Written in the variables of this document, Bayes' theorem is eq. (6). The unknown the model infers is the metrology value Y, and the measured data X is the evidence for that inference.
 
 ```math
-P(X \mid Y) = \frac{P(Y \mid X) \cdot P(X)}{P(Y)} \hspace{19em} (6)
+P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (6)
 ```
 
-The terms mean the following [[8](#ref-8)].
+The terms mean the following.
 
-- **Prior**: P(X). The prior probability: the belief or probability held about event X before the new evidence Y is known.
-- **Likelihood**: P(Y|X). The probability that the observed event Y appears, assuming event X has occurred.
-- **Posterior**: P(X|Y). The probability of X updated after event Y is observed.
+- **Prior**: P(Y). The prior probability: the distribution held for the metrology value Y before the measured data X is seen.
+- **Likelihood**: P(X|Y). The probability that the measured data X appears, assuming the metrology value Y is given.
+- **Posterior**: P(Y|X). The posterior probability: the distribution of Y updated after the measured data X is observed, which is the conditional distribution the model sets out to estimate.
+- **Evidence**: P(X). The marginal distribution of the measured data, a normalizing constant that makes the posterior a probability distribution.
 
-The prior in eq. (6) belongs to the unknown event being inferred. Eq. (6) is the general form with X as the unknown event and Y as the evidence, whereas in this document the unknown the model infers is the metrology value Y and the measured data X is the evidence. Swapping the two variables in eq. (6) gives eq. (7).
-
-```math
-P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (7)
-```
-
-In eq. (7) the prior is the distribution of metrology values P(Y), the likelihood is P(X|Y) and the posterior is P(Y|X), which the model sets out to estimate. The numerator P(X|Y)·P(Y) of eq. (7) equals the right side of eq. (3), so prior shift, in which P(Y) alone changes while P(X|Y) of eq. (3) stays fixed, is a change of this prior. Label shift names the same shift in P(Y) after the label Y. Both names come from classification problems with a Y → X structure, in which Y produces X; section 5.2 covers how, in a manufacturing process with an X → Y structure, a shift in P(Y) mostly results from a change in P(X) or P(Y|X).
+The prior belongs to the unknown being inferred, the metrology value Y, so the prior of prior shift is P(Y). The numerator P(X|Y)·P(Y) of eq. (6) equals the right side of eq. (3), so prior shift, in which P(Y) alone changes while P(X|Y) of eq. (3) stays fixed, is a change of this prior. Label shift names the same shift in P(Y) after the label Y. Both names come from classification problems with a Y → X structure, in which Y produces X; section 5.2 covers how, in a manufacturing process with an X → Y structure, a shift in P(Y) mostly results from a change in P(X) or P(Y|X).
 
 ## Appendix E. Talk Slides
 
