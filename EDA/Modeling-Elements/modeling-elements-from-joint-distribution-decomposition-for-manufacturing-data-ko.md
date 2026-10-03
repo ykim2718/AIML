@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 57 | Created: 2026-05-29 | Updated: 2026-10-03 09:58 CDT
+Rev. 58 | Created: 2026-05-29 | Updated: 2026-10-03 10:01 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -81,7 +81,7 @@ P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
 
 식 (1) 의 양변을 X 에 대해 적분하면 식 (2) 를 얻는다. 좌변 ∫ P(X,Y) dX 는 X 를 적분하여 없앤 Y 의 marginal distribution P(Y) 이고, 우변은 조건부 분포 P(Y|X) 를 X 의 분포 P(X) 로 가중하여 평균한 값이다. 이 적분을 marginalization 이라 하며, 식 (1) 이 결합분포를 두 factor 로 나눈다면 식 (2) 는 두 factor 에서 P(Y) 를 다시 얻는다.
 
-꼭지 2 에 있는 인용구의 세 요소는 식 (1) 의 세 자리에 놓인다.
+꼭지 2 에 있는 인용구의 세 요소는 식 (1) 과 식 (2) 의 세 자리에 놓인다.
 
 - **$`P(Y)`$ (Good Prediction):** 좋은 예측. 두 factor 의 곱인 결합분포 P(X,Y) 를 X 에 대해 적분하여 얻는 marginal distribution 이다 (식 (2)).
 - **$`P(X)`$ (Good Data):** 좋은 데이터. 식 (1) 의 factor 로, 측정 데이터의 분포다.
@@ -103,7 +103,7 @@ Prior shift 는 식 (3) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 �
 
 ### 3.1 Placement
 
-Table 1 은 세 항목을 분해, 변화, 개입, 질문, 관측, 대책의 여섯 축에 놓는다.
+Table 1 은 세 항목을 분해, 변화, 개입, 질문, 관측, 대책의 여섯 관점에 놓는다.
 
 Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
@@ -216,7 +216,7 @@ Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z �
 - **marginal distribution (주변분포)**: 결합분포 P(X,Y) 에서 X 를 적분하여 없애고 Y 하나만 남긴 분포. P(Y) = ∫ P(X,Y) dX 이며, X 의 값과 상관없이 Y 가 어떻게 분포하는지를 나타낸다.
 - **regression dilution**: 입력 X 에 측정 오차가 있을 때 추정한 회귀 기울기가 0 쪽으로 줄어드는 현상.
 - **selection bias**: 표본을 고르는 방식 때문에 표본의 분포가 모집단의 분포와 달라지는 치우침.
-- **Spatial decomposition**: wafer 측정 map 을 공간 기저 (다항식) 로 분해하고, 그 계수 (a1, …) 를 예측하는 방법.
+- **spatial decomposition**: wafer 측정 map 을 공간 기저 (다항식) 로 분해하고, 그 계수 (a1, …) 를 예측하는 방법.
 - **target engineering**: 예측 대상 Y 를 변환·분해·재구성하여 model 이 학습하기 쉬운 형태로 바꾸는 일.
 - **temporal CV**: 과거로 학습하고 미래로 검증하는 시간순 교차검증.
 

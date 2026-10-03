@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 5 | Created: 2026-10-03 | Updated: 2026-10-03 09:58 CDT
+Rev. 6 | Created: 2026-10-03 | Updated: 2026-10-03 10:01 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -81,7 +81,7 @@ P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
 
 Integrating both sides of eq. (1) over X gives eq. (2). The left side, ∫ P(X,Y) dX, is the marginal distribution P(Y) of Y with X integrated out, and the right side is the conditional distribution P(Y|X) averaged with the distribution P(X) as weight. This integration is called marginalization: eq. (1) splits the joint distribution into two factors, and eq. (2) recovers P(Y) from those two factors.
 
-The three elements of the quote in section 2 take the three places of eq. (1).
+The three elements of the quote in section 2 take the three places of eqs. (1) and (2).
 
 - **$`P(Y)`$ (Good Prediction):** good prediction; the marginal distribution obtained by integrating the joint distribution P(X,Y), the product of the two factors, over X (eq. (2)).
 - **$`P(X)`$ (Good Data):** good data; a factor of eq. (1), the distribution of the measured data.
@@ -216,7 +216,7 @@ Observation methods differ in how directly they look at P(Y|X).
 - **marginal distribution (주변분포)**: the distribution left for Y alone after integrating X out of the joint distribution P(X,Y). P(Y) = ∫ P(X,Y) dX, describing how Y is distributed regardless of the value of X.
 - **regression dilution**: the shrinking of an estimated regression slope toward 0 when the input X carries measurement error.
 - **selection bias**: a skew in which the sample distribution departs from the population distribution because of how the sample is chosen.
-- **Spatial decomposition**: decomposing a wafer measurement map onto a spatial basis (polynomials) and predicting its coefficients (a1, …).
+- **spatial decomposition**: decomposing a wafer measurement map onto a spatial basis (polynomials) and predicting its coefficients (a1, …).
 - **target engineering**: transforming, decomposing or reformulating the prediction target Y into a form the model learns more easily.
 - **temporal CV**: time-ordered cross-validation that trains on the past and validates on the future.
 
