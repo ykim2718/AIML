@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 68 | Created: 2026-05-29 | Updated: 2026-10-03 11:21 CDT
+Rev. 69 | Created: 2026-05-29 | Updated: 2026-10-03 11:23 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -324,7 +324,7 @@ P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (6)
 - **Posterior**: P(Y|X). 사후 확률이며, 측정 데이터 X 를 관측한 뒤 갱신된 Y 의 분포로, model 이 추정하려는 조건부 분포다.
 - **Evidence**: P(X). 측정 데이터의 marginal distribution 이며, posterior 를 확률분포로 맞추는 정규화 상수다.
 
-Prior 는 추론하려는 미지의 양인 계측값 Y 에 붙으므로, prior shift 의 prior 는 P(Y) 다. 식 (6) 의 분자 P(X|Y)·P(Y) 는 식 (3) 의 우변과 같으므로, 식 (3) 에서 P(X|Y) 를 그대로 둔 채 P(Y) 만 바뀌는 prior shift 는 이 prior 가 바뀌는 경우다. Label shift 는 같은 P(Y) 이동을 label Y 쪽에서 부르는 이름이다. 두 이름은 Y 가 X 를 만드는 Y → X 구조의 분류 문제에서 왔다. 증상 X 를 보고 그 원인인 병 Y 를 맞히는 문제처럼, 결과를 보고 원인 class 를 고르는 분류 문제를 가리킨다. X → Y 구조인 제조 공정에서 P(Y) 이동이 대부분 P(X) 나 P(Y|X) 변화의 결과로 나타나는 것은 section 5.2 에 적었다.
+Prior 는 추론하려는 미지의 양인 계측값 Y 에 붙으므로, prior shift 의 prior 는 P(Y) 다. 식 (6) 의 분자 P(X|Y)·P(Y) 는 식 (3) 의 우변과 같으므로, 식 (3) 에서 P(X|Y) 를 그대로 둔 채 P(Y) 만 바뀌는 prior shift 는 이 prior 가 바뀌는 경우다. Label shift 는 같은 P(Y) 이동을 label Y 쪽에서 부르는 이름이다. 두 이름은 Y 가 X 를 만드는 Y → X 구조의 분류 문제에서 왔다. 증상 X 를 보고 그 원인인 병 Y 를 맞히는 문제처럼, 결과를 보고 원인 class 를 고르는 분류 문제를 가리킨다. 제조 공정은 반대로 공정 데이터 X 가 원인이고 계측값 Y 가 결과인 X → Y 구조여서, 이 이름이 그대로 들어맞지 않는다. 그래서 제조 공정에서 관측되는 P(Y) 이동은 대부분 P(X) 나 P(Y|X) 변화의 결과로 나타난다 (section 5.2).
 
 ## Appendix E. Talk Slides
 
