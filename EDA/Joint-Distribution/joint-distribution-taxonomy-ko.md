@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 18 | Created: 2026-05-29 | Updated: 2026-10-03 01:25 CDT
+Rev. 19 | Created: 2026-05-29 | Updated: 2026-10-03 01:27 CDT
 
 ## 1. Purpose
 
@@ -147,3 +147,4 @@ Table 2. Physical meaning of each term
 - **PSI (Population Stability Index)**: 두 시점의 구간별 분포 비율 차이로 분포 이동을 재는 지표.
 - **Spatial decomposition**: wafer 측정 map 을 공간 기저 (다항식) 로 분해하고, 그 계수 (a1, …) 를 예측하는 방법.
 - **temporal CV**: 과거로 학습하고 미래로 검증하는 시간순 교차검증.
+- **주변분포 (marginal distribution)**: 결합분포 P(X,Y) 에서 X 를 적분하여 없애고 Y 하나만 남긴 분포. P(Y) = ∫ P(X,Y) dX 이며, X 의 값과 상관없이 Y 가 어떻게 분포하는지를 나타낸다.
