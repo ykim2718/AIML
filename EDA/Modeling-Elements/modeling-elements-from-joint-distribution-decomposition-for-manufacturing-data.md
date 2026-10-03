@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 13 | Created: 2026-10-03 | Updated: 2026-10-03 10:51 CDT
+Rev. 14 | Created: 2026-10-03 | Updated: 2026-10-03 11:09 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,7 +18,8 @@ Rev. 13 | Created: 2026-10-03 | Updated: 2026-10-03 10:51 CDT
   - [B.3 P(Y|X) Concept Drift](#b3-pyx-concept-drift)
   - [B.4 Model Estimator](#b4-model-estimator)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
-- [Appendix D. Talk Slides](#appendix-d-talk-slides)
+- [Appendix D. Prior in Bayes' Theorem](#appendix-d-prior-in-bayes-theorem)
+- [Appendix E. Talk Slides](#appendix-e-talk-slides)
 
 ## 1. Purpose
 
@@ -200,7 +201,9 @@ Observation methods differ in how directly they look at P(Y|X).
 <a id="ref-6"></a>
 [6] Google Cloud. [Introduction to Vertex AI Model Monitoring](https://docs.cloud.google.com/vertex-ai/docs/model-monitoring/overview). *Vertex AI documentation*.<br>
 <a id="ref-7"></a>
-[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.
+[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.<br>
+<a id="ref-8"></a>
+[8] gaussian37. [확률과 통계 기초](https://gaussian37.github.io/ml-concept-basic_probability_statistics/). *gaussian37 blog*.
 
 ---
 
@@ -308,7 +311,29 @@ Table 3. Use of the shift taxonomy in research and industry
 - **Industry tools**: model monitoring tools watch the P(X) shift that is visible without ground truth under the names data quality drift [[5](#ref-5)], training-serving skew and inference drift [[6](#ref-6)], and data drift [[7](#ref-7)]. Once ground truth arrives, they check model quality drift [[5](#ref-5)] or concept drift [[7](#ref-7)] from the gap between predictions and ground truth.
 - **Framework of this document**: the three-shift classification is a standard concept in research and industry. Mapping the three terms to the good data, good model and good prediction of eq. (4) is this document's own framing and is not a named standard framework in the sources above.
 
-## Appendix D. Talk Slides
+## Appendix D. Prior in Bayes' Theorem
+
+Bayes' theorem is written as eq. (6) [[8](#ref-8)].
+
+```math
+P(X \mid Y) = \frac{P(Y \mid X) \cdot P(X)}{P(Y)} \hspace{19em} (6)
+```
+
+The terms mean the following [[8](#ref-8)].
+
+- **Prior**: P(X). The prior probability: the belief or probability held about event X before the new evidence Y is known.
+- **Likelihood**: P(Y|X). The probability that the observed event Y appears, assuming event X has occurred.
+- **Posterior**: P(X|Y). The probability of X updated after event Y is observed.
+
+The prior in eq. (6) belongs to the unknown event being inferred. Eq. (6) is the general form with X as the unknown event and Y as the evidence, whereas in this document the unknown the model infers is the metrology value Y and the measured data X is the evidence. Swapping the two variables in eq. (6) gives eq. (7).
+
+```math
+P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (7)
+```
+
+In eq. (7) the prior is the distribution of metrology values P(Y), the likelihood is P(X|Y) and the posterior is P(Y|X), which the model sets out to estimate. The numerator P(X|Y)·P(Y) of eq. (7) equals the right side of eq. (3), so prior shift, in which P(Y) alone changes while P(X|Y) of eq. (3) stays fixed, is a change of this prior. Label shift names the same shift in P(Y) after the label Y. Both names come from classification problems with a Y → X structure, in which Y produces X; section 5.2 covers how, in a manufacturing process with an X → Y structure, a shift in P(Y) mostly results from a change in P(X) or P(Y|X).
+
+## Appendix E. Talk Slides
 
 Three slides present this document, and the source file is [modeling-elements-invited-talk.pptx](talk-slides/modeling-elements-invited-talk.pptx).
 

@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 65 | Created: 2026-05-29 | Updated: 2026-10-03 10:51 CDT
+Rev. 66 | Created: 2026-05-29 | Updated: 2026-10-03 11:09 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,7 +18,8 @@ Rev. 65 | Created: 2026-05-29 | Updated: 2026-10-03 10:51 CDT
   - [B.3 P(Y|X) Concept Drift](#b3-pyx-concept-drift)
   - [B.4 Model Estimator](#b4-model-estimator)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
-- [Appendix D. Talk Slides](#appendix-d-talk-slides)
+- [Appendix D. Prior in Bayes' Theorem](#appendix-d-prior-in-bayes-theorem)
+- [Appendix E. Talk Slides](#appendix-e-talk-slides)
 
 ## 1. Purpose
 
@@ -200,7 +201,9 @@ Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z �
 <a id="ref-6"></a>
 [6] Google Cloud. [Introduction to Vertex AI Model Monitoring](https://docs.cloud.google.com/vertex-ai/docs/model-monitoring/overview). *Vertex AI documentation*.<br>
 <a id="ref-7"></a>
-[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.
+[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.<br>
+<a id="ref-8"></a>
+[8] gaussian37. [확률과 통계 기초](https://gaussian37.github.io/ml-concept-basic_probability_statistics/). *gaussian37 blog*.
 
 ---
 
@@ -308,7 +311,29 @@ Table 3. Use of the shift taxonomy in research and industry
 - **Industry tools**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
 - **Framework of this document**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (4) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
 
-## Appendix D. Talk Slides
+## Appendix D. Prior in Bayes' Theorem
+
+베이즈 정리 (Bayes' theorem) 는 식 (6) 으로 적는다 [[8](#ref-8)].
+
+```math
+P(X \mid Y) = \frac{P(Y \mid X) \cdot P(X)}{P(Y)} \hspace{19em} (6)
+```
+
+각 항의 뜻은 다음과 같다 [[8](#ref-8)].
+
+- **Prior**: P(X). 사전 확률이며, 새로운 증거 Y 를 알기 전에 사건 X 에 대해 가지고 있던 믿음이나 확률이다.
+- **Likelihood**: P(Y|X). 가능도이며, 사건 X 가 일어났다는 가정 아래 관측된 사건 Y 가 나타날 확률이다.
+- **Posterior**: P(X|Y). 사후 확률이며, 사건 Y 를 관측한 뒤 갱신된 X 의 확률이다.
+
+식 (6) 의 prior 는 추론하려는 미지의 사건에 붙는다. 식 (6) 은 X 를 미지의 사건, Y 를 증거로 둔 일반형이며, 이 문서에서는 거꾸로 model 이 추론하는 미지의 양이 계측값 Y 이고 측정 데이터 X 가 증거다. 식 (6) 에서 두 변수의 자리를 바꾸면 식 (7) 이 된다.
+
+```math
+P(Y \mid X) = \frac{P(X \mid Y) \cdot P(Y)}{P(X)} \hspace{19em} (7)
+```
+
+식 (7) 에서 prior 는 계측값의 분포 P(Y), likelihood 는 P(X|Y), posterior 는 model 이 추정하려는 P(Y|X) 다. 식 (7) 의 분자 P(X|Y)·P(Y) 는 식 (3) 의 우변과 같으므로, 식 (3) 에서 P(X|Y) 를 그대로 둔 채 P(Y) 만 바뀌는 prior shift 는 이 prior 가 바뀌는 경우다. Label shift 는 같은 P(Y) 이동을 label Y 쪽에서 부르는 이름이다. 두 이름은 Y 가 X 를 만드는 Y → X 구조의 분류 문제에서 왔으며, X → Y 구조인 제조 공정에서 P(Y) 이동이 대부분 P(X) 나 P(Y|X) 변화의 결과로 나타나는 것은 section 5.2 에 적었다.
+
+## Appendix E. Talk Slides
 
 이 문서를 발표할 때 쓰는 slide 는 세 장이며, 원본은 [modeling-elements-invited-talk.pptx](talk-slides/modeling-elements-invited-talk.pptx) 이다.
 
