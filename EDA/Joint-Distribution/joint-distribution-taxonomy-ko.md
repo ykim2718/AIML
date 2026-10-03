@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 10 | Created: 2026-05-29 | Updated: 2026-10-03 01:07 CDT
+Rev. 11 | Created: 2026-05-29 | Updated: 2026-10-03 01:10 CDT
 
 ## 1. Purpose
 
@@ -21,13 +21,9 @@ P(Y)_{\mathrm{pred}} = P(X_{o})_{\mathrm{true}} \cdot P(Y \mid X_{i})_{\mathrm{p
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX \hspace{19em} (2)
 ```
 
-식 (1) 은 출력 주변분포 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다.
+식 (1) 은 출력 주변분포 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 입력이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 입력이다.
 
-X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 입력이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 입력이다.
-
-식 (1) 이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다.
-
-아래 두 가정 모두에서, X<sub>i</sub> 로 추정한 관계를 X<sub>o</sub> 에 그대로 쓰려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
+식 (1) 이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다. 아래 두 가정 모두에서, X<sub>i</sub> 로 추정한 관계를 X<sub>o</sub> 에 그대로 쓰려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
 - **입력이 한 조건에 모인다**: P(X<sub>o</sub>)<sub>true</sub> 가 한 입력 x<sub>o</sub> 에 확률을 모두 둔 분포이면, 곧 장비 상태와 recipe 가 하나로 고정되면 식 (2) 의 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다.
 - **식을 입력 하나에 대해 읽는다**: out-of-sample 입력 x<sub>o</sub> 하나에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
