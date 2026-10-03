@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 33 | Created: 2026-05-29 | Updated: 2026-10-03 07:36 CDT
+Rev. 34 | Created: 2026-05-29 | Updated: 2026-10-03 07:37 CDT
 
 ## 1. Purpose
 
@@ -145,6 +145,14 @@ Table 2. Physical meaning of each term
 
 측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (1) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵고, 대응과 관측을 구분한다.
 
+공정 물리 관점에서 concept drift 는 관측되지 않은 chamber 상태 변수 Z(t) (노화, 찌꺼기 등) 의 변화로 인해 P(Y|X) 가 시간에 따라 변하는 현상이며, 그 관계는 식 (6) 으로 적는다.
+
+```math
+P(Y \mid X, t) = \int P(Y \mid X, Z)\, P(Z \mid t)\, dZ \hspace{19em} (6)
+```
+
+Z 는 잠재 변수 (latent variable) 이다. Chamber 상태가 주어졌을 때의 관계 P(Y|X,Z) 는 시간에 따라 바뀌지 않아도, Z 가 측정 데이터 X 에 들어 있지 않으므로 model 은 P(Z|t) 의 변화를 P(Y|X) 의 변화로만 본다.
+
 - **대응**: detrending, 최신성 sample 가중, 최근 drift windowing. 관계가 변한다고 가정하고 최근 sample 에 가중치를 더 주며, 그 효과는 temporal CV 로 시간순으로 검증한다. 변동 시점은 특정하지 못한다.
 - **관측**: 변화를 측정하고 시점을 특정한다.
 
@@ -181,6 +189,7 @@ Table 2. Physical meaning of each term
 - **I(X;Y)**: 상호정보량 (mutual information). X 와 Y 의 의존성 총량을 나타내는 거시 지표.
 - **i.i.d. (independent and identically distributed)**: 각 표본이 서로 독립이고 같은 분포에서 나온다는 가정.
 - **label noise**: 계측 오차처럼 정답값 Y 에 섞인 잡음.
+- **latent variable**: 결과에 영향을 주지만 직접 관측되지 않는 변수. Chamber 의 노화나 찌꺼기 누적 상태가 그 예다.
 - **point mass**: 한 값에서만 확률 1 이고 다른 모든 값에서 확률 0 인 분포. 그 값 하나만 나온다.
 - **selection bias**: 표본을 고르는 방식 때문에 표본의 분포가 모집단의 분포와 달라지는 치우침.
 - **Spatial decomposition**: wafer 측정 map 을 공간 기저 (다항식) 로 분해하고, 그 계수 (a1, …) 를 예측하는 방법.
