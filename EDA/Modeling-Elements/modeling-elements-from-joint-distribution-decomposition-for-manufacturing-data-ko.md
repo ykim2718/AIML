@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 54 | Created: 2026-05-29 | Updated: 2026-10-03 09:28 CDT
+Rev. 55 | Created: 2026-05-29 | Updated: 2026-10-03 09:55 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,6 +18,7 @@ Rev. 54 | Created: 2026-05-29 | Updated: 2026-10-03 09:28 CDT
   - [B.3 P(Y|X) Concept Drift](#b3-pyx-concept-drift)
   - [B.4 Model Estimator](#b4-model-estimator)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
+- [Appendix D. Talk Slides](#appendix-d-talk-slides)
 
 ## 1. Purpose
 
@@ -305,3 +306,11 @@ Table 3. Use of the shift taxonomy in research and industry
 - **Manufacturing data**: 반도체 virtual metrology 에서는 wafer 특성이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[1](#ref-1)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[4](#ref-4)].
 - **Industry tools**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
 - **Framework of this document**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (4) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
+
+## Appendix D. Talk Slides
+
+학회 invited talk 에서 이 문서를 발표할 때 쓰는 slide 3 장이며, 원본은 [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx) 이다.
+
+- **Slide 1**: [Modeling Elements from Joint Distribution Decomposition](modeling-elements-invited-talk-1.png). 결합분포를 P(X), P(Y|X), P(Y) 로 나눈 taxonomy 와 식 (1), (2).
+- **Slide 2**: [Prediction from the Joint Distribution](modeling-elements-invited-talk-2.png). 식 (4) 의 세 항과 좋은 데이터·좋은 모델·좋은 예측.
+- **Slide 3**: [Four Axes: Detect, Respond, Validate](modeling-elements-invited-talk-3.png). [Appendix B](#appendix-b-detection-and-implementation-by-axis) 에 있는 네 축의 탐지·대응·검증 방법의 요약.

@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 2 | Created: 2026-10-03 | Updated: 2026-10-03 09:28 CDT
+Rev. 3 | Created: 2026-10-03 | Updated: 2026-10-03 09:55 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,6 +18,7 @@ Rev. 2 | Created: 2026-10-03 | Updated: 2026-10-03 09:28 CDT
   - [B.3 P(Y|X) Concept Drift](#b3-pyx-concept-drift)
   - [B.4 Model Estimator](#b4-model-estimator)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
+- [Appendix D. Talk Slides](#appendix-d-talk-slides)
 
 ## 1. Purpose
 
@@ -305,3 +306,11 @@ Table 3. Use of the shift taxonomy in research and industry
 - **Manufacturing data**: in semiconductor virtual metrology, wafer characteristics change over time and prediction performance degrades, so an adaptive update was proposed that measures only wafers with low prediction reliability and updates the model at once with those results [[1](#ref-1)]. Gama et al. surveyed methods for detecting and adapting to concept drift [[4](#ref-4)].
 - **Industry tools**: model monitoring tools watch the P(X) shift that is visible without ground truth under the names data quality drift [[5](#ref-5)], training-serving skew and inference drift [[6](#ref-6)], and data drift [[7](#ref-7)]. Once ground truth arrives, they check model quality drift [[5](#ref-5)] or concept drift [[7](#ref-7)] from the gap between predictions and ground truth.
 - **Framework of this document**: the three-shift classification is a standard concept in research and industry. Mapping the three terms to the good data, good model and good prediction of eq. (4) is this document's own framing and is not a named standard framework in the sources above.
+
+## Appendix D. Talk Slides
+
+These three slides present this document as a conference invited talk; the source file is [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx).
+
+- **Slide 1**: [Modeling Elements from Joint Distribution Decomposition](modeling-elements-invited-talk-1.png). Taxonomy that splits the joint distribution into P(X), P(Y|X) and P(Y), with eqs. (1) and (2).
+- **Slide 2**: [Prediction from the Joint Distribution](modeling-elements-invited-talk-2.png). The three terms of eq. (4) read as good data, good model and good prediction.
+- **Slide 3**: [Four Axes: Detect, Respond, Validate](modeling-elements-invited-talk-3.png). Detection, response and validation methods of the four axes, condensed from [Appendix B](#appendix-b-detection-and-implementation-by-axis).
