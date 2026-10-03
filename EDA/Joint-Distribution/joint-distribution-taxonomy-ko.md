@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 16 | Created: 2026-05-29 | Updated: 2026-10-03 01:21 CDT
+Rev. 17 | Created: 2026-05-29 | Updated: 2026-10-03 01:23 CDT
 
 ## 1. Purpose
 
@@ -25,7 +25,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 
 식 (1) 이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다. 아래 두 가정 모두에서, X<sub>i</sub> 로 추정한 관계를 X<sub>o</sub> 에 그대로 쓰려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
-- **한 값에 모인 추론 데이터**: P(X<sub>o</sub>)<sub>true</sub> 가 추론 데이터 한 건 x<sub>o</sub> 에서만 확률 1 이고 다른 모든 값에서 확률 0 인 분포 (point mass) 이면, 식 (2) 의 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다. X<sub>o</sub> 는 공정 조건이 아닌 측정한 데이터이므로, 장비 상태와 recipe 를 하나로 고정해도 측정 결과 데이터는 건마다 달라져 point mass 가 되지 않는다. 이 가정은 추론 데이터의 모든 건이 같은 값 x<sub>o</sub> 를 가질 때만 성립한다.
+- **한 값에 모인 추론 데이터**: P(X<sub>o</sub>)<sub>true</sub> 가 추론 데이터 한 건 x<sub>o</sub> 에서만 확률 1 이고 다른 모든 값에서 확률 0 인 분포 (point mass) 이면, 식 (2) 의 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다. 이 가정은 추론 데이터의 모든 건이 같은 값 x<sub>o</sub> 를 가질 때만 성립한다.
 - **추론 데이터 한 건에 대한 해석**: 추론 데이터 한 건 x<sub>o</sub> 에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
 
 Model 은 학습 데이터 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 추론 데이터의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
