@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 5 | Created: 2026-05-29 | Updated: 2026-10-03 00:56 CDT
+Rev. 6 | Created: 2026-05-29 | Updated: 2026-10-03 01:02 CDT
 
 ## 1. Purpose
 
@@ -9,13 +9,20 @@ Rev. 5 | Created: 2026-05-29 | Updated: 2026-10-03 00:56 CDT
 
 ## 2. Summary
 
+> ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
+>
 > ### P(Y)<sub>pred</sub> = P(X<sub>o</sub>)<sub>true</sub> · P(Y|X<sub>i</sub>)<sub>pred</sub>
 >
-> ### X<sub>i</sub> = in-samples, X<sub>o</sub> = out-of-samples
->
-> ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
+> ### X<sub>i</sub> = in-sample, X<sub>o</sub> = out-of-sample
 
-인용한 식은 식 (2) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 P(Y)<sub>pred</sub> = ∫ P(Y|X<sub>i</sub>)<sub>pred</sub> · P(X<sub>o</sub>)<sub>true</sub> dX 이다. Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
+인용한 식은 출력 주변분포 식 (2) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 P(Y)<sub>pred</sub> = ∫ P(Y|X<sub>i</sub>)<sub>pred</sub> · P(X<sub>o</sub>)<sub>true</sub> dX 이다. Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
+
+인용한 식이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다.
+
+- **입력이 한 조건에 모인다**: P(X<sub>o</sub>)<sub>true</sub> 가 한 입력 x<sub>o</sub> 에 확률을 모두 둔 분포이면, 곧 장비 상태와 recipe 가 하나로 고정되면 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다.
+- **식을 입력 하나에 대해 읽는다**: out-of-sample 입력 x<sub>o</sub> 하나에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
+
+두 가정 모두에서, X<sub>i</sub> 로 추정한 관계를 X<sub>o</sub> 에 그대로 쓰려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
 - **좋은 데이터**: X<sub>i</sub> 는 장비·recipe 의 입력과 wafer 계측값을 짝지은 학습 표본의 입력이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 장비·recipe 가 실제로 내놓는 입력의 분포다. X<sub>o</sub> 가 X<sub>i</sub> 의 범위를 벗어나면 covariate shift 다.
 - **좋은 model**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 X<sub>i</sub> 로 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
