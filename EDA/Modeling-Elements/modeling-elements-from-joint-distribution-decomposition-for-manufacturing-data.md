@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 15 | Created: 2026-10-03 | Updated: 2026-10-03 11:13 CDT
+Rev. 16 | Created: 2026-10-03 | Updated: 2026-10-03 11:21 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -324,7 +324,7 @@ The terms mean the following.
 - **Posterior**: P(Y|X). The posterior probability: the distribution of Y updated after the measured data X is observed, which is the conditional distribution the model sets out to estimate.
 - **Evidence**: P(X). The marginal distribution of the measured data, a normalizing constant that makes the posterior a probability distribution.
 
-The prior belongs to the unknown being inferred, the metrology value Y, so the prior of prior shift is P(Y). The numerator P(X|Y)·P(Y) of eq. (6) equals the right side of eq. (3), so prior shift, in which P(Y) alone changes while P(X|Y) of eq. (3) stays fixed, is a change of this prior. Label shift names the same shift in P(Y) after the label Y. Both names come from classification problems with a Y → X structure, in which Y produces X; section 5.2 covers how, in a manufacturing process with an X → Y structure, a shift in P(Y) mostly results from a change in P(X) or P(Y|X).
+The prior belongs to the unknown being inferred, the metrology value Y, so the prior of prior shift is P(Y). The numerator P(X|Y)·P(Y) of eq. (6) equals the right side of eq. (3), so prior shift, in which P(Y) alone changes while P(X|Y) of eq. (3) stays fixed, is a change of this prior. Label shift names the same shift in P(Y) after the label Y. Both names come from classification problems with a Y → X structure, in which Y produces X. Such a problem picks the cause class from the effect, as when the disease Y is identified from the symptoms X it causes. Section 5.2 covers how, in a manufacturing process with an X → Y structure, a shift in P(Y) mostly results from a change in P(X) or P(Y|X).
 
 ## Appendix E. Talk Slides
 
