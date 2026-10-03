@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 11 | Created: 2026-05-29 | Updated: 2026-10-03 01:10 CDT
+Rev. 12 | Created: 2026-05-29 | Updated: 2026-10-03 01:12 CDT
 
 ## 1. Purpose
 
@@ -31,8 +31,8 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
 
 - **좋은 데이터**: X<sub>i</sub> 는 장비·recipe 의 입력과 wafer 계측값을 짝지은 학습 표본의 입력이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 장비·recipe 가 실제로 내놓는 입력의 분포다. X<sub>o</sub> 가 X<sub>i</sub> 의 범위를 벗어나면 covariate shift 다.
-- **좋은 model**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 X<sub>i</sub> 로 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
-- **결과**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
+- **좋은 모델**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 X<sub>i</sub> 로 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
+- **좋은 추론**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
 
 - **Taxonomy**: 반도체 공정 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 입력 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류된다.
 - **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (4)).
