@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 58 | Created: 2026-05-29 | Updated: 2026-10-03 10:01 CDT
+Rev. 59 | Created: 2026-05-29 | Updated: 2026-10-03 10:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -327,7 +327,7 @@ Fig 2. Talk slide 1, taxonomy from the joint distribution
 <a id="fig-3"></a>
 Fig 3. Talk slide 2, prediction from the joint distribution
 
-식 (4) 의 세 항을 좋은 데이터, 좋은 모델, 좋은 예측으로 읽고, 식 (4) 가 성립하는 두 조건을 slide 아래쪽에 적었다.
+식 (4) 의 세 항을 좋은 데이터, 좋은 모델, 좋은 예측으로 읽고, 각 요소를 깨는 covariate shift, concept drift, prior shift 를 schematic 으로 보인다. Slide 아래쪽에는 식 (4) 가 성립하는 두 조건을 적었다.
 
 셋째 slide 는 [Appendix B](#appendix-b-detection-and-implementation-by-axis) 를 줄여 보인다 ([Fig 4](#fig-4)).
 

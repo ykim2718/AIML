@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 6 | Created: 2026-10-03 | Updated: 2026-10-03 10:01 CDT
+Rev. 7 | Created: 2026-10-03 | Updated: 2026-10-03 10:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -327,7 +327,7 @@ The second slide shows eq. (4) of section 4 ([Fig 3](#fig-3)).
 <a id="fig-3"></a>
 Fig 3. Talk slide 2, prediction from the joint distribution
 
-The three terms of eq. (4) are read as good data, good model and good prediction, and the bottom of the slide states the two conditions under which eq. (4) holds.
+The three terms of eq. (4) are read as good data, good model and good prediction, and a schematic under each shows the shift that breaks it: covariate shift, concept drift and prior shift. The bottom of the slide states the two conditions under which eq. (4) holds.
 
 The third slide condenses [Appendix B](#appendix-b-detection-and-implementation-by-axis) ([Fig 4](#fig-4)).
 
