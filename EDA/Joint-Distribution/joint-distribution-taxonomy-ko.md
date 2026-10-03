@@ -20,7 +20,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 #### Term-by-Term Breakdown
 
 - **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** The final, marginalized probability distribution of the target variable $`Y`$ that you expect to see on the out-of-sample inference data.
-- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Models Conditional Prediction):** The predictive model itself. It is learned from the **in-sample training data** $`X_i`$ and outputs the probability of $`Y`$ given a value of the measured data. The subscript `pred` emphasizes that this is an estimated or learned function, not necessarily the true physical probability.
+- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** The predictive model itself. It is learned from the **in-sample training data** $`X_i`$ and outputs the probability of $`Y`$ given a value of the measured data. The subscript `pred` emphasizes that this is an estimated or learned function, not necessarily the true physical probability.
 - **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** The actual, data-generating probability density of the **out-of-sample inference data** $`X_o`$. This represents how $`X_o`$ is actually distributed when the model is used for inference.
 - **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** The integral "sums out" or averages the predictions over all possible values of $`X_o`$, weighted by how likely each value is to occur at inference time.
 
