@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 45 | Created: 2026-05-29 | Updated: 2026-10-03 08:07 CDT
+Rev. 46 | Created: 2026-05-29 | Updated: 2026-10-03 08:08 CDT
 
 ## 1. Purpose
 
@@ -11,7 +11,7 @@ Rev. 45 | Created: 2026-05-29 | Updated: 2026-10-03 08:07 CDT
 
 > ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
 
-조건부 확률의 정의 P(Y|X) = P(X,Y) / P(X) 로부터, 결합분포는 식 (1) 의 chain rule 로 분해된다.
+이 문서의 P(·) 는 확률분포 (이산 변수는 확률질량함수, 연속 변수는 확률밀도함수) 를 뜻한다. 조건부 분포의 정의 P(Y|X) = P(X,Y) / P(X) 로부터, 결합분포는 식 (1) 의 chain rule 로 분해된다.
 
 ```math
 P(X, Y) = P(Y \mid X) \cdot P(X) \hspace{19em} (1)
@@ -34,7 +34,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 #### Term-by-Term Breakdown
 
 - **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** out-of-sample 추론 데이터에서 나오리라 기대하는 target 변수 $`Y`$ 의 최종 분포로, 측정 데이터를 적분하여 없앤 marginal distribution 이다.
-- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값이 주어지면 $`Y`$ 의 확률을 내놓는다. 첨자 `pred` 는 이것이 추정·학습한 함수이며 실제 물리적 확률과 다를 수 있음을 나타낸다.
+- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값이 주어지면 $`Y`$ 의 조건부 분포를 내놓는다. 첨자 `pred` 는 이것이 추정·학습한 함수이며 실제 분포와 다를 수 있음을 나타낸다.
 - **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 를 실제로 만들어 내는 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
 - **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** $`X_o`$ 가 가질 수 있는 모든 값에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
@@ -116,7 +116,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 | Lens              | P(X)                                                                | P(Y)                                         | P(Y\|X)                                                           |
 | :---------------: | :-----------------------------------------------------------------: | :------------------------------------------: | :---------------------------------------------------------------: |
-| 확률 분해         | 측정 데이터의 marginal distribution                                 | 출력의 marginal distribution                 | 조건부 (관계)                                                     |
+| 분포 분해         | 측정 데이터의 marginal distribution                                 | 출력의 marginal distribution                 | 조건부 (관계)                                                     |
 | 분포 변화 (shift) | Covariate shift                                                     | Prior / label shift                          | Concept drift                                                     |
 | 개입 지점         | 데이터 공간                                                         | Target engineering (변환·분해)               | 관계 학습                                                         |
 | 질문 형태         | 추론 데이터 X<sub>o</sub> 가 학습 데이터 X<sub>i</sub> 와 달라졌나? | 계측값 분포가 달라졌나?                      | 학습 뒤 측정 데이터와 계측값의 관계가 달라졌나?                   |
