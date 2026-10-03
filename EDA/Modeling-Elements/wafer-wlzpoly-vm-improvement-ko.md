@@ -1,11 +1,11 @@
 # Wafer VM Improvement for Study wafer_wlzpoly
-Rev. 0 | Created: 2026-05-29 | Updated: 2026-10-02 23:43 CDT
+Rev. 1 | Created: 2026-05-29 | Updated: 2026-10-03 09:07 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: wafer virtual metrology model 의 test R² 가 0.36 에서 정체하고, train R² 와의 차이가 크다.
 - **Goal**: 적용한 방법과 개선 방향을 결합분포 taxonomy 의 P(X), P(Y), P(Y|X) 와 Model 축에 배치하여 다음 실험의 순서를 정한다.
-- **Non-Goal**: taxonomy 의 원리는 다루지 않는다. 원리는 [joint-distribution-taxonomy-ko.md](joint-distribution-taxonomy-ko.md) 에 있다.
+- **Non-Goal**: taxonomy 의 원리는 다루지 않는다. 원리는 [modeling-elements-from-joint-distribution-decomposition-for-manufacturing-data-ko.md](modeling-elements-from-joint-distribution-decomposition-for-manufacturing-data-ko.md) 에 있다.
 
 ## 2. Summary
 
