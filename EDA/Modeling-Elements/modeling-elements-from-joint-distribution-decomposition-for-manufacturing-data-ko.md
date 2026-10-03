@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 52 | Created: 2026-05-29 | Updated: 2026-10-03 09:21 CDT
+Rev. 53 | Created: 2026-05-29 | Updated: 2026-10-03 09:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -17,6 +17,11 @@ Rev. 52 | Created: 2026-05-29 | Updated: 2026-10-03 09:21 CDT
   - [B.2 Prior Shift Detection](#b2-prior-shift-detection)
   - [B.3 Concept Drift Detection](#b3-concept-drift-detection)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
+- [Appendix D. Implementation by Axis](#appendix-d-implementation-by-axis)
+  - [D.1 P(X) Covariate Shift](#d1-px-covariate-shift)
+  - [D.2 P(Y) Prior Shift](#d2-py-prior-shift)
+  - [D.3 P(Y|X) Concept Drift](#d3-pyx-concept-drift)
+  - [D.4 Model Estimator](#d4-model-estimator)
 
 ## 1. Purpose
 
@@ -114,7 +119,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | 관측 (탐지)       | PSI·KS·KL, domain classifier                                        | 계측값 분포 비교                             | Binning CDT, 시간창별 I(X<sub>k</sub>;Y), 잔차 CUSUM·Page-Hinkley |
 | 대책 (lever)      | Feature 선택·증강, importance weighting, domain adaptation          | Target 변환·분해, group 별 scale, prior 보정 | 재학습 간격, 최신성 가중, detrending, drift 적응                  |
 
-관측 행은 변화를 재는 방법이고, 대책 행은 변화를 가정하고 model 을 맞추는 방법이다. 변동 시점을 특정하는 것은 관측 행의 방법뿐이다. 5.1 ~ 5.3 의 세 변화를 탐지하는 방법은 [Appendix B](#appendix-b-detection-methods) 에 모은다. 이 분류가 학계와 업계에서 쓰이는 사례는 [Appendix C](#appendix-c-benchmarking) 에 모은다.
+관측 행은 변화를 재는 방법이고, 대책 행은 변화를 가정하고 model 을 맞추는 방법이다. 변동 시점을 특정하는 것은 관측 행의 방법뿐이다. 5.1 ~ 5.3 의 세 변화를 탐지하는 방법은 [Appendix B](#appendix-b-detection-methods) 에 모은다. 이 분류가 학계와 업계에서 쓰이는 사례는 [Appendix C](#appendix-c-benchmarking) 에 모은다. 네 축의 탐지·대응·검증 방법은 [Appendix D](#appendix-d-implementation-by-axis) 에 요약한다.
 
 ## 4. Prediction from the Joint Distribution
 
@@ -272,3 +277,31 @@ Table 3. Use of the shift taxonomy in research and industry
 - **Manufacturing data**: 반도체 virtual metrology 에서는 wafer 특성이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[4](#ref-4)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[3](#ref-3)].
 - **Industry tools**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
 - **Framework of this document**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (4) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
+
+## Appendix D. Implementation by Axis
+
+네 축마다 무엇으로 탐지하고, 어떤 model·기법으로 대응하며, 어떻게 검증하는지를 요약한다. Model Estimator 축은 결합분포 밖에 있어 본문의 Non-Goal 이지만, 실행에는 함께 정해야 하므로 여기에 둔다.
+
+### D.1 P(X) Covariate Shift
+
+- **Detection**: 변수별 PSI·KS test 와, 다변량 MMD·domain classifier·Hotelling T²·SPE (Appendix B.1).
+- **Methods**: domain classifier 로 추정한 밀도비로 학습 sample 에 가중치를 주는 importance weighting, 학습·추론 입력 분포를 맞추는 domain adaptation, 학습 데이터가 추론 범위를 덮도록 계측 sampling 계획을 조정.
+- **Validation**: 추론 데이터와 닮은 학습 sample 로 검증 set 을 꾸리는 adversarial validation.
+
+### D.2 P(Y) Prior Shift
+
+- **Detection**: 계측값 분포 비교 (KS test, PSI) 와 EWMA 관리도 (Appendix B.2).
+- **Methods**: target engineering (log·Box-Cox 변환, spatial decomposition), group 별 scale 정규화, target spec 변경 시 target 재정의와 재학습.
+- **Validation**: spec·group 별로 나누어 오차를 따로 평가.
+
+### D.3 P(Y|X) Concept Drift
+
+- **Detection**: Binning CDT, 잔차 CUSUM·Page-Hinkley, ADWIN (Appendix B.3).
+- **Methods**: 최근 window 로 일정 간격 재학습, 최신성 가중, 신뢰도가 낮은 wafer 만 계측해 즉시 갱신하는 adaptive update [[4](#ref-4)], chamber 상태 Z(t) 의 대리 변수 (PM 이후 경과 시간, RF 누적 시간) 를 feature 로 추가.
+- **Validation**: 과거로 학습하고 미래로 검증하는 temporal CV, lot 단위로 나눈 group split.
+
+### D.4 Model Estimator
+
+- **Detection**: 학습·검증 성능 차이로 과적합을, 시간창별 성능 감시로 성능 저하를 본다.
+- **Methods**: 표본이 변수보다 적으면 PLS·ridge·lasso 같은 정규화 선형 model, 비선형이면 LightGBM·XGBoost·CatBoost 같은 tree ensemble, 불확실성이 필요하면 Gaussian process 나 quantile regression·conformal prediction. 물리 지식은 monotone constraint 나 물리식 위에 잔차만 학습하는 hybrid 로 넣고, hyperparameter 는 Optuna 같은 Bayesian 최적화로 찾는다.
+- **Validation**: lot 단위 group split 과 temporal CV 를 함께 쓰고, R²·RMSE 와 예측 구간의 coverage 를 본다.

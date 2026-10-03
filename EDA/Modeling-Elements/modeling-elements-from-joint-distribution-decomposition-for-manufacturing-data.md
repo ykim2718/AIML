@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 0 | Created: 2026-10-03 | Updated: 2026-10-03 09:21 CDT
+Rev. 1 | Created: 2026-10-03 | Updated: 2026-10-03 09:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -17,6 +17,11 @@ Rev. 0 | Created: 2026-10-03 | Updated: 2026-10-03 09:21 CDT
   - [B.2 Prior Shift Detection](#b2-prior-shift-detection)
   - [B.3 Concept Drift Detection](#b3-concept-drift-detection)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
+- [Appendix D. Implementation by Axis](#appendix-d-implementation-by-axis)
+  - [D.1 P(X) Covariate Shift](#d1-px-covariate-shift)
+  - [D.2 P(Y) Prior Shift](#d2-py-prior-shift)
+  - [D.3 P(Y|X) Concept Drift](#d3-pyx-concept-drift)
+  - [D.4 Model Estimator](#d4-model-estimator)
 
 ## 1. Purpose
 
@@ -114,7 +119,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | Observation (detection)     | PSI·KS·KL, domain classifier                                                  | Metrology value distribution comparison                                 | Binning CDT, windowed I(X<sub>k</sub>;Y), residual CUSUM·Page-Hinkley              |
 | Lever                       | Feature selection and augmentation, importance weighting, domain adaptation   | Target transform and decomposition, per-group scaling, prior correction | Retraining interval, recency weighting, detrending, drift adaptation               |
 
-The observation row lists ways to measure a change, and the lever row lists ways to fit the model while assuming a change. Only the methods in the observation row pin down when a change happened. The methods that detect the three changes of 5.1 ~ 5.3 are collected in [Appendix B](#appendix-b-detection-methods). Cases in which research and industry use this classification are collected in [Appendix C](#appendix-c-benchmarking).
+The observation row lists ways to measure a change, and the lever row lists ways to fit the model while assuming a change. Only the methods in the observation row pin down when a change happened. The methods that detect the three changes of 5.1 ~ 5.3 are collected in [Appendix B](#appendix-b-detection-methods). Cases in which research and industry use this classification are collected in [Appendix C](#appendix-c-benchmarking). The detection, response and validation methods for the four axes are summarized in [Appendix D](#appendix-d-implementation-by-axis).
 
 ## 4. Prediction from the Joint Distribution
 
@@ -272,3 +277,31 @@ Table 3. Use of the shift taxonomy in research and industry
 - **Manufacturing data**: in semiconductor virtual metrology, wafer characteristics change over time and prediction performance degrades, so an adaptive update was proposed that measures only wafers with low prediction reliability and updates the model at once with those results [[4](#ref-4)]. Gama et al. surveyed methods for detecting and adapting to concept drift [[3](#ref-3)].
 - **Industry tools**: model monitoring tools watch the P(X) shift that is visible without ground truth under the names data quality drift [[5](#ref-5)], training-serving skew and inference drift [[6](#ref-6)], and data drift [[7](#ref-7)]. Once ground truth arrives, they check model quality drift [[5](#ref-5)] or concept drift [[7](#ref-7)] from the gap between predictions and ground truth.
 - **Framework of this document**: the three-shift classification is a standard concept in research and industry. Mapping the three terms to the good data, good model and good prediction of eq. (4) is this document's own framing and is not a named standard framework in the sources above.
+
+## Appendix D. Implementation by Axis
+
+For each of the four axes, this appendix summarizes how to detect the change, which models and techniques respond to it, and how to validate them. The Model Estimator axis lies outside the joint distribution and is a Non-Goal of the main text, but it has to be settled alongside the others in practice, so it is placed here.
+
+### D.1 P(X) Covariate Shift
+
+- **Detection**: per-variable PSI and KS test, plus multivariate MMD, domain classifier and Hotelling T²·SPE (Appendix B.1).
+- **Methods**: importance weighting that weights training samples by a density ratio estimated with a domain classifier, domain adaptation that aligns training and inference input distributions, and a metrology sampling plan adjusted so that training data covers the inference range.
+- **Validation**: adversarial validation, which builds the validation set from training samples that resemble inference data.
+
+### D.2 P(Y) Prior Shift
+
+- **Detection**: metrology value distribution comparison (KS test, PSI) and EWMA control charts (Appendix B.2).
+- **Methods**: target engineering (log and Box-Cox transforms, spatial decomposition), per-group scale normalization, and redefining the target and retraining when the target spec changes.
+- **Validation**: evaluating error separately per spec and per group.
+
+### D.3 P(Y|X) Concept Drift
+
+- **Detection**: Binning CDT, residual CUSUM and Page-Hinkley, ADWIN (Appendix B.3).
+- **Methods**: periodic retraining on a recent window, recency weighting, adaptive update that measures only low-reliability wafers and updates the model at once [[4](#ref-4)], and proxies for the chamber state Z(t) (time since PM, accumulated RF hours) added as features.
+- **Validation**: temporal CV that trains on the past and validates on the future, and a group split by lot.
+
+### D.4 Model Estimator
+
+- **Detection**: overfitting from the gap between training and validation performance, and degradation from windowed performance monitoring.
+- **Methods**: regularized linear models such as PLS, ridge and lasso when samples are fewer than variables; tree ensembles such as LightGBM, XGBoost and CatBoost for nonlinear relations; Gaussian process, quantile regression or conformal prediction when uncertainty is needed. Physics knowledge enters through monotone constraints or a hybrid that learns only the residual on top of a physics equation, and hyperparameters are searched with Bayesian optimization such as Optuna.
+- **Validation**: group split by lot together with temporal CV, reading R², RMSE and the coverage of prediction intervals.
