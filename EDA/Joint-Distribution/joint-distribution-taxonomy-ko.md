@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 2 | Created: 2026-05-29 | Updated: 2026-10-03 00:48 CDT
+Rev. 3 | Created: 2026-05-29 | Updated: 2026-10-03 00:51 CDT
 
 ## 1. Purpose
 
@@ -9,8 +9,9 @@ Rev. 2 | Created: 2026-05-29 | Updated: 2026-10-03 00:48 CDT
 
 ## 2. Summary
 
-> P(Y)<sub>pred</sub> = P(X)<sub>true</sub> · P(Y|X)<sub>pred</sub><br>
-> 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
+> #### P(Y)<sub>pred</sub> = P(X)<sub>true</sub> · P(Y|X)<sub>pred</sub>
+>
+> #### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
 
 인용한 식은 식 (2) 를 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 P(Y)<sub>pred</sub> = ∫ P(Y|X)<sub>pred</sub> · P(X)<sub>true</sub> dX 이다. 예측한 출력분포는 두 factor 의 곱으로 정해지므로, 둘 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
 
