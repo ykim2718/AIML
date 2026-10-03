@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 44 | Created: 2026-05-29 | Updated: 2026-10-03 07:56 CDT
+Rev. 45 | Created: 2026-05-29 | Updated: 2026-10-03 08:07 CDT
 
 ## 1. Purpose
 
@@ -17,7 +17,13 @@ Rev. 44 | Created: 2026-05-29 | Updated: 2026-10-03 07:56 CDT
 P(X, Y) = P(Y \mid X) \cdot P(X) \hspace{19em} (1)
 ```
 
-인용구의 세 요소는 식 (1) 의 세 자리에 놓인다. 좋은 데이터는 factor P(X) 이고, 좋은 모델은 factor P(Y|X) 이며, 좋은 예측은 두 factor 의 곱인 결합분포 P(X,Y) 를 X 에 대해 적분하여 얻는 P(Y) 다. 식 (2) 는 이 관계를 학습 데이터와 추론 데이터로 나누어 적는다.
+인용구의 세 요소는 식 (1) 의 세 자리에 놓인다.
+
+- **$`P(Y)`$ (Good Prediction):** 좋은 예측. 두 factor 의 곱인 결합분포 P(X,Y) 를 X 에 대해 적분하여 얻는 marginal distribution 이다.
+- **$`P(X)`$ (Good Data):** 좋은 데이터. 식 (1) 의 factor 로, 측정 데이터의 분포다.
+- **$`P(Y \mid X)`$ (Good Model):** 좋은 모델. 식 (1) 의 factor 로, 측정 데이터가 주어졌을 때 계측값의 조건부 관계다.
+
+식 (2) 는 세 요소의 관계를 학습 데이터와 추론 데이터로 나누어 적는다.
 
 ```math
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (2)
