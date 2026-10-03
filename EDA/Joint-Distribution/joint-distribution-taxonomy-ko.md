@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 38 | Created: 2026-05-29 | Updated: 2026-10-03 07:46 CDT
+Rev. 39 | Created: 2026-05-29 | Updated: 2026-10-03 07:48 CDT
 
 ## 1. Purpose
 
@@ -16,6 +16,13 @@ Rev. 38 | Created: 2026-05-29 | Updated: 2026-10-03 07:46 CDT
 ```math
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (1)
 ```
+
+#### Term-by-Term Breakdown
+
+- **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** The final, marginalized probability distribution of the target variable $`Y`$ that you expect to see under the true conditions.
+- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** The predictive model itself. It outputs the probability of $`Y`$ given a set of **input/inner features** $`X_i`$. The subscript `pred` emphasizes that this is an estimated or learned function, not necessarily the true physical probability.
+- **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Outer Variables):** The actual, data-generating probability density of the **omitted/outer/observed variables** $`X_o`$. This represents how $`X_o`$ is actually distributed in reality or in a target evaluation domain.
+- **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** The integral "sums out" or averages the predictions over all possible states of $`X_o`$, weighted by how likely each state is to occur in reality.
 
 식 (1) 은 출력 주변분포 (marginal distribution) 식 (3) 을 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. P(Y|X<sub>i</sub>)<sub>pred</sub> 는 X<sub>i</sub> 로 학습한 관계를 추론 데이터 X<sub>o</sub> 의 값에서 읽은 것이며, 식 (1) 은 그 값을 X<sub>o</sub> 에 대해 적분한다.
 
