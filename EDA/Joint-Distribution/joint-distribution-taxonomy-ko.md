@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 21 | Created: 2026-05-29 | Updated: 2026-10-03 01:34 CDT
+Rev. 22 | Created: 2026-05-29 | Updated: 2026-10-03 01:35 CDT
 
 ## 1. Purpose
 
@@ -11,17 +11,17 @@ Rev. 21 | Created: 2026-05-29 | Updated: 2026-10-03 01:34 CDT
 
 > ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
 
-인용구의 좋은 데이터와 좋은 model 은 예측한 출력분포를 정하는 두 factor 이며, 식 (1) 과 그 적분형 식 (2) 가 그 관계를 적는다.
+인용구의 좋은 데이터와 좋은 모델은 예측한 출력분포를 정하는 두 factor 이며, 식 (1) 과 그 적분형 식 (2) 가 그 관계를 적는다.
 
 ```math
 P(Y)_{\mathrm{pred}} = P(X_{o})_{\mathrm{true}} \cdot P(Y \mid X_{i})_{\mathrm{pred}} \hspace{19em} (1)
 ```
 
 ```math
-P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX \hspace{19em} (2)
+P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (2)
 ```
 
-식 (1) 은 출력 주변분포 (marginal distribution) 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다.
+식 (1) 은 출력 주변분포 (marginal distribution) 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. P(Y|X<sub>i</sub>)<sub>pred</sub> 는 X<sub>i</sub> 로 학습한 관계를 추론 데이터 X<sub>o</sub> 의 값에서 읽은 것이며, 식 (2) 는 그 값을 X<sub>o</sub> 에 대해 적분한다.
 
 식 (1) 이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다. 아래 두 가정 모두에서, X<sub>i</sub> 로 추정한 관계를 X<sub>o</sub> 에 그대로 쓰려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
@@ -31,8 +31,8 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 Model 은 학습 데이터 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 추론 데이터의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
 
 - **좋은 예측**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
-- **좋은 데이터**: X<sub>i</sub> 는 wafer 계측값과 짝지어 model 학습에 쓰는 장비·recipe 의 학습 데이터이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 장비·recipe 가 실제로 내놓는 추론 데이터의 분포다. X<sub>o</sub> 가 X<sub>i</sub> 의 범위를 벗어나면 covariate shift 다.
-- **좋은 모델**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 학습 데이터 X<sub>i</sub> 로 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
+- **좋은 데이터**: X<sub>i</sub> 는 wafer 계측값과 짝지어 model 학습에 쓰는, 장비 sensor 등에서 측정한 학습 데이터이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 실제로 측정되는 추론 데이터의 분포다. P(X<sub>o</sub>) 가 P(X<sub>i</sub>) 와 달라지면 covariate shift 다.
+- **좋은 모델**: P(Y|X<sub>i</sub>)<sub>pred</sub> 는 model 이 학습 데이터 X<sub>i</sub> 로 추정한 조건부 관계다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 학습 뒤에 바뀌면 concept drift 다.
 
 - **Taxonomy**: 반도체 공정 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 데이터 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류되며, 식 (1) 에서 각각 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다.
 - **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (4)).
@@ -91,8 +91,8 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | :---------------: | :-----------------------------------------------------------------: | :------------------------------------------: | :---------------------------------------------------: |
 | 확률 분해         | 데이터 주변분포                                                     | 출력 주변분포                                | 조건부 (관계)                                         |
 | 분포 변화 (shift) | Covariate shift                                                     | Prior / label shift                          | Concept drift                                         |
-| 개입 지점         | 데이터 공간                                                         | 출력공간 (target 구조화)                     | 관계·mechanism                                        |
-| 질문 형태         | 추론 데이터 X<sub>o</sub> 가 학습 데이터 X<sub>i</sub> 와 달라졌나? | 정답 분포가 달라졌나?                        | 학습 뒤 데이터→계측값 관계가 달라졌나?                |
+| 개입 지점         | 데이터 공간                                                         | 출력공간 (target 구조화)                     | 조건부 관계                                           |
+| 질문 형태         | 추론 데이터 X<sub>o</sub> 가 학습 데이터 X<sub>i</sub> 와 달라졌나? | 정답 분포가 달라졌나?                        | 학습 뒤 측정 데이터와 계측값의 관계가 달라졌나?       |
 | 관측 (탐지)       | PSI·KS·KL, domain classifier                                        | Target 주변분포 비교                         | Binning CDT, 시간창별 I(X;Y), 잔차 CUSUM·Page-Hinkley |
 | 대책 (lever)      | Feature 선택·증강, importance weighting, domain adaptation          | Target 변환·분해, group 별 scale, prior 보정 | 재학습 period, 최신성 가중, detrending, drift 적응    |
 
@@ -100,7 +100,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 ## 4. Physical Meaning
 
-세 항목은 반도체 공정에서 각각 측정 데이터, 계측 결과, 공정 물리에 대응하고, 식 (1) 에서는 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다. Table 2 가 그 대응을 모은다.
+세 항목은 반도체 공정에서 각각 측정 데이터, 계측 결과, 측정 데이터와 계측값 사이의 조건부 관계에 대응하고, 식 (1) 에서는 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다. Table 2 가 그 대응을 모은다.
 
 Table 2. Physical meaning of each term
 
@@ -124,7 +124,7 @@ Table 2. Physical meaning of each term
 
 ### 4.3 P(Y|X) Concept Drift
 
-데이터→계측값 관계 자체가 학습 뒤에 변하는 경우이며, 식 (1) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 실제 P(Y|X<sub>o</sub>) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵고, 대응과 관측을 구분한다.
+측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (1) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 실제 P(Y|X<sub>o</sub>) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵고, 대응과 관측을 구분한다.
 
 - **대응**: detrending, 최신성 sample 가중, 최근 drift windowing, temporal CV. 관계가 변한다고 가정하고 최근 sample 에 가중치를 더 주며, 변동 시점은 특정하지 못한다.
 - **관측**: 변화를 측정하고 시점을 특정한다.
