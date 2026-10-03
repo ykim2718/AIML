@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 6 | Created: 2026-05-29 | Updated: 2026-10-03 01:02 CDT
+Rev. 7 | Created: 2026-05-29 | Updated: 2026-10-03 01:05 CDT
 
 ## 1. Purpose
 
@@ -10,14 +10,18 @@ Rev. 6 | Created: 2026-05-29 | Updated: 2026-10-03 01:02 CDT
 ## 2. Summary
 
 > ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
->
-> ### P(Y)<sub>pred</sub> = P(X<sub>o</sub>)<sub>true</sub> · P(Y|X<sub>i</sub>)<sub>pred</sub>
->
-> ### X<sub>i</sub> = in-sample, X<sub>o</sub> = out-of-sample
 
-인용한 식은 출력 주변분포 식 (2) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 P(Y)<sub>pred</sub> = ∫ P(Y|X<sub>i</sub>)<sub>pred</sub> · P(X<sub>o</sub>)<sub>true</sub> dX 이다. Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
+인용구의 좋은 데이터와 좋은 model 은 예측한 출력분포를 정하는 두 factor 이며, 식 (1) 이 그 관계를 적는다.
 
-인용한 식이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다.
+```math
+P(Y)_{\mathrm{pred}} = P(X_{o})_{\mathrm{true}} \cdot P(Y \mid X_{i})_{\mathrm{pred}} \hspace{19em} (1)
+```
+
+X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 입력이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 입력이다.
+
+식 (1) 은 출력 주변분포 식 (3) 을 예측에 옮겨 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 P(Y)<sub>pred</sub> = ∫ P(Y|X<sub>i</sub>)<sub>pred</sub> · P(X<sub>o</sub>)<sub>true</sub> dX 이다. Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
+
+식 (1) 이 적분 없이 곱만으로 성립하려면 아래 둘 가운데 하나를 가정한다.
 
 - **입력이 한 조건에 모인다**: P(X<sub>o</sub>)<sub>true</sub> 가 한 입력 x<sub>o</sub> 에 확률을 모두 둔 분포이면, 곧 장비 상태와 recipe 가 하나로 고정되면 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다.
 - **식을 입력 하나에 대해 읽는다**: out-of-sample 입력 x<sub>o</sub> 하나에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
@@ -29,7 +33,7 @@ Rev. 6 | Created: 2026-05-29 | Updated: 2026-10-03 01:02 CDT
 - **결과**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
 
 - **Taxonomy**: 반도체 공정 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 입력 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류된다.
-- **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (2)).
+- **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (3)).
 - **Change**: 세 항목의 변화는 각각 covariate shift, prior shift, concept drift 이다.
 - **Physical meaning**: P(X) 는 장비·recipe 가 내놓는 입력의 분포, P(Y) 는 wafer 계측값의 분포, P(Y|X) 는 그 입력에서 계측값을 정하는 공정 물리다.
 - **Reading rule**: 장비·recipe 를 바꾸면 입력과 관계가 함께 이동하므로, 세 항목을 배타적 분류 대신 **관측·개입 지점** 으로 읽는다.
@@ -66,11 +70,11 @@ Fig 1. Taxonomy and hierarchy of the joint distribution
 - Model 은 결합분포를 추정하는 쪽이므로 세 항목과 직교 (orthogonal) 한다.
 
 ```math
-P(X, Y) = P(Y \mid X) \cdot P(X) \hspace{19em} (1)
+P(X, Y) = P(Y \mid X) \cdot P(X) \hspace{19em} (2)
 ```
 
 ```math
-P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
+P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (3)
 ```
 
 ### 3.1 Placement
