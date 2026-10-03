@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 51 | Created: 2026-05-29 | Updated: 2026-10-03 09:07 CDT
+Rev. 52 | Created: 2026-05-29 | Updated: 2026-10-03 09:21 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -234,23 +234,23 @@ Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z �
 
 - **MMD (Maximum Mean Discrepancy)**: kernel 공간에서 두 데이터의 평균 차이로 다변량 분포 차이를 검정한다.
 - **Domain classifier**: 학습 데이터와 추론 데이터를 가르는 classifier 를 학습하여, AUC 가 0.5 보다 클수록 두 분포가 다르다고 본다.
-- **Hotelling T²·SPE (PCA 기반)**: 학습 데이터로 만든 PCA model 에서 추론 데이터의 T² 와 잔차 SPE 가 관리 한계를 넘는지 본다.
-- **Autoencoder 재구성 오차**: 학습 데이터로 만든 autoencoder 에서 추론 데이터의 재구성 오차가 관리 한계를 넘는지 본다.
+- **Hotelling T²·SPE (PCA-based)**: 학습 데이터로 만든 PCA model 에서 추론 데이터의 T² 와 잔차 SPE 가 관리 한계를 넘는지 본다.
+- **Autoencoder reconstruction error**: 학습 데이터로 만든 autoencoder 에서 추론 데이터의 재구성 오차가 관리 한계를 넘는지 본다.
 
 ### B.2 Prior Shift Detection
 
-- **계측값 분포 비교**: 학습 데이터의 계측값과 최근 계측값의 분포를 KS test 나 PSI 로 비교한다.
-- **SPC 관리도 (Shewhart·EWMA)**: 계측값의 평균과 산포가 관리 한계를 벗어나는 시점을 감시한다.
-- **예측 분포 감시**: 계측값이 늦게 들어올 때 P(Y)<sub>pred</sub> 의 분포 이동을 먼저 감시하여 P(Y) 이동을 미리 알린다.
+- **Metrology value distribution comparison**: 학습 데이터의 계측값과 최근 계측값의 분포를 KS test 나 PSI 로 비교한다.
+- **SPC control chart (Shewhart·EWMA)**: 계측값의 평균과 산포가 관리 한계를 벗어나는 시점을 감시한다.
+- **Prediction distribution monitoring**: 계측값이 늦게 들어올 때 P(Y)<sub>pred</sub> 의 분포 이동을 먼저 감시하여 P(Y) 이동을 미리 알린다.
 
 ### B.3 Concept Drift Detection
 
 - **Binning CDT (Conditional Distribution Test)**: X 를 bin 으로 나눠 bin 마다 P(Y|bin) 을 시간창별로 검정하여 변동 시점을 특정한다.
-- **잔차 CUSUM**: 예측 잔차의 누적합이 임계값을 넘는 시점을 관계 변화 시점으로 본다.
+- **Residual CUSUM**: 예측 잔차의 누적합이 임계값을 넘는 시점을 관계 변화 시점으로 본다.
 - **Page-Hinkley**: 예측 잔차의 누적 편차와 그 최솟값의 차이가 임계값을 넘으면 평균 변화를 알린다.
 - **ADWIN (Adaptive Windowing)**: 오차 window 를 두 부분으로 나눠 평균 차이가 유의하면 오래된 부분을 버리고 변화를 알린다.
-- **시간창별 성능 감시**: 시간창마다 R²·RMSE 를 계산하여 성능 저하 시점을 찾는다. 계측값이 있어야 한다.
-- **시간창별 I(X<sub>k</sub>;Y)**: 시간창마다 중요도 상위 K 개 변수 X<sub>k</sub> 와 계측값의 상호정보량을 계산하여 의존성 변화를 추적한다. 고차원 X 전체의 I(X;Y) 는 표본 수에 비해 차원이 커서 시간창마다 정확히 추정하기 어렵다. I(X<sub>k</sub>;Y) 는 P(X) 이동만으로도 바뀔 수 있으므로, B.1 의 covariate shift 탐지 결과와 함께 해석한다.
+- **Windowed performance monitoring**: 시간창마다 R²·RMSE 를 계산하여 성능 저하 시점을 찾는다. 계측값이 있어야 한다.
+- **Windowed I(X<sub>k</sub>;Y)**: 시간창마다 중요도 상위 K 개 변수 X<sub>k</sub> 와 계측값의 상호정보량을 계산하여 의존성 변화를 추적한다. 고차원 X 전체의 I(X;Y) 는 표본 수에 비해 차원이 커서 시간창마다 정확히 추정하기 어렵다. I(X<sub>k</sub>;Y) 는 P(X) 이동만으로도 바뀔 수 있으므로, B.1 의 covariate shift 탐지 결과와 함께 해석한다.
 
 ## Appendix C. Benchmarking
 
@@ -268,7 +268,7 @@ Table 3. Use of the shift taxonomy in research and industry
 | Vertex AI Model Monitoring [[6](#ref-6)]     | Industry tool    | training-serving skew, inference drift                  | P(X<sub>o</sub>) ≠ P(X<sub>i</sub>), 시간에 따른 P(X<sub>o</sub>) 이동 |
 | Evidently AI [[7](#ref-7)]                   | Open-source tool | data drift, prediction drift, concept drift             | P(X), P(Y)<sub>pred</sub>, P(Y\|X)                                     |
 
-- **학계**: dataset shift 는 학습과 추론 사이에 결합분포 P(X,Y) 가 달라지는 문제로 정의된다 [[1](#ref-1)]. Moreno-Torres et al. 은 결합분포의 어느 항이 바뀌는지로 covariate shift (P(X) 이동, P(Y|X) 유지), prior probability shift (P(Y) 이동, P(X|Y) 유지), concept shift 를 정리하였고 [[2](#ref-2)], 이 문서의 식 (3) 과 세 shift 분류가 이를 따른다.
-- **제조 데이터**: 반도체 virtual metrology 에서는 wafer 특성이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[4](#ref-4)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[3](#ref-3)].
-- **업계 도구**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
-- **이 문서의 틀**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (4) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
+- **Research**: dataset shift 는 학습과 추론 사이에 결합분포 P(X,Y) 가 달라지는 문제로 정의된다 [[1](#ref-1)]. Moreno-Torres et al. 은 결합분포의 어느 항이 바뀌는지로 covariate shift (P(X) 이동, P(Y|X) 유지), prior probability shift (P(Y) 이동, P(X|Y) 유지), concept shift 를 정리하였고 [[2](#ref-2)], 이 문서의 식 (3) 과 세 shift 분류가 이를 따른다.
+- **Manufacturing data**: 반도체 virtual metrology 에서는 wafer 특성이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[4](#ref-4)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[3](#ref-3)].
+- **Industry tools**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
+- **Framework of this document**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (4) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
