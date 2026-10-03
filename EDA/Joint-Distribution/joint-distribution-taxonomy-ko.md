@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 40 | Created: 2026-05-29 | Updated: 2026-10-03 07:49 CDT
+Rev. 41 | Created: 2026-05-29 | Updated: 2026-10-03 07:50 CDT
 
 ## 1. Purpose
 
@@ -19,10 +19,10 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 
 #### Term-by-Term Breakdown
 
-- **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** The final, marginalized probability distribution of the target variable $`Y`$ that you expect to see on the out-of-sample inference data.
-- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Model's Conditional Prediction):** The predictive model itself. It is learned from the **in-sample training data** $`X_i`$ and outputs the probability of $`Y`$ given a value of the measured data. The subscript `pred` emphasizes that this is an estimated or learned function, not necessarily the true physical probability.
-- **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** The actual, data-generating probability density of the **out-of-sample inference data** $`X_o`$. This represents how $`X_o`$ is actually distributed when the model is used for inference.
-- **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** The integral "sums out" or averages the predictions over all possible values of $`X_o`$, weighted by how likely each value is to occur at inference time.
+- **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** out-of-sample 추론 데이터에서 나오리라 기대하는 target 변수 $`Y`$ 의 최종 분포로, 측정 데이터를 적분하여 없앤 주변분포다.
+- **$`P(Y \mid X_i)_{\mathrm{pred}}`$ (Models Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값이 주어지면 $`Y`$ 의 확률을 내놓는다. 첨자 `pred` 는 이것이 추정·학습한 함수이며 실제 물리적 확률과 다를 수 있음을 나타낸다.
+- **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 를 실제로 만들어 내는 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
+- **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** $`X_o`$ 가 가질 수 있는 모든 값에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
 식 (1) 은 출력 주변분포 (marginal distribution) 식 (3) 을 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. P(Y|X<sub>i</sub>)<sub>pred</sub> 는 X<sub>i</sub> 로 학습한 관계를 추론 데이터 X<sub>o</sub> 의 값에서 읽은 것이며, 식 (1) 은 그 값을 X<sub>o</sub> 에 대해 적분한다.
 
