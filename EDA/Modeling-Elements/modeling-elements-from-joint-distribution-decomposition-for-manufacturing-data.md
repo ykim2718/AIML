@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 1 | Created: 2026-10-03 | Updated: 2026-10-03 09:24 CDT
+Rev. 2 | Created: 2026-10-03 | Updated: 2026-10-03 09:28 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,16 +12,12 @@ Rev. 1 | Created: 2026-10-03 | Updated: 2026-10-03 09:24 CDT
   - [5.3 P(Y|X) Concept Drift](#53-pyx-concept-drift)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Detection Methods](#appendix-b-detection-methods)
-  - [B.1 Covariate Shift Detection](#b1-covariate-shift-detection)
-  - [B.2 Prior Shift Detection](#b2-prior-shift-detection)
-  - [B.3 Concept Drift Detection](#b3-concept-drift-detection)
+- [Appendix B. Detection and Implementation by Axis](#appendix-b-detection-and-implementation-by-axis)
+  - [B.1 P(X) Covariate Shift](#b1-px-covariate-shift)
+  - [B.2 P(Y) Prior Shift](#b2-py-prior-shift)
+  - [B.3 P(Y|X) Concept Drift](#b3-pyx-concept-drift)
+  - [B.4 Model Estimator](#b4-model-estimator)
 - [Appendix C. Benchmarking](#appendix-c-benchmarking)
-- [Appendix D. Implementation by Axis](#appendix-d-implementation-by-axis)
-  - [D.1 P(X) Covariate Shift](#d1-px-covariate-shift)
-  - [D.2 P(Y) Prior Shift](#d2-py-prior-shift)
-  - [D.3 P(Y|X) Concept Drift](#d3-pyx-concept-drift)
-  - [D.4 Model Estimator](#d4-model-estimator)
 
 ## 1. Purpose
 
@@ -119,7 +115,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | Observation (detection)     | PSI·KS·KL, domain classifier                                                  | Metrology value distribution comparison                                 | Binning CDT, windowed I(X<sub>k</sub>;Y), residual CUSUM·Page-Hinkley              |
 | Lever                       | Feature selection and augmentation, importance weighting, domain adaptation   | Target transform and decomposition, per-group scaling, prior correction | Retraining interval, recency weighting, detrending, drift adaptation               |
 
-The observation row lists ways to measure a change, and the lever row lists ways to fit the model while assuming a change. Only the methods in the observation row pin down when a change happened. The methods that detect the three changes of 5.1 ~ 5.3 are collected in [Appendix B](#appendix-b-detection-methods). Cases in which research and industry use this classification are collected in [Appendix C](#appendix-c-benchmarking). The detection, response and validation methods for the four axes are summarized in [Appendix D](#appendix-d-implementation-by-axis).
+The observation row lists ways to measure a change, and the lever row lists ways to fit the model while assuming a change. Only the methods in the observation row pin down when a change happened. The detection, response and validation methods for the four axes are collected in [Appendix B](#appendix-b-detection-and-implementation-by-axis). Cases in which research and industry use this classification are collected in [Appendix C](#appendix-c-benchmarking).
 
 ## 4. Prediction from the Joint Distribution
 
@@ -191,13 +187,13 @@ Observation methods differ in how directly they look at P(Y|X).
 ## References
 
 <a id="ref-1"></a>
-[1] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.). (2009). [Dataset Shift in Machine Learning](https://mitpressbookstore.mit.edu/book/9780262170055). MIT Press. ISBN 978-0-262-17005-5.<br>
+[1] Kang, S., & Kang, P. (2017). [An intelligent virtual metrology system with adaptive update for semiconductor manufacturing](https://doi.org/10.1016/j.jprocont.2017.02.002). *Journal of Process Control*, 52, 66–74.<br>
 <a id="ref-2"></a>
-[2] Moreno-Torres, J. G., Raeder, T., Alaiz-Rodríguez, R., Chawla, N. V., & Herrera, F. (2012). [A unifying view on dataset shift in classification](https://doi.org/10.1016/j.patcog.2011.06.019). *Pattern Recognition*, 45(1), 521–530.<br>
+[2] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.). (2009). [Dataset Shift in Machine Learning](https://mitpressbookstore.mit.edu/book/9780262170055). MIT Press. ISBN 978-0-262-17005-5.<br>
 <a id="ref-3"></a>
-[3] Gama, J., Žliobaitė, I., Bifet, A., Pechenizkiy, M., & Bouchachia, A. (2014). [A survey on concept drift adaptation](https://doi.org/10.1145/2523813). *ACM Computing Surveys*, 46(4), 44.<br>
+[3] Moreno-Torres, J. G., Raeder, T., Alaiz-Rodríguez, R., Chawla, N. V., & Herrera, F. (2012). [A unifying view on dataset shift in classification](https://doi.org/10.1016/j.patcog.2011.06.019). *Pattern Recognition*, 45(1), 521–530.<br>
 <a id="ref-4"></a>
-[4] Kang, S., & Kang, P. (2017). [An intelligent virtual metrology system with adaptive update for semiconductor manufacturing](https://doi.org/10.1016/j.jprocont.2017.02.002). *Journal of Process Control*, 52, 66–74.<br>
+[4] Gama, J., Žliobaitė, I., Bifet, A., Pechenizkiy, M., & Bouchachia, A. (2014). [A survey on concept drift adaptation](https://doi.org/10.1145/2523813). *ACM Computing Surveys*, 46(4), 44.<br>
 <a id="ref-5"></a>
 [5] Amazon Web Services. [Data and model quality monitoring with Amazon SageMaker Model Monitor](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html). *Amazon SageMaker AI Developer Guide*.<br>
 <a id="ref-6"></a>
@@ -223,9 +219,11 @@ Observation methods differ in how directly they look at P(Y|X).
 - **target engineering**: transforming, decomposing or reformulating the prediction target Y into a form the model learns more easily.
 - **temporal CV**: time-ordered cross-validation that trains on the past and validates on the future.
 
-## Appendix B. Detection Methods
+## Appendix B. Detection and Implementation by Axis
 
-### B.1 Covariate Shift Detection
+For each of the four axes, this appendix collects how to detect the change (Detection) and which models and techniques respond to it and how they are validated (Response). The Model Estimator axis lies outside the joint distribution and is a Non-Goal of the main text, but it has to be settled alongside the others in practice, so it is placed here.
+
+### B.1 P(X) Covariate Shift
 
 Univariate methods compare each variable's distribution separately and miss changes in the correlation between variables. Manufacturing data with hundreds of sensor variables calls for multivariate methods alongside them.
 
@@ -242,13 +240,27 @@ Univariate methods compare each variable's distribution separately and miss chan
 - **Hotelling T²·SPE (PCA-based)**: checks whether T² and the residual SPE of inference data exceed control limits in a PCA model built on training data.
 - **Autoencoder reconstruction error**: checks whether the reconstruction error of inference data exceeds a control limit in an autoencoder built on training data.
 
-### B.2 Prior Shift Detection
+#### Response
+
+- **Methods**: importance weighting that weights training samples by a density ratio estimated with a domain classifier, domain adaptation that aligns training and inference input distributions, and a metrology sampling plan adjusted so that training data covers the inference range.
+- **Validation**: adversarial validation, which builds the validation set from training samples that resemble inference data.
+
+### B.2 P(Y) Prior Shift
+
+#### Detection
 
 - **Metrology value distribution comparison**: compares the distribution of training metrology values with recent ones by KS test or PSI.
 - **SPC control chart (Shewhart·EWMA)**: watches for the time the mean and spread of metrology values leave their control limits.
 - **Prediction distribution monitoring**: when metrology values arrive late, watches the shift of P(Y)<sub>pred</sub> first to give early warning of a shift in P(Y).
 
-### B.3 Concept Drift Detection
+#### Response
+
+- **Methods**: target engineering (log and Box-Cox transforms, spatial decomposition), per-group scale normalization, and redefining the target and retraining when the target spec changes.
+- **Validation**: evaluating error separately per spec and per group.
+
+### B.3 P(Y|X) Concept Drift
+
+#### Detection
 
 - **Binning CDT (Conditional Distribution Test)**: splits X into bins and tests P(Y|bin) per bin and per time window to pin down when a change happened.
 - **Residual CUSUM**: takes the time the cumulative sum of prediction residuals crosses a threshold as the time the relation changed.
@@ -256,6 +268,22 @@ Univariate methods compare each variable's distribution separately and miss chan
 - **ADWIN (Adaptive Windowing)**: splits the error window in two and, if the means differ significantly, drops the older part and flags a change.
 - **Windowed performance monitoring**: computes R²·RMSE per time window to find when performance degrades. It requires metrology values.
 - **Windowed I(X<sub>k</sub>;Y)**: tracks dependence changes by computing, per time window, the mutual information between the top K variables X<sub>k</sub> by importance and the metrology value. I(X;Y) over all of a high-dimensional X is hard to estimate accurately per window because the dimension is large relative to the sample size. I(X<sub>k</sub>;Y) can change from a shift in P(X) alone, so it is read together with the covariate shift results of B.1.
+
+#### Response
+
+- **Methods**: periodic retraining on a recent window, recency weighting, adaptive update that measures only low-reliability wafers and updates the model at once [[1](#ref-1)], and proxies for the chamber state Z(t) (time since PM, accumulated RF hours) added as features.
+- **Validation**: temporal CV that trains on the past and validates on the future, and a group split by lot.
+
+### B.4 Model Estimator
+
+#### Detection
+
+- **Train–validation gap**: reveals overfitting from the difference between training and validation performance. Degradation over time is watched with the Windowed performance monitoring of B.3.
+
+#### Response
+
+- **Methods**: regularized linear models such as PLS, ridge and lasso when samples are fewer than variables; tree ensembles such as LightGBM, XGBoost and CatBoost for nonlinear relations; Gaussian process, quantile regression or conformal prediction when uncertainty is needed. Physics knowledge enters through monotone constraints or a hybrid that learns only the residual on top of a physics equation, and hyperparameters are searched with Bayesian optimization such as Optuna.
+- **Validation**: group split by lot together with temporal CV, reading R², RMSE and the coverage of prediction intervals.
 
 ## Appendix C. Benchmarking
 
@@ -265,43 +293,15 @@ Table 3. Use of the shift taxonomy in research and industry
 
 | Source                                       | Kind             | Terms used                                              | Term in this document                                                 |
 | :------------------------------------------: | :--------------: | :-----------------------------------------------------: | :-------------------------------------------------------------------: |
-| Quiñonero-Candela et al. [[1](#ref-1)]       | Book             | dataset shift, covariate shift                          | P(X,Y) difference between training and inference, P(X) shift          |
-| Moreno-Torres et al. [[2](#ref-2)]           | Paper            | covariate shift, prior probability shift, concept shift | The three shifts of P(X), P(Y), P(Y\|X)                               |
-| Gama et al. [[3](#ref-3)]                    | Survey           | concept drift detection, adaptation                     | Observation and response in 5.3                                       |
-| Kang & Kang [[4](#ref-4)]                    | Paper            | virtual metrology adaptive update                       | Response to P(Y\|X) change in manufacturing data                      |
+| Quiñonero-Candela et al. [[2](#ref-2)]       | Book             | dataset shift, covariate shift                          | P(X,Y) difference between training and inference, P(X) shift          |
+| Moreno-Torres et al. [[3](#ref-3)]           | Paper            | covariate shift, prior probability shift, concept shift | The three shifts of P(X), P(Y), P(Y\|X)                               |
+| Gama et al. [[4](#ref-4)]                    | Survey           | concept drift detection, adaptation                     | Observation and response in 5.3                                       |
+| Kang & Kang [[1](#ref-1)]                    | Paper            | virtual metrology adaptive update                       | Response to P(Y\|X) change in manufacturing data                      |
 | Amazon SageMaker Model Monitor [[5](#ref-5)] | Industry tool    | data quality drift, model quality drift                 | P(X) shift, loss of good prediction performance                       |
 | Vertex AI Model Monitoring [[6](#ref-6)]     | Industry tool    | training-serving skew, inference drift                  | P(X<sub>o</sub>) ≠ P(X<sub>i</sub>), P(X<sub>o</sub>) shift over time |
 | Evidently AI [[7](#ref-7)]                   | Open-source tool | data drift, prediction drift, concept drift             | P(X), P(Y)<sub>pred</sub>, P(Y\|X)                                    |
 
-- **Research**: dataset shift is defined as a change in the joint distribution P(X,Y) between training and inference [[1](#ref-1)]. Moreno-Torres et al. organized covariate shift (P(X) moves, P(Y|X) stays), prior probability shift (P(Y) moves, P(X|Y) stays) and concept shift by which term of the joint distribution changes [[2](#ref-2)], and eq. (3) and the three-shift classification of this document follow that work.
-- **Manufacturing data**: in semiconductor virtual metrology, wafer characteristics change over time and prediction performance degrades, so an adaptive update was proposed that measures only wafers with low prediction reliability and updates the model at once with those results [[4](#ref-4)]. Gama et al. surveyed methods for detecting and adapting to concept drift [[3](#ref-3)].
+- **Research**: dataset shift is defined as a change in the joint distribution P(X,Y) between training and inference [[2](#ref-2)]. Moreno-Torres et al. organized covariate shift (P(X) moves, P(Y|X) stays), prior probability shift (P(Y) moves, P(X|Y) stays) and concept shift by which term of the joint distribution changes [[3](#ref-3)], and eq. (3) and the three-shift classification of this document follow that work.
+- **Manufacturing data**: in semiconductor virtual metrology, wafer characteristics change over time and prediction performance degrades, so an adaptive update was proposed that measures only wafers with low prediction reliability and updates the model at once with those results [[1](#ref-1)]. Gama et al. surveyed methods for detecting and adapting to concept drift [[4](#ref-4)].
 - **Industry tools**: model monitoring tools watch the P(X) shift that is visible without ground truth under the names data quality drift [[5](#ref-5)], training-serving skew and inference drift [[6](#ref-6)], and data drift [[7](#ref-7)]. Once ground truth arrives, they check model quality drift [[5](#ref-5)] or concept drift [[7](#ref-7)] from the gap between predictions and ground truth.
 - **Framework of this document**: the three-shift classification is a standard concept in research and industry. Mapping the three terms to the good data, good model and good prediction of eq. (4) is this document's own framing and is not a named standard framework in the sources above.
-
-## Appendix D. Implementation by Axis
-
-For each of the four axes, this appendix summarizes how to detect the change, which models and techniques respond to it, and how to validate them. The Model Estimator axis lies outside the joint distribution and is a Non-Goal of the main text, but it has to be settled alongside the others in practice, so it is placed here.
-
-### D.1 P(X) Covariate Shift
-
-- **Detection**: per-variable PSI and KS test, plus multivariate MMD, domain classifier and Hotelling T²·SPE (Appendix B.1).
-- **Methods**: importance weighting that weights training samples by a density ratio estimated with a domain classifier, domain adaptation that aligns training and inference input distributions, and a metrology sampling plan adjusted so that training data covers the inference range.
-- **Validation**: adversarial validation, which builds the validation set from training samples that resemble inference data.
-
-### D.2 P(Y) Prior Shift
-
-- **Detection**: metrology value distribution comparison (KS test, PSI) and EWMA control charts (Appendix B.2).
-- **Methods**: target engineering (log and Box-Cox transforms, spatial decomposition), per-group scale normalization, and redefining the target and retraining when the target spec changes.
-- **Validation**: evaluating error separately per spec and per group.
-
-### D.3 P(Y|X) Concept Drift
-
-- **Detection**: Binning CDT, residual CUSUM and Page-Hinkley, ADWIN (Appendix B.3).
-- **Methods**: periodic retraining on a recent window, recency weighting, adaptive update that measures only low-reliability wafers and updates the model at once [[4](#ref-4)], and proxies for the chamber state Z(t) (time since PM, accumulated RF hours) added as features.
-- **Validation**: temporal CV that trains on the past and validates on the future, and a group split by lot.
-
-### D.4 Model Estimator
-
-- **Detection**: overfitting from the gap between training and validation performance, and degradation from windowed performance monitoring.
-- **Methods**: regularized linear models such as PLS, ridge and lasso when samples are fewer than variables; tree ensembles such as LightGBM, XGBoost and CatBoost for nonlinear relations; Gaussian process, quantile regression or conformal prediction when uncertainty is needed. Physics knowledge enters through monotone constraints or a hybrid that learns only the residual on top of a physics equation, and hyperparameters are searched with Bayesian optimization such as Optuna.
-- **Validation**: group split by lot together with temporal CV, reading R², RMSE and the coverage of prediction intervals.
