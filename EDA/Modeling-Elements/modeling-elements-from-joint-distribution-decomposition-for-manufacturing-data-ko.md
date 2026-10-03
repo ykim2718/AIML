@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 61 | Created: 2026-05-29 | Updated: 2026-10-03 10:45 CDT
+Rev. 62 | Created: 2026-05-29 | Updated: 2026-10-03 10:45 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -127,7 +127,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x;\, X_{i})_{\mathrm{model}} \cdot P(X_
 ```
 
 - **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** out-of-sample 추론 데이터에서 나오리라 기대하는 target 변수 $`Y`$ 의 최종 분포로, 측정 데이터를 적분하여 없앤 marginal distribution 이다.
-- **$`P(Y \mid X = x;\, X_i)_{\mathrm{model}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값 $`x`$ 가 주어지면 $`Y`$ 의 조건부 분포를 내놓는다. 첨자 `model` 은 이것이 추정·학습한 함수이며 실제 분포와 다를 수 있음을 나타낸다. `;` 뒤의 $`X_i`$ 는 model 을 학습한 데이터를 나타내며, `|` 뒤의 조건 변수와 구별된다.
+- **$`P(Y \mid X = x;\, X_i)_{\mathrm{model}}`$ (Model's Conditional Prediction):** 예측 model 그 자체다. In-sample 학습 데이터 $`X_i`$ 로 학습하며, 측정 데이터의 값 $`x`$ 가 주어지면 $`Y`$ 의 조건부 분포를 내놓는다. 첨자 `model` 은 이것이 추정·학습한 함수이며 실제 분포와 다를 수 있음을 나타낸다. `;` 뒤의 $`X_i`$ 는 model 을 학습한 데이터를 나타내며, `|` 뒤의 조건 변수와 구별된다. 이 문서의 다른 자리에서는 줄여 P(Y|X)<sub>model</sub> 로 적는다.
 - **$`P(X_o = x)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 가 값 $`x`$ 를 가질 실제 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
 - **$`\int \ldots dx`$ (Marginalization over $`x`$):** 추론 데이터가 가질 수 있는 모든 값 $`x`$ 에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
