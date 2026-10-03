@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 4 | Created: 2026-10-03 | Updated: 2026-10-03 09:56 CDT
+Rev. 5 | Created: 2026-10-03 | Updated: 2026-10-03 09:58 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -309,11 +309,11 @@ Table 3. Use of the shift taxonomy in research and industry
 
 ## Appendix D. Talk Slides
 
-Three slides present this document as a conference invited talk, and the source file is [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx).
+Three slides present this document, and the source file is [modeling-elements-invited-talk.pptx](talk-slides/modeling-elements-invited-talk.pptx).
 
 The first slide shows the taxonomy of section 3 ([Fig 2](#fig-2)).
 
-<img src="images/modeling-elements-invited-talk-1.png" width="800" style="max-width: 100%;" alt="Fig 2">
+<img src="talk-slides/modeling-elements-invited-talk-1.png" width="800" style="max-width: 100%;" alt="Fig 2">
 
 <a id="fig-2"></a>
 Fig 2. Talk slide 1, taxonomy from the joint distribution
@@ -322,7 +322,7 @@ The joint distribution is split into P(X), P(Y|X) and P(Y), and eqs. (1) and (2)
 
 The second slide shows eq. (4) of section 4 ([Fig 3](#fig-3)).
 
-<img src="images/modeling-elements-invited-talk-2.png" width="800" style="max-width: 100%;" alt="Fig 3">
+<img src="talk-slides/modeling-elements-invited-talk-2.png" width="800" style="max-width: 100%;" alt="Fig 3">
 
 <a id="fig-3"></a>
 Fig 3. Talk slide 2, prediction from the joint distribution
@@ -331,7 +331,7 @@ The three terms of eq. (4) are read as good data, good model and good prediction
 
 The third slide condenses [Appendix B](#appendix-b-detection-and-implementation-by-axis) ([Fig 4](#fig-4)).
 
-<img src="images/modeling-elements-invited-talk-3.png" width="800" style="max-width: 100%;" alt="Fig 4">
+<img src="talk-slides/modeling-elements-invited-talk-3.png" width="800" style="max-width: 100%;" alt="Fig 4">
 
 <a id="fig-4"></a>
 Fig 4. Talk slide 3, detection, response and validation by axis

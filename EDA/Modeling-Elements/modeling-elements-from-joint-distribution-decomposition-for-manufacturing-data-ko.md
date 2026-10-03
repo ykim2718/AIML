@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 56 | Created: 2026-05-29 | Updated: 2026-10-03 09:56 CDT
+Rev. 57 | Created: 2026-05-29 | Updated: 2026-10-03 09:58 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -309,11 +309,11 @@ Table 3. Use of the shift taxonomy in research and industry
 
 ## Appendix D. Talk Slides
 
-학회 invited talk 에서 이 문서를 발표할 때 쓰는 slide 는 세 장이며, 원본은 [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx) 이다.
+이 문서를 발표할 때 쓰는 slide 는 세 장이며, 원본은 [modeling-elements-invited-talk.pptx](talk-slides/modeling-elements-invited-talk.pptx) 이다.
 
 첫 slide 는 section 3 의 taxonomy 를 보인다 ([Fig 2](#fig-2)).
 
-<img src="images/modeling-elements-invited-talk-1.png" width="800" style="max-width: 100%;" alt="Fig 2">
+<img src="talk-slides/modeling-elements-invited-talk-1.png" width="800" style="max-width: 100%;" alt="Fig 2">
 
 <a id="fig-2"></a>
 Fig 2. Talk slide 1, taxonomy from the joint distribution
@@ -322,7 +322,7 @@ Fig 2. Talk slide 1, taxonomy from the joint distribution
 
 둘째 slide 는 section 4 의 식 (4) 를 보인다 ([Fig 3](#fig-3)).
 
-<img src="images/modeling-elements-invited-talk-2.png" width="800" style="max-width: 100%;" alt="Fig 3">
+<img src="talk-slides/modeling-elements-invited-talk-2.png" width="800" style="max-width: 100%;" alt="Fig 3">
 
 <a id="fig-3"></a>
 Fig 3. Talk slide 2, prediction from the joint distribution
@@ -331,7 +331,7 @@ Fig 3. Talk slide 2, prediction from the joint distribution
 
 셋째 slide 는 [Appendix B](#appendix-b-detection-and-implementation-by-axis) 를 줄여 보인다 ([Fig 4](#fig-4)).
 
-<img src="images/modeling-elements-invited-talk-3.png" width="800" style="max-width: 100%;" alt="Fig 4">
+<img src="talk-slides/modeling-elements-invited-talk-3.png" width="800" style="max-width: 100%;" alt="Fig 4">
 
 <a id="fig-4"></a>
 Fig 4. Talk slide 3, detection, response and validation by axis
