@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 41 | Created: 2026-05-29 | Updated: 2026-10-03 07:50 CDT
+Rev. 42 | Created: 2026-05-29 | Updated: 2026-10-03 07:51 CDT
 
 ## 1. Purpose
 
@@ -24,7 +24,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 - **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 를 실제로 만들어 내는 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
 - **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** $`X_o`$ 가 가질 수 있는 모든 값에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
-식 (1) 은 출력 주변분포 (marginal distribution) 식 (3) 을 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. P(Y|X<sub>i</sub>)<sub>pred</sub> 는 X<sub>i</sub> 로 학습한 관계를 추론 데이터 X<sub>o</sub> 의 값에서 읽은 것이며, 식 (1) 은 그 값을 X<sub>o</sub> 에 대해 적분한다.
+식 (1) 은 출력 주변분포 (marginal distribution) 식 (2) 를 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다. P(Y|X<sub>i</sub>)<sub>pred</sub> 는 X<sub>i</sub> 로 학습한 관계를 추론 데이터 X<sub>o</sub> 의 값에서 읽은 것이며, 식 (1) 은 그 값을 X<sub>o</sub> 에 대해 적분한다.
 
 식 (1) 이 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
@@ -37,7 +37,7 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 세 항목을 결합분포의 taxonomy 로 정리하면 아래와 같다.
 
 - **Taxonomy**: 제조 데이터 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 측정 데이터 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류되며, 식 (1) 에서 각각 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다.
-- **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (3)). 반대 방향 분해 P(X|Y) · P(Y) 는 prior shift 를 정의하며 (식 (4)), X → Y 인과 구조인 제조 공정에서 관측되는 P(Y) 이동은 대부분 P(X) 나 P(Y|X) 변화의 결과다.
+- **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (2)). 반대 방향 분해 P(X|Y) · P(Y) 는 prior shift 를 정의하며 (식 (3)), X → Y 인과 구조인 제조 공정에서 관측되는 P(Y) 이동은 대부분 P(X) 나 P(Y|X) 변화의 결과다.
 - **Change**: 세 항목의 변화는 각각 covariate shift, prior shift, concept drift 이다.
 - **Physical meaning**: P(X) 는 장비 sensor 등에서 측정한 데이터 (학습 데이터 X<sub>i</sub>, 추론 데이터 X<sub>o</sub>) 의 분포, P(Y) 는 wafer 계측값의 분포, P(Y|X) 는 측정 데이터가 주어졌을 때 계측값의 조건부 분포로, 공정 물리가 측정 데이터와 계측값 사이에 남긴 관계다.
 - **Reading rule**: 장비 교체·recipe 변경은 측정 데이터의 분포와 조건부 관계를 함께 이동시킬 수 있으므로, 세 항목을 배타적 분류 대신 **관측·개입 지점** 으로 읽는다.
@@ -79,20 +79,16 @@ Fig 1. Taxonomy and hierarchy of the joint distribution
 - Model 축은 P(Y|X)<sub>pred</sub> 를 얻는 추정 방법 (algorithm·최적화) 이다. 세 항목은 무엇을 추정하는지를, Model 축은 어떻게 추정하는지를 정하므로 둘은 직교 (orthogonal) 한다.
 
 ```math
-P(X, Y) = P(Y \mid X) \cdot P(X) \hspace{19em} (2)
-```
-
-```math
-P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (3)
+P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
 ```
 
 결합분포는 반대 방향으로도 분해된다.
 
 ```math
-P(X, Y) = P(X \mid Y) \cdot P(Y) \hspace{19em} (4)
+P(X, Y) = P(X \mid Y) \cdot P(Y) \hspace{19em} (3)
 ```
 
-Prior shift 는 식 (4) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 경우로 정의된다. 식 (2) 의 분해만으로는 prior shift 를 P(X) 와 P(Y|X) 의 변화와 구별할 수 없으므로, 두 분해를 함께 둔다. 이 정의는 Y 가 X 의 원인인 인과 구조 (Y → X) 에서 성립하며, 공정이 진행되어 측정 데이터 X 를 남긴 뒤 계측값 Y 가 나오는 제조 공정은 X → Y 구조다.
+Prior shift 는 식 (3) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 경우로 정의된다. 이 정의는 Y 가 X 의 원인인 인과 구조 (Y → X) 에서 성립하며, 공정이 진행되어 측정 데이터 X 를 남긴 뒤 계측값 Y 가 나오는 제조 공정은 X → Y 구조다.
 
 세 항목은 아래 세 전제 위에서 성립한다.
 
@@ -119,7 +115,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 ## 4. Physical Meaning
 
-세 항목은 반도체 공정에서 각각 측정 데이터, 계측 결과, 측정 데이터와 계측값 사이의 조건부 관계에 대응한다. Table 2 가 그 대응과 식 (1) 에서의 역할을 모은다.
+세 항목은 제조 공정에서 각각 측정 데이터, 계측 결과, 측정 데이터와 계측값 사이의 조건부 관계에 대응한다. Table 2 가 그 대응과 식 (1) 에서의 역할을 모은다.
 
 Table 2. Physical meaning of each term
 
@@ -137,7 +133,7 @@ Table 2. Physical meaning of each term
 
 ### 4.2 P(Y) Prior Shift
 
-- 의미: 출력 주변분포가 이동한다 (label shift, prior probability shift). 식 (4) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 경우로 정의되며, 이 정의는 Y → X 인과 구조에서 성립한다.
+- 의미: 출력 주변분포가 이동한다 (label shift, prior probability shift). 식 (3) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 경우로 정의되며, 이 정의는 Y → X 인과 구조에서 성립한다.
 - 제조 공정에서의 해석: X → Y 구조에서 관측되는 P(Y) 이동은 대부분 P(X) 이동 (covariate shift) 이나 P(Y|X) 변화 (concept drift) 의 결과로 나타난다. P(Y) 자체가 바뀌는 경우는 계측 target spec 이 바뀌어 계측 기준 Y 가 달라지는 경우, recipe 변경으로 spatial decomposition 계수의 분포가 이동하는 경우처럼 Y 의 정의나 기준이 바뀔 때다.
 - Target engineering: P(Y) 에 대한 개입은 출력의 정의와 구조를 바꾸는 것이며, target 변환 (log, Box-Cox), spatial decomposition, multi-task target 재구성이 여기에 든다.
 - Spatial decomposition: wafer 측정 map 을 공간 기저로 분해하여 출력공간에 개입하므로 P(Y) 에 속한다. 효과는 P(Y|X) 학습 난이도를 낮추는 쪽으로 전파된다. 출력을 매끄럽고 물리적 의미가 있는 계수로 바꾸면 관계 학습이 쉬워진다.
@@ -146,10 +142,10 @@ Table 2. Physical meaning of each term
 
 측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (1) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
 
-공정 물리 관점에서 concept drift 는 관측되지 않은 chamber 상태 변수 Z(t) (노화, 찌꺼기 등) 의 변화로 인해 P(Y|X) 가 시간에 따라 변하는 현상이며, 그 관계는 식 (5) 으로 적는다.
+공정 물리 관점에서 concept drift 는 관측되지 않은 chamber 상태 변수 Z(t) (노화, 찌꺼기 등) 의 변화로 인해 P(Y|X) 가 시간에 따라 변하는 현상이며, 그 관계는 식 (4) 로 적는다.
 
 ```math
-P(Y \mid X, t) = \int P(Y \mid X, Z)\, P(Z \mid t)\, dZ \hspace{19em} (5)
+P(Y \mid X, t) = \int P(Y \mid X, Z)\, P(Z \mid t)\, dZ \hspace{19em} (4)
 ```
 
 Z 는 잠재 변수 (latent variable) 이다. Chamber 상태가 주어졌을 때의 관계 P(Y|X,Z) 는 시간에 따라 바뀌지 않아도, Z 가 측정 데이터 X 에 들어 있지 않으므로 model 은 P(Z|t) 의 변화를 P(Y|X) 의 변화로만 본다. Concept drift 에는 대응과 관측의 두 가지 길이 있다.
@@ -248,7 +244,7 @@ Table 3. Use of the shift taxonomy in research and industry
 | Vertex AI Model Monitoring [[6](#ref-6)]     | Industry tool    | training-serving skew, inference drift                  | P(X<sub>o</sub>) ≠ P(X<sub>i</sub>), 시간에 따른 P(X<sub>o</sub>) 이동 |
 | Evidently AI [[7](#ref-7)]                   | Open-source tool | data drift, prediction drift, concept drift             | P(X), P(Y)<sub>pred</sub>, P(Y\|X)                                     |
 
-- **학계**: dataset shift 는 학습과 추론 사이에 결합분포 P(X,Y) 가 달라지는 문제로 정의된다 [[1](#ref-1)]. Moreno-Torres et al. 은 결합분포의 어느 항이 바뀌는지로 covariate shift (P(X) 이동, P(Y|X) 유지), prior probability shift (P(Y) 이동, P(X|Y) 유지), concept shift 를 정리하였고 [[2](#ref-2)], 이 문서의 식 (2)·(5) 와 세 shift 분류가 이를 따른다.
+- **학계**: dataset shift 는 학습과 추론 사이에 결합분포 P(X,Y) 가 달라지는 문제로 정의된다 [[1](#ref-1)]. Moreno-Torres et al. 은 결합분포의 어느 항이 바뀌는지로 covariate shift (P(X) 이동, P(Y|X) 유지), prior probability shift (P(Y) 이동, P(X|Y) 유지), concept shift 를 정리하였고 [[2](#ref-2)], 이 문서의 식 (3) 과 세 shift 분류가 이를 따른다.
 - **제조 데이터**: 반도체 virtual metrology 에서는 공정 조건이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[4](#ref-4)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[3](#ref-3)].
 - **업계 도구**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
 - **이 문서의 틀**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (1) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
