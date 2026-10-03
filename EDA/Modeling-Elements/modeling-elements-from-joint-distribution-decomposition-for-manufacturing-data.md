@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 17 | Created: 2026-10-03 | Updated: 2026-10-03 11:23 CDT
+Rev. 18 | Created: 2026-10-03 | Updated: 2026-10-03 11:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -278,6 +278,8 @@ Univariate methods compare each variable's distribution separately and miss chan
 - **Validation**: temporal CV that trains on the past and validates on the future, and a group split by lot.
 
 ### B.4 Model Estimator
+
+B.3 covers the error from a change in the true relation P(Y|X) after training, while B.4 covers the error the model makes in estimating that relation even when it stays fixed. The error of B.4 is set at training time by the choice of estimator, overfitting and hyperparameters.
 
 #### Detection
 

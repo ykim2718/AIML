@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 69 | Created: 2026-05-29 | Updated: 2026-10-03 11:23 CDT
+Rev. 70 | Created: 2026-05-29 | Updated: 2026-10-03 11:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -278,6 +278,8 @@ Z 는 잠재 변수 (latent variable) 이다. 식 (5) 는 주어진 t 에서 Z �
 - **Validation**: 과거로 학습하고 미래로 검증하는 temporal CV, lot 단위로 나눈 group split.
 
 ### B.4 Model Estimator
+
+B.3 은 학습 뒤 실제 관계 P(Y|X) 가 바뀌어 생기는 오류를 다루고, B.4 는 실제 관계가 그대로여도 model 이 그 관계를 추정하며 생기는 오류를 다룬다. B.4 의 오류는 추정기 선택, 과적합, hyperparameter 처럼 학습 시점에 정해진다.
 
 #### Detection
 
