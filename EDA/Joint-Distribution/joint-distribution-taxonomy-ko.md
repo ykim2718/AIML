@@ -1,5 +1,5 @@
-# P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 26 | Created: 2026-05-29 | Updated: 2026-10-03 07:18 CDT
+# Taxonomy of Modeling Elements by P(X), P(Y) and P(Y|X)
+Rev. 27 | Created: 2026-05-29 | Updated: 2026-10-03 07:25 CDT
 
 ## 1. Purpose
 
