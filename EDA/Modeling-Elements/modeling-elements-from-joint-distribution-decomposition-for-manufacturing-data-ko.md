@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 60 | Created: 2026-05-29 | Updated: 2026-10-03 10:44 CDT
+Rev. 61 | Created: 2026-05-29 | Updated: 2026-10-03 10:45 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -120,7 +120,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 ## 4. Prediction from the Joint Distribution
 
-식 (4) 는 세 요소의 관계를 학습 데이터 X<sub>i</sub> 와 추론 데이터 X<sub>o</sub> 로 나누어 적는다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 데이터다.
+식 (4) 는 학습한 model 로 추론할 때 세 요소의 관계를 학습 데이터 X<sub>i</sub> 와 추론 데이터 X<sub>o</sub> 로 나누어 적는다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 데이터다.
 
 ```math
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x;\, X_{i})_{\mathrm{model}} \cdot P(X_{o} = x)_{\mathrm{true}}\, dx \hspace{19em} (4)

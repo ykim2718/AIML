@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 8 | Created: 2026-10-03 | Updated: 2026-10-03 10:44 CDT
+Rev. 9 | Created: 2026-10-03 | Updated: 2026-10-03 10:45 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -120,7 +120,7 @@ The observation row lists ways to measure a change, and the lever row lists ways
 
 ## 4. Prediction from the Joint Distribution
 
-Eq. (4) writes the relation of the three elements with training data X<sub>i</sub> and inference data X<sub>o</sub> kept apart. X<sub>i</sub> is in-sample, the data used to train the model, and X<sub>o</sub> is out-of-sample, the new data that arrives at inference.
+Eq. (4) writes the relation of the three elements at inference with a trained model, with training data X<sub>i</sub> and inference data X<sub>o</sub> kept apart. X<sub>i</sub> is in-sample, the data used to train the model, and X<sub>o</sub> is out-of-sample, the new data that arrives at inference.
 
 ```math
 P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x;\, X_{i})_{\mathrm{model}} \cdot P(X_{o} = x)_{\mathrm{true}}\, dx \hspace{19em} (4)
