@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 55 | Created: 2026-05-29 | Updated: 2026-10-03 09:55 CDT
+Rev. 56 | Created: 2026-05-29 | Updated: 2026-10-03 09:56 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -309,8 +309,31 @@ Table 3. Use of the shift taxonomy in research and industry
 
 ## Appendix D. Talk Slides
 
-학회 invited talk 에서 이 문서를 발표할 때 쓰는 slide 3 장이며, 원본은 [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx) 이다.
+학회 invited talk 에서 이 문서를 발표할 때 쓰는 slide 는 세 장이며, 원본은 [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx) 이다.
 
-- **Slide 1**: [Modeling Elements from Joint Distribution Decomposition](modeling-elements-invited-talk-1.png). 결합분포를 P(X), P(Y|X), P(Y) 로 나눈 taxonomy 와 식 (1), (2).
-- **Slide 2**: [Prediction from the Joint Distribution](modeling-elements-invited-talk-2.png). 식 (4) 의 세 항과 좋은 데이터·좋은 모델·좋은 예측.
-- **Slide 3**: [Four Axes: Detect, Respond, Validate](modeling-elements-invited-talk-3.png). [Appendix B](#appendix-b-detection-and-implementation-by-axis) 에 있는 네 축의 탐지·대응·검증 방법의 요약.
+첫 slide 는 section 3 의 taxonomy 를 보인다 ([Fig 2](#fig-2)).
+
+<img src="images/modeling-elements-invited-talk-1.png" width="800" style="max-width: 100%;" alt="Fig 2">
+
+<a id="fig-2"></a>
+Fig 2. Talk slide 1, taxonomy from the joint distribution
+
+결합분포를 P(X), P(Y|X), P(Y) 로 나누고 식 (1) 과 식 (2) 로 세 요소를 잇는다.
+
+둘째 slide 는 section 4 의 식 (4) 를 보인다 ([Fig 3](#fig-3)).
+
+<img src="images/modeling-elements-invited-talk-2.png" width="800" style="max-width: 100%;" alt="Fig 3">
+
+<a id="fig-3"></a>
+Fig 3. Talk slide 2, prediction from the joint distribution
+
+식 (4) 의 세 항을 좋은 데이터, 좋은 모델, 좋은 예측으로 읽고, 식 (4) 가 성립하는 두 조건을 slide 아래쪽에 적었다.
+
+셋째 slide 는 [Appendix B](#appendix-b-detection-and-implementation-by-axis) 를 줄여 보인다 ([Fig 4](#fig-4)).
+
+<img src="images/modeling-elements-invited-talk-3.png" width="800" style="max-width: 100%;" alt="Fig 4">
+
+<a id="fig-4"></a>
+Fig 4. Talk slide 3, detection, response and validation by axis
+
+네 축마다 탐지, 대응, 검증 방법을 한 칸에 모았다.

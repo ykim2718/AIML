@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 3 | Created: 2026-10-03 | Updated: 2026-10-03 09:55 CDT
+Rev. 4 | Created: 2026-10-03 | Updated: 2026-10-03 09:56 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -309,8 +309,31 @@ Table 3. Use of the shift taxonomy in research and industry
 
 ## Appendix D. Talk Slides
 
-These three slides present this document as a conference invited talk; the source file is [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx).
+Three slides present this document as a conference invited talk, and the source file is [modeling-elements-invited-talk.pptx](modeling-elements-invited-talk.pptx).
 
-- **Slide 1**: [Modeling Elements from Joint Distribution Decomposition](modeling-elements-invited-talk-1.png). Taxonomy that splits the joint distribution into P(X), P(Y|X) and P(Y), with eqs. (1) and (2).
-- **Slide 2**: [Prediction from the Joint Distribution](modeling-elements-invited-talk-2.png). The three terms of eq. (4) read as good data, good model and good prediction.
-- **Slide 3**: [Four Axes: Detect, Respond, Validate](modeling-elements-invited-talk-3.png). Detection, response and validation methods of the four axes, condensed from [Appendix B](#appendix-b-detection-and-implementation-by-axis).
+The first slide shows the taxonomy of section 3 ([Fig 2](#fig-2)).
+
+<img src="images/modeling-elements-invited-talk-1.png" width="800" style="max-width: 100%;" alt="Fig 2">
+
+<a id="fig-2"></a>
+Fig 2. Talk slide 1, taxonomy from the joint distribution
+
+The joint distribution is split into P(X), P(Y|X) and P(Y), and eqs. (1) and (2) connect the three elements.
+
+The second slide shows eq. (4) of section 4 ([Fig 3](#fig-3)).
+
+<img src="images/modeling-elements-invited-talk-2.png" width="800" style="max-width: 100%;" alt="Fig 3">
+
+<a id="fig-3"></a>
+Fig 3. Talk slide 2, prediction from the joint distribution
+
+The three terms of eq. (4) are read as good data, good model and good prediction, and the bottom of the slide states the two conditions under which eq. (4) holds.
+
+The third slide condenses [Appendix B](#appendix-b-detection-and-implementation-by-axis) ([Fig 4](#fig-4)).
+
+<img src="images/modeling-elements-invited-talk-3.png" width="800" style="max-width: 100%;" alt="Fig 4">
+
+<a id="fig-4"></a>
+Fig 4. Talk slide 3, detection, response and validation by axis
+
+Each of the four axes has one panel with its detection, response and validation methods.
