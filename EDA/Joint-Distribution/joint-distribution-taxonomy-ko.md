@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 1 | Created: 2026-05-29 | Updated: 2026-10-02 23:43 CDT
+Rev. 2 | Created: 2026-05-29 | Updated: 2026-10-03 00:48 CDT
 
 ## 1. Purpose
 
@@ -8,6 +8,15 @@ Rev. 1 | Created: 2026-05-29 | Updated: 2026-10-02 23:43 CDT
 - **Non-Goal**: 결합분포 밖에 있는 Model (추정기·최적화) 축과 특정 과제의 진단 수치는 다루지 않는다.
 
 ## 2. Summary
+
+> P(Y)<sub>pred</sub> = P(X)<sub>true</sub> · P(Y|X)<sub>pred</sub><br>
+> 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
+
+인용한 식은 식 (2) 를 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 P(Y)<sub>pred</sub> = ∫ P(Y|X)<sub>pred</sub> · P(X)<sub>true</sub> dX 이다. 예측한 출력분포는 두 factor 의 곱으로 정해지므로, 둘 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
+
+- **좋은 데이터**: P(X)<sub>true</sub> 는 장비·recipe 가 실제로 내놓는 입력의 분포다. 학습 때 본 입력 범위 안에 있어야 하며, 범위를 벗어나면 covariate shift 다.
+- **좋은 model**: P(Y|X)<sub>pred</sub> 는 model 이 추정한 공정 물리다. 실제 P(Y|X) 에 가까워야 하며, 실제 관계가 시간에 따라 바뀌면 concept drift 다.
+- **결과**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 를 함께 맞추어야 실제 P(Y) 에 가까워진다.
 
 - **Taxonomy**: 반도체 공정 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 입력 주변분포 P(X), 출력 주변분포 P(Y), 조건부 관계 P(Y|X) 로 분류된다.
 - **Hierarchy**: P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 주변분포다 (식 (2)).
