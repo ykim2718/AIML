@@ -1,5 +1,5 @@
 # Model Developer Agent
-Rev. 0 | Created: 2026-10-03 | Updated: 2026-10-03 15:52 CDT
+Rev. 1 | Created: 2026-10-03 | Updated: 2026-10-03 16:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,9 +21,7 @@ Rev. 0 | Created: 2026-10-03 | Updated: 2026-10-03 15:52 CDT
 
 ## 2. Summary
 
-Model developer agent 는 네 기능을 맡는다. Algorithm 과 pre-trained model 을 bank 에 등록하고, 데이터에 맞는 후보를 그 bank 에서 찾고, 후보를 검증해 순위를 내고, 이긴 후보의 hyperparameter 와 artifact 를 확정한다. MLOps 는 이 넷을 Model Registry, AutoML 또는 model search, automated validation, lineage tracking 을 곁들인 hyperparameter optimization 이라 부르며, [Fig 1](#fig-1) 이 그 넷과 그것을 사거나 만드는 세 tier 를 함께 그린다.
-
-Managed platform 은 넷을 한 제품으로 팔고, modular stack 은 기능마다 도구를 하나씩 모아 쓰며, single library 는 registry 없이 한 process 안에서 넷을 돌린다. 고르는 자리는 [Table 1](#table-1) 이고, 네 기능이 어떤 pipeline 으로 도는지는 [Fig 2](#fig-2) 에 있으며, tier 마다의 제품은 [Table 2](#table-2) 와 [Table 3](#table-3) 에 적었다.
+Model developer agent 는 네 기능을 맡는다. Algorithm 과 pre-trained model 을 bank 에 등록하고, 데이터에 맞는 후보를 그 bank 에서 찾고, 후보를 검증해 순위를 내고, 이긴 후보의 hyperparameter 와 artifact 를 확정한다. MLOps 는 이 넷을 Model Registry, AutoML 또는 model search, automated validation, lineage tracking 을 곁들인 hyperparameter optimization 이라 부른다. 네 기능과 그것을 맡는 세 tier 는 [Fig 1](#fig-1), 고르는 표는 [Table 1](#table-1), pipeline 은 [Fig 2](#fig-2), tier 마다의 제품은 [Table 2](#table-2) 와 [Table 3](#table-3) 에 있다.
 
 ## 3. Taxonomy and its Hierarchy
 

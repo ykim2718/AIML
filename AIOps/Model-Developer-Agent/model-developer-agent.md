@@ -1,5 +1,5 @@
 # Model Developer Agent
-Rev. 0 | Created: 2026-10-03 | Updated: 2026-10-03 15:52 CDT
+Rev. 1 | Created: 2026-10-03 | Updated: 2026-10-03 16:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,9 +21,7 @@ Rev. 0 | Created: 2026-10-03 | Updated: 2026-10-03 15:52 CDT
 
 ## 2. Summary
 
-A model developer agent carries four capabilities: it registers algorithms and pre-trained models in a bank, searches the bank for the candidates a dataset deserves, validates and ranks those candidates, and freezes the hyperparameters and the artifact of the winner. Those four are what MLOps calls a Model Registry, AutoML or model search, automated validation, and hyperparameter optimization with lineage tracking; [Fig 1](#fig-1) places them and the three tiers a team can buy or build them at.
-
-A managed platform holds all four as one product, a modular stack assembles them from one tool per capability, and a single library runs all four inside one process without a registry. [Table 1](#table-1) is what a design picks from, [Fig 2](#fig-2) draws the pipeline the four capabilities run as, and [Table 2](#table-2) and [Table 3](#table-3) name the products of each tier.
+A model developer agent carries four capabilities: it registers algorithms and pre-trained models in a bank, searches the bank for the candidates a dataset deserves, validates and ranks those candidates, and freezes the winner's hyperparameters and artifact. MLOps calls the four a Model Registry, AutoML or model search, automated validation, and hyperparameter optimization with lineage tracking. The four and the three tiers that hold them are in [Fig 1](#fig-1), the table a design picks from in [Table 1](#table-1), the pipeline in [Fig 2](#fig-2), and the products of each tier in [Table 2](#table-2) and [Table 3](#table-3).
 
 ## 3. Taxonomy and its Hierarchy
 
