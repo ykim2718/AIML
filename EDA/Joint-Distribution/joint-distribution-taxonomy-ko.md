@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 46 | Created: 2026-05-29 | Updated: 2026-10-03 08:08 CDT
+Rev. 47 | Created: 2026-05-29 | Updated: 2026-10-03 08:12 CDT
 
 ## 1. Purpose
 
@@ -17,19 +17,25 @@ Rev. 46 | Created: 2026-05-29 | Updated: 2026-10-03 08:08 CDT
 P(X, Y) = P(Y \mid X) \cdot P(X) \hspace{19em} (1)
 ```
 
+```math
+P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (2)
+```
+
+식 (1) 의 양변을 X 에 대해 적분하면 식 (2) 를 얻는다. 좌변 ∫ P(X,Y) dX 는 X 를 적분하여 없앤 Y 의 marginal distribution P(Y) 이고, 우변은 조건부 분포 P(Y|X) 를 X 의 분포 P(X) 로 가중하여 평균한 값이다. 이 적분을 marginalization 이라 하며, 식 (1) 이 결합분포를 두 factor 로 나눈다면 식 (2) 는 두 factor 에서 P(Y) 를 다시 얻는다.
+
 인용구의 세 요소는 식 (1) 의 세 자리에 놓인다.
 
-- **$`P(Y)`$ (Good Prediction):** 좋은 예측. 두 factor 의 곱인 결합분포 P(X,Y) 를 X 에 대해 적분하여 얻는 marginal distribution 이다.
+- **$`P(Y)`$ (Good Prediction):** 좋은 예측. 두 factor 의 곱인 결합분포 P(X,Y) 를 X 에 대해 적분하여 얻는 marginal distribution 이다 (식 (2)).
 - **$`P(X)`$ (Good Data):** 좋은 데이터. 식 (1) 의 factor 로, 측정 데이터의 분포다.
 - **$`P(Y \mid X)`$ (Good Model):** 좋은 모델. 식 (1) 의 factor 로, 측정 데이터가 주어졌을 때 계측값의 조건부 관계다.
 
-식 (2) 는 세 요소의 관계를 학습 데이터와 추론 데이터로 나누어 적는다.
+식 (3) 은 세 요소의 관계를 학습 데이터와 추론 데이터로 나누어 적는다.
 
 ```math
-P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (2)
+P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX_{o} \hspace{19em} (3)
 ```
 
-식 (2) 는 출력의 marginal distribution 식 (3) 을 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다.
+식 (3) 은 출력의 marginal distribution 식 (2) 를 예측에 옮긴 것이다. X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 학습 데이터이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 추론 데이터다.
 
 #### Term-by-Term Breakdown
 
@@ -38,9 +44,9 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 - **$`P(X_o)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** out-of-sample 추론 데이터 $`X_o`$ 를 실제로 만들어 내는 확률밀도다. Model 을 추론에 쓸 때 $`X_o`$ 가 실제로 어떻게 분포하는지를 나타낸다.
 - **$`\int \ldots dX_o`$ (Marginalization over $`X_o`$):** $`X_o`$ 가 가질 수 있는 모든 값에 걸쳐 예측을 더한다. 각 값의 가중치는 추론 때 그 값이 나올 확률이므로, 적분 결과는 예측의 가중 평균이다.
 
-식 (2) 가 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
+식 (3) 이 실제 P(Y) 를 맞히려면 X<sub>o</sub> 가 X<sub>i</sub> 의 범위 안에 있고 실제 P(Y|X) 가 학습 뒤에 바뀌지 않아야 한다.
 
-식 (2) 의 세 항으로 보면 세 요소는 아래와 같다.
+식 (3) 의 세 항으로 보면 세 요소는 아래와 같다.
 
 - **좋은 예측**: P(Y)<sub>pred</sub> 는 두 factor 에서 유도되는 값이므로, 두 factor 가운데 하나만 어긋나도 실제 P(Y) 에서 벗어난다.
 - **좋은 데이터**: X<sub>i</sub> 는 wafer 계측값과 짝지어 model 학습에 쓰는, 장비 sensor 등에서 측정한 학습 데이터이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 실제로 측정되는 추론 데이터의 분포다. P(X<sub>i</sub>) 가 P(X<sub>o</sub>) 를 덮어야 하며, P(X<sub>o</sub>) 가 P(X<sub>i</sub>) 와 달라지면 covariate shift 다.
@@ -48,8 +54,8 @@ P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mat
 
 세 항목을 결합분포의 taxonomy 로 정리하면 아래와 같다.
 
-- **Taxonomy**: 제조 데이터 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 측정 데이터의 marginal distribution P(X), 출력의 marginal distribution P(Y), 조건부 관계 P(Y|X) 로 분류되며, 식 (2) 에서 각각 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다.
-- **Hierarchy**: 식 (1) 의 chain rule P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 marginal distribution 이다 (식 (3)). 반대 방향 분해 P(X|Y) · P(Y) 는 prior shift 를 정의하며 (식 (4)), X → Y 인과 구조인 제조 공정에서 관측되는 P(Y) 이동은 대부분 P(X) 나 P(Y|X) 변화의 결과다.
+- **Taxonomy**: 제조 데이터 AI/ML model 의 요소는 결합분포 P(X,Y) 의 세 항목, 곧 측정 데이터의 marginal distribution P(X), 출력의 marginal distribution P(Y), 조건부 관계 P(Y|X) 로 분류되며, 식 (3) 에서 각각 좋은 데이터, 좋은 예측, 좋은 모델의 자리에 놓인다.
+- **Hierarchy**: 식 (1) 의 chain rule P(X,Y) = P(Y|X) · P(X) 로 분해되는 두 factor 가 P(X) 와 P(Y|X) 이고, P(Y) 는 두 factor 의 곱을 X 에 대해 적분한 marginal distribution 이다 (식 (2)). 반대 방향 분해 P(X|Y) · P(Y) 는 prior shift 를 정의하며 (식 (4)), X → Y 인과 구조인 제조 공정에서 관측되는 P(Y) 이동은 대부분 P(X) 나 P(Y|X) 변화의 결과다.
 - **Change**: 세 항목의 변화는 각각 covariate shift, prior shift, concept drift 이다.
 - **Physical meaning**: P(X) 는 장비 sensor 등에서 측정한 데이터 (학습 데이터 X<sub>i</sub>, 추론 데이터 X<sub>o</sub>) 의 분포, P(Y) 는 wafer 계측값의 분포, P(Y|X) 는 측정 데이터가 주어졌을 때 계측값의 조건부 분포로, 공정 물리가 측정 데이터와 계측값 사이에 남긴 관계다.
 - **Reading rule**: 장비 교체·recipe 변경은 측정 데이터의 분포와 조건부 관계를 함께 이동시킬 수 있으므로, 세 항목을 배타적 분류 대신 **관측·개입 지점** 으로 읽는다.
@@ -90,11 +96,7 @@ Fig 1. Taxonomy and hierarchy of the joint distribution
 - 아래층의 P(Y) 는 두 factor 에서 유도되는 marginal distribution 이므로, P(X) 나 P(Y|X) 가 바뀌면 P(Y) 도 따라 바뀔 수 있다.
 - Model 축은 P(Y|X)<sub>pred</sub> 를 얻는 추정 방법 (algorithm·최적화) 이다. 세 항목은 무엇을 추정하는지를, Model 축은 어떻게 추정하는지를 정하므로 둘은 직교 (orthogonal) 한다.
 
-```math
-P(Y) = \int P(Y \mid X)\, P(X)\, dX \hspace{19em} (3)
-```
-
-결합분포는 반대 방향으로도 분해된다.
+결합분포는 식 (1) 과 반대 방향으로도 분해된다.
 
 ```math
 P(X, Y) = P(X \mid Y) \cdot P(Y) \hspace{19em} (4)
@@ -106,7 +108,7 @@ Prior shift 는 식 (4) 에서 P(X|Y) 가 그대로인 채 P(Y) 만 바뀌는 �
 
 - **불확실성의 출처**: 계측값은 Y<sub>obs</sub> = Y + ε<sub>m</sub>, 측정 데이터는 X<sub>obs</sub> = X + ε<sub>x</sub> 이다. Model 이 학습하는 P(Y<sub>obs</sub>|X<sub>obs</sub>) 의 산포에는 공정 고유 산포, 계측 오차 ε<sub>m</sub> (label noise), sensor 측정 오차 ε<sub>x</sub> 가 함께 들어 있으며, 셋은 데이터를 늘려도 줄지 않는 aleatoric uncertainty 다. ε<sub>x</sub> 는 산포를 키울 뿐 아니라 추정한 관계의 기울기를 0 쪽으로 줄여 (regression dilution) P(Y|X) 추정을 왜곡한다. 학습 데이터가 부족해 생기는 model 의 불확실성 (epistemic uncertainty) 만 데이터로 줄어들며, 좋은 모델이 도달할 수 있는 정확도의 한계는 공정 고유 산포와 두 측정 오차가 정한다.
 - **표본 선택**: 계측은 일부 wafer 만 sampling 하므로, 학습 데이터의 분포 P(X<sub>i</sub>) 는 계측된 wafer 의 분포이며 전체 wafer 의 P(X) 와 다를 수 있다 (selection bias). 추론은 계측하지 않은 wafer 에 하므로, 이 차이는 그대로 covariate shift 가 된다. X 나 Y 의 값에 따라 계측이 누락 (missing) 되면 P(X<sub>i</sub>) 나 학습 데이터의 P(Y) 가 같은 방식으로 치우친다.
-- **i.i.d. 가정과 계층 구조**: 식 (2) 로 학습 데이터에서 추론 데이터의 예측을 얻는 것은 wafer 가 서로 독립이고 같은 분포에서 나온다 (i.i.d.) 는 가정 위에서다. 공정 데이터에는 시간 자기상관과 lot·chamber 의 계층 구조가 있어 같은 lot·chamber 의 wafer 가 서로 닮으며, 이 구조를 무시하고 학습·검증을 나누면 같은 lot 이 양쪽에 들어가 성능이 실제보다 높게 나온다.
+- **i.i.d. 가정과 계층 구조**: 식 (3) 으로 학습 데이터에서 추론 데이터의 예측을 얻는 것은 wafer 가 서로 독립이고 같은 분포에서 나온다 (i.i.d.) 는 가정 위에서다. 공정 데이터에는 시간 자기상관과 lot·chamber 의 계층 구조가 있어 같은 lot·chamber 의 wafer 가 서로 닮으며, 이 구조를 무시하고 학습·검증을 나누면 같은 lot 이 양쪽에 들어가 성능이 실제보다 높게 나온다.
 
 ### 3.1 Placement
 
@@ -127,11 +129,11 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 
 ## 4. Physical Meaning
 
-세 항목은 제조 공정에서 각각 측정 데이터, 계측 결과, 측정 데이터와 계측값 사이의 조건부 관계에 대응한다. Table 2 가 그 대응과 식 (2) 에서의 역할을 모은다.
+세 항목은 제조 공정에서 각각 측정 데이터, 계측 결과, 측정 데이터와 계측값 사이의 조건부 관계에 대응한다. Table 2 가 그 대응과 식 (3) 에서의 역할을 모은다.
 
 Table 2. Physical meaning of each term
 
-| Term    | Role in eq. (2)                                                | Physical meaning                                         | Shift between training and inference                                                                |
+| Term    | Role in eq. (3)                                                | Physical meaning                                         | Shift between training and inference                                                                |
 | :-----: | :------------------------------------------------------------: | :------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
 | P(X)    | 좋은 데이터: P(X<sub>i</sub>), P(X<sub>o</sub>)<sub>true</sub> | 장비 sensor 등에서 측정한 데이터의 분포                  | Covariate shift: P(X<sub>o</sub>) ≠ P(X<sub>i</sub>) (새 장비, sensor drift, 신규 recipe 유입)      |
 | P(Y)    | 좋은 예측: P(Y)<sub>pred</sub>                                 | Wafer 계측값 (측정 map, 공간 분해 계수) 의 분포          | Prior shift: 실제 P(Y) 이동 (target spec 변경, recipe 변경에 따른 계수 분포 이동)                   |
@@ -140,7 +142,7 @@ Table 2. Physical meaning of each term
 ### 4.1 P(X) Covariate Shift
 
 - 의미: 학습 데이터 X<sub>i</sub> 와 추론 데이터 X<sub>o</sub> 의 분포가 다르다 (P(X<sub>o</sub>) ≠ P(X<sub>i</sub>)). 관계 P(Y|X) 는 그대로일 수 있다.
-- 해석: model 이 관계는 학습했으나, 추론 데이터가 학습 데이터로 드물게 덮인 영역으로 옮겨 가 식 (2) 의 좋은 데이터가 깨진 경우다.
+- 해석: model 이 관계는 학습했으나, 추론 데이터가 학습 데이터로 드물게 덮인 영역으로 옮겨 가 식 (3) 의 좋은 데이터가 깨진 경우다.
 - 범위: 데이터 공간 작업은 shift 대응과 함께 feature 선택·생성 전반을 포함한다.
 
 ### 4.2 P(Y) Prior Shift
@@ -152,7 +154,7 @@ Table 2. Physical meaning of each term
 
 ### 4.3 P(Y|X) Concept Drift
 
-측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (2) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
+측정 데이터와 계측값 사이의 관계 자체가 학습 뒤에 변하는 경우이며, 식 (3) 의 P(Y|X<sub>i</sub>)<sub>pred</sub> 가 추론 시점의 실제 P(Y|X) 와 어긋나 좋은 모델이 깨진다. 세 항목 가운데 다루기 가장 어렵다.
 
 공정 물리 관점에서 concept drift 는 관측되지 않은 chamber 상태 변수 Z(t) (노화, 찌꺼기 등) 의 변화로 인해 P(Y|X) 가 시간에 따라 변하는 현상이며, 그 관계는 식 (5) 로 적는다.
 
@@ -259,4 +261,4 @@ Table 3. Use of the shift taxonomy in research and industry
 - **학계**: dataset shift 는 학습과 추론 사이에 결합분포 P(X,Y) 가 달라지는 문제로 정의된다 [[1](#ref-1)]. Moreno-Torres et al. 은 결합분포의 어느 항이 바뀌는지로 covariate shift (P(X) 이동, P(Y|X) 유지), prior probability shift (P(Y) 이동, P(X|Y) 유지), concept shift 를 정리하였고 [[2](#ref-2)], 이 문서의 식 (4) 와 세 shift 분류가 이를 따른다.
 - **제조 데이터**: 반도체 virtual metrology 에서는 wafer 특성이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[4](#ref-4)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[3](#ref-3)].
 - **업계 도구**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
-- **이 문서의 틀**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (2) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
+- **이 문서의 틀**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (3) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
