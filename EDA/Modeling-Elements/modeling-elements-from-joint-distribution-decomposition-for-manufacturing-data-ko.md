@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 62 | Created: 2026-05-29 | Updated: 2026-10-03 10:45 CDT
+Rev. 63 | Created: 2026-05-29 | Updated: 2026-10-03 10:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -28,7 +28,7 @@ Rev. 62 | Created: 2026-05-29 | Updated: 2026-10-03 10:45 CDT
 
 ## 2. Summary
 
-> ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
+> ### 좋은 예측은 좋은 데이터와 좋은 모델에서 나옵니다.
 
 - **Taxonomy**: 결합분포 P(X,Y) 를 chain rule 로 분해하면 제조 데이터 AI/ML 의 세 요소, 곧 데이터 P(X), 모델 P(Y|X), 예측 P(Y) 가 나온다 (section 3, section 4).
 - **Change**: 세 요소의 변화는 각각 covariate shift, concept drift, prior shift 이며, X → Y 구조인 제조 공정에서 P(Y) 이동은 대부분 P(X) 나 P(Y|X) 변화의 결과다 (section 5).
