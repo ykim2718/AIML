@@ -1,17 +1,17 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 32 | Created: 2026-05-29 | Updated: 2026-10-03 07:33 CDT
+Rev. 33 | Created: 2026-05-29 | Updated: 2026-10-03 07:36 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: AI/ML model 개발을 위한 요소를 묶는 체계가 없다.
-- **Goal**: 결합확률분포 $P(X,Y) = P(Y\vert{}X) \cdot P(X)$의 분해를 통해 제조 공정 데이터 기반 AI/ML의 요소(데이터, 모델, 예측)과 현상(Covariate shift, Concept drift, Prior shift)을 명확하게 연결하는 프레임워크를 제시한다.
+- **Goal**: 결합확률분포 $P(X,Y) = P(Y\vert{}X) \cdot P(X)$의 분해를 통해 제조 공정 데이터 기반 AI/ML의 요소 (데이터, 모델, 예측) 와 현상 (Covariate shift, Concept drift, Prior shift) 을 명확하게 연결하는 framework 를 제시한다.
 - **Non-Goal**: 결합분포 밖에 있는 Model (추정기·최적화) 축과 특정 과제의 진단 수치는 다루지 않는다.
 
 ## 2. Summary
 
 > ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
 
-인용구의 좋은 데이터와 좋은 모델은 예측한 출력분포를 정하는 두 factor 이며, 식 (1) 과 그 적분형 식 (2) 가 그 관계를 적는다.
+인용구의 좋은 데이터와 좋은 모델은 예측한 출력분포를 정하는 두 factor 이며, 개념적 약식 표현인 식 (1) 과 그 적분형 식 (2) 가 그 관계를 적는다.
 
 ```math
 P(Y)_{\mathrm{pred}} = P(X_{o})_{\mathrm{true}} \cdot P(Y \mid X_{i})_{\mathrm{pred}} \hspace{19em} (1)
