@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 23 | Created: 2026-05-29 | Updated: 2026-10-03 01:37 CDT
+Rev. 24 | Created: 2026-05-29 | Updated: 2026-10-03 01:38 CDT
 
 ## 1. Purpose
 
@@ -98,7 +98,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | 관측 (탐지)       | PSI·KS·KL, domain classifier                                        | Target 주변분포 비교                         | Binning CDT, 시간창별 I(X;Y), 잔차 CUSUM·Page-Hinkley |
 | 대책 (lever)      | Feature 선택·증강, importance weighting, domain adaptation          | Target 변환·분해, group 별 scale, prior 보정 | 재학습 간격, 최신성 가중, detrending, drift 적응      |
 
-관측 행은 변화를 재는 방법이고, 대책 행은 변화를 가정하고 model 을 맞추는 방법이다. 변동 시점을 특정하는 것은 관측 행의 방법뿐이다.
+관측 행은 변화를 재는 방법이고, 대책 행은 변화를 가정하고 model 을 맞추는 방법이다. 변동 시점을 특정하는 것은 관측 행의 방법뿐이다. 4.1 ~ 4.3 의 세 변화를 탐지하는 방법은 [Appendix B](#appendix-b-detection-methods) 에 모은다.
 
 ## 4. Physical Meaning
 
@@ -152,3 +152,29 @@ Table 2. Physical meaning of each term
 - **Spatial decomposition**: wafer 측정 map 을 공간 기저 (다항식) 로 분해하고, 그 계수 (a1, …) 를 예측하는 방법.
 - **temporal CV**: 과거로 학습하고 미래로 검증하는 시간순 교차검증.
 - **주변분포 (marginal distribution)**: 결합분포 P(X,Y) 에서 X 를 적분하여 없애고 Y 하나만 남긴 분포. P(Y) = ∫ P(X,Y) dX 이며, X 의 값과 상관없이 Y 가 어떻게 분포하는지를 나타낸다.
+
+## Appendix B. Detection Methods
+
+### B.1 Covariate Shift Detection
+
+- **PSI (Population Stability Index)**: 변수마다 학습 데이터와 추론 데이터의 구간별 비율을 비교하여 P(X) 의 이동 크기를 잰다.
+- **KS test (Kolmogorov–Smirnov test)**: 변수마다 두 데이터의 누적분포 최대 차이로 분포가 같은지 검정한다.
+- **KL divergence (Kullback–Leibler divergence)**: 학습 데이터 분포에 대한 추론 데이터 분포의 차이를 정보량으로 잰다.
+- **MMD (Maximum Mean Discrepancy)**: kernel 공간에서 두 데이터의 평균 차이로 다변량 분포 차이를 검정한다.
+- **Domain classifier**: 학습 데이터와 추론 데이터를 가르는 classifier 를 학습하여, AUC 가 0.5 보다 클수록 두 분포가 다르다고 본다.
+- **Hotelling T²·SPE (PCA 기반)**: 학습 데이터로 만든 PCA model 에서 추론 데이터의 T² 와 잔차 SPE 가 관리 한계를 넘는지 본다.
+
+### B.2 Prior Shift Detection
+
+- **계측값 분포 비교**: 학습 데이터의 계측값과 최근 계측값의 분포를 KS test 나 PSI 로 비교한다.
+- **SPC 관리도 (Shewhart·EWMA)**: 계측값의 평균과 산포가 관리 한계를 벗어나는 시점을 감시한다.
+- **예측 분포 감시**: 계측값이 늦게 들어올 때 P(Y)<sub>pred</sub> 의 분포 이동을 먼저 감시하여 P(Y) 이동을 미리 알린다.
+
+### B.3 Concept Drift Detection
+
+- **Binning CDT (Conditional Distribution Test)**: X 를 bin 으로 나눠 bin 마다 P(Y|bin) 을 시간창별로 검정하여 변동 시점을 특정한다.
+- **잔차 CUSUM**: 예측 잔차의 누적합이 임계값을 넘는 시점을 관계 변화 시점으로 본다.
+- **Page-Hinkley**: 예측 잔차의 누적 편차와 그 최솟값의 차이가 임계값을 넘으면 평균 변화를 알린다.
+- **ADWIN (Adaptive Windowing)**: 오차 window 를 두 부분으로 나눠 평균 차이가 유의하면 오래된 부분을 버리고 변화를 알린다.
+- **시간창별 성능 감시**: 시간창마다 R²·RMSE 를 계산하여 성능 저하 시점을 찾는다. 계측값이 있어야 한다.
+- **시간창별 I(X;Y)**: 시간창마다 상호정보량을 계산하여 측정 데이터와 계측값의 의존성 변화를 추적한다.
