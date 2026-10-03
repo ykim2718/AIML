@@ -1,5 +1,5 @@
 # P(X) · P(Y) · P(Y|X) Taxonomy of the Joint Distribution for Semiconductor Process AI/ML
-Rev. 9 | Created: 2026-05-29 | Updated: 2026-10-03 01:05 CDT
+Rev. 10 | Created: 2026-05-29 | Updated: 2026-10-03 01:07 CDT
 
 ## 1. Purpose
 
@@ -11,11 +11,17 @@ Rev. 9 | Created: 2026-05-29 | Updated: 2026-10-03 01:05 CDT
 
 > ### 좋은 예측은 좋은 데이타와 좋은 모델에서 나옵니다.
 
-인용구의 좋은 데이터와 좋은 model 은 예측한 출력분포를 정하는 두 factor 이며, 식 (1) 이 그 관계를 적는다.
+인용구의 좋은 데이터와 좋은 model 은 예측한 출력분포를 정하는 두 factor 이며, 식 (1) 과 그 적분형 식 (2) 가 그 관계를 적는다.
 
 ```math
 P(Y)_{\mathrm{pred}} = P(X_{o})_{\mathrm{true}} \cdot P(Y \mid X_{i})_{\mathrm{pred}} \hspace{19em} (1)
 ```
+
+```math
+P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX \hspace{19em} (2)
+```
+
+식 (1) 은 출력 주변분포 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이고, 식 (2) 는 적분까지 적은 형태다.
 
 X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 입력이고, X<sub>o</sub> 는 out-of-sample, 곧 추론 때 새로 들어오는 입력이다.
 
@@ -25,12 +31,6 @@ X<sub>i</sub> 는 in-sample, 곧 model 을 학습할 때 쓴 입력이고, X<sub
 
 - **입력이 한 조건에 모인다**: P(X<sub>o</sub>)<sub>true</sub> 가 한 입력 x<sub>o</sub> 에 확률을 모두 둔 분포이면, 곧 장비 상태와 recipe 가 하나로 고정되면 식 (2) 의 적분이 그 한 점의 값이 되어 P(Y)<sub>pred</sub> = P(Y|X=x<sub>o</sub>)<sub>pred</sub> 이다.
 - **식을 입력 하나에 대해 읽는다**: out-of-sample 입력 x<sub>o</sub> 하나에 대해서는 곱이 그대로 성립하며, 이때 좌변은 주변분포 P(Y) 대신 결합확률 P(Y, X<sub>o</sub>=x<sub>o</sub>) 이다. 모든 x<sub>o</sub> 에 대해 더해야 P(Y)<sub>pred</sub> 가 된다.
-
-식 (1) 은 출력 주변분포 식 (4) 를 예측에 옮겨 곱의 형태로 줄여 적은 것이며, 적분까지 적으면 식 (2) 이다.
-
-```math
-P(Y)_{\mathrm{pred}} = \int P(Y \mid X_{i})_{\mathrm{pred}} \cdot P(X_{o})_{\mathrm{true}}\, dX \hspace{19em} (2)
-```
 
 Model 은 in-sample 입력 X<sub>i</sub> 와 그 계측값으로 학습하여 조건부 관계 P(Y|X<sub>i</sub>)<sub>pred</sub> 를 추정하고, 추론에서는 그 관계를 out-of-sample 입력의 실제 분포 P(X<sub>o</sub>)<sub>true</sub> 에 적용하여 예측한 출력분포 P(Y)<sub>pred</sub> 를 얻는다.
 
