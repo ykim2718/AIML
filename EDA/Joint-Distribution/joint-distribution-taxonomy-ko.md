@@ -1,10 +1,10 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 30 | Created: 2026-05-29 | Updated: 2026-10-03 07:29 CDT
+Rev. 31 | Created: 2026-05-29 | Updated: 2026-10-03 07:31 CDT
 
 ## 1. Purpose
 
 - **Problem Statement**: AI/ML model 개발을 위한 요소를 묶는 체계가 없다.
-- **Goal**: P(X), P(Y), P(Y|X) 를 결합분포 P(X,Y) 로 묶어 반도체 공정 AI/ML model 의 taxonomy 와 physical meaning을 밝힌다.
+- **Goal**: P(X), P(Y), P(Y|X) 를 결합분포 P(X,Y) 로 묶어 제조 데이터 AI/ML model 의 taxonomy 와 physical meaning을 밝힌다.
 - **Non-Goal**: 결합분포 밖에 있는 Model (추정기·최적화) 축과 특정 과제의 진단 수치는 다루지 않는다.
 
 ## 2. Summary
@@ -115,7 +115,7 @@ Table 1. Six lenses on P(X), P(Y) and P(Y|X)
 | 관측 (탐지)       | PSI·KS·KL, domain classifier                                        | 계측값 분포 비교                             | Binning CDT, 시간창별 I(X;Y), 잔차 CUSUM·Page-Hinkley |
 | 대책 (lever)      | Feature 선택·증강, importance weighting, domain adaptation          | Target 변환·분해, group 별 scale, prior 보정 | 재학습 간격, 최신성 가중, detrending, drift 적응      |
 
-관측 행은 변화를 재는 방법이고, 대책 행은 변화를 가정하고 model 을 맞추는 방법이다. 변동 시점을 특정하는 것은 관측 행의 방법뿐이다. 4.1 ~ 4.3 의 세 변화를 탐지하는 방법은 [Appendix B](#appendix-b-detection-methods) 에 모은다.
+관측 행은 변화를 재는 방법이고, 대책 행은 변화를 가정하고 model 을 맞추는 방법이다. 변동 시점을 특정하는 것은 관측 행의 방법뿐이다. 4.1 ~ 4.3 의 세 변화를 탐지하는 방법은 [Appendix B](#appendix-b-detection-methods) 에 모은다. 이 분류가 학계와 업계에서 쓰이는 사례는 [Appendix C](#appendix-c-benchmarking) 에 모은다.
 
 ## 4. Physical Meaning
 
@@ -153,6 +153,23 @@ Table 2. Physical meaning of each term
 - **Binning CDT**: X 를 bin 으로 나눠 P(Y|bin) 을 시간창별로 검정하여 변동 시점을 특정한다. P(Y|X) 를 가장 직접 본다.
 - **잔차 CUSUM, Page-Hinkley**: 예측 잔차 통계량이 임계값을 넘는 시점을 출력한다.
 - **I(X;Y)**: 의존성 총량 (거시 지표). 단독으로 쓰면 P(X), P(Y), 관계의 변화가 함께 잡히므로, 시간창별로 추적해야 concept drift 에 가까워진다.
+
+## References
+
+<a id="ref-1"></a>
+[1] Quiñonero-Candela, J., Sugiyama, M., Schwaighofer, A., & Lawrence, N. D. (Eds.). (2009). [Dataset Shift in Machine Learning](https://mitpressbookstore.mit.edu/book/9780262170055). MIT Press. ISBN 978-0-262-17005-5.<br>
+<a id="ref-2"></a>
+[2] Moreno-Torres, J. G., Raeder, T., Alaiz-Rodríguez, R., Chawla, N. V., & Herrera, F. (2012). [A unifying view on dataset shift in classification](https://doi.org/10.1016/j.patcog.2011.06.019). *Pattern Recognition*, 45(1), 521–530.<br>
+<a id="ref-3"></a>
+[3] Gama, J., Žliobaitė, I., Bifet, A., Pechenizkiy, M., & Bouchachia, A. (2014). [A survey on concept drift adaptation](https://doi.org/10.1145/2523813). *ACM Computing Surveys*, 46(4), 44.<br>
+<a id="ref-4"></a>
+[4] Kang, S., & Kang, P. (2017). [An intelligent virtual metrology system with adaptive update for semiconductor manufacturing](https://doi.org/10.1016/j.jprocont.2017.02.002). *Journal of Process Control*, 52, 66–74.<br>
+<a id="ref-5"></a>
+[5] Amazon Web Services. [Data and model quality monitoring with Amazon SageMaker Model Monitor](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html). *Amazon SageMaker AI Developer Guide*.<br>
+<a id="ref-6"></a>
+[6] Google Cloud. [Introduction to Vertex AI Model Monitoring](https://docs.cloud.google.com/vertex-ai/docs/model-monitoring/overview). *Vertex AI documentation*.<br>
+<a id="ref-7"></a>
+[7] Evidently AI. [Concept drift in ML](https://www.evidentlyai.com/ml-in-production/concept-drift). *ML in Production guide*.
 
 ---
 
@@ -195,3 +212,24 @@ Table 2. Physical meaning of each term
 - **ADWIN (Adaptive Windowing)**: 오차 window 를 두 부분으로 나눠 평균 차이가 유의하면 오래된 부분을 버리고 변화를 알린다.
 - **시간창별 성능 감시**: 시간창마다 R²·RMSE 를 계산하여 성능 저하 시점을 찾는다. 계측값이 있어야 한다.
 - **시간창별 I(X;Y)**: 시간창마다 상호정보량을 계산하여 측정 데이터와 계측값의 의존성 변화를 추적한다.
+
+## Appendix C. Benchmarking
+
+Table 3 은 이 문서의 분류가 학계의 dataset shift 이론과 업계의 model monitoring 도구에서 쓰이는 사례를 모은다.
+
+Table 3. Use of the shift taxonomy in research and industry
+
+| Source                                       | Kind             | Terms used                                              | Term in this document                                                  |
+| :------------------------------------------: | :--------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------: |
+| Quiñonero-Candela et al. [[1](#ref-1)]       | Book             | dataset shift, covariate shift                          | 학습·추론 사이의 P(X,Y) 차이, P(X) 이동                                |
+| Moreno-Torres et al. [[2](#ref-2)]           | Paper            | covariate shift, prior probability shift, concept shift | P(X), P(Y), P(Y\|X) 의 세 shift                                        |
+| Gama et al. [[3](#ref-3)]                    | Survey           | concept drift detection, adaptation                     | 4.3 의 관측과 대응                                                     |
+| Kang & Kang [[4](#ref-4)]                    | Paper            | virtual metrology adaptive update                       | 제조 데이터의 P(Y\|X) 변화 대응                                        |
+| Amazon SageMaker Model Monitor [[5](#ref-5)] | Industry tool    | data quality drift, model quality drift                 | P(X) 이동, 좋은 예측의 성능 저하                                       |
+| Vertex AI Model Monitoring [[6](#ref-6)]     | Industry tool    | training-serving skew, inference drift                  | P(X<sub>o</sub>) ≠ P(X<sub>i</sub>), 시간에 따른 P(X<sub>o</sub>) 이동 |
+| Evidently AI [[7](#ref-7)]                   | Open-source tool | data drift, prediction drift, concept drift             | P(X), P(Y)<sub>pred</sub>, P(Y\|X)                                     |
+
+- **학계**: dataset shift 는 학습과 추론 사이에 결합분포 P(X,Y) 가 달라지는 문제로 정의된다 [[1](#ref-1)]. Moreno-Torres et al. 은 결합분포의 어느 항이 바뀌는지로 covariate shift (P(X) 이동, P(Y|X) 유지), prior probability shift (P(Y) 이동, P(X|Y) 유지), concept shift 를 정리하였고 [[2](#ref-2)], 이 문서의 식 (3)·(5) 와 세 shift 분류가 이를 따른다.
+- **제조 데이터**: 반도체 virtual metrology 에서는 공정 조건이 시간에 따라 바뀌어 예측 성능이 떨어지므로, 신뢰도가 낮은 wafer 만 계측하고 그 결과로 model 을 즉시 갱신하는 adaptive update 가 제안되었다 [[4](#ref-4)]. Concept drift 의 탐지와 적응 방법은 Gama et al. 이 정리하였다 [[3](#ref-3)].
+- **업계 도구**: model monitoring 도구는 정답값 없이 볼 수 있는 P(X) 이동을 data quality drift [[5](#ref-5)], training-serving skew·inference drift [[6](#ref-6)], data drift [[7](#ref-7)] 라는 이름으로 감시한다. 정답값이 들어온 뒤에는 예측과 정답의 차이로 model quality drift [[5](#ref-5)] 나 concept drift [[7](#ref-7)] 를 확인한다.
+- **이 문서의 틀**: 세 shift 분류는 학계와 업계에서 쓰는 표준 개념이다. 세 항을 식 (1) 의 좋은 데이터·좋은 모델·좋은 예측에 대응시킨 틀은 이 문서가 정리한 것이며, 위 출처들이 이름 붙여 쓰는 표준 framework 는 아니다.
