@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 7 | Created: 2026-10-03 | Updated: 2026-10-03 10:34 CDT
+Rev. 8 | Created: 2026-10-03 | Updated: 2026-10-03 10:44 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,11 +123,11 @@ The observation row lists ways to measure a change, and the lever row lists ways
 Eq. (4) writes the relation of the three elements with training data X<sub>i</sub> and inference data X<sub>o</sub> kept apart. X<sub>i</sub> is in-sample, the data used to train the model, and X<sub>o</sub> is out-of-sample, the new data that arrives at inference.
 
 ```math
-P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x)_{\mathrm{model}} \cdot P(X_{o} = x)_{\mathrm{true}}\, dx \hspace{19em} (4)
+P(Y)_{\mathrm{pred}} = \int P(Y \mid X = x;\, X_{i})_{\mathrm{model}} \cdot P(X_{o} = x)_{\mathrm{true}}\, dx \hspace{19em} (4)
 ```
 
 - **$`P(Y)_{\mathrm{pred}}`$ (Overall Predicted Distribution):** the final distribution of the target variable $`Y`$ expected on out-of-sample inference data; a marginal distribution with the measured data integrated out.
-- **$`P(Y \mid X = x)_{\mathrm{model}}`$ (Model's Conditional Prediction):** the predictive model itself. It is trained on in-sample training data $`X_i`$ and, given a measured data value $`x`$, returns the conditional distribution of $`Y`$. The subscript `model` marks it as an estimated, learned function that may differ from the true distribution.
+- **$`P(Y \mid X = x;\, X_i)_{\mathrm{model}}`$ (Model's Conditional Prediction):** the predictive model itself. It is trained on in-sample training data $`X_i`$ and, given a measured data value $`x`$, returns the conditional distribution of $`Y`$. The subscript `model` marks it as an estimated, learned function that may differ from the true distribution. The $`X_i`$ after `;` marks the data the model was trained on, set apart from the conditioning variable after `|`.
 - **$`P(X_o = x)_{\mathrm{true}}`$ (True Distribution of Out-of-Sample Data):** the true probability density that out-of-sample inference data $`X_o`$ takes the value $`x`$. It describes how $`X_o`$ is actually distributed when the model is used for inference.
 - **$`\int \ldots dx`$ (Marginalization over $`x`$):** sums the predictions over every value $`x`$ the inference data can take. Each value is weighted by how likely it is at inference time, so the result is a weighted average of the predictions.
 
