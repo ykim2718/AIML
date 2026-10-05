@@ -1,5 +1,5 @@
-# CLTS (Continuous Learning for Time Series)
-Rev. 31 | Created: 2026-08-12 | Updated: 2026-10-05 16:05 CDT
+# CLTS (Continual Learning for Time Series)
+Rev. 32 | Created: 2026-08-12 | Updated: 2026-10-05 16:10 CDT
 
 - [1. Taxonomy](#1-taxonomy)
 - [2. Learning Method: How to Learn](#2-learning-method-how-to-learn)
@@ -19,14 +19,14 @@ Rev. 31 | Created: 2026-08-12 | Updated: 2026-10-05 16:05 CDT
 - [Appendix E. Python Examples: Knowledge Retention](#appendix-e-python-examples-knowledge-retention)
 - [Appendix F. Python Examples: Model Selection](#appendix-f-python-examples-model-selection)
 
-CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 Recursive Retraining, Online Learning, Incremental Learning 등으로 불린다.
+CLTS는 CL for TS, 즉 Continual Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 Recursive Retraining, Online Learning, Incremental Learning 등으로 불린다.
 
 ## 1. Taxonomy
 
 네 가지 축 — learning schedule (언제 학습하는가), learning method (어떻게 학습하는가), knowledge retention (무엇을 보존하는가), model selection (어느 모델을 쓰는가) — 으로 나눈 하나의 통합 체계로 정리하면 Fig 1과 같다. 각 항목의 오른쪽에는 그 분류로 불리는 대표 명칭이나 기법을 표기한다.
 
 ```
-CLTS (Continuous Learning for Time Series)
+CLTS (Continual Learning for Time Series)
 |
 +-- Learning schedule (When to learn)
 |   +-- Periodic (per day / week / month) ......... Recursive / Rolling Retraining
@@ -174,6 +174,8 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **Avalanche**: PyTorch 기반의 continual learning library로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
 - **booster**: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
 - **concept drift**: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
+- **continual**: 끊겼다가 되풀이되며 이어지는 것을 뜻한다. 데이터가 묶음 단위로 끊어져 도착하고 모델이 그 묶음을 차례로 이어 학습하므로 이 분야의 표준 이름이 continual learning이다.
+- **continuous**: 끊김 없이 이어지는 것을 뜻한다. Fig 1의 Learning schedule 축에서 샘플마다 쉬지 않고 갱신하는 가지의 이름으로 쓰며, 학습이 끊어져 이어지는 continual과 구별한다.
 - **data leakage**: 학습 시점에 알 수 없어야 할 정보가 학습이나 평가에 섞여 성능이 과대평가되는 문제다.
 - **data stream mining**: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
 - **delayed evaluation**: 모델을 학습 시점에 평가하지 않고, forecast horizon만큼의 실제값이 도착한 뒤에 평가하는 방식이다.
