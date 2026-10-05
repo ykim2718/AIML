@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 29 | Created: 2026-08-12 | Updated: 2026-10-05 14:54 CDT
+Rev. 30 | Created: 2026-08-12 | Updated: 2026-10-05 16:00 CDT
 
 - [1. Taxonomy](#1-taxonomy)
 - [2. Learning Method: How to Learn](#2-learning-method-how-to-learn)
@@ -63,7 +63,7 @@ Fig 1. Unified taxonomy of continual learning for time series
 
 ## 2. Learning Method: How to Learn
 
-Fig 1의 Learning method 축은 architecture adaptation, 즉 새 데이터를 받을 때 모델의 architecture를 고치는지 고정하는지를 기준으로 갈린다. Architecture를 고정하고 parameter만 갱신하는 쪽이 static architecture, 데이터가 쌓이는 동안 architecture 자체를 키우거나 다시 고르는 쪽이 dynamic architecture이다. System identification은 같은 구별을 parameter estimation과 structure identification이라는 이름으로 쓴다.
+Fig 1의 Learning method 축은 architecture adaptation, 즉 새 데이터를 받을 때 모델의 architecture를 고치는지 고정하는지를 기준으로 갈린다. Architecture를 고정하고 parameter만 갱신하는 쪽이 static architecture, 데이터가 쌓이는 동안 architecture 자체를 키우거나 다시 고르는 쪽이 dynamic architecture이다. Control engineering과 signal processing 쪽에서 System identification은 같은 구별을 parameter estimation과 structure identification이라는 이름으로 쓴다.
 
 ### 2.1 Static architecture
 
@@ -208,7 +208,7 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **SGD**: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
 - **static architecture**: 모델의 architecture를 고정하고 parameter만 갱신하는 방식이다.
 - **structure identification**: 관측값으로 모델의 architecture 자체 (항의 개수, 차수 등) 를 고르는 절차이다.
-- **system identification**: 관측한 입력과 출력으로 동적 system의 모델을 만드는 공학 분야이다.
+- **system identification**: 관측한 입력과 출력으로 동적 system의 모델을 만드는 control engineering과 signal processing의 분야이다.
 - **TensorFlow**: Google이 주도하는 오픈소스 딥러닝 framework이다.
 - **test-time adaptation**: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
 - **transfer learning**: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
