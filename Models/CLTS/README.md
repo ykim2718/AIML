@@ -1,11 +1,10 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 28 | Created: 2026-08-12 | Updated: 2026-09-23 11:08 CDT
+Rev. 29 | Created: 2026-08-12 | Updated: 2026-10-05 14:54 CDT
 
 - [1. Taxonomy](#1-taxonomy)
 - [2. Learning Method: How to Learn](#2-learning-method-how-to-learn)
-  - [2.1 Full retraining on a window](#21-full-retraining-on-a-window)
-  - [2.2 Native sequential update](#22-native-sequential-update)
-  - [2.3 Fine-tuning of a pre-trained model](#23-fine-tuning-of-a-pre-trained-model)
+  - [2.1 Static architecture](#21-static-architecture)
+  - [2.2 Dynamic architecture](#22-dynamic-architecture)
 - [3. Model Selection: Which Model to Serve](#3-model-selection-which-model-to-serve)
   - [3.1 Delayed evaluation](#31-delayed-evaluation)
   - [3.2 Online ensemble](#32-online-ensemble)
@@ -34,18 +33,23 @@ CLTS (Continuous Learning for Time Series)
 |   +-- Continuous (per sample or mini-batch) ..... Online / Streaming Learning, Data Stream Mining
 |   +-- On drift alarm ............................ Concept Drift Detection / Adaptation
 |
-+-- Learning method (How to learn)
-|   +-- Full retraining on a window
-|   |   +-- Rolling window ........................ fixed-size window, keeps the latest trend
-|   |   +-- Expanding window ...................... retrain on the full history from the start
-|   +-- Native sequential update .................. SGD, Adaptive Filtering (Kalman filter, RLS)
-|   +-- Fine-tuning of a pre-trained model ........ Transfer Learning, warm start
-|   +-- Learned / self-adaptation ................. Meta-Learning, Test-Time Adaptation
++-- Learning method (How to learn) ................ Architecture adaptation (static / dynamic)
+|   +-- Static architecture ....................... architecture fixed, parameters only
+|   |   +-- Full retraining on a window
+|   |   |   +-- Rolling window .................... fixed-size window, keeps the latest trend
+|   |   |   +-- Expanding window .................. retrain on the full history from the start
+|   |   +-- Native sequential update .............. SGD, Adaptive Filtering (Kalman filter, RLS)
+|   |   +-- Fine-tuning of a pre-trained model .... Transfer Learning, warm start
+|   |   +-- Learned / self-adaptation ............. Meta-Learning, Test-Time Adaptation
+|   +-- Dynamic architecture ...................... architecture updated with the data
+|       +-- Incremental structure growth .......... Hoeffding tree, Adaptive Random Forest
+|       +-- Capacity expansion .................... Progressive Neural Network, DEN
+|       +-- Structure re-selection by search ...... AutoML / NAS in the retraining pipeline
 |
 +-- Knowledge retention (What to preserve) ........ Incremental / Continual / Lifelong Learning
 |   +-- Replay-based .............................. keep and mix past samples
 |   +-- Regularization-based ...................... EWC penalty on important weights
-|   +-- Architecture-based ........................ parameter isolation
+|   +-- Architecture-based ........................ see Learning method / Dynamic architecture
 |
 +-- Model selection (Which model to serve)
     +-- Delayed evaluation
@@ -59,22 +63,42 @@ Fig 1. Unified taxonomy of continual learning for time series
 
 ## 2. Learning Method: How to Learn
 
-Fig 1의 Learning method 축 4가지 중, 시계열 예측에서 실제로 가장 널리 쓰이는 3가지를 설명한다. 네 번째 가지인 Learned / self-adaptation (Meta-Learning, Test-Time Adaptation) 은 아직 연구 단계라 제외한다.
+Fig 1의 Learning method 축은 architecture adaptation, 즉 새 데이터를 받을 때 모델의 architecture를 고치는지 고정하는지를 기준으로 갈린다. Architecture를 고정하고 parameter만 갱신하는 쪽이 static architecture, 데이터가 쌓이는 동안 architecture 자체를 키우거나 다시 고르는 쪽이 dynamic architecture이다. System identification은 같은 구별을 parameter estimation과 structure identification이라는 이름으로 쓴다.
 
-### 2.1 Full retraining on a window
+### 2.1 Static architecture
+
+Architecture를 고정한 채 parameter만 갱신하는 네 가지 가운데, 시계열 예측에서 실제로 가장 널리 쓰이는 세 가지를 설명한다. 네 번째 가지인 Learned / self-adaptation (Meta-Learning, Test-Time Adaptation) 은 아직 연구 단계라 제외한다.
+
+#### Full retraining on a window
 
 Window를 잡는 방식에 따라 두 가지로 나뉜다.
 
 - Rolling window: 고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다.
 - Expanding window 🌳: 시작점을 고정하고, 새로운 데이터가 들어올 때마다 증가분을 포함한 전체 이력으로 모델을 처음부터 다시 학습시킨다. 장기 패턴 보존에 유리하고 구현이 가장 단순하지만, 데이터가 커질수록 재학습 비용이 증가한다.
 
-### 2.2 Native sequential update
+#### Native sequential update
 
 Kalman filter와 state space 모델이 대표적이며, 새로운 관측값이 들어올 때마다 수학적 상태 방정식을 통해 현재 상태의 확률 분포 (평균, 분산) 를 실시간으로 업데이트하는 전통적이고 강력한 시계열 기법이다. 계산량이 적고 실시간 예측 업데이트에 매우 효율적이라는 장점이 있다. Kalman filter 외에도 recursive least squares 같은 adaptive filter가 streaming 데이터 위에서 선형 모델을 갱신하는 고전적 방법으로 함께 쓰인다.
 
-### 2.3 Fine-tuning of a pre-trained model
+#### Fine-tuning of a pre-trained model
 
 기존 데이터를 기반으로 사전 학습된 (pre-trained) 딥러닝/머신러닝 모델의 가중치를 파라미터 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
+
+### 2.2 Dynamic architecture
+
+Architecture까지 갱신하는 세 가지이며, architecture를 고치는 주체와 시점에서 갈린다.
+
+#### Incremental structure growth
+
+Hoeffding tree와 Adaptive Random Forest가 대표적이고 River가 둘의 구현을 제공하며, 새 샘플이 쌓여 분기 조건의 통계적 문턱을 넘는 순간 leaf를 분기로 바꾸어 tree를 키운다. 학습을 멈추지 않고 architecture가 자라므로 재학습 없이 새로운 패턴을 받아들이지만, 끝없이 자라는 것을 막는 깊이와 memory 상한을 함께 정해야 한다.
+
+#### Capacity expansion
+
+Progressive Neural Network와 Dynamically Expandable Network (DEN) 처럼 새 과제가 도착할 때 column이나 unit을 더해 용량을 늘리는 방식이다. 기존 가중치를 고정한 채 새로 더한 자리에만 학습하므로 catastrophic forgetting이 일어나지 않지만, 과제가 늘어날수록 모델 크기와 추론 비용이 함께 늘어난다.
+
+#### Structure re-selection by search
+
+주기적 재학습 pipeline 안에서 hyperparameter 탐색이나 neural architecture search (NAS) 로 architecture를 다시 고르는 방식이며, 구현은 AutoML 도구가 맡는다. Architecture가 운영 중에 바뀌지 않고 재학습 주기마다 한 번씩 바뀌므로, 세 가지 가운데 기존의 검증과 배포 절차를 그대로 쓸 수 있는 유일한 방식이다.
 
 ## 3. Model Selection: Which Model to Serve
 
@@ -142,20 +166,26 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 ## Appendix A. Terminology
 
 - **adaptive filter**: 새 관측값이 들어올 때마다 계수를 실시간으로 갱신하는 filter이다.
+- **Adaptive Random Forest**: Hoeffding tree를 base learner로 쓰는 streaming ensemble로, drift가 감지된 tree를 새로 학습한 tree로 교체한다.
 - **ADWIN**: Adaptive Windowing. 값의 stream에서 분포 변화를 감지하는 drift detection 알고리즘이다.
+- **architecture adaptation**: 새 데이터를 받을 때 모델의 architecture를 고칠지 고정할지를 정하는 선택이다.
 - **ARIMA**: Autoregressive Integrated Moving Average. 자기회귀와 이동평균을 결합한 고전적 시계열 예측 모델이다.
+- **AutoML**: 전처리, 모델, hyperparameter의 선택을 탐색으로 자동화하는 기법이다.
 - **Avalanche**: PyTorch 기반의 continual learning 라이브러리로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
 - **booster**: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
 - **concept drift**: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
 - **data leakage**: 학습 시점에 알 수 없어야 할 정보가 학습이나 평가에 섞여 성능이 과대평가되는 문제다.
 - **data stream mining**: 끝없이 이어지는 데이터 stream에서 실시간으로 패턴을 추출하는 분야이다.
 - **delayed evaluation**: 모델을 학습 시점에 평가하지 않고, forecast horizon만큼의 실제값이 도착한 뒤에 평가하는 방식이다.
+- **DEN**: Dynamically Expandable Network. 새 과제가 도착할 때 필요한 만큼 unit을 더해 용량을 늘리는 continual learning 모델이다.
+- **dynamic architecture**: 데이터가 쌓이는 동안 모델의 architecture 자체를 키우거나 다시 고르는 방식이다.
 - **EWC**: Elastic Weight Consolidation. 이전 과제에 중요한 가중치의 변화에 벌점을 주어 forgetting을 줄이는 regularization 기법이다.
 - **expanding window**: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
 - **experience**: Avalanche에서 continual learning stream을 구성하는 학습 단위로, 한 번에 도착하는 데이터 묶음이다.
 - **forecast horizon**: 예측 시점부터 예측 대상 시점까지의 시간 간격이다.
 - **FSNet**: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
 - **gradient boosting**: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
+- **Hoeffding tree**: Hoeffding 부등식으로 분기 시점을 판정하여 stream 위에서 점진적으로 자라는 decision tree이다.
 - **lifelong learning**: 하나의 모델이 이어지는 여러 과제를 계속 학습하는 패러다임으로, continual learning과 거의 같은 뜻으로 쓰인다.
 - **LightGBM**: gradient boosting 기반의 오픈소스 머신러닝 framework이다.
 - **local level model**: 관측값을 서서히 변하는 수준 성분과 관측 노이즈로 분해하는 가장 단순한 state space 모델이다.
@@ -163,9 +193,12 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **meta-learning**: 새로운 과제에 빠르게 적응하는 방법 자체를 학습하는 기법이다.
 - **model selection**: 학습된 여러 모델 가운데 배포에 사용할 모델을 평가 점수로 고르는 절차이다.
 - **MSE**: Mean Squared Error. 예측 오차 제곱의 평균이다.
+- **NAS**: Neural Architecture Search. Neural network의 architecture를 탐색으로 자동 설계하는 기법이다.
 - **OneNet**: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
 - **online ensemble**: 학습된 여러 모델의 예측을 실시간 성능에 따라 가중 결합하는 기법이다.
+- **parameter estimation**: 모델의 architecture를 고정한 상태에서 관측값으로 parameter 값을 구하는 절차이다.
 - **parameter isolation**: 과제별로 서로 다른 파라미터 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
+- **Progressive Neural Network**: 새 과제마다 column을 더하고 기존 column의 가중치를 고정하여 forgetting을 막는 continual learning 모델이다.
 - **progressive validation**: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
 - **PyTorch**: Meta가 주도하는 오픈소스 딥러닝 framework이다.
 - **recursive least squares (RLS)**: 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
@@ -173,6 +206,9 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **replay**: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
 - **rolling window**: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
 - **SGD**: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
+- **static architecture**: 모델의 architecture를 고정하고 parameter만 갱신하는 방식이다.
+- **structure identification**: 관측값으로 모델의 architecture 자체 (항의 개수, 차수 등) 를 고르는 절차이다.
+- **system identification**: 관측한 입력과 출력으로 동적 system의 모델을 만드는 공학 분야이다.
 - **TensorFlow**: Google이 주도하는 오픈소스 딥러닝 framework이다.
 - **test-time adaptation**: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
 - **transfer learning**: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
@@ -184,37 +220,43 @@ Fig 1의 네 축을 각 분류별 대표 Python library와 연결하면 Fig 2와
 ```
 Learning schedule (When to learn)
 |
-+-- Periodic ................... any library, a retraining loop per step / day / week
-+-- On drift alarm ............. River (drift.ADWIN, drift.PageHinkley)
++-- Periodic ....................... any library, a retraining loop per step / day / week
++-- On drift alarm ................. River (drift.ADWIN, drift.PageHinkley)
 
 Learning method (How to learn)
 |
-+-- Full retraining on a window
-|   +-- scikit-learn ........... refit any estimator on each window
-|   +-- statsmodels ............ refit ARIMA / state space models per window
-|   +-- LightGBM ............... periodic retraining of boosting models
++-- Static architecture
+|   +-- Full retraining on a window
+|   |   +-- scikit-learn ........... refit any estimator on each window
+|   |   +-- statsmodels ............ refit ARIMA / state space models per window
+|   |   +-- LightGBM ............... periodic retraining of boosting models
+|   |
+|   +-- Native sequential update (per sample or mini-batch)
+|   |   +-- River .................. predict_one / learn_one streaming pipeline
+|   |   +-- scikit-learn ........... partial_fit (SGDRegressor, MLPRegressor)
+|   |   +-- statsmodels ............ Kalman filter state update via append
+|   |   +-- pySmooth ............... online ARIMA, Kalman filter variants
+|   |
+|   +-- Fine-tuning of a pre-trained model (warm start)
+|       +-- scikit-learn ........... warm_start=True (GradientBoostingRegressor)
+|       +-- LightGBM ............... continued training via init_model
+|       +-- PyTorch / TensorFlow ... load pre-trained weights and fine-tune
 |
-+-- Native sequential update (per sample or mini-batch)
-|   +-- River .................. predict_one / learn_one streaming pipeline
-|   +-- scikit-learn ........... partial_fit (SGDRegressor, MLPRegressor)
-|   +-- statsmodels ............ Kalman filter state update via append
-|   +-- pySmooth ............... online ARIMA, Kalman filter variants
-|
-+-- Fine-tuning of a pre-trained model (warm start)
-    +-- scikit-learn ........... warm_start=True (GradientBoostingRegressor)
-    +-- LightGBM ............... continued training via init_model
-    +-- PyTorch / TensorFlow ... load pre-trained weights and fine-tune
++-- Dynamic architecture
+    +-- River ...................... tree.HoeffdingTreeRegressor, forest.ARFRegressor
+    +-- Avalanche .................. parameter isolation strategies
+    +-- scikit-learn ............... GridSearchCV re-run in each retraining cycle
 
 Knowledge retention (What to preserve)
 |
-+-- Replay-based ............... Avalanche (replay plugin), custom replay buffer
-+-- Regularization-based ....... Avalanche (EWC plugin)
-+-- Architecture-based ......... Avalanche (parameter isolation strategies)
++-- Replay-based ................... Avalanche (replay plugin), custom replay buffer
++-- Regularization-based ........... Avalanche (EWC plugin)
++-- Architecture-based ............. see Learning method / Dynamic architecture
 
 Model selection (Which model to serve)
 |
-+-- Delayed evaluation ......... collections.deque + NumPy, with any model library
-+-- Online ensemble ............ River (ensemble, model_selection modules)
++-- Delayed evaluation ............. collections.deque + NumPy, with any model library
++-- Online ensemble ................ River (ensemble, model_selection modules)
 ```
 
 Fig 2. Classifications of Fig 1 extended with representative Python libraries
@@ -254,7 +296,7 @@ for t in range(TRAIN, len(y)):
 
 ## Appendix D. Python Examples: Learning Method
 
-Fig 1의 Learning method 축에 해당하는 예시이다. Fig 2의 분류 순서 (Full retraining on a window, Native sequential update, Fine-tuning of a pre-trained model) 를 따른다.
+Fig 1의 Learning method 축 가운데 Static architecture 가지에 해당하는 예시이다. Fig 2의 분류 순서 (Full retraining on a window, Native sequential update, Fine-tuning of a pre-trained model) 를 따른다.
 
 #### Rolling window retraining
 
