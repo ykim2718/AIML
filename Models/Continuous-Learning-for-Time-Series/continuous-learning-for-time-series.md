@@ -1,5 +1,5 @@
 # CLTS (Continuous Learning for Time Series)
-Rev. 30 | Created: 2026-08-12 | Updated: 2026-10-05 16:00 CDT
+Rev. 31 | Created: 2026-08-12 | Updated: 2026-10-05 16:05 CDT
 
 - [1. Taxonomy](#1-taxonomy)
 - [2. Learning Method: How to Learn](#2-learning-method-how-to-learn)
@@ -19,7 +19,7 @@ Rev. 30 | Created: 2026-08-12 | Updated: 2026-10-05 16:00 CDT
 - [Appendix E. Python Examples: Knowledge Retention](#appendix-e-python-examples-knowledge-retention)
 - [Appendix F. Python Examples: Model Selection](#appendix-f-python-examples-model-selection)
 
-CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 재귀적 재학습 (Recursive Retraining), 온라인 학습 (Online Learning), 점진적 학습 (Incremental Learning) 등으로 불린다.
+CLTS는 CL for TS, 즉 Continuous Learning for Time Series의 약어이다. 시계열 데이터에 새로운 샘플이 추가될 때 전체 모델을 처음부터 다시 학습시키지 않고, 새로운 데이터만 추가로 학습시켜 예측 성능을 지속적으로 개선하는 기법을 다룬다. 이 기법은 적용 방식과 요구 사항에 따라 Recursive Retraining, Online Learning, Incremental Learning 등으로 불린다.
 
 ## 1. Taxonomy
 
@@ -74,7 +74,7 @@ Architecture를 고정한 채 parameter만 갱신하는 네 가지 가운데, �
 Window를 잡는 방식에 따라 두 가지로 나뉜다.
 
 - Rolling window: 고정된 크기 (예: 최근 30일) 의 window를 유지하면서, 새로운 데이터가 들어오면 가장 오래된 데이터를 밀어내고 최신 데이터로 모델을 재학습시킨다. 데이터의 최신 trend와 계절성 변화 (concept drift) 를 가장 잘 반영한다.
-- Expanding window 🌳: 시작점을 고정하고, 새로운 데이터가 들어올 때마다 증가분을 포함한 전체 이력으로 모델을 처음부터 다시 학습시킨다. 장기 패턴 보존에 유리하고 구현이 가장 단순하지만, 데이터가 커질수록 재학습 비용이 증가한다.
+- Expanding window: 시작점을 고정하고, 새로운 데이터가 들어올 때마다 증가분을 포함한 전체 이력으로 모델을 처음부터 다시 학습시킨다. 장기 패턴 보존에 유리하고 구현이 가장 단순하지만, 데이터가 커질수록 재학습 비용이 증가한다.
 
 #### Native sequential update
 
@@ -82,7 +82,7 @@ Kalman filter와 state space 모델이 대표적이며, 새로운 관측값이 �
 
 #### Fine-tuning of a pre-trained model
 
-기존 데이터를 기반으로 사전 학습된 (pre-trained) 딥러닝/머신러닝 모델의 가중치를 파라미터 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
+기존 데이터를 기반으로 사전 학습된 (pre-trained) deep learning·machine learning 모델의 가중치를 parameter 초기화 없이 새로운 데이터로만 소량 추가 학습 (warm start) 시키는 방식이다. 전체 재학습 대비 계산 비용이 낮고, 기존 모델이 학습한 표현을 재활용할 수 있다는 장점이 있다.
 
 ### 2.2 Dynamic architecture
 
@@ -120,46 +120,46 @@ Best model 하나를 유지하는 대신, 여러 모델의 예측을 실시간 �
 
 ## 4. Challenges
 
-시계열에 대한 continual learning은 일반적인 continual learning과 구별되는 어려움을 가진다.
+시계열의 continual learning은 concept drift, catastrophic forgetting, delayed feedback 세 가지 어려움을 함께 받는다.
 
 - Concept drift: 입력 변수와 목표값 사이의 관계가 시간에 따라 변한다. 정적 과거 데이터로 학습한 offline 모델은 빠르게 낡은 모델이 된다.
-- Catastrophic forgetting: 새 데이터에만 맞춰 갱신하면 과거에 학습한 패턴 (예: 재발하는 계절성) 을 잊어버린다. 많은 online continual learning 방법이 이를 완화하기 위해 과거 샘플을 다시 학습에 섞는 replay를 사용한다.
-- Delayed feedback: 예측 시점에는 실제 미래 값을 알 수 없고, forecast horizon이 지나야 정답을 얻는다. 이 지연 동안 concept drift가 진행되면 모델이 이미 낡은 개념에 적응하는 문제가 생긴다.
+- Catastrophic forgetting: 새 데이터에만 맞춰 갱신하면 과거에 학습한 패턴 (예: 재발하는 계절성) 을 잊어버린다. 많은 online continual learning 방법이 forgetting을 완화하기 위해 과거 샘플을 다시 학습에 섞는 replay를 사용한다.
+- Delayed feedback: 예측 시점에는 실제 미래 값을 알 수 없고, forecast horizon이 지나야 정답을 얻는다. forecast horizon만큼의 지연 동안 concept drift가 진행되면 모델이 이미 낡은 개념에 적응하는 문제가 생긴다.
 
 ## 5. Deep Learning Approaches
 
-딥러닝 기반 online 시계열 예측에서는 concept drift와 forgetting을 동시에 다루기 위한 전용 architecture가 제안되었다. FSNet은 빠른 적응을 위한 보조 구조를 붙인 online 예측 모델이고, OneNet은 복수 모델의 online ensemble로 drift에 대응한다. 시계열 회귀와 예측에 대한 continual learning 연구는 분류 대비 아직 초기 단계이며, 최근에야 첫 survey가 정리되었다.
+Deep learning 기반 online 시계열 예측에서는 concept drift와 forgetting을 동시에 다루기 위한 전용 architecture가 제안되었다. FSNet은 빠른 적응을 위한 보조 구조를 붙인 online 예측 모델이고, OneNet은 복수 모델의 online ensemble로 drift에 대응한다. Drift가 닿기 전에 모델을 미리 보정하는 proactive adaptation [[1](#ref-1)] 과 되풀이되는 drift에 모델 pool로 대응하는 continuous evolution pool [[2](#ref-2)] 도 같은 계열이다. 시계열 회귀와 예측에 대한 continual learning 연구는 분류 대비 아직 초기 단계이며, 최근에야 첫 survey [[3](#ref-3)] 와 score 기반 online 방법 [[4](#ref-4)] 이 나왔다.
 
 ## 6. Tools and Libraries
 
 Table 1. Python tools for continual time series learning
 
-| Tool | Approach | Note |
-|------|----------|------|
-| River | Online Learning | Creme와 scikit-multiflow가 병합된 streaming 학습 라이브러리로, 샘플 단위 회귀·분류·이상 탐지와 progressive validation, drift detection, online ensemble을 지원한다. |
-| scikit-learn | Incremental Learning / Warm Start | `partial_fit` 을 제공하는 estimator는 mini-batch 단위 갱신을 지원하고, `warm_start=True` 는 이전 학습 결과에서 이어서 학습한다. |
-| statsmodels | State Space Models | Kalman filter 기반 state space 모델로 새 관측값에 대한 상태 갱신을 지원한다. |
-| pySmooth | Kalman Filter / Online ARIMA | 이산·확장·unscented Kalman filter와 online ARIMA를 제공한다. |
-| LightGBM | Continued Training | `init_model` 에 기존 booster를 전달하면 새 데이터로 tree를 추가하며 이어서 학습한다. |
-| PyTorch / TensorFlow | Fine-Tuning | 사전 학습 모델의 가중치를 유지한 채 새 데이터로 소량 추가 학습하는 warm start 패턴을 지원한다. |
-| Avalanche | Continual Learning | PyTorch 기반으로 replay·EWC·parameter isolation 등 forgetting 완화 strategy를 제공한다. |
+| Tool                 | Approach                          | Note                                                                                                                                                             |
+| :------------------: | :-------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| River                | Online Learning                   | Creme와 scikit-multiflow가 병합된 streaming 학습 library로, 샘플 단위 회귀·분류·이상 탐지와 progressive validation, drift detection, online ensemble을 지원한다. |
+| scikit-learn         | Incremental Learning / Warm Start | `partial_fit` 을 제공하는 estimator는 mini-batch 단위 갱신을 지원하고, `warm_start=True` 는 이전 학습 결과에서 이어서 학습한다.                                  |
+| statsmodels          | State Space Models                | Kalman filter 기반 state space 모델로 새 관측값에 대한 상태 갱신을 지원한다.                                                                                     |
+| pySmooth             | Kalman Filter / Online ARIMA      | 이산·확장·unscented Kalman filter와 online ARIMA를 제공한다.                                                                                                     |
+| LightGBM             | Continued Training                | `init_model` 에 기존 booster를 전달하면 새 데이터로 tree를 추가하며 이어서 학습한다.                                                                             |
+| PyTorch / TensorFlow | Fine-Tuning                       | 사전 학습 모델의 가중치를 유지한 채 새 데이터로 소량 추가 학습하는 warm start 패턴을 지원한다.                                                                   |
+| Avalanche            | Continual Learning                | PyTorch 기반으로 replay·EWC·parameter isolation 등 forgetting 완화 strategy를 제공한다.                                                                          |
 
 Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-python-examples-learning-schedule), [Appendix D](#appendix-d-python-examples-learning-method), [Appendix E](#appendix-e-python-examples-knowledge-retention), [Appendix F](#appendix-f-python-examples-model-selection) 에 있다.
 
 ## References
 
 <a id="ref-1"></a>
-[1] [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)<br>
+[1] [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)<br>
 <a id="ref-2"></a>
-[2] [Proactive Model Adaptation Against Concept Drift for Online Time Series Forecasting](https://arxiv.org/pdf/2412.08435)<br>
+[2] [Continuous Evolution Pool: Taming Recurring Concept Drift in Online Time Series Forecasting](https://arxiv.org/html/2506.14790)<br>
 <a id="ref-3"></a>
-[3] [Continuous Evolution Pool: Taming Recurring Concept Drift in Online Time Series Forecasting](https://arxiv.org/html/2506.14790)<br>
+[3] [Continual Learning for Time Series Forecasting: A First Survey](https://univ-evry.hal.science/INSA-CVL/hal-04836655v1)<br>
 <a id="ref-4"></a>
 [4] [Online Continual Learning for Time Series: a Natural Score-driven Approach](https://arxiv.org/html/2601.12931)<br>
 <a id="ref-5"></a>
-[5] [pySmooth: Kalman filters and online ARIMA in Python](https://github.com/kenluck2001/pySmooth)<br>
+[5] [Kalman Filter for Time Series Forecasting in Python](https://forecastegy.com/posts/kalman-filter-for-time-series-forecasting-in-python/)<br>
 <a id="ref-6"></a>
-[6] [Kalman Filter for Time Series Forecasting in Python](https://forecastegy.com/posts/kalman-filter-for-time-series-forecasting-in-python/)
+[6] [pySmooth: Kalman filters and online ARIMA in Python](https://github.com/kenluck2001/pySmooth)
 
 ---
 
@@ -171,7 +171,7 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **architecture adaptation**: 새 데이터를 받을 때 모델의 architecture를 고칠지 고정할지를 정하는 선택이다.
 - **ARIMA**: Autoregressive Integrated Moving Average. 자기회귀와 이동평균을 결합한 고전적 시계열 예측 모델이다.
 - **AutoML**: 전처리, 모델, hyperparameter의 선택을 탐색으로 자동화하는 기법이다.
-- **Avalanche**: PyTorch 기반의 continual learning 라이브러리로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
+- **Avalanche**: PyTorch 기반의 continual learning library로, replay·regularization·architecture 계열 기법의 구현을 제공한다.
 - **booster**: gradient boosting 모델에서 학습된 tree들의 집합을 담는 객체이다.
 - **concept drift**: 입력 변수와 목표값 사이의 통계적 관계가 시간에 따라 변하는 현상이다.
 - **data leakage**: 학습 시점에 알 수 없어야 할 정보가 학습이나 평가에 섞여 성능이 과대평가되는 문제다.
@@ -183,11 +183,11 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **expanding window**: 시작점을 고정하고 끝점만 앞으로 늘려 학습 구간을 확장하는 방식이다.
 - **experience**: Avalanche에서 continual learning stream을 구성하는 학습 단위로, 한 번에 도착하는 데이터 묶음이다.
 - **forecast horizon**: 예측 시점부터 예측 대상 시점까지의 시간 간격이다.
-- **FSNet**: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 딥러닝 모델이다.
+- **FSNet**: Fast and Slow learning Network. 빠른 적응용 보조 구조를 가진 online 시계열 예측 deep learning 모델이다.
 - **gradient boosting**: 이전 모델의 오차를 보정하는 tree를 순차적으로 추가하는 ensemble 학습 기법이다.
 - **Hoeffding tree**: Hoeffding 부등식으로 분기 시점을 판정하여 stream 위에서 점진적으로 자라는 decision tree이다.
 - **lifelong learning**: 하나의 모델이 이어지는 여러 과제를 계속 학습하는 패러다임으로, continual learning과 거의 같은 뜻으로 쓰인다.
-- **LightGBM**: gradient boosting 기반의 오픈소스 머신러닝 framework이다.
+- **LightGBM**: gradient boosting 기반의 open source machine learning framework이다.
 - **local level model**: 관측값을 서서히 변하는 수준 성분과 관측 노이즈로 분해하는 가장 단순한 state space 모델이다.
 - **MAE**: Mean Absolute Error. 예측 오차 절대값의 평균이다.
 - **meta-learning**: 새로운 과제에 빠르게 적응하는 방법 자체를 학습하는 기법이다.
@@ -197,19 +197,19 @@ Table 1 도구의 구현 예시는 Fig 1의 축별로 [Appendix C](#appendix-c-p
 - **OneNet**: 복수 예측 모델을 online ensemble로 결합하여 concept drift에 대응하는 시계열 예측 모델이다.
 - **online ensemble**: 학습된 여러 모델의 예측을 실시간 성능에 따라 가중 결합하는 기법이다.
 - **parameter estimation**: 모델의 architecture를 고정한 상태에서 관측값으로 parameter 값을 구하는 절차이다.
-- **parameter isolation**: 과제별로 서로 다른 파라미터 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
+- **parameter isolation**: 과제별로 서로 다른 parameter 부분집합을 할당하여 과제 간 간섭을 막는 continual learning 기법이다.
 - **Progressive Neural Network**: 새 과제마다 column을 더하고 기존 column의 가중치를 고정하여 forgetting을 막는 continual learning 모델이다.
 - **progressive validation**: 각 샘플에 대해 먼저 예측하고 그 다음 학습하여, 별도의 평가 데이터 없이 online 모델을 평가하는 방식이다.
-- **PyTorch**: Meta가 주도하는 오픈소스 딥러닝 framework이다.
+- **PyTorch**: Meta가 주도하는 open source deep learning framework이다.
 - **recursive least squares (RLS)**: 새 관측값이 들어올 때마다 최소제곱 해를 점진적으로 갱신하는 adaptive filter 알고리즘이다.
-- **regularization**: 모델의 복잡도나 파라미터 변화에 벌점을 주어 과적합과 forgetting을 억제하는 기법이다.
+- **regularization**: 모델의 복잡도나 parameter 변화에 벌점을 주어 과적합과 forgetting을 억제하는 기법이다.
 - **replay**: 과거 샘플 일부를 저장해 두었다가 새 데이터와 함께 다시 학습에 사용하는 forgetting 완화 기법이다.
 - **rolling window**: 고정 길이의 학습 구간을 시간 축을 따라 밀며 최신 데이터만 유지하는 방식이다.
-- **SGD**: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 파라미터를 갱신하는 최적화 알고리즘이다.
+- **SGD**: Stochastic Gradient Descent. 샘플 (또는 mini-batch) 단위의 gradient로 parameter를 갱신하는 최적화 알고리즘이다.
 - **static architecture**: 모델의 architecture를 고정하고 parameter만 갱신하는 방식이다.
 - **structure identification**: 관측값으로 모델의 architecture 자체 (항의 개수, 차수 등) 를 고르는 절차이다.
 - **system identification**: 관측한 입력과 출력으로 동적 system의 모델을 만드는 control engineering과 signal processing의 분야이다.
-- **TensorFlow**: Google이 주도하는 오픈소스 딥러닝 framework이다.
+- **TensorFlow**: Google이 주도하는 open source deep learning framework이다.
 - **test-time adaptation**: 배포된 모델이 예측 시점의 입력 분포 변화에 맞춰 스스로를 조정하는 기법이다.
 - **transfer learning**: 한 과제에서 학습한 지식을 다른 과제의 학습에 재사용하는 기법이다.
 
@@ -338,7 +338,7 @@ for t in range(START, len(X)):
 
 #### Incremental learning with scikit-learn partial_fit
 
-`partial_fit` 을 제공하는 estimator (SGDRegressor, SGDClassifier, MLPRegressor 등) 는 새 샘플이 도착할 때마다 파라미터 초기화 없이 모델을 갱신한다.
+`partial_fit` 을 제공하는 estimator (SGDRegressor, SGDClassifier, MLPRegressor 등) 는 새 샘플이 도착할 때마다 parameter 초기화 없이 모델을 갱신한다.
 
 ```python
 import numpy as np
@@ -359,7 +359,7 @@ for i in range(len(X_stream)):
 
 #### Kalman filter update with statsmodels
 
-statsmodels의 UnobservedComponents로 local level model을 적합한 뒤, `append` 로 새 관측값을 Kalman filter 상태에 반영한다. 파라미터를 다시 추정하지 않으므로 갱신 비용이 매우 낮다.
+statsmodels의 UnobservedComponents로 local level model을 적합한 뒤, `append` 로 새 관측값을 Kalman filter 상태에 반영한다. Parameter를 다시 추정하지 않으므로 갱신 비용이 매우 낮다 [[5](#ref-5)].
 
 ```python
 import numpy as np
@@ -401,7 +401,7 @@ for _ in range(200):
 
 #### Online ARIMA with pySmooth
 
-pySmooth는 pip 패키지가 아니므로 저장소를 clone 한 뒤 `ML` 폴더를 모듈 경로에 추가해 사용하고, NumPy 2.0에서 제거된 `np.mat` 을 사용하므로 NumPy 1.x 환경이 필요하다. RecursiveARIMA는 새 관측값이 올 때마다 `update` 로 내부 상태를 갱신한다.
+pySmooth [[6](#ref-6)] 는 pip package가 아니므로 저장소를 clone 한 뒤 `ML` folder를 모듈 경로에 추가해 사용하고, NumPy 2.0에서 제거된 `np.mat` 을 사용하므로 NumPy 1.x 환경이 필요하다. RecursiveARIMA는 새 관측값이 올 때마다 `update` 로 내부 상태를 갱신한다.
 
 ```python
 # clone first: git clone https://github.com/kenluck2001/pySmooth
@@ -473,7 +473,7 @@ booster = lgb.train(
 
 #### Fine-tuning with PyTorch
 
-사전 학습된 신경망의 가중치를 초기화하지 않고, 새 데이터에 대해서만 더 작은 learning rate로 소량 추가 학습한다. TensorFlow에서도 같은 warm start 패턴을 사용한다.
+사전 학습된 neural network의 가중치를 초기화하지 않고, 새 데이터에 대해서만 더 작은 learning rate로 소량 추가 학습한다. TensorFlow에서도 같은 warm start 패턴을 사용한다.
 
 ```python
 import numpy as np
@@ -555,7 +555,7 @@ Fig 1의 Model selection 축에 해당하는 예시이다.
 
 #### Delayed evaluation pipeline
 
-3.1의 delayed evaluation 구조를 구현한 pipeline이다. 매 시점 expanding window로 재학습한 모델을 `collections.deque` 대기 queue에 넣고, forecast horizon (여기서는 5) 만큼의 실제값이 도착하면 MSE로 평가해 best model을 갱신한다. 평가에는 학습 시점 이후에 도착한 실제값만 사용하므로 data leakage가 없다. `fit_model` 의 LinearRegression 자리에 어떤 모델 라이브러리를 넣어도 같은 구조가 동작한다.
+3.1의 delayed evaluation 구조를 구현한 pipeline이다. 매 시점 expanding window로 재학습한 모델을 `collections.deque` 대기 queue에 넣고, forecast horizon (여기서는 5) 만큼의 실제값이 도착하면 MSE로 평가해 best model을 갱신한다. 평가에는 학습 시점 이후에 도착한 실제값만 사용하므로 data leakage가 없다. `fit_model` 의 LinearRegression 자리에 어떤 모델 library를 넣어도 같은 구조가 동작한다.
 
 ```python
 from collections import deque
