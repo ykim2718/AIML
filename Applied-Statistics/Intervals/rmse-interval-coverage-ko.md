@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 0 | Created: 2026-10-05 | Updated: 2026-10-05 18:52 CDT
+Rev. 1 | Created: 2026-10-05 | Updated: 2026-10-06 17:32 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -17,6 +17,7 @@ Rev. 0 | Created: 2026-10-05 | Updated: 2026-10-05 18:52 CDT
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation of Equations (3) to (7)](#appendix-b-derivation-of-equations-3-to-7)
+- [Appendix C. Chi-squared Distribution](#appendix-c-chi-squared-distribution)
 
 ## 1. Purpose
 
@@ -103,7 +104,7 @@ RMSE 는 $\sigma$ 를 모를 때 그 자리에 넣는 추정값이며, 자료마
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (2)
 ```
 
-식 (2) 의 $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 n 개의 오차다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다.
+식 (2) 의 $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 n 개의 오차다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix C](#appendix-c-chi-squared-distribution) 에 있다.
 
 ```math
 \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \sim \chi^2_n \hspace{19em} (3)
@@ -215,16 +216,19 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 
 ## Appendix A. Terminology
 
-- **chi-squared distribution**: 독립인 표준정규분포 값 여러 개를 제곱해 더한 값이 따르는 분포. 더한 개수가 자유도다.
+- **chi-squared distribution**: 독립인 표준정규분포 값 여러 개를 제곱해 더한 값이 따르는 분포. 식 (12) 가 정의다.
 - **concave**: 2차 도함수가 음수여서 곡선이 위로 볼록한 함수의 성질.
 - **confidence interval**: 추정하려는 모수가 들어 있을 확률을 정해 둔 구간.
 - **coverage**: 구간이 담으려는 대상을 실제로 담을 확률.
 - **degrees of freedom**: 제곱합에 남아 있는 독립한 성분의 개수.
+- **gamma function**: 식 (16) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
 - **heteroscedasticity**: 분산이 자리마다 다른 상태.
 - **Jensen's inequality**: concave 함수에서 기댓값의 함수가 함수의 기댓값보다 크다는 부등식.
 - **Laplace distribution**: 양쪽 꼬리가 지수함수로 줄어드는 대칭 분포. 분산이 같은 정규분포보다 꼬리가 두껍다.
+- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (15) 가 정의다.
 - **Monte Carlo**: 난수로 표본을 만들어 확률을 추정하는 방법.
 - **prediction interval**: 새 관측 하나가 들어 있을 확률을 정해 둔 구간.
+- **regularized incomplete gamma function**: lower incomplete gamma function 을 gamma function 으로 나눈 값. 식 (14) 의 우변이 그 값이다.
 - **RMSE**: 오차 제곱의 평균에 제곱근을 취한 값. 식 (2) 가 정의다.
 - **Student t distribution**: 표준정규분포 값을, 그와 독립인 chi-squared 값을 자유도로 나눈 것의 제곱근으로 나눈 비가 따르는 분포.
 - **tolerance factor**: tolerance interval 에서 scale 에 곱하는 배율. 비율과 신뢰수준과 표본 수로 정해진다.
@@ -261,3 +265,54 @@ Parameter 를 p 개 추정한 경우에는 제곱합의 자유도가 $\nu = n - 
 ```
 
 식 (11) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 같은 자리를 바꾸어 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
+
+## Appendix C. Chi-squared Distribution
+
+### C.1 Definition
+
+서로 독립이고 표준정규분포 $N(0, 1)$ 를 따르는 $k$ 개의 확률변수 $Z_1, Z_2, \dots, Z_k$ 가 있을 때, 이 변수들의 제곱합으로 정의되는 확률변수 $X$ 는 자유도가 $k$ 인 chi-squared distribution 을 따른다.
+
+```math
+X = \sum_{i=1}^{k} Z_i^2 = Z_1^2 + Z_2^2 + \dots + Z_k^2 \sim \chi^2(k) \hspace{19em} (12)
+```
+
+- $k$ (자유도, degrees of freedom): 합산되는 독립 표준정규분포 변수의 개수.
+
+본문은 같은 자유도를 n 과 $\nu$ 로 적는다. 식 (8) 의 $S$ 는 식 (12) 의 $X$ 에 $k = n$ 을 넣은 것이고, 식 (11) 의 $S_{\nu}$ 는 $k = \nu$ 를 넣은 것이다.
+
+### C.2 Probability Density Function
+
+자유도가 $k$ 인 chi-squared distribution 의 확률밀도함수 (probability density function) 는 $x \gt 0$ 에서 아래와 같다.
+
+```math
+f(x; k) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\; x^{(k/2) - 1}\, e^{-x/2} \hspace{19em} (13)
+```
+
+식 (13) 의 $\Gamma$ 는 gamma function 이며, 식 (16) 이 gamma function 의 정의다.
+
+### C.3 Cumulative Distribution Function
+
+누적분포함수 $F(x; k)$ 는 확률변수 $X$ 가 특정 값 $x$ 이하일 확률 $P(X \le x)$ 를 뜻하며, 확률밀도함수를 0 부터 $x$ 까지 적분하여 구한다.
+
+```math
+F(x; k) = P(X \le x) = \frac{1}{\Gamma(k/2)}\; \gamma\!\left(\frac{k}{2}, \frac{x}{2}\right) \quad (x \ge 0) \hspace{19em} (14)
+```
+
+식 (14) 의 $\gamma(s, t)$ 는 하부 불완전 감마 함수 (lower incomplete gamma function) 이고, $\Gamma(s)$ 는 적분의 위끝을 무한대로 늘린 gamma function 이다.
+
+```math
+\gamma(s, t) = \int_0^t u^{s-1} e^{-u}\, du \hspace{19em} (15)
+```
+
+```math
+\Gamma(s) = \int_0^{\infty} u^{s-1} e^{-u}\, du \hspace{19em} (16)
+```
+
+Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary function) 로 단순하게 표현되지 않는다. 그래서 식 (14) 처럼 정규화 불완전 감마 함수 (regularized incomplete gamma function) 의 꼴로 정의하고, 실제 계산에는 numerical 방법이나 R, Python, Excel 이 담은 통계 함수를 쓴다.
+
+### C.4 Properties
+
+- **값의 범위**: $X \ge 0$. 제곱합이므로 음수가 되지 않는다.
+- **평균**: $E(X) = k$.
+- **분산**: $\mathrm{Var}(X) = 2k$.
+- **모양**: $k$ 가 작을수록 오른쪽으로 긴 꼬리를 가진 비대칭 형태이며, $k$ 가 커질수록 점점 정규분포 모양에 가깝게 대칭형으로 변한다.
