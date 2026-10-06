@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 1 | Created: 2026-10-05 | Updated: 2026-10-06 17:32 CDT
+Rev. 2 | Created: 2026-10-05 | Updated: 2026-10-06 17:48 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -16,8 +16,8 @@ Rev. 1 | Created: 2026-10-05 | Updated: 2026-10-06 17:32 CDT
   - [5.3 Conditions](#53-conditions)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Derivation of Equations (3) to (7)](#appendix-b-derivation-of-equations-3-to-7)
-- [Appendix C. Chi-squared Distribution](#appendix-c-chi-squared-distribution)
+- [Appendix B. Chi-squared Distribution](#appendix-b-chi-squared-distribution)
+- [Appendix C. Derivation of Equations (3) to (7)](#appendix-c-derivation-of-equations-3-to-7)
 
 ## 1. Purpose
 
@@ -104,7 +104,7 @@ RMSE 는 $\sigma$ 를 모를 때 그 자리에 넣는 추정값이며, 자료마
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (2)
 ```
 
-식 (2) 의 $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 n 개의 오차다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix C](#appendix-c-chi-squared-distribution) 에 있다.
+식 (2) 의 $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 n 개의 오차다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix B](#appendix-b-chi-squared-distribution) 에 있다.
 
 ```math
 \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \sim \chi^2_n \hspace{19em} (3)
@@ -116,7 +116,7 @@ RMSE 는 $\sigma$ 를 모를 때 그 자리에 넣는 추정값이며, 자료마
 E[\mathrm{RMSE}] = c_n\,\sigma, \qquad c_n = \sqrt{\frac{2}{n}}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (4)
 ```
 
-$c_n$ 은 n 이 커지면 1 로 간다. n 이 10 이면 0.9754, 28 이면 0.9911, 100 이면 0.9975 다. 유도는 [Appendix B](#appendix-b-derivation-of-equations-3-to-7) 에 있다.
+$c_n$ 은 n 이 커지면 1 로 간다. n 이 10 이면 0.9754, 28 이면 0.9911, 100 이면 0.9975 다. 유도는 [Appendix C](#appendix-c-derivation-of-equations-3-to-7) 에 있다.
 
 ### 4.3 The Coverage with the RMSE
 
@@ -216,103 +216,103 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 
 ## Appendix A. Terminology
 
-- **chi-squared distribution**: 독립인 표준정규분포 값 여러 개를 제곱해 더한 값이 따르는 분포. 식 (12) 가 정의다.
+- **chi-squared distribution**: 독립인 표준정규분포 값 여러 개를 제곱해 더한 값이 따르는 분포. 식 (8) 이 정의다.
 - **concave**: 2차 도함수가 음수여서 곡선이 위로 볼록한 함수의 성질.
 - **confidence interval**: 추정하려는 모수가 들어 있을 확률을 정해 둔 구간.
 - **coverage**: 구간이 담으려는 대상을 실제로 담을 확률.
 - **degrees of freedom**: 제곱합에 남아 있는 독립한 성분의 개수.
-- **gamma function**: 식 (16) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
+- **gamma function**: 식 (12) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
 - **heteroscedasticity**: 분산이 자리마다 다른 상태.
 - **Jensen's inequality**: concave 함수에서 기댓값의 함수가 함수의 기댓값보다 크다는 부등식.
 - **Laplace distribution**: 양쪽 꼬리가 지수함수로 줄어드는 대칭 분포. 분산이 같은 정규분포보다 꼬리가 두껍다.
-- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (15) 가 정의다.
+- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (11) 이 정의다.
 - **Monte Carlo**: 난수로 표본을 만들어 확률을 추정하는 방법.
 - **prediction interval**: 새 관측 하나가 들어 있을 확률을 정해 둔 구간.
-- **regularized incomplete gamma function**: lower incomplete gamma function 을 gamma function 으로 나눈 값. 식 (14) 의 우변이 그 값이다.
+- **regularized incomplete gamma function**: lower incomplete gamma function 을 gamma function 으로 나눈 값. 식 (10) 의 우변이 그 값이다.
 - **RMSE**: 오차 제곱의 평균에 제곱근을 취한 값. 식 (2) 가 정의다.
 - **Student t distribution**: 표준정규분포 값을, 그와 독립인 chi-squared 값을 자유도로 나눈 것의 제곱근으로 나눈 비가 따르는 분포.
 - **tolerance factor**: tolerance interval 에서 scale 에 곱하는 배율. 비율과 신뢰수준과 표본 수로 정해진다.
 - **tolerance interval**: 모집단의 정해진 비율을 담는다는 것을 정해진 신뢰수준으로 보장하는 구간.
 
-## Appendix B. Derivation of Equations (3) to (7)
+## Appendix B. Chi-squared Distribution
 
-출발점은 오차 하나를 $\sigma$ 로 나눈 값이 표준정규분포를 따른다는 것 하나다. n 개를 제곱해 더하면 자유도 n 의 chi-squared distribution 이 된다.
-
-```math
-S = \sum_{i=1}^{n} \left(\frac{e_i}{\sigma}\right)^2 \sim \chi^2_n, \qquad S = \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \hspace{19em} (8)
-```
-
-두 번째 등식은 식 (2) 의 양변을 제곱해 n 을 곱한 것이며, 이것이 식 (3) 이다. 식 (4) 는 여기서 제곱근의 기댓값으로 나온다. 자유도 n 의 chi-squared 값에 제곱근을 취한 값의 기댓값이 아래와 같다.
-
-```math
-E\left[\sqrt{S}\right] = \sqrt{2}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (9)
-```
-
-식 (8) 에서 $\mathrm{RMSE} = \sigma\sqrt{S/n}$ 이므로 양변에 기댓값을 취하고 식 (9) 를 넣으면 식 (4) 의 $c_n$ 이 그대로 나온다.
-
-식 (5) 는 t distribution 의 정의에서 나온다. 새 오차 $e^{\ast}$ 는 $e_1, \dots, e_n$ 과 독립이므로 $Z = e^{\ast}/\sigma$ 는 S 와 독립인 표준정규분포 값이다.
-
-```math
-\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{\sigma Z}{\sigma\sqrt{S/n}} = \frac{Z}{\sqrt{S/n}} \sim t_n \hspace{19em} (10)
-```
-
-식 (10) 의 가운데에서 $\sigma$ 가 약분되므로 담는 비율은 모르는 $\sigma$ 와 무관해지고 n 하나로 정해진다. 좌변의 절댓값이 1.96 이하일 확률을 t distribution 의 누적분포함수로 적은 것이 식 (6) 이다.
-
-Parameter 를 p 개 추정한 경우에는 제곱합의 자유도가 $\nu = n - p$ 로 줄지만, RMSE 는 식 (2) 대로 n 으로 나눈다. 자유도만큼의 chi-squared 값을 $S_{\nu}$ 로 두면 두 수가 따로 남는다.
-
-```math
-\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{Z}{\sqrt{S_{\nu}/n}} = \sqrt{\frac{n}{\nu}}\;\frac{Z}{\sqrt{S_{\nu}/\nu}} \sim \sqrt{\frac{n}{\nu}}\;t_{\nu} \hspace{19em} (11)
-```
-
-식 (11) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 같은 자리를 바꾸어 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
-
-## Appendix C. Chi-squared Distribution
-
-### C.1 Definition
+### B.1 Definition
 
 서로 독립이고 표준정규분포 $N(0, 1)$ 를 따르는 $k$ 개의 확률변수 $Z_1, Z_2, \dots, Z_k$ 가 있을 때, 이 변수들의 제곱합으로 정의되는 확률변수 $X$ 는 자유도가 $k$ 인 chi-squared distribution 을 따른다.
 
 ```math
-X = \sum_{i=1}^{k} Z_i^2 = Z_1^2 + Z_2^2 + \dots + Z_k^2 \sim \chi^2(k) \hspace{19em} (12)
+X = \sum_{i=1}^{k} Z_i^2 = Z_1^2 + Z_2^2 + \dots + Z_k^2 \sim \chi^2(k) \hspace{19em} (8)
 ```
 
 - $k$ (자유도, degrees of freedom): 합산되는 독립 표준정규분포 변수의 개수.
 
-본문은 같은 자유도를 n 과 $\nu$ 로 적는다. 식 (8) 의 $S$ 는 식 (12) 의 $X$ 에 $k = n$ 을 넣은 것이고, 식 (11) 의 $S_{\nu}$ 는 $k = \nu$ 를 넣은 것이다.
+본문은 같은 자유도를 n 과 $\nu$ 로 적는다. 식 (13) 의 $S$ 는 식 (8) 의 $X$ 에 $k = n$ 을 넣은 것이고, 식 (16) 의 $S_{\nu}$ 는 $k = \nu$ 를 넣은 것이다.
 
-### C.2 Probability Density Function
+### B.2 Probability Density Function
 
 자유도가 $k$ 인 chi-squared distribution 의 확률밀도함수 (probability density function) 는 $x \gt 0$ 에서 아래와 같다.
 
 ```math
-f(x; k) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\; x^{(k/2) - 1}\, e^{-x/2} \hspace{19em} (13)
+f(x; k) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\; x^{(k/2) - 1}\, e^{-x/2} \hspace{19em} (9)
 ```
 
-식 (13) 의 $\Gamma$ 는 gamma function 이며, 식 (16) 이 gamma function 의 정의다.
+식 (9) 의 $\Gamma$ 는 gamma function 이며, 식 (12) 가 gamma function 의 정의다.
 
-### C.3 Cumulative Distribution Function
+### B.3 Cumulative Distribution Function
 
 누적분포함수 $F(x; k)$ 는 확률변수 $X$ 가 특정 값 $x$ 이하일 확률 $P(X \le x)$ 를 뜻하며, 확률밀도함수를 0 부터 $x$ 까지 적분하여 구한다.
 
 ```math
-F(x; k) = P(X \le x) = \frac{1}{\Gamma(k/2)}\; \gamma\!\left(\frac{k}{2}, \frac{x}{2}\right) \quad (x \ge 0) \hspace{19em} (14)
+F(x; k) = P(X \le x) = \frac{1}{\Gamma(k/2)}\; \gamma\!\left(\frac{k}{2}, \frac{x}{2}\right) \quad (x \ge 0) \hspace{19em} (10)
 ```
 
-식 (14) 의 $\gamma(s, t)$ 는 하부 불완전 감마 함수 (lower incomplete gamma function) 이고, $\Gamma(s)$ 는 적분의 위끝을 무한대로 늘린 gamma function 이다.
+식 (10) 의 $\gamma(s, t)$ 는 하부 불완전 감마 함수 (lower incomplete gamma function) 이고, $\Gamma(s)$ 는 적분의 위끝을 무한대로 늘린 gamma function 이다.
 
 ```math
-\gamma(s, t) = \int_0^t u^{s-1} e^{-u}\, du \hspace{19em} (15)
+\gamma(s, t) = \int_0^t u^{s-1} e^{-u}\, du \hspace{19em} (11)
 ```
 
 ```math
-\Gamma(s) = \int_0^{\infty} u^{s-1} e^{-u}\, du \hspace{19em} (16)
+\Gamma(s) = \int_0^{\infty} u^{s-1} e^{-u}\, du \hspace{19em} (12)
 ```
 
-Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary function) 로 단순하게 표현되지 않는다. 그래서 식 (14) 처럼 정규화 불완전 감마 함수 (regularized incomplete gamma function) 의 꼴로 정의하고, 실제 계산에는 numerical 방법이나 R, Python, Excel 이 담은 통계 함수를 쓴다.
+Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary function) 로 단순하게 표현되지 않는다. 그래서 식 (10) 처럼 정규화 불완전 감마 함수 (regularized incomplete gamma function) 의 꼴로 정의하고, 실제 계산에는 numerical 방법이나 R, Python, Excel 이 담은 통계 함수를 쓴다.
 
-### C.4 Properties
+### B.4 Properties
 
 - **값의 범위**: $X \ge 0$. 제곱합이므로 음수가 되지 않는다.
 - **평균**: $E(X) = k$.
 - **분산**: $\mathrm{Var}(X) = 2k$.
 - **모양**: $k$ 가 작을수록 오른쪽으로 긴 꼬리를 가진 비대칭 형태이며, $k$ 가 커질수록 점점 정규분포 모양에 가깝게 대칭형으로 변한다.
+
+## Appendix C. Derivation of Equations (3) to (7)
+
+출발점은 오차 하나를 $\sigma$ 로 나눈 값이 표준정규분포를 따른다는 것 하나다. n 개를 제곱해 더하면 자유도 n 의 chi-squared distribution 이 된다.
+
+```math
+S = \sum_{i=1}^{n} \left(\frac{e_i}{\sigma}\right)^2 \sim \chi^2_n, \qquad S = \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \hspace{19em} (13)
+```
+
+두 번째 등식은 식 (2) 의 양변을 제곱해 n 을 곱한 것이며, 이것이 식 (3) 이다. 식 (4) 는 여기서 제곱근의 기댓값으로 나온다. 자유도 n 의 chi-squared 값에 제곱근을 취한 값의 기댓값이 아래와 같다.
+
+```math
+E\left[\sqrt{S}\right] = \sqrt{2}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (14)
+```
+
+식 (13) 에서 $\mathrm{RMSE} = \sigma\sqrt{S/n}$ 이므로 양변에 기댓값을 취하고 식 (14) 를 넣으면 식 (4) 의 $c_n$ 이 그대로 나온다.
+
+식 (5) 는 t distribution 의 정의에서 나온다. 새 오차 $e^{\ast}$ 는 $e_1, \dots, e_n$ 과 독립이므로 $Z = e^{\ast}/\sigma$ 는 S 와 독립인 표준정규분포 값이다.
+
+```math
+\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{\sigma Z}{\sigma\sqrt{S/n}} = \frac{Z}{\sqrt{S/n}} \sim t_n \hspace{19em} (15)
+```
+
+식 (15) 의 가운데에서 $\sigma$ 가 약분되므로 담는 비율은 모르는 $\sigma$ 와 무관해지고 n 하나로 정해진다. 좌변의 절댓값이 1.96 이하일 확률을 t distribution 의 누적분포함수로 적은 것이 식 (6) 이다.
+
+Parameter 를 p 개 추정한 경우에는 제곱합의 자유도가 $\nu = n - p$ 로 줄지만, RMSE 는 식 (2) 대로 n 으로 나눈다. 자유도만큼의 chi-squared 값을 $S_{\nu}$ 로 두면 두 수가 따로 남는다.
+
+```math
+\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{Z}{\sqrt{S_{\nu}/n}} = \sqrt{\frac{n}{\nu}}\;\frac{Z}{\sqrt{S_{\nu}/\nu}} \sim \sqrt{\frac{n}{\nu}}\;t_{\nu} \hspace{19em} (16)
+```
+
+식 (16) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 같은 자리를 바꾸어 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
