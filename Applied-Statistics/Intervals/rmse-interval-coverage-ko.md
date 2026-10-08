@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 2 | Created: 2026-10-05 | Updated: 2026-10-06 17:48 CDT
+Rev. 3 | Created: 2026-10-05 | Updated: 2026-10-08 11:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,9 +21,9 @@ Rev. 2 | Created: 2026-10-05 | Updated: 2026-10-06 17:48 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: 예측 오차가 퍼진 범위를 RMSE 의 1.96 배로 적는 관행이 있는데, 그 구간이 담는 비율을 95% 로 적는 글과 94% 로 적는 글이 함께 쓰이고 어느 조건에서 어느 값이 맞는지는 양쪽 다 적지 않는다.
-- **Goal**: RMSE 의 1.96 배로 그린 구간이 담는 확률을 오차 개수의 함수로 적고 94% 가 성립하는 개수의 범위를 구하여, 손에 있는 자료에서 이 구간을 그대로 쓸지 배율을 바꿀지 고르게 한다.
-- **Non-Goal**: 오차가 정규분포가 아닐 때 쓸 구간은 다루지 않는다. 꼬리의 모양이 달라지면 배율 하나로 비율이 정해지지 않아 다른 계열의 방법이 필요하다.
+- **Problem Statement**: ML 의 metric 인 RMSE 의 물리적 의미를 이해하기 힘들다.
+- **Goal**: RMSE 를 이용해 SPC 를 위한 spec 을 만드는 방법의 이론과 실행을 담은 guide 를 만든다.
+- **Non-Goal**: 오차가 정규분포가 아닐 때 쓸 구간은 다루지 않는다.
 
 ## 2. Summary
 
