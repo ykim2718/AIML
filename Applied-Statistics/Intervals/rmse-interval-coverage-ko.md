@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 3 | Created: 2026-10-05 | Updated: 2026-10-08 11:46 CDT
+Rev. 4 | Created: 2026-10-05 | Updated: 2026-10-08 12:05 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,6 +14,11 @@ Rev. 3 | Created: 2026-10-05 | Updated: 2026-10-08 11:46 CDT
   - [5.1 The Multiplier for 95 Percent](#51-the-multiplier-for-95-percent)
   - [5.2 Degrees of Freedom with Fitted Parameters](#52-degrees-of-freedom-with-fitted-parameters)
   - [5.3 Conditions](#53-conditions)
+- [6. Spec Setting for SPC](#6-spec-setting-for-spc)
+  - [6.1 What the Limit Is Drawn On](#61-what-the-limit-is-drawn-on)
+  - [6.2 The Limit from the RMSE](#62-the-limit-from-the-rmse)
+  - [6.3 The Guard Band](#63-the-guard-band)
+  - [6.4 The Spec and the Control Limit](#64-the-spec-and-the-control-limit)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Chi-squared Distribution](#appendix-b-chi-squared-distribution)
@@ -31,7 +36,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 참 
 
 비율이 깎이는 까닭은 새 오차를 RMSE 로 나눈 값이 표준정규분포가 아니라 자유도 n 의 Student t distribution 을 따르는 데 있다.
 
-95% 를 지키려면 배율을 1.96 대신 그 t distribution 의 97.5% 점으로 둔다. n 이 28 이면 2.05 이고, n 이 커지면 1.96 으로 돌아간다.
+95% 를 지키려면 배율을 1.96 대신 그 t distribution 의 97.5% 점으로 둔다. n 이 28 이면 2.05 이고, n 이 커지면 1.96 으로 돌아간다. SPC 의 spec 은 그 배율로 긋고, 예측값이 계측값을 대신해 판정에 쓰이면 guard band 만큼 안쪽으로 물러선다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -201,6 +206,58 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 - **깨지는 조건**: 오차의 평균이 0 이 아니면 RMSE 가 흩어짐과 치우침을 함께 담아 구간이 필요보다 넓어지고, 식 (6) 의 비율은 더 이상 그 구간을 설명하지 않는다. 분산이 자리마다 다르면 (heteroscedasticity) 하나의 RMSE 가 모든 자리를 대표하지 못해 분산이 큰 자리에서 비율이 떨어진다. 오차가 서로 상관되어 있으면 제곱합에 남는 자유도가 n 보다 작아 식 (6) 이 비율을 높게 낸다. 꼬리가 정규분포보다 두꺼우면 같은 배율이 담는 비율이 더 낮아, 분산이 같은 Laplace distribution 에서 $\pm 1.96\sigma$ 가 담는 비율은 93.7% 다.
 - **만나는 자리**: 계측 두 방법의 차이에 한계를 긋는 Bland-Altman 한계 [[3](#ref-3)], 회귀 model 의 예측 오차 범위 보고, 공정 자료의 예측값에 붙이는 오차 막대.
 
+## 6. Spec Setting for SPC
+
+RMSE 로 spec 을 정하는 일은 네 걸음이다. 한계를 무엇에 긋는지 가르고, 담을 비율에서 배율을 읽고, 예측값이 판정에 쓰이면 guard band 만큼 물러서고, 그 spec 을 관리 한계와 따로 둔다.
+
+### 6.1 What the Limit Is Drawn On
+
+RMSE 가 정하는 것은 model 의 오차에 긋는 한계와 그 오차 때문에 spec 에서 물러서는 폭 둘이고, 공정이 평소와 같은지를 가르는 관리 한계는 공정의 변동에서 따로 나온다.
+
+Table 3. Limits around a predicted value
+
+| #   | Limit            | Set from     | Offset               | What it decides               |
+| :-: | :--------------: | :----------: | :------------------: | :---------------------------: |
+| 1   | Error limit      | RMSE         | $k\,\mathrm{RMSE}$   | 한 예측의 오차를 받아들일지   |
+| 2   | Acceptance limit | Spec 과 RMSE | $g\,\mathrm{RMSE}$   | 예측값으로 규격 판정을 내릴지 |
+| 3   | Control limit    | 공정의 변동  | 관측 표준편차의 3 배 | 공정이 평소와 달라졌는지      |
+
+1 행은 model 이 계측을 대신해도 되는 범위다. 2 행은 이미 있는 spec 에서 안쪽으로 물러선 자리이며, 물러선 폭이 guard band 다. 3 행의 한계는 spec 에서 나오지 않지만, 예측값으로 chart 를 그리면 그 폭에 RMSE 가 식 (10) 으로 섞여 든다.
+
+### 6.2 The Limit from the RMSE
+
+한계는 목표값에서 배율과 RMSE 의 곱만큼 떨어진 두 자리다.
+
+```math
+\mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (8)
+```
+
+식 (8) 의 $\mu_0$ 는 Table 3 의 1 행에서 0 이고 2 행에서 공정의 목표값이며, $\alpha$ 는 1 에서 담을 비율을 뺀 값이다. $\alpha$ 가 0.05 이면 $k$ 는 Table 2 의 마지막 열이고, n 이 28 이면 2.05 다. 쓰기 전에 아래 세 가지를 확인한다.
+
+- **Bias 를 먼저 뺀다**: 오차의 평균이 0 이 아니면 RMSE 가 치우침과 흩어짐을 함께 담아 (꼭지 5.3) 한계가 필요보다 넓어진다. 치우침을 model 에서 고친 뒤 RMSE 를 다시 구한다.
+- **Model 을 맞추는 데 쓰지 않은 자료로 구한다**: 같은 자료의 잔차로 RMSE 를 구하면 식 (7) 이 비율을 높게 낸다. 자유도는 $\nu = n - p$ 이고, p 는 그 자료로 추정한 parameter 의 개수다.
+- **오차 개수를 먼저 센다**: n 이 30 안팎이면 1.96 이 담는 비율이 94% 이므로, 95% 를 spec 에 적으려면 배율을 Table 2 에서 바꾸어 읽는다.
+
+### 6.3 The Guard Band
+
+예측값이 계측값을 대신해 규격 판정을 내리면 spec 안쪽으로 물러선 수락 한계 (acceptance limit) 를 쓴다.
+
+```math
+A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathrm{USL} - g\,\mathrm{RMSE} \hspace{19em} (9)
+```
+
+식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 실제로는 밖에 있을 확률이 RMSE 만큼 남아 있고, guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 (expanded uncertainty) 한 배를 spec 에서 빼는 것이고 [[6](#ref-6)], 확장 불확도를 RMSE 의 두 배로 잡으면 $g = 2$ 가 된다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
+
+### 6.4 The Spec and the Control Limit
+
+관리 한계는 공정의 변동에서 구하고 spec 은 요구에서 구하므로, 둘을 같은 수로 두지 않는다. 예측값으로 chart 를 그리면 관측되는 변동이 공정의 변동과 model 의 오차를 함께 담는다.
+
+```math
+\sigma_{\mathrm{obs}}^2 = \sigma_{\mathrm{proc}}^2 + \mathrm{RMSE}^2 \hspace{19em} (10)
+```
+
+식 (10) 의 $\sigma_{\mathrm{obs}}$ 가 관리 한계의 폭을 정하므로, RMSE 가 공정 표준편차의 절반이면 한계가 1.12 배 넓어지고 같은 자료로 잰 공정능력지수 (process capability index) 는 0.89 배로 내려간다. RMSE 가 공정 표준편차와 같으면 각각 1.41 배와 0.71 배다. 식 (10) 은 model 의 오차가 공정의 변동과 독립일 때 성립하며, 오차가 공정 수준에 따라 달라지면 (heteroscedasticity) 하나의 RMSE 로 모든 자리의 한계를 정하지 못한다.
+
 ## References
 
 <a id="ref-1"></a>
@@ -210,26 +267,37 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 <a id="ref-3"></a>
 [3] Bland, J. M., & Altman, D. G. (1986). [Statistical Methods for Assessing Agreement Between Two Methods of Clinical Measurement](https://doi.org/10.1016/S0140-6736(86)90837-8). *The Lancet*, 327(8476), 307–310.<br>
 <a id="ref-4"></a>
-[4] Student. (1908). [The Probable Error of a Mean](https://doi.org/10.2307/2331554). *Biometrika*, 6(1), 1–25.
+[4] Student. (1908). [The Probable Error of a Mean](https://doi.org/10.2307/2331554). *Biometrika*, 6(1), 1–25.<br>
+<a id="ref-5"></a>
+[5] JCGM. (2012). [Evaluation of Measurement Data — The Role of Measurement Uncertainty in Conformity Assessment](https://doi.org/10.59161/JCGM106-2012). JCGM 106:2012, Joint Committee for Guides in Metrology.<br>
+<a id="ref-6"></a>
+[6] ISO. (2017). [Geometrical Product Specifications (GPS) — Inspection by Measurement of Workpieces and Measuring Equipment — Part 1: Decision Rules for Verifying Conformity or Nonconformity with Specifications](https://www.iso.org/standard/70137.html). ISO 14253-1:2017, International Organization for Standardization.
 
 ---
 
 ## Appendix A. Terminology
 
-- **chi-squared distribution**: 독립인 표준정규분포 값 여러 개를 제곱해 더한 값이 따르는 분포. 식 (8) 이 정의다.
+- **chi-squared distribution**: 독립인 표준정규분포 값 여러 개를 제곱해 더한 값이 따르는 분포. 식 (11) 이 정의다.
 - **concave**: 2차 도함수가 음수여서 곡선이 위로 볼록한 함수의 성질.
 - **confidence interval**: 추정하려는 모수가 들어 있을 확률을 정해 둔 구간.
+- **consumer's risk**: 받아들인 것이 규격을 벗어나 있을 확률.
+- **control limit**: 공정이 평소와 같은지를 가르는 chart 의 한계. 공정의 변동에서 구한다.
 - **coverage**: 구간이 담으려는 대상을 실제로 담을 확률.
 - **degrees of freedom**: 제곱합에 남아 있는 독립한 성분의 개수.
-- **gamma function**: 식 (12) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
+- **expanded uncertainty**: 표준불확도에 포함인자를 곱한 값. 포함인자 2 가 관례다.
+- **gamma function**: 식 (15) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
+- **guard band**: Spec 과 수락 한계 사이의 폭. 식 (9) 가 정의다.
 - **heteroscedasticity**: 분산이 자리마다 다른 상태.
 - **Jensen's inequality**: concave 함수에서 기댓값의 함수가 함수의 기댓값보다 크다는 부등식.
 - **Laplace distribution**: 양쪽 꼬리가 지수함수로 줄어드는 대칭 분포. 분산이 같은 정규분포보다 꼬리가 두껍다.
-- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (11) 이 정의다.
+- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (14) 이 정의다.
 - **Monte Carlo**: 난수로 표본을 만들어 확률을 추정하는 방법.
 - **prediction interval**: 새 관측 하나가 들어 있을 확률을 정해 둔 구간.
-- **regularized incomplete gamma function**: lower incomplete gamma function 을 gamma function 으로 나눈 값. 식 (10) 의 우변이 그 값이다.
+- **process capability index**: Spec 의 폭을 공정 변동의 6 배로 나눈 값.
+- **producer's risk**: 거부한 것이 규격 안에 있을 확률.
+- **regularized incomplete gamma function**: lower incomplete gamma function 을 gamma function 으로 나눈 값. 식 (13) 의 우변이 그 값이다.
 - **RMSE**: 오차 제곱의 평균에 제곱근을 취한 값. 식 (2) 가 정의다.
+- **spec limit**: 요구에서 나온 상한과 하한. 공정의 변동과는 따로 정해진다.
 - **Student t distribution**: 표준정규분포 값을, 그와 독립인 chi-squared 값을 자유도로 나눈 것의 제곱근으로 나눈 비가 따르는 분포.
 - **tolerance factor**: tolerance interval 에서 scale 에 곱하는 배율. 비율과 신뢰수준과 표본 수로 정해진다.
 - **tolerance interval**: 모집단의 정해진 비율을 담는다는 것을 정해진 신뢰수준으로 보장하는 구간.
@@ -241,42 +309,42 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 서로 독립이고 표준정규분포 $N(0, 1)$ 를 따르는 $k$ 개의 확률변수 $Z_1, Z_2, \dots, Z_k$ 가 있을 때, 이 변수들의 제곱합으로 정의되는 확률변수 $X$ 는 자유도가 $k$ 인 chi-squared distribution 을 따른다.
 
 ```math
-X = \sum_{i=1}^{k} Z_i^2 = Z_1^2 + Z_2^2 + \dots + Z_k^2 \sim \chi^2(k) \hspace{19em} (8)
+X = \sum_{i=1}^{k} Z_i^2 = Z_1^2 + Z_2^2 + \dots + Z_k^2 \sim \chi^2(k) \hspace{19em} (11)
 ```
 
 - $k$ (자유도, degrees of freedom): 합산되는 독립 표준정규분포 변수의 개수.
 
-본문은 같은 자유도를 n 과 $\nu$ 로 적는다. 식 (13) 의 $S$ 는 식 (8) 의 $X$ 에 $k = n$ 을 넣은 것이고, 식 (16) 의 $S_{\nu}$ 는 $k = \nu$ 를 넣은 것이다.
+본문은 같은 자유도를 n 과 $\nu$ 로 적는다. 식 (16) 의 $S$ 는 식 (11) 의 $X$ 에 $k = n$ 을 넣은 것이고, 식 (19) 의 $S_{\nu}$ 는 $k = \nu$ 를 넣은 것이다.
 
 ### B.2 Probability Density Function
 
 자유도가 $k$ 인 chi-squared distribution 의 확률밀도함수 (probability density function) 는 $x \gt 0$ 에서 아래와 같다.
 
 ```math
-f(x; k) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\; x^{(k/2) - 1}\, e^{-x/2} \hspace{19em} (9)
+f(x; k) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\; x^{(k/2) - 1}\, e^{-x/2} \hspace{19em} (12)
 ```
 
-식 (9) 의 $\Gamma$ 는 gamma function 이며, 식 (12) 가 gamma function 의 정의다.
+식 (12) 의 $\Gamma$ 는 gamma function 이며, 식 (15) 가 gamma function 의 정의다.
 
 ### B.3 Cumulative Distribution Function
 
 누적분포함수 $F(x; k)$ 는 확률변수 $X$ 가 특정 값 $x$ 이하일 확률 $P(X \le x)$ 를 뜻하며, 확률밀도함수를 0 부터 $x$ 까지 적분하여 구한다.
 
 ```math
-F(x; k) = P(X \le x) = \frac{1}{\Gamma(k/2)}\; \gamma\!\left(\frac{k}{2}, \frac{x}{2}\right) \quad (x \ge 0) \hspace{19em} (10)
+F(x; k) = P(X \le x) = \frac{1}{\Gamma(k/2)}\; \gamma\!\left(\frac{k}{2}, \frac{x}{2}\right) \quad (x \ge 0) \hspace{19em} (13)
 ```
 
-식 (10) 의 $\gamma(s, t)$ 는 하부 불완전 감마 함수 (lower incomplete gamma function) 이고, $\Gamma(s)$ 는 적분의 위끝을 무한대로 늘린 gamma function 이다.
+식 (13) 의 $\gamma(s, t)$ 는 하부 불완전 감마 함수 (lower incomplete gamma function) 이고, $\Gamma(s)$ 는 적분의 위끝을 무한대로 늘린 gamma function 이다.
 
 ```math
-\gamma(s, t) = \int_0^t u^{s-1} e^{-u}\, du \hspace{19em} (11)
+\gamma(s, t) = \int_0^t u^{s-1} e^{-u}\, du \hspace{19em} (14)
 ```
 
 ```math
-\Gamma(s) = \int_0^{\infty} u^{s-1} e^{-u}\, du \hspace{19em} (12)
+\Gamma(s) = \int_0^{\infty} u^{s-1} e^{-u}\, du \hspace{19em} (15)
 ```
 
-Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary function) 로 단순하게 표현되지 않는다. 그래서 식 (10) 처럼 정규화 불완전 감마 함수 (regularized incomplete gamma function) 의 꼴로 정의하고, 실제 계산에는 numerical 방법이나 R, Python, Excel 이 담은 통계 함수를 쓴다.
+Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary function) 로 단순하게 표현되지 않는다. 그래서 식 (13) 처럼 정규화 불완전 감마 함수 (regularized incomplete gamma function) 의 꼴로 정의하고, 실제 계산에는 numerical 방법이나 R, Python, Excel 이 담은 통계 함수를 쓴다.
 
 ### B.4 Properties
 
@@ -290,29 +358,29 @@ Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary fun
 출발점은 오차 하나를 $\sigma$ 로 나눈 값이 표준정규분포를 따른다는 것 하나다. n 개를 제곱해 더하면 자유도 n 의 chi-squared distribution 이 된다.
 
 ```math
-S = \sum_{i=1}^{n} \left(\frac{e_i}{\sigma}\right)^2 \sim \chi^2_n, \qquad S = \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \hspace{19em} (13)
+S = \sum_{i=1}^{n} \left(\frac{e_i}{\sigma}\right)^2 \sim \chi^2_n, \qquad S = \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \hspace{19em} (16)
 ```
 
 두 번째 등식은 식 (2) 의 양변을 제곱해 n 을 곱한 것이며, 이것이 식 (3) 이다. 식 (4) 는 여기서 제곱근의 기댓값으로 나온다. 자유도 n 의 chi-squared 값에 제곱근을 취한 값의 기댓값이 아래와 같다.
 
 ```math
-E\left[\sqrt{S}\right] = \sqrt{2}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (14)
+E\left[\sqrt{S}\right] = \sqrt{2}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (17)
 ```
 
-식 (13) 에서 $\mathrm{RMSE} = \sigma\sqrt{S/n}$ 이므로 양변에 기댓값을 취하고 식 (14) 를 넣으면 식 (4) 의 $c_n$ 이 그대로 나온다.
+식 (16) 에서 $\mathrm{RMSE} = \sigma\sqrt{S/n}$ 이므로 양변에 기댓값을 취하고 식 (17) 를 넣으면 식 (4) 의 $c_n$ 이 그대로 나온다.
 
 식 (5) 는 t distribution 의 정의에서 나온다. 새 오차 $e^{\ast}$ 는 $e_1, \dots, e_n$ 과 독립이므로 $Z = e^{\ast}/\sigma$ 는 S 와 독립인 표준정규분포 값이다.
 
 ```math
-\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{\sigma Z}{\sigma\sqrt{S/n}} = \frac{Z}{\sqrt{S/n}} \sim t_n \hspace{19em} (15)
+\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{\sigma Z}{\sigma\sqrt{S/n}} = \frac{Z}{\sqrt{S/n}} \sim t_n \hspace{19em} (18)
 ```
 
-식 (15) 의 가운데에서 $\sigma$ 가 약분되므로 담는 비율은 모르는 $\sigma$ 와 무관해지고 n 하나로 정해진다. 좌변의 절댓값이 1.96 이하일 확률을 t distribution 의 누적분포함수로 적은 것이 식 (6) 이다.
+식 (18) 의 가운데에서 $\sigma$ 가 약분되므로 담는 비율은 모르는 $\sigma$ 와 무관해지고 n 하나로 정해진다. 좌변의 절댓값이 1.96 이하일 확률을 t distribution 의 누적분포함수로 적은 것이 식 (6) 이다.
 
 Parameter 를 p 개 추정한 경우에는 제곱합의 자유도가 $\nu = n - p$ 로 줄지만, RMSE 는 식 (2) 대로 n 으로 나눈다. 자유도만큼의 chi-squared 값을 $S_{\nu}$ 로 두면 두 수가 따로 남는다.
 
 ```math
-\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{Z}{\sqrt{S_{\nu}/n}} = \sqrt{\frac{n}{\nu}}\;\frac{Z}{\sqrt{S_{\nu}/\nu}} \sim \sqrt{\frac{n}{\nu}}\;t_{\nu} \hspace{19em} (16)
+\frac{e^{\ast}}{\mathrm{RMSE}} = \frac{Z}{\sqrt{S_{\nu}/n}} = \sqrt{\frac{n}{\nu}}\;\frac{Z}{\sqrt{S_{\nu}/\nu}} \sim \sqrt{\frac{n}{\nu}}\;t_{\nu} \hspace{19em} (19)
 ```
 
-식 (16) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 같은 자리를 바꾸어 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
+식 (19) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 같은 자리를 바꾸어 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
