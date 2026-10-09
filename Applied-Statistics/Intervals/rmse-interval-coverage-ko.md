@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 14 | Created: 2026-10-05 | Updated: 2026-10-09 11:03 CDT
+Rev. 15 | Created: 2026-10-05 | Updated: 2026-10-09 11:07 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -63,21 +63,25 @@ Fig 1. The two axes an interval around a prediction is placed on
 두 축 위의 구간은 가정의 세기에 따라 계층을 이루며, 아래 <a href="#fig-2">Fig 2</a> 가 그 계층을 담는다.
 
 ```text
-HIERARCHY of the intervals, each step down dropping an assumption
+HIERARCHY of the intervals, with what each step down changes
 
 interval                      scale     k                   coverage
 Normal interval               sigma     z(1 - a/2)          1 - a for every n
 |
-+-- true value  RMSE interval RMSE      z(1 - a/2)          2 * F_t(k; nu) - 1
+| gives up: the true value of sigma, estimated by the RMSE of n errors
+|
++-- RMSE interval             RMSE      z(1 - a/2)          2 * F_t(k; nu) - 1
 |                                                           below 1 - a; n sets how far
 +-- prediction                RMSE      t(nu, 1 - a/2)      1 - a for every n
+    |
+    | adds: a confidence level on the covered fraction
     |
     +-- tolerance             RMSE      tolerance factor    a stated fraction, held with
                                                             a stated confidence
 ```
 
 <a id="fig-2"></a>
-Fig 2. The hierarchy the intervals form, from the strongest assumption down
+Fig 2. The hierarchy the intervals form, and what each step down gives up or adds
 
 - $k$: 표준편차에 곱하는 배율. 구간의 두 끝이 중심에서 표준편차의 $k$ 배만큼 떨어진다.
 - $z(1 - \alpha/2)$: 표준정규분포의 양측 $1 - \alpha$ 점.
@@ -87,7 +91,7 @@ Fig 2. The hierarchy the intervals form, from the strongest assumption down
 - $F_t$: 자유도 $\nu$ 의 t distribution 의 누적분포함수. 그림은 F_t 로 적는다.
 - $n$: RMSE 를 구한 오차의 개수.
 
-계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 표준편차를 참값에서 추정값으로 바꾸면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (true value) 과 셋째 줄 (prediction) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 비율이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 $t_{\nu}(1 - \alpha/2)$ 로 키운다. 넷째 줄 (tolerance) 은 담는 비율 자체에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다. 이 문서가 다루는 $\alpha = 0.05$ 에서 $z(1 - \alpha/2)$ 가 1.96 이다.
+계층은 한 단계 내려갈 때마다 아는 것을 내려놓거나 요구를 하나 더 붙인다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 표준편차를 참값에서 추정값으로 바꾸면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (RMSE interval) 과 셋째 줄 (prediction) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 비율이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 $t_{\nu}(1 - \alpha/2)$ 로 키운다. 넷째 줄 (tolerance) 은 담는 비율 자체에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다. 이 문서가 다루는 $\alpha = 0.05$ 에서 $z(1 - \alpha/2)$ 가 1.96 이다.
 
 ### 3.1 Placement
 
