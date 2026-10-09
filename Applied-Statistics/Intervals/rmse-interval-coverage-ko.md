@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 10 | Created: 2026-10-05 | Updated: 2026-10-09 10:45 CDT
+Rev. 11 | Created: 2026-10-05 | Updated: 2026-10-09 10:49 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -34,7 +34,7 @@ Rev. 10 | Created: 2026-10-05 | Updated: 2026-10-09 10:45 CDT
 
 RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 오차의 참 표준편차를 알 때 95.00% 이고, RMSE 를 오차 n 개에서 구했으면 그보다 낮으며, 94% 가 되는 것은 n 이 28 일 때다 (n 이 23 부터 37 까지면 94% 로 반올림된다).
 
-비율이 깎이는 까닭은 새 오차를 RMSE 로 나눈 값이 표준정규분포가 아니라 자유도 n 의 Student t distribution 을 따르는 데 있다.
+새 오차를 RMSE 로 나눈 값이 자유도 n 의 Student t distribution 을 따르므로 비율이 95% 아래로 깎인다.
 
 95% 를 지키려면 배율을 1.96 대신 그 t distribution 의 97.5% 점으로 둔다. n 이 28 이면 2.05 이고, n 이 커지면 1.96 으로 돌아간다. SPC 의 spec 은 그 배율로 긋고, 예측값이 계측값을 대신해 판정에 쓰이면 guard band 만큼 안쪽으로 물러선다.
 
@@ -79,7 +79,7 @@ Normal interval    scale sigma   k = 1.96            coverage 0.9500 for every n
 <a id="fig-2"></a>
 Fig 2. The hierarchy the intervals form, from the strongest assumption down
 
-계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말하려 하므로 구간이 가장 넓다.
+계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 하나를 내려놓은 자리에서는 배율을 1.96 에 둔 채 담는 비율이 떨어지거나, 비율을 0.9500 으로 지킨 채 배율이 커지거나 둘 중 하나가 된다.
 
 ### 3.1 Placement
 
@@ -99,7 +99,7 @@ Table 1. Intervals around a prediction
 
 ## 4. Coverage of the Interval
 
-RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 확률은 식 (6) 하나로 정해지고, 그 값은 모르는 $\sigma$ 가 아니라 RMSE 를 구한 오차의 개수 n 으로 정해진다.
+RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 확률은 식 (6) 하나로 정해지고, RMSE 를 구한 오차의 개수 n 이 그 값을 정한다. 모르는 $\sigma$ 는 유도 과정에서 약분되어 남지 않는다.
 
 ### 4.1 With the Scale Known
 
@@ -135,7 +135,7 @@ $c_n$ 은 n 이 커지면 1 로 간다. n 이 10 이면 0.9754, 28 이면 0.9911
 
 ### 4.3 The Coverage with the RMSE
 
-새 오차를 RMSE 로 나눈 값은 표준정규분포가 아니라 자유도 n 의 Student t distribution 을 따른다 [[4](#ref-4)].
+새 오차를 RMSE 로 나눈 값은 자유도 n 의 Student t distribution 을 따른다 [[4](#ref-4)].
 
 ```math
 \frac{e^{\ast}}{\mathrm{RMSE}} \sim t_n \hspace{19em} (5)
@@ -189,11 +189,11 @@ RMSE 가 언제나 기댓값 $c_n\sigma$ 와 같다면 담는 비율은 $2\Phi(1
 
 ## 5. Application
 
-95% 를 지키려면 RMSE 에 곱하는 배율을 1.96 이 아니라 그 자유도의 t distribution 의 97.5% 점으로 둔다.
+95% 를 지키려면 RMSE 에 곱하는 배율을 그 자유도의 t distribution 의 97.5% 점으로 둔다.
 
 ### 5.1 The Multiplier for 95 Percent
 
-배율은 Table 2 의 마지막 열에 있다. n 이 28 이면 2.05, 50 이면 2.01, 100 이면 1.98 이다. 1.96 을 그대로 쓰면서 95% 라 적는 글은 n 이 수백 이상일 때만 맞고, n 이 277 이상이어야 비율이 94.9% 를 넘는다.
+배율은 Table 2 의 마지막 열에 있다. n 이 28 이면 2.05, 50 이면 2.01, 100 이면 1.98 이다. 1.96 을 그대로 쓰면서 95% 라 적는 글은 꼭지 4.3 이 적은 대로 n 이 수백 이상일 때만 맞다.
 
 반대로 94% 를 노린 구간을 $\sigma$ 를 아는 자리에서 그리려면 배율은 1.88 이다. 1.96 과 94% 를 함께 적은 글은 이 배율을 말하는 것이 아니라, RMSE 로 오차의 표준편차를 추정한 자리에서 n 이 30 안팎일 때 나오는 값을 적은 것이다.
 
@@ -256,7 +256,7 @@ Table 3. Limits around a predicted value
 A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathrm{USL} - g\,\mathrm{RMSE} \hspace{19em} (9)
 ```
 
-식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 실제로는 밖에 있을 확률이 RMSE 만큼 남아 있고, guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 (expanded uncertainty) 한 배를 spec 에서 빼는 것이고 [[6](#ref-6)], 확장 불확도를 RMSE 의 두 배로 잡으면 $g = 2$ 가 된다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
+식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 참값은 밖에 있을 수 있고, 그 확률은 RMSE 가 클수록 커진다. Guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 (expanded uncertainty) 한 배를 spec 에서 빼는 것이고 [[6](#ref-6)], 확장 불확도를 RMSE 의 두 배로 잡으면 $g = 2$ 가 된다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
 
 ### 6.4 The Spec and the Control Limit
 
@@ -300,7 +300,7 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 - **heteroscedasticity**: 분산이 자리마다 다른 상태.
 - **Jensen's inequality**: concave 함수에서 기댓값의 함수가 함수의 기댓값보다 크다는 부등식.
 - **Laplace distribution**: 양쪽 꼬리가 지수함수로 줄어드는 대칭 분포. 분산이 같은 정규분포보다 꼬리가 두껍다.
-- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (14) 이 정의다.
+- **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (14) 가 정의다.
 - **Monte Carlo**: 난수로 표본을 만들어 확률을 추정하는 방법.
 - **prediction interval**: 새 관측 하나가 들어 있을 확률을 정해 둔 구간.
 - **process capability index**: Spec 의 폭을 공정 변동의 6 배로 나눈 값.
@@ -377,7 +377,7 @@ S = \sum_{i=1}^{n} \left(\frac{e_i}{\sigma}\right)^2 \sim \chi^2_n, \qquad S = \
 E\left[\sqrt{S}\right] = \sqrt{2}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (17)
 ```
 
-식 (16) 에서 $\mathrm{RMSE} = \sigma\sqrt{S/n}$ 이므로 양변에 기댓값을 취하고 식 (17) 를 넣으면 식 (4) 의 $c_n$ 이 그대로 나온다.
+식 (16) 에서 $\mathrm{RMSE} = \sigma\sqrt{S/n}$ 이므로 양변에 기댓값을 취하고 식 (17) 을 넣으면 식 (4) 의 $c_n$ 이 그대로 나온다.
 
 식 (5) 는 t distribution 의 정의에서 나온다. 새 오차 $e^{\ast}$ 는 $e_1, \dots, e_n$ 과 독립이므로 $Z = e^{\ast}/\sigma$ 는 S 와 독립인 표준정규분포 값이다.
 
