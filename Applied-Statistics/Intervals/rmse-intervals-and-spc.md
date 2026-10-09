@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 2 | Created: 2026-10-09 | Updated: 2026-10-09 16:52 CDT
+Rev. 3 | Created: 2026-10-09 | Updated: 2026-10-09 16:55 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -141,7 +141,7 @@ The error $e_i$ in Eq. (1) is the i-th predicted value of the model minus the i-
 
 In Eq. (2), $\mu_0$ is the center of the interval, 0 for an interval on the errors. $k$ is the multiplier set by the target probability $1 - \alpha$, and $\sqrt{n/\nu}$ is a correction factor that compensates for the RMSE dividing its sum of squares by n rather than $\nu$. With no fitted parameters, $\nu = n$, the correction factor is 1, and $k = t_n(1 - \alpha/2)$, which is 2.05 at $\alpha = 0.05$ and n = 28. With p fitted parameters, $\nu = n - p$ goes into the formula, and n = 28 with p = 2 gives 2.13. Setting $k$ at the customary 1.96 leaves the probability short of $1 - \alpha$; the size of the shortfall is in section 4.2.
 
-#### Using the RMSE in Place of Sigma
+#### Using the RMSE in Place of Sigma 🎈
 
 Two facts let the RMSE stand in for $\sigma$.
 

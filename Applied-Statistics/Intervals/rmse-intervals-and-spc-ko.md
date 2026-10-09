@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 44 | Created: 2026-10-05 | Updated: 2026-10-09 16:52 CDT
+Rev. 45 | Created: 2026-10-05 | Updated: 2026-10-09 16:55 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -141,7 +141,7 @@ $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행의 배율이 $\sq
 
 식 (2) 의 $\mu_0$ 는 구간의 중심이고, 오차에 긋는 구간에서는 0 이다. $k$ 는 담을 확률 $1 - \alpha$ 가 정하는 배율이며, $\sqrt{n/\nu}$ 는 RMSE 가 제곱합을 $\nu$ 가 아니라 n 으로 나눈 것을 바로잡는 보정 계수다. Parameter 를 추정하지 않아 $\nu = n$ 이면 그 보정 계수가 1 이 되어 $k = t_n(1 - \alpha/2)$ 로 줄고, $\alpha = 0.05$ 와 n = 28 에서 2.05 다. Parameter 를 p 개 추정했으면 $\nu = n - p$ 를 넣어 다시 구하며, n = 28 에 p = 2 이면 2.13 이다. $k$ 를 관례대로 1.96 에 두면 담는 확률이 $1 - \alpha$ 에 미치지 못하고, 얼마나 모자라는지는 꼭지 4.2 에 있다.
 
-#### Using the RMSE in Place of Sigma
+#### Using the RMSE in Place of Sigma 🎈
 
 $\sigma$ 대신 RMSE 를 쓸 수 있는 근거는 둘이다.
 
