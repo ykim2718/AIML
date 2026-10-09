@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 12 | Created: 2026-10-05 | Updated: 2026-10-09 10:52 CDT
+Rev. 13 | Created: 2026-10-05 | Updated: 2026-10-09 10:58 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -65,21 +65,21 @@ Fig 1. The two axes an interval around a prediction is placed on
 ```text
 HIERARCHY of the intervals, each step down dropping an assumption
 |
-Normal interval    scale sigma   k = 1.96            coverage 0.9500 for every n
+Normal interval               scale sigma   k = z(1 - a/2)        coverage 1 - a for every n
 |
-+-- RMSE interval  scale RMSE    k = 1.96            coverage 2 * F_t(1.96; nu) - 1
-|                                                    0.9400 at n = 28
-+-- prediction     scale RMSE    k = t(nu, 0.975)    coverage 0.9500 for every n
++-- true value  RMSE interval scale RMSE    k = z(1 - a/2)        coverage 2 * F_t(k; nu) - 1
+|                                                                 below 1 - a, and n sets how far below
++-- prediction                scale RMSE    k = t(nu, 1 - a/2)    coverage 1 - a for every n
     |
-    +-- tolerance  scale RMSE    k = tolerance factor
-                                                     a stated fraction, held with
-                                                     a stated confidence
+    +-- tolerance             scale RMSE    k = tolerance factor
+                                                                  a stated fraction, held with
+                                                                  a stated confidence
 ```
 
 <a id="fig-2"></a>
 Fig 2. The hierarchy the intervals form, from the strongest assumption down
 
-계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 표준편차를 참값에서 추정값으로 바꾸면 <a href="#fig-2">Fig 2</a> 의 둘째 줄과 셋째 줄로 갈린다. 배율을 1.96 에 그대로 두면 담는 비율이 0.9500 아래로 떨어지고, 비율을 0.9500 으로 지키려면 배율을 $t_{\nu}(0.975)$ 로 키운다. 넷째 줄은 담는 비율 자체에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다.
+계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 표준편차를 참값에서 추정값으로 바꾸면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (true value) 과 셋째 줄 (prediction) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 비율이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 $t_{\nu}(1 - \alpha/2)$ 로 키운다. 넷째 줄 (tolerance) 은 담는 비율 자체에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다. 그림의 a 는 $\alpha$ 를 적은 것이고, $\alpha$ 는 1 에서 담을 비율을 뺀 값이다. 이 문서가 다루는 $\alpha = 0.05$ 에서 $z(1 - \alpha/2)$ 가 1.96 이다.
 
 ### 3.1 Placement
 
@@ -87,15 +87,15 @@ Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</
 
 Table 1. Intervals around a prediction
 
-| #   | Interval            | Scale             | Multiplier       | Covered quantity     | Probability       |
-| :-: | :-----------------: | :---------------: | :--------------: | :------------------: | :---------------: |
-| 1   | Normal interval     | $\sigma$          | 1.96             | 새 오차 하나         | 0.9500            |
-| 2   | RMSE interval       | RMSE              | 1.96             | 새 오차 하나         | 식 (6) 의 값      |
-| 3   | Prediction interval | RMSE              | $t_{\nu}(0.975)$ | 새 오차 하나         | 0.9500            |
-| 4   | Confidence interval | RMSE / $\sqrt{n}$ | $t_{\nu}(0.975)$ | 오차의 평균          | 0.9500            |
-| 5   | Tolerance interval  | RMSE              | tolerance factor | 모집단의 정해진 비율 | 신뢰수준으로 보장 |
+| #   | Interval            | Scale             | Multiplier              | Covered quantity     | Probability       |
+| :-: | :-----------------: | :---------------: | :---------------------: | :------------------: | :---------------: |
+| 1   | Normal interval     | $\sigma$          | $z(1 - \alpha/2)$       | 새 오차 하나         | $1 - \alpha$      |
+| 2   | RMSE interval       | RMSE              | $z(1 - \alpha/2)$       | 새 오차 하나         | 식 (6) 의 값      |
+| 3   | Prediction interval | RMSE              | $t_{\nu}(1 - \alpha/2)$ | 새 오차 하나         | $1 - \alpha$      |
+| 4   | Confidence interval | RMSE / $\sqrt{n}$ | $t_{\nu}(1 - \alpha/2)$ | 오차의 평균          | $1 - \alpha$      |
+| 5   | Tolerance interval  | RMSE              | tolerance factor        | 모집단의 정해진 비율 | 신뢰수준으로 보장 |
 
-1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 0.9500 으로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
+$z(1 - \alpha/2)$ 는 표준정규분포의 양측 $1 - \alpha$ 점이고, $t_{\nu}(1 - \alpha/2)$ 는 자유도 $\nu$ 의 t distribution 의 같은 점이다. $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행과 4 행의 배율이 $t_{\nu}(0.975)$ 다. 1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 $1 - \alpha$ 로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
 
 ## 4. Coverage of the Interval
 
@@ -109,7 +109,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 확률은 식 
 P\left(|e| \le 1.96\,\sigma\right) = 2\Phi(1.96) - 1 = 0.9500 \hspace{19em} (1)
 ```
 
-$\Phi$ 는 표준정규분포의 누적분포함수이고, 1.96 은 그 분포의 양측 95% 점을 소수 둘째 자리에서 끊은 값이다. 끊지 않은 값은 1.95996 이며, 1.96 이 내는 비율 0.950004 는 95% 와 소수 여섯째 자리에서 갈린다. 계측 두 방법의 차이를 견주는 자리에서 차이의 평균에 표준편차의 1.96 배를 더하고 빼어 한계를 적는 관례가 이 값을 쓴다 [[3](#ref-3)].
+$\Phi$ 는 표준정규분포의 누적분포함수이고, 1.96 은 그 분포의 양측 95% 점을 소수 둘째 자리에서 끊은 값이다. 끊지 않은 값은 1.95996 이며, 1.96 이 내는 비율 0.950004 는 95% 와 소수 여섯째 자리에서 갈린다. 계측 두 방법의 차이를 견주는 자리에서 차이의 평균에 표준편차의 1.96 배를 더하고 빼어 한계를 적는 관례가 이 값을 쓴다 [[3](#ref-3)]. 1.96 은 담을 비율을 95% 로 정했을 때의 값이며, 다른 비율을 정하면 그 자리에 그 비율의 양측 점이 들어간다. 이 문서는 관례대로 95% 를 놓고 적는다.
 
 ### 4.2 The RMSE as an Estimate of the Scale
 
@@ -242,7 +242,7 @@ Table 3. Limits around a predicted value
 \mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (8)
 ```
 
-식 (8) 의 $\mu_0$ 는 Table 3 의 1 행에서 0 이고 2 행에서 공정의 목표값이며, $\alpha$ 는 1 에서 담을 비율을 뺀 값이다. $\alpha$ 가 0.05 이면 $k$ 는 Table 2 의 마지막 열이고, n 이 28 이면 2.05 다. 쓰기 전에 아래 세 가지를 확인한다.
+식 (8) 의 $\mu_0$ 는 Table 3 의 1 행에서 0 이고 2 행에서 공정의 목표값이다. $\alpha$ 가 0.05 이면 $k$ 는 Table 2 의 마지막 열이고, n 이 28 이면 2.05 다. 쓰기 전에 아래 세 가지를 확인한다.
 
 - **Bias 를 먼저 뺀다**: 오차의 평균이 0 이 아니면 RMSE 가 치우침과 흩어짐을 함께 담아 (꼭지 5.3) 한계가 필요보다 넓어진다. 치우침을 model 에서 고친 뒤 RMSE 를 다시 구한다.
 - **Model 을 맞추는 데 쓰지 않은 자료로 구한다**: 같은 자료의 잔차로 RMSE 를 구하면 식 (7) 이 비율을 높게 낸다. 자유도는 $\nu = n - p$ 이고, p 는 그 자료로 추정한 parameter 의 개수다.
