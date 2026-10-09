@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 1 | Created: 2026-10-09 | Updated: 2026-10-09 16:50 CDT
+Rev. 2 | Created: 2026-10-09 | Updated: 2026-10-09 16:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -133,13 +133,20 @@ The two ends of the interval are the center plus and minus the multiplier times 
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (1)
 ```
 
-The error $e_i$ in Eq. (1) is the i-th predicted value of the model minus the i-th measured value, and $e_1, \dots, e_n$ are n such differences drawn independently from a normal distribution with mean 0 and variance $\sigma^2$. Two facts let the RMSE stand in for $\sigma$. First, with a zero mean, $\sigma^2 = E[e_i^2]$, and the quantity under the square root in Eq. (1) is the sample mean of $e_i^2$, so $E[\mathrm{RMSE}^2] = \sigma^2$. $\mathrm{RMSE}^2$ is therefore an unbiased estimator of $\sigma^2$, and since the sample mean converges to $\sigma^2$ as n grows, the RMSE converges to $\sigma$. Second, the t distribution of Eq. (6) accounts exactly for how far the RMSE departs from $\sigma$ at finite n, so Eq. (7) gives the probability without approximation.
+The error $e_i$ in Eq. (1) is the i-th predicted value of the model minus the i-th measured value, and $e_1, \dots, e_n$ are n such differences drawn independently from a normal distribution with mean 0 and variance $\sigma^2$.
 
 ```math
 \mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (2)
 ```
 
 In Eq. (2), $\mu_0$ is the center of the interval, 0 for an interval on the errors. $k$ is the multiplier set by the target probability $1 - \alpha$, and $\sqrt{n/\nu}$ is a correction factor that compensates for the RMSE dividing its sum of squares by n rather than $\nu$. With no fitted parameters, $\nu = n$, the correction factor is 1, and $k = t_n(1 - \alpha/2)$, which is 2.05 at $\alpha = 0.05$ and n = 28. With p fitted parameters, $\nu = n - p$ goes into the formula, and n = 28 with p = 2 gives 2.13. Setting $k$ at the customary 1.96 leaves the probability short of $1 - \alpha$; the size of the shortfall is in section 4.2.
+
+#### Using the RMSE in Place of Sigma
+
+Two facts let the RMSE stand in for $\sigma$.
+
+- **Expected value**: With a zero mean, $\sigma^2 = E[e_i^2]$, and the quantity under the square root in Eq. (1) is the sample mean of $e_i^2$, so $E[\mathrm{RMSE}^2] = \sigma^2$. $\mathrm{RMSE}^2$ is therefore an unbiased estimator of $\sigma^2$, and since the sample mean converges to $\sigma^2$ as n grows, the RMSE converges to $\sigma$.
+- **Finite n**: The t distribution of Eq. (6) accounts exactly for how far the RMSE departs from $\sigma$ at finite n, so Eq. (7) gives the probability without approximation. That includes the RMSE running slightly below $\sigma$ on average, which pulls the probability of the 1.96 interval below 95%; the size of that drop is in sections 4.2 and 4.3.
 
 ### 4.2 Interval Coverage
 

@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 43 | Created: 2026-10-05 | Updated: 2026-10-09 16:50 CDT
+Rev. 44 | Created: 2026-10-05 | Updated: 2026-10-09 16:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -133,13 +133,20 @@ $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행의 배율이 $\sq
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (1)
 ```
 
-식 (1) 의 오차 $e_i$ 는 model 의 i 번째 예측값에서 i 번째 계측값을 뺀 차이이고, $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 그 차이 n 개다. $\sigma$ 대신 RMSE 를 쓸 수 있는 근거는 둘이다. 첫째, 오차의 평균이 0 이므로 $\sigma^2 = E[e_i^2]$ 이고, 식 (1) 의 제곱근 안이 바로 $e_i^2$ 의 표본평균이어서 $E[\mathrm{RMSE}^2] = \sigma^2$ 이 성립한다. 곧 $\mathrm{RMSE}^2$ 은 $\sigma^2$ 의 불편추정량 (unbiased estimator) 이고, n 이 커지면 표본평균이 $\sigma^2$ 로 모이므로 RMSE 도 $\sigma$ 로 모인다. 둘째, 유한한 n 에서 RMSE 가 $\sigma$ 와 어긋나는 몫을 식 (6) 의 t distribution 이 그대로 셈에 넣으므로, 담는 확률을 어림잡지 않고 식 (7) 로 구할 수 있다.
+식 (1) 의 오차 $e_i$ 는 model 의 i 번째 예측값에서 i 번째 계측값을 뺀 차이이고, $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 그 차이 n 개다.
 
 ```math
 \mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (2)
 ```
 
 식 (2) 의 $\mu_0$ 는 구간의 중심이고, 오차에 긋는 구간에서는 0 이다. $k$ 는 담을 확률 $1 - \alpha$ 가 정하는 배율이며, $\sqrt{n/\nu}$ 는 RMSE 가 제곱합을 $\nu$ 가 아니라 n 으로 나눈 것을 바로잡는 보정 계수다. Parameter 를 추정하지 않아 $\nu = n$ 이면 그 보정 계수가 1 이 되어 $k = t_n(1 - \alpha/2)$ 로 줄고, $\alpha = 0.05$ 와 n = 28 에서 2.05 다. Parameter 를 p 개 추정했으면 $\nu = n - p$ 를 넣어 다시 구하며, n = 28 에 p = 2 이면 2.13 이다. $k$ 를 관례대로 1.96 에 두면 담는 확률이 $1 - \alpha$ 에 미치지 못하고, 얼마나 모자라는지는 꼭지 4.2 에 있다.
+
+#### Using the RMSE in Place of Sigma
+
+$\sigma$ 대신 RMSE 를 쓸 수 있는 근거는 둘이다.
+
+- **기댓값**: 오차의 평균이 0 이므로 $\sigma^2 = E[e_i^2]$ 이고, 식 (1) 의 제곱근 안이 바로 $e_i^2$ 의 표본평균이어서 $E[\mathrm{RMSE}^2] = \sigma^2$ 이 성립한다. 곧 $\mathrm{RMSE}^2$ 은 $\sigma^2$ 의 불편추정량 (unbiased estimator) 이고, n 이 커지면 표본평균이 $\sigma^2$ 로 모이므로 RMSE 도 $\sigma$ 로 모인다.
+- **유한한 n**: RMSE 가 $\sigma$ 와 어긋나는 몫을 식 (6) 의 t distribution 이 그대로 셈에 넣으므로, 담는 확률을 어림잡지 않고 식 (7) 로 구할 수 있다. RMSE 의 기댓값이 $\sigma$ 보다 조금 작아 1.96 배 구간이 담는 확률이 95% 아래로 내려가는 것도 이 식에 들어 있으며, 그 크기는 꼭지 4.2 와 4.3 에 있다.
 
 ### 4.2 Interval Coverage
 
