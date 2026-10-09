@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 42 | Created: 2026-10-05 | Updated: 2026-10-09 16:48 CDT
+Rev. 43 | Created: 2026-10-05 | Updated: 2026-10-09 16:50 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

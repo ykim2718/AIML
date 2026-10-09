@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 0 | Created: 2026-10-09 | Updated: 2026-10-09 16:48 CDT
+Rev. 1 | Created: 2026-10-09 | Updated: 2026-10-09 16:50 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -41,13 +41,13 @@ Rev. 0 | Created: 2026-10-09 | Updated: 2026-10-09 16:48 CDT
 
 This document separates the four intervals drawn around a prediction from the RMSE (the RMSE interval, the prediction interval, the confidence interval and the tolerance interval) by what they cover and the multiplier they use, and applies them to the three SPC limits (the error limit, the guard band and the control limit).
 
-An interval of 1.96 times the RMSE holds a new error with probability 95.00% when the scale is the true standard deviation of the errors, and with less when the RMSE comes from n errors; the probability is 94% at n = 28 (it rounds to 94% for n from 19 to 55). The ratio of a new error to the RMSE follows Student's t distribution with n degrees of freedom, which pulls the probability below 95%.
+An interval of plus or minus 1.96 standard deviations holds a new error with probability 95.00% when the true standard deviation of the errors is used, and with less when the RMSE of n errors takes its place; the probability is 94% at n = 28 (it rounds to 94% for n from 19 to 55). The ratio of a new error to the RMSE follows Student's t distribution with n degrees of freedom, which pulls the probability below 95%.
 
-To keep 95%, the multiplier is the 97.5% point of that t distribution instead of 1.96. It is 2.05 at n = 28 and returns to 1.96 as n grows. The error limit drawn on the model error uses that multiplier, and when a predicted value replaces a measured value in a conformity decision, the decision uses the existing spec narrowed inward by a guard band.
+To hold 95%, the multiplier is the 97.5% point of that t distribution instead of 1.96. It is 2.05 at n = 28 and returns to 1.96 as n grows. The error limit drawn on the model error uses that multiplier, and when a predicted value replaces a measured value in a conformity decision, the decision uses the existing spec narrowed inward by a guard band.
 
 ## 3. Taxonomy and its Hierarchy
 
-The size of an interval is a multiple of the RMSE, the model error. The two ends of the interval are the center plus and minus the multiplier times the RMSE, and when $\sigma$ is known the multiplier goes on that true value instead. Two things set the multiplier: whether the standard deviation of the errors (scale) is known or estimated, and what the interval is meant to cover (covered quantity). The two axes are shown in <a href="#fig-1">Fig 1</a> below.
+The size of an interval is a multiple of the RMSE, the model error. The two ends of the interval are the center plus and minus the multiplier times the RMSE, and when $\sigma$ is known the multiplier is applied to that true value instead. Two things set the multiplier: whether the standard deviation of the errors (scale) is known or estimated, and what the interval is meant to cover (covered quantity). The two axes are shown in <a href="#fig-1">Fig 1</a> below.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
@@ -103,7 +103,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 - **tolerance factor**: The multiplier set by the fraction of the population to cover, the confidence that guarantees it, and n. With a confidence above 0.5 it exceeds the multiplier of the prediction interval.
 - The $n = 28$ in the figure is the error count at which the probability is exactly 0.9400. Values at other n are in Table 2.
 
-Each step down the hierarchy drops one assumption or adds one requirement. The top knows the standard deviation of the errors, the next estimates it from n errors, and the bottom uses the estimate to guarantee a fraction of the population. Dropping the assumption that $\sigma$ is known splits into the second row (RMSE interval) and the third row (prediction interval) of <a href="#fig-2">Fig 2</a>. Keeping the multiplier at $z(1 - \alpha/2)$ lets the probability fall below $1 - \alpha$; keeping $1 - \alpha$ raises the multiplier to $\sqrt{n/\nu}\; t_{\nu}(1 - \alpha/2)$ of Eq. (2), which is $t_{n}(1 - \alpha/2)$ when $\nu = n$. The fourth row (tolerance interval) puts a confidence level on the covered probability, and with that confidence above 0.5 its multiplier exceeds the third row's.
+Each step down the hierarchy drops one assumption or adds one requirement. The top knows the standard deviation of the errors, the next estimates it from n errors, and the bottom uses the estimate to guarantee a fraction of the population. Once $\sigma$ is no longer assumed known, the hierarchy branches into the second row (RMSE interval) and the third row (prediction interval) of <a href="#fig-2">Fig 2</a>. Keeping the multiplier at $z(1 - \alpha/2)$ lets the probability fall below $1 - \alpha$; holding $1 - \alpha$ requires raising the multiplier to $\sqrt{n/\nu}\; t_{\nu}(1 - \alpha/2)$ of Eq. (2), which is $t_{n}(1 - \alpha/2)$ when $\nu = n$. The fourth row (tolerance interval) puts a confidence level on the covered probability, and with that confidence above 0.5 its multiplier exceeds the third row's.
 
 ### 3.1 Placement
 
@@ -123,7 +123,7 @@ At $\alpha = 0.05$ the multiplier is 1.96 in rows 1 and 2, $\sqrt{n/\nu}\; t_{\n
 
 ## 4. RMSE Interval
 
-This section holds the equation that draws the interval and the one that gives its probability. The interval is Eq. (2) and the probability is Eq. (7); the unknown $\sigma$ cancels in the derivation, so the probability depends only on the error count n.
+This section gives the equation for the interval and the equation for its probability. The interval is Eq. (2) and the probability is Eq. (7); the unknown $\sigma$ cancels in the derivation, so the probability depends only on the error count n.
 
 ### 4.1 Interval Calculation
 
@@ -139,7 +139,7 @@ The error $e_i$ in Eq. (1) is the i-th predicted value of the model minus the i-
 \mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (2)
 ```
 
-In Eq. (2), $\mu_0$ is the center of the interval, 0 for an interval on the errors. $k$ is the multiplier set by the target probability $1 - \alpha$, and $\sqrt{n/\nu}$ is the correction factor for the RMSE dividing its sum of squares by n instead of $\nu$. With no fitted parameters, $\nu = n$, the correction factor is 1, and $k = t_n(1 - \alpha/2)$, which is 2.05 at $\alpha = 0.05$ and n = 28. With p fitted parameters, $\nu = n - p$ goes into the formula, and n = 28 with p = 2 gives 2.13. Setting $k$ at the customary 1.96 leaves the probability short of $1 - \alpha$; the size of the shortfall is in section 4.2.
+In Eq. (2), $\mu_0$ is the center of the interval, 0 for an interval on the errors. $k$ is the multiplier set by the target probability $1 - \alpha$, and $\sqrt{n/\nu}$ is a correction factor that compensates for the RMSE dividing its sum of squares by n rather than $\nu$. With no fitted parameters, $\nu = n$, the correction factor is 1, and $k = t_n(1 - \alpha/2)$, which is 2.05 at $\alpha = 0.05$ and n = 28. With p fitted parameters, $\nu = n - p$ goes into the formula, and n = 28 with p = 2 gives 2.13. Setting $k$ at the customary 1.96 leaves the probability short of $1 - \alpha$; the size of the shortfall is in section 4.2.
 
 ### 4.2 Interval Coverage
 
@@ -149,7 +149,7 @@ With $\sigma$ known, an interval of 1.96 times $\sigma$ holds 95.00% for every n
 P\left(|e| \le 1.96\,\sigma\right) = 2\Phi(1.96) - 1 = 0.9500 \hspace{19em} (3)
 ```
 
-$\Phi$ is the CDF of the standard normal distribution, and 1.96 is its two-sided 95% point cut at the second decimal place. The uncut value is 1.95996, and the 0.950004 that the 1.96 interval holds differs from 95% at the sixth decimal place. The convention of writing limits as the mean difference plus and minus 1.96 standard deviations, when two measurement methods are compared, uses this value [[3](#ref-3)]. The 1.96 belongs to a target probability of 95%; a different target puts its own two-sided point in place of 1.96. This document uses 95%, as is customary.
+$\Phi$ is the CDF of the standard normal distribution, and 1.96 is its two-sided 95% point cut at the second decimal place. The uncut value is 1.95996, and the 0.950004 that the 1.96 interval holds differs from 95% at the sixth decimal place. This is the value behind the convention of reporting limits as the mean difference plus or minus 1.96 standard deviations when two measurement methods are compared [[3](#ref-3)]. The 1.96 corresponds to a target probability of 95%; a different target replaces it with its own two-sided point. This document uses 95%, as is customary.
 
 The RMSE varies from one data set to the next, so it cannot simply replace the $\sigma$ of Eq. (3). The sum of squares divided by $\sigma^2$ follows a chi-squared distribution with n degrees of freedom; its definition, density and CDF are in [Appendix C](#appendix-c-chi-squared-distribution).
 
@@ -177,7 +177,7 @@ The $e^{\ast}$ in Eq. (6) is the error of the model's next prediction. It did no
 P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_n}(1.96) - 1 \hspace{19em} (7)
 ```
 
-$F_{t_n}$ in Eq. (7) is the CDF of the t distribution with n degrees of freedom. Its value at each n, and the multiplier that keeps 95% in place of 1.96, are in Table 2.
+$F_{t_n}$ in Eq. (7) is the CDF of the t distribution with n degrees of freedom. Table 2 lists its value at each n and the multiplier that holds 95% in place of 1.96.
 
 Table 2. Coverage of the RMSE interval by sample count
 
@@ -195,7 +195,7 @@ Table 2. Coverage of the RMSE interval by sample count
 | 10  | 200  | 0.9988 | 0.9486   | 1.9719              |
 | 11  | 1000 | 0.9998 | 0.9497   | 1.9623              |
 
-The coverage column rises toward 95% as n grows but reaches it at no n. It rounds to 94% for n from 19 to 55, and row 5, at 0.9400, is the closest. Exceeding 94.5% takes n of at least 56, and exceeding 94.9% takes at least 277. Table 2 is the case $\nu = n$ with no fitted parameters; with fitted parameters the value comes from Eq. (8) in section 4.5. The values of Eq. (7) agree to the third decimal place with a Monte Carlo run of 2 million draws at n = 10, 28 and 100.
+The coverage column rises toward 95% as n grows but never reaches it. It rounds to 94% for n from 19 to 55, and row 5, at 0.9400, is the closest. Coverage exceeds 94.5% only for n of 56 or more, and 94.9% only for n of 277 or more. Table 2 is the case $\nu = n$ with no fitted parameters; with fitted parameters the value comes from Eq. (8) in section 4.5. The values of Eq. (7) agree to the third decimal place with a Monte Carlo run of 2 million draws at n = 10, 28 and 100.
 
 Eq. (7) and the multiplier that keeps 95%, plotted against n, are shown in <a href="#fig-3">Fig 3</a> below.
 
@@ -219,7 +219,7 @@ Both parts shrink together as n grows: 0.0059 and 0.0225 at n = 10, 0.0006 and 0
 
 ### 4.4 Coverage Stated with 1.96
 
-Text that pairs 1.96 with 95% is only approximately right, and only for n in the hundreds, as Table 2 shows. Text that pairs 1.96 with 94% reports the value for an RMSE-estimated standard deviation with n around 30; with $\sigma$ known, the multiplier that holds 94% is 1.88.
+A statement that pairs 1.96 with 95% is right only approximately, and only for n in the hundreds, as Table 2 shows. A statement that pairs 1.96 with 94% reports the value for an RMSE-estimated standard deviation with n around 30; with $\sigma$ known, the multiplier that holds 94% is 1.88.
 
 ### 4.5 Degrees of Freedom with Fitted Parameters
 
@@ -242,7 +242,7 @@ Eq. (8) reduces to Eq. (7) when p is 0. At n = 28 it gives 0.9299 for p = 2 and 
 
 The prediction interval uses the $k$ of Eq. (2) as it stands, and the next error falls inside it with probability $1 - \alpha$ for every n.
 
-It shares the standard deviation of the RMSE interval of section 4 and differs only in the multiplier. The RMSE interval fixes $k$ at the customary 1.96 in the same equation, which lowers its probability to Eq. (7); the prediction interval uses $k = \sqrt{n/\nu}\; t_{\nu}(1 - \alpha/2)$ and keeps the probability at $1 - \alpha$. With no fitted parameters, $\nu = n$ and the multiplier reduces to $t_{n}(1 - \alpha/2)$, the last column of Table 2.
+It uses the same standard deviation as the RMSE interval of section 4 and differs only in the multiplier. The RMSE interval fixes $k$ at the customary 1.96 in the same equation, which lowers its probability to Eq. (7); the prediction interval uses $k = \sqrt{n/\nu}\; t_{\nu}(1 - \alpha/2)$ and keeps the probability at $1 - \alpha$. With no fitted parameters, $\nu = n$ and the multiplier reduces to $t_{n}(1 - \alpha/2)$, the last column of Table 2.
 
 ### 5.1 The Multiplier for 95 Percent
 
@@ -297,11 +297,11 @@ Table 3. Limits around a predicted value
 | 2   | Acceptance limit | Spec and RMSE     | $g\,\mathrm{RMSE}$                 | Whether to decide conformity on a predicted value |
 | 3   | Control limit    | Process variation | Three observed standard deviations | Whether the process has changed                   |
 
-Row 1 is the range within which the model may replace a measurement. Row 2 is the existing spec narrowed inward, and the amount of narrowing is the guard band. Row 3 does not come from the spec, but on a chart of predicted values its width gains the RMSE through Eq. (10).
+Row 1 is the range within which the model may replace a measurement. Row 2 is the existing spec narrowed inward, and the amount of narrowing is the guard band. Row 3 does not come from the spec, but on a chart of predicted values its width also reflects the RMSE, through Eq. (10).
 
 ### 8.2 The Limit from the RMSE
 
-The error limit, row 1 of Table 3, is Eq. (2) of section 4.1 with $\mu_0 = 0$. The spec is set separately from the requirement, and the RMSE enters it only through the guard band of section 8.3. At $\alpha = 0.05$ and $\nu = n = 28$ the multiplier is 2.05, the value in the last column of Table 2. Three checks come before use.
+The error limit, row 1 of Table 3, is Eq. (2) of section 4.1 with $\mu_0 = 0$. The spec is set separately from the requirement, and the RMSE enters it only through the guard band of section 8.3. At $\alpha = 0.05$ and $\nu = n = 28$ the multiplier is 2.05, the value in the last column of Table 2. Check three things before using it.
 
 - **Remove the bias first**: A nonzero mean error makes the RMSE carry bias as well as spread (section 4.6) and widens the limit beyond what is needed. Correct the bias in the model and recompute the RMSE.
 - **Use data not used to fit the model**: No parameters were fitted to those data, so $\nu = n$. Residuals from the fitting data reduce the degrees of freedom to $\nu = n - p$ and make Eq. (7) overstate the probability, so the probability then comes from Eq. (8) and the multiplier from Eq. (2) with that $\nu$.
@@ -319,7 +319,7 @@ Only items between the two values of Eq. (9) are accepted, and the width $g\,\ma
 
 ### 8.4 The Spec and the Control Limit
 
-Control limits come from the process variation and the spec from the requirement, so the two are not set to the same number. On a chart of predicted values the observed variation contains both the process variation and the model error.
+Control limits come from the process variation and the spec from the requirement, so the two are not set to the same value. On a chart of predicted values the observed variation contains both the process variation and the model error.
 
 ```math
 \sigma_{\mathrm{obs}}^2 = \sigma_{\mathrm{proc}}^2 + \mathrm{RMSE}^2 \hspace{19em} (10)
