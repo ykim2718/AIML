@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 33 | Created: 2026-10-05 | Updated: 2026-10-09 16:11 CDT
+Rev. 34 | Created: 2026-10-05 | Updated: 2026-10-09 16:22 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -23,10 +23,9 @@ Rev. 33 | Created: 2026-10-05 | Updated: 2026-10-09 16:11 CDT
   - [9.4 The Spec and the Control Limit](#94-the-spec-and-the-control-limit)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Quantile Function](#appendix-b-quantile-function)
-  - [B.1 From the Cumulative Distribution Function to Its Inverse](#b1-from-the-cumulative-distribution-function-to-its-inverse)
-  - [B.2 The Two-sided Point](#b2-the-two-sided-point)
-  - [B.3 The t Quantile](#b3-the-t-quantile)
+- [Appendix B. Quantile Functions of the Normal and t Distributions](#appendix-b-quantile-functions-of-the-normal-and-t-distributions)
+  - [B.1 Normal Distribution](#b1-normal-distribution)
+  - [B.2 t Distribution](#b2-t-distribution)
 - [Appendix C. Chi-squared Distribution](#appendix-c-chi-squared-distribution)
 - [Appendix D. Derivation of Equations (4) to (8)](#appendix-d-derivation-of-equations-4-to-8)
 
@@ -97,7 +96,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 - **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
 - **coverage**: Model 이 다음에 한 번 더 예측했을 때 그 오차가 구간 안에 들 확률. 그 오차는 RMSE 를 구하던 때에는 아직 생기지 않았으므로 RMSE 를 구한 n 개와 독립이고, 문서는 이것을 새 오차라 적는다.
 - **1 - α**: 구간이 담을 확률로 정한 값. $\alpha$ 는 그 나머지이고, 이 문서는 $\alpha = 0.05$ 를 쓴다.
-- **z**: 표준정규분포의 분위수 함수 (quantile function, inverse CDF). 식 (3) 의 누적분포함수 $\Phi$ 의 역함수여서 $z = \Phi^{-1}$ 이고, $z(q)$ 는 누적확률이 $q$ 가 되는 지점이다. $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남기며, $\alpha = 0.05$ 에서 1.96 이다. [Appendix B](#appendix-b-quantile-function) 가 이것을 자세히 적는다.
+- **z**: 표준정규분포의 분위수 함수 (quantile function, inverse CDF). 식 (3) 의 누적분포함수 $\Phi$ 의 역함수여서 $z = \Phi^{-1}$ 이고, $z(q)$ 는 누적확률이 $q$ 가 되는 지점이다. $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남기며, $\alpha = 0.05$ 에서 1.96 이다. [Appendix B](#appendix-b-quantile-functions-of-the-normal-and-t-distributions) 가 이것을 자세히 적는다.
 - **t**: 자유도 $\nu$ 인 Student t distribution 의 분위수 함수. $t(\nu, q)$ 는 누적확률이 $q$ 가 되는 지점이고, $t(\nu, 1 - \alpha/2)$ 는 $\alpha = 0.05$ 와 $n = 28$ 에서 2.05 다.
 - **tolerance factor**: 모집단의 어느 비율까지 담을지와 그것을 보장하는 신뢰수준, 그리고 n 으로 정해지는 배율. 신뢰수준을 0.5 보다 높게 두면 prediction interval 의 배율보다 크다.
 - 그림의 $n = 28$ 은 담는 확률이 꼭 0.9400 이 되는 오차 개수다. 다른 n 에서 나오는 값은 Table 2 에 있다.
@@ -363,9 +362,11 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 - **tolerance interval**: 모집단의 정해진 비율을 담는다는 것을 정해진 신뢰수준으로 보장하는 구간.
 - **unbiased estimator**: 기댓값이 추정 대상과 같은 추정량.
 
-## Appendix B. Quantile Function
+## Appendix B. Quantile Functions of the Normal and t Distributions
 
-### B.1 From the Cumulative Distribution Function to Its Inverse
+### B.1 Normal Distribution
+
+#### From the Cumulative Distribution Function to Its Inverse
 
 누적분포함수는 지점을 받아 확률을 내고, 분위수 함수는 반대로 확률을 받아 지점을 낸다. 표준정규분포의 누적분포함수 $\Phi$ 가 앞의 것이다.
 
@@ -381,7 +382,7 @@ z(q) = \Phi^{-1}(q), \qquad \Phi(z(q)) = q \hspace{19em} (12)
 
 $z(0.5)$ 는 0 이고 $z(0.975)$ 는 1.96 이다. 앞엣것은 중앙값이고, 뒤엣것은 그 아래에 전체의 97.5% 가 놓이는 지점이다.
 
-### B.2 The Two-sided Point
+#### The Two-sided Point
 
 양쪽 꼬리에 합쳐 $\alpha$ 를 남기는 구간의 두 끝이 $\pm z(1 - \alpha/2)$ 다. 분포가 대칭이므로 한쪽 꼬리에 $\alpha/2$ 씩 남기고, 위쪽 꼬리가 $\alpha/2$ 인 지점은 그 아래의 누적확률이 $1 - \alpha/2$ 인 지점이다.
 
@@ -391,7 +392,7 @@ P\left(|Z| \le z(1 - \alpha/2)\right) = 1 - \alpha \hspace{19em} (13)
 
 $\alpha = 0.05$ 를 넣으면 $z(0.975) = 1.96$ 이고, 식 (13) 이 식 (3) 이 된다.
 
-### B.3 The t Quantile
+### B.2 t Distribution
 
 자유도 $\nu$ 의 Student t distribution 도 같은 방식으로 $t(\nu, q)$ 를 쓴다. 그 분포의 누적분포함수 $F_{t_{\nu}}$ 의 역함수이며, $t(\nu, 1 - \alpha/2)$ 가 양쪽 꼬리에 합쳐 $\alpha$ 를 남기는 지점이다. t distribution 은 정규분포보다 꼬리가 두꺼워 같은 $q$ 에서 $z(q)$ 보다 크고, $\nu$ 가 커지면 $z(q)$ 로 다가간다. $\alpha = 0.05$ 에서 $t(28, 0.975)$ 는 2.05, $t(1000, 0.975)$ 는 1.96 이다.
 
