@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 20 | Created: 2026-10-05 | Updated: 2026-10-09 11:30 CDT
+Rev. 21 | Created: 2026-10-05 | Updated: 2026-10-09 11:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -84,7 +84,7 @@ Normal interval             σ, known       z(1 - α/2)        1 - α for every 
 <a id="fig-2"></a>
 Fig 2. The hierarchy the intervals form, and the assumption each step drops or the requirement it adds
 
-- **σ**: 오차의 참 표준편차. 맨 윗줄은 그 값을 아는 경우이고, 아래 세 줄은 모르는 경우다.
+- **σ**: 오차의 참 표준편차. Normal interval 은 그 값을 아는 경우이고, RMSE interval 과 prediction interval 과 tolerance interval 은 모르는 경우다.
 - **RMSE**: 오차 n 개로 구한 $\sigma$ 의 추정값. 식 (2) 가 정의다.
 - **n**: RMSE 를 구한 오차의 개수.
 - **ν**: RMSE 의 제곱합에 남은 자유도. 그림은 parameter 를 추정하지 않아 $\nu = n$ 인 경우다.
@@ -93,7 +93,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 - **1 - α**: 구간이 담을 확률로 정한 값. $\alpha$ 는 그 나머지이고, 이 문서는 $\alpha = 0.05$ 를 쓴다.
 - **z**: 표준정규분포의 분위수 함수. $z(q)$ 는 누적확률이 $q$ 가 되는 지점이고, $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남긴다. $\alpha = 0.05$ 에서 1.96 이다.
 - **t**: 자유도 $\nu$ 인 Student t distribution 의 분위수 함수. $t(\nu, q)$ 는 누적확률이 $q$ 가 되는 지점이고, $t(\nu, 1 - \alpha/2)$ 는 $\alpha = 0.05$ 와 $n = 28$ 에서 2.05 다.
-- **tolerance factor**: 담을 비율과 신뢰수준과 n 으로 정해지는 배율. 셋째 줄의 배율보다 크다.
+- **tolerance factor**: 담을 비율과 신뢰수준과 n 으로 정해지는 배율. prediction interval 의 배율보다 크다.
 
 계층은 한 단계 내려갈 때마다 아는 것을 내려놓거나 요구를 하나 더 붙인다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. $\sigma$ 를 안다는 가정을 버리면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (RMSE interval) 과 셋째 줄 (prediction interval) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 확률이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 $t_{\nu}(1 - \alpha/2)$ 로 키운다. 넷째 줄 (tolerance interval) 은 담는 확률에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다.
 
