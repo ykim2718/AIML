@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 38 | Created: 2026-10-05 | Updated: 2026-10-09 16:36 CDT
+Rev. 39 | Created: 2026-10-05 | Updated: 2026-10-09 16:38 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -47,7 +47,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 오�
 
 ## 3. Taxonomy and its Hierarchy
 
-구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에서 RMSE 의 배율 배만큼 떨어진 자리이며, $\sigma$ 를 아는 경우에는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 표준편차 (scale) 를 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
+구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에 RMSE 의 배율 배를 더하고 뺀 값이며, $\sigma$ 를 아는 경우에는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 표준편차 (scale) 를 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
@@ -107,7 +107,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 ### 3.1 Placement
 
-Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</a> 의 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 은 구간마다 쓰는 표준편차와 곱하는 배율과 확률이 가리키는 대상을 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
+Table 1 은 구간마다 <a href="#fig-1">Fig 1</a> 의 두 축에서 고른 값, 곧 쓰는 표준편차와 담는 대상을 적고, 그 둘로 정해지는 배율과 확률을 함께 적는다. 쓸 구간은 가진 표준편차와 담아야 하는 대상으로 이 표에서 고른다.
 
 Table 1. Intervals around a prediction
 
@@ -127,7 +127,7 @@ $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행의 배율이 $\sq
 
 ### 4.1 Interval Calculation
 
-구간은 중심에서 RMSE 의 배율 배만큼 떨어진 두 자리이고, RMSE 는 오차 n 개의 제곱평균제곱근이다.
+구간의 두 끝은 중심에 RMSE 의 배율 배를 더하고 뺀 값이고, RMSE 는 오차 n 개의 제곱평균제곱근이다.
 
 ```math
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (1)
@@ -143,7 +143,7 @@ $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행의 배율이 $\sq
 
 ### 4.2 Interval Coverage
 
-$\sigma$ 를 알면 1.96 배로 그린 구간이 담는 확률은 n 과 무관하게 95.00% 이고, $\sigma$ 자리에 RMSE 를 넣으면 그보다 낮아진다.
+$\sigma$ 를 알면 1.96 배로 그린 구간이 담는 확률은 n 과 무관하게 95.00% 이고, $\sigma$ 대신 RMSE 를 쓰면 그보다 낮아진다.
 
 ```math
 P\left(|e| \le 1.96\,\sigma\right) = 2\Phi(1.96) - 1 = 0.9500 \hspace{19em} (3)
@@ -235,7 +235,7 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 
 - **가정**: 오차가 평균 0 의 정규분포에서 독립으로 나오고 분산이 모두 같다. RMSE 를 구한 오차와 담을 대상인 새 오차가 서로 독립이다. 예측값 자체가 흔들리는 몫인 leverage 는 뺀다 (꼭지 5.2).
 - **설정값**: 배율은 1.96 으로 고정한다. 같은 자료로 parameter 를 p 개 추정했으면 자유도는 $\nu = n - p$ 이고, 담는 확률은 식 (8) 로 구한다.
-- **깨지는 조건**: 오차의 평균이 0 이 아니면 RMSE 가 흩어짐과 치우침을 함께 담아 구간이 필요보다 넓어지고, 식 (7) 의 비율은 더 이상 그 구간을 설명하지 않는다. 분산이 자리마다 다르면 (heteroscedasticity) 하나의 RMSE 가 모든 자리를 대표하지 못해 분산이 큰 자리에서 비율이 떨어진다. 오차가 서로 상관되어 있으면 제곱합에 남는 자유도가 n 보다 작아 식 (7) 이 비율을 높게 낸다. 꼬리가 정규분포보다 두꺼우면 같은 배율이 담는 비율이 더 낮아, 분산이 같은 Laplace distribution 에서 $\pm 1.96\sigma$ 가 담는 비율은 93.7% 다.
+- **깨지는 조건**: 오차의 평균이 0 이 아니면 RMSE 가 흩어짐과 치우침을 함께 담아 구간이 필요보다 넓어지고, 식 (7) 의 비율은 더 이상 그 구간을 설명하지 않는다. 오차의 분산이 입력값에 따라 다르면 (heteroscedasticity) 하나의 RMSE 가 모든 입력값의 오차를 대표하지 못해 분산이 큰 입력값에서 비율이 떨어진다. 오차가 서로 상관되어 있으면 제곱합에 남는 자유도가 n 보다 작아 식 (7) 이 비율을 높게 낸다. 꼬리가 정규분포보다 두꺼우면 같은 배율이 담는 비율이 더 낮아, 분산이 같은 Laplace distribution 에서 $\pm 1.96\sigma$ 가 담는 비율은 93.7% 다.
 - **만나는 자리**: 계측 두 방법의 차이에 한계를 긋는 Bland-Altman 한계 [[3](#ref-3)].
 
 ## 5. Prediction Interval
@@ -297,7 +297,7 @@ Table 3. Limits around a predicted value
 | 2   | Acceptance limit | Spec 과 RMSE | $g\,\mathrm{RMSE}$   | 예측값으로 규격 판정을 내릴지 |
 | 3   | Control limit    | 공정의 변동  | 관측 표준편차의 3 배 | 공정이 평소와 달라졌는지      |
 
-1 행은 model 이 계측을 대신해도 되는 범위다. 2 행은 이미 있는 spec 에서 안쪽으로 물러선 자리이며, 물러선 폭이 guard band 다. 3 행의 한계는 spec 에서 나오지 않지만, 예측값으로 chart 를 그리면 그 폭에 RMSE 가 식 (10) 으로 섞여 든다.
+1 행은 model 이 계측을 대신해도 되는 범위다. 2 행은 이미 있는 spec 에서 안쪽으로 물러선 한계이며, 물러선 폭이 guard band 다. 3 행의 한계는 spec 에서 나오지 않지만, 예측값으로 chart 를 그리면 그 폭에 RMSE 가 식 (10) 으로 섞여 든다.
 
 ### 8.2 The Limit from the RMSE
 
@@ -325,7 +325,7 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 \sigma_{\mathrm{obs}}^2 = \sigma_{\mathrm{proc}}^2 + \mathrm{RMSE}^2 \hspace{19em} (10)
 ```
 
-식 (10) 의 $\sigma_{\mathrm{obs}}$ 가 관리 한계의 폭을 정하므로, RMSE 가 공정 표준편차의 절반이면 한계가 1.12 배 넓어지고 같은 자료로 잰 공정능력지수 (process capability index) 는 0.89 배로 내려간다. RMSE 가 공정 표준편차와 같으면 각각 1.41 배와 0.71 배다. 식 (10) 은 model 의 오차가 공정의 변동과 독립일 때 성립하며, 오차가 공정 수준에 따라 달라지면 (heteroscedasticity) 하나의 RMSE 로 모든 자리의 한계를 정하지 못한다.
+식 (10) 의 $\sigma_{\mathrm{obs}}$ 가 관리 한계의 폭을 정하므로, RMSE 가 공정 표준편차의 절반이면 한계가 1.12 배 넓어지고 같은 자료로 잰 공정능력지수 (process capability index) 는 0.89 배로 내려간다. RMSE 가 공정 표준편차와 같으면 각각 1.41 배와 0.71 배다. 식 (10) 은 model 의 오차가 공정의 변동과 독립일 때 성립하며, 오차가 공정 수준에 따라 달라지면 (heteroscedasticity) 하나의 RMSE 로 모든 공정 수준의 한계를 정하지 못한다.
 
 ## References
 
@@ -357,7 +357,7 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 - **expanded uncertainty**: 표준불확도에 coverage factor 를 곱한 값.
 - **gamma function**: 식 (18) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
 - **guard band**: Spec 과 수락 한계 사이의 폭. 식 (9) 가 정의다.
-- **heteroscedasticity**: 분산이 자리마다 다른 상태.
+- **heteroscedasticity**: 오차의 분산이 입력값이나 공정 수준에 따라 다른 상태.
 - **Jensen's inequality**: concave 함수에서 기댓값의 함수가 함수의 기댓값보다 크다는 부등식.
 - **Laplace distribution**: 양쪽 꼬리가 지수함수로 줄어드는 대칭 분포. 분산이 같은 정규분포보다 꼬리가 두껍다.
 - **leverage**: 새 입력이 자료의 중심에서 떨어진 정도를 재는 값. 예측값 자체가 흔들리는 몫을 정한다.
