@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 22 | Created: 2026-10-05 | Updated: 2026-10-09 11:38 CDT
+Rev. 23 | Created: 2026-10-05 | Updated: 2026-10-09 11:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -86,7 +86,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 - **σ**: 오차의 참 표준편차. Normal interval 은 그 값을 아는 경우이고, RMSE interval 과 prediction interval 과 tolerance interval 은 모르는 경우다.
 - **RMSE**: 오차 n 개로 구한 $\sigma$ 의 추정값. 식 (2) 가 정의다.
-- **n**: RMSE 를 구할 때 제곱해 더한 오차가 몇 개인가. 식 (2) 의 합이 $i = 1$ 부터 n 까지 도는 그 n 이다.
+- **n**: Model 이 예측하고 그 자리의 계측값과 짝지어 오차를 구한 횟수. 식 (2) 의 합이 그 n 개를 더한다.
 - **ν**: RMSE 의 제곱합에 남은 자유도. 그림은 parameter 를 추정하지 않아 $\nu = n$ 인 경우다.
 - **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
 - **coverage**: 구간이 새 오차 하나를 담을 확률.
