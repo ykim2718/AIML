@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 24 | Created: 2026-10-05 | Updated: 2026-10-09 11:52 CDT
+Rev. 25 | Created: 2026-10-05 | Updated: 2026-10-09 12:00 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -129,7 +129,7 @@ $\Phi$ 는 표준정규분포의 누적분포함수이고, 1.96 은 그 분포�
 
 ### 4.2 The RMSE as an Estimate of the Scale
 
-RMSE 는 $\sigma$ 를 모를 때 그것을 대신해 쓰는 추정값이며, 자료마다 달라지는 확률변수다.
+RMSE 는 $\sigma$ 를 모를 때 대신해 쓰는 추정값이며, 자료마다 달라지는 확률변수다.
 
 ```math
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (2)
