@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 16 | Created: 2026-10-05 | Updated: 2026-10-09 11:09 CDT
+Rev. 17 | Created: 2026-10-05 | Updated: 2026-10-09 11:14 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -65,33 +65,32 @@ Fig 1. The two axes an interval around a prediction is placed on
 ```text
 HIERARCHY of the intervals, with what each step down changes
 
-interval                      scale     k                   coverage
-Normal interval               sigma     z(1 - a/2)          1 - a for every n
+interval                    scale          multiplier        coverage of one new error
+Normal interval             sigma, known   1.96              0.9500 for every n
 |
-| gives up: the true value of sigma, estimated by the RMSE of n errors
+| assumption dropped: sigma is known. The RMSE of n errors takes its place.
 |
-+-- RMSE interval             RMSE      z(1 - a/2)          2 * F_t(k; nu) - 1
-|                                                           below 1 - a; n sets how far
-+-- prediction interval       RMSE      t(nu, 1 - a/2)      1 - a for every n
++-- RMSE interval           RMSE           1.96, unchanged   below 0.9500, 0.9400 at n = 28
+|
++-- prediction interval     RMSE           2.05 at n = 28    0.9500 for every n
     |
-    | adds: a confidence level on the covered fraction
+    | requirement added: the covered fraction must hold with a stated confidence
     |
-    +-- tolerance interval    RMSE      tolerance factor    a stated fraction, held with
-                                                            a stated confidence
+    +-- tolerance interval  RMSE           larger still      0.95 of the population, held
+                                                             with a stated confidence
 ```
 
 <a id="fig-2"></a>
-Fig 2. The hierarchy the intervals form, and what each step down gives up or adds
+Fig 2. The hierarchy the intervals form, and the assumption each step drops or the requirement it adds
 
-- $k$: 표준편차에 곱하는 배율. 구간의 두 끝이 중심에서 표준편차의 $k$ 배만큼 떨어진다.
-- $z(1 - \alpha/2)$: 표준정규분포의 양측 $1 - \alpha$ 점.
-- $\alpha$: 1 에서 담을 비율을 뺀 값. 그림은 a 로 적는다.
-- $t_{\nu}(1 - \alpha/2)$: 자유도 $\nu$ 의 Student t distribution 의 양측 $1 - \alpha$ 점. 그림은 t(nu, 1 - a/2) 로 적는다.
-- $\nu$: 제곱합에 남은 자유도. parameter 를 p 개 추정하면 $\nu = n - p$ 다.
-- $F_t$: 자유도 $\nu$ 의 t distribution 의 누적분포함수. 그림은 F_t 로 적는다.
-- $n$: RMSE 를 구한 오차의 개수.
+- **sigma**: 오차의 참 표준편차 $\sigma$. 보통은 모르는 값이다.
+- **RMSE**: 오차 n 개로 구한 $\sigma$ 의 추정값. 식 (2) 가 정의다.
+- **n**: RMSE 를 구한 오차의 개수.
+- **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
+- **coverage**: 구간이 새 오차 하나를 담을 확률.
+- 담을 확률을 0.95 로 정한 경우를 적은 것이며, 다른 값을 정하면 multiplier 열과 coverage 열이 함께 바뀐다.
 
-계층은 한 단계 내려갈 때마다 아는 것을 내려놓거나 요구를 하나 더 붙인다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 표준편차를 참값에서 추정값으로 바꾸면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (RMSE interval) 과 셋째 줄 (prediction interval) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 비율이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 $t_{\nu}(1 - \alpha/2)$ 로 키운다. 넷째 줄 (tolerance interval) 은 담는 비율 자체에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다. 이 문서가 다루는 $\alpha = 0.05$ 에서 $z(1 - \alpha/2)$ 가 1.96 이다.
+계층은 한 단계 내려갈 때마다 아는 것을 내려놓거나 요구를 하나 더 붙인다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. $\sigma$ 를 안다는 가정을 버리면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (RMSE interval) 과 셋째 줄 (prediction interval) 로 갈린다. 배율을 1.96 에 그대로 두면 담는 확률이 0.9500 아래로 떨어지고, 0.9500 을 지키려면 배율을 키운다. 넷째 줄 (tolerance interval) 은 담는 확률에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다.
 
 ### 3.1 Placement
 
@@ -107,7 +106,7 @@ Table 1. Intervals around a prediction
 | 4   | Confidence interval | RMSE / $\sqrt{n}$ | $t_{\nu}(1 - \alpha/2)$ | 오차의 평균          | $1 - \alpha$      |
 | 5   | Tolerance interval  | RMSE              | tolerance factor        | 모집단의 정해진 비율 | 신뢰수준으로 보장 |
 
-$\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행과 4 행의 배율이 $t_{\nu}(0.975)$ 다. 1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 $1 - \alpha$ 로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
+$1 - \alpha$ 는 구간이 담을 확률로 정한 값이고 $\alpha$ 는 그 나머지다. $z(1 - \alpha/2)$ 는 표준정규분포에서 양쪽 꼬리를 합쳐 $\alpha$ 를 남기는 값이고, $t_{\nu}(1 - \alpha/2)$ 는 자유도 $\nu$ 의 t distribution 에서 같은 자리다. $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행과 4 행의 배율이 $t_{\nu}(0.975)$ 다. 1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 $1 - \alpha$ 로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
 
 ## 4. Coverage of the Interval
 
