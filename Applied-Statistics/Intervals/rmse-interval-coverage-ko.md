@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 25 | Created: 2026-10-05 | Updated: 2026-10-09 12:00 CDT
+Rev. 26 | Created: 2026-10-05 | Updated: 2026-10-09 12:03 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -86,12 +86,12 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 - **σ**: 오차의 참 표준편차. Normal interval 은 그 값을 아는 경우이고, RMSE interval 과 prediction interval 과 tolerance interval 은 모르는 경우다.
 - **RMSE**: 오차 n 개로 구한 $\sigma$ 의 추정값. 식 (2) 가 정의다.
-- **n**: Model 이 예측하고 계측값과 짝지어 오차를 구한 횟수. 식 (2) 의 합이 그 n 개를 더한다.
+- **n**: Model 이 예측하고 계측값과 짝지어 오차를 구한 횟수. 식 (2) 에서 사용한 n 개다.
 - **ν**: RMSE 의 제곱합에 남은 자유도. 그림은 parameter 를 추정하지 않아 $\nu = n$ 인 경우다.
 - **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
-- **coverage**: 구간이 새 오차 하나를 담을 확률.
+- **coverage**: 구간이 새 오차 하나를 담을 확률. 새 오차는 RMSE 를 구할 때 쓰지 않은 오차를 뜻하며, RMSE 를 구한 n 개와 독립이다.
 - **1 - α**: 구간이 담을 확률로 정한 값. $\alpha$ 는 그 나머지이고, 이 문서는 $\alpha = 0.05$ 를 쓴다.
-- **z**: 표준정규분포의 분위수 함수. $z(q)$ 는 누적확률이 $q$ 가 되는 지점이고, $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남긴다. $\alpha = 0.05$ 에서 1.96 이다.
+- **z**: 표준정규분포의 분위수 함수 (quantile function). $z(q)$ 는 누적확률이 $q$ 가 되는 지점이고, $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남긴다. $\alpha = 0.05$ 에서 1.96 이다.
 - **t**: 자유도 $\nu$ 인 Student t distribution 의 분위수 함수. $t(\nu, q)$ 는 누적확률이 $q$ 가 되는 지점이고, $t(\nu, 1 - \alpha/2)$ 는 $\alpha = 0.05$ 와 $n = 28$ 에서 2.05 다.
 - **tolerance factor**: 담을 비율과 신뢰수준과 n 으로 정해지는 배율. prediction interval 의 배율보다 크다.
 
