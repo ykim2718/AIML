@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 41 | Created: 2026-10-05 | Updated: 2026-10-09 16:45 CDT
+Rev. 42 | Created: 2026-10-05 | Updated: 2026-10-09 16:48 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -199,7 +199,7 @@ Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n �
 
 식 (7) 과 95% 를 지키는 배율을 n 에 대해 그리면 아래 <a href="#fig-3">Fig 3</a> 와 같다.
 
-<img src="rmse-intervals-and-spc-ko_fig/rmse_interval_coverage.png" width="900" style="max-width: 100%;" alt="Fig 3">
+<img src="rmse-intervals-and-spc_fig/rmse_interval_coverage.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
 <a id="fig-3"></a>
 Fig 3. Coverage of the RMSE interval and the multiplier that restores 95 percent
@@ -455,10 +455,10 @@ Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary fun
 
 ### C.4 Properties
 
-- **값의 범위**: $X \ge 0$. 제곱합이므로 음수가 되지 않는다.
-- **평균**: $E(X) = k$.
-- **분산**: $\mathrm{Var}(X) = 2k$.
-- **모양**: $k$ 가 작을수록 오른쪽으로 긴 꼬리를 가진 비대칭 형태이며, $k$ 가 커질수록 점점 정규분포 모양에 가깝게 대칭형으로 변한다.
+- **Range**: $X \ge 0$. 제곱합이므로 음수가 되지 않는다.
+- **Mean**: $E(X) = k$.
+- **Variance**: $\mathrm{Var}(X) = 2k$.
+- **Shape**: $k$ 가 작을수록 오른쪽으로 긴 꼬리를 가진 비대칭 형태이며, $k$ 가 커질수록 점점 정규분포 모양에 가깝게 대칭형으로 변한다.
 
 ## Appendix D. Derivation of Equations (4) to (8)
 
