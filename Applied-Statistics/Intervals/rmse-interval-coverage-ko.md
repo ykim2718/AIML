@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 26 | Created: 2026-10-05 | Updated: 2026-10-09 12:03 CDT
+Rev. 27 | Created: 2026-10-05 | Updated: 2026-10-09 12:05 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -65,7 +65,7 @@ Fig 1. The two axes an interval around a prediction is placed on
 ```text
 HIERARCHY of the intervals, with what each step down changes
 
-interval                    scale          multiplier        coverage of one new error
+interval                    scale          multiplier        coverage of the next error
 Normal interval             σ, known       z(1 - α/2)        1 - α for every n
 |
 | assumption dropped: σ is known. The RMSE of n errors takes its place.
@@ -89,7 +89,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 - **n**: Model 이 예측하고 계측값과 짝지어 오차를 구한 횟수. 식 (2) 에서 사용한 n 개다.
 - **ν**: RMSE 의 제곱합에 남은 자유도. 그림은 parameter 를 추정하지 않아 $\nu = n$ 인 경우다.
 - **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
-- **coverage**: 구간이 새 오차 하나를 담을 확률. 새 오차는 RMSE 를 구할 때 쓰지 않은 오차를 뜻하며, RMSE 를 구한 n 개와 독립이다.
+- **coverage**: Model 이 다음에 한 번 더 예측했을 때 그 오차가 구간 안에 들 확률. 그 오차는 RMSE 를 구하던 때에는 아직 생기지 않았으므로 RMSE 를 구한 n 개와 독립이고, 문서는 이것을 새 오차라 적는다.
 - **1 - α**: 구간이 담을 확률로 정한 값. $\alpha$ 는 그 나머지이고, 이 문서는 $\alpha = 0.05$ 를 쓴다.
 - **z**: 표준정규분포의 분위수 함수 (quantile function). $z(q)$ 는 누적확률이 $q$ 가 되는 지점이고, $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남긴다. $\alpha = 0.05$ 에서 1.96 이다.
 - **t**: 자유도 $\nu$ 인 Student t distribution 의 분위수 함수. $t(\nu, q)$ 는 누적확률이 $q$ 가 되는 지점이고, $t(\nu, 1 - \alpha/2)$ 는 $\alpha = 0.05$ 와 $n = 28$ 에서 2.05 다.
@@ -157,7 +157,7 @@ $c_n$ 은 n 이 커지면 1 로 간다. n 이 10 이면 0.9754, 28 이면 0.9911
 \frac{e^{\ast}}{\mathrm{RMSE}} \sim t_n \hspace{19em} (5)
 ```
 
-식 (5) 의 $e^{\ast}$ 는 RMSE 를 구한 n 개와 독립인 새 오차 하나다. 분모가 상수 $\sigma$ 에서 확률변수 RMSE 로 바뀌면서 비 (ratio) 의 분포가 표준정규분포에서 t distribution 으로 옮겨 가고, 담는 비율도 그만큼 달라진다.
+식 (5) 의 $e^{\ast}$ 는 model 이 다음에 내놓을 예측 하나의 오차다. RMSE 를 구하던 때에는 아직 생기지 않았으므로 RMSE 를 구한 n 개와 독립이다. 분모가 상수 $\sigma$ 에서 확률변수 RMSE 로 바뀌면서 비 (ratio) 의 분포가 표준정규분포에서 t distribution 으로 옮겨 가고, 담는 비율도 그만큼 달라진다.
 
 ```math
 P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_n}(1.96) - 1 \hspace{19em} (6)
