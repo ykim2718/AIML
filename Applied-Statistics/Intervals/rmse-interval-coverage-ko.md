@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 11 | Created: 2026-10-05 | Updated: 2026-10-09 10:49 CDT
+Rev. 12 | Created: 2026-10-05 | Updated: 2026-10-09 10:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -79,7 +79,7 @@ Normal interval    scale sigma   k = 1.96            coverage 0.9500 for every n
 <a id="fig-2"></a>
 Fig 2. The hierarchy the intervals form, from the strongest assumption down
 
-계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 하나를 내려놓은 자리에서는 배율을 1.96 에 둔 채 담는 비율이 떨어지거나, 비율을 0.9500 으로 지킨 채 배율이 커지거나 둘 중 하나가 된다.
+계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. 표준편차를 참값에서 추정값으로 바꾸면 <a href="#fig-2">Fig 2</a> 의 둘째 줄과 셋째 줄로 갈린다. 배율을 1.96 에 그대로 두면 담는 비율이 0.9500 아래로 떨어지고, 비율을 0.9500 으로 지키려면 배율을 $t_{\nu}(0.975)$ 로 키운다. 넷째 줄은 담는 비율 자체에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다.
 
 ### 3.1 Placement
 
