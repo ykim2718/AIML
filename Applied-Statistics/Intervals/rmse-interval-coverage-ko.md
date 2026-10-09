@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 35 | Created: 2026-10-05 | Updated: 2026-10-09 16:26 CDT
+Rev. 36 | Created: 2026-10-05 | Updated: 2026-10-09 16:30 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -277,11 +277,17 @@ Prediction interval 은 다음 오차 하나가 들어올 확률이 평균적으
 
 ## 8. Spec Setting for SPC
 
-RMSE 로 SPC 의 한계를 정하는 일은 네 걸음이다. 한계를 무엇에 긋는지 가르고, 요구하는 비율에서 error limit 의 배율을 읽고, 예측값이 판정에 쓰이면 spec 에서 guard band 만큼 물러서고, spec 과 관리 한계를 따로 둔다.
+예측값으로 SPC 를 할 때 긋는 세 한계는 각각 prediction interval, RMSE interval, Normal interval 을 쓰고, 그에 앞서 confidence interval 로 model 의 치우침을 확인한다.
+
+- **Prediction interval**: Error limit (꼭지 8.2). 다음 예측 하나의 오차를 n 과 무관하게 $1 - \alpha$ 로 담아야 하므로 식 (2) 의 배율을 쓴다.
+- **RMSE interval**: Acceptance limit 의 guard band (꼭지 8.3). ISO 14253-1 이 표준불확도에 고정 배율 2 를 곱한 확장 불확도 (expanded uncertainty) 를 spec 에서 빼라고 정하므로, RMSE 에 고정 배율을 곱하는 RMSE interval 의 꼴이 된다. 고정 배율이 담는 확률은 식 (7) 처럼 n 이 작을수록 낮아, n 이 작으면 배율을 prediction interval 의 배율 쪽으로 키운다.
+- **Normal interval**: Control limit (꼭지 8.4). 관리 한계는 관측 표준편차를 아는 값으로 보고 그 3 배를 더하고 빼므로, Table 1 의 1 행에서 배율이 3, 곧 $\alpha = 0.0027$ 인 경우다.
+- **Confidence interval**: Bias 확인 (꼭지 8.2 의 첫 항목). RMSE 를 구하기 전에 오차의 평균이 0 인지를 꼭지 6 의 구간으로 본다.
+- **Tolerance interval**: 쓰지 않는다. Spec 이 "신뢰수준 $\gamma$ 로 모집단의 $P$ 이상" 을 요구하면 error limit 의 배율을 꼭지 7 의 tolerance factor 로 바꾼다.
 
 ### 8.1 What the Limit Is Drawn On
 
-RMSE 가 정하는 것은 model 의 오차에 긋는 한계와 그 오차 때문에 spec 에서 물러서는 폭 둘이고, 공정이 평소와 같은지를 가르는 관리 한계는 공정의 변동에서 따로 나온다.
+Error limit 과 guard band 는 RMSE 로 구하고, control limit 은 공정의 변동으로 구한다. Table 3 이 세 한계를 견준다.
 
 Table 3. Limits around a predicted value
 
@@ -309,7 +315,7 @@ Table 3 의 1 행인 error limit 은 꼭지 4.1 의 식 (2) 에 $\mu_0 = 0$ 을 
 A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathrm{USL} - g\,\mathrm{RMSE} \hspace{19em} (9)
 ```
 
-식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 참값은 밖에 있을 수 있고, 그 확률은 RMSE 가 클수록 커진다. Guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 (expanded uncertainty) 한 배를 spec 에서 빼는 것이다 [[6](#ref-6)]. RMSE 를 표준불확도로 보면 $g$ 가 곧 포함인자 (coverage factor) 이고, 관례인 포함인자 2 가 $g = 2$ 를 준다. n 이 작으면 식 (2) 의 $k$ 가 커지는 것과 같은 이유로 2 보다 큰 값을 쓴다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
+식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 참값은 밖에 있을 수 있고, 그 확률은 RMSE 가 클수록 커진다. Guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 한 배를 spec 에서 빼는 것이다 [[6](#ref-6)]. RMSE 를 표준불확도로 보면 $g$ 가 곧 포함인자 (coverage factor) 이고, 관례인 포함인자 2 가 $g = 2$ 를 준다. n 이 작으면 식 (2) 의 $k$ 가 커지는 것과 같은 이유로 2 보다 큰 값을 쓴다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
 
 ### 8.4 The Spec and the Control Limit
 
