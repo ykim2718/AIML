@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 37 | Created: 2026-10-05 | Updated: 2026-10-09 16:35 CDT
+Rev. 38 | Created: 2026-10-05 | Updated: 2026-10-09 16:36 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -39,9 +39,9 @@ Rev. 37 | Created: 2026-10-05 | Updated: 2026-10-09 16:35 CDT
 
 ## 2. Summary
 
-RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 오차의 참 표준편차를 알 때 95.00% 이고, RMSE 를 오차 n 개에서 구했으면 그보다 낮으며, 94% 가 되는 것은 n 이 28 일 때다 (n 이 19 부터 55 까지면 94% 로 반올림된다).
+이 문서는 RMSE 로 예측값 주위에 긋는 구간 네 가지 (RMSE interval, prediction interval, confidence interval, tolerance interval) 를 담는 대상과 배율로 가르고, 그 구간을 SPC 의 세 한계 (error limit, guard band, control limit) 에 적용한다.
 
-새 오차를 RMSE 로 나눈 값이 자유도 n 의 Student t distribution 을 따르므로 비율이 95% 아래로 깎인다.
+RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 오차의 참 표준편차를 알 때 95.00% 이고, RMSE 를 오차 n 개에서 구했으면 그보다 낮으며, 94% 가 되는 것은 n 이 28 일 때다 (n 이 19 부터 55 까지면 94% 로 반올림된다). 새 오차를 RMSE 로 나눈 값이 자유도 n 의 Student t distribution 을 따르므로 비율이 95% 아래로 깎인다.
 
 95% 를 지키려면 배율을 1.96 대신 그 t distribution 의 97.5% 점으로 둔다. n 이 28 이면 2.05 이고, n 이 커지면 1.96 으로 돌아간다. Model 의 오차에 긋는 한계 (error limit) 는 그 배율로 긋고, 예측값이 계측값을 대신해 판정에 쓰이면 이미 있는 spec 에서 guard band 만큼 안쪽으로 물러선다.
 
