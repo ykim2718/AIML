@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 8 | Created: 2026-10-05 | Updated: 2026-10-09 10:04 CDT
+Rev. 9 | Created: 2026-10-05 | Updated: 2026-10-09 10:41 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,7 +27,7 @@ Rev. 8 | Created: 2026-10-05 | Updated: 2026-10-09 10:04 CDT
 ## 1. Purpose
 
 - **Problem Statement**: ML 의 metric 인 RMSE 의 물리적 의미를 이해하기 힘들다.
-- **Goal**: RMSE 를 이용해 SPC 를 위한 spec 을 만드는 방법의 이론과 실행을 담은 guide 를 만든다.
+- **Goal**: model 의 오차인 RMSE 를 이용해 SPC 를 위한 spec 을 만드는 방법의 이론과 실행을 담은 guide 를 만든다.
 - **Non-Goal**: 오차가 정규분포가 아닐 때 쓸 구간은 다루지 않는다.
 
 ## 2. Summary
@@ -40,7 +40,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 참 
 
 ## 3. Taxonomy and its Hierarchy
 
-구간의 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 배율은 오차의 scale 에 곱하는 수이고, 구간의 두 끝은 중심에서 scale 의 배율 배만큼 떨어진 자리다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
+구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에서 RMSE 의 배율 배만큼 떨어진 자리이며, $\sigma$ 를 아는 자리에서는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
