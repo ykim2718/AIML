@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 7 | Created: 2026-10-05 | Updated: 2026-10-09 10:02 CDT
+Rev. 8 | Created: 2026-10-05 | Updated: 2026-10-09 10:04 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,7 +40,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 참 
 
 ## 3. Taxonomy and its Hierarchy
 
-구간의 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
+구간의 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 배율은 오차의 scale 에 곱하는 수이고, 구간의 두 끝은 중심에서 scale 의 배율 배만큼 떨어진 자리다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
