@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 19 | Created: 2026-10-05 | Updated: 2026-10-09 11:19 CDT
+Rev. 20 | Created: 2026-10-05 | Updated: 2026-10-09 11:30 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -84,15 +84,15 @@ Normal interval             σ, known       z(1 - α/2)        1 - α for every 
 <a id="fig-2"></a>
 Fig 2. The hierarchy the intervals form, and the assumption each step drops or the requirement it adds
 
-- **σ**: 오차의 참 표준편차. 보통은 모르는 값이다.
+- **σ**: 오차의 참 표준편차. 맨 윗줄은 그 값을 아는 경우이고, 아래 세 줄은 모르는 경우다.
 - **RMSE**: 오차 n 개로 구한 $\sigma$ 의 추정값. 식 (2) 가 정의다.
 - **n**: RMSE 를 구한 오차의 개수.
-- **ν**: 제곱합에 남은 자유도. 같은 자료로 parameter 를 p 개 추정하면 $\nu = n - p$ 다.
+- **ν**: RMSE 의 제곱합에 남은 자유도. 그림은 parameter 를 추정하지 않아 $\nu = n$ 인 경우다.
 - **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
 - **coverage**: 구간이 새 오차 하나를 담을 확률.
 - **1 - α**: 구간이 담을 확률로 정한 값. $\alpha$ 는 그 나머지이고, 이 문서는 $\alpha = 0.05$ 를 쓴다.
-- **z(1 - α/2)**: 표준정규분포에서 양쪽 꼬리를 합쳐 $\alpha$ 를 남기는 값. $\alpha = 0.05$ 에서 1.96 이다.
-- **t(ν, 1 - α/2)**: 자유도 $\nu$ 의 Student t distribution 에서 같은 자리. $\alpha = 0.05$ 와 $n = 28$ 에서 2.05 다.
+- **z**: 표준정규분포의 분위수 함수. $z(q)$ 는 누적확률이 $q$ 가 되는 지점이고, $z(1 - \alpha/2)$ 는 양쪽 꼬리에 합쳐 $\alpha$ 를 남긴다. $\alpha = 0.05$ 에서 1.96 이다.
+- **t**: 자유도 $\nu$ 인 Student t distribution 의 분위수 함수. $t(\nu, q)$ 는 누적확률이 $q$ 가 되는 지점이고, $t(\nu, 1 - \alpha/2)$ 는 $\alpha = 0.05$ 와 $n = 28$ 에서 2.05 다.
 - **tolerance factor**: 담을 비율과 신뢰수준과 n 으로 정해지는 배율. 셋째 줄의 배율보다 크다.
 
 계층은 한 단계 내려갈 때마다 아는 것을 내려놓거나 요구를 하나 더 붙인다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말한다. $\sigma$ 를 안다는 가정을 버리면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (RMSE interval) 과 셋째 줄 (prediction interval) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 확률이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 $t_{\nu}(1 - \alpha/2)$ 로 키운다. 넷째 줄 (tolerance interval) 은 담는 확률에 신뢰수준을 하나 더 붙이므로 배율이 셋째 줄보다 커진다.
@@ -103,15 +103,15 @@ Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</
 
 Table 1. Intervals around a prediction
 
-| #   | Interval            | Scale             | Multiplier              | Covered quantity     | Probability       |
-| :-: | :-----------------: | :---------------: | :---------------------: | :------------------: | :---------------: |
-| 1   | Normal interval     | $\sigma$          | $z(1 - \alpha/2)$       | 새 오차 하나         | $1 - \alpha$      |
-| 2   | RMSE interval       | RMSE              | $z(1 - \alpha/2)$       | 새 오차 하나         | 식 (6) 의 값      |
-| 3   | Prediction interval | RMSE              | $t_{\nu}(1 - \alpha/2)$ | 새 오차 하나         | $1 - \alpha$      |
-| 4   | Confidence interval | RMSE / $\sqrt{n}$ | $t_{\nu}(1 - \alpha/2)$ | 오차의 평균          | $1 - \alpha$      |
-| 5   | Tolerance interval  | RMSE              | tolerance factor        | 모집단의 정해진 비율 | 신뢰수준으로 보장 |
+| #   | Interval            | Scale             | Multiplier              | Covered quantity       | Probability       |
+| :-: | :-----------------: | :---------------: | :---------------------: | :--------------------: | :---------------: |
+| 1   | Normal interval     | $\sigma$          | $z(1 - \alpha/2)$       | 새 오차 하나           | $1 - \alpha$      |
+| 2   | RMSE interval       | RMSE              | $z(1 - \alpha/2)$       | 새 오차 하나           | 식 (6) 의 값      |
+| 3   | Prediction interval | RMSE              | $t_{\nu}(1 - \alpha/2)$ | 새 오차 하나           | $1 - \alpha$      |
+| 4   | Confidence interval | RMSE / $\sqrt{n}$ | $t_{\nu}(1 - \alpha/2)$ | 오차의 평균            | $1 - \alpha$      |
+| 5   | Tolerance interval  | RMSE              | tolerance factor        | 모집단의 비율 $P$ 이상 | 신뢰수준 $\gamma$ |
 
-$\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행과 4 행의 배율이 $t_{\nu}(0.975)$ 다. 1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 $1 - \alpha$ 로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
+$\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행과 4 행의 배율이 $t_{\nu}(0.975)$ 다. 1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 $1 - \alpha$ 로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 다른 네 행과 확률의 뜻이 다르다. 3 행은 새 오차 하나가 구간에 들 확률이 평균적으로 $1 - \alpha$ 라는 뜻이고, 5 행은 구간이 모집단의 $P$ 이상을 담는다는 것을 신뢰수준 $\gamma$ 로 보장한다는 뜻이어서 담는 비율에 다시 확률이 붙는다. 배율은 $P$ 와 $\gamma$ 와 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
 
 ## 4. Coverage of the Interval
 
@@ -181,7 +181,7 @@ Table 2. Coverage of the RMSE interval by sample count
 | 10  | 200  | 0.9988 | 0.9486   | 1.9719              |
 | 11  | 1000 | 0.9998 | 0.9497   | 1.9623              |
 
-Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n 에서도 95% 에 닿지 않는다. 94% 로 반올림되는 구간은 n 이 23 부터 37 까지이고, 가장 가까운 값은 5 행의 0.9400 이다. 94.5% 를 넘으려면 n 이 56 이상, 94.9% 를 넘으려면 277 이상이어야 한다. 식 (6) 의 값은 200 만 회의 Monte Carlo 와 n 이 10, 28, 100 인 세 자리에서 소수 셋째 자리까지 같다.
+Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n 에서도 95% 에 닿지 않는다. 94% 로 반올림되는 구간은 n 이 23 부터 37 까지이고, 가장 가까운 값은 5 행의 0.9400 이다. 94.5% 를 넘으려면 n 이 56 이상, 94.9% 를 넘으려면 277 이상이어야 한다. Table 2 는 parameter 를 추정하지 않아 $\nu = n$ 인 경우이고, 추정했으면 꼭지 5.2 의 식 (7) 로 구한다. 식 (6) 의 값은 200 만 회의 Monte Carlo 와 n 이 10, 28, 100 인 세 자리에서 소수 셋째 자리까지 같다.
 
 아래 <a href="#fig-3">Fig 3</a> 가 식 (6) 과 95% 를 지키는 배율을 n 에 대해 그린다.
 
@@ -223,11 +223,11 @@ P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_{\nu}}\!\left(1.96\sqrt
 
 식 (7) 은 p 가 0 이면 식 (6) 으로 돌아간다. n 이 28 일 때 p 가 2 이면 0.9299, 5 이면 0.9111 이다. n 이 100 이고 p 가 5 이면 0.9409 로, 같은 0.94 를 세 배가 넘는 자료로 얻는다.
 
-식 (7) 은 새 오차가 RMSE 를 구한 잔차와 독립이고 분산이 $\sigma^2$ 인 경우다. 같은 자료 안의 점을 예측하면 model 이 그 점에 맞춰져 있어 잔차가 더 작고, 예측값 자체가 흔들리는 몫이 더해져 분산이 $\sigma^2$ 보다 크므로 식 (7) 의 값은 실제보다 높게 나온다.
+식 (7) 은 새 오차가 RMSE 를 구한 잔차와 독립이고 분산이 $\sigma^2$ 인 경우다. 새 입력 $x^{\ast}$ 에서 model 의 예측값을 빼고 남는 오차는 분산이 $\sigma^2$ 이 아니라 $\sigma^2(1 + h)$ 이고, $h$ 는 그 입력의 leverage, 곧 예측값 자체가 흔들리는 몫이다. 선형 회귀라면 $h = 1/n + (x^{\ast} - \bar{x})^2 / \sum (x_i - \bar{x})^2$ 이다. 따라서 식 (7) 은 $h$ 를 뺀 간이 예측구간이며, 자료의 중심에서 멀어질수록 실제보다 비율을 높게 낸다.
 
 ### 5.3 Conditions
 
-- **가정**: 오차가 평균 0 의 정규분포에서 독립으로 나오고 분산이 모두 같다. RMSE 를 구한 오차와 담을 대상인 새 오차가 서로 독립이다.
+- **가정**: 오차가 평균 0 의 정규분포에서 독립으로 나오고 분산이 모두 같다. RMSE 를 구한 오차와 담을 대상인 새 오차가 서로 독립이다. 예측값 자체가 흔들리는 몫인 leverage 를 뺀 간이 예측구간이다.
 - **설정값**: 배율은 $t_{\nu}(0.975)$ 이고 자유도는 $\nu = n - p$ 이며, p 는 같은 자료로 추정한 parameter 의 개수다. 오차 개수 n 은 RMSE 의 정의인 식 (2) 의 분모에 따로 남는다.
 - **깨지는 조건**: 오차의 평균이 0 이 아니면 RMSE 가 흩어짐과 치우침을 함께 담아 구간이 필요보다 넓어지고, 식 (6) 의 비율은 더 이상 그 구간을 설명하지 않는다. 분산이 자리마다 다르면 (heteroscedasticity) 하나의 RMSE 가 모든 자리를 대표하지 못해 분산이 큰 자리에서 비율이 떨어진다. 오차가 서로 상관되어 있으면 제곱합에 남는 자유도가 n 보다 작아 식 (6) 이 비율을 높게 낸다. 꼬리가 정규분포보다 두꺼우면 같은 배율이 담는 비율이 더 낮아, 분산이 같은 Laplace distribution 에서 $\pm 1.96\sigma$ 가 담는 비율은 93.7% 다.
 - **만나는 자리**: 계측 두 방법의 차이에 한계를 긋는 Bland-Altman 한계 [[3](#ref-3)], 회귀 model 의 예측 오차 범위 보고, 공정 자료의 예측값에 붙이는 오차 막대.
@@ -258,7 +258,7 @@ Table 3. Limits around a predicted value
 \mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (8)
 ```
 
-식 (8) 의 $\mu_0$ 는 Table 3 의 1 행에서 0 이고 2 행에서 공정의 목표값이다. $\alpha$ 가 0.05 이면 $k$ 는 Table 2 의 마지막 열이고, n 이 28 이면 2.05 다. 쓰기 전에 아래 세 가지를 확인한다.
+식 (8) 의 $\mu_0$ 는 Table 3 의 1 행에서 0 이고 2 행에서 공정의 목표값이다. $\sqrt{n/\nu}$ 는 RMSE 가 제곱합을 $\nu$ 가 아니라 n 으로 나눈 것을 되돌리는 몫이다. Parameter 를 추정하지 않아 $\nu = n$ 이면 1 이 되어 $k = t_n(1 - \alpha/2)$ 로 줄고, $\alpha = 0.05$ 와 n = 28 에서 Table 2 의 마지막 열인 2.05 다. Parameter 를 p 개 추정했으면 $\nu = n - p$ 를 넣어 다시 구하며, n = 28 에 p = 2 이면 2.13 이다. 쓰기 전에 아래 세 가지를 확인한다.
 
 - **Bias 를 먼저 뺀다**: 오차의 평균이 0 이 아니면 RMSE 가 치우침과 흩어짐을 함께 담아 (꼭지 5.3) 한계가 필요보다 넓어진다. 치우침을 model 에서 고친 뒤 RMSE 를 다시 구한다.
 - **Model 을 맞추는 데 쓰지 않은 자료로 구한다**: 같은 자료의 잔차로 RMSE 를 구하면 식 (7) 이 비율을 높게 낸다. 자유도는 $\nu = n - p$ 이고, p 는 그 자료로 추정한 parameter 의 개수다.
@@ -272,7 +272,7 @@ Table 3. Limits around a predicted value
 A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathrm{USL} - g\,\mathrm{RMSE} \hspace{19em} (9)
 ```
 
-식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 참값은 밖에 있을 수 있고, 그 확률은 RMSE 가 클수록 커진다. Guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 (expanded uncertainty) 한 배를 spec 에서 빼는 것이고 [[6](#ref-6)], 확장 불확도를 RMSE 의 두 배로 잡으면 $g = 2$ 가 된다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
+식 (9) 의 두 값 사이에 들어온 것만 받아들이고, spec 과 수락 한계 사이의 폭 $g\,\mathrm{RMSE}$ 가 guard band 다. Spec 바로 안쪽에서 측정된 것도 참값은 밖에 있을 수 있고, 그 확률은 RMSE 가 클수록 커진다. Guard band 가 그 확률, 곧 consumer's risk 를 내린다 [[5](#ref-5)]. ISO 14253-1 의 기본 규칙은 확장 불확도 (expanded uncertainty) 한 배를 spec 에서 빼는 것이다 [[6](#ref-6)]. RMSE 를 표준불확도로 보면 $g$ 가 곧 포함인자 (coverage factor) 이고, 관례인 포함인자 2 가 $g = 2$ 를 준다. n 이 작으면 식 (8) 의 $k$ 가 커지는 것과 같은 이유로 2 보다 큰 값을 쓴다. $g$ 를 키우면 consumer's risk 가 내려가는 대신 규격 안의 것을 거부할 확률, 곧 producer's risk 가 올라간다.
 
 ### 6.4 The Spec and the Control Limit
 
@@ -309,13 +309,15 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 - **consumer's risk**: 받아들인 것이 규격을 벗어나 있을 확률.
 - **control limit**: 공정이 평소와 같은지를 가르는 chart 의 한계. 공정의 변동에서 구한다.
 - **coverage**: 구간이 담으려는 대상을 실제로 담을 확률.
+- **coverage factor**: 표준불확도에 곱해 확장 불확도를 얻는 수. 관례는 2 다.
 - **degrees of freedom**: 제곱합에 남아 있는 독립한 성분의 개수.
-- **expanded uncertainty**: 표준불확도에 포함인자를 곱한 값. 포함인자 2 가 관례다.
+- **expanded uncertainty**: 표준불확도에 coverage factor 를 곱한 값.
 - **gamma function**: 식 (15) 의 적분으로 정의되는 함수. 양의 정수에서 계승 (factorial) 을 확장한 값이 된다.
 - **guard band**: Spec 과 수락 한계 사이의 폭. 식 (9) 가 정의다.
 - **heteroscedasticity**: 분산이 자리마다 다른 상태.
 - **Jensen's inequality**: concave 함수에서 기댓값의 함수가 함수의 기댓값보다 크다는 부등식.
 - **Laplace distribution**: 양쪽 꼬리가 지수함수로 줄어드는 대칭 분포. 분산이 같은 정규분포보다 꼬리가 두껍다.
+- **leverage**: 새 입력이 자료의 중심에서 떨어진 정도를 재는 값. 예측값 자체가 흔들리는 몫을 정한다.
 - **lower incomplete gamma function**: gamma function 의 적분 구간을 유한한 위끝에서 끊은 함수. 식 (14) 가 정의다.
 - **Monte Carlo**: 난수로 표본을 만들어 확률을 추정하는 방법.
 - **prediction interval**: 새 관측 하나가 들어 있을 확률을 정해 둔 구간.
