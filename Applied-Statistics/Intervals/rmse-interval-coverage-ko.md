@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 4 | Created: 2026-10-05 | Updated: 2026-10-08 12:05 CDT
+Rev. 5 | Created: 2026-10-05 | Updated: 2026-10-08 21:21 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,7 +40,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 참 
 
 ## 3. Taxonomy and its Hierarchy
 
-구간의 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 무엇을 담는다고 말하는가이다. 아래 <a href="#fig-1">Fig 1</a> 이 두 축과 계층을 한 장에 담는다.
+구간의 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 무엇을 담는다고 말하는가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
@@ -49,31 +49,41 @@ INTERVAL around a prediction:  center +/- k * scale
 |   sigma                        the true error scale, known
 |   RMSE of n errors             an estimate, itself random
 |
-+-- axis 2: what the interval claims to hold
-|   one future error             prediction
-|   the mean of the errors       confidence
-|   a fraction of the population tolerance
-|
-+-- hierarchy, each step down drops an assumption and widens the interval
-    Normal interval    scale sigma   k = 1.96            coverage 0.9500 for every n
-    |
-    +-- RMSE interval  scale RMSE    k = 1.96            coverage 2 * F_t(1.96; nu) - 1
-    |                                                    0.9400 at n = 28
-    +-- prediction     scale RMSE    k = t(nu, 0.975)    coverage 0.9500 for every n
-        |
-        +-- tolerance  scale RMSE    k = tolerance factor
-                                                         a stated fraction, held with
-                                                         a stated confidence
++-- axis 2: the covered quantity
+    one future error             prediction
+    the mean of the errors       confidence
+    a fraction of the population tolerance
 ```
 
 <a id="fig-1"></a>
-Fig 1. Intervals around a prediction and what each one assumes
+Fig 1. The two axes an interval around a prediction is placed on
 
-첫째 축은 구간의 폭을 정하는 scale 이 참값인가 추정값인가를 가른다. 둘째 축은 같은 폭에 어떤 확률을 붙이는가를 가르며, 담는 대상이 오차 하나에서 오차의 평균으로, 다시 모집단의 비율로 옮겨 간다. 계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 scale 을 알고, 그 아래는 scale 을 n 개의 오차로 추정하며, 맨 아래는 추정한 scale 로 모집단의 비율까지 말하려 하므로 구간이 가장 넓다.
+첫째 축은 구간의 폭을 정하는 scale 이 참값인가 추정값인가를 가른다. 둘째 축은 같은 폭에 어떤 확률을 붙이는가를 가르며, 담는 대상이 오차 하나에서 오차의 평균으로, 다시 모집단의 비율로 옮겨 간다.
+
+두 축 위의 구간은 가정의 세기에 따라 계층을 이루며, 아래 <a href="#fig-2">Fig 2</a> 가 그 계층을 담는다.
+
+```text
+HIERARCHY of the intervals, each step down dropping an assumption
+|
+Normal interval    scale sigma   k = 1.96            coverage 0.9500 for every n
+|
++-- RMSE interval  scale RMSE    k = 1.96            coverage 2 * F_t(1.96; nu) - 1
+|                                                    0.9400 at n = 28
++-- prediction     scale RMSE    k = t(nu, 0.975)    coverage 0.9500 for every n
+    |
+    +-- tolerance  scale RMSE    k = tolerance factor
+                                                     a stated fraction, held with
+                                                     a stated confidence
+```
+
+<a id="fig-2"></a>
+Fig 2. The hierarchy the intervals form, from the strongest assumption down
+
+계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 scale 을 알고, 그 아래는 scale 을 n 개의 오차로 추정하며, 맨 아래는 추정한 scale 로 모집단의 비율까지 말하려 하므로 구간이 가장 넓다.
 
 ### 3.1 Placement
 
-Placement 는 <a href="#fig-1">Fig 1</a> 이 세운 두 축과 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 구간이 쓰는 scale, 그 scale 에 곱하는 배율, 확률이 가리키는 대상의 세 가지로 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
+Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</a> 의 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 구간이 쓰는 scale, 그 scale 에 곱하는 배율, 확률이 가리키는 대상의 세 가지로 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
 
 Table 1. Intervals around a prediction
 
@@ -157,12 +167,12 @@ Table 2. Coverage of the RMSE interval by sample count
 
 Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n 에서도 95% 에 닿지 않는다. 94% 로 반올림되는 구간은 n 이 23 부터 37 까지이고, 가장 가까운 값은 5 행의 0.9400 이다. 94.5% 를 넘으려면 n 이 56 이상, 94.9% 를 넘으려면 277 이상이어야 한다. 식 (6) 의 값은 200 만 회의 Monte Carlo 와 n 이 10, 28, 100 인 세 자리에서 소수 셋째 자리까지 같다.
 
-아래 <a href="#fig-2">Fig 2</a> 가 식 (6) 과 95% 를 지키는 배율을 n 에 대해 그린다.
+아래 <a href="#fig-3">Fig 3</a> 가 식 (6) 과 95% 를 지키는 배율을 n 에 대해 그린다.
 
-<img src="rmse-interval-coverage-ko_fig/rmse_interval_coverage.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="rmse-interval-coverage-ko_fig/rmse_interval_coverage.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-<a id="fig-2"></a>
-Fig 2. Coverage of the RMSE interval and the multiplier that restores 95 percent
+<a id="fig-3"></a>
+Fig 3. Coverage of the RMSE interval and the multiplier that restores 95 percent
 
 - (a) 식 (6) 의 비율을 n 에 대해 그린 것이다. 위의 가로선이 scale 을 알 때의 0.9500, 아래의 가로선이 0.9400 이며, 표시한 점이 곡선과 아래 가로선이 만나는 n = 28 이다.
 - (b) 95% 를 지키는 배율 $t_n(0.975)$ 를 n 에 대해 그린 것이다. 가로선이 1.96 이고, 곡선은 n 이 커지면서 그 선으로 내려온다.
