@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 23 | Created: 2026-10-05 | Updated: 2026-10-09 11:46 CDT
+Rev. 24 | Created: 2026-10-05 | Updated: 2026-10-09 11:52 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,7 +40,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 오�
 
 ## 3. Taxonomy and its Hierarchy
 
-구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에서 RMSE 의 배율 배만큼 떨어진 자리이며, $\sigma$ 를 아는 자리에서는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 표준편차 (scale) 를 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
+구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에서 RMSE 의 배율 배만큼 떨어진 자리이며, $\sigma$ 를 아는 경우에는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 표준편차 (scale) 를 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
@@ -86,7 +86,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 - **σ**: 오차의 참 표준편차. Normal interval 은 그 값을 아는 경우이고, RMSE interval 과 prediction interval 과 tolerance interval 은 모르는 경우다.
 - **RMSE**: 오차 n 개로 구한 $\sigma$ 의 추정값. 식 (2) 가 정의다.
-- **n**: Model 이 예측하고 그 자리의 계측값과 짝지어 오차를 구한 횟수. 식 (2) 의 합이 그 n 개를 더한다.
+- **n**: Model 이 예측하고 계측값과 짝지어 오차를 구한 횟수. 식 (2) 의 합이 그 n 개를 더한다.
 - **ν**: RMSE 의 제곱합에 남은 자유도. 그림은 parameter 를 추정하지 않아 $\nu = n$ 인 경우다.
 - **multiplier**: 표준편차에 곱하는 수. 구간의 두 끝이 중심에서 그만큼 떨어진다.
 - **coverage**: 구간이 새 오차 하나를 담을 확률.
@@ -99,7 +99,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 ### 3.1 Placement
 
-Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</a> 의 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 구간이 쓰는 표준편차, 그 표준편차에 곱하는 배율, 확률이 가리키는 대상의 세 가지로 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
+Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</a> 의 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 은 구간마다 쓰는 표준편차와 곱하는 배율과 확률이 가리키는 대상을 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
 
 Table 1. Intervals around a prediction
 
@@ -125,17 +125,17 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 확률은 식 
 P\left(|e| \le 1.96\,\sigma\right) = 2\Phi(1.96) - 1 = 0.9500 \hspace{19em} (1)
 ```
 
-$\Phi$ 는 표준정규분포의 누적분포함수이고, 1.96 은 그 분포의 양측 95% 점을 소수 둘째 자리에서 끊은 값이다. 끊지 않은 값은 1.95996 이며, 1.96 이 내는 비율 0.950004 는 95% 와 소수 여섯째 자리에서 갈린다. 계측 두 방법의 차이를 견주는 자리에서 차이의 평균에 표준편차의 1.96 배를 더하고 빼어 한계를 적는 관례가 이 값을 쓴다 [[3](#ref-3)]. 1.96 은 담을 비율을 95% 로 정했을 때의 값이며, 다른 비율을 정하면 그 자리에 그 비율의 양측 점이 들어간다. 이 문서는 관례대로 95% 를 놓고 적는다.
+$\Phi$ 는 표준정규분포의 누적분포함수이고, 1.96 은 그 분포의 양측 95% 점을 소수 둘째 자리에서 끊은 값이다. 끊지 않은 값은 1.95996 이며, 1.96 이 내는 비율 0.950004 는 95% 와 소수 여섯째 자리에서 갈린다. 계측 두 방법의 차이를 견줄 때 차이의 평균에 표준편차의 1.96 배를 더하고 빼어 한계를 적는 관례가 이 값을 쓴다 [[3](#ref-3)]. 1.96 은 담을 비율을 95% 로 정했을 때의 값이며, 다른 비율을 정하면 1.96 대신 그 비율의 양측 점이 들어간다. 이 문서는 관례대로 95% 를 놓고 적는다.
 
 ### 4.2 The RMSE as an Estimate of the Scale
 
-RMSE 는 $\sigma$ 를 모를 때 그 자리에 넣는 추정값이며, 자료마다 달라지는 확률변수다.
+RMSE 는 $\sigma$ 를 모를 때 그것을 대신해 쓰는 추정값이며, 자료마다 달라지는 확률변수다.
 
 ```math
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (2)
 ```
 
-식 (2) 의 오차 $e_i$ 는 model 이 i 번째 자리에 내놓은 예측값에서 그 자리의 계측값을 뺀 차이이고, $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 그 차이 n 개다. $\sigma$ 자리에 RMSE 를 넣을 수 있는 근거는 둘이다. 첫째, 오차의 평균이 0 이므로 $\sigma^2 = E[e_i^2]$ 이고, 식 (2) 의 제곱근 안이 바로 $e_i^2$ 의 표본평균이어서 $E[\mathrm{RMSE}^2] = \sigma^2$ 이 성립한다. 곧 $\mathrm{RMSE}^2$ 은 $\sigma^2$ 의 불편추정량 (unbiased estimator) 이고, n 이 커지면 표본평균이 $\sigma^2$ 로 모이므로 RMSE 도 $\sigma$ 로 모인다. 둘째, 유한한 n 에서 RMSE 가 $\sigma$ 와 어긋나는 몫을 식 (5) 의 t distribution 이 그대로 셈에 넣으므로, 담는 확률을 어림잡지 않고 식 (6) 으로 구할 수 있다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix B](#appendix-b-chi-squared-distribution) 에 있다.
+식 (2) 의 오차 $e_i$ 는 model 의 i 번째 예측값에서 i 번째 계측값을 뺀 차이이고, $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 그 차이 n 개다. $\sigma$ 대신 RMSE 를 쓸 수 있는 근거는 둘이다. 첫째, 오차의 평균이 0 이므로 $\sigma^2 = E[e_i^2]$ 이고, 식 (2) 의 제곱근 안이 바로 $e_i^2$ 의 표본평균이어서 $E[\mathrm{RMSE}^2] = \sigma^2$ 이 성립한다. 곧 $\mathrm{RMSE}^2$ 은 $\sigma^2$ 의 불편추정량 (unbiased estimator) 이고, n 이 커지면 표본평균이 $\sigma^2$ 로 모이므로 RMSE 도 $\sigma$ 로 모인다. 둘째, 유한한 n 에서 RMSE 가 $\sigma$ 와 어긋나는 몫을 식 (5) 의 t distribution 이 그대로 셈에 넣으므로, 담는 확률을 어림잡지 않고 식 (6) 으로 구할 수 있다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix B](#appendix-b-chi-squared-distribution) 에 있다.
 
 ```math
 \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \sim \chi^2_n \hspace{19em} (3)
@@ -163,7 +163,7 @@ $c_n$ 은 n 이 커지면 1 로 간다. n 이 10 이면 0.9754, 28 이면 0.9911
 P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_n}(1.96) - 1 \hspace{19em} (6)
 ```
 
-식 (6) 의 $F_{t_n}$ 은 자유도 n 의 t distribution 의 누적분포함수다. Table 2 가 n 마다 그 값과, 95% 를 지키려면 1.96 자리에 넣어야 할 배율을 적는다.
+식 (6) 의 $F_{t_n}$ 은 자유도 n 의 t distribution 의 누적분포함수다. Table 2 가 n 마다 그 값과, 95% 를 지키려면 1.96 대신 쓸 배율을 적는다.
 
 Table 2. Coverage of the RMSE interval by sample count
 
@@ -181,7 +181,7 @@ Table 2. Coverage of the RMSE interval by sample count
 | 10  | 200  | 0.9988 | 0.9486   | 1.9719              |
 | 11  | 1000 | 0.9998 | 0.9497   | 1.9623              |
 
-Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n 에서도 95% 에 닿지 않는다. 94% 로 반올림되는 구간은 n 이 23 부터 37 까지이고, 가장 가까운 값은 5 행의 0.9400 이다. 94.5% 를 넘으려면 n 이 56 이상, 94.9% 를 넘으려면 277 이상이어야 한다. Table 2 는 parameter 를 추정하지 않아 $\nu = n$ 인 경우이고, 추정했으면 꼭지 5.2 의 식 (7) 로 구한다. 식 (6) 의 값은 200 만 회의 Monte Carlo 와 n 이 10, 28, 100 인 세 자리에서 소수 셋째 자리까지 같다.
+Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n 에서도 95% 에 닿지 않는다. 94% 로 반올림되는 구간은 n 이 23 부터 37 까지이고, 가장 가까운 값은 5 행의 0.9400 이다. 94.5% 를 넘으려면 n 이 56 이상, 94.9% 를 넘으려면 277 이상이어야 한다. Table 2 는 parameter 를 추정하지 않아 $\nu = n$ 인 경우이고, 추정했으면 꼭지 5.2 의 식 (7) 로 구한다. 식 (6) 의 값은 200 만 회의 Monte Carlo 와 n 이 10, 28, 100 인 세 경우에서 소수 셋째 자리까지 같다.
 
 아래 <a href="#fig-3">Fig 3</a> 가 식 (6) 과 95% 를 지키는 배율을 n 에 대해 그린다.
 
@@ -211,7 +211,7 @@ RMSE 가 언제나 기댓값 $c_n\sigma$ 와 같다면 담는 비율은 $2\Phi(1
 
 배율은 Table 2 의 마지막 열에 있다. n 이 28 이면 2.05, 50 이면 2.01, 100 이면 1.98 이다. 1.96 을 그대로 쓰면서 95% 라 적는 글은 꼭지 4.3 이 적은 대로 n 이 수백 이상일 때만 맞다.
 
-반대로 94% 를 노린 구간을 $\sigma$ 를 아는 자리에서 그리려면 배율은 1.88 이다. 1.96 과 94% 를 함께 적은 글은 이 배율을 말하는 것이 아니라, RMSE 로 오차의 표준편차를 추정한 자리에서 n 이 30 안팎일 때 나오는 값을 적은 것이다.
+반대로 94% 를 노린 구간을 $\sigma$ 를 아는 경우에 그리려면 배율은 1.88 이다. 1.96 과 94% 를 함께 적은 글은 이 배율을 말하는 것이 아니라, RMSE 로 오차의 표준편차를 추정했을 때 n 이 30 안팎이면 나오는 값을 적은 것이다.
 
 ### 5.2 Degrees of Freedom with Fitted Parameters
 
@@ -412,4 +412,4 @@ Parameter 를 p 개 추정한 경우에는 제곱합의 자유도가 $\nu = n - 
 \frac{e^{\ast}}{\mathrm{RMSE}} = \frac{Z}{\sqrt{S_{\nu}/n}} = \sqrt{\frac{n}{\nu}}\;\frac{Z}{\sqrt{S_{\nu}/\nu}} \sim \sqrt{\frac{n}{\nu}}\;t_{\nu} \hspace{19em} (19)
 ```
 
-식 (19) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 같은 자리를 바꾸어 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
+식 (19) 의 좌변이 1.96 이하일 조건은 $t_{\nu}$ 가 $1.96\sqrt{\nu/n}$ 이하일 조건과 같고, 이것을 누적분포함수로 적은 것이 식 (7) 이다. 식 (4) 의 $c_n$ 도 n 을 $\nu$ 로 바꾸면 $\sqrt{\nu/n}$ 배만큼 더 작아진다.
