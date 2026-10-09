@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 18 | Created: 2026-10-05 | Updated: 2026-10-09 11:16 CDT
+Rev. 19 | Created: 2026-10-05 | Updated: 2026-10-09 11:19 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -135,7 +135,7 @@ RMSE 는 $\sigma$ 를 모를 때 그 자리에 넣는 추정값이며, 자료마
 \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} e_i^2} \hspace{19em} (2)
 ```
 
-식 (2) 의 오차 $e_i$ 는 model 이 i 번째 자리에 내놓은 예측값에서 그 자리의 계측값을 뺀 차이이고, $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 그 차이 n 개다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix B](#appendix-b-chi-squared-distribution) 에 있다.
+식 (2) 의 오차 $e_i$ 는 model 이 i 번째 자리에 내놓은 예측값에서 그 자리의 계측값을 뺀 차이이고, $e_1, \dots, e_n$ 은 평균 0, 분산 $\sigma^2$ 의 정규분포에서 독립으로 나온 그 차이 n 개다. $\sigma$ 자리에 RMSE 를 넣을 수 있는 근거는 둘이다. 첫째, 오차의 평균이 0 이므로 $\sigma^2 = E[e_i^2]$ 이고, 식 (2) 의 제곱근 안이 바로 $e_i^2$ 의 표본평균이어서 $E[\mathrm{RMSE}^2] = \sigma^2$ 이 성립한다. 곧 $\mathrm{RMSE}^2$ 은 $\sigma^2$ 의 불편추정량 (unbiased estimator) 이고, n 이 커지면 표본평균이 $\sigma^2$ 로 모이므로 RMSE 도 $\sigma$ 로 모인다. 둘째, 유한한 n 에서 RMSE 가 $\sigma$ 와 어긋나는 몫을 식 (5) 의 t distribution 이 그대로 셈에 넣으므로, 담는 확률을 어림잡지 않고 식 (6) 으로 구할 수 있다. 제곱합을 $\sigma^2$ 으로 나눈 값은 자유도 n 의 chi-squared distribution 을 따른다. Chi-squared distribution 의 정의와 확률밀도함수와 누적분포함수는 [Appendix B](#appendix-b-chi-squared-distribution) 에 있다.
 
 ```math
 \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \sim \chi^2_n \hspace{19em} (3)
@@ -327,6 +327,7 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 - **Student t distribution**: 표준정규분포 값을, 그와 독립인 chi-squared 값을 자유도로 나눈 것의 제곱근으로 나눈 비가 따르는 분포.
 - **tolerance factor**: tolerance interval 에서 표준편차에 곱하는 배율. 비율과 신뢰수준과 표본 수로 정해진다.
 - **tolerance interval**: 모집단의 정해진 비율을 담는다는 것을 정해진 신뢰수준으로 보장하는 구간.
+- **unbiased estimator**: 기댓값이 추정 대상과 같은 추정량.
 
 ## Appendix B. Chi-squared Distribution
 
