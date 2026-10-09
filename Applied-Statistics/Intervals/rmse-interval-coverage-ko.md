@@ -1,5 +1,5 @@
 # Coverage of the RMSE Interval
-Rev. 9 | Created: 2026-10-05 | Updated: 2026-10-09 10:41 CDT
+Rev. 10 | Created: 2026-10-05 | Updated: 2026-10-09 10:45 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -32,7 +32,7 @@ Rev. 9 | Created: 2026-10-05 | Updated: 2026-10-09 10:41 CDT
 
 ## 2. Summary
 
-RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 참 scale 을 알 때 95.00% 이고, RMSE 를 오차 n 개에서 구했으면 그보다 낮으며, 94% 가 되는 것은 n 이 28 일 때다 (n 이 23 부터 37 까지면 94% 로 반올림된다).
+RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 오차의 참 표준편차를 알 때 95.00% 이고, RMSE 를 오차 n 개에서 구했으면 그보다 낮으며, 94% 가 되는 것은 n 이 28 일 때다 (n 이 23 부터 37 까지면 94% 로 반올림된다).
 
 비율이 깎이는 까닭은 새 오차를 RMSE 로 나눈 값이 표준정규분포가 아니라 자유도 n 의 Student t distribution 을 따르는 데 있다.
 
@@ -40,7 +40,7 @@ RMSE 의 1.96 배로 그린 구간이 새 오차 하나를 담는 비율은 참 
 
 ## 3. Taxonomy and its Hierarchy
 
-구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에서 RMSE 의 배율 배만큼 떨어진 자리이며, $\sigma$ 를 아는 자리에서는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 scale 을 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
+구간의 크기는 model 의 오차인 RMSE 의 배율로 구한다. 구간의 두 끝은 중심에서 RMSE 의 배율 배만큼 떨어진 자리이며, $\sigma$ 를 아는 자리에서는 RMSE 대신 그 참값에 배율을 곱한다. 배율을 정하는 것은 두 가지다. 오차의 표준편차 (scale) 를 아는가 추정하는가, 그리고 구간이 담는 대상 (covered quantity) 이 무엇인가이다. 아래 <a href="#fig-1">Fig 1</a> 이 그 두 축을 담는다.
 
 ```text
 INTERVAL around a prediction:  center +/- k * scale
@@ -58,7 +58,7 @@ INTERVAL around a prediction:  center +/- k * scale
 <a id="fig-1"></a>
 Fig 1. The two axes an interval around a prediction is placed on
 
-첫째 축은 구간의 폭을 정하는 scale 이 참값인가 추정값인가를 가른다. 둘째 축은 같은 폭에 어떤 확률을 붙이는가를 가르며, 담는 대상이 오차 하나에서 오차의 평균으로, 다시 모집단의 비율로 옮겨 간다.
+첫째 축은 구간의 폭을 정하는 오차의 표준편차가 참값인가 추정값인가를 가른다. 둘째 축은 같은 폭에 어떤 확률을 붙이는가를 가르며, 담는 대상이 오차 하나에서 오차의 평균으로, 다시 모집단의 비율로 옮겨 간다.
 
 두 축 위의 구간은 가정의 세기에 따라 계층을 이루며, 아래 <a href="#fig-2">Fig 2</a> 가 그 계층을 담는다.
 
@@ -79,11 +79,11 @@ Normal interval    scale sigma   k = 1.96            coverage 0.9500 for every n
 <a id="fig-2"></a>
 Fig 2. The hierarchy the intervals form, from the strongest assumption down
 
-계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 scale 을 알고, 그 아래는 scale 을 n 개의 오차로 추정하며, 맨 아래는 추정한 scale 로 모집단의 비율까지 말하려 하므로 구간이 가장 넓다.
+계층은 위에서 아래로 내려갈수록 아는 것을 하나씩 내려놓는다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 말하려 하므로 구간이 가장 넓다.
 
 ### 3.1 Placement
 
-Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</a> 의 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 구간이 쓰는 scale, 그 scale 에 곱하는 배율, 확률이 가리키는 대상의 세 가지로 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
+Placement 는 <a href="#fig-1">Fig 1</a> 의 두 축과 <a href="#fig-2">Fig 2</a> 의 계층 위에서 각 구간이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 구간이 쓰는 표준편차, 그 표준편차에 곱하는 배율, 확률이 가리키는 대상의 세 가지로 적으며, 손에 있는 자료에 어느 구간을 쓸지는 이 표에서 고른다.
 
 Table 1. Intervals around a prediction
 
@@ -95,7 +95,7 @@ Table 1. Intervals around a prediction
 | 4   | Confidence interval | RMSE / $\sqrt{n}$ | $t_{\nu}(0.975)$ | 오차의 평균          | 0.9500            |
 | 5   | Tolerance interval  | RMSE              | tolerance factor | 모집단의 정해진 비율 | 신뢰수준으로 보장 |
 
-1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 scale 에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 0.9500 으로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
+1 행은 $\sigma$ 를 아는 경우에만 쓸 수 있고, 2 행부터는 모두 RMSE 로 $\sigma$ 를 대신한다. 2 행과 3 행은 같은 표준편차에 다른 배율을 곱한 것이며, 3 행의 배율이 자유도 $\nu$ 의 t distribution 에서 나온 값이라 비율이 n 과 무관하게 0.9500 으로 유지된다. 4 행은 폭이 $\sqrt{n}$ 배만큼 좁고, 담는 대상이 새 오차가 아니라 오차의 평균이므로 2 행과 바꾸어 쓸 수 없다. 4 행의 RMSE 는 오차의 평균을 뺀 뒤 구한 값이고 자유도는 $\nu = n - 1$ 이다. 5 행은 비율 자체에 신뢰수준을 붙이는 구간이고, 배율은 비율과 신뢰수준과 n 의 세 값으로 정해지는 tolerance factor 다 [[1](#ref-1)]. Tolerance factor 는 닫힌 형태가 없어 세 값의 조합마다 표에서 읽는다 [[2](#ref-2)].
 
 ## 4. Coverage of the Interval
 
@@ -174,7 +174,7 @@ Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n �
 <a id="fig-3"></a>
 Fig 3. Coverage of the RMSE interval and the multiplier that restores 95 percent
 
-- (a) 식 (6) 의 비율을 n 에 대해 그린 것이다. 위의 가로선이 scale 을 알 때의 0.9500, 아래의 가로선이 0.9400 이며, 표시한 점이 곡선과 아래 가로선이 만나는 n = 28 이다.
+- (a) 식 (6) 의 비율을 n 에 대해 그린 것이다. 위의 가로선이 오차의 표준편차를 알 때의 0.9500, 아래의 가로선이 0.9400 이며, 표시한 점이 곡선과 아래 가로선이 만나는 n = 28 이다.
 - (b) 95% 를 지키는 배율 $t_n(0.975)$ 를 n 에 대해 그린 것이다. 가로선이 1.96 이고, 곡선은 n 이 커지면서 그 선으로 내려온다.
 
 ### 4.4 Where the Loss Comes From
@@ -183,7 +183,7 @@ Fig 3. Coverage of the RMSE interval and the multiplier that restores 95 percent
 
 RMSE 가 언제나 기댓값 $c_n\sigma$ 와 같다면 담는 비율은 $2\Phi(1.96\,c_n) - 1$ 이 된다. n 이 28 이면 그 값이 0.9479 이므로, 기댓값이 작은 데서 오는 몫은 0.0021 이다. 실제 비율이 0.9400 이니 나머지 0.0079 는 RMSE 가 흔들리는 데서 온다.
 
-담는 비율을 scale 의 함수로 본 $g(u) = 2\Phi(1.96\,u) - 1$ 은 $u \gt 0$ 에서 concave 이다. Jensen's inequality 가 $E[g(U)] \lt g(E[U])$ 를 주므로, RMSE 가 기댓값보다 커질 때 얻는 비율이 작아질 때 잃는 비율보다 적고 평균이 내려간다.
+담는 비율을 표준편차의 함수로 본 $g(u) = 2\Phi(1.96\,u) - 1$ 은 $u \gt 0$ 에서 concave 이다. Jensen's inequality 가 $E[g(U)] \lt g(E[U])$ 를 주므로, RMSE 가 기댓값보다 커질 때 얻는 비율이 작아질 때 잃는 비율보다 적고 평균이 내려간다.
 
 두 몫은 n 이 커지면 함께 줄어든다. n 이 10 이면 0.0059 와 0.0225, 100 이면 0.0006 과 0.0022 다.
 
@@ -195,7 +195,7 @@ RMSE 가 언제나 기댓값 $c_n\sigma$ 와 같다면 담는 비율은 $2\Phi(1
 
 배율은 Table 2 의 마지막 열에 있다. n 이 28 이면 2.05, 50 이면 2.01, 100 이면 1.98 이다. 1.96 을 그대로 쓰면서 95% 라 적는 글은 n 이 수백 이상일 때만 맞고, n 이 277 이상이어야 비율이 94.9% 를 넘는다.
 
-반대로 94% 를 노린 구간을 $\sigma$ 를 아는 자리에서 그리려면 배율은 1.88 이다. 1.96 과 94% 를 함께 적은 글은 이 배율을 말하는 것이 아니라, RMSE 로 scale 을 추정한 자리에서 n 이 30 안팎일 때 나오는 값을 적은 것이다.
+반대로 94% 를 노린 구간을 $\sigma$ 를 아는 자리에서 그리려면 배율은 1.88 이다. 1.96 과 94% 를 함께 적은 글은 이 배율을 말하는 것이 아니라, RMSE 로 오차의 표준편차를 추정한 자리에서 n 이 30 안팎일 때 나오는 값을 적은 것이다.
 
 ### 5.2 Degrees of Freedom with Fitted Parameters
 
@@ -309,7 +309,7 @@ A_{\mathrm{L}} = \mathrm{LSL} + g\,\mathrm{RMSE}, \qquad A_{\mathrm{U}} = \mathr
 - **RMSE**: 오차 제곱의 평균에 제곱근을 취한 값. 식 (2) 가 정의다.
 - **spec limit**: 요구에서 나온 상한과 하한. 공정의 변동과는 따로 정해진다.
 - **Student t distribution**: 표준정규분포 값을, 그와 독립인 chi-squared 값을 자유도로 나눈 것의 제곱근으로 나눈 비가 따르는 분포.
-- **tolerance factor**: tolerance interval 에서 scale 에 곱하는 배율. 비율과 신뢰수준과 표본 수로 정해진다.
+- **tolerance factor**: tolerance interval 에서 표준편차에 곱하는 배율. 비율과 신뢰수준과 표본 수로 정해진다.
 - **tolerance interval**: 모집단의 정해진 비율을 담는다는 것을 정해진 신뢰수준으로 보장하는 구간.
 
 ## Appendix B. Chi-squared Distribution
