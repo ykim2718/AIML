@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 40 | Created: 2026-10-05 | Updated: 2026-10-09 16:41 CDT
+Rev. 41 | Created: 2026-10-05 | Updated: 2026-10-09 16:45 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -199,7 +199,7 @@ Coverage 열은 n 이 커질수록 올라가 95% 에 다가가지만 어느 n �
 
 식 (7) 과 95% 를 지키는 배율을 n 에 대해 그리면 아래 <a href="#fig-3">Fig 3</a> 와 같다.
 
-<img src="rmse-interval-coverage-ko_fig/rmse_interval_coverage.png" width="900" style="max-width: 100%;" alt="Fig 3">
+<img src="rmse-intervals-and-spc-ko_fig/rmse_interval_coverage.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
 <a id="fig-3"></a>
 Fig 3. Coverage of the RMSE interval and the multiplier that restores 95 percent
