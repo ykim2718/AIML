@@ -1,5 +1,5 @@
-# Coverage of the RMSE Interval
-Rev. 36 | Created: 2026-10-05 | Updated: 2026-10-09 16:30 CDT
+# Intervals from the RMSE and Their Use in SPC
+Rev. 37 | Created: 2026-10-05 | Updated: 2026-10-09 16:35 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
