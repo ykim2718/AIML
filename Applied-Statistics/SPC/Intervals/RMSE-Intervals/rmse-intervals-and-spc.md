@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 3 | Created: 2026-10-09 | Updated: 2026-10-09 16:55 CDT
+Rev. 4 | Created: 2026-10-09 | Updated: 2026-10-10 10:44 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,7 +123,7 @@ At $\alpha = 0.05$ the multiplier is 1.96 in rows 1 and 2, $\sqrt{n/\nu}\; t_{\n
 
 ## 4. RMSE Interval
 
-This section gives the equation for the interval and the equation for its probability. The interval is Eq. (2) and the probability is Eq. (7); the unknown $\sigma$ cancels in the derivation, so the probability depends only on the error count n.
+This section gives Eq. (2), which draws the interval, and Eq. (7), the probability that the interval holds one new error. The unknown $\sigma$ cancels in the derivation of Eq. (7), so this probability depends only on the error count n.
 
 ### 4.1 Interval Calculation
 

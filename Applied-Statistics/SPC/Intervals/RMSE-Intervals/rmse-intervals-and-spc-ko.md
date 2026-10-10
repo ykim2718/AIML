@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 45 | Created: 2026-10-05 | Updated: 2026-10-09 16:55 CDT
+Rev. 46 | Created: 2026-10-05 | Updated: 2026-10-10 10:44 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,7 +123,7 @@ $\alpha = 0.05$ 에서 1 행과 2 행의 배율이 1.96, 3 행의 배율이 $\sq
 
 ## 4. RMSE Interval
 
-구간을 긋는 식과 그 구간이 담는 확률을 구하는 식이 이 꼭지에 있다. 구간은 식 (2), 담는 확률은 식 (7) 이며, 모르는 $\sigma$ 는 유도 과정에서 약분되어 확률이 오차의 개수 n 으로만 정해진다.
+이 꼭지는 구간을 긋는 식 (2) 와, 그 구간이 새 오차 하나를 담는 확률을 구하는 식 (7) 을 다룬다. 식 (7) 을 유도하면 모르는 $\sigma$ 가 약분되므로, 이 확률은 오차의 개수 n 하나로 정해진다.
 
 ### 4.1 Interval Calculation
 
