@@ -1,5 +1,5 @@
 # CLAUDE.md
-Rev. 5 | Created: 2026-07-31 | Updated: 2026-09-22 17:35 CDT
+Rev. 6 | Created: 2026-07-31 | Updated: 2026-10-10 12:00 CDT
 
 ## Git Workflow
 
@@ -28,6 +28,13 @@ git push -u origin main
 - 버전 표기, 제목 번호, 표와 figure 의 제목, code block 표기, 용어 규칙이 모두 그 skill 에 있다.
 - 규칙 자체는 여기에 옮겨 적지 않는다. 두 곳에 적으면 한쪽만 바뀌어 어긋나므로, 형식이 달라지면 skill 만 고친다.
 - 이 저장소는 그 규칙에 예외를 두지 않는다.
+
+## Response Language
+
+**답변은 한글로 쓴다.**
+
+- Stop hook 경고처럼 하네스나 시스템이 보낸 메시지에 답할 때도 한글로 쓴다.
+- 질문을 옮긴 영어 문장은 예외로, 답 앞에 영어로 적는다.
 
 ## Korean Wording
 
