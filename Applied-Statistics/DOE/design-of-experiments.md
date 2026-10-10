@@ -1,60 +1,408 @@
 # Design of Experiments
-Rev. 6 | Created: 2026-08-30 | Updated: 2026-09-23 11:33 CDT
+Rev. 7 | Created: 2026-08-30 | Updated: 2026-10-09 19:38 CDT
 
-- [1. Design of Experiments](#1-design-of-experiments)
-- [2. Full Factorial Designs](#2-full-factorial-designs)
-  - [2.1. Multilevel Designs](#21-multilevel-designs)
-  - [2.2. Two-Level Designs](#22-two-level-designs)
-- [3. Fractional Factorial Designs](#3-fractional-factorial-designs)
-  - [3.1. Introduction](#31-introduction)
-  - [3.2. Plackett-Burman Designs](#32-plackett-burman-designs)
-  - [3.3. General Fractional Designs](#33-general-fractional-designs)
-- [4. Response Surface Designs](#4-response-surface-designs)
-  - [4.1. Introduction](#41-introduction)
-  - [4.2. Central Composite Designs](#42-central-composite-designs)
-  - [4.3. Box-Behnken Designs](#43-box-behnken-designs)
-- [5. D-Optimal Designs](#5-d-optimal-designs)
-  - [5.1. Introduction](#51-introduction)
-  - [5.2. Generating D-Optimal Designs](#52-generating-d-optimal-designs)
-  - [5.3. Augmenting D-Optimal Designs](#53-augmenting-d-optimal-designs)
-  - [5.4. Specifying Fixed Covariate Factors](#54-specifying-fixed-covariate-factors)
-  - [5.5. Specifying Categorical Factors](#55-specifying-categorical-factors)
-  - [5.6. Specifying Candidate Sets](#56-specifying-candidate-sets)
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Placement](#31-placement)
+- [4. Principle](#4-principle)
+- [5. Full Factorial Designs](#5-full-factorial-designs)
+  - [5.1 Multilevel Designs](#51-multilevel-designs)
+  - [5.2 Two-Level Designs](#52-two-level-designs)
+- [6. Fractional Factorial Designs](#6-fractional-factorial-designs)
+  - [6.1 Confounding and Resolution](#61-confounding-and-resolution)
+  - [6.2 Plackett-Burman Designs](#62-plackett-burman-designs)
+  - [6.3 General Fractional Designs](#63-general-fractional-designs)
+- [7. Response Surface Designs](#7-response-surface-designs)
+  - [7.1 Quadratic Model](#71-quadratic-model)
+  - [7.2 Central Composite Designs](#72-central-composite-designs)
+  - [7.3 Box-Behnken Designs](#73-box-behnken-designs)
+- [8. D-Optimal Designs](#8-d-optimal-designs)
+  - [8.1 D-Efficiency](#81-d-efficiency)
+  - [8.2 Generating D-Optimal Designs](#82-generating-d-optimal-designs)
+  - [8.3 Augmenting D-Optimal Designs](#83-augmenting-d-optimal-designs)
+  - [8.4 Specifying Fixed Covariate Factors](#84-specifying-fixed-covariate-factors)
+  - [8.5 Specifying Categorical Factors](#85-specifying-categorical-factors)
+  - [8.6 Specifying Candidate Sets](#86-specifying-candidate-sets)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Implementation](#appendix-b-python-implementation)
+  - [B.1 Common Header](#b1-common-header)
+  - [B.2 Full Factorial Designs](#b2-full-factorial-designs)
+  - [B.3 Fractional Factorial Designs](#b3-fractional-factorial-designs)
+  - [B.4 Response Surface Designs](#b4-response-surface-designs)
+  - [B.5 D-Optimal Designs](#b5-d-optimal-designs)
 
-> The design families of the MathWorks Statistics and Machine Learning Toolbox chapter on design of
-> experiments [[1](#ref-1)], with the same organisation and with every construction implemented in
-> Python on top of numpy and scipy.
+## 1. Purpose
 
-## 1. Design of Experiments
+- **Problem Statement**: In passively collected data several factors explain the same change in the response, so a model fitted to that data cannot separate the effect of each factor.
+- **Goal**: Build a DOE User's Guide. A reader who finishes it can pick the design that fits the target model, the run budget and the constraints on the factor space, and can state its assumptions and limits.
+- **Non-Goal**: The analysis after the experiment (ANOVA, model fitting and testing) and the use of any particular software are out of scope.
 
-Passive data collection leads to a difficulty. The same naturally occurring change in a response
-may be explained by several factors at once, and a model fitted to such data cannot separate them.
-Designed experiments remove the difficulty by setting the factor values deliberately, so that the
-factors move independently of each other and their effects on the response can be estimated apart.
+## 2. Summary
 
-Write $\mathbf{y}$ for the vector of $n$ measured responses, $\mathbf{X}$ for the model matrix
-built from the factor settings, and $\boldsymbol{\beta}$ for the coefficients. The least squares
-estimate and its covariance follow from the design alone once $\sigma^2$ is fixed.
+Designing an experiment is choosing the rows of the design matrix so that the covariance of the coefficient estimates is small within a run budget.
+The target model picks the design: a full factorial for every effect, a fractional factorial for screening many factors,
+a response surface design for optimisation with curvature, and a D-optimal design for irregular budgets, constraints and covariates.
 
-$$\hat{\boldsymbol{\beta}} = \left( \mathbf{X}^{\top}\mathbf{X} \right)^{-1} \mathbf{X}^{\top}\mathbf{y}, \qquad \mathrm{Cov}\left[ \hat{\boldsymbol{\beta}} \right] = \sigma^{2} \left( \mathbf{X}^{\top}\mathbf{X} \right)^{-1}$$
+## 3. Taxonomy and its Hierarchy
 
-Designing an experiment is therefore choosing the rows of $\mathbf{X}$ so that this covariance is
-small, subject to a budget on the number of runs. The families below differ in which model they aim
-at and in how they spend the budget.
+Design families differ in what they assume about the model, and the stronger the assumption the fewer runs they need. This
+document follows the four families of the MathWorks Statistics and Machine Learning Toolbox [[1](#ref-1)].
 
-Table 1. Design families and the model each one serves.
+The five axes that separate designs are shown in [Fig 1](#fig-1).
 
-| Family | Model aimed at | Typical use |
-|---|---|---|
-| Full factorial | All effects and interactions | Few factors, every combination affordable |
-| Fractional factorial | Main effects, some interactions | Screening many factors |
-| Response surface | Full quadratic | Optimisation near a known operating point |
-| D-optimal | Any stated model | Irregular budgets, constraints, covariates |
+```text
+Axis               Values
+-----------------  ----------------------------------------------------------------------
+Target model       all effects | main effects + some interactions | main effects only
+                   | full quadratic | any stated model
+Levels per factor  2 | 3 | any
+Run count          product of levels | power of 2 | multiple of 4 | set by geometry | any
+Factor space       regular cube | constrained region
+Factor type        continuous and set | categorical | recorded covariate
+```
 
-The Python blocks in this document are meant to be read in order; each one uses the names defined
-before it, on top of a single header. The blocks that follow them hold the printed output.
+<a id="fig-1"></a>
+Fig 1. Axes of the design taxonomy
+
+The five axes are independent. With the same full quadratic target model, a cubic factor space calls for a response
+surface design and a constrained region calls for a D-optimal design.
+
+What each design assumes about the model, and what it pays for that, follows the hierarchy in [Fig 2](#fig-2).
+
+```text
+Family / design          Assumes                              Gives up
+-----------------------  -----------------------------------  ---------------------------------------
+Full factorial           nothing about the model              small run count: N1 x ... x Nk runs
++- General fractional    high-order interactions are small    separation of confounded effects
+   +- Plackett-Burman    only main effects matter             every interaction (resolution III)
+Response surface         response is at most quadratic        terms above second order
++- Central composite     settings at +/-alpha are reachable   fewest runs: embeds a full 2^k
++- Box-Behnken           three or more factors                corner runs and an embedded factorial
+D-optimal                the stated model is correct          regular geometry and orthogonality
+```
+
+<a id="fig-2"></a>
+Fig 2. Hierarchy of design families
+
+Each step down from the full factorial adds an assumption about the model and removes runs. A general fractional design
+saves runs by treating high-order interactions as small, and a Plackett-Burman design by treating every interaction as
+small. The response surface family caps the model at second order and adds a third level to estimate curvature. A
+D-optimal design chooses its runs for one stated model, so it needs neither a cubic factor space nor a fixed run count.
+
+### 3.1 Placement
+
+Table 1 gives the criteria for choosing a design.
+
+Table 1. Placement of designs
+
+| Design             | Model aimed at                  | Run count                        | Use when                                                                     |
+| :----------------: | :-----------------------------: | :------------------------------: | :--------------------------------------------------------------------------: |
+| Full factorial     | All effects and interactions    | $N_1 \times \cdots \times N_k$   | Few factors, every combination affordable                                    |
+| General fractional | Main effects, some interactions | $2^{b}$                          | Screening many factors with a chosen resolution                              |
+| Plackett-Burman    | Main effects                    | Smallest multiple of 4 above $k$ | Main-effect screening needing a run count between powers of 2                |
+| Central composite  | Full quadratic model            | $2^k + 2k + n_c$                 | Optimisation near a known operating point                                    |
+| Box-Behnken        | Full quadratic model            | $4\binom{k}{2} + n_c$            | Optimisation of a process that cannot set every factor to an extreme at once |
+| D-optimal          | Any stated model                | Set to the budget                | Irregular budgets, constraints, covariates or categorical factors            |
+
+$k$ is the number of factors, $b$ the number of basic factors, and $n_c$ the number of centre runs.
+
+## 4. Principle
+
+The design fixes the precision of the coefficient estimates before any response is measured. Write $\mathbf{y}$ for the
+vector of $n$ measured responses, $\mathbf{X}$ for the model matrix built from the factor settings, and
+$\boldsymbol{\beta}$ for the coefficients; the least squares estimate and its covariance are given by equation (1).
+
+```math
+\hat{\boldsymbol{\beta}} = \left( \mathbf{X}^{\top}\mathbf{X} \right)^{-1} \mathbf{X}^{\top}\mathbf{y}, \qquad \mathrm{Cov}\left[ \hat{\boldsymbol{\beta}} \right] = \sigma^{2} \left( \mathbf{X}^{\top}\mathbf{X} \right)^{-1} \hspace{19em} (1)
+```
+
+The covariance in equation (1) contains no $\mathbf{y}$, so once $\sigma^2$ is given it follows from the design alone. A
+designed experiment sets the factor values deliberately, so the factors move independently of each other and the effect
+of each one on the response is estimated apart. The design families differ in which model they aim at and in how they
+spend the run budget (Table 1).
+
+Two-level factors are coded as $-1$ and $+1$ throughout, and continuous factors are scaled so that their working range is
+$[-1, 1]$. Terms used without definition are in [Appendix A](#appendix-a-terminology), and the Python implementation and
+output of every design are in [Appendix B](#appendix-b-python-implementation).
+
+## 5. Full Factorial Designs
+
+A full factorial design measures the response at every combination of the factor levels and estimates every effect and
+interaction the factors can produce. With $N_1, \ldots, N_k$ levels it needs $N_1 \times \cdots \times N_k$ runs, one per
+treatment.
+
+- **Assumption**: Few factors and levels, so a run at every combination is affordable.
+- **Settings**: The level count $N_i$ of each factor.
+- **Breaks when**: More factors multiply the run count by their level counts; even at two levels $2^k$ exceeds the budget.
+- **Used for**: Experiments with few factors, and the starting point of the fractional and response surface families.
+
+### 5.1 Multilevel Designs
+
+Factors need not share a level count. The design is the cartesian product of the level sets, listed so that the first
+column varies fastest. One two-level factor and one three-level factor give six runs
+([Appendix B.2](#b2-full-factorial-designs)).
+
+### 5.2 Two-Level Designs
+
+When every factor has two levels the design has $2^k$ runs. The columns are orthogonal and balanced, so every effect is
+estimated independently of the others and with the smallest variance the run count allows. The fractional and response
+surface families start from this design.
+
+## 6. Fractional Factorial Designs
+
+A fractional factorial design measures a subset of the treatments, chosen so that the effects believed to matter stay
+estimable. Most of the $2^k$ runs of a full factorial go to high-order interactions that are rarely large.
+
+### 6.1 Confounding and Resolution
+
+The price of fewer runs is confounding. Each retained column carries the sum of several effects, and no experiment run on
+that design can tell them apart. The resolution names the degree of confounding and is the length of the shortest word in
+the defining relation.
+
+Table 2. Design resolution [[2](#ref-2)]
+
+| Resolution | Main effects confounded with | Two-way interactions confounded with |
+| :--------: | :--------------------------: | :----------------------------------: |
+| III        | Two-way interactions         | Each other                           |
+| IV         | Three-way interactions       | Each other                           |
+| V          | Four-way interactions        | Three-way interactions               |
+
+Under resolution III the main effects hold only if two-way interactions are small; resolution IV estimates the main
+effects apart from two-way interactions; resolution V estimates both the main effects and the two-way interactions apart
+from every other effect of second order or lower.
+
+### 6.2 Plackett-Burman Designs
+
+When only main effects are considered significant, a Plackett-Burman design gives a resolution III design whose run count
+is a multiple of 4 rather than a power of 2, and so fills the gaps between the two-level factorials [[3](#ref-3)]. Eleven
+factors are screened in 12 runs instead of 16.
+
+The design is built from a Hadamard matrix. Where the run count is a power of 2 the columns of the Hadamard matrix are
+used directly; otherwise a final row of $-1$ is placed under the circulant of a known generator row. The 11 columns of the
+12-run design are mutually orthogonal ([Appendix B.3](#b3-fractional-factorial-designs)).
+
+- **Assumption**: Interactions are negligible and only main effects are significant.
+- **Settings**: The number of factors $k$. The run count is the smallest multiple of 4 above $k$, and needs a generator row when it is not a power of 2.
+- **Breaks when**: A large two-way interaction is confounded with a main effect, so the main-effect estimate carries that interaction.
+- **Used for**: Screening many factors.
+
+### 6.3 General Fractional Designs
+
+A general fractional design starts from a full factorial in a set of basic factors and defines the remaining factors as
+products of them. The product that defines a factor is its generator, and the generators fix both the design and its
+confounding. The generators `a b c abc` handle four factors in eight runs, half of the sixteen a full factorial needs.
+
+The defining relation is generated by the words that the generators imply, and the resolution is the length of the
+shortest word in the subgroup those words generate. Table 3 gives the resolution of four generator sets.
+
+Table 3. Resolution of four generator sets
+
+| Generators   | Runs  | Resolution |
+| :----------: | :---: | :--------: |
+| a b ab       | 4     | III        |
+| a b c ab     | 8     | III        |
+| a b c abc    | 8     | IV         |
+| a b c d abcd | 16    | V          |
+
+The two eight-run designs cost the same and differ only in the generator, yet `a b c ab` confounds main effects with
+two-way interactions and `a b c abc` does not. At a fixed run count the generator sets the resolution.
+
+- **Assumption**: The interactions that the resolution confounds are small (Table 2).
+- **Settings**: The number of basic factors $b$ (run count $2^{b}$) and a generator for each added factor.
+- **Breaks when**: A large confounded interaction makes the column estimate a sum of effects that cannot be told apart.
+- **Used for**: Screening many factors when the run count stays a power of 2 and the resolution must be chosen.
+
+## 7. Response Surface Designs
+
+A response surface design adds a third level to each factor to fit a full quadratic model, which carries curvature. Once
+the factors that matter are known and the goal is optimisation, the model needs curvature: an optimum is a stationary
+point, and a first-order model has none.
+
+### 7.1 Quadratic Model
+
+The full quadratic model in $k$ factors is equation (2) and has $(k+1)(k+2)/2$ coefficients.
+
+```math
+y = \beta_0 + \sum_{i=1}^{k} \beta_i x_i + \sum_{i \lt j} \beta_{ij} x_i x_j + \sum_{i=1}^{k} \beta_{ii} x_i^{2} + \varepsilon \hspace{19em} (2)
+```
+
+A two-level design cannot fit equation (2). The square term $x_i^2$ takes the same value 1 at $-1$ and $+1$. The two
+designs below add the third level in different ways.
+
+### 7.2 Central Composite Designs
+
+A central composite design consists of a two-level factorial at the corners of a cube, star points on the factor axes at
+a distance $\alpha$ from the centre, and one or more centre runs. Choosing $\alpha = (2^k)^{1/4}$ makes the design
+rotatable, so the prediction variance depends on the distance from the centre and not on the direction.
+
+The three variants differ in where the star points sit.
+
+- **Circumscribed**: Star points outside the cube at $\pm\alpha$, which needs factor settings beyond the two-level range.
+- **Faced**: Star points on the faces of the cube at $\alpha = 1$.
+- **Inscribed**: The circumscribed shape rescaled so that the star points, not the corners, sit at $\pm 1$.
+
+A circumscribed design in two factors with one centre run has nine runs, with the star points at $\pm 1.4142$
+([Appendix B.4](#b4-response-surface-designs)).
+
+- **Assumption**: Near the operating point the response is approximated by a full quadratic model, and there are two or more factors.
+- **Settings**: $\alpha$ ($(2^k)^{1/4}$ for rotatable, 1 for faced), the variant, and the centre run count $n_c \ge 1$. The run count is $2^k + 2k + n_c$.
+- **Breaks when**: The process cannot reach the $\pm\alpha$ settings, which rules out the circumscribed design in favour of faced or inscribed.
+- **Used for**: Optimisation near a known operating point.
+
+### 7.3 Box-Behnken Designs
+
+A Box-Behnken design fits the full quadratic model without ever setting two factors to an extreme at the same time
+[[4](#ref-4)]. It puts a two-level factorial in each pair of factors with the rest held at the centre, so its points sit at
+the midpoints of the edges of the design space and at the centre. The corners of the cube are left out, so no run
+combines the extremes of every factor, and there is no embedded factorial design.
+
+Table 4. Run counts of the two response surface designs, three centre runs each
+
+| Factors | Quadratic terms | Box-Behnken | Central composite |
+| :-----: | :-------------: | :---------: | :---------------: |
+| 3       | 10              | 15          | 17                |
+| 4       | 15              | 27          | 27                |
+| 5       | 21              | 43          | 45                |
+
+The pairwise construction reproduces the published Box-Behnken designs for three to five factors. Beyond five the
+published designs use a balanced incomplete block design and are smaller than every pair taken in turn. The pairwise
+construction stays valid there but is no longer minimal.
+
+- **Assumption**: The response is approximated by a full quadratic model, and there are three or more factors.
+- **Settings**: The centre run count $n_c$ (default 3 in the Appendix B implementation). The run count is $4\binom{k}{2} + n_c$.
+- **Breaks when**: Beyond five factors the pairwise construction does not give the minimum run count.
+- **Used for**: Optimising a process that cannot set every factor to an extreme at once.
+
+## 8. D-Optimal Designs
+
+A D-optimal design takes the model and the run budget as given and searches for the set of runs that minimises the
+covariance of the coefficients by maximising the determinant of the information matrix $\mathbf{X}^{\top}\mathbf{X}$.
+The cube of factor settings, the run count that is a power of 2 or a multiple of 4, and the factors free to move, all
+presumed by the families above, are not required by a D-optimal design.
+
+- **Assumption**: The stated model describes the response correctly. The design is optimal only for the coefficients of that model.
+- **Settings**: The model (linear, interaction, quadratic), the run count, the grid level count of continuous factors, the number of random starts, and the candidate set.
+- **Breaks when**: Fewer runs than model terms cannot estimate the model. With too few starts the search can stop at a design short of the optimum.
+- **Used for**: Irregular run budgets, augmentation of staged experiments, recorded covariates, categorical factors, and constrained factor spaces.
+
+### 8.1 D-Efficiency
+
+D-efficiency normalises the determinant of the information matrix so that designs of different sizes can be compared. In
+equation (3) $p$ is the number of model terms; D-efficiency is 1 for an orthogonal design and smaller otherwise.
+
+```math
+D = \frac{\left| \mathbf{X}^{\top}\mathbf{X} \right|^{1/p}}{n} \hspace{19em} (3)
+```
+
+The two-level full factorial reaches a D-efficiency of 1 for the linear model. When an orthogonal design exists, a
+D-optimal search cannot find a better one.
+
+### 8.2 Generating D-Optimal Designs
+
+A D-optimal design comes from an iterative search. The coordinate-exchange algorithm starts from a random design and
+repeats one move until nothing improves: take one factor of one run, try every value on a grid, and keep the best
+[[5](#ref-5)]. The result depends on where the search starts, so the search is repeated from several random starts and the
+best design is kept.
+
+Twelve runs requested for a quadratic model in three factors give a design with D-efficiency 0.4498
+([Appendix B.5](#b5-d-optimal-designs)). That is three runs fewer than the smallest Box-Behnken design of Table 4 and two
+above the ten coefficients the model has.
+
+### 8.3 Augmenting D-Optimal Designs
+
+An experiment often runs in stages, and the runs already performed cannot be chosen again. Augmentation holds the
+performed runs fixed and searches only for the new ones, so the added runs fill what the existing design is missing. The
+search uses row exchange, which swaps whole runs against rows of a candidate set rather than single coordinates; when the
+runs are drawn from a fixed list, exchanging rows is the fitting move.
+
+The four corner runs alone cannot fit the six-term quadratic model. Two more runs make it estimable, and the search puts
+both of them off the corners, where the existing design has nothing, at $(0, 1)$ and $(-1, 0)$.
+
+### 8.4 Specifying Fixed Covariate Factors
+
+A covariate is a factor that the experimenter records rather than sets, such as ambient temperature, the operator on
+shift, or the age of a batch. Its values are known in advance for each run but cannot be chosen. The design problem is
+then to choose the controlled factors given the covariate column, so that the model separates the controlled effects
+from the covariate effect.
+
+When the covariate drifts evenly from $-1$ to $+1$ across eight runs, the search places a pattern balanced against that
+drift in the two controlled columns, so neither controlled effect is confounded with the covariate.
+
+### 8.5 Specifying Categorical Factors
+
+A categorical factor has no numeric scale, so its levels cannot be pushed towards $\pm 1$. A factor with $L$ levels enters
+the model as $L - 1$ columns through effect coding, and the search runs on those columns.
+
+Three categorical factors at three levels each give 27 candidate treatments. Asked for nine runs, the search returns a
+design in which every level of every factor appears three times and every pair of levels from two factors appears exactly
+once.
+
+### 8.6 Specifying Candidate Sets
+
+Row exchange takes a candidate set, the list of runs it may choose from. Where the factor space is a cube, the candidate
+set is a grid over it.
+
+Passing the candidate set explicitly handles factor spaces that are not cubes. A mixture whose components must sum to
+one, a pair of settings that cannot be high together, and a machine that cannot run cold and fast are all constraints that
+remove rows from the grid. The search never proposes a run that is not on the list, so deleting those rows from the
+candidate set carries the constraint into the design.
+
+## References
+
+<a id="ref-1"></a>
+[1] MathWorks. [Design of Experiments — Statistics and Machine Learning Toolbox Documentation](https://kr.mathworks.com/help/stats/design-of-experiments.html).<br>
+<a id="ref-2"></a>
+[2] Montgomery, D. C. (2019). *Design and Analysis of Experiments* (10th ed.). Wiley.
+ISBN 978-1-119-49249-8.<br>
+<a id="ref-3"></a>
+[3] Plackett, R. L., & Burman, J. P. (1946). [The Design of Optimum Multifactorial Experiments](https://doi.org/10.1093/biomet/33.4.305).
+*Biometrika*, 33(4), 305–325.<br>
+<a id="ref-4"></a>
+[4] Box, G. E. P., & Behnken, D. W. (1960). [Some New Three Level Designs for the Study of
+Quantitative Variables](https://doi.org/10.1080/00401706.1960.10489912). *Technometrics*, 2(4), 455–475.<br>
+<a id="ref-5"></a>
+[5] Meyer, R. K., & Nachtsheim, C. J. (1995). [The Coordinate-Exchange Algorithm for Constructing
+Exact Optimal Experimental Designs](https://doi.org/10.1080/00401706.1995.10485889). *Technometrics*, 37(1), 60–69.
+
+---
+
+## Appendix A. Terminology
+
+- **Basic factor**: a factor whose column comes from the full factorial a fractional design starts
+  from, rather than from a generator.
+- **Candidate set**: the list of factor settings from which a D-optimal search may choose runs.
+- **Centre run**: a run with every continuous factor at the middle of its range.
+- **Confounding**: two effects carried by the same design column, so that no analysis of the
+  experiment can separate them.
+- **Covariate**: a factor that the experimenter records for each run rather than sets.
+- **Defining relation**: the set of products of factor columns that equal the column of ones in a
+  fractional factorial design; its shortest word gives the resolution.
+- **Effect coding**: coding of a categorical factor with $L$ levels into $L - 1$ columns, with the last level set to $-1$ in every column.
+- **Factor**: an input whose value the experimenter sets or records.
+- **Generator**: the product of basic factors that defines an added factor in a fractional
+  factorial design.
+- **Hadamard matrix**: a square matrix of $\pm 1$ entries whose columns are mutually orthogonal.
+- **Interaction**: the extent to which the effect of one factor depends on the level of another.
+- **Level**: one of the values a factor takes in a design.
+- **Main effect**: the change in the response when one factor changes level, averaged over the other factors.
+- **Response**: the measured output of a run.
+- **Rotatable**: a design whose prediction variance depends only on the distance from the centre of
+  the factor space.
+- **Run**: one execution of the experiment at one combination of factor levels; one row of a design.
+- **Screening**: an experiment that picks out, from many factors, those with a significant effect on the response.
+- **Star point**: a run of a central composite design that moves one factor off the centre and
+  holds the rest at it.
+- **Treatment**: a combination of factor levels.
+- **Word**: a group of factor names whose product is the column of ones in the defining relation; its length is the number of factors in it.
+
+## Appendix B. Python Implementation
+
+The Python blocks of this appendix are meant to run in order. Each one uses the names defined before it, on top of the
+header in B.1, and the `text` block right after it holds its output. Running them needs numpy and scipy.
+
+### B.1 Common Header
 
 ```python
 # Python
@@ -67,20 +415,11 @@ from scipy.linalg import hadamard
 np.set_printoptions(linewidth=100, suppress=True, precision=4)
 ```
 
-Two-level factors are coded as $-1$ and $+1$ throughout, and continuous factors are scaled so that
-their working range is $[-1, 1]$. Terms used without definition in the body are collected in
-[Appendix A](#appendix-a-terminology).
+### B.2 Full Factorial Designs
 
-## 2. Full Factorial Designs
+#### Multilevel Designs
 
-A full factorial design measures the response at every combination of the factor levels. With
-$N_1, \ldots, N_k$ levels it needs $N_1 \times \cdots \times N_k$ runs, one per treatment, and it
-supports every effect and interaction the factors can produce.
-
-### 2.1. Multilevel Designs
-
-Factors need not share a level count. The design is the cartesian product of the level sets, listed
-so that the first column varies fastest.
+The cartesian product construction of section 5.1, making six runs from a two-level and a three-level factor.
 
 ```python
 # Python
@@ -96,8 +435,6 @@ def full_factorial(levels: Sequence[int]) -> np.ndarray:
 print(full_factorial([2, 3]))
 ```
 
-The two-level factor and the three-level factor give six runs.
-
 ```text
 [[0 0]
  [1 0]
@@ -107,10 +444,9 @@ The two-level factor and the three-level factor give six runs.
  [1 2]]
 ```
 
-### 2.2. Two-Level Designs
+#### Two-Level Designs
 
-When every factor has two levels the design has $2^k$ runs and is the starting point for the
-fractional and response surface families below.
+The $2^k$ design of section 5.2, coded as $\pm 1$.
 
 ```python
 # Python
@@ -135,39 +471,12 @@ print(two_level_factorial(3))
  [ 1.  1.  1.]]
 ```
 
-The columns are orthogonal and balanced, which is what makes every effect estimable independently
-of the others and with the smallest variance the run count allows.
+### B.3 Fractional Factorial Designs
 
-## 3. Fractional Factorial Designs
+#### Plackett-Burman Designs
 
-### 3.1. Introduction
-
-The run count of a full factorial grows as $2^k$, and most of those runs buy high-order
-interactions that are rarely large. A fractional factorial design keeps a subset of the treatments,
-chosen so that the effects believed to matter stay estimable. The price is confounding: each
-retained column carries the sum of several effects, and no experiment run on that design can tell
-them apart.
-
-The resolution names how bad the confounding is, and is the length of the shortest word in the
-defining relation.
-
-Table 2. Design resolution [[5](#ref-5)].
-
-| Resolution | Main effects confounded with | Two-way interactions confounded with |
-|---|---|---|
-| III | Two-way interactions | Each other |
-| IV | Three-way interactions | Each other |
-| V | Four-way interactions | Three-way interactions |
-
-### 3.2. Plackett-Burman Designs
-
-When only main effects are considered significant, a Plackett-Burman design gives a resolution III
-design whose run count is a multiple of 4 rather than a power of 2 [[2](#ref-2)]. It therefore
-fills the gaps between the two-level factorials: 11 factors take 12 runs instead of 16.
-
-The design is built from a Hadamard matrix. Where the run count is a power of 2 scipy supplies it
-directly; where it is not, the design is a circulant of a known generator row with a final row of
-$-1$.
+The construction of section 6.2. The last line checks that the 11 columns of the 12-run design are mutually orthogonal. A
+run count that is neither a power of 2 nor covered by a generator raises instead of falling back on a different design.
 
 ```python
 # Python
@@ -201,15 +510,9 @@ print(design.shape, np.allclose(design.T @ design, 12 * np.eye(11)))
 (12, 11) True
 ```
 
-Eleven factors are screened in twelve runs, and the check confirms that the columns are orthogonal.
-A run count that is neither a power of 2 nor covered by a generator raises rather than falling back
-on a different design.
+#### General Fractional Designs
 
-### 3.3. General Fractional Designs
-
-A general fractional design starts from a full factorial in a set of basic factors and defines the
-remaining factors as products of them. The product that defines a factor is its generator, and the
-generators fix both the design and its confounding.
+The generator construction of section 6.3, making the eight-run design in four factors from the generators `a b c abc`.
 
 ```python
 # Python
@@ -234,8 +537,6 @@ def fractional_factorial(generators: str) -> np.ndarray:
 print(fractional_factorial('a b c abc'))
 ```
 
-Four factors in eight runs, half of the sixteen a full factorial would need.
-
 ```text
 [[-1. -1. -1. -1.]
  [ 1. -1. -1.  1.]
@@ -247,8 +548,9 @@ Four factors in eight runs, half of the sixteen a full factorial would need.
  [ 1.  1.  1.  1.]]
 ```
 
-The defining relation is generated by the words that the generators imply, and the resolution is
-the shortest word in the subgroup those words generate.
+#### Design Resolution
+
+Computes the resolution of Table 3 as the shortest word in the subgroup generated by the words the generators imply.
 
 ```python
 # Python
@@ -286,33 +588,12 @@ a b c abc        runs= 8 resolution=4
 a b c d abcd     runs=16 resolution=5
 ```
 
-The two eight-run designs cost the same and differ only in the generator, yet one confounds main
-effects with two-way interactions and the other does not. The generator is the whole of the choice.
+### B.4 Response Surface Designs
 
-## 4. Response Surface Designs
+#### Central Composite Designs
 
-### 4.1. Introduction
-
-Once the factors that matter are known and the goal is optimisation, the model has to carry
-curvature, because an optimum is a stationary point and a first-order model has none. The full
-quadratic model in $k$ factors has $(k+1)(k+2)/2$ coefficients.
-
-$$y = \beta_0 + \sum_{i=1}^{k} \beta_i x_i + \sum_{i \lt j} \beta_{ij} x_i x_j + \sum_{i=1}^{k} \beta_{ii} x_i^{2} + \varepsilon$$
-
-A two-level design cannot fit it, since a square term takes the same value at both levels. The two
-designs below add a third level in different ways.
-
-### 4.2. Central Composite Designs
-
-A central composite design puts a two-level factorial at the corners of a cube, star points on the
-factor axes at a distance $\alpha$ from the centre, and one or more centre runs. Choosing
-$\alpha = (2^k)^{1/4}$ makes the design rotatable, so the prediction variance depends on the
-distance from the centre and not on the direction.
-
-The three variants differ in where the star points fall. A circumscribed design places them outside
-the cube, which needs factor settings beyond the two-level range. A faced design puts them on the
-cube faces at $\alpha = 1$. An inscribed design keeps the circumscribed shape but rescales it so
-that the star points, not the corners, sit at $\pm 1$.
+The three variants of section 7.2, chosen by `kind`. An invalid `kind` raises instead of falling back on a default, so a
+misspelled variant cannot produce a design the caller did not ask for.
 
 ```python
 # Python
@@ -350,15 +631,9 @@ print(central_composite(2, n_center=1))
  [ 0.      0.    ]]
 ```
 
-The invalid `kind` raises instead of falling back on a default, so a misspelled variant cannot
-silently produce a design the caller did not ask for.
+#### Box-Behnken Designs
 
-### 4.3. Box-Behnken Designs
-
-A Box-Behnken design also fits the full quadratic model but never sets two factors to an extreme at
-the same time [[3](#ref-3)]. Its points sit at the midpoints of the edges of the design space and at
-the centre, so the corners of the cube are avoided and no run combines the extremes of every factor.
-There is no embedded factorial design.
+The pairwise construction of section 7.3, making the fifteen runs of Table 4 from three factors and three centre runs.
 
 ```python
 # Python
@@ -398,32 +673,12 @@ print(box_behnken(3, n_center=3))
  [ 0.  0.  0.]]
 ```
 
-Table 3. Run counts of the two response surface designs, three centre runs each.
+### B.5 D-Optimal Designs
 
-| Factors | Quadratic terms | Box-Behnken | Central composite |
-|---:|---:|---:|---:|
-| 3 | 10 | 15 | 17 |
-| 4 | 15 | 27 | 27 |
-| 5 | 21 | 43 | 45 |
+#### D-Efficiency
 
-The pairwise construction above reproduces the published Box-Behnken designs for three to five
-factors. Beyond five the published designs use a balanced incomplete block design and are smaller
-than every pair taken in turn, so this function stays valid but stops being minimal.
-
-## 5. D-Optimal Designs
-
-### 5.1. Introduction
-
-The families above are built for regular situations: a cube of factor settings, a run count that is
-a power of 2 or a multiple of 4, and every factor free to move. A D-optimal design drops all of
-that. It takes the model and the run budget as given and searches for the set of runs that
-minimises the covariance of the coefficients, by maximising the determinant of the information
-matrix $\mathbf{X}^{\top}\mathbf{X}$.
-
-D-efficiency normalises that determinant so that designs of different sizes can be compared. It is
-1 for an orthogonal design and smaller otherwise, where $p$ is the number of model terms.
-
-$$D = \frac{\left| \mathbf{X}^{\top}\mathbf{X} \right|^{1/p}}{n}$$
+Computes equation (3) and checks the scale with the D-efficiency of 1 that the two-level full factorial reaches for the
+linear model. Fewer runs than model terms raise an error.
 
 ```python
 # Python
@@ -462,16 +717,10 @@ print(round(d_efficiency(two_level_factorial(2), model='linear'), 4))
 1.0
 ```
 
-The two-level full factorial reaches the maximum for the linear model, which is the check that the
-measure is scaled as intended: a D-optimal search cannot do better than an orthogonal design when
-one exists.
+#### Coordinate Exchange
 
-### 5.2. Generating D-Optimal Designs
-
-The search is iterative. The coordinate-exchange algorithm starts from a random design and repeats
-one move until nothing improves: take one factor of one run, try every value on a grid, and keep
-the best [[4](#ref-4)]. Since the result depends on where the search starts, the whole thing is
-repeated from several random starts and the best design is kept.
+The search of section 8.2, choosing twelve runs for a quadratic model in three factors. The first output line is the
+D-efficiency.
 
 ```python
 # Python
@@ -508,9 +757,6 @@ print(round(d_efficiency(design, model='quadratic'), 4))
 print(design)
 ```
 
-Twelve runs for a quadratic model in three factors, three fewer than the smallest Box-Behnken design
-of Table 3 and two above the ten coefficients the model has.
-
 ```text
 0.4498
 [[ 1.  1.  1.]
@@ -527,17 +773,9 @@ of Table 3 and two above the ten coefficients the model has.
  [-1. -1.  1.]]
 ```
 
-Asking for fewer runs than the model has terms raises from `d_efficiency`, since no design of that
-size estimates the model and returning one would hide the mistake.
+#### Row Exchange and Augmentation
 
-### 5.3. Augmenting D-Optimal Designs
-
-An experiment often runs in stages, and the runs already performed are not available for
-reconsideration. Augmentation holds those rows fixed and searches only for the new ones, so the
-added runs are chosen for what the existing design is missing.
-
-The search here exchanges whole rows against a candidate set rather than single coordinates, which
-is the natural move when the rows are drawn from a fixed list.
+The search of section 8.3; rows passed in `fixed` are not exchanged. Two runs are added to the four corner runs.
 
 ```python
 # Python
@@ -575,21 +813,15 @@ print(added)
 print(round(d_efficiency(np.vstack([existing, added]), model='quadratic'), 4))
 ```
 
-The four corner runs cannot fit the six-term quadratic model at all. Two more runs make it
-estimable, and the search puts both of them off the corners, where the existing design has nothing.
-
 ```text
 [[ 0.  1.]
  [-1.  0.]]
 0.42
 ```
 
-### 5.4. Specifying Fixed Covariate Factors
+#### Fixed Covariates
 
-Some factors are recorded rather than set: ambient temperature, the operator on shift, the age of a
-batch. Their values are known in advance for each run but cannot be chosen. The design problem is
-then to choose the controlled factors given the covariate column, so that the model separates the
-controlled effects from the covariate effect.
+The search of section 8.4; the last column is the evenly drifting covariate.
 
 ```python
 # Python
@@ -625,10 +857,6 @@ drift = np.linspace(-1.0, 1.0, 8).reshape(-1, 1)
 print(covariate_exchange(drift, n_factors=2, model='linear', n_levels=3, n_tries=3, seed=4))
 ```
 
-The covariate drifts steadily across the eight runs. The search answers with a pattern in the two
-controlled columns that is balanced against that drift, so neither controlled effect is confounded
-with it.
-
 ```text
 [[-1.     -1.     -1.    ]
  [ 1.     -1.     -0.7143]
@@ -640,10 +868,9 @@ with it.
  [-1.     -1.      1.    ]]
 ```
 
-### 5.5. Specifying Categorical Factors
+#### Categorical Factors
 
-A categorical factor has no numeric scale, so its levels cannot be pushed towards $\pm 1$. A factor
-with $L$ levels enters the model as $L - 1$ coded columns, and the search runs on those columns.
+The effect coding and row exchange of section 8.5, with the chosen runs mapped back to their levels and sorted.
 
 ```python
 # Python
@@ -666,10 +893,6 @@ chosen = np.array([levels[int(np.where((coded == r).all(axis=1))[0][0])] for r i
 print(chosen[np.lexsort((chosen[:, 2], chosen[:, 1], chosen[:, 0]))])
 ```
 
-Three categorical factors at three levels each give 27 candidate treatments. Asked for nine runs,
-the search returns a design in which every level of every factor appears three times and every pair
-of levels from two factors appears exactly once.
-
 ```text
 [[0 0 1]
  [0 1 0]
@@ -682,10 +905,9 @@ of levels from two factors appears exactly once.
  [2 2 0]]
 ```
 
-### 5.6. Specifying Candidate Sets
+#### Candidate Sets
 
-The row exchange of section 5.3 needs a list of allowed runs to choose from. Where the factor space
-is a plain cube, that list is a grid over it, and generating it is mechanical.
+Builds the cubic grid of section 8.6 and chooses six runs for a quadratic model in two factors.
 
 ```python
 # Python
@@ -709,49 +931,3 @@ print(selected)
  [ 1.  0.]
  [ 1. -1.]]
 ```
-
-The reason to pass a candidate set explicitly rather than let it be generated is that the factor
-space is often not a cube. A mixture whose components must sum to one, a pair of settings that
-cannot be high together, a machine that cannot run cold and fast: each of these is a constraint that
-removes rows from the grid. Deleting those rows from the candidate set is enough, because the search
-never proposes a run that is not on the list.
-
-## References
-
-<a id="ref-1"></a>
-[1] MathWorks. [Design of Experiments — Statistics and Machine Learning Toolbox Documentation](https://kr.mathworks.com/help/stats/design-of-experiments.html).<br>
-<a id="ref-2"></a>
-[2] Plackett, R. L., & Burman, J. P. (1946). [The Design of Optimum Multifactorial Experiments](https://doi.org/10.1093/biomet/33.4.305).
-*Biometrika*, 33(4), 305–325.<br>
-<a id="ref-3"></a>
-[3] Box, G. E. P., & Behnken, D. W. (1960). [Some New Three Level Designs for the Study of
-Quantitative Variables](https://doi.org/10.1080/00401706.1960.10489912). *Technometrics*, 2(4), 455–475.<br>
-<a id="ref-4"></a>
-[4] Meyer, R. K., & Nachtsheim, C. J. (1995). [The Coordinate-Exchange Algorithm for Constructing
-Exact Optimal Experimental Designs](https://doi.org/10.1080/00401706.1995.10485889). *Technometrics*, 37(1), 60–69.<br>
-<a id="ref-5"></a>
-[5] Montgomery, D. C. (2019). *Design and Analysis of Experiments* (10th ed.). Wiley.
-ISBN 978-1-119-49249-8.
-
----
-
-## Appendix A. Terminology
-
-- **Basic factor**: a factor whose column comes from the full factorial a fractional design starts
-  from, rather than from a generator.
-- **Centre run**: a run with every continuous factor at the middle of its range.
-- **Confounding**: two effects carried by the same design column, so that no analysis of the
-  experiment can separate them.
-- **Defining relation**: the set of products of factor columns that equal the column of ones in a
-  fractional factorial design; its shortest word gives the resolution.
-- **Factor**: an input whose value the experimenter sets or records.
-- **Generator**: the product of basic factors that defines an added factor in a fractional
-  factorial design.
-- **Level**: one of the values a factor takes in a design.
-- **Response**: the measured output of a run.
-- **Rotatable**: a design whose prediction variance depends only on the distance from the centre of
-  the factor space.
-- **Run**: one execution of the experiment at one combination of factor levels; one row of a design.
-- **Star point**: a run of a central composite design that moves one factor off the centre and
-  holds the rest at it.
-- **Treatment**: a combination of factor levels.
