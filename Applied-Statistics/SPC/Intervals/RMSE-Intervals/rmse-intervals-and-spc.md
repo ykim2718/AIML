@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 4 | Created: 2026-10-09 | Updated: 2026-10-10 10:44 CDT
+Rev. 5 | Created: 2026-10-09 | Updated: 2026-10-10 10:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,7 +123,7 @@ At $\alpha = 0.05$ the multiplier is 1.96 in rows 1 and 2, $\sqrt{n/\nu}\; t_{\n
 
 ## 4. RMSE Interval
 
-This section gives Eq. (2), which draws the interval, and Eq. (7), the probability that the interval holds one new error. The unknown $\sigma$ cancels in the derivation of Eq. (7), so this probability depends only on the error count n.
+This section covers the RMSE interval, Eq. (2) with its multiplier $k$ fixed at 1.96, and Eq. (7), the probability that this interval holds one new error. Eq. (2) with its own $k$ is the prediction interval, covered in section 5. The unknown $\sigma$ cancels in the derivation of Eq. (7), so this probability depends only on the error count n.
 
 ### 4.1 Interval Calculation
 
@@ -139,7 +139,7 @@ The error $e_i$ in Eq. (1) is the i-th predicted value of the model minus the i-
 \mathrm{LSL},\ \mathrm{USL} = \mu_0 \mp k\,\mathrm{RMSE}, \qquad k = \sqrt{\frac{n}{\nu}}\; t_{\nu}\!\left(1 - \frac{\alpha}{2}\right) \hspace{19em} (2)
 ```
 
-In Eq. (2), $\mu_0$ is the center of the interval, 0 for an interval on the errors. $k$ is the multiplier set by the target probability $1 - \alpha$, and $\sqrt{n/\nu}$ is a correction factor that compensates for the RMSE dividing its sum of squares by n rather than $\nu$. With no fitted parameters, $\nu = n$, the correction factor is 1, and $k = t_n(1 - \alpha/2)$, which is 2.05 at $\alpha = 0.05$ and n = 28. With p fitted parameters, $\nu = n - p$ goes into the formula, and n = 28 with p = 2 gives 2.13. Setting $k$ at the customary 1.96 leaves the probability short of $1 - \alpha$; the size of the shortfall is in section 4.2.
+In Eq. (2), $\mu_0$ is the center of the interval, 0 for an interval on the errors. $k$ is the multiplier set by the target probability $1 - \alpha$, and $\sqrt{n/\nu}$ is a correction factor that compensates for the RMSE dividing its sum of squares by n rather than $\nu$. With no fitted parameters, $\nu = n$, the correction factor is 1, and $k = t_n(1 - \alpha/2)$, which is 2.05 at $\alpha = 0.05$ and n = 28. With p fitted parameters, $\nu = n - p$ goes into the formula, and n = 28 with p = 2 gives 2.13. Eq. (2) with this $k$ is the prediction interval, and the interval with $k$ set at the customary 1.96 is the RMSE interval. The RMSE interval holds less than $1 - \alpha$; the size of the shortfall is in section 4.2.
 
 #### Using the RMSE in Place of Sigma 🎈
 
