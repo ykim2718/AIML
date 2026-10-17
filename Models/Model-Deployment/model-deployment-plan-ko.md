@@ -1,5 +1,5 @@
 # Model Deployment Plan
-Rev. 0 | Created: 2026-10-14 | Updated: 2026-10-14 09:25 CDT
+Rev. 1 | Created: 2026-10-14 | Updated: 2026-10-17 08:30 CDT
 
 ## 1. Purpose
 
@@ -57,6 +57,8 @@ Table 1. Location
 | On-premise | 회사 내부 데이터센터 server 에서 실행      | Fab 내부 MES·분석 server             |
 | Edge       | 데이터가 생기는 장비 옆 PC 에서 실행       | PVD 장비 옆 산업용 PC                |
 | Hybrid     | 학습은 server, 추론은 엣지처럼 역할을 나눔 | 재학습은 사내 server, 예측은 장비 PC |
+
+배포를 실행 위치와 제공 주체의 두 축으로 나눈 분류와, 위치마다의 가정과 깨지는 조건은 [AI Deployment Locations For Semiconductor Equipment](../../AIOps/AI-Deployment-Locations/ai-deployment-locations-ko.md) 에 정리되어 있다.
 
 ### 3.2 Serving
 
