@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 29 | Created: 2026-10-14 | Updated: 2026-10-18 03:34 CDT
+Rev. 30 | Created: 2026-10-14 | Updated: 2026-10-18 03:35 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -189,11 +189,11 @@ Table 3. Onboarding gates, results and actions
 - **Equipment interface**: SECS/GEM, FDC/EES, MES, APC (R2R) 와의 interface.
 - **KPI**: 스펙 적중률, wafer 당 보정 비용, 엔지니어 개입 횟수, consumable 수명 종료 구간 성능.
 
-Roadmap 의 기간은 추정값이다.
+Roadmap 은 단기·중기·장기의 세 Phase 로 나누며, Phase 마다 걸리는 기간은 장비 구성과 data 상태에 따라 달라진다.
 
-- **Phase 1 (3~6개월, L1)**: 기존 VM model 과 역산을 함수로 감싼 agent, 승인 routing 과 질의응답만 맡는 최소 orchestrator, 동일 기종·다 chamber 의 Global + Local model 적용, chamber matching 검증.
-- **Phase 2 (6~12개월, L2)**: [3] Guardrail, [5] Drift monitor, [6] Adapt 단계 도입, recalibration DOE 와 재학습 자동화 (MLOps).
-- **Phase 3 (12개월~, L3)**: 이기종·신규 장비의 few-shot onboarding, LLM 기반 orchestrator, 다른 공정으로 확장.
+- **Phase 1 (단기, L1)**: 기존 VM model 과 역산을 함수로 감싼 agent, 승인 routing 과 질의응답만 맡는 최소 orchestrator, 동일 기종·다 chamber 의 Global + Local model 적용, chamber matching 검증.
+- **Phase 2 (중기, L2)**: [3] Guardrail, [5] Drift monitor, [6] Adapt 단계 도입, recalibration DOE 와 재학습 자동화 (MLOps).
+- **Phase 3 (장기, L3)**: 이기종·신규 장비의 few-shot onboarding, LLM 기반 orchestrator, 다른 공정으로 확장.
 
 ---
 
