@@ -1,5 +1,5 @@
-# PVD THK AI Agent Proposal
-Rev. 0 | Created: 2026-10-14 | Updated: 2026-10-14 09:25 CDT
+# Semiconductor Deposition Equipment AI Agent Proposal
+Rev. 1 | Created: 2026-10-14 | Updated: 2026-10-17 22:41 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
