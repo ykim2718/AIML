@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 30 | Created: 2026-10-14 | Updated: 2026-10-18 03:35 CDT
+Rev. 31 | Created: 2026-10-14 | Updated: 2026-10-18 03:36 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -266,7 +266,7 @@ Table 4. Single vs multi-equipment deployment
   <tr><td align="center">Engineer workload (관리 인력)</td><td align="center">장비 수에 비례해 증가</td><td align="center">AI 에이전트가 통합 관리</td></tr>
 </table>
 
-신규 장비는 공통 model 을 재사용하므로 셋업 기간이 대폭 줄어든다.
+신규 장비 도입 시, 공통 model 을 재사용하므로 셋업 기간이 대폭 줄어든다.
 
 - **공통 model 재사용**: 모든 장비 data 로 학습한 Global backbone 이 recipe 와 THK 의 관계를 이미 담고 있다.
 - **차이만 학습**: 신규 장비는 그 장비 고유의 차이만 소량의 monitor wafer 로 Local adapter 에 학습한다.
