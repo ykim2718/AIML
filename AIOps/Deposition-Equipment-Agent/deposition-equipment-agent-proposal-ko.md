@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 8 | Created: 2026-10-14 | Updated: 2026-10-18 01:04 CDT
+Rev. 9 | Created: 2026-10-14 | Updated: 2026-10-18 01:06 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,22 +40,22 @@ Rev. 8 | Created: 2026-10-14 | Updated: 2026-10-18 01:04 CDT
                                          |                           | reads reports     |
                    predict / recommend / health / calibrate          +-------------------+
                                          |
-       +---------------------------------+-------------------+------------------+
-       |                                                     |                  |
-+------+----------------------------------------+    +-------+--------+ +-------+--------+
-| Equipment Agent #1                            |    | Equipment      | | Equipment      |
-|                                               |    | Agent #2       | | Agent #N       |
-|  LLM       which tool to call, and when       |    | same as #1     | | same as #1     |
-|            explanation of the result          |    +-------+--------+ +-------+--------+
-|               |  tool call     ^  output      |            |    ...           |
-|               v                |              |            |                  |
-|  ML model  predict THK and its uncertainty    |            |                  |
-|            invert process condition           |            |                  |
-|            detect drift, retrain the adapter  |            |                  |
-|  Guardrail uncertainty threshold before APC   |            |                  |
-+------+----------------------------------------+            |                  |
-       |                                                     |                  |
-       +------------+-----------------------------------+----+------------------+
+       +---------------------------------+-------------------+----------------------+
+       |                                                     |                      |
++------+----------------------------------------+    +-------+--------+     +-------+--------+
+| Equipment Agent #1                            |    | Equipment      |     | Equipment      |
+|                                               |    | Agent #2       | ... | Agent #N       |
+|  LLM       which tool to call, and when       |    | same as #1     |     | same as #1     |
+|            explanation of the result          |    +-------+--------+     +-------+--------+
+|               |  tool call     ^  output      |            |                      |
+|               v                |              |            |                      |
+|  ML model  predict THK and its uncertainty    |            |                      |
+|            invert process condition           |            |                      |
+|            detect drift, retrain the adapter  |            |                      |
+|  Guardrail uncertainty threshold before APC   |            |                      |
++------+----------------------------------------+            |                      |
+       |                                                     |                      |
+       +------------+-----------------------------------+----+----------------------+
                     |                                   |
        Feature Store (common schema)          Model Registry (Global
                     |                         backbone + Local adapters)
