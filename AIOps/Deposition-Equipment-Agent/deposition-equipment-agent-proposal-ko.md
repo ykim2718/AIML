@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 5 | Created: 2026-10-14 | Updated: 2026-10-18 00:57 CDT
+Rev. 6 | Created: 2026-10-14 | Updated: 2026-10-18 01:00 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -52,6 +52,7 @@ Rev. 5 | Created: 2026-10-14 | Updated: 2026-10-18 00:57 CDT
 |  ML model  predict THK and its uncertainty    |            |                  |
 |            invert process condition           |            |                  |
 |            detect drift, retrain the adapter  |            |                  |
+|  Guardrail uncertainty threshold before APC   |            |                  |
 +------+----------------------------------------+            |                  |
        |                                                     |                  |
        +------------+-----------------------------------+----+------------------+
@@ -74,17 +75,18 @@ Fig 1. Two-tier agent architecture, with the LLM and the ML model inside one equ
 
 Table 1. Solution items
 
-| Category               | Item              | Description                                                              | Section |
-| :---:                  | :---:             | :---:                                                                    | :---:   |
-| A. 품질 예측·제어      | 두께 실시간 예측  | 웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감 | 6.1     |
-| A. 품질 예측·제어      | 자동 공정 보정    | 예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정          | 6.1     |
-| B. 장비 상태·정비 관리 | 소모품 수명 예측  | 타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내                | 6.1, 7  |
-| B. 장비 상태·정비 관리 | 이상 조기 감지    | 장비 센서 신호를 실시간 감시하여 불량 발생 전 경보                       | 6.1     |
-| B. 장비 상태·정비 관리 | 고장 원인 안내    | 이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내              | 6.1     |
-| B. 장비 상태·정비 관리 | 예방 정비 최적화  | 장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소              | 7       |
-| C. 다장비 통합 관리    | 장비 간 편차 관리 | 여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지                   | 5, 7    |
-| D. AI 운영 기반        | 자동 학습 유지    | PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지                          | 6.1     |
-| D. AI 운영 기반        | AI 운영 비서      | "어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변              | 6.2     |
+<table>
+  <tr><th align="center">Category</th><th align="center">Item</th><th align="center">Description</th><th align="center">Section</th></tr>
+  <tr><td align="center" rowspan="2">A. 품질 예측·제어</td><td align="center">두께 실시간 예측</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">6.1</td></tr>
+  <tr><td align="center">자동 공정 보정</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="4">B. 장비 상태·정비 관리</td><td align="center">소모품 수명 예측</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">6.1, 7</td></tr>
+  <tr><td align="center">이상 조기 감지</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">6.1</td></tr>
+  <tr><td align="center">고장 원인 안내</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">6.1</td></tr>
+  <tr><td align="center">예방 정비 최적화</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">7</td></tr>
+  <tr><td align="center">C. 다장비 통합 관리</td><td align="center">장비 간 편차 관리</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">5, 7</td></tr>
+  <tr><td align="center" rowspan="2">D. AI 운영 기반</td><td align="center">자동 학습 유지</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">6.1</td></tr>
+  <tr><td align="center">AI 운영 비서</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">6.2</td></tr>
+</table>
 
 Section 열은 그 항목을 구현하는 본문 절이다. 기대 효과는 계측 비용 절감, 수율 향상, 장비 가동률 증가, 엔지니어 업무 부담 감소이다.
 
