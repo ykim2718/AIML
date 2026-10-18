@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 13 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
+Rev. 14 | Created: 2026-10-14 | Updated: 2026-10-18 01:18 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,7 +22,7 @@ Rev. 13 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
 
 - **Problem Statement**: 증착 장비의 두께 예측 model 은 엔지니어가 결과를 읽고 다음 웨이퍼의 조건을 직접 정해야 하며, 장비가 늘면 model 개발, 보정, 정비 판단이 장비마다 따로 반복된다.
 - **Goal**: 검증된 ML model 을 도구로 쓰는 AI agent 가 웨이퍼 단위의 예측·보정·정비 판단을 수행하여, 장비가 늘어도 신규 장비 셋업 기간과 엔지니어 개입 횟수가 장비 수에 비례해 늘지 않게 한다.
-- **Non-Goal**: LLM 이 THK 를 직접 예측하거나 공정 조건 값을 산출하는 구조는 다루지 않는다.
+- **Non-Goal**: LLM 이 THK 를 직접 예측하거나 공정 조건 값을 산출하는 구조와, feature store·model registry·fab systems 의 구축과 운영 절차는 다루지 않는다.
 
 ## 2. Summary
 
@@ -68,11 +68,17 @@ Rev. 13 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
 <a id="fig-1"></a>
 Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML model inside one equipment agent
 
-아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다. 공통 feature schema 로 정리한 data 는 feature store 에, Global model 과 장비별 adapter 는 model registry 에 둔다.
+아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다.
 
 `Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 부를지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
 
 장비 에이전트는 승인이나 확인이 필요하면 run 을 멈추고 orchestrator 에 요청을 올린다. Orchestrator 는 그 요청을 권한이 있는 엔지니어에게 보내고, 승인 기록을 남긴 뒤 답을 장비 에이전트에 돌려준다. 엔지니어는 이 경로로 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, [7] Report 단계에서 쓴 report 를 읽는다.
+
+Fig 1 아래쪽의 세 구성 요소는 장비 에이전트가 쓰는 데이터와 model 을 보관하고 주고받는다.
+
+- **Fab systems**: 장비의 trace 와 생산 정보를 내보내고, APC 로 장비 에이전트의 조정값을 받아 다음 run 의 recipe 에 반영하는 fab 의 기존 시스템.
+- **Feature store**: Fab systems 에서 받은 trace 를 공통 feature schema 로 정리해, 학습과 추론에 같은 feature 를 내주는 저장소.
+- **Model registry**: Global backbone 과 장비·챔버별 Local adapter 의 version 을 보관하는 저장소. 장비 에이전트는 검증을 통과해 승격된 version 만 불러 쓴다.
 
 ## 3. Solution Scope
 
