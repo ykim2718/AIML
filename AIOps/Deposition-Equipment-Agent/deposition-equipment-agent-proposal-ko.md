@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 15 | Created: 2026-10-14 | Updated: 2026-10-18 01:19 CDT
+Rev. 16 | Created: 2026-10-14 | Updated: 2026-10-18 01:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -28,7 +28,7 @@ Rev. 15 | Created: 2026-10-14 | Updated: 2026-10-18 01:19 CDT
 
 증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다. 사람의 판단이 필요하면 장비 에이전트는 run 을 멈추고 요청만 올리며, 엔지니어와 주고받는 일은 orchestrator 가 맡는다.
 예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
-신규 장비는 sensor 호환성, 데이터 분포, 입력·출력 관계, 20\~30매 pilot 계측의 네 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 를 차례로 거쳐 기존 model 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하고, 기존 model 을 다시 쓸 수 있는 장비는 수일\~수주 안에 투입한다.
+신규 장비는 네 단계 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 로 기존 model 을 다시 쓸 수 있는지 판정해 셋업 기간을 줄인다.
 
 전체 구성은 [Fig 1](#fig-1) 과 같다.
 
