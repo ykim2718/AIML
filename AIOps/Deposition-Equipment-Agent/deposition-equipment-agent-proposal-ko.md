@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 32 | Created: 2026-10-14 | Updated: 2026-10-18 04:03 CDT
+Rev. 33 | Created: 2026-10-14 | Updated: 2026-10-18 04:12 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -13,6 +13,7 @@ Rev. 32 | Created: 2026-10-14 | Updated: 2026-10-18 04:03 CDT
 - [Appendix C. Model Architecture](#appendix-c-model-architecture)
 - [Appendix D. Orchestrator Functions](#appendix-d-orchestrator-functions)
 - [Appendix E. Onboarding Gate Metrics](#appendix-e-onboarding-gate-metrics)
+- [Appendix F. Model Lifecycle](#appendix-f-model-lifecycle)
 
 ## 1. Purpose
 
@@ -66,7 +67,7 @@ Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML mod
 `Equipment Agent #1` 은 agent 하나의 안을 펼친 것이며, `#2` 부터 `#N` 까지도 같은 구성이다. Orchestrator 와 agent 는 predict, recommend, health, calibrate 네 함수 interface 로만 주고받으며, orchestrator 의 기능은 [Appendix D](#appendix-d-orchestrator-functions) 에 있다.
 
 - **Feature store**: 장비 trace 를 step 별 요약 통계와 recipe·PM 이후 RF hours 같은 context 로 가공한 model 입력 (feature) 을 보관하여, 학습과 추론에 같은 feature 를 내준다.
-- **Model registry**: Global backbone 과 chamber 별 Local adapter 의 version 을 보관하며, agent 는 그 가운데 운영에 쓰도록 지정된 production version 만 불러 쓴다. Local adapter 는 chamber 마다 하나씩 두는 작은 보정 model 로, Global backbone 의 예측에 남은 그 chamber 고유의 offset·gain 만 학습한다.
+- **Model registry**: Global backbone 과 chamber 별 Local adapter 의 version 을 보관하며, agent 는 그 가운데 운영에 쓰도록 지정된 production version 만 불러 쓴다. Local adapter 는 chamber 마다 하나씩 두는 작은 보정 model 로, Global backbone 의 예측에 남은 그 chamber 고유의 offset·gain 만 학습한다. Version 이 만들어지고 production version 으로 정해지는 흐름은 [Appendix F](#appendix-f-model-lifecycle) 에 있다.
 
 ## 3. Solution Items
 
@@ -94,55 +95,48 @@ Section 열은 그 항목을 다루는 꼭지다. 기대 효과는 계측 비용
 웨이퍼 한 장이 끝날 때마다 [Fig 2](#fig-2) 의 loop 가 한 번 돈다.
 
 ```text
-  +------------------------------------------------------------------+
-  | LLM       reads the output of each step, decides which step to   |
-  |           call next, and writes the [7] Report                   |
-  +---------------------------------+--------------------------------+
-                                    |  function calls to [1] - [6]
-                                    v
-  +----------------+
-  | Trace data in  |
-  +-------+--------+
+  +--------------------------------------------------------------------------+
+  | LLM  reads the output of each step, decides which step to call           |
+  |      next, and writes the [7] Report                                     |
+  +-------------------------------------+------------------------------------+
+                                        |  function calls to [1] - [6]
+                                        v
+  +---------------+
+  | Trace data in |
+  +-------+-------+
           |
           v
-  +----------------+     +----------------+     +----------------+
-  | [1] Detect     |---->| [2] Predict    |---->| [3] Guardrail  |
-  | (code)         |     | (ML)           |     | (rule)         |
-  +----------------+     +----------------+     +-------+--------+
-                                                        |
-                                 +----------------------+
-                 high confidence |                      | low confidence
-                                 v                      v
-                         +----------------+     +----------------+
-                         | [4] Recommend  |     | Metrology      |
-                         | (ML)           |     | sampling       |
-                         |                |     | request        |
-                         +-------+--------+     +-------+--------+
-                                 |                      |
-                                 v                      v
-                         +----------------+     +----------------+
-                         | Approval       |     | Metrology      |
-                         | request to     |     | data in        |
-                         | orchestrator   |     |                |
-                         +-------+--------+     +-------+--------+
-                                 |                      |
-                                 v                      v
-                         +----------------+     +----------------+
-                         | APC (R2R)      |     | [5] Drift      |
-                         |                |     | monitor (ML)   |
-                         +----------------+     +-------+--------+
-                                                        |
-                                                        v
-                         +----------------+     +----------------+
-                         | [7] Report     |<----| [6] Adapt      |
-                         | (LLM)          |     | (ML)           |
-                         +-------+--------+     +----------------+
-                                 |
-                                 v
-  +------------------------------------------------------------------+
-  | Orchestrator  routes the report and the requests of [1] and [4]  |
-  |               to the engineer, and returns the answers           |
-  +------------------------------------------------------------------+
+  +-------------------+     +------------------+     +----------------------+
+  | [1] Detect (code) |---->| [2] Predict (ML) |---->| [3] Guardrail (rule) |
+  +-------------------+     +------------------+     +-----------+----------+
+                                                                 |
+                    +--------------------------------------------+
+    high confidence |                                            | low confidence
+                    v                                            v
+  +----------------------------------+            +----------------------------+
+  | [4] Recommend (ML)               |            | Metrology sampling request |
+  +-----------------+----------------+            +--------------+-------------+
+                    |                                            |
+                    v                                            v
+  +----------------------------------+            +----------------------------+
+  | Approval request to orchestrator |            | Metrology data in          |
+  +-----------------+----------------+            +--------------+-------------+
+                    |                                            |
+                    v                                            v
+  +----------------------------------+            +----------------------------+
+  | APC (R2R)                        |            | [5] Drift monitor (ML)     |
+  +----------------------------------+            +--------------+-------------+
+                                                                 |
+                                                                 v
+  +----------------------------------+            +----------------------------+
+  | [7] Report (LLM)                 |<-----------| [6] Adapt (ML)             |
+  +-----------------+----------------+            +----------------------------+
+                    |
+                    v
+  +--------------------------------------------------------------------------+
+  | Orchestrator  routes the report and the requests of [1] and [4]          |
+  |               to the engineer, and returns the answers                   |
+  +--------------------------------------------------------------------------+
 ```
 
 <a id="fig-2"></a>
@@ -156,7 +150,7 @@ Fig 2. Per-wafer loop of the equipment agent and what carries each step
 - **[4] Recommend (R2R), ML**: Inverse model 로 다음 wafer 의 recipe 를 내고, SOA 95% 안의 조건만 제안한다.
 - **Approval request**: Table 2 의 autonomy level 이 승인을 요구하는 변경은 run 을 멈추고 orchestrator 에 승인을 요청하며, 승인을 받은 뒤 APC 로 보낸다.
 - **[5] Drift monitor (EES), ML**: Residual trend, consumable 수명에 따른 SOA shift, PM 과 seasoning 뒤의 covariate shift 와 concept shift 를 감지한다.
-- **[6] Adapt (recalibration), ML**: Recalibration DOE (예: monitor wafer 5매, CCD axial 4점 + center point) 를 제안하고 해당 chamber 의 adapter 만 재학습한다. Shadow validation 과 시간순 검증을 통과한 후보만 production version 교체를 요청한다.
+- **[6] Adapt (recalibration), ML**: Recalibration DOE (예: monitor wafer 5매, CCD axial 4점 + center point) 를 제안하고 해당 chamber 의 adapter 만 재학습한다. Shadow validation 과 시간순 검증을 통과한 후보만 production version 교체를 요청하며, 교체 절차는 [Appendix F](#appendix-f-model-lifecycle) 에 있다.
 - **[7] Report (RCA), LLM**: VM 편차의 root-cause sensor 와 recipe step, 권장 조치를 자연어 report 로 요약하여 orchestrator 를 거쳐 엔지니어에게 보낸다 (예: "증착 시간 0.4초 증가 권장, 신뢰도 95%").
 
 ## 5. Autonomy Levels
@@ -219,7 +213,9 @@ Roadmap 은 단기·중기·장기의 세 Phase 로 나누며, Phase 마다 걸�
 
 - **APC (R2R)**: 계측값이나 예측값으로 다음 run 의 recipe 를 조정하는 공정 제어 (advanced process control, run-to-run).
 - **CCD**: Axial 점과 기준점으로 구성하는 실험 설계 (central composite design).
+- **Challenger model**: 재학습으로 새로 만든 후보 model version. 검증을 마치기 전에는 제어에 쓰지 않는다.
 - **Chamber fingerprint**: 같은 recipe 에서도 chamber 마다 다르게 나타나는 고유한 offset·gain 과 sensor 특성.
+- **Champion model**: 지금 production version 으로 지정되어 운영에 쓰이는 model version. Challenger 와 견주는 기준이 된다.
 - **Concept shift**: 입력과 출력의 관계가 바뀌는 drift.
 - **Conformal prediction**: 검증 data 의 잔차 분포로 정해진 확률을 보장하는 예측 구간을 만드는 방법.
 - **Consumable**: 타깃처럼 증착 장비에서 쓰는 만큼 닳아 주기적으로 교체하는 부품.
@@ -251,6 +247,7 @@ Roadmap 은 단기·중기·장기의 세 Phase 로 나누며, Phase 마다 걸�
 - **PSI**: 두 분포의 구간별 비율 차이로 분포 이동을 재는 지표 (population stability index).
 - **RCA**: 이상이나 편차를 일으킨 원인 sensor·부품·recipe step 을 찾는 분석 (root-cause analysis).
 - **RMSE**: 예측 오차 제곱 평균의 제곱근 (root mean square error).
+- **Rollback**: 새 production version 에 문제가 생겼을 때 보관해 둔 이전 version 으로 되돌리는 일.
 - **RUL**: 부품이나 소모품이 교체 기준에 이를 때까지 남은 사용 기간 (remaining useful life).
 - **Seasoning**: PM 뒤 챔버 상태를 안정시키려고 진행하는 사전 run.
 - **SECS/GEM**: 반도체 장비와 host 사이의 표준 통신 protocol.
@@ -350,3 +347,52 @@ Table 8. Gate metrics
 | Covariate shift  | Feature 별 PSI, KS test, Wasserstein distance / PCA 공간의 Hotelling T², Mahalanobis distance / domain classifier AUC / step 별 DTW distance, golden trace envelope 이탈률 |
 | Concept shift    | SHAP importance rank 의 Spearman correlation, key sensor 의 THK sensitivity (slope) 비교                                                                                   |
 | Pilot validation | Monitor wafer 20~30매 실측의 RMSE, R², bias                                                                                                                                |
+
+## Appendix F. Model Lifecycle
+
+Model version 은 challenger 로 만들어져 검증과 엔지니어 승인을 거친 뒤 production version 이 되며, 그때부터 champion 이 된다. 교체된 이전 champion 은 model registry 에 보관했다가 문제가 생기면 되돌린다.
+
+Version 하나가 거치는 단계는 [Fig 3](#fig-3) 과 같다.
+
+```text
+  +----------------------+     +----------------------+       +-------------+
+  | Challenger created   |---->| Validation           |-fail->| Discarded   |
+  +----------------------+     +-----------+----------+       +-------------+
+                                           | pass
+                                           v
+                               +----------------------+
+                               | Engineer approval    |
+                               +-----------+----------+
+                                           | approved
+                                           v
+                           +-------------------------------+
+                           | Production version (champion) |
+                           +---------------+---------------+
+                                           | replaced by a new champion
+                                           v
+                            +----------------------------+
+                            | Archived (rollback target) |
+                            +----------------------------+
+```
+
+<a id="fig-3"></a>
+Fig 3. Lifecycle of one model version
+
+Validation 에서 champion 보다 나아지지 않은 challenger 는 버리고, 엔지니어의 승인을 받은 challenger 만 production version 이 된다.
+
+Challenger 가 만들어지는 경우는 Table 9 와 같다.
+
+Table 9. Sources of challenger versions
+
+| Model           | Trigger                         | Created by                       | Validation                                                     |
+| :---:           | :---:                           | :---:                            | :---:                                                          |
+| Local adapter   | 신규 장비 onboarding (Table 3)  | Bias 보정 또는 adapter fine-tune | Table 3 의 pilot validation                                    |
+| Local adapter   | [5] Drift monitor 의 drift 감지 | [6] Adapt 의 재학습              | Shadow validation, 시간순 검증                                 |
+| Global backbone | 여러 장비의 data 축적           | 전체 장비 data 로 재학습 (MLOps) | Shadow validation, 시간순 검증, 모든 chamber 의 adapter 재검증 |
+
+Onboarding 에서 만든 첫 version 은 그 chamber 에 견줄 champion 이 없으므로 Table 3 의 판정으로 검증한다.
+
+- **Validation**: Challenger 를 champion 과 나란히 돌리는 shadow validation 과 시간순 검증으로, challenger 의 VM 오차가 champion 보다 작은지 본다. 검증 동안 challenger 의 예측은 제어에 쓰지 않는다.
+- **Approval**: Production version 교체는 Table 2 의 모든 autonomy level 에서 엔지니어가 승인하며, 승인 요청은 orchestrator 를 거친다.
+- **Global backbone 교체**: 모든 chamber 의 예측이 함께 바뀌므로, 그 위의 Local adapter 를 새 backbone 에 맞춰 함께 검증한 뒤 한 번에 교체한다.
+- **Archive and rollback**: 밀려난 champion 은 지우지 않고 보관하며, 새 production version 에서 [5] Drift monitor 가 이상을 감지하면 이전 version 으로 되돌린다.
