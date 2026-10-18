@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 12 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
+Rev. 13 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -34,7 +34,7 @@ Rev. 12 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
 
 ```text
                    +-------------------------------------------+     +-------------------+
-                   |              AI Orchestrator              |<--->| Engineer          |
+                   |              AI Orchestrator              |<--->| Engineer 👩‍🎓       |
                    |  event workflow / policy / permission     |     | approves actions  |
                    |  approval routing / audit record          |     | by autonomy level |
                    +---------------------+---------------------+     | answers requests  |
@@ -54,7 +54,8 @@ Rev. 12 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
 |            invert process condition           |            |                      |
 |            detect drift, retrain the adapter  |            |                      |
 |  Guardrail uncertainty threshold before APC   |            |                      |
-|  Engineer  approves, answers via orchestrator |            |                      |
+|  Engineer 👩‍🎓 approves and answers             |            |                      |
+|            via orchestrator                   |            |                      |
 +------+----------------------------------------+            |                      |
        |                                                     |                      |
        +------------+-----------------------------------+----+----------------------+
