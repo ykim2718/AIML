@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 20 | Created: 2026-10-14 | Updated: 2026-10-18 01:40 CDT
+Rev. 21 | Created: 2026-10-14 | Updated: 2026-10-18 01:41 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -130,12 +130,12 @@ Table 2. Single vs multi-equipment deployment
 
 Table 3. Hierarchical model layers
 
-| Layer              | Role                            | Technique                                            |
-| :---:              | :---:                           | :---:                                                |
-| Global backbone    | 장비 공통의 물리·공정 관계 학습 | 전체 장비 data, tool/chamber embedding 입력          |
-| Local adapter      | 챔버 고유 offset·gain 보정      | Residual model, LoRA 형 adapter, mixed-effects model |
-| Few-shot extension | 신규 장비를 소량 계측으로 투입  | Transfer learning, meta-learning (MAML 계열)         |
-| Uncertainty        | 예측 신뢰도 산출                | Conformal prediction, ensemble variance              |
+| Layer                              | Role                                                          | Technique                                            |
+| :---:                              | :---:                                                         | :---:                                                |
+| Global backbone (common model)     | 전체 장비 공통의 process physics (recipe 와 THK 의 관계) 학습 | 전체 장비 data, tool/chamber embedding 입력          |
+| Local adapter (chamber model)      | Chamber fingerprint (chamber 고유 offset·gain) 보정           | Residual model, LoRA 형 adapter, mixed-effects model |
+| Few-shot extension (tool start-up) | 신규 tool qualification 때 소량의 monitor wafer 계측으로 투입 | Transfer learning, meta-learning (MAML 계열)         |
+| Uncertainty (VM reliability)       | VM 값의 신뢰도 산출, guardrail 의 threshold 입력              | Conformal prediction, ensemble variance              |
 
 Local adapter 는 Global backbone 이 설명하지 못한 챔버별 차이만 학습하므로, 드리프트가 생긴 챔버는 adapter 만 다시 학습한다.
 
@@ -330,6 +330,7 @@ Table 11. Recommended roadmap
 
 - **APC (R2R)**: 계측값이나 예측값으로 다음 run 의 recipe 를 조정하는 공정 제어 (advanced process control, run-to-run).
 - **CCD**: Axial 점과 기준점으로 구성하는 실험 설계 (central composite design).
+- **Chamber fingerprint**: 같은 recipe 에서도 chamber 마다 다르게 나타나는 고유한 offset·gain 과 sensor 특성.
 - **Concept shift**: 입력과 출력의 관계가 바뀌는 drift.
 - **Conformal prediction**: 검증 data 의 잔차 분포로 정해진 확률을 보장하는 예측 구간을 만드는 방법.
 - **Covariate shift**: 입출력 관계는 그대로이고 입력 분포만 바뀌는 drift.
@@ -351,6 +352,7 @@ Table 11. Recommended roadmap
 - **MES**: 공장의 생산 실행 시스템 (manufacturing execution system).
 - **Mixed-effects model**: 공통 효과와 장비·챔버별 random effect 를 함께 추정하는 통계 model.
 - **MLOps**: Model 의 학습·검증·배포·감시를 자동화하는 운영 체계.
+- **Monitor wafer**: 제품이 아니라 공정 상태를 확인하거나 보정하려고 흘리는 wafer.
 - **PCA**: 상관된 변수를 소수의 직교 성분으로 줄이는 주성분 분석 (principal component analysis).
 - **PdM**: 장비 상태 data 로 고장 시점을 예측해 그 전에 정비하는 예지 정비 (predictive maintenance).
 - **PHM**: 장비의 이상 감지, 잔여 수명 예측, 정비 판단을 묶어 다루는 분야 (prognostics and health management).
