@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 33 | Created: 2026-10-14 | Updated: 2026-10-18 04:12 CDT
+Rev. 34 | Created: 2026-10-14 | Updated: 2026-10-18 04:38 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -96,11 +96,10 @@ Section 열은 그 항목을 다루는 꼭지다. 기대 효과는 계측 비용
 
 ```text
   +--------------------------------------------------------------------------+
-  | LLM  reads the output of each step, decides which step to call           |
-  |      next, and writes the [7] Report                                     |
-  +-------------------------------------+------------------------------------+
-                                        |  function calls to [1] - [6]
-                                        v
+  | LLM  calls [1] - [6] as functions, reads the output of each step,        |
+  |      decides which step to call next, and writes the [7] Report          |
+  +--------------------------------------------------------------------------+
+
   +---------------+
   | Trace data in |
   +-------+-------+
