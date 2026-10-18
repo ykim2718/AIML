@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 11 | Created: 2026-10-14 | Updated: 2026-10-18 01:11 CDT
+Rev. 12 | Created: 2026-10-14 | Updated: 2026-10-18 01:15 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -54,7 +54,7 @@ Rev. 11 | Created: 2026-10-14 | Updated: 2026-10-18 01:11 CDT
 |            invert process condition           |            |                      |
 |            detect drift, retrain the adapter  |            |                      |
 |  Guardrail uncertainty threshold before APC   |            |                      |
-|  Pause     request approval, wait for answer  |            |                      |
+|  Engineer  approves, answers via orchestrator |            |                      |
 +------+----------------------------------------+            |                      |
        |                                                     |                      |
        +------------+-----------------------------------+----+----------------------+
@@ -150,8 +150,8 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
 
 ```text
   +------------------------------------------------------------------+
-  | LLM   reads the output of each step, decides which step to call  |
-  |       next, and writes the [7] Report                            |
+  | LLM       reads the output of each step, decides which step to   |
+  |           call next, and writes the [7] Report                   |
   +---------------------------------+--------------------------------+
                                     |  tool calls to [1] - [6]
                                     v
@@ -164,21 +164,31 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
                           high confidence  +----+----+  low confidence
                                            |         |
                                            v         v
-                          [4] Recommend -> APC     Metrology sampling
-                              (ML)         (R2R)   request
+                          [4] Recommend (ML)       Metrology sampling
+                                           |       request
+                                           v         |
+                          Engineer approval          |
+                          by autonomy level          |
+                                           |         |
+                                           v         v
+                                       APC (R2R)   Metrology data in
                                                      |
                                                      v
-  [7] Report (LLM)  <--  [6] Adapt  <--  [5] Drift monitor  <---  Metrology data in
+  [7] Report (LLM)  <--  [6] Adapt  <--  [5] Drift monitor
                              (ML)              (ML)
        |
        v
-  Orchestrator  -->  Engineer
+  +------------------------------------------------------------------+
+  | Engineer  reached only through the orchestrator: answers the     |
+  |           mapping questions of [1], approves [4] by autonomy     |
+  |           level, and reads the [7] Report                        |
+  +------------------------------------------------------------------+
 ```
 
 <a id="fig-2"></a>
 Fig 2. Per-wafer loop of the equipment agent and what carries each step
 
-LLM 은 단계마다 결과를 읽어 다음에 부를 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (tool) 은 trace data 를 표준 feature 로 바꾸는 변환 도구가 맡는다는 표시다.
+LLM 은 단계마다 결과를 읽어 다음에 부를 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (tool) 은 trace data 를 표준 feature 로 바꾸는 변환 도구가 맡는다는 표시다. Engineer 는 orchestrator 를 거쳐서만 loop 에 들어오며, [4] Recommend 의 조정은 Table 5 의 autonomy level 이 정한 범위에서 엔지니어의 승인을 받은 뒤 APC 로 넘어간다.
 
 [5] 와 [6] 은 계측값이 들어올 때만 돌고, 나머지 단계는 웨이퍼마다 돈다. 단계마다 맡는 에이전트와 하는 일은 Table 4 와 같다.
 
