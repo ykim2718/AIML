@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 21 | Created: 2026-10-14 | Updated: 2026-10-18 01:41 CDT
+Rev. 22 | Created: 2026-10-14 | Updated: 2026-10-18 01:46 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,7 +27,7 @@ Rev. 21 | Created: 2026-10-14 | Updated: 2026-10-18 01:41 CDT
 ## 2. Summary
 
 증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다. 사람의 판단이 필요하면 장비 에이전트는 run 을 멈추고 요청만 올리며, 엔지니어와 주고받는 일은 orchestrator 가 맡는다.
-예측과 역산은 검증된 ML model 이 맡고 LLM 은 함수 호출 (function calling) 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
+예측과 역산은 검증된 ML model 이 맡고 LLM 은 함수 호출 (function calling) 판단과 결과 설명만 맡으며, 자율성은 L1 advisory (open-loop) 에서 L3 closed-loop R2R 까지 단계적으로 올린다.
 신규 장비는 네 단계 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 로 기존 model 을 다시 쓸 수 있는지 판정해 셋업 기간을 줄인다.
 
 전체 구성은 [Fig 1](#fig-1) 과 같다.
@@ -60,9 +60,7 @@ Rev. 21 | Created: 2026-10-14 | Updated: 2026-10-18 01:41 CDT
        |                                                     |                      |
        +------------+-----------------------------------+----+----------------------+
                     |                                   |
-       Feature Store (common schema)          Model Registry (Global
-                    |                         backbone + Local adapters)
-       Fab systems: SECS/GEM, FDC/EES, MES, APC (R2R)
+       Feature Store (common schema)          Model Registry (Global backbone + Local adapters)
 ```
 
 <a id="fig-1"></a>
@@ -74,7 +72,7 @@ Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML mod
 
 장비 에이전트는 승인이나 확인이 필요하면 run 을 멈추고 orchestrator 에 요청을 올린다. Orchestrator 는 그 요청을 권한이 있는 엔지니어에게 보내고, 승인 기록을 남긴 뒤 답을 장비 에이전트에 돌려준다. 엔지니어는 이 경로로 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, [7] Report 단계에서 쓴 report 를 읽는다.
 
-Fig 1 아래쪽의 세 구성 요소는 장비 에이전트가 쓰는 데이터와 model 을 보관하고 주고받는다.
+장비 에이전트는 fab systems 에서 데이터를 받고, Fig 1 아래쪽의 두 저장소에 데이터와 model 을 보관한다.
 
 - **Fab systems**: 장비의 trace 와 생산 정보를 내보내고, APC 로 장비 에이전트의 조정값을 받아 다음 run 의 recipe 에 반영하는 fab 의 기존 시스템.
 - **Feature store**: Fab systems 에서 받은 trace 를 공통 feature schema 로 정리해, 학습과 추론에 같은 feature 를 내주는 저장소.
@@ -225,11 +223,11 @@ Detect 의 이상 점검과 Report 의 원인 요약이 Table 1 의 이상 조�
 
 Table 5. Autonomy levels
 
-| Level              | Automatic action      | Human approval          |
-| :---:              | :---:                 | :---:                   |
-| L1 조언형          | 없음 (추천만)         | 모든 조정               |
-| L2 반자동          | SOA 95% 안의 조정     | SOA 95% 밖의 조정       |
-| L3 자동 run-to-run | SOA 안의 조정, 재학습 | Model 교체, SOA 밖 조건 |
+| Level                                | Automatic action                       | Human approval                 |
+| :---:                                | :---:                                  | :---:                          |
+| L1 Advisory, open-loop (조언형)      | 없음, recipe 추천만                    | 모든 recipe 변경               |
+| L2 Supervised closed-loop (반자동)   | SOA 95% 안의 recipe 조정               | SOA 95% 밖의 recipe 변경       |
+| L3 Closed-loop R2R (자동 run-to-run) | SOA 안의 recipe 조정, model retraining | Model promotion, SOA 밖 recipe |
 
 고객은 L1 에서 추천의 적중을 확인한 뒤 다음 단계로 넘어가므로, 자율성을 올리는 근거가 운영 실적으로 쌓인다.
 
@@ -314,7 +312,7 @@ Table 10. Key issues for deployment
 
 ## 10. Roadmap
 
-장비 1대의 L1 조언형과 동일 기종 다챔버의 Global + Local model 에서 시작하여, 재학습 자동화와 L2 를 거쳐 이기종·신규 장비와 다른 공정으로 넓힌다.
+장비 1대의 L1 advisory 와 동일 기종 다챔버의 Global + Local model 에서 시작하여, 재학습 자동화와 L2 를 거쳐 이기종·신규 장비와 다른 공정으로 넓힌다.
 
 Table 11. Recommended roadmap
 
