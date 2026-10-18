@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 25 | Created: 2026-10-14 | Updated: 2026-10-18 02:00 CDT
+Rev. 26 | Created: 2026-10-14 | Updated: 2026-10-18 02:47 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -143,7 +143,7 @@ Fig 2. Per-wafer loop of the equipment agent and what carries each step
 - **[4] Recommend (R2R), ML**: Inverse model 로 다음 wafer 의 recipe 를 내고, SOA 95% 안의 조건만 제안한다.
 - **Engineer approval**: Table 2 의 autonomy level 이 승인을 요구하는 변경은 orchestrator 를 거쳐 엔지니어의 승인을 받은 뒤 APC 로 보낸다.
 - **[5] Drift monitor (EES), ML**: Residual trend, consumable 수명에 따른 SOA shift, PM 과 seasoning 뒤의 covariate shift 와 concept shift 를 감지한다.
-- **[6] Adapt (recalibration), ML**: Recalibration DOE (예: monitor wafer 5매, CCD axial 4점 + center point) 를 제안하고 해당 chamber 의 adapter 만 재학습한다. Shadow 검증과 시간순 검증을 통과한 후보만 promotion 을 요청한다.
+- **[6] Adapt (recalibration), ML**: Recalibration DOE (예: monitor wafer 5매, CCD axial 4점 + center point) 를 제안하고 해당 chamber 의 adapter 만 재학습한다. Shadow validation 과 시간순 검증을 통과한 후보만 promotion 을 요청한다.
 - **[7] Report (RCA), LLM**: VM 편차의 root-cause sensor 와 recipe step, 권장 조치를 엔지니어용 자연어 report 로 요약한다 (예: "증착 시간 0.4초 증가 권장, 신뢰도 95%").
 
 ## 5. Autonomy Levels
@@ -209,6 +209,7 @@ Roadmap 의 기간은 추정값이다.
 - **Chamber fingerprint**: 같은 recipe 에서도 chamber 마다 다르게 나타나는 고유한 offset·gain 과 sensor 특성.
 - **Concept shift**: 입력과 출력의 관계가 바뀌는 drift.
 - **Conformal prediction**: 검증 data 의 잔차 분포로 정해진 확률을 보장하는 예측 구간을 만드는 방법.
+- **Consumable**: 타깃처럼 증착 장비에서 쓰는 만큼 닳아 주기적으로 교체하는 부품.
 - **Covariate shift**: 입출력 관계는 그대로이고 입력 분포만 바뀌는 drift.
 - **Dispatching**: 대기 중인 lot 이나 wafer 를 어느 장비에서 처리할지 정하는 일.
 - **DOE**: 실험 계획 (design of experiments).
@@ -239,7 +240,7 @@ Roadmap 의 기간은 추정값이다.
 - **RUL**: 부품이나 소모품이 교체 기준에 이를 때까지 남은 사용 기간 (remaining useful life).
 - **Seasoning**: PM 뒤 챔버 상태를 안정시키려고 진행하는 사전 run.
 - **SECS/GEM**: 반도체 장비와 host 사이의 표준 통신 protocol.
-- **Shadow 검증**: 후보 model 을 운영 model 과 나란히 돌려 결과만 비교하고 제어에는 쓰지 않는 검증.
+- **Shadow validation**: 후보 model 을 운영 model 과 나란히 돌려 결과만 비교하고 제어에는 쓰지 않는 검증.
 - **SHAP**: 예측값을 feature 별 기여도로 나누어 설명하는 방법 (SHapley additive explanations).
 - **SOA**: 추천을 허용하는 공정 조건의 운전 영역 (safe operating area). SOA 95% 는 그 영역의 95% 범위이다.
 - **SPC**: 공정 측정값을 관리 한계와 비교해 이상을 가려내는 통계적 공정 관리 (statistical process control).
@@ -248,7 +249,6 @@ Roadmap 의 기간은 추정값이다.
 - **TTTM**: 같은 recipe 에서 장비·챔버 사이의 결과 차이를 줄이는 matching (tool-to-tool matching).
 - **Virtual metrology (VM)**: 계측 전에 공정 data 로 계측값을 예측하는 방법.
 - **Wasserstein distance**: 한 분포를 다른 분포로 옮기는 최소 비용으로 정의한 분포 간 거리.
-- **소모품 수명**: 타깃 등 증착 장비의 소모 부품이 누적 사용으로 닳은 정도.
 
 ## Appendix B. Single vs Multi-Equipment
 
@@ -325,7 +325,7 @@ Table 8. Gate metrics
 
 | Gate             | Metric                                                                                                                                                                     |
 | :---:            | :---:                                                                                                                                                                      |
-| Schema gate      | 입력 feature 의 mapping 률, 상위 중요도 센서의 존재 여부, sampling period 와 단위의 일치 여부                                                                              |
+| Schema gate      | Feature mapping rate, key sensor 유무, sampling period·unit 일치 여부                                                                                                      |
 | Covariate shift  | Feature 별 PSI, KS test, Wasserstein distance / PCA 공간의 Hotelling T², Mahalanobis distance / domain classifier AUC / step 별 DTW distance, golden trace envelope 이탈률 |
-| Concept shift    | SHAP 중요도 순위의 Spearman 상관, 주요 센서의 두께 민감도 (기울기) 비교                                                                                                    |
-| Pilot validation | 20~30매 실계측의 RMSE, R², bias                                                                                                                                            |
+| Concept shift    | SHAP importance rank 의 Spearman correlation, key sensor 의 THK sensitivity (slope) 비교                                                                                   |
+| Pilot validation | Monitor wafer 20~30매 실측의 RMSE, R², bias                                                                                                                                |
