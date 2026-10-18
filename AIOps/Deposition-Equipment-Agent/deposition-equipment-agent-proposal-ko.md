@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 3 | Created: 2026-10-14 | Updated: 2026-10-17 23:36 CDT
+Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-18 00:53 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -28,36 +28,46 @@ Rev. 3 | Created: 2026-10-14 | Updated: 2026-10-17 23:36 CDT
 
 증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다.
 예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
-신규 장비는 4단계 gate 로 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하여, 기존 model 을 다시 쓸 수 있는 장비는 수일~수주 안에 투입한다.
+신규 장비는 sensor 호환성, 데이터 분포, 입력·출력 관계, 20~30매 pilot 계측의 네 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 를 차례로 거쳐 기존 model 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하고, 기존 model 을 다시 쓸 수 있는 장비는 수일~수주 안에 투입한다.
 
 전체 구성은 [Fig 1](#fig-1) 과 같다.
 
 ```text
-                +-------------------------------------------+
-                |              AI Orchestrator              |
-                |  event workflow / policy / permission     |
-                +---------------------+---------------------+
-                                      |
-                predict / recommend / health / calibrate
-                                      |
-       +------------------------------+------------------------------+
-       |                              |                              |
-+------+---------+             +------+---------+             +------+---------+
-| Equipment      |             | Equipment      |             | Equipment      |
-| Agent #1       |             | Agent #2       |     ...     | Agent #N       |
-+------+---------+             +------+---------+             +------+---------+
-       |                              |                              |
-       +---------------+--------------+--------------+---------------+
-                       |                             |
-          Feature Store (common schema)    Model Registry (Global
-                       |                   backbone + Local adapters)
-          SECS/GEM, FDC/EES, MES, APC (R2R)
+                   +-------------------------------------------+
+                   |              AI Orchestrator              |
+                   |  event workflow / policy / permission     |
+                   +---------------------+---------------------+
+                                         |
+                   predict / recommend / health / calibrate
+                                         |
+       +---------------------------------+-------------------+------------------+
+       |                                                     |                  |
++------+----------------------------------------+    +-------+--------+ +-------+--------+
+| Equipment Agent #1                            |    | Equipment      | | Equipment      |
+|                                               |    | Agent #2       | | Agent #N       |
+|  LLM       which tool to call, and when       |    | same as #1     | | same as #1     |
+|            explanation of the result          |    +-------+--------+ +-------+--------+
+|               |  tool call     ^  output      |            |    ...           |
+|               v                |              |            |                  |
+|  Tools     ML model: predict THK,             |            |                  |
+|                      invert process condition |            |                  |
+|            guardrail: uncertainty threshold   |            |                  |
+|            drift monitor, adaptation          |            |                  |
++------+----------------------------------------+            |                  |
+       |                                                     |                  |
+       +------------+-----------------------------------+----+------------------+
+                    |                                   |
+       Feature Store (common schema)          Model Registry (Global
+                    |                         backbone + Local adapters)
+       SECS/GEM, FDC/EES, MES, APC (R2R)
 ```
 
 <a id="fig-1"></a>
-Fig 1. Two-tier agent architecture
+Fig 1. Two-tier agent architecture, with the LLM and the tools inside one equipment agent
 
 아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다. 공통 feature schema 로 정리한 data 는 feature store 에, Global model 과 장비별 adapter 는 model registry 에 둔다.
+
+`Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 부를지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
 
 ## 3. Solution Scope
 
