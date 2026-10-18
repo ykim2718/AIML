@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 9 | Created: 2026-10-14 | Updated: 2026-10-18 01:06 CDT
+Rev. 10 | Created: 2026-10-14 | Updated: 2026-10-18 01:08 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -317,6 +317,7 @@ Table 11. Recommended roadmap
 - **DOE**: 실험 계획 (design of experiments).
 - **Domain classifier AUC**: 기준 장비와 신규 장비의 data 를 분류기가 얼마나 구분하는지를 나타내는 AUC. 0.5 에 가까울수록 두 data 가 비슷하다.
 - **DTW**: 시간 축의 늘어남을 허용하여 두 trace 의 형상 차이를 재는 거리 (dynamic time warping).
+- **Fab systems**: 장비 에이전트가 데이터를 받고 제어값을 보내는 fab 의 기존 시스템. SECS/GEM, FDC/EES, MES, APC (R2R) 를 묶어 부르는 이름이다.
 - **FDC/EES**: 장비의 trace 를 수집·감시하는 fault detection and classification / equipment engineering system.
 - **Golden trace envelope**: normal run 들의 trace 로 정한 step 별 허용 범위.
 - **Hotelling T²**: 다변량 data 가 기준 분포의 중심에서 벗어난 정도를 재는 통계량.
