@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 17 | Created: 2026-10-14 | Updated: 2026-10-18 01:26 CDT
+Rev. 18 | Created: 2026-10-14 | Updated: 2026-10-18 01:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -90,12 +90,12 @@ Table 1. Solution items
   <tr><th align="center">Category</th><th align="center">Item</th><th align="center">Description</th><th align="center">Section</th></tr>
   <tr><td align="center" rowspan="2">A. APC</td><td align="center">Virtual metrology (두께 실시간 예측)</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">6.1</td></tr>
   <tr><td align="center">R2R control (자동 공정 보정)</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">6.1</td></tr>
-  <tr><td align="center" rowspan="4">B. EES / PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">6.1, 7</td></tr>
-  <tr><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">B. EES</td><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">6.1</td></tr>
   <tr><td align="center">FDC root-cause 분석 (고장 원인 안내)</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">C. PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">6.1, 7</td></tr>
   <tr><td align="center">PdM (예방 정비 최적화)</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">7</td></tr>
-  <tr><td align="center">C. TTTM</td><td align="center">Chamber matching (장비 간 편차 관리)</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">5, 7</td></tr>
-  <tr><td align="center" rowspan="2">D. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">6.1</td></tr>
+  <tr><td align="center">D. TTTM</td><td align="center">Chamber matching (장비 간 편차 관리)</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">5, 7</td></tr>
+  <tr><td align="center" rowspan="2">E. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">6.1</td></tr>
   <tr><td align="center">LLM copilot (AI 운영 비서)</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">6.2</td></tr>
 </table>
 
