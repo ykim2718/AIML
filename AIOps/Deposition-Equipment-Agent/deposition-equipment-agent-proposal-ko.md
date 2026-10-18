@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 16 | Created: 2026-10-14 | Updated: 2026-10-18 01:20 CDT
+Rev. 17 | Created: 2026-10-14 | Updated: 2026-10-18 01:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -88,15 +88,15 @@ Table 1. Solution items
 
 <table>
   <tr><th align="center">Category</th><th align="center">Item</th><th align="center">Description</th><th align="center">Section</th></tr>
-  <tr><td align="center" rowspan="2">A. 품질 예측·제어</td><td align="center">두께 실시간 예측</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">6.1</td></tr>
-  <tr><td align="center">자동 공정 보정</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">6.1</td></tr>
-  <tr><td align="center" rowspan="4">B. 장비 상태·정비 관리</td><td align="center">소모품 수명 예측</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">6.1, 7</td></tr>
-  <tr><td align="center">이상 조기 감지</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">6.1</td></tr>
-  <tr><td align="center">고장 원인 안내</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">6.1</td></tr>
-  <tr><td align="center">예방 정비 최적화</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">7</td></tr>
-  <tr><td align="center">C. 다장비 통합 관리</td><td align="center">장비 간 편차 관리</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">5, 7</td></tr>
-  <tr><td align="center" rowspan="2">D. AI 운영 기반</td><td align="center">자동 학습 유지</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">6.1</td></tr>
-  <tr><td align="center">AI 운영 비서</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">6.2</td></tr>
+  <tr><td align="center" rowspan="2">A. APC</td><td align="center">Virtual metrology (두께 실시간 예측)</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">6.1</td></tr>
+  <tr><td align="center">R2R control (자동 공정 보정)</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="4">B. EES / PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">6.1, 7</td></tr>
+  <tr><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">6.1</td></tr>
+  <tr><td align="center">FDC root-cause 분석 (고장 원인 안내)</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">6.1</td></tr>
+  <tr><td align="center">PdM (예방 정비 최적화)</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">7</td></tr>
+  <tr><td align="center">C. TTTM</td><td align="center">Chamber matching (장비 간 편차 관리)</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">5, 7</td></tr>
+  <tr><td align="center" rowspan="2">D. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">6.1</td></tr>
+  <tr><td align="center">LLM copilot (AI 운영 비서)</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">6.2</td></tr>
 </table>
 
 Section 열은 그 항목을 구현하는 본문 절이다. 기대 효과는 계측 비용 절감, 수율 향상, 장비 가동률 증가, 엔지니어 업무 부담 감소이다.
@@ -349,15 +349,19 @@ Table 11. Recommended roadmap
 - **Mixed-effects model**: 공통 효과와 장비·챔버별 random effect 를 함께 추정하는 통계 model.
 - **MLOps**: Model 의 학습·검증·배포·감시를 자동화하는 운영 체계.
 - **PCA**: 상관된 변수를 소수의 직교 성분으로 줄이는 주성분 분석 (principal component analysis).
+- **PdM**: 장비 상태 data 로 고장 시점을 예측해 그 전에 정비하는 예지 정비 (predictive maintenance).
+- **PHM**: 장비의 이상 감지, 잔여 수명 예측, 정비 판단을 묶어 다루는 분야 (prognostics and health management).
 - **PM**: 예방 정비 (preventive maintenance).
 - **PSI**: 두 분포의 구간별 비율 차이로 분포 이동을 재는 지표 (population stability index).
 - **RMSE**: 예측 오차 제곱 평균의 제곱근 (root mean square error).
+- **RUL**: 부품이나 소모품이 교체 기준에 이를 때까지 남은 사용 기간 (remaining useful life).
 - **Seasoning**: PM 뒤 챔버 상태를 안정시키려고 진행하는 사전 run.
 - **SECS/GEM**: 반도체 장비와 host 사이의 표준 통신 protocol.
 - **Shadow 검증**: 후보 model 을 운영 model 과 나란히 돌려 결과만 비교하고 제어에는 쓰지 않는 검증.
 - **SHAP**: 예측값을 feature 별 기여도로 나누어 설명하는 방법 (SHapley additive explanations).
 - **SOA**: 추천을 허용하는 공정 조건의 운전 영역 (safe operating area). SOA 95% 는 그 영역의 95% 범위이다.
 - **THK**: 증착 막의 두께 (thickness).
+- **TTTM**: 같은 recipe 에서 장비·챔버 사이의 결과 차이를 줄이는 matching (tool-to-tool matching).
 - **Virtual metrology**: 계측 전에 공정 data 로 계측값을 예측하는 방법.
 - **Wasserstein distance**: 한 분포를 다른 분포로 옮기는 최소 비용으로 정의한 분포 간 거리.
 - **소모품 수명**: 타깃 등 증착 장비의 소모 부품이 누적 사용으로 닳은 정도.
