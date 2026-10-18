@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 18 | Created: 2026-10-14 | Updated: 2026-10-18 01:29 CDT
+Rev. 19 | Created: 2026-10-14 | Updated: 2026-10-18 01:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,7 +27,7 @@ Rev. 18 | Created: 2026-10-14 | Updated: 2026-10-18 01:29 CDT
 ## 2. Summary
 
 증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다. 사람의 판단이 필요하면 장비 에이전트는 run 을 멈추고 요청만 올리며, 엔지니어와 주고받는 일은 orchestrator 가 맡는다.
-예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
+예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 (tool calling) 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
 신규 장비는 네 단계 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 로 기존 model 을 다시 쓸 수 있는지 판정해 셋업 기간을 줄인다.
 
 전체 구성은 [Fig 1](#fig-1) 과 같다.
@@ -70,7 +70,7 @@ Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML mod
 
 아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다.
 
-`Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 부를지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
+`Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 호출할지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
 
 장비 에이전트는 승인이나 확인이 필요하면 run 을 멈추고 orchestrator 에 요청을 올린다. Orchestrator 는 그 요청을 권한이 있는 엔지니어에게 보내고, 승인 기록을 남긴 뒤 답을 장비 에이전트에 돌려준다. 엔지니어는 이 경로로 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, [7] Report 단계에서 쓴 report 를 읽는다.
 
@@ -87,16 +87,16 @@ Fig 1 아래쪽의 세 구성 요소는 장비 에이전트가 쓰는 데이터�
 Table 1. Solution items
 
 <table>
-  <tr><th align="center">Category</th><th align="center">Item</th><th align="center">Description</th><th align="center">Section</th></tr>
-  <tr><td align="center" rowspan="2">A. APC</td><td align="center">Virtual metrology (두께 실시간 예측)</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">6.1</td></tr>
-  <tr><td align="center">R2R control (자동 공정 보정)</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">6.1</td></tr>
-  <tr><td align="center" rowspan="2">B. EES</td><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">6.1</td></tr>
-  <tr><td align="center">FDC root-cause 분석 (고장 원인 안내)</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">6.1</td></tr>
-  <tr><td align="center" rowspan="2">C. PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">6.1, 7</td></tr>
-  <tr><td align="center">PdM (예방 정비 최적화)</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">7</td></tr>
-  <tr><td align="center">D. TTTM</td><td align="center">Chamber matching (장비 간 편차 관리)</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">5, 7</td></tr>
-  <tr><td align="center" rowspan="2">E. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">6.1</td></tr>
-  <tr><td align="center">LLM copilot (AI 운영 비서)</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">6.2</td></tr>
+  <tr><th align="center">Category</th><th align="center">Item</th><th align="center">Description</th><th align="center">LLM role</th><th align="center">Section</th></tr>
+  <tr><td align="center" rowspan="2">A. APC</td><td align="center">Virtual metrology (두께 실시간 예측)</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">도구 호출 (VM model)</td><td align="center">6.1</td></tr>
+  <tr><td align="center">R2R control (자동 공정 보정)</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">도구 호출 (역산 model), 조정 근거 설명</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">B. EES</td><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">도구 호출 (FDC 감시)</td><td align="center">6.1</td></tr>
+  <tr><td align="center">FDC root-cause 분석 (고장 원인 안내)</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">원인 설명</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">C. PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">도구 호출 (RUL model)</td><td align="center">6.1, 7</td></tr>
+  <tr><td align="center">PdM (예방 정비 최적화)</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">PM 추천 근거 설명</td><td align="center">7</td></tr>
+  <tr><td align="center">D. TTTM</td><td align="center">Chamber matching (장비 간 편차 관리)</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">없음 (orchestrator 가 맡음)</td><td align="center">5, 7</td></tr>
+  <tr><td align="center" rowspan="2">E. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">재학습 시점 판단, 도구 호출</td><td align="center">6.1</td></tr>
+  <tr><td align="center">LLM copilot (AI 운영 비서)</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">질문에 답변</td><td align="center">6.2</td></tr>
 </table>
 
 Section 열은 그 항목을 구현하는 본문 절이다. 기대 효과는 계측 비용 절감, 수율 향상, 장비 가동률 증가, 엔지니어 업무 부담 감소이다.
@@ -109,17 +109,17 @@ Table 2. Single vs multi-equipment deployment
 
 <table>
   <tr><th align="center">Aspect</th><th align="center">Item</th><th align="center">Single equipment</th><th align="center">Multi-equipment</th></tr>
-  <tr><td align="center" rowspan="2">학습 데이터</td><td align="center">데이터 양</td><td align="center">한 장비 데이터만 사용</td><td align="center">모든 장비 데이터를 함께 학습</td></tr>
-  <tr><td align="center">경험 범위</td><td align="center">겪어 본 상황만 예측</td><td align="center">다른 장비의 경험까지 활용</td></tr>
-  <tr><td align="center" rowspan="2">신규 장비 도입</td><td align="center">셋업</td><td align="center">장비마다 처음부터 개발</td><td align="center">기존 AI 재활용</td></tr>
-  <tr><td align="center">소요 기간</td><td align="center">수개월</td><td align="center">수일~수주</td></tr>
-  <tr><td align="center" rowspan="2">품질 관리</td><td align="center">기준</td><td align="center">장비별 개별 관리</td><td align="center">전체를 하나의 기준으로 관리</td></tr>
-  <tr><td align="center">장비 간 편차</td><td align="center">파악 어려움</td><td align="center">자동 비교와 보정</td></tr>
-  <tr><td align="center" rowspan="2">이상 대응</td><td align="center">감지</td><td align="center">문제 발생 후 대응</td><td align="center">다른 장비의 사례로 사전 경고</td></tr>
-  <tr><td align="center">확산</td><td align="center">같은 문제 반복 발생</td><td align="center">유사 장비에 미리 전파·차단</td></tr>
-  <tr><td align="center" rowspan="3">운영 효율</td><td align="center">웨이퍼 배정</td><td align="center">고정</td><td align="center">최적 장비로 자동 배정</td></tr>
-  <tr><td align="center">계측·정비</td><td align="center">장비별 개별 계획</td><td align="center">전체 일정 통합 최적화</td></tr>
-  <tr><td align="center">관리 인력</td><td align="center">장비 수에 비례해 증가</td><td align="center">AI 에이전트가 통합 관리</td></tr>
+  <tr><td align="center" rowspan="2">Training data (학습 데이터)</td><td align="center">Data volume (데이터 양)</td><td align="center">한 장비 데이터만 사용</td><td align="center">모든 장비 데이터를 함께 학습</td></tr>
+  <tr><td align="center">Domain coverage (경험 범위)</td><td align="center">겪어 본 상황만 예측</td><td align="center">다른 장비의 경험까지 활용</td></tr>
+  <tr><td align="center" rowspan="2">Tool qualification (신규 장비 도입)</td><td align="center">Model setup (셋업)</td><td align="center">장비마다 처음부터 개발</td><td align="center">기존 AI 재활용</td></tr>
+  <tr><td align="center">Lead time (소요 기간)</td><td align="center">수개월</td><td align="center">수일~수주</td></tr>
+  <tr><td align="center" rowspan="2">SPC (품질 관리)</td><td align="center">Control limit (기준)</td><td align="center">장비별 개별 관리</td><td align="center">전체를 하나의 기준으로 관리</td></tr>
+  <tr><td align="center">TTTM (장비 간 편차)</td><td align="center">파악 어려움</td><td align="center">자동 비교와 보정</td></tr>
+  <tr><td align="center" rowspan="2">Excursion control (이상 대응)</td><td align="center">Early detection (감지)</td><td align="center">문제 발생 후 대응</td><td align="center">다른 장비의 사례로 사전 경고</td></tr>
+  <tr><td align="center">Containment (확산)</td><td align="center">같은 문제 반복 발생</td><td align="center">유사 장비에 미리 전파·차단</td></tr>
+  <tr><td align="center" rowspan="3">Fab productivity (운영 효율)</td><td align="center">Dispatching (웨이퍼 배정)</td><td align="center">고정</td><td align="center">최적 장비로 자동 배정</td></tr>
+  <tr><td align="center">Sampling·PM scheduling (계측·정비)</td><td align="center">장비별 개별 계획</td><td align="center">전체 일정 통합 최적화</td></tr>
+  <tr><td align="center">Engineer workload (관리 인력)</td><td align="center">장비 수에 비례해 증가</td><td align="center">AI 에이전트가 통합 관리</td></tr>
 </table>
 
 단일 장비 적용은 그 장비 하나의 개별 최적화이고, 다수 장비 적용은 장비가 늘수록 성능이 오르는 전체 최적화이다.
@@ -195,7 +195,7 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
 <a id="fig-2"></a>
 Fig 2. Per-wafer loop of the equipment agent and what carries each step
 
-LLM 은 단계마다 결과를 읽어 다음에 부를 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (tool) 은 trace data 를 표준 feature 로 바꾸는 변환 도구가 맡는다는 표시다. Engineer 는 orchestrator 를 거쳐서만 loop 에 들어오며, [4] Recommend 의 조정은 Table 5 의 autonomy level 이 정한 범위에서 엔지니어의 승인을 받은 뒤 APC 로 넘어간다.
+LLM 은 단계마다 결과를 읽어 다음에 호출할 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (tool) 은 trace data 를 표준 feature 로 바꾸는 변환 도구가 맡는다는 표시다. Engineer 는 orchestrator 를 거쳐서만 loop 에 들어오며, [4] Recommend 의 조정은 Table 5 의 autonomy level 이 정한 범위에서 엔지니어의 승인을 받은 뒤 APC 로 넘어간다.
 
 [5] 와 [6] 은 계측값이 들어올 때만 돌고, 나머지 단계는 웨이퍼마다 돈다. 단계마다 맡는 에이전트와 하는 일은 Table 4 와 같다.
 
@@ -215,7 +215,7 @@ Detect 의 이상 점검과 Report 의 원인 요약이 Table 1 의 이상 조�
 
 ### 6.2 Role of LLM
 
-예측과 역산은 검증된 ML model 이 도구로서 수행하고, LLM 은 어떤 도구를 언제 부를지 판단하고 그 결과를 설명하는 역할만 맡는다. Explanation Agent 의 report 와 AI 운영 비서의 질의 응답이 LLM 이 맡는 일이다.
+예측과 역산은 검증된 ML model 이 도구로서 수행하고, LLM 은 어떤 도구를 언제 호출할지 판단하고 그 결과를 설명하는 역할만 맡는다. 도구 호출은 LLM 이 ML model 이나 규칙 같은 함수를 고르고 입력값을 정해 실행을 요청한 뒤, 돌아온 결과를 읽는 일이다. Explanation Agent 의 report 와 AI 운영 비서의 질의 응답이 LLM 이 맡는 일이다.
 
 에이전트는 feature 이름 대신 데이터 기반 도구의 출력만으로 판단하므로, 암호화된 고객 데이터처럼 도메인 지식을 쓸 수 없는 경우에도 동작한다.
 
@@ -333,9 +333,11 @@ Table 11. Recommended roadmap
 - **Concept shift**: 입력과 출력의 관계가 바뀌는 drift.
 - **Conformal prediction**: 검증 data 의 잔차 분포로 정해진 확률을 보장하는 예측 구간을 만드는 방법.
 - **Covariate shift**: 입출력 관계는 그대로이고 입력 분포만 바뀌는 drift.
+- **Dispatching**: 대기 중인 lot 이나 wafer 를 어느 장비에서 처리할지 정하는 일.
 - **DOE**: 실험 계획 (design of experiments).
 - **Domain classifier AUC**: 기준 장비와 신규 장비의 data 를 분류기가 얼마나 구분하는지를 나타내는 AUC. 0.5 에 가까울수록 두 data 가 비슷하다.
 - **DTW**: 시간 축의 늘어남을 허용하여 두 trace 의 형상 차이를 재는 거리 (dynamic time warping).
+- **Excursion**: 공정이나 장비가 관리 범위를 벗어나 불량 wafer 가 생길 수 있는 상태.
 - **Fab systems**: 장비 에이전트가 데이터를 받고 제어값을 보내는 fab 의 기존 시스템. SECS/GEM, FDC/EES, MES, APC (R2R) 를 묶어 부르는 이름이다.
 - **FDC/EES**: 장비의 trace 를 수집·감시하는 fault detection and classification / equipment engineering system.
 - **Golden trace envelope**: normal run 들의 trace 로 정한 step 별 허용 범위.
@@ -360,7 +362,10 @@ Table 11. Recommended roadmap
 - **Shadow 검증**: 후보 model 을 운영 model 과 나란히 돌려 결과만 비교하고 제어에는 쓰지 않는 검증.
 - **SHAP**: 예측값을 feature 별 기여도로 나누어 설명하는 방법 (SHapley additive explanations).
 - **SOA**: 추천을 허용하는 공정 조건의 운전 영역 (safe operating area). SOA 95% 는 그 영역의 95% 범위이다.
+- **SPC**: 공정 측정값을 관리 한계와 비교해 이상을 가려내는 통계적 공정 관리 (statistical process control).
 - **THK**: 증착 막의 두께 (thickness).
+- **Tool calling**: LLM 이 함수를 고르고 입력값을 정해 실행을 요청한 뒤 결과를 받아 읽는 방식. 이 문서에서는 도구 호출이라 적는다.
+- **Tool qualification**: 신규 장비가 양산 조건을 만족하는지 확인하고 생산에 투입하는 절차.
 - **TTTM**: 같은 recipe 에서 장비·챔버 사이의 결과 차이를 줄이는 matching (tool-to-tool matching).
 - **Virtual metrology**: 계측 전에 공정 data 로 계측값을 예측하는 방법.
 - **Wasserstein distance**: 한 분포를 다른 분포로 옮기는 최소 비용으로 정의한 분포 간 거리.
