@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 6 | Created: 2026-10-14 | Updated: 2026-10-18 01:00 CDT
+Rev. 7 | Created: 2026-10-14 | Updated: 2026-10-18 01:02 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -33,12 +33,12 @@ Rev. 6 | Created: 2026-10-14 | Updated: 2026-10-18 01:00 CDT
 전체 구성은 [Fig 1](#fig-1) 과 같다.
 
 ```text
-                   +-------------------------------------------+
-                   |              AI Orchestrator              |
-                   |  event workflow / policy / permission     |
-                   +---------------------+---------------------+
-                                         |
-                   predict / recommend / health / calibrate
+                   +-------------------------------------------+     +-------------------+
+                   |              AI Orchestrator              |<--->| Engineer          |
+                   |  event workflow / policy / permission     |     | approves actions  |
+                   +---------------------+---------------------+     | by autonomy level |
+                                         |                           | reads reports     |
+                   predict / recommend / health / calibrate          +-------------------+
                                          |
        +---------------------------------+-------------------+------------------+
        |                                                     |                  |
@@ -63,11 +63,13 @@ Rev. 6 | Created: 2026-10-14 | Updated: 2026-10-18 01:00 CDT
 ```
 
 <a id="fig-1"></a>
-Fig 1. Two-tier agent architecture, with the LLM and the ML model inside one equipment agent
+Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML model inside one equipment agent
 
 아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다. 공통 feature schema 로 정리한 data 는 feature store 에, Global model 과 장비별 adapter 는 model registry 에 둔다.
 
 `Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 부를지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
+
+엔지니어는 orchestrator 의 policy·permission 을 거쳐 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, 장비 에이전트가 [7] Report 단계에서 쓴 report 를 읽는다.
 
 ## 3. Solution Scope
 
@@ -96,19 +98,20 @@ Section 열은 그 항목을 구현하는 본문 절이다. 기대 효과는 계
 
 Table 2. Single vs multi-equipment deployment
 
-| Aspect         | Item         | Single equipment       | Multi-equipment              |
-| :---:          | :---:        | :---:                  | :---:                        |
-| 학습 데이터    | 데이터 양    | 한 장비 데이터만 사용  | 모든 장비 데이터를 함께 학습 |
-| 학습 데이터    | 경험 범위    | 겪어 본 상황만 예측    | 다른 장비의 경험까지 활용    |
-| 신규 장비 도입 | 셋업         | 장비마다 처음부터 개발 | 기존 AI 재활용               |
-| 신규 장비 도입 | 소요 기간    | 수개월                 | 수일~수주                    |
-| 품질 관리      | 기준         | 장비별 개별 관리       | 전체를 하나의 기준으로 관리  |
-| 품질 관리      | 장비 간 편차 | 파악 어려움            | 자동 비교와 보정             |
-| 이상 대응      | 감지         | 문제 발생 후 대응      | 다른 장비의 사례로 사전 경고 |
-| 이상 대응      | 확산         | 같은 문제 반복 발생    | 유사 장비에 미리 전파·차단   |
-| 운영 효율      | 웨이퍼 배정  | 고정                   | 최적 장비로 자동 배정        |
-| 운영 효율      | 계측·정비    | 장비별 개별 계획       | 전체 일정 통합 최적화        |
-| 운영 효율      | 관리 인력    | 장비 수에 비례해 증가  | AI 에이전트가 통합 관리      |
+<table>
+  <tr><th align="center">Aspect</th><th align="center">Item</th><th align="center">Single equipment</th><th align="center">Multi-equipment</th></tr>
+  <tr><td align="center" rowspan="2">학습 데이터</td><td align="center">데이터 양</td><td align="center">한 장비 데이터만 사용</td><td align="center">모든 장비 데이터를 함께 학습</td></tr>
+  <tr><td align="center">경험 범위</td><td align="center">겪어 본 상황만 예측</td><td align="center">다른 장비의 경험까지 활용</td></tr>
+  <tr><td align="center" rowspan="2">신규 장비 도입</td><td align="center">셋업</td><td align="center">장비마다 처음부터 개발</td><td align="center">기존 AI 재활용</td></tr>
+  <tr><td align="center">소요 기간</td><td align="center">수개월</td><td align="center">수일~수주</td></tr>
+  <tr><td align="center" rowspan="2">품질 관리</td><td align="center">기준</td><td align="center">장비별 개별 관리</td><td align="center">전체를 하나의 기준으로 관리</td></tr>
+  <tr><td align="center">장비 간 편차</td><td align="center">파악 어려움</td><td align="center">자동 비교와 보정</td></tr>
+  <tr><td align="center" rowspan="2">이상 대응</td><td align="center">감지</td><td align="center">문제 발생 후 대응</td><td align="center">다른 장비의 사례로 사전 경고</td></tr>
+  <tr><td align="center">확산</td><td align="center">같은 문제 반복 발생</td><td align="center">유사 장비에 미리 전파·차단</td></tr>
+  <tr><td align="center" rowspan="3">운영 효율</td><td align="center">웨이퍼 배정</td><td align="center">고정</td><td align="center">최적 장비로 자동 배정</td></tr>
+  <tr><td align="center">계측·정비</td><td align="center">장비별 개별 계획</td><td align="center">전체 일정 통합 최적화</td></tr>
+  <tr><td align="center">관리 인력</td><td align="center">장비 수에 비례해 증가</td><td align="center">AI 에이전트가 통합 관리</td></tr>
+</table>
 
 단일 장비 적용은 그 장비 하나의 개별 최적화이고, 다수 장비 적용은 장비가 늘수록 성능이 오르는 전체 최적화이다.
 
