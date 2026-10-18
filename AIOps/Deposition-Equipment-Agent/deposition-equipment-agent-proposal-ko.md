@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 23 | Created: 2026-10-14 | Updated: 2026-10-18 01:47 CDT
+Rev. 24 | Created: 2026-10-14 | Updated: 2026-10-18 01:48 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -74,7 +74,6 @@ Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML mod
 
 장비 에이전트는 fab systems 에서 데이터를 받고, Fig 1 아래쪽의 두 저장소에 데이터와 model 을 보관한다.
 
-- **Fab systems**: 장비의 trace 와 생산 정보를 내보내고, APC 로 장비 에이전트의 조정값을 받아 다음 run 의 recipe 에 반영하는 fab 의 기존 시스템.
 - **Feature store**: Fab systems 에서 받은 trace 를 공통 feature schema 로 정리해, 학습과 추론에 같은 feature 를 내주는 저장소.
 - **Model registry**: Global backbone 과 장비·챔버별 Local adapter 의 version 을 보관하는 저장소. 장비 에이전트는 검증을 통과해 승격된 version 만 불러 쓴다.
 
@@ -253,12 +252,12 @@ Table 6. Orchestrator functions
 
 Table 7. Example technology stack
 
-| Purpose        | Software                |
-| :---:          | :---:                   |
-| Orchestration  | LangGraph 또는 Temporal |
-| Model registry | MLflow                  |
-| Feature store  | Feast                   |
-| Event bus      | Kafka                   |
+| Purpose                                                     | Software                |
+| :---:                                                       | :---:                   |
+| Orchestration (fab 전체 event workflow, 승인 routing)       | LangGraph 또는 Temporal |
+| Model registry (VM·R2R model 과 chamber adapter 의 version) | MLflow                  |
+| Feature store (trace 에서 뽑은 공통 feature)                | Feast                   |
+| Event bus (공정 종료, FDC alarm, 계측 완료 event)           | Kafka                   |
 
 ## 8. New Equipment Onboarding Gate
 
