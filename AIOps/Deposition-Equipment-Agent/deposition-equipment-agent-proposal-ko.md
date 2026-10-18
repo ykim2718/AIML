@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-18 00:53 CDT
+Rev. 5 | Created: 2026-10-14 | Updated: 2026-10-18 00:57 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -28,7 +28,7 @@ Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-18 00:53 CDT
 
 증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다.
 예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
-신규 장비는 sensor 호환성, 데이터 분포, 입력·출력 관계, 20~30매 pilot 계측의 네 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 를 차례로 거쳐 기존 model 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하고, 기존 model 을 다시 쓸 수 있는 장비는 수일~수주 안에 투입한다.
+신규 장비는 sensor 호환성, 데이터 분포, 입력·출력 관계, 20\~30매 pilot 계측의 네 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 를 차례로 거쳐 기존 model 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하고, 기존 model 을 다시 쓸 수 있는 장비는 수일\~수주 안에 투입한다.
 
 전체 구성은 [Fig 1](#fig-1) 과 같다.
 
@@ -49,10 +49,9 @@ Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-18 00:53 CDT
 |            explanation of the result          |    +-------+--------+ +-------+--------+
 |               |  tool call     ^  output      |            |    ...           |
 |               v                |              |            |                  |
-|  Tools     ML model: predict THK,             |            |                  |
-|                      invert process condition |            |                  |
-|            guardrail: uncertainty threshold   |            |                  |
-|            drift monitor, adaptation          |            |                  |
+|  ML model  predict THK and its uncertainty    |            |                  |
+|            invert process condition           |            |                  |
+|            detect drift, retrain the adapter  |            |                  |
 +------+----------------------------------------+            |                  |
        |                                                     |                  |
        +------------+-----------------------------------+----+------------------+
@@ -63,7 +62,7 @@ Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-18 00:53 CDT
 ```
 
 <a id="fig-1"></a>
-Fig 1. Two-tier agent architecture, with the LLM and the tools inside one equipment agent
+Fig 1. Two-tier agent architecture, with the LLM and the ML model inside one equipment agent
 
 아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다. 공통 feature schema 로 정리한 data 는 feature store 에, Global model 과 장비별 adapter 는 model registry 에 둔다.
 
@@ -143,26 +142,36 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
 웨이퍼 한 장이 끝날 때마다 [Fig 2](#fig-2) 의 loop 가 한 번 돈다.
 
 ```text
+  +------------------------------------------------------------------+
+  | LLM   reads the output of each step, decides which step to call  |
+  |       next, and writes the [7] Report                            |
+  +---------------------------------+--------------------------------+
+                                    |  tool calls to [1] - [6]
+                                    v
   Trace data in
        |
        v
-  [1] Detect  ----->  [2] Predict  ----->  [3] Guardrail
+  [1] Detect  ----->  [2] Predict  ----->  [3] Guardrail (rule)
+      (tool)              (ML)
                                                 |
                           high confidence  +----+----+  low confidence
                                            |         |
                                            v         v
                           [4] Recommend -> APC     Metrology sampling
-                                           (R2R)   request
+                              (ML)         (R2R)   request
                                                      |
                                                      v
-  [7] Report  <-----  [6] Adapt  <-----  [5] Drift monitor  <---  Metrology data in
+  [7] Report (LLM)  <--  [6] Adapt  <--  [5] Drift monitor  <---  Metrology data in
+                             (ML)              (ML)
        |
        v
   Engineer
 ```
 
 <a id="fig-2"></a>
-Fig 2. Per-wafer loop of the equipment agent
+Fig 2. Per-wafer loop of the equipment agent and what carries each step
+
+LLM 은 단계마다 결과를 읽어 다음에 부를 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (tool) 은 trace data 를 표준 feature 로 바꾸는 변환 도구가 맡는다는 표시다.
 
 [5] 와 [6] 은 계측값이 들어올 때만 돌고, 나머지 단계는 웨이퍼마다 돈다. 단계마다 맡는 에이전트와 하는 일은 Table 4 와 같다.
 
@@ -261,7 +270,7 @@ Table 9. Decision matrix
 | :---:                       | :---:                           | :---:                            | :---:                        |
 | 기존 model 재사용           | < 0.1 / < 0.6                   | > 0.8                            | 스펙 안, bias 없음           |
 | 장비 튜닝                   | 특정 제어 변수만 이탈           | 유지                             | 튜닝 후 재평가               |
-| Model 보정 (bias / adapter) | 0.1~0.25 / 0.6~0.8              | 0.5~0.8                          | Offset·gain 보정으로 스펙 안 |
+| Model 보정 (bias / adapter) | 0.1\~0.25 / 0.6\~0.8            | 0.5\~0.8                         | Offset·gain 보정으로 스펙 안 |
 | 신규 개발                   | > 0.25 / > 0.8                  | < 0.5                            | 보정 후에도 스펙 밖          |
 
 표의 경계값은 초기 권장값이며 fab 마다 보정한다. 하드웨어 차이를 model 이 흡수하면 그 뒤의 드리프트를 하드웨어 변화와 구별하기 어려워지므로, 장비 튜닝을 model 보정보다 먼저 검토한다.
