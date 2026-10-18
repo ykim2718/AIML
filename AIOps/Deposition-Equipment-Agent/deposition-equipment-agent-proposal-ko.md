@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 7 | Created: 2026-10-14 | Updated: 2026-10-18 01:02 CDT
+Rev. 8 | Created: 2026-10-14 | Updated: 2026-10-18 01:04 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,7 +26,7 @@ Rev. 7 | Created: 2026-10-14 | Updated: 2026-10-18 01:02 CDT
 
 ## 2. Summary
 
-증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다.
+증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안하며, 엔지니어가 승인과 판단으로 참여하는 human-in-the-loop 의 loop 는 장비 에이전트가 아니라 orchestrator 다.
 예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
 신규 장비는 sensor 호환성, 데이터 분포, 입력·출력 관계, 20\~30매 pilot 계측의 네 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 를 차례로 거쳐 기존 model 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하고, 기존 model 을 다시 쓸 수 있는 장비는 수일\~수주 안에 투입한다.
 
@@ -59,7 +59,7 @@ Rev. 7 | Created: 2026-10-14 | Updated: 2026-10-18 01:02 CDT
                     |                                   |
        Feature Store (common schema)          Model Registry (Global
                     |                         backbone + Local adapters)
-       SECS/GEM, FDC/EES, MES, APC (R2R)
+       Fab systems: SECS/GEM, FDC/EES, MES, APC (R2R)
 ```
 
 <a id="fig-1"></a>
@@ -320,6 +320,7 @@ Table 11. Recommended roadmap
 - **FDC/EES**: 장비의 trace 를 수집·감시하는 fault detection and classification / equipment engineering system.
 - **Golden trace envelope**: normal run 들의 trace 로 정한 step 별 허용 범위.
 - **Hotelling T²**: 다변량 data 가 기준 분포의 중심에서 벗어난 정도를 재는 통계량.
+- **Human-in-the-loop**: 자동화된 흐름 안에서 사람이 승인이나 판단을 맡는 운영 방식. 이 문서에서는 orchestrator 가 엔지니어의 승인을 받는 흐름을 가리킨다.
 - **KS test**: 두 표본의 누적 분포 차이로 분포가 같은지 검정하는 Kolmogorov-Smirnov test.
 - **LoRA**: 큰 model 의 가중치는 고정하고 저차원 행렬만 학습하는 경량 adapter 방식 (low-rank adaptation).
 - **Mahalanobis distance**: 변수 간 공분산을 고려한 다변량 거리.
