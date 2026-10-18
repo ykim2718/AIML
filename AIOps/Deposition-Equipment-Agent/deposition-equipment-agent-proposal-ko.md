@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 28 | Created: 2026-10-14 | Updated: 2026-10-18 03:32 CDT
+Rev. 29 | Created: 2026-10-14 | Updated: 2026-10-18 03:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -256,7 +256,7 @@ Table 4. Single vs multi-equipment deployment
   <tr><td align="center" rowspan="2">Training data (학습 데이터)</td><td align="center">Data volume (데이터 양)</td><td align="center">한 장비 데이터만 사용</td><td align="center">모든 장비 데이터를 함께 학습</td></tr>
   <tr><td align="center">Domain coverage (경험 범위)</td><td align="center">겪어 본 상황만 예측</td><td align="center">다른 장비의 경험까지 활용</td></tr>
   <tr><td align="center" rowspan="2">Tool qualification (신규 장비 도입)</td><td align="center">Model setup (셋업)</td><td align="center">장비마다 처음부터 개발</td><td align="center">기존 AI 재활용</td></tr>
-  <tr><td align="center">Lead time (소요 기간)</td><td align="center">수개월</td><td align="center">수일~수주</td></tr>
+  <tr><td align="center">Lead time (소요 기간)</td><td align="center">장비마다 처음부터 개발하는 기간</td><td align="center">대폭 감소</td></tr>
   <tr><td align="center" rowspan="2">SPC (품질 관리)</td><td align="center">Control limit (기준)</td><td align="center">장비별 개별 관리</td><td align="center">전체를 하나의 기준으로 관리</td></tr>
   <tr><td align="center">TTTM (장비 간 편차)</td><td align="center">파악 어려움</td><td align="center">자동 비교와 보정</td></tr>
   <tr><td align="center" rowspan="2">Excursion control (이상 대응)</td><td align="center">Early detection (감지)</td><td align="center">문제 발생 후 대응</td><td align="center">다른 장비의 사례로 사전 경고</td></tr>
@@ -266,7 +266,7 @@ Table 4. Single vs multi-equipment deployment
   <tr><td align="center">Engineer workload (관리 인력)</td><td align="center">장비 수에 비례해 증가</td><td align="center">AI 에이전트가 통합 관리</td></tr>
 </table>
 
-신규 장비는 공통 model 을 재사용하므로, 셋업 기간이 Table 4 의 수개월에서 수일~수주로 줄어든다.
+신규 장비는 공통 model 을 재사용하므로 셋업 기간이 대폭 줄어든다.
 
 - **공통 model 재사용**: 모든 장비 data 로 학습한 Global backbone 이 recipe 와 THK 의 관계를 이미 담고 있다.
 - **차이만 학습**: 신규 장비는 그 장비 고유의 차이만 소량의 monitor wafer 로 Local adapter 에 학습한다.
