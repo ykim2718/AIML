@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 19 | Created: 2026-10-14 | Updated: 2026-10-18 01:33 CDT
+Rev. 20 | Created: 2026-10-14 | Updated: 2026-10-18 01:40 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,13 +21,13 @@ Rev. 19 | Created: 2026-10-14 | Updated: 2026-10-18 01:33 CDT
 ## 1. Purpose
 
 - **Problem Statement**: 증착 장비의 두께 예측 model 은 엔지니어가 결과를 읽고 다음 웨이퍼의 조건을 직접 정해야 하며, 장비가 늘면 model 개발, 보정, 정비 판단이 장비마다 따로 반복된다.
-- **Goal**: 검증된 ML model 을 도구로 쓰는 AI agent 가 웨이퍼 단위의 예측·보정·정비 판단을 수행하여, 장비가 늘어도 신규 장비 셋업 기간과 엔지니어 개입 횟수가 장비 수에 비례해 늘지 않게 한다.
+- **Goal**: 검증된 ML model 을 함수로 호출하는 AI agent 가 웨이퍼 단위의 예측·보정·정비 판단을 수행하여, 장비가 늘어도 신규 장비 셋업 기간과 엔지니어 개입 횟수가 장비 수에 비례해 늘지 않게 한다.
 - **Non-Goal**: LLM 이 THK 를 직접 예측하거나 공정 조건 값을 산출하는 구조와, feature store·model registry·fab systems 의 구축과 운영 절차는 다루지 않는다.
 
 ## 2. Summary
 
 증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다. 사람의 판단이 필요하면 장비 에이전트는 run 을 멈추고 요청만 올리며, 엔지니어와 주고받는 일은 orchestrator 가 맡는다.
-예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 (tool calling) 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
+예측과 역산은 검증된 ML model 이 맡고 LLM 은 함수 호출 (function calling) 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
 신규 장비는 네 단계 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 로 기존 model 을 다시 쓸 수 있는지 판정해 셋업 기간을 줄인다.
 
 전체 구성은 [Fig 1](#fig-1) 과 같다.
@@ -46,9 +46,9 @@ Rev. 19 | Created: 2026-10-14 | Updated: 2026-10-18 01:33 CDT
 +------+----------------------------------------+    +-------+--------+     +-------+--------+
 | Equipment Agent #1                            |    | Equipment      |     | Equipment      |
 |                                               |    | Agent #2       | ... | Agent #N       |
-|  LLM       which tool to call, and when       |    | same as #1     |     | same as #1     |
+|  LLM       which function to call, and when    |    | same as #1     |     | same as #1     |
 |            explanation of the result          |    +-------+--------+     +-------+--------+
-|               |  tool call     ^  output      |            |                      |
+|               |  function call ^  output      |            |                      |
 |               v                |              |            |                      |
 |  ML model  predict THK and its uncertainty    |            |                      |
 |            invert process condition           |            |                      |
@@ -68,9 +68,9 @@ Rev. 19 | Created: 2026-10-14 | Updated: 2026-10-18 01:33 CDT
 <a id="fig-1"></a>
 Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML model inside one equipment agent
 
-아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 도구 interface 로만 장비 에이전트와 주고받는다.
+아래 층은 장비마다 하나인 장비 에이전트이고, 위 층의 orchestrator 는 네 가지 공통 함수 interface 로만 장비 에이전트와 주고받는다.
 
-`Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 호출할지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
+`Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 함수를 언제 호출할지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
 
 장비 에이전트는 승인이나 확인이 필요하면 run 을 멈추고 orchestrator 에 요청을 올린다. Orchestrator 는 그 요청을 권한이 있는 엔지니어에게 보내고, 승인 기록을 남긴 뒤 답을 장비 에이전트에 돌려준다. 엔지니어는 이 경로로 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, [7] Report 단계에서 쓴 report 를 읽는다.
 
@@ -88,14 +88,14 @@ Table 1. Solution items
 
 <table>
   <tr><th align="center">Category</th><th align="center">Item</th><th align="center">Description</th><th align="center">LLM role</th><th align="center">Section</th></tr>
-  <tr><td align="center" rowspan="2">A. APC</td><td align="center">Virtual metrology (두께 실시간 예측)</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">도구 호출 (VM model)</td><td align="center">6.1</td></tr>
-  <tr><td align="center">R2R control (자동 공정 보정)</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">도구 호출 (역산 model), 조정 근거 설명</td><td align="center">6.1</td></tr>
-  <tr><td align="center" rowspan="2">B. EES</td><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">도구 호출 (FDC 감시)</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">A. APC</td><td align="center">Virtual metrology (두께 실시간 예측)</td><td align="center">웨이퍼마다 계측하지 않고 증착 두께를 즉시 예측하여 계측 시간과 비용 절감</td><td align="center">함수 호출 (VM model)</td><td align="center">6.1</td></tr>
+  <tr><td align="center">R2R control (자동 공정 보정)</td><td align="center">예측 두께가 목표에서 벗어나면 다음 웨이퍼의 증착 조건 자동 조정</td><td align="center">함수 호출 (역산 model), 조정 근거 설명</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">B. EES</td><td align="center">FDC (이상 조기 감지)</td><td align="center">장비 센서 신호를 실시간 감시하여 불량 발생 전 경보</td><td align="center">함수 호출 (FDC 감시)</td><td align="center">6.1</td></tr>
   <tr><td align="center">FDC root-cause 분석 (고장 원인 안내)</td><td align="center">이상 발생 시 원인으로 의심되는 부품과 조건을 쉬운 말로 안내</td><td align="center">원인 설명</td><td align="center">6.1</td></tr>
-  <tr><td align="center" rowspan="2">C. PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">도구 호출 (RUL model)</td><td align="center">6.1, 7</td></tr>
+  <tr><td align="center" rowspan="2">C. PHM</td><td align="center">Consumable RUL (소모품 수명 예측)</td><td align="center">타깃 등 소모 부품의 소모량을 추적하여 최적 교체 시점 안내</td><td align="center">함수 호출 (RUL model)</td><td align="center">6.1, 7</td></tr>
   <tr><td align="center">PdM (예방 정비 최적화)</td><td align="center">장비 상태에 따라 PM 시점을 추천하여 불필요한 down time 감소</td><td align="center">PM 추천 근거 설명</td><td align="center">7</td></tr>
   <tr><td align="center">D. TTTM</td><td align="center">Chamber matching (장비 간 편차 관리)</td><td align="center">여러 장비와 챔버의 결과 차이를 비교하여 같은 품질 유지</td><td align="center">없음 (orchestrator 가 맡음)</td><td align="center">5, 7</td></tr>
-  <tr><td align="center" rowspan="2">E. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">재학습 시점 판단, 도구 호출</td><td align="center">6.1</td></tr>
+  <tr><td align="center" rowspan="2">E. MLOps</td><td align="center">Model retraining (자동 학습 유지)</td><td align="center">PM 이나 부품 교체 뒤에도 재학습으로 정확도 유지</td><td align="center">재학습 시점 판단, 함수 호출</td><td align="center">6.1</td></tr>
   <tr><td align="center">LLM copilot (AI 운영 비서)</td><td align="center">"어제 2번 장비가 왜 멈췄나" 같은 질문에 data 를 분석해 답변</td><td align="center">질문에 답변</td><td align="center">6.2</td></tr>
 </table>
 
@@ -160,13 +160,13 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
   | LLM       reads the output of each step, decides which step to   |
   |           call next, and writes the [7] Report                   |
   +---------------------------------+--------------------------------+
-                                    |  tool calls to [1] - [6]
+                                    |  function calls to [1] - [6]
                                     v
   Trace data in
        |
        v
   [1] Detect  ----->  [2] Predict  ----->  [3] Guardrail (rule)
-      (tool)              (ML)
+      (code)              (ML)
                                                 |
                           high confidence  +----+----+  low confidence
                                            |         |
@@ -195,29 +195,29 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
 <a id="fig-2"></a>
 Fig 2. Per-wafer loop of the equipment agent and what carries each step
 
-LLM 은 단계마다 결과를 읽어 다음에 호출할 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (tool) 은 trace data 를 표준 feature 로 바꾸는 변환 도구가 맡는다는 표시다. Engineer 는 orchestrator 를 거쳐서만 loop 에 들어오며, [4] Recommend 의 조정은 Table 5 의 autonomy level 이 정한 범위에서 엔지니어의 승인을 받은 뒤 APC 로 넘어간다.
+LLM 은 단계마다 결과를 읽어 다음에 호출할 단계를 정하고, [7] Report 는 직접 쓴다. 단계 옆의 (ML) 은 ML model, (rule) 은 불확실성 임계값 규칙, (code) 는 trace data 를 표준 feature 로 바꾸는 변환 code 가 맡는다는 표시다. Engineer 는 orchestrator 를 거쳐서만 loop 에 들어오며, [4] Recommend 의 조정은 Table 5 의 autonomy level 이 정한 범위에서 엔지니어의 승인을 받은 뒤 APC 로 넘어간다.
 
 [5] 와 [6] 은 계측값이 들어올 때만 돌고, 나머지 단계는 웨이퍼마다 돈다. 단계마다 맡는 에이전트와 하는 일은 Table 4 와 같다.
 
 Table 4. Steps of the agent loop
 
-| Step          | Role agent               | Action                                                                                                                                          |
-| :---:         | :---:                    | :---:                                                                                                                                           |
-| Detect        | Data Harmonization Agent | 공정 종료 직후 trace data 를 표준 feature 로 변환, 결측·이상치·센서 이상 점검, mapping 이 애매하면 orchestrator 에 확인 요청                    |
-| Predict       | Model Router Agent       | 장비 상태와 data 유사도로 Global, Local, Ensemble 중 선택 또는 가중치 결정, THK 와 신뢰구간 예측 (계측 전 virtual metrology)                    |
-| Guardrail     | Guardrail Agent          | 불확실성이 임계값 안이면 예측값을 APC (R2R) 로 전달, 넘으면 전달하지 않고 adaptive metrology sampling 요청                                      |
-| Recommend     | Equipment Agent          | 다음 웨이퍼의 공정 조건 역산, SOA 95% 영역 안의 조건만 제안                                                                                     |
-| Drift monitor | Drift Monitor Agent      | 잔차 추세, 소모품 수명에 따른 SOA 이동, PM·부품 교체·seasoning 에 따른 covariate shift 와 concept shift 감지                                    |
-| Adapt         | Adaptation Agent         | 보정 DOE 제안 (예: 보정 웨이퍼 5매, CCD axial 4점 + 기준점), 해당 챔버의 adapter 만 재학습, shadow 검증과 시간순 검증을 통과한 후보만 승격 요청 |
-| Report        | Explanation Agent        | 예측 편차의 원인 센서와 step, 권장 조치를 엔지니어용 자연어 report 로 요약 (예: "증착 시간 0.4초 증가 권장, 신뢰도 95%")                        |
+| Step                       | Role agent               | Action                                                                                                                                                                    |
+| :---:                      | :---:                    | :---:                                                                                                                                                                     |
+| Detect (FDC)               | Data Harmonization Agent | 공정 종료 직후 trace data 를 표준 feature 로 변환 (data harmonization), missing value·outlier·sensor fault 점검, sensor mapping 이 애매하면 orchestrator 에 확인 요청     |
+| Predict (VM)               | Model Router Agent       | 장비 상태와 data 유사도로 Global, Local, Ensemble model 중 선택 또는 가중치 결정, 계측 전 THK 와 신뢰구간 산출                                                            |
+| Guardrail (VM reliability) | Guardrail Agent          | Prediction uncertainty 가 threshold 안이면 VM 값을 APC (R2R) 로 전달, 넘으면 전달하지 않고 adaptive metrology sampling 요청                                               |
+| Recommend (R2R)            | Equipment Agent          | 다음 wafer 의 recipe parameter 를 inverse model 로 산출, SOA 95% 안의 조건만 제안                                                                                         |
+| Drift monitor (EES)        | Drift Monitor Agent      | Residual trend, consumable life 에 따른 SOA shift, PM·part replacement·seasoning 뒤의 covariate shift 와 concept shift 감지                                               |
+| Adapt (recalibration)      | Adaptation Agent         | Recalibration DOE 제안 (예: monitor wafer 5매, CCD axial 4점 + center point), 해당 chamber 의 adapter 만 재학습, shadow 검증과 시간순 검증을 통과한 후보만 promotion 요청 |
+| Report (RCA)               | Explanation Agent        | VM 편차의 root-cause sensor 와 recipe step, 권장 조치를 엔지니어용 자연어 report 로 요약 (예: "증착 시간 0.4초 증가 권장, 신뢰도 95%")                                    |
 
 Detect 의 이상 점검과 Report 의 원인 요약이 Table 1 의 이상 조기 감지와 고장 원인 안내를 맡고, Adapt 가 자동 학습 유지를 맡는다.
 
 ### 6.2 Role of LLM
 
-예측과 역산은 검증된 ML model 이 도구로서 수행하고, LLM 은 어떤 도구를 언제 호출할지 판단하고 그 결과를 설명하는 역할만 맡는다. 도구 호출은 LLM 이 ML model 이나 규칙 같은 함수를 고르고 입력값을 정해 실행을 요청한 뒤, 돌아온 결과를 읽는 일이다. Explanation Agent 의 report 와 AI 운영 비서의 질의 응답이 LLM 이 맡는 일이다.
+예측과 역산은 검증된 ML model 이 함수로서 수행하고, LLM 은 어떤 함수를 언제 호출할지 판단하고 그 결과를 설명하는 역할만 맡는다. 함수 호출은 LLM 이 ML model 이나 규칙 같은 함수를 고르고 입력값을 정해 실행을 요청한 뒤, 돌아온 결과를 읽는 일이다. Explanation Agent 의 report 와 AI 운영 비서의 질의 응답이 LLM 이 맡는 일이다. 반도체에서 tool 은 장비를 뜻하므로, 이 문서는 LLM 이 호출하는 대상을 tool 대신 함수 (function) 라 적는다.
 
-에이전트는 feature 이름 대신 데이터 기반 도구의 출력만으로 판단하므로, 암호화된 고객 데이터처럼 도메인 지식을 쓸 수 없는 경우에도 동작한다.
+에이전트는 feature 이름 대신 데이터 기반 함수의 출력만으로 판단하므로, 암호화된 고객 데이터처럼 도메인 지식을 쓸 수 없는 경우에도 동작한다.
 
 ### 6.3 Autonomy Level
 
@@ -235,7 +235,7 @@ Table 5. Autonomy levels
 
 ## 7. Multi-Equipment Orchestrator
 
-장비 에이전트들이 같은 도구 interface (predict, recommend, health, calibrate) 를 공유하면, orchestrator 가 event 기반 workflow 와 정책·권한을 관리하며 장비 사이의 판단을 맡는다.
+장비 에이전트들이 같은 함수 interface (predict, recommend, health, calibrate) 를 공유하면, orchestrator 가 event 기반 workflow 와 정책·권한을 관리하며 장비 사이의 판단을 맡는다.
 
 Table 6. Orchestrator functions
 
@@ -255,7 +255,7 @@ Table 6. Orchestrator functions
 
 Table 7. Example technology stack
 
-| Purpose        | Tool                    |
+| Purpose        | Software                |
 | :---:          | :---:                   |
 | Orchestration  | LangGraph 또는 Temporal |
 | Model registry | MLflow                  |
@@ -320,7 +320,7 @@ Table 11. Recommended roadmap
 
 | Phase   | Duration (estimated) | Autonomy | Scope                                                                                                                          |
 | :---:   | :---:                | :---:    | :---:                                                                                                                          |
-| Phase 1 | 3~6개월              | L1       | 기존 두께 예측 model 과 역산을 도구로 감싼 장비 에이전트, 동일 기종·다챔버의 Global + Local model 적용과 chamber matching 검증 |
+| Phase 1 | 3~6개월              | L1       | 기존 두께 예측 model 과 역산을 함수로 감싼 장비 에이전트, 동일 기종·다챔버의 Global + Local model 적용과 chamber matching 검증 |
 | Phase 2 | 6~12개월             | L2       | Drift Monitor·Adaptation·Guardrail Agent 도입, 보정 DOE·재학습 자동화, MLOps                                                   |
 | Phase 3 | 12개월~              | L3       | 이기종·신규 장비의 few-shot onboarding 과 4단계 gate, LLM 기반 orchestrator, 다른 공정으로 확장                                |
 
@@ -340,6 +340,7 @@ Table 11. Recommended roadmap
 - **Excursion**: 공정이나 장비가 관리 범위를 벗어나 불량 wafer 가 생길 수 있는 상태.
 - **Fab systems**: 장비 에이전트가 데이터를 받고 제어값을 보내는 fab 의 기존 시스템. SECS/GEM, FDC/EES, MES, APC (R2R) 를 묶어 부르는 이름이다.
 - **FDC/EES**: 장비의 trace 를 수집·감시하는 fault detection and classification / equipment engineering system.
+- **Function calling**: LLM 이 함수를 고르고 입력값을 정해 실행을 요청한 뒤 결과를 받아 읽는 방식. 이 문서에서는 함수 호출이라 적으며, 반도체에서 tool 은 장비를 뜻하므로 tool calling 이라 적지 않는다.
 - **Golden trace envelope**: normal run 들의 trace 로 정한 step 별 허용 범위.
 - **Hotelling T²**: 다변량 data 가 기준 분포의 중심에서 벗어난 정도를 재는 통계량.
 - **Human-in-the-loop**: 자동화된 흐름 안에서 사람이 승인이나 판단을 맡는 운영 방식. 이 문서에서는 장비 에이전트가 run 을 멈추고 요청을 올리면 orchestrator 가 엔지니어에게 전달하고 답을 돌려주는 흐름을 가리킨다.
@@ -355,6 +356,7 @@ Table 11. Recommended roadmap
 - **PHM**: 장비의 이상 감지, 잔여 수명 예측, 정비 판단을 묶어 다루는 분야 (prognostics and health management).
 - **PM**: 예방 정비 (preventive maintenance).
 - **PSI**: 두 분포의 구간별 비율 차이로 분포 이동을 재는 지표 (population stability index).
+- **RCA**: 이상이나 편차를 일으킨 원인 sensor·부품·recipe step 을 찾는 분석 (root-cause analysis).
 - **RMSE**: 예측 오차 제곱 평균의 제곱근 (root mean square error).
 - **RUL**: 부품이나 소모품이 교체 기준에 이를 때까지 남은 사용 기간 (remaining useful life).
 - **Seasoning**: PM 뒤 챔버 상태를 안정시키려고 진행하는 사전 run.
@@ -364,9 +366,8 @@ Table 11. Recommended roadmap
 - **SOA**: 추천을 허용하는 공정 조건의 운전 영역 (safe operating area). SOA 95% 는 그 영역의 95% 범위이다.
 - **SPC**: 공정 측정값을 관리 한계와 비교해 이상을 가려내는 통계적 공정 관리 (statistical process control).
 - **THK**: 증착 막의 두께 (thickness).
-- **Tool calling**: LLM 이 함수를 고르고 입력값을 정해 실행을 요청한 뒤 결과를 받아 읽는 방식. 이 문서에서는 도구 호출이라 적는다.
 - **Tool qualification**: 신규 장비가 양산 조건을 만족하는지 확인하고 생산에 투입하는 절차.
 - **TTTM**: 같은 recipe 에서 장비·챔버 사이의 결과 차이를 줄이는 matching (tool-to-tool matching).
-- **Virtual metrology**: 계측 전에 공정 data 로 계측값을 예측하는 방법.
+- **Virtual metrology (VM)**: 계측 전에 공정 data 로 계측값을 예측하는 방법.
 - **Wasserstein distance**: 한 분포를 다른 분포로 옮기는 최소 비용으로 정의한 분포 간 거리.
 - **소모품 수명**: 타깃 등 증착 장비의 소모 부품이 누적 사용으로 닳은 정도.
