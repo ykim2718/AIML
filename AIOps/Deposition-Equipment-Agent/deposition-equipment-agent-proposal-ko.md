@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 22 | Created: 2026-10-14 | Updated: 2026-10-18 01:46 CDT
+Rev. 23 | Created: 2026-10-14 | Updated: 2026-10-18 01:47 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -237,15 +237,15 @@ Table 5. Autonomy levels
 
 Table 6. Orchestrator functions
 
-| Function              | Description                                                                                                                               |
-| :---:                 | :---:                                                                                                                                     |
-| 보정 웨이퍼 예산 배분 | 여러 장비 중 드리프트가 큰 장비에 보정 웨이퍼를 우선 배정                                                                                 |
-| 신규 장비 빠른 시작   | 같은 기종 장비의 Global backbone 과 adapter 를 전이학습하여 초기 학습에 필요한 계측 웨이퍼 수 축소, 투입 여부는 section 8 의 gate 로 판정 |
-| 장비 간 매칭          | 동일 recipe 에서 챔버별 THK 차이 보정                                                                                                     |
-| 정비 일정 최적화      | 소모품 수명과 장비 상태에 따른 SOA 축소를 보고 소모품 교체와 PM 시점을 장비별로 조율                                                      |
-| 이상 사례 전파        | 한 장비에서 감지한 이상 사례를 유사 장비에 미리 알려 사전 경고                                                                            |
-| 웨이퍼 배정           | 장비 상태와 예측 신뢰도를 보고 웨이퍼를 최적 장비에 배정                                                                                  |
-| 공통 지식 축적        | Feature 추출 방식, 실패 사례, 검증 기준을 template 으로 재사용                                                                            |
+| Function                                         | Description                                                                                                                                           |
+| :---:                                            | :---:                                                                                                                                                 |
+| Monitor wafer allocation (보정 웨이퍼 예산 배분) | Drift 가 큰 chamber 에 recalibration 용 monitor wafer 를 우선 배정                                                                                    |
+| Tool start-up (신규 장비 빠른 시작)              | 같은 기종의 Global backbone 과 adapter 를 transfer learning 하여 qualification 에 필요한 monitor wafer 수 축소, 투입 여부는 section 8 의 gate 로 판정 |
+| Chamber matching (장비 간 매칭)                  | 같은 recipe 에서 chamber 별 THK offset 보정 (TTTM)                                                                                                    |
+| PM scheduling (정비 일정 최적화)                 | Consumable RUL 과 장비 상태에 따른 SOA 축소를 보고 consumable 교체와 PM 시점을 장비별로 조율                                                          |
+| Excursion propagation (이상 사례 전파)           | 한 장비에서 감지한 excursion 을 같은 기종 장비에 미리 알려 사전 경고                                                                                  |
+| Dispatching (웨이퍼 배정)                        | 장비 상태와 VM reliability 를 보고 lot·wafer 를 최적 장비에 배정                                                                                      |
+| Knowledge base (공통 지식 축적)                  | Feature extraction 방식, failure case, 검증 기준을 template 으로 재사용                                                                               |
 
 ### 7.1 Technology Stack
 
