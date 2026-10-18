@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 10 | Created: 2026-10-14 | Updated: 2026-10-18 01:08 CDT
+Rev. 11 | Created: 2026-10-14 | Updated: 2026-10-18 01:11 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,7 +26,7 @@ Rev. 10 | Created: 2026-10-14 | Updated: 2026-10-18 01:08 CDT
 
 ## 2. Summary
 
-증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안하며, 엔지니어가 승인과 판단으로 참여하는 human-in-the-loop 의 loop 는 장비 에이전트가 아니라 orchestrator 다.
+증착 장비 1대를 맡는 장비 에이전트를 두고, 그 위에 공통 Global model 과 장비·챔버별 Local adapter 로 여러 장비를 조율하는 AI orchestrator 를 두는 2단 구성을 제안한다. 사람의 판단이 필요하면 장비 에이전트는 run 을 멈추고 요청만 올리며, 엔지니어와 주고받는 일은 orchestrator 가 맡는다.
 예측과 역산은 검증된 ML model 이 맡고 LLM 은 도구 호출 판단과 결과 설명만 맡으며, 자율성은 L1 조언형에서 L3 자동 run-to-run 까지 단계적으로 올린다.
 신규 장비는 sensor 호환성, 데이터 분포, 입력·출력 관계, 20\~30매 pilot 계측의 네 gate ([8. New Equipment Onboarding Gate](#8-new-equipment-onboarding-gate)) 를 차례로 거쳐 기존 model 재사용·장비 튜닝·model 보정·신규 개발 중 하나로 판정하고, 기존 model 을 다시 쓸 수 있는 장비는 수일\~수주 안에 투입한다.
 
@@ -36,7 +36,8 @@ Rev. 10 | Created: 2026-10-14 | Updated: 2026-10-18 01:08 CDT
                    +-------------------------------------------+     +-------------------+
                    |              AI Orchestrator              |<--->| Engineer          |
                    |  event workflow / policy / permission     |     | approves actions  |
-                   +---------------------+---------------------+     | by autonomy level |
+                   |  approval routing / audit record          |     | by autonomy level |
+                   +---------------------+---------------------+     | answers requests  |
                                          |                           | reads reports     |
                    predict / recommend / health / calibrate          +-------------------+
                                          |
@@ -53,6 +54,7 @@ Rev. 10 | Created: 2026-10-14 | Updated: 2026-10-18 01:08 CDT
 |            invert process condition           |            |                      |
 |            detect drift, retrain the adapter  |            |                      |
 |  Guardrail uncertainty threshold before APC   |            |                      |
+|  Pause     request approval, wait for answer  |            |                      |
 +------+----------------------------------------+            |                      |
        |                                                     |                      |
        +------------+-----------------------------------+----+----------------------+
@@ -69,7 +71,7 @@ Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML mod
 
 `Equipment Agent #1` 상자는 장비 에이전트 하나의 안을 펼쳐 그린 것이며, 다른 장비 에이전트도 같은 구성이다. LLM 은 어떤 도구를 언제 부를지 정하고 그 결과를 설명하며, THK 예측과 공정 조건 역산은 ML model 이, 예측값을 APC 로 넘길지는 guardrail 의 불확실성 임계값이 정한다. LLM 이 맡는 범위는 [6.2 Role of LLM](#62-role-of-llm) 에 정리되어 있다.
 
-엔지니어는 orchestrator 의 policy·permission 을 거쳐 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, 장비 에이전트가 [7] Report 단계에서 쓴 report 를 읽는다.
+장비 에이전트는 승인이나 확인이 필요하면 run 을 멈추고 orchestrator 에 요청을 올린다. Orchestrator 는 그 요청을 권한이 있는 엔지니어에게 보내고, 승인 기록을 남긴 뒤 답을 장비 에이전트에 돌려준다. 엔지니어는 이 경로로 [6.3 Autonomy Level](#63-autonomy-level) 의 Table 5 가 정한 범위의 조정을 승인하고, [7] Report 단계에서 쓴 report 를 읽는다.
 
 ## 3. Solution Scope
 
@@ -170,7 +172,7 @@ Global backbone 은 모든 장비의 입력을 같은 표준 feature 로 받을 
                              (ML)              (ML)
        |
        v
-  Engineer
+  Orchestrator  -->  Engineer
 ```
 
 <a id="fig-2"></a>
@@ -184,7 +186,7 @@ Table 4. Steps of the agent loop
 
 | Step          | Role agent               | Action                                                                                                                                          |
 | :---:         | :---:                    | :---:                                                                                                                                           |
-| Detect        | Data Harmonization Agent | 공정 종료 직후 trace data 를 표준 feature 로 변환, 결측·이상치·센서 이상 점검, mapping 이 애매하면 엔지니어에게 확인 요청                       |
+| Detect        | Data Harmonization Agent | 공정 종료 직후 trace data 를 표준 feature 로 변환, 결측·이상치·센서 이상 점검, mapping 이 애매하면 orchestrator 에 확인 요청                    |
 | Predict       | Model Router Agent       | 장비 상태와 data 유사도로 Global, Local, Ensemble 중 선택 또는 가중치 결정, THK 와 신뢰구간 예측 (계측 전 virtual metrology)                    |
 | Guardrail     | Guardrail Agent          | 불확실성이 임계값 안이면 예측값을 APC (R2R) 로 전달, 넘으면 전달하지 않고 adaptive metrology sampling 요청                                      |
 | Recommend     | Equipment Agent          | 다음 웨이퍼의 공정 조건 역산, SOA 95% 영역 안의 조건만 제안                                                                                     |
@@ -321,7 +323,7 @@ Table 11. Recommended roadmap
 - **FDC/EES**: 장비의 trace 를 수집·감시하는 fault detection and classification / equipment engineering system.
 - **Golden trace envelope**: normal run 들의 trace 로 정한 step 별 허용 범위.
 - **Hotelling T²**: 다변량 data 가 기준 분포의 중심에서 벗어난 정도를 재는 통계량.
-- **Human-in-the-loop**: 자동화된 흐름 안에서 사람이 승인이나 판단을 맡는 운영 방식. 이 문서에서는 orchestrator 가 엔지니어의 승인을 받는 흐름을 가리킨다.
+- **Human-in-the-loop**: 자동화된 흐름 안에서 사람이 승인이나 판단을 맡는 운영 방식. 이 문서에서는 장비 에이전트가 run 을 멈추고 요청을 올리면 orchestrator 가 엔지니어에게 전달하고 답을 돌려주는 흐름을 가리킨다.
 - **KS test**: 두 표본의 누적 분포 차이로 분포가 같은지 검정하는 Kolmogorov-Smirnov test.
 - **LoRA**: 큰 model 의 가중치는 고정하고 저차원 행렬만 학습하는 경량 adapter 방식 (low-rank adaptation).
 - **Mahalanobis distance**: 변수 간 공분산을 고려한 다변량 거리.
