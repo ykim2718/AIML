@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 31 | Created: 2026-10-14 | Updated: 2026-10-18 03:36 CDT
+Rev. 32 | Created: 2026-10-14 | Updated: 2026-10-18 04:03 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -66,7 +66,7 @@ Fig 1. Two-tier agent architecture with the engineer, and the LLM and the ML mod
 `Equipment Agent #1` 은 agent 하나의 안을 펼친 것이며, `#2` 부터 `#N` 까지도 같은 구성이다. Orchestrator 와 agent 는 predict, recommend, health, calibrate 네 함수 interface 로만 주고받으며, orchestrator 의 기능은 [Appendix D](#appendix-d-orchestrator-functions) 에 있다.
 
 - **Feature store**: 장비 trace 를 step 별 요약 통계와 recipe·PM 이후 RF hours 같은 context 로 가공한 model 입력 (feature) 을 보관하여, 학습과 추론에 같은 feature 를 내준다.
-- **Model registry**: Global backbone 과 chamber 별 Local adapter 의 version 을 보관하며, agent 는 검증을 통과해 승격된 version 만 쓴다. Local adapter 는 chamber 마다 하나씩 두는 작은 보정 model 로, Global backbone 의 예측에 남은 그 chamber 고유의 offset·gain 만 학습한다.
+- **Model registry**: Global backbone 과 chamber 별 Local adapter 의 version 을 보관하며, agent 는 그 가운데 운영에 쓰도록 지정된 production version 만 불러 쓴다. Local adapter 는 chamber 마다 하나씩 두는 작은 보정 model 로, Global backbone 의 예측에 남은 그 chamber 고유의 offset·gain 만 학습한다.
 
 ## 3. Solution Items
 
@@ -100,31 +100,49 @@ Section 열은 그 항목을 다루는 꼭지다. 기대 효과는 계측 비용
   +---------------------------------+--------------------------------+
                                     |  function calls to [1] - [6]
                                     v
-  Trace data in
-       |
-       v
-  [1] Detect  ----->  [2] Predict  ----->  [3] Guardrail (rule)
-      (code)              (ML)
-                                                |
-                          high confidence  +----+----+  low confidence
-                                           |         |
-                                           v         v
-                          [4] Recommend (ML)       Metrology sampling
-                                           |       request
-                                           v         |
-                          Approval request to        |
-                          orchestrator by level      |
-                                           |         |
-                                           v         v
-                                       APC (R2R)   Metrology data in
-                                                     |
-                                                     v
-  [7] Report (LLM)  <--  [6] Adapt  <--  [5] Drift monitor
-                             (ML)              (ML)
-       |
-       v
-  Orchestrator  routes the report and the requests of [1] and [4]
-                to the engineer, and returns the answers
+  +----------------+
+  | Trace data in  |
+  +-------+--------+
+          |
+          v
+  +----------------+     +----------------+     +----------------+
+  | [1] Detect     |---->| [2] Predict    |---->| [3] Guardrail  |
+  | (code)         |     | (ML)           |     | (rule)         |
+  +----------------+     +----------------+     +-------+--------+
+                                                        |
+                                 +----------------------+
+                 high confidence |                      | low confidence
+                                 v                      v
+                         +----------------+     +----------------+
+                         | [4] Recommend  |     | Metrology      |
+                         | (ML)           |     | sampling       |
+                         |                |     | request        |
+                         +-------+--------+     +-------+--------+
+                                 |                      |
+                                 v                      v
+                         +----------------+     +----------------+
+                         | Approval       |     | Metrology      |
+                         | request to     |     | data in        |
+                         | orchestrator   |     |                |
+                         +-------+--------+     +-------+--------+
+                                 |                      |
+                                 v                      v
+                         +----------------+     +----------------+
+                         | APC (R2R)      |     | [5] Drift      |
+                         |                |     | monitor (ML)   |
+                         +----------------+     +-------+--------+
+                                                        |
+                                                        v
+                         +----------------+     +----------------+
+                         | [7] Report     |<----| [6] Adapt      |
+                         | (LLM)          |     | (ML)           |
+                         +-------+--------+     +----------------+
+                                 |
+                                 v
+  +------------------------------------------------------------------+
+  | Orchestrator  routes the report and the requests of [1] and [4]  |
+  |               to the engineer, and returns the answers           |
+  +------------------------------------------------------------------+
 ```
 
 <a id="fig-2"></a>
@@ -138,7 +156,7 @@ Fig 2. Per-wafer loop of the equipment agent and what carries each step
 - **[4] Recommend (R2R), ML**: Inverse model 로 다음 wafer 의 recipe 를 내고, SOA 95% 안의 조건만 제안한다.
 - **Approval request**: Table 2 의 autonomy level 이 승인을 요구하는 변경은 run 을 멈추고 orchestrator 에 승인을 요청하며, 승인을 받은 뒤 APC 로 보낸다.
 - **[5] Drift monitor (EES), ML**: Residual trend, consumable 수명에 따른 SOA shift, PM 과 seasoning 뒤의 covariate shift 와 concept shift 를 감지한다.
-- **[6] Adapt (recalibration), ML**: Recalibration DOE (예: monitor wafer 5매, CCD axial 4점 + center point) 를 제안하고 해당 chamber 의 adapter 만 재학습한다. Shadow validation 과 시간순 검증을 통과한 후보만 promotion 을 요청한다.
+- **[6] Adapt (recalibration), ML**: Recalibration DOE (예: monitor wafer 5매, CCD axial 4점 + center point) 를 제안하고 해당 chamber 의 adapter 만 재학습한다. Shadow validation 과 시간순 검증을 통과한 후보만 production version 교체를 요청한다.
 - **[7] Report (RCA), LLM**: VM 편차의 root-cause sensor 와 recipe step, 권장 조치를 자연어 report 로 요약하여 orchestrator 를 거쳐 엔지니어에게 보낸다 (예: "증착 시간 0.4초 증가 권장, 신뢰도 95%").
 
 ## 5. Autonomy Levels
@@ -147,11 +165,11 @@ Fig 2. Per-wafer loop of the equipment agent and what carries each step
 
 Table 2. Autonomy levels
 
-| Level                                | Automatic action                       | Human approval                 |
-| :---:                                | :---:                                  | :---:                          |
-| L1 Advisory, open-loop (조언형)      | 없음, recipe 추천만                    | 모든 recipe 변경               |
-| L2 Supervised closed-loop (반자동)   | SOA 95% 안의 recipe 조정               | SOA 95% 밖의 recipe 변경       |
-| L3 Closed-loop R2R (자동 run-to-run) | SOA 안의 recipe 조정, model retraining | Model promotion, SOA 밖 recipe |
+| Level                                | Automatic action                       | Human approval                         |
+| :---:                                | :---:                                  | :---:                                  |
+| L1 Advisory, open-loop (조언형)      | 없음, recipe 추천만                    | 모든 recipe 변경                       |
+| L2 Supervised closed-loop (반자동)   | SOA 95% 안의 recipe 조정               | SOA 95% 밖의 recipe 변경               |
+| L3 Closed-loop R2R (자동 run-to-run) | SOA 안의 recipe 조정, model retraining | Production version 교체, SOA 밖 recipe |
 
 L1 에서 추천의 적중을 확인한 뒤 다음 단계로 넘어가므로, 단계를 올리는 근거가 운영 실적으로 쌓인다.
 
@@ -184,7 +202,7 @@ Table 3. Onboarding gates, results and actions
 
 운영 전에 아래 네 가지를 먼저 정하며, 이 가운데 장비 연동이 보통 가장 오래 걸린다.
 
-- **Safety**: SOA 밖 조건 실행 금지, threshold 를 넘는 VM 값의 R2R 전달 차단, model promotion 전 검증 gate, 모든 결정의 log 기록.
+- **Safety**: SOA 밖 조건 실행 금지, threshold 를 넘는 VM 값의 R2R 전달 차단, production version 교체 전 검증 gate, 모든 결정의 log 기록.
 - **Security**: 고객 데이터가 fab 밖으로 나가지 않도록 on-premise LLM 이나 feature 만 다루는 구조.
 - **Equipment interface**: SECS/GEM, FDC/EES, MES, APC (R2R) 와의 interface.
 - **KPI**: 스펙 적중률, wafer 당 보정 비용, 엔지니어 개입 횟수, consumable 수명 종료 구간 성능.
@@ -229,6 +247,7 @@ Roadmap 은 단기·중기·장기의 세 Phase 로 나누며, Phase 마다 걸�
 - **PdM**: 장비 상태 data 로 고장 시점을 예측해 그 전에 정비하는 예지 정비 (predictive maintenance).
 - **PHM**: 장비의 이상 감지, 잔여 수명 예측, 정비 판단을 묶어 다루는 분야 (prognostics and health management).
 - **PM**: 예방 정비 (preventive maintenance).
+- **Production version**: Model registry 에 보관한 model version 가운데 지금 운영에서 예측에 쓰도록 지정된 version.
 - **PSI**: 두 분포의 구간별 비율 차이로 분포 이동을 재는 지표 (population stability index).
 - **RCA**: 이상이나 편차를 일으킨 원인 sensor·부품·recipe step 을 찾는 분석 (root-cause analysis).
 - **RMSE**: 예측 오차 제곱 평균의 제곱근 (root mean square error).
