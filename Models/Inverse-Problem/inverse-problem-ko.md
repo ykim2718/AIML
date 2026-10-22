@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 46 | Created: 2026-08-28 | Updated: 2026-10-22 16:41 CDT
+Rev. 47 | Created: 2026-08-28 | Updated: 2026-10-22 16:47 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -60,6 +60,7 @@ Model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지�
 ```text
 Problem
   +-- Forward problem                              given x, find y
+  |     +-- Physical model                         computes y from physical laws
   |     +-- Surrogate model    y = f(x)            data-driven model that replaces the physical model
   +-- Inverse problem                              given y, find x
         +-- Inverse model      x = g(y)            learn g directly

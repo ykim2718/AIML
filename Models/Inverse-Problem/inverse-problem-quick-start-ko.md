@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 6 | Created: 2026-10-22 | Updated: 2026-10-22 16:45 CDT
+Rev. 7 | Created: 2026-10-22 | Updated: 2026-10-22 16:47 CDT
 
 ## 1. Purpose
 
@@ -18,6 +18,7 @@ Problem 은 forward problem 과 inverse problem 으로 나뉘고, inverse proble
 ```text
 Problem
   +-- Forward problem                              given x, find y
+  |     +-- Physical model                         computes y from physical laws
   |     +-- Surrogate model    y = f(x)            data-driven model that replaces the physical model
   +-- Inverse problem                              given y, find x
         +-- Inverse model      x = g(y)            learn g directly
