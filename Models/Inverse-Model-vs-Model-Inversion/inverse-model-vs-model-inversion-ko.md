@@ -1,5 +1,5 @@
 # Inverse Model and Model Inversion Quick Start
-Rev. 0 | Created: 2026-10-22 | Updated: 2026-10-22 15:17 CDT
+Rev. 1 | Created: 2026-10-22 | Updated: 2026-10-22 15:48 CDT
 
 ## 1. Purpose
 
@@ -13,24 +13,16 @@ Inverse model 은 출력에서 입력으로 방향을 뒤집어 처음부터 학
 
 ## 3. Inverse Model and Model Inversion
 
-두 방식은 학습하는 model 의 방향과 추론 때 반복하는 계산으로 갈린다. Recipe 로 막 두께를 예측하는 예에서 두 흐름은 아래 Fig 1 과 같다.
+두 방식은 같은 inverse problem 을 푸는 두 방법이며, 계층은 아래 Fig 1 과 같다.
 
 ```text
-Forward model      Recipe (input) -------------------> Thickness (output)
-
-Inverse model      Target thickness (input) ---------> Required recipe (output)
-                   one forward pass of a model trained in the reversed direction
-
-Model inversion    Target thickness
-                         |
-                         v
-                   candidate recipe --> forward model --> predicted thickness
-                         ^                                       |
-                         +------ update recipe until match ------+
+Inverse problem       given y, find x
+  +-- Inverse model      x = g(y)            learn g directly
+  +-- Model inversion    y = f(x), for x     solve with the forward model f
 ```
-Fig 1. Inverse model and model inversion
+Fig 1. Inverse problem and its two solution methods
 
-Inverse model 은 목표 두께를 받아 recipe 를 바로 내놓는다. Model inversion 은 forward model 을 바꾸지 않고, 예측 두께가 목표 두께와 맞을 때까지 입력 recipe 를 조금씩 바꿔 가며 되풀이한다.
+y 는 두께, x 는 recipe 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 forward model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다.
 
 ### 3.1 Inverse Model
 
@@ -69,6 +61,7 @@ Use when 행은 Speed 행과 Multi-solution 행에서 나온다. Multi-solution 
 - **forward model**: 입력 조건 (recipe) 을 받아 출력 (두께) 을 예측하는 model.
 - **forward pass**: 학습된 model 에 입력을 한 번 넣어 출력을 계산하는 것.
 - **inverse model**: 출력을 입력으로, 입력을 출력으로 받도록 뒤집어 학습한 model. 역모델이라고도 부른다.
+- **inverse problem**: 목표 출력 y 가 주어졌을 때 그것을 만드는 입력 x 를 찾는 문제.
 - **inverse problem solving**: 정해진 출력을 내는 입력을 forward model 로 찾는 것.
 - **inversion model**: Model inversion 을 수행하는 system 을 부르는 이름. Model inversion 과 같은 것을 가리킨다.
 - **model inversion**: 이미 가진 forward model 을 최적화나 탐색으로 거꾸로 풀어 입력을 찾는 과정.
