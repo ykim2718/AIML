@@ -1,6 +1,6 @@
 """Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.13.2.2026.9.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.14.0.2026.10.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -19,7 +19,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
 __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'build_appendix_d_model',
-           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7']
+           'panel_caption', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8']
 
 APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
@@ -67,8 +67,8 @@ def build_appendix_b_model() -> tuple:
     return x_data, y_data, drift, x_mean, y_mean, pls
 
 
-def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 3: the measured values, the sampled inputs and the parity plot of the forward model."""
+def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 4: the measured values, the sampled inputs and the parity plot of the forward model."""
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     y_pred = pls.predict(x_data - x_mean).ravel() + y_mean
     residual = y_data - y_pred
@@ -150,8 +150,8 @@ def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 4: scores moved along the null space keep the predicted value."""
+def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 5: scores moved along the null space keep the predicted value."""
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     loadings, y_loadings = pls.x_loadings_, pls.y_loadings_
 
@@ -239,8 +239,8 @@ def mahalanobis_contour(ax, points: np.ndarray) -> None:
     ax.clabel(lines, fmt='%.0f', fontsize=font_size(0.8))
 
 
-def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 5: the measured values, the correlated inputs and the parity plot of Appendix C."""
+def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 6: the measured values, the correlated inputs and the parity plot of Appendix C."""
     x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
     y_pred = forward.predict(x_data)
     residual = y_data - y_pred
@@ -310,8 +310,8 @@ def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 6: the constrained solution hits the target inside the validity domain."""
+def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 7: the constrained solution hits the target inside the validity domain."""
     x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
 
     def t2(x_vec: np.ndarray) -> float:
@@ -416,8 +416,8 @@ def build_appendix_d_model() -> tuple:
     return data, surrogate, pca, t2_limit, spe_limit
 
 
-def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 7: the hidden model against T, the search in the A-B plane, the surrogate against P,
+def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 8: the hidden model against T, the search in the A-B plane, the surrogate against P,
     and the rows that were actually run within 2% of the solved A and B."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
@@ -573,8 +573,8 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     arguments = parse_args()
-    fig_3(out_folder=arguments.output_folder)
     fig_4(out_folder=arguments.output_folder)
     fig_5(out_folder=arguments.output_folder)
     fig_6(out_folder=arguments.output_folder)
     fig_7(out_folder=arguments.output_folder)
+    fig_8(out_folder=arguments.output_folder)
