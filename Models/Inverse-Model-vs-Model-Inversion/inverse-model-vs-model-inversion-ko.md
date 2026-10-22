@@ -1,5 +1,5 @@
 # Inverse Model and Model Inversion Quick Start
-Rev. 1 | Created: 2026-10-22 | Updated: 2026-10-22 15:48 CDT
+Rev. 2 | Created: 2026-10-22 | Updated: 2026-10-22 15:50 CDT
 
 ## 1. Purpose
 
@@ -13,14 +13,16 @@ Inverse model 은 출력에서 입력으로 방향을 뒤집어 처음부터 학
 
 ## 3. Inverse Model and Model Inversion
 
-두 방식은 같은 inverse problem 을 푸는 두 방법이며, 계층은 아래 Fig 1 과 같다.
+Problem 은 forward problem 과 inverse problem 으로 나뉘고, inverse problem 을 푸는 방법은 inverse model 과 model inversion 두 가지다. 계층은 아래 Fig 1 과 같다.
 
 ```text
-Inverse problem       given y, find x
-  +-- Inverse model      x = g(y)            learn g directly
-  +-- Model inversion    y = f(x), for x     solve with the forward model f
+Problem
+  +-- Forward problem          y = f(x)            given x, find y
+  +-- Inverse problem          x = g(y)            given y, find x
+        +-- Inverse model      x = g(y)            learn g directly
+        +-- Model inversion    y = f(x), for x     solve with the forward model f
 ```
-Fig 1. Inverse problem and its two solution methods
+Fig 1. Forward problem, inverse problem and the two inverse problem methods
 
 y 는 두께, x 는 recipe 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 forward model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다.
 
@@ -60,6 +62,7 @@ Use when 행은 Speed 행과 Multi-solution 행에서 나온다. Multi-solution 
 
 - **forward model**: 입력 조건 (recipe) 을 받아 출력 (두께) 을 예측하는 model.
 - **forward pass**: 학습된 model 에 입력을 한 번 넣어 출력을 계산하는 것.
+- **forward problem**: 입력 x 가 주어졌을 때 출력 y = f(x) 를 구하는 문제.
 - **inverse model**: 출력을 입력으로, 입력을 출력으로 받도록 뒤집어 학습한 model. 역모델이라고도 부른다.
 - **inverse problem**: 목표 출력 y 가 주어졌을 때 그것을 만드는 입력 x 를 찾는 문제.
 - **inverse problem solving**: 정해진 출력을 내는 입력을 forward model 로 찾는 것.
