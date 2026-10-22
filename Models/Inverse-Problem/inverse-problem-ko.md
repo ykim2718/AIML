@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 47 | Created: 2026-08-28 | Updated: 2026-10-22 16:47 CDT
+Rev. 48 | Created: 2026-08-28 | Updated: 2026-10-22 18:18 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -136,7 +136,7 @@ Deterministic 정식화는 잔차를 최소화하는 제약 최적화로 문제�
 p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x}) p(\mathbf{x}) \hspace{19em} (2)
 ```
 
-두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [[3](#ref-3)]. Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 다중해와 불확실성을 그대로 보여 준다.
+두 정식화는 대응한다. 사후분포의 최빈값을 구하는 일은 음의 로그 우도를 잔차로, 음의 로그 사전분포를 regularization 으로 둔 최소화와 같다 [[3](#ref-3)]. Deterministic 쪽은 계산이 싸고, Bayesian 쪽은 multi-solution 과 불확실성을 그대로 보여 준다.
 
 ### 2.2 Search space (Where to search)
 
@@ -147,7 +147,7 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 - Analytical inverse 는 선형 model 에서 pseudo-inverse 로 해를 닫힌 형태로 준다. 가장 싸지만 비선형 model 에는 쓸 수 없다.
 - Numerical optimization 은 $f$ 를 그대로 두고 잔차를 줄인다. 미분이 되면 gradient 를, 안 되면 derivative-free 탐색을 쓴다.
 - Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 따로 학습한다. 학습이 끝나면 $\mathbf{y}$ 를 한 번 넣어 $\mathbf{x}$ 를 바로 얻지만, 같은 $\mathbf{y}$ 에 여러 $\mathbf{x}$ 가 대응하면 그 조건부 평균 하나를 내놓아 어느 해에도 맞지 않는 답이 된다 [[4](#ref-4)].
-- Posterior sampling 은 해를 표본으로 뽑아 다중해를 그대로 드러낸다. 비용이 가장 크다.
+- Posterior sampling 은 해를 표본으로 뽑아 multi-solution 을 그대로 드러낸다. 비용이 가장 크다.
 
 ### 2.4 Ambiguity handling (What fixes the answer)
 
@@ -223,19 +223,19 @@ Model 별 inversion 방법을 Table 2 에 정리한다.
 
 Table 2. Inversion method by model family
 
-|   #   |              Model               |              Inversion method               |                                                                          Characteristics                                                                          |
-| :---: | :------------------------------: | :-----------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|   1   |            PLS / PCR             |          해석적 역해와 null space           | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다 |
-|   2   |           OLS / Ridge            |               Pseudo-inverse                |                                    잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                    |
-|   3   |               PCA                |              Pre-image problem              |                                출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                 |
-|   4   |            Kernel PLS            |        Latent space 역해와 pre-image        |                                          비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                           |
-|   5   |                GP                |            사후분포 기반 역설계             |                                                    불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                    |
-|   6   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |  미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다   |
-|   7   |          Neural network          |             입력에 대한 역전파              |                                       가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                        |
-|   8   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                       생성 model 방식의 역설계이며 제조 분야로 확산 중이다                                                        |
-|   9   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                            cINN 은 목표를 한 번 넣어 사후분포를 준다                                                             |
-|  10   |         Diffusion model          |                사후 sampling                |                                                       잡음이 있는 비선형 문제에서 다중해를 표본으로 얻는다                                                        |
-|  11   |          Model-agnostic          |     제약이 있는 numerical optimization      |              어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다              |
+|   #   |              Model               |              Inversion method               |                                                                              Characteristics                                                                               |
+| :---: | :------------------------------: | :-----------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|   1   |            PLS / PCR             |          해석적 역해와 null space           |     선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다      |
+|   2   |           OLS / Ridge            |               Pseudo-inverse                |                                        잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                         |
+|   3   |               PCA                |              Pre-image problem              |                                     출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                     |
+|   4   |            Kernel PLS            |        Latent space 역해와 pre-image        |                                               비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                               |
+|   5   |                GP                |            사후분포 기반 역설계             |                                                        불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                         |
+|   6   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |       미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다       |
+|   7   |          Neural network          |             입력에 대한 역전파              |                                            가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                            |
+|   8   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                            생성 model 방식의 역설계이며 제조 분야로 확산 중이다                                                            |
+|   9   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                                 cINN 은 목표를 한 번 넣어 사후분포를 준다                                                                  |
+|  10   |         Diffusion model          |                사후 sampling                |                                                       잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                        |
+|  11   |          Model-agnostic          |     제약이 있는 numerical optimization      |                  어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다                   |
 
 Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 이어지는 여섯 절이 계열별로 설명한다.
 
@@ -280,7 +280,7 @@ Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y
 Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므로, 실행 전에 다음 네 가지를 확인한다.
 
 - 외삽: model 은 historical data 가 덮은 영역에서만 신뢰할 수 있다. $T^{2}$ 는 그 영역 안에서 중심으로부터 얼마나 멀리 있는지를, SPE 는 영역이 이루는 면에서 얼마나 떨어졌는지를 잰다. 둘 중 하나만 보면 상관 구조가 깨진 해를 놓친다.
-- 다중해: 답이 하나가 아니면 하나만 골라 보고하지 않는다. Null space 구간이나 사후분포처럼 답의 집합을 보여 주는 편이 판단에 도움이 된다.
+- Multi-solution: 답이 하나가 아니면 하나만 골라 보고하지 않는다. Null space 구간이나 사후분포처럼 답의 집합을 보여 주는 편이 판단에 도움이 된다.
 - 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 규격을 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 그 확률을 낼 수 없으므로 별도의 검증이 필요하다.
 - 검증과 갱신: 얻은 입력은 실험이나 시뮬레이션으로 확인하고, 그 결과를 데이터에 더해 model 을 다시 학습하는 closed loop 를 둔다. 이 재학습이 없으면 model 의 오차가 그대로 설계 오차가 된다.
 
@@ -353,7 +353,7 @@ Table 3. Libraries for model inversion
 - **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
 - **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
 - **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
-- **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 이라고도 부른다.
+- **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 또는 역모델이라고도 부른다.
 - **Joint-Y PLS**: 여러 site 의 데이터를 공통 출력으로 묶어 하나의 latent space 에서 다루는 PLS 확장이다.
 - **Latent variable**: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
 - **Loading**: Latent 변수와 관측 변수를 잇는 계수이며, score 에서 입력을 복원할 때 쓰인다.
@@ -361,7 +361,8 @@ Table 3. Libraries for model inversion
 - **MCMC**: 사후분포를 따르는 표본을 연쇄적으로 생성하는 sampling 방법이며 Markov chain Monte Carlo 의 약자이다.
 - **Minimum-norm solution**: 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다.
 - **Model distillation**: 원 model 의 예측을 정답으로 삼아 다른 model 을 학습시켜 그 입출력 관계를 옮기는 방법이다.
-- **Model inversion**: 학습된 model 을 뒤집어 목표 출력을 내는 입력을 구하는 방법이다.
+- **Model inversion**: 이미 가진 forward model 을 거꾸로 풀어 목표 출력을 내는 입력을 찾는 방법이다.
+- **Multi-solution**: 같은 출력을 만드는 입력 조합이 여럿 있는 상태이다.
 - **Normalizing flow**: 가역 변환의 합성으로 분포를 다른 분포로 옮기는 생성 model 이다.
 - **Null space**: 예측 출력을 바꾸지 않는 입력 또는 score 의 방향이 이루는 부분공간이다.
 - **Null space direction**: null space 의 기저 벡터 하나이며, 그 방향으로 score 를 움직여도 예측 출력이 바뀌지 않는다.
@@ -376,7 +377,7 @@ Table 3. Libraries for model inversion
 - **Regularization**: 해의 크기나 형태에 벌점을 주어 ill-posed problem 을 안정화하는 방법이다.
 - **Score**: 관측을 latent 좌표계로 투영한 값이다.
 - **SPE**: 관측이 model 평면에서 벗어난 거리의 제곱이며 squared prediction error 의 약자이다.
-- **Surrogate model**: 비싼 계산이나 실험을 대신하는 값싼 근사 model 이다.
+- **Surrogate model**: 원래 model (physical model 이나 직접 부를 수 없는 model) 을 대신해 (x, y) 쌍으로 학습한 data-driven forward model 이다.
 - **TreeSHAP**: Tree model 에서 각 입력의 기여도를 다항 시간에 정확히 계산하는 방법이다.
 - **VAE**: Latent 변수의 분포를 학습하는 생성 model 이며 variational autoencoder 의 약자이다.
 - **Validity domain**: model 이 학습 데이터로 뒷받침되는 입력 영역이다.
