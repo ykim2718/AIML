@@ -1,5 +1,5 @@
 # Inverse Model and Model Inversion Quick Start
-Rev. 4 | Created: 2026-10-22 | Updated: 2026-10-22 15:59 CDT
+Rev. 5 | Created: 2026-10-22 | Updated: 2026-10-22 16:16 CDT
 
 ## 1. Purpose
 
@@ -17,17 +17,17 @@ Problem 은 forward problem 과 inverse problem 으로 나뉘고, inverse proble
 
 ```text
 Problem
-  +-- Forward problem          y = f(x)            given x, find y
-  |     +-- Surrogate model    y ~ s(x)            cheaper forward model fitted to (x, y) pairs
+  +-- Forward problem                              given x, find y
+  |     +-- Surrogate model    y = f(x)            data-driven model that replaces the physical model
   +-- Inverse problem                              given y, find x
         +-- Inverse model      x = g(y)            learn g directly
         |     aka direct (learned) inversion, learned inverse map
-        +-- Model inversion    y = f(x), for x     solve with the forward model f or its surrogate s
+        +-- Model inversion    y = f(x), for x     solve with the surrogate model f
               aka optimization-based (iterative) inversion
 ```
 Fig 1. Forward problem, inverse problem and the two inverse problem methods
 
-y 는 두께, x 는 recipe 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 forward model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다. Surrogate model s 는 (x, y) 쌍으로 f 를 대신 학습한 forward model 이며, f 를 직접 부를 수 없을 때 model inversion 이 s 를 대신 푼다. Inverse model 은 문헌에서 direct (learned) inversion 또는 learned inverse map 으로, model inversion 은 optimization-based (iterative) inversion 으로도 부른다.
+y 는 두께, x 는 recipe 이다. Forward problem 을 푸는 model f 는 physical model 을 대신해 (x, y) 쌍으로 학습한 surrogate model 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 surrogate model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다. Inverse model 은 문헌에서 direct (learned) inversion 또는 learned inverse map 으로, model inversion 은 optimization-based (iterative) inversion 으로도 부른다.
 
 ### 3.1 Inverse Model
 
@@ -72,5 +72,6 @@ Use when 행은 Speed 행과 Multi-solution 행에서 나온다. Multi-solution 
 - **inversion model**: Model inversion 을 수행하는 system 을 부르는 이름. Model inversion 과 같은 것을 가리킨다.
 - **model inversion**: 이미 가진 forward model 을 최적화나 탐색으로 거꾸로 풀어 입력을 찾는 과정.
 - **multi-solution**: 같은 출력을 만드는 입력 조합이 여럿 있는 상태.
+- **physical model**: 물리 법칙으로 입력에서 출력을 계산하는 model.
 - **recipe**: 공정 장비에 주는 입력 조건의 묶음.
-- **surrogate model**: (x, y) 쌍으로 원래 forward model 을 대신 학습한 가벼운 forward model.
+- **surrogate model**: Physical model 을 대신해 (x, y) 쌍으로 학습한 data-driven forward model.
