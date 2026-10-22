@@ -1,5 +1,5 @@
 # Inverse Model and Model Inversion Quick Start
-Rev. 2 | Created: 2026-10-22 | Updated: 2026-10-22 15:50 CDT
+Rev. 3 | Created: 2026-10-22 | Updated: 2026-10-22 15:51 CDT
 
 ## 1. Purpose
 
@@ -18,7 +18,7 @@ Problem 은 forward problem 과 inverse problem 으로 나뉘고, inverse proble
 ```text
 Problem
   +-- Forward problem          y = f(x)            given x, find y
-  +-- Inverse problem          x = g(y)            given y, find x
+  +-- Inverse problem                              given y, find x
         +-- Inverse model      x = g(y)            learn g directly
         +-- Model inversion    y = f(x), for x     solve with the forward model f
 ```
