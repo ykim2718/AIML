@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 45 | Created: 2026-08-28 | Updated: 2026-10-22 16:38 CDT
+Rev. 46 | Created: 2026-08-28 | Updated: 2026-10-22 16:41 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -55,22 +55,7 @@ Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적�
 
 Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. 공정의 historical data 로 만든 latent variable model 을 뒤집어, 원하는 품질을 낼 수 있는 운전 조건의 창을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
-비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
-
-Table 1. Terms adjacent to model inversion
-
-|   #   |          Term          |             Question it answers             |                     Difference from model inversion                     |
-| :---: | :--------------------: | :-----------------------------------------: | :---------------------------------------------------------------------: |
-|   1   |    Model inversion     |      목표 출력을 내는 입력은 무엇인가       |                            기준이 되는 문제                             |
-|   2   |     Inverse design     |     목표 성능을 갖는 설계안은 무엇인가      |            문제의 이름이며, model inversion 은 그 해법 하나             |
-|   3   |      Calibration       | 관측을 설명하는 model parameter 는 무엇인가 |                되찾는 대상이 입력이 아닌 model parameter                |
-|   4   |      Optimization      | 목적 함수를 가장 좋게 하는 입력은 무엇인가  | 목표값 추종이 아닌 극값 탐색. 잔차를 목적 함수로 두면 inversion 을 포함 |
-|   5   |      Attribution       |    출력이 어느 입력에 얼마나 반응하는가     |        국소 기여도의 설명. 목표를 만족하는 입력은 제시하지 않음         |
-|   6   | Model inversion attack |        학습 데이터에 무엇이 있었는가        |         목적이 설계가 아닌 privacy 침해. 복원 대상은 학습 표본          |
-
-## 2. Taxonomy
-
-Inverse problem 과 그 해법의 계층은 아래 Fig 1 과 같다.
+Model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지는 아래 Fig 1 과 같다.
 
 ```text
 Problem
@@ -86,40 +71,55 @@ Fig 1. Taxonomy of inverse problem
 
 Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 2.3 의 learned inverse map 으로 짧게 다룬다.
 
+비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
+
+Table 1. Terms adjacent to model inversion
+
+|   #   |          Term          |             Question it answers             |                     Difference from model inversion                     |
+| :---: | :--------------------: | :-----------------------------------------: | :---------------------------------------------------------------------: |
+|   1   |    Model inversion     |      목표 출력을 내는 입력은 무엇인가       |                            기준이 되는 문제                             |
+|   2   |     Inverse design     |     목표 성능을 갖는 설계안은 무엇인가      |            문제의 이름이며, model inversion 은 그 해법 하나             |
+|   3   |      Calibration       | 관측을 설명하는 model parameter 는 무엇인가 |                되찾는 대상이 입력이 아닌 model parameter                |
+|   4   |      Optimization      | 목적 함수를 가장 좋게 하는 입력은 무엇인가  | 목표값 추종이 아닌 극값 탐색. 잔차를 목적 함수로 두면 inversion 을 포함 |
+|   5   |      Attribution       |    출력이 어느 입력에 얼마나 반응하는가     |        국소 기여도의 설명. 목표를 만족하는 입력은 제시하지 않음         |
+|   6   | Model inversion attack |        학습 데이터에 무엇이 있었는가        |         목적이 설계가 아닌 privacy 침해. 복원 대상은 학습 표본          |
+
+## 2. Taxonomy
+
 Inverse problem 의 해법을 가르는 축을 Fig 2 에 정리한다.
 
 ```
 Inverse problem (given a target y*, find the input x)
 |
 +-- Formulation (How to pose)
-|   +-- Deterministic ......................... minimize the residual under constraints
-|   +-- Bayesian .............................. posterior of x given y*, prior included
+|   +-- Deterministic ......................... minimize the residual under constraints          -> model inversion
+|   +-- Bayesian .............................. posterior of x given y*, prior included          -> both
 |
 +-- Search space (Where to search)
-|   +-- Input space ........................... x itself, constraints stated explicitly
-|   +-- Latent space .......................... scores or codes, low dimensional
+|   +-- Input space ........................... x itself, constraints stated explicitly          -> model inversion
+|   +-- Latent space .......................... scores or codes, low dimensional                 -> model inversion
 |
 +-- Solution method (How to solve)
-|   +-- Analytical inverse .................... pseudo-inverse, closed form for linear models
-|   +-- Numerical optimization ................ gradient based or derivative free search
-|   +-- Learned inverse map ................... a second model trained from y to x
-|   +-- Posterior sampling .................... MCMC, conditional generative models
+|   +-- Analytical inverse .................... pseudo-inverse, closed form for linear models    -> model inversion
+|   +-- Numerical optimization ................ gradient based or derivative free search         -> model inversion
+|   +-- Learned inverse map ................... a second model trained from y to x               -> inverse model
+|   +-- Posterior sampling .................... MCMC, conditional generative models              -> both
 |
 +-- Ambiguity handling (What fixes the answer)
-|   +-- Null space ............................ directions that leave the prediction unchanged
-|   +-- Regularization ........................ norm penalty, minimum-norm solution
-|   +-- Validity constraint ................... T^2 and SPE limits, input bounds
-|   +-- Prior ................................. probability mass on plausible inputs
+|   +-- Null space ............................ directions that leave the prediction unchanged   -> model inversion
+|   +-- Regularization ........................ norm penalty, minimum-norm solution              -> model inversion
+|   +-- Validity constraint ................... T^2 and SPE limits, input bounds                 -> both
+|   +-- Prior ................................. probability mass on plausible inputs             -> both
 |
 +-- Answer form (What to return)
-    +-- Point ................................. one input vector
-    +-- Region ................................ design space, null space segment
-    +-- Distribution .......................... posterior with uncertainty
+    +-- Point ................................. one input vector                                 -> both
+    +-- Region ................................ design space, null space segment                 -> model inversion
+    +-- Distribution .......................... posterior with uncertainty                       -> both
 ```
 
 Fig 2. Taxonomy of inverse problem solution approaches
 
-한 방법은 다섯 축에서 하나씩 고른 조합이며, 축은 서로 배타적이지 않다. 이어지는 다섯 절이 축마다 그 선택지를 설명한다.
+각 항목 끝의 화살표는 그 선택지가 Fig 1 의 model inversion 과 inverse model 가운데 어느 쪽에 쓰이는지를 나타내며, both 는 두 쪽 모두에 쓰인다는 뜻이다. Bayesian 정식화와 posterior sampling 은 MCMC 로 $f$ 를 불러 표본을 뽑으면 model inversion 이고, cINN 처럼 사후분포를 직접 학습하면 inverse model 이다. 한 방법은 다섯 축에서 하나씩 고른 조합이며, 축은 서로 배타적이지 않다. 이어지는 다섯 절이 축마다 그 선택지를 설명한다.
 
 ### 2.1 Formulation (How to pose)
 
