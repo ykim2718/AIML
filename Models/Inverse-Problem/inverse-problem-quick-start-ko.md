@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 7 | Created: 2026-10-22 | Updated: 2026-10-22 16:47 CDT
+Rev. 8 | Created: 2026-10-22 | Updated: 2026-10-22 18:15 CDT
 
 ## 1. Purpose
 
@@ -7,13 +7,9 @@ Rev. 7 | Created: 2026-10-22 | Updated: 2026-10-22 16:47 CDT
 - **Goal**: 두 용어가 가리키는 구축 방식을 구별하고, 추론 속도와 multi-solution 에서의 안정성을 기준으로 둘 중 하나를 고를 수 있게 한다.
 - **Non-Goal**: 최적화 algorithm 의 세부, ill-posedness 이론, model 종류별 inversion 방법은 다루지 않는다.
 
-## 2. Summary
+## 2. Taxonomy
 
-Inverse model 은 출력에서 입력으로 방향을 뒤집어 처음부터 학습한 독립 model 이고, model inversion 은 이미 가진 forward model 을 최적화로 거꾸로 푸는 과정이다. 추론 속도가 우선이면 inverse model 을, multi-solution 이 있어 안정성이 우선이면 model inversion 을 쓴다.
-
-## 3. Inverse Model and Model Inversion
-
-Problem 은 forward problem 과 inverse problem 으로 나뉘고, inverse problem 을 푸는 방법은 inverse model 과 model inversion 두 가지다. 계층은 아래 Fig 1 과 같다.
+Problem 과 그 해법의 계층은 아래 Fig 1 과 같다.
 
 ```text
 Problem
@@ -28,7 +24,11 @@ Problem
 ```
 Fig 1. Forward problem, inverse problem and the two inverse problem methods
 
-y 는 두께, x 는 recipe 이다. Forward problem 을 푸는 model f 는 physical model 을 대신해 (x, y) 쌍으로 학습한 surrogate model 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 surrogate model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다. Inverse model 은 문헌에서 direct (learned) inversion 또는 learned inverse map 으로, model inversion 은 optimization-based (iterative) inversion 으로도 부른다.
+y 는 두께, x 는 recipe 이다. Forward problem 을 푸는 model f 는 physical model 을 대신해 (x, y) 쌍으로 학습한 surrogate model 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 surrogate model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다. Inverse model 은 문헌에서 direct (learned) inversion 또는 learned inverse map 으로, model inversion 은 optimization-based (iterative) inversion 으로도 부른다. 추론 속도가 우선이면 inverse model 을, multi-solution 이 있어 안정성이 우선이면 model inversion 을 쓴다.
+
+## 3. Inverse Model and Model Inversion
+
+두 방법은 학습하는 model 의 방향과 추론 때 반복하는 계산으로 갈린다.
 
 ### 3.1 Inverse Model
 
