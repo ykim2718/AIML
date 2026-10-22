@@ -1,6 +1,6 @@
-"""Draw the Appendix B, Appendix C and Appendix D figures of inversion-problem-ko.md."""
+"""Draw the Appendix B, Appendix C and Appendix D figures of inverse-problem-ko.md."""
 __author__ = 'yRocket'
-__version__ = "0.14.0.2026.10.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.14.1.2026.10.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -30,7 +30,7 @@ APPENDIX_D_TOLERANCE: float = 0.02
 
 matplotlib.use('Agg')
 
-DEFAULT_OUTPUT_FOLDER: pathlib.Path = pathlib.Path(__file__).parent / 'inversion-problem-ko_fig'
+DEFAULT_OUTPUT_FOLDER: pathlib.Path = pathlib.Path(__file__).parent / 'inverse-problem-ko_fig'
 FIGSIZE: tuple = (9.0, 4.0)
 REFERENCE_WIDTH: float = 9.0     # the width BASE_FONT_SIZE was chosen for
 BASE_FONT_SIZE: float = 9.0
@@ -556,7 +556,7 @@ def parse_args() -> argparse.Namespace:
         prog=pathlib.Path(__file__).name,
         description=f'{pathlib.Path(__file__).name} {__version__}\n'
                     f'Draw the Appendix B, Appendix C and Appendix D figures of '
-                    f'inversion-problem-ko.md.',
+                    f'inverse-problem-ko.md.',
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument('--output-folder', type=pathlib.Path, default=DEFAULT_OUTPUT_FOLDER,

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 44 | Created: 2026-08-28 | Updated: 2026-10-22 16:23 CDT
+Rev. 45 | Created: 2026-08-28 | Updated: 2026-10-22 16:38 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -55,23 +55,6 @@ Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적�
 
 Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. 공정의 historical data 로 만든 latent variable model 을 뒤집어, 원하는 품질을 낼 수 있는 운전 조건의 창을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
-Model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지는 아래 Fig 1 과 같다.
-
-```text
-Problem
-  +-- Forward problem                              given x, find y
-  |     +-- Surrogate model    y = f(x)            data-driven model that replaces the physical model
-  +-- Inverse problem                              given y, find x
-        +-- Inverse model      x = g(y)            learn g directly
-        |     aka direct (learned) inversion, learned inverse map
-        +-- Model inversion    y = f(x), for x     solve with the surrogate model f
-              aka optimization-based (iterative) inversion
-```
-Fig 1. Taxonomy of inverse problem
-
-Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 2.3 의 learned inverse map 으로 짧게 다룬다.
-
-
 비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
 
 Table 1. Terms adjacent to model inversion
@@ -86,6 +69,22 @@ Table 1. Terms adjacent to model inversion
 |   6   | Model inversion attack |        학습 데이터에 무엇이 있었는가        |         목적이 설계가 아닌 privacy 침해. 복원 대상은 학습 표본          |
 
 ## 2. Taxonomy
+
+Inverse problem 과 그 해법의 계층은 아래 Fig 1 과 같다.
+
+```text
+Problem
+  +-- Forward problem                              given x, find y
+  |     +-- Surrogate model    y = f(x)            data-driven model that replaces the physical model
+  +-- Inverse problem                              given y, find x
+        +-- Inverse model      x = g(y)            learn g directly
+        |     aka direct (learned) inversion, learned inverse map
+        +-- Model inversion    y = f(x), for x     solve with the surrogate model f
+              aka optimization-based (iterative) inversion
+```
+Fig 1. Taxonomy of inverse problem
+
+Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 2.3 의 learned inverse map 으로 짧게 다룬다.
 
 Inverse problem 의 해법을 가르는 축을 Fig 2 에 정리한다.
 
@@ -430,7 +429,7 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 뒤집기 전에 뒤집을 model 부터 본다.
 
-<img src="inversion-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 4">
+<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
@@ -446,7 +445,7 @@ Fig 4 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 
 
 Code 가 만든 `x_alt` 37 개를 Fig 5 에 그린다.
 
-<img src="inversion-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 5">
+<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 5">
 
 Fig 5. Predicted value and inputs along the null space
 
@@ -540,7 +539,7 @@ print("x_sol       :", np.round(x_sol, 3))
 
 뒤집기 전에 이 예시의 데이터도 같은 방식으로 본다.
 
-<img src="inversion-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 6">
+<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 6">
 
 Fig 6. Appendix C measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
@@ -552,7 +551,7 @@ Fig 6 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, R
 
 두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 7 에 나란히 그린다.
 
-<img src="inversion-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 7">
+<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 7">
 
 Fig 7. Constrained solution against the validity limits
 
@@ -693,7 +692,7 @@ their true T      : [17.85 18.56 19.01 19.8 ]
 
 이 결과를 Fig 8 에 그린다.
 
-<img src="inversion-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 8">
+<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 8">
 
 Fig 8. Appendix D hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
 
