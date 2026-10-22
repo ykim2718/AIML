@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 9 | Created: 2026-10-22 | Updated: 2026-10-22 18:18 CDT
+Rev. 10 | Created: 2026-10-22 | Updated: 2026-10-22 18:20 CDT
 
 ## 1. Purpose
 
@@ -44,7 +44,7 @@ y 는 두께, x 는 recipe 이다. Forward problem 을 푸는 model f 는 physic
 - **Strength**: 물리 법칙과 forward model 의 예측 정밀도를 그대로 쓰므로 안정적.
 - **Weakness**: 추론마다 최적화 연산을 거치므로 inverse model 보다 느림.
 
-### 3.3 Placement
+### 3.3 Comparison
 
 두 방식의 차이는 Table 1 과 같다.
 

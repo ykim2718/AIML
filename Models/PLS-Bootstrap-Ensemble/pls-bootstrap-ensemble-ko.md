@@ -1,10 +1,10 @@
 # PLS Bootstrap Ensemble
-Rev. 0 | Created: 2026-10-19 | Updated: 2026-10-19 22:25 CDT
+Rev. 1 | Created: 2026-10-19 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Principle](#4-principle)
   - [4.1 Algorithm](#41-algorithm)
   - [4.2 Spread and Prediction Interval](#42-spread-and-prediction-interval)
@@ -74,7 +74,7 @@ Single PLS ................................ one fit, no spread
 - Single PLS 에서 row bootstrap 으로 내려가면 퍼짐, OOB 오차, 계수 구간을 얻고, 계산량은 member 수 $B$ 배로 는다.
 - Row bootstrap 에서 group bootstrap 으로 내려가면 행이 서로 독립이라는 가정을 group 이 서로 독립이라는 가정으로 바꾼다. 대신 다시 뽑는 단위의 수가 행 수에서 group 수로 줄어 퍼짐의 추정이 거칠어진다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 변형은 자료의 구조와 원하는 산출물로 고른다.
 

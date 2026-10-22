@@ -1,10 +1,10 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 71 | Created: 2026-05-29 | Updated: 2026-10-03 11:53 CDT
+Rev. 72 | Created: 2026-05-29 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Prediction from the Joint Distribution](#4-prediction-from-the-joint-distribution)
 - [5. Physical Meaning](#5-physical-meaning)
   - [5.1 P(X) Shift and Drift](#51-px-shift-and-drift)
@@ -117,7 +117,7 @@ Table 1. Shift and drift of the three elements
 
 한 사건이 여러 칸에 함께 영향을 줄 수 있으며, Table 1 은 각 사건을 가장 먼저 바뀌는 요소의 칸에 둔다. Sensor drift 는 P(X) drift 이면서 측정값 기준의 관계 P(Y|X<sub>obs</sub>) 도 바꾸는 예다. 문헌과 업계 도구는 같은 칸을 다른 이름으로 부른다. P(X) shift 는 covariate shift, P(Y) shift 는 prior shift 또는 label shift, P(Y|X) shift 와 drift 는 concept shift 와 concept drift 이며, model monitoring 도구는 P(X) drift 를 data drift 라 부른다 ([Appendix C](#appendix-c-benchmarking)).
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 2 는 세 요소를 분해, 변화, 개입, 질문, 관측, 대책의 여섯 관점에 놓는다.
 

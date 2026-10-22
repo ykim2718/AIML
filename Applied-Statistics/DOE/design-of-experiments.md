@@ -1,10 +1,10 @@
 # Design of Experiments
-Rev. 7 | Created: 2026-08-30 | Updated: 2026-10-09 19:38 CDT
+Rev. 8 | Created: 2026-08-30 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Principle](#4-principle)
 - [5. Full Factorial Designs](#5-full-factorial-designs)
   - [5.1 Multilevel Designs](#51-multilevel-designs)
@@ -91,11 +91,11 @@ saves runs by treating high-order interactions as small, and a Plackett-Burman d
 small. The response surface family caps the model at second order and adds a third level to estimate curvature. A
 D-optimal design chooses its runs for one stated model, so it needs neither a cubic factor space nor a fixed run count.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1 gives the criteria for choosing a design.
 
-Table 1. Placement of designs
+Table 1. Comparison of designs
 
 | Design             | Model aimed at                  | Run count                        | Use when                                                                     |
 | :----------------: | :-----------------------------: | :------------------------------: | :--------------------------------------------------------------------------: |

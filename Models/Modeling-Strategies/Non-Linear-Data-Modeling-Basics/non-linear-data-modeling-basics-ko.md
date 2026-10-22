@@ -1,10 +1,10 @@
 # Non-Linear Data Modeling Basics
-Rev. 18 | Created: 2026-09-23 | Updated: 2026-09-23 15:41 CDT
+Rev. 19 | Created: 2026-09-23 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Principle](#4-principle)
   - [4.1 Linear Model Mechanics and Limits](#41-linear-model-mechanics-and-limits)
   - [4.2 Nonlinear Features in a Linear Model](#42-nonlinear-features-in-a-linear-model)
@@ -54,7 +54,7 @@ Fig 1. The composition of the two models and the methods on each side
 
 두 model 의 계층은 가정의 강도로 내려갑니다. Feature-Intensive Model 은 비선형의 형태를 항으로 미리 적어 두는 대신 그 항의 계수를 그대로 읽습니다. Algorithm-Intensive Model 은 형태를 적지 않아도 되는 대신, 어느 변수의 어느 구간이 예측을 움직였는지를 계수 하나로 읽지 못합니다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1. Where each model sits on the three axes
 

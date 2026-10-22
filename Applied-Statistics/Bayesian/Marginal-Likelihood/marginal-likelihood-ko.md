@@ -1,10 +1,10 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 6 | Created: 2026-09-20 | Updated: 2026-09-23 11:33 CDT
+Rev. 7 | Created: 2026-09-20 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Marginal Likelihood](#4-marginal-likelihood)
   - [4.1 Derivation](#41-derivation)
   - [4.2 Why the Integral Resists](#42-why-the-integral-resists)
@@ -50,9 +50,9 @@ Fig 1. Method families for the marginal likelihood and the assumption each makes
 
 세로축은 적분을 다루는 방식이고, 가로로 붙은 글은 그 방법이 posterior 의 모양에 두는 가정이다. 위에서 아래로 내려갈수록 가정이 약해져 쓸 수 있는 model 이 넓어지고, 대신 값 하나를 얻는 비용이 커진다. BIC 가 Laplace 아래에 붙은 것은 계열이 달라서가 아니라 같은 전개에서 항을 더 버린 것이기 때문이다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
-Placement 는 <a href="#fig-1">Fig 1</a> 이 세운 축과 계층 위에서 각 방법이 어느 자리에 놓이는지를 뜻한다. Table 1 이 그 자리를 posterior 에 두는 가정, 값 하나를 얻는 비용, 내놓는 산출의 세 가지로 적으며, 손에 있는 model 에 어느 방법을 쓸지는 이 표에서 고른다.
+Comparison 은 <a href="#fig-1">Fig 1</a> 이 세운 축과 계층 위에서 각 방법을 견준다. Table 1 은 각 방법을 posterior 에 두는 가정, 값 하나를 얻는 비용, 내놓는 산출의 세 가지로 견주며, 손에 있는 model 에 어느 방법을 쓸지는 이 표에서 고른다.
 
 Table 1. Methods for the marginal likelihood
 

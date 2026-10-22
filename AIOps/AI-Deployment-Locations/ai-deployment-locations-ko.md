@@ -1,5 +1,5 @@
 # AI Deployment Locations For Semiconductor Equipment
-Rev. 0 | Created: 2026-10-17 | Updated: 2026-10-17 08:28 CDT
+Rev. 1 | Created: 2026-10-17 | Updated: 2026-10-22 18:20 CDT
 
 ## 1. Purpose
 
@@ -48,7 +48,7 @@ Fig 2. Hierarchy of deployment locations
 데이터가 나가는 범위도 넓어져서, on-premise 에서는 장비 밖으로, cloud 에서는 회사 밖으로 나간다.
 Hybrid 는 세 위치에 역할을 나누어 맡기는 배포로, 보통 학습과 추론을 서로 다른 위치에서 하므로 Fig 2 에 따로 단계를 두지 않는다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1 은 위치마다 실행 장소, 응답 지연, 데이터가 나가는 범위, 그리고 fab 에서 맡는 기능을 정리한다.
 

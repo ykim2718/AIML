@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 32 | Created: 2026-08-25 | Updated: 2026-09-23 11:33 CDT
+Rev. 33 | Created: 2026-08-25 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Taxonomy of Outliers](#2-taxonomy-of-outliers)
@@ -13,8 +13,8 @@ Rev. 32 | Created: 2026-08-25 | Updated: 2026-09-23 11:33 CDT
   - [2.8. Time Series Type](#28-time-series-type)
 - [3. Hierarchy of Methods](#3-hierarchy-of-methods)
   - [3.1. The Three Families](#31-the-three-families)
-  - [3.2. Placement on the Axes](#32-placement-on-the-axes)
-  - [3.3. Placement by the Shape of the Data](#33-placement-by-the-shape-of-the-data)
+  - [3.2. Comparison on the Axes](#32-comparison-on-the-axes)
+  - [3.3. Comparison by the Shape of the Data](#33-comparison-by-the-shape-of-the-data)
 - [4. Statistical Methods](#4-statistical-methods)
   - [4.1. Z-Score](#41-z-score)
   - [4.2. Interquartile Range](#42-interquartile-range)
@@ -219,7 +219,7 @@ The hierarchy is not a ranking. A method one step down answers a wider class of 
 class of questions, so the family is fixed by what the data are, and the axes of section 2 fix which
 method inside that family is being asked for.
 
-### 3.2. Placement on the Axes
+### 3.2. Comparison on the Axes
 
 Table 2 places every method of sections 4 to 6 on the axes of section 2, and says which of those
 questions each one actually answers.
@@ -260,9 +260,9 @@ every method answers it the same way.
 A contextual anomaly is out of reach on the form axis as well: it needs a context variable, and no
 method here takes one.
 
-### 3.3. Placement by the Shape of the Data
+### 3.3. Comparison by the Shape of the Data
 
-Table 1 reads the same placement from the other side, from the shape of the data to the method whose
+Table 1 reads the same comparison from the other side, from the shape of the data to the method whose
 assumptions that shape satisfies.
 
 **Table 1. Method by the shape of the data**

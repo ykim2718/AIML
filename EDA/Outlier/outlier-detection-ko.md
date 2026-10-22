@@ -1,5 +1,5 @@
 # Outlier Detection Methods
-Rev. 15 | Created: 2026-09-09 | Updated: 2026-09-23 11:33 CDT
+Rev. 16 | Created: 2026-09-09 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Taxonomy of Outliers](#2-taxonomy-of-outliers)
@@ -13,8 +13,8 @@ Rev. 15 | Created: 2026-09-09 | Updated: 2026-09-23 11:33 CDT
   - [2.8. Time Series Type](#28-time-series-type)
 - [3. Hierarchy of Methods](#3-hierarchy-of-methods)
   - [3.1. The Three Families](#31-the-three-families)
-  - [3.2. Placement on the Axes](#32-placement-on-the-axes)
-  - [3.3. Placement by the Shape of the Data](#33-placement-by-the-shape-of-the-data)
+  - [3.2. Comparison on the Axes](#32-comparison-on-the-axes)
+  - [3.3. Comparison by the Shape of the Data](#33-comparison-by-the-shape-of-the-data)
 - [4. Statistical Methods](#4-statistical-methods)
   - [4.1. Z-Score](#41-z-score)
   - [4.2. Interquartile Range](#42-interquartile-range)
@@ -183,7 +183,7 @@ Masking 은 outlier 하나가 중심이나 척도를 부풀려 두 번째 outlie
 
 이 계층은 순위가 아니다. 한 단계 아래의 방법은 더 넓은 데이터에 답하고 더 좁은 질문에 답하므로, family 는 데이터가 무엇인지가 정하고, 그 family 안에서 어느 방법이 필요한지는 꼭지 2 의 축이 정한다.
 
-### 3.2. Placement on the Axes
+### 3.2. Comparison on the Axes
 
 Table 2 는 꼭지 4 부터 6 까지의 모든 방법을 꼭지 2 의 축 위에 놓고, 각 방법이 그 질문 가운데 어느 것에 실제로 답하는지를 말한다.
 
@@ -217,9 +217,9 @@ Deep 방법들은 방법이 아니라 데이터를 바꾸어 collective anomaly 
 
 Contextual anomaly 도 form 축에서 손에 닿지 않는다. 견줄 context 변수를 요구하는데 여기 있는 어느 방법도 그것을 받지 않는다.
 
-### 3.3. Placement by the Shape of the Data
+### 3.3. Comparison by the Shape of the Data
 
-Table 1 은 같은 배치를 반대쪽에서 읽어, 데이터의 모양에서 그 모양이 가정을 만족시키는 방법으로 간다.
+Table 1 은 같은 비교를 반대쪽에서 읽어, 데이터의 모양에서 그 모양이 가정을 만족시키는 방법으로 간다.
 
 **Table 1. Method by the shape of the data**
 

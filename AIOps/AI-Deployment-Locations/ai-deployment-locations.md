@@ -1,5 +1,5 @@
 # AI Deployment Locations For Semiconductor Equipment
-Rev. 0 | Created: 2026-10-17 | Updated: 2026-10-17 08:28 CDT
+Rev. 1 | Created: 2026-10-17 | Updated: 2026-10-22 18:20 CDT
 
 ## 1. Purpose
 
@@ -48,7 +48,7 @@ Each step down adds network hops between the tool and the model, so response lat
 The data also travels further at each step: it leaves the tool at on-premise and leaves the company at cloud.
 Hybrid splits roles among the three locations, typically training on one and inference on another, so it has no level of its own in Fig 2.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1 places each location by where it runs, its latency, how far the data travels and the fab functions it serves.
 

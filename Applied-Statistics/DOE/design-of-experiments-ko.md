@@ -1,10 +1,10 @@
 # Design of Experiments
-Rev. 6 | Created: 2026-09-04 | Updated: 2026-10-09 19:38 CDT
+Rev. 7 | Created: 2026-09-04 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Principle](#4-principle)
 - [5. Full Factorial Designs](#5-full-factorial-designs)
   - [5.1 Multilevel Designs](#51-multilevel-designs)
@@ -91,11 +91,11 @@ Full factorial 에서 한 단계 내려갈 때마다 model 에 두는 가정이 
 계열은 model 의 차수를 이차로 묶고 세 번째 수준을 더해 곡률을 추정한다. D-optimal design 은 명시한 model 하나에
 맞춰 run 을 고르므로 정육면체 모양의 factor 공간도, 정해진 run 수도 요구하지 않는다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Design 을 고르는 기준은 Table 1 과 같다.
 
-Table 1. Placement of designs
+Table 1. Comparison of designs
 
 | Design             | Model aimed at         | Run count                       | Use when                                                        |
 | :----------------: | :--------------------: | :-----------------------------: | :-------------------------------------------------------------: |

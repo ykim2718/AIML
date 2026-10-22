@@ -1,10 +1,10 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 48 | Created: 2026-10-05 | Updated: 2026-10-10 11:56 CDT
+Rev. 49 | Created: 2026-10-05 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. RMSE Interval](#4-rmse-interval)
   - [4.1 Interval Calculation](#41-interval-calculation)
   - [4.2 Interval Coverage](#42-interval-coverage)
@@ -105,7 +105,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 계층을 한 단계 내려갈 때마다 가정을 하나 버리거나 요구를 하나 더한다. 맨 위는 오차의 표준편차를 알고, 그 아래는 표준편차를 n 개의 오차로 추정하며, 맨 아래는 추정한 표준편차로 모집단의 비율까지 보장한다. $\sigma$ 를 안다는 가정을 버리면 <a href="#fig-2">Fig 2</a> 의 둘째 줄 (RMSE interval) 과 셋째 줄 (prediction interval) 로 갈린다. 배율을 $z(1 - \alpha/2)$ 에 그대로 두면 담는 확률이 $1 - \alpha$ 아래로 떨어지고, $1 - \alpha$ 를 지키려면 배율을 식 (9) 의 $\sqrt{n/\nu}\; t_{\nu}(1 - \alpha/2)$ 로 키우며, $\nu = n$ 이면 $t_{n}(1 - \alpha/2)$ 다. 넷째 줄 (tolerance interval) 은 담는 확률에 신뢰수준을 하나 더 붙이며, 그 신뢰수준을 0.5 보다 높게 두면 배율이 셋째 줄보다 커진다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1 에는 구간마다 <a href="#fig-1">Fig 1</a> 의 두 축에서 고른 값, 곧 쓰는 표준편차와 담는 대상이 있고, 그 둘로 정해지는 배율과 확률도 함께 있다. 쓸 구간은 가진 표준편차와 담아야 하는 대상으로 이 표에서 고른다.
 

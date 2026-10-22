@@ -1,10 +1,10 @@
 # Prefect In An AI Agent Backend
-Rev. 56 | Created: 2026-09-27 | Updated: 2026-09-28 14:44 CDT
+Rev. 57 | Created: 2026-09-27 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Backend Composition](#4-backend-composition)
 - [5. Benchmarking](#5-benchmarking)
   - [5.1 Criteria](#51-criteria)
@@ -57,7 +57,7 @@ Fig 1. The three frontend roles and the seven backend responsibilities ordered b
 
 범위가 한 단계 넓어지면, 앞 범위가 끝난 뒤에도 남아야 하는 상태를 둘 자리가 하나 더 있어야 한다. 한 단계 범위는 process 안에서 끝나고, 한 실행 범위는 process 가 죽어도 내용이 남는 저장소를 쓰며, 모든 실행 범위는 process 가 모두 끝난 뒤에도 돌면서 어떤 실행이 있었는지 알려 주는 service 를 쓴다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 <a id="table-1"></a>
 Table 1. Each role, the part that holds it, and what settles it

@@ -1,10 +1,10 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 19 | Created: 2026-10-03 | Updated: 2026-10-03 11:53 CDT
+Rev. 20 | Created: 2026-10-03 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Prediction from the Joint Distribution](#4-prediction-from-the-joint-distribution)
 - [5. Physical Meaning](#5-physical-meaning)
   - [5.1 P(X) Shift and Drift](#51-px-shift-and-drift)
@@ -117,7 +117,7 @@ Table 1. Shift and drift of the three elements
 
 One event can affect several cells at once, and Table 1 puts each event in the cell of the element that changes first. Sensor drift is an example: it is P(X) drift and also changes the relation P(Y|X<sub>obs</sub>) on measured values. The literature and industry tools call the same cells by other names: P(X) shift is covariate shift, P(Y) shift is prior shift or label shift, P(Y|X) shift and drift are concept shift and concept drift, and model monitoring tools call P(X) drift data drift ([Appendix C](#appendix-c-benchmarking)).
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 2 places the three elements on six lenses: decomposition, change, intervention, question, observation and lever.
 

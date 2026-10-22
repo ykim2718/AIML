@@ -1,10 +1,10 @@
 # Spec-Driven Development (SDD)
-Rev. 4 | Created: 2026-09-26 | Updated: 2026-09-26 16:57 CDT
+Rev. 5 | Created: 2026-09-26 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
   - [3.2 Spec Components](#32-spec-components)
   - [3.3 Requirement Notation](#33-requirement-notation)
   - [3.4 Persistence Model](#34-persistence-model)
@@ -62,7 +62,7 @@ SDD 의 파일은 위에서 아래로 적용 범위가 좁아진다. Project rul
 
 Spec 의 네 요소는 위에서 아래로 agent 가 스스로 정할 수 있는 폭을 좁힌다. Scope 는 손댈 파일과 library 를, data schema 는 입출력의 모양을, behavior 는 경계 조건에서의 동작을 고정한다. Acceptance criteria 는 앞의 세 요소를 실행할 수 있는 명령으로 바꾸어, 통과 여부를 사람의 판단 없이 가린다. 앞의 세 요소만 있고 acceptance criteria 가 없으면 agent 는 구현을 마쳤다고 보고할 뿐 spec 을 지켰는지는 확인하지 않는다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 아래 표는 두 방식을 같은 항목으로 나란히 놓는다.
 

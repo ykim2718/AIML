@@ -1,10 +1,10 @@
 # Time-Series ML Model Validation Checklist
-Rev. 7 | Created: 2026-09-20 | Updated: 2026-09-23 11:08 CDT
+Rev. 8 | Created: 2026-09-20 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. General ML Check](#4-general-ml-check)
 - [5. Time-Series Specific Check](#5-time-series-specific-check)
   - [5.1 Validation Strategy](#51-validation-strategy)
@@ -61,7 +61,7 @@ Time-Series ML Model Validation
 <a id="fig-1"></a>
 Fig 1. Two levels of the validation checklist and the three axes of the time-series level
 
-### 3.1 Placement
+### 3.1 Comparison
 
 각 check 는 modeling pipeline 의 한 stage 에서 확인한다. Table 1 이 check 와 그 stage 이며, stage 의 순서는 data split 에서 deployment 까지의 순서다.
 

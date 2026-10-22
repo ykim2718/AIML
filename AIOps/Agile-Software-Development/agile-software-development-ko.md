@@ -1,11 +1,11 @@
 # Agile Software Development
-Rev. 7 | Created: 2026-09-13 | Updated: 2026-09-23 11:33 CDT
+Rev. 8 | Created: 2026-09-13 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
   - [3.1 Values](#31-values)
-  - [3.2 Placement](#32-placement)
+  - [3.2 Comparison](#32-comparison)
 - [4. Iteration Cycle](#4-iteration-cycle)
 - [5. Completion And Release](#5-completion-and-release)
   - [5.1 Definition Of Done](#51-definition-of-done)
@@ -81,7 +81,7 @@ Table 2. The four values of the Agile Manifesto
 | 고객과의 협력 | 계약 협상 |
 | 변화에 대응하기 | 계획을 따르기 |
 
-### 3.2 Placement
+### 3.2 Comparison
 
 폭포수 (waterfall) 모델과 갈리는 지점은 계획을 언제 바꿀 수 있고 피드백이 언제 도착하는가에 있으며, 기술적 단계의 목록에 있지 않다. Waterfall 은 각 단계를 순서대로 한 번씩 지나므로 피드백이 끝에 닿고, Agile 은 그 전 과정을 짧은 단위로 되풀이하므로 피드백이 단위마다 닿는다.
 

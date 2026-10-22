@@ -1,10 +1,10 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 6 | Created: 2026-10-09 | Updated: 2026-10-10 11:56 CDT
+Rev. 7 | Created: 2026-10-09 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. RMSE Interval](#4-rmse-interval)
   - [4.1 Interval Calculation](#41-interval-calculation)
   - [4.2 Interval Coverage](#42-interval-coverage)
@@ -105,7 +105,7 @@ Fig 2. The hierarchy the intervals form, and the assumption each step drops or t
 
 Each step down the hierarchy drops one assumption or adds one requirement. The top knows the standard deviation of the errors, the next estimates it from n errors, and the bottom uses the estimate to guarantee a fraction of the population. Once $\sigma$ is no longer assumed known, the hierarchy branches into the second row (RMSE interval) and the third row (prediction interval) of <a href="#fig-2">Fig 2</a>. Keeping the multiplier at $z(1 - \alpha/2)$ lets the probability fall below $1 - \alpha$; holding $1 - \alpha$ requires raising the multiplier to $\sqrt{n/\nu}\; t_{\nu}(1 - \alpha/2)$ of Eq. (9), which is $t_{n}(1 - \alpha/2)$ when $\nu = n$. The fourth row (tolerance interval) puts a confidence level on the covered probability, and with that confidence above 0.5 its multiplier exceeds the third row's.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1 lists, for each interval, the value it takes on the two axes of <a href="#fig-1">Fig 1</a>, namely the standard deviation it uses and what it covers, together with the multiplier and probability those two fix. The interval to use is chosen from this table by the standard deviation at hand and what has to be covered.
 

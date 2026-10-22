@@ -1,11 +1,11 @@
 # Agile Software Development
-Rev. 7 | Created: 2026-09-13 | Updated: 2026-09-23 11:33 CDT
+Rev. 8 | Created: 2026-09-13 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
   - [3.1 Values](#31-values)
-  - [3.2 Placement](#32-placement)
+  - [3.2 Comparison](#32-comparison)
 - [4. Iteration Cycle](#4-iteration-cycle)
 - [5. Completion And Release](#5-completion-and-release)
   - [5.1 Definition Of Done](#51-definition-of-done)
@@ -81,7 +81,7 @@ Table 2. The four values of the Agile Manifesto
 | Customer collaboration | Contract negotiation |
 | Responding to change | Following a plan |
 
-### 3.2 Placement
+### 3.2 Comparison
 
 Against the waterfall model the difference lies in where the plan is allowed to change and when feedback arrives, rather than in the set of technical steps. Waterfall passes each stage once in order, so the feedback lands at the end; Agile repeats the whole path in short units, so the feedback lands every unit.
 

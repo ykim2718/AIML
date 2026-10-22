@@ -1,5 +1,5 @@
 # Model Deployment Plan
-Rev. 1 | Created: 2026-10-14 | Updated: 2026-10-17 08:30 CDT
+Rev. 2 | Created: 2026-10-14 | Updated: 2026-10-22 18:20 CDT
 
 ## 1. Purpose
 
@@ -83,7 +83,7 @@ Table 3. Transition
 | Blue-Green | 기존 환경과 새 환경을 함께 띄워 두고 한 번에 전환하며, 문제가 생기면 즉시 되돌림 |
 | Rolling    | 여러 장비나 server 에 차례로 교체                                                |
 
-### 3.4 Placement
+### 3.4 Comparison
 
 Table 4. Deployment choice for this project
 

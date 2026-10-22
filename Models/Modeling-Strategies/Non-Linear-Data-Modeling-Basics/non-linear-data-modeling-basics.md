@@ -1,10 +1,10 @@
 # Non-Linear Data Modeling Basics
-Rev. 13 | Created: 2026-09-23 | Updated: 2026-09-23 15:41 CDT
+Rev. 14 | Created: 2026-09-23 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Principle](#4-principle)
   - [4.1 Linear Model Mechanics and Limits](#41-linear-model-mechanics-and-limits)
   - [4.2 Nonlinear Features in a Linear Model](#42-nonlinear-features-in-a-linear-model)
@@ -54,7 +54,7 @@ Fig 1. The composition of the two models and the methods on each side
 
 The hierarchy of the two models descends by the strength of the assumption. The Feature-Intensive Model writes the shape of the nonlinearity down as terms in advance, and in return reads the coefficient of each term directly. The Algorithm-Intensive Model leaves the shape unwritten, and in return cannot read from a single coefficient which range of which variable moved the prediction.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1. Where each model sits on the three axes
 

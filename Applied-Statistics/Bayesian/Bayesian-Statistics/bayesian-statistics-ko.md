@@ -1,10 +1,10 @@
 # Bayesian Statistics
-Rev. 8 | Created: 2026-09-20 | Updated: 2026-09-23 11:33 CDT
+Rev. 9 | Created: 2026-09-20 | Updated: 2026-10-22 18:20 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-  - [3.1 Placement](#31-placement)
+  - [3.1 Comparison](#31-comparison)
 - [4. Conditional Probability and Bayes' Rule](#4-conditional-probability-and-bayes-rule)
 - [5. The Pool Table Problem](#5-the-pool-table-problem)
   - [5.1 Setup](#51-setup)
@@ -64,7 +64,7 @@ Fig 1. The two schools and what each takes as given
 
 갈림은 무엇을 고정으로 두는가에서 시작한다. 고전 통계학은 model 을 고정으로 두므로 parameter 하나를 골라야 하고, Bayes 통계학은 자료를 고정으로 두므로 parameter 전체에 분포를 얹어야 한다. 아래로 내려갈수록 답이 쓰는 정보가 늘어나고, 그만큼 입력으로 요구하는 것도 늘어난다.
 
-### 3.1 Placement
+### 3.1 Comparison
 
 Table 1. The two schools side by side
 
