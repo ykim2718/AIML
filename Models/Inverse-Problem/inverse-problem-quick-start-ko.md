@@ -1,5 +1,5 @@
-# Inverse Model and Model Inversion Quick Start
-Rev. 5 | Created: 2026-10-22 | Updated: 2026-10-22 16:16 CDT
+# Inverse Model Quick Start
+Rev. 6 | Created: 2026-10-22 | Updated: 2026-10-22 16:45 CDT
 
 ## 1. Purpose
 
