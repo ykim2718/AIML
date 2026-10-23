@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 20 | Created: 2026-10-22 | Updated: 2026-10-23 08:29 UTC
+Rev. 21 | Created: 2026-10-22 | Updated: 2026-10-23 08:30 UTC
 
 ## 1. Purpose
 
@@ -120,8 +120,10 @@ Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 
 
 Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 개 학습하고 그 예측을 합쳐 최종 예측을 정하는 ensemble 방식이다. 절차는 아래 세 단계이다.
 
-1. Bootstrapping: 원래 학습 데이터 n 행에서 한 행을 무작위로 뽑아 표본에 넣고, 그 행을 다시 후보로 되돌려 놓는 일을 n 번 되풀이한다. 같은 행이 여러 번 뽑히거나 한 번도 뽑히지 않을 수 있어서, 개별 model 마다 조금씩 다른 n 행의 학습 표본이 하나씩 생긴다.
+1. Bootstrapping: 원래 학습 데이터에서 행을 복원추출하여, 개별 model 마다 학습 표본을 하나씩 만든다.
 2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
 3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
+
+복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
 
 세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[2](#ref-2)].
