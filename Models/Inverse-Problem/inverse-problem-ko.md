@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 52 | Created: 2026-08-28 | Updated: 2026-10-23 08:23 UTC
+Rev. 53 | Created: 2026-08-28 | Updated: 2026-10-23 08:26 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -29,6 +29,7 @@ Rev. 52 | Created: 2026-08-28 | Updated: 2026-10-23 08:23 UTC
 - [Appendix B. Python Example: PLS Model Inversion](#appendix-b-python-example-pls-model-inversion)
 - [Appendix C. Python Example: Constrained Numerical Inversion](#appendix-c-python-example-constrained-numerical-inversion)
 - [Appendix D. Python Example: Inversion without Model Access](#appendix-d-python-example-inversion-without-model-access)
+- [Appendix E. Bagging Ensemble](#appendix-e-bagging-ensemble)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -242,7 +243,7 @@ Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 
 
 ### 4.1 Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 bagging 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-e-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
 
 ### 4.2 Kernel and Gaussian process models
 
@@ -344,7 +345,7 @@ Table 3. Libraries for model inversion
 
 - **Acquisition function**: 예측값과 불확실성을 함께 담아 다음에 시험할 입력을 고르는 함수이다.
 - **Activation maximization**: 학습된 network 의 특정 출력이 최대가 되는 입력을 입력에 대한 역전파로 찾는 방법이다.
-- **Bagging**: Bootstrap aggregating 의 줄임말. 원래 표본에서 행을 복원추출한 bootstrap 표본마다 같은 model 을 학습하고, 그 model 들의 예측을 회귀에서는 평균으로, 분류에서는 다수결로 합치는 ensemble 방법. 예측의 분산을 줄이며, model 사이의 퍼짐으로 예측의 불확실성을 잴 수 있다 이다.
+- **Bagging**: Bootstrap aggregating 의 줄임말. 절차는 [Appendix E](#appendix-e-bagging-ensemble) 에 있다.
 - **Bayesian optimization**: 사후분포를 가진 surrogate model 과 acquisition function 으로 blackbox 함수의 최적점을 반복 탐색하는 방법이다.
 - **cINN**: 조건을 입력으로 받는 invertible neural network 이며, 조건부 사후분포에서 표본을 뽑는다.
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
@@ -717,3 +718,13 @@ Fig 8. Appendix D hidden model against T, the search in the A–B plane, the sur
 출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.869 나 19.184 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
 해는 유효 영역 안에 있다. $T^{2}$ 는 0.00 으로 상한 5.99 보다, SPE 는 0.063 으로 상한 0.468 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
+
+## Appendix E. Bagging Ensemble
+
+Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 개 학습하고 그 예측을 합쳐 최종 예측을 정하는 ensemble 방식이다. 절차는 아래 세 단계이다.
+
+1. Bootstrapping: 원래 학습 데이터에서 행을 복원추출하여, 개별 model 마다 학습 표본을 하나씩 만든다.
+2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
+3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
+
+세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[11](#ref-11)].
