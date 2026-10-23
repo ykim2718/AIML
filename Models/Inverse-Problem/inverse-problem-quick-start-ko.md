@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 12 | Created: 2026-10-22 | Updated: 2026-10-23 00:13 UTC
+Rev. 13 | Created: 2026-10-22 | Updated: 2026-10-23 06:01 UTC
 
 ## 1. Purpose
 
@@ -69,15 +69,15 @@ Table 2. Models and libraries by method
 <table>
   <tr><th align="center">Method</th><th align="center">Model</th><th align="center">Library</th><th align="center">Note</th></tr>
   <tr><td align="center" rowspan="3">Inverse model</td><td align="center">PLS</td><td align="center"><code>sklearn.cross_decomposition.PLSRegression</code></td><td align="center">y 를 입력, x 를 출력으로 두고 학습</td></tr>
-  <tr><td align="center">Neural network</td><td align="center"><code>sklearn.neural_network.MLPRegressor</code>, <code>torch.nn.Sequential</code></td><td align="center">y 를 입력, x 를 출력으로 두고 network 를 학습</td></tr>
-  <tr><td align="center">cINN</td><td align="center"><code>FrEIA.framework.SequenceINN</code>, <code>FrEIA.modules.AllInOneBlock</code></td><td align="center">목표 y 를 조건으로 x 의 사후분포에서 표본을 뽑음</td></tr>
-  <tr><td align="center" rowspan="7">Model inversion</td><td align="center">OLS / Ridge</td><td align="center"><code>sklearn.linear_model.LinearRegression</code>, <code>sklearn.linear_model.Ridge</code>, <code>numpy.linalg.pinv</code></td><td align="center">계수 행렬의 pseudo-inverse 로 닫힌 해를 구함</td></tr>
-  <tr><td align="center">PLS / PCR</td><td align="center"><code>sklearn.cross_decomposition.PLSRegression</code>, <code>sklearn.decomposition.PCA</code>, <code>scipy.linalg.null_space</code></td><td align="center">score 공간에서 역해를 구하고 null space 로 해의 집합을 얻음</td></tr>
-  <tr><td align="center">Random forest / GBM</td><td align="center"><code>sklearn.ensemble.RandomForestRegressor</code>, <code>sklearn.ensemble.GradientBoostingRegressor</code>, <code>scipy.optimize.differential_evolution</code></td><td align="center">미분 없이 입력 범위 안에서 전역 탐색</td></tr>
-  <tr><td align="center">Neural network</td><td align="center"><code>torch.Tensor.requires_grad_</code>, <code>torch.optim.Adam</code></td><td align="center">입력 tensor 의 gradient 를 켜고 x 를 갱신</td></tr>
-  <tr><td align="center">GP</td><td align="center"><code>botorch.models.SingleTaskGP</code>, <code>botorch.fit.fit_gpytorch_mll</code>, <code>botorch.optim.optimize_acqf</code></td><td align="center">GP 를 학습하고 acquisition function 을 최적화</td></tr>
+  <tr><td align="center">Neural network</td><td align="center"><code>sklearn.neural_network.MLPRegressor</code>,<br><code>torch.nn.Sequential</code></td><td align="center">y 를 입력, x 를 출력으로 두고 network 를 학습</td></tr>
+  <tr><td align="center">cINN</td><td align="center"><code>FrEIA.framework.SequenceINN</code>,<br><code>FrEIA.modules.AllInOneBlock</code></td><td align="center">목표 y 를 조건으로 x 의 사후분포에서 표본을 뽑음</td></tr>
+  <tr><td align="center" rowspan="7">Model inversion</td><td align="center">OLS / Ridge</td><td align="center"><code>sklearn.linear_model.LinearRegression</code>,<br><code>sklearn.linear_model.Ridge</code>,<br><code>numpy.linalg.pinv</code></td><td align="center">계수 행렬의 pseudo-inverse 로 닫힌 해를 구함</td></tr>
+  <tr><td align="center">PLS / PCR</td><td align="center"><code>sklearn.cross_decomposition.PLSRegression</code>,<br><code>sklearn.decomposition.PCA</code>,<br><code>scipy.linalg.null_space</code></td><td align="center">score 공간에서 역해를 구하고 null space 로 해의 집합을 얻음</td></tr>
+  <tr><td align="center">Random forest / GBM</td><td align="center"><code>sklearn.ensemble.RandomForestRegressor</code>,<br><code>sklearn.ensemble.GradientBoostingRegressor</code>,<br><code>scipy.optimize.differential_evolution</code></td><td align="center">미분 없이 입력 범위 안에서 전역 탐색</td></tr>
+  <tr><td align="center">Neural network</td><td align="center"><code>torch.Tensor.requires_grad_</code>,<br><code>torch.optim.Adam</code></td><td align="center">입력 tensor 의 gradient 를 켜고 x 를 갱신</td></tr>
+  <tr><td align="center">GP</td><td align="center"><code>botorch.models.SingleTaskGP</code>,<br><code>botorch.fit.fit_gpytorch_mll</code>,<br><code>botorch.optim.optimize_acqf</code></td><td align="center">GP 를 학습하고 acquisition function 을 최적화</td></tr>
   <tr><td align="center">임의의 surrogate model</td><td align="center"><code>scipy.optimize.minimize</code></td><td align="center">제약을 건 numerical optimization</td></tr>
-  <tr><td align="center">임의의 surrogate model</td><td align="center"><code>pymc.Model</code>, <code>pymc.sample</code>, <code>emcee.EnsembleSampler</code></td><td align="center">x 의 사후분포를 sampling</td></tr>
+  <tr><td align="center">임의의 surrogate model</td><td align="center"><code>pymc.Model</code>,<br><code>pymc.sample</code>,<br><code>emcee.EnsembleSampler</code></td><td align="center">x 의 사후분포를 sampling</td></tr>
 </table>
 
 Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 의 surrogate model 로 쓰면 입력이 x 이며 x 에 대한 gradient 로 해를 찾는다.
