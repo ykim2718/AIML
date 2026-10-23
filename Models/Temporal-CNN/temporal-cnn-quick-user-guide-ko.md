@@ -1,5 +1,5 @@
 # Temporal CNN Quick User Guide
-Rev. 0 | Created: 2026-10-23 | Updated: 2026-10-23 22:31 UTC
+Rev. 1 | Created: 2026-10-23 | Updated: 2026-10-23 22:47 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -19,12 +19,12 @@ Rev. 0 | Created: 2026-10-23 | Updated: 2026-10-23 22:31 UTC
 ## 1. Purpose
 
 - **Problem Statement**: 반도체 공정의 wafer 센서 시계열에 쓸 Temporal CNN (TCN) 의 quick user guide 가 없다.
-- **Goal**: TCN 의 구조와 TCN 기반 encoder 의 역할을 알고, wafer 내 센서 패턴과 wafer 간 장기 의존성에 쓸 model 을 고를 수 있게 한다.
+- **Goal**: TCN 으로 예측하는 방법과 embedding vector 를 추출하는 방법을 구별해 쓸 수 있게 한다.
 - **Non-Goal**: TCN 과 Transformer 의 구현 code 와 hyperparameter 조정은 다루지 않는다.
 
 ## 2. Summary
 
-Wafer 내 (intra-wafer) 센서 패턴은 TCN 기반 encoder 로 wafer 한 장을 embedding vector 하나로 압축하고, wafer 간 (inter-wafer) 장기 의존성은 그 vector 의 sequence 를 Transformer 기반 attention 으로 학습한다. TCN 기반 encoder 는 TCN 뒤에 pooling 을 두어 시계열을 vector 하나로 압축하는 구성이다.
+Standard TCN 은 time step 마다 출력을 하나씩 주어 예측과 분류에 쓰고, TCN 기반 encoder 는 TCN 뒤에 pooling 을 두어 시계열을 embedding vector 하나로 압축한다. 반도체 공정에서는 wafer 내 (intra-wafer) 센서 패턴을 TCN 기반 encoder 로 wafer 한 장당 embedding vector 하나로 압축하고, wafer 간 (inter-wafer) 장기 의존성은 그 vector 의 sequence 를 Transformer 기반 attention 으로 학습한다.
 
 ## 3. Taxonomy and its Hierarchy
 
