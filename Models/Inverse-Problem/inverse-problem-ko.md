@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 51 | Created: 2026-08-28 | Updated: 2026-10-23 08:21 UTC
+Rev. 52 | Created: 2026-08-28 | Updated: 2026-10-23 08:23 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -242,7 +242,7 @@ Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 
 
 ### 4.1 Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 bagging 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
 
 ### 4.2 Kernel and Gaussian process models
 
@@ -344,6 +344,7 @@ Table 3. Libraries for model inversion
 
 - **Acquisition function**: 예측값과 불확실성을 함께 담아 다음에 시험할 입력을 고르는 함수이다.
 - **Activation maximization**: 학습된 network 의 특정 출력이 최대가 되는 입력을 입력에 대한 역전파로 찾는 방법이다.
+- **Bagging**: Bootstrap aggregating 의 줄임말. 원래 표본에서 행을 복원추출한 bootstrap 표본마다 같은 model 을 학습하고, 그 model 들의 예측을 회귀에서는 평균으로, 분류에서는 다수결로 합치는 ensemble 방법. 예측의 분산을 줄이며, model 사이의 퍼짐으로 예측의 불확실성을 잴 수 있다 이다.
 - **Bayesian optimization**: 사후분포를 가진 surrogate model 과 acquisition function 으로 blackbox 함수의 최적점을 반복 탐색하는 방법이다.
 - **cINN**: 조건을 입력으로 받는 invertible neural network 이며, 조건부 사후분포에서 표본을 뽑는다.
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
@@ -374,7 +375,7 @@ Table 3. Libraries for model inversion
 - **PCR**: 주성분으로 축소한 뒤 회귀하는 model 이며 principal component regression 의 약자이다.
 - **Physical model**: 물리 법칙으로 입력에서 출력을 계산하는 model 이다.
 - **PLS**: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 뽑는 회귀 model 이며 partial least squares 의 약자이다.
-- **PLS bootstrap ensemble**: 행을 복원추출한 표본 (bootstrap 표본) 마다 PLS 를 적합하고, 그 PLS 들의 예측을 평균하는 ensemble 이다.
+- **PLS bootstrap ensemble**: 행을 복원추출한 표본 (bootstrap 표본) 마다 PLS 를 적합하고, 그 PLS 들의 예측을 평균하는 ensemble, 곧 PLS 의 bagging 이다.
 - **Posterior sampling**: 사후분포에서 표본을 뽑아 해의 집합을 얻는 방법이다.
 - **Pre-image problem**: 특징 공간의 한 점에 대응하는 입력 공간의 점을 찾는 문제이다.
 - **Pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
