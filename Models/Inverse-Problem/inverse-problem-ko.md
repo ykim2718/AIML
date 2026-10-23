@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 49 | Created: 2026-08-28 | Updated: 2026-10-23 06:03 UTC
+Rev. 50 | Created: 2026-08-28 | Updated: 2026-10-23 08:14 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -223,25 +223,26 @@ Model 별 inversion 방법을 Table 2 에 정리한다.
 
 Table 2. Inversion method by model family
 
-|   #   |              Model               |              Inversion method               |                                                                              Characteristics                                                                               |
-| :---: | :------------------------------: | :-----------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|   1   |            PLS / PCR             |          해석적 역해와 null space           |     선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다      |
-|   2   |           OLS / Ridge            |               Pseudo-inverse                |                                        잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                         |
-|   3   |               PCA                |              Pre-image problem              |                                     출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                     |
-|   4   |            Kernel PLS            |        Latent space 역해와 pre-image        |                                               비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                               |
-|   5   |                GP                |            사후분포 기반 역설계             |                                                        불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                         |
-|   6   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |       미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다       |
-|   7   |          Neural network          |             입력에 대한 역전파              |                                            가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                            |
-|   8   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                                        생성 model 방식의 역설계이다                                                                        |
-|   9   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                                 cINN 은 목표를 한 번 넣어 사후분포를 준다                                                                  |
-|  10   |         Diffusion model          |                사후 sampling                |                                                       잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                        |
-|  11   |          Model-agnostic          |     제약이 있는 numerical optimization      |                  어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다                   |
+|   #   |              Model               |              Inversion method               |                                                                          Characteristics                                                                          |
+| :---: | :------------------------------: | :-----------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|   1   |            PLS / PCR             |          해석적 역해와 null space           | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다 |
+|   2   |      PLS bootstrap ensemble      |        Bootstrap 표본별 해석적 역해         |                                     Bootstrap 표본마다 적합한 PLS 를 1 행의 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다                                     |
+|   3   |           OLS / Ridge            |               Pseudo-inverse                |                                    잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                    |
+|   4   |               PCA                |              Pre-image problem              |                                출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                 |
+|   5   |            Kernel PLS            |        Latent space 역해와 pre-image        |                                          비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                           |
+|   6   |                GP                |            사후분포 기반 역설계             |                                                    불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                    |
+|   7   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |  미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다   |
+|   8   |          Neural network          |             입력에 대한 역전파              |                                       가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                        |
+|   9   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                                   생성 model 방식의 역설계이다                                                                    |
+|  10   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                             cINN 은 목표를 한 번 넣어 사후분포를 준다                                                             |
+|  11   |         Diffusion model          |                사후 sampling                |                                                   잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                   |
+|  12   |          Model-agnostic          |     제약이 있는 numerical optimization      |              어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다              |
 
 Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 이어지는 여섯 절이 계열별로 설명한다.
 
 ### 4.1 Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
 
 ### 4.2 Kernel and Gaussian process models
 
@@ -291,7 +292,7 @@ Table 3. Libraries for model inversion
 |      Library       |                  Role                   |                                   Note                                    |
 | :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
 |   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
-|    scikit-learn    |   Latent variable model 과 유효 영역    |            `PLSRegression`, `PCA`, `GaussianProcessRegressor`             |
+|    scikit-learn    |   Latent variable model 과 유효 영역    |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
 |      PyTorch       |          입력에 대한 gradient           |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
 | BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |                  Acquisition function 최적화를 제공한다                   |
 |        SHAP        |        Tree model 의 국소 선형화        |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
@@ -371,6 +372,7 @@ Table 3. Libraries for model inversion
 - **PCR**: 주성분으로 축소한 뒤 회귀하는 model 이며 principal component regression 의 약자이다.
 - **Physical model**: 물리 법칙으로 입력에서 출력을 계산하는 model 이다.
 - **PLS**: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 뽑는 회귀 model 이며 partial least squares 의 약자이다.
+- **PLS bootstrap ensemble**: 행을 복원추출한 표본 (bootstrap 표본) 마다 PLS 를 적합하고, 그 PLS 들의 예측을 평균하는 ensemble 이다.
 - **Posterior sampling**: 사후분포에서 표본을 뽑아 해의 집합을 얻는 방법이다.
 - **Pre-image problem**: 특징 공간의 한 점에 대응하는 입력 공간의 점을 찾는 문제이다.
 - **Pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
