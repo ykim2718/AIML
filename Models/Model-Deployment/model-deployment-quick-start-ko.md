@@ -1,5 +1,5 @@
 # Model Deployment Quick Start
-Rev. 3 | Created: 2026-10-14 | Updated: 2026-10-23 09:44 UTC
+Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-23 09:50 UTC
 
 ## 1. Purpose
 
@@ -9,19 +9,32 @@ Rev. 3 | Created: 2026-10-14 | Updated: 2026-10-23 09:44 UTC
 
 ## 2. Taxonomy
 
-Model 배포는 위치, 서빙 방식, 전환 전략의 세 축으로 나뉘며, 세 축과 축마다의 값은 아래 Fig 1 과 같다.
+Model 배포의 계층은 아래 Fig 1 과 같다.
 
 ```text
 Deployment
-├── Location   : Cloud | On-premise | Edge | Hybrid
-├── Serving    : Batch | Online API | Streaming | Embedded
-└── Transition : Shadow | Canary | A/B test | Blue-Green | Rolling
+  +-- Location                                 where the model runs
+  |     +-- Cloud                              external cloud server (AWS, Azure, GCP)
+  |     +-- On-premise                         in-house data center server
+  |     +-- Edge                               PC next to the tool that makes the data
+  |     +-- Hybrid                             training on a server, inference at the edge
+  +-- Serving                                  how predictions are delivered
+  |     +-- Batch                              predicts stored data on a schedule
+  |     +-- Online API                         predicts per request (REST, gRPC)
+  |     +-- Streaming                          predicts while events keep arriving
+  |     +-- Embedded                           model runs inside tool software or PLC
+  +-- Transition                               how a new model replaces the old one
+        +-- Shadow                             predicts only, no control
+        +-- Canary                             one tool or some lots first
+        +-- A/B test                           two models run side by side
+        +-- Blue-Green                         switch at once, instant rollback
+        +-- Rolling                            replace tools or servers in sequence
 ```
 
 <a id="fig-1"></a>
-Fig 1. Three axes of model deployment
+Fig 1. Hierarchy of model deployment
 
-세 축은 서로 독립이므로, 한 배포는 축마다 값을 하나씩 골라 정한다. Location 은 model 을 어디에서 실행하는지, Serving 은 예측을 어떻게 내주는지, Transition 은 새 model 로 어떻게 바꾸는지를 정한다.
+Location, Serving, Transition 의 세 축은 서로 독립이므로, 한 배포는 축마다 값을 하나씩 골라 정한다.
 
 전환 전략은 새 model 이 실제 제어에 미치는 범위에 따라 아래 Fig 2 의 차례로 넓어진다.
 
@@ -45,7 +58,7 @@ Fig 2. Hierarchy of transition strategies
 
 ### 3.1 Location
 
-Table 1. Location
+Table 1. Deployment Location
 
 |  Location  |                Description                 |               Example                |
 | :--------: | :----------------------------------------: | :----------------------------------: |
@@ -58,7 +71,7 @@ Table 1. Location
 
 ### 3.2 Serving
 
-Table 2. Serving
+Table 2. Deployment Serving
 
 |  Serving   |                     Description                      |            Example             |
 | :--------: | :--------------------------------------------------: | :----------------------------: |
@@ -69,7 +82,7 @@ Table 2. Serving
 
 ### 3.3 Transition
 
-Table 3. Transition
+Table 3. Deployment Transition
 
 | Transition |                                   Description                                    |
 | :--------: | :------------------------------------------------------------------------------: |
