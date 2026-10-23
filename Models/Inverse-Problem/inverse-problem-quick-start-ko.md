@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 13 | Created: 2026-10-22 | Updated: 2026-10-23 06:01 UTC
+Rev. 14 | Created: 2026-10-22 | Updated: 2026-10-23 06:01 UTC
 
 ## 1. Purpose
 
@@ -24,7 +24,7 @@ Problem
 ```
 Fig 1. Forward problem, inverse problem and the two inverse problem methods
 
-y 는 두께, x 는 recipe 이다. Forward problem 을 푸는 model f 는 physical model 을 대신해 (x, y) 쌍으로 학습한 surrogate model 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 surrogate model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다. Inverse model 은 문헌에서 direct (learned) inversion 또는 learned inverse map 으로, model inversion 은 optimization-based (iterative) inversion 으로도 부른다 [[1](#ref-1)]. 추론 속도가 우선이면 inverse model 을, multi-solution 이 있어 안정성이 우선이면 model inversion 을 쓴다.
+Forward problem 을 푸는 model f 는 physical model 을 대신해 (x, y) 쌍으로 학습한 surrogate model 이다. Inverse model 은 x = g(y) 의 g 를 데이터로 직접 학습해 x 를 바로 얻는다. Model inversion 은 surrogate model f 를 그대로 두고, 최적화로 y = f(x) 를 x 에 대해 푼다. Inverse model 은 문헌에서 direct (learned) inversion 또는 learned inverse map 으로, model inversion 은 optimization-based (iterative) inversion 으로도 부른다 [[1](#ref-1)]. 추론 속도가 우선이면 inverse model 을, multi-solution 이 있어 안정성이 우선이면 model inversion 을 쓴다.
 
 ## 3. Inverse Model and Model Inversion
 
@@ -33,14 +33,14 @@ y 는 두께, x 는 recipe 이다. Forward problem 을 푸는 model f 는 physic
 ### 3.1 Inverse Model
 
 - **Definition**: 출력을 입력으로, 입력을 출력으로 받도록 처음부터 방향을 뒤집어 학습한 독립 data-driven model.
-- **Inference**: Forward pass 한 번으로 recipe 를 역산.
+- **Inference**: Forward pass 한 번으로 입력 x 를 역산.
 - **Strength**: 데이터가 충분하면 빠른 추론.
-- **Weakness**: 같은 두께를 만드는 recipe 조합이 여럿이면 (multi-solution) 불안정한 학습.
+- **Weakness**: 같은 출력 y 를 만드는 입력 x 조합이 여럿이면 (multi-solution) 불안정한 학습.
 
 ### 3.2 Model Inversion
 
 - **Definition**: Forward model 을 가진 상태에서 gradient descent 같은 최적화나 탐색 algorithm 으로 입력 조건을 거꾸로 찾는 과정, 또는 그 system.
-- **Inference**: 목표 두께가 나올 때까지 입력 recipe 를 바꿔 가며 최적값을 찾음.
+- **Inference**: 목표 출력 y 가 나올 때까지 입력 x 를 바꿔 가며 최적값을 찾음.
 - **Strength**: 물리 법칙과 forward model 의 예측 정밀도를 그대로 쓰므로 안정적.
 - **Weakness**: 추론마다 최적화 연산을 거치므로 inverse model 보다 느림.
 
@@ -93,7 +93,7 @@ Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 
 
 - **acquisition function**: GP 의 예측값과 불확실성으로 다음에 시험할 입력을 고르는 함수.
 - **cINN**: 목표 출력을 조건으로 받아 입력의 사후분포에서 표본을 뽑는 invertible neural network. Conditional invertible neural network 의 줄임말.
-- **forward model**: 입력 조건 (recipe) 을 받아 출력 (두께) 을 예측하는 model.
+- **forward model**: 입력 x 를 받아 출력 y 를 예측하는 model.
 - **forward pass**: 학습된 model 에 입력을 한 번 넣어 출력을 계산하는 것.
 - **forward problem**: 입력 x 가 주어졌을 때 출력 y = f(x) 를 구하는 문제.
 - **GBM**: 잔차를 차례로 학습하는 tree 를 더해 만드는 model. Gradient boosting machine 의 줄임말.
@@ -108,7 +108,6 @@ Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 
 - **physical model**: 물리 법칙으로 입력에서 출력을 계산하는 model.
 - **PLS**: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 잡아 회귀하는 model. Partial least squares 의 줄임말.
 - **pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 최소 norm 해를 주는 역행렬.
-- **recipe**: 공정 장비에 주는 입력 조건의 묶음.
 - **Ridge**: 계수의 제곱합에 벌점을 주어 계수를 줄이는 선형 회귀.
 - **score**: 입력을 PLS 나 PCA 의 latent 좌표계로 투영한 값.
 - **surrogate model**: 원래 model (physical model 이나 직접 부를 수 없는 model) 을 대신해 (x, y) 쌍으로 학습한 data-driven forward model.
