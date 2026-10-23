@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 16 | Created: 2026-10-22 | Updated: 2026-10-23 08:13 UTC
+Rev. 17 | Created: 2026-10-22 | Updated: 2026-10-23 08:21 UTC
 
 ## 1. Purpose
 
@@ -81,12 +81,14 @@ Table 2. Models and libraries by method
   <tr><td align="center">임의의 surrogate model</td><td align="center"><code>pymc.Model</code>,<br><code>pymc.sample</code>,<br><code>emcee.EnsembleSampler</code></td><td align="center">x 의 사후분포를 sampling</td></tr>
 </table>
 
-Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 의 surrogate model 로 쓰면 입력이 x 이며 x 에 대한 gradient 로 해를 찾는다.
+Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 의 surrogate model 로 쓰면 입력이 x 이며 x 에 대한 gradient 로 해를 찾는다. PLS bootstrap ensemble 의 적합 절차와 퍼짐의 해석은 [[2](#ref-2)] 에 있다.
 
 ## References
 
 <a id="ref-1"></a>
-[1] yRocket. (2026). [Inverse Problem and Model Inversion](https://github.com/ykim2718/AIML/blob/main/Models/Inverse-Problem/inverse-problem-ko.md). *AIML repository*, GitHub.
+[1] yRocket. (2026). [Inverse Problem and Model Inversion](https://github.com/ykim2718/AIML/blob/main/Models/Inverse-Problem/inverse-problem-ko.md). *AIML repository*, GitHub.<br>
+<a id="ref-2"></a>
+[2] yRocket. (2026). [PLS Bootstrap Ensemble](https://github.com/ykim2718/AIML/blob/main/Models/PLS-Bootstrap-Ensemble/pls-bootstrap-ensemble-ko.md). *AIML repository*, GitHub.
 
 ---
 
