@@ -1,5 +1,5 @@
 # Model Deployment Quick Start
-Rev. 4 | Created: 2026-10-14 | Updated: 2026-10-23 09:50 UTC
+Rev. 5 | Created: 2026-10-14 | Updated: 2026-10-23 09:52 UTC
 
 ## 1. Purpose
 
@@ -54,7 +54,7 @@ Fig 2. Hierarchy of transition strategies
 
 ## 3. Deployment Options
 
-세 축의 값마다 실행 방식과 쓰이는 예는 3.1 부터 3.3 까지와 같고, 조건에 맞는 조합은 3.4 와 같다.
+이 절에서는 Fig 1 의 세 축을 차례로 살펴본다. 3.1 Location, 3.2 Serving, 3.3 Transition 에서 축의 값마다 설명과 예를 들고, 3.4 Comparison 에서 실시간 제어에 맞는 배포 조합을 고른다.
 
 ### 3.1 Location
 
