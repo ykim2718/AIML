@@ -1,11 +1,11 @@
 # Inverse Model Quick Start
-Rev. 14 | Created: 2026-10-22 | Updated: 2026-10-23 06:01 UTC
+Rev. 15 | Created: 2026-10-22 | Updated: 2026-10-23 08:10 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: Inverse model 과 model inversion 은 실무 문서에서 구별 없이 쓰여, 목표 출력에서 입력을 되찾는 방식 가운데 어느 것을 뜻하는지 가릴 수 없다.
-- **Goal**: 두 용어가 가리키는 구축 방식을 구별하고, 추론 속도와 multi-solution 에서의 안정성을 기준으로 둘 중 하나를 고를 수 있게 한다.
-- **Non-Goal**: 최적화 algorithm 의 세부, ill-posedness 이론, model 종류별 inversion 방법의 세부는 다루지 않는다.
+- **Problem Statement**: Inverse model 에 대한 quick start guide 가 없다.
+- **Goal**: Inverse model 의 quick start guide 를 제공한다.
+- **Non-Goal**: Model 의 세부를 다루지 않는다.
 
 ## 2. Taxonomy
 
