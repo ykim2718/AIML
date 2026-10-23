@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 48 | Created: 2026-08-28 | Updated: 2026-10-22 18:18 CDT
+Rev. 49 | Created: 2026-08-28 | Updated: 2026-10-23 06:03 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -41,7 +41,7 @@ Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
 
 - 관측형 inverse problem 은 측정된 $\mathbf{y}^{\ast}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
-- 설계형 inverse problem 은 목표 품질 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 품질을 내는 조건을 찾는다. Product design 과 inverse design 이 여기에 속한다.
+- 설계형 inverse problem 은 목표 출력 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 출력을 내는 입력을 찾는다. Product design 과 inverse design 이 여기에 속한다.
 
 ### 1.2 Ill-posedness
 
@@ -53,7 +53,7 @@ Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적�
 
 ### 1.3 Model inversion
 
-Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. 공정의 historical data 로 만든 latent variable model 을 뒤집어, 원하는 품질을 낼 수 있는 운전 조건의 창을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
+Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. Historical data 로 만든 latent variable model 을 뒤집어, 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
 Model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지는 아래 Fig 1 과 같다.
 
@@ -155,7 +155,7 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 
 ### 2.5 Answer form (What to return)
 
-Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여유가 없다. Region 은 규격을 만족하는 입력 영역을 주며, 공정에서는 design space 라는 이름으로 쓰인다. Distribution 은 사후분포를 그대로 주어, 규격을 만족할 확률로 판단하게 한다.
+Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여유가 없다. Region 은 목표 범위를 만족하는 입력 영역을 주며, design space 라는 이름으로도 쓰인다. Distribution 은 사후분포를 그대로 주어, 목표 범위를 만족할 확률로 판단하게 한다.
 
 ## 3. Latent Variable Model Inversion
 
@@ -169,7 +169,7 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-목표 품질 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
+목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
@@ -177,7 +177,7 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 
 $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
 
-- Null space 는 품질을 바꾸지 않고 움직일 수 있는 운전 자유도이다. 원가, 처리량, 에너지 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
+- Null space 는 출력을 바꾸지 않고 움직일 수 있는 입력의 자유도이다. 비용 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE 에 상한을 두고 그 안으로 해를 가둔다 [[5](#ref-5)].
 
 ```math
@@ -213,8 +213,8 @@ Fig 3. Null space and the validity region in the score plane
 같은 골격을 산업 문제로 넓힌 결과는 다음 넷이다.
 
 - 두 site 의 데이터를 하나의 latent space 로 묶는 Joint-Y PLS 는, 한 site 에서 검증된 조건을 다른 site 의 조건으로 옮기는 product transfer 를 inversion 문제로 만든다 [[6](#ref-6)].
-- Model parameter 의 불확실성을 해에 전파하면 규격을 만족하는 영역이 좁아진다. 이 보수적인 영역이 pharmaceutical 공정에서 말하는 design space 이다 [[7](#ref-7)].
-- 규격이 등식이 아니라 상하한으로 주어지거나, 일부 입력이 고정되거나, 목표가 여러 개인 경우가 모두 하나의 제약 최적화로 통합되었다 [[8](#ref-8)].
+- Model parameter 의 불확실성을 해에 전파하면 목표 범위를 만족하는 영역이 좁아진다. 이 보수적인 영역을 design space 라 부른다 [[7](#ref-7)].
+- 목표가 등식이 아니라 상하한으로 주어지거나, 일부 입력이 고정되거나, 목표가 여러 개인 경우가 모두 하나의 제약 최적화로 통합되었다 [[8](#ref-8)].
 - 최근 정식화는 score 공간에서 풀 것인가 입력 공간에서 풀 것인가를 문제의 제약 구조로 결정하고, null space 를 유지한 채 $T^{2}$ 와 SPE 제약을 함께 넣는다 [[9](#ref-9)], [[10](#ref-10)].
 
 ## 4. Model-Specific Inversion Methods
@@ -232,7 +232,7 @@ Table 2. Inversion method by model family
 |   5   |                GP                |            사후분포 기반 역설계             |                                                        불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                         |
 |   6   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |       미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다       |
 |   7   |          Neural network          |             입력에 대한 역전파              |                                            가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                            |
-|   8   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                            생성 model 방식의 역설계이며 제조 분야로 확산 중이다                                                            |
+|   8   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                                        생성 model 방식의 역설계이다                                                                        |
 |   9   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                                 cINN 은 목표를 한 번 넣어 사후분포를 준다                                                                  |
 |  10   |         Diffusion model          |                사후 sampling                |                                                       잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                        |
 |  11   |          Model-agnostic          |     제약이 있는 numerical optimization      |                  어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다                   |
@@ -241,7 +241,7 @@ Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 
 
 ### 4.1 Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 공정에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
 
 ### 4.2 Kernel and Gaussian process models
 
@@ -257,7 +257,7 @@ Random forest 와 gradient boosting 은 tree 를 base learner 로 쓴다. Tree �
 
 ### 4.5 Generative and invertible models
 
-생성 model 은 데이터 분포를 학습하므로 그 자체가 강한 prior 이다. Autoencoder 와 VAE 는 latent 공간에서 탐색한 뒤 디코딩하며, 디코더가 만들어 낼 수 있는 것만 후보가 되므로 비현실적인 해가 걸러진다. 분자 설계는 유효한 분자만 후보로 남기는 이 성질 덕분에 이 방식을 표준으로 쓴다 [[15](#ref-15)]. Invertible neural network 와 normalizing flow 는 구조적으로 양방향이다. Forward 를 학습하면 inverse 가 함께 정의되고, 조건부 형태인 cINN 은 목표를 조건으로 준 사후분포에서 표본을 직접 뽑는다 [[16](#ref-16)]. Diffusion model 은 학습된 score 에 관측 우도의 gradient 를 더해 사후분포를 표본화하며, 잡음이 섞인 비선형 문제에서 최근의 표준으로 쓰인다 [[17](#ref-17)].
+생성 model 은 데이터 분포를 학습하므로 그 자체가 강한 prior 이다. Autoencoder 와 VAE 는 latent 공간에서 탐색한 뒤 디코딩하며, 디코더가 만들어 낼 수 있는 것만 후보가 되므로 비현실적인 해가 걸러진다. 유효한 설계만 후보로 남아야 하는 문제에서 이 방식이 표준으로 쓰인다 [[15](#ref-15)]. Invertible neural network 와 normalizing flow 는 구조적으로 양방향이다. Forward 를 학습하면 inverse 가 함께 정의되고, 조건부 형태인 cINN 은 목표를 조건으로 준 사후분포에서 표본을 직접 뽑는다 [[16](#ref-16)]. Diffusion model 은 학습된 score 에 관측 우도의 gradient 를 더해 사후분포를 표본화하며, 잡음이 섞인 비선형 문제에서 최근의 표준으로 쓰인다 [[17](#ref-17)].
 
 ### 4.6 Model-agnostic numerical optimization
 
@@ -281,7 +281,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 
 - 외삽: model 은 historical data 가 덮은 영역에서만 신뢰할 수 있다. $T^{2}$ 는 그 영역 안에서 중심으로부터 얼마나 멀리 있는지를, SPE 는 영역이 이루는 면에서 얼마나 떨어졌는지를 잰다. 둘 중 하나만 보면 상관 구조가 깨진 해를 놓친다.
 - Multi-solution: 답이 하나가 아니면 하나만 골라 보고하지 않는다. Null space 구간이나 사후분포처럼 답의 집합을 보여 주는 편이 판단에 도움이 된다.
-- 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 규격을 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 그 확률을 낼 수 없으므로 별도의 검증이 필요하다.
+- 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 목표 범위를 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 그 확률을 낼 수 없으므로 별도의 검증이 필요하다.
 - 검증과 갱신: 얻은 입력은 실험이나 시뮬레이션으로 확인하고, 그 결과를 데이터에 더해 model 을 다시 학습하는 closed loop 를 둔다. 이 재학습이 없으면 model 의 오차가 그대로 설계 오차가 된다.
 
 ## 7. Tools and Libraries
@@ -346,7 +346,7 @@ Table 3. Libraries for model inversion
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
 - **COBYLA**: 선형 근사를 갱신하며 제약이 있는 문제를 푸는 derivative-free optimization 방법이며 constrained optimization by linear approximations 의 약자이다.
 - **Derivative-free optimization**: 목적 함수의 gradient 없이 함수값만으로 해를 찾는 최적화이다.
-- **Design space**: 품질 규격을 만족하는 것으로 확인된 입력 영역이다.
+- **Design space**: 출력의 목표 범위를 만족하는 것으로 확인된 입력 영역이다.
 - **Forward problem**: 입력에서 출력을 계산하는 문제이다.
 - **GBM**: 잔차를 순차적으로 학습하는 tree 를 더해 만드는 model 이며 gradient boosting machine 의 약자이다.
 - **GP**: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
@@ -394,7 +394,7 @@ from sklearn.cross_decomposition import PLSRegression
 
 rng = np.random.default_rng(0)
 
-# historical plant data: 2 process inputs, 1 quality output
+# historical data: 2 inputs, 1 output
 # both inputs are centred at 0, x1 spread twice as wide as x2
 n, n_comp = 100, 2
 X = np.column_stack([rng.normal(0.0, 1.0, n), rng.normal(0.0, 0.5, n)])
@@ -437,7 +437,7 @@ Fig 4. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0
 
 Fig 4 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
 
-Fig 4 (b) 는 같은 표본의 두 process input 을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
+Fig 4 (b) 는 같은 표본의 두 입력을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
 
 등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 3.1 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix C 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
 
@@ -454,11 +454,11 @@ Fig 5. Predicted value and inputs along the null space
 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다.
 
 - (a) 의 가로축은 그 입력이 minimum-norm solution 에서 떨어진 거리 $\lVert \mathbf{x}(\alpha) - \mathbf{x}^{\ast} \rVert$ 이고 세로축은 그 입력을 model 에 넣어 얻은 예측값이다. 입력이 2.0 만큼 멀어지는 동안에도 예측값은 목표 2.000 에 붙어 있다.
-- (b) 는 같은 37 개를 두 process input 의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, 주황으로 표시한 minimum-norm solution 은 그 직선 위의 한 점이다.
+- (b) 는 같은 37 개를 두 입력의 평면에 그린 것이다. 해가 하나가 아니라 직선을 이루고, 그 위 어느 점을 골라도 예측은 2.000 이며, 주황으로 표시한 minimum-norm solution 은 그 직선 위의 한 점이다.
 
 Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
 
-공정에서의 뜻은 목표 품질을 내되 평균 운전 조건에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 원가나 운전 여유 같은 다른 기준이 있으면 Fig 5 처럼 null space 를 따라 옮겨 간다.
+Minimum-norm solution 은 목표 출력을 내되 입력의 평균에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 비용 같은 다른 기준이 있으면 Fig 5 처럼 null space 를 따라 옮겨 간다.
 
 Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 5 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
@@ -564,7 +564,7 @@ $T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 
 
 ## Appendix D. Python Example: Inversion without Model Access
 
-5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 운전 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
+5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 바꿀 수 없는 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
 
 ```python
 import numpy as np
@@ -705,7 +705,7 @@ Fig 8. Appendix D hidden model against T, the search in the A–B plane, the sur
 
 (c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
-(d) 는 해를 실제와 맞대어 본 것이다. 네 행의 surrogate 예측은 모두 19.0 부근인데 참값은 17.85 에서 19.80 까지 퍼져 있어, 같은 조건을 실제로 운전해도 목표를 그대로 얻지는 못한다. 이 퍼짐은 (a) 가 보인 가려진 model 의 $R^{2} = 0.712$ 에서 온다. Surrogate 는 그 model 을 $R^{2} = 0.9995$ 로 따라가지만 그 model 이 참값을 설명하지 못하는 몫까지 메워 주지는 못하므로, 두 오차 가운데 큰 쪽이 결과를 정한다. 6 의 검증 항목이 말한 대로 얻은 조건을 실험으로 확인하고 그 결과를 데이터에 더해야 하는 이유가 (d) 에 그대로 보인다.
+(d) 는 해를 실제와 맞대어 본 것이다. 네 행의 surrogate 예측은 모두 19.0 부근인데 참값은 17.85 에서 19.80 까지 퍼져 있어, 같은 조건으로 실제로 실행해도 목표를 그대로 얻지는 못한다. 이 퍼짐은 (a) 가 보인 가려진 model 의 $R^{2} = 0.712$ 에서 온다. Surrogate 는 그 model 을 $R^{2} = 0.9995$ 로 따라가지만 그 model 이 참값을 설명하지 못하는 몫까지 메워 주지는 못하므로, 두 오차 가운데 큰 쪽이 결과를 정한다. 6 의 검증 항목이 말한 대로 얻은 조건을 실험으로 확인하고 그 결과를 데이터에 더해야 하는 이유가 (d) 에 그대로 보인다.
 
 등고선이 계단 모양이다. Surrogate 가 4.3 의 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
 
