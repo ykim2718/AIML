@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 11 | Created: 2026-10-22 | Updated: 2026-10-22 23:46 UTC
+Rev. 12 | Created: 2026-10-22 | Updated: 2026-10-23 00:13 UTC
 
 ## 1. Purpose
 
@@ -66,16 +66,19 @@ Inverse model 은 y → x 방향의 model 하나와 그것을 학습할 library 
 
 Table 2. Models and libraries by method
 
-|     Method      |         Model          |      Library       |                           Note                            |
-| :-------------: | :--------------------: | :----------------: | :-------------------------------------------------------: |
-|  Inverse model  |   PLS 등 회귀 model    |    scikit-learn    |          `PLSRegression` 을 y → x 방향으로 학습           |
-|  Inverse model  |     Neural network     |      PyTorch       |              y → x 방향으로 network 를 학습               |
-|  Inverse model  |          cINN          |       FrEIA        |     목표 y 를 조건으로 x 의 사후분포에서 표본을 뽑음      |
-| Model inversion | PLS / PCR, OLS / Ridge |   NumPy / SciPy    | `numpy.linalg.pinv`, `scipy.linalg.null_space` 로 닫힌 해 |
-| Model inversion |  Random forest / GBM   |       SciPy        |        `scipy.optimize.minimize` 로 미분 없이 탐색        |
-| Model inversion |     Neural network     |      PyTorch       |         입력 tensor 에 대한 gradient 로 x 를 갱신         |
-| Model inversion |           GP           | BoTorch / GPyTorch |                  GP 기반 Bayesian 최적화                  |
-| Model inversion | 임의의 surrogate model |    PyMC / emcee    |                 x 의 사후분포를 sampling                  |
+<table>
+  <tr><th align="center">Method</th><th align="center">Model</th><th align="center">Library</th><th align="center">Note</th></tr>
+  <tr><td align="center" rowspan="3">Inverse model</td><td align="center">PLS</td><td align="center"><code>sklearn.cross_decomposition.PLSRegression</code></td><td align="center">y 를 입력, x 를 출력으로 두고 학습</td></tr>
+  <tr><td align="center">Neural network</td><td align="center"><code>sklearn.neural_network.MLPRegressor</code>, <code>torch.nn.Sequential</code></td><td align="center">y 를 입력, x 를 출력으로 두고 network 를 학습</td></tr>
+  <tr><td align="center">cINN</td><td align="center"><code>FrEIA.framework.SequenceINN</code>, <code>FrEIA.modules.AllInOneBlock</code></td><td align="center">목표 y 를 조건으로 x 의 사후분포에서 표본을 뽑음</td></tr>
+  <tr><td align="center" rowspan="7">Model inversion</td><td align="center">OLS / Ridge</td><td align="center"><code>sklearn.linear_model.LinearRegression</code>, <code>sklearn.linear_model.Ridge</code>, <code>numpy.linalg.pinv</code></td><td align="center">계수 행렬의 pseudo-inverse 로 닫힌 해를 구함</td></tr>
+  <tr><td align="center">PLS / PCR</td><td align="center"><code>sklearn.cross_decomposition.PLSRegression</code>, <code>sklearn.decomposition.PCA</code>, <code>scipy.linalg.null_space</code></td><td align="center">score 공간에서 역해를 구하고 null space 로 해의 집합을 얻음</td></tr>
+  <tr><td align="center">Random forest / GBM</td><td align="center"><code>sklearn.ensemble.RandomForestRegressor</code>, <code>sklearn.ensemble.GradientBoostingRegressor</code>, <code>scipy.optimize.differential_evolution</code></td><td align="center">미분 없이 입력 범위 안에서 전역 탐색</td></tr>
+  <tr><td align="center">Neural network</td><td align="center"><code>torch.Tensor.requires_grad_</code>, <code>torch.optim.Adam</code></td><td align="center">입력 tensor 의 gradient 를 켜고 x 를 갱신</td></tr>
+  <tr><td align="center">GP</td><td align="center"><code>botorch.models.SingleTaskGP</code>, <code>botorch.fit.fit_gpytorch_mll</code>, <code>botorch.optim.optimize_acqf</code></td><td align="center">GP 를 학습하고 acquisition function 을 최적화</td></tr>
+  <tr><td align="center">임의의 surrogate model</td><td align="center"><code>scipy.optimize.minimize</code></td><td align="center">제약을 건 numerical optimization</td></tr>
+  <tr><td align="center">임의의 surrogate model</td><td align="center"><code>pymc.Model</code>, <code>pymc.sample</code>, <code>emcee.EnsembleSampler</code></td><td align="center">x 의 사후분포를 sampling</td></tr>
+</table>
 
 Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 의 surrogate model 로 쓰면 입력이 x 이며 x 에 대한 gradient 로 해를 찾는다.
 
@@ -88,6 +91,7 @@ Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 
 
 ## Appendix A. Terminology
 
+- **acquisition function**: GP 의 예측값과 불확실성으로 다음에 시험할 입력을 고르는 함수.
 - **cINN**: 목표 출력을 조건으로 받아 입력의 사후분포에서 표본을 뽑는 invertible neural network. Conditional invertible neural network 의 줄임말.
 - **forward model**: 입력 조건 (recipe) 을 받아 출력 (두께) 을 예측하는 model.
 - **forward pass**: 학습된 model 에 입력을 한 번 넣어 출력을 계산하는 것.
@@ -98,10 +102,13 @@ Neural network 를 inverse model 로 쓰면 입력이 y 이고, model inversion 
 - **inverse problem**: 목표 출력 y 가 주어졌을 때 그것을 만드는 입력 x 를 찾는 문제.
 - **model inversion**: 이미 가진 forward model 을 거꾸로 풀어 목표 출력을 내는 입력을 찾는 방법.
 - **multi-solution**: 같은 출력을 만드는 입력 조합이 여럿 있는 상태.
+- **null space**: 입력을 그 방향으로 움직여도 예측이 바뀌지 않는 방향들의 집합.
 - **OLS**: 잔차 제곱합을 최소화하는 선형 회귀. Ordinary least squares 의 줄임말.
 - **PCR**: 주성분으로 입력을 줄인 뒤 회귀하는 model. Principal component regression 의 줄임말.
 - **physical model**: 물리 법칙으로 입력에서 출력을 계산하는 model.
 - **PLS**: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 잡아 회귀하는 model. Partial least squares 의 줄임말.
+- **pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 최소 norm 해를 주는 역행렬.
 - **recipe**: 공정 장비에 주는 입력 조건의 묶음.
 - **Ridge**: 계수의 제곱합에 벌점을 주어 계수를 줄이는 선형 회귀.
+- **score**: 입력을 PLS 나 PCA 의 latent 좌표계로 투영한 값.
 - **surrogate model**: 원래 model (physical model 이나 직접 부를 수 없는 model) 을 대신해 (x, y) 쌍으로 학습한 data-driven forward model.
