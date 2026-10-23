@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 53 | Created: 2026-08-28 | Updated: 2026-10-23 08:26 UTC
+Rev. 54 | Created: 2026-08-28 | Updated: 2026-10-23 08:29 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -345,7 +345,6 @@ Table 3. Libraries for model inversion
 
 - **Acquisition function**: 예측값과 불확실성을 함께 담아 다음에 시험할 입력을 고르는 함수이다.
 - **Activation maximization**: 학습된 network 의 특정 출력이 최대가 되는 입력을 입력에 대한 역전파로 찾는 방법이다.
-- **Bagging**: Bootstrap aggregating 의 줄임말. 절차는 [Appendix E](#appendix-e-bagging-ensemble) 에 있다.
 - **Bayesian optimization**: 사후분포를 가진 surrogate model 과 acquisition function 으로 blackbox 함수의 최적점을 반복 탐색하는 방법이다.
 - **cINN**: 조건을 입력으로 받는 invertible neural network 이며, 조건부 사후분포에서 표본을 뽑는다.
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
@@ -376,7 +375,7 @@ Table 3. Libraries for model inversion
 - **PCR**: 주성분으로 축소한 뒤 회귀하는 model 이며 principal component regression 의 약자이다.
 - **Physical model**: 물리 법칙으로 입력에서 출력을 계산하는 model 이다.
 - **PLS**: 입력과 출력의 공분산이 큰 방향으로 latent 변수를 뽑는 회귀 model 이며 partial least squares 의 약자이다.
-- **PLS bootstrap ensemble**: 행을 복원추출한 표본 (bootstrap 표본) 마다 PLS 를 적합하고, 그 PLS 들의 예측을 평균하는 ensemble, 곧 PLS 의 bagging 이다.
+- **PLS bootstrap ensemble**: 행을 복원추출 (sampling with replacement) 한 표본, 곧 bootstrap 표본마다 PLS 를 적합하고, 그 PLS 들의 예측을 평균하는 ensemble, 곧 PLS 의 bagging 이다.
 - **Posterior sampling**: 사후분포에서 표본을 뽑아 해의 집합을 얻는 방법이다.
 - **Pre-image problem**: 특징 공간의 한 점에 대응하는 입력 공간의 점을 찾는 문제이다.
 - **Pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
@@ -723,7 +722,7 @@ Fig 8. Appendix D hidden model against T, the search in the A–B plane, the sur
 
 Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 개 학습하고 그 예측을 합쳐 최종 예측을 정하는 ensemble 방식이다. 절차는 아래 세 단계이다.
 
-1. Bootstrapping: 원래 학습 데이터에서 행을 복원추출하여, 개별 model 마다 학습 표본을 하나씩 만든다.
+1. Bootstrapping: 원래 학습 데이터 n 행에서 한 행을 무작위로 뽑아 표본에 넣고, 그 행을 다시 후보로 되돌려 놓는 일을 n 번 되풀이한다. 같은 행이 여러 번 뽑히거나 한 번도 뽑히지 않을 수 있어서, 개별 model 마다 조금씩 다른 n 행의 학습 표본이 하나씩 생긴다.
 2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
 3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
 
