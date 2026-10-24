@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 63 | Created: 2026-08-28 | Updated: 2026-10-24 23:13 UTC
+Rev. 64 | Created: 2026-08-28 | Updated: 2026-10-24 23:36 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -37,7 +37,7 @@ Rev. 63 | Created: 2026-08-28 | Updated: 2026-10-24 23:13 UTC
 
 ### 1.1 Forward problem and inverse problem
 
-Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{y} \in \mathbb{R}^M$ 을 계산하는 문제이며, 물리 model 이든 데이터로 학습한 model 이든 $\mathbf{y} = f(\mathbf{x})$ 로 쓴다. Inverse problem 은 그 반대 방향으로, 관측되었거나 목표로 정한 $\mathbf{y}^{\ast}$ 가 주어졌을 때 그것을 만들어 내는 $\mathbf{x}$ 를 찾는 문제이다.
+Forward problem 은 입력 변수 $K$ 개로 이루어진 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 변수 $M$ 개로 이루어진 $\mathbf{y} \in \mathbb{R}^M$ 을 계산하는 문제이며, 물리 model 이든 데이터로 학습한 model 이든 $\mathbf{y} = f(\mathbf{x})$ 로 쓴다. Inverse problem 은 그 반대 방향으로, 관측되었거나 목표로 정한 $\mathbf{y}^{\ast}$ 가 주어졌을 때 그것을 만들어 내는 $\mathbf{x}$ 를 찾는 문제이다.
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다.
 
@@ -47,7 +47,7 @@ Well-posed 문제의 세 조건은 inverse problem 을 풀 때 무엇을 처리�
 
 Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
 
-- 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 상 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
+- 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 image 또는 range 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
 - 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 해가 여럿이면 그중 하나를 골라야 한다.
 - 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
 
@@ -355,6 +355,7 @@ Table 3. Libraries for model inversion
 - **GP**: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
 - **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
 - **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
+- **Image**: $f$ 가 내놓을 수 있는 출력을 모두 모은 집합이며, range 라고도 부른다.
 - **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
 - **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 또는 역모델이라고도 부른다.
 - **Joint-Y PLS**: 여러 site 의 데이터를 공통 출력으로 묶어 하나의 latent space 에서 다루는 PLS 확장이다.
