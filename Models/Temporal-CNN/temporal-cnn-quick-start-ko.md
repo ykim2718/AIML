@@ -1,5 +1,5 @@
 # Temporal CNN Quick Start
-Rev. 3 | Created: 2026-10-23 | Updated: 2026-10-24 10:15 UTC
+Rev. 4 | Created: 2026-10-23 | Updated: 2026-10-24 10:19 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -112,7 +112,7 @@ Fig 3. Tensor shapes of the TCN and Transformer hybrid
 
 Stage 1 은 wafer 한 장의 Hz 단위 고밀도 센서 시계열을 vector 하나로 압축하여 메모리를 줄인다. Stage 2 는 그 vector 를 Wafer_Sequence_Length 장만큼 이어 받아 wafer 간 trend 를 학습한다.
 
-Stage 1 이 다루는 intra-wafer 시계열은 압력, RF power, gas flow 같은 센서가 wafer 한 장을 가공하는 수십 초~수분 동안 남긴 기록이다. Stage 2 가 다루는 inter-wafer 변화는 R2R (Run-to-Run), chamber aging, target drift 처럼 wafer 수십~수백 장에 걸쳐 나타난다.
+Stage 1 이 다루는 intra-wafer 시계열은 압력, RF power, gas flow 같은 센서가 wafer 한 장을 가공하는 수십 초에서 수분 동안 남긴 기록이다. Stage 2 가 다루는 inter-wafer 변화는 R2R (Run-to-Run), chamber aging, target drift 처럼 wafer 수십에서 수백 장에 걸쳐 나타난다.
 
 ### 5.1 Causal Masking
 
