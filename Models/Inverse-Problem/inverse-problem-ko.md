@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 70 | Created: 2026-08-28 | Updated: 2026-10-24 23:45 UTC
+Rev. 71 | Created: 2026-08-28 | Updated: 2026-10-24 23:46 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -76,19 +76,6 @@ Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습�
 ### 1.4 Model inversion
 
 Model inversion 은 입력에서 출력으로 가는 model $f$ 를 이미 학습된 그대로 뒤집어 inverse problem 의 해법으로 쓰는 것을 뜻한다. $g$ 를 따로 학습하지 않지만, $\mathbf{y}^{\ast}$ 가 주어질 때마다 $\mathbf{y}^{\ast} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 풀어야 한다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $f$ 를 푼 해도 여럿이 되어, 그중 하나를 골라야 한다 ([2.4](#24-ambiguity-handling-what-fixes-the-answer)). 얻은 해의 신뢰 범위는 $f$ 가 학습한 영역으로 제한된다. 해가 여럿인 문제에서는 null space 로 해의 집합을 그대로 드러낸다 ([3.1](#31-pls-inversion-and-the-null-space)). 이 방법은 optimization-based (iterative) inversion 이라고도 부르며, historical data 로 만든 latent variable model 을 뒤집어 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법에서 출발했다 [[2](#ref-2)].
-
-비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
-
-Table 1. Terms adjacent to model inversion
-
-|   #   |          Term          |             Question it answers             |                     Difference from model inversion                     |
-| :---: | :--------------------: | :-----------------------------------------: | :---------------------------------------------------------------------: |
-|   1   |    Model inversion     |      목표 출력을 내는 입력은 무엇인가       |                            기준이 되는 문제                             |
-|   2   |     Inverse design     |     목표 성능을 갖는 설계안은 무엇인가      |            문제의 이름이며, model inversion 은 그 해법 하나             |
-|   3   |      Calibration       | 관측을 설명하는 model parameter 는 무엇인가 |                되찾는 대상이 입력이 아닌 model parameter                |
-|   4   |      Optimization      | 목적 함수를 가장 좋게 하는 입력은 무엇인가  | 목표값 추종이 아닌 극값 탐색. 잔차를 목적 함수로 두면 inversion 을 포함 |
-|   5   |      Attribution       |    출력이 어느 입력에 얼마나 반응하는가     |        국소 기여도의 설명. 목표를 만족하는 입력은 제시하지 않음         |
-|   6   | Model inversion attack |        학습 데이터에 무엇이 있었는가        |         목적이 설계가 아닌 privacy 침해. 복원 대상은 학습 표본          |
 
 ## 2. Taxonomy
 
@@ -224,9 +211,9 @@ Fig 3. Null space and the validity region in the score plane
 
 ## 4. Model-Specific Inversion Methods
 
-Model 별 inversion 방법을 Table 2 에 정리한다.
+Model 별 inversion 방법을 Table 1 에 정리한다.
 
-Table 2. Inversion method by model family
+Table 1. Inversion method by model family
 
 |   #   |              Model               |              Inversion method               |                                                                          Characteristics                                                                          |
 | :---: | :------------------------------: | :-----------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -292,7 +279,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 
 ## 7. Tools and Libraries
 
-Table 3. Libraries for model inversion
+Table 2. Libraries for model inversion
 
 |      Library       |                  Role                   |                                   Note                                    |
 | :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
