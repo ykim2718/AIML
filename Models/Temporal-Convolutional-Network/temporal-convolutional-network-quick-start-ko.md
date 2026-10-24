@@ -1,5 +1,5 @@
 # Temporal Convolutional Network Quick Start
-Rev. 8 | Created: 2026-10-23 | Updated: 2026-10-24 10:36 UTC
+Rev. 9 | Created: 2026-10-23 | Updated: 2026-10-24 10:37 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -127,7 +127,7 @@ Stage 1 이 다루는 intra-wafer 시계열은 압력, RF power, gas flow 같은
 
 ### 5.2 Positional Encoding
 
-Transformer 에 wafer 진행 순서 (wafer index), lot 내 slot 번호, PM (Preventive Maintenance) 후 누적 순번을 positional encoding 이나 meta feature 로 결합하면 wafer 간 장기 의존성을 학습하는 성능이 높아진다.
+Transformer 에 wafer 진행 순서 (wafer index), lot 내 slot 번호, PM (Preventive Maintenance) 후 누적 순번을 positional encoding 이나 covariate 로 결합하면 wafer 간 장기 의존성을 학습하는 성능이 높아진다.
 
 ### 5.3 Comparison
 
@@ -166,9 +166,9 @@ Table 3 의 class 로 세 model 을 만든 예시 code 는 [Appendix B](#appendi
 - **aka**: also known as. 같은 것을 가리키는 다른 이름 앞에 붙인다.
 - **Attention mask**: attention 계산에서 지정한 위치의 관련성을 0 으로 만들어 참조하지 못하게 하는 행렬.
 - **Chamber aging**: 가공 횟수가 쌓이면서 chamber 상태가 바뀌어 공정 결과가 서서히 달라지는 현상.
+- **Covariate**: 센서값과 함께 model 에 넣는 wafer 의 부가 정보로, slot 번호나 PM 후 누적 순번 같은 값.
 - **Embedding vector**: 시계열 같은 고차원 입력을 고정 길이로 압축한 vector.
 - **GAP (Global Average Pooling)**: 시간 축의 모든 step 출력을 평균하여 vector 하나로 만드는 연산.
-- **Meta feature**: 센서값이 아닌 wafer 의 부가 정보로, slot 번호나 PM 후 누적 순번 같은 값.
 - **PM (Preventive Maintenance)**: 장비를 정해진 period 마다 세정하고 부품을 교체하는 예방 정비.
 - **Positional encoding**: Transformer 입력에 위치 정보를 더하는 vector.
 - **R2R (Run-to-Run)**: 이전 run 의 계측 결과로 다음 run 의 공정 조건을 보정하는 제어.
