@@ -1,10 +1,11 @@
 # Inverse Problem and Model Inversion
-Rev. 66 | Created: 2026-08-28 | Updated: 2026-10-24 23:39 UTC
+Rev. 67 | Created: 2026-08-28 | Updated: 2026-10-24 23:41 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
   - [1.2 Ill-posedness](#12-ill-posedness)
-  - [1.3 Model inversion](#13-model-inversion)
+  - [1.3 Inverse model](#13-inverse-model)
+  - [1.4 Model inversion](#14-model-inversion)
 - [2. Taxonomy](#2-taxonomy)
   - [2.1 Formulation (How to pose)](#21-formulation-how-to-pose)
   - [2.2 Search space (Where to search)](#22-search-space-where-to-search)
@@ -51,7 +52,13 @@ Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적�
 - 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 해가 여럿이면 그중 하나를 골라야 한다.
 - 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
 
-### 1.3 Model inversion
+### 1.3 Inverse model
+
+Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습해 inverse problem 의 해법으로 쓰는 것을 뜻한다. $(\mathbf{x}, \mathbf{y})$ 쌍으로 $g$ 를 학습해 두면 $\mathbf{y}^{\ast}$ 를 한 번 넣어 $\mathbf{x} = g(\mathbf{y}^{\ast})$ 를 바로 얻으므로 반복 탐색이 없다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $g$ 는 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다 ([2.3](#23-solution-method-how-to-solve)). 해가 여럿인 문제에서는 사후분포를 직접 학습하는 cINN 을 쓴다 ([4.5](#45-generative-and-invertible-models)).
+
+Inverse model 과 model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지는 1.4 의 Fig 1 과 같다.
+
+### 1.4 Model inversion
 
 Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. Historical data 로 만든 latent variable model 을 뒤집어, 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
@@ -70,7 +77,7 @@ Problem
 ```
 Fig 1. Taxonomy of inverse problem
 
-Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 2.3 의 learned inverse map 으로 짧게 다룬다.
+Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 1.3 과 2.3 의 learned inverse map 으로 짧게 다룬다.
 
 비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
 
