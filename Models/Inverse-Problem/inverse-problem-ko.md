@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 67 | Created: 2026-08-28 | Updated: 2026-10-24 23:41 UTC
+Rev. 68 | Created: 2026-08-28 | Updated: 2026-10-24 23:43 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -42,27 +42,7 @@ Forward problem 은 입력 변수 $K$ 개로 이루어진 $\mathbf{x} \in \mathb
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다.
 
-### 1.2 Ill-posedness
-
-Well-posed 문제의 세 조건은 inverse problem 을 풀 때 무엇을 처리해야 하는지를 정한다. 잔차 최소화, regularization, 여러 해 가운데 하나를 고르는 처리 ([2.1](#21-formulation-how-to-pose), [2.4](#24-ambiguity-handling-what-fixes-the-answer)) 는 각각 존재성 (existence), 안정성 (stability), 유일성 (uniqueness) 이 깨진 경우에 대응한다.
-
-Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
-
-- 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 image 또는 range 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
-- 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 해가 여럿이면 그중 하나를 골라야 한다.
-- 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
-
-### 1.3 Inverse model
-
-Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습해 inverse problem 의 해법으로 쓰는 것을 뜻한다. $(\mathbf{x}, \mathbf{y})$ 쌍으로 $g$ 를 학습해 두면 $\mathbf{y}^{\ast}$ 를 한 번 넣어 $\mathbf{x} = g(\mathbf{y}^{\ast})$ 를 바로 얻으므로 반복 탐색이 없다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $g$ 는 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다 ([2.3](#23-solution-method-how-to-solve)). 해가 여럿인 문제에서는 사후분포를 직접 학습하는 cINN 을 쓴다 ([4.5](#45-generative-and-invertible-models)).
-
-Inverse model 과 model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지는 1.4 의 Fig 1 과 같다.
-
-### 1.4 Model inversion
-
-Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. Historical data 로 만든 latent variable model 을 뒤집어, 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
-
-Model inversion 이 inverse problem 의 해법 가운데 어디에 놓이는지는 아래 Fig 1 과 같다.
+Forward problem 과 inverse problem, 그리고 inverse problem 의 두 해법인 inverse model 과 model inversion 의 관계는 아래 Fig 1 과 같다.
 
 ```text
 Problem
@@ -78,6 +58,24 @@ Problem
 Fig 1. Taxonomy of inverse problem
 
 Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 1.3 과 2.3 의 learned inverse map 으로 짧게 다룬다.
+
+### 1.2 Ill-posedness
+
+Well-posed 문제의 세 조건은 inverse problem 을 풀 때 무엇을 처리해야 하는지를 정한다. 잔차 최소화, regularization, 여러 해 가운데 하나를 고르는 처리 ([2.1](#21-formulation-how-to-pose), [2.4](#24-ambiguity-handling-what-fixes-the-answer)) 는 각각 존재성 (existence), 안정성 (stability), 유일성 (uniqueness) 이 깨진 경우에 대응한다.
+
+Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
+
+- 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 image 또는 range 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
+- 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 해가 여럿이면 그중 하나를 골라야 한다.
+- 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
+
+### 1.3 Inverse model
+
+Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습해 inverse problem 의 해법으로 쓰는 것을 뜻한다. $(\mathbf{x}, \mathbf{y})$ 쌍으로 $g$ 를 학습해 두면 $\mathbf{y}^{\ast}$ 를 한 번 넣어 $\mathbf{x} = g(\mathbf{y}^{\ast})$ 를 바로 얻으므로 반복 탐색이 없다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $g$ 는 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다 ([2.3](#23-solution-method-how-to-solve)). 해가 여럿인 문제에서는 사후분포를 직접 학습하는 cINN 을 쓴다 ([4.5](#45-generative-and-invertible-models)).
+
+### 1.4 Model inversion
+
+Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. Historical data 로 만든 latent variable model 을 뒤집어, 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
 비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
 
