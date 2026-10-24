@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 62 | Created: 2026-08-28 | Updated: 2026-10-24 23:10 UTC
+Rev. 63 | Created: 2026-08-28 | Updated: 2026-10-24 23:13 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -42,6 +42,8 @@ Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다.
 
 ### 1.2 Ill-posedness
+
+Well-posed 문제의 세 조건은 inverse problem 을 풀 때 무엇을 처리해야 하는지를 정한다. 잔차 최소화, regularization, 여러 해 가운데 하나를 고르는 처리 ([2.1](#21-formulation-how-to-pose), [2.4](#24-ambiguity-handling-what-fixes-the-answer)) 는 각각 존재성, 안정성, 유일성이 깨진 경우에 대응한다.
 
 Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
 
