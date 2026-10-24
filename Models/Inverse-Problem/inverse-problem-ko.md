@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 59 | Created: 2026-08-28 | Updated: 2026-10-24 06:24 CDT
+Rev. 60 | Created: 2026-08-28 | Updated: 2026-10-24 06:33 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -41,8 +41,8 @@ Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
 
-- Identification problem 은 이미 측정한 $\mathbf{y}^{\ast}$ 를 받아, 그 값을 실제로 만든 상태 $\mathbf{x}$ 하나를 찾는다. Tomography, deconvolution 이 여기에 속한다.
-- Design problem 은 목표로 정한 $\mathbf{y}^{\ast}$ 를 받아, 출력이 그 값이 되는 입력 $\mathbf{x}$ 를 고른다. Product design, inverse design 이 여기에 속한다.
+- Identification problem 은 이미 정해져 있는 $\mathbf{x}$ 를 알아내는 일이다. Tomography, deconvolution 이 여기에 속한다.
+- Design problem 은 원하는 $\mathbf{y}$ 가 나오도록 $\mathbf{x}$ 를 정하는 일이다. Product design, inverse design 이 여기에 속한다.
 
 ### 1.2 Ill-posedness
 
@@ -350,13 +350,13 @@ Table 3. Libraries for model inversion
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
 - **COBYLA**: 선형 근사를 갱신하며 제약이 있는 문제를 푸는 derivative-free optimization 방법이며 constrained optimization by linear approximations 의 약자이다.
 - **Derivative-free optimization**: 목적 함수의 gradient 없이 함수값만으로 해를 찾는 최적화이다.
-- **Design problem**: 목표로 정한 출력을 받아, 출력이 그 값이 되는 입력을 고르는 inverse problem 이다.
+- **Design problem**: 원하는 출력이 나오도록 입력을 정하는 inverse problem 이다.
 - **Design space**: 출력의 목표 범위를 만족하는 것으로 확인된 입력 영역이다.
 - **Forward problem**: 입력에서 출력을 계산하는 문제이다.
 - **GBM**: 잔차를 순차적으로 학습하는 tree 를 더해 만드는 model 이며 gradient boosting machine 의 약자이다.
 - **GP**: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
 - **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
-- **Identification problem**: 이미 측정한 출력을 받아, 그 값을 실제로 만든 상태를 찾는 inverse problem 이며, reconstruction problem 이라고도 부른다.
+- **Identification problem**: 이미 정해져 있는 입력을 알아내는 inverse problem 이며, reconstruction problem 이라고도 부른다.
 - **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
 - **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
 - **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 또는 역모델이라고도 부른다.
