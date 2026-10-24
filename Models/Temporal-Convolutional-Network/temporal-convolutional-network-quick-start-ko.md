@@ -1,5 +1,5 @@
-# Temporal CNN Quick Start
-Rev. 6 | Created: 2026-10-23 | Updated: 2026-10-24 10:29 UTC
+# Temporal Convolutional Network Quick Start
+Rev. 7 | Created: 2026-10-23 | Updated: 2026-10-24 10:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -19,9 +19,9 @@ Rev. 6 | Created: 2026-10-23 | Updated: 2026-10-24 10:29 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: Temporal CNN 에 대한 quick start guide 가 없다.
+- **Problem Statement**: Temporal Convolutional Network (TCN) 에 대한 quick start guide 가 없다.
 - **Goal**: TCN 으로 예측하는 방법과 embedding vector 를 추출하는 방법을 구별해 쓸 수 있게 한다.
-- **Non-Goal**: Temporal CNN 의 세부를 다루지 않는다.
+- **Non-Goal**: Temporal Convolutional Network 의 세부를 다루지 않는다.
 
 ## 2. Taxonomy
 
