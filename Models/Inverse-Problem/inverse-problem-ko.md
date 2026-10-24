@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 71 | Created: 2026-08-28 | Updated: 2026-10-24 23:46 UTC
+Rev. 72 | Created: 2026-08-28 | Updated: 2026-10-24 23:47 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -55,7 +55,7 @@ Problem
         +-- Model inversion    y = f(x), for x     solve with the surrogate model f
               aka optimization-based (iterative) inversion
 ```
-Fig 1. Taxonomy of inverse problem
+Fig 1. Taxonomy of inverse problem 🌳
 
 Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 1.3 과 2.3 의 learned inverse map 으로 짧게 다룬다.
 
