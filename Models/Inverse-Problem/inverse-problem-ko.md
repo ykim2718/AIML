@@ -348,7 +348,6 @@ Table 2. Libraries for model inversion
 - **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
 - **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
 - **Image**: $f$ 가 내놓을 수 있는 출력을 모두 모은 집합이며, range 라고도 부른다.
-- **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
 - **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 또는 역모델이라고도 부른다.
 - **Joint-Y PLS**: 여러 site 의 데이터를 공통 출력으로 묶어 하나의 latent space 에서 다루는 PLS 확장이다.
 - **Latent variable**: 관측 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다.
