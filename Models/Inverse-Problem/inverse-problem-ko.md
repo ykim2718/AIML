@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 55 | Created: 2026-08-28 | Updated: 2026-10-23 08:30 UTC
+Rev. 56 | Created: 2026-08-28 | Updated: 2026-10-24 06:18 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -41,15 +41,15 @@ Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
 
-- 관측형 inverse problem 은 측정된 $\mathbf{y}^{\ast}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
-- 설계형 inverse problem 은 목표 출력 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 출력을 내는 입력을 찾는다. Product design 과 inverse design 이 여기에 속한다.
+- Identification problem 은 측정된 $\mathbf{y}^{\ast}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
+- Design problem 은 목표 출력 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 출력을 내는 입력을 찾는다. Product design 과 inverse design 이 여기에 속한다.
 
 ### 1.2 Ill-posedness
 
 Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
 
 - 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 상 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
-- 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 이 자유도를 어떻게 쓸지가 설계형 문제의 핵심이 된다.
+- 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 이 자유도를 어떻게 쓸지가 design problem 의 핵심이 된다.
 - 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
 
 ### 1.3 Model inversion
@@ -350,11 +350,13 @@ Table 3. Libraries for model inversion
 - **CMA-ES**: 공분산 행렬을 갱신하며 표본을 뽑아 최적점을 찾는 derivative-free optimization 방법이며 covariance matrix adaptation evolution strategy 의 약자이다.
 - **COBYLA**: 선형 근사를 갱신하며 제약이 있는 문제를 푸는 derivative-free optimization 방법이며 constrained optimization by linear approximations 의 약자이다.
 - **Derivative-free optimization**: 목적 함수의 gradient 없이 함수값만으로 해를 찾는 최적화이다.
+- **Design problem**: 목표로 정한 출력을 내는 입력을 찾는 inverse problem 이며, inverse design 이 여기에 속한다.
 - **Design space**: 출력의 목표 범위를 만족하는 것으로 확인된 입력 영역이다.
 - **Forward problem**: 입력에서 출력을 계산하는 문제이다.
 - **GBM**: 잔차를 순차적으로 학습하는 tree 를 더해 만드는 model 이며 gradient boosting machine 의 약자이다.
 - **GP**: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
 - **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
+- **Identification problem**: 측정된 출력에서 그 출력을 만든 상태나 parameter 를 복원하는 inverse problem 이며, reconstruction problem 이라고도 부른다.
 - **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
 - **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
 - **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 또는 역모델이라고도 부른다.
