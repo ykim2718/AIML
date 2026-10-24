@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 74 | Created: 2026-08-28 | Updated: 2026-10-24 23:54 UTC
+Rev. 75 | Created: 2026-08-28 | Updated: 2026-10-24 23:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -57,7 +57,9 @@ Problem
 ```
 Fig 1. Taxonomy of inverse problem 🌳
 
-Inverse model 이 model 구조에 대한 이름이고, model inversion 은 model 을 뒤집는 행위의 이름이어서 짝이 맞지 않게 들릴 수 있다. Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 1.3 과 2.3 의 learned inverse map 으로 짧게 다룬다.
+Inverse model 이 model 구조에 대한 이름이고, model inversion 은 model 을 뒤집는 행위의 이름이어서 짝이 맞지 않게 들릴 수 있다.
+
+Forward problem 을 푸는 $f$ 는 physical model 을 대신해 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한 surrogate model 이다. Inverse problem 의 해법은 $g$ 를 따로 학습하는지에 따라 둘로 갈린다. Inverse model 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 $g$ 를 데이터로 직접 학습하고, model inversion 은 $f$ 를 그대로 두고 $\mathbf{y} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 푼다. 이 문서는 주로 model inversion 을 다루며, inverse model 은 1.3 과 2.3 의 learned inverse map 으로 짧게 다룬다.
 
 ### 1.2 Ill-posedness
 
