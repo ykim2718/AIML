@@ -1,5 +1,5 @@
 # Temporal CNN Quick Start
-Rev. 5 | Created: 2026-10-23 | Updated: 2026-10-24 10:23 UTC
+Rev. 6 | Created: 2026-10-23 | Updated: 2026-10-24 10:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -15,6 +15,7 @@ Rev. 5 | Created: 2026-10-23 | Updated: 2026-10-24 10:23 UTC
   - [5.3 Comparison](#53-comparison)
 - [6. Models and Libraries](#6-models-and-libraries)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Python Example](#appendix-b-python-example)
 
 ## 1. Purpose
 
@@ -156,6 +157,8 @@ Table 3. Models and libraries by method
 
 TCN 기반 encoder 는 Standard TCN 의 두 행으로 TCN block 을 만든 뒤 그 뒤에 GAP 를 둔다. `torch.nn.Conv1d` 는 Standard TCN 의 두 행에 모두 나오며, dilated causal convolution 에서는 dilation 과 왼쪽 padding 을 주고 residual block 에서는 kernel 크기 1 로 채널 수만 맞춘다.
 
+Table 3 의 class 로 세 model 을 만든 예시 code 는 [Appendix B](#appendix-b-python-example) 에 있다.
+
 ---
 
 ## Appendix A. Terminology
@@ -174,3 +177,129 @@ TCN 기반 encoder 는 Standard TCN 의 두 행으로 TCN block 을 만든 뒤 �
 - **Target drift**: 공정 결과의 목표값 대비 편차가 시간에 따라 한 방향으로 움직이는 현상.
 - **Vanishing gradient**: 깊은 network 에서 역전파 gradient 가 층을 지날수록 작아져 앞쪽 layer 가 학습되지 않는 현상.
 - **VM (Virtual Metrology)**: 계측 대신 공정 센서 데이터로 계측값을 추정하는 model.
+
+## Appendix B. Python Example
+
+아래 code 는 Table 3 의 `torch.nn` class 로 standard TCN, TCN 기반 encoder, TCN 과 Transformer 의 hybrid 를 만든 예시다. `TCNForecaster` 는 시점 $t$ 까지의 입력으로 $t+1$ 의 센서값을 예측하고, `TCNEncoder` 는 $z = \mathrm{Pool}(\mathrm{TCN}(X))$ 로 wafer 한 장의 embedding vector 를 만든다. `WaferSequenceModel` 은 wafer 별 embedding vector 를 causal Transformer 에 넣어 wafer 마다 박막 두께 같은 값 하나를 예측한다. 세 model 의 출력 head 는 `torch.nn.Linear` 이다.
+
+```python
+# Python
+from typing import Sequence
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+__author__ = 'yRocket'
+__version__ = "0.0.0+20261024"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+
+KERNEL_SIZE: int = 3
+DILATIONS: tuple = (1, 2, 4, 8)  # receptive field grows exponentially with depth
+
+
+class CausalConv1d(nn.Module):
+    """Dilated 1D convolution that pads only the left side, so step t sees x_t, x_{t-1}, ... only."""
+
+    def __init__(self, in_channels: int, out_channels: int, kernel_size: int, dilation: int):
+        super().__init__()
+        self.left_pad = (kernel_size - 1) * dilation
+        self.conv = nn.Conv1d(in_channels=in_channels, out_channels=out_channels,
+                              kernel_size=kernel_size, dilation=dilation)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # x: (batch, channels, time)
+        return self.conv(F.pad(x, pad=(self.left_pad, 0)))
+
+
+class ResidualBlock(nn.Module):
+    """Causal convolution with a residual connection; a kernel-1 Conv1d matches channels when they differ."""
+
+    def __init__(self, in_channels: int, out_channels: int, kernel_size: int, dilation: int):
+        super().__init__()
+        self.conv = CausalConv1d(in_channels=in_channels, out_channels=out_channels,
+                                 kernel_size=kernel_size, dilation=dilation)
+        self.skip = (nn.Identity() if in_channels == out_channels
+                     else nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=1))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.relu(self.conv(x) + self.skip(x))
+
+
+class TCN(nn.Module):
+    """Standard TCN: (batch, time, sensors) -> (batch, time, hidden), one output per time step."""
+
+    def __init__(self, n_sensors: int, hidden: int, kernel_size: int = KERNEL_SIZE,
+                 dilations: Sequence[int] = DILATIONS):
+        super().__init__()
+        if not dilations:
+            raise ValueError("dilations must not be empty.")
+        channels = [n_sensors] + [hidden] * len(dilations)
+        self.blocks = nn.Sequential(*[
+            ResidualBlock(in_channels=channels[i], out_channels=channels[i + 1],
+                          kernel_size=kernel_size, dilation=d)
+            for i, d in enumerate(dilations)])
+        self.n_sensors = n_sensors
+        self.hidden = hidden
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() != 3 or x.shape[-1] != self.n_sensors:
+            raise ValueError(f"expected (batch, time, {self.n_sensors}), got {tuple(x.shape)}")
+        return self.blocks(x.transpose(1, 2)).transpose(1, 2)
+
+
+class TCNForecaster(nn.Module):
+    """Prediction: forecasts the sensor values of step t+1 from steps up to t."""
+
+    def __init__(self, tcn: TCN):
+        super().__init__()
+        self.tcn = tcn
+        self.head = nn.Linear(in_features=tcn.hidden, out_features=tcn.n_sensors)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # (batch, time, sensors) -> same shape
+        return self.head(self.tcn(x))
+
+
+class TCNEncoder(nn.Module):
+    """Embedding: z = Pool(TCN(X)), (batch, time, sensors) -> (batch, hidden)."""
+
+    def __init__(self, tcn: TCN):
+        super().__init__()
+        self.tcn = tcn
+        self.pool = nn.AdaptiveAvgPool1d(output_size=1)  # GAP over the time axis
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        h = self.tcn(x)  # (batch, time, hidden)
+        return self.pool(h.transpose(1, 2)).squeeze(-1)
+
+
+class WaferSequenceModel(nn.Module):
+    """Hybrid: TCN encoder per wafer, causal Transformer across wafers, one value (e.g. thickness) per wafer."""
+
+    def __init__(self, encoder: TCNEncoder, n_heads: int, n_layers: int):
+        super().__init__()
+        d_model = encoder.tcn.hidden
+        self.encoder = encoder
+        layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=n_heads, batch_first=True)
+        self.transformer = nn.TransformerEncoder(encoder_layer=layer, num_layers=n_layers)
+        self.head = nn.Linear(in_features=d_model, out_features=1)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """x: (batch, n_wafers, time, sensors) -> (batch, n_wafers)."""
+        if x.dim() != 4:
+            raise ValueError(f"expected (batch, n_wafers, time, sensors), got {tuple(x.shape)}")
+        batch, n_wafers = x.shape[:2]
+        z = self.encoder(x.flatten(0, 1)).view(batch, n_wafers, -1)  # (batch, n_wafers, hidden)
+        mask = nn.Transformer.generate_square_subsequent_mask(n_wafers)  # hides future wafers
+        return self.head(self.transformer(z, mask=mask, is_causal=True)).squeeze(-1)
+
+
+if __name__ == '__main__':
+    torch.manual_seed(0)
+    x = torch.randn(4, 200, 6)  # 4 wafers, 200 time steps, 6 sensors
+    tcn = TCN(n_sensors=6, hidden=32)
+    print(TCNForecaster(tcn=tcn)(x).shape)  # torch.Size([4, 200, 6])
+    print(TCNEncoder(tcn=tcn)(x).shape)  # torch.Size([4, 32])
+    model = WaferSequenceModel(encoder=TCNEncoder(tcn=tcn), n_heads=4, n_layers=2)
+    print(model(torch.randn(2, 25, 200, 6)).shape)  # torch.Size([2, 25])
+```
+
+PyTorch 2.14.1 에서 실행하면 `__main__` block 의 주석과 같은 shape 가 출력된다.
