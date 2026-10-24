@@ -1,5 +1,5 @@
 # Transformer Models by Domain Quick Start
-Rev. 2 | Created: 2026-10-24 | Updated: 2026-10-24 10:54 UTC
+Rev. 3 | Created: 2026-10-24 | Updated: 2026-10-24 10:57 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -10,6 +10,7 @@ Rev. 2 | Created: 2026-10-24 | Updated: 2026-10-24 10:54 UTC
 - [4. Domain Models](#4-domain-models)
   - [4.1 Comparison](#41-comparison)
 - [5. Models and Libraries](#5-models-and-libraries)
+- [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
@@ -47,7 +48,7 @@ Transformer 는 architecture 이고, LLM 은 그 architecture 로 자연어를 �
 
 ### 3.1 Transformer
 
-- **Definition**: 2017 년 논문 "Attention Is All You Need" 가 제안한 architecture. Self-attention 으로 sequence 구성 요소 사이의 관련성을 계산.
+- **Definition**: 2017 년 논문 "Attention Is All You Need" [[1](#ref-1)] 가 제안한 architecture. Self-attention 으로 sequence 구성 요소 사이의 관련성을 계산.
 - **Input**: token, image patch, 센서값처럼 sequence 로 놓을 수 있는 모든 데이터.
 - **Example**: BERT, ViT, Whisper, PatchTST.
 
@@ -106,6 +107,11 @@ Table 2. Models and libraries by domain
 </table>
 
 GPT-4 와 Claude 는 API 로만 제공되고, Lag-Llama 와 AlphaFold2 는 개발처의 GitHub source code 로 설치하므로 Table 2 에서 뺐다.
+
+## References
+
+<a id="ref-1"></a>
+[1] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems*, 30, 5998–6008.
 
 ---
 
