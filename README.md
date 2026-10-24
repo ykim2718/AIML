@@ -1,5 +1,5 @@
 # AIML
-Rev. 110 | Created: 2026-08-07 | Updated: 2026-10-17 08:30 CDT
+Rev. 111 | Created: 2026-08-07 | Updated: 2026-10-24 23:48 UTC
 
 - [1. Scope](#1-scope)
 - [2. Repository Map](#2-repository-map)
@@ -15,6 +15,7 @@ Rev. 110 | Created: 2026-08-07 | Updated: 2026-10-17 08:30 CDT
 - [4. Order Of Use](#4-order-of-use)
 - [5. Conventions](#5-conventions)
 - [6. Running The Code](#6-running-the-code)
+- [Appendix A. Emoji](#appendix-a-emoji)
 
 > A working notebook of applied machine learning and statistics, kept as documents that fix the reasoning and as scripts that show the mechanics.
 > The material leans toward measurement-heavy engineering data, semiconductor process and metrology data in particular.
@@ -208,3 +209,26 @@ python "statsmodels - coint - pair trading.py"
 ```
 
 Licensing is declared per document. The CCC guide declares the MIT License for itself, and the repository as a whole carries no license file.
+
+---
+
+## Appendix A. Emoji
+
+Emoji kept for use in the documents of this repository.
+
+- 👑🏆💗🎉🎶
+- 🌐 🌍
+- 🌴 🌳🥑🍉🍎🦐🦞🍩🍬🍭🍻
+- 📋 🚩📢 🎁🎀🆕☕
+- 😀🤔🕵️‍♀️🧐😢😭😮🧑‍🎓
+- ❓⁉️✔️☑️✅🆗🆒💯↔️
+- 🖥️📊📈💲🏦
+- 👌👍🤏✌️✋👏🙏☝️
+- 💡🎈📍🔔📌 🔎🔍 🔖🎗️
+- 🌞⛅☔🌈
+- 🐞🪱🕷️🐛💥🔥🔴⚠️ ⛔✖️🟰
+- 👮👫👬👭🤖
+- 0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟#️⃣*️⃣
+- 🚀🚗
+- 🇺🇸🇰🇷
+- 🐓
