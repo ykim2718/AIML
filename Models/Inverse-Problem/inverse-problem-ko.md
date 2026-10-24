@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 64 | Created: 2026-08-28 | Updated: 2026-10-24 23:36 UTC
+Rev. 65 | Created: 2026-08-28 | Updated: 2026-10-24 23:38 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -47,9 +47,9 @@ Well-posed 문제의 세 조건은 inverse problem 을 풀 때 무엇을 처리�
 
 Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적으로 의존한다는 세 조건을 모두 만족한다. 세 조건 중 하나 이상을 어기는 문제를 ill-posed 라고 하며, inverse problem 은 대부분 여기에 속한다 [[1](#ref-1)].
 
-- 존재성은 $\mathbf{y}^{\ast}$ 가 $f$ 의 image 또는 range 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
-- 유일성은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 해가 여럿이면 그중 하나를 골라야 한다.
-- 안정성은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
+- 존재성 (existence) 은 $\mathbf{y}^{\ast}$ 가 $f$ 의 image 또는 range 밖에 있으면 깨진다. 정확히 맞추는 대신 잔차를 최소화하는 해로 문제를 바꾸어 완화한다.
+- 유일성 (uniqueness) 은 $K \gt M$ 일 때 거의 항상 깨진다. 같은 출력을 주는 입력이 이루는 집합이 null space 이며, 해가 여럿이면 그중 하나를 골라야 한다.
+- 안정성 (stability) 은 $f$ 의 작은 특이값 방향에서 깨진다. 관측 잡음이 그 방향에서 크게 증폭되므로 regularization 으로 해의 크기를 눌러야 한다 [[1](#ref-1)].
 
 ### 1.3 Model inversion
 
