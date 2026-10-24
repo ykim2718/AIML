@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 72 | Created: 2026-08-28 | Updated: 2026-10-24 23:47 UTC
+Rev. 73 | Created: 2026-08-28 | Updated: 2026-10-24 23:54 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -42,7 +42,7 @@ Forward problem 은 입력 변수 $K$ 개로 이루어진 $\mathbf{x} \in \mathb
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다.
 
-Forward problem 과 inverse problem, 그리고 inverse problem 의 두 해법인 inverse model 과 model inversion 의 관계는 아래 Fig 1 과 같다.
+Forward problem 과 inverse problem, 그리고 inverse problem 의 두 해법인 inverse model 과 model inversion 의 관계는 아래 Fig 1 과 같다. Inverse model 이 model 구조에 대한 이름이고, model inversion 은 model 을 뒤집는 행위의 이름이어서 짝이 맞지 않게 들릴 수 있다.
 
 ```text
 Problem
