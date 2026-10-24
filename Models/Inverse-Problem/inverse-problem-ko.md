@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 56 | Created: 2026-08-28 | Updated: 2026-10-24 06:18 CDT
+Rev. 57 | Created: 2026-08-28 | Updated: 2026-10-24 06:21 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -41,8 +41,8 @@ Forward problem 은 입력 $\mathbf{x} \in \mathbb{R}^K$ 에서 출력 $\mathbf{
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다. Inverse problem 은 무엇을 되찾는가에 따라 두 갈래로 쓰인다.
 
-- Identification problem 은 측정된 $\mathbf{y}^{\ast}$ 에서 그 뒤에 있는 상태를 복원한다. Tomography, deconvolution 이 여기에 속한다.
-- Design problem 은 목표 출력 $\mathbf{y}^{\ast}$ 를 먼저 정하고 그 출력을 내는 입력을 찾는다. Product design 과 inverse design 이 여기에 속한다.
+- Identification problem 은 이미 측정한 $\mathbf{y}^{\ast}$ 를 받아, 그 값을 실제로 만든 상태 $\mathbf{x}$ 하나를 찾는다. Tomography, deconvolution 이 여기에 속한다.
+- Design problem 은 목표로 정한 $\mathbf{y}^{\ast}$ 를 받아, 출력이 그 값이 되는 입력 $\mathbf{x}$ 를 고른다. Product design, inverse design 이 여기에 속한다.
 
 ### 1.2 Ill-posedness
 
