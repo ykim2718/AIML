@@ -1,5 +1,5 @@
-# Transformer Models by Domain Quick Start
-Rev. 3 | Created: 2026-10-24 | Updated: 2026-10-24 10:57 UTC
+# Domain-specific Transformer Models Quick Start
+Rev. 4 | Created: 2026-10-24 | Updated: 2026-10-24 10:59 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -15,9 +15,9 @@ Rev. 3 | Created: 2026-10-24 | Updated: 2026-10-24 10:57 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: Transformer Models by Domain 에 대한 quick start guide 가 없다.
+- **Problem Statement**: Domain-specific Transformer Models 에 대한 quick start guide 가 없다.
 - **Goal**: Transformer 와 LLM 을 구별하고, 도메인마다 대표 Transformer model 을 고를 수 있게 한다.
-- **Non-Goal**: Transformer Models by Domain 의 세부를 다루지 않는다.
+- **Non-Goal**: Domain-specific Transformer Models 의 세부를 다루지 않는다.
 
 ## 2. Taxonomy
 
