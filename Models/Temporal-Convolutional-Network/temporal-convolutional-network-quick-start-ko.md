@@ -1,5 +1,5 @@
 # Temporal Convolutional Network Quick Start
-Rev. 7 | Created: 2026-10-23 | Updated: 2026-10-24 10:35 UTC
+Rev. 8 | Created: 2026-10-23 | Updated: 2026-10-24 10:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -32,9 +32,9 @@ Sequence model
   +-- Recurrent                                             computes steps one after another
   |     +-- RNN, LSTM, GRU     h_t = f(h_{t-1}, x_t)        waits for the previous step
   +-- Convolutional                                         1D convolution over past steps
-  |     +-- Standard TCN       Y = TCN(X)                   one output per time step (Seq-to-Seq)
+  |     +-- Standard TCN       Y = TCN(X)                   one output per time step (sequence-to-sequence)
   |     |     aka Temporal Convolutional Network
-  |     +-- TCN-based encoder  z = Pool(TCN(X))             one embedding vector per sequence (Seq-to-Vector)
+  |     +-- TCN-based encoder  z = Pool(TCN(X))             one embedding vector per sequence (sequence-to-vector)
   +-- Attention                                             relates every pair of positions
         +-- Transformer        softmax(Q K^T / sqrt(d)) V   global context, needs positional encoding
 ```
@@ -78,7 +78,7 @@ TCN 은 RNN, LSTM, GRU 보다 아래 세 가지에서 유리하다.
 
 ## 4. TCN and TCN-based Encoder
 
-TCN 기반 encoder 는 TCN 을 특징 추출과 압축에 쓰도록 출력 쪽에 pooling 을 더한 구성이다. 입출력 흐름은 [Fig 2](#fig-2) 와 같다.
+TCN 기반 encoder 는 TCN 을 feature extraction 과 압축에 쓰도록 출력 쪽에 pooling 을 더한 구성이다. 입출력 흐름은 [Fig 2](#fig-2) 와 같다.
 
 ```text
 Standard TCN
@@ -96,12 +96,12 @@ Standard TCN 은 시간 축의 길이 $T$ 를 유지하고 step 마다 출력을
 
 Table 1. Standard TCN and TCN-based encoder
 
-| Aspect         | Standard TCN                        | TCN-based encoder                                           |
-| :------------: | :---------------------------------: | :---------------------------------------------------------: |
-| Purpose        | 시계열 예측 (forecasting) 또는 분류 | 고차원 시계열의 특징 추출과 차원 축소                       |
-| Input → output | Seq-to-Seq, 입력 길이 = 출력 길이   | Seq-to-Vector, 시계열 → embedding vector                    |
-| Operation      | time step 마다 출력 하나            | TCN block 뒤 pooling 또는 dense layer 로 latent vector 하나 |
-| Next stage     | 그 출력이 최종 예측값               | Transformer, FC layer, decoder 의 입력                      |
+| Aspect         | Standard TCN                                | TCN-based encoder                                                        |
+| :------------: | :-----------------------------------------: | :----------------------------------------------------------------------: |
+| Purpose        | 시계열 예측 (forecasting) 또는 분류         | 고차원 시계열의 feature extraction 과 dimensionality reduction           |
+| Input → output | Sequence-to-sequence, 입력 길이 = 출력 길이 | Sequence-to-vector, 시계열 → embedding vector                            |
+| Operation      | time step 마다 출력 하나                    | TCN block 뒤 pooling 또는 fully connected layer 로 embedding vector 하나 |
+| Next stage     | 그 출력이 최종 예측값                       | Transformer, fully connected layer, decoder 의 입력                      |
 
 ## 5. Hybrid Architecture for Wafer Sensor Data
 
