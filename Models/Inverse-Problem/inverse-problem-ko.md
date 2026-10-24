@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 61 | Created: 2026-08-28 | Updated: 2026-10-24 06:44 CDT
+Rev. 62 | Created: 2026-08-28 | Updated: 2026-10-24 23:10 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -128,7 +128,7 @@ Deterministic 정식화는 잔차를 최소화하는 제약 최적화로 문제�
 \hat{\mathbf{x}} = \arg\min_{\mathbf{x}} \lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2} + \lambda R(\mathbf{x}) \hspace{19em} (1)
 ```
 
-여기서 $R$ 은 regularization 항이고 $\lambda$ 는 그 세기이다. Bayesian 정식화는 하나의 해 대신 사후분포를 구한다.
+여기서 $R$ 은 regularization 항이고 $\lambda$ 는 그 세기이다. 잔차 최소화는 존재성이 깨지는 문제를, regularization 은 안정성이 깨지는 문제를 다룬다 ([1.2](#12-ill-posedness)). Bayesian 정식화는 하나의 해 대신 사후분포를 구한다.
 
 ```math
 p(\mathbf{x} \mid \mathbf{y}^{\ast}) \propto p(\mathbf{y}^{\ast} \mid \mathbf{x}) p(\mathbf{x}) \hspace{19em} (2)
@@ -149,7 +149,7 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 
 ### 2.4 Ambiguity handling (What fixes the answer)
 
-답이 여럿일 때 무엇으로 하나를 고르는가가 방법을 가른다. Null space 는 예측을 바꾸지 않는 방향을 명시해 남은 자유도를 다른 목적에 쓰게 한다. Regularization 은 크기가 작은 해를 고른다. Validity constraint 는 historical data 가 덮은 영역 안으로 해를 가둔다. Prior 는 있을 법한 입력에 확률을 몰아준다. 앞의 셋은 deterministic 정식화에, 마지막은 Bayesian 정식화에 자연스럽게 붙는다.
+답이 여럿인 것은 유일성이 깨진 경우이며 ([1.2](#12-ill-posedness)), 그중 하나를 무엇으로 고르는가가 방법을 가른다. Null space 는 예측을 바꾸지 않는 방향을 명시해 남은 자유도를 다른 목적에 쓰게 한다. Regularization 은 크기가 작은 해를 고른다. Validity constraint 는 historical data 가 덮은 영역 안으로 해를 가둔다. Prior 는 있을 법한 입력에 확률을 몰아준다. 앞의 셋은 deterministic 정식화에, 마지막은 Bayesian 정식화에 자연스럽게 붙는다.
 
 ### 2.5 Answer form (What to return)
 
