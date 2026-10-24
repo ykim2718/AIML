@@ -1,5 +1,5 @@
 # Temporal CNN Quick Start
-Rev. 4 | Created: 2026-10-23 | Updated: 2026-10-24 10:19 UTC
+Rev. 5 | Created: 2026-10-23 | Updated: 2026-10-24 10:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -40,7 +40,13 @@ Sequence model
 <a id="fig-1"></a>
 Fig 1. Sequence models and the place of TCN
 
-Recurrent family 는 이전 step 의 출력을 기다려 다음 step 을 계산한다. Convolutional family 는 그 순차 계산을 버리고 convolution 으로 모든 step 을 함께 계산하며, 참조하는 과거 길이는 kernel 크기, dilation rate, layer 수로 정해진다. Attention family 는 거리와 관계없이 모든 위치 쌍의 관련성을 직접 계산하므로, 순서 정보를 positional encoding 으로 따로 넣어야 한다. Convolutional family 안에서 standard TCN 은 step 마다 출력을 하나씩 주어 미래 센서값을 예측하고, TCN 기반 encoder 는 같은 TCN 뒤에 pooling 을 두어 시계열 하나를 embedding vector 하나로 압축한다.
+Recurrent family 는 이전 step 의 출력을 기다려 다음 step 을 계산한다. RNN, LSTM, GRU 는 시점 $t$ 의 상태 $h_t$ 를 직전 상태 $h_{t-1}$ 와 입력 $x_t$ 로 구한다.
+
+Convolutional family 는 순차 계산 대신 convolution 으로 모든 step 을 함께 계산하며, 참조하는 과거 길이는 kernel 크기, dilation rate, layer 수로 정해진다. 이 family 안에서 standard TCN 은 step 마다 출력을 하나씩 주어 미래 센서값을 예측하고, TCN 기반 encoder 는 같은 TCN 뒤에 pooling 을 두어 시계열 하나를 embedding vector 하나로 압축한다.
+
+TCN 기반 encoder 의 식 $z = \mathrm{Pool}(\mathrm{TCN}(X))$ 에서 $X = (x_1, \ldots, x_T)$ 는 wafer 한 장의 센서 시계열이고, $x_t$ 는 시점 $t$ 의 센서 $C$ 개 값이다. $\mathrm{TCN}(X)$ 는 dilated causal convolution 을 거쳐 같은 길이 $T$ 의 출력 $(h_1, \ldots, h_T)$ 를 만들며, $h_t$ 는 시점 $t$ 까지의 입력을 요약한 $D$ 차원 vector 이다. Pool 은 시간 축을 하나로 줄여, GAP 를 쓰면 $z = \frac{1}{T}\sum_{t=1}^{T} h_t$ 이고 마지막 step 을 쓰면 $z = h_T$ 이다. 결과 $z$ 는 길이 $T$ 와 관계없는 $D$ 차원 vector 하나이며 wafer 한 장을 대표한다.
+
+Attention family 는 거리와 관계없이 모든 위치 쌍의 관련성을 직접 계산하므로, 순서 정보를 positional encoding 으로 따로 넣어야 한다.
 
 ## 3. TCN Structure
 
