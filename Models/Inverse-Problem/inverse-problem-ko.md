@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 58 | Created: 2026-08-28 | Updated: 2026-10-24 06:23 CDT
+Rev. 59 | Created: 2026-08-28 | Updated: 2026-10-24 06:24 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -356,7 +356,7 @@ Table 3. Libraries for model inversion
 - **GBM**: 잔차를 순차적으로 학습하는 tree 를 더해 만드는 model 이며 gradient boosting machine 의 약자이다.
 - **GP**: 함수에 대한 사전분포를 두어 예측과 분산을 함께 주는 model 이며 Gaussian process 의 약자이다.
 - **Hotelling $T^{2}$**: score 가 model 중심에서 얼마나 떨어져 있는지를 재는 통계량이다.
-- **Identification problem**: 이미 측정한 출력을 받아, 그 값을 실제로 만든 상태를 찾는 inverse problem 이다.
+- **Identification problem**: 이미 측정한 출력을 받아, 그 값을 실제로 만든 상태를 찾는 inverse problem 이며, reconstruction problem 이라고도 부른다.
 - **Ill-posed problem**: 해의 존재성, 유일성, 안정성 중 하나 이상이 깨진 문제이다.
 - **Inverse design**: 목표 성능을 먼저 정하고 그 성능을 내는 설계안을 찾는 문제이다.
 - **Inverse model**: 출력에서 입력으로 가는 사상을 데이터로 직접 학습한 model 이며, learned inverse map 또는 역모델이라고도 부른다.
