@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 68 | Created: 2026-08-28 | Updated: 2026-10-24 23:43 UTC
+Rev. 69 | Created: 2026-08-28 | Updated: 2026-10-24 23:44 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -75,7 +75,7 @@ Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습�
 
 ### 1.4 Model inversion
 
-Model inversion 은 이미 학습된 model 을 inverse problem 의 해법으로 쓰는 것을 뜻한다. Historical data 로 만든 latent variable model 을 뒤집어, 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
+Model inversion 은 입력에서 출력으로 가는 model $f$ 를 이미 학습된 그대로 뒤집어 inverse problem 의 해법으로 쓰는 것을 뜻한다. Historical data 로 만든 latent variable model 을 뒤집어, 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법이 이 용어의 출발점이다 [[2](#ref-2)]. 새로 실험을 설계하는 대신 이미 가진 model 을 반대 방향으로 읽는다는 점이 특징이며, 그래서 해의 신뢰 범위가 그 model 이 학습한 영역으로 제한된다.
 
 비슷해 보이지만 다른 문제들이 같은 이름으로 불리는 경우가 있어, Table 1 에 경계를 정리한다.
 
