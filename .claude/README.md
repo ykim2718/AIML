@@ -1,5 +1,5 @@
 # Claude Rules Setup
-Rev. 10 | Created: 2026-08-03 | Updated: 2026-09-23 11:08 CDT
+Rev. 11 | Created: 2026-08-03 | Updated: 2026-10-25 06:55 CDT
 
 - [1. Layout](#1-layout)
 - [2. Settings](#2-settings)
@@ -63,7 +63,7 @@ cp <SOURCE_REPO>/.claude/settings.json .claude/settings.json
 cp <SOURCE_REPO>/.claude/hooks/session-start.sh .claude/hooks/session-start.sh
 ```
 
-commit 하고 push 한 뒤 새 세션을 열어 `/md_rules` 가 호출되면 plugin 이 실린 것이다.
+commit 하고 push 한 뒤 새 세션을 열어 `/md-rules` 가 호출되면 plugin 이 실린 것이다.
 
 ## 5. Update
 
