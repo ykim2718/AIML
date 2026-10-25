@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 76 | Created: 2026-08-28 | Updated: 2026-10-25 00:02 UTC
+Rev. 77 | Created: 2026-08-28 | Updated: 2026-10-25 00:05 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -12,19 +12,12 @@ Rev. 76 | Created: 2026-08-28 | Updated: 2026-10-25 00:02 UTC
   - [2.3 Solution method (How to solve)](#23-solution-method-how-to-solve)
   - [2.4 Ambiguity handling (What fixes the answer)](#24-ambiguity-handling-what-fixes-the-answer)
   - [2.5 Answer form (What to return)](#25-answer-form-what-to-return)
-- [3. Latent Variable Model Inversion](#3-latent-variable-model-inversion)
-  - [3.1 PLS inversion and the null space](#31-pls-inversion-and-the-null-space)
-  - [3.2 Design space and product transfer](#32-design-space-and-product-transfer)
-- [4. Model-Specific Inversion Methods](#4-model-specific-inversion-methods)
-  - [4.1 Linear projection models](#41-linear-projection-models)
-  - [4.2 Kernel and Gaussian process models](#42-kernel-and-gaussian-process-models)
-  - [4.3 Tree ensembles](#43-tree-ensembles)
-  - [4.4 Neural networks](#44-neural-networks)
-  - [4.5 Generative and invertible models](#45-generative-and-invertible-models)
-  - [4.6 Model-agnostic numerical optimization](#46-model-agnostic-numerical-optimization)
-- [5. Inversion without Model Access](#5-inversion-without-model-access)
-- [6. Solution Validity](#6-solution-validity)
-- [7. Tools and Libraries](#7-tools-and-libraries)
+- [3. Inversion Methods](#3-inversion-methods)
+  - [3.1 Latent Variable Model Inversion](#31-latent-variable-model-inversion)
+  - [3.2 Model-Specific Inversion Methods](#32-model-specific-inversion-methods)
+  - [3.3 Inversion without Model Access](#33-inversion-without-model-access)
+- [4. Solution Validity](#4-solution-validity)
+- [5. Tools and Libraries](#5-tools-and-libraries)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Python Example: PLS Model Inversion](#appendix-b-python-example-pls-model-inversion)
@@ -73,11 +66,11 @@ Well-posed 문제는 해가 존재하고, 유일하며, 데이터에 연속적�
 
 ### 1.3 Inverse model
 
-Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습해 inverse problem 의 해법으로 쓰는 것을 뜻한다. $(\mathbf{x}, \mathbf{y})$ 쌍으로 $g$ 를 따로 학습해야 하지만, 학습이 끝나면 $\mathbf{y}^{\ast}$ 를 한 번 넣어 $\mathbf{x}$ 를 바로 얻는다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $g$ 는 그 여럿의 조건부 평균 하나를 내놓아, 목표를 만족하지 않는 답이 될 수 있다 ([2.3](#23-solution-method-how-to-solve)). 얻은 해의 신뢰 범위는 $g$ 가 학습한 영역으로 제한된다. 해가 여럿인 문제에서는 사후분포를 직접 학습하는 cINN 을 쓴다 ([4.5](#45-generative-and-invertible-models)). 이 방법은 learned inverse map 또는 direct (learned) inversion 이라고도 부른다.
+Inverse model 은 출력에서 입력으로 가는 model $g$ 를 새로 학습해 inverse problem 의 해법으로 쓰는 것을 뜻한다. $(\mathbf{x}, \mathbf{y})$ 쌍으로 $g$ 를 따로 학습해야 하지만, 학습이 끝나면 $\mathbf{y}^{\ast}$ 를 한 번 넣어 $\mathbf{x}$ 를 바로 얻는다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $g$ 는 그 여럿의 조건부 평균 하나를 내놓아, 목표를 만족하지 않는 답이 될 수 있다 ([2.3](#23-solution-method-how-to-solve)). 얻은 해의 신뢰 범위는 $g$ 가 학습한 영역으로 제한된다. 해가 여럿인 문제에서는 사후분포를 직접 학습하는 cINN 을 쓴다 ([3.2](#32-model-specific-inversion-methods)). 이 방법은 learned inverse map 또는 direct (learned) inversion 이라고도 부른다.
 
 ### 1.4 Model inversion
 
-Model inversion 은 입력에서 출력으로 가는 model $f$ 를 이미 학습된 그대로 뒤집어 inverse problem 의 해법으로 쓰는 것을 뜻한다. $g$ 를 따로 학습하지 않지만, $\mathbf{y}^{\ast}$ 가 주어질 때마다 $\mathbf{y}^{\ast} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 풀어야 한다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $f$ 를 푼 해도 여럿이 되어, 그중 하나를 골라야 한다 ([2.4](#24-ambiguity-handling-what-fixes-the-answer)). 얻은 해의 신뢰 범위는 $f$ 가 학습한 영역으로 제한된다. 해가 여럿인 문제에서는 null space 로 해의 집합을 그대로 드러낸다 ([3.1](#31-pls-inversion-and-the-null-space)). 이 방법은 optimization-based (iterative) inversion 이라고도 부르며, historical data 로 만든 latent variable model 을 뒤집어 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법에서 출발했다 [[2](#ref-2)].
+Model inversion 은 입력에서 출력으로 가는 model $f$ 를 이미 학습된 그대로 뒤집어 inverse problem 의 해법으로 쓰는 것을 뜻한다. $g$ 를 따로 학습하지 않지만, $\mathbf{y}^{\ast}$ 가 주어질 때마다 $\mathbf{y}^{\ast} = f(\mathbf{x})$ 를 $\mathbf{x}$ 에 대해 풀어야 한다. 같은 $\mathbf{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 $f$ 를 푼 해도 여럿이 되어, 그중 하나를 골라야 한다 ([2.4](#24-ambiguity-handling-what-fixes-the-answer)). 얻은 해의 신뢰 범위는 $f$ 가 학습한 영역으로 제한된다. 해가 여럿인 문제에서는 null space 로 해의 집합을 그대로 드러낸다 ([3.1](#31-latent-variable-model-inversion)). 이 방법은 optimization-based (iterative) inversion 이라고도 부르며, historical data 로 만든 latent variable model 을 뒤집어 원하는 출력을 낼 수 있는 입력 영역을 얻는 방법에서 출발했다 [[2](#ref-2)].
 
 ## 2. Taxonomy
 
@@ -151,13 +144,17 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 
 Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여유가 없다. Region 은 목표 범위를 만족하는 입력 영역을 주며, design space 라는 이름으로도 쓰인다. Distribution 은 사후분포를 그대로 주어, 목표 범위를 만족할 확률로 판단하게 한다.
 
-## 3. Latent Variable Model Inversion
+## 3. Inversion Methods
+
+손에 가진 model 에 따라 inversion 방법은 셋으로 나뉜다. Latent variable model 을 부를 수 있으면 3.1, 그 밖의 model 을 부를 수 있으면 3.2, model 을 부를 수 없으면 3.3 의 방법을 쓴다.
+
+### 3.1 Latent Variable Model Inversion
 
 Fig 2 의 분류에서 이 절의 방법은 Formulation 은 Deterministic, Search space 는 Latent space, Solution method 는 Analytical inverse, Ambiguity handling 은 Null space 와 Validity constraint, Answer form 은 Region 을 고른 조합이다.
 
 PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 오래된 산업 사례이며, 이후의 방법들이 되풀이하는 골격을 이미 갖추고 있다. 차원을 줄여 자유도를 정리하고, 줄인 공간에서 역해를 구하고, 유효 영역 제약으로 외삽을 막는 세 단계가 그것이다 [[2](#ref-2)], [[5](#ref-5)].
 
-### 3.1 PLS inversion and the null space
+#### PLS inversion and the null space
 
 PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
 
@@ -204,7 +201,7 @@ Fig 3. Null space and the validity region in the score plane
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix B](#appendix-b-python-example-pls-model-inversion) 에 있다.
 
-### 3.2 Design space and product transfer
+#### Design space and product transfer
 
 같은 골격을 산업 문제로 넓힌 결과는 다음 넷이다.
 
@@ -213,7 +210,9 @@ Fig 3. Null space and the validity region in the score plane
 - 목표가 등식이 아니라 상하한으로 주어지거나, 일부 입력이 고정되거나, 목표가 여러 개인 경우가 모두 하나의 제약 최적화로 통합되었다 [[8](#ref-8)].
 - 최근 정식화는 score 공간에서 풀 것인가 입력 공간에서 풀 것인가를 문제의 제약 구조로 결정하고, null space 를 유지한 채 $T^{2}$ 와 SPE 제약을 함께 넣는다 [[9](#ref-9)], [[10](#ref-10)].
 
-## 4. Model-Specific Inversion Methods
+### 3.2 Model-Specific Inversion Methods
+
+Fig 2 의 분류에서 이 절의 방법은 Solution method 축의 Analytical inverse, Numerical optimization, Posterior sampling 을 model 종류별로 나눈 것이며, 나머지 축의 선택은 model 종류마다 다르다.
 
 Model 별 inversion 방법을 Table 1 에 정리한다.
 
@@ -234,45 +233,47 @@ Table 1. Inversion method by model family
 |  11   |         Diffusion model          |                사후 sampling                |                                                   잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                   |
 |  12   |          Model-agnostic          |     제약이 있는 numerical optimization      |              어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다              |
 
-Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 이어지는 여섯 절이 계열별로 설명한다.
+Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 이어지는 여섯 꼭지가 계열별로 설명한다.
 
-### 4.1 Linear projection models
+#### Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-e-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.2 의 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-e-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 3.2 의 kernel 계열에서 다루는 pre-image 문제가 된다.
 
-### 4.2 Kernel and Gaussian process models
+#### Kernel and Gaussian process models
 
 Kernel 계열은 특징 공간에서는 선형이지만 그 공간의 점에 대응하는 입력이 일반적으로 존재하지 않는다. 그래서 특징 공간의 해를 입력 공간으로 되돌리는 pre-image 를 반복 최적화나 고정점 방법으로 근사한다 [[12](#ref-12)]. Gaussian process 는 예측과 함께 분산을 주므로 뒤집는 방법이 달라진다. 목표에서 벗어난 정도와 불확실성을 함께 담은 acquisition function 을 정의하고 그것을 최적화하면, 다음에 시험할 입력을 정하는 Bayesian optimization 이 된다 [[13](#ref-13)]. 해를 한 번에 구하지 않고 실험을 반복하며 좁혀 간다는 점에서 앞의 방법들과 성격이 다르다.
 
-### 4.3 Tree ensembles
+#### Tree ensembles
 
 Random forest 와 gradient boosting 은 tree 를 base learner 로 쓴다. Tree 하나는 입력 공간을 문턱값으로 잘라 상자로 나누고 상자마다 저장된 값 하나를 돌려주며, 그런 함수를 여럿 더하거나 평균해도 조각별 상수 함수이다. 그래서 입력에 대한 gradient 가 상자 안에서는 0 이고 문턱값 위에서는 정의되지 않아, gradient 대신 탐색을 쓴다. 이 성질은 boosting 이나 bagging 이 아니라 base learner 가 정하며, base learner 를 선형 model 로 두면 합도 선형이 되어 gradient 가 살아난다. 격자 탐색, genetic algorithm, CMA-ES 같은 derivative-free 방법이 그대로 쓰이며, 학습된 tree 자체를 빠른 surrogate 로 두고 그 위에서 탐색을 돌린다. TreeSHAP 은 한 점 주변에서 각 입력의 기여도를 정확히 계산하므로, 국소 선형 근사를 얻어 탐색의 방향을 정하는 데 쓸 수 있다 [[14](#ref-14)].
 
-### 4.4 Neural networks
+#### Neural networks
 
 미분 가능한 network 는 가장 직접적으로 뒤집힌다. 가중치를 고정한 채 입력을 변수로 두고 $\lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ 를 입력에 대해 역전파하면 된다. 출력 하나를 최대화하는 형태로 쓰면 activation maximization 이고, 작은 변화로 출력을 바꾸는 형태로 쓰면 adversarial 예제 생성과 계산이 같다 [[15](#ref-15)]. 쓰임이 다를 뿐 계산이 같으므로 위험도 그대로 따라온다. 제약 없이 최적화하면 목표 출력을 완벽히 맞추면서도 데이터 분포에서 한참 떨어진 입력이 나오므로, 입력 범위 제한이나 사전 분포 항이 반드시 필요하다.
 
-### 4.5 Generative and invertible models
+#### Generative and invertible models
 
 생성 model 은 데이터 분포를 학습하므로 그 자체가 강한 prior 이다. Autoencoder 와 VAE 는 latent 공간에서 탐색한 뒤 디코딩하며, 디코더가 만들어 낼 수 있는 것만 후보가 되므로 비현실적인 해가 걸러진다. 유효한 설계만 후보로 남아야 하는 문제에서 이 방식이 표준으로 쓰인다 [[16](#ref-16)]. Invertible neural network 와 normalizing flow 는 구조적으로 양방향이다. Forward 를 학습하면 inverse 가 함께 정의되고, 조건부 형태인 cINN 은 목표를 조건으로 준 사후분포에서 표본을 직접 뽑는다 [[17](#ref-17)]. Diffusion model 은 학습된 score 에 관측 우도의 gradient 를 더해 사후분포를 표본화하며, 잡음이 섞인 비선형 문제에서 최근의 표준으로 쓰인다 [[18](#ref-18)].
 
-### 4.6 Model-agnostic numerical optimization
+#### Model-agnostic numerical optimization
 
 Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가장 범용이다. 잔차를 목적 함수로 삼고, 유효 영역과 물리적 한계를 제약으로 걸어 최적화기를 돌린다. Gradient 를 쓸 수 있으면 쓰고 없으면 derivative-free 방법으로 바꾸기만 하면 되므로, 앞의 모든 계열에 대해 대안이 된다. 대가는 비용과 국소해이다. 목적 함수의 국소 최소점이 여럿이면 시작점에 따라 다른 해에 닿으므로, 여러 시작점에서 반복하고 얻은 해들을 함께 보고하는 편이 안전하다. 구현은 [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 에 있다.
 
-## 5. Inversion without Model Access
+### 3.3 Inversion without Model Access
+
+Fig 2 의 분류에서 이 절의 방법은 Solution method 축에서 surrogate re-fitting 이 3.2 의 방법을, learned inverse map 이 Learned inverse map 을 쓰며, nearest-sample lookup 은 Fig 2 에 없다. Ambiguity handling 은 세 방법 모두 Validity constraint 이다.
 
 Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y}_i)$ 이 있으면 inversion 은 풀린다. Model 의 구조 대신 그 쌍이 담은 입출력 관계를 쓰는 것이며, 쓸 수 있는 방법은 셋이다.
 
-- Surrogate re-fitting: 가진 쌍으로 $\hat{y}$ 를 맞추는 새 model 을 학습하고, 그 surrogate 를 4 의 방법으로 뒤집는다. 원 model 의 예측을 정답으로 삼아 다른 model 로 옮기는 것이므로 model distillation 이며, 해의 오차는 원 model 의 잔차가 아니라 surrogate 의 재현 오차가 정한다.
+- Surrogate re-fitting: 가진 쌍으로 $\hat{y}$ 를 맞추는 새 model 을 학습하고, 그 surrogate 를 3.2 의 방법으로 뒤집는다. 원 model 의 예측을 정답으로 삼아 다른 model 로 옮기는 것이므로 model distillation 이며, 해의 오차는 원 model 의 잔차가 아니라 surrogate 의 재현 오차가 정한다.
 - Learned inverse map: $\hat{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 그 쌍으로 바로 학습한다 (2.3). 학습이 끝나면 목표를 한 번 넣어 $\mathbf{x}$ 를 얻으므로 반복 탐색이 없다. 같은 $\hat{y}$ 를 내는 $\mathbf{x}$ 가 여럿이면 잔차 제곱합을 최소화하는 학습이 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다.
 - Nearest-sample lookup: 목표에 가장 가까운 $\hat{y}_i$ 를 가진 $\mathbf{x}_i$ 를 뽑고 그 이웃에서 보간한다. 가장 싸지만 쌍이 덮은 영역 밖으로는 나가지 못한다.
 
-유효 영역은 세 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 6 의 검증을 그대로 쓴다.
+유효 영역은 세 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 4 의 검증을 그대로 쓴다.
 
 한계는 쌍이 덮는 영역이다. Surrogate 와 inverse map 은 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다. 세 방법을 이어 붙인 예시는 [Appendix D](#appendix-d-python-example-inversion-without-model-access) 에 있다.
 
-## 6. Solution Validity
+## 4. Solution Validity
 
 Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므로, 실행 전에 다음 네 가지를 확인한다.
 
@@ -281,7 +282,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 목표 범위를 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 그 확률을 낼 수 없으므로 별도의 검증이 필요하다.
 - 검증과 갱신: 얻은 입력은 실험이나 시뮬레이션으로 확인하고, 그 결과를 데이터에 더해 model 을 다시 학습하는 closed loop 를 둔다. 이 재학습이 없으면 model 의 오차가 그대로 설계 오차가 된다.
 
-## 7. Tools and Libraries
+## 5. Tools and Libraries
 
 Table 2. Libraries for model inversion
 
@@ -470,7 +471,7 @@ Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측
 
 ## Appendix C. Python Example: Constrained Numerical Inversion
 
-미분이 되지 않는 gradient boosting model 을 blackbox 로 두고 4.6 의 방식으로 뒤집는다. 유효 영역은 historical data 에 맞춘 PCA 의 $T^{2}$ 와 SPE 로 정의하고, 두 상한을 제약으로 건다.
+미분이 되지 않는 gradient boosting model 을 blackbox 로 두고 3.2 의 model-agnostic numerical optimization 방식으로 뒤집는다. 유효 영역은 historical data 에 맞춘 PCA 의 $T^{2}$ 와 SPE 로 정의하고, 두 상한을 제약으로 건다.
 
 ```python
 import numpy as np
@@ -560,7 +561,7 @@ Fig 7. Constrained solution against the validity limits
 - (a) 는 `x2`–`x4` 평면이다. 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 놓여 목표 1.0 을 맞추고, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 놓이며 값도 0.65 에 그친다.
 - (b) 는 두 해의 통계량을 각자의 상한으로 나눈 값이다. $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이고, $T^{2}$ 는 두 해 모두 상한 아래이다.
 
-$T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 6 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
+$T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 4 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
 
 ## Appendix D. Python Example: Inversion without Model Access
 
@@ -705,9 +706,9 @@ Fig 8. Appendix D hidden model against T, the search in the A–B plane, the sur
 
 (c) 의 $R^{2}$ 는 이 예시가 가려진 model 과 같은 계열인 `GradientBoostingRegressor` 를 surrogate 로 쓴 결과이다. 실제로는 가려진 model 의 계열을 알 수 없어 surrogate 가 다른 계열이 되고, 재현 오차는 이보다 커진다. 해의 오차를 정하는 것이 그 재현 오차이므로, surrogate 를 고른 뒤에는 (c) 같은 그림으로 그 크기부터 확인한다.
 
-(d) 는 해를 실제와 맞대어 본 것이다. 네 행의 surrogate 예측은 모두 19.0 부근인데 참값은 17.85 에서 19.80 까지 퍼져 있어, 같은 조건으로 실제로 실행해도 목표를 그대로 얻지는 못한다. 이 퍼짐은 (a) 가 보인 가려진 model 의 $R^{2} = 0.712$ 에서 온다. Surrogate 는 그 model 을 $R^{2} = 0.9995$ 로 따라가지만 그 model 이 참값을 설명하지 못하는 몫까지 메워 주지는 못하므로, 두 오차 가운데 큰 쪽이 결과를 정한다. 6 의 검증 항목이 말한 대로 얻은 조건을 실험으로 확인하고 그 결과를 데이터에 더해야 하는 이유가 (d) 에 그대로 보인다.
+(d) 는 해를 실제와 맞대어 본 것이다. 네 행의 surrogate 예측은 모두 19.0 부근인데 참값은 17.85 에서 19.80 까지 퍼져 있어, 같은 조건으로 실제로 실행해도 목표를 그대로 얻지는 못한다. 이 퍼짐은 (a) 가 보인 가려진 model 의 $R^{2} = 0.712$ 에서 온다. Surrogate 는 그 model 을 $R^{2} = 0.9995$ 로 따라가지만 그 model 이 참값을 설명하지 못하는 몫까지 메워 주지는 못하므로, 두 오차 가운데 큰 쪽이 결과를 정한다. 4 의 검증 항목이 말한 대로 얻은 조건을 실험으로 확인하고 그 결과를 데이터에 더해야 하는 이유가 (d) 에 그대로 보인다.
 
-등고선이 계단 모양이다. Surrogate 가 4.3 의 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
+등고선이 계단 모양이다. Surrogate 가 3.2 의 tree ensemble 과 같은 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
 
 출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.869 나 19.184 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
