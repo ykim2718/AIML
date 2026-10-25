@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 0 | Created: 2026-10-25 | Updated: 2026-10-25 09:45 UTC
+Rev. 1 | Created: 2026-10-25 | Updated: 2026-10-25 16:18 CDT
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -354,7 +354,7 @@ The result of inversion is a proposal made under the assumption that the model i
 <a id="ref-18"></a>
 [18] Chung, H., Kim, J., McCann, M. T., Klasky, M. L., Ye, J. C. (2023). [Diffusion posterior sampling for general noisy inverse problems](https://doi.org/10.48550/arXiv.2209.14687). International Conference on Learning Representations.<br>
 <a id="ref-19"></a>
-[19] yRocket. (2026). [Scores in Partial Least Squares](https://github.com/ykim2718/AIML/blob/main/Applied-Statistics/Regression/PLS/partial-least-squares-scores-ko.md). *AIML repository*, GitHub.
+[19] yRocket. (2026). [Scores in Partial Least Squares](https://github.com/ykim2718/AIML/blob/main/Math-Foundations/Regression/PLS/partial-least-squares-scores-ko.md). *AIML repository*, GitHub.
 
 ---
 

@@ -1,5 +1,5 @@
 # Outlier Detection
-Rev. 5 | Created: 2026-08-17 | Updated: 2026-09-09 15:32 CDT
+Rev. 6 | Created: 2026-08-17 | Updated: 2026-10-25 16:18 CDT
 
 > This folder covers the detection of observations that are discordant with the model the rest of a sample follows.
 > A survey names the methods and picks among them, and each method worked out in full keeps its own subfolder, holding the document that fixes it and the scripts that run it.
@@ -20,7 +20,7 @@ Table 1. Methods and the document that fixes each
 |--------|-------------|---------------------|
 | [GESD](GESD/) | [GESD/generalized-esd.md](GESD/generalized-esd.md) | How many outliers does an approximately normal sample carry, when the number is not known in advance? It is the many-outlier procedure of ISO 16269-4, and it reaches outliers that hide one another from a single-outlier test. |
 | [Hampel](Hampel/) | [Hampel/hampel-identifier.md](Hampel/hampel-identifier.md) | How far does each observation sit from the bulk, when the sample is not normal? It scores every observation against the median and the MAD, which contamination cannot move, and needs no iteration. It is not part of ISO 16269-4. |
-| [ZScore](../../Applied-Statistics/ZScore/) | [Applied-Statistics/ZScore/z-score-ceiling.md](../../Applied-Statistics/ZScore/z-score-ceiling.md) | What is the largest z-score a sample of a given size can produce at all? The classical score is bounded by (n-1)/sqrt(n), so a rule at a fixed cut-off is inert below a certain size and returns a clean verdict it could not have avoided. It is kept under `Applied-Statistics/` because the bound is arithmetic rather than a detection procedure. |
+| [ZScore](../../Math-Foundations/ZScore/) | [Math-Foundations/ZScore/z-score-ceiling.md](../../Math-Foundations/ZScore/z-score-ceiling.md) | What is the largest z-score a sample of a given size can produce at all? The classical score is bounded by (n-1)/sqrt(n), so a rule at a fixed cut-off is inert below a certain size and returns a clean verdict it could not have avoided. It is kept under `Math-Foundations/` because the bound is arithmetic rather than a detection procedure. |
 
 ## 3. Order Of Use
 
