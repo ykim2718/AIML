@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 2 | Created: 2026-10-25 | Updated: 2026-10-25 15:53 CDT
+Rev. 3 | Created: 2026-10-25 | Updated: 2026-10-25 16:10 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -46,8 +46,10 @@ Table 1. Symbols
 | $\hat{y}_i$                | sample $i$ 의 예측값                            | scalar          | 실수                                                                 |
 | $t_i$                      | sample $i$ 의 score                             | scalar          | $\lVert \mathbf{w} \rVert = 1$                                       |
 
-norm 과 예측값의 기호는 아래와 같이 읽는다.
+특수 기호는 아래와 같이 읽는다.
 
+- $\mathbf{x}_i^\top$: 영어로 "x i transpose", 한국어로 "x i 의 전치" 또는 "엑스 아이 트랜스포즈" 라 읽는다.
+- $\sum$: 영어로 "sum" 또는 "sigma", 한국어로 "합" 또는 "시그마" 라 읽는다. 식 (1) 처럼 아래위에 $j = 1$ 과 $p$ 가 붙으면 영어로 "the sum over j from 1 to p", 한국어로 "j 가 1 부터 p 까지의 합" 이라 읽는다.
 - $\lVert \mathbf{v} \rVert$: 영어로 "the norm of v" 또는 "norm v", 한국어로 "v 의 노름" 이라 읽는다.
 - $\hat{y}_i$: 영어로 "y hat i" 또는 "y hat sub i", 한국어로 "와이 햇 아이" 라 읽는다. 기호 위의 hat 은 그 값이 model 의 추정값임을 나타낸다.
 
