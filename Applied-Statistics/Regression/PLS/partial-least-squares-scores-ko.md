@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 0 | Created: 2026-10-24 | Updated: 2026-10-24 21:56 CDT
+Rev. 1 | Created: 2026-10-24 | Updated: 2026-10-24 22:00 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,6 +14,10 @@ Rev. 0 | Created: 2026-10-24 | Updated: 2026-10-24 21:56 CDT
   - [8.2 Hotelling's T-Squared on the Scores](#82-hotellings-t-squared-on-the-scores)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Worked Example](#appendix-b-worked-example)
+- [Appendix C. Comparison of PLS and OLS](#appendix-c-comparison-of-pls-and-ols)
+  - [C.1 Ordinary Least Squares](#c1-ordinary-least-squares)
+  - [C.2 Partial Least Squares](#c2-partial-least-squares)
+  - [C.3 Summary](#c3-summary)
 
 ## 1. Purpose
 
@@ -57,7 +61,7 @@ OLS                       uses every column of X; needs X^T X invertible
 <a id="fig-2"></a>
 Fig 2. Hierarchy from OLS to latent projection
 
-맨 위의 OLS 는 $\mathbf{X}$ 의 열을 모두 쓰므로 $\mathbf{X}^\top \mathbf{X}$ 의 역행렬이 있어야 한다. 한 단계 아래의 latent projection 은 열 $P$ 개 대신 score $K$ 개에 회귀하므로 역행렬이 필요 없지만, score 가 펼치는 부분공간 밖에 있는 $\mathbf{X}$ 의 정보는 버린다. 마지막 단계에서 PCR 과 PLS 는 방향을 고르는 기준만 다르며, PCR 은 $\mathbf{X}$ 의 variance 로, PLS 는 $\mathbf{Y}$ 와의 covariance 로 방향을 고른다.
+맨 위의 OLS 는 $\mathbf{X}$ 의 열을 모두 쓰므로 $\mathbf{X}^\top \mathbf{X}$ 의 역행렬이 있어야 한다. 한 단계 아래의 latent projection 은 열 $P$ 개 대신 score $K$ 개에 회귀하므로 역행렬이 필요 없지만, score 가 펼치는 부분공간 밖에 있는 $\mathbf{X}$ 의 정보는 버린다. 마지막 단계에서 PCR 과 PLS 는 방향을 고르는 기준만 다르며, PCR 은 $\mathbf{X}$ 의 variance 로, PLS 는 $\mathbf{Y}$ 와의 covariance 로 방향을 고른다. OLS 와 PLS 가 쓰이는 조건과 한계는 [Appendix C](#appendix-c-comparison-of-pls-and-ols) 에 있다.
 
 ### 3.1 Comparison
 
@@ -211,6 +215,7 @@ $T^2$ 는 score 가 펼치는 부분공간 안의 변화만 잰다. 식 (4) 의 
 - **supervised**: 방향을 고를 때 타겟 $\mathbf{Y}$ 를 쓰는 방식.
 - **unsupervised**: 방향을 고를 때 입력 $\mathbf{X}$ 만 쓰는 방식.
 - **가상 계측 (virtual metrology)**: 계측 장비로 재지 않고 장비 센서 값에서 계측값을 예측하는 것.
+- **과적합 (overfitting)**: Model 이 학습 데이터의 noise 까지 맞추어, 학습 데이터의 오차는 작지만 새 데이터의 예측 오차가 큰 상태.
 
 ## Appendix B. Worked Example
 
@@ -294,3 +299,33 @@ excursion wafer: T^2 =   40.86  OUT
 - $R^2$ 세 줄: PCA 는 variance 가 큰 두 요인을 먼저 골라 앞의 score 2 개로 $R^2 = 0.080$ 이고, PLS 는 두께와의 공분산으로 방향을 골라 score 2 개로 $R^2 = 0.956$ 이다. Score 3 개를 모두 쓰면 두 방법이 같은 부분공간을 펼치므로 $R^2$ 가 같다.
 - 직교성 줄: PLS score 의 비대각 원소가 대각 원소에 비해 부동소수점 오차 수준이어서 식 (8) 이 성립한다.
 - $T^2$ 세 줄: 두께 요인을 평소 범위 밖으로 민 wafer 만 식 (11) 의 한계를 넘는다.
+
+## Appendix C. Comparison of PLS and OLS
+
+PLS 와 OLS 는 회귀 계수를 구하는 대상이 다른 별개의 방법이다. OLS 는 입력 변수 $P$ 개에 $\mathbf{y}$ 를 직접 회귀하고, PLS 는 입력 변수를 score $K$ 개로 압축한 뒤 그 score 에 $\mathbf{y}$ 를 회귀한다.
+
+### C.1 Ordinary Least Squares
+
+OLS (Ordinary Least Squares, 일반최소제곱) 는 가장 전통적이고 기본적인 선형 회귀 방법이며, 잔차 (관측값과 예측값의 차이) 의 제곱합을 최소로 하는 회귀 계수를 구한다.
+
+- 조건: 입력 변수의 수 $P$ 가 sample 수 $N$ 보다 적고, 변수 사이에 다중공선성이 없을 때 가장 잘 작동한다.
+- 한계: 반도체 장비 센서 데이터처럼 입력 변수가 수백 개 이상이고 서로 강하게 상관되면, $\mathbf{X}^\top \mathbf{X}$ 의 역행렬을 구할 수 없거나 과적합 (overfitting) 이 일어난다. 앞의 경우는 계수를 하나로 정할 수 없고, 뒤의 경우는 학습 데이터에는 맞지만 새 데이터의 예측 오차가 크다.
+
+### C.2 Partial Least Squares
+
+PLS (Partial Least Squares, 부분최소제곱) 는 OLS 가 실패하는 고차원 데이터와 다중공선성이 심한 데이터를 위해 고안된, 차원 축소에 기반한 회귀 방법이다.
+
+- 원리: 입력 변수를 그대로 쓰지 않고, $\mathbf{Y}$ 를 설명하는 정보가 가장 많은 소수의 latent variable (score) 로 압축한 뒤 회귀한다 (section 4, section 5).
+- 장점: 변수 사이의 상관이나 noise 가 많아도 안정적으로 예측 model 을 만들며 (section 7), section 8 의 공정 모니터링과 식 (2) 의 $\mathbf{w}$ 로 각 입력 변수의 기여를 읽는 분석에도 쓰인다.
+- OLS 와의 관계: 성분 수 $K$ 를 $\mathbf{X}$ 의 rank 까지 올리면 score 가 $\mathbf{X}$ 의 열 공간 전체를 펼치므로, $P \lt N$ 이고 $\mathbf{X}$ 의 열이 선형독립일 때 PLS 의 예측값은 OLS 의 예측값과 같다.
+
+### C.3 Summary
+
+두 방법의 차이는 Table 3 과 같다.
+
+Table 3. OLS and PLS by data condition
+
+| Method | Regresses y on           | Suits                                         | Fails when                                         |
+| :---:  | :---:                    | :---:                                         | :---:                                              |
+| OLS    | 입력 변수 $P$ 개         | 변수가 적고 서로의 상관이 낮은 데이터         | $P \gt N$ 이거나 변수 사이의 상관이 높을 때        |
+| PLS    | Score $K$ 개 ($K \ll P$) | 변수가 매우 많고 서로 상관된 공정·센서 데이터 | $\mathbf{X}$ 와 $\mathbf{Y}$ 의 관계가 비선형일 때 |
