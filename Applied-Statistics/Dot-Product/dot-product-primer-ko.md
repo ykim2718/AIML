@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 1 | Created: 2026-10-25 | Updated: 2026-10-25 07:07 CDT
+Rev. 2 | Created: 2026-10-25 | Updated: 2026-10-25 15:53 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -45,6 +45,11 @@ Table 1. Symbols
 | $b$                        | 선형 model 의 절편                              | scalar          | 실수                                                                 |
 | $\hat{y}_i$                | sample $i$ 의 예측값                            | scalar          | 실수                                                                 |
 | $t_i$                      | sample $i$ 의 score                             | scalar          | $\lVert \mathbf{w} \rVert = 1$                                       |
+
+norm 과 예측값의 기호는 아래와 같이 읽는다.
+
+- $\lVert \mathbf{v} \rVert$: 영어로 "the norm of v" 또는 "norm v", 한국어로 "v 의 노름" 이라 읽는다.
+- $\hat{y}_i$: 영어로 "y hat i" 또는 "y hat sub i", 한국어로 "와이 햇 아이" 라 읽는다. 기호 위의 hat 은 그 값이 model 의 추정값임을 나타낸다.
 
 ## 4. Interpretation
 
