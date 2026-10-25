@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 3 | Created: 2026-10-24 | Updated: 2026-10-25 09:41 UTC
+Rev. 4 | Created: 2026-10-24 | Updated: 2026-10-25 11:41 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -269,6 +269,10 @@ Table 3. OLS and PLS by data condition
 
 ### C.1 Equation (1)
 
+```math
+\mathbf{t} = \mathbf{X}\mathbf{w}, \qquad \mathbf{u} = \mathbf{Y}\mathbf{c} \hspace{19em} (1)
+```
+
 Score $t_i$ 는 sample $i$ 의 입력값 $\mathbf{x}_i$ 에서 방향 $\mathbf{w}$ 의 직선에 내린 수선의 발이 원점에서 떨어진 부호 있는 거리이며, 발이 $\mathbf{w}$ 와 같은 쪽에 있으면 양수, 반대쪽에 있으면 음수이다. $t_i$ 를 sample 마다 모은 열이 $\mathbf{t}$ 이다. 한 sample 의 투영과 sample $N$ 개의 투영은 아래 Fig 3 과 같다.
 
 ```text
@@ -304,16 +308,20 @@ $\mathbf{Y}$ 의 $i$ 번째 행을 길이 1 인 방향 $\mathbf{c}$ 위로 투�
 
 ### C.2 Equation (2)
 
+```math
+(\mathbf{w}, \mathbf{c}) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{Y}\mathbf{c}) \hspace{19em} (2)
+```
+
 $\mathbf{X}$ 와 $\mathbf{Y}$ 의 열을 centering 했으므로 $\mathbf{t}$ 와 $\mathbf{u}$ 의 평균도 0 이고, 두 score 의 공분산은 아래와 같다.
 
 ```math
-\mathrm{Cov}(\mathbf{t}, \mathbf{u}) = \frac{\mathbf{t}^\top \mathbf{u}}{N - 1} = \frac{\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}}{N - 1}
+\mathrm{Cov}(\mathbf{t}, \mathbf{u}) = \frac{\mathbf{t}^\top \mathbf{u}}{N - 1} = \frac{\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}}{N - 1} \hspace{19em} (12)
 ```
 
 $N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로 $\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}$ 를 최대로 하면 된다. 제약 $\mathbf{w}^\top \mathbf{w} = 1$, $\mathbf{c}^\top \mathbf{c} = 1$ 에 Lagrange multiplier $\lambda$ 와 $\mu$ 를 두고 $\mathbf{w}$ 와 $\mathbf{c}$ 로 미분하여 0 으로 놓는다.
 
 ```math
-\mathbf{X}^\top \mathbf{Y} \mathbf{c} = 2\lambda \mathbf{w}, \qquad \mathbf{Y}^\top \mathbf{X} \mathbf{w} = 2\mu \mathbf{c}
+\mathbf{X}^\top \mathbf{Y} \mathbf{c} = 2\lambda \mathbf{w}, \qquad \mathbf{Y}^\top \mathbf{X} \mathbf{w} = 2\mu \mathbf{c} \hspace{19em} (13)
 ```
 
 두 식의 왼쪽에 각각 $\mathbf{w}^\top$ 와 $\mathbf{c}^\top$ 를 곱하면 $2\lambda = 2\mu = \mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}$ 이므로, 최대값 $\sigma$ 는 $\mathbf{X}^\top \mathbf{Y}$ 의 가장 큰 singular value 이고 $\mathbf{w}$ 와 $\mathbf{c}$ 는 그 singular value 의 왼쪽과 오른쪽 singular vector 이다.
@@ -322,47 +330,63 @@ $N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로 $\mathbf{w}^\top \
 
 ### C.3 Equation (3)
 
+```math
+\mathbf{p} = \frac{\mathbf{X}^\top \mathbf{t}}{\mathbf{t}^\top \mathbf{t}}, \qquad \mathbf{X} \leftarrow \mathbf{X} - \mathbf{t}\mathbf{p}^\top \hspace{19em} (3)
+```
+
 $\mathbf{p}$ 는 $\mathbf{X}$ 의 각 열을 $\mathbf{t}$ 하나에 회귀한 최소제곱 계수이다. 잔차 제곱합 $\lVert \mathbf{X} - \mathbf{t}\mathbf{p}^\top \rVert^2$ 를 $\mathbf{p}$ 로 미분하여 0 으로 놓으면 아래와 같고, 이것을 $\mathbf{p}$ 에 대해 풀면 식 (3) 의 첫 식이다.
 
 ```math
--2\mathbf{X}^\top \mathbf{t} + 2\mathbf{p}\,\mathbf{t}^\top \mathbf{t} = \mathbf{0}
+-2\mathbf{X}^\top \mathbf{t} + 2\mathbf{p}\,\mathbf{t}^\top \mathbf{t} = \mathbf{0} \hspace{19em} (14)
 ```
 
 Deflation 한 행렬 $\mathbf{X}_{k+1} = \mathbf{X}_k - \mathbf{t}_k \mathbf{p}_k^\top$ 는 $\mathbf{t}_k$ 와 직교한다.
 
 ```math
-\mathbf{t}_k^\top \mathbf{X}_{k+1} = \mathbf{t}_k^\top \mathbf{X}_k - (\mathbf{t}_k^\top \mathbf{t}_k)\,\mathbf{p}_k^\top = \mathbf{t}_k^\top \mathbf{X}_k - \mathbf{t}_k^\top \mathbf{X}_k = \mathbf{0}^\top
+\mathbf{t}_k^\top \mathbf{X}_{k+1} = \mathbf{t}_k^\top \mathbf{X}_k - (\mathbf{t}_k^\top \mathbf{t}_k)\,\mathbf{p}_k^\top = \mathbf{t}_k^\top \mathbf{X}_k - \mathbf{t}_k^\top \mathbf{X}_k = \mathbf{0}^\top \hspace{19em} (15)
 ```
 
 따라서 다음 성분은 $`\mathbf{t}_k`$ 가 설명한 부분이 빠진 $`\mathbf{X}_{k+1}`$ 에서 찾아진다.
 
 ### C.4 Equation (4)
 
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^\top + \mathbf{F} \hspace{19em} (4)
+```
+
 식 (3) 의 deflation 을 $k = 1, \ldots, K$ 에 대해 차례로 더하면 아래와 같다.
 
 ```math
-\mathbf{X} = \mathbf{X}_1 = \sum_{k=1}^{K} \mathbf{t}_k \mathbf{p}_k^\top + \mathbf{X}_{K+1} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \qquad \mathbf{E} = \mathbf{X}_{K+1}
+\mathbf{X} = \mathbf{X}_1 = \sum_{k=1}^{K} \mathbf{t}_k \mathbf{p}_k^\top + \mathbf{X}_{K+1} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \qquad \mathbf{E} = \mathbf{X}_{K+1} \hspace{19em} (16)
 ```
 
 $\mathbf{Y}$ 도 같은 방법으로 각 $\mathbf{t}_k$ 에 회귀한 계수 $\mathbf{q}_k = \mathbf{Y}^\top \mathbf{t}_k / (\mathbf{t}_k^\top \mathbf{t}_k)$ 를 열로 모아 $\mathbf{Q}$ 로 두면, $\mathbf{Y} = \mathbf{T}\mathbf{Q}^\top + \mathbf{F}$ 이다. C.8 에서 보이듯 $\mathbf{t}_k$ 가 서로 직교하므로, $\mathbf{Y}$ 를 성분마다 deflation 하든 원래 $\mathbf{Y}$ 를 그대로 쓰든 $\mathbf{q}_k$ 는 같다.
 
 ### C.5 Equation (5)
 
+```math
+\mathbf{X} \in \mathbb{R}^{N \times P} \;\longrightarrow\; \mathbf{T} \in \mathbb{R}^{N \times K}, \qquad K \ll P \hspace{19em} (5)
+```
+
 $\mathbf{t}_k = \mathbf{X}_k \mathbf{w}_k$ 이므로 deflation 은 $\mathbf{X}_k$ 의 오른쪽에 $P \times P$ 행렬을 곱하는 것과 같다.
 
 ```math
-\mathbf{X}_{k+1} = \mathbf{X}_k - \mathbf{X}_k \mathbf{w}_k \mathbf{p}_k^\top = \mathbf{X}_k \left( \mathbf{I} - \mathbf{w}_k \mathbf{p}_k^\top \right)
+\mathbf{X}_{k+1} = \mathbf{X}_k - \mathbf{X}_k \mathbf{w}_k \mathbf{p}_k^\top = \mathbf{X}_k \left( \mathbf{I} - \mathbf{w}_k \mathbf{p}_k^\top \right) \hspace{19em} (17)
 ```
 
 이것을 $`\mathbf{X}_1 = \mathbf{X}`$ 부터 되풀이하면 $`\mathbf{X}_k = \mathbf{X}\mathbf{G}_k`$ 이고, $`\mathbf{G}_k = (\mathbf{I} - \mathbf{w}_1 \mathbf{p}_1^\top) \cdots (\mathbf{I} - \mathbf{w}_{k-1} \mathbf{p}_{k-1}^\top)`$ 이며 $`\mathbf{G}_1 = \mathbf{I}`$ 이다. 따라서 $`\mathbf{t}_k = \mathbf{X}\mathbf{G}_k\mathbf{w}_k`$ 이고, $`\mathbf{r}_k = \mathbf{G}_k\mathbf{w}_k`$ 를 열로 모은 $`\mathbf{R} \in \mathbb{R}^{P \times K}`$ 로 아래를 얻는다.
 
 ```math
-\mathbf{T} = \mathbf{X}\mathbf{R}, \qquad \mathbf{X} \in \mathbb{R}^{N \times P}, \;\; \mathbf{R} \in \mathbb{R}^{P \times K} \;\Rightarrow\; \mathbf{T} \in \mathbb{R}^{N \times K}
+\mathbf{T} = \mathbf{X}\mathbf{R}, \qquad \mathbf{X} \in \mathbb{R}^{N \times P}, \;\; \mathbf{R} \in \mathbb{R}^{P \times K} \;\Rightarrow\; \mathbf{T} \in \mathbb{R}^{N \times K} \hspace{19em} (18)
 ```
 
 모든 score 는 원래 $\mathbf{X}$ 의 선형결합이므로, 새 sample 의 score 도 그 sample 의 입력값에 $\mathbf{R}$ 을 곱해 구한다.
 
 ### C.6 Equation (6)
+
+```math
+\mathrm{PCA}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Var}(\mathbf{X}\mathbf{w}), \qquad \mathrm{PLS}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) \hspace{19em} (6)
+```
 
 PCA 의 기준은 $\mathrm{Var}(\mathbf{X}\mathbf{w}) = \mathbf{w}^\top \mathbf{S} \mathbf{w}$ 이고, $\mathbf{S} = \mathbf{X}^\top \mathbf{X} / (N - 1)$ 은 $\mathbf{X}$ 의 공분산 행렬이다. 제약 $\mathbf{w}^\top \mathbf{w} = 1$ 에 Lagrange multiplier $\lambda$ 를 두고 미분하면 $\mathbf{S}\mathbf{w} = \lambda\mathbf{w}$ 이고, 이때 기준의 값은 $\mathbf{w}^\top \mathbf{S} \mathbf{w} = \lambda$ 이다. 따라서 PCA 의 첫 방향은 $\mathbf{S}$ 의 가장 큰 eigenvalue 의 eigenvector 이며, $\mathbf{y}$ 는 식에 들어 있지 않다.
 
@@ -370,50 +394,70 @@ PLS 의 기준은 $\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \mathbf{w}^\
 
 ### C.7 Equation (7)
 
+```math
+\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \mathrm{Corr}(\mathbf{X}\mathbf{w}, \mathbf{y}) \cdot \sqrt{\mathrm{Var}(\mathbf{X}\mathbf{w})} \cdot \sqrt{\mathrm{Var}(\mathbf{y})} \hspace{19em} (7)
+```
+
 $\mathbf{X}\mathbf{w}$ 와 $\mathbf{y}$ 의 상관계수의 정의는 아래와 같다.
 
 ```math
-\mathrm{Corr}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \frac{\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y})}{\sqrt{\mathrm{Var}(\mathbf{X}\mathbf{w})} \, \sqrt{\mathrm{Var}(\mathbf{y})}}
+\mathrm{Corr}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \frac{\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y})}{\sqrt{\mathrm{Var}(\mathbf{X}\mathbf{w})} \, \sqrt{\mathrm{Var}(\mathbf{y})}} \hspace{19em} (19)
 ```
 
 양변에 두 표준편차의 곱을 곱하면 식 (7) 이다.
 
 ### C.8 Equation (8)
 
+```math
+\mathbf{t}_j^\top \mathbf{t}_k = 0 \quad (j \neq k) \hspace{19em} (8)
+```
+
 $`j \lt k`$ 일 때 $`\mathbf{t}_j^\top \mathbf{X}_k = \mathbf{0}^\top`$ 임을 $`k`$ 에 대한 귀납법으로 보인다. $`k = j + 1`$ 이면 C.3 의 결과이다. $`\mathbf{t}_j^\top \mathbf{X}_k = \mathbf{0}^\top`$ 이면 C.5 의 $`\mathbf{X}_{k+1} = \mathbf{X}_k (\mathbf{I} - \mathbf{w}_k \mathbf{p}_k^\top)`$ 에서 아래가 성립한다.
 
 ```math
-\mathbf{t}_j^\top \mathbf{X}_{k+1} = \left( \mathbf{t}_j^\top \mathbf{X}_k \right) \left( \mathbf{I} - \mathbf{w}_k \mathbf{p}_k^\top \right) = \mathbf{0}^\top
+\mathbf{t}_j^\top \mathbf{X}_{k+1} = \left( \mathbf{t}_j^\top \mathbf{X}_k \right) \left( \mathbf{I} - \mathbf{w}_k \mathbf{p}_k^\top \right) = \mathbf{0}^\top \hspace{19em} (20)
 ```
 
 따라서 $j \lt k$ 이면 $\mathbf{t}_j^\top \mathbf{t}_k = \mathbf{t}_j^\top \mathbf{X}_k \mathbf{w}_k = 0$ 이고, $j \gt k$ 는 두 첨자를 바꾸어 같은 결과를 얻는다.
 
 ### C.9 Equation (9)
 
+```math
+q_k = \frac{\mathbf{t}_k^\top \mathbf{y}}{\mathbf{t}_k^\top \mathbf{t}_k}, \qquad k = 1, \ldots, K \hspace{19em} (9)
+```
+
 $\mathbf{y}$ 를 $\mathbf{T}$ 에 회귀한 최소제곱 계수는 정규방정식 (normal equation) 의 해 $\mathbf{q} = (\mathbf{T}^\top \mathbf{T})^{-1} \mathbf{T}^\top \mathbf{y}$ 이다. 식 (8) 에서 $\mathbf{T}^\top \mathbf{T} = \mathrm{diag}(\mathbf{t}_1^\top \mathbf{t}_1, \ldots, \mathbf{t}_K^\top \mathbf{t}_K)$ 이므로, 역행렬은 각 대각 원소의 역수를 대각에 둔 행렬이다. $\mathbf{T}^\top \mathbf{y}$ 의 $k$ 번째 원소는 $\mathbf{t}_k^\top \mathbf{y}$ 이므로 $\mathbf{q}$ 의 $k$ 번째 원소는 식 (9) 의 $q_k$ 이다.
 
 ### C.10 Equation (10)
 
+```math
+T_i^2 = \sum_{k=1}^{K} \frac{t_{ik}^2}{s_k^2} \hspace{19em} (10)
+```
+
 Sample $`i`$ 의 score 를 모은 벡터 $`\mathbf{t}_{(i)} = (t_{i1}, \ldots, t_{iK})^\top`$ 의 Hotelling $`T^2`$ 는 score 의 공분산 행렬 $`\mathbf{S}_T`$ 로 가중한 거리의 제곱이다. $`\mathbf{X}`$ 를 centering 했으므로 score 의 평균은 0 이고, 아래와 같다.
 
 ```math
-T_i^2 = \mathbf{t}_{(i)}^\top \mathbf{S}_T^{-1} \mathbf{t}_{(i)}, \qquad \mathbf{S}_T = \frac{\mathbf{T}^\top \mathbf{T}}{N - 1}
+T_i^2 = \mathbf{t}_{(i)}^\top \mathbf{S}_T^{-1} \mathbf{t}_{(i)}, \qquad \mathbf{S}_T = \frac{\mathbf{T}^\top \mathbf{T}}{N - 1} \hspace{19em} (21)
 ```
 
 식 (8) 에서 $\mathbf{S}_T = \mathrm{diag}(s_1^2, \ldots, s_K^2)$ 이고 $s_k^2 = \mathbf{t}_k^\top \mathbf{t}_k / (N - 1)$ 이다. 대각행렬의 역행렬을 넣어 이차형식을 풀면 식 (10) 이다.
 
 ### C.11 Equation (11)
 
+```math
+T_{\mathrm{lim}}^2 = \frac{K (N^2 - 1)}{N (N - K)} \, F_{1-\alpha}(K, N - K) \hspace{19em} (11)
+```
+
 학습 sample $N$ 개와 새 sample 의 score 가 서로 독립이고 같은 $K$ 변량 정규분포 $\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$ 를 따른다고 둔다. 새 sample 의 score $\mathbf{t}_{\mathrm{new}}$ 와 학습 score 의 평균 $\bar{\mathbf{t}}$ 의 차는 아래 분포를 따르고, $(N - 1)\mathbf{S}_T$ 는 자유도 $N - 1$ 의 Wishart distribution 을 따르며 그 차와 독립이다.
 
 ```math
-\mathbf{t}_{\mathrm{new}} - \bar{\mathbf{t}} \sim \mathcal{N}\!\left( \mathbf{0}, \; \left( 1 + \tfrac{1}{N} \right) \boldsymbol{\Sigma} \right)
+\mathbf{t}_{\mathrm{new}} - \bar{\mathbf{t}} \sim \mathcal{N}\!\left( \mathbf{0}, \; \left( 1 + \tfrac{1}{N} \right) \boldsymbol{\Sigma} \right) \hspace{19em} (22)
 ```
 
 $\mathbf{d} \sim \mathcal{N}(\mathbf{0}, \boldsymbol{\Sigma})$ 와 그와 독립인 자유도 $m$ 의 표본 공분산 행렬 $\mathbf{S}$ 에 대해 $\mathbf{d}^\top \mathbf{S}^{-1} \mathbf{d} \sim \frac{mK}{m - K + 1} F(K, m - K + 1)$ 이다. 위의 차를 $\sqrt{1 + 1/N}$ 로 나누면 $\mathbf{d}$ 의 조건을 만족하므로, $m = N - 1$ 을 넣고 다시 $1 + 1/N = (N + 1)/N$ 을 곱하면 아래를 얻는다.
 
 ```math
-T_{\mathrm{new}}^2 \sim \frac{N + 1}{N} \cdot \frac{(N - 1)K}{N - K} \, F(K, N - K) = \frac{K (N^2 - 1)}{N (N - K)} \, F(K, N - K)
+T_{\mathrm{new}}^2 \sim \frac{N + 1}{N} \cdot \frac{(N - 1)K}{N - K} \, F(K, N - K) = \frac{K (N^2 - 1)}{N (N - K)} \, F(K, N - K) \hspace{19em} (23)
 ```
 
 학습 score 의 평균 $\bar{\mathbf{t}}$ 는 0 이므로 $T_{\mathrm{new}}^2$ 는 새 sample 의 score 를 식 (10) 에 넣은 값과 같고, 이 분포의 $1 - \alpha$ 분위수가 식 (11) 이다. Score 의 방향 $\mathbf{R}$ 은 학습 데이터로 정한 값이므로, 이 분포는 $\mathbf{R}$ 을 고정된 값으로 볼 때 성립한다.
