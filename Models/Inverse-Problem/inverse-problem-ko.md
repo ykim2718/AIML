@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 83 | Created: 2026-08-28 | Updated: 2026-10-25 02:33 UTC
+Rev. 84 | Created: 2026-08-28 | Updated: 2026-10-25 02:36 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -768,23 +768,23 @@ Fig 8. Appendix F hidden model against T, the search in the A–B plane, the sur
 $a$ 번째 성분은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 의 공분산이 가장 큰 방향으로 뽑는다. $\mathbf{X}_1 = \mathbf{X}$, $\mathbf{Y}_1 = \mathbf{Y}$ 이고, $\mathbf{w}_a \in \mathbb{R}^{K}$ 와 $\mathbf{c}_a \in \mathbb{R}^{M}$ 는 길이가 1 인 가중치 벡터이다.
 
 ```math
-(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a
+(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (6)
 ```
 
 해는 $\mathbf{X}_a^{\top} \mathbf{Y}_a$ 의 첫 번째 특이벡터 쌍이고, $\mathbf{t}_a \in \mathbb{R}^{n}$ 이 $a$ 번째 score 이다. $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 를 $\mathbf{t}_a$ 에 회귀해 loading $\mathbf{p}_a \in \mathbb{R}^{K}$ 와 $\mathbf{q}_a \in \mathbb{R}^{M}$ 을 얻고, 그만큼을 빼서 다음 성분으로 넘긴다.
 
 ```math
-\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top}
+\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (7)
 ```
 
 $A$ 개 성분을 뽑은 뒤 빼낸 몫을 모두 더하면 식 (3) 이 된다. Score 와 loading 을 열로 모은 행렬이 $\mathbf{T}$, $\mathbf{P}$, $\mathbf{Q}$ 이고, 마지막에 남은 $\mathbf{E}$ 와 $\mathbf{F}$ 가 잔차이다.
 
 ```math
-\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1}
+\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (8)
 ```
 
 ```math
-\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F}
+\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (9)
 ```
 
 빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (5) 에서 쓴다.
@@ -794,13 +794,13 @@ $A$ 개 성분을 뽑은 뒤 빼낸 몫을 모두 더하면 식 (3) 이 된다. 
 식 (3) 의 한 행을 열 벡터로 적으면, 잔차를 뺀 입력과 출력은 같은 score $\mathbf{t} \in \mathbb{R}^{A}$ 로 $\mathbf{x} = \mathbf{P}\mathbf{t}$, $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 된다. 그래서 목표 $\mathbf{y}^{\ast}$ 를 내는 score 는 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 의 해이다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 rank 가 $M$ 이고 $A \ge M$ 이면 해가 있으며, 그 가운데 norm 이 가장 작은 해를 Lagrange 승수 $\boldsymbol{\lambda} \in \mathbb{R}^{M}$ 으로 구한다.
 
 ```math
-\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast}
+\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (10)
 ```
 
 $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므로 $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$ 이다. 이것을 대입하면 식 (4) 의 앞 식이 되고, 이 행렬 $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ 이 rank 가 $M$ 인 $\mathbf{Q}$ 의 pseudo-inverse $\mathbf{Q}^{+}$ 이다.
 
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}
+\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (11)
 ```
 
 뒤 식은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 $\boldsymbol{\alpha}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
@@ -810,13 +810,13 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므�
 $s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다.
 
 ```math
-T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}
+T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (12)
 ```
 
 SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 의 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model 평면에서 떨어진 거리의 제곱이다.
 
 ```math
-\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2}
+\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (13)
 ```
 
 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model 평면 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
