@@ -1,5 +1,5 @@
 # AIML
-Rev. 116 | Created: 2026-08-07 | Updated: 2026-10-25 06:55 CDT
+Rev. 117 | Created: 2026-08-07 | Updated: 2026-10-25 07:08 CDT
 
 - [1. Scope](#1-scope)
 - [2. Repository Map](#2-repository-map)
@@ -184,7 +184,7 @@ Table 11. Linear algebra documents
 
 | Document | Description |
 | :---: | :---: |
-| [Linear-Algebra/Dot-Product/dot-product-ko.md](Linear-Algebra/Dot-Product/dot-product-ko.md) (Korean only) | It equates the sum of element-wise products with the product of two lengths and the cosine of the angle between them, reads the result as a projection onto a unit weight vector, and applies it to the output of a linear model, the scores of PLS and PCA, and a chamber sensor example in which a shifted wafer loses little dot product but much of its cosine. |
+| [Linear-Algebra/Dot-Product/dot-product-primer-ko.md](Linear-Algebra/Dot-Product/dot-product-primer-ko.md) (Korean only) | It equates the sum of element-wise products with the product of two lengths and the cosine of the angle between them, reads the result as a projection onto a unit weight vector, checks both sides on a chamber sensor example in which a shifted wafer loses little dot product but much of its cosine, applies it to the output of a linear model and the scores of PLS and PCA with the conditions under which that reading breaks, and derives the identity from the law of cosines. |
 
 ## 4. Order Of Use
 
