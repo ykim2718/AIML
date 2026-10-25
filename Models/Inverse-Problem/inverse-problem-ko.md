@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 77 | Created: 2026-08-28 | Updated: 2026-10-25 00:05 UTC
+Rev. 78 | Created: 2026-08-28 | Updated: 2026-10-25 00:09 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -17,13 +17,13 @@ Rev. 77 | Created: 2026-08-28 | Updated: 2026-10-25 00:05 UTC
   - [3.2 Model-Specific Inversion Methods](#32-model-specific-inversion-methods)
   - [3.3 Inversion without Model Access](#33-inversion-without-model-access)
 - [4. Solution Validity](#4-solution-validity)
-- [5. Tools and Libraries](#5-tools-and-libraries)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Python Example: PLS Model Inversion](#appendix-b-python-example-pls-model-inversion)
 - [Appendix C. Python Example: Constrained Numerical Inversion](#appendix-c-python-example-constrained-numerical-inversion)
 - [Appendix D. Python Example: Inversion without Model Access](#appendix-d-python-example-inversion-without-model-access)
 - [Appendix E. Bagging Ensemble](#appendix-e-bagging-ensemble)
+- [Appendix F. Tools and Libraries](#appendix-f-tools-and-libraries)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -146,7 +146,7 @@ Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여
 
 ## 3. Inversion Methods
 
-손에 가진 model 에 따라 inversion 방법은 셋으로 나뉜다. Latent variable model 을 부를 수 있으면 3.1, 그 밖의 model 을 부를 수 있으면 3.2, model 을 부를 수 없으면 3.3 의 방법을 쓴다.
+손에 가진 model 에 따라 inversion 방법은 셋으로 나뉜다. Latent variable model 을 부를 수 있으면 3.1, 그 밖의 model 을 부를 수 있으면 3.2, model 을 부를 수 없으면 3.3 의 방법을 쓴다. 이 방법들을 구현하는 library 는 [Appendix F](#appendix-f-tools-and-libraries) 에 있다.
 
 ### 3.1 Latent Variable Model Inversion
 
@@ -281,20 +281,6 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - Multi-solution: 답이 하나가 아니면 하나만 골라 보고하지 않는다. Null space 구간이나 사후분포처럼 답의 집합을 보여 주는 편이 판단에 도움이 된다.
 - 불확실성: GP, Bayesian, flow 계열은 사후분포를 주므로 목표 범위를 만족할 확률로 해를 평가할 수 있다 [[3](#ref-3)]. 점 추정만 주는 model 은 그 확률을 낼 수 없으므로 별도의 검증이 필요하다.
 - 검증과 갱신: 얻은 입력은 실험이나 시뮬레이션으로 확인하고, 그 결과를 데이터에 더해 model 을 다시 학습하는 closed loop 를 둔다. 이 재학습이 없으면 model 의 오차가 그대로 설계 오차가 된다.
-
-## 5. Tools and Libraries
-
-Table 2. Libraries for model inversion
-
-|      Library       |                  Role                   |                                   Note                                    |
-| :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
-|   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
-|    scikit-learn    |   Latent variable model 과 유효 영역    |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
-|      PyTorch       |          입력에 대한 gradient           |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
-| BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |                  Acquisition function 최적화를 제공한다                   |
-|        SHAP        |        Tree model 의 국소 선형화        |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
-|       FrEIA        |        Invertible neural network        |                           cINN 구조를 조립한다                            |
-|    PyMC / emcee    |            사후분포 sampling            |                   Bayesian 정식화의 표본 기반 해법이다                    |
 
 ## References
 
@@ -725,3 +711,17 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
 
 세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[11](#ref-11)].
+
+## Appendix F. Tools and Libraries
+
+Table 2. Libraries for model inversion
+
+|      Library       |                  Role                   |                                   Note                                    |
+| :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
+|   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
+|    scikit-learn    |   Latent variable model 과 유효 영역    |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
+|      PyTorch       |          입력에 대한 gradient           |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
+| BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |                  Acquisition function 최적화를 제공한다                   |
+|        SHAP        |        Tree model 의 국소 선형화        |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
+|       FrEIA        |        Invertible neural network        |                           cINN 구조를 조립한다                            |
+|    PyMC / emcee    |            사후분포 sampling            |                   Bayesian 정식화의 표본 기반 해법이다                    |
