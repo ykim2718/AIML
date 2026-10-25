@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 80 | Created: 2026-08-28 | Updated: 2026-10-25 00:23 UTC
+Rev. 81 | Created: 2026-08-28 | Updated: 2026-10-25 00:30 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -175,6 +175,8 @@ Model inversion 은 $f$ 를 그대로 두고 $\mathbf{y}^{\ast} = f(\mathbf{x})$
 - Latent variable model 을 부를 수 있으면 [4.1 Latent Variable Model Inversion](#41-latent-variable-model-inversion) 의 방법을 쓴다.
 - 그 밖의 model 을 부를 수 있으면 [4.2 Model-Specific Inversion Methods](#42-model-specific-inversion-methods) 의 방법을 쓴다.
 - Model 을 부를 수 없으면 [4.3 Inversion without Model Access](#43-inversion-without-model-access) 의 방법을 쓴다.
+
+Latent variable 은 입력 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다. 이 좌표계에는 입력들 사이의 상관 구조가 이미 들어 있어 ([2.2](#22-search-space-where-to-search)), latent variable model 은 입력과 출력을 이 좌표로 함께 설명한다. PLS 와 PCR 이 여기에 속한다.
 
 이 방법들을 구현하는 library 는 [Appendix B](#appendix-b-tools-and-libraries) 에 있다.
 
