@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 4 | Created: 2026-10-24 | Updated: 2026-10-25 11:41 UTC
+Rev. 5 | Created: 2026-10-24 | Updated: 2026-10-25 21:24 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -273,36 +273,9 @@ Table 3. OLS and PLS by data condition
 \mathbf{t} = \mathbf{X}\mathbf{w}, \qquad \mathbf{u} = \mathbf{Y}\mathbf{c} \hspace{19em} (1)
 ```
 
-Score $t_i$ 는 sample $i$ 의 입력값 $\mathbf{x}_i$ 에서 방향 $\mathbf{w}$ 의 직선에 내린 수선의 발이 원점에서 떨어진 부호 있는 거리이며, 발이 $\mathbf{w}$ 와 같은 쪽에 있으면 양수, 반대쪽에 있으면 음수이다. $t_i$ 를 sample 마다 모은 열이 $\mathbf{t}$ 이다. 한 sample 의 투영과 sample $N$ 개의 투영은 아래 Fig 3 과 같다.
+Score $t_i$ 는 sample $i$ 의 입력값 $\mathbf{x}_i$ 에서 방향 $\mathbf{w}$ 의 직선에 내린 수선의 발이 원점에서 떨어진 부호 있는 거리이며, 발이 $\mathbf{w}$ 와 같은 쪽에 있으면 양수, 반대쪽에 있으면 음수이다. $t_i$ 를 sample 마다 모은 열이 $\mathbf{t}$ 이다.
 
-```text
-                                  * x_i   (sample i)
-                                  |
-                                  |   x_i - t_i w   (perpendicular to w)
-                                  |
-   O ==> w -----------------------+------------------------>  line of w
-   (unit length)                  t_i w   (foot of the perpendicular)
-
-   |<-------- t_i = x_i^T w ------>|
-
-                                (a)
-
-
-        X (N x P)          w (P x 1)          t = Xw (N x 1)
-
-     [ x_1^T ]                              [ x_1^T w ]  = t_1
-     [ x_2^T ]      x      [ w ]      =     [ x_2^T w ]  = t_2
-     [  ...  ]                              [   ...   ]
-     [ x_N^T ]                              [ x_N^T w ]  = t_N
-
-                                (b)
-```
-
-<a id="fig-3"></a>
-Fig 3. Projection of samples onto the direction w
-
-- (a): Sample $i$ 하나의 투영. $\mathbf{x}_i$ 와 $\mathbf{w}$ 사이의 각을 $\theta$ 라 하면 원점에서 수선의 발까지의 부호 있는 거리는 $\lVert \mathbf{x}_i \rVert \cos\theta$ 이고, $\lVert \mathbf{w} \rVert = 1$ 이므로 이 값은 내적 $\mathbf{x}_i^\top \mathbf{w} = \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta$ 와 같다. 수선 $\mathbf{x}_i - t_i \mathbf{w}$ 는 $\mathbf{w}$ 와 직교한다.
-- (b): Sample $N$ 개의 투영을 한 번에 계산. $\mathbf{X}$ 의 $i$ 번째 행이 $\mathbf{x}_i^\top$ 이므로 $\mathbf{X}\mathbf{w}$ 의 $i$ 번째 원소가 $t_i$ 이고, 따라서 $\mathbf{t} = \mathbf{X}\mathbf{w}$ 이다.
+$\mathbf{x}_i$ 와 $\mathbf{w}$ 사이의 각을 $\theta$ 라 하면 원점에서 수선의 발까지의 부호 있는 거리는 $\lVert \mathbf{x}_i \rVert \cos\theta$ 이고, $\lVert \mathbf{w} \rVert = 1$ 이므로 이 값은 내적 $\mathbf{x}_i^\top \mathbf{w} = \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta$ 와 같다. 수선 $\mathbf{x}_i - t_i \mathbf{w}$ 는 $\mathbf{w}$ 와 직교한다. $\mathbf{X}$ 의 $i$ 번째 행이 $\mathbf{x}_i^\top$ 이므로 $\mathbf{X}\mathbf{w}$ 의 $i$ 번째 원소가 $t_i$ 이고, 따라서 $\mathbf{t} = \mathbf{X}\mathbf{w}$ 이다.
 
 $\mathbf{Y}$ 의 $i$ 번째 행을 길이 1 인 방향 $\mathbf{c}$ 위로 투영하면 같은 방법으로 $\mathbf{u} = \mathbf{Y}\mathbf{c}$ 이다.
 
