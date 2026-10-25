@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 84 | Created: 2026-08-28 | Updated: 2026-10-25 02:36 UTC
+Rev. 85 | Created: 2026-08-28 | Updated: 2026-10-25 09:40 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -352,7 +352,9 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 <a id="ref-17"></a>
 [17] Gómez-Bombarelli, R., Wei, J. N., Duvenaud, D., et al. (2018). [Automatic chemical design using a data-driven continuous representation of molecules](https://doi.org/10.1021/acscentsci.7b00572). ACS Central Science, 4(2), 268–276.<br>
 <a id="ref-18"></a>
-[18] Chung, H., Kim, J., McCann, M. T., Klasky, M. L., Ye, J. C. (2023). [Diffusion posterior sampling for general noisy inverse problems](https://doi.org/10.48550/arXiv.2209.14687). International Conference on Learning Representations.
+[18] Chung, H., Kim, J., McCann, M. T., Klasky, M. L., Ye, J. C. (2023). [Diffusion posterior sampling for general noisy inverse problems](https://doi.org/10.48550/arXiv.2209.14687). International Conference on Learning Representations.<br>
+<a id="ref-19"></a>
+[19] yRocket. (2026). [Scores in Partial Least Squares](https://github.com/ykim2718/AIML/blob/main/Applied-Statistics/Regression/PLS/partial-least-squares-scores-ko.md). *AIML repository*, GitHub.
 
 ---
 
@@ -787,7 +789,7 @@ $A$ 개 성분을 뽑은 뒤 빼낸 몫을 모두 더하면 식 (3) 이 된다. 
 \mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (9)
 ```
 
-빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (5) 에서 쓴다.
+빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (5) 에서 쓴다. Score 를 뽑는 단계와 score 의 직교성은 [[19](#ref-19)] 의 Appendix C 에서도 유도한다.
 
 #### Eq. (4) Minimum-norm score and input
 
@@ -807,7 +809,7 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므�
 
 #### Eq. (5) Hotelling T² and SPE
 
-$s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다.
+$s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix C 에도 있다.
 
 ```math
 T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (12)
