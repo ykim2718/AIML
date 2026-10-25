@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 78 | Created: 2026-08-28 | Updated: 2026-10-25 00:09 UTC
+Rev. 79 | Created: 2026-08-28 | Updated: 2026-10-25 00:13 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -19,11 +19,11 @@ Rev. 78 | Created: 2026-08-28 | Updated: 2026-10-25 00:09 UTC
 - [4. Solution Validity](#4-solution-validity)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Python Example: PLS Model Inversion](#appendix-b-python-example-pls-model-inversion)
-- [Appendix C. Python Example: Constrained Numerical Inversion](#appendix-c-python-example-constrained-numerical-inversion)
-- [Appendix D. Python Example: Inversion without Model Access](#appendix-d-python-example-inversion-without-model-access)
-- [Appendix E. Bagging Ensemble](#appendix-e-bagging-ensemble)
-- [Appendix F. Tools and Libraries](#appendix-f-tools-and-libraries)
+- [Appendix B. Tools and Libraries](#appendix-b-tools-and-libraries)
+- [Appendix C. Bagging Ensemble](#appendix-c-bagging-ensemble)
+- [Appendix D. Python Example: PLS Model Inversion](#appendix-d-python-example-pls-model-inversion)
+- [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
+- [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -146,7 +146,13 @@ Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여
 
 ## 3. Inversion Methods
 
-손에 가진 model 에 따라 inversion 방법은 셋으로 나뉜다. Latent variable model 을 부를 수 있으면 3.1, 그 밖의 model 을 부를 수 있으면 3.2, model 을 부를 수 없으면 3.3 의 방법을 쓴다. 이 방법들을 구현하는 library 는 [Appendix F](#appendix-f-tools-and-libraries) 에 있다.
+손에 가진 model 에 따라 inversion 방법은 셋으로 나뉜다.
+
+- Latent variable model 을 부를 수 있으면 [3.1 Latent Variable Model Inversion](#31-latent-variable-model-inversion) 의 방법을 쓴다.
+- 그 밖의 model 을 부를 수 있으면 [3.2 Model-Specific Inversion Methods](#32-model-specific-inversion-methods) 의 방법을 쓴다.
+- Model 을 부를 수 없으면 [3.3 Inversion without Model Access](#33-inversion-without-model-access) 의 방법을 쓴다.
+
+이 방법들을 구현하는 library 는 [Appendix B](#appendix-b-tools-and-libraries) 에 있다.
 
 ### 3.1 Latent Variable Model Inversion
 
@@ -199,7 +205,7 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 Fig 3. Null space and the validity region in the score plane
 
-타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix B](#appendix-b-python-example-pls-model-inversion) 에 있다.
+타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다.
 
 #### Design space and product transfer
 
@@ -220,24 +226,24 @@ Table 1. Inversion method by model family
 
 |   #   |              Model               |              Inversion method               |                                                                          Characteristics                                                                          |
 | :---: | :------------------------------: | :-----------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|   1   |            PLS / PCR             |          해석적 역해와 null space           | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix B](#appendix-b-python-example-pls-model-inversion) 가 이 행을 실행한다 |
+|   1   |            PLS / PCR             |          해석적 역해와 null space           | 선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix D](#appendix-d-python-example-pls-model-inversion) 가 이 행을 실행한다 |
 |   2   |      PLS bootstrap ensemble      |        Bootstrap 표본별 해석적 역해         |                                     Bootstrap 표본마다 적합한 PLS 를 1 행의 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다                                     |
 |   3   |           OLS / Ridge            |               Pseudo-inverse                |                                    잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                    |
 |   4   |               PCA                |              Pre-image problem              |                                출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                 |
 |   5   |            Kernel PLS            |        Latent space 역해와 pre-image        |                                          비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                           |
 |   6   |                GP                |            사후분포 기반 역설계             |                                                    불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                    |
-|   7   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |  미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다   |
+|   7   |       Random forest / GBM        | Surrogate search, TreeSHAP 기반 국소 선형화 |  미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다   |
 |   8   |          Neural network          |             입력에 대한 역전파              |                                       가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                        |
 |   9   |        Autoencoder / VAE         |         Latent space 탐색 후 디코딩         |                                                                   생성 model 방식의 역설계이다                                                                    |
 |  10   | Invertible NN / Normalizing flow |              구조적으로 양방향              |                                                             cINN 은 목표를 한 번 넣어 사후분포를 준다                                                             |
 |  11   |         Diffusion model          |                사후 sampling                |                                                   잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                   |
-|  12   |          Model-agnostic          |     제약이 있는 numerical optimization      |              어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다              |
+|  12   |          Model-agnostic          |     제약이 있는 numerical optimization      |              어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다              |
 
 Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 이어지는 여섯 꼭지가 계열별로 설명한다.
 
 #### Linear projection models
 
-PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-e-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 3.2 의 kernel 계열에서 다루는 pre-image 문제가 된다.
+PLS 와 PCR 은 3.1 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-c-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[11](#ref-11)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 3.2 의 kernel 계열에서 다루는 pre-image 문제가 된다.
 
 #### Kernel and Gaussian process models
 
@@ -257,7 +263,7 @@ Random forest 와 gradient boosting 은 tree 를 base learner 로 쓴다. Tree �
 
 #### Model-agnostic numerical optimization
 
-Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가장 범용이다. 잔차를 목적 함수로 삼고, 유효 영역과 물리적 한계를 제약으로 걸어 최적화기를 돌린다. Gradient 를 쓸 수 있으면 쓰고 없으면 derivative-free 방법으로 바꾸기만 하면 되므로, 앞의 모든 계열에 대해 대안이 된다. 대가는 비용과 국소해이다. 목적 함수의 국소 최소점이 여럿이면 시작점에 따라 다른 해에 닿으므로, 여러 시작점에서 반복하고 얻은 해들을 함께 보고하는 편이 안전하다. 구현은 [Appendix C](#appendix-c-python-example-constrained-numerical-inversion) 에 있다.
+Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가장 범용이다. 잔차를 목적 함수로 삼고, 유효 영역과 물리적 한계를 제약으로 걸어 최적화기를 돌린다. Gradient 를 쓸 수 있으면 쓰고 없으면 derivative-free 방법으로 바꾸기만 하면 되므로, 앞의 모든 계열에 대해 대안이 된다. 대가는 비용과 국소해이다. 목적 함수의 국소 최소점이 여럿이면 시작점에 따라 다른 해에 닿으므로, 여러 시작점에서 반복하고 얻은 해들을 함께 보고하는 편이 안전하다. 구현은 [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) 에 있다.
 
 ### 3.3 Inversion without Model Access
 
@@ -271,7 +277,7 @@ Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y
 
 유효 영역은 세 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 4 의 검증을 그대로 쓴다.
 
-한계는 쌍이 덮는 영역이다. Surrogate 와 inverse map 은 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다. 세 방법을 이어 붙인 예시는 [Appendix D](#appendix-d-python-example-inversion-without-model-access) 에 있다.
+한계는 쌍이 덮는 영역이다. Surrogate 와 inverse map 은 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다. 세 방법을 이어 붙인 예시는 [Appendix F](#appendix-f-python-example-inversion-without-model-access) 에 있다.
 
 ## 4. Solution Validity
 
@@ -370,9 +376,35 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - **Validity domain**: model 이 학습 데이터로 뒷받침되는 입력 영역이다.
 - **Well-posed problem**: 해가 존재하고 유일하며 데이터에 연속적으로 의존하는 문제이다.
 
-## Appendix B. Python Example: PLS Model Inversion
+## Appendix B. Tools and Libraries
 
-3.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix B, C, D 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix D 의 pandas 만 있으면 그대로 돌아간다.
+Table 2. Libraries for model inversion
+
+|      Library       |                  Role                   |                                   Note                                    |
+| :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
+|   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
+|    scikit-learn    |   Latent variable model 과 유효 영역    |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
+|      PyTorch       |          입력에 대한 gradient           |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
+| BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |                  Acquisition function 최적화를 제공한다                   |
+|        SHAP        |        Tree model 의 국소 선형화        |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
+|       FrEIA        |        Invertible neural network        |                           cINN 구조를 조립한다                            |
+|    PyMC / emcee    |            사후분포 sampling            |                   Bayesian 정식화의 표본 기반 해법이다                    |
+
+## Appendix C. Bagging Ensemble
+
+Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 개 학습하고 그 예측을 합쳐 최종 예측을 정하는 ensemble 방식이다. 절차는 아래 세 단계이다.
+
+1. Bootstrapping: 원래 학습 데이터에서 행을 복원추출하여, 개별 model 마다 학습 표본을 하나씩 만든다.
+2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
+3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
+
+복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
+
+세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[11](#ref-11)].
+
+## Appendix D. Python Example: PLS Model Inversion
+
+3.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix D, C, D 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix F 의 pandas 만 있으면 그대로 돌아간다.
 
 ```python
 import numpy as np
@@ -420,13 +452,13 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 <img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 4">
 
-Fig 4. Appendix B measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
+Fig 4. Appendix D measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
 Fig 4 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
 
 Fig 4 (b) 는 같은 표본의 두 입력을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
 
-등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 3.1 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix C 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
+등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 3.1 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix E 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
 
 Fig 4 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
@@ -453,9 +485,9 @@ Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측
 
 해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 4 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 4 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
 
-입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix B 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
+입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix D 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
 
-## Appendix C. Python Example: Constrained Numerical Inversion
+## Appendix E. Python Example: Constrained Numerical Inversion
 
 미분이 되지 않는 gradient boosting model 을 blackbox 로 두고 3.2 의 model-agnostic numerical optimization 방식으로 뒤집는다. 유효 영역은 historical data 에 맞춘 PCA 의 $T^{2}$ 와 SPE 로 정의하고, 두 상한을 제약으로 건다.
 
@@ -468,7 +500,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 rng = np.random.default_rng(0)
 
-# the same 100 samples and the same value as Appendix B
+# the same 100 samples and the same value as Appendix D
 n = 100
 x1 = rng.normal(0.0, 1.0, n)
 x2 = rng.normal(0.0, 0.5, n)
@@ -530,13 +562,13 @@ print("x_sol       :", np.round(x_sol, 3))
 
 <img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 6">
 
-Fig 6. Appendix C measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
+Fig 6. Appendix E measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
-Fig 6 (a) 는 측정값을 순서대로 그린 것이다. Appendix B 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
+Fig 6 (a) 는 측정값을 순서대로 그린 것이다. Appendix D 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
 
 Fig 6 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
 
-Fig 6 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix B 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
+Fig 6 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix D 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
 
 두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 7 에 나란히 그린다.
 
@@ -549,7 +581,7 @@ Fig 7. Constrained solution against the validity limits
 
 $T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 4 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
 
-## Appendix D. Python Example: Inversion without Model Access
+## Appendix F. Python Example: Inversion without Model Access
 
 5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 바꿀 수 없는 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
 
@@ -683,7 +715,7 @@ their true T      : [17.85 18.56 19.01 19.8 ]
 
 <img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 8">
 
-Fig 8. Appendix D hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
+Fig 8. Appendix F hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
 
 - (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.712$ 이다. `T` 는 평균 19.1, 표준편차 1.3 으로 목표 19.0 을 중심에 두고 몰려 있어 100 행 가운데 51 행이 목표에서 1 이내에 들며, 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
 - (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 19.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.
@@ -699,29 +731,3 @@ Fig 8. Appendix D hidden model against T, the search in the A–B plane, the sur
 출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.869 나 19.184 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
 해는 유효 영역 안에 있다. $T^{2}$ 는 0.00 으로 상한 5.99 보다, SPE 는 0.063 으로 상한 0.468 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
-
-## Appendix E. Bagging Ensemble
-
-Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 개 학습하고 그 예측을 합쳐 최종 예측을 정하는 ensemble 방식이다. 절차는 아래 세 단계이다.
-
-1. Bootstrapping: 원래 학습 데이터에서 행을 복원추출하여, 개별 model 마다 학습 표본을 하나씩 만든다.
-2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
-3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
-
-복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
-
-세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[11](#ref-11)].
-
-## Appendix F. Tools and Libraries
-
-Table 2. Libraries for model inversion
-
-|      Library       |                  Role                   |                                   Note                                    |
-| :----------------: | :-------------------------------------: | :-----------------------------------------------------------------------: |
-|   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
-|    scikit-learn    |   Latent variable model 과 유효 영역    |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
-|      PyTorch       |          입력에 대한 gradient           |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
-| BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |                  Acquisition function 최적화를 제공한다                   |
-|        SHAP        |        Tree model 의 국소 선형화        |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
-|       FrEIA        |        Invertible neural network        |                           cINN 구조를 조립한다                            |
-|    PyMC / emcee    |            사후분포 sampling            |                   Bayesian 정식화의 표본 기반 해법이다                    |
