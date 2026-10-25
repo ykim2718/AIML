@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 85 | Created: 2026-08-28 | Updated: 2026-10-25 09:40 UTC
+Rev. 86 | Created: 2026-08-28 | Updated: 2026-10-25 09:45 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -433,7 +433,7 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 
 ## Appendix D. Python Example: PLS Model Inversion
 
-4.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix D, C, D 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix F 의 pandas 만 있으면 그대로 돌아간다.
+4.1 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix D, E, F 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix F 의 pandas 만 있으면 그대로 돌아간다.
 
 ```python
 import numpy as np
@@ -612,7 +612,7 @@ $T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 
 
 ## Appendix F. Python Example: Inversion without Model Access
 
-5 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 바꿀 수 없는 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
+4.3 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 바꿀 수 없는 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
 
 ```python
 import numpy as np
@@ -757,9 +757,9 @@ Fig 8. Appendix F hidden model against T, the search in the A–B plane, the sur
 
 등고선이 계단 모양이다. Surrogate 가 4.2 의 tree ensemble 과 같은 조각별 상수 함수이므로 예측이 문턱값을 넘을 때만 바뀌고, 그 사이에서는 상수로 남아 한 계단을 이룬다.
 
-출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.869 나 19.184 처럼 목표에서 벗어난 자리에 갇힌다. 4.6 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
+출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.869 나 19.184 처럼 목표에서 벗어난 자리에 갇힌다. 4.2 의 model-agnostic numerical optimization 꼭지가 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
-해는 유효 영역 안에 있다. $T^{2}$ 는 0.00 으로 상한 5.99 보다, SPE 는 0.063 으로 상한 0.468 보다 작으므로, 5 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
+해는 유효 영역 안에 있다. $T^{2}$ 는 0.00 으로 상한 5.99 보다, SPE 는 0.063 으로 상한 0.468 보다 작으므로, 4.3 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
 
 ## Appendix G. Derivation of Eq. (3), (4) and (5)
 
