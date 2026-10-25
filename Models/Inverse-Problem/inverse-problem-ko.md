@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 75 | Created: 2026-08-28 | Updated: 2026-10-24 23:56 UTC
+Rev. 76 | Created: 2026-08-28 | Updated: 2026-10-25 00:02 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -152,6 +152,8 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 Point 는 하나의 조건을 제시하므로 바로 실행할 수 있지만 여유가 없다. Region 은 목표 범위를 만족하는 입력 영역을 주며, design space 라는 이름으로도 쓰인다. Distribution 은 사후분포를 그대로 주어, 목표 범위를 만족할 확률로 판단하게 한다.
 
 ## 3. Latent Variable Model Inversion
+
+Fig 2 의 분류에서 이 절의 방법은 Formulation 은 Deterministic, Search space 는 Latent space, Solution method 는 Analytical inverse, Ambiguity handling 은 Null space 와 Validity constraint, Answer form 은 Region 을 고른 조합이다.
 
 PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 오래된 산업 사례이며, 이후의 방법들이 되풀이하는 골격을 이미 갖추고 있다. 차원을 줄여 자유도를 정리하고, 줄인 공간에서 역해를 구하고, 유효 영역 제약으로 외삽을 막는 세 단계가 그것이다 [[2](#ref-2)], [[5](#ref-5)].
 
