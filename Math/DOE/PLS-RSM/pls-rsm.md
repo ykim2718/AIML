@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 6 | Created: 2026-09-06 | Updated: 2026-10-25 16:18 CDT
+Rev. 7 | Created: 2026-09-06 | Updated: 2026-10-25 16:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -157,7 +157,7 @@ Third, **the gap between the two data sets is far wider than the gap between the
 The script that produced Fig 1 and Table 2 of section 6. It replicates the two designs against the same true surface and goes through expansion, fitting, recovery of the surface and computation of the stationary point in turn, leaving the distance distribution behind. Run with no arguments it reproduces the document's results, and `-h` shows the values that can be adjusted.
 
 ```python
-# Math-Foundations/DOE/PLS-RSM/pls_rsm.py
+# Math/DOE/PLS-RSM/pls_rsm.py
 __author__ = 'yRocket'
 __version__ = "0.0.0.2026.9.6"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 

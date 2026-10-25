@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 6 | Created: 2026-09-06 | Updated: 2026-10-25 16:18 CDT
+Rev. 7 | Created: 2026-09-06 | Updated: 2026-10-25 16:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -157,7 +157,7 @@ Table 2. Distance from the located optimum to the true optimum
 Section 6 의 Fig 1 과 Table 2 를 낸 script 이다. 두 설계를 같은 참 곡면에 대해 복제하고, 확장, 적합, 곡면 복원, 정류점 계산을 차례로 거쳐 거리 분포를 남긴다. 인자 없이 실행하면 문서와 같은 결과가 나오며, `-h` 로 조절할 수 있는 값을 볼 수 있다.
 
 ```python
-# Math-Foundations/DOE/PLS-RSM/pls_rsm.py
+# Math/DOE/PLS-RSM/pls_rsm.py
 __author__ = 'yRocket'
 __version__ = "0.0.0.2026.9.6"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 

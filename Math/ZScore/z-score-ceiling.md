@@ -1,5 +1,5 @@
 # Ceiling of the Classical z-Score
-Rev. 5 | Created: 2026-08-18 | Updated: 2026-10-25 16:18 CDT
+Rev. 6 | Created: 2026-08-18 | Updated: 2026-10-25 16:20 CDT
 
 - [1. Scope](#1-scope)
 - [2. Bound](#2-bound)
@@ -135,7 +135,7 @@ The file holds the score and its ceiling and nothing else. Tabulating them and d
 left to whatever calls it.
 
 ```python
-# Math-Foundations/ZScore/z_score_ceiling.py
+# Math/ZScore/z_score_ceiling.py
 __author__ = 'yRocket'
 __version__ = "0.0.0.2026.8.18"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
