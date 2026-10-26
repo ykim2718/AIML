@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 6 | Created: 2026-10-24 | Updated: 2026-10-26 00:09 UTC
+Rev. 7 | Created: 2026-10-24 | Updated: 2026-10-26 00:12 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,6 +12,7 @@ Rev. 6 | Created: 2026-10-24 | Updated: 2026-10-26 00:09 UTC
 - [8. Visualization and Anomaly Detection](#8-visualization-and-anomaly-detection)
   - [8.1 Score Plot](#81-score-plot)
   - [8.2 Hotelling's T-Squared on the Scores](#82-hotellings-t-squared-on-the-scores)
+- [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Comparison of PLS and OLS](#appendix-b-comparison-of-pls-and-ols)
   - [B.1 Ordinary Least Squares](#b1-ordinary-least-squares)
@@ -204,6 +205,11 @@ T_{\mathrm{lim}}^2 = \frac{K (N^2 - 1)}{N (N - K)} \, F_{1-\alpha}(K, N - K) \hs
 
 $T^2$ 는 score 가 펼치는 부분공간 안의 변화만 잰다. 식 (4) 의 잔차 $\mathbf{E}$ 에만 나타나는 변화, 곧 학습 데이터에 없던 방향으로 센서가 움직이는 경우는 $T^2$ 가 커지지 않으므로, 잔차의 크기를 재는 SPE 를 함께 감시한다.
 
+## References
+
+<a id="ref-1"></a>
+[1] [Lagrange Multiplier Method](https://github.com/ykim2718/AIML/blob/main/Math/Optimization/Lagrange-Multiplier/lagrange-multiplier-ko.md). *AIML* repository, GitHub.
+
 ---
 
 ## Appendix A. Terminology
@@ -215,7 +221,7 @@ $T^2$ 는 score 가 펼치는 부분공간 안의 변화만 잰다. 식 (4) 의 
 - **excursion**: 공정 변수나 결과가 관리 범위를 벗어난 상태.
 - **golden trace**: normal 운전에서 sample 이 score 공간이나 센서 값에서 지나는 기준 궤적.
 - **Hotelling $T^2$**: 공분산으로 가중한 중심으로부터의 거리의 제곱이며, 다변량 데이터에서 sample 하나가 normal 운전의 분포에서 얼마나 드문지를 수 하나로 나타낸다.
-- **Lagrange multiplier**: 제약조건 (constraint) 이 있는 최적화에서 제약조건마다 하나씩 두는 변수이며, 목적함수 (objective function) 에서 제약조건과의 곱을 뺀 식을 미분하여 0 으로 놓으면 제약조건 아래의 극값 조건을 얻는다.
+- **Lagrange multiplier**: 제약조건 (constraint) 이 있는 최적화에서 제약조건마다 하나씩 두는 변수이며, 목적함수 (objective function) 에서 제약조건과의 곱을 뺀 식을 미분하여 0 으로 놓으면 제약조건 아래의 극값 조건을 얻는다 [[1](#ref-1)].
 - **latent space**: Score 가 좌표가 되는 저차원 공간이며, 관측하지 않은 요인을 축으로 한다.
 - **latent variable**: 직접 관측하지 않고 관측 변수의 선형결합으로 구한 변수이며, 이 문서에서는 score 하나가 latent variable 하나이다.
 - **loading**: 원래 변수를 score 에 회귀한 계수이며, 각 변수가 그 성분에 얼마나 실려 있는지를 나타낸다.
@@ -265,7 +271,7 @@ Table 3. OLS and PLS by data condition
 
 ## Appendix C. Derivation of Equations (1) to (11)
 
-식 (1) 부터 식 (10) 까지는 centering 한 $\mathbf{X}$ 와 $\mathbf{Y}$ 에 내적, 최소제곱, Lagrange multiplier 를 써서 유도하고, 식 (11) 은 정규분포와 Wishart distribution 의 성질로 유도한다. 아래에서 $\mathbf{x}_i^\top$ 는 $\mathbf{X}$ 의 $i$ 번째 행, 곧 sample $i$ 의 입력값이고, $\mathbf{X}_k$ 는 $k - 1$ 번의 deflation 을 거친 행렬이며 $\mathbf{X}_1 = \mathbf{X}$ 이다.
+식 (1) 부터 식 (10) 까지는 centering 한 $\mathbf{X}$ 와 $\mathbf{Y}$ 에 내적, 최소제곱, Lagrange multiplier [[1](#ref-1)] 를 써서 유도하고, 식 (11) 은 정규분포와 Wishart distribution 의 성질로 유도한다. 아래에서 $\mathbf{x}_i^\top$ 는 $\mathbf{X}$ 의 $i$ 번째 행, 곧 sample $i$ 의 입력값이고, $\mathbf{X}_k$ 는 $k - 1$ 번의 deflation 을 거친 행렬이며 $\mathbf{X}_1 = \mathbf{X}$ 이다.
 
 ### C.1 Equation (1)
 
