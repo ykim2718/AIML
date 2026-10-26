@@ -1,5 +1,5 @@
 # AIML
-Rev. 121 | Created: 2026-08-07 | Updated: 2026-10-25 16:22 CDT
+Rev. 122 | Created: 2026-08-07 | Updated: 2026-10-26 01:29 CDT
 
 - [1. Scope](#1-scope)
 - [2. Repository Map](#2-repository-map)
@@ -191,6 +191,7 @@ Table 10. AIOps documents
 
 - The repository uses the `main` branch only. Work is committed to `main` directly, without feature branches and without pull requests.
 - Markdown conventions — the version header, heading numbers, table and figure captions, terminology — are defined by the `md-rules` skill, which arrives with the plugin declared in [.claude/settings.json](.claude/settings.json), and are deliberately not restated here.
+- Documents that explain a formula, or a primer or handbook that collects several, follow the `math-doc-rules` skill from the same plugin, which fixes their chapters — notation with the readings of special symbols, interpretation, worked example and application — and requires every worked number to be recomputed by script.
 - Prose paragraphs are written in full sentences, while list items and table cells may be shortened to noun phrases, one point to an item.
 - Some of the older documents and script comments are written in Korean. Newer documents are written in English.
 - These rules are recorded in [CLAUDE.md](CLAUDE.md) so that an assistant working in the repository follows them without being told, and the shared rules that apply across projects arrive automatically through the plugin declared in [.claude/settings.json](.claude/settings.json).
