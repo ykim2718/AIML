@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 8 | Created: 2026-10-24 | Updated: 2026-10-26 05:36 UTC
+Rev. 9 | Created: 2026-10-24 | Updated: 2026-10-26 05:37 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -119,13 +119,9 @@ $\mathbf{w}$ 와 $\mathbf{c}$ 는 sample 을 투영할 방향을 나타내는 �
 \mathbf{t} = \mathbf{X}\mathbf{w}, \qquad \mathbf{u} = \mathbf{Y}\mathbf{c} \hspace{19em} (1)
 ```
 
-두 방향은 길이를 1 로 묶은 채로 두 score 의 공분산을 최대로 하는 값이다.
-
 ```math
 (\mathbf{w}, \mathbf{c}) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{Y}\mathbf{c}) \hspace{19em} (2)
 ```
-
-타겟이 하나 ($M = 1$) 이면 식 (2) 의 해는 $\mathbf{w} \propto \mathbf{X}^\top \mathbf{y}$ 이므로, $\mathbf{w}$ 의 각 원소는 그 입력 변수와 $\mathbf{y}$ 의 공분산에 비례한다.
 
 첫 성분을 찾은 뒤에는 $\mathbf{t}$ 가 설명한 부분을 $\mathbf{X}$ 에서 빼고 (deflation), 남은 행렬에서 식 (2) 를 다시 풀어 다음 성분을 찾는다. $\mathbf{p}$ 는 $\mathbf{X}$ 의 열을 $\mathbf{t}$ 에 회귀한 계수인 loading 이다.
 
