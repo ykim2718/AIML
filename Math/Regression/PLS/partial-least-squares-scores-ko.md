@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 10 | Created: 2026-10-24 | Updated: 2026-10-26 05:46 UTC
+Rev. 11 | Created: 2026-10-24 | Updated: 2026-10-26 06:10 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -309,7 +309,7 @@ $N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로, 식 (2) 는 아�
 - 제약조건: $\mathbf{w}^\top \mathbf{w} = 1$ 과 $\mathbf{c}^\top \mathbf{c} = 1$ 의 두 개
 - Lagrange multiplier: 두 제약조건에 하나씩 둔 $\lambda$ 와 $\mu$
 
-목적함수에서 각 제약조건과 그 multiplier 의 곱을 뺀 $L = \mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c} - \lambda (\mathbf{w}^\top \mathbf{w} - 1) - \mu (\mathbf{c}^\top \mathbf{c} - 1)$ 을 $\mathbf{w}$ 와 $\mathbf{c}$ 로 미분하여 0 으로 놓는다.
+목적함수에서 각 제약조건과 그 multiplier 의 곱을 뺀 Lagrangian (Lagrange function) $L = \mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c} - \lambda (\mathbf{w}^\top \mathbf{w} - 1) - \mu (\mathbf{c}^\top \mathbf{c} - 1)$ 을 $\mathbf{w}$ 와 $\mathbf{c}$ 로 미분하여 0 으로 놓는다.
 
 ```math
 \mathbf{X}^\top \mathbf{Y} \mathbf{c} = 2\lambda \mathbf{w}, \qquad \mathbf{Y}^\top \mathbf{X} \mathbf{w} = 2\mu \mathbf{c} \hspace{19em} (13)
