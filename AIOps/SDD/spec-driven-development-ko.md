@@ -1,5 +1,5 @@
 # Spec-Driven Development (SDD)
-Rev. 6 | Created: 2026-09-26 | Updated: 2026-10-26 18:24 CDT
+Rev. 7 | Created: 2026-09-26 | Updated: 2026-10-26 18:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -168,11 +168,11 @@ SDD 에서 사람은 specifier 와 reviewer 의 두 역할을 맡고, 그 사이
 
 Table 4. Roles in SDD
 
-| Role      | Actor                     | Phase         | Output                                      | Decides                                                    |
-| :-------: | :-----------------------: | :-----------: | :-----------------------------------------: | :--------------------------------------------------------: |
-| Specifier | Human                     | Phase 1       | Spec 파일, project rules                    | 범위, data schema, behavior, acceptance criteria           |
-| Agent     | AI&nbsp;coding&nbsp;agent | Phase 2, 3, 4 | Plan, tasks, test, code                     | Spec 안에서의 구현 방법                                    |
-| Reviewer  | Human                     | Phase 2, 5    | Gate 승인, 수용, agent 반려, specifier 반려 | Plan 과 test 의 승인, 결과의 수용 여부, 결함을 돌려보낼 곳 |
+| Role      | Actor                     | Phase                        | Output                                                          | Decides                                                                       |
+| :-------: | :-----------------------: | :--------------------------: | :-------------------------------------------------------------: | :---------------------------------------------------------------------------: |
+| Specifier | Human                     | Phase&nbsp;1                 | Spec file, project rules                                        | Scope, data schema, behavior, acceptance criteria                             |
+| Agent     | AI&nbsp;coding&nbsp;agent | Phase&nbsp;2,&nbsp;3,&nbsp;4 | Plan, tasks, test, code                                         | How to implement within the spec                                              |
+| Reviewer  | Human                     | Phase&nbsp;2,&nbsp;5         | Gate approval, acceptance, return to agent, return to specifier | Approval of plan and test, acceptance of the result, where to return a defect |
 
 Reviewer 는 찾은 결함을 agent 나 specifier 에게 돌려보내 spec 을 거쳐 고치게 한다. Reviewer 가 code 를 직접 고치면 spec 과 code 가 어긋나 spec 이 single source of truth 로 남지 않는다.
 
