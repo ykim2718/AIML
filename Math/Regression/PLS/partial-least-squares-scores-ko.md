@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 7 | Created: 2026-10-24 | Updated: 2026-10-26 00:12 UTC
+Rev. 8 | Created: 2026-10-24 | Updated: 2026-10-26 05:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -105,7 +105,15 @@ Table 2. Assumption, setting, failure condition and usage of each method
 
 ## 4. Score Extraction
 
-PLS 의 score 는 $\mathbf{X}$ 와 $\mathbf{Y}$ 를 각각 한 방향으로 투영한 좌표이며, 두 좌표의 공분산이 최대가 되도록 방향을 고른다. $\mathbf{X} \in \mathbb{R}^{N \times P}$ 는 sample $N$ 개와 입력 변수 $P$ 개로 이루어진 입력 행렬이고, $\mathbf{Y} \in \mathbb{R}^{N \times M}$ 은 같은 sample 의 타겟 변수 $M$ 개로 이루어진 타겟 행렬이며, 두 행렬의 열은 평균을 빼서 centering 한다. 이 꼭지부터 꼭지 8 까지 나오는 식 (1) 에서 식 (11) 까지의 유도는 [Appendix C](#appendix-c-derivation-of-equations-1-to-11) 에 있다. 방향 $\mathbf{w} \in \mathbb{R}^{P}$ 와 $\mathbf{c} \in \mathbb{R}^{M}$ 으로 투영한 X-score $\mathbf{t}$ 와 Y-score $\mathbf{u}$ 는 아래와 같다.
+PLS 의 score 는 $\mathbf{X}$ 와 $\mathbf{Y}$ 를 각각 한 방향으로 투영한 좌표이며, 두 좌표의 공분산이 최대가 되도록 방향을 고른다. $\mathbf{X} \in \mathbb{R}^{N \times P}$ 는 sample $N$ 개와 입력 변수 $P$ 개로 이루어진 입력 행렬이고, $\mathbf{Y} \in \mathbb{R}^{N \times M}$ 은 같은 sample 의 타겟 변수 $M$ 개로 이루어진 타겟 행렬이며, 두 행렬의 열은 평균을 빼서 centering 한다. 이 꼭지부터 꼭지 8 까지 나오는 식 (1) 에서 식 (11) 까지의 유도는 [Appendix C](#appendix-c-derivation-of-equations-1-to-11) 에 있다.
+
+$\mathbf{w}$ 와 $\mathbf{c}$ 는 sample 을 투영할 방향을 나타내는 길이 1 인 벡터이고, $\mathbf{w}$ 는 $\mathbf{X}$ 쪽, $\mathbf{c}$ 는 $\mathbf{Y}$ 쪽 방향이다.
+
+- $\mathbf{w} \in \mathbb{R}^P$ 는 입력 변수 $P$ 개에 하나씩 주는 가중치이다. $\mathbf{x}_i^\top$ 를 $\mathbf{X}$ 의 $i$ 번째 행, 곧 sample $i$ 의 입력값이라 하면 sample $i$ 의 X-score 는 $t_i = \mathbf{x}_i^\top \mathbf{w}$ 이고, 식 (1) 의 $\mathbf{t} = \mathbf{X}\mathbf{w}$ 는 이 값을 모든 sample 에 대해 모은 것이다.
+- $\mathbf{c} \in \mathbb{R}^M$ 은 타겟 변수 $M$ 개에 하나씩 주는 가중치이고, 같은 방법으로 Y-score 는 $\mathbf{u} = \mathbf{Y}\mathbf{c}$ 이다.
+- 두 벡터의 값은 식 (2) 에서 정해진다. 길이를 1 로 묶은 채 $\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{Y}\mathbf{c})$ 를 최대로 하는 값이며, 타겟이 하나이고 그 열이 $\mathbf{y}$ 이면 $\mathbf{w} \propto \mathbf{X}^\top \mathbf{y}$ 이고 $\mathbf{c} = \pm 1$ 이다.
+
+방향 $\mathbf{w} \in \mathbb{R}^{P}$ 와 $\mathbf{c} \in \mathbb{R}^{M}$ 으로 투영한 X-score $\mathbf{t}$ 와 Y-score $\mathbf{u}$ 는 아래와 같다.
 
 ```math
 \mathbf{t} = \mathbf{X}\mathbf{w}, \qquad \mathbf{u} = \mathbf{Y}\mathbf{c} \hspace{19em} (1)
