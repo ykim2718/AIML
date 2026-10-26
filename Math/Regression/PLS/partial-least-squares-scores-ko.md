@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 11 | Created: 2026-10-24 | Updated: 2026-10-26 06:10 UTC
+Rev. 12 | Created: 2026-10-24 | Updated: 2026-10-26 06:14 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -392,7 +392,7 @@ PCA 는 $\mathbf{X}\mathbf{w}$ 의 variance 를, PLS 는 $\mathbf{X}\mathbf{w}$ 
 \mathrm{PCA}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Var}(\mathbf{X}\mathbf{w}), \qquad \mathrm{PLS}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) \hspace{19em} (6)
 ```
 
-PCA 는 제약조건에 Lagrange multiplier $\lambda$ 를 두고 $L = \mathbf{w}^\top \mathbf{S} \mathbf{w} - \lambda (\mathbf{w}^\top \mathbf{w} - 1)$ 을 미분하면 $\mathbf{S}\mathbf{w} = \lambda\mathbf{w}$ 이고, 이때 목적함수의 값은 $\mathbf{w}^\top \mathbf{S} \mathbf{w} = \lambda$ 이다. 따라서 PCA 의 첫 방향은 $\mathbf{S}$ 의 가장 큰 eigenvalue 의 eigenvector 이며, $\mathbf{y}$ 는 식에 들어 있지 않다.
+PCA 는 제약조건에 Lagrange multiplier $\lambda$ 를 두고 Lagrangian $L = \mathbf{w}^\top \mathbf{S} \mathbf{w} - \lambda (\mathbf{w}^\top \mathbf{w} - 1)$ 을 미분하면 $\mathbf{S}\mathbf{w} = \lambda\mathbf{w}$ 이고, 이때 목적함수의 값은 $\mathbf{w}^\top \mathbf{S} \mathbf{w} = \lambda$ 이다. 따라서 PCA 의 첫 방향은 $\mathbf{S}$ 의 가장 큰 eigenvalue 의 eigenvector 이며, $\mathbf{y}$ 는 식에 들어 있지 않다.
 
 PLS 는 Lagrange multiplier 없이 Cauchy–Schwarz 부등식으로 풀린다. 제약조건 $\mathbf{w}^\top \mathbf{w} = 1$ 아래에서 $\mathbf{w}^\top \mathbf{X}^\top \mathbf{y} \le \lVert \mathbf{w} \rVert \, \lVert \mathbf{X}^\top \mathbf{y} \rVert = \lVert \mathbf{X}^\top \mathbf{y} \rVert$ 이고, 등호는 $\mathbf{w}$ 가 $\mathbf{X}^\top \mathbf{y}$ 와 같은 방향일 때 성립하므로 C.2 의 $M = 1$ 결과와 같다.
 
