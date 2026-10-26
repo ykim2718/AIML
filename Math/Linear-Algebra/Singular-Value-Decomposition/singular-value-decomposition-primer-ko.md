@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 1 | Created: 2026-10-26 | Updated: 2026-10-26 02:08 CDT
+Rev. 2 | Created: 2026-10-26 | Updated: 2026-10-26 02:14 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,9 +18,6 @@ Rev. 1 | Created: 2026-10-26 | Updated: 2026-10-26 02:08 CDT
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
 - [Appendix C. Circle to Ellipse](#appendix-c-circle-to-ellipse)
-  - [C.1 Three Steps](#c1-three-steps)
-  - [C.2 Four Tracked Points](#c2-four-tracked-points)
-  - [C.3 What the Singular Vectors Are](#c3-what-the-singular-vectors-are)
 
 ## 1. Purpose
 
@@ -250,77 +247,38 @@ Table 3. Derivation of equation (1)
 
 ## Appendix C. Circle to Ellipse
 
-꼭지 5 의 $\mathbf{A}$ 로 단위 원이 타원이 되는 과정을 식 (1) 의 세 행렬로 나누어 계산하고, 그 과정에서 특이벡터가 어떤 방향인지 보인다.
-
-### C.1 Three Steps
-
-식 (7) 의 특이벡터와 꼭지 5 의 특이값으로 세 행렬을 적으면 아래와 같고, 세 행렬을 곱하면 $\mathbf{A}$ 가 된다.
+단위 원 위의 점 $N = 360$ 개를 열로 모은 $2 \times N$ 행렬 $\mathbf{P}$ 에 꼭지 5 의 $\mathbf{A}$ 를 곱하면, 모든 점이 식 (1) 의 세 행렬을 오른쪽부터 차례로 거쳐 타원 위로 옮겨진다.
 
 ```math
-\mathbf{V}^\top = \tfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}, \quad \boldsymbol{\Sigma} = \begin{bmatrix} 3\sqrt{5} & 0 \\ 0 & \sqrt{5} \end{bmatrix}, \quad \mathbf{U} = \tfrac{1}{\sqrt{10}} \begin{bmatrix} 1 & 3 \\ 3 & -1 \end{bmatrix} \hspace{19em} (13)
+\mathbf{P} = \begin{bmatrix} \cos\theta_1 & \cos\theta_2 & \cdots & \cos\theta_N \\ \sin\theta_1 & \sin\theta_2 & \cdots & \sin\theta_N \end{bmatrix}, \quad \theta_k = \frac{360^\circ (k - 1)}{N}, \quad \mathbf{A}\mathbf{P} = \mathbf{U} \left( \boldsymbol{\Sigma} \left( \mathbf{V}^\top \mathbf{P} \right) \right) \hspace{19em} (13)
 ```
 
-단위 원 위의 점은 각도 $\theta$ 로 적는다.
+세 단계를 차례로 계산한 결과는 아래 Fig 1 과 같다.
 
-```math
-\mathbf{x}(\theta) = \begin{bmatrix} \cos\theta \\ \sin\theta \end{bmatrix}, \quad 0^\circ \le \theta \lt 360^\circ \hspace{19em} (14)
-```
+<a id="fig-1"></a>
+<img src="singular-value-decomposition-primer-ko_fig/fig1.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
-1. **$\mathbf{V}^\top$**: 행렬식이 -1 이므로 회전이 아니라 $22.5^\circ$ 직선에 대한 반사이다. 길이를 바꾸지 않아 단위 원은 단위 원 그대로이고, $\mathbf{v}_1$ 은 $[1, 0]^\top$ 으로, $\mathbf{v}_2$ 는 $[0, 1]^\top$ 으로 옮겨진다.
-2. **$\boldsymbol{\Sigma}$**: 첫 좌표를 $3\sqrt{5} \approx 6.708$ 배, 둘째 좌표를 $\sqrt{5} \approx 2.236$ 배 한다. 단위 원은 두 좌표축을 반축으로 하는 타원 $z_1^2 / 45 + z_2^2 / 5 = 1$ 이 된다.
-3. **$\mathbf{U}$**: 행렬식이 -1 이므로 약 $35.8^\circ$ 직선에 대한 반사이다. 길이를 바꾸지 않고 $[1, 0]^\top$ 을 $\mathbf{u}_1$ 로, $[0, 1]^\top$ 을 $\mathbf{u}_2$ 로 옮기므로, 2 단계 타원의 두 반축이 $\mathbf{u}_1$ 과 $\mathbf{u}_2$ 방향으로 놓인다.
+Fig 1. Unit circle points through the three factors of A
 
-세 단계를 거친 타원은 아래 식을 만족한다.
+- (a): 계산 전의 $\mathbf{P}$. 화살표는 우특이벡터 $\mathbf{v}_1$, $\mathbf{v}_2$ 이고, 녹색 점은 $\theta = 0^\circ$ 의 점 $[1, 0]^\top$ 이다.
+- (b): $\mathbf{V}^\top\mathbf{P}$. 길이가 바뀌지 않아 점들은 여전히 단위 원 위에 있고, $\mathbf{v}_1$ 과 $\mathbf{v}_2$ 는 좌표축 방향의 $\mathbf{e}_1$, $\mathbf{e}_2$ 로 옮겨졌다. $\mathbf{v}_1$ 을 $\mathbf{e}_1$ 로 옮기는 회전이라면 $-45^\circ$ 회전이어서 녹색 점은 $[0.707, -0.707]^\top$ 으로 가야 하지만, 실제로는 $[0.707, 0.707]^\top$ 으로 옮겨졌다. 따라서 $\mathbf{V}^\top$ 은 회전이 아니라 반사이다.
+- (c): $\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{P}$. 첫 좌표가 $\sigma_1 = 6.708$ 배, 둘째 좌표가 $\sigma_2 = 2.236$ 배 되어, 원이 두 좌표축을 반축으로 하는 타원이 되었다.
+- (d): $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{P} = \mathbf{A}\mathbf{P}$. $\mathbf{U}$ 가 좌표축을 $\mathbf{u}_1$, $\mathbf{u}_2$ 로 옮겨 타원의 반축이 $\sigma_1\mathbf{u}_1$ 과 $\sigma_2\mathbf{u}_2$ 가 되었다. 녹색 점은 $\mathbf{A}$ 의 첫째 열 $[3, 4]^\top$ 에 놓인다.
 
-```math
-\mathbf{y}^\top (\mathbf{A}\mathbf{A}^\top)^{-1} \mathbf{y} = 1, \quad \mathbf{A}\mathbf{A}^\top = \begin{bmatrix} 9 & 12 \\ 12 & 41 \end{bmatrix}, \quad (\mathbf{A}\mathbf{A}^\top)^{-1} = \tfrac{1}{225} \begin{bmatrix} 41 & -12 \\ -12 & 9 \end{bmatrix} \hspace{19em} (15)
-```
+360 개 점의 상 가운데 원점에서 가장 먼 점의 거리는 6.708, 가장 가까운 점의 거리는 2.236 이고, 가장 먼 점의 방향은 $\pm[0.316, 0.949]^\top = \pm\mathbf{u}_1$ 이다. 반축 끝으로 옮겨지는 단위 원 위의 점은 (a) 의 $\mathbf{v}_1$, $\mathbf{v}_2$ 이므로, 우특이벡터는 $\mathbf{A}$ 가 가장 길게 늘이는 입력 방향과 그에 직교하는 입력 방향이다. 좌특이벡터는 그 두 입력이 옮겨진 타원의 반축 방향이고, 특이값은 그 반축의 길이이다.
 
-단위 원 위의 점 7 개를 $\mathbf{A}$ 로 옮겨 식 (15) 의 왼쪽을 계산하면 모두 1 이 된다. $\mathbf{A}\mathbf{A}^\top$ 의 고윳값은 45 와 5 이고 고유벡터는 $\mathbf{u}_1$ 과 $\mathbf{u}_2$ 이므로, 반축 길이는 $\sqrt{45} = \sigma_1$ 과 $\sqrt{5} = \sigma_2$ 이다.
+$\mathbf{U}$, $\mathbf{V}$, $\sigma_1$ 을 그대로 두고 $\sigma_2$ 만 바꾸어 같은 계산을 하면 아래 Fig 2 와 같다.
 
-### C.2 Four Tracked Points
+<a id="fig-2"></a>
+<img src="singular-value-decomposition-primer-ko_fig/fig2.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-단위 원 위의 네 점을 세 단계로 따라가면 아래 Table 4 와 같다.
+Fig 2. Image of the unit circle as the second singular value shrinks
 
-Table 4. Four points of the unit circle through the three steps
+- (a): $\sigma_2 = \sigma_1 = 6.708$. 두 축을 같은 배율로 늘여 상은 반지름 6.708 의 원이다. 모든 방향이 똑같이 늘어나므로 특이벡터가 하나로 정해지지 않는다.
+- (b): $\sigma_2 = 2.236$. 꼭지 5 의 $\mathbf{A}$ 이며, Fig 1 (d) 와 같은 타원이다.
+- (c): $\sigma_2 = 1$. 반단축이 1 로 줄어 타원이 $\mathbf{u}_1$ 방향으로 납작해졌다.
+- (d): $\sigma_2 = 0$. 반단축이 사라져 모든 점이 $\mathbf{u}_1$ 방향의 길이 $2\sigma_1$ 선분 위로 옮겨진다. 이때의 행렬은 식 (8) 의 계수 1 근사 $\mathbf{A}_1$ 이다.
 
-| Point          | $\mathbf{x}$           | $\mathbf{V}^\top\mathbf{x}$ | $\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{x}$ | $\mathbf{A}\mathbf{x}$ | Length |
-| :------------: | :--------------------: | :-------------------------: | :--------------------------------------------: | :--------------------: | :----: |
-| $\mathbf{v}_1$ | $[0.707, 0.707]^\top$  | $[1, 0]^\top$               | $[6.708, 0]^\top$                              | $[2.121, 6.364]^\top$  | 6.708  |
-| $\mathbf{v}_2$ | $[0.707, -0.707]^\top$ | $[0, 1]^\top$               | $[0, 2.236]^\top$                              | $[2.121, -0.707]^\top$ | 2.236  |
-| $\mathbf{e}_1$ | $[1, 0]^\top$          | $[0.707, 0.707]^\top$       | $[4.743, 1.581]^\top$                          | $[3, 4]^\top$          | 5.000  |
-| $\mathbf{e}_2$ | $[0, 1]^\top$          | $[0.707, -0.707]^\top$      | $[4.743, -1.581]^\top$                         | $[0, 5]^\top$          | 5.000  |
+$\sigma_2$ 가 작아질수록 $\mathbf{u}_2$ 방향의 정보가 줄고, 0 이 되면 $\mathbf{v}_2$ 방향의 입력은 모두 원점으로 옮겨져 되찾을 수 없다. 6.2 의 저차원 근사는 Fig 2 의 (b) 를 (d) 로 바꾸는 계산이고, 6.3 에서 작은 특이값의 역수가 잡음을 키우는 것은 (c) 처럼 납작한 타원을 원으로 되돌리려면 $\mathbf{u}_2$ 방향을 $1/\sigma_2$ 배 늘여야 하기 때문이다.
 
-$\mathbf{e}_1$ 과 $\mathbf{e}_2$ 는 좌표축 방향의 단위 vector 이며, $\mathbf{A}\mathbf{e}_1$ 과 $\mathbf{A}\mathbf{e}_2$ 는 $\mathbf{A}$ 의 첫째 열과 둘째 열이다.
-
-- $\mathbf{v}_1$ 과 $\mathbf{v}_2$ 는 2 단계에서 좌표축 위에 놓여 한 축 방향으로만 늘어나고, 최종 위치가 타원의 반축 끝이다. 길이 6.708 과 2.236 이 반장축과 반단축의 길이이다.
-- $\mathbf{e}_1$ 과 $\mathbf{e}_2$ 는 2 단계에서 두 좌표가 모두 0 이 아니어서 두 방향으로 다른 배율을 받고, 최종 위치는 반축 끝이 아닌 타원 위의 점이다. 길이 5 는 6.708 과 2.236 사이에 있다.
-- 서로 직교하는 $\mathbf{v}_1$, $\mathbf{v}_2$ 의 상은 $(\mathbf{A}\mathbf{v}_1)^\top(\mathbf{A}\mathbf{v}_2) = 0$ 으로 여전히 직교한다. 역시 서로 직교하는 $\mathbf{e}_1$, $\mathbf{e}_2$ 의 상은 $(\mathbf{A}\mathbf{e}_1)^\top(\mathbf{A}\mathbf{e}_2) = 20$ 으로 직교하지 않는다.
-
-### C.3 What the Singular Vectors Are
-
-단위 원 위의 점이 $\mathbf{A}$ 로 옮겨진 길이의 제곱은 $\theta$ 의 함수로 정리된다.
-
-```math
-\lVert \mathbf{A}\mathbf{x}(\theta) \rVert^2 = \mathbf{x}(\theta)^\top \mathbf{A}^\top\mathbf{A}\, \mathbf{x}(\theta) = 25\cos^2\theta + 40\cos\theta\sin\theta + 25\sin^2\theta = 25 + 20\sin 2\theta \hspace{19em} (16)
-```
-
-네 각도에서 식 (16) 의 값은 아래 Table 5 와 같다.
-
-Table 5. Squared length of the image by angle
-
-| $\theta$    | Direction       | $\lVert \mathbf{A}\mathbf{x}(\theta) \rVert^2$ | Length |
-| :---------: | :-------------: | :--------------------------------------------: | :----: |
-| $0^\circ$   | $\mathbf{e}_1$  | 25                                             | 5.000  |
-| $45^\circ$  | $\mathbf{v}_1$  | 45                                             | 6.708  |
-| $90^\circ$  | $\mathbf{e}_2$  | 25                                             | 5.000  |
-| $135^\circ$ | $-\mathbf{v}_2$ | 5                                              | 2.236  |
-
-식 (16) 은 $\sin 2\theta = 1$ 인 $\theta = 45^\circ$ 에서 최대 45, $\sin 2\theta = -1$ 인 $\theta = 135^\circ$ 에서 최소 5 이다. 이 결과에서 특이벡터의 뜻이 아래와 같이 정해진다.
-
-- **우특이벡터 $\mathbf{v}_1$**: 단위 입력 가운데 $\mathbf{A}$ 가 가장 길게 늘이는 방향이다. 그 길이가 $\sigma_1 = \sqrt{45}$ 이다.
-- **우특이벡터 $\mathbf{v}_2$**: $\mathbf{v}_1$ 과 직교하는 방향이며, 2 차원에서는 가장 짧게 줄이는 방향이다. 그 길이가 $\sigma_2 = \sqrt{5}$ 이고, $135^\circ$ 의 $-\mathbf{v}_2$ 는 $\mathbf{v}_2$ 와 같은 직선 위에 있다.
-- **좌특이벡터 $\mathbf{u}_i$**: $\mathbf{A}\mathbf{v}_i$ 를 길이 $\sigma_i$ 로 나눈 단위 vector 이며, 타원의 $i$ 번째 반축 방향이다.
-- **직교의 보존**: 두 특이값이 다르면 서로 직교하는 입력 쌍 가운데 상도 직교하는 쌍은 부호를 빼면 $(\mathbf{v}_1, \mathbf{v}_2)$ 하나뿐이다. 식 (4) 로 $(\mathbf{A}\mathbf{v}_i)^\top(\mathbf{A}\mathbf{v}_j) = \sigma_i \sigma_j\, \mathbf{u}_i^\top\mathbf{u}_j = 0$ 이다.
-
-$\mathbf{A}$ 의 고유벡터는 이 역할을 하지 않는다. 고윳값 5 의 고유벡터 $[0, 1]^\top = \mathbf{e}_2$ 는 Table 4 에서 방향이 그대로인 $[0, 5]^\top$ 으로 옮겨지지만, 길이 5 는 반축 길이가 아니며 그 상은 타원의 반축 위에 있지 않다. 행렬이 대칭이 아니면 방향을 지키는 축 (고유벡터) 과 가장 많이 늘이는 축 (우특이벡터) 은 서로 다르다.
+Fig 1 과 Fig 2 는 같은 folder 의 [`src/svd_circle_to_ellipse.py`](src/svd_circle_to_ellipse.py) 가 그린다. 이 script 는 식 (13) 의 $\mathbf{P}$ 를 만들어 세 행렬을 차례로 곱하고, $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{P}$ 가 $\mathbf{A}\mathbf{P}$ 와 같은지 확인한 뒤, 위의 가장 먼 점과 가장 가까운 점의 거리를 출력한다. 이 folder 에서 `python3 src/svd_circle_to_ellipse.py --output-folder .` 를 실행하면 두 그림을 `singular-value-decomposition-primer-ko_fig/` 에 쓴다.
