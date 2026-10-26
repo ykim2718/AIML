@@ -1,5 +1,5 @@
 # Lagrange Multiplier Method
-Rev. 1 | Created: 2026-10-25 | Updated: 2026-10-25 16:40 CDT
+Rev. 2 | Created: 2026-10-25 | Updated: 2026-10-26 00:09 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -70,8 +70,8 @@ Table 1. Symbols
 
 최적점은 목적 함수의 등고선과 제약 조건의 곡선이 접하는 점이다. 2 차원 공간에서 세 요소는 아래와 같다.
 
-1. **목적 함수 $f(x, y)$ 의 등고선**: 지도에서 산의 높이를 나타내는 동심원이며, 올라가야 할 정상이 목표다.
-2. **제약 조건 $g(x, y) = C$**: 반드시 따라 걸어야 하는 등산로다.
+1. **목적 함수 (objective function) $f(x, y)$ 의 등고선 (contour line)**: 지도에서 산의 높이를 나타내는 동심원이며, 올라가야 할 정상이 목표다.
+2. **제약 조건 (constraint) $g(x, y) = C$**: 반드시 따라 걸어야 하는 등산로다.
 3. **접점 (tangency point)**: 등산로를 따라 걸을 때 $f$ 의 등고선과 등산로가 접하는 점이며, 제약 조건 아래에서 도달할 수 있는 가장 높은 점이다.
 
 접점에서 $\nabla f$ 와 $\nabla g$ 는 모두 제약 곡선의 접선 방향 $\mathbf{t}$ 에 수직이므로, 2 차원에서 두 gradient 는 평행하다.
