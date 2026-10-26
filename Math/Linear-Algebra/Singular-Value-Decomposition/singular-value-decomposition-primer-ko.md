@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 0 | Created: 2026-10-26 | Updated: 2026-10-26 01:52 CDT
+Rev. 1 | Created: 2026-10-26 | Updated: 2026-10-26 02:08 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -17,6 +17,10 @@ Rev. 0 | Created: 2026-10-26 | Updated: 2026-10-26 01:52 CDT
   - [6.4 Breaking Conditions](#64-breaking-conditions)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
+- [Appendix C. Circle to Ellipse](#appendix-c-circle-to-ellipse)
+  - [C.1 Three Steps](#c1-three-steps)
+  - [C.2 Four Tracked Points](#c2-four-tracked-points)
+  - [C.3 What the Singular Vectors Are](#c3-what-the-singular-vectors-are)
 
 ## 1. Purpose
 
@@ -105,7 +109,7 @@ $\mathbf{v}_i$ 는 입력 공간 $\mathbb{R}^n$ 에, $\mathbf{u}_i$ 는 출력 �
 2. $\boldsymbol{\Sigma}$ 가 $i$ 번째 좌표축을 $\sigma_i$ 배 늘이거나 줄이고, 차원을 $n$ 에서 $m$ 으로 바꾼다.
 3. $\mathbf{U}$ 가 출력 공간을 회전 또는 반사하여 $i$ 번째 좌표축을 $\mathbf{u}_i$ 에 맞춘다.
 
-$2 \times 2$ 행렬에서는 이 세 단계가 단위 원을 타원으로 바꾼다. 타원의 반장축 길이가 $\sigma_1$, 반단축 길이가 $\sigma_2$ 이고, 두 반축의 방향이 $\mathbf{u}_1$ 과 $\mathbf{u}_2$ 이다. $\mathbf{v}_1$ 과 $\mathbf{v}_2$ 는 단위 원 위에서 그 두 반축의 끝점으로 옮겨지는 점의 방향이다.
+$2 \times 2$ 행렬에서는 이 세 단계가 단위 원을 타원으로 바꾼다. 타원의 반장축 길이가 $\sigma_1$, 반단축 길이가 $\sigma_2$ 이고, 두 반축의 방향이 $\mathbf{u}_1$ 과 $\mathbf{u}_2$ 이다. $\mathbf{v}_1$ 과 $\mathbf{v}_2$ 는 단위 원 위에서 그 두 반축의 끝점으로 옮겨지는 점의 방향이다. 꼭지 5 의 행렬로 세 단계를 실제로 계산한 과정은 [Appendix C](#appendix-c-circle-to-ellipse) 에 있다.
 
 ### 4.4 Sum of Rank-One Matrices
 
@@ -222,6 +226,7 @@ $\boldsymbol{\Sigma}^{+}$ 는 $\boldsymbol{\Sigma}$ 를 전치한 $n \times m$ �
 - **standardization**: 각 열에서 평균을 빼고 표준편차로 나누어 열마다 평균 0, 표준편차 1 로 맞추는 전처리.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **고유벡터**: $\mathbf{A}\mathbf{x} = \lambda\mathbf{x}$ 를 만족하는 영이 아닌 vector. $\lambda$ 는 그 고윳값이다.
+- **반사 (reflection)**: 한 직선을 거울로 삼아 평면의 점을 맞은편으로 옮기는 변환. 길이를 바꾸지 않으며, 행렬식이 -1 인 직교 행렬이다.
 - **반장축**: 타원의 중심에서 가장 먼 점까지의 선분. 가장 가까운 점까지의 선분은 반단축이다.
 - **외적 (outer product)**: 열 vector $\mathbf{u}$ 와 행 vector $\mathbf{v}^\top$ 를 곱한 행렬 $\mathbf{u}\mathbf{v}^\top$. 계수가 1 이다.
 - **직교 행렬**: 열이 서로 직교하는 단위 vector 인 정사각 행렬. 전치가 역행렬이다.
@@ -242,3 +247,80 @@ Table 3. Derivation of equation (1)
 | 6     | $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$                                                                                                                    | 단계 5 의 오른쪽에 $\mathbf{V}^\top$ 을 곱함, $\mathbf{V}\mathbf{V}^\top = \mathbf{I}$                                     |
 
 식 (9) 의 가운데 식은 식 (1) 을 $\mathbf{X}^\top\mathbf{X}$ 에 넣고 $\mathbf{U}^\top\mathbf{U} = \mathbf{I}$ 를 쓰면 $\mathbf{X}^\top\mathbf{X} = \mathbf{V}\boldsymbol{\Sigma}^\top\mathbf{U}^\top\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top = \mathbf{V}\boldsymbol{\Sigma}^\top\boldsymbol{\Sigma}\mathbf{V}^\top$ 로 나온다.
+
+## Appendix C. Circle to Ellipse
+
+꼭지 5 의 $\mathbf{A}$ 로 단위 원이 타원이 되는 과정을 식 (1) 의 세 행렬로 나누어 계산하고, 그 과정에서 특이벡터가 어떤 방향인지 보인다.
+
+### C.1 Three Steps
+
+식 (7) 의 특이벡터와 꼭지 5 의 특이값으로 세 행렬을 적으면 아래와 같고, 세 행렬을 곱하면 $\mathbf{A}$ 가 된다.
+
+```math
+\mathbf{V}^\top = \tfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}, \quad \boldsymbol{\Sigma} = \begin{bmatrix} 3\sqrt{5} & 0 \\ 0 & \sqrt{5} \end{bmatrix}, \quad \mathbf{U} = \tfrac{1}{\sqrt{10}} \begin{bmatrix} 1 & 3 \\ 3 & -1 \end{bmatrix} \hspace{19em} (13)
+```
+
+단위 원 위의 점은 각도 $\theta$ 로 적는다.
+
+```math
+\mathbf{x}(\theta) = \begin{bmatrix} \cos\theta \\ \sin\theta \end{bmatrix}, \quad 0^\circ \le \theta \lt 360^\circ \hspace{19em} (14)
+```
+
+1. **$\mathbf{V}^\top$**: 행렬식이 -1 이므로 회전이 아니라 $22.5^\circ$ 직선에 대한 반사이다. 길이를 바꾸지 않아 단위 원은 단위 원 그대로이고, $\mathbf{v}_1$ 은 $[1, 0]^\top$ 으로, $\mathbf{v}_2$ 는 $[0, 1]^\top$ 으로 옮겨진다.
+2. **$\boldsymbol{\Sigma}$**: 첫 좌표를 $3\sqrt{5} \approx 6.708$ 배, 둘째 좌표를 $\sqrt{5} \approx 2.236$ 배 한다. 단위 원은 두 좌표축을 반축으로 하는 타원 $z_1^2 / 45 + z_2^2 / 5 = 1$ 이 된다.
+3. **$\mathbf{U}$**: 행렬식이 -1 이므로 약 $35.8^\circ$ 직선에 대한 반사이다. 길이를 바꾸지 않고 $[1, 0]^\top$ 을 $\mathbf{u}_1$ 로, $[0, 1]^\top$ 을 $\mathbf{u}_2$ 로 옮기므로, 2 단계 타원의 두 반축이 $\mathbf{u}_1$ 과 $\mathbf{u}_2$ 방향으로 놓인다.
+
+세 단계를 거친 타원은 아래 식을 만족한다.
+
+```math
+\mathbf{y}^\top (\mathbf{A}\mathbf{A}^\top)^{-1} \mathbf{y} = 1, \quad \mathbf{A}\mathbf{A}^\top = \begin{bmatrix} 9 & 12 \\ 12 & 41 \end{bmatrix}, \quad (\mathbf{A}\mathbf{A}^\top)^{-1} = \tfrac{1}{225} \begin{bmatrix} 41 & -12 \\ -12 & 9 \end{bmatrix} \hspace{19em} (15)
+```
+
+단위 원 위의 점 7 개를 $\mathbf{A}$ 로 옮겨 식 (15) 의 왼쪽을 계산하면 모두 1 이 된다. $\mathbf{A}\mathbf{A}^\top$ 의 고윳값은 45 와 5 이고 고유벡터는 $\mathbf{u}_1$ 과 $\mathbf{u}_2$ 이므로, 반축 길이는 $\sqrt{45} = \sigma_1$ 과 $\sqrt{5} = \sigma_2$ 이다.
+
+### C.2 Four Tracked Points
+
+단위 원 위의 네 점을 세 단계로 따라가면 아래 Table 4 와 같다.
+
+Table 4. Four points of the unit circle through the three steps
+
+| Point          | $\mathbf{x}$           | $\mathbf{V}^\top\mathbf{x}$ | $\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{x}$ | $\mathbf{A}\mathbf{x}$ | Length |
+| :------------: | :--------------------: | :-------------------------: | :--------------------------------------------: | :--------------------: | :----: |
+| $\mathbf{v}_1$ | $[0.707, 0.707]^\top$  | $[1, 0]^\top$               | $[6.708, 0]^\top$                              | $[2.121, 6.364]^\top$  | 6.708  |
+| $\mathbf{v}_2$ | $[0.707, -0.707]^\top$ | $[0, 1]^\top$               | $[0, 2.236]^\top$                              | $[2.121, -0.707]^\top$ | 2.236  |
+| $\mathbf{e}_1$ | $[1, 0]^\top$          | $[0.707, 0.707]^\top$       | $[4.743, 1.581]^\top$                          | $[3, 4]^\top$          | 5.000  |
+| $\mathbf{e}_2$ | $[0, 1]^\top$          | $[0.707, -0.707]^\top$      | $[4.743, -1.581]^\top$                         | $[0, 5]^\top$          | 5.000  |
+
+$\mathbf{e}_1$ 과 $\mathbf{e}_2$ 는 좌표축 방향의 단위 vector 이며, $\mathbf{A}\mathbf{e}_1$ 과 $\mathbf{A}\mathbf{e}_2$ 는 $\mathbf{A}$ 의 첫째 열과 둘째 열이다.
+
+- $\mathbf{v}_1$ 과 $\mathbf{v}_2$ 는 2 단계에서 좌표축 위에 놓여 한 축 방향으로만 늘어나고, 최종 위치가 타원의 반축 끝이다. 길이 6.708 과 2.236 이 반장축과 반단축의 길이이다.
+- $\mathbf{e}_1$ 과 $\mathbf{e}_2$ 는 2 단계에서 두 좌표가 모두 0 이 아니어서 두 방향으로 다른 배율을 받고, 최종 위치는 반축 끝이 아닌 타원 위의 점이다. 길이 5 는 6.708 과 2.236 사이에 있다.
+- 서로 직교하는 $\mathbf{v}_1$, $\mathbf{v}_2$ 의 상은 $(\mathbf{A}\mathbf{v}_1)^\top(\mathbf{A}\mathbf{v}_2) = 0$ 으로 여전히 직교한다. 역시 서로 직교하는 $\mathbf{e}_1$, $\mathbf{e}_2$ 의 상은 $(\mathbf{A}\mathbf{e}_1)^\top(\mathbf{A}\mathbf{e}_2) = 20$ 으로 직교하지 않는다.
+
+### C.3 What the Singular Vectors Are
+
+단위 원 위의 점이 $\mathbf{A}$ 로 옮겨진 길이의 제곱은 $\theta$ 의 함수로 정리된다.
+
+```math
+\lVert \mathbf{A}\mathbf{x}(\theta) \rVert^2 = \mathbf{x}(\theta)^\top \mathbf{A}^\top\mathbf{A}\, \mathbf{x}(\theta) = 25\cos^2\theta + 40\cos\theta\sin\theta + 25\sin^2\theta = 25 + 20\sin 2\theta \hspace{19em} (16)
+```
+
+네 각도에서 식 (16) 의 값은 아래 Table 5 와 같다.
+
+Table 5. Squared length of the image by angle
+
+| $\theta$    | Direction       | $\lVert \mathbf{A}\mathbf{x}(\theta) \rVert^2$ | Length |
+| :---------: | :-------------: | :--------------------------------------------: | :----: |
+| $0^\circ$   | $\mathbf{e}_1$  | 25                                             | 5.000  |
+| $45^\circ$  | $\mathbf{v}_1$  | 45                                             | 6.708  |
+| $90^\circ$  | $\mathbf{e}_2$  | 25                                             | 5.000  |
+| $135^\circ$ | $-\mathbf{v}_2$ | 5                                              | 2.236  |
+
+식 (16) 은 $\sin 2\theta = 1$ 인 $\theta = 45^\circ$ 에서 최대 45, $\sin 2\theta = -1$ 인 $\theta = 135^\circ$ 에서 최소 5 이다. 이 결과에서 특이벡터의 뜻이 아래와 같이 정해진다.
+
+- **우특이벡터 $\mathbf{v}_1$**: 단위 입력 가운데 $\mathbf{A}$ 가 가장 길게 늘이는 방향이다. 그 길이가 $\sigma_1 = \sqrt{45}$ 이다.
+- **우특이벡터 $\mathbf{v}_2$**: $\mathbf{v}_1$ 과 직교하는 방향이며, 2 차원에서는 가장 짧게 줄이는 방향이다. 그 길이가 $\sigma_2 = \sqrt{5}$ 이고, $135^\circ$ 의 $-\mathbf{v}_2$ 는 $\mathbf{v}_2$ 와 같은 직선 위에 있다.
+- **좌특이벡터 $\mathbf{u}_i$**: $\mathbf{A}\mathbf{v}_i$ 를 길이 $\sigma_i$ 로 나눈 단위 vector 이며, 타원의 $i$ 번째 반축 방향이다.
+- **직교의 보존**: 두 특이값이 다르면 서로 직교하는 입력 쌍 가운데 상도 직교하는 쌍은 부호를 빼면 $(\mathbf{v}_1, \mathbf{v}_2)$ 하나뿐이다. 식 (4) 로 $(\mathbf{A}\mathbf{v}_i)^\top(\mathbf{A}\mathbf{v}_j) = \sigma_i \sigma_j\, \mathbf{u}_i^\top\mathbf{u}_j = 0$ 이다.
+
+$\mathbf{A}$ 의 고유벡터는 이 역할을 하지 않는다. 고윳값 5 의 고유벡터 $[0, 1]^\top = \mathbf{e}_2$ 는 Table 4 에서 방향이 그대로인 $[0, 5]^\top$ 으로 옮겨지지만, 길이 5 는 반축 길이가 아니며 그 상은 타원의 반축 위에 있지 않다. 행렬이 대칭이 아니면 방향을 지키는 축 (고유벡터) 과 가장 많이 늘이는 축 (우특이벡터) 은 서로 다르다.
