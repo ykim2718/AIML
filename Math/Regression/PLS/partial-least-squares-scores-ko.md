@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 5 | Created: 2026-10-24 | Updated: 2026-10-25 21:24 UTC
+Rev. 6 | Created: 2026-10-24 | Updated: 2026-10-26 00:09 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -215,7 +215,7 @@ $T^2$ 는 score 가 펼치는 부분공간 안의 변화만 잰다. 식 (4) 의 
 - **excursion**: 공정 변수나 결과가 관리 범위를 벗어난 상태.
 - **golden trace**: normal 운전에서 sample 이 score 공간이나 센서 값에서 지나는 기준 궤적.
 - **Hotelling $T^2$**: 공분산으로 가중한 중심으로부터의 거리의 제곱이며, 다변량 데이터에서 sample 하나가 normal 운전의 분포에서 얼마나 드문지를 수 하나로 나타낸다.
-- **Lagrange multiplier**: 제약이 있는 최적화에서 제약식마다 하나씩 두는 변수이며, 목적함수에 제약식과의 곱을 더한 식을 미분하여 0 으로 놓으면 제약 아래의 극값 조건을 얻는다.
+- **Lagrange multiplier**: 제약조건 (constraint) 이 있는 최적화에서 제약조건마다 하나씩 두는 변수이며, 목적함수 (objective function) 에서 제약조건과의 곱을 뺀 식을 미분하여 0 으로 놓으면 제약조건 아래의 극값 조건을 얻는다.
 - **latent space**: Score 가 좌표가 되는 저차원 공간이며, 관측하지 않은 요인을 축으로 한다.
 - **latent variable**: 직접 관측하지 않고 관측 변수의 선형결합으로 구한 변수이며, 이 문서에서는 score 하나가 latent variable 하나이다.
 - **loading**: 원래 변수를 score 에 회귀한 계수이며, 각 변수가 그 성분에 얼마나 실려 있는지를 나타낸다.
@@ -291,7 +291,13 @@ $\mathbf{X}$ 와 $\mathbf{Y}$ 의 열을 centering 했으므로 $\mathbf{t}$ 와
 \mathrm{Cov}(\mathbf{t}, \mathbf{u}) = \frac{\mathbf{t}^\top \mathbf{u}}{N - 1} = \frac{\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}}{N - 1} \hspace{19em} (12)
 ```
 
-$N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로 $\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}$ 를 최대로 하면 된다. 제약 $\mathbf{w}^\top \mathbf{w} = 1$, $\mathbf{c}^\top \mathbf{c} = 1$ 에 Lagrange multiplier $\lambda$ 와 $\mu$ 를 두고 $\mathbf{w}$ 와 $\mathbf{c}$ 로 미분하여 0 으로 놓는다.
+$N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로, 식 (2) 는 아래 최적화 문제와 같다.
+
+- 목적함수: $\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}$ 의 최대화
+- 제약조건: $\mathbf{w}^\top \mathbf{w} = 1$ 과 $\mathbf{c}^\top \mathbf{c} = 1$ 의 두 개
+- Lagrange multiplier: 두 제약조건에 하나씩 둔 $\lambda$ 와 $\mu$
+
+목적함수에서 각 제약조건과 그 multiplier 의 곱을 뺀 $L = \mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c} - \lambda (\mathbf{w}^\top \mathbf{w} - 1) - \mu (\mathbf{c}^\top \mathbf{c} - 1)$ 을 $\mathbf{w}$ 와 $\mathbf{c}$ 로 미분하여 0 으로 놓는다.
 
 ```math
 \mathbf{X}^\top \mathbf{Y} \mathbf{c} = 2\lambda \mathbf{w}, \qquad \mathbf{Y}^\top \mathbf{X} \mathbf{w} = 2\mu \mathbf{c} \hspace{19em} (13)
@@ -361,9 +367,18 @@ $\mathbf{t}_k = \mathbf{X}_k \mathbf{w}_k$ 이므로 deflation 은 $\mathbf{X}_k
 \mathrm{PCA}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Var}(\mathbf{X}\mathbf{w}), \qquad \mathrm{PLS}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) \hspace{19em} (6)
 ```
 
-PCA 의 기준은 $\mathrm{Var}(\mathbf{X}\mathbf{w}) = \mathbf{w}^\top \mathbf{S} \mathbf{w}$ 이고, $\mathbf{S} = \mathbf{X}^\top \mathbf{X} / (N - 1)$ 은 $\mathbf{X}$ 의 공분산 행렬이다. 제약 $\mathbf{w}^\top \mathbf{w} = 1$ 에 Lagrange multiplier $\lambda$ 를 두고 미분하면 $\mathbf{S}\mathbf{w} = \lambda\mathbf{w}$ 이고, 이때 기준의 값은 $\mathbf{w}^\top \mathbf{S} \mathbf{w} = \lambda$ 이다. 따라서 PCA 의 첫 방향은 $\mathbf{S}$ 의 가장 큰 eigenvalue 의 eigenvector 이며, $\mathbf{y}$ 는 식에 들어 있지 않다.
+식 (6) 의 두 최적화 문제는 목적함수만 다르고 제약조건은 같다. $\mathbf{S} = \mathbf{X}^\top \mathbf{X} / (N - 1)$ 은 $\mathbf{X}$ 의 공분산 행렬이다.
 
-PLS 의 기준은 $\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \mathbf{w}^\top \mathbf{X}^\top \mathbf{y} / (N - 1)$ 이다. Cauchy–Schwarz 부등식으로 $\mathbf{w}^\top \mathbf{X}^\top \mathbf{y} \le \lVert \mathbf{w} \rVert \, \lVert \mathbf{X}^\top \mathbf{y} \rVert = \lVert \mathbf{X}^\top \mathbf{y} \rVert$ 이고, 등호는 $\mathbf{w}$ 가 $\mathbf{X}^\top \mathbf{y}$ 와 같은 방향일 때 성립하므로 C.2 의 $M = 1$ 결과와 같다.
+- PCA
+  - 목적함수: $\mathrm{Var}(\mathbf{X}\mathbf{w}) = \mathbf{w}^\top \mathbf{S} \mathbf{w}$ 의 최대화
+  - 제약조건: $\mathbf{w}^\top \mathbf{w} = 1$
+- PLS
+  - 목적함수: $\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \mathbf{w}^\top \mathbf{X}^\top \mathbf{y} / (N - 1)$ 의 최대화
+  - 제약조건: $\mathbf{w}^\top \mathbf{w} = 1$
+
+PCA 는 제약조건에 Lagrange multiplier $\lambda$ 를 두고 $L = \mathbf{w}^\top \mathbf{S} \mathbf{w} - \lambda (\mathbf{w}^\top \mathbf{w} - 1)$ 을 미분하면 $\mathbf{S}\mathbf{w} = \lambda\mathbf{w}$ 이고, 이때 목적함수의 값은 $\mathbf{w}^\top \mathbf{S} \mathbf{w} = \lambda$ 이다. 따라서 PCA 의 첫 방향은 $\mathbf{S}$ 의 가장 큰 eigenvalue 의 eigenvector 이며, $\mathbf{y}$ 는 식에 들어 있지 않다.
+
+PLS 는 Lagrange multiplier 없이 Cauchy–Schwarz 부등식으로 풀린다. 제약조건 $\mathbf{w}^\top \mathbf{w} = 1$ 아래에서 $\mathbf{w}^\top \mathbf{X}^\top \mathbf{y} \le \lVert \mathbf{w} \rVert \, \lVert \mathbf{X}^\top \mathbf{y} \rVert = \lVert \mathbf{X}^\top \mathbf{y} \rVert$ 이고, 등호는 $\mathbf{w}$ 가 $\mathbf{X}^\top \mathbf{y}$ 와 같은 방향일 때 성립하므로 C.2 의 $M = 1$ 결과와 같다.
 
 ### C.7 Equation (7)
 
