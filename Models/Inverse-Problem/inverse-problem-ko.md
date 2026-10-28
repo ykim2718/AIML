@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 97 | Created: 2026-08-28 | Updated: 2026-10-28 10:06 UTC
+Rev. 98 | Created: 2026-08-28 | Updated: 2026-10-28 10:07 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -243,7 +243,7 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다.
 
-두 상한이 score 평면에서 null space 를 어디까지 허용하는지를 Fig 3 에 그린다. Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합하고, 목표 2.0 의 minimum-norm solution 을 각각 구하면 아래 Fig 4 와 같다.
+두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 과 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 4 와 같다.
 
 <img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
 

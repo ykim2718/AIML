@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 11 | Created: 2026-10-25 | Updated: 2026-10-28 10:06 UTC
+Rev. 12 | Created: 2026-10-25 | Updated: 2026-10-28 10:07 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -243,7 +243,7 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5).
 
-Fig 3 shows how far the two limits allow the null space in the score plane. Fitting PLS to each of 200 bootstrap samples of the Appendix D data and finding the minimum-norm solution for the target 2.0 for each gives Fig 4 below.
+How far the two limits allow the null space in the score plane is shown in Fig 3 below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 4.
 
 <img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
 
