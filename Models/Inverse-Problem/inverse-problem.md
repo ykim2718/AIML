@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 2 | Created: 2026-10-25 | Updated: 2026-10-25 16:20 CDT
+Rev. 3 | Created: 2026-10-25 | Updated: 2026-10-28 08:28 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -214,27 +214,11 @@ The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivati
 
 Fig 3 shows how far the two limits allow the null space in the score plane.
 
-```
-        t2
-         ^
-         |        .............................
-         |     ...                             ...
-         |   ..                                   ..
-         |  .        A * - - - t* - - - * B          .
-    -----+--.------------------------------------.-----> t1
-         |  .   (all t on A--B predict the same y*)  .
-         |   ..                                   ..
-         |     ...                             ...
-         |        .............................
-         |                 T^2 = limit
-
-  the A--B segment is the null space direction;
-  only the part inside the ellipse is supported by past data
-```
+<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="600" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Null space and the validity region in the score plane
 
-The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion).
+The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
 
 #### Design space and product transfer
 

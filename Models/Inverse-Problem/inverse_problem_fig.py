@@ -1,6 +1,10 @@
-"""Draw the Appendix B, Appendix C and Appendix D figures of inverse-problem-ko.md."""
+"""Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
+
+Changelog:
+    0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
+"""
 __author__ = 'yRocket'
-__version__ = "0.14.1.2026.10.22"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.15.0.2026.10.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -19,7 +23,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
 __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'build_appendix_d_model',
-           'panel_caption', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8']
+           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8']
 
 APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
@@ -65,6 +69,60 @@ def build_appendix_b_model() -> tuple:
     x_mean, y_mean = x_data.mean(axis=0), y_data.mean()
     pls = PLSRegression(n_components=n_comp, scale=False).fit(x_data - x_mean, y_data - y_mean)
     return x_data, y_data, drift, x_mean, y_mean, pls
+
+
+def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 3: the null space line through t* and the part of it inside the T^2 limit."""
+    x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
+    scores, y_loadings = pls.x_scores_, pls.y_loadings_
+    score_var = scores.var(axis=0, ddof=1)
+    t2_limit = chi2.ppf(0.95, df=scores.shape[1])
+
+    y_des = 2.0
+    t_star = np.linalg.pinv(y_loadings) @ np.array([y_des - y_mean])
+    null_dir = null_space(y_loadings)[:, 0]
+
+    # T^2(t* + alpha n) = limit is a quadratic in alpha; its two roots are the ends A and B
+    quad_a = np.sum(null_dir ** 2 / score_var)
+    quad_b = 2.0 * np.sum(t_star * null_dir / score_var)
+    quad_c = np.sum(t_star ** 2 / score_var) - t2_limit
+    alpha_a, alpha_b = np.sort(np.roots([quad_a, quad_b, quad_c]).real)
+    point_a, point_b = t_star + alpha_a * null_dir, t_star + alpha_b * null_dir
+
+    angle = np.linspace(0.0, 2.0 * np.pi, 400)
+    ellipse = np.sqrt(t2_limit * score_var)[None, :] * np.column_stack([np.cos(angle), np.sin(angle)])
+    reach = 1.6 * max(abs(alpha_a), abs(alpha_b))
+    line = t_star[None, :] + np.linspace(-reach, reach, 2)[:, None] * null_dir[None, :]
+
+    fig, ax = plt.subplots(figsize=(FIGSIZE[0] * 0.6, FIGSIZE[0] * 0.6))
+    ax.scatter(scores[:, 0], scores[:, 1], s=12, color='0.75', label='historical scores')
+    ax.plot(ellipse[:, 0], ellipse[:, 1], color=COLORS[0], linewidth=1.4,
+            label=f'T^2 = limit ({t2_limit:.2f})')
+    ax.plot(line[:, 0], line[:, 1], color=COLORS[3], linewidth=1.0, linestyle='--',
+            label='null space direction through t*')
+    ax.plot([point_a[0], point_b[0]], [point_a[1], point_b[1]], color=COLORS[3], linewidth=3.0,
+            label='usable segment A-B')
+    ax.scatter([t_star[0]], [t_star[1]], s=120, marker='*', color=COLORS[1], zorder=4,
+               label='t* (minimum-norm)')
+    for name, point in (('A', point_a), ('B', point_b)):
+        ax.scatter([point[0]], [point[1]], s=30, color=COLORS[3], zorder=4)
+        ax.annotate(name, point, textcoords='offset points', xytext=(6, 6), fontsize=font_size())
+    ax.axhline(0.0, color='0.6', linewidth=0.6)
+    ax.axvline(0.0, color='0.6', linewidth=0.6)
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.set_xlabel('t1', fontsize=font_size())
+    ax.set_ylabel('t2', fontsize=font_size())
+    ax.tick_params(labelsize=font_size(0.9))
+    ax.legend(fontsize=font_size(0.8), loc='upper left')
+
+    fig.tight_layout()
+    out_path = out_folder / 'score-plane-null-space.png'
+    out_folder.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
+    plt.close(fig)
+    print(f'wrote {out_path}, T2 limit={t2_limit:.2f}, '
+          f'A={np.round(point_a, 3)}, B={np.round(point_b, 3)}, t*={np.round(t_star, 3)}')
+    return out_path
 
 
 def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
@@ -555,7 +613,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=pathlib.Path(__file__).name,
         description=f'{pathlib.Path(__file__).name} {__version__}\n'
-                    f'Draw the Appendix B, Appendix C and Appendix D figures of '
+                    f'Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of '
                     f'inverse-problem-ko.md.',
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--version', action='version', version=__version__)
@@ -573,6 +631,7 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     arguments = parse_args()
+    fig_3(out_folder=arguments.output_folder)
     fig_4(out_folder=arguments.output_folder)
     fig_5(out_folder=arguments.output_folder)
     fig_6(out_folder=arguments.output_folder)
