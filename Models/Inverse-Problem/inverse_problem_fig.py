@@ -1,10 +1,11 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.16.0: Add fig_4, the spread of the minimum-norm solution over bootstrap PLS models.
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.15.0.2026.10.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.16.0.2026.10.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -23,7 +24,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
 __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'build_appendix_d_model',
-           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8']
+           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8', 'fig_9']
 
 APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
@@ -125,8 +126,64 @@ def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 4: the measured values, the sampled inputs and the parity plot of the forward model."""
+def fig_4(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
+    """Fig 4: the minimum-norm solution of each bootstrap PLS spreads around the single-model one."""
+    if n_boot < 2:
+        raise ValueError(f'n_boot must be at least 2, got {n_boot}')
+    x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
+    y_des = 2.0
+
+    def min_norm_solution(model, x_centre: np.ndarray, y_centre: float) -> np.ndarray:
+        t_star = np.linalg.pinv(model.y_loadings_) @ np.array([y_des - y_centre])
+        return model.x_loadings_ @ t_star + x_centre
+
+    x_single = min_norm_solution(pls, x_mean, y_mean)
+    null_dir = pls.x_loadings_ @ null_space(pls.y_loadings_)[:, 0]
+    null_dir = null_dir / np.linalg.norm(null_dir)
+
+    rng = np.random.default_rng(1)
+    n_rows = len(y_data)
+    x_boot = np.empty((n_boot, x_data.shape[1]))
+    for b in range(n_boot):
+        rows = rng.integers(0, n_rows, n_rows)        # sampling with replacement
+        xb, yb = x_data[rows], y_data[rows]
+        xb_mean, yb_mean = xb.mean(axis=0), yb.mean()
+        model = PLSRegression(n_components=2, scale=False).fit(xb - xb_mean, yb - yb_mean)
+        x_boot[b] = min_norm_solution(model, xb_mean, yb_mean)
+    x_ensemble = x_boot.mean(axis=0)
+    spread = x_boot.std(axis=0, ddof=1)
+
+    reach = np.linspace(-2.0, 2.0, 2)
+    line = x_single[None, :] + reach[:, None] * null_dir[None, :]
+
+    fig, ax = plt.subplots(figsize=(FIGSIZE[0] * 0.6, FIGSIZE[0] * 0.6))
+    ax.scatter(x_data[:, 0], x_data[:, 1], s=12, color='0.8', label='historical data')
+    ax.plot(line[:, 0], line[:, 1], color=COLORS[3], linewidth=1.0, linestyle='--',
+            label='solution line of the single PLS')
+    ax.scatter(x_boot[:, 0], x_boot[:, 1], s=10, color=COLORS[0], alpha=0.6,
+               label=f'minimum-norm solution of {n_boot} bootstrap PLS')
+    ax.scatter([x_ensemble[0]], [x_ensemble[1]], s=90, marker='D', color=COLORS[2], zorder=4,
+               label='mean of the bootstrap solutions')
+    ax.scatter([x_single[0]], [x_single[1]], s=140, marker='*', color=COLORS[1], zorder=5,
+               label='minimum-norm solution of the single PLS')
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.set_xlabel('x1', fontsize=font_size())
+    ax.set_ylabel('x2', fontsize=font_size())
+    ax.tick_params(labelsize=font_size(0.9))
+    ax.legend(fontsize=font_size(0.75), loc='upper left')
+
+    fig.tight_layout()
+    out_path = out_folder / 'bootstrap-solution-spread.png'
+    out_folder.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
+    plt.close(fig)
+    print(f'wrote {out_path}, single={np.round(x_single, 3)}, ensemble={np.round(x_ensemble, 3)}, '
+          f'spread (sd)={np.round(spread, 3)}')
+    return out_path
+
+
+def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 5: the measured values, the sampled inputs and the parity plot of the forward model."""
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     y_pred = pls.predict(x_data - x_mean).ravel() + y_mean
     residual = y_data - y_pred
@@ -208,8 +265,8 @@ def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 5: scores moved along the null space keep the predicted value."""
+def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 6: scores moved along the null space keep the predicted value."""
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     loadings, y_loadings = pls.x_loadings_, pls.y_loadings_
 
@@ -297,8 +354,8 @@ def mahalanobis_contour(ax, points: np.ndarray) -> None:
     ax.clabel(lines, fmt='%.0f', fontsize=font_size(0.8))
 
 
-def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 6: the measured values, the correlated inputs and the parity plot of Appendix C."""
+def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 7: the measured values, the correlated inputs and the parity plot of Appendix C."""
     x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
     y_pred = forward.predict(x_data)
     residual = y_data - y_pred
@@ -368,8 +425,8 @@ def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 7: the constrained solution hits the target inside the validity domain."""
+def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 8: the constrained solution hits the target inside the validity domain."""
     x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
 
     def t2(x_vec: np.ndarray) -> float:
@@ -474,8 +531,8 @@ def build_appendix_d_model() -> tuple:
     return data, surrogate, pca, t2_limit, spe_limit
 
 
-def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 8: the hidden model against T, the search in the A-B plane, the surrogate against P,
+def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 9: the hidden model against T, the search in the A-B plane, the surrogate against P,
     and the rows that were actually run within 2% of the solved A and B."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
@@ -637,3 +694,4 @@ if __name__ == '__main__':
     fig_6(out_folder=arguments.output_folder)
     fig_7(out_folder=arguments.output_folder)
     fig_8(out_folder=arguments.output_folder)
+    fig_9(out_folder=arguments.output_folder)
