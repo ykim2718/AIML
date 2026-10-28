@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 8 | Created: 2026-10-25 | Updated: 2026-10-28 09:56 UTC
+Rev. 9 | Created: 2026-10-25 | Updated: 2026-10-28 10:02 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -251,6 +251,16 @@ Fig 3. Null space and the validity region in the score plane
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
 
+Fitting PLS to each of 200 bootstrap samples of the Appendix D data and finding the minimum-norm solution for the target 2.0 for each gives Fig 4 below.
+
+<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="600" style="max-width: 100%;" alt="Fig 4">
+
+Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
+
+Fig 4 carries Fig 3 over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of Fig 3 mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4), and the red dashed line is the null space line of Fig 3 mapped the same way. The blue points and the green diamond are not in Fig 3; they come from fitting PLS anew to each bootstrap sample.
+
+The 200 blue points are the minimum-norm solutions of the bootstrap PLS models, with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives.
+
 #### Design space and product transfer
 
 The same skeleton extended to industrial problems gave the following four results.
@@ -417,14 +427,6 @@ Bagging is short for bootstrap aggregating, an ensemble method that trains sever
 Sampling with replacement draws one row, puts it back among the candidates, and then draws the next row. With n rows in the original data the draw is repeated n times, so some rows are drawn more than once and some are never drawn. Each individual model thus gets a slightly different training sample of n rows.
 
 The method that combines the three steps is called a bagging ensemble. The PLS bootstrap ensemble is a bagging ensemble whose individual model is PLS [[6](#ref-6)].
-
-Fitting PLS to each of 200 bootstrap samples of the Appendix D data and finding the minimum-norm solution for the target 2.0 for each gives Fig 4 below.
-
-<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="600" style="max-width: 100%;" alt="Fig 4">
-
-Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
-
-The 200 blue points are the minimum-norm solutions of the bootstrap PLS models, with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives.
 
 ## Appendix D. Python Example: PLS Model Inversion
 

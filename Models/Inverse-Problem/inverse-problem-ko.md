@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 94 | Created: 2026-08-28 | Updated: 2026-10-28 09:56 UTC
+Rev. 95 | Created: 2026-08-28 | Updated: 2026-10-28 10:02 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -251,6 +251,16 @@ Fig 3. Null space and the validity region in the score plane
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 
+Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합하고, 목표 2.0 의 minimum-norm solution 을 각각 구하면 아래 Fig 4 와 같다.
+
+<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="600" style="max-width: 100%;" alt="Fig 4">
+
+Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
+
+Fig 4 는 Fig 3 을 입력 평면으로 옮긴 것이다. 주황 별은 Fig 3 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 Fig 3 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 Fig 3 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
+
+파란 점 200 개는 bootstrap PLS 마다 구한 minimum-norm solution 이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다.
+
 #### Design space and product transfer
 
 같은 골격을 산업 문제로 넓힌 결과는 다음 넷이다.
@@ -417,14 +427,6 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
 
 세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[6](#ref-6)].
-
-Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합하고, 목표 2.0 의 minimum-norm solution 을 각각 구하면 아래 Fig 4 와 같다.
-
-<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="600" style="max-width: 100%;" alt="Fig 4">
-
-Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
-
-파란 점 200 개는 bootstrap PLS 마다 구한 minimum-norm solution 이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다.
 
 ## Appendix D. Python Example: PLS Model Inversion
 
