@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 4 | Created: 2026-10-25 | Updated: 2026-10-28 09:26 UTC
+Rev. 5 | Created: 2026-10-25 | Updated: 2026-10-28 09:46 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -17,8 +17,13 @@ Rev. 4 | Created: 2026-10-25 | Updated: 2026-10-28 09:26 UTC
   - [3.2 Invertible Models](#32-invertible-models)
 - [4. Model Inversion](#4-model-inversion)
   - [4.1 Model-Specific Inversion Methods](#41-model-specific-inversion-methods)
-  - [4.2 Latent Variable Model Inversion](#42-latent-variable-model-inversion)
-  - [4.3 Inversion without Model Access](#43-inversion-without-model-access)
+  - [4.2 Linear Projection Models](#42-linear-projection-models)
+  - [4.3 Kernel and Gaussian Process Models](#43-kernel-and-gaussian-process-models)
+  - [4.4 Tree Ensembles](#44-tree-ensembles)
+  - [4.5 Neural Networks](#45-neural-networks)
+  - [4.6 Generative Models](#46-generative-models)
+  - [4.7 Model-Agnostic Numerical Optimization](#47-model-agnostic-numerical-optimization)
+  - [4.8 Inversion without Model Access](#48-inversion-without-model-access)
 - [5. Solution Validity](#5-solution-validity)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
@@ -74,7 +79,7 @@ An inverse model means newly learning a model $g$ that runs from output to input
 
 ### 1.4 Model inversion
 
-Model inversion means taking a model $f$ that runs from input to output, exactly as it was trained, and inverting it as the solution of the inverse problem. No separate $g$ is learned, but each time $\mathbf{y}^{\ast}$ is given, $\mathbf{y}^{\ast} = f(\mathbf{x})$ has to be solved for $\mathbf{x}$. When several $\mathbf{x}$ give the same $\mathbf{y}$, solving $f$ also yields several solutions, and one of them has to be chosen ([2.4](#24-ambiguity-handling-what-fixes-the-answer)). The solution can be trusted only within the region $f$ was trained on. Problems with several solutions expose the solution set as it is through the null space ([4.2](#42-latent-variable-model-inversion)). The method is also called optimization-based (iterative) inversion, and it started from inverting a latent variable model built on historical data to obtain the input region that can deliver the desired output [[2](#ref-2)].
+Model inversion means taking a model $f$ that runs from input to output, exactly as it was trained, and inverting it as the solution of the inverse problem. No separate $g$ is learned, but each time $\mathbf{y}^{\ast}$ is given, $\mathbf{y}^{\ast} = f(\mathbf{x})$ has to be solved for $\mathbf{x}$. When several $\mathbf{x}$ give the same $\mathbf{y}$, solving $f$ also yields several solutions, and one of them has to be chosen ([2.4](#24-ambiguity-handling-what-fixes-the-answer)). The solution can be trusted only within the region $f$ was trained on. Problems with several solutions expose the solution set as it is through the null space ([4.2](#42-linear-projection-models)). The method is also called optimization-based (iterative) inversion, and it started from inverting a latent variable model built on historical data to obtain the input region that can deliver the desired output [[2](#ref-2)].
 
 ## 2. Taxonomy
 
@@ -161,7 +166,7 @@ The libraries that implement these methods are listed in [Appendix B](#appendix-
 
 In the classification of Fig 2, the method of this section combines Learned inverse map for Solution method and Point for Answer form.
 
-A learned inverse map trains a model from $\mathbf{y}$ to $\mathbf{x}$ on $(\mathbf{x}, \mathbf{y})$ pairs ([2.3](#23-solution-method-how-to-solve)). Even when the model cannot be called, it can be trained directly on pairs of inputs and predictions $(\mathbf{x}_i, \hat{y}_i)$ alone. Once trained, a single pass of the target gives $\mathbf{x}$, so there is no iterative search. When several $\mathbf{x}$ give the same $\hat{y}$, training that minimises the sum of squared residuals returns one conditional mean of them, and that mean does not lie on the solution set, so it may fail to meet the target. Outside the region the pairs cover it behaves differently from the original model, so a constraint that holds the solution inside that region is needed. An example that chains it with the two methods of 4.3 is in [Appendix F](#appendix-f-python-example-inversion-without-model-access).
+A learned inverse map trains a model from $\mathbf{y}$ to $\mathbf{x}$ on $(\mathbf{x}, \mathbf{y})$ pairs ([2.3](#23-solution-method-how-to-solve)). Even when the model cannot be called, it can be trained directly on pairs of inputs and predictions $(\mathbf{x}_i, \hat{y}_i)$ alone. Once trained, a single pass of the target gives $\mathbf{x}$, so there is no iterative search. When several $\mathbf{x}$ give the same $\hat{y}$, training that minimises the sum of squared residuals returns one conditional mean of them, and that mean does not lie on the solution set, so it may fail to meet the target. Outside the region the pairs cover it behaves differently from the original model, so a constraint that holds the solution inside that region is needed. An example that chains it with the two methods of 4.8 is in [Appendix F](#appendix-f-python-example-inversion-without-model-access).
 
 ### 3.2 Invertible Models
 
@@ -171,11 +176,10 @@ Invertible neural networks and normalizing flows are bidirectional by constructi
 
 ## 4. Model Inversion
 
-Model inversion keeps $f$ as it is and solves $\mathbf{y}^{\ast} = f(\mathbf{x})$ for $\mathbf{x}$ ([1.4](#14-model-inversion)), and it splits in three by the model at hand.
+Model inversion keeps $f$ as it is and solves $\mathbf{y}^{\ast} = f(\mathbf{x})$ for $\mathbf{x}$ ([1.4](#14-model-inversion)), and it splits in two by the model at hand.
 
-- When the model can be called, use the method that fits its family in [4.1 Model-Specific Inversion Methods](#41-model-specific-inversion-methods).
-- When that model is a latent variable model, use the methods of [4.2 Latent Variable Model Inversion](#42-latent-variable-model-inversion).
-- When the model cannot be called, use the methods of [4.3 Inversion without Model Access](#43-inversion-without-model-access).
+- When the model can be called, find its family in Table 1 of [4.1 Model-Specific Inversion Methods](#41-model-specific-inversion-methods) and use the method of that family among 4.2 to 4.7.
+- When the model cannot be called, use the methods of [4.8 Inversion without Model Access](#48-inversion-without-model-access).
 
 A latent variable is an internal coordinate that summarises the input variables in a few numbers, and PLS calls it a score. The space the latent variables span is the latent space, and its coordinates already carry the correlation structure among the inputs ([2.2](#22-search-space-where-to-search)). A latent variable model explains the inputs and the outputs together in these coordinates, and PLS and PCR belong to it.
 
@@ -203,37 +207,15 @@ Table 1. Inversion method by model family
 | 10  |    Diffusion model     |               Posterior sampling               |                                                            Obtains multi-solution as samples in noisy nonlinear problems                                                            |
 | 11  |     Model-agnostic     |       Constrained numerical optimization       |                     Applies to any $f$, the most general. The method [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) uses is this row                      |
 
-The structure of the model decides which methods can be used. A linear model gives a closed-form solution, a differentiable model gives the gradient with respect to the input, and the piecewise constant tree family relies on search. The six subsections that follow explain each family.
+The structure of the model decides which methods can be used. A linear model gives a closed-form solution, a differentiable model gives the gradient with respect to the input, and the piecewise constant tree family relies on search. The six sections 4.2 to 4.7 explain each family.
 
-#### Linear projection models
+### 4.2 Linear Projection Models
 
-PLS and PCR are inverted by the procedure of 4.2. The PLS bootstrap ensemble is the [bagging](#appendix-c-bagging-ensemble) of PLS: it inverts each PLS fitted to a bootstrap sample by the same procedure and gives the spread of the solution instead of a single solution [[6](#ref-6)]. OLS and Ridge also give a solution of the same form through the pseudo-inverse, but the space the solution lies in differs. The solution of a projection model passes through the score space and inherits the correlation structure among the inputs, while the OLS solution can wander outside that structure. For a problem with correlated inputs, the OLS inverse returns physically impossible combinations. PCA has no output to match at all, so the nature of the problem itself changes. Linear PCA has a closed-form solution that maps the score back through the loading, but in kernel PCA that mapping becomes the pre-image problem treated with the kernel family of 4.1.
+PLS and PCR are inverted by the procedure of [PLS inversion and the null space](#pls-inversion-and-the-null-space). The PLS bootstrap ensemble is the [bagging](#appendix-c-bagging-ensemble) of PLS: it inverts each PLS fitted to a bootstrap sample by the same procedure and gives the spread of the solution instead of a single solution [[6](#ref-6)]. OLS and Ridge also give a solution of the same form through the pseudo-inverse, but the space the solution lies in differs. The solution of a projection model passes through the score space and inherits the correlation structure among the inputs, while the OLS solution can wander outside that structure. For a problem with correlated inputs, the OLS inverse returns physically impossible combinations. PCA has no output to match at all, so the nature of the problem itself changes. Linear PCA has a closed-form solution that maps the score back through the loading, but in kernel PCA that mapping becomes the pre-image problem treated with the kernel family of 4.3.
 
-#### Kernel and Gaussian process models
+In the classification of Fig 2, PLS inversion combines Deterministic for Formulation, Latent space for Search space, Analytical inverse for Solution method, Null space and Validity constraint for Ambiguity handling, and Region for Answer form.
 
-The kernel family is linear in the feature space, but in general no input corresponds to a point of that space. So the pre-image that maps the feature-space solution back to the input space is approximated by iterative optimisation or a fixed-point method [[7](#ref-7)]. A Gaussian process gives a variance with each prediction, which changes how it is inverted. Defining an acquisition function that weighs the distance from the target together with the uncertainty, and optimising it, gives Bayesian optimization, which decides the input to try next [[8](#ref-8)]. It differs from the earlier methods in narrowing the solution down through repeated experiments rather than finding it at once.
-
-#### Tree ensembles
-
-Random forests and gradient boosting use trees as base learners. One tree cuts the input space into boxes at thresholds and returns one stored value per box, and a sum or average of many such functions is still piecewise constant. So the gradient with respect to the input is 0 inside a box and undefined on a threshold, and search is used instead of the gradient. The base learner, not boosting or bagging, decides this property: with a linear base learner the sum is linear too and the gradient comes back. Derivative-free methods such as grid search, genetic algorithms and CMA-ES apply as they are, and the trained trees themselves serve as a fast surrogate on which the search runs. TreeSHAP computes the contribution of each input around a point exactly, so it can give a local linear approximation that sets the direction of the search [[9](#ref-9)].
-
-#### Neural networks
-
-A differentiable network is inverted most directly. Fix the weights, treat the input as the variable, and backpropagate $\lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ to the input. Written as maximising one output it is activation maximization, and written as changing the output with a small perturbation it is the same computation as generating adversarial examples [[10](#ref-10)]. Only the use differs and the computation is the same, so the risk comes along too. Unconstrained optimisation returns inputs that match the target output perfectly yet lie far from the data distribution, so an input range limit or a prior term is required.
-
-#### Generative models
-
-A generative model learns the data distribution, so it is a strong prior in itself. Autoencoders and VAEs search the latent space and then decode, and only what the decoder can produce becomes a candidate, so unrealistic solutions are filtered out. This is the standard approach for problems where only valid designs may remain as candidates [[11](#ref-11)]. The conditional form of an invertible model learns the posterior directly without going through $f$, so it is an inverse model and is treated in 3.2. A diffusion model samples the posterior by adding the gradient of the observation likelihood to the learned score, and it has recently become the standard for noisy nonlinear problems [[12](#ref-12)].
-
-#### Model-agnostic numerical optimization
-
-Treating $f$ as a blackbox without using its structure at all is the most general approach. Take the residual as the objective, set the validity domain and the physical limits as constraints, and run an optimiser. It uses the gradient when one is available and only switches to a derivative-free method when it is not, so it is an alternative for every family above. The price is cost and local optima. When the objective has several local minima, different starting points reach different solutions, so it is safer to repeat from several starting points and report the solutions together. The implementation is in [Appendix E](#appendix-e-python-example-constrained-numerical-inversion).
-
-### 4.2 Latent Variable Model Inversion
-
-In the classification of Fig 2, the method of this section combines Deterministic for Formulation, Latent space for Search space, Analytical inverse for Solution method, Null space and Validity constraint for Ambiguity handling, and Region for Answer form.
-
-Inverting a PLS model is the oldest industrial case of solving an inverse problem in the latent space, and it already has the skeleton the later methods repeat. Its three steps are to reduce the dimension and sort out the degrees of freedom, to find the inverse solution in the reduced space, and to prevent extrapolation with a validity constraint [[2](#ref-2)], [[13](#ref-13)].
+Inverting a PLS model is the oldest industrial case of solving an inverse problem in the latent space, and it already has the skeleton the later methods repeat. Its three steps are to reduce the dimension and sort out the degrees of freedom, to find the inverse solution in the reduced space, and to prevent extrapolation with a validity constraint [[2](#ref-2)], [[7](#ref-7)].
 
 #### PLS inversion and the null space
 
@@ -252,7 +234,7 @@ Given a target output $\mathbf{y}^{\ast}$, solve the equation $\mathbf{Q}\mathbf
 Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy $\mathbf{Q}\mathbf{n} = \mathbf{0}$, and the subspace they span is the null space [[2](#ref-2)].
 
 - The null space is the freedom to move the input without changing the output. A secondary goal such as cost can be optimised over this freedom.
-- Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[13](#ref-13)].
+- Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[7](#ref-7)].
 
 ```math
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
@@ -272,12 +254,32 @@ The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B i
 
 The same skeleton extended to industrial problems gave the following four results.
 
-- Joint-Y PLS, which ties the data of two sites into one latent space, turns product transfer, moving a condition validated at one site to a condition at another, into an inversion problem [[14](#ref-14)].
-- Propagating the uncertainty of the model parameters into the solution narrows the region that meets the target range. This conservative region is called the design space [[15](#ref-15)].
-- Targets given as upper and lower limits instead of equalities, partly fixed inputs, and several targets were all unified into one constrained optimisation [[16](#ref-16)].
-- Recent formulations decide from the constraint structure of the problem whether to solve in the score space or the input space, and add the $T^{2}$ and SPE constraints together while keeping the null space [[17](#ref-17)], [[18](#ref-18)].
+- Joint-Y PLS, which ties the data of two sites into one latent space, turns product transfer, moving a condition validated at one site to a condition at another, into an inversion problem [[8](#ref-8)].
+- Propagating the uncertainty of the model parameters into the solution narrows the region that meets the target range. This conservative region is called the design space [[9](#ref-9)].
+- Targets given as upper and lower limits instead of equalities, partly fixed inputs, and several targets were all unified into one constrained optimisation [[10](#ref-10)].
+- Recent formulations decide from the constraint structure of the problem whether to solve in the score space or the input space, and add the $T^{2}$ and SPE constraints together while keeping the null space [[11](#ref-11)], [[12](#ref-12)].
 
-### 4.3 Inversion without Model Access
+### 4.3 Kernel and Gaussian Process Models
+
+The kernel family is linear in the feature space, but in general no input corresponds to a point of that space. So the pre-image that maps the feature-space solution back to the input space is approximated by iterative optimisation or a fixed-point method [[13](#ref-13)]. A Gaussian process gives a variance with each prediction, which changes how it is inverted. Defining an acquisition function that weighs the distance from the target together with the uncertainty, and optimising it, gives Bayesian optimization, which decides the input to try next [[14](#ref-14)]. It differs from the earlier methods in narrowing the solution down through repeated experiments rather than finding it at once.
+
+### 4.4 Tree Ensembles
+
+Random forests and gradient boosting use trees as base learners. One tree cuts the input space into boxes at thresholds and returns one stored value per box, and a sum or average of many such functions is still piecewise constant. So the gradient with respect to the input is 0 inside a box and undefined on a threshold, and search is used instead of the gradient. The base learner, not boosting or bagging, decides this property: with a linear base learner the sum is linear too and the gradient comes back. Derivative-free methods such as grid search, genetic algorithms and CMA-ES apply as they are, and the trained trees themselves serve as a fast surrogate on which the search runs. TreeSHAP computes the contribution of each input around a point exactly, so it can give a local linear approximation that sets the direction of the search [[15](#ref-15)].
+
+### 4.5 Neural Networks
+
+A differentiable network is inverted most directly. Fix the weights, treat the input as the variable, and backpropagate $\lVert f(\mathbf{x}) - \mathbf{y}^{\ast} \rVert^{2}$ to the input. Written as maximising one output it is activation maximization, and written as changing the output with a small perturbation it is the same computation as generating adversarial examples [[16](#ref-16)]. Only the use differs and the computation is the same, so the risk comes along too. Unconstrained optimisation returns inputs that match the target output perfectly yet lie far from the data distribution, so an input range limit or a prior term is required.
+
+### 4.6 Generative Models
+
+A generative model learns the data distribution, so it is a strong prior in itself. Autoencoders and VAEs search the latent space and then decode, and only what the decoder can produce becomes a candidate, so unrealistic solutions are filtered out. This is the standard approach for problems where only valid designs may remain as candidates [[17](#ref-17)]. The conditional form of an invertible model learns the posterior directly without going through $f$, so it is an inverse model and is treated in 3.2. A diffusion model samples the posterior by adding the gradient of the observation likelihood to the learned score, and it has recently become the standard for noisy nonlinear problems [[18](#ref-18)].
+
+### 4.7 Model-Agnostic Numerical Optimization
+
+Treating $f$ as a blackbox without using its structure at all is the most general approach. Take the residual as the objective, set the validity domain and the physical limits as constraints, and run an optimiser. It uses the gradient when one is available and only switches to a derivative-free method when it is not, so it is an alternative for every family above. The price is cost and local optima. When the objective has several local minima, different starting points reach different solutions, so it is safer to repeat from several starting points and report the solutions together. The implementation is in [Appendix E](#appendix-e-python-example-constrained-numerical-inversion).
+
+### 4.8 Inversion without Model Access
 
 In the classification of Fig 2, on the Solution method axis surrogate re-fitting uses the methods of 4.1, and nearest-sample lookup is not in Fig 2. For Ambiguity handling both methods use Validity constraint.
 
@@ -314,29 +316,29 @@ The result of inversion is a proposal made under the assumption that the model i
 <a id="ref-6"></a>
 [6] yRocket. (2026). [PLS Bootstrap Ensemble](https://github.com/ykim2718/AIML/blob/main/Models/PLS-Bootstrap-Ensemble/pls-bootstrap-ensemble-ko.md). *AIML repository*, GitHub.<br>
 <a id="ref-7"></a>
-[7] Kwok, J. T., Tsang, I. W. (2004). [The pre-image problem in kernel methods](https://doi.org/10.1109/TNN.2004.837781). IEEE Transactions on Neural Networks, 15(6), 1517–1525.<br>
+[7] Jaeckle, C. M., MacGregor, J. F. (2000). [Industrial applications of product design through the inversion of latent variable models](https://doi.org/10.1016/S0169-7439(99)00058-1). Chemometrics and Intelligent Laboratory Systems, 50(2), 199–210.<br>
 <a id="ref-8"></a>
-[8] Shahriari, B., Swersky, K., Wang, Z., Adams, R. P., de Freitas, N. (2016). [Taking the human out of the loop: a review of Bayesian optimization](https://doi.org/10.1109/JPROC.2015.2494218). Proceedings of the IEEE, 104(1), 148–175.<br>
+[8] García-Muñoz, S., MacGregor, J. F., Kourti, T. (2005). [Product transfer between sites using Joint-Y PLS](https://doi.org/10.1016/j.chemolab.2005.04.009). Chemometrics and Intelligent Laboratory Systems, 79(1–2), 101–114.<br>
 <a id="ref-9"></a>
-[9] Lundberg, S. M., Erion, G., Chen, H., et al. (2020). [From local explanations to global understanding with explainable AI for trees](https://doi.org/10.1038/s42256-019-0138-9). Nature Machine Intelligence, 2, 56–67.<br>
+[9] García-Muñoz, S., Dolph, S., Ward, H. W. (2010). [Handling uncertainty in the establishment of a design space for the manufacture of a pharmaceutical product](https://doi.org/10.1016/j.compchemeng.2010.02.027). Computers & Chemical Engineering, 34(7), 1098–1107.<br>
 <a id="ref-10"></a>
-[10] Simonyan, K., Vedaldi, A., Zisserman, A. (2014). [Deep inside convolutional networks: visualising image classification models and saliency maps](https://doi.org/10.48550/arXiv.1312.6034). arXiv:1312.6034.<br>
+[10] Tomba, E., Barolo, M., García-Muñoz, S. (2012). [General framework for latent variable model inversion for the design and manufacturing of new products](https://doi.org/10.1021/ie301214c). Industrial & Engineering Chemistry Research, 51(39), 12886–12900.<br>
 <a id="ref-11"></a>
-[11] Gómez-Bombarelli, R., Wei, J. N., Duvenaud, D., et al. (2018). [Automatic chemical design using a data-driven continuous representation of molecules](https://doi.org/10.1021/acscentsci.7b00572). ACS Central Science, 4(2), 268–276.<br>
+[11] Palací-López, D., Facco, P., Barolo, M., Ferrer, A. (2019). [New tools for the design and manufacturing of new products based on latent variable model inversion](https://doi.org/10.1016/j.chemolab.2019.103848). Chemometrics and Intelligent Laboratory Systems, 194, 103848.<br>
 <a id="ref-12"></a>
-[12] Chung, H., Kim, J., McCann, M. T., Klasky, M. L., Ye, J. C. (2023). [Diffusion posterior sampling for general noisy inverse problems](https://doi.org/10.48550/arXiv.2209.14687). International Conference on Learning Representations.<br>
+[12] Palací-López, D., et al. (2020). [Improved formulation of the latent variable model inversion-based optimization problem for quality by design applications](https://doi.org/10.1002/cem.3230). Journal of Chemometrics, 34(6), e3230.<br>
 <a id="ref-13"></a>
-[13] Jaeckle, C. M., MacGregor, J. F. (2000). [Industrial applications of product design through the inversion of latent variable models](https://doi.org/10.1016/S0169-7439(99)00058-1). Chemometrics and Intelligent Laboratory Systems, 50(2), 199–210.<br>
+[13] Kwok, J. T., Tsang, I. W. (2004). [The pre-image problem in kernel methods](https://doi.org/10.1109/TNN.2004.837781). IEEE Transactions on Neural Networks, 15(6), 1517–1525.<br>
 <a id="ref-14"></a>
-[14] García-Muñoz, S., MacGregor, J. F., Kourti, T. (2005). [Product transfer between sites using Joint-Y PLS](https://doi.org/10.1016/j.chemolab.2005.04.009). Chemometrics and Intelligent Laboratory Systems, 79(1–2), 101–114.<br>
+[14] Shahriari, B., Swersky, K., Wang, Z., Adams, R. P., de Freitas, N. (2016). [Taking the human out of the loop: a review of Bayesian optimization](https://doi.org/10.1109/JPROC.2015.2494218). Proceedings of the IEEE, 104(1), 148–175.<br>
 <a id="ref-15"></a>
-[15] García-Muñoz, S., Dolph, S., Ward, H. W. (2010). [Handling uncertainty in the establishment of a design space for the manufacture of a pharmaceutical product](https://doi.org/10.1016/j.compchemeng.2010.02.027). Computers & Chemical Engineering, 34(7), 1098–1107.<br>
+[15] Lundberg, S. M., Erion, G., Chen, H., et al. (2020). [From local explanations to global understanding with explainable AI for trees](https://doi.org/10.1038/s42256-019-0138-9). Nature Machine Intelligence, 2, 56–67.<br>
 <a id="ref-16"></a>
-[16] Tomba, E., Barolo, M., García-Muñoz, S. (2012). [General framework for latent variable model inversion for the design and manufacturing of new products](https://doi.org/10.1021/ie301214c). Industrial & Engineering Chemistry Research, 51(39), 12886–12900.<br>
+[16] Simonyan, K., Vedaldi, A., Zisserman, A. (2014). [Deep inside convolutional networks: visualising image classification models and saliency maps](https://doi.org/10.48550/arXiv.1312.6034). arXiv:1312.6034.<br>
 <a id="ref-17"></a>
-[17] Palací-López, D., Facco, P., Barolo, M., Ferrer, A. (2019). [New tools for the design and manufacturing of new products based on latent variable model inversion](https://doi.org/10.1016/j.chemolab.2019.103848). Chemometrics and Intelligent Laboratory Systems, 194, 103848.<br>
+[17] Gómez-Bombarelli, R., Wei, J. N., Duvenaud, D., et al. (2018). [Automatic chemical design using a data-driven continuous representation of molecules](https://doi.org/10.1021/acscentsci.7b00572). ACS Central Science, 4(2), 268–276.<br>
 <a id="ref-18"></a>
-[18] Palací-López, D., et al. (2020). [Improved formulation of the latent variable model inversion-based optimization problem for quality by design applications](https://doi.org/10.1002/cem.3230). Journal of Chemometrics, 34(6), e3230.<br>
+[18] Chung, H., Kim, J., McCann, M. T., Klasky, M. L., Ye, J. C. (2023). [Diffusion posterior sampling for general noisy inverse problems](https://doi.org/10.48550/arXiv.2209.14687). International Conference on Learning Representations.<br>
 <a id="ref-19"></a>
 [19] yRocket. (2026). [Scores in Partial Least Squares](https://github.com/ykim2718/AIML/blob/main/Math/Regression/PLS/partial-least-squares-scores-ko.md). *AIML repository*, GitHub.
 
@@ -395,11 +397,11 @@ Table 2. Libraries for inverse model and model inversion
 
 |      Library       |                         Role                         |       Section        |                                   Note                                    |
 | :----------------: | :--------------------------------------------------: | :------------------: | :-----------------------------------------------------------------------: |
-|   NumPy / SciPy    | Pseudo-inverse, null space, constrained optimisation |       4.1, 4.2       | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
-|    scikit-learn    |      Latent variable model and validity domain       | 4.1, 4.2, Appendix C |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
-|      PyTorch       |          Gradient with respect to the input          |         4.1          |       Turns on the gradient of the input tensor and backpropagates        |
-| BoTorch / GPyTorch |            GP-based Bayesian optimization            |         4.1          |                Provides acquisition function optimisation                 |
-|        SHAP        |          Local linearization of tree models          |         4.1          |               Computes contributions exactly with TreeSHAP                |
+|   NumPy / SciPy    | Pseudo-inverse, null space, constrained optimisation |       4.2, 4.7       | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
+|    scikit-learn    |      Latent variable model and validity domain       | 4.2, 4.3, Appendix C |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
+|      PyTorch       |          Gradient with respect to the input          |         4.5          |       Turns on the gradient of the input tensor and backpropagates        |
+| BoTorch / GPyTorch |            GP-based Bayesian optimization            |         4.3          |                Provides acquisition function optimisation                 |
+|        SHAP        |          Local linearization of tree models          |         4.4          |               Computes contributions exactly with TreeSHAP                |
 |       FrEIA        |              Invertible neural network               |         3.2          |                      Assembles the cINN architecture                      |
 |    PyMC / emcee    |                  Posterior sampling                  |       2.1, 2.3       |             Sample-based solution of the Bayesian formulation             |
 
@@ -502,7 +504,7 @@ The general case with $K$ inputs and $M$ outputs is the same computation, and th
 
 ## Appendix E. Python Example: Constrained Numerical Inversion
 
-This treats a non-differentiable gradient boosting model as a blackbox and inverts it in the model-agnostic numerical optimization way of 4.1. The validity domain is defined by the $T^{2}$ and SPE of a PCA fitted to historical data, and both upper limits are set as constraints.
+This treats a non-differentiable gradient boosting model as a blackbox and inverts it in the model-agnostic numerical optimization way of 4.7. The validity domain is defined by the $T^{2}$ and SPE of a PCA fitted to historical data, and both upper limits are set as constraints.
 
 ```python
 import numpy as np
@@ -596,7 +598,7 @@ $T^{2}$ alone does not catch an SPE 13 times its limit, so as the extrapolation 
 
 ## Appendix F. Python Example: Inversion without Model Access
 
-This runs the methods of 4.3 as they are. From a table of 100 rows with features `A`, `B`, `C`, `D`, `E` and the true value `T`, it obtains the prediction `P`, hides the model, and from the remaining table alone finds the `A` and `B` that bring `P` to the target 19.0. `C`, `D` and `E` are given as conditions that cannot be changed and are held at their mean, and only `A` and `B` can be adjusted.
+This runs the methods of 4.8 as they are. From a table of 100 rows with features `A`, `B`, `C`, `D`, `E` and the true value `T`, it obtains the prediction `P`, hides the model, and from the remaining table alone finds the `A` and `B` that bring `P` to the target 19.0. `C`, `D` and `E` are given as conditions that cannot be changed and are held at their mean, and only `A` and `B` can be adjusted.
 
 ```python
 import numpy as np
@@ -739,11 +741,11 @@ The $R^{2}$ of (c) results from this example using `GradientBoostingRegressor`, 
 
 (d) holds the solution against reality. The surrogate predictions of the four rows are all near 19.0, but their true values spread from 17.85 to 19.80, so running the same condition for real does not deliver the target as it is. This spread comes from the $R^{2} = 0.712$ of the hidden model shown in (a). The surrogate follows that model with $R^{2} = 0.9995$, but it cannot fill in the part of the true value that model fails to explain, so the larger of the two errors decides the result. (d) shows plainly why, as the validation item of 5 says, the condition obtained has to be confirmed by experiment and the result added to the data.
 
-The contours are stepped. The surrogate is a piecewise constant function like the tree ensemble of 4.1, so the prediction changes only when it crosses a threshold and stays constant in between, forming one step.
+The contours are stepped. The surrogate is a piecewise constant function like the tree ensemble of 4.4, so the prediction changes only when it crosses a threshold and stays constant in between, forming one step.
 
-Those steps are also why five starting points are used. Inside one box the objective is flat, so the search finds no direction to move and stops where it is, and a single starting point gets stuck off the target, as at 18.869 or 19.184. As the model-agnostic numerical optimization subsection of 4.1 says, repeat from several starting points and pick the best solution among them.
+Those steps are also why five starting points are used. Inside one box the objective is flat, so the search finds no direction to move and stops where it is, and a single starting point gets stuck off the target, as at 18.869 or 19.184. As 4.7 says, repeat from several starting points and pick the best solution among them.
 
-The solution lies inside the validity domain. $T^{2}$ is 0.00, below the limit 5.99, and SPE is 0.063, below the limit 0.468, so as 4.3 says, the constraint set from $\mathbf{X}$ alone without model access works as it is. Still, `P` is the surrogate prediction, so it can differ from the value the hidden model would actually give at this condition by the reproduction error (c) shows.
+The solution lies inside the validity domain. $T^{2}$ is 0.00, below the limit 5.99, and SPE is 0.063, below the limit 0.468, so as 4.8 says, the constraint set from $\mathbf{X}$ alone without model access works as it is. Still, `P` is the surrogate prediction, so it can differ from the value the hidden model would actually give at this condition by the reproduction error (c) shows.
 
 ## Appendix G. Derivation of Eq. (3), (4) and (5)
 
