@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 9 | Created: 2026-10-25 | Updated: 2026-10-28 10:02 UTC
+Rev. 10 | Created: 2026-10-25 | Updated: 2026-10-28 10:04 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -245,7 +245,7 @@ The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivati
 
 Fig 3 shows how far the two limits allow the null space in the score plane.
 
-<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="600" style="max-width: 100%;" alt="Fig 3">
+<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Null space and the validity region in the score plane
 
@@ -253,7 +253,7 @@ The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B i
 
 Fitting PLS to each of 200 bootstrap samples of the Appendix D data and finding the minimum-norm solution for the target 2.0 for each gives Fig 4 below.
 
-<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="600" style="max-width: 100%;" alt="Fig 4">
+<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="300" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
 

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 95 | Created: 2026-08-28 | Updated: 2026-10-28 10:02 UTC
+Rev. 96 | Created: 2026-08-28 | Updated: 2026-10-28 10:04 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -245,7 +245,7 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 두 상한이 score 평면에서 null space 를 어디까지 허용하는지를 Fig 3 에 그린다.
 
-<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="600" style="max-width: 100%;" alt="Fig 3">
+<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Null space and the validity region in the score plane
 
@@ -253,7 +253,7 @@ Fig 3. Null space and the validity region in the score plane
 
 Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합하고, 목표 2.0 의 minimum-norm solution 을 각각 구하면 아래 Fig 4 와 같다.
 
-<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="600" style="max-width: 100%;" alt="Fig 4">
+<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="300" style="max-width: 100%;" alt="Fig 4">
 
 Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
 
