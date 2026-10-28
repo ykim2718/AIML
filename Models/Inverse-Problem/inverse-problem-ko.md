@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 96 | Created: 2026-08-28 | Updated: 2026-10-28 10:04 UTC
+Rev. 97 | Created: 2026-08-28 | Updated: 2026-10-28 10:06 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -243,15 +243,13 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다.
 
-두 상한이 score 평면에서 null space 를 어디까지 허용하는지를 Fig 3 에 그린다.
+두 상한이 score 평면에서 null space 를 어디까지 허용하는지를 Fig 3 에 그린다. Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합하고, 목표 2.0 의 minimum-norm solution 을 각각 구하면 아래 Fig 4 와 같다.
 
 <img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Null space and the validity region in the score plane
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
-
-Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합하고, 목표 2.0 의 minimum-norm solution 을 각각 구하면 아래 Fig 4 와 같다.
 
 <img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="300" style="max-width: 100%;" alt="Fig 4">
 

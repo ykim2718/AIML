@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 10 | Created: 2026-10-25 | Updated: 2026-10-28 10:04 UTC
+Rev. 11 | Created: 2026-10-25 | Updated: 2026-10-28 10:06 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -243,15 +243,13 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5).
 
-Fig 3 shows how far the two limits allow the null space in the score plane.
+Fig 3 shows how far the two limits allow the null space in the score plane. Fitting PLS to each of 200 bootstrap samples of the Appendix D data and finding the minimum-norm solution for the target 2.0 for each gives Fig 4 below.
 
 <img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
 
 Fig 3. Null space and the validity region in the score plane
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
-
-Fitting PLS to each of 200 bootstrap samples of the Appendix D data and finding the minimum-norm solution for the target 2.0 for each gives Fig 4 below.
 
 <img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="300" style="max-width: 100%;" alt="Fig 4">
 
