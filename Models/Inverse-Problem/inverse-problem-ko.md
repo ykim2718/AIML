@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 98 | Created: 2026-08-28 | Updated: 2026-10-28 10:07 UTC
+Rev. 99 | Created: 2026-08-28 | Updated: 2026-10-28 10:09 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -243,19 +243,18 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다.
 
-두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 과 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 4 와 같다.
+두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
-<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
+<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="600" style="max-width: 100%;" alt="Fig 3">
 
-Fig 3. Null space and the validity region in the score plane
+Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
+
+- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다.
+- (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, bootstrap PLS 200 개의 minimum-norm solution 이다.
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 
-<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="300" style="max-width: 100%;" alt="Fig 4">
-
-Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
-
-Fig 4 는 Fig 3 을 입력 평면으로 옮긴 것이다. 주황 별은 Fig 3 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 Fig 3 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 Fig 3 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
+(b) 는 (a) 를 입력 평면으로 옮긴 것이다. 주황 별은 (a) 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 (a) 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 (a) 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
 
 파란 점 200 개는 bootstrap PLS 마다 구한 minimum-norm solution 이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다.
 
@@ -474,25 +473,25 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 뒤집기 전에 뒤집을 model 부터 본다.
 
-<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 5">
+<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 4">
 
-Fig 5. Appendix D measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
+Fig 4. Appendix D measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
-Fig 5 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
+Fig 4 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
 
-Fig 5 (b) 는 같은 표본의 두 입력을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
+Fig 4 (b) 는 같은 표본의 두 입력을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
 
 등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 4.2 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix E 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
 
-Fig 5 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
+Fig 4 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
 이 예시의 model 은 $R^{2} = 0.518$, RMSE 1.38 이다. 잔차의 대부분은 (a) 의 추세에서 온다. Model 이 보지 못하는 변수가 있으면 그만큼 설명되지 않고 남는다. 목표 2.0 은 표본이 덮는 $-4.1$ 에서 $6.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
-Code 가 만든 `x_alt` 37 개를 Fig 6 에 그린다.
+Code 가 만든 `x_alt` 37 개를 Fig 5 에 그린다.
 
-<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 6">
+<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 5">
 
-Fig 6. Predicted value and inputs along the null space
+Fig 5. Predicted value and inputs along the null space
 
 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다.
 
@@ -501,13 +500,13 @@ Fig 6. Predicted value and inputs along the null space
 
 Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
 
-Minimum-norm solution 은 목표 출력을 내되 입력의 평균에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 비용 같은 다른 기준이 있으면 Fig 6 처럼 null space 를 따라 옮겨 간다.
+Minimum-norm solution 은 목표 출력을 내되 입력의 평균에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 비용 같은 다른 기준이 있으면 Fig 5 처럼 null space 를 따라 옮겨 간다.
 
-Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 6 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
+Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 5 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
 Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다. 세 이름의 관계는 해집합 = minimum-norm solution + null space 이다. Null space 는 원점을 지나는 방향의 집합이고, 그것을 $\mathbf{x}^{\ast}$ 만큼 평행이동한 직선이 해집합이며, minimum-norm solution 은 그 직선 위의 한 점이다.
 
-해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 5 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 5 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
+해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 4 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 4 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
 
 입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix D 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
 
@@ -584,21 +583,21 @@ print("x_sol       :", np.round(x_sol, 3))
 
 뒤집기 전에 이 예시의 데이터도 같은 방식으로 본다.
 
-<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 7">
+<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 6">
 
-Fig 7. Appendix E measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
+Fig 6. Appendix E measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
-Fig 7 (a) 는 측정값을 순서대로 그린 것이다. Appendix D 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
+Fig 6 (a) 는 측정값을 순서대로 그린 것이다. Appendix D 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
 
-Fig 7 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
+Fig 6 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
 
-Fig 7 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix D 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
+Fig 6 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix D 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
 
-두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 8 에 나란히 그린다.
+두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 7 에 나란히 그린다.
 
-<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 8">
+<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 7">
 
-Fig 8. Constrained solution against the validity limits
+Fig 7. Constrained solution against the validity limits
 
 - (a) 는 `x2`–`x4` 평면이다. 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 놓여 목표 1.0 을 맞추고, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 놓이며 값도 0.65 에 그친다.
 - (b) 는 두 해의 통계량을 각자의 상한으로 나눈 값이다. $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이고, $T^{2}$ 는 두 해 모두 상한 아래이다.
@@ -735,11 +734,11 @@ their true T      : [17.85 18.56 19.01 19.8 ]
 
 세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.9995$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 19.0 에 가장 가까운 다섯 행에서 출발점을 준다. 각 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 를 돌려 얻은 `P` 는 18.869 에서 19.184 까지 흩어지며, 그중 가장 가까운 `A` = 10.066, `B` = 5.531 이 `P` = 19.002 를 낸다.
 
-이 결과를 Fig 9 에 그린다.
+이 결과를 Fig 8 에 그린다.
 
-<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 9">
+<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 8">
 
-Fig 9. Appendix F hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
+Fig 8. Appendix F hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
 
 - (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.712$ 이다. `T` 는 평균 19.1, 표준편차 1.3 으로 목표 19.0 을 중심에 두고 몰려 있어 100 행 가운데 51 행이 목표에서 1 이내에 들며, 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
 - (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 19.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.

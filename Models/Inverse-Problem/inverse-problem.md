@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 12 | Created: 2026-10-25 | Updated: 2026-10-28 10:07 UTC
+Rev. 13 | Created: 2026-10-25 | Updated: 2026-10-28 10:09 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -243,19 +243,18 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 
 The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5).
 
-How far the two limits allow the null space in the score plane is shown in Fig 3 below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 4.
+How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 
-<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="300" style="max-width: 100%;" alt="Fig 3">
+<img src="inverse-problem-ko_fig/score-plane-null-space.png" width="600" style="max-width: 100%;" alt="Fig 3">
 
-Fig 3. Null space and the validity region in the score plane
+Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
+
+- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse.
+- (b): the $\mathbf{t}^{\ast}$ and null space line of (a) mapped to the input plane, and the minimum-norm solutions of 200 bootstrap PLS models.
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
 
-<img src="inverse-problem-ko_fig/bootstrap-solution-spread.png" width="300" style="max-width: 100%;" alt="Fig 4">
-
-Fig 4. Spread of the minimum-norm solution over bootstrap PLS models
-
-Fig 4 carries Fig 3 over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of Fig 3 mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4), and the red dashed line is the null space line of Fig 3 mapped the same way. The blue points and the green diamond are not in Fig 3; they come from fitting PLS anew to each bootstrap sample.
+(b) carries (a) over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of (a) mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4), and the red dashed line is the null space line of (a) mapped the same way. The blue points and the green diamond are not in (a); they come from fitting PLS anew to each bootstrap sample.
 
 The 200 blue points are the minimum-norm solutions of the bootstrap PLS models, with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives.
 
@@ -474,25 +473,25 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 Before inverting, look at the model to be inverted.
 
-<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 5">
+<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 4">
 
-Fig 5. Appendix D measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
+Fig 4. Appendix D measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
-Fig 5 (a) plots the measured value $y$ in the order the samples came in. The value climbs nonlinearly along the order, grows noticeably from around the 50th sample, and at the 80th swings around the target 2.0. The orange line is that trend; the two inputs do not carry it, so the model cannot explain it. Because the target 2.0 is an ordinary value in the later half, the target lies inside the data.
+Fig 4 (a) plots the measured value $y$ in the order the samples came in. The value climbs nonlinearly along the order, grows noticeably from around the 50th sample, and at the 80th swings around the target 2.0. The orange line is that trend; the two inputs do not carry it, so the model cannot explain it. Because the target 2.0 is an ordinary value in the later half, the target lies inside the data.
 
-Fig 5 (b) plots the two inputs of the same samples. The contours show how the samples are scattered, and the bars on the top and right are the distribution of each input on its own. The two inputs share the mean 0 and differ only in spread, with the standard deviation of $x_1$ twice that of $x_2$, so the samples scatter in an ellipse stretched sideways. That ellipse is the region the model has learned.
+Fig 4 (b) plots the two inputs of the same samples. The contours show how the samples are scattered, and the bars on the top and right are the distribution of each input on its own. The two inputs share the mean 0 and differ only in spread, with the standard deviation of $x_1$ twice that of $x_2$, so the samples scatter in an ellipse stretched sideways. That ellipse is the region the model has learned.
 
 The contours are Mahalanobis distances measured from the sample centre, 1, 2 and 3 from the inside. This distance divides by the spread in each direction, so along the wider $x_1$ the same distance reaches further. The contours therefore become ellipses stretched sideways, and the ellipse reads directly how many standard deviations a point lies from the centre. Hotelling $T^{2}$ of 4.2 is the square of this distance measured in the score space, and Appendix E places an upper limit on it to hold the solution inside the region the data covers.
 
-Fig 5 (c) is the parity plot of the same 100 samples, one point per sample. The horizontal axis is the measured value $y$ of the sample and the vertical axis is the model prediction $\hat{y}$ for it, so a point on the 1:1 line means the sample is matched exactly, and its vertical distance from the line is the residual $y - \hat{y}$ of the sample.
+Fig 4 (c) is the parity plot of the same 100 samples, one point per sample. The horizontal axis is the measured value $y$ of the sample and the vertical axis is the model prediction $\hat{y}$ for it, so a point on the 1:1 line means the sample is matched exactly, and its vertical distance from the line is the residual $y - \hat{y}$ of the sample.
 
 The model of this example has $R^{2} = 0.518$ and RMSE 1.38. Most of the residual comes from the trend of (a). A variable the model does not see stays unexplained by that much. The target 2.0 lies within $-4.1$ to $6.2$, the range the samples cover, so it is not an extrapolation, but the value the inverted condition actually delivers swings by about the RMSE. The accuracy of inversion cannot exceed the accuracy of the forward model, so look at this figure first and then decide whether to invert.
 
-Fig 6 plots the 37 `x_alt` the code produced.
+Fig 5 plots the 37 `x_alt` the code produced.
 
-<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 6">
+<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 5">
 
-Fig 6. Predicted value and inputs along the null space
+Fig 5. Predicted value and inputs along the null space
 
 Each point in both panels is the same thing: one input $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ made by moving by $\alpha$ along the null space direction $\mathbf{n}$, where $\bar{\mathbf{x}}$ is the mean of the inputs.
 
@@ -501,13 +500,13 @@ Each point in both panels is the same thing: one input $\mathbf{x}(\alpha) = \ma
 
 The minimum-norm solution is the solution with the smallest norm when several solutions meet the target equally. In this example there are as many scores satisfying $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ as the null space allows, and the pseudo-inverse $\mathbf{Q}^{+}$ picks the one with the smallest $\lVert \mathbf{t} \rVert$. Geometrically it is the point of the solution set (the line along the null space) closest to the origin, so its component along the null space direction is 0.
 
-The minimum-norm solution is the combination that delivers the target output while departing least from the mean of the inputs. It is the one reference point fixed uniquely, so it serves as the starting point, and when another criterion such as cost exists the solution moves along the null space as in Fig 6.
+The minimum-norm solution is the combination that delivers the target output while departing least from the mean of the inputs. It is the one reference point fixed uniquely, so it serves as the starting point, and when another criterion such as cost exists the solution moves along the null space as in Fig 5.
 
-A null space direction is a direction along which moving the score leaves the prediction unchanged, namely an $\mathbf{n}$ that satisfies $\mathbf{Q}\mathbf{n} = \mathbf{0}$. In this example with $A = 2$ latent variables and $M = 1$ output, $A - M = 1$ such direction remains, and `null_space(Q)` returns it as a unit vector. The 37 `x_alt` are made by moving $\alpha$ from $-2$ to $2$ along that direction, and the line of Fig 6 (b) is that very direction. The amount moved along it is the freedom available while keeping the target.
+A null space direction is a direction along which moving the score leaves the prediction unchanged, namely an $\mathbf{n}$ that satisfies $\mathbf{Q}\mathbf{n} = \mathbf{0}$. In this example with $A = 2$ latent variables and $M = 1$ output, $A - M = 1$ such direction remains, and `null_space(Q)` returns it as a unit vector. The 37 `x_alt` are made by moving $\alpha$ from $-2$ to $2$ along that direction, and the line of Fig 5 (b) is that very direction. The amount moved along it is the freedom available while keeping the target.
 
 The model is linear in the input, so the solution set is a line. The prediction is the linear expression $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$, so the set of inputs that deliver the target 2.0 is the points satisfying $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$, a level set of that linear expression. With two inputs and one equation the set is a line in the plane, and its direction is perpendicular to $\mathbf{b}$. Moving along $\mathbf{b}$ changes the prediction fastest, and moving perpendicular to it does not change the prediction at all. That perpendicular direction is the null space direction above. The three names relate as solution set = minimum-norm solution + null space. The null space is a set of directions through the origin, the line obtained by shifting it by $\mathbf{x}^{\ast}$ is the solution set, and the minimum-norm solution is one point on that line.
 
-What fixes the solution set is the model prediction $\hat{y}$, not the measured value $y$, and the prediction does not carry the sample order. So the line does not bend even with the trend of Fig 5 (a). The trend stays in the residual and only widens the scatter of Fig 5 (c); it cannot touch the property that the prediction is a linear expression of the input. Put another way, the trend can push the value a condition on that line actually delivers away from the target, but it cannot change the shape of the solution set.
+What fixes the solution set is the model prediction $\hat{y}$, not the measured value $y$, and the prediction does not carry the sample order. So the line does not bend even with the trend of Fig 4 (a). The trend stays in the residual and only widens the scatter of Fig 4 (c); it cannot touch the property that the prediction is a linear expression of the input. Put another way, the trend can push the value a condition on that line actually delivers away from the target, but it cannot change the shape of the solution set.
 
 The general case with $K$ inputs and $M$ outputs is the same computation, and the solution set is a plane of dimension $K - M$. With three inputs it becomes a plane instead of a line, which is why Appendix D uses $K = 2$, where the set can be drawn on paper as it is.
 
@@ -584,21 +583,21 @@ print("x_sol       :", np.round(x_sol, 3))
 
 Before inverting, look at the data of this example in the same way.
 
-<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 7">
+<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 6">
 
-Fig 7. Appendix E measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
+Fig 6. Appendix E measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
-Fig 7 (a) plots the measured values in order. It uses the same 100 samples and the same values as Appendix D, so the trend along the order is the same, and only the target differs at 1.0.
+Fig 6 (a) plots the measured values in order. It uses the same 100 samples and the same values as Appendix D, so the trend along the order is the same, and only the target differs at 1.0.
 
-Fig 7 (b) is the plane of the two correlated inputs `x2` and `x4`. Since `x4` follows `x2` with a factor of $-0.7$, the contours become a tilted narrow ellipse, and a condition that leaves this band is exactly the departure SPE catches.
+Fig 6 (b) is the plane of the two correlated inputs `x2` and `x4`. Since `x4` follows `x2` with a factor of $-0.7$, the contours become a tilted narrow ellipse, and a condition that leaves this band is exactly the departure SPE catches.
 
-Fig 7 (c) is the parity plot of the gradient boosting model, with $R^{2} = 0.951$ and RMSE 0.44. The trees split the same values finely to fit the training samples, so the residual is smaller than for the PLS of Appendix D. These are values on the training data, so the accuracy on a new condition is lower than $R^{2} = 0.951$.
+Fig 6 (c) is the parity plot of the gradient boosting model, with $R^{2} = 0.951$ and RMSE 0.44. The trees split the same values finely to fit the training samples, so the residual is smaller than for the PLS of Appendix D. These are values on the training data, so the accuracy on a new condition is lower than $R^{2} = 0.951$.
 
-Fig 8 shows side by side the solution with both constraints and the solution with $T^{2}$ alone.
+Fig 7 shows side by side the solution with both constraints and the solution with $T^{2}$ alone.
 
-<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 8">
+<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 7">
 
-Fig 8. Constrained solution against the validity limits
+Fig 7. Constrained solution against the validity limits
 
 - (a) is the `x2`–`x4` plane. The solution with both constraints lies on the band the historical data forms and meets the target 1.0, while the solution with $T^{2}$ alone lands far off the band and reaches only 0.65.
 - (b) is the statistics of the two solutions divided by their own limits. The SPE of the solution with $T^{2}$ alone is 13 times its limit, and $T^{2}$ is below the limit for both.
@@ -735,11 +734,11 @@ their true T      : [17.85 18.56 19.01 19.8 ]
 
 The three methods run as one chain. The surrogate reproduces `P` with $R^{2} = 0.9995$ to make the object to invert, and nearest-sample lookup supplies the starting points from the five rows closest to the target 19.0. The `P` obtained by running COBYLA from each starting point with `C`, `D` and `E` held at their mean scatters from 18.869 to 19.184, and the closest of them, `A` = 10.066 and `B` = 5.531, gives `P` = 19.002.
 
-Fig 9 shows this result.
+Fig 8 shows this result.
 
-<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 9">
+<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 8">
 
-Fig 9. Appendix F hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
+Fig 8. Appendix F hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
 
 - (a) is the parity plot of the hidden model. The horizontal axis is the true value `T` and the vertical axis is the `P` that model left, with $R^{2} = 0.712$. `T` has mean 19.1 and standard deviation 1.3, gathered around the target 19.0, so 51 of the 100 rows lie within 1 of the target; the accuracy of the object to invert stops here, so the accuracy of the inversion cannot exceed it either.
 - (b) is the `A`–`B` plane. The grey contours are the `P` the surrogate gives with `C`, `D` and `E` held at their mean, and the thick line is the level line of the target 19.0. The five orange markers are the starting points, and the star is the solution closest to the target among them.

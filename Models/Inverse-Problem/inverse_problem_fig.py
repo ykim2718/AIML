@@ -1,11 +1,12 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.17.0: Merge fig_3 and fig_4 into the two panels of fig_3, with text twice as large.
     0.16.0: Add fig_4, the spread of the minimum-norm solution over bootstrap PLS models.
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.16.0.2026.10.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.17.0.2026.10.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -24,7 +25,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
 __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'build_appendix_d_model',
-           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8', 'fig_9']
+           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8']
 
 APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
@@ -72,75 +73,41 @@ def build_appendix_b_model() -> tuple:
     return x_data, y_data, drift, x_mean, y_mean, pls
 
 
-def fig_3(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 3: the null space line through t* and the part of it inside the T^2 limit."""
+def fig_3(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
+    """Fig 3: (a) the null space segment inside the T^2 limit in the score plane,
+    (b) the minimum-norm solutions of bootstrap PLS models in the input plane.
+    """
+    if n_boot < 2:
+        raise ValueError(f'n_boot must be at least 2, got {n_boot}')
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
+    y_des = 2.0
+    text_scale = 1.85             # twice the text of the former 300 px wide single panels
+
+    # (a) score plane: T^2(t* + alpha n) = limit is a quadratic in alpha; its roots are A and B
     scores, y_loadings = pls.x_scores_, pls.y_loadings_
     score_var = scores.var(axis=0, ddof=1)
     t2_limit = chi2.ppf(0.95, df=scores.shape[1])
-
-    y_des = 2.0
     t_star = np.linalg.pinv(y_loadings) @ np.array([y_des - y_mean])
     null_dir = null_space(y_loadings)[:, 0]
-
-    # T^2(t* + alpha n) = limit is a quadratic in alpha; its two roots are the ends A and B
     quad_a = np.sum(null_dir ** 2 / score_var)
     quad_b = 2.0 * np.sum(t_star * null_dir / score_var)
     quad_c = np.sum(t_star ** 2 / score_var) - t2_limit
     alpha_a, alpha_b = np.sort(np.roots([quad_a, quad_b, quad_c]).real)
     point_a, point_b = t_star + alpha_a * null_dir, t_star + alpha_b * null_dir
-
     angle = np.linspace(0.0, 2.0 * np.pi, 400)
     ellipse = np.sqrt(t2_limit * score_var)[None, :] * np.column_stack([np.cos(angle), np.sin(angle)])
     reach = 1.6 * max(abs(alpha_a), abs(alpha_b))
-    line = t_star[None, :] + np.linspace(-reach, reach, 2)[:, None] * null_dir[None, :]
+    score_line = t_star[None, :] + np.linspace(-reach, reach, 2)[:, None] * null_dir[None, :]
 
-    fig, ax = plt.subplots(figsize=(FIGSIZE[0] * 0.6, FIGSIZE[0] * 0.6))
-    ax.scatter(scores[:, 0], scores[:, 1], s=12, color='0.75', label='historical scores')
-    ax.plot(ellipse[:, 0], ellipse[:, 1], color=COLORS[0], linewidth=1.4,
-            label=f'T^2 = limit ({t2_limit:.2f})')
-    ax.plot(line[:, 0], line[:, 1], color=COLORS[3], linewidth=1.0, linestyle='--',
-            label='null space direction through t*')
-    ax.plot([point_a[0], point_b[0]], [point_a[1], point_b[1]], color=COLORS[3], linewidth=3.0,
-            label='usable segment A-B')
-    ax.scatter([t_star[0]], [t_star[1]], s=120, marker='*', color=COLORS[1], zorder=4,
-               label='t* (minimum-norm)')
-    for name, point in (('A', point_a), ('B', point_b)):
-        ax.scatter([point[0]], [point[1]], s=30, color=COLORS[3], zorder=4)
-        ax.annotate(name, point, textcoords='offset points', xytext=(6, 6), fontsize=font_size())
-    ax.axhline(0.0, color='0.6', linewidth=0.6)
-    ax.axvline(0.0, color='0.6', linewidth=0.6)
-    ax.set_aspect('equal', adjustable='datalim')
-    ax.set_xlabel('t1', fontsize=font_size())
-    ax.set_ylabel('t2', fontsize=font_size())
-    ax.tick_params(labelsize=font_size(0.9))
-    ax.legend(fontsize=font_size(0.8), loc='upper left')
-
-    fig.tight_layout()
-    out_path = out_folder / 'score-plane-null-space.png'
-    out_folder.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
-    plt.close(fig)
-    print(f'wrote {out_path}, T2 limit={t2_limit:.2f}, '
-          f'A={np.round(point_a, 3)}, B={np.round(point_b, 3)}, t*={np.round(t_star, 3)}')
-    return out_path
-
-
-def fig_4(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
-    """Fig 4: the minimum-norm solution of each bootstrap PLS spreads around the single-model one."""
-    if n_boot < 2:
-        raise ValueError(f'n_boot must be at least 2, got {n_boot}')
-    x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
-    y_des = 2.0
-
+    # (b) input plane: the same t* and line mapped by P, and one solution per bootstrap PLS
     def min_norm_solution(model, x_centre: np.ndarray, y_centre: float) -> np.ndarray:
-        t_star = np.linalg.pinv(model.y_loadings_) @ np.array([y_des - y_centre])
-        return model.x_loadings_ @ t_star + x_centre
+        t_min = np.linalg.pinv(model.y_loadings_) @ np.array([y_des - y_centre])
+        return model.x_loadings_ @ t_min + x_centre
 
     x_single = min_norm_solution(pls, x_mean, y_mean)
-    null_dir = pls.x_loadings_ @ null_space(pls.y_loadings_)[:, 0]
-    null_dir = null_dir / np.linalg.norm(null_dir)
-
+    input_dir = pls.x_loadings_ @ null_dir
+    input_dir = input_dir / np.linalg.norm(input_dir)
+    input_line = x_single[None, :] + np.linspace(-2.0, 2.0, 2)[:, None] * input_dir[None, :]
     rng = np.random.default_rng(1)
     n_rows = len(y_data)
     x_boot = np.empty((n_boot, x_data.shape[1]))
@@ -153,37 +120,59 @@ def fig_4(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
     x_ensemble = x_boot.mean(axis=0)
     spread = x_boot.std(axis=0, ddof=1)
 
-    reach = np.linspace(-2.0, 2.0, 2)
-    line = x_single[None, :] + reach[:, None] * null_dir[None, :]
+    fig, axes = plt.subplots(1, 2, figsize=(FIGSIZE[0] * 10.0 / 9.0, FIGSIZE[0] * 0.78))
+    ax = axes[0]
+    ax.scatter(scores[:, 0], scores[:, 1], s=14, color='0.75', label='historical scores')
+    ax.plot(ellipse[:, 0], ellipse[:, 1], color=COLORS[0], linewidth=1.6, label=f'T^2 = {t2_limit:.2f}')
+    ax.plot(score_line[:, 0], score_line[:, 1], color=COLORS[3], linewidth=1.2, linestyle='--',
+            label='null space line')
+    ax.plot([point_a[0], point_b[0]], [point_a[1], point_b[1]], color=COLORS[3], linewidth=3.5,
+            label='segment A-B')
+    ax.scatter([t_star[0]], [t_star[1]], s=200, marker='*', color=COLORS[1], zorder=4, label='t*')
+    for name, point in (('A', point_a), ('B', point_b)):
+        ax.scatter([point[0]], [point[1]], s=40, color=COLORS[3], zorder=4)
+        ax.annotate(name, point, textcoords='offset points', xytext=(6, 6),
+                    fontsize=font_size(text_scale))
+    ax.set_xlabel('t1', fontsize=font_size(text_scale))
+    ax.set_ylabel('t2', fontsize=font_size(text_scale))
 
-    fig, ax = plt.subplots(figsize=(FIGSIZE[0] * 0.6, FIGSIZE[0] * 0.6))
-    ax.scatter(x_data[:, 0], x_data[:, 1], s=12, color='0.8', label='historical data')
-    ax.plot(line[:, 0], line[:, 1], color=COLORS[3], linewidth=1.0, linestyle='--',
-            label='solution line of the single PLS')
-    ax.scatter(x_boot[:, 0], x_boot[:, 1], s=10, color=COLORS[0], alpha=0.6,
-               label=f'minimum-norm solution of {n_boot} bootstrap PLS')
-    ax.scatter([x_ensemble[0]], [x_ensemble[1]], s=90, marker='D', color=COLORS[2], zorder=4,
-               label='mean of the bootstrap solutions')
-    ax.scatter([x_single[0]], [x_single[1]], s=140, marker='*', color=COLORS[1], zorder=5,
-               label='minimum-norm solution of the single PLS')
-    ax.set_aspect('equal', adjustable='datalim')
-    ax.set_xlabel('x1', fontsize=font_size())
-    ax.set_ylabel('x2', fontsize=font_size())
-    ax.tick_params(labelsize=font_size(0.9))
-    ax.legend(fontsize=font_size(0.75), loc='upper left')
+    ax = axes[1]
+    ax.scatter(x_data[:, 0], x_data[:, 1], s=14, color='0.8', label='historical data')
+    ax.plot(input_line[:, 0], input_line[:, 1], color=COLORS[3], linewidth=1.2, linestyle='--',
+            label='solution line')
+    ax.scatter(x_boot[:, 0], x_boot[:, 1], s=12, color=COLORS[0], alpha=0.6,
+               label=f'{n_boot} bootstrap x*')
+    ax.scatter([x_ensemble[0]], [x_ensemble[1]], s=110, marker='D', color=COLORS[2], zorder=4,
+               label='bootstrap mean')
+    ax.scatter([x_single[0]], [x_single[1]], s=200, marker='*', color=COLORS[1], zorder=5, label='x*')
+    ax.set_xlabel('x1', fontsize=font_size(text_scale))
+    ax.set_ylabel('x2', fontsize=font_size(text_scale))
 
-    fig.tight_layout()
-    out_path = out_folder / 'bootstrap-solution-spread.png'
+    for ax in axes:
+        ax.axhline(0.0, color='0.6', linewidth=0.6)
+        ax.axvline(0.0, color='0.6', linewidth=0.6)
+        ax.set_aspect('equal', adjustable='datalim')
+        ax.tick_params(labelsize=font_size(text_scale * 0.9))
+        ax.legend(fontsize=font_size(text_scale * 0.8), loc='upper center', ncol=2,
+                  bbox_to_anchor=(0.5, -0.2), frameon=False, columnspacing=0.8, handletextpad=0.3)
+
+    fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
+    panel_caption(fig, [axes[0]], '(a)', y=0.0)
+    panel_caption(fig, [axes[1]], '(b)', y=0.0)
+    for text in fig.texts:
+        text.set_fontsize(font_size(text_scale))
+    out_path = out_folder / 'score-plane-null-space.png'
     out_folder.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
     plt.close(fig)
-    print(f'wrote {out_path}, single={np.round(x_single, 3)}, ensemble={np.round(x_ensemble, 3)}, '
-          f'spread (sd)={np.round(spread, 3)}')
+    print(f'wrote {out_path}, T2 limit={t2_limit:.2f}, A={np.round(point_a, 3)}, '
+          f'B={np.round(point_b, 3)}, t*={np.round(t_star, 3)}, x*={np.round(x_single, 3)}, '
+          f'bootstrap mean={np.round(x_ensemble, 3)}, spread (sd)={np.round(spread, 3)}')
     return out_path
 
 
-def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 5: the measured values, the sampled inputs and the parity plot of the forward model."""
+def fig_4(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 4: the measured values, the sampled inputs and the parity plot of the forward model."""
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     y_pred = pls.predict(x_data - x_mean).ravel() + y_mean
     residual = y_data - y_pred
@@ -265,8 +254,8 @@ def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 6: scores moved along the null space keep the predicted value."""
+def fig_5(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 5: scores moved along the null space keep the predicted value."""
     x_data, y_data, drift, x_mean, y_mean, pls = build_appendix_b_model()
     loadings, y_loadings = pls.x_loadings_, pls.y_loadings_
 
@@ -354,8 +343,8 @@ def mahalanobis_contour(ax, points: np.ndarray) -> None:
     ax.clabel(lines, fmt='%.0f', fontsize=font_size(0.8))
 
 
-def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 7: the measured values, the correlated inputs and the parity plot of Appendix C."""
+def fig_6(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 6: the measured values, the correlated inputs and the parity plot of Appendix C."""
     x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
     y_pred = forward.predict(x_data)
     residual = y_data - y_pred
@@ -425,8 +414,8 @@ def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 8: the constrained solution hits the target inside the validity domain."""
+def fig_7(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 7: the constrained solution hits the target inside the validity domain."""
     x_data, y_data, forward, pca, t2_limit, spe_limit = build_appendix_c_model()
 
     def t2(x_vec: np.ndarray) -> float:
@@ -531,8 +520,8 @@ def build_appendix_d_model() -> tuple:
     return data, surrogate, pca, t2_limit, spe_limit
 
 
-def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 9: the hidden model against T, the search in the A-B plane, the surrogate against P,
+def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 8: the hidden model against T, the search in the A-B plane, the surrogate against P,
     and the rows that were actually run within 2% of the solved A and B."""
     data, surrogate, pca, t2_limit, spe_limit = build_appendix_d_model()
     features = data[APPENDIX_D_FEATURES].to_numpy()
@@ -694,4 +683,3 @@ if __name__ == '__main__':
     fig_6(out_folder=arguments.output_folder)
     fig_7(out_folder=arguments.output_folder)
     fig_8(out_folder=arguments.output_folder)
-    fig_9(out_folder=arguments.output_folder)
