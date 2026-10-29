@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 8 | Created: 2026-09-10 | Updated: 2026-10-29 03:08 CDT
+Rev. 9 | Created: 2026-09-10 | Updated: 2026-10-29 22:27 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -53,19 +53,6 @@ Fig 1. Three independent axes of trace feature selection
 
 A method takes one value on each axis, and its value on one axis does not fix its value on another. Group lasso with sensor groups, fitted once, is Embedded, Sensor and Single fit; the same group lasso rerun over subsamples changes only its stability value, to Resampled. The mechanism axis is treated in §4, the selection unit axis in §5 and the stability axis in §6.
 
-The literature also classifies feature selection on four other axes, as in Table 1.
-
-Table 1. Other classification axes in the literature
-
-| Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                          |
-| :----------------: | :---------------------------------------------------------: | :-----------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Supervision        | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Follows from the mechanism axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch                                                         |
-| Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Divides the wrapper branch: sequential as branches 2.1 and 2.2, randomized as 2.3, exhaustive with no branch                                                               |
-| Output form        | Ranking, subset                                             | [[1](#ref-1)] | Follows from the branch: ranking from branches 1, 3.3 and 4, subset from branches 2, 3.1, 3.2 and 5                                                                        |
-| Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | Divides branches by the score used: Relief by similarity, mutual information and mRMR by information theory, lasso by sparse learning, Pearson r and ANOVA F by statistics |
-
-Each of the four either follows from the mechanism axis or subdivides one of its branches, so Fig 1 keeps only the three independent axes.
-
 The mechanism axis divides further by when the model is consulted, running from the branch that consults neither the model nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2).
 
 ```text
@@ -104,6 +91,19 @@ Trace feature selection
 Fig 2. Hierarchy of the mechanism axis by when the model is consulted
 
 Branch 0 runs first and consults no target, so it can leave a column that should have gone but cannot select a wrong one. Branches 1 to 3 differ by whether the model is consulted before the fit, around it, or inside it. Branch 4 probes a model that is already finished. Branch 5 alone answers with an error rate instead of a ranking, and it takes its input from any of branches 1 to 4. The branch boundaries that are easiest to cross by mistake are fixed in §4.1, §4.2, §4.4 and §4.5.
+
+The literature also classifies feature selection on four other axes, as in Table 1.
+
+Table 1. Other classification axes in the literature
+
+| Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                          |
+| :----------------: | :---------------------------------------------------------: | :-----------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Supervision        | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Follows from the mechanism axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch                                                         |
+| Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Divides the wrapper branch: sequential as branches 2.1 and 2.2, randomized as 2.3, exhaustive with no branch                                                               |
+| Output form        | Ranking, subset                                             | [[1](#ref-1)] | Follows from the branch: ranking from branches 1, 3.3 and 4, subset from branches 2, 3.1, 3.2 and 5                                                                        |
+| Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | Divides branches by the score used: Relief by similarity, mutual information and mRMR by information theory, lasso by sparse learning, Pearson r and ANOVA F by statistics |
+
+Each of the four either follows from the mechanism axis or subdivides one of its branches, so Fig 1 keeps only the three independent axes.
 
 ### 3.1 Comparison
 

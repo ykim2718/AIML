@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 8 | Created: 2026-09-10 | Updated: 2026-10-29 03:08 CDT
+Rev. 9 | Created: 2026-09-10 | Updated: 2026-10-29 22:27 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -53,19 +53,6 @@ Fig 1. Three independent axes of trace feature selection
 
 한 방법은 축마다 값 하나를 갖고, 한 축의 값이 다른 축의 값을 정하지 않는다. Sensor 로 묶은 group lasso 를 한 번 적합하면 Embedded, Sensor, Single fit 이고, 같은 group lasso 를 subsample 마다 다시 돌리면 stability 값만 Resampled 로 바뀐다. Mechanism 축은 §4, selection unit 축은 §5, stability 축은 §6 에서 다룬다.
 
-문헌은 feature selection 을 이 밖에 네 축으로도 나누며, Table 1 과 같다.
-
-Table 1. Other classification axes in the literature
-
-| Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                  |
-| :----------------: | :---------------------------------------------------------: | :-----------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Supervision        | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Mechanism 축에서 정해짐: 가지 0 은 unsupervised, 가지 1 부터 5 는 supervised, semi-supervised 는 해당 가지 없음                                                    |
-| Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Wrapper 가지를 다시 나눔: sequential 은 가지 2.1 과 2.2, randomized 는 2.3, exhaustive 는 해당 가지 없음                                                           |
-| Output form        | Ranking, subset                                             | [[1](#ref-1)] | 가지에서 정해짐: ranking 은 가지 1, 3.3, 4, subset 은 가지 2, 3.1, 3.2, 5                                                                                          |
-| Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | 쓰는 점수로 가지를 다시 나눔: Relief 는 similarity, mutual information 과 mRMR 은 information theory, lasso 는 sparse learning, Pearson r 과 ANOVA F 는 statistics |
-
-네 축은 모두 mechanism 축에서 값이 정해지거나 그 가지 하나를 다시 나누므로, Fig 1 에는 서로 독립인 세 축만 둔다.
-
 Mechanism 축은 model 을 언제 참조하는가로 다시 나뉜다. 계층은 model 도 target 도 참조하지 않는 가지에서 시작해 순위가 나온 뒤에야 쓰는 가지로 끝나며, 아래 [Fig 2](#fig-2) 와 같다.
 
 ```text
@@ -104,6 +91,19 @@ Trace feature selection
 Fig 2. Hierarchy of the mechanism axis by when the model is consulted
 
 가지 0 은 가장 먼저 돌고 target 을 보지 않으므로, 빼야 할 열을 남길 수는 있어도 엉뚱한 열을 고르지는 않는다. 가지 1 부터 3 까지는 model 을 적합 전에 참조하는가, 적합을 감싸서 참조하는가, 적합 안에서 참조하는가로 갈린다. 가지 4 는 적합이 끝난 model 을 probe 한다. 가지 5 만 순위 대신 오차율로 답하며, 가지 1 부터 4 가운데 어느 것의 결과든 입력으로 받는다. 잘못 넘기 쉬운 가지 경계는 §4.1, §4.2, §4.4, §4.5 에서 정한다.
+
+문헌은 feature selection 을 이 밖에 네 축으로도 나누며, Table 1 과 같다.
+
+Table 1. Other classification axes in the literature
+
+| Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                  |
+| :----------------: | :---------------------------------------------------------: | :-----------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Supervision        | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Mechanism 축에서 정해짐: 가지 0 은 unsupervised, 가지 1 부터 5 는 supervised, semi-supervised 는 해당 가지 없음                                                    |
+| Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Wrapper 가지를 다시 나눔: sequential 은 가지 2.1 과 2.2, randomized 는 2.3, exhaustive 는 해당 가지 없음                                                           |
+| Output form        | Ranking, subset                                             | [[1](#ref-1)] | 가지에서 정해짐: ranking 은 가지 1, 3.3, 4, subset 은 가지 2, 3.1, 3.2, 5                                                                                          |
+| Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | 쓰는 점수로 가지를 다시 나눔: Relief 는 similarity, mutual information 과 mRMR 은 information theory, lasso 는 sparse learning, Pearson r 과 ANOVA F 는 statistics |
+
+네 축은 모두 mechanism 축에서 값이 정해지거나 그 가지 하나를 다시 나누므로, Fig 1 에는 서로 독립인 세 축만 둔다.
 
 ### 3.1 Comparison
 
