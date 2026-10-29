@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 11 | Created: 2026-09-10 | Updated: 2026-10-29 22:49 UTC
+Rev. 12 | Created: 2026-09-10 | Updated: 2026-10-29 23:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -13,27 +13,26 @@ Rev. 11 | Created: 2026-09-10 | Updated: 2026-10-29 22:49 UTC
   - [4.5 Post-Hoc Ranking](#45-post-hoc-ranking)
   - [4.6 Error-Controlled Selection](#46-error-controlled-selection)
 - [5. Selection Unit Axis](#5-selection-unit-axis)
-- [6. Stability Axis](#6-stability-axis)
-- [7. Failure Modes](#7-failure-modes)
-- [8. Further Work](#8-further-work)
+- [6. Failure Modes](#6-failure-modes)
+- [7. Further Work](#7-further-work)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 
 - **Problem Statement**: One recipe's trace yields thousands of feature columns from hundreds of sensors while the wafer count stays in the hundreds, so a model fitted on all of them learns chance correlation and names nothing a process engineer can adjust.
-- **Goal**: Place the selection methods on three axes — evaluation criterion, selection unit, stability — so that a reader can name which axis position a candidate method takes and what its answer therefore does not cover.
+- **Goal**: Place the selection methods on the four axes of Fig 1 — evaluation criterion, label availability, search strategy, selection unit — so that a reader can name which axis position a candidate method takes and what its answer therefore does not cover.
 - **Non-Goal**: Scoring a single feature, the subject of [Feature Importance](../../Feature-Importance/feature-importance.md), is not covered here.
 
 ## 2. Summary
 
-A method that selects trace features has to be placed on three axes — evaluation criterion, selection unit and stability — before it is clear what its answer does not cover. The evaluation criterion axis fixes what the answer is a property of and what it costs, the selection unit axis decides whether the selected set can be acted on in the process, and the stability axis decides whether the set reappears when the wafers change. With wafers in the hundreds against columns in the thousands, the last two axes usually decide whether a selected set on trace data can be used.
+A method that selects trace features has to be placed on four axes — evaluation criterion, label availability, search strategy and selection unit — before it is clear what its answer does not cover. The evaluation criterion axis fixes what the answer is a property of and what it costs, and the selection unit axis decides whether the selected set can be acted on in the process. With wafers in the hundreds against columns in the thousands, a selection from one fit also changes when the wafers change, and the subsampling member of the error-controlled branch addresses that change.
 
 ## 3. Taxonomy and its Hierarchy
 
-A method that selects trace features takes one value on each of three independent axes: evaluation criterion, selection unit and stability. The evaluation criterion axis, named after the evaluation criteria of Liu and Yu [[1](#ref-1)], extends the filter, wrapper and embedded division of the selection literature [[2](#ref-2)], [[3](#ref-3)] with preprocessing, post-hoc ranking and error-controlled selection. The other two axes come from the shape of trace data: one column names a sensor, a recipe step and a statistic at once, and the wafer count is far below the column count.
+A method that selects trace features takes one value on each of four axes: evaluation criterion, label availability, search strategy and selection unit. The evaluation criterion axis, named after the evaluation criteria of Liu and Yu [[1](#ref-1)], extends the filter, wrapper and embedded division of the selection literature [[2](#ref-2)], [[3](#ref-3)] with preprocessing, post-hoc ranking and error-controlled selection. The selection unit axis comes from the shape of trace data: one column names a sensor, a recipe step and a statistic at once.
 
-The three axes and the values on each are as in [Fig 1](#fig-1).
+The four axes and the values on each are as in [Fig 1](#fig-1).
 
 ```text
 Trace feature selection
@@ -41,73 +40,65 @@ Trace feature selection
 +-- Evaluation criterion ... when the model is consulted
 |     Preprocessing | Filter | Wrapper | Embedded | Post-hoc ranking | Error-controlled
 |
-+-- Selection unit ......... what one selected item stands for
-|     Column | Sensor | Step window | Statistic family
++-- Label availability ..... whether target labels are used
+|     Supervised | Unsupervised | Semi-supervised
 |
-+-- Stability .............. how the selection is checked against a change of wafers
-      Single fit | Resampled | Error-bounded
++-- Search strategy ........ how candidate subsets are generated
+|     Exhaustive | Sequential | Randomized
+|
++-- Selection unit ......... what one selected item stands for
+      Column | Sensor | Step window | Statistic family
 ```
 
 <a id="fig-1"></a>
-Fig 1. Three independent axes of trace feature selection
+Fig 1. Feature selection taxonomy for trace data
 
-A method takes one value on each axis, and its value on one axis does not fix its value on another. Group lasso with sensor groups, fitted once, is Embedded, Sensor and Single fit; the same group lasso rerun over subsamples changes only its stability value, to Resampled. The evaluation criterion axis is treated in §4, the selection unit axis in §5 and the stability axis in §6.
+Evaluation criterion and search strategy are two of the dimensions of Liu and Yu [[1](#ref-1)], label availability is the division of Li et al. [[4](#ref-4)], and selection unit is added by this document for trace data; no single source combines the four. A method takes one value on each axis. Group lasso with sensor groups is Embedded, Supervised, without a subset search, and Sensor; grouped by recipe step instead, it changes only its selection unit, to Step window. The evaluation criterion axis is treated in §4 and the selection unit axis in §5.
 
-The evaluation criterion axis divides further by when the model is consulted, running from the branch that consults neither the model nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2).
+The evaluation criterion axis divides further by when the model is consulted, running from the branch that consults neither the model nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2), where the right-hand columns give the label availability, search strategy and selection unit of each line.
 
 ```text
-Trace feature selection
+Trace feature selection                                                                     Label availability | Search strategy | Selection unit
 |
 +-- 0. Preprocessing (the target is not consulted)
-|   +-- Constancy ................... zero-variance drop, dead-sensor drop
-|   +-- Redundancy .................. correlation clustering, near-duplicate drop
+|   +-- Constancy ................... zero-variance drop, dead-sensor drop                  Unsupervised       | -               | Column, sensor
+|   +-- Redundancy .................. correlation clustering, near-duplicate drop           Unsupervised       | -               | Column
 |
 +-- 1. Filter (scored before any model is fitted)
-|   +-- 1.1 Univariate .............. Pearson r, Spearman rho, ANOVA F, mutual information
-|   +-- 1.2 Multivariate ............ mRMR, correlation-filtered ranking
-|   +-- 1.3 Neighbour contrast ...... Relief, ReliefF, RReliefF
+|   +-- 1.1 Univariate .............. Pearson r, Spearman rho, ANOVA F, mutual information  Supervised         | -               | Column
+|   +-- 1.2 Multivariate ............ mRMR, correlation-filtered ranking                    Supervised         | Sequential      | Column
+|   +-- 1.3 Neighbour contrast ...... Relief, ReliefF, RReliefF                             Supervised         | -               | Column
 |
 +-- 2. Wrapper (a model is refitted for each candidate subset)
-|   +-- 2.1 Backward ................ RFE, backward elimination
-|   +-- 2.2 Forward ................. forward selection, stepwise
-|   +-- 2.3 Stochastic search ....... genetic search, simulated annealing
+|   +-- 2.1 Backward ................ RFE, backward elimination                             Supervised         | Sequential      | Column
+|   +-- 2.2 Forward ................. forward selection, stepwise                           Supervised         | Sequential      | Column
+|   +-- 2.3 Stochastic search ....... genetic search, simulated annealing                   Supervised         | Randomized      | Column
 |
 +-- 3. Embedded (selection is a term of the training objective)
-|   +-- 3.1 Column penalty .......... lasso, elastic net
-|   +-- 3.2 Group penalty ........... group lasso, sparse group lasso
-|   +-- 3.3 Split structure ......... MDI, split count, gain
+|   +-- 3.1 Column penalty .......... lasso, elastic net                                    Supervised         | -               | Column
+|   +-- 3.2 Group penalty ........... group lasso, sparse group lasso                       Supervised         | -               | Sensor, step window, statistic family
+|   +-- 3.3 Split structure ......... MDI, split count, gain                                Supervised         | -               | Column
 |
 +-- 4. Post-hoc ranking (the fit is finished, the model is then probed)
-|   +-- 4.1 Removal ................. permutation importance, drop-column
-|   +-- 4.2 Attribution ............. SHAP, LIME
-|   +-- 4.3 Attention ............... attention weight, diagnostic only
+|   +-- 4.1 Removal ................. permutation importance, drop-column                   Supervised         | -               | Column
+|   +-- 4.2 Attribution ............. SHAP, LIME                                            Supervised         | -               | Column
+|   +-- 4.3 Attention ............... attention weight, diagnostic only                     Supervised         | -               | Column
 |
 +-- 5. Error-controlled (a selected set with a stated error bound)
-    +-- 5.1 Subsampling ............. stability selection
-    +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs
+    +-- 5.1 Subsampling ............. stability selection                                   Supervised         | -               | Unit of the base selector
+    +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs                  Supervised         | -               | Column
 ```
 
 <a id="fig-2"></a>
 Fig 2. Hierarchy of the evaluation criterion axis by when the model is consulted
 
-Branch 0 runs first and consults no target, so it can leave a column that should have gone but cannot select a wrong one. Branches 1 to 3 differ by whether the model is consulted before the fit, around it, or inside it. Branch 4 probes a model that is already finished. Branch 5 alone answers with an error rate instead of a ranking, and it takes its input from any of branches 1 to 4. The branch boundaries that are easiest to cross by mistake are fixed in §4.1, §4.2, §4.4 and §4.5.
-
-The literature also classifies feature selection on two other axes, as in Table 1.
-
-Table 1. Other classification axes in the literature
-
-| Axis               | Values                                    | Source        | Relation to Fig 1                                                                                                             |
-| :----------------: | :---------------------------------------: | :-----------: | :---------------------------------------------------------------------------------------------------------------------------: |
-| Label availability | Supervised, unsupervised, semi-supervised | [[4](#ref-4)] | Follows from the evaluation criterion axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch |
-| Search strategy    | Exhaustive, sequential, randomized        | [[1](#ref-1)] | Divides the wrapper branch: sequential as branches 2.1 and 2.2, randomized as 2.3, exhaustive with no branch                  |
-
-Each of the two either follows from the evaluation criterion axis or subdivides one of its branches, so Fig 1 keeps only the three independent axes.
+Branch 0 runs first and consults no target, so it can leave a column that should have gone but cannot select a wrong one. Branches 1 to 3 differ by whether the model is consulted before the fit, around it, or inside it. Branch 4 probes a model that is already finished. Branch 5 alone answers with an error rate instead of a ranking, and it takes its input from any of branches 1 to 4. The branch boundaries that are easiest to cross by mistake are fixed in §4.1, §4.2, §4.4 and §4.5. In the right-hand columns, - marks a line whose members do not search over subsets; no line is semi-supervised or exhaustive, and branch 5.1 takes its selection unit from its base selector.
 
 ### 3.1 Comparison
 
-The branch of Fig 2 that answers each question asked of a trace feature list is as in Table 2.
+The branch of Fig 2 that answers each question asked of a trace feature list is as in Table 1.
 
-Table 2. Question and the branch that answers it
+Table 1. Question and the branch that answers it
 
 | Question                                                         | Branch                  | Note                                                         |
 | :--------------------------------------------------------------: | :---------------------: | :----------------------------------------------------------: |
@@ -128,9 +119,9 @@ The number in the second column is the branch number of Fig 2, and a row that na
 
 ## 4. Evaluation Criterion Axis
 
-The evaluation criterion axis places a branch by when the model is consulted, which fixes what the answer is a property of and what it costs, as in Table 3.
+The evaluation criterion axis places a branch by when the model is consulted, which fixes what the answer is a property of and what it costs, as in Table 2.
 
-Table 3. Branches of the evaluation criterion axis
+Table 2. Branches of the evaluation criterion axis
 
 | Branch              | When the model is consulted                   | The answer is a property of                 | Cost                                  |
 | :-----------------: | :-------------------------------------------: | :-----------------------------------------: | :-----------------------------------: |
@@ -161,9 +152,9 @@ The members of the branch divide into univariate members, which score a feature 
 
 The third kind is neighbour contrast. Relief and its variants score a feature by contrasting each row with its nearest neighbours of the same and of the opposite class, so a feature that matters only in combination with another still receives a score, which no marginal criterion can produce [[6](#ref-6)]. The output is one number per feature, as with the univariate members, but the computation is not marginal, so it is kept as branch 1.3 apart from branch 1.1.
 
-The members compare as in Table 4.
+The members compare as in Table 3.
 
-Table 4. Filter methods
+Table 3. Filter methods
 
 | Method               | Criterion                                           | Sees redundancy | Sees interaction |
 | :------------------: | :-------------------------------------------------: | :-------------: | :--------------: |
@@ -180,9 +171,9 @@ The threshold is set loosely. None of the univariate members can see a feature t
 
 The wrapper branch scores a subset by the performance of a model refitted on it, so its answer is a property of that model and its cost is one refit per step [[7](#ref-7)].
 
-The search direction and the cost of each member are as in Table 5.
+The search direction and the cost of each member are as in Table 4.
 
-Table 5. Wrapper methods
+Table 4. Wrapper methods
 
 | Method               | Search direction                           | Refits per step                   | Failure on a wide table                                                             |
 | :------------------: | :----------------------------------------: | :-------------------------------: | :---------------------------------------------------------------------------------: |
@@ -198,9 +189,9 @@ RFE was introduced on gene expression data, where the column count exceeds the r
 
 The embedded branch costs one fit: the selection is read from the objective being minimized, without an outer search over subsets.
 
-The penalty and the selection unit of each member are as in Table 6.
+The penalty and the selection unit of each member are as in Table 5.
 
-Table 6. Embedded methods
+Table 5. Embedded methods
 
 | Method             | Penalty                          | Selection unit     | Effect of the unit                                                           |
 | :----------------: | :------------------------------: | :----------------: | :--------------------------------------------------------------------------: |
@@ -210,7 +201,7 @@ Table 6. Embedded methods
 | Sparse group lasso | Group and column penalties mixed | Group, then column | A sensor kept with only some of its statistics                               |
 | MDI                | None; read off the splits        | One column         | Nothing beyond the fit already performed                                     |
 
-Lasso is unstable on the correlated columns of a trace table, and the elastic net corrects it. When two columns are strongly correlated, lasso selects one of them and zeroes the other, and which one it selects is not determined by the data in any stable way; the L2 term added by the elastic net makes correlated columns enter and leave together [[9](#ref-9)]. The correction answers the stability problem of §6 only in part, since it groups columns by correlation and not by the physical object the engineer acts on.
+Lasso is unstable on the correlated columns of a trace table, and the elastic net corrects it. When two columns are strongly correlated, lasso selects one of them and zeroes the other, and which one it selects is not determined by the data in any stable way; the L2 term added by the elastic net makes correlated columns enter and leave together [[9](#ref-9)]. The correction addresses the instability across wafers described in §4.6 only in part, since it groups columns by correlation and not by the physical object the engineer acts on.
 
 Tree importance is two different methods under one name, and only MDI is embedded. MDI, the impurity decrease accumulated over the splits a feature was used in, is read off the tree structure the training procedure built, so it is embedded and sits in branch 3.3. Permutation importance shuffles a column of a finished model's input and measures the change in loss, so it is post-hoc and belongs in branch 4.1 (§4.5).
 
@@ -220,9 +211,9 @@ On a trace table the distinction changes the ranking. MDI is biased toward featu
 
 The post-hoc ranking branch is a filter applied to a fitted model instead of to raw data, and it has the filter's defect: it gives a ranking and no cut-off.
 
-What each member disturbs and whether it needs labels are as in Table 7.
+What each member disturbs and whether it needs labels are as in Table 6.
 
-Table 7. Post-hoc ranking methods
+Table 6. Post-hoc ranking methods
 
 | Method                 | What is disturbed                          | Labels required | Scope of the result                                     |
 | :--------------------: | :----------------------------------------: | :-------------: | :-----------------------------------------------------: |
@@ -242,9 +233,9 @@ Attention weights face a second objection, apart from the branch they belong to.
 
 The error-controlled branch costs more and in return bounds how many of the selected features are there by chance, which no other branch does.
 
-How each member is constructed and what it bounds are as in Table 8.
+How each member is constructed and what it bounds are as in Table 7.
 
-Table 8. Error-controlled methods
+Table 7. Error-controlled methods
 
 | Method              | Construction                                                        | What is bounded                    | Price                                                          |
 | :-----------------: | :-----------------------------------------------------------------: | :--------------------------------: | :------------------------------------------------------------: |
@@ -254,13 +245,19 @@ Table 8. Error-controlled methods
 
 Of all the branches, this one alone answers "which features can be reported as real". Model-X knockoffs construct a synthetic copy of each feature that carries its correlation structure but is independent of the target given the rest, then keep the features whose score exceeds that of their own copies by a threshold set to hold the false discovery rate below a chosen level [[16](#ref-16)]. The price is the joint distribution of the features, which for a trace table is estimable only under an assumed structure, and the guarantee is no stronger than that assumption.
 
+Stability selection is the subsampling member of the branch: the base selector is rerun over subsamples, the selection frequency of each feature is counted, and the features above a threshold are kept, with a finite-sample bound on the expected number of falsely selected features under stated conditions [[17](#ref-17)]. The resampling wraps any selector from branches 1 to 4 without changing it.
+
+On trace data a selection from one fit changes when the wafers change. With wafers in the hundreds against features in the thousands, physically paired sensors — forward and reflected RF power, adjacent thermocouples, a flow setpoint and its readback — correlate so strongly that a penalized fit's choice between two columns is settled by noise rather than by signal. Refitting on a different subset of the wafers therefore changes which member of each pair is selected.
+
+The frequency curve is itself the finding, and reading only the thresholded set loses it. A feature selected in nearly every subsample and a feature selected in just over half of them are two different results, reported identically by a single fit. Two conditions have to hold for the frequency to mean anything: the subsamples must respect the lot, since wafers processed together are not independent draws, and they must respect the processing order, since a split that mixes early and late wafers hides the drift that the selection is supposed to survive.
+
 ## 5. Selection Unit Axis
 
 The unit a method selects at decides whether its answer can be acted on, and on a trace table the actionable unit is the sensor or the recipe step rather than the column. A trace feature table is built by applying a set of summary statistics to each sensor over each recipe step, so one column names three things at once — which sensor, which step, which statistic — and only the sensor and the step correspond to something a line can change. A column-unit selection can keep the maximum of the forward RF power, drop its mean, and keep the maximum of the reflected RF power; that set is a valid model input and an instruction no one can carry out.
 
-What one selected item is at each unit, and the action it leads to, are as in Table 9.
+What one selected item is at each unit, and the action it leads to, are as in Table 8.
 
-Table 9. Selection units
+Table 8. Selection units
 
 | Unit             | One selected item is                      | The action it maps to                    | Method that selects at it             |
 | :--------------: | :---------------------------------------: | :--------------------------------------: | :-----------------------------------: |
@@ -269,29 +266,11 @@ Table 9. Selection units
 | Step window      | Every statistic over one recipe step      | Change or hold that step                 | Group lasso with step groups          |
 | Statistic family | One statistic across every sensor         | Change what is reduced from the trace    | Group lasso with statistic groups     |
 
-The group is declared before the fit and cannot be recovered after it, so the selection unit is an axis and not a post-processing choice. Group lasso applies an L2 norm to each group's coefficient vector and sums those norms as an L1, so the whole group is driven to zero together or kept together [[17](#ref-17)]. Sparse group lasso adds a column penalty on top, which is the form that answers "use this sensor but only two of its statistics" — a decision that is actionable at the collection level and economical at the model level [[18](#ref-18)].
+The group is declared before the fit and cannot be recovered after it, so the selection unit is an axis and not a post-processing choice. Group lasso applies an L2 norm to each group's coefficient vector and sums those norms as an L1, so the whole group is driven to zero together or kept together [[18](#ref-18)]. Sparse group lasso adds a column penalty on top, which is the form that answers "use this sensor but only two of its statistics" — a decision that is actionable at the collection level and economical at the model level [[19](#ref-19)].
 
 The column unit answers a different question — which numbers a model needs — and that question is the right one when the collection set is already fixed and only the model is being trimmed. The error is to answer at the column unit and report the answer as a sensor list.
 
-## 6. Stability Axis
-
-On trace data the value that matters on this axis is Resampled: a selection from one fit changes when the wafers change. With wafers in the hundreds against features in the thousands, physically paired sensors — forward and reflected RF power, adjacent thermocouples, a flow setpoint and its readback — correlate so strongly that a penalized fit's choice between two columns is settled by noise rather than by signal. Refitting on a different subset of the wafers therefore changes which member of each pair is selected.
-
-The procedure and the reported result at each value of the axis are as in Table 10.
-
-Table 10. Stability positions
-
-| Position      | Procedure                                        | What is reported                                  | Cost                                |
-| :-----------: | :----------------------------------------------: | :-----------------------------------------------: | :---------------------------------: |
-| Single fit    | The selector run once on all rows                | One subset, with no spread around it              | One run                             |
-| Resampled     | The selector run on each of B subsamples         | A selection frequency per feature                 | B runs                              |
-| Error-bounded | Resampled, with the threshold set from the bound | A subset with a bound on expected false positives | B runs, plus the bound's conditions |
-
-Stability selection is the Resampled value made into a method: the base selector is rerun over subsamples, the selection frequency of each feature is counted, and the features above a threshold are kept, with a finite-sample bound on the expected number of falsely selected features under stated conditions [[19](#ref-19)]. The bound makes it branch 5.1 of Fig 2, and since the resampling wraps any selector from branches 1 to 4 without changing it, it is also a value of the stability axis.
-
-The frequency curve is itself the finding, and reading only the thresholded set loses it. A feature selected in nearly every subsample and a feature selected in just over half of them are two different results, reported identically by a single fit. Two conditions have to hold for the frequency to mean anything: the subsamples must respect the lot, since wafers processed together are not independent draws, and they must respect the processing order, since a split that mixes early and late wafers hides the drift that the selection is supposed to survive.
-
-## 7. Failure Modes
+## 6. Failure Modes
 
 Each defect below belongs to a method rather than to an implementation, and each is reached by a procedure that looks correct at every step.
 
@@ -304,7 +283,7 @@ Each defect below belongs to a method rather than to an implementation, and each
 - **Permutation over correlated columns.** The model evaluated on rows the process cannot produce, with its behaviour there entering the score [[21](#ref-21)].
 - **A set selected on one chamber.** Local chamber state instead of process physics, not transferring to the next chamber.
 
-## 8. Further Work
+## 7. Further Work
 
 - **Selection at the trace-segment unit.** A unit finer than the recipe step and coarser than the column, choosing the time window within a step that carries the response. It is reachable now because the feature-based framing of virtual metrology has moved from whole-trace summaries to segment features with a stated physical meaning [[22](#ref-22)]. It needs traces aligned to a common time base within a step, which step boundaries alone do not supply when the step length varies by wafer.
 - **Group knockoffs for the sensor unit.** The error-controlled branch applied at the sensor unit of §5, so that a reported sensor list carries a false discovery rate instead of a ranking. It is reachable now because model-X knockoffs moved the requirement from more rows than columns to a known joint distribution of the features [[16](#ref-16)], which a wide trace table can meet in principle. It needs a validated covariance model for the sensor set, since the guarantee is no stronger than the distribution assumed for the synthetic copies.
@@ -344,11 +323,11 @@ Each defect below belongs to a method rather than to an implementation, and each
 <a id="ref-16"></a>
 [16] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.<br>
 <a id="ref-17"></a>
-[17] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
+[17] Meinshausen, N. and Bühlmann, P. (2010). [Stability selection](https://doi.org/10.1111/j.1467-9868.2010.00740.x). *Journal of the Royal Statistical Society: Series B*, 72(4), 417–473.<br>
 <a id="ref-18"></a>
-[18] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
+[18] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
 <a id="ref-19"></a>
-[19] Meinshausen, N. and Bühlmann, P. (2010). [Stability selection](https://doi.org/10.1111/j.1467-9868.2010.00740.x). *Journal of the Royal Statistical Society: Series B*, 72(4), 417–473.<br>
+[19] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
 <a id="ref-20"></a>
 [20] Ambroise, C. and McLachlan, G. J. (2002). [Selection bias in gene extraction on the basis of microarray gene-expression data](https://doi.org/10.1073/pnas.102102699). *Proceedings of the National Academy of Sciences*, 99(10), 6562–6566.<br>
 <a id="ref-21"></a>
