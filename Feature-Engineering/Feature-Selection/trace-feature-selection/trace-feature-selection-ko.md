@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 9 | Created: 2026-09-10 | Updated: 2026-10-29 22:27 UTC
+Rev. 10 | Created: 2026-09-10 | Updated: 2026-10-29 22:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -98,7 +98,7 @@ Table 1. Other classification axes in the literature
 
 | Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                  |
 | :----------------: | :---------------------------------------------------------: | :-----------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Supervision        | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Mechanism 축에서 정해짐: 가지 0 은 unsupervised, 가지 1 부터 5 는 supervised, semi-supervised 는 해당 가지 없음                                                    |
+| Label availability | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Mechanism 축에서 정해짐: 가지 0 은 unsupervised, 가지 1 부터 5 는 supervised, semi-supervised 는 해당 가지 없음                                                    |
 | Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Wrapper 가지를 다시 나눔: sequential 은 가지 2.1 과 2.2, randomized 는 2.3, exhaustive 는 해당 가지 없음                                                           |
 | Output form        | Ranking, subset                                             | [[1](#ref-1)] | 가지에서 정해짐: ranking 은 가지 1, 3.3, 4, subset 은 가지 2, 3.1, 3.2, 5                                                                                          |
 | Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | 쓰는 점수로 가지를 다시 나눔: Relief 는 similarity, mutual information 과 mRMR 은 information theory, lasso 는 sparse learning, Pearson r 과 ANOVA F 는 statistics |

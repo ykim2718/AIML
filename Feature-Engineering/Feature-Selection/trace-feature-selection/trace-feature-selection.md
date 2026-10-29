@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 9 | Created: 2026-09-10 | Updated: 2026-10-29 22:27 UTC
+Rev. 10 | Created: 2026-09-10 | Updated: 2026-10-29 22:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -98,7 +98,7 @@ Table 1. Other classification axes in the literature
 
 | Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                          |
 | :----------------: | :---------------------------------------------------------: | :-----------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Supervision        | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Follows from the mechanism axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch                                                         |
+| Label availability | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Follows from the mechanism axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch                                                         |
 | Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Divides the wrapper branch: sequential as branches 2.1 and 2.2, randomized as 2.3, exhaustive with no branch                                                               |
 | Output form        | Ranking, subset                                             | [[1](#ref-1)] | Follows from the branch: ranking from branches 1, 3.3 and 4, subset from branches 2, 3.1, 3.2 and 5                                                                        |
 | Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | Divides branches by the score used: Relief by similarity, mutual information and mRMR by information theory, lasso by sparse learning, Pearson r and ANOVA F by statistics |
