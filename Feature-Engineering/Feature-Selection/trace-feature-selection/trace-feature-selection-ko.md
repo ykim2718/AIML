@@ -1,11 +1,11 @@
 # Trace Feature Selection
-Rev. 10 | Created: 2026-09-10 | Updated: 2026-10-29 22:45 UTC
+Rev. 11 | Created: 2026-09-10 | Updated: 2026-10-29 22:49 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
   - [3.1 Comparison](#31-comparison)
-- [4. Mechanism Axis](#4-mechanism-axis)
+- [4. Evaluation Criterion Axis](#4-evaluation-criterion-axis)
   - [4.1 Preprocessing](#41-preprocessing)
   - [4.2 Filter](#42-filter)
   - [4.3 Wrapper](#43-wrapper)
@@ -22,38 +22,38 @@ Rev. 10 | Created: 2026-09-10 | Updated: 2026-10-29 22:45 UTC
 ## 1. Purpose
 
 - **Problem Statement**: Recipe 하나의 trace 는 sensor 수백 개에서 feature 수천 열을 만들지만 wafer 는 수백 장에 그쳐, 이 열을 모두 넣고 적합한 model 은 우연 상관을 학습하고 공정 담당자가 조정할 대상을 알려 주지 못한다.
-- **Goal**: 선택 방법을 mechanism, selection unit, stability 의 세 축 위에 놓아, 독자가 어떤 방법이 축마다 어느 값을 갖는지와 그 때문에 답이 다루지 못하는 것을 짚을 수 있게 한다.
+- **Goal**: 선택 방법을 evaluation criterion, selection unit, stability 의 세 축 위에 놓아, 독자가 어떤 방법이 축마다 어느 값을 갖는지와 그 때문에 답이 다루지 못하는 것을 짚을 수 있게 한다.
 - **Non-Goal**: Feature 하나에 점수를 매기는 일은 다루지 않는다. 이 주제는 [Feature Importance](../../Feature-Importance/feature-importance.md) 에 있다.
 
 ## 2. Summary
 
-Trace feature 를 고르는 방법은 mechanism, selection unit, stability 의 세 축 위에 놓아야 그 답이 다루지 못하는 것이 드러난다. Mechanism 축은 답이 무엇의 성질인지와 비용을 정하고, selection unit 축은 고른 집합을 공정에서 실행할 수 있는지를, stability 축은 wafer 가 바뀌어도 같은 집합이 다시 선택되는지를 정한다. Trace data 는 wafer 수백 장에 열 수천 개여서, 고른 집합을 쓸 수 있는지는 뒤의 두 축이 정하는 경우가 많다.
+Trace feature 를 고르는 방법은 evaluation criterion, selection unit, stability 의 세 축 위에 놓아야 그 답이 다루지 못하는 것이 드러난다. Evaluation criterion 축은 답이 무엇의 성질인지와 비용을 정하고, selection unit 축은 고른 집합을 공정에서 실행할 수 있는지를, stability 축은 wafer 가 바뀌어도 같은 집합이 다시 선택되는지를 정한다. Trace data 는 wafer 수백 장에 열 수천 개여서, 고른 집합을 쓸 수 있는지는 뒤의 두 축이 정하는 경우가 많다.
 
 ## 3. Taxonomy and its Hierarchy
 
-Trace feature 를 고르는 방법은 서로 독립인 세 축, 곧 mechanism, selection unit, stability 에서 각각 값 하나를 갖는다. Mechanism 축은 feature selection 문헌의 filter, wrapper, embedded 구분 [[1](#ref-1)], [[2](#ref-2)] 에 preprocessing, post-hoc ranking, error-controlled selection 을 더한 것이다. 나머지 두 축은 trace data 의 모양에서 나온다. 열 하나가 sensor, recipe step, 요약통계를 함께 가리키고, wafer 수가 열 수보다 훨씬 적다.
+Trace feature 를 고르는 방법은 서로 독립인 세 축, 곧 evaluation criterion, selection unit, stability 에서 각각 값 하나를 갖는다. Evaluation criterion 축은 이름을 Liu & Yu [[1](#ref-1)] 의 evaluation criteria 에서 따왔으며, feature selection 문헌의 filter, wrapper, embedded 구분 [[2](#ref-2)], [[3](#ref-3)] 에 preprocessing, post-hoc ranking, error-controlled selection 을 더한 것이다. 나머지 두 축은 trace data 의 모양에서 나온다. 열 하나가 sensor, recipe step, 요약통계를 함께 가리키고, wafer 수가 열 수보다 훨씬 적다.
 
 세 축과 축마다의 값은 아래 [Fig 1](#fig-1) 과 같다.
 
 ```text
 Trace feature selection
 |
-+-- Mechanism ........ when the model is consulted
++-- Evaluation criterion ... when the model is consulted
 |     Preprocessing | Filter | Wrapper | Embedded | Post-hoc ranking | Error-controlled
 |
-+-- Selection unit ... what one selected item stands for
++-- Selection unit ......... what one selected item stands for
 |     Column | Sensor | Step window | Statistic family
 |
-+-- Stability ........ how the selection is checked against a change of wafers
++-- Stability .............. how the selection is checked against a change of wafers
       Single fit | Resampled | Error-bounded
 ```
 
 <a id="fig-1"></a>
 Fig 1. Three independent axes of trace feature selection
 
-한 방법은 축마다 값 하나를 갖고, 한 축의 값이 다른 축의 값을 정하지 않는다. Sensor 로 묶은 group lasso 를 한 번 적합하면 Embedded, Sensor, Single fit 이고, 같은 group lasso 를 subsample 마다 다시 돌리면 stability 값만 Resampled 로 바뀐다. Mechanism 축은 §4, selection unit 축은 §5, stability 축은 §6 에서 다룬다.
+한 방법은 축마다 값 하나를 갖고, 한 축의 값이 다른 축의 값을 정하지 않는다. Sensor 로 묶은 group lasso 를 한 번 적합하면 Embedded, Sensor, Single fit 이고, 같은 group lasso 를 subsample 마다 다시 돌리면 stability 값만 Resampled 로 바뀐다. Evaluation criterion 축은 §4, selection unit 축은 §5, stability 축은 §6 에서 다룬다.
 
-Mechanism 축은 model 을 언제 참조하는가로 다시 나뉜다. 계층은 model 도 target 도 참조하지 않는 가지에서 시작해 순위가 나온 뒤에야 쓰는 가지로 끝나며, 아래 [Fig 2](#fig-2) 와 같다.
+Evaluation criterion 축은 model 을 언제 참조하는가로 다시 나뉜다. 계층은 model 도 target 도 참조하지 않는 가지에서 시작해 순위가 나온 뒤에야 쓰는 가지로 끝나며, 아래 [Fig 2](#fig-2) 와 같다.
 
 ```text
 Trace feature selection
@@ -88,22 +88,20 @@ Trace feature selection
 ```
 
 <a id="fig-2"></a>
-Fig 2. Hierarchy of the mechanism axis by when the model is consulted
+Fig 2. Hierarchy of the evaluation criterion axis by when the model is consulted
 
 가지 0 은 가장 먼저 돌고 target 을 보지 않으므로, 빼야 할 열을 남길 수는 있어도 엉뚱한 열을 고르지는 않는다. 가지 1 부터 3 까지는 model 을 적합 전에 참조하는가, 적합을 감싸서 참조하는가, 적합 안에서 참조하는가로 갈린다. 가지 4 는 적합이 끝난 model 을 probe 한다. 가지 5 만 순위 대신 오차율로 답하며, 가지 1 부터 4 가운데 어느 것의 결과든 입력으로 받는다. 잘못 넘기 쉬운 가지 경계는 §4.1, §4.2, §4.4, §4.5 에서 정한다.
 
-문헌은 feature selection 을 이 밖에 네 축으로도 나누며, Table 1 과 같다.
+문헌은 feature selection 을 이 밖에 두 축으로도 나누며, Table 1 과 같다.
 
 Table 1. Other classification axes in the literature
 
-| Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                  |
-| :----------------: | :---------------------------------------------------------: | :-----------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Label availability | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Mechanism 축에서 정해짐: 가지 0 은 unsupervised, 가지 1 부터 5 는 supervised, semi-supervised 는 해당 가지 없음                                                    |
-| Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Wrapper 가지를 다시 나눔: sequential 은 가지 2.1 과 2.2, randomized 는 2.3, exhaustive 는 해당 가지 없음                                                           |
-| Output form        | Ranking, subset                                             | [[1](#ref-1)] | 가지에서 정해짐: ranking 은 가지 1, 3.3, 4, subset 은 가지 2, 3.1, 3.2, 5                                                                                          |
-| Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | 쓰는 점수로 가지를 다시 나눔: Relief 는 similarity, mutual information 과 mRMR 은 information theory, lasso 는 sparse learning, Pearson r 과 ANOVA F 는 statistics |
+| Axis               | Values                                    | Source        | Relation to Fig 1                                                                                                          |
+| :----------------: | :---------------------------------------: | :-----------: | :------------------------------------------------------------------------------------------------------------------------: |
+| Label availability | Supervised, unsupervised, semi-supervised | [[4](#ref-4)] | Evaluation criterion 축에서 정해짐: 가지 0 은 unsupervised, 가지 1 부터 5 는 supervised, semi-supervised 는 해당 가지 없음 |
+| Search strategy    | Exhaustive, sequential, randomized        | [[1](#ref-1)] | Wrapper 가지를 다시 나눔: sequential 은 가지 2.1 과 2.2, randomized 는 2.3, exhaustive 는 해당 가지 없음                   |
 
-네 축은 모두 mechanism 축에서 값이 정해지거나 그 가지 하나를 다시 나누므로, Fig 1 에는 서로 독립인 세 축만 둔다.
+두 축은 모두 evaluation criterion 축에서 값이 정해지거나 그 가지 하나를 다시 나누므로, Fig 1 에는 서로 독립인 세 축만 둔다.
 
 ### 3.1 Comparison
 
@@ -128,11 +126,11 @@ Table 2. Question and the branch that answers it
 
 둘째 열의 번호는 Fig 2 의 가지 번호이고, 묶는 단위를 적은 행은 §5 의 selection unit 을 따른다.
 
-## 4. Mechanism Axis
+## 4. Evaluation Criterion Axis
 
-Mechanism 축은 model 을 언제 참조하는가로 가지를 나누며, 이에 따라 답이 무엇의 성질인지와 비용이 정해진다. 가지마다의 값은 Table 3 과 같다.
+Evaluation criterion 축은 model 을 언제 참조하는가로 가지를 나누며, 이에 따라 답이 무엇의 성질인지와 비용이 정해진다. 가지마다의 값은 Table 3 과 같다.
 
-Table 3. Branches of the mechanism axis
+Table 3. Branches of the evaluation criterion axis
 
 | Branch              | When the model is consulted         | The answer is a property of | Cost                                |
 | :-----------------: | :---------------------------------: | :-------------------------: | :---------------------------------: |
@@ -236,7 +234,7 @@ Table 7. Post-hoc ranking methods
 
 문턱이 없으므로 이 가지는 집합을 만드는 데 쓰지 않고, 짧은 후보 목록의 순서를 정하는 데 쓴다. Permutation 과 drop-column 은 다른 구성원에 없는 결정을 하나 더 요구한다. 학습 행을 쓸지 held-out row 를 쓸지다. Held-out row 를 쓰면 그 값은 표본 밖에서도 유지된 의존도이며, 서로 다른 값이 충분히 많은 잡음 열에서는 두 방식의 값이 그 열의 학습 자료 점수만큼 벌어진다.
 
-SHAP, LIME, attention weight 는 post-hoc ranking 에 속한다. Embedded 는 선택이 학습 중 최소화하는 목적함수의 한 항이라는 뜻이다 [[1](#ref-1)]. Lasso 는 L1 penalty 가 손실 안에 있어 계수를 정확히 0 으로 만들면서 열을 고르는데 [[11](#ref-11)], SHAP [[12](#ref-12)] 과 LIME [[13](#ref-13)] 에는 그런 항이 없다. 둘 다 적합이 끝난 뒤에 계산하고, model 을 black box 로 다루며, 학습된 가중치를 바꾸지 않는다. 결과는 순위이고, 문턱은 여전히 방법 밖에서 정해야 한다.
+SHAP, LIME, attention weight 는 post-hoc ranking 에 속한다. Embedded 는 선택이 학습 중 최소화하는 목적함수의 한 항이라는 뜻이다 [[2](#ref-2)]. Lasso 는 L1 penalty 가 손실 안에 있어 계수를 정확히 0 으로 만들면서 열을 고르는데 [[11](#ref-11)], SHAP [[12](#ref-12)] 과 LIME [[13](#ref-13)] 에는 그런 항이 없다. 둘 다 적합이 끝난 뒤에 계산하고, model 을 black box 로 다루며, 학습된 가중치를 바꾸지 않는다. 결과는 순위이고, 문턱은 여전히 방법 밖에서 정해야 한다.
 
 Attention weight 에는 어느 가지에 속하는가와 별개로 반론이 하나 더 있다. 입력에 걸린 attention 은 예측이 어느 입력에 의존하는지를 믿을 만하게 가리키지 못한다. 같은 예측을 주는 다른 가중치 배정이 있고, 그 가중치는 gradient 기반 척도와 상관이 낮다 [[14](#ref-14)]. 이에 대한 반박은 이 결과를 없애지 않고 범위만 좁혀, model 의 나머지를 고정하면 attention 을 마음대로 바꿀 수 없음을 보였다 [[15](#ref-15)]. 따라서 attention weight 는 진단에는 쓸 수 있어도 선택 기준으로는 부족하며, Fig 2 의 가지 4.3 을 진단 전용으로 둔 근거가 이 반론이다.
 
@@ -314,13 +312,13 @@ Stability selection 은 Resampled 를 방법으로 구현한 것이다. Base sel
 ## References
 
 <a id="ref-1"></a>
-[1] Guyon, I. and Elisseeff, A. (2003). [An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/v3/guyon03a.html). *Journal of Machine Learning Research*, 3, 1157–1182.<br>
+[1] Liu, H. and Yu, L. (2005). [Toward Integrating Feature Selection Algorithms for Classification and Clustering](https://doi.org/10.1109/TKDE.2005.66). *IEEE Transactions on Knowledge and Data Engineering*, 17(4), 491–502.<br>
 <a id="ref-2"></a>
-[2] Chandrashekar, G. and Sahin, F. (2014). [A survey on feature selection methods](https://doi.org/10.1016/j.compeleceng.2013.11.024). *Computers & Electrical Engineering*, 40(1), 16–28.<br>
+[2] Guyon, I. and Elisseeff, A. (2003). [An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/v3/guyon03a.html). *Journal of Machine Learning Research*, 3, 1157–1182.<br>
 <a id="ref-3"></a>
-[3] Li, J., Cheng, K., Wang, S., Morstatter, F., Trevino, R. P., Tang, J. and Liu, H. (2017). [Feature Selection: A Data Perspective](https://doi.org/10.1145/3136625). *ACM Computing Surveys*, 50(6), 94.<br>
+[3] Chandrashekar, G. and Sahin, F. (2014). [A survey on feature selection methods](https://doi.org/10.1016/j.compeleceng.2013.11.024). *Computers & Electrical Engineering*, 40(1), 16–28.<br>
 <a id="ref-4"></a>
-[4] Liu, H. and Yu, L. (2005). [Toward Integrating Feature Selection Algorithms for Classification and Clustering](https://doi.org/10.1109/TKDE.2005.66). *IEEE Transactions on Knowledge and Data Engineering*, 17(4), 491–502.<br>
+[4] Li, J., Cheng, K., Wang, S., Morstatter, F., Trevino, R. P., Tang, J. and Liu, H. (2017). [Feature Selection: A Data Perspective](https://doi.org/10.1145/3136625). *ACM Computing Surveys*, 50(6), 94.<br>
 <a id="ref-5"></a>
 [5] Peng, H., Long, F. and Ding, C. (2005). [Feature Selection Based on Mutual Information: Criteria of Max-Dependency, Max-Relevance, and Min-Redundancy](https://doi.org/10.1109/TPAMI.2005.159). *IEEE Transactions on Pattern Analysis and Machine Intelligence*, 27(8), 1226–1238.<br>
 <a id="ref-6"></a>

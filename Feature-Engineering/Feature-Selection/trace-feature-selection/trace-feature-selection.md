@@ -1,11 +1,11 @@
 # Trace Feature Selection
-Rev. 10 | Created: 2026-09-10 | Updated: 2026-10-29 22:45 UTC
+Rev. 11 | Created: 2026-09-10 | Updated: 2026-10-29 22:49 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
   - [3.1 Comparison](#31-comparison)
-- [4. Mechanism Axis](#4-mechanism-axis)
+- [4. Evaluation Criterion Axis](#4-evaluation-criterion-axis)
   - [4.1 Preprocessing](#41-preprocessing)
   - [4.2 Filter](#42-filter)
   - [4.3 Wrapper](#43-wrapper)
@@ -22,38 +22,38 @@ Rev. 10 | Created: 2026-09-10 | Updated: 2026-10-29 22:45 UTC
 ## 1. Purpose
 
 - **Problem Statement**: One recipe's trace yields thousands of feature columns from hundreds of sensors while the wafer count stays in the hundreds, so a model fitted on all of them learns chance correlation and names nothing a process engineer can adjust.
-- **Goal**: Place the selection methods on three axes — mechanism, selection unit, stability — so that a reader can name which axis position a candidate method takes and what its answer therefore does not cover.
+- **Goal**: Place the selection methods on three axes — evaluation criterion, selection unit, stability — so that a reader can name which axis position a candidate method takes and what its answer therefore does not cover.
 - **Non-Goal**: Scoring a single feature, the subject of [Feature Importance](../../Feature-Importance/feature-importance.md), is not covered here.
 
 ## 2. Summary
 
-A method that selects trace features has to be placed on three axes — mechanism, selection unit and stability — before it is clear what its answer does not cover. The mechanism axis fixes what the answer is a property of and what it costs, the selection unit axis decides whether the selected set can be acted on in the process, and the stability axis decides whether the set reappears when the wafers change. With wafers in the hundreds against columns in the thousands, the last two axes usually decide whether a selected set on trace data can be used.
+A method that selects trace features has to be placed on three axes — evaluation criterion, selection unit and stability — before it is clear what its answer does not cover. The evaluation criterion axis fixes what the answer is a property of and what it costs, the selection unit axis decides whether the selected set can be acted on in the process, and the stability axis decides whether the set reappears when the wafers change. With wafers in the hundreds against columns in the thousands, the last two axes usually decide whether a selected set on trace data can be used.
 
 ## 3. Taxonomy and its Hierarchy
 
-A method that selects trace features takes one value on each of three independent axes: mechanism, selection unit and stability. The mechanism axis extends the filter, wrapper and embedded division of the selection literature [[1](#ref-1)], [[2](#ref-2)] with preprocessing, post-hoc ranking and error-controlled selection. The other two axes come from the shape of trace data: one column names a sensor, a recipe step and a statistic at once, and the wafer count is far below the column count.
+A method that selects trace features takes one value on each of three independent axes: evaluation criterion, selection unit and stability. The evaluation criterion axis, named after the evaluation criteria of Liu and Yu [[1](#ref-1)], extends the filter, wrapper and embedded division of the selection literature [[2](#ref-2)], [[3](#ref-3)] with preprocessing, post-hoc ranking and error-controlled selection. The other two axes come from the shape of trace data: one column names a sensor, a recipe step and a statistic at once, and the wafer count is far below the column count.
 
 The three axes and the values on each are as in [Fig 1](#fig-1).
 
 ```text
 Trace feature selection
 |
-+-- Mechanism ........ when the model is consulted
++-- Evaluation criterion ... when the model is consulted
 |     Preprocessing | Filter | Wrapper | Embedded | Post-hoc ranking | Error-controlled
 |
-+-- Selection unit ... what one selected item stands for
++-- Selection unit ......... what one selected item stands for
 |     Column | Sensor | Step window | Statistic family
 |
-+-- Stability ........ how the selection is checked against a change of wafers
++-- Stability .............. how the selection is checked against a change of wafers
       Single fit | Resampled | Error-bounded
 ```
 
 <a id="fig-1"></a>
 Fig 1. Three independent axes of trace feature selection
 
-A method takes one value on each axis, and its value on one axis does not fix its value on another. Group lasso with sensor groups, fitted once, is Embedded, Sensor and Single fit; the same group lasso rerun over subsamples changes only its stability value, to Resampled. The mechanism axis is treated in §4, the selection unit axis in §5 and the stability axis in §6.
+A method takes one value on each axis, and its value on one axis does not fix its value on another. Group lasso with sensor groups, fitted once, is Embedded, Sensor and Single fit; the same group lasso rerun over subsamples changes only its stability value, to Resampled. The evaluation criterion axis is treated in §4, the selection unit axis in §5 and the stability axis in §6.
 
-The mechanism axis divides further by when the model is consulted, running from the branch that consults neither the model nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2).
+The evaluation criterion axis divides further by when the model is consulted, running from the branch that consults neither the model nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2).
 
 ```text
 Trace feature selection
@@ -88,22 +88,20 @@ Trace feature selection
 ```
 
 <a id="fig-2"></a>
-Fig 2. Hierarchy of the mechanism axis by when the model is consulted
+Fig 2. Hierarchy of the evaluation criterion axis by when the model is consulted
 
 Branch 0 runs first and consults no target, so it can leave a column that should have gone but cannot select a wrong one. Branches 1 to 3 differ by whether the model is consulted before the fit, around it, or inside it. Branch 4 probes a model that is already finished. Branch 5 alone answers with an error rate instead of a ranking, and it takes its input from any of branches 1 to 4. The branch boundaries that are easiest to cross by mistake are fixed in §4.1, §4.2, §4.4 and §4.5.
 
-The literature also classifies feature selection on four other axes, as in Table 1.
+The literature also classifies feature selection on two other axes, as in Table 1.
 
 Table 1. Other classification axes in the literature
 
-| Axis               | Values                                                      | Source        | Relation to Fig 1                                                                                                                                                          |
-| :----------------: | :---------------------------------------------------------: | :-----------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Label availability | Supervised, unsupervised, semi-supervised                   | [[3](#ref-3)] | Follows from the mechanism axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch                                                         |
-| Search strategy    | Exhaustive, sequential, randomized                          | [[4](#ref-4)] | Divides the wrapper branch: sequential as branches 2.1 and 2.2, randomized as 2.3, exhaustive with no branch                                                               |
-| Output form        | Ranking, subset                                             | [[1](#ref-1)] | Follows from the branch: ranking from branches 1, 3.3 and 4, subset from branches 2, 3.1, 3.2 and 5                                                                        |
-| Criterion property | Similarity, information theory, sparse learning, statistics | [[3](#ref-3)] | Divides branches by the score used: Relief by similarity, mutual information and mRMR by information theory, lasso by sparse learning, Pearson r and ANOVA F by statistics |
+| Axis               | Values                                    | Source        | Relation to Fig 1                                                                                                             |
+| :----------------: | :---------------------------------------: | :-----------: | :---------------------------------------------------------------------------------------------------------------------------: |
+| Label availability | Supervised, unsupervised, semi-supervised | [[4](#ref-4)] | Follows from the evaluation criterion axis: branch 0 unsupervised, branches 1 to 5 supervised, semi-supervised with no branch |
+| Search strategy    | Exhaustive, sequential, randomized        | [[1](#ref-1)] | Divides the wrapper branch: sequential as branches 2.1 and 2.2, randomized as 2.3, exhaustive with no branch                  |
 
-Each of the four either follows from the mechanism axis or subdivides one of its branches, so Fig 1 keeps only the three independent axes.
+Each of the two either follows from the evaluation criterion axis or subdivides one of its branches, so Fig 1 keeps only the three independent axes.
 
 ### 3.1 Comparison
 
@@ -128,11 +126,11 @@ Table 2. Question and the branch that answers it
 
 The number in the second column is the branch number of Fig 2, and a row that names a grouping takes its selection unit from §5.
 
-## 4. Mechanism Axis
+## 4. Evaluation Criterion Axis
 
-The mechanism axis places a branch by when the model is consulted, which fixes what the answer is a property of and what it costs, as in Table 3.
+The evaluation criterion axis places a branch by when the model is consulted, which fixes what the answer is a property of and what it costs, as in Table 3.
 
-Table 3. Branches of the mechanism axis
+Table 3. Branches of the evaluation criterion axis
 
 | Branch              | When the model is consulted                   | The answer is a property of                 | Cost                                  |
 | :-----------------: | :-------------------------------------------: | :-----------------------------------------: | :-----------------------------------: |
@@ -236,7 +234,7 @@ Table 7. Post-hoc ranking methods
 
 Without a cut-off the branch is used to order a shortlist, not to produce a set. Permutation and drop-column additionally require a decision that the other members do not: whether the rows are the training rows or held-out rows. On held-out rows the value measures reliance that persists out of sample, and for a noise column with enough distinct values the two choices differ by the whole width of that column's training-data score.
 
-SHAP, LIME and attention weights belong to post-hoc ranking, since embedded means that the selection is a term of the objective minimized during training [[1](#ref-1)]. Lasso selects because the L1 penalty sits inside the loss and drives coefficients to exactly zero [[11](#ref-11)]; SHAP [[12](#ref-12)] and LIME [[13](#ref-13)] have no such term, are computed after the fit is finished, treat the model as a black box, and leave the trained weights untouched. Their output is a ranking, and a cut-off still has to be chosen outside the method.
+SHAP, LIME and attention weights belong to post-hoc ranking, since embedded means that the selection is a term of the objective minimized during training [[2](#ref-2)]. Lasso selects because the L1 penalty sits inside the loss and drives coefficients to exactly zero [[11](#ref-11)]; SHAP [[12](#ref-12)] and LIME [[13](#ref-13)] have no such term, are computed after the fit is finished, treat the model as a black box, and leave the trained weights untouched. Their output is a ranking, and a cut-off still has to be chosen outside the method.
 
 Attention weights face a second objection, apart from the branch they belong to. Attention over the inputs does not reliably identify the inputs a prediction depends on: alternative weight assignments yield the same prediction, and the weights correlate poorly with gradient-based measures [[14](#ref-14)]. The rebuttal narrows that result without removing it, showing that attention cannot be reassigned freely once the rest of the model is held fixed [[15](#ref-15)]. Attention weights are therefore usable for a diagnostic and insufficient for a selection criterion, and branch 4.3 of Fig 2 is marked diagnostic only on that ground.
 
@@ -314,13 +312,13 @@ Each defect below belongs to a method rather than to an implementation, and each
 ## References
 
 <a id="ref-1"></a>
-[1] Guyon, I. and Elisseeff, A. (2003). [An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/v3/guyon03a.html). *Journal of Machine Learning Research*, 3, 1157–1182.<br>
+[1] Liu, H. and Yu, L. (2005). [Toward Integrating Feature Selection Algorithms for Classification and Clustering](https://doi.org/10.1109/TKDE.2005.66). *IEEE Transactions on Knowledge and Data Engineering*, 17(4), 491–502.<br>
 <a id="ref-2"></a>
-[2] Chandrashekar, G. and Sahin, F. (2014). [A survey on feature selection methods](https://doi.org/10.1016/j.compeleceng.2013.11.024). *Computers & Electrical Engineering*, 40(1), 16–28.<br>
+[2] Guyon, I. and Elisseeff, A. (2003). [An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/v3/guyon03a.html). *Journal of Machine Learning Research*, 3, 1157–1182.<br>
 <a id="ref-3"></a>
-[3] Li, J., Cheng, K., Wang, S., Morstatter, F., Trevino, R. P., Tang, J. and Liu, H. (2017). [Feature Selection: A Data Perspective](https://doi.org/10.1145/3136625). *ACM Computing Surveys*, 50(6), 94.<br>
+[3] Chandrashekar, G. and Sahin, F. (2014). [A survey on feature selection methods](https://doi.org/10.1016/j.compeleceng.2013.11.024). *Computers & Electrical Engineering*, 40(1), 16–28.<br>
 <a id="ref-4"></a>
-[4] Liu, H. and Yu, L. (2005). [Toward Integrating Feature Selection Algorithms for Classification and Clustering](https://doi.org/10.1109/TKDE.2005.66). *IEEE Transactions on Knowledge and Data Engineering*, 17(4), 491–502.<br>
+[4] Li, J., Cheng, K., Wang, S., Morstatter, F., Trevino, R. P., Tang, J. and Liu, H. (2017). [Feature Selection: A Data Perspective](https://doi.org/10.1145/3136625). *ACM Computing Surveys*, 50(6), 94.<br>
 <a id="ref-5"></a>
 [5] Peng, H., Long, F. and Ding, C. (2005). [Feature Selection Based on Mutual Information: Criteria of Max-Dependency, Max-Relevance, and Min-Redundancy](https://doi.org/10.1109/TPAMI.2005.159). *IEEE Transactions on Pattern Analysis and Machine Intelligence*, 27(8), 1226–1238.<br>
 <a id="ref-6"></a>
