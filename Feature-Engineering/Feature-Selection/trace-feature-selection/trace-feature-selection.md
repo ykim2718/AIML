@@ -1,12 +1,12 @@
 # Trace Feature Selection
-Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-23 11:08 CDT
+Rev. 5 | Created: 2026-09-10 | Updated: 2026-10-29 02:50 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Hierarchy](#3-hierarchy)
   - [3.1 The Boundary Between Embedded And Post-Hoc](#31-the-boundary-between-embedded-and-post-hoc)
   - [3.2 The Two Methods Under Tree Importance](#32-the-two-methods-under-tree-importance)
-  - [3.3 The Place Of Variance Thresholding](#33-the-place-of-variance-thresholding)
+  - [3.3 The Place Of Preprocessing](#33-the-place-of-preprocessing)
   - [3.4 The Division Inside The Filter Branch](#34-the-division-inside-the-filter-branch)
 - [4. Mechanism Axis](#4-mechanism-axis)
   - [4.1 Filter](#41-filter)
@@ -101,11 +101,15 @@ Tree importance is two different methods under one name, and only one of them is
 
 The distinction is not cosmetic on a trace table. MDI is biased toward features with many distinct values, and inflates continuous columns over low-cardinality ones [[11](#ref-11)]. A trace feature table is exactly that mixture: continuous summary statistics such as the mean and the slope sit beside low-cardinality counts such as the cycle count and the step index, and MDI will rank the first group above the second for reasons that have nothing to do with the target.
 
-### 3.3 The Place Of Variance Thresholding
+### 3.3 The Place Of Preprocessing
 
 Variance thresholding sits outside the mechanism axis rather than beside the correlation tests, because it never looks at the target. Pearson correlation, Spearman correlation, ANOVA F and mutual information all score a feature against the target and can therefore be compared with one another and with any other supervised criterion. Variance thresholding scores a feature against itself, so placing it in the same box implies a comparison that cannot be made.
 
-Its work is real and it is done first: a trace collection carries columns that are constant by construction, such as a setpoint that never moves within a recipe, and columns from sensors that stopped reporting. Both must go before any supervised criterion runs, because a zero-variance column has an undefined correlation and a near-constant one has a correlation dominated by its quantization. That is preprocessing, and it is branch 0 in Fig 1, together with the removal of near-duplicate columns.
+Its work is real and it is done first: a trace collection carries columns that are constant by construction, such as a setpoint that never moves within a recipe, and columns from sensors that stopped reporting. Both must go before any supervised criterion runs, because a zero-variance column has an undefined correlation and a near-constant one has a correlation dominated by its quantization. Removing them is the Constancy group of branch 0 in Fig 1.
+
+The Redundancy group of branch 0 keeps one column out of several that repeat one signal. A trace table produces such columns by construction: the mean, the median and the integral of one sensor within one recipe step follow the same physical quantity and rise and fall together from wafer to wafer. The columns are standardized, the absolute Pearson correlation |r| is computed for every pair, and the columns whose |r| exceeds a threshold such as 0.95 are grouped, either by hierarchical clustering on the distance 1 − |r| or by a greedy pass down the correlation matrix; one column is kept per group. On standardized columns the cosine similarity equals Pearson r, so a cosine criterion is the same method. The kept column is an original column rather than an average of the group, so it still names a sensor, a recipe step and a statistic (§5).
+
+The Redundancy group does not consult the target either, so the target has no say in which member of a group survives. The survivor is fixed by a rule set before the target is seen, such as the column with the fewest missing values or the statistic an engineer already reads. The supervised counterpart, which weighs relevance to the target against redundancy with the selected set, is mRMR in branch 1.2 (§3.4).
 
 ### 3.4 The Division Inside The Filter Branch
 

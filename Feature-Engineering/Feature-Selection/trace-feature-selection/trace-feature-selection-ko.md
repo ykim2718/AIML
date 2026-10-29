@@ -1,12 +1,12 @@
 # Trace Feature Selection
-Rev. 4 | Created: 2026-09-10 | Updated: 2026-09-23 11:08 CDT
+Rev. 5 | Created: 2026-09-10 | Updated: 2026-10-29 02:50 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Hierarchy](#3-hierarchy)
   - [3.1 The Boundary Between Embedded And Post-Hoc](#31-the-boundary-between-embedded-and-post-hoc)
   - [3.2 The Two Methods Under Tree Importance](#32-the-two-methods-under-tree-importance)
-  - [3.3 The Place Of Variance Thresholding](#33-the-place-of-variance-thresholding)
+  - [3.3 The Place Of Preprocessing](#33-the-place-of-preprocessing)
   - [3.4 The Division Inside The Filter Branch](#34-the-division-inside-the-filter-branch)
 - [4. Mechanism Axis](#4-mechanism-axis)
   - [4.1 Filter](#41-filter)
@@ -101,11 +101,15 @@ Tree importance 는 한 이름 아래 놓인 서로 다른 두 방법이고, 그
 
 Trace 표에서 이 구별은 겉치레가 아니다. MDI 는 서로 다른 값을 많이 가지는 feature 쪽으로 치우쳐, 연속형 열을 낮은 cardinality 의 열보다 부풀린다 [[11](#ref-11)]. Trace feature 표가 바로 그 혼합이다. 평균이나 기울기 같은 연속형 요약 통계량 옆에 cycle count 나 step index 같은 낮은 cardinality 의 계수값이 나란히 놓이고, MDI 는 target 과 무관한 이유로 앞의 무리를 뒤의 무리 위에 세운다.
 
-### 3.3 The Place Of Variance Thresholding
+### 3.3 The Place Of Preprocessing
 
 Variance thresholding 은 상관 검정 옆이 아니라 mechanism 축 밖에 놓인다. Target 을 전혀 보지 않기 때문이다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 모두 feature 를 target 에 대고 점수를 매기므로 서로 비교할 수 있고 다른 지도 기준과도 비교할 수 있다. Variance thresholding 은 feature 를 그 자신에 대고 재므로, 같은 상자에 넣으면 성립하지 않는 비교를 암시하게 된다.
 
-그 일 자체는 실제로 필요하고 가장 먼저 이루어진다. Trace 수집물에는 recipe 안에서 움직이지 않는 setpoint 처럼 구조적으로 상수인 열과, 보고를 멈춘 sensor 의 열이 들어 있다. 둘 다 어떤 지도 기준보다 먼저 빠져야 한다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화에 지배되기 때문이다. 그것이 전처리이고, Fig 1 의 가지 0 이며, 거의 중복인 열의 제거도 여기에 함께 놓인다.
+그 일 자체는 실제로 필요하고 가장 먼저 이루어진다. Trace 수집물에는 recipe 안에서 움직이지 않는 setpoint 처럼 구조적으로 상수인 열과, 보고를 멈춘 sensor 의 열이 들어 있다. 둘 다 어떤 지도 기준보다 먼저 빠져야 한다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화에 지배되기 때문이다. 이 두 종류의 열을 빼는 일이 Fig 1 가지 0 의 Constancy 묶음이다.
+
+가지 0 의 Redundancy 묶음은 같은 신호가 여러 열에 되풀이될 때 한 열만 남긴다. Trace table 에서는 한 recipe step 안에서 한 sensor 의 mean, median, integral 이 같은 물리량을 따라가므로, 세 열은 wafer 사이에서 함께 오르내린다. 열을 표준화한 뒤 모든 열 쌍의 Pearson correlation 절댓값 |r| 을 구하고, |r| 이 0.95 같은 threshold 를 넘는 열을 한 group 으로 묶는다. 묶을 때는 거리 1 − |r| 위의 hierarchical clustering 을 쓰거나 correlation matrix 를 차례로 훑는 greedy 제거를 쓰며, group 마다 한 열을 남긴다. 표준화한 열에서는 cosine similarity 가 Pearson r 과 같으므로, cosine 을 기준으로 삼아도 같은 방법이다. 남는 열은 group 의 평균이 아닌 원래 열 하나여서, 어느 sensor 의 어느 recipe step 의 어느 요약통계인지가 그대로 남는다 (§5).
+
+Redundancy 묶음도 target 을 보지 않으므로, group 안에서 어느 열이 남을지는 target 과 상관없이 정해진다. 남길 열은 결측이 가장 적은 열이나 engineer 가 이미 읽는 요약통계처럼, target 을 보기 전에 정한 규칙으로 고른다. Target 과의 relevance 와 이미 고른 열과의 redundancy 를 함께 따지는 지도 기준은 가지 1.2 의 mRMR 이다 (§3.4).
 
 ### 3.4 The Division Inside The Filter Branch
 
