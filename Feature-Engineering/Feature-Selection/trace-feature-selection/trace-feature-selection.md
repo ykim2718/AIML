@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 6 | Created: 2026-09-10 | Updated: 2026-10-29 02:58 CDT
+Rev. 7 | Created: 2026-09-10 | Updated: 2026-10-29 03:00 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,13 +21,13 @@ Rev. 6 | Created: 2026-09-10 | Updated: 2026-10-29 02:58 CDT
 
 ## 1. Purpose
 
-- **Problem Statement**: One recipe's trace yields thousands of feature columns from hundreds of sensors while the wafer count stays in the hundreds, so a model fitted on all of them learns chance correlation and returns no place a process engineer can act on.
+- **Problem Statement**: One recipe's trace yields thousands of feature columns from hundreds of sensors while the wafer count stays in the hundreds, so a model fitted on all of them learns chance correlation and names nothing a process engineer can adjust.
 - **Goal**: Place the selection methods on three axes — mechanism, selection unit, stability — so that a reader can name which axis position a candidate method takes and what its answer therefore does not cover.
-- **Non-Goal**: Putting a number on one feature is not covered here; that is the subject of [Feature Importance](../../Feature-Importance/feature-importance.md).
+- **Non-Goal**: Scoring a single feature, the subject of [Feature Importance](../../Feature-Importance/feature-importance.md), is not covered here.
 
 ## 2. Summary
 
-A method that selects trace features has to be placed on three axes — mechanism, selection unit and stability — before it is clear what its answer does not cover. The mechanism axis fixes what the answer is a property of and what it costs, the selection unit axis decides whether the selected set can be acted on in the process, and the stability axis decides whether the set reappears when the wafers change. With wafers in the hundreds against columns in the thousands, the last two axes usually decide the answer on trace data.
+A method that selects trace features has to be placed on three axes — mechanism, selection unit and stability — before it is clear what its answer does not cover. The mechanism axis fixes what the answer is a property of and what it costs, the selection unit axis decides whether the selected set can be acted on in the process, and the stability axis decides whether the set reappears when the wafers change. With wafers in the hundreds against columns in the thousands, the last two axes usually decide whether a selected set on trace data can be used.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -134,21 +134,21 @@ Within each branch that selects, the members differ on one property, and the tab
 
 ### 4.1 Preprocessing
 
-Preprocessing is branch 0 because it consults neither the model nor the target. Pearson correlation, Spearman correlation, ANOVA F and mutual information all score a feature against the target and can therefore be compared with one another and with any other supervised criterion. Variance thresholding scores a feature against itself, so placing it beside the correlation tests implies a comparison that cannot be made.
+Branch 0 holds the methods that consult neither the model nor the target. Pearson correlation, Spearman correlation, ANOVA F and mutual information all score a feature against the target and can therefore be compared with one another and with any other supervised criterion. Variance thresholding scores a feature against itself, so placing it beside the correlation tests implies a comparison that cannot be made.
 
 The Constancy group runs first. A trace collection carries columns that are constant by construction, such as a setpoint that never moves within a recipe, and columns from sensors that stopped reporting. Both must go before any supervised criterion runs: a zero-variance column has an undefined correlation, and a near-constant one has a correlation dominated by its quantization.
 
 The Redundancy group keeps one column out of several that repeat one signal. A trace table produces such columns by construction: the mean, the median and the integral of one sensor within one recipe step follow the same physical quantity and rise and fall together from wafer to wafer. The columns are standardized, the absolute Pearson correlation |r| is computed for every pair, and the columns whose |r| exceeds a threshold such as 0.95 are grouped, either by hierarchical clustering on the distance 1 − |r| or by a greedy pass down the correlation matrix; one column is kept per group. On standardized columns the cosine similarity equals Pearson r, so a cosine criterion is the same method. The kept column is an original column rather than an average of the group, so it still names a sensor, a recipe step and a statistic (§5).
 
-The Redundancy group does not consult the target either, so the target has no say in which member of a group survives. The survivor is fixed by a rule set before the target is seen, such as the column with the fewest missing values or the statistic an engineer already reads. The supervised counterpart, which weighs relevance to the target against redundancy with the selected set, is mRMR in branch 1.2 (§4.2).
+The Redundancy group does not consult the target either, so which member of a group survives is independent of the target. The survivor is fixed by a rule set before the target is seen, such as the column with the fewest missing values or the statistic an engineer already reads. The supervised counterpart, which weighs relevance to the target against redundancy with the selected set, is mRMR in branch 1.2 (§4.2).
 
 ### 4.2 Filter
 
-The filter branch is cheap enough to run on the full trace feature list, and that is its use: one pass that cuts thousands of columns to hundreds before anything expensive is attempted.
+The filter branch is cheap enough to run on the full trace feature list, and it is used as one pass that cuts thousands of columns to hundreds before anything expensive is attempted.
 
 The members of the branch divide into univariate members, which score a feature alone, and multivariate members, which score it against the features already chosen. Pearson correlation, Spearman correlation, ANOVA F and mutual information score one column at a time against the target, and a sensor whose several summary statistics all track one physical quantity therefore contributes several near-equal scores. A univariate filter keeps all of those columns, and the column count falls without the redundancy falling with it. mRMR scores relevance to the target against redundancy with the already-selected set, and is the member that handles redundancy [[3](#ref-3)].
 
-The third kind is neighbour contrast. Relief and its variants score a feature by contrasting each row with its nearest neighbours of the same and of the opposite class, so a feature that matters only in combination with another can still earn a score, which no marginal criterion can produce [[4](#ref-4)]. The output is one number per feature, as with the univariate members, but the computation is not marginal, so it is kept as branch 1.3 apart from branch 1.1.
+The third kind is neighbour contrast. Relief and its variants score a feature by contrasting each row with its nearest neighbours of the same and of the opposite class, so a feature that matters only in combination with another still receives a score, which no marginal criterion can produce [[4](#ref-4)]. The output is one number per feature, as with the univariate members, but the computation is not marginal, so it is kept as branch 1.3 apart from branch 1.1.
 
 The members compare as in Table 3.
 
@@ -163,7 +163,7 @@ Table 3. Filter methods
 | mRMR                 | Relevance minus redundancy against the selected set | Yes             | No               |
 | Relief, ReliefF      | Neighbour contrast in feature space                 | Partly          | Yes              |
 
-The cut is made generously. None of the univariate members can see a feature that matters only in combination with another, and a column dropped here does not return at a later step.
+The threshold is set loosely. None of the univariate members can see a feature that matters only in combination with another, and a column dropped here does not return at a later step.
 
 ### 4.3 Wrapper
 
@@ -185,13 +185,13 @@ RFE was introduced on gene expression data, where the column count exceeds the r
 
 ### 4.4 Embedded
 
-The embedded branch costs one fit: the selection is read from the objective being minimized, with no search laid around it.
+The embedded branch costs one fit: the selection is read from the objective being minimized, without an outer search over subsets.
 
 The penalty and the selection unit of each member are as in Table 5.
 
 Table 5. Embedded methods
 
-| Method             | Penalty                          | Selection unit     | What the unit buys                                                           |
+| Method             | Penalty                          | Selection unit     | Effect of the unit                                                           |
 | :----------------: | :------------------------------: | :----------------: | :--------------------------------------------------------------------------: |
 | Lasso              | L1 on each coefficient           | One column         | The smallest set of columns                                                  |
 | Elastic net        | L1 and L2 mixed                  | One column         | Correlated columns kept or dropped together rather than one picked at random |
@@ -199,9 +199,9 @@ Table 5. Embedded methods
 | Sparse group lasso | Group and column penalties mixed | Group, then column | A sensor kept with only some of its statistics                               |
 | MDI                | None; read off the splits        | One column         | Nothing beyond the fit already performed                                     |
 
-Lasso is unstable under exactly the condition a trace table presents, and the elastic net corrects it. When two columns are strongly correlated, lasso selects one of them and zeroes the other, and which one it selects is not determined by the data in any stable way; the L2 term added by the elastic net makes correlated columns enter and leave together [[7](#ref-7)]. The correction answers the stability problem of §6 only in part, since it groups columns by correlation and not by the physical object the engineer acts on.
+Lasso is unstable on the correlated columns of a trace table, and the elastic net corrects it. When two columns are strongly correlated, lasso selects one of them and zeroes the other, and which one it selects is not determined by the data in any stable way; the L2 term added by the elastic net makes correlated columns enter and leave together [[7](#ref-7)]. The correction answers the stability problem of §6 only in part, since it groups columns by correlation and not by the physical object the engineer acts on.
 
-Tree importance is two different methods under one name, and only MDI is embedded. MDI, the impurity decrease accumulated over the splits a feature was used in, is read off the tree structure the training procedure built, so it is embedded and sits in branch 3.3. Permutation importance shuffles a column of a finished model's input and watches the loss, so it is post-hoc and belongs in branch 4.1 (§4.5).
+Tree importance is two different methods under one name, and only MDI is embedded. MDI, the impurity decrease accumulated over the splits a feature was used in, is read off the tree structure the training procedure built, so it is embedded and sits in branch 3.3. Permutation importance shuffles a column of a finished model's input and measures the change in loss, so it is post-hoc and belongs in branch 4.1 (§4.5).
 
 On a trace table the distinction changes the ranking. MDI is biased toward features with many distinct values, and inflates continuous columns over low-cardinality ones [[8](#ref-8)]. A trace feature table holds continuous summary statistics such as the mean and the slope beside low-cardinality counts such as the cycle count and the step index, and MDI ranks the first group above the second for reasons unrelated to the target.
 
@@ -213,7 +213,7 @@ What each member disturbs and whether it needs labels are as in Table 6.
 
 Table 6. Post-hoc ranking methods
 
-| Method                 | What is disturbed                          | Labels required | Standing                                                |
+| Method                 | What is disturbed                          | Labels required | Scope of the result                                     |
 | :--------------------: | :----------------------------------------: | :-------------: | :-----------------------------------------------------: |
 | Permutation importance | One column, shuffled                       | Yes             | A reliance measure on held-out rows                     |
 | Drop-column            | One column, removed and the model refitted | Yes             | The cost of one refit per column                        |
@@ -221,11 +221,11 @@ Table 6. Post-hoc ranking methods
 | LIME                   | A local neighbourhood, resampled           | No              | A local surrogate model, apart from a global statement  |
 | Attention weight       | Nothing; the weight is read                | No              | Diagnostic only                                         |
 
-Without a cut-off the branch is used to order a shortlist, not to produce a set. Permutation and drop-column additionally require a decision that the other members do not: whether the rows are the training rows or held-out rows. On held-out rows the value reports reliance that held out of sample, and for a noise column with enough distinct values the two choices differ by the whole width of that column's training-data score.
+Without a cut-off the branch is used to order a shortlist, not to produce a set. Permutation and drop-column additionally require a decision that the other members do not: whether the rows are the training rows or held-out rows. On held-out rows the value measures reliance that persists out of sample, and for a noise column with enough distinct values the two choices differ by the whole width of that column's training-data score.
 
 SHAP, LIME and attention weights belong to post-hoc ranking, since embedded means that the selection is a term of the objective minimized during training [[1](#ref-1)]. Lasso selects because the L1 penalty sits inside the loss and drives coefficients to exactly zero [[9](#ref-9)]; SHAP [[10](#ref-10)] and LIME [[11](#ref-11)] have no such term, are computed after the fit is finished, treat the model as a black box, and leave the trained weights untouched. Their output is a ranking, and a cut-off still has to be chosen outside the method.
 
-Attention weights carry a second objection, apart from the branch they belong to. Attention over the inputs does not reliably identify the inputs a prediction depends on: alternative weight assignments yield the same prediction, and the weights correlate poorly with gradient-based measures [[12](#ref-12)]. The rebuttal narrows that result without removing it, showing that attention cannot be reassigned freely once the rest of the model is held fixed [[13](#ref-13)]. Attention weights are therefore usable for a diagnostic and insufficient for a selection criterion, which is why branch 4.3 of Fig 2 is marked diagnostic only.
+Attention weights face a second objection, apart from the branch they belong to. Attention over the inputs does not reliably identify the inputs a prediction depends on: alternative weight assignments yield the same prediction, and the weights correlate poorly with gradient-based measures [[12](#ref-12)]. The rebuttal narrows that result without removing it, showing that attention cannot be reassigned freely once the rest of the model is held fixed [[13](#ref-13)]. Attention weights are therefore usable for a diagnostic and insufficient for a selection criterion, and branch 4.3 of Fig 2 is marked diagnostic only on that ground.
 
 ### 4.6 Error-Controlled Selection
 
@@ -241,7 +241,7 @@ Table 7. Error-controlled methods
 | Fixed-X knockoffs   | Synthetic columns built from the design matrix                      | False discovery rate               | Requires more rows than columns                                |
 | Model-X knockoffs   | Synthetic columns drawn from the joint distribution of the features | False discovery rate               | Requires that joint distribution to be known or well estimated |
 
-Of all the branches, this one alone answers "which features can be reported as real". Model-X knockoffs construct a synthetic copy of each feature that carries its correlation structure but is independent of the target given the rest, then keep the features that beat their own copies by a margin set to hold the false discovery rate below a chosen level [[14](#ref-14)]. The price is the joint distribution of the features, which for a trace table is estimable only under an assumed structure, and the guarantee is no stronger than that assumption.
+Of all the branches, this one alone answers "which features can be reported as real". Model-X knockoffs construct a synthetic copy of each feature that carries its correlation structure but is independent of the target given the rest, then keep the features whose score exceeds that of their own copies by a threshold set to hold the false discovery rate below a chosen level [[14](#ref-14)]. The price is the joint distribution of the features, which for a trace table is estimable only under an assumed structure, and the guarantee is no stronger than that assumption.
 
 ## 5. Selection Unit Axis
 
@@ -264,7 +264,7 @@ The column unit answers a different question — which numbers a model needs —
 
 ## 6. Stability Axis
 
-On trace data the value that matters on this axis is Resampled: a selection from one fit changes when the wafers change. With wafers in the hundreds against features in the thousands, and with physically paired sensors — forward and reflected RF power, adjacent thermocouples, a flow setpoint and its readback — correlating near the level at which a penalized fit's choice between two columns is settled by noise rather than by signal, refitting on a different subset of the wafers changes which member of each pair is selected.
+On trace data the value that matters on this axis is Resampled: a selection from one fit changes when the wafers change. With wafers in the hundreds against features in the thousands, physically paired sensors — forward and reflected RF power, adjacent thermocouples, a flow setpoint and its readback — correlate so strongly that a penalized fit's choice between two columns is settled by noise rather than by signal. Refitting on a different subset of the wafers therefore changes which member of each pair is selected.
 
 The procedure and the reported result at each value of the axis are as in Table 9.
 

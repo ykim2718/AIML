@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 6 | Created: 2026-09-10 | Updated: 2026-10-29 02:58 CDT
+Rev. 7 | Created: 2026-09-10 | Updated: 2026-10-29 03:00 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,7 +27,7 @@ Rev. 6 | Created: 2026-09-10 | Updated: 2026-10-29 02:58 CDT
 
 ## 2. Summary
 
-Trace feature 를 고르는 방법은 mechanism, selection unit, stability 의 세 축 위에 놓아야 그 답이 다루지 못하는 것이 드러난다. Mechanism 축은 답이 무엇의 성질인지와 비용을 정하고, selection unit 축은 고른 집합을 공정에서 실행할 수 있는지를, stability 축은 wafer 가 바뀌어도 같은 집합이 다시 선택되는지를 정한다. Trace data 는 wafer 수백 장에 열 수천 개여서, 뒤의 두 축이 답을 정하는 경우가 많다.
+Trace feature 를 고르는 방법은 mechanism, selection unit, stability 의 세 축 위에 놓아야 그 답이 다루지 못하는 것이 드러난다. Mechanism 축은 답이 무엇의 성질인지와 비용을 정하고, selection unit 축은 고른 집합을 공정에서 실행할 수 있는지를, stability 축은 wafer 가 바뀌어도 같은 집합이 다시 선택되는지를 정한다. Trace data 는 wafer 수백 장에 열 수천 개여서, 고른 집합을 쓸 수 있는지는 뒤의 두 축이 정하는 경우가 많다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -191,7 +191,7 @@ Embedded 가지의 비용은 적합 한 번이다. 선택이 바깥 탐색 없�
 
 Table 5. Embedded methods
 
-| Method             | Penalty                             | Selection unit   | What the unit buys                                          |
+| Method             | Penalty                             | Selection unit   | Effect of the unit                                          |
 | :----------------: | :---------------------------------: | :--------------: | :---------------------------------------------------------: |
 | Lasso              | 계수마다 L1                         | 열 하나          | 가장 작은 열 집합                                           |
 | Elastic net        | L1 과 L2 의 혼합                    | 열 하나          | 상관된 열이 임의로 하나만 뽑히지 않고 함께 남거나 함께 빠짐 |
@@ -213,7 +213,7 @@ Post-hoc ranking 가지는 원자료 대신 적합된 model 에 적용한 filter
 
 Table 6. Post-hoc ranking methods
 
-| Method                 | What is disturbed              | Labels required | Standing                                 |
+| Method                 | What is disturbed              | Labels required | Scope of the result                      |
 | :--------------------: | :----------------------------: | :-------------: | :--------------------------------------: |
 | Permutation importance | 열 하나를 섞음                 | 예              | Held-out row 에서 잰 의존도              |
 | Drop-column            | 열 하나를 빼고 model 을 재적합 | 예              | 열마다 재적합 한 번의 비용               |
