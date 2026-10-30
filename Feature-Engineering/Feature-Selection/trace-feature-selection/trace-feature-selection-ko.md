@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 21 | Created: 2026-09-10 | Updated: 2026-10-30 02:26 UTC
+Rev. 22 | Created: 2026-09-10 | Updated: 2026-10-30 09:49 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -177,6 +177,14 @@ Table 3. Filter methods
 
 **Key features.** Wrapper 가지는 부분집합마다 model 을 다시 적합하고 그 성능으로 점수를 매기므로, 답은 그 model 의 성질이고 비용은 단계마다 재적합 한 번이다 [[7](#ref-7)].
 
+**Subset score.** 부분집합의 점수로는 cross-validation 오차나, BIC 같은 information criterion 을 쓴다 [[8](#ref-8)]. BIC 는 다시 적합한 model 의 적합도와 크기를 함께 채점한다.
+
+```math
+\mathrm{BIC} = k \ln n - 2 \ln \hat{L} \hspace{19em} (2)
+```
+
+k 는 적합한 parameter 의 수, n 은 행의 수, $\hat{L}$ 은 그 행에서 model 의 최대 likelihood 다. BIC 가 가장 낮은 부분집합이 model 의 성능과 간결함을 가장 잘 함께 만족하며, feature 하나는 $2 \ln \hat{L}$ 을 ln n 보다 크게 올릴 때만 BIC 를 낮춘다.
+
 구성원마다의 탐색 방향과 비용은 Table 4 와 같다.
 
 Table 4. Wrapper methods
@@ -189,7 +197,7 @@ Table 4. Wrapper methods
 | Stepwise             | 전진에 후진 단계를 섞음   | 위 두 가지 모두           | 최적해 보장 없이 탐색 비용만 듦                                  |
 | Genetic search       | 부분집합 위의 확률적 탐색 | 세대마다 개체 하나에 하나 | 개체군에 따라 비용이 늘고, seed 없이는 결과가 재현되지 않음      |
 
-**On trace data.** RFE 는 열 수가 행 수보다 몇 자릿수 많은 gene expression 자료에서 나왔고, 단계마다 feature 한 묶음을 제거한다 [[8](#ref-8)]. Trace 표도 같은 모양이어서 이 가지에서는 RFE 를 가장 흔히 쓴다. 단계마다 재적합하는 비용은 그대로이므로, wrapper 는 filter 에 들어가는 수천 열이 아니라 filter 를 통과한 수백 열에서 돌린다.
+**On trace data.** RFE 는 열 수가 행 수보다 몇 자릿수 많은 gene expression 자료에서 나왔고, 단계마다 feature 한 묶음을 제거한다 [[9](#ref-9)]. Trace 표도 같은 모양이어서 이 가지에서는 RFE 를 가장 흔히 쓴다. 단계마다 재적합하는 비용은 그대로이므로, wrapper 는 filter 에 들어가는 수천 열이 아니라 filter 를 통과한 수백 열에서 돌린다. Wafer 가 100 장에서 1,000 장이면 ln n 은 4.6 에서 6.9 사이이고, BIC 는 parameter 보다 행이 많아야 likelihood 를 적합할 수 있는데 filter 를 통과한 목록이 이 조건도 맞춘다.
 
 ### 4.4 Embedded
 
@@ -203,19 +211,19 @@ Table 5. Embedded methods
 | :--------------------------------: | :---------------------------------: | :--------------: | :---------------------------------------------------------: |
 | Lasso                              | 계수마다 L1                         | 열 하나          | 가장 작은 열 집합                                           |
 | Elastic net                        | L1 과 L2 의 혼합                    | 열 하나          | 상관된 열이 임의로 하나만 뽑히지 않고 함께 남거나 함께 빠짐 |
-| Group lasso [[9](#ref-9)]          | Group 안 L2, 이를 L1 으로 합산      | Group 하나       | Sensor 하나 또는 step 하나가 통째로 들어오거나 빠짐         |
-| Sparse group lasso [[10](#ref-10)] | Group penalty 와 열 penalty 의 혼합 | Group, 그다음 열 | Sensor 를 쓰되 그 통계량 가운데 일부만                      |
+| Group lasso [[10](#ref-10)]        | Group 안 L2, 이를 L1 으로 합산      | Group 하나       | Sensor 하나 또는 step 하나가 통째로 들어오거나 빠짐         |
+| Sparse group lasso [[11](#ref-11)] | Group penalty 와 열 penalty 의 혼합 | Group, 그다음 열 | Sensor 를 쓰되 그 통계량 가운데 일부만                      |
 | MDI                                | 없음, 분기에서 읽음                 | 열 하나          | 이미 끝낸 적합 외에는 없음                                  |
 
-**Lasso and elastic net.** Lasso 는 강하게 상관된 두 열 가운데 하나를 남기고 다른 하나를 0 으로 만들며, 어느 쪽을 남길지는 자료가 안정적으로 정하지 못한다 [[11](#ref-11)]. Elastic net 은 L2 항을 더해 강하게 상관된 두 열을 함께 남기거나 함께 뺀다 [[12](#ref-12)].
+**Lasso and elastic net.** Lasso 는 강하게 상관된 두 열 가운데 하나를 남기고 다른 하나를 0 으로 만들며, 어느 쪽을 남길지는 자료가 안정적으로 정하지 못한다 [[12](#ref-12)]. Elastic net 은 L2 항을 더해 강하게 상관된 두 열을 함께 남기거나 함께 뺀다 [[13](#ref-13)].
 
 **MDI and permutation importance.** MDI 는 학습이 만든 tree 구조에서 불순도 감소량을 읽으므로 embedded 이며 가지 3.3 에 속한다. Permutation importance 는 완성된 model 의 입력에서 한 열을 섞은 뒤 손실 변화를 읽으므로 post-hoc 이며 가지 4.1 에 속한다 (§4.5).
 
-**On trace data.** Elastic net 은 열을 상관으로 묶을 뿐 담당자가 조정하는 sensor 나 step 으로 묶지 않으므로, §4.6 의 wafer 사이 불안정을 일부만 해결한다. MDI 는 서로 다른 값을 많이 갖는 feature 쪽으로 치우친다 [[13](#ref-13)]. Trace feature 표에는 평균이나 기울기 같은 연속형 요약통계와 cycle count 나 step index 같은 낮은 cardinality 의 계수값이 함께 있어, MDI 는 target 과 무관한 이유로 연속형 열을 계수값보다 높은 순위에 둔다.
+**On trace data.** Elastic net 은 열을 상관으로 묶을 뿐 담당자가 조정하는 sensor 나 step 으로 묶지 않으므로, §4.6 의 wafer 사이 불안정을 일부만 해결한다. MDI 는 서로 다른 값을 많이 갖는 feature 쪽으로 치우친다 [[14](#ref-14)]. Trace feature 표에는 평균이나 기울기 같은 연속형 요약통계와 cycle count 나 step index 같은 낮은 cardinality 의 계수값이 함께 있어, MDI 는 target 과 무관한 이유로 연속형 열을 계수값보다 높은 순위에 둔다.
 
 ### 4.5 Post-Hoc Ranking
 
-**Key features.** Post-hoc ranking 가지는 적합된 model 에 적용한 filter 이며, 순위만 주고 문턱은 주지 않는다. SHAP, LIME, attention weight 가 여기에 속한다. Embedded 는 선택이 학습 목적함수의 한 항이라는 뜻인데 [[2](#ref-2)], SHAP [[14](#ref-14)] 과 LIME [[15](#ref-15)] 은 적합이 끝난 뒤 model 을 black box 로 다루어 계산하며 학습된 가중치를 바꾸지 않는다.
+**Key features.** Post-hoc ranking 가지는 적합된 model 에 적용한 filter 이며, 순위만 주고 문턱은 주지 않는다. SHAP, LIME, attention weight 가 여기에 속한다. Embedded 는 선택이 학습 목적함수의 한 항이라는 뜻인데 [[2](#ref-2)], SHAP [[15](#ref-15)] 과 LIME [[16](#ref-16)] 은 적합이 끝난 뒤 model 을 black box 로 다루어 계산하며 학습된 가중치를 바꾸지 않는다.
 
 구성원마다 흔드는 대상과 label 필요 여부는 Table 6 과 같다.
 
@@ -229,11 +237,11 @@ Table 6. Post-hoc ranking methods
 | LIME                   | 국소 이웃을 재표집             | 아니오          | 국소 surrogate model, 전역 결론과는 별개 |
 | Attention weight       | 없음, 가중치를 읽을 뿐         | 아니오          | 진단 전용                                |
 
-**On trace data.** 이 가지는 집합을 만들지 않고 짧은 후보 목록의 순서를 정한다. Permutation 과 drop-column 은 학습 행과 held-out row 가운데 무엇을 쓸지도 정해야 하며, held-out row 에서 잰 값은 표본 밖에서도 유지된 의존도다. Attention weight 는 진단에만 쓴다. 같은 예측을 주는 다른 가중치 배정이 있고 그 가중치는 gradient 기반 척도와 상관이 낮으며 [[16](#ref-16)], 이에 대한 반박도 이 결과의 범위를 좁힐 뿐 없애지 못한다 [[17](#ref-17)].
+**On trace data.** 이 가지는 집합을 만들지 않고 짧은 후보 목록의 순서를 정한다. Permutation 과 drop-column 은 학습 행과 held-out row 가운데 무엇을 쓸지도 정해야 하며, held-out row 에서 잰 값은 표본 밖에서도 유지된 의존도다. Attention weight 는 진단에만 쓴다. 같은 예측을 주는 다른 가중치 배정이 있고 그 가중치는 gradient 기반 척도와 상관이 낮으며 [[17](#ref-17)], 이에 대한 반박도 이 결과의 범위를 좁힐 뿐 없애지 못한다 [[18](#ref-18)].
 
 ### 4.6 Error-Controlled Selection
 
-**Key features.** Error-controlled 가지는 비용이 더 드는 대신, 고른 feature 가운데 우연히 들어온 것이 몇 개인지에 한계를 준다. 다른 가지에는 이 한계가 없다. Model-X knockoffs 는 각 feature 의 상관 구조를 유지하면서 나머지 feature 가 주어졌을 때 target 과 독립인 합성 사본을 만들고, 자기 사본보다 정해진 차이 이상으로 점수가 높은 feature 만 남겨 false discovery rate 를 정한 수준 아래로 유지한다 [[18](#ref-18)]. Stability selection 은 base selector 를 subsample 마다 다시 실행하고, feature 마다 선택 빈도를 세어 문턱을 넘는 feature 를 남기며, 잘못 선택된 feature 수의 기댓값에 유한표본 한계를 준다 [[19](#ref-19)].
+**Key features.** Error-controlled 가지는 비용이 더 드는 대신, 고른 feature 가운데 우연히 들어온 것이 몇 개인지에 한계를 준다. 다른 가지에는 이 한계가 없다. Model-X knockoffs 는 각 feature 의 상관 구조를 유지하면서 나머지 feature 가 주어졌을 때 target 과 독립인 합성 사본을 만들고, 자기 사본보다 정해진 차이 이상으로 점수가 높은 feature 만 남겨 false discovery rate 를 정한 수준 아래로 유지한다 [[19](#ref-19)]. Stability selection 은 base selector 를 subsample 마다 다시 실행하고, feature 마다 선택 빈도를 세어 문턱을 넘는 feature 를 남기며, 잘못 선택된 feature 수의 기댓값에 유한표본 한계를 준다 [[20](#ref-20)].
 
 구성원마다의 구성 방법과 한계의 대상은 Table 7 과 같다.
 
@@ -293,29 +301,31 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 <a id="ref-7"></a>
 [7] Kohavi, R. and John, G. H. (1997). [Wrappers for feature subset selection](<https://doi.org/10.1016/S0004-3702(97)00043-X>). *Artificial Intelligence*, 97(1–2), 273–324.<br>
 <a id="ref-8"></a>
-[8] Guyon, I., Weston, J., Barnhill, S. and Vapnik, V. (2002). [Gene Selection for Cancer Classification using Support Vector Machines](https://doi.org/10.1023/A:1012487302797). *Machine Learning*, 46, 389–422.<br>
+[8] Schwarz, G. (1978). [Estimating the Dimension of a Model](https://doi.org/10.1214/aos/1176344136). *The Annals of Statistics*, 6(2), 461–464.<br>
 <a id="ref-9"></a>
-[9] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
+[9] Guyon, I., Weston, J., Barnhill, S. and Vapnik, V. (2002). [Gene Selection for Cancer Classification using Support Vector Machines](https://doi.org/10.1023/A:1012487302797). *Machine Learning*, 46, 389–422.<br>
 <a id="ref-10"></a>
-[10] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
+[10] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
 <a id="ref-11"></a>
-[11] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
+[11] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
 <a id="ref-12"></a>
-[12] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.<br>
+[12] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
 <a id="ref-13"></a>
-[13] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
+[13] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.<br>
 <a id="ref-14"></a>
-[14] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.<br>
+[14] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
 <a id="ref-15"></a>
-[15] Ribeiro, M. T., Singh, S. and Guestrin, C. (2016). ["Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://doi.org/10.1145/2939672.2939778). *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1135–1144.<br>
+[15] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.<br>
 <a id="ref-16"></a>
-[16] Jain, S. and Wallace, B. C. (2019). [Attention is not Explanation](https://doi.org/10.18653/v1/N19-1357). *Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, 3543–3556.<br>
+[16] Ribeiro, M. T., Singh, S. and Guestrin, C. (2016). ["Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://doi.org/10.1145/2939672.2939778). *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1135–1144.<br>
 <a id="ref-17"></a>
-[17] Wiegreffe, S. and Pinter, Y. (2019). [Attention is not not Explanation](https://doi.org/10.18653/v1/D19-1002). *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing*, 11–20.<br>
+[17] Jain, S. and Wallace, B. C. (2019). [Attention is not Explanation](https://doi.org/10.18653/v1/N19-1357). *Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, 3543–3556.<br>
 <a id="ref-18"></a>
-[18] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.<br>
+[18] Wiegreffe, S. and Pinter, Y. (2019). [Attention is not not Explanation](https://doi.org/10.18653/v1/D19-1002). *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing*, 11–20.<br>
 <a id="ref-19"></a>
-[19] Meinshausen, N. and Bühlmann, P. (2010). [Stability selection](https://doi.org/10.1111/j.1467-9868.2010.00740.x). *Journal of the Royal Statistical Society: Series B*, 72(4), 417–473.
+[19] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.<br>
+<a id="ref-20"></a>
+[20] Meinshausen, N. and Bühlmann, P. (2010). [Stability selection](https://doi.org/10.1111/j.1467-9868.2010.00740.x). *Journal of the Royal Statistical Society: Series B*, 72(4), 417–473.
 
 ---
 

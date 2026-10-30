@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 21 | Created: 2026-09-10 | Updated: 2026-10-30 02:26 UTC
+Rev. 22 | Created: 2026-09-10 | Updated: 2026-10-30 09:49 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -177,6 +177,14 @@ Table 3. Filter methods
 
 **Key features.** The wrapper branch scores a subset by the performance of a model refitted on it, so its answer is a property of that model and its cost is one refit per step [[7](#ref-7)].
 
+**Subset score.** A subset can be scored by a cross-validated error or by an information criterion such as the BIC [[8](#ref-8)], which rates the refitted model by its fit and its size at once.
+
+```math
+\mathrm{BIC} = k \ln n - 2 \ln \hat{L} \hspace{19em} (2)
+```
+
+Here k is the number of fitted parameters, n is the number of rows, and $\hat{L}$ is the maximized likelihood of the model on those rows. The subset with the lowest BIC gives the best balance of model performance and parsimony, and a feature lowers the BIC only when it raises $2 \ln \hat{L}$ by more than ln n.
+
 The search direction and the cost of each member are as in Table 4.
 
 Table 4. Wrapper methods
@@ -189,7 +197,7 @@ Table 4. Wrapper methods
 | Stepwise             | Forward with backward steps                | Both of the above                 | Search cost without a guarantee of the optimum                                      |
 | Genetic search       | Stochastic over subsets                    | One per individual per generation | Cost grows with the population, and the result is not reproducible without the seed |
 
-**On trace data.** RFE was introduced on gene expression data, whose column count exceeds the row count by orders of magnitude, and it eliminates a block of features per step [[8](#ref-8)]. A trace table has the same shape, so RFE is the member of this branch most often used on it. The refit cost remains, so a wrapper runs on the hundreds of columns that pass the filter, not on the thousands that enter it.
+**On trace data.** RFE was introduced on gene expression data, whose column count exceeds the row count by orders of magnitude, and it eliminates a block of features per step [[9](#ref-9)]. A trace table has the same shape, so RFE is the member of this branch most often used on it. The refit cost remains, so a wrapper runs on the hundreds of columns that pass the filter, not on the thousands that enter it. With n between 100 and 1,000 wafers, ln n lies between 4.6 and 6.9, and the BIC needs a likelihood fitted on more rows than parameters, which the filtered shortlist also provides.
 
 ### 4.4 Embedded
 
@@ -203,19 +211,19 @@ Table 5. Embedded methods
 | :--------------------------------: | :------------------------------: | :----------------: | :--------------------------------------------------------------------------: |
 | Lasso                              | L1 on each coefficient           | One column         | The smallest set of columns                                                  |
 | Elastic net                        | L1 and L2 mixed                  | One column         | Correlated columns kept or dropped together rather than one picked at random |
-| Group lasso [[9](#ref-9)]          | L2 within a group, summed as L1  | One group          | A whole sensor or a whole step, in or out                                    |
-| Sparse group lasso [[10](#ref-10)] | Group and column penalties mixed | Group, then column | A sensor kept with only some of its statistics                               |
+| Group lasso [[10](#ref-10)]        | L2 within a group, summed as L1  | One group          | A whole sensor or a whole step, in or out                                    |
+| Sparse group lasso [[11](#ref-11)] | Group and column penalties mixed | Group, then column | A sensor kept with only some of its statistics                               |
 | MDI                                | None; read off the splits        | One column         | Nothing beyond the fit already performed                                     |
 
-**Lasso and elastic net.** Lasso keeps one of two strongly correlated columns and sets the other to zero, and the data do not fix in any stable way which one it keeps [[11](#ref-11)]. Elastic net adds an L2 term and keeps or drops two strongly correlated columns together [[12](#ref-12)].
+**Lasso and elastic net.** Lasso keeps one of two strongly correlated columns and sets the other to zero, and the data do not fix in any stable way which one it keeps [[12](#ref-12)]. Elastic net adds an L2 term and keeps or drops two strongly correlated columns together [[13](#ref-13)].
 
 **MDI and permutation importance.** MDI reads the impurity decrease from the tree structure the training built, so it is embedded and sits in branch 3.3. Permutation importance reads the loss change after shuffling one column of a finished model's input, so it is post-hoc and sits in branch 4.1 (§4.5).
 
-**On trace data.** Elastic net groups columns by correlation and not by the sensor or step the engineer acts on, so it addresses the instability across wafers of §4.6 only in part. MDI is biased toward features with many distinct values [[13](#ref-13)]; a trace feature table holds continuous summary statistics such as the mean and the slope beside low-cardinality counts such as the cycle count and the step index, and MDI ranks the first above the second for reasons unrelated to the target.
+**On trace data.** Elastic net groups columns by correlation and not by the sensor or step the engineer acts on, so it addresses the instability across wafers of §4.6 only in part. MDI is biased toward features with many distinct values [[14](#ref-14)]; a trace feature table holds continuous summary statistics such as the mean and the slope beside low-cardinality counts such as the cycle count and the step index, and MDI ranks the first above the second for reasons unrelated to the target.
 
 ### 4.5 Post-Hoc Ranking
 
-**Key features.** The post-hoc ranking branch is a filter applied to a fitted model, and it gives a ranking with no cut-off. SHAP, LIME and attention weights belong here: embedded means that the selection is a term of the training objective [[2](#ref-2)], while SHAP [[14](#ref-14)] and LIME [[15](#ref-15)] are computed after the fit, treat the model as a black box and leave the trained weights untouched.
+**Key features.** The post-hoc ranking branch is a filter applied to a fitted model, and it gives a ranking with no cut-off. SHAP, LIME and attention weights belong here: embedded means that the selection is a term of the training objective [[2](#ref-2)], while SHAP [[15](#ref-15)] and LIME [[16](#ref-16)] are computed after the fit, treat the model as a black box and leave the trained weights untouched.
 
 What each member disturbs and whether it needs labels are as in Table 6.
 
@@ -229,11 +237,11 @@ Table 6. Post-hoc ranking methods
 | LIME                   | A local neighbourhood, resampled           | No              | A local surrogate model, apart from a global statement  |
 | Attention weight       | Nothing; the weight is read                | No              | Diagnostic only                                         |
 
-**On trace data.** The branch orders a shortlist instead of producing a set. Permutation and drop-column also require a choice between training rows and held-out rows, and on held-out rows the value measures reliance that persists out of sample. Attention weights serve as a diagnostic only: other weight assignments yield the same prediction and the weights correlate poorly with gradient-based measures [[16](#ref-16)], and the rebuttal narrows that result without removing it [[17](#ref-17)].
+**On trace data.** The branch orders a shortlist instead of producing a set. Permutation and drop-column also require a choice between training rows and held-out rows, and on held-out rows the value measures reliance that persists out of sample. Attention weights serve as a diagnostic only: other weight assignments yield the same prediction and the weights correlate poorly with gradient-based measures [[17](#ref-17)], and the rebuttal narrows that result without removing it [[18](#ref-18)].
 
 ### 4.6 Error-Controlled Selection
 
-**Key features.** The error-controlled branch costs more and in return bounds how many of the selected features are there by chance, which no other branch does. Model-X knockoffs build a synthetic copy of each feature that keeps its correlation structure but is independent of the target given the rest, and keep the features whose score exceeds that of their own copies by a threshold that holds the false discovery rate below a chosen level [[18](#ref-18)]. Stability selection reruns a base selector over subsamples, counts how often each feature is selected, and keeps the features above a threshold, with a finite-sample bound on the expected number of false positives [[19](#ref-19)].
+**Key features.** The error-controlled branch costs more and in return bounds how many of the selected features are there by chance, which no other branch does. Model-X knockoffs build a synthetic copy of each feature that keeps its correlation structure but is independent of the target given the rest, and keep the features whose score exceeds that of their own copies by a threshold that holds the false discovery rate below a chosen level [[19](#ref-19)]. Stability selection reruns a base selector over subsamples, counts how often each feature is selected, and keeps the features above a threshold, with a finite-sample bound on the expected number of false positives [[20](#ref-20)].
 
 How each member is constructed and what it bounds are as in Table 7.
 
@@ -293,29 +301,31 @@ The group is declared before the fit and cannot be recovered after it, so the se
 <a id="ref-7"></a>
 [7] Kohavi, R. and John, G. H. (1997). [Wrappers for feature subset selection](<https://doi.org/10.1016/S0004-3702(97)00043-X>). *Artificial Intelligence*, 97(1–2), 273–324.<br>
 <a id="ref-8"></a>
-[8] Guyon, I., Weston, J., Barnhill, S. and Vapnik, V. (2002). [Gene Selection for Cancer Classification using Support Vector Machines](https://doi.org/10.1023/A:1012487302797). *Machine Learning*, 46, 389–422.<br>
+[8] Schwarz, G. (1978). [Estimating the Dimension of a Model](https://doi.org/10.1214/aos/1176344136). *The Annals of Statistics*, 6(2), 461–464.<br>
 <a id="ref-9"></a>
-[9] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
+[9] Guyon, I., Weston, J., Barnhill, S. and Vapnik, V. (2002). [Gene Selection for Cancer Classification using Support Vector Machines](https://doi.org/10.1023/A:1012487302797). *Machine Learning*, 46, 389–422.<br>
 <a id="ref-10"></a>
-[10] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
+[10] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
 <a id="ref-11"></a>
-[11] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
+[11] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
 <a id="ref-12"></a>
-[12] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.<br>
+[12] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
 <a id="ref-13"></a>
-[13] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
+[13] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.<br>
 <a id="ref-14"></a>
-[14] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.<br>
+[14] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
 <a id="ref-15"></a>
-[15] Ribeiro, M. T., Singh, S. and Guestrin, C. (2016). ["Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://doi.org/10.1145/2939672.2939778). *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1135–1144.<br>
+[15] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.<br>
 <a id="ref-16"></a>
-[16] Jain, S. and Wallace, B. C. (2019). [Attention is not Explanation](https://doi.org/10.18653/v1/N19-1357). *Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, 3543–3556.<br>
+[16] Ribeiro, M. T., Singh, S. and Guestrin, C. (2016). ["Why Should I Trust You?": Explaining the Predictions of Any Classifier](https://doi.org/10.1145/2939672.2939778). *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1135–1144.<br>
 <a id="ref-17"></a>
-[17] Wiegreffe, S. and Pinter, Y. (2019). [Attention is not not Explanation](https://doi.org/10.18653/v1/D19-1002). *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing*, 11–20.<br>
+[17] Jain, S. and Wallace, B. C. (2019). [Attention is not Explanation](https://doi.org/10.18653/v1/N19-1357). *Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies*, 3543–3556.<br>
 <a id="ref-18"></a>
-[18] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.<br>
+[18] Wiegreffe, S. and Pinter, Y. (2019). [Attention is not not Explanation](https://doi.org/10.18653/v1/D19-1002). *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing*, 11–20.<br>
 <a id="ref-19"></a>
-[19] Meinshausen, N. and Bühlmann, P. (2010). [Stability selection](https://doi.org/10.1111/j.1467-9868.2010.00740.x). *Journal of the Royal Statistical Society: Series B*, 72(4), 417–473.
+[19] Candès, E., Fan, Y., Janson, L. and Lv, J. (2018). [Panning for gold: 'model-X' knockoffs for high dimensional controlled variable selection](https://doi.org/10.1111/rssb.12265). *Journal of the Royal Statistical Society: Series B*, 80(3), 551–577.<br>
+<a id="ref-20"></a>
+[20] Meinshausen, N. and Bühlmann, P. (2010). [Stability selection](https://doi.org/10.1111/j.1467-9868.2010.00740.x). *Journal of the Royal Statistical Society: Series B*, 72(4), 417–473.
 
 ---
 
