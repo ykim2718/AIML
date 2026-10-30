@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 13 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
+Rev. 14 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,7 +14,6 @@ Rev. 13 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
   - [4.6 Error-Controlled Selection](#46-error-controlled-selection)
 - [5. Selection Unit Axis](#5-selection-unit-axis)
 - [6. Failure Modes](#6-failure-modes)
-- [7. Further Work](#7-further-work)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
@@ -283,11 +282,6 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 - **Permutation over correlated columns.** 공정이 만들 수 없는 행에서 model 을 평가하고, 그 행에서의 거동이 점수에 들어감 [[21](#ref-21)].
 - **A set selected on one chamber.** 공정 물리 대신 그 chamber 의 국소 상태를 반영해, 다음 chamber 에서 재현되지 않음.
 
-## 7. Further Work
-
-- **Selection at the trace-segment unit.** Recipe step 보다 작고 열보다 큰 단위로, step 안에서 반응이 나타나는 시간 구간을 고르는 일이다. 지금 가능해진 것은 virtual metrology 의 feature 기반 framework 가 trace 전체 요약에서 물리적 뜻이 명시된 구간 feature 로 옮겨 왔기 때문이다 [[22](#ref-22)]. Step 안에서 공통 시간축에 정렬된 trace 가 필요하며, step 길이가 wafer 마다 다르면 step 경계만으로는 정렬할 수 없다.
-- **Group knockoffs for the sensor unit.** Error-controlled 가지를 §5 의 sensor 단위에 적용하여, 보고하는 sensor 목록에 순위 대신 false discovery rate 를 주는 일이다. 지금 가능해진 것은 model-X knockoffs 가 요구 조건을 "열보다 많은 행" 에서 "feature 의 알려진 결합분포" 로 바꾸었기 때문이며 [[16](#ref-16)], 넓은 trace 표도 원리상 이 조건을 충족할 수 있다. Sensor 집합에 대해 검증된 공분산 model 이 필요하다. 보장은 합성 사본에 가정한 분포보다 강해지지 않는다.
-
 ## References
 
 <a id="ref-1"></a>
@@ -331,9 +325,7 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 <a id="ref-20"></a>
 [20] Ambroise, C. and McLachlan, G. J. (2002). [Selection bias in gene extraction on the basis of microarray gene-expression data](https://doi.org/10.1073/pnas.102102699). *Proceedings of the National Academy of Sciences*, 99(10), 6562–6566.<br>
 <a id="ref-21"></a>
-[21] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.<br>
-<a id="ref-22"></a>
-[22] Suthar, K., Shah, D., Wang, J. and He, Q. P. (2019). [Next-generation virtual metrology for semiconductor manufacturing: A feature-based framework](https://doi.org/10.1016/j.compchemeng.2019.05.016). *Computers & Chemical Engineering*, 127, 140–149.
+[21] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.
 
 ---
 
@@ -354,5 +346,4 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 - **stability selection**: Base selector 를 subsample 마다 다시 실행하고 선택 빈도가 문턱을 넘는 feature 를 남기는 절차.
 - **subsample**: 행 가운데 비복원으로 뽑은 부분집합이며, 선택기를 그 위에서 다시 실행한다.
 - **trace**: Sensor 가 wafer 한 장의 recipe 통과 동안 기록한 시계열.
-- **virtual metrology**: Wafer 를 재는 대신 장비 자료에서 계측값을 예측하는 것.
 - **wrapper method**: 후보 부분집합마다 model 을 재적합하고 그 model 의 성능으로 부분집합을 채점하는 선택 방법.

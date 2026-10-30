@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 13 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
+Rev. 14 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,7 +14,6 @@ Rev. 13 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
   - [4.6 Error-Controlled Selection](#46-error-controlled-selection)
 - [5. Selection Unit Axis](#5-selection-unit-axis)
 - [6. Failure Modes](#6-failure-modes)
-- [7. Further Work](#7-further-work)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
@@ -283,11 +282,6 @@ Each defect below belongs to a method rather than to an implementation, and each
 - **Permutation over correlated columns.** The model evaluated on rows the process cannot produce, with its behaviour there entering the score [[21](#ref-21)].
 - **A set selected on one chamber.** Local chamber state instead of process physics, not transferring to the next chamber.
 
-## 7. Further Work
-
-- **Selection at the trace-segment unit.** A unit finer than the recipe step and coarser than the column, choosing the time window within a step that carries the response. It is reachable now because the feature-based framing of virtual metrology has moved from whole-trace summaries to segment features with a stated physical meaning [[22](#ref-22)]. It needs traces aligned to a common time base within a step, which step boundaries alone do not supply when the step length varies by wafer.
-- **Group knockoffs for the sensor unit.** The error-controlled branch applied at the sensor unit of §5, so that a reported sensor list carries a false discovery rate instead of a ranking. It is reachable now because model-X knockoffs moved the requirement from more rows than columns to a known joint distribution of the features [[16](#ref-16)], which a wide trace table can meet in principle. It needs a validated covariance model for the sensor set, since the guarantee is no stronger than the distribution assumed for the synthetic copies.
-
 ## References
 
 <a id="ref-1"></a>
@@ -331,9 +325,7 @@ Each defect below belongs to a method rather than to an implementation, and each
 <a id="ref-20"></a>
 [20] Ambroise, C. and McLachlan, G. J. (2002). [Selection bias in gene extraction on the basis of microarray gene-expression data](https://doi.org/10.1073/pnas.102102699). *Proceedings of the National Academy of Sciences*, 99(10), 6562–6566.<br>
 <a id="ref-21"></a>
-[21] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.<br>
-<a id="ref-22"></a>
-[22] Suthar, K., Shah, D., Wang, J. and He, Q. P. (2019). [Next-generation virtual metrology for semiconductor manufacturing: A feature-based framework](https://doi.org/10.1016/j.compchemeng.2019.05.016). *Computers & Chemical Engineering*, 127, 140–149.
+[21] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.
 
 ---
 
@@ -354,5 +346,4 @@ Each defect below belongs to a method rather than to an implementation, and each
 - **stability selection**: A procedure that reruns a base selector over subsamples and keeps the features whose selection frequency exceeds a threshold.
 - **subsample**: A subset of the rows drawn without replacement, on which a selector is rerun.
 - **trace**: The time series a sensor records over one wafer's pass through one recipe.
-- **virtual metrology**: The prediction of a metrology measurement from equipment data, in place of measuring the wafer.
 - **wrapper method**: A selection method that refits a model for each candidate subset and scores the subset by that model's performance.
