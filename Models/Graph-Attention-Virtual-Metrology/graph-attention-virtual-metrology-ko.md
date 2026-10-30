@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 1 | Created: 2026-10-29 | Updated: 2026-10-30 04:53 UTC
+Rev. 2 | Created: 2026-10-29 | Updated: 2026-10-30 05:46 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -42,7 +42,7 @@ Model 은 parameter node embedding, parameter-to-layer graph attention, thicknes
 - **Directed bipartite graph**: Edge 는 모든 parameter node 에서 모든 layer node 로 간다. Edge 의 가중치는 미리 정하지 않고 wafer 마다 식 (3) 의 attention 으로 구한다.
 - **Thickness head**: Layer 표현 $`\mathbf{e}_l`$ 을 multilayer perceptron (MLP) 에 넣어 두께 하나를 예측한다.
 
-논문의 graph 와 신경망 layer 의 directed acyclic graph (DAG) 는 아래 Table 1 과 같이 다르다. 논문은 DAG 를 언급하지 않으며, 이 표는 리뷰어의 분석이다.
+논문의 graph 와 신경망 layer 의 directed acyclic graph (DAG) 는 아래 Table 1 과 같이 다르다. 논문은 DAG 를 언급하지 않으며, 이 표는 작성자의 분석이다.
 
 Table 1. Graph in the paper versus layer DAG
 
@@ -183,19 +183,19 @@ Table 3. Performance comparison of model configurations
 
 ## 5. Limitations and Critical Review
 
-- **Computational Cost**: 논문은 학습에 쓴 GPU (NVIDIA A100 80 GB) 만 밝히고, FLOPs, 메모리 사용량, 학습 시간, 추론 시간은 보고하지 않았다. 리뷰어의 분석으로는, 식 (3) 의 계산량이 layer 수 $L$ 과 node 수 $S \cdot P$ 의 곱에 비례하므로 node 1,000 여 개에서는 부담이 작다.
+- **Computational Cost**: 논문은 학습에 쓴 GPU (NVIDIA A100 80 GB) 만 밝히고, FLOPs, 메모리 사용량, 학습 시간, 추론 시간은 보고하지 않았다. 작성자의 분석으로는, 식 (3) 의 계산량이 layer 수 $L$ 과 node 수 $S \cdot P$ 의 곱에 비례하므로 node 1,000 여 개에서는 부담이 작다.
 - **Assumptions and Constraints**:
   - 논문이 밝힌 한계: 학습한 parameter–layer 관계는 물리, 화학 원리와 대조해 검증하지 않았다. Wafer 안의 두께 분포는 예측하지 않는다. Process drift 와 변동에 대한 강건성은 시험하지 않았다.
   - 논문이 밝힌 한계: 학습 loss 와 validation loss 의 차이를 lot 단위 분할에서 생긴 분포 차이로 본다.
-  - 리뷰어의 분석: 제안 model 과 MLP baseline 의 차이 0.0121 은 test 자료 126 장의 Film B 네 layer 에서 한 번 잰 값이며, 반복 실험의 분산이 없어 차이가 우연인지 가릴 수 없다.
-  - 리뷰어의 분석: Film A layer 의 $R^2$ 는 보고되지 않았다.
-  - 리뷰어의 분석: 식 (2) 의 평균 때문에 Conv1D 가 보는 구간보다 긴 step 안의 시간 순서는 embedding 에 남지 않는다.
-  - 리뷰어의 분석: 식 (3) 은 attention head 하나로 적혀 있지만 실험 설정의 head 수는 4 이며, head 를 어떻게 합쳐 $`\mathbf{e}_l`$ 과 heatmap 을 만드는지는 논문에 없다.
-  - 리뷰어의 분석: Parameter 30 개를 domain 지식으로 미리 골랐으므로, attention 이 고른 parameter 는 그 30 개 안에서의 순위다.
+  - 작성자의 분석: 제안 model 과 MLP baseline 의 차이 0.0121 은 test 자료 126 장의 Film B 네 layer 에서 한 번 잰 값이며, 반복 실험의 분산이 없어 차이가 우연인지 가릴 수 없다.
+  - 작성자의 분석: Film A layer 의 $R^2$ 는 보고되지 않았다.
+  - 작성자의 분석: 식 (2) 의 평균 때문에 Conv1D 가 보는 구간보다 긴 step 안의 시간 순서는 embedding 에 남지 않는다.
+  - 작성자의 분석: 식 (3) 은 attention head 하나로 적혀 있지만 실험 설정의 head 수는 4 이며, head 를 어떻게 합쳐 $`\mathbf{e}_l`$ 과 heatmap 을 만드는지는 논문에 없다.
+  - 작성자의 분석: Parameter 30 개를 domain 지식으로 미리 골랐으므로, attention 이 고른 parameter 는 그 30 개 안에서의 순위다.
 
 ## 6. Takeaways and Engineering Insights
 
-이 꼭지는 리뷰어의 판단이다. 어느 project 에 차용할지는 정하지 않았으므로, 논문에서 떼어 쓸 수 있는 구성 요소만 적는다.
+이 꼭지는 작성자의 판단이다. 어느 project 에 차용할지는 정하지 않았으므로, 논문에서 떼어 쓸 수 있는 구성 요소만 적는다.
 
 - **What can I use?**:
   - Step–parameter node embedding: 길이가 다른 step 별 trace 를 Conv1D 와 시간 평균으로 같은 길이 $`d_h`$ 의 벡터로 바꾼다 (식 (1), (2)).
@@ -237,11 +237,11 @@ Table 3. Performance comparison of model configurations
 
 ## Appendix B. Equation Derivation
 
-논문은 식의 유도를 싣지 않았다. 아래 유도는 모두 리뷰어의 유도이며, 논문의 정의와 식 번호에서 출발한다.
+논문은 식의 유도를 싣지 않았다. 아래 유도는 모두 작성자의 유도이며, 논문의 정의와 식 번호에서 출발한다.
 
 ### B.1 Temporal Convolution (Eq. 1)
 
-리뷰어의 유도이며, 식 (1) 이 출력 $`T_s \times d_h`$ 를 주는 조건을 보인다. 출발점은 kernel 크기 $K$, 입력 channel 하나, 출력 channel $`d_h`$ 개인 1 차원 convolution 의 정의다.
+작성자의 유도이며, 식 (1) 이 출력 $`T_s \times d_h`$ 를 주는 조건을 보인다. 출발점은 kernel 크기 $K$, 입력 channel 하나, 출력 channel $`d_h`$ 개인 1 차원 convolution 의 정의다.
 
 ```math
 z_{s,p}^{(t,c)} = b_c + \sum_{k=0}^{K-1} w_{c,k}\, x_{s,p}^{(t + k - \lfloor K/2 \rfloor)}, \quad c = 1, \dots, d_h \hspace{19em} (7)
@@ -254,7 +254,7 @@ z_{s,p}^{(t,c)} = b_c + \sum_{k=0}^{K-1} w_{c,k}\, x_{s,p}^{(t + k - \lfloor K/2
 
 ### B.2 Temporal Mean (Eq. 2)
 
-리뷰어의 유도이며, 식 (2) 가 $`T_s`$ 와 무관한 길이 $`d_h`$ 의 벡터를 주는 것을 보인다. 출발점은 식 (1) 의 $`\mathbf{z}_{s,p}`$ 다.
+작성자의 유도이며, 식 (2) 가 $`T_s`$ 와 무관한 길이 $`d_h`$ 의 벡터를 주는 것을 보인다. 출발점은 식 (1) 의 $`\mathbf{z}_{s,p}`$ 다.
 
 - 행 $`T_s`$ 개를 더하면 $`\sum_{t} \mathbf{z}_{s,p}^{(t)} \in \mathbb{R}^{d_h}`$ 이다. 행렬의 열 수 $`d_h`$ 는 그대로이고 행 차원만 없어진다.
 - $`T_s`$ 로 나누면 그 값은 시점 수에 따라 커지지 않는다. 길이가 다른 step 의 embedding 을 같은 크기로 견줄 수 있다.
@@ -262,7 +262,7 @@ z_{s,p}^{(t,c)} = b_c + \sum_{k=0}^{K-1} w_{c,k}\, x_{s,p}^{(t + k - \lfloor K/2
 
 ### B.3 Parameter-to-Layer Attention Weight (Eq. 3)
 
-리뷰어의 유도이며, 식 (3) 이 정의로 도입한 식이므로 그 정의에서 따라 나오는 성질을 보인다. 출발점은 점수 $`u_{l,(s,p)} = \mathbf{q}_l^\top \mathbf{h}_{s,p} / \sqrt{d_h}`$ 에 softmax 를 건 것이 식 (3) 이라는 사실이다.
+작성자의 유도이며, 식 (3) 이 정의로 도입한 식이므로 그 정의에서 따라 나오는 성질을 보인다. 출발점은 점수 $`u_{l,(s,p)} = \mathbf{q}_l^\top \mathbf{h}_{s,p} / \sqrt{d_h}`$ 에 softmax 를 건 것이 식 (3) 이라는 사실이다.
 
 합이 1 이다. 분모가 모든 node 의 분자를 더한 것이므로 아래가 성립한다.
 
@@ -288,7 +288,7 @@ $`\sqrt{d_h}`$ 로 나누면 점수의 분산이 1 이 된다. $`\mathbf{q}_l`$ 
 
 ### B.4 Layer Representation (Eq. 4)
 
-리뷰어의 유도이며, 식 (4) 의 $`\mathbf{e}_l`$ 이 parameter node embedding 의 convex combination 이라는 것과 가중치가 학습되는 경로를 보인다. 출발점은 식 (3) 과 식 (8) 이다.
+작성자의 유도이며, 식 (4) 의 $`\mathbf{e}_l`$ 이 parameter node embedding 의 convex combination 이라는 것과 가중치가 학습되는 경로를 보인다. 출발점은 식 (3) 과 식 (8) 이다.
 
 - 식 (8) 에 따라 가중치 $`\alpha_{l,(s,p)}`$ 는 모두 양수이고 합이 1 이므로, $`\mathbf{e}_l`$ 은 $`\mathbf{h}_{s,p}`$ 들의 convex combination 이다. 성분마다 $`\min_{s,p} h_{s,p,c} \le e_{l,c} \le \max_{s,p} h_{s,p,c}`$ 가 성립한다.
 - 한 node 의 가중치가 1 에 가까우면 $`\mathbf{e}_l`$ 은 그 node 의 embedding 에 가깝다. 식 (5) 를 줄이려면 두께 예측에 쓸모 있는 node 의 가중치가 커져야 하므로, $`\alpha_{l,(s,p)}`$ 를 중요도로 읽을 수 있다.
@@ -309,7 +309,7 @@ $`\mathbf{q}_l`$ 은 softmax 를 거쳐 학습된다. Node 를 $j, k$ 로 줄여
 
 ### B.5 Standardized Loss (Eq. 5)
 
-리뷰어의 유도이며, 식 (5) 가 표준화한 두께의 mean squared error 와 같다는 것을 보인다. 출발점은 학습 자료에서 구한 layer $l$ 두께의 평균 $`\mu_l`$ 과 표준편차 $`\sigma_l`$ 로 정의한 표준화다.
+작성자의 유도이며, 식 (5) 가 표준화한 두께의 mean squared error 와 같다는 것을 보인다. 출발점은 학습 자료에서 구한 layer $l$ 두께의 평균 $`\mu_l`$ 과 표준편차 $`\sigma_l`$ 로 정의한 표준화다.
 
 ```math
 z_l = \frac{y_l - \mu_l}{\sigma_l}, \qquad \hat{z}_l = \frac{\hat{y}_l - \mu_l}{\sigma_l} \hspace{19em} (13)
@@ -325,7 +325,7 @@ z_l = \frac{y_l - \mu_l}{\sigma_l}, \qquad \hat{z}_l = \frac{\hat{y}_l - \mu_l}{
 
 ### B.6 Coefficient of Determination (Eq. 6)
 
-리뷰어의 유도이며, 식 (6) 의 $R^2$ 가 평균 예측 대비 줄어든 오차의 비율임을 보인다. 출발점은 평가 자료 $N$ 장의 잔차 제곱합과 총 제곱합이다.
+작성자의 유도이며, 식 (6) 의 $R^2$ 가 평균 예측 대비 줄어든 오차의 비율임을 보인다. 출발점은 평가 자료 $N$ 장의 잔차 제곱합과 총 제곱합이다.
 
 ```math
 \mathrm{SSE}_l = \sum_{i=1}^{N} (y_{i,l} - \hat{y}_{i,l})^2, \qquad \mathrm{SST}_l = \sum_{i=1}^{N} (y_{i,l} - \bar{y}_l)^2 \hspace{19em} (15)
