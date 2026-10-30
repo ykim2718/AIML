@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 16 | Created: 2026-09-10 | Updated: 2026-10-30 01:21 UTC
+Rev. 17 | Created: 2026-09-10 | Updated: 2026-10-30 01:28 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,13 +20,13 @@ Rev. 16 | Created: 2026-09-10 | Updated: 2026-10-30 01:21 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: Recipe 하나의 trace 는 sensor 수백 개에서 feature 수천 열을 만들지만 wafer 는 수백 장에 그쳐, 이 열을 모두 넣고 적합한 model 은 우연 상관을 학습하고 공정 담당자가 조정할 대상을 알려 주지 못한다.
-- **Goal**: 선택 방법을 Fig 1 의 네 축, 곧 evaluation criterion, label availability, search strategy, selection unit 위에 놓아, 독자가 어떤 방법이 축마다 어느 값을 갖는지와 그 때문에 답이 다루지 못하는 것을 짚을 수 있게 한다.
-- **Non-Goal**: Feature 하나에 점수를 매기는 일은 다루지 않는다. 이 주제는 [Feature Importance](../../Feature-Importance/feature-importance.md) 에 있다.
+- **Problem Statement**: Recipe 하나의 trace 는 feature 수천 열을 만들지만 wafer 는 수백 장에 그쳐, 이 열을 모두 넣고 적합한 model 은 우연 상관을 학습하고 조정할 sensor 나 step 을 알려 주지 못한다.
+- **Goal**: 독자가 어떤 trace feature selection 방법이든 Fig 1 의 네 축 위에 놓고, 그 답이 다루지 못하는 것을 짚을 수 있게 한다.
+- **Non-Goal**: Feature 하나에 점수를 매기는 일은 다루지 않으며, 이 주제는 [Feature Importance](../../Feature-Importance/feature-importance.md) 에 있다.
 
 ## 2. Summary
 
-Trace feature 를 고르는 방법은 evaluation criterion, label availability, search strategy, selection unit 의 네 축 위에 놓아야 그 답이 다루지 못하는 것이 드러난다. Evaluation criterion 축은 답이 무엇의 성질인지와 비용을 정하고, selection unit 축은 고른 집합을 공정에서 실행할 수 있는지를 정한다. Trace data 는 wafer 수백 장에 열 수천 개여서 한 번의 적합으로 고른 집합이 wafer 가 바뀌면 달라지며, error-controlled 가지의 subsampling 구성원이 이 변화를 다룬다.
+Trace feature selection 방법은 네 축의 값으로 구분된다. Evaluation criterion 은 답이 무엇의 성질인지와 비용을 정하고, label availability 와 search strategy 는 대부분 그 기준의 가지에서 정해지며, selection unit 은 답을 공정에서 실행할 수 있는지를 정한다. 한 번의 적합으로 고른 집합은 wafer 가 바뀌면 달라지며, error-controlled 가지의 subsampling 구성원이 이 변화를 잰다.
 
 ## 3. Taxonomy and its Hierarchy
 
@@ -96,24 +96,24 @@ Fig 2. Hierarchy of the evaluation criterion axis by use of the learning algorit
 
 ### 3.1 Comparison
 
-Trace feature list 에 묻는 질문마다 답하는 Fig 2 의 가지는 Table 1 과 같다.
+Use case 마다 답하는 Fig 2 의 가지는 Table 1 과 같다.
 
-Table 1. Question and the branch that answers it
+Table 1. Use case and the branch that answers it
 
-| Question                                           | Branch                  | Note                                                         |
-| :------------------------------------------------: | :---------------------: | :----------------------------------------------------------: |
-| 어느 열이 죽었거나 상수이거나 중복인가             | 0                       | Target 을 보기 전에 실행                                     |
-| 수천 열 가운데 무엇을 다음 단계로 넘길 것인가      | 1.1                     | 넉넉하게 자름, 조합에서만 의미를 갖는 feature 는 보이지 않음 |
-| 어느 열이 이미 고른 열에 없는 정보를 갖는가        | 1.2                     | Relevance 와 함께 redundancy 를 기준으로 삼음                |
-| 어느 열이 다른 열과 함께일 때만 의미를 갖는가      | 1.3                     | Neighbour contrast 로 marginal 점수가 놓치는 것을 봄         |
-| 이 model 이 실제로 필요로 하는 부분집합은 무엇인가 | 2.1                     | 단계마다 재적합 한 번, filter 를 통과한 목록에서 실행        |
-| 어느 sensor 를 수집에서 뺄 수 있는가               | 3.2, sensor 로 묶음     | 단위가 sensor 여야 실행할 수 있는 답                         |
-| Target 이 어느 recipe step 에 반응하는가           | 3.2, step 으로 묶음     | 단위가 step 이어야 함                                        |
-| 어느 sensor 를 남기고 통계량을 줄일 것인가         | 3.2, sparse group lasso | Group 사이 sparsity 와 group 안 sparsity 를 함께             |
-| 적합된 black box model 이 어느 열에 의존하는가     | 4.1, held-out row 에서  | 그 적합의 의존도, 자료 안의 정보와는 별개                    |
-| 이 wafer 하나의 예측값은 왜 그렇게 나왔는가        | 4.2                     | 행 하나의 설명, 선택과는 별개                                |
-| 어느 feature 가 wafer 가 바뀌어도 다시 선택되는가  | 5.1                     | 부분집합 대신 선택 빈도를 보고                               |
-| 무엇을 실재한다고 보고할 수 있는가                 | 5.2                     | 오차율을 보고하는 유일한 가지                                |
+| Use case                             | Branch                  | Note                                                  |
+| :----------------------------------: | :---------------------: | :---------------------------------------------------: |
+| 죽은 열, 상수 열, 중복 열 제거       | 0                       | Target 을 쓰기 전에 실행                              |
+| 수천 열을 후보 목록으로 축소         | 1.1                     | 넉넉하게 자름, 조합에서만 의미를 갖는 feature 는 놓침 |
+| 이미 고른 열에 정보를 더하는 열 선택 | 1.2                     | Relevance 와 redundancy 를 함께 채점                  |
+| 조합에서만 의미를 갖는 열 탐지       | 1.3                     | Neighbour contrast 로 상호작용을 잡음                 |
+| 한 model 에 필요한 부분집합 결정     | 2.1                     | Filter 를 통과한 목록에서 실행                        |
+| 수집에서 뺄 sensor 결정              | 3.2, sensor 로 묶음     | 단위는 sensor                                         |
+| Target 이 반응하는 recipe step 탐지  | 3.2, step 으로 묶음     | 단위는 step                                           |
+| Sensor 를 남기고 통계량만 축소       | 3.2, sparse group lasso | Group 사이와 group 안을 함께 희소화                   |
+| 적합된 model 이 의존하는 열의 순위   | 4.1, held-out row 에서  | 그 적합의 의존도, 자료의 정보와 별개                  |
+| Wafer 하나의 예측 설명               | 4.2                     | 행 하나의 설명, 선택은 하지 않음                      |
+| Wafer 가 바뀌어도 남는 feature 선택  | 5.1                     | 선택 빈도를 보고                                      |
+| 오차율과 함께 feature 보고           | 5.2                     | False discovery rate 를 한정                          |
 
 둘째 열의 번호는 Fig 2 의 가지 번호이고, 묶는 단위를 적은 행은 §7 의 selection unit 을 따른다.
 
@@ -136,21 +136,13 @@ Table 2. Branches of the evaluation criterion axis
 
 ### 4.1 Preprocessing
 
-Preprocessing 은 model 도 target 도 참조하지 않아 가지 0 이 된다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 모두 feature 를 target 과 견주어 점수를 매기므로, 서로 비교할 수 있고 다른 지도 기준과도 비교할 수 있다. Variance thresholding 은 feature 를 그 자신의 분산으로만 재므로, 상관 검정과 한 묶음에 넣으면 성립하지 않는 비교를 하게 된다.
+**Key features.** 가지 0 은 학습 algorithm 도 target 도 쓰지 않고 열을 덜어 낸다. Constancy 는 분산이 0 이거나 거의 상수인 열을 뺀다. Redundancy 는 Pearson correlation 절댓값 |r| 이 0.95 같은 threshold 를 넘는 열들 가운데 한 열만 남기며, 열을 묶을 때는 거리 1 − |r| 위의 hierarchical clustering 이나 correlation matrix 를 차례로 훑는 greedy 제거를 쓴다. 표준화한 열에서는 cosine similarity 가 Pearson r 과 같으므로, cosine 을 기준으로 삼아도 같은 방법이다. Variance thresholding 은 feature 를 그 자신의 분산으로만 재므로, 가지 1 의 지도 점수와 비교할 수 없다.
 
-Constancy 묶음이 가장 먼저 실행된다. Trace 수집물에는 recipe 안에서 변하지 않는 setpoint 처럼 구조적으로 상수인 열과, 보고를 멈춘 sensor 의 열이 있다. 두 종류 모두 지도 기준을 돌리기 전에 빼야 한다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화 오차에 좌우된다.
-
-Redundancy 묶음은 같은 신호가 여러 열에 되풀이될 때 한 열만 남긴다. Trace table 에서는 한 recipe step 안에서 한 sensor 의 mean, median, integral 이 같은 물리량을 따라가므로, 세 열은 wafer 사이에서 함께 오르내린다. 열을 표준화한 뒤 모든 열 쌍의 Pearson correlation 절댓값 |r| 을 구하고, |r| 이 0.95 같은 threshold 를 넘는 열을 한 group 으로 묶는다. 묶을 때는 거리 1 − |r| 위의 hierarchical clustering 을 쓰거나 correlation matrix 를 차례로 훑는 greedy 제거를 쓰며, group 마다 한 열을 남긴다. 표준화한 열에서는 cosine similarity 가 Pearson r 과 같으므로, cosine 을 기준으로 삼아도 같은 방법이다. 남는 열은 group 의 평균이 아닌 원래 열 하나여서, 어느 sensor 의 어느 recipe step 의 어느 요약통계인지가 그대로 남는다 (§7).
-
-Redundancy 묶음도 target 을 보지 않으므로, group 안에서 어느 열이 남을지는 target 과 상관없이 정해진다. 남길 열은 결측이 가장 적은 열이나 engineer 가 이미 읽는 요약통계처럼, target 을 보기 전에 정한 규칙으로 고른다. Target 과의 relevance 와 이미 고른 열과의 redundancy 를 함께 따지는 지도 기준은 가지 1.2 의 mRMR 이다 (§4.2).
+**On trace data.** Trace 수집물에는 recipe 안에서 변하지 않는 setpoint 처럼 구조적으로 상수인 열과 보고를 멈춘 sensor 의 열이 있으며, 둘 다 가장 먼저 뺀다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화 오차에 좌우된다. 한 recipe step 안에서 한 sensor 의 mean, median, integral 은 wafer 사이에서 함께 오르내리므로, Redundancy 는 세 열을 원래 열 하나로 줄이고 그 열은 sensor, recipe step, 요약통계를 그대로 가리킨다 (§7). 남길 열은 결측이 가장 적은 열처럼 target 을 보기 전에 정한 규칙으로 고르며, 같은 일을 target 을 보고 하는 지도 기준은 가지 1.2 의 mRMR 이다 (§4.2).
 
 ### 4.2 Filter
 
-Filter 가지는 trace feature list 전체에 돌릴 수 있을 만큼 계산이 싸며, 비싼 방법에 앞서 한 번 훑어 수천 열을 수백 열로 줄이는 데 쓴다.
-
-Filter 의 구성원은 feature 를 혼자 재는 univariate 구성원과, 이미 고른 feature 와 견주어 재는 multivariate 구성원으로 나뉜다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 한 번에 한 열씩 target 과 견주므로, 여러 요약통계가 한 물리량을 따라가는 sensor 에서는 거의 같은 점수가 여러 개 나온다. Univariate filter 는 그 sensor 의 열을 모두 남기므로, 열 수는 줄어도 redundancy 는 줄지 않는다. mRMR 은 target 과의 relevance 에서 이미 고른 집합과의 redundancy 를 빼서 점수를 매기므로, redundancy 를 다루는 구성원이다 [[5](#ref-5)].
-
-세 번째 갈래는 neighbour contrast 다. Relief 와 그 변형은 각 행을 같은 class 와 다른 class 의 nearest neighbour 와 대비하여 feature 에 점수를 매기므로, 다른 feature 와 함께일 때만 의미를 갖는 feature 도 점수를 얻는다. Marginal 기준으로는 얻을 수 없는 결과다 [[6](#ref-6)]. 결과는 univariate 구성원처럼 feature 마다 숫자 하나지만 계산이 marginal 하지 않으므로, 가지 1.1 에 넣지 않고 별도 갈래 1.3 으로 둔다.
+**Key features.** Filter 가지는 model 을 적합하기 전에 feature 에 점수를 매기며, trace feature list 전체에 돌릴 수 있을 만큼 계산이 싸다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 열 하나를 target 과 견주어 점수를 매긴다. mRMR 은 열 하나를 target 및 이미 고른 열과 견주어 점수를 매긴다 [[5](#ref-5)]. Relief 와 그 변형은 열 하나를 각 행의 같은 class 와 다른 class 의 nearest neighbour 와 견주어 점수를 매기므로, 다른 feature 와 함께일 때만 의미를 갖는 feature 도 점수를 얻는다 [[6](#ref-6)].
 
 구성원끼리의 비교는 Table 3 과 같다.
 
@@ -165,11 +157,11 @@ Table 3. Filter methods
 | mRMR                 | 선택된 집합과의 redundancy 를 뺀 relevance | 예              | 아니오           |
 | Relief, ReliefF      | Feature 공간에서의 neighbour contrast      | 부분적으로      | 예               |
 
-자를 때는 넉넉하게 남긴다. Univariate 구성원은 어느 것도 다른 feature 와 함께일 때만 의미를 갖는 feature 를 보지 못하고, 여기서 버린 열은 뒤 단계에서 다시 들어오지 않는다.
+**On trace data.** 여러 요약통계가 한 물리량을 따라가는 sensor 에서는 거의 같은 univariate 점수가 여러 개 나오므로, univariate filter 는 열 수만 줄이고 redundancy 는 줄이지 못한다. 자를 때는 넉넉하게 남긴다. Univariate 구성원은 조합에서만 의미를 갖는 feature 를 보지 못하고, 여기서 버린 열은 뒤 단계에서 다시 들어오지 않는다.
 
 ### 4.3 Wrapper
 
-Wrapper 가지는 부분집합마다 model 을 다시 적합하고 그 성능으로 점수를 매기므로, 답은 그 model 의 성질이고 비용은 단계마다 재적합 한 번이다 [[7](#ref-7)].
+**Key features.** Wrapper 가지는 부분집합마다 model 을 다시 적합하고 그 성능으로 점수를 매기므로, 답은 그 model 의 성질이고 비용은 단계마다 재적합 한 번이다 [[7](#ref-7)].
 
 구성원마다의 탐색 방향과 비용은 Table 4 와 같다.
 
@@ -183,11 +175,11 @@ Table 4. Wrapper methods
 | Stepwise             | 전진에 후진 단계를 섞음   | 위 두 가지 모두           | 최적해 보장 없이 탐색 비용만 듦                                  |
 | Genetic search       | 부분집합 위의 확률적 탐색 | 세대마다 개체 하나에 하나 | 개체군에 따라 비용이 늘고, seed 없이는 결과가 재현되지 않음      |
 
-RFE 는 열 수가 행 수보다 몇 자릿수 많은 gene expression 자료에서 나왔고, 단계마다 feature 하나 대신 한 묶음을 제거하여 그 조건을 감당한다 [[8](#ref-8)]. Trace 표도 같은 모양이어서 이 가지에서는 RFE 를 가장 흔히 쓴다. 그래도 단계마다 model 을 다시 적합하는 비용은 그대로이므로, wrapper 는 filter 에 들어가는 수천 열이 아니라 filter 를 통과한 수백 열에서 돌린다.
+**On trace data.** RFE 는 열 수가 행 수보다 몇 자릿수 많은 gene expression 자료에서 나왔고, 단계마다 feature 한 묶음을 제거한다 [[8](#ref-8)]. Trace 표도 같은 모양이어서 이 가지에서는 RFE 를 가장 흔히 쓴다. 단계마다 재적합하는 비용은 그대로이므로, wrapper 는 filter 에 들어가는 수천 열이 아니라 filter 를 통과한 수백 열에서 돌린다.
 
 ### 4.4 Embedded
 
-Embedded 가지의 비용은 적합 한 번이다. 선택이 바깥 탐색 없이 학습 중 최소화하는 목적함수에서 바로 정해진다.
+**Key features.** Embedded 가지의 비용은 적합 한 번이다. 선택이 바깥 탐색 없이 학습 중 최소화하는 목적함수에서 바로 정해진다.
 
 구성원마다의 penalty 와 selection unit 은 Table 5 와 같다.
 
@@ -201,15 +193,15 @@ Table 5. Embedded methods
 | Sparse group lasso [[10](#ref-10)] | Group penalty 와 열 penalty 의 혼합 | Group, 그다음 열 | Sensor 를 쓰되 그 통계량 가운데 일부만                      |
 | MDI                                | 없음, 분기에서 읽음                 | 열 하나          | 이미 끝낸 적합 외에는 없음                                  |
 
-열끼리 강하게 상관된 trace 표의 조건에서 lasso 는 불안정하며, elastic net 이 이를 보완한다. 두 열이 강하게 상관되면 lasso 는 하나를 고르고 다른 하나를 0 으로 만드는데, 어느 쪽을 고를지는 자료가 안정적으로 정하지 못한다. Elastic net 은 L2 항을 더해 상관된 열이 함께 들어오고 함께 빠지게 한다 [[11](#ref-11)]. 이 보완은 §4.6 에서 다루는 wafer 사이의 불안정을 일부만 해결한다. 열을 상관으로 묶을 뿐, 담당자가 조정하는 물리적 대상으로 묶지는 않는다.
+**Lasso and elastic net.** Lasso 는 강하게 상관된 두 열 가운데 하나를 남기고 다른 하나를 0 으로 만들며, 어느 쪽을 남길지는 자료가 안정적으로 정하지 못한다 [[11](#ref-11)]. Elastic net 은 L2 항을 더해 강하게 상관된 두 열을 함께 남기거나 함께 뺀다 [[12](#ref-12)].
 
-Tree importance 라는 이름 아래에는 서로 다른 두 방법이 있고, 그 가운데 MDI 만 embedded 다. MDI 는 어떤 feature 가 쓰인 분기들에서 누적한 불순도 감소량으로, 학습 절차가 만든 tree 구조에서 읽으므로 embedded 이며 가지 3.3 에 속한다. Permutation importance 는 완성된 model 의 입력에서 한 열을 섞어 손실의 변화를 보므로 post-hoc 이며 가지 4.1 에 속한다 (§4.5).
+**MDI and permutation importance.** MDI 는 학습이 만든 tree 구조에서 불순도 감소량을 읽으므로 embedded 이며 가지 3.3 에 속한다. Permutation importance 는 완성된 model 의 입력에서 한 열을 섞은 뒤 손실 변화를 읽으므로 post-hoc 이며 가지 4.1 에 속한다 (§4.5).
 
-Trace 표에서는 두 방법을 구별하느냐에 따라 순위가 달라진다. MDI 는 서로 다른 값을 많이 갖는 feature 쪽으로 치우쳐, 연속형 열을 낮은 cardinality 의 열보다 높게 평가한다 [[12](#ref-12)]. Trace feature 표에는 평균이나 기울기 같은 연속형 요약통계와 cycle count 나 step index 같은 낮은 cardinality 의 계수값이 함께 들어 있어, MDI 는 target 과 무관한 이유로 연속형 열을 계수값보다 높은 순위에 둔다.
+**On trace data.** Elastic net 은 열을 상관으로 묶을 뿐 담당자가 조정하는 sensor 나 step 으로 묶지 않으므로, §4.6 의 wafer 사이 불안정을 일부만 해결한다. MDI 는 서로 다른 값을 많이 갖는 feature 쪽으로 치우친다 [[13](#ref-13)]. Trace feature 표에는 평균이나 기울기 같은 연속형 요약통계와 cycle count 나 step index 같은 낮은 cardinality 의 계수값이 함께 있어, MDI 는 target 과 무관한 이유로 연속형 열을 계수값보다 높은 순위에 둔다.
 
 ### 4.5 Post-Hoc Ranking
 
-Post-hoc ranking 가지는 원자료 대신 적합된 model 에 적용한 filter 이며, filter 와 같은 결함이 있다. 순위만 주고 문턱은 주지 않는다.
+**Key features.** Post-hoc ranking 가지는 적합된 model 에 적용한 filter 이며, 순위만 주고 문턱은 주지 않는다. SHAP, LIME, attention weight 가 여기에 속한다. Embedded 는 선택이 학습 목적함수의 한 항이라는 뜻인데 [[2](#ref-2)], SHAP [[14](#ref-14)] 과 LIME [[15](#ref-15)] 은 적합이 끝난 뒤 model 을 black box 로 다루어 계산하며 학습된 가중치를 바꾸지 않는다.
 
 구성원마다 흔드는 대상과 label 필요 여부는 Table 6 과 같다.
 
@@ -223,15 +215,11 @@ Table 6. Post-hoc ranking methods
 | LIME                   | 국소 이웃을 재표집             | 아니오          | 국소 surrogate model, 전역 결론과는 별개 |
 | Attention weight       | 없음, 가중치를 읽을 뿐         | 아니오          | 진단 전용                                |
 
-문턱이 없으므로 이 가지는 집합을 만드는 데 쓰지 않고, 짧은 후보 목록의 순서를 정하는 데 쓴다. Permutation 과 drop-column 은 다른 구성원에 없는 결정을 하나 더 요구한다. 학습 행을 쓸지 held-out row 를 쓸지다. Held-out row 를 쓰면 그 값은 표본 밖에서도 유지된 의존도이며, 서로 다른 값이 충분히 많은 잡음 열에서는 두 방식의 값이 그 열의 학습 자료 점수만큼 벌어진다.
-
-SHAP, LIME, attention weight 는 post-hoc ranking 에 속한다. Embedded 는 선택이 학습 중 최소화하는 목적함수의 한 항이라는 뜻이다 [[2](#ref-2)]. Lasso 는 L1 penalty 가 손실 안에 있어 계수를 정확히 0 으로 만들면서 열을 고르는데 [[13](#ref-13)], SHAP [[14](#ref-14)] 과 LIME [[15](#ref-15)] 에는 그런 항이 없다. 둘 다 적합이 끝난 뒤에 계산하고, model 을 black box 로 다루며, 학습된 가중치를 바꾸지 않는다. 결과는 순위이고, 문턱은 여전히 방법 밖에서 정해야 한다.
-
-Attention weight 에는 어느 가지에 속하는가와 별개로 반론이 하나 더 있다. 입력에 걸린 attention 은 예측이 어느 입력에 의존하는지를 믿을 만하게 가리키지 못한다. 같은 예측을 주는 다른 가중치 배정이 있고, 그 가중치는 gradient 기반 척도와 상관이 낮다 [[16](#ref-16)]. 이에 대한 반박은 이 결과를 없애지 않고 범위만 좁혀, model 의 나머지를 고정하면 attention 을 마음대로 바꿀 수 없음을 보였다 [[17](#ref-17)]. 따라서 attention weight 는 진단에는 쓸 수 있어도 선택 기준으로는 부족하며, Fig 2 의 가지 4.3 을 진단 전용으로 둔 근거가 이 반론이다.
+**On trace data.** 이 가지는 집합을 만들지 않고 짧은 후보 목록의 순서를 정한다. Permutation 과 drop-column 은 학습 행과 held-out row 가운데 무엇을 쓸지도 정해야 하며, held-out row 에서 잰 값은 표본 밖에서도 유지된 의존도다. Attention weight 는 진단에만 쓴다. 같은 예측을 주는 다른 가중치 배정이 있고 그 가중치는 gradient 기반 척도와 상관이 낮으며 [[16](#ref-16)], 이에 대한 반박도 이 결과의 범위를 좁힐 뿐 없애지 못한다 [[17](#ref-17)].
 
 ### 4.6 Error-Controlled Selection
 
-Error-controlled 가지는 비용이 더 드는 대신, 고른 feature 가운데 우연히 들어온 것이 몇 개인지에 한계를 준다. 다른 가지에는 이 한계가 없다.
+**Key features.** Error-controlled 가지는 비용이 더 드는 대신, 고른 feature 가운데 우연히 들어온 것이 몇 개인지에 한계를 준다. 다른 가지에는 이 한계가 없다. Model-X knockoffs 는 각 feature 의 상관 구조를 유지하면서 나머지 feature 가 주어졌을 때 target 과 독립인 합성 사본을 만들고, 자기 사본보다 정해진 차이 이상으로 점수가 높은 feature 만 남겨 false discovery rate 를 정한 수준 아래로 유지한다 [[18](#ref-18)]. Stability selection 은 base selector 를 subsample 마다 다시 실행하고, feature 마다 선택 빈도를 세어 문턱을 넘는 feature 를 남기며, 잘못 선택된 feature 수의 기댓값에 유한표본 한계를 준다 [[19](#ref-19)].
 
 구성원마다의 구성 방법과 한계의 대상은 Table 7 과 같다.
 
@@ -243,13 +231,7 @@ Table 7. Error-controlled methods
 | Fixed-X knockoffs   | 설계행렬로 만든 합성 열                   | False discovery rate | 열보다 행이 많아야 함               |
 | Model-X knockoffs   | Feature 결합분포에서 뽑은 합성 열         | False discovery rate | 그 결합분포를 알거나 잘 추정해야 함 |
 
-모든 가지 가운데 이 가지만 "무엇을 실재한다고 보고할 수 있는가" 에 답한다. Model-X knockoffs 는 각 feature 의 상관 구조를 유지하면서 나머지 feature 가 주어졌을 때 target 과 독립인 합성 사본을 만들고, 자기 사본을 정해진 차이 이상으로 이긴 feature 만 남겨 false discovery rate 를 정한 수준 아래로 유지한다 [[18](#ref-18)]. 대가는 feature 의 결합분포다. Trace 표에서는 구조를 가정해야만 결합분포를 추정할 수 있고, 보장은 그 가정보다 강해지지 않는다.
-
-Stability selection 은 이 가지의 subsampling 구성원이다. Base selector 를 subsample 마다 다시 실행하고, feature 마다 선택 빈도를 세어 문턱을 넘는 feature 를 남기며, 명시한 조건 아래에서 잘못 선택된 feature 수의 기댓값에 유한표본 한계를 준다 [[19](#ref-19)]. 재표집은 가지 1 부터 4 까지의 어느 선택기든 바꾸지 않고 감싼다.
-
-Trace data 에서는 한 번의 적합으로 고른 집합이 wafer 가 바뀌면 달라진다. Wafer 는 수백 장인데 feature 는 수천 개이고, 물리적으로 짝을 이루는 sensor — forward 와 reflected RF power, 인접한 thermocouple, 유량 setpoint 와 그 readback — 는 벌점 적합이 두 열 가운데 무엇을 고를지를 신호가 아닌 잡음이 정할 만큼 상관이 높다. 그래서 wafer 의 다른 부분집합으로 다시 적합하면 쌍마다 선택되는 열이 바뀐다.
-
-선택 빈도의 분포 자체가 결과이며, 문턱으로 자른 집합만 보면 이 분포를 잃는다. 거의 모든 subsample 에서 선택된 feature 와 절반을 겨우 넘긴 feature 는 다른 결과인데, 한 번의 적합은 둘을 똑같이 보고한다. 선택 빈도가 뜻을 가지려면 두 조건이 성립해야 한다. Subsample 은 lot 단위로 나눠야 한다. 함께 처리된 wafer 는 독립 추출이 아니다. 또 처리 순서를 지켜야 한다. 앞뒤 wafer 를 섞어 나누면 선택이 견뎌야 할 drift 가 가려진다.
+**On trace data.** 물리적으로 짝을 이루는 sensor — forward 와 reflected RF power, 인접한 thermocouple, 유량 setpoint 와 그 readback — 는 상관이 높아, 한 번의 벌점 적합은 두 열 가운데 하나를 잡음으로 고르고 고른 집합은 wafer 가 바뀌면 달라진다. Stability selection 의 선택 빈도가 결과이며, 거의 모든 subsample 에서 선택된 feature 와 절반을 겨우 넘긴 feature 는 다른 결과인데 한 번의 적합은 둘을 똑같이 보고한다. 선택 빈도는 subsample 이 lot 단위와 처리 순서를 지킬 때만 뜻을 갖는다. 함께 처리된 wafer 는 독립 추출이 아니고, 앞뒤 wafer 를 섞으면 drift 가 가려진다. Model-X knockoffs 에 필요한 결합분포는 trace 표에서 구조를 가정해야만 추정할 수 있고, 보장은 그 가정보다 강해지지 않는다.
 
 ## 5. Label Availability Axis
 
@@ -265,22 +247,20 @@ Sequential 탐색은 feature 를 하나씩 또는 한 묶음씩 더하거나 뺀
 
 ## 7. Selection Unit Axis
 
-무엇을 단위로 고르는가가 답을 실행할 수 있는지를 정하며, trace 표에서 실행할 수 있는 단위는 열이 아니라 sensor 나 recipe step 이다. Trace feature 표는 sensor 마다, recipe step 마다 요약통계 한 벌을 계산해 만들므로, 열 하나가 어느 sensor, 어느 step, 어느 통계량인지를 함께 가리킨다. 이 셋 가운데 line 이 바꿀 수 있는 것은 sensor 와 step 뿐이다. 열 단위 선택은 forward RF power 의 최댓값은 남기고 평균은 버리면서 reflected RF power 의 최댓값을 남길 수 있다. 이 집합은 model 입력으로는 타당하지만 아무도 실행할 수 없는 지시다.
+열 단위 선택은 model 입력으로는 타당하지만 line 이 실행할 조치로 이어지지 않는다. Trace 의 열 하나는 sensor, recipe step, 요약통계를 함께 가리키고, line 이 바꿀 수 있는 것은 sensor 와 step 뿐이다. 열 단위 집합은 forward RF power 의 최댓값은 남기고 평균은 버리면서 reflected RF power 의 최댓값을 남길 수 있으며, 아무도 이 집합을 실행할 수 없다.
 
-단위마다 선택된 항목 하나가 무엇이고 어떤 조치로 이어지는지는 Table 8 과 같다.
+단위마다 이어지는 line 조치는 Table 8 과 같다.
 
 Table 8. Selection units
 
-| Unit             | One selected item is                       | The action it maps to             | Method that selects at it             |
-| :--------------: | :----------------------------------------: | :-------------------------------: | :-----------------------------------: |
-| Column           | Sensor 하나의 step 하나에 대한 통계량 하나 | 그 자체로는 없음                  | Lasso, elastic net, univariate filter |
-| Sensor           | Sensor 하나의 모든 통계량                  | 그 sensor 를 수집에서 남기거나 뺌 | Sensor 로 묶은 group lasso            |
-| Step window      | Recipe step 하나에 대한 모든 통계량        | 그 step 을 바꾸거나 그대로 둠     | Step 으로 묶은 group lasso            |
-| Statistic family | 모든 sensor 에 걸친 통계량 하나            | Trace 에서 무엇을 계산할지를 바꿈 | 통계량으로 묶은 group lasso           |
+| Unit             | Line action                       | Selected item                              | Method                                |
+| :--------------: | :-------------------------------: | :----------------------------------------: | :-----------------------------------: |
+| Column           | 없음                              | Sensor 하나의 step 하나에 대한 통계량 하나 | Lasso, elastic net, univariate filter |
+| Sensor           | 그 sensor 를 수집에서 남기거나 뺌 | Sensor 하나의 모든 통계량                  | Sensor 로 묶은 group lasso            |
+| Step window      | 그 step 을 바꾸거나 그대로 둠     | Recipe step 하나에 대한 모든 통계량        | Step 으로 묶은 group lasso            |
+| Statistic family | Trace 에서 계산할 통계량을 바꿈   | 모든 sensor 에 걸친 통계량 하나            | 통계량으로 묶은 group lasso           |
 
-Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로, selection unit 은 후처리의 선택이 아닌 축이다.
-
-열 단위는 model 이 어느 숫자를 필요로 하는가라는 다른 질문에 답하며, 수집 집합이 이미 고정되어 model 만 다듬을 때는 이 질문이 맞다. 잘못은 열 단위로 답해 놓고 그 답을 sensor 목록으로 보고하는 데 있다.
+Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로, selection unit 은 후처리의 선택이 아닌 축이다. 열 단위는 수집 집합이 고정되어 model 만 다듬을 때 맞는 단위이며, 잘못은 열 단위의 답을 sensor 목록으로 보고하는 데 있다.
 
 ## References
 
@@ -305,11 +285,11 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 <a id="ref-10"></a>
 [10] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
 <a id="ref-11"></a>
-[11] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.<br>
+[11] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
 <a id="ref-12"></a>
-[12] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
+[12] Zou, H. and Hastie, T. (2005). [Regularization and variable selection via the elastic net](https://doi.org/10.1111/j.1467-9868.2005.00503.x). *Journal of the Royal Statistical Society: Series B*, 67(2), 301–320.<br>
 <a id="ref-13"></a>
-[13] Tibshirani, R. (1996). [Regression Shrinkage and Selection via the Lasso](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x). *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.<br>
+[13] Strobl, C., Boulesteix, A.-L., Zeileis, A. and Hothorn, T. (2007). [Bias in random forest variable importance measures: illustrations, sources and a solution](https://doi.org/10.1186/1471-2105-8-25). *BMC Bioinformatics*, 8, 25.<br>
 <a id="ref-14"></a>
 [14] Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://papers.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems*, 30, 4765–4774.<br>
 <a id="ref-15"></a>
