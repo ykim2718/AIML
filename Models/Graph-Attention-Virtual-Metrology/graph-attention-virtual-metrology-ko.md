@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 3 | Created: 2026-10-29 | Updated: 2026-10-30 05:50 UTC
+Rev. 4 | Created: 2026-10-29 | Updated: 2026-10-30 06:00 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -20,7 +20,7 @@ Rev. 3 | Created: 2026-10-29 | Updated: 2026-10-30 05:50 UTC
   - [B.5 Standardized Loss (Eq. 5)](#b5-standardized-loss-eq-5)
   - [B.6 Coefficient of Determination (Eq. 6)](#b6-coefficient-of-determination-eq-6)
 
-<!-- -->
+<br>
 
 - **Authors**: Tao Han (Arizona State University, Intel Foundry), Suk Ki Lee (Arizona State University), Hyunwoong Ko (Arizona State University)
 - **Venue / Year**: arXiv preprint, cs.CE (2026)
