@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 4 | Created: 2026-10-29 | Updated: 2026-10-30 06:00 UTC
+Rev. 5 | Created: 2026-10-29 | Updated: 2026-10-30 06:09 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -43,6 +43,8 @@ Model 은 parameter node embedding, parameter-to-layer graph attention, thicknes
 - **Layer node**: Film layer $l$ 하나가 node 하나이며, learnable embedding $`\mathbf{q}_l \in \mathbb{R}^{d_h}`$ 로 표현한다.
 - **Directed bipartite graph**: Edge 는 모든 parameter node 에서 모든 layer node 로 간다. Edge 의 가중치는 미리 정하지 않고 wafer 마다 식 (3) 의 attention 으로 구한다.
 - **Thickness head**: Layer 표현 $`\mathbf{e}_l`$ 을 multilayer perceptron (MLP) 에 넣어 두께 하나를 예측한다.
+
+논문은 film 두께에 대한 영향을 공정 조건과 film 형성 결과 사이의 의존 관계로 보고, 이 관계를 directed bipartite graph 로 나타냈다 (논문 3.3절). 공정 조건은 parameter node, 결과는 layer node 이며, edge 는 parameter node 에서 layer node 로만 간다. 이 구조에서 layer 마다 필요한 공정 정보만 골라 모으고, 가중치 $`\alpha_{l,(s,p)}`$ 를 parameter $(s, p)$ 가 layer $l$ 두께에 갖는 중요도로 읽는다. 논문은 이 해석 가능성으로 기존 deep learning VM 의 black-box 한계를 푸는 것을 주 목표로 밝혔다. Parameter node 끼리 연결하는 graph 같은 다른 구조와 견주어 bipartite graph 를 고른 이유는 논문에 적혀 있지 않다.
 
 논문의 graph 와 신경망 layer 의 directed acyclic graph (DAG) 는 아래 Table 1 과 같이 다르다. 논문은 DAG 를 언급하지 않으며, 이 표는 작성자의 분석이다.
 
