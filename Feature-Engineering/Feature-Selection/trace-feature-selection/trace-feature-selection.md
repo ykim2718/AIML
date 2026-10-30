@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 18 | Created: 2026-09-10 | Updated: 2026-10-30 01:29 UTC
+Rev. 19 | Created: 2026-09-10 | Updated: 2026-10-30 01:31 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,13 +22,13 @@ Rev. 18 | Created: 2026-09-10 | Updated: 2026-10-30 01:29 UTC
 
 - **Problem Statement**: In a high-dimensional setting where thousands of trace sensor columns are produced for a few hundred wafers, training on all of them learns spurious correlation and does not connect to a process engineer's actual control actions (sensor or step adjustment).
 - **Goal**: Systematically diagnose the structural limits and the field applicability of a given feature selection method through the four axes (Evaluation Criterion, Label Availability, Search Strategy, Selection Unit).
-- **Non-Goal**: The structure and principles of featurization methods are not covered.
+- **Non-Goal**: The structure and principles of featurization methods are not covered (see [Feature Importance](../../Feature-Importance/feature-importance.md)).
 
 ## 2. Summary
 
 A trace feature selection method is defined by a combination of the following four axes:
 1. **Evaluation Criterion**: how the model is used and the cost of scoring (Preprocessing ~ Error-Controlled)
-2. **Label Availability**: whether target labels are used (Supervised / Unsupervised)
+2. **Label Availability**: whether target labels are used (Supervised / Unsupervised / Semi-supervised)
 3. **Search Strategy**: how candidate subsets are searched (Exhaustive / Sequential / Randomized)
 4. **Selection Unit**: the physical unit of action of a selected item (Column / Sensor / Step Window / Statistic Family)
 
