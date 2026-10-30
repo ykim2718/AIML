@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 12 | Created: 2026-09-10 | Updated: 2026-10-29 23:17 UTC
+Rev. 13 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -37,7 +37,7 @@ Trace feature 를 고르는 방법은 네 축, 곧 evaluation criterion, label a
 ```text
 Trace feature selection
 |
-+-- Evaluation criterion ... when the model is consulted
++-- Evaluation criterion ... dependence on the learning algorithm
 |     Preprocessing | Filter | Wrapper | Embedded | Post-hoc ranking | Error-controlled
 |
 +-- Label availability ..... whether target labels are used
@@ -55,7 +55,7 @@ Fig 1. Feature selection taxonomy for trace data
 
 Evaluation criterion 과 search strategy 는 Liu & Yu [[1](#ref-1)] 의 차원 가운데 둘이고, label availability 는 Li 등 [[4](#ref-4)] 의 구분이며, selection unit 은 이 문서가 trace data 를 위해 더한 축이다. 네 축을 함께 쓴 출처는 없다. 한 방법은 축마다 값 하나를 갖는다. Sensor 로 묶은 group lasso 는 Embedded, Supervised, 부분집합 탐색 없음, Sensor 이고, recipe step 으로 묶으면 selection unit 값만 Step window 로 바뀐다. Evaluation criterion 축은 §4, selection unit 축은 §5 에서 다룬다.
 
-Evaluation criterion 축은 model 을 언제 참조하는가로 다시 나뉜다. 계층은 model 도 target 도 참조하지 않는 가지에서 시작해 순위가 나온 뒤에야 쓰는 가지로 끝나며, 아래 [Fig 2](#fig-2) 와 같다. 오른쪽 열에는 줄마다 label availability, search strategy, selection unit 의 값을 두었다.
+Evaluation criterion 축은 선택이 학습 algorithm 을 어떻게 쓰는가로 다시 나뉜다. 계층은 학습 algorithm 도 target 도 쓰지 않는 가지에서 시작해 순위가 나온 뒤에야 쓰는 가지로 끝나며, 아래 [Fig 2](#fig-2) 와 같다. 오른쪽 열에는 줄마다 label availability, search strategy, selection unit 의 값을 두었다.
 
 ```text
 Trace feature selection                                                                     Label availability | Search strategy | Selection unit
@@ -90,7 +90,7 @@ Trace feature selection                                                         
 ```
 
 <a id="fig-2"></a>
-Fig 2. Hierarchy of the evaluation criterion axis by when the model is consulted
+Fig 2. Hierarchy of the evaluation criterion axis by use of the learning algorithm
 
 가지 0 은 가장 먼저 돌고 target 을 보지 않으므로, 빼야 할 열을 남길 수는 있어도 엉뚱한 열을 고르지는 않는다. 가지 1 부터 3 까지는 model 을 적합 전에 참조하는가, 적합을 감싸서 참조하는가, 적합 안에서 참조하는가로 갈린다. 가지 4 는 적합이 끝난 model 을 probe 한다. 가지 5 만 순위 대신 오차율로 답하며, 가지 1 부터 4 가운데 어느 것의 결과든 입력으로 받는다. 잘못 넘기 쉬운 가지 경계는 §4.1, §4.2, §4.4, §4.5 에서 정한다. 오른쪽 열의 - 는 그 줄의 구성원이 부분집합을 탐색하지 않는다는 뜻이다. Semi-supervised 나 exhaustive 에 해당하는 줄은 없고, 가지 5.1 의 selection unit 은 base selector 의 단위를 따른다.
 
@@ -119,18 +119,18 @@ Table 1. Question and the branch that answers it
 
 ## 4. Evaluation Criterion Axis
 
-Evaluation criterion 축은 model 을 언제 참조하는가로 가지를 나누며, 이에 따라 답이 무엇의 성질인지와 비용이 정해진다. 가지마다의 값은 Table 2 와 같다.
+Evaluation criterion 축은 선택이 학습 algorithm 을 어떻게 쓰는가로 가지를 나누며, 이에 따라 답이 무엇의 성질인지와 비용이 정해진다. 가지마다의 값은 Table 2 와 같다.
 
 Table 2. Branches of the evaluation criterion axis
 
-| Branch              | When the model is consulted         | The answer is a property of | Cost                                |
-| :-----------------: | :---------------------------------: | :-------------------------: | :---------------------------------: |
-| 0. Preprocessing    | 참조하지 않으며 target 도 보지 않음 | Feature 그 자체             | 한 번 훑기                          |
-| 1. Filter           | 적합 전                             | 자료                        | Feature 마다 한 번 훑기             |
-| 2. Wrapper          | 후보 부분집합마다 한 번             | 그 model 과 그 탐색         | 단계마다 재적합 한 번               |
-| 3. Embedded         | 적합 도중                           | 적합된 model                | 적합 한 번                          |
-| 4. Post-hoc ranking | 적합이 끝난 뒤                      | 그 적합 하나                | Feature 마다 probe 한 번            |
-| 5. Error-controlled | 순위가 나온 뒤                      | 명시한 가정 아래의 분포     | 여러 번 실행하거나 knockoff 를 구성 |
+| Branch              | Use of the learning algorithm   | The answer is a property of | Cost                                |
+| :-----------------: | :-----------------------------: | :-------------------------: | :---------------------------------: |
+| 0. Preprocessing    | 쓰지 않으며 target 도 보지 않음 | Feature 그 자체             | 한 번 훑기                          |
+| 1. Filter           | 적합 전                         | 자료                        | Feature 마다 한 번 훑기             |
+| 2. Wrapper          | 후보 부분집합마다 한 번         | 그 model 과 그 탐색         | 단계마다 재적합 한 번               |
+| 3. Embedded         | 적합 도중                       | 적합된 model                | 적합 한 번                          |
+| 4. Post-hoc ranking | 적합이 끝난 뒤                  | 그 적합 하나                | Feature 마다 probe 한 번            |
+| 5. Error-controlled | 순위가 나온 뒤                  | 명시한 가정 아래의 분포     | 여러 번 실행하거나 knockoff 를 구성 |
 
 고르는 일을 하는 가지에서는 구성원이 한 가지 성질로 갈리며, 각 절의 표에서 그 성질을 열 하나로 두었다. 가지 0 에는 표가 없다. 가지 0 의 구성원은 열 사이에서 고르지 않고 열을 덜어 낸다.
 

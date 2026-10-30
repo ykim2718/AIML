@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 12 | Created: 2026-09-10 | Updated: 2026-10-29 23:17 UTC
+Rev. 13 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -37,7 +37,7 @@ The four axes and the values on each are as in [Fig 1](#fig-1).
 ```text
 Trace feature selection
 |
-+-- Evaluation criterion ... when the model is consulted
++-- Evaluation criterion ... dependence on the learning algorithm
 |     Preprocessing | Filter | Wrapper | Embedded | Post-hoc ranking | Error-controlled
 |
 +-- Label availability ..... whether target labels are used
@@ -55,7 +55,7 @@ Fig 1. Feature selection taxonomy for trace data
 
 Evaluation criterion and search strategy are two of the dimensions of Liu and Yu [[1](#ref-1)], label availability is the division of Li et al. [[4](#ref-4)], and selection unit is added by this document for trace data; no single source combines the four. A method takes one value on each axis. Group lasso with sensor groups is Embedded, Supervised, without a subset search, and Sensor; grouped by recipe step instead, it changes only its selection unit, to Step window. The evaluation criterion axis is treated in §4 and the selection unit axis in §5.
 
-The evaluation criterion axis divides further by when the model is consulted, running from the branch that consults neither the model nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2), where the right-hand columns give the label availability, search strategy and selection unit of each line.
+The evaluation criterion axis divides further by how the selection uses the learning algorithm, running from the branch that uses neither the learning algorithm nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2), where the right-hand columns give the label availability, search strategy and selection unit of each line.
 
 ```text
 Trace feature selection                                                                     Label availability | Search strategy | Selection unit
@@ -90,7 +90,7 @@ Trace feature selection                                                         
 ```
 
 <a id="fig-2"></a>
-Fig 2. Hierarchy of the evaluation criterion axis by when the model is consulted
+Fig 2. Hierarchy of the evaluation criterion axis by use of the learning algorithm
 
 Branch 0 runs first and consults no target, so it can leave a column that should have gone but cannot select a wrong one. Branches 1 to 3 differ by whether the model is consulted before the fit, around it, or inside it. Branch 4 probes a model that is already finished. Branch 5 alone answers with an error rate instead of a ranking, and it takes its input from any of branches 1 to 4. The branch boundaries that are easiest to cross by mistake are fixed in §4.1, §4.2, §4.4 and §4.5. In the right-hand columns, - marks a line whose members do not search over subsets; no line is semi-supervised or exhaustive, and branch 5.1 takes its selection unit from its base selector.
 
@@ -119,11 +119,11 @@ The number in the second column is the branch number of Fig 2, and a row that na
 
 ## 4. Evaluation Criterion Axis
 
-The evaluation criterion axis places a branch by when the model is consulted, which fixes what the answer is a property of and what it costs, as in Table 2.
+The evaluation criterion axis places a branch by how it uses the learning algorithm, which fixes what the answer is a property of and what it costs, as in Table 2.
 
 Table 2. Branches of the evaluation criterion axis
 
-| Branch              | When the model is consulted                   | The answer is a property of                 | Cost                                  |
+| Branch              | Use of the learning algorithm                 | The answer is a property of                 | Cost                                  |
 | :-----------------: | :-------------------------------------------: | :-----------------------------------------: | :-----------------------------------: |
 | 0. Preprocessing    | Never, and the target is not consulted either | The feature by itself                       | One pass                              |
 | 1. Filter           | Before any fit                                | The data                                    | One pass per feature                  |
