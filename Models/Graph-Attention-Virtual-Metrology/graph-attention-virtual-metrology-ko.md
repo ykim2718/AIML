@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 5 | Created: 2026-10-29 | Updated: 2026-10-30 06:09 UTC
+Rev. 6 | Created: 2026-10-29 | Updated: 2026-10-30 06:10 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -12,7 +12,7 @@ Rev. 5 | Created: 2026-10-29 | Updated: 2026-10-30 06:09 UTC
 - [6. Takeaways and Engineering Insights](#6-takeaways-and-engineering-insights)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Equation Derivation](#appendix-b-equation-derivation)
+- [Appendix B. Mathematical Derivation](#appendix-b-mathematical-derivation)
   - [B.1 Temporal Convolution (Eq. 1)](#b1-temporal-convolution-eq-1)
   - [B.2 Temporal Mean (Eq. 2)](#b2-temporal-mean-eq-2)
   - [B.3 Parameter-to-Layer Attention Weight (Eq. 3)](#b3-parameter-to-layer-attention-weight-eq-3)
@@ -239,7 +239,7 @@ Table 3. Performance comparison of model configurations
 - **spectroscopic ellipsometry**: 반사광의 편광 변화로 film 두께와 광학 특성을 재는 비파괴 계측.
 - **VM**: Virtual metrology. 장비 sensor 자료로 공정 후 wafer 특성을 예측하는 방법.
 
-## Appendix B. Equation Derivation
+## Appendix B. Mathematical Derivation
 
 논문은 식의 유도를 싣지 않았다. 아래 유도는 모두 작성자의 유도이며, 논문의 정의와 식 번호에서 출발한다.
 
