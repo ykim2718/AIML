@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 20 | Created: 2026-09-10 | Updated: 2026-10-30 01:40 UTC
+Rev. 21 | Created: 2026-09-10 | Updated: 2026-10-30 02:26 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,7 +22,7 @@ Rev. 20 | Created: 2026-09-10 | Updated: 2026-10-30 01:40 UTC
 
 - **Problem Statement**: In a high-dimensional setting where thousands of trace sensor columns are produced for a few hundred wafers, training on all of them learns spurious correlation and does not connect to a process engineer's actual control actions (sensor or step adjustment).
 - **Goal**: Systematically diagnose the structural limits and the field applicability of a given feature selection method through the four axes (Evaluation Criterion, Label Availability, Search Strategy, Selection Unit).
-- **Non-Goal**: The structure and principles of featurization methods are not covered (see [Feature Importance](../../Feature-Importance/feature-importance.md)).
+- **Non-Goal**: The structure and principles of featurization methods are not covered.
 
 ## 2. Summary
 

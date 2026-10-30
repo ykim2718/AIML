@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 20 | Created: 2026-09-10 | Updated: 2026-10-30 01:40 UTC
+Rev. 21 | Created: 2026-09-10 | Updated: 2026-10-30 02:26 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,7 +22,7 @@ Rev. 20 | Created: 2026-09-10 | Updated: 2026-10-30 01:40 UTC
 
 - **Problem Statement**: 수백 장의 웨이퍼 당 수천 개의 트레이스 센서 열(Column)이 생성되는 고차원 데이터 환경에서는, 단순 전면 학습 시 우연 상관(Spurious Correlation)을 학습하며 공정 엔지니어의 실제 제어 액션(Sensor/Step 조정)과 연결되지 않음.
 - **Goal**: 4대 축(Evaluation Criterion, Label Availability, Search Strategy, Selection Unit)을 통해 특정 피처 선택 방법의 구조적 한계와 현장 적용 가능성을 체계적으로 진단.
-- **Non-Goal**: 피처링 방법의 구조와 원리는 다루지 않는다 ([Feature Importance](../../Feature-Importance/feature-importance.md) 참조).
+- **Non-Goal**: 피처링 방법의 구조와 원리는 다루지 않는다.
 
 ## 2. Summary
 
