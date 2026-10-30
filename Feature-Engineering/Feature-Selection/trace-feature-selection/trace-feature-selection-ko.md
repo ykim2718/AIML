@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 17 | Created: 2026-09-10 | Updated: 2026-10-30 01:28 UTC
+Rev. 18 | Created: 2026-09-10 | Updated: 2026-10-30 01:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,13 +20,17 @@ Rev. 17 | Created: 2026-09-10 | Updated: 2026-10-30 01:28 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: Recipe 하나의 trace 는 feature 수천 열을 만들지만 wafer 는 수백 장에 그쳐, 이 열을 모두 넣고 적합한 model 은 우연 상관을 학습하고 조정할 sensor 나 step 을 알려 주지 못한다.
-- **Goal**: 독자가 어떤 trace feature selection 방법이든 Fig 1 의 네 축 위에 놓고, 그 답이 다루지 못하는 것을 짚을 수 있게 한다.
-- **Non-Goal**: Feature 하나에 점수를 매기는 일은 다루지 않으며, 이 주제는 [Feature Importance](../../Feature-Importance/feature-importance.md) 에 있다.
+- **Problem Statement**: 수백 장의 웨이퍼 당 수천 개의 트레이스 센서 열(Column)이 생성되는 고차원 데이터 환경에서는, 단순 전면 학습 시 우연 상관(Spurious Correlation)을 학습하며 공정 엔지니어의 실제 제어 액션(Sensor/Step 조정)과 연결되지 않음.
+- **Goal**: 4대 축(Evaluation Criterion, Label Availability, Search Strategy, Selection Unit)을 통해 특정 피처 선택 방법의 구조적 한계와 현장 적용 가능성을 체계적으로 진단.
+- **Non-Goal**: 피처링 방법의 구조와 원리는 다루지 않는다.
 
 ## 2. Summary
 
-Trace feature selection 방법은 네 축의 값으로 구분된다. Evaluation criterion 은 답이 무엇의 성질인지와 비용을 정하고, label availability 와 search strategy 는 대부분 그 기준의 가지에서 정해지며, selection unit 은 답을 공정에서 실행할 수 있는지를 정한다. 한 번의 적합으로 고른 집합은 wafer 가 바뀌면 달라지며, error-controlled 가지의 subsampling 구성원이 이 변화를 잰다.
+Trace Feature Selection 방법론은 다음 4가지 축의 조합으로 정의됩니다:
+1. **Evaluation Criterion**: 모델 활용 방식 및 채점 비용 (Preprocessing ~ Error-Controlled)
+2. **Label Availability**: 타겟 라벨 활용 여부 (Supervised / Unsupervised)
+3. **Search Strategy**: 후보 부분집합 탐색 방식 (Exhaustive / Sequential / Randomized)
+4. **Selection Unit**: 선택된 항목의 물리적 실행 단위 (Column / Sensor / Step Window / Statistic Family)
 
 ## 3. Taxonomy and its Hierarchy
 

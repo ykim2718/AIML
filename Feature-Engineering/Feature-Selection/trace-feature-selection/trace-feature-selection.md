@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 17 | Created: 2026-09-10 | Updated: 2026-10-30 01:28 UTC
+Rev. 18 | Created: 2026-09-10 | Updated: 2026-10-30 01:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,13 +20,17 @@ Rev. 17 | Created: 2026-09-10 | Updated: 2026-10-30 01:28 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: A recipe's trace yields thousands of feature columns while the wafer count stays in the hundreds, so a model fitted on all of them learns chance correlation and names no sensor or step to adjust.
-- **Goal**: A reader can place any trace feature selection method on the four axes of Fig 1 and state what its answer does not cover.
-- **Non-Goal**: Scoring a single feature, the subject of [Feature Importance](../../Feature-Importance/feature-importance.md), is not covered here.
+- **Problem Statement**: In a high-dimensional setting where thousands of trace sensor columns are produced for a few hundred wafers, training on all of them learns spurious correlation and does not connect to a process engineer's actual control actions (sensor or step adjustment).
+- **Goal**: Systematically diagnose the structural limits and the field applicability of a given feature selection method through the four axes (Evaluation Criterion, Label Availability, Search Strategy, Selection Unit).
+- **Non-Goal**: The structure and principles of featurization methods are not covered.
 
 ## 2. Summary
 
-Four axes place a trace feature selection method. The evaluation criterion fixes what the answer is a property of and what it costs, label availability and search strategy are largely fixed by the branch of that criterion, and the selection unit decides whether the answer can be acted on in the process. A selection from one fit also changes when the wafers change, and the subsampling member of the error-controlled branch measures that change.
+A trace feature selection method is defined by a combination of the following four axes:
+1. **Evaluation Criterion**: how the model is used and the cost of scoring (Preprocessing ~ Error-Controlled)
+2. **Label Availability**: whether target labels are used (Supervised / Unsupervised)
+3. **Search Strategy**: how candidate subsets are searched (Exhaustive / Sequential / Randomized)
+4. **Selection Unit**: the physical unit of action of a selected item (Column / Sensor / Step Window / Statistic Family)
 
 ## 3. Taxonomy and its Hierarchy
 
