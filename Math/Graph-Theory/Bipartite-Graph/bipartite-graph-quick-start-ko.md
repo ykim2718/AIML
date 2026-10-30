@@ -1,5 +1,5 @@
 # Bipartite Graph Quick Start
-Rev. 1 | Created: 2026-10-30 | Updated: 2026-10-30 05:57 CDT
+Rev. 2 | Created: 2026-10-30 | Updated: 2026-10-30 17:22 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -10,7 +10,12 @@ Rev. 1 | Created: 2026-10-30 | Updated: 2026-10-30 05:57 CDT
   - [4.1 Comparison](#41-comparison)
 - [5. Applications and Courses](#5-applications-and-courses)
 - [6. Models and Libraries](#6-models-and-libraries)
+- [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Application](#appendix-b-application)
+  - [B.1 Applications with References](#b1-applications-with-references)
+  - [B.2 Feature Selection](#b2-feature-selection)
+  - [B.3 Trace Data](#b3-trace-data)
 
 ## 1. Purpose
 
@@ -119,6 +124,8 @@ Table 2. Problems modeled as bipartite graphs
 - Maximum matching 은 간선을 공유하지 않는 짝을 가장 많이 고르고, assignment 는 간선마다 비용이 있을 때 비용 합이 가장 작은 완전 matching 을 고른다.
 - 사용자–상품 graph 의 biadjacency matrix 는 행이 사용자, 열이 상품인 interaction 행렬과 같다. 그래서 collaborative filtering 의 행렬 분해와 GNN 은 같은 자료를 행렬과 graph 로 달리 다룬다.
 
+출처가 있는 사용처와, feature selection 과 trace data 에 쓸 때의 득실은 [Appendix B](#appendix-b-application) 에 있다.
+
 Bipartite graph 를 배우는 과목은 아래 Table 3 과 같다.
 
 Table 3. Courses that teach bipartite graphs
@@ -151,15 +158,26 @@ Table 4. Python functions for bipartite graphs
 
 `minimum_weight_full_matching` 과 `linear_sum_assignment` 는 같은 assignment problem 을 푼다. 앞의 것은 graph 를, 뒤의 것은 비용 행렬을 입력으로 받는다.
 
+## References
+
+<a id="ref-1"></a>[1] Hopcroft, J. E. and Karp, R. M. (1973). [An n^{5/2} Algorithm for Maximum Matchings in Bipartite Graphs](https://doi.org/10.1137/0202019). *SIAM Journal on Computing*, 2(4), 225–231.<br>
+<a id="ref-2"></a>[2] Crouse, D. F. (2016). [On Implementing 2D Rectangular Assignment Algorithms](https://doi.org/10.1109/TAES.2016.140952). *IEEE Transactions on Aerospace and Electronic Systems*, 52(4), 1679–1696.<br>
+<a id="ref-3"></a>[3] Dhillon, I. S. (2001). [Co-clustering Documents and Words Using Bipartite Spectral Graph Partitioning](https://doi.org/10.1145/502512.502550). *Proceedings of the 7th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*.<br>
+<a id="ref-4"></a>[4] Han, T., Lee, S. K. and Ko, H. (2026). [Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing](https://doi.org/10.48550/arXiv.2606.00923). *arXiv preprint*, arXiv:2606.00923.
+
 ---
 
 ## Appendix A. Terminology
 
 - **assignment problem**: 두 집합의 쌍마다 비용이 있을 때 비용 합이 가장 작은 일대일 배정을 고르는 문제.
+- **attention**: 입력 node 마다 점수를 매겨 softmax 로 정규화한 가중치로 입력을 가중 평균하는 연산. 가중치는 입력이 바뀔 때마다 다시 계산된다.
 - **biadjacency matrix**: 행이 $P$ 의 정점, 열이 $Q$ 의 정점이고, 간선이 있으면 1 또는 그 weight 를 두는 행렬.
+- **co-clustering**: 행렬의 행과 열을 함께 묶어, 한 행 묶음과 한 열 묶음이 짝을 이루는 co-cluster 로 나누는 clustering.
 - **collaborative filtering**: 사용자와 상품의 interaction 기록만으로 사용자가 좋아할 상품을 추정하는 추천 방법.
 - **cycle**: 시작 정점으로 돌아오는 경로. 길이는 지나는 간선의 수이다.
 - **dropout**: 학습 중에 neuron 출력을 무작위로 0 으로 만드는 regularization 방법.
+- **embedding**: 입력 하나를 정해진 길이의 실수 vector 하나로 나타낸 것.
+- **filter, wrapper, embedded**: Feature selection 의 세 갈래. Filter 는 model 없이 통계량으로, wrapper 는 model 을 다시 학습하며 고른 집합의 점수로, embedded 는 학습 중에 model 이 매기는 계수나 중요도로 feature 를 고른다.
 - **GNN**: Graph Neural Network. 정점마다 이웃 정점의 embedding 을 모아 새 embedding 을 계산하는 신경망.
 - **Hopcroft–Karp**: Bipartite graph 의 weight 없는 최대 matching 을 구하는 algorithm.
 - **Hungarian algorithm**: 정사각 비용 행렬에서 비용 합이 최소인 assignment 를 구하는 algorithm.
@@ -170,3 +188,39 @@ Table 4. Python functions for bipartite graphs
 - **PinSage**: Pinterest 의 pin–board bipartite graph 에서 추천에 쓴 GNN.
 - **pruning**: 학습한 신경망에서 작은 weight 를 0 으로 만들어 연결을 줄이는 방법.
 - **최대 유량 (max flow)**: 간선마다 용량이 있는 network 에서 출발점에서 도착점으로 보낼 수 있는 흐름의 최댓값. Ford–Fulkerson 이 대표 algorithm 이다.
+
+## Appendix B. Application
+
+### B.1 Applications with References
+
+출처가 있는 bipartite graph 의 사용처는 아래 Table 5 와 같다.
+
+Table 5. Applications of bipartite graphs with references
+
+| Application       | P                              | Q                    | What the graph gives                                      | Reference     |
+| :---------------: | :----------------------------: | :------------------: | :-------------------------------------------------------: | :-----------: |
+| Maximum matching  | 구직자                         | 일자리               | 서로 겹치지 않는 짝의 최대 개수                           | [[1](#ref-1)] |
+| Assignment        | 작업                           | 기계                 | 비용 합이 최소인 일대일 배정                              | [[2](#ref-2)] |
+| Co-clustering     | Sample (문서, wafer)           | Feature (낱말, 센서) | sample 묶음과 feature 묶음을 함께 나눈 co-cluster         | [[3](#ref-3)] |
+| Virtual metrology | Step–parameter 별 sensor trace | Film layer           | wafer 마다 trace 가 각 layer 두께에 주는 attention 가중치 | [[4](#ref-4)] |
+
+- Hopcroft–Karp [[1](#ref-1)] 은 weight 없는 최대 matching 을, Crouse [[2](#ref-2)] 는 직사각 비용 행렬까지 다루는 assignment 를 다루며, 각각 `networkx.algorithms.bipartite.hopcroft_karp_matching` 과 `scipy.optimize.linear_sum_assignment` 가 출처로 든 문헌이다.
+- Dhillon [[3](#ref-3)] 은 문서–낱말 행렬을 bipartite graph 의 biadjacency matrix 로 보고 spectral 분할로 문서와 낱말을 함께 묶었으며, `sklearn.cluster.SpectralCoclustering` 이 이 방법을 구현한다.
+- Han 등 [[4](#ref-4)] 은 반도체 증착 공정에서 step–parameter 의 sensor trace 를 parameter node, film layer 를 layer node 로 두고 둘 사이의 directed bipartite graph 에 attention 을 걸어 layer 별 두께를 예측했다.
+
+### B.2 Feature Selection
+
+Feature 가 target 여러 개나 process step 같은 두 번째 집합과 짝을 이룰 때 bipartite graph 가 feature selection 에 유리하고, 표 하나에 target 이 하나뿐이면 얻는 것이 거의 없다.
+
+- **Target 이 하나일 때**: Feature $p$ 개와 target 하나를 잇는 graph 는 $K(p, 1)$ 이고, 간선의 weight 는 선형 model 의 계수 vector 와 같다. Graph 로 그려도 계수나 feature importance 이상의 정보가 생기지 않으므로, filter, wrapper, embedded 방법을 그대로 쓰는 편이 단순하다.
+- **Target 이 여럿일 때**: Feature 를 $P$, target 을 $Q$ 로 둔 bipartite graph 에서 간선 weight 를 학습하면, feature 마다 어느 target 에 기여하는지를 한 번에 볼 수 있다. Han 등 [[4](#ref-4)] 의 parameter-to-layer attention 이 이 경우이며, layer 마다 attention 가중치가 큰 step–parameter 를 그 layer 의 후보 feature 로 고를 수 있다.
+- **Sample–feature co-clustering**: Sample 을 $P$, feature 를 $Q$ 로 두고 Dhillon [[3](#ref-3)] 의 방법으로 나누면, 같은 sample 묶음에서 함께 커지고 작아지는 feature 가 한 co-cluster 에 모인다. Co-cluster 마다 대표 feature 하나만 남기면 중복 feature 를 줄일 수 있다.
+- **깨지는 조건**: Co-clustering 은 target 을 보지 않으므로 중복은 줄이지만 target 과의 관련성은 보장하지 않는다. 입력 행렬의 원소가 음수가 아니어야 하므로 표준화한 값 대신 0 이상으로 옮긴 값을 쓴다. Attention 가중치가 크다고 그 feature 를 빼면 예측이 나빠진다는 보장은 없으므로, 고른 feature 는 빼고 다시 학습해 검증한다.
+
+### B.3 Trace Data
+
+Bipartite graph 는 많은 sensor trace 를 어느 trace 가 어느 출력에 영향을 주는지로 정리하는 데 유리하고, trace 하나의 시간 변화는 다루지 않는다.
+
+- **유리한 점**: Han 등 [[4](#ref-4)] 은 trace 하나를 (step, parameter) 쌍의 node 하나로 두어, step 과 parameter 수가 늘어도 node 만 늘어난다. 각 layer 가 모든 trace node 와 이어진 complete bipartite graph 이므로 어떤 trace 가 중요한지는 미리 정하지 않고 wafer 마다 attention 으로 정해진다.
+- **시간 축**: Trace 안의 시간 변화는 graph 의 간선이 아니라 node 안의 encoder 가 다룬다. Han 등 [[4](#ref-4)] 은 trace 마다 1 차원 convolution 과 시간 평균으로 embedding 하나를 만든 뒤 graph 에 넣었다. 따라서 trace 의 정렬, 길이 맞추기, 빠진 step 의 처리는 graph 를 만들기 전에 끝내야 한다.
+- **깨지는 조건**: 모든 trace node 가 모든 출력과 이어지므로 graph 구조 자체에는 정보가 없고, 정보는 학습한 attention 가중치에 있다. Wafer 수가 trace node 수에 비해 적으면 attention 가중치가 wafer 마다 크게 흔들리므로, 여러 wafer 에서 평균한 가중치로 해석한다.
