@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 9 | Created: 2026-10-29 | Updated: 2026-10-30 06:27 UTC
+Rev. 10 | Created: 2026-10-29 | Updated: 2026-10-30 06:30 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -20,6 +20,8 @@ Rev. 9 | Created: 2026-10-29 | Updated: 2026-10-30 06:27 UTC
   - [B.5 Standardized Loss (Eq. 5)](#b5-standardized-loss-eq-5)
   - [B.6 Coefficient of Determination (Eq. 6)](#b6-coefficient-of-determination-eq-6)
 - [Appendix C. Application to [Wafer, Feature, Trace] Tensor](#appendix-c-application-to-wafer-feature-trace-tensor)
+  - [C.1 Time Series Covered by the Paper](#c1-time-series-covered-by-the-paper)
+  - [C.2 Cautions](#c2-cautions)
 
 <br>
 
@@ -212,7 +214,7 @@ Table 3. Performance comparison of model configurations
   - Step 마다 $`T_s`$ 가 다르면 batch 로 묶을 때 padding 한 시점을 식 (2) 의 평균에서 빼야 한다.
   - $`\sigma_l`$ 과 평균은 학습 자료에서만 구하고, $R^2$ 는 예측을 원래 단위로 되돌린 뒤 계산한다.
   - Heatmap 은 test wafer 마다 구한 $`\alpha_{l,(s,p)}`$ 를 평균한 것이고, 상위 $k$ 개만 남긴 그림은 나머지 값을 가린 것이다.
-  - [Wafer, Feature, Trace] 모양의 tensor 자료에 적용하는 조건은 [Appendix C](#appendix-c-application-to-wafer-feature-trace-tensor) 에 있다.
+  - [Wafer, Feature, Trace] 모양의 tensor 자료에 적용하는 조건과 주의점은 [Appendix C](#appendix-c-application-to-wafer-feature-trace-tensor) 에 있다.
 
 ## References
 
@@ -347,8 +349,27 @@ R_l^2 = 1 - \frac{\mathrm{SSE}_l}{\mathrm{SST}_l} = 1 - \frac{\mathrm{SSE}_l / N
 
 ## Appendix C. Application to [Wafer, Feature, Trace] Tensor
 
-리뷰어의 분석이며, 순서가 있는 wafer 들의 [Wafer, Feature, Trace] tensor 자료에 이 model 을 적용하는 조건을 적는다.
+리뷰어의 분석이며, 순서가 있는 wafer 들의 [Wafer, Feature, Trace] tensor 자료에 이 model 을 적용하는 조건과 주의점을 적는다. 논문은 장비 trace 의 시계열 특성은 반영하지만, wafer 가 만들어진 순서의 시계열 특성은 반영하지 않는다.
 
-- wafer 하나를 sample 하나로 보면 적용할 수 있다. 논문의 입력은 wafer 마다 parameter 별 trace $`\mathbf{x}_{s,p} \in \mathbb{R}^{T_s}`$ 이므로, tensor 의 [Feature, Trace] 부분이 parameter $p$ 와 시점 $t$ 에 해당한다.
-- trace 축을 process step 으로 나눌 수 있으면 step–parameter node $S \cdot P$ 개를 만들 수 있다. 나눌 수 없으면 node 는 feature $P$ 개뿐이고, attention 가중치는 step–parameter 단위가 아니라 feature 단위의 중요도가 된다.
-- 논문은 wafer 를 서로 독립인 sample 로 다루고 lot 단위로만 자료를 나눈다. wafer 순서에 담긴 정보, 예를 들어 앞 wafer 의 영향이나 drift 는 model 에 들어가지 않는다.
+### C.1 Time Series Covered by the Paper
+
+Table 4. Time series handled by the paper
+
+| Time axis              | Tensor axis | Handled in the paper | How                                                     |
+| :--------------------: | :---------: | :------------------: | :-----------------------------------------------------: |
+| Trace 안의 시점        | Trace       | 부분적으로           | Step 안은 Conv1D 와 시간 평균, step 사이는 node 로 구분 |
+| Wafer 가 만들어진 순서 | Wafer       | 아니다               | Wafer 를 서로 독립인 sample 로 다룸                     |
+
+- Wafer 하나를 sample 하나로 보면 적용할 수 있다. 논문의 입력은 wafer 마다 parameter 별 trace $`\mathbf{x}_{s,p} \in \mathbb{R}^{T_s}`$ 이므로, tensor 의 [Feature, Trace] 부분이 parameter $p$ 와 시점 $t$ 에 해당한다.
+- Trace 축을 process step 으로 나눌 수 있으면 step–parameter node $S \cdot P$ 개를 만들 수 있다. 나눌 수 없으면 node 는 feature $P$ 개뿐이고, attention 가중치는 step–parameter 단위가 아니라 feature 단위의 중요도가 된다.
+- 논문은 attention 가중치를 Granger causality 에서 착안해 앞 step 의 parameter 변화가 뒤 step 의 두께에 기여하는 정도로 해석한다. 이 해석은 논문의 해석이며, Granger causality 검정을 한 것은 아니다.
+- 논문은 lot 단위로 자료를 나누지만 lot 을 시간 순서로 나눴는지는 밝히지 않았다. 앞 wafer 의 영향이나 drift 는 model 에 들어가지 않는다.
+
+### C.2 Cautions
+
+- **Step 안의 순서**: 식 (2) 의 평균 때문에 Conv1D kernel 폭 (논문 설정 5 시점) 보다 긴 순서는 embedding 에 남지 않는다. Step 안의 긴 추세가 두께에 중요하면 평균 대신 순서를 보존하는 요약이 필요하다.
+- **Step 사이의 순서**: Step 의 순서는 node 의 번호 $s$ 로만 구분된다. 식 (3) 에는 node 의 순서를 나타내는 항이 없으므로, step $s$ 와 $s + 1$ 이 이웃이라는 정보는 model 에 들어가지 않는다.
+- **Step 정렬**: 모든 wafer 가 같은 step $S$ 개와 parameter $P$ 개를 가져야 node 가 wafer 사이에 같은 뜻을 갖는다. Recipe 에 따라 step 수가 다르면 step 을 맞춘 뒤에 적용한다.
+- **Wafer 순서와 자료 분할**: Wafer 축에 시간 순서가 있으면 앞 기간의 lot 으로 학습하고 뒤 기간의 lot 으로 평가해야 drift 아래의 성능을 잴 수 있다. 무작위 lot 분할은 뒤 기간의 정보가 학습에 들어가 성능을 높게 보일 수 있다.
+- **표준화 값**: 식 (13) 의 $`\mu_l`$ 과 식 (5) 의 $`\sigma_l`$ 은 학습 기간에서 구한 값이다. Drift 로 두께의 평균과 분산이 바뀌면 다시 구해야 한다.
+- **Attention 해석**: 논문의 heatmap 은 test wafer 전체의 평균이다. Wafer 축에 시간 순서가 있으면 기간마다 따로 평균해야 중요도가 시간에 따라 바뀌는지 볼 수 있다.
