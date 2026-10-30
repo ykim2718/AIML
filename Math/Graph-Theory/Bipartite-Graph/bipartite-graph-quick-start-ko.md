@@ -1,5 +1,5 @@
 # Bipartite Graph Quick Start
-Rev. 0 | Created: 2026-10-30 | Updated: 2026-10-30 05:19 CDT
+Rev. 1 | Created: 2026-10-30 | Updated: 2026-10-30 05:57 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -55,19 +55,31 @@ Fig 1. Hierarchy of bipartite graphs
 - **Property**: 같은 $m$, $n$ 의 bipartite graph 가운데 간선이 가장 많다. $K(3, 2)$ 의 간선은 6 개이다.
 - **Use**: 두 집합의 모든 쌍을 후보로 두는 문제, 예를 들어 작업 $m$ 개를 기계 $n$ 대에 배정할 때 모든 배정에 비용을 매기는 assignment problem 의 출발점이다.
 
-정점 8 개의 $K(4, 4)$ 를 두 가지로 배치하면 아래 Fig 2 와 같다.
+같은 정점 다섯 개로 만든 general bipartite graph 와 $K(3, 2)$ 는 아래 Fig 2 와 같다.
 
 <a id="fig-2"></a>
 <img src="bipartite-graph-quick-start-ko_fig/fig2.png" width="800" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. One complete bipartite graph K(4, 4) in two layouts
+Fig 2. A bipartite graph and the complete bipartite graph K(3, 2) on the same vertices
+
+- (a): $V = \{a, b, c, d, e\}$ 를 $P = \{a, b, c\}$ 와 $Q = \{d, e\}$ 로 나누고 간선 a–d, a–e, b–e, c–d 만 두었다. 모든 간선이 $P$ 와 $Q$ 사이에 있어 bipartite 이지만, 가능한 $P$–$Q$ 쌍 6 개 가운데 b–d 와 c–e 가 빠져 complete 는 아니다.
+- (b): 같은 두 집합에서 $P$ 의 모든 정점을 $Q$ 의 모든 정점과 이었다. 간선 수는 $m n = 3 \times 2 = 6$ 이다.
+
+(a) 에 간선 b–d 와 c–e 를 더하면 (b) 가 된다. 정점과 두 집합이 같아도 간선 수가 $m n$ 에 못 미치면 general bipartite graph 이고, $m n$ 개를 모두 가지면 complete bipartite graph 이다.
+
+정점 8 개의 $K(4, 4)$ 를 두 가지로 배치하면 아래 Fig 3 과 같다.
+
+<a id="fig-3"></a>
+<img src="bipartite-graph-quick-start-ko_fig/fig3.png" width="800" style="max-width: 100%;" alt="Fig 3">
+
+Fig 3. One complete bipartite graph K(4, 4) in two layouts
 
 - (a): 정점 1 부터 8 을 원 위에 차례로 놓았다. 모든 간선이 같은 색이어서 어느 정점이 어느 집합인지 그림만으로는 보이지 않는다.
 - (b): 같은 graph 에서 홀수 정점을 $P = \{1, 3, 5, 7\}$ 의 왼쪽 열에, 짝수 정점을 $Q = \{2, 4, 6, 8\}$ 의 오른쪽 열에 놓고, 간선을 $P$ 쪽 정점마다 다른 색으로 그렸다. 간선 16 개가 모두 두 열 사이에 있고 열 안의 간선은 없다.
 
 두 panel 은 정점과 간선이 같고 배치만 다르다. Graph 가 bipartite 인지는 정점의 위치와 상관없이 간선의 연결로 정해지므로, 3.1 의 두 색 칠하기로 집합을 찾은 뒤 두 열로 배치하면 (b) 처럼 두 집합이 드러난다. 정점 수가 늘면 (a) 의 배치에서 눈으로 판별하기 어려워지므로 `networkx.is_bipartite` 로 판별한다.
 
-Fig 2 는 같은 folder 의 [`src/bipartite_layouts.py`](src/bipartite_layouts.py) 가 그린다. 이 script 는 홀수 정점과 짝수 정점을 모두 잇는 graph 를 만들고, `networkx.is_bipartite` 와 `networkx.algorithms.bipartite.sets` 로 두 집합이 홀수와 짝수 정점인지 확인한 뒤 두 배치를 그린다. 이 folder 에서 `python3 src/bipartite_layouts.py --output-folder .` 를 실행하면 그림을 `bipartite-graph-quick-start-ko_fig/` 에 쓴다.
+Fig 2 와 Fig 3 은 같은 folder 의 [`src/bipartite_layouts.py`](src/bipartite_layouts.py) 로 그렸다. 이 script 는 Fig 2 에서 (a) 의 간선이 가능한 $P$–$Q$ 쌍의 일부인지 확인하고, Fig 3 에서는 홀수 정점과 짝수 정점을 모두 잇는 graph 를 만들어 `networkx.is_bipartite` 와 `networkx.algorithms.bipartite.sets` 로 두 집합이 홀수와 짝수 정점인지 확인한 뒤 두 배치를 그린다. 이 folder 에서 `python3 src/bipartite_layouts.py --output-folder .` 를 실행하면 두 그림을 `bipartite-graph-quick-start-ko_fig/` 에 쓴다.
 
 ## 4. Fully Connected Layer
 
