@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 14 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
+Rev. 15 | Created: 2026-09-10 | Updated: 2026-10-30 01:18 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -13,7 +13,6 @@ Rev. 14 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
   - [4.5 Post-Hoc Ranking](#45-post-hoc-ranking)
   - [4.6 Error-Controlled Selection](#46-error-controlled-selection)
 - [5. Selection Unit Axis](#5-selection-unit-axis)
-- [6. Failure Modes](#6-failure-modes)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
@@ -269,19 +268,6 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 
 열 단위는 model 이 어느 숫자를 필요로 하는가라는 다른 질문에 답하며, 수집 집합이 이미 고정되어 model 만 다듬을 때는 이 질문이 맞다. 잘못은 열 단위로 답해 놓고 그 답을 sensor 목록으로 보고하는 데 있다.
 
-## 6. Failure Modes
-
-아래 결함은 모두 구현이 아닌 방법에서 생기며, 단계마다 옳아 보이는 절차를 거쳐 나타난다.
-
-- **Univariate filter over collinear sensors.** 한 물리 신호의 사본이 모두 남아, 열 수는 줄고 redundancy 는 그대로.
-- **Wrapper score computed outside the resampling fold.** Selection bias 로 보고된 cross-validation 오차가 크게 낙관적 [[20](#ref-20)].
-- **Random split over lot-grouped wafers.** 한 lot 의 wafer 가 분할 양쪽에 있어, held-out row 가 실제로는 학습에 쓰인 wafer 와 같은 lot.
-- **A drift proxy selected.** Chamber 사용 시간이나 소모품 수명이 target 의 drift 를 따라가, 적합에서는 예측력이 있으나 조정해도 효과 없음.
-- **MDI read as importance.** 연속형 요약통계가 cardinality 때문에 낮은 cardinality 의 계수값보다 높은 순위 [[10](#ref-10)].
-- **A zero coefficient read as irrelevance.** 정확히 중복된 두 열이 모두 0 으로 채점됨.
-- **Permutation over correlated columns.** 공정이 만들 수 없는 행에서 model 을 평가하고, 그 행에서의 거동이 점수에 들어감 [[21](#ref-21)].
-- **A set selected on one chamber.** 공정 물리 대신 그 chamber 의 국소 상태를 반영해, 다음 chamber 에서 재현되지 않음.
-
 ## References
 
 <a id="ref-1"></a>
@@ -321,11 +307,7 @@ Group 은 적합 전에 선언하며 적합 뒤에는 되살릴 수 없으므로
 <a id="ref-18"></a>
 [18] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
 <a id="ref-19"></a>
-[19] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
-<a id="ref-20"></a>
-[20] Ambroise, C. and McLachlan, G. J. (2002). [Selection bias in gene extraction on the basis of microarray gene-expression data](https://doi.org/10.1073/pnas.102102699). *Proceedings of the National Academy of Sciences*, 99(10), 6562–6566.<br>
-<a id="ref-21"></a>
-[21] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.
+[19] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.
 
 ---
 

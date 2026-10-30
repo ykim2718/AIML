@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 14 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
+Rev. 15 | Created: 2026-09-10 | Updated: 2026-10-30 01:18 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -13,7 +13,6 @@ Rev. 14 | Created: 2026-09-10 | Updated: 2026-10-30 01:17 UTC
   - [4.5 Post-Hoc Ranking](#45-post-hoc-ranking)
   - [4.6 Error-Controlled Selection](#46-error-controlled-selection)
 - [5. Selection Unit Axis](#5-selection-unit-axis)
-- [6. Failure Modes](#6-failure-modes)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
@@ -269,19 +268,6 @@ The group is declared before the fit and cannot be recovered after it, so the se
 
 The column unit answers a different question — which numbers a model needs — and that question is the right one when the collection set is already fixed and only the model is being trimmed. The error is to answer at the column unit and report the answer as a sensor list.
 
-## 6. Failure Modes
-
-Each defect below belongs to a method rather than to an implementation, and each is reached by a procedure that looks correct at every step.
-
-- **Univariate filter over collinear sensors.** Every copy of one physical signal kept, the column count reduced without the redundancy reduced.
-- **Wrapper score computed outside the resampling fold.** Selection bias, with the reported cross-validation error optimistic by a wide margin [[20](#ref-20)].
-- **Random split over lot-grouped wafers.** Wafers of one lot on both sides of the split, so the held-out rows are not held out.
-- **A drift proxy selected.** Chamber age or consumable life tracking the target's own drift, predictive in the fit and inert under intervention.
-- **MDI read as importance.** Continuous summary statistics ranked above low-cardinality counts for their cardinality [[10](#ref-10)].
-- **A zero coefficient read as irrelevance.** An exactly duplicated pair scored at zero on both of its members.
-- **Permutation over correlated columns.** The model evaluated on rows the process cannot produce, with its behaviour there entering the score [[21](#ref-21)].
-- **A set selected on one chamber.** Local chamber state instead of process physics, not transferring to the next chamber.
-
 ## References
 
 <a id="ref-1"></a>
@@ -321,11 +307,7 @@ Each defect below belongs to a method rather than to an implementation, and each
 <a id="ref-18"></a>
 [18] Yuan, M. and Lin, Y. (2006). [Model selection and estimation in regression with grouped variables](https://doi.org/10.1111/j.1467-9868.2005.00532.x). *Journal of the Royal Statistical Society: Series B*, 68(1), 49–67.<br>
 <a id="ref-19"></a>
-[19] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.<br>
-<a id="ref-20"></a>
-[20] Ambroise, C. and McLachlan, G. J. (2002). [Selection bias in gene extraction on the basis of microarray gene-expression data](https://doi.org/10.1073/pnas.102102699). *Proceedings of the National Academy of Sciences*, 99(10), 6562–6566.<br>
-<a id="ref-21"></a>
-[21] Hooker, G., Mentch, L. and Zhou, S. (2021). [Unrestricted permutation forces extrapolation: variable importance requires at least one more model, or there is no free variable importance](https://doi.org/10.1007/s11222-021-10057-z). *Statistics and Computing*, 31, 82.
+[19] Simon, N., Friedman, J., Hastie, T. and Tibshirani, R. (2013). [A Sparse-Group Lasso](https://doi.org/10.1080/10618600.2012.681250). *Journal of Computational and Graphical Statistics*, 22(2), 231–245.
 
 ---
 
