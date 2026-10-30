@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 8 | Created: 2026-10-29 | Updated: 2026-10-30 06:26 UTC
+Rev. 9 | Created: 2026-10-29 | Updated: 2026-10-30 06:27 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -19,7 +19,7 @@ Rev. 8 | Created: 2026-10-29 | Updated: 2026-10-30 06:26 UTC
   - [B.4 Layer Representation (Eq. 4)](#b4-layer-representation-eq-4)
   - [B.5 Standardized Loss (Eq. 5)](#b5-standardized-loss-eq-5)
   - [B.6 Coefficient of Determination (Eq. 6)](#b6-coefficient-of-determination-eq-6)
-- [Appendix C. Application to Wafer, Feature, Trace Tensor](#appendix-c-application-to-wafer-feature-trace-tensor)
+- [Appendix C. Application to [Wafer, Feature, Trace] Tensor](#appendix-c-application-to-wafer-feature-trace-tensor)
 
 <br>
 
@@ -212,7 +212,7 @@ Table 3. Performance comparison of model configurations
   - Step 마다 $`T_s`$ 가 다르면 batch 로 묶을 때 padding 한 시점을 식 (2) 의 평균에서 빼야 한다.
   - $`\sigma_l`$ 과 평균은 학습 자료에서만 구하고, $R^2$ 는 예측을 원래 단위로 되돌린 뒤 계산한다.
   - Heatmap 은 test wafer 마다 구한 $`\alpha_{l,(s,p)}`$ 를 평균한 것이고, 상위 $k$ 개만 남긴 그림은 나머지 값을 가린 것이다.
-  - [wafer, feature, trace] 모양의 tensor 자료에 적용하는 조건은 [Appendix C](#appendix-c-application-to-wafer-feature-trace-tensor) 에 있다.
+  - [Wafer, Feature, Trace] 모양의 tensor 자료에 적용하는 조건은 [Appendix C](#appendix-c-application-to-wafer-feature-trace-tensor) 에 있다.
 
 ## References
 
@@ -345,10 +345,10 @@ R_l^2 = 1 - \frac{\mathrm{SSE}_l}{\mathrm{SST}_l} = 1 - \frac{\mathrm{SSE}_l / N
 - 모든 wafer 에 평균 $`\bar{y}_l`$ 을 예측하면 $`\mathrm{SSE}_l = \mathrm{SST}_l`$ 이어서 $`R_l^2 = 0`$ 이다. 그보다 나쁜 예측에서는 $`R_l^2`$ 가 음수가 된다.
 - 논문의 값 0.7227 은 Film B 네 layer 의 평균 $`\frac{1}{4} \sum_{l \in \mathrm{Film\ B}} R_l^2`$ 이다. 식 (16) 의 오른쪽 변에 따라, model 이 Film B layer 마다 평가 자료의 두께 분산을 평균 약 72 % 설명한다는 뜻이다.
 
-## Appendix C. Application to Wafer, Feature, Trace Tensor
+## Appendix C. Application to [Wafer, Feature, Trace] Tensor
 
-리뷰어의 분석이며, 순서가 있는 wafer 들의 [wafer, feature, trace] tensor 자료에 이 model 을 적용하는 조건을 적는다.
+리뷰어의 분석이며, 순서가 있는 wafer 들의 [Wafer, Feature, Trace] tensor 자료에 이 model 을 적용하는 조건을 적는다.
 
-- wafer 하나를 sample 하나로 보면 적용할 수 있다. 논문의 입력은 wafer 마다 parameter 별 trace $`\mathbf{x}_{s,p} \in \mathbb{R}^{T_s}`$ 이므로, tensor 의 [feature, trace] 부분이 parameter $p$ 와 시점 $t$ 에 해당한다.
+- wafer 하나를 sample 하나로 보면 적용할 수 있다. 논문의 입력은 wafer 마다 parameter 별 trace $`\mathbf{x}_{s,p} \in \mathbb{R}^{T_s}`$ 이므로, tensor 의 [Feature, Trace] 부분이 parameter $p$ 와 시점 $t$ 에 해당한다.
 - trace 축을 process step 으로 나눌 수 있으면 step–parameter node $S \cdot P$ 개를 만들 수 있다. 나눌 수 없으면 node 는 feature $P$ 개뿐이고, attention 가중치는 step–parameter 단위가 아니라 feature 단위의 중요도가 된다.
 - 논문은 wafer 를 서로 독립인 sample 로 다루고 lot 단위로만 자료를 나눈다. wafer 순서에 담긴 정보, 예를 들어 앞 wafer 의 영향이나 drift 는 model 에 들어가지 않는다.
