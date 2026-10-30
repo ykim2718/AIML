@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 19 | Created: 2026-09-10 | Updated: 2026-10-30 01:31 UTC
+Rev. 20 | Created: 2026-09-10 | Updated: 2026-10-30 01:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -62,35 +62,35 @@ Evaluation criterion 과 search strategy 는 Liu & Yu [[1](#ref-1)] 의 차원 �
 Evaluation criterion 축은 선택이 학습 algorithm 을 어떻게 쓰는가로 다시 나뉜다. 계층은 학습 algorithm 도 target 도 쓰지 않는 가지에서 시작해 순위가 나온 뒤에야 쓰는 가지로 끝나며, 아래 [Fig 2](#fig-2) 와 같다. 오른쪽 열에는 줄마다 label availability, search strategy, selection unit 의 값을 두었다.
 
 ```text
-Trace feature selection                                                                     Label availability | Search strategy | Selection unit
+Trace feature selection                                                                      Label availability | Search strategy | Selection unit
 |
 +-- 0. Preprocessing (the target is not consulted)
-|   +-- Constancy ................... zero-variance drop, dead-sensor drop                  Unsupervised       | -               | Column, sensor
-|   +-- Redundancy .................. correlation clustering, near-duplicate drop           Unsupervised       | -               | Column
+|   +-- Constancy ................... zero-variance drop, dead-sensor drop                   Unsupervised       | -               | Column, sensor
+|   +-- Redundancy .................. correlation or cosine clustering, near-duplicate drop  Unsupervised       | -               | Column
 |
 +-- 1. Filter (scored before any model is fitted)
-|   +-- 1.1 Univariate .............. Pearson r, Spearman rho, ANOVA F, mutual information  Supervised         | -               | Column
-|   +-- 1.2 Multivariate ............ mRMR, correlation-filtered ranking                    Supervised         | Sequential      | Column
-|   +-- 1.3 Neighbour contrast ...... Relief, ReliefF, RReliefF                             Supervised         | -               | Column
+|   +-- 1.1 Univariate .............. Pearson r, Spearman rho, ANOVA F, mutual information   Supervised         | -               | Column
+|   +-- 1.2 Multivariate ............ mRMR, correlation-filtered ranking                     Supervised         | Sequential      | Column
+|   +-- 1.3 Neighbour contrast ...... Relief, ReliefF, RReliefF                              Supervised         | -               | Column
 |
 +-- 2. Wrapper (a model is refitted for each candidate subset)
-|   +-- 2.1 Backward ................ RFE, backward elimination                             Supervised         | Sequential      | Column
-|   +-- 2.2 Forward ................. forward selection, stepwise                           Supervised         | Sequential      | Column
-|   +-- 2.3 Stochastic search ....... genetic search, simulated annealing                   Supervised         | Randomized      | Column
+|   +-- 2.1 Backward ................ RFE, backward elimination                              Supervised         | Sequential      | Column
+|   +-- 2.2 Forward ................. forward selection, stepwise                            Supervised         | Sequential      | Column
+|   +-- 2.3 Stochastic search ....... genetic search, simulated annealing                    Supervised         | Randomized      | Column
 |
 +-- 3. Embedded (selection is a term of the training objective)
-|   +-- 3.1 Column penalty .......... lasso, elastic net                                    Supervised         | -               | Column
-|   +-- 3.2 Group penalty ........... group lasso, sparse group lasso                       Supervised         | -               | Sensor, step window, statistic family
-|   +-- 3.3 Split structure ......... MDI, split count, gain                                Supervised         | -               | Column
+|   +-- 3.1 Column penalty .......... lasso, elastic net                                     Supervised         | -               | Column
+|   +-- 3.2 Group penalty ........... group lasso, sparse group lasso                        Supervised         | -               | Sensor, step window, statistic family
+|   +-- 3.3 Split structure ......... MDI, split count, gain                                 Supervised         | -               | Column
 |
 +-- 4. Post-hoc ranking (the fit is finished, the model is then probed)
-|   +-- 4.1 Removal ................. permutation importance, drop-column                   Supervised         | -               | Column
-|   +-- 4.2 Attribution ............. SHAP, LIME                                            Supervised         | -               | Column
-|   +-- 4.3 Attention ............... attention weight, diagnostic only                     Supervised         | -               | Column
+|   +-- 4.1 Removal ................. permutation importance, drop-column                    Supervised         | -               | Column
+|   +-- 4.2 Attribution ............. SHAP, LIME                                             Supervised         | -               | Column
+|   +-- 4.3 Attention ............... attention weight, diagnostic only                      Supervised         | -               | Column
 |
 +-- 5. Error-controlled (a selected set with a stated error bound)
-    +-- 5.1 Subsampling ............. stability selection                                   Supervised         | -               | Unit of the base selector
-    +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs                  Supervised         | -               | Column
+    +-- 5.1 Subsampling ............. stability selection                                    Supervised         | -               | Unit of the base selector
+    +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs                   Supervised         | -               | Column
 ```
 
 <a id="fig-2"></a>
@@ -140,9 +140,19 @@ Table 2. Branches of the evaluation criterion axis
 
 ### 4.1 Preprocessing
 
-**Key features.** 가지 0 은 학습 algorithm 도 target 도 쓰지 않고 열을 덜어 낸다. Constancy 는 분산이 0 이거나 거의 상수인 열을 뺀다. Redundancy 는 Pearson correlation 절댓값 |r| 이 0.95 같은 threshold 를 넘는 열들 가운데 한 열만 남기며, 열을 묶을 때는 거리 1 − |r| 위의 hierarchical clustering 이나 correlation matrix 를 차례로 훑는 greedy 제거를 쓴다. 표준화한 열에서는 cosine similarity 가 Pearson r 과 같으므로, cosine 을 기준으로 삼아도 같은 방법이다. Variance thresholding 은 feature 를 그 자신의 분산으로만 재므로, 가지 1 의 지도 점수와 비교할 수 없다.
+**Key features.** 가지 0 은 학습 algorithm 도 target 도 쓰지 않고 열을 덜어 내며, Constancy 와 Redundancy 두 묶음으로 나뉜다. Variance thresholding 은 feature 를 그 자신의 분산으로만 재므로, 가지 1 의 지도 점수와 비교할 수 없다.
 
-**On trace data.** Trace 수집물에는 recipe 안에서 변하지 않는 setpoint 처럼 구조적으로 상수인 열과 보고를 멈춘 sensor 의 열이 있으며, 둘 다 가장 먼저 뺀다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화 오차에 좌우된다. 한 recipe step 안에서 한 sensor 의 mean, median, integral 은 wafer 사이에서 함께 오르내리므로, Redundancy 는 세 열을 원래 열 하나로 줄이고 그 열은 sensor, recipe step, 요약통계를 그대로 가리킨다 (§7). 남길 열은 결측이 가장 적은 열처럼 target 을 보기 전에 정한 규칙으로 고르며, 같은 일을 target 을 보고 하는 지도 기준은 가지 1.2 의 mRMR 이다 (§4.2).
+**Constancy.** Constancy 는 분산이 0 이거나 거의 상수인 열을 뺀다. Trace 수집물에는 recipe 안에서 변하지 않는 setpoint 처럼 구조적으로 상수인 열과 보고를 멈춘 sensor 의 열이 있으며, 둘 다 가장 먼저 뺀다. 분산이 0 인 열은 상관이 정의되지 않고, 거의 상수인 열은 상관이 양자화 오차에 좌우된다.
+
+**Redundancy.** Redundancy 는 같은 신호를 되풀이하는 여러 열 가운데 한 열만 남긴다. 두 열의 유사도는 wafer 마다의 값을 늘어놓은 열 vector $a$, $b$ 의 cosine similarity 로 잰다.
+
+```math
+\cos(a, b) = \frac{a \cdot b}{\lVert a \rVert \, \lVert b \rVert} \hspace{19em} (1)
+```
+
+$|\cos(a, b)|$ 가 0.95 같은 threshold τ 를 넘는 두 열은 같은 신호로 본다. 평균을 빼 표준화한 열에서는 cosine similarity 가 Pearson r 과 같으므로, cosine 기준과 상관 기준은 같은 group 을 만든다. Group 은 거리 1 − |cos(a, b)| 위의 hierarchical clustering 이나, 열 N 개의 N × N 유사도 행렬을 차례로 훑는 greedy 제거로 만들며, group 마다 한 열을 남긴다.
+
+**On trace data.** 한 recipe step 안에서 한 sensor 의 mean, median, integral 은 wafer 사이에서 함께 오르내리므로, Redundancy 는 세 열을 원래 열 하나로 줄이고 그 열은 sensor, recipe step, 요약통계를 그대로 가리킨다 (§7). 남길 열은 결측이 가장 적은 열처럼 target 을 보기 전에 정한 규칙으로 고르며, 같은 일을 target 을 보고 하는 지도 기준은 가지 1.2 의 mRMR 이다 (§4.2).
 
 ### 4.2 Filter
 

@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 19 | Created: 2026-09-10 | Updated: 2026-10-30 01:31 UTC
+Rev. 20 | Created: 2026-09-10 | Updated: 2026-10-30 01:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -62,35 +62,35 @@ Evaluation criterion and search strategy are two of the dimensions of Liu and Yu
 The evaluation criterion axis divides further by how the selection uses the learning algorithm, running from the branch that uses neither the learning algorithm nor the target to the branch reached only once a ranking exists, as in [Fig 2](#fig-2), where the right-hand columns give the label availability, search strategy and selection unit of each line.
 
 ```text
-Trace feature selection                                                                     Label availability | Search strategy | Selection unit
+Trace feature selection                                                                      Label availability | Search strategy | Selection unit
 |
 +-- 0. Preprocessing (the target is not consulted)
-|   +-- Constancy ................... zero-variance drop, dead-sensor drop                  Unsupervised       | -               | Column, sensor
-|   +-- Redundancy .................. correlation clustering, near-duplicate drop           Unsupervised       | -               | Column
+|   +-- Constancy ................... zero-variance drop, dead-sensor drop                   Unsupervised       | -               | Column, sensor
+|   +-- Redundancy .................. correlation or cosine clustering, near-duplicate drop  Unsupervised       | -               | Column
 |
 +-- 1. Filter (scored before any model is fitted)
-|   +-- 1.1 Univariate .............. Pearson r, Spearman rho, ANOVA F, mutual information  Supervised         | -               | Column
-|   +-- 1.2 Multivariate ............ mRMR, correlation-filtered ranking                    Supervised         | Sequential      | Column
-|   +-- 1.3 Neighbour contrast ...... Relief, ReliefF, RReliefF                             Supervised         | -               | Column
+|   +-- 1.1 Univariate .............. Pearson r, Spearman rho, ANOVA F, mutual information   Supervised         | -               | Column
+|   +-- 1.2 Multivariate ............ mRMR, correlation-filtered ranking                     Supervised         | Sequential      | Column
+|   +-- 1.3 Neighbour contrast ...... Relief, ReliefF, RReliefF                              Supervised         | -               | Column
 |
 +-- 2. Wrapper (a model is refitted for each candidate subset)
-|   +-- 2.1 Backward ................ RFE, backward elimination                             Supervised         | Sequential      | Column
-|   +-- 2.2 Forward ................. forward selection, stepwise                           Supervised         | Sequential      | Column
-|   +-- 2.3 Stochastic search ....... genetic search, simulated annealing                   Supervised         | Randomized      | Column
+|   +-- 2.1 Backward ................ RFE, backward elimination                              Supervised         | Sequential      | Column
+|   +-- 2.2 Forward ................. forward selection, stepwise                            Supervised         | Sequential      | Column
+|   +-- 2.3 Stochastic search ....... genetic search, simulated annealing                    Supervised         | Randomized      | Column
 |
 +-- 3. Embedded (selection is a term of the training objective)
-|   +-- 3.1 Column penalty .......... lasso, elastic net                                    Supervised         | -               | Column
-|   +-- 3.2 Group penalty ........... group lasso, sparse group lasso                       Supervised         | -               | Sensor, step window, statistic family
-|   +-- 3.3 Split structure ......... MDI, split count, gain                                Supervised         | -               | Column
+|   +-- 3.1 Column penalty .......... lasso, elastic net                                     Supervised         | -               | Column
+|   +-- 3.2 Group penalty ........... group lasso, sparse group lasso                        Supervised         | -               | Sensor, step window, statistic family
+|   +-- 3.3 Split structure ......... MDI, split count, gain                                 Supervised         | -               | Column
 |
 +-- 4. Post-hoc ranking (the fit is finished, the model is then probed)
-|   +-- 4.1 Removal ................. permutation importance, drop-column                   Supervised         | -               | Column
-|   +-- 4.2 Attribution ............. SHAP, LIME                                            Supervised         | -               | Column
-|   +-- 4.3 Attention ............... attention weight, diagnostic only                     Supervised         | -               | Column
+|   +-- 4.1 Removal ................. permutation importance, drop-column                    Supervised         | -               | Column
+|   +-- 4.2 Attribution ............. SHAP, LIME                                             Supervised         | -               | Column
+|   +-- 4.3 Attention ............... attention weight, diagnostic only                      Supervised         | -               | Column
 |
 +-- 5. Error-controlled (a selected set with a stated error bound)
-    +-- 5.1 Subsampling ............. stability selection                                   Supervised         | -               | Unit of the base selector
-    +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs                  Supervised         | -               | Column
+    +-- 5.1 Subsampling ............. stability selection                                    Supervised         | -               | Unit of the base selector
+    +-- 5.2 Knockoffs ............... fixed-X knockoffs, model-X knockoffs                   Supervised         | -               | Column
 ```
 
 <a id="fig-2"></a>
@@ -140,9 +140,19 @@ Within each branch that selects, the members differ on one property, and the tab
 
 ### 4.1 Preprocessing
 
-**Key features.** Branch 0 removes columns using neither the learning algorithm nor the target. Constancy removes zero-variance and near-constant columns. Redundancy keeps one column out of several whose absolute Pearson correlation |r| exceeds a threshold such as 0.95, grouping them by hierarchical clustering on the distance 1 − |r| or by a greedy pass down the correlation matrix. On standardized columns the cosine similarity equals Pearson r, so a cosine criterion is the same method. Variance thresholding scores a feature against itself, so it cannot be compared with the supervised scores of branch 1.
+**Key features.** Branch 0 removes columns using neither the learning algorithm nor the target, in two groups, Constancy and Redundancy. Variance thresholding scores a feature against itself, so it cannot be compared with the supervised scores of branch 1.
 
-**On trace data.** A trace collection carries columns constant by construction, such as a setpoint that never moves within a recipe, and columns from sensors that stopped reporting; both go first, since a zero-variance column has no defined correlation and a near-constant one has a correlation dominated by its quantization. The mean, the median and the integral of one sensor within one recipe step rise and fall together, so Redundancy reduces them to one original column that still names a sensor, a recipe step and a statistic (§7). The kept column is fixed by a rule set before the target is seen, such as the fewest missing values; the supervised counterpart is mRMR in branch 1.2 (§4.2).
+**Constancy.** Constancy removes zero-variance and near-constant columns. A trace collection carries columns constant by construction, such as a setpoint that never moves within a recipe, and columns from sensors that stopped reporting; both go first, since a zero-variance column has no defined correlation and a near-constant one has a correlation dominated by its quantization.
+
+**Redundancy.** Redundancy keeps one column out of several that repeat one signal. The similarity of two columns is the cosine similarity of their column vectors $a$ and $b$, each holding one value per wafer.
+
+```math
+\cos(a, b) = \frac{a \cdot b}{\lVert a \rVert \, \lVert b \rVert} \hspace{19em} (1)
+```
+
+Two columns whose $|\cos(a, b)|$ exceeds a threshold τ such as 0.95 are treated as one signal. On columns standardized to mean zero the cosine similarity equals Pearson r, so a cosine criterion and a correlation criterion form the same groups. The groups are formed by hierarchical clustering on the distance 1 − |cos(a, b)| or by a greedy pass down the N × N similarity matrix of the N columns, and one column is kept per group.
+
+**On trace data.** The mean, the median and the integral of one sensor within one recipe step rise and fall together, so Redundancy reduces them to one original column that still names a sensor, a recipe step and a statistic (§7). The kept column is fixed by a rule set before the target is seen, such as the fewest missing values; the supervised counterpart is mRMR in branch 1.2 (§4.2).
 
 ### 4.2 Filter
 
