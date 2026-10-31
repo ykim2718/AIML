@@ -1,5 +1,5 @@
 # Bipartite Graph Quick Start
-Rev. 2 | Created: 2026-10-30 | Updated: 2026-10-30 17:22 CDT
+Rev. 3 | Created: 2026-10-30 | Updated: 2026-10-30 19:57 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -222,5 +222,5 @@ Feature 가 target 여러 개나 process step 같은 두 번째 집합과 짝을
 Bipartite graph 는 많은 sensor trace 를 어느 trace 가 어느 출력에 영향을 주는지로 정리하는 데 유리하고, trace 하나의 시간 변화는 다루지 않는다.
 
 - **유리한 점**: Han 등 [[4](#ref-4)] 은 trace 하나를 (step, parameter) 쌍의 node 하나로 두어, step 과 parameter 수가 늘어도 node 만 늘어난다. 각 layer 가 모든 trace node 와 이어진 complete bipartite graph 이므로 어떤 trace 가 중요한지는 미리 정하지 않고 wafer 마다 attention 으로 정해진다.
-- **시간 축**: Trace 안의 시간 변화는 graph 의 간선이 아니라 node 안의 encoder 가 다룬다. Han 등 [[4](#ref-4)] 은 trace 마다 1 차원 convolution 과 시간 평균으로 embedding 하나를 만든 뒤 graph 에 넣었다. 따라서 trace 의 정렬, 길이 맞추기, 빠진 step 의 처리는 graph 를 만들기 전에 끝내야 한다.
+- **시간 축**: Trace 안의 시간 변화는 graph 의 간선이 아니라 node 안의 encoder 가 다룬다. Han 등 [[4](#ref-4)] 은 trace 마다 1 차원 convolution 과 시간 평균으로 길이 64 의 embedding vector 하나를 만든 뒤 graph 에 넣었다. 따라서 trace 의 정렬, 길이 맞추기, 빠진 step 의 처리는 graph 를 만들기 전에 끝내야 한다.
 - **깨지는 조건**: 모든 trace node 가 모든 출력과 이어지므로 graph 구조 자체에는 정보가 없고, 정보는 학습한 attention 가중치에 있다. Wafer 수가 trace node 수에 비해 적으면 attention 가중치가 wafer 마다 크게 흔들리므로, 여러 wafer 에서 평균한 가중치로 해석한다.
