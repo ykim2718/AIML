@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 0 | Created: 2026-11-01 | Updated: 2026-11-01 14:48 UTC
+Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 14:54 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,6 +40,8 @@ Table 1. Symbols
 | $\mathbf{A}$                 | 선형 변환을 나타내는 행렬                              | $m \times n$                   | 실수 원소                                                |
 | $m$, $n$                     | $\mathbf{A}$ 의 행의 수와 열의 수                      | scalar                         | 양의 정수                                                |
 | $\mathbf{r}_i^\top$          | $\mathbf{A}$ 의 $i$ 번째 행                            | $1 \times n$                   | $i = 1, \dots, m$                                        |
+| $y_i$                        | $\mathbf{y}$ 의 $i$ 번째 원소                          | scalar                         | 실수                                                     |
+| $\mathbf{R}$                 | $\mathbf{A}$ 의 기약 행사다리꼴                        | $m \times n$                   | 기본 행 연산으로 얻음                                    |
 | $\mathbf{x}$                 | 입력 vector                                            | $n \times 1$                   | 실수 원소                                                |
 | $\mathbf{y}$                 | $\mathbf{A}^\top$ 에 곱하는 계수 vector                | $m \times 1$                   | 실수 원소                                                |
 | $\mathbf{b}$                 | 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 우변 | $m \times 1$                   | 실수 원소                                                |
@@ -112,7 +114,7 @@ Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 
 \dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A}) = r \hspace{19em} (3)
 ```
 
-$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행의 수와 pivot 열의 수가 같고, pivot 열의 수가 일차독립인 열의 최대 개수이므로 식 (3) 이 성립한다.
+$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (3) 이 성립한다.
 
 ### 4.4 Orthogonal Decomposition of the Input Space
 
@@ -162,7 +164,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \hspace{19em} (7)
 ```
 
-Row space 성분 $[2, -1, 1]^\top$ 은 식 (7) 의 첫 줄과 같이 두 행의 일차결합이고, $\mathbf{n}$ 과의 내적이 $2 \cdot (-1) + (-1) \cdot (-1) + 1 \cdot 1 = 0$ 이다. $\mathbf{x}$ 와 row space 성분에 $\mathbf{A}$ 를 곱한 결과가 같은 $[3, 0]^\top$ 이므로, 출력은 row space 성분만으로 정해진다.
+Row space 성분 $[2, -1, 1]^\top$ 은 식 (7) 의 첫 줄과 같이 두 행의 일차결합이고, $\mathbf{n}$ 과의 내적이 $2 \cdot (-1) + (-1) \cdot (-1) + 1 \cdot 1 = 0$ 이다. $\mathbf{x}$ 와 row space 성분에 $\mathbf{A}$ 를 곱한 결과는 같은 $[3, 0]^\top$ 이고, null space 성분에 곱한 결과는 zero vector 이다.
 
 ## 6. Application
 
@@ -192,7 +194,9 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 norm 이 가장 작은 해를 주는 역행렬의 일반화.
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **기본 행 연산 (elementary row operation)**: 행 둘을 맞바꾸기, 한 행에 0 이 아닌 상수 곱하기, 한 행에 다른 행의 상수배 더하기의 세 연산.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
+- **기저 (basis)**: 부분공간을 생성하는 일차독립인 vector 의 모임. 원소의 수가 그 부분공간의 차원이다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **우특이벡터 (right singular vector)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\mathbf{V}$ 의 열. 입력 공간 $\mathbb{R}^n$ 의 단위 vector 이다.
 - **정규직교 기저 (orthonormal basis)**: 서로 직교하는 단위 vector 로 이루어진 기저.
