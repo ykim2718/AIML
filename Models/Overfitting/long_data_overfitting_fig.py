@@ -6,7 +6,7 @@ whose rows come in groups. Panel (c) adds rows two ways, from new groups and ins
 already present, and follows the error on unseen groups.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.3+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.4+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -25,8 +25,8 @@ __all__ = ['grouped_draw', 'capacity_curve', 'split_comparison', 'row_curve',
            'draw_long_data_overfitting']
 
 FIGSIZE: tuple = (13.5, 4.0)
-REFERENCE_WIDTH: float = 13.5        # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 12.0
+REFERENCE_WIDTH: float = 13.5        # the width the font sizes below were chosen for
+FONT_SIZES: dict = {'text': 12.0, 'axis_label': 14.0, 'panel_label': 14.0}  # points; 'text' is the minimum
 COLORS: list = list(matplotlib.colors.TABLEAU_COLORS.values())
 FULL_DEPTH: int = 40                 # the x position standing for an unlimited tree
 
@@ -119,8 +119,9 @@ def draw_long_data_overfitting(capacity: pd.DataFrame, splits: pd.Series, rows: 
                                output_folder: pathlib.Path) -> pathlib.Path:
     """Write the three-panel figure and the series it was drawn from. Returns the figure path."""
     output_folder.mkdir(parents=True, exist_ok=True)
-    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
-    plt.rcParams.update({'font.size': font_size})
+    scale = FIGSIZE[0] / REFERENCE_WIDTH
+    font_size = FONT_SIZES['text'] * scale
+    plt.rcParams.update({'font.size': font_size, 'axes.labelsize': FONT_SIZES['axis_label'] * scale})
 
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=FIGSIZE)
 
@@ -151,7 +152,8 @@ def draw_long_data_overfitting(capacity: pd.DataFrame, splits: pd.Series, rows: 
     fig.subplots_adjust(bottom=0.28, top=0.96, wspace=0.30)
     for axis, label in zip(axes, ('(a)', '(b)', '(c)')):
         position = axis.get_position()
-        fig.text(position.x0 + position.width / 2, 0.02, label, ha='center', fontsize=font_size)
+        fig.text(position.x0 + position.width / 2, 0.02, label, ha='center',
+                 fontsize=FONT_SIZES['panel_label'] * scale)
 
     figure_path = output_folder / 'long-data-overfitting.png'
     fig.savefig(figure_path, dpi=300)
