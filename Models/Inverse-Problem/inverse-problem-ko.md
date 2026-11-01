@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 123 | Created: 2026-08-28 | Updated: 2026-11-01 14:49 UTC
+Rev. 124 | Created: 2026-08-28 | Updated: 2026-11-01 14:53 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -256,8 +256,13 @@ $\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t
 
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
-- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다. 이 선분이 null space 방법으로 구할 수 있는 해의 범위이다.
+- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다.
 - (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, PLS bootstrap ensemble 이 주는 bootstrap PLS 200 개의 minimum-norm solution 이다.
+
+Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래와 같다.
+
+1. Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 주황 별 $\mathbf{x}^{\ast}$ 이다. (b) 의 파란 점 200 개도 bootstrap PLS 마다 이 방법으로 구한 해이다.
+2. Null space 방법: (a) 의 null space 직선 가운데 $T^{2}$ 상한 타원 안의 선분 A–B 와, 그 직선을 입력 평면으로 옮긴 (b) 의 빨간 점선이다.
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 

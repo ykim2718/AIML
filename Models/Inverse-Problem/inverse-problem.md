@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 37 | Created: 2026-10-25 | Updated: 2026-11-01 14:49 UTC
+Rev. 38 | Created: 2026-10-25 | Updated: 2026-11-01 14:53 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -256,8 +256,13 @@ How far the two limits allow the null space in the score plane is shown in Fig 3
 
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
-- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse. This segment is the range of solutions the null space method can find.
+- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse.
 - (b): the $\mathbf{t}^{\ast}$ and null space line of (a) mapped to the input plane, and the minimum-norm solutions of 200 bootstrap PLS models given by the PLS bootstrap ensemble.
+
+The solutions that the two methods of PLS inversion find in Fig 3 are as follows.
+
+1. Minimum-norm solution method: $\mathbf{t}^{\ast}$ in (a) and the orange star $\mathbf{x}^{\ast}$ in (b). The 200 blue points in (b) are also solutions found by this method, one per bootstrap PLS.
+2. Null space method: the segment A–B of the null space line inside the $T^{2}$ limit ellipse in (a), and the red dashed line in (b) that carries that line into the input plane.
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
 
