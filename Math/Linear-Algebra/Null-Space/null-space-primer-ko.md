@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 7 | Created: 2026-10-31 | Updated: 2026-10-31 19:39 CDT
+Rev. 8 | Created: 2026-10-31 | Updated: 2026-10-31 19:45 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -99,7 +99,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면,
 식 (2) 에서 해의 개수는 아래와 같이 갈린다.
 
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
-- $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: 그 vector 의 모든 상수배를 더할 수 있으므로 해가 무수히 많다.
+- $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 모두 해이므로 해가 무수히 많다.
 
 상수배한 vector 가 null space 에 드는지는 식 (1) 의 조건 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는지로 확인한다. 행렬 곱은 상수를 곱한 뒤에 하든 먼저 하든 결과가 같으므로 (선형성), null space 의 vector 에 상수 $c$ 를 곱한 vector 에 $\mathbf{A}$ 를 곱하면 아래와 같다.
 
