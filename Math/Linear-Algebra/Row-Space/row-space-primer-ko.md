@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 8 | Created: 2026-11-01 | Updated: 2026-11-01 21:26 UTC
+Rev. 9 | Created: 2026-11-01 | Updated: 2026-11-01 21:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -32,7 +32,7 @@ Row space 는 null space 와 직교하고, 그 차원은 column space 의 차원
 
 ## 3. Notation
 
-이 문서의 vector 는 모두 열 vector 이며, 그 표기 관례는 [Appendix C](#appendix-c-column-vector-convention) 에 있다. 이 문서가 쓰는 기호는 아래 Table 1 과 같다.
+이 문서의 vector 는 모두 열 vector 이며, 그 표기 관례는 [Appendix C](#appendix-c-column-vector-convention) 에 있다. 이 문서가 쓰는 기호는 아래 Table 1 이다.
 
 Table 1. Symbols
 
@@ -58,7 +58,7 @@ Table 1. Symbols
 | $\mathbf{n}$                 | Worked Example 에서 null space 를 생성하는 vector                           | $3 \times 1$                   | zero vector 가 아님                                      |
 | $\sigma_k$, $\mathbf{v}_k$   | $\mathbf{A}$ 의 $k$ 번째 특이값과 우특이벡터                                | scalar, $n \times 1$           | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                 |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
 - $\mathbf{A}^\top$: 영어로 "A transpose", 한국어로 "A 의 전치" 또는 "A 트랜스포즈" 라 읽는다.
@@ -74,7 +74,7 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Column space 와 row space 의 정의는 아래와 같다.
+Column space 와 row space 의 정의는 아래이다.
 
 - **Column space**: $\mathbf{A}$ 의 열들의 일차결합 전체. $\mathbf{A}$ 에 $\mathbb{R}^n$ 의 vector $\mathbf{x}$ 를 곱한 $\mathbf{A}\mathbf{x}$ 전체이며, $\mathbb{R}^m$ 의 부분공간이다.
 - **Row space**: $\mathbf{A}$ 의 행들의 일차결합 전체. $\mathbf{A}^\top$ 에 $\mathbb{R}^m$ 의 vector $\mathbf{y}$ 를 곱한 $\mathbf{A}^\top\mathbf{y}$ 전체이며, $\mathbb{R}^n$ 의 부분공간이다.
@@ -91,7 +91,7 @@ Column space 와 row space 의 정의는 아래와 같다.
 
 ### 4.1 Set Definition
 
-$\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, 식 (1) 의 row space 는 $\mathbf{A}^\top$ 의 column space 와 같다. Column space 와 row space 를 견주면 아래 Table 2 와 같다.
+$\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, 식 (1) 의 row space 는 $\mathbf{A}^\top$ 의 column space 와 같다. Column space 와 row space 를 견주면 아래 Table 2 이다.
 
 Table 2. Column space and row space
 
@@ -163,7 +163,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 
 식 (6) 에서 $\mathbf{n}$ 은 두 행과 모두 직교한다. 차원은 row space 가 2, null space 가 1 로 더하면 $n = 3$ 이고, left null space 는 $m - r = 0$ 차원이어서 zero vector 만 있다.
 
-입력 $\mathbf{x} = [3, 0, 0]^\top$ 을 두 성분으로 나누면 아래와 같다.
+입력 $\mathbf{x} = [3, 0, 0]^\top$ 을 두 성분으로 나누면 아래이다.
 
 ```math
 \begin{gathered}
@@ -176,7 +176,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \hspace{19em} (7)
 ```
 
-Row space 성분 $[2, -1, 1]^\top$ 은 식 (7) 의 첫 줄과 같이 두 행의 일차결합이고, $\mathbf{n}$ 과의 내적이 $2 \cdot (-1) + (-1) \cdot (-1) + 1 \cdot 1 = 0$ 이다. $\mathbf{x}$ 와 row space 성분에 $\mathbf{A}$ 를 곱한 결과는 같은 $[3, 0]^\top$ 이고, null space 성분에 곱한 결과는 zero vector 이다.
+Row space 성분 $[2, -1, 1]^\top$ 은 식 (7) 첫 줄처럼 두 행의 일차결합이고, $\mathbf{n}$ 과의 내적이 $2 \cdot (-1) + (-1) \cdot (-1) + 1 \cdot 1 = 0$ 이다. $\mathbf{x}$ 와 row space 성분에 $\mathbf{A}$ 를 곱한 결과는 같은 $[3, 0]^\top$ 이고, null space 성분에 곱한 결과는 zero vector 이다.
 
 ## 6. Application
 
