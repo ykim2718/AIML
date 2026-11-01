@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 12 | Created: 2026-11-01 | Updated: 2026-11-01 23:21 UTC
+Rev. 13 | Created: 2026-11-01 | Updated: 2026-11-01 23:26 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -74,7 +74,7 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Column space 와 row space 의 정의는 아래이다.
+$\mathbf{A}$ 는 행이 $m$ 개, 열이 $n$ 개인 행렬이고, $\mathbf{x}$ 는 원소가 $n$ 개인 열 vector, $\mathbf{y}$ 는 원소가 $m$ 개인 열 vector 이다. 이 셋으로 쓴 column space 와 row space 의 정의는 아래이다.
 
 - **Column space**: $\mathbf{x}$ 에 $\mathbb{R}^n$ 의 모든 vector 를 넣어 얻은 $\mathbf{A}\mathbf{x}$ 의 집합. $\mathbb{R}^m$ 의 부분공간이다.
 - **Row space**: $\mathbf{y}$ 에 $\mathbb{R}^m$ 의 모든 vector 를 넣어 얻은 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbb{R}^n$ 의 부분공간이다.
