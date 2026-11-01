@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 32 | Created: 2026-10-25 | Updated: 2026-11-01 13:47 UTC
+Rev. 33 | Created: 2026-10-25 | Updated: 2026-11-01 13:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -34,7 +34,7 @@ Rev. 32 | Created: 2026-10-25 | Updated: 2026-11-01 13:47 UTC
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
 - [Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-h-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
-- [Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe)
+- [Appendix I. PLS Inversion: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe)
 
 A trained model usually runs from input to output. An inverse problem fixes the desired output first and recovers the input that produces it, and model inversion is the way of running an already trained model backwards for that purpose. This document defines the two terms, classifies the solutions along five axes, summarises the classical results of latent variable model inversion and the inversion methods for each model family, and covers the case where the model cannot be called and the validation of the solution.
 
@@ -214,13 +214,13 @@ The structure of the model decides which methods can be used. A linear model giv
 
 ### 4.2 Linear Projection Models
 
-PLS and PCR are inverted by the procedure of [PLS inversion and the null space](#pls-inversion-and-the-null-space). The PLS bootstrap ensemble is the [bagging](#appendix-c-bagging-ensemble) of PLS: it inverts each PLS fitted to a bootstrap sample by the same procedure and gives the spread of the solution instead of a single solution [[6](#ref-6)]. OLS and Ridge also give a solution of the same form through the pseudo-inverse, but the space the solution lies in differs. The solution of a projection model passes through the score space and inherits the correlation structure among the inputs, while the OLS solution can wander outside that structure. For a problem with correlated inputs, the OLS inverse returns physically impossible combinations. PCA has no output to match at all, so the nature of the problem itself changes. Linear PCA has a closed-form solution that maps the score back through the loading, but in kernel PCA that mapping becomes the pre-image problem treated with the kernel family of 4.3.
+PLS and PCR are inverted by the procedure of [PLS inversion](#pls-inversion). The PLS bootstrap ensemble is the [bagging](#appendix-c-bagging-ensemble) of PLS: it inverts each PLS fitted to a bootstrap sample by the same procedure and gives the spread of the solution instead of a single solution [[6](#ref-6)]. OLS and Ridge also give a solution of the same form through the pseudo-inverse, but the space the solution lies in differs. The solution of a projection model passes through the score space and inherits the correlation structure among the inputs, while the OLS solution can wander outside that structure. For a problem with correlated inputs, the OLS inverse returns physically impossible combinations. PCA has no output to match at all, so the nature of the problem itself changes. Linear PCA has a closed-form solution that maps the score back through the loading, but in kernel PCA that mapping becomes the pre-image problem treated with the kernel family of 4.3.
 
 In the classification of Fig 2, PLS inversion combines Deterministic for Formulation, Latent space for Search space, Analytical inverse for Solution method, Null space and Validity constraint for Ambiguity handling, and Region for Answer form.
 
 Inverting a PLS model is the oldest industrial case of solving an inverse problem in the latent space, and it already has the skeleton the later methods repeat. Its three steps are to reduce the dimension and sort out the degrees of freedom, to find the inverse solution in the reduced space, and to prevent extrapolation with a validity constraint [[2](#ref-2)], [[7](#ref-7)].
 
-#### PLS inversion and the null space
+#### PLS inversion
 
 PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a common score $\mathbf{T}$. $A$ is the number of latent variables.
 
@@ -228,7 +228,12 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores. Given a target output $\mathbf{y}^{\ast}$, solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, then map the score back through the loading to recover the input.
+$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores. Given a target output $\mathbf{y}^{\ast}$, the input is found by solving the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, and there are two methods for the solution.
+
+- Minimum-norm solution method: finds one solution with the pseudo-inverse of Eq. (4).
+- Null space method: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
+
+The minimum-norm solution method solves the equation with the pseudo-inverse and maps the score back through the loading to recover the input.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
@@ -243,7 +248,7 @@ $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mat
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix I](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe).
+$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe).
 
 How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 
@@ -251,7 +256,7 @@ How far the two limits allow the null space in the score plane is shown in Fig 3
 
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
-- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse.
+- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse. This segment is the range of solutions the null space method can find.
 - (b): the $\mathbf{t}^{\ast}$ and null space line of (a) mapped to the input plane, and the minimum-norm solutions of 200 bootstrap PLS models given by the PLS bootstrap ensemble.
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
@@ -846,7 +851,7 @@ Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 
 Each blue surface is the column space of the $\mathbf{P}$ of one bootstrap PLS, and 12 of the 200 are drawn. A change of training sample changes the loading matrix $\mathbf{P}$ and the sample mean, so the tilt and the position of the model plane change together. The 200 blue points are the minimum-norm solutions $\mathbf{x}^{\ast}$ of the 200 bootstrap PLS. Each $\mathbf{x}^{\ast}$ is obtained by Eq. (4) and so lies on the model plane of its own PLS, and its SPE with respect to that model plane is 0. Each $\mathbf{x}^{\ast}$ is computed with the pseudo-inverse of Eq. (4) alone and is not moved along the null space, the directions of the other solutions that give the same $\mathbf{y}^{\ast}$. The spread of the blue points therefore comes from the moving model plane, not from the null space. The green diamond is the mean of the 200 solutions, the solution of the PLS bootstrap ensemble. The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. In Fig 3 (b) the inputs and the latent variables are both 2, so the model plane is the whole input plane and a change of its tilt cannot be seen; this figure adds one more input.
 
-## Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE
+## Appendix I. PLS Inversion: Model Plane of One PLS and SPE
 
 Drawing the relation between SPE and the model plane for three inputs gives Fig 10 below.
 

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 118 | Created: 2026-08-28 | Updated: 2026-11-01 13:47 UTC
+Rev. 119 | Created: 2026-08-28 | Updated: 2026-11-01 13:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -34,7 +34,7 @@ Rev. 118 | Created: 2026-08-28 | Updated: 2026-11-01 13:47 UTC
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
 - [Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-h-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
-- [Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe)
+- [Appendix I. PLS Inversion: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -214,13 +214,13 @@ Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 
 
 ### 4.2 Linear Projection Models
 
-PLS 와 PCR 은 [PLS inversion and the null space](#pls-inversion-and-the-null-space) 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-c-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[6](#ref-6)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.3 의 kernel 계열에서 다루는 pre-image 문제가 된다.
+PLS 와 PCR 은 [PLS inversion](#pls-inversion) 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-c-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[6](#ref-6)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.3 의 kernel 계열에서 다루는 pre-image 문제가 된다.
 
 Fig 2 의 분류에서 PLS inversion 은 Formulation 은 Deterministic, Search space 는 Latent space, Solution method 는 Analytical inverse, Ambiguity handling 은 Null space 와 Validity constraint, Answer form 은 Region 을 고른 조합이다.
 
 PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 오래된 산업 사례이며, 이후의 방법들이 되풀이하는 골격을 이미 갖추고 있다. 차원을 줄여 자유도를 정리하고, 줄인 공간에서 역해를 구하고, 유효 영역 제약으로 외삽을 막는 세 단계가 그것이다 [[2](#ref-2)], [[7](#ref-7)].
 
-#### PLS inversion and the null space
+#### PLS inversion
 
 PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
 
@@ -228,7 +228,12 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-$\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다. 목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
+$\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다. 목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀어 입력을 구하며, 해를 구하는 방법은 아래 둘이다.
+
+- Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
+- Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
+
+Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
@@ -243,7 +248,7 @@ $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고,
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe) 에 있다.
+$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
 
 두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
@@ -251,7 +256,7 @@ $\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t
 
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
-- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다.
+- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다. 이 선분이 null space 방법으로 구할 수 있는 해의 범위이다.
 - (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, PLS bootstrap ensemble 이 주는 bootstrap PLS 200 개의 minimum-norm solution 이다.
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
@@ -846,7 +851,7 @@ Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 
 파란 면은 각 bootstrap PLS 의 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
 
-## Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE
+## Appendix I. PLS Inversion: Model Plane of One PLS and SPE
 
 SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 10 과 같다.
 
