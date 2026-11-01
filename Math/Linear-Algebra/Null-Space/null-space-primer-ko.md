@@ -1,0 +1,205 @@
+# Null Space Primer
+Rev. 0 | Created: 2026-10-31 | Updated: 2026-10-31 19:10 CDT
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Notation](#3-notation)
+- [4. Interpretation](#4-interpretation)
+  - [4.1 Set Definition](#41-set-definition)
+  - [4.2 Linear Transformation](#42-linear-transformation)
+  - [4.3 Uniqueness of Solutions](#43-uniqueness-of-solutions)
+  - [4.4 Rank-Nullity Theorem](#44-rank-nullity-theorem)
+- [5. Worked Example](#5-worked-example)
+- [6. Application](#6-application)
+  - [6.1 Collinear Features in Linear Regression](#61-collinear-features-in-linear-regression)
+  - [6.2 Numerical Computation with SVD](#62-numerical-computation-with-svd)
+- [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Derivation](#appendix-b-derivation)
+
+## 1. Purpose
+
+- **Problem Statement**: 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 원소만 보아서는 드러나지 않는다.
+- **Goal**: 독자가 null space 와 nullity 를 구해 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지를 가리고, 선형 회귀의 weight 가 하나로 정해지지 않는 원인을 찾을 수 있게 한다.
+- **Non-Goal**: 해가 없는 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 최소제곱 해와 left null space 는 다루지 않는다.
+
+## 2. Summary
+
+Null space (kernel) 는 $m \times n$ 행렬 $\mathbf{A}$ 에 곱했을 때 영 vector 가 되는 모든 입력 vector 의 집합 $\mathrm{Null}(\mathbf{A})$ 이고, $\mathbb{R}^n$ 의 부분공간이다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 있을 때, null space 에 영 vector 만 있으면 해는 하나이고 영이 아닌 vector 가 있으면 해는 무수히 많다.
+Null space 의 차원인 nullity 와 계수 (rank) 를 더하면 입력 공간의 차원 $n$ 이 된다.
+
+## 3. Notation
+
+이 문서가 쓰는 기호는 아래 Table 1 과 같다.
+
+Table 1. Symbols
+
+| Symbol                         | Meaning                                                                | Shape                          | Assumption                                                 |
+| :----------------------------: | :--------------------------------------------------------------------: | :----------------------------: | :--------------------------------------------------------: |
+| $\mathbf{A}$                   | 선형 변환을 나타내는 행렬, 예를 들어 행이 sample 이고 열이 센서인 자료 | $m \times n$                   | 실수 원소                                                  |
+| $m$, $n$                       | $\mathbf{A}$ 의 행의 수와 열의 수                                      | scalar                         | 양의 정수                                                  |
+| $\mathbf{x}$                   | 입력 vector, 선형방정식의 해                                           | $n \times 1$                   | 실수 원소                                                  |
+| $\mathbf{b}$                   | 선형방정식의 우변                                                      | $m \times 1$                   | 실수 원소                                                  |
+| $\mathbf{0}$                   | 영 vector                                                              | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
+| $\mathrm{Null}(\mathbf{A})$    | $\mathbf{A}$ 의 null space                                             | $\mathbb{R}^n$ 의 부분공간     | 영 vector 를 언제나 포함                                   |
+| $x_j$, $b_j$                   | $\mathbf{x}$ 와 $\mathbf{b}$ 의 $j$ 번째 원소                          | scalar                         | 실수                                                       |
+| $\mathbf{p}$, $\mathbf{q}$     | null space 에 속하는 임의의 vector 두 개                               | $n \times 1$                   | $\mathbf{A}\mathbf{p} = \mathbf{A}\mathbf{q} = \mathbf{0}$ |
+| $c$                            | 임의의 상수                                                            | scalar                         | 실수                                                       |
+| $\mathbf{x}_0$                 | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 특수해 하나                     | $n \times 1$                   | $\mathbf{A}\mathbf{x}_0 = \mathbf{b}$                      |
+| $\mathbf{x}_{\mathrm{null}}$   | null space 에 속하는 vector                                            | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
+| $\mathrm{rank}(\mathbf{A})$    | $\mathbf{A}$ 의 계수                                                   | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
+| $\mathrm{nullity}(\mathbf{A})$ | $\mathrm{Null}(\mathbf{A})$ 의 차원                                    | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
+| $\mathbf{n}$                   | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | 영 vector 가 아님                                          |
+| $t$                            | $\mathbf{n}$ 에 곱하는 배율                                            | scalar                         | 실수                                                       |
+| $\mathbf{B}$                   | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                   | $3 \times 3$                   | rank 3                                                     |
+| $\mathbf{R}$                   | $\mathbf{A}$ 의 기약 행사다리꼴                                        | $m \times n$                   | 기본 행 연산으로 얻음                                      |
+| $\mathbf{w}$                   | 선형 회귀의 weight vector                                              | $n \times 1$                   | 실수 원소                                                  |
+| $\hat{\mathbf{y}}$             | 선형 회귀의 예측값 vector                                              | $m \times 1$                   | 실수 원소                                                  |
+| $\sigma_i$                     | $\mathbf{A}$ 의 $i$ 번째 특이값                                        | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
+| $\mathbf{v}_i$                 | $\mathbf{A}$ 의 $i$ 번째 우특이벡터                                    | $n \times 1$                   | 단위 vector                                                |
+
+특수 기호는 아래와 같이 읽는다.
+
+- $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
+- $\in$: 영어로 "in" 또는 "is an element of", 한국어로 "에 속한다" 라 읽는다.
+- $\{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \}$ 의 $\mid$: 영어로 "such that", 한국어로 "인" 이라 읽는다. 식 (1) 전체는 영어로 "the set of x in R n such that A x equals zero", 한국어로 "A x 가 영 vector 인 R n 의 x 의 집합" 이라 읽는다.
+- $\mathbf{A}^\top$: 영어로 "A transpose", 한국어로 "A 의 전치" 또는 "A 트랜스포즈" 라 읽는다.
+- $\mathbf{A}^{+}$: 영어로 "A plus" 또는 "the pseudo-inverse of A", 한국어로 "A 의 pseudo-inverse" 라 읽는다.
+- $\hat{\mathbf{y}}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다. 기호 위의 hat 은 그 값이 model 의 추정값임을 나타낸다.
+- $\lVert \mathbf{x} \rVert$: 영어로 "the norm of x" 또는 "norm x", 한국어로 "x 의 노름" 이라 읽는다.
+
+## 4. Interpretation
+
+Null space 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 전체이다.
+
+```math
+\mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)
+```
+
+### 4.1 Set Definition
+
+식 (1) 의 $\mathbf{x}$ 는 $n$ 차원 입력 공간 (domain) 의 vector 이므로, null space 는 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다. $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 그래서 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이고, 영 vector 를 언제나 포함한다.
+
+### 4.2 Linear Transformation
+
+$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다.
+
+### 4.3 Uniqueness of Solutions
+
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면, 해 전체는 $\mathbf{x}_0$ 에 null space 의 vector 를 더한 것이다.
+
+```math
+\mathbf{A}(\mathbf{x}_0 + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{b} + \mathbf{0} = \mathbf{b} \hspace{19em} (2)
+```
+
+식 (2) 에서 해의 개수는 아래와 같이 갈린다.
+
+- $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
+- $\mathrm{Null}(\mathbf{A})$ 에 영이 아닌 vector 가 있음: 그 vector 의 모든 상수배를 더할 수 있으므로 해가 무수히 많다.
+
+식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) 해가 없고, null space 는 해의 개수를 정하지 않는다.
+
+### 4.4 Rank-Nullity Theorem
+
+Null space 의 차원을 nullity 라 하며, 계수 (rank) 와 nullity 를 더하면 열의 수 $n$ 이 된다.
+
+```math
+\mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n \hspace{19em} (3)
+```
+
+식 (3) 의 $\mathrm{rank}(\mathbf{A})$ 는 변환 뒤에 남는 차원이고, $\mathrm{nullity}(\mathbf{A})$ 는 원점으로 가는 차원이다. 행의 수 $m$ 은 식 (3) 에 들지 않으므로, $m \lt n$ 이면 $\mathrm{rank}(\mathbf{A}) \le m \lt n$ 이어서 nullity 가 1 이상이고 해가 있으면 언제나 무수히 많다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+
+## 5. Worked Example
+
+세 번째 열이 첫 번째 열과 두 번째 열의 합인 $3 \times 3$ 행렬을 둔다.
+
+```math
+\mathbf{A} = \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \\ 1 & 1 & 2 \end{bmatrix}, \quad \mathbf{b} = \begin{bmatrix} 2 \\ 3 \\ 5 \end{bmatrix} \hspace{19em} (4)
+```
+
+$\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 첫 행과 둘째 행에서 $x_1 = -x_3$, $x_2 = -x_3$ 이고, 셋째 행은 첫 행과 둘째 행의 합이어서 조건을 더하지 않는다. $x_3 = 1$ 로 두면 null space 를 생성하는 vector 는 아래와 같다.
+
+```math
+\mathbf{n} = \begin{bmatrix} -1 \\ -1 \\ 1 \end{bmatrix}, \quad \mathbf{A}\mathbf{n} = \begin{bmatrix} -1 + 0 + 1 \\ 0 - 1 + 1 \\ -1 - 1 + 2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix} \hspace{19em} (5)
+```
+
+$\mathrm{Null}(\mathbf{A})$ 는 $\mathbf{n}$ 의 상수배 전체인 직선이므로 nullity 는 1 이다. 일차독립인 열은 첫 번째와 두 번째 열 둘이므로 rank 는 2 이고, $2 + 1 = 3 = n$ 으로 식 (3) 이 성립한다. $\mathbf{A}$ 는 $\mathbb{R}^3$ 을 두 열이 생성하는 평면으로 옮기고, $\mathbf{n}$ 방향의 직선을 원점으로 보낸다.
+
+특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (2) 대로 $\mathbf{x}_0 + t\,\mathbf{n}$ 을 넣으면 $t$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 2 와 같다.
+
+Table 2. Solutions along the null space
+
+| $t$   | $\mathbf{x}_0 + t\,\mathbf{n}$ | $\mathbf{A}(\mathbf{x}_0 + t\,\mathbf{n})$ |
+| :---: | :----------------------------: | :----------------------------------------: |
+| $0$   | $[2, 3, 0]$                    | $[2, 3, 5]$                                |
+| $1$   | $[1, 2, 1]$                    | $[2, 3, 5]$                                |
+| $2$   | $[0, 1, 2]$                    | $[2, 3, 5]$                                |
+
+오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 3 과 같다.
+
+Table 3. Number of solutions by null space
+
+| Matrix       | Right-hand side | Rank  | Nullity | Solutions                        |
+| :----------: | :-------------: | :---: | :-----: | :------------------------------: |
+| $\mathbf{A}$ | $[2, 3, 5]$     | $2$   | $1$     | 무수히 많음, $[2 - t, 3 - t, t]$ |
+| $\mathbf{B}$ | $[2, 3, 5]$     | $3$   | $0$     | 하나, $[2, 3, 0]$                |
+| $\mathbf{A}$ | $[1, 0, 0]$     | $2$   | $1$     | 없음                             |
+
+$\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 rank 3 이어서 null space 에 영 vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
+
+## 6. Application
+
+Null space 에 영이 아닌 vector 가 있으면, 같은 출력을 주는 입력이 하나로 정해지지 않는다.
+
+### 6.1 Collinear Features in Linear Regression
+
+선형 회귀의 예측값은 $\hat{\mathbf{y}} = \mathbf{A}\mathbf{w}$ 이며, $\mathbf{A}$ 의 열이 센서이고 $\mathbf{w}$ 가 weight 이다. 한 센서가 다른 센서들의 일차결합이면 (collinearity) null space 에 영이 아닌 vector 가 있고, 식 (2) 대로 그 vector 의 상수배를 $\mathbf{w}$ 에 더해도 $\hat{\mathbf{y}}$ 가 바뀌지 않는다.
+
+식 (4) 의 $\mathbf{A}$ 에서 세 번째 센서는 첫 두 센서의 합이다. $\mathbf{w} = [2, 3, 0]^\top$ 과 $[0, 1, 2]^\top$ 은 예측값이 모두 $[2, 3, 5]^\top$ 이지만, 앞의 것은 세 번째 센서의 weight 가 0 이고 뒤의 것은 2 이다. 이때 weight 의 크기로 센서의 중요도를 해석할 수 없다. 정규방정식의 $\mathbf{A}^\top\mathbf{A}$ 도 같은 null space 를 가져 역행렬이 없으므로, 열을 빼거나 regularization 을 써서 nullity 를 0 으로 만든다.
+
+### 6.2 Numerical Computation with SVD
+
+Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (4) 의 $\mathbf{A}$ 의 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (5) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
+
+Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + t\,\mathbf{n}$ 에서 $t = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다.
+
+부동소수점 계산에서는 특이값이 정확히 0 이 되지 않으므로, 문턱값보다 작은 특이값을 0 으로 보고 rank 와 nullity 를 정한다. 문턱값을 크게 잡으면 거의 collinear 한 센서까지 null space 에 들어가고, 작게 잡으면 측정 noise 때문에 nullity 가 0 으로 나온다.
+
+---
+
+## Appendix A. Terminology
+
+- **collinearity**: 한 feature 가 다른 feature 들의 일차결합으로 나타나는 것. Null space 에 영이 아닌 vector 가 생긴다.
+- **column space**: 행렬의 열들의 일차결합으로 나타나는 vector 전체. $\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 여기에 속할 때만 해가 있다.
+- **nullity**: Null space 의 차원.
+- **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
+- **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.
+- **regularization**: 손실 함수에 weight 의 크기에 대한 벌점을 더해 weight 를 하나로 정하는 방법.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
+- **동차 선형방정식 (homogeneous linear equation)**: 우변이 영 vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
+- **부분공간 (subspace)**: 영 vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
+- **선형 변환 (linear transformation)**: 덧셈과 상수배를 보존하는 vector 사이의 함수. 행렬 곱 $\mathbf{x} \mapsto \mathbf{A}\mathbf{x}$ 로 나타난다.
+- **우특이벡터 (right singular vector)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\mathbf{V}$ 의 열. 입력 공간 $\mathbb{R}^n$ 의 단위 vector 이다.
+- **자유 열**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (자유 변수) 는 아무 값이나 가질 수 있다.
+- **정규방정식 (normal equation)**: 최소제곱 weight 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\mathbf{w} = \mathbf{A}^\top\mathbf{y}$. $\mathbf{y}$ 는 관측값 vector 이다.
+- **특수해 (particular solution)**: $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족하는 해 하나.
+- **특이값 분해 (Singular Value Decomposition, SVD)**: 실수 행렬을 직교 행렬, 0 이상의 대각 원소를 가진 대각 행렬, 직교 행렬의 곱으로 나타내는 분해. 대각 원소가 특이값이다.
+
+## Appendix B. Derivation
+
+식 (3) 은 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다. 단계마다 쓴 성질은 아래 Table 4 와 같다.
+
+Table 4. Derivation of equation (3)
+
+| Step  | Statement                                                                               | Property                                             |
+| :---: | :-------------------------------------------------------------------------------------: | :--------------------------------------------------: |
+| 1     | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 과 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 의 해가 같다 | 기본 행 연산은 가역 행렬을 왼쪽에 곱하는 것          |
+| 2     | $\mathbf{R}$ 의 pivot 열의 수 $= \mathrm{rank}(\mathbf{A})$                             | 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않음 |
+| 3     | 자유 열의 수 $= n - \mathrm{rank}(\mathbf{A})$                                          | 모든 열은 pivot 열이거나 자유 열                     |
+| 4     | 자유 변수 하나를 1, 나머지를 0 으로 둔 해가 자유 열마다 하나씩 있다                     | pivot 변수는 자유 변수로 하나씩 정해짐               |
+| 5     | 단계 4 의 해들은 일차독립이고 $\mathrm{Null}(\mathbf{A})$ 를 생성한다                   | 해마다 값이 1 인 자유 변수가 다름                    |
+| 6     | $\mathrm{nullity}(\mathbf{A}) = n - \mathrm{rank}(\mathbf{A})$                          | 기저의 원소 수가 차원                                |
+
+$\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (4) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, 자유 열이 세 번째 열 하나이며, 단계 4 의 해가 식 (5) 의 $\mathbf{n}$ 이다.
+
