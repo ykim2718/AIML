@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 16 | Created: 2026-10-25 | Updated: 2026-11-01 09:09 UTC
+Rev. 17 | Created: 2026-10-25 | Updated: 2026-11-01 09:11 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -227,7 +227,7 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-Given a target output $\mathbf{y}^{\ast}$, solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, then map the score back through the loading to recover the input.
+$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores. Given a target output $\mathbf{y}^{\ast}$, solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, then map the score back through the loading to recover the input.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
