@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 112 | Created: 2026-08-28 | Updated: 2026-11-01 11:30 UTC
+Rev. 113 | Created: 2026-08-28 | Updated: 2026-11-01 11:39 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -837,11 +837,14 @@ SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 �
 
 Fig 3 (b) 의 PLS bootstrap ensemble 을 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
 
-<img src="inverse-problem-ko_fig/bootstrap-schematic.png" width="700" style="max-width: 100%;" alt="Fig 9">
+<img src="inverse-problem-ko_fig/bootstrap-schematic.png" width="900" style="max-width: 100%;" alt="Fig 9">
 
-Fig 9. Model planes of the bootstrap PLS models and their minimum-norm solutions
+Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 
-파란 면은 bootstrap 표본마다 적합한 PLS 의 model plane, 곧 각 PLS 의 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 빨간 면은 모든 행으로 적합한 PLS 하나의 model plane 이고, 회색 점은 학습에 쓴 $\mathbf{X}$ 의 행이다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개를 식 (4) 의 절차로 각각 뒤집은 minimum-norm solution $\mathbf{x}^{\ast}$ 이며, 점마다 자기 PLS 의 model plane 위에 놓인다. 그래서 파란 점의 퍼짐은 model plane 이 흔들린 만큼 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이고, 주황 별은 PLS 하나의 minimum-norm solution 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
+- (a): 모든 행으로 적합한 PLS 하나의 model plane (빨간 면) 과 그 minimum-norm solution $\mathbf{x}^{\ast}$ (주황 별) 이다. 회색 점은 학습에 쓴 $\mathbf{X}$ 의 행이다.
+- (b): bootstrap 표본마다 적합한 PLS 의 model plane (파란 면) 과 그 minimum-norm solution (파란 점) 이다. 빨간 면과 주황 별은 (a) 와 같다.
+
+파란 면은 각 bootstrap PLS 의 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개를 식 (4) 의 절차로 각각 뒤집은 minimum-norm solution $\mathbf{x}^{\ast}$ 이며, 점마다 자기 PLS 의 model plane 위에 놓인다. 그래서 파란 점의 퍼짐은 model plane 이 흔들린 만큼 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
 
 ## Appendix I. Schematic of SPE and the Model Plane in PLS Inversion
 
