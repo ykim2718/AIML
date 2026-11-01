@@ -5,7 +5,7 @@ spline that passes through every training point. The held-out RMSE of each fit i
 quote it.
 """
 __author__ = 'yRocket'
-__version__ = "0.1.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.1+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -24,8 +24,8 @@ PANEL_GAP: float = 0.35              # inches between two charts
 MARGINS: dict = {'left': 0.45, 'right': 0.15, 'bottom': 0.90, 'top': 0.15}  # inches around the charts
 PANEL_LABEL_HEIGHT: float = 0.20     # inches from the bottom edge to the panel labels
 DPI: int = 200
-REFERENCE_AXES_WIDTH: float = 4.0    # the chart width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 12.0
+REFERENCE_AXES_WIDTH: float = 4.0    # the chart width the font sizes below were chosen for
+FONT_SIZES: dict = {'text': 12.0, 'axis_label': 14.0, 'panel_label': 14.0}  # points; 'text' is the minimum
 COLORS: list = list(matplotlib.colors.TABLEAU_COLORS.values())
 PANEL_LABELS: tuple = ('(a) Underfitted', '(b) Well-fitted', '(c) Overfitted')
 
@@ -56,8 +56,9 @@ def fit_curves(train: pd.DataFrame) -> list:
 def draw_fit_capacity(train: pd.DataFrame, test: pd.DataFrame, output_folder: pathlib.Path) -> pathlib.Path:
     """Write the three-panel figure and print the train and held-out RMSE. Returns the figure path."""
     output_folder.mkdir(parents=True, exist_ok=True)
-    font_size = BASE_FONT_SIZE * AXES_SIZE[0] / REFERENCE_AXES_WIDTH
-    plt.rcParams.update({'font.size': font_size})
+    scale = AXES_SIZE[0] / REFERENCE_AXES_WIDTH
+    plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
+                         'axes.labelsize': FONT_SIZES['axis_label'] * scale})
     n_panels = len(PANEL_LABELS)
     fig_width = MARGINS['left'] + n_panels * AXES_SIZE[0] + (n_panels - 1) * PANEL_GAP + MARGINS['right']
     fig_height = MARGINS['bottom'] + AXES_SIZE[1] + MARGINS['top']
@@ -84,7 +85,7 @@ def draw_fit_capacity(train: pd.DataFrame, test: pd.DataFrame, output_folder: pa
     for axis, label in zip(axes, PANEL_LABELS):
         position = axis.get_position()
         fig.text(position.x0 + position.width / 2, PANEL_LABEL_HEIGHT / fig_height, label,
-                 ha='center', fontsize=font_size)
+                 ha='center', fontsize=FONT_SIZES['panel_label'] * scale)
 
     figure_path = output_folder / 'fit-capacity.png'
     fig.savefig(figure_path, dpi=DPI)
