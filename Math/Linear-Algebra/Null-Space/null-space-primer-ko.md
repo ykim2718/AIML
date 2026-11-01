@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 16 | Created: 2026-10-31 | Updated: 2026-10-31 20:31 CDT
+Rev. 17 | Created: 2026-10-31 | Updated: 2026-10-31 20:34 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -105,7 +105,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 �
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
 - $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 모두 해이므로 해가 무수히 많다.
 
-두 번째 경우는 상수배를 더한 null space vector 를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 왼쪽 변에 넣어 $\mathbf{b}$ 가 나오는지로 확인한다.
+두 번째 경우는 $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 왼쪽 변에 넣어 $\mathbf{b}$ 가 나오는지로 확인한다.
 
 ```math
 \mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + c\,\mathbf{A}\mathbf{x}_{\mathrm{null}} = \underbrace{\mathbf{b}}_{\mathbf{A}\mathbf{x}_0 = \mathbf{b}} + c\,\underbrace{\mathbf{0}}_{\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}} = \mathbf{b} \hspace{19em} (3)
@@ -131,8 +131,6 @@ A·(c·x_null)       = [-3+0+3, 0-3+3, -3-3+6] = [0, 0, 0]
 x0 + c·x_null      = [2, 3, 0] + [-3, -3, 3] = [-1, 0, 3]
 A·(x0 + c·x_null)  = [-1+0+3, 0+0+3, -1+0+6] = [2, 3, 5] = b
 ```
-
-Null space vector 를 3 배 해도 $\mathbf{A}$ 를 곱한 결과는 zero vector 이고, 특수해에 그 3 배를 더한 $[-1, 0, 3]^\top$ 은 $\mathbf{A}$ 를 곱하면 $\mathbf{b}$ 가 되어 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다.
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 null space 와 상관없이 0 개이다. Null space 로 해가 하나인지 무수히 많은지를 가리는 것은 해가 하나라도 있을 때만 맞다.
 
@@ -183,15 +181,15 @@ Table 2. Solutions along the null space
 | $1$   | $[1, 2, 1]$                    | $[2, 3, 5]$                                |
 | $2$   | $[0, 1, 2]$                    | $[2, 3, 5]$                                |
 
-오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 3 과 같다.
+오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 3 과 같다. 첨가 행렬의 rank 를 적은 열은 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 의 절차에서 쓴다.
 
 Table 3. Number of solutions by null space
 
-| Matrix       | Right-hand side | Rank  | Nullity | Solutions                        |
-| :----------: | :-------------: | :---: | :-----: | :------------------------------: |
-| $\mathbf{A}$ | $[2, 3, 5]$     | $2$   | $1$     | 무수히 많음, $[2 - c, 3 - c, c]$ |
-| $\mathbf{B}$ | $[2, 3, 5]$     | $3$   | $0$     | 하나, $[2, 3, 0]$                |
-| $\mathbf{A}$ | $[1, 0, 0]$     | $2$   | $1$     | 없음                             |
+| Matrix       | Right-hand side | Rank of A | Rank of [A \| b] | Nullity | Solutions                        |
+| :----------: | :-------------: | :-------: | :--------------: | :-----: | :------------------------------: |
+| $\mathbf{A}$ | $[2, 3, 5]$     | $2$       | $2$              | $1$     | 무수히 많음, $[2 - c, 3 - c, c]$ |
+| $\mathbf{B}$ | $[2, 3, 5]$     | $3$       | $3$              | $0$     | 하나, $[2, 3, 0]$                |
+| $\mathbf{A}$ | $[1, 0, 0]$     | $2$       | $3$              | $1$     | 없음                             |
 
 $\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 rank 3 이어서 null space 에 zero vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
 
@@ -256,9 +254,20 @@ $\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\ma
 
 ## Appendix C. Counting the Solutions of Equation (2)
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 rank 와 열의 수 $n$ 을 견주어 가린다. 그 전에 해가 있는지를 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 로 먼저 확인한다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 rank 와 열의 수 $n$ 을 견주어 가린다. 해가 있는지는 첨가 행렬 (augmented matrix) $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 로 먼저 확인한다.
 
-1. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) \gt \mathrm{rank}(\mathbf{A})$ 이면 해가 없다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않아, $\mathbf{b}$ 를 붙이면 일차독립인 열이 하나 늘어난다.
+첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 와 두 우변으로 만든 첨가 행렬은 아래와 같다.
+
+```text
+[A | b], b = [2, 3, 5]      [A | b], b = [1, 0, 0]
+[[1, 0, 1 | 2],             [[1, 0, 1 | 1],
+ [0, 1, 1 | 3],              [0, 1, 1 | 0],
+ [1, 1, 2 | 5]]              [1, 1, 2 | 0]]
+```
+
+왼쪽 첨가 행렬의 첫 행은 방정식 $x_1 + x_3 = 2$ 를 뜻한다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합이면 붙인 열이 새 방향을 더하지 않아 rank 가 그대로이고, 아니면 rank 가 1 늘어난다. 왼쪽은 셋째 행이 첫 두 행의 합 ($5 = 2 + 3$) 이어서 rank 가 $\mathbf{A}$ 와 같은 2 이고, 오른쪽은 셋째 행의 우변이 $0 \ne 1 + 0$ 이어서 rank 가 3 으로 늘어난다.
+
+1. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) \gt \mathrm{rank}(\mathbf{A})$ 이면 해가 없다. 위의 오른쪽 첨가 행렬이 이 경우이다.
 2. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) = n$ 이면 해가 하나이다. 식 (4) 에서 nullity 가 0 이어서 null space 에 zero vector 만 있다.
 3. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) \lt n$ 이면 해가 무수히 많다. 식 (4) 에서 nullity 가 1 이상이어서 null space 에 zero vector 가 아닌 vector 가 있다.
 
@@ -270,14 +279,4 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 
 식 (7) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 4.3 의 식 (3) 과 같다.
 
-꼭지 5 의 세 경우에 이 절차를 적용하면 아래 Table 5 와 같다.
-
-Table 5. Counting solutions by rank
-
-| Matrix       | Right-hand side | Rank of A | Rank of [A \| b] | n     | Solutions   |
-| :----------: | :-------------: | :-------: | :--------------: | :---: | :---------: |
-| $\mathbf{A}$ | $[2, 3, 5]$     | $2$       | $2$              | $3$   | 무수히 많음 |
-| $\mathbf{B}$ | $[2, 3, 5]$     | $3$       | $3$              | $3$   | 하나        |
-| $\mathbf{A}$ | $[1, 0, 0]$     | $2$       | $3$              | $3$   | 없음        |
-
-셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.
+[Table 3](#5-worked-example) 의 세 경우에 이 절차를 적용하면, 셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.
