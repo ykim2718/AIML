@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 3 | Created: 2026-10-31 | Updated: 2026-10-31 19:29 CDT
+Rev. 4 | Created: 2026-10-31 | Updated: 2026-10-31 19:30 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -78,7 +78,7 @@ Null space 는 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\math
 
 ### 4.1 Set Definition
 
-$m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다. 식 (4) 의 $\mathbf{A}$ 는 $m = n = 3$ 이어서 두 공간이 모두 $\mathbb{R}^3$ 이다.
+$m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다.
 
 식 (1) 에서 바로 찾을 수 있는 해는 영 vector 이며, 식 (4) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 영 vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 영 vector 를 포함해야 하므로, 영 vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다.
 
