@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 13 | Created: 2026-11-01 | Updated: 2026-11-01 23:26 UTC
+Rev. 14 | Created: 2026-11-01 | Updated: 2026-11-01 23:28 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -76,8 +76,10 @@ Table 1. Symbols
 
 $\mathbf{A}$ 는 행이 $m$ 개, 열이 $n$ 개인 행렬이고, $\mathbf{x}$ 는 원소가 $n$ 개인 열 vector, $\mathbf{y}$ 는 원소가 $m$ 개인 열 vector 이다. 이 셋으로 쓴 column space 와 row space 의 정의는 아래이다.
 
-- **Column space**: $\mathbf{x}$ 에 $\mathbb{R}^n$ 의 모든 vector 를 넣어 얻은 $\mathbf{A}\mathbf{x}$ 의 집합. $\mathbb{R}^m$ 의 부분공간이다.
-- **Row space**: $\mathbf{y}$ 에 $\mathbb{R}^m$ 의 모든 vector 를 넣어 얻은 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbb{R}^n$ 의 부분공간이다.
+- **Column space**: $\mathbf{A}$ 의 치역 (range). $\mathbf{x} \in \mathbb{R}^n$ 인 모든 $\mathbf{x}$ 에 대한 $\mathbf{A}\mathbf{x}$ 의 집합이며, $\mathbb{R}^m$ 의 부분공간이다.
+- **Row space**: $\mathbf{A}^\top$ 의 치역. $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합이며, $\mathbb{R}^n$ 의 부분공간이다.
+
+두 정의를 가르는 것은 곱하는 행렬이 $\mathbf{A}$ 인지 $\mathbf{A}^\top$ 인지이고, $\mathbf{x}$ 와 $\mathbf{y}$ 는 그 행렬에 곱할 수 있는 vector 의 이름이다. $\mathbf{A}$ 는 열이 $n$ 개여서 $\mathbb{R}^n$ 의 vector 에, $\mathbf{A}^\top$ 는 열이 $m$ 개여서 $\mathbb{R}^m$ 의 vector 에 곱한다.
 
 일차결합 (linear combination) 은 vector 여러 개에 각각 상수를 곱해 모두 더한 vector 이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 $j$ 번째 열에 $\mathbf{x}$ 의 $j$ 번째 원소를 곱해 $j = 1, \dots, n$ 에 대해 더한 vector 이므로 열들의 일차결합이다. $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 $i$ 번째 행에 $\mathbf{y}$ 의 $i$ 번째 원소를 곱해 $i = 1, \dots, m$ 에 대해 더한 vector 이므로 행들의 일차결합이다. 따라서 column space 의 원소는 모두 $\mathbf{A}$ 의 열들의 일차결합이고, row space 의 원소는 모두 $\mathbf{A}$ 의 행들의 일차결합이다.
 
@@ -215,6 +217,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **정규직교 기저 (orthonormal basis)**: 서로 직교하는 단위 vector 로 이루어진 기저.
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
 - **직교 여공간 (orthogonal complement)**: 한 부분공간의 모든 vector 와 직교하는 vector 전체. 여집합은 원래 집합에 없는 점을 모두 모은 것이지만, 직교 여공간은 직교하는 방향만 모은 것이다.
+- **치역 (range)**: 한 행렬에 곱할 수 있는 모든 vector 에 그 행렬을 곱한 결과의 집합.
 
 ## Appendix B. Derivation
 
