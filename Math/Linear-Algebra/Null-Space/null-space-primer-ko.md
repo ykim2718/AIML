@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 12 | Created: 2026-10-31 | Updated: 2026-10-31 20:24 CDT
+Rev. 13 | Created: 2026-10-31 | Updated: 2026-10-31 20:26 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -15,7 +15,6 @@ Rev. 12 | Created: 2026-10-31 | Updated: 2026-10-31 20:24 CDT
   - [6.2 Numerical Computation with SVD](#62-numerical-computation-with-svd)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
-- [Appendix C. Numeric Check of Equation (3)](#appendix-c-numeric-check-of-equation-3)
 
 ## 1. Purpose
 
@@ -108,7 +107,23 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 �
 \mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + c\,\mathbf{A}\mathbf{x}_{\mathrm{null}} = \underbrace{\mathbf{b}}_{\mathbf{A}\mathbf{x}_0 = \mathbf{b}} + c\,\underbrace{\mathbf{0}}_{\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}} = \mathbf{b} \hspace{19em} (3)
 ```
 
-식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $c = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다. 식 (3) 의 각 항을 숫자로 계산한 예는 [Appendix C](#appendix-c-numeric-check-of-equation-3) 에 있다.
+식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 3](#5-worked-example) 의 $c = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다.
+
+식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$, 식 (6) 의 $\mathbf{n}$ 을 null space vector 로 두고, 특수해를 $[2, 3, 0]^\top$, 상수를 $c = 3$ 으로 하여 식 (3) 의 각 항을 계산하면 아래 Table 2 와 같다.
+
+Table 2. Terms of equation (3) with c = 3
+
+| Quantity                                                   | Calculation               | Value                    |
+| :--------------------------------------------------------: | :-----------------------: | :----------------------: |
+| $\mathbf{x}_{\mathrm{null}}$                               | 식 (6) 의 $\mathbf{n}$    | $[-1, -1, 1]$            |
+| $\mathbf{A}\mathbf{x}_{\mathrm{null}}$                     | $[-1+0+1, 0-1+1, -1-1+2]$ | $[0, 0, 0]$              |
+| $c\,\mathbf{A}\mathbf{x}_{\mathrm{null}}$                  | $3 \cdot [0, 0, 0]$       | $[0, 0, 0]$              |
+| $c\,\mathbf{x}_{\mathrm{null}}$                            | $3 \cdot [-1, -1, 1]$     | $[-3, -3, 3]$            |
+| $\mathbf{A}(c\,\mathbf{x}_{\mathrm{null}})$                | $[-3+0+3, 0-3+3, -3-3+6]$ | $[0, 0, 0]$              |
+| $\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}$             | $[2, 3, 0] + [-3, -3, 3]$ | $[-1, 0, 3]$             |
+| $\mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}})$ | $[-1+0+3, 0+0+3, -1+0+6]$ | $[2, 3, 5] = \mathbf{b}$ |
+
+Null space vector 를 3 배 해도 $\mathbf{A}$ 를 곱한 결과는 zero vector 이고, 특수해에 그 3 배를 더한 $[-1, 0, 3]^\top$ 은 $\mathbf{A}$ 를 곱하면 $\mathbf{b}$ 가 되어 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다.
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 null space 와 상관없이 0 개이다. Null space 로 해가 하나인지 무수히 많은지를 가리는 것은 해가 하나라도 있을 때만 맞다.
 
@@ -149,9 +164,9 @@ $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 첫 행과 둘째 행에서 $x_1 = -x_3$
 
 $\mathrm{Null}(\mathbf{A})$ 는 $\mathbf{n}$ 의 상수배 전체인 직선이므로 nullity 는 1 이다. 일차독립인 열은 첫 번째와 두 번째 열 둘이므로 rank 는 2 이고, $2 + 1 = 3 = n$ 으로 식 (4) 가 성립한다. $\mathbf{A}$ 는 $\mathbb{R}^3$ 을 두 열이 생성하는 평면으로 옮기고, $\mathbf{n}$ 방향의 직선을 원점으로 보낸다.
 
-특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (3) 대로 $\mathbf{x}_0 + c\,\mathbf{n}$ 을 넣으면 $c$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 2 와 같다.
+특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (3) 대로 $\mathbf{x}_0 + c\,\mathbf{n}$ 을 넣으면 $c$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 3 과 같다.
 
-Table 2. Solutions along the null space
+Table 3. Solutions along the null space
 
 | $c$   | $\mathbf{x}_0 + c\,\mathbf{n}$ | $\mathbf{A}(\mathbf{x}_0 + c\,\mathbf{n})$ |
 | :---: | :----------------------------: | :----------------------------------------: |
@@ -159,9 +174,9 @@ Table 2. Solutions along the null space
 | $1$   | $[1, 2, 1]$                    | $[2, 3, 5]$                                |
 | $2$   | $[0, 1, 2]$                    | $[2, 3, 5]$                                |
 
-오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 3 과 같다.
+오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 4 와 같다.
 
-Table 3. Number of solutions by null space
+Table 4. Number of solutions by null space
 
 | Matrix       | Right-hand side | Rank  | Nullity | Solutions                        |
 | :----------: | :-------------: | :---: | :-----: | :------------------------------: |
@@ -214,9 +229,9 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 ## Appendix B. Derivation
 
-식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다. 단계마다 쓴 성질은 아래 Table 4 와 같다.
+식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다. 단계마다 쓴 성질은 아래 Table 5 와 같다.
 
-Table 4. Derivation of equation (4)
+Table 5. Derivation of equation (4)
 
 | Step  | Statement                                                                               | Property                                             |
 | :---: | :-------------------------------------------------------------------------------------: | :--------------------------------------------------: |
@@ -228,21 +243,3 @@ Table 4. Derivation of equation (4)
 | 6     | $\mathrm{nullity}(\mathbf{A}) = n - \mathrm{rank}(\mathbf{A})$                          | 기저의 원소 수가 차원                                |
 
 $\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, 자유 열이 세 번째 열 하나이며, 단계 4 의 해가 식 (6) 의 $\mathbf{n}$ 이다.
-
-## Appendix C. Numeric Check of Equation (3)
-
-식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$, 식 (6) 의 $\mathbf{n}$ 을 null space vector 로 두고, 특수해를 $[2, 3, 0]^\top$, 상수를 $c = 3$ 으로 하여 식 (3) 의 각 항을 계산하면 아래 Table 5 와 같다.
-
-Table 5. Terms of equation (3) with c = 3
-
-| Quantity                                                   | Calculation               | Value                    |
-| :--------------------------------------------------------: | :-----------------------: | :----------------------: |
-| $\mathbf{x}_{\mathrm{null}}$                               | 식 (6) 의 $\mathbf{n}$    | $[-1, -1, 1]$            |
-| $\mathbf{A}\mathbf{x}_{\mathrm{null}}$                     | $[-1+0+1, 0-1+1, -1-1+2]$ | $[0, 0, 0]$              |
-| $c\,\mathbf{A}\mathbf{x}_{\mathrm{null}}$                  | $3 \cdot [0, 0, 0]$       | $[0, 0, 0]$              |
-| $c\,\mathbf{x}_{\mathrm{null}}$                            | $3 \cdot [-1, -1, 1]$     | $[-3, -3, 3]$            |
-| $\mathbf{A}(c\,\mathbf{x}_{\mathrm{null}})$                | $[-3+0+3, 0-3+3, -3-3+6]$ | $[0, 0, 0]$              |
-| $\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}$             | $[2, 3, 0] + [-3, -3, 3]$ | $[-1, 0, 3]$             |
-| $\mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}})$ | $[-1+0+3, 0+0+3, -1+0+6]$ | $[2, 3, 5] = \mathbf{b}$ |
-
-Null space vector 를 3 배 해도 $\mathbf{A}$ 를 곱한 결과는 zero vector 이고, 특수해에 그 3 배를 더한 $[-1, 0, 3]^\top$ 은 $\mathbf{A}$ 를 곱하면 $\mathbf{b}$ 가 되어 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다.
