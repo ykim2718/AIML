@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 100 | Created: 2026-08-28 | Updated: 2026-11-01 03:20 UTC
+Rev. 101 | Created: 2026-08-28 | Updated: 2026-11-01 09:08 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -823,4 +823,4 @@ SPE 와 model 평면의 관계를 입력이 3 개인 경우로 그리면 아래 
 
 Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
 
-파란 면이 $\mathbf{P}$ 의 열이 이루는 model 평면이고, 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (13) 의 SPE 이다. 수치는 그림을 위해 만든 값이다. Appendix D 는 입력과 latent 변수가 모두 2 개여서 model 평면이 입력 공간 전체가 되고 SPE 가 늘 0 이므로, 입력을 하나 더한 경우로 그렸다.
+파란 면이 $\mathbf{P}$ 의 열이 이루는 model 평면이고, 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (13) 의 SPE 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.

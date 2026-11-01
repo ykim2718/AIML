@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 14 | Created: 2026-10-25 | Updated: 2026-11-01 03:20 UTC
+Rev. 15 | Created: 2026-10-25 | Updated: 2026-11-01 09:08 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -823,4 +823,4 @@ Drawing the relation between SPE and the model plane for three inputs gives Fig 
 
 Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
 
-The blue surface is the model plane spanned by the columns of $\mathbf{P}$, and the ellipse, the null space line, the segment A–B and $\mathbf{x}^{\ast}$ on it are the score plane of Fig 3 (a) carried into the input space by $\mathbf{P}$. When an $\mathbf{x}$ solved directly in the input space (purple) leaves the plane, the squared length of the perpendicular $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ dropped to the plane is the SPE of Eq. (13). The numbers are made up for the drawing. In Appendix D both the inputs and the latent variables number 2, so the model plane fills the whole input space and SPE is always 0; the figure therefore adds one more input.
+The blue surface is the model plane spanned by the columns of $\mathbf{P}$, and the ellipse, the null space line, the segment A–B and $\mathbf{x}^{\ast}$ on it are the score plane of Fig 3 (a) carried into the input space by $\mathbf{P}$. When an $\mathbf{x}$ solved directly in the input space (purple) leaves the plane, the squared length of the perpendicular $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ dropped to the plane is the SPE of Eq. (13). The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. The figure can be drawn only when the score space has fewer dimensions than the input space, $A \lt K$, and this condition is not an arbitrary choice. When $A = K$ the columns of $\mathbf{P}$ span the whole input space, so every $\mathbf{x}$ is written exactly as $\mathbf{P}\mathbf{t}$, the residual $\mathbf{e}$ is 0, SPE is always 0, and the figure has nothing to show. Appendix D, with 2 inputs and 2 latent variables, is such a case, so this figure adds one more input.
