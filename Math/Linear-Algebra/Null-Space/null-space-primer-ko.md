@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 1 | Created: 2026-10-31 | Updated: 2026-10-31 19:27 CDT
+Rev. 2 | Created: 2026-10-31 | Updated: 2026-10-31 19:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -80,7 +80,9 @@ Null space 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\
 
 $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다. 식 (4) 의 $\mathbf{A}$ 는 $m = n = 3$ 이어서 두 공간이 모두 $\mathbb{R}^3$ 이다.
 
-$\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 그래서 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이고, 영 vector 를 언제나 포함한다.
+식 (1) 에서 바로 찾을 수 있는 해는 영 vector 이며, 식 (4) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 영 vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 영 vector 를 포함해야 하므로, 영 vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다.
+
+또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다.
 
 ### 4.2 Linear Transformation
 
@@ -177,12 +179,14 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.
 - **regularization**: 손실 함수에 weight 의 크기에 대한 벌점을 더해 weight 를 하나로 정하는 방법.
+- **vector space**: 영 vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
 - **동차 선형방정식 (homogeneous linear equation)**: 우변이 영 vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
-- **부분공간 (subspace)**: 영 vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
+- **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합. $\mathbb{R}^n$ 의 부분공간은 $\mathbb{R}^n$ 안에 있는 vector space 이다.
 - **선형 변환 (linear transformation)**: 덧셈과 상수배를 보존하는 vector 사이의 함수. 행렬 곱 $\mathbf{x} \mapsto \mathbf{A}\mathbf{x}$ 로 나타난다.
 - **우특이벡터 (right singular vector)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\mathbf{V}$ 의 열. 입력 공간 $\mathbb{R}^n$ 의 단위 vector 이다.
+- **자명해 (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 영 vector $\mathbf{x} = \mathbf{0}$.
 - **자유 열**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (자유 변수) 는 아무 값이나 가질 수 있다.
 - **정규방정식 (normal equation)**: 최소제곱 weight 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\mathbf{w} = \mathbf{A}^\top\mathbf{y}$. $\mathbf{y}$ 는 관측값 vector 이다.
 - **특수해 (particular solution)**: $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족하는 해 하나.
