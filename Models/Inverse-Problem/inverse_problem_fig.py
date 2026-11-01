@@ -8,7 +8,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.19.0.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.19.1.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -716,8 +716,6 @@ def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
     for name, point in zip(('A', 'B'), seg_t):
         ax2.annotate(name, point, textcoords='offset points', xytext=(6, 6), fontsize=text_size,
                      color=COLORS[3])
-    ax2.text(0.03, 0.97, 'row space of P\n(score space, R^A)', transform=ax2.transAxes, va='top',
-             fontsize=text_size, color='0.25')
     ax2.set_xlim(-5.0, 5.0)
     ax2.set_ylim(-3.2, 3.6)
     ax2.set_aspect('equal', adjustable='box')
@@ -748,7 +746,7 @@ def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
     ax.text(*(foot + np.array([0.2, 0.3, -0.45])), 'P t', color=COLORS[4], fontsize=text_size)
     for name, point in (('A', point_a), ('B', point_b)):
         ax.text(*(point + np.array([0.15, 0.15, 0.15])), name, color=COLORS[3], fontsize=text_size)
-    ax.text(*(loadings @ np.array([3.0, -3.4])), 'column space of P\n(model plane, R^K)', color=COLORS[0],
+    ax.text(*(loadings @ np.array([3.0, -3.4])), 'model plane', color=COLORS[0],
             fontsize=text_size)
     for setter, name in ((ax.set_xlabel, 'x1'), (ax.set_ylabel, 'x2'), (ax.set_zlabel, 'x3')):
         setter(name, fontsize=text_size)
@@ -763,10 +761,10 @@ def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
     fig.patches.append(FancyArrowPatch(
         (0.37, 0.53), (0.46, 0.53), transform=fig.transFigure, arrowstyle='-|>', mutation_scale=25,
         color='0.3', linewidth=1.8))
-    panel_caption(fig, [ax2], '(a)', y=0.0)
-    panel_caption(fig, [ax], '(b)', y=0.0)
+    panel_caption(fig, [ax2], '(a) row space of P: score space R^A', y=0.0)
+    panel_caption(fig, [ax], '(b) column space of P: model plane in input space R^K', y=0.0)
     for text in fig.texts:
-        if text.get_text() in ('(a)', '(b)'):
+        if text.get_text().startswith(('(a)', '(b)')):
             text.set_fontsize(font_size(1.6))
 
     out_path = out_folder / 'spe-schematic.png'
