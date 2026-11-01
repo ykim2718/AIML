@@ -18,7 +18,7 @@ from matplotlib.colors import TABLEAU_COLORS
 matplotlib.use("Agg")
 
 __author__ = 'yRocket'
-__version__ = "0.0.3+20261031"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.4+20261031"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 __all__ = ["RankNullity"]
 
 FIGURE_FOLDER_NAME: Final[str] = "null-space-primer-ko_fig"
@@ -28,7 +28,7 @@ class RankNullity:
     """Map a grid of input points and the null space line through A and plot the input and output spaces."""
 
     MATRIX: Final[tuple[tuple[float, ...], ...]] = ((1.0, 0.0, 1.0), (0.0, 1.0, 1.0), (1.0, 1.0, 2.0))
-    NULL_VECTOR: Final[tuple[float, ...]] = (-1.0, -1.0, 1.0)  # n of equation (7)
+    NULL_VECTOR: Final[tuple[float, ...]] = (-1.0, -1.0, 1.0)  # n of equation (6)
     FIGSIZE: Final[tuple[float, float]] = (11.0, 5.4)
     REFERENCE_WIDTH: Final[float] = 11.0
     BASE_FONT_SIZE: Final[float] = 10.0
