@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 10 | Created: 2026-10-31 | Updated: 2026-10-31 20:23 CDT
+Rev. 11 | Created: 2026-10-31 | Updated: 2026-10-31 20:23 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -111,7 +111,7 @@ $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 $\mathbf
 
 식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $t = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다. 식 (3) 의 각 항을 숫자로 계산한 예는 [Appendix C](#appendix-c-numeric-check-of-equation-3) 에 있다.
 
-식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) 해가 없고, null space 는 해의 개수를 정하지 않는다.
+식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 null space 와 상관없이 0 개이다. Null space 로 해가 하나인지 무수히 많은지를 가리는 것은 해가 하나라도 있을 때만 맞다.
 
 ### 4.4 Rank-Nullity Theorem
 
