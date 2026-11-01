@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 110 | Created: 2026-08-28 | Updated: 2026-11-01 11:20 UTC
+Rev. 111 | Created: 2026-08-28 | Updated: 2026-11-01 11:24 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -251,13 +251,13 @@ $\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
 - (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다.
-- (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, bootstrap PLS 200 개의 minimum-norm solution 이다.
+- (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, PLS bootstrap ensemble 이 주는 bootstrap PLS 200 개의 minimum-norm solution 이다.
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 
 (b) 는 (a) 를 입력 평면으로 옮긴 것이다. 주황 별은 (a) 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 (a) 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 (a) 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
 
-파란 점 200 개는 bootstrap PLS 마다 구한 minimum-norm solution 이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다.
+파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix C](#appendix-c-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다.
 
 #### Design space and product transfer
 
