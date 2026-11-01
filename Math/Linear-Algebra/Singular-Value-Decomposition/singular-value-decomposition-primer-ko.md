@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 2 | Created: 2026-10-26 | Updated: 2026-10-26 02:14 CDT
+Rev. 3 | Created: 2026-10-26 | Updated: 2026-11-01 14:47 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -230,18 +230,24 @@ $\boldsymbol{\Sigma}^{+}$ 는 $\boldsymbol{\Sigma}$ 를 전치한 $n \times m$ �
 
 ## Appendix B. Derivation
 
-식 (1) 은 $\mathbf{A}^\top\mathbf{A}$ 의 고윳값 분해에서 출발하면 나온다. 단계마다 쓴 성질은 아래 Table 3 과 같다.
+식 (1) 은 $\mathbf{A}^\top\mathbf{A}$ 의 고윳값 분해에서 출발하면 나온다.
 
-Table 3. Derivation of equation (1)
+```math
+\begin{aligned}
+& \mathbf{A}^\top\mathbf{A} = \mathbf{V}\boldsymbol{\Lambda}\mathbf{V}^\top, \quad \lambda_1 \ge \cdots \ge \lambda_n \ge 0 \\
+& \sigma_i = \sqrt{\lambda_i}, \quad \mathbf{u}_i = \mathbf{A}\mathbf{v}_i / \sigma_i \quad (\sigma_i \gt 0) \\
+& \mathbf{u}_i^\top\mathbf{u}_j = \frac{\mathbf{v}_i^\top\mathbf{A}^\top\mathbf{A}\mathbf{v}_j}{\sigma_i\sigma_j} = \frac{\lambda_j\, \mathbf{v}_i^\top\mathbf{v}_j}{\sigma_i\sigma_j} = \begin{cases} 1 & i = j \\ 0 & i \ne j \end{cases} \\
+& \mathbf{A}\mathbf{V} = \mathbf{U}\boldsymbol{\Sigma} \\
+& \mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top
+\end{aligned}
+\hspace{19em} (13)
+```
 
-| Step  | Expression                                                                                                                                                                     | Property                                                                                                                   |
-| :---: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
-| 1     | $\mathbf{A}^\top\mathbf{A} = \mathbf{V}\boldsymbol{\Lambda}\mathbf{V}^\top, \quad \lambda_1 \ge \cdots \ge \lambda_n \ge 0$                                                    | 대칭 행렬의 고윳값 분해, $\mathbf{x}^\top\mathbf{A}^\top\mathbf{A}\mathbf{x} = \lVert \mathbf{A}\mathbf{x} \rVert^2 \ge 0$ |
-| 2     | $\sigma_i = \sqrt{\lambda_i}, \quad \mathbf{u}_i = \mathbf{A}\mathbf{v}_i / \sigma_i \quad (\sigma_i \gt 0)$                                                                   | 식 (2) 와 식 (4) 의 정의                                                                                                   |
-| 3     | $\mathbf{u}_i^\top\mathbf{u}_j = \mathbf{v}_i^\top\mathbf{A}^\top\mathbf{A}\mathbf{v}_j / (\sigma_i\sigma_j) = \lambda_j\, \mathbf{v}_i^\top\mathbf{v}_j / (\sigma_i\sigma_j)$ | 단계 1, $\mathbf{A}^\top\mathbf{A}\mathbf{v}_j = \lambda_j\mathbf{v}_j$                                                    |
-| 4     | $\mathbf{u}_i^\top\mathbf{u}_j = 1 \ (i = j), \quad 0 \ (i \ne j)$                                                                                                             | $\mathbf{V}$ 는 직교, $\lambda_i = \sigma_i^2$                                                                             |
-| 5     | $\mathbf{A}\mathbf{V} = \mathbf{U}\boldsymbol{\Sigma}$                                                                                                                         | 단계 2 를 열마다 모음, $\sigma_i = 0$ 인 $\mathbf{u}_i$ 는 직교 보완으로 채움                                              |
-| 6     | $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$                                                                                                                    | 단계 5 의 오른쪽에 $\mathbf{V}^\top$ 을 곱함, $\mathbf{V}\mathbf{V}^\top = \mathbf{I}$                                     |
+- 첫째 줄: 대칭 행렬의 고윳값 분해이다. $\mathbf{x}^\top\mathbf{A}^\top\mathbf{A}\mathbf{x} = \lVert \mathbf{A}\mathbf{x} \rVert^2 \ge 0$ 이므로 고윳값은 0 이상이다.
+- 둘째 줄: 식 (2) 와 식 (4) 의 정의이다.
+- 셋째 줄: 첫째 줄에서 $\mathbf{A}^\top\mathbf{A}\mathbf{v}_j = \lambda_j\mathbf{v}_j$ 이고, $\mathbf{V}$ 가 직교이며 $\lambda_i = \sigma_i^2$ 이므로 $\mathbf{u}_i$ 들은 서로 직교하는 단위 vector 이다.
+- 넷째 줄: 둘째 줄을 열마다 모은다. $\sigma_i = 0$ 인 $\mathbf{u}_i$ 는 직교 보완으로 채운다.
+- 다섯째 줄: 넷째 줄의 오른쪽에 $\mathbf{V}^\top$ 을 곱하고 $\mathbf{V}\mathbf{V}^\top = \mathbf{I}$ 를 쓴다.
 
 식 (9) 의 가운데 식은 식 (1) 을 $\mathbf{X}^\top\mathbf{X}$ 에 넣고 $\mathbf{U}^\top\mathbf{U} = \mathbf{I}$ 를 쓰면 $\mathbf{X}^\top\mathbf{X} = \mathbf{V}\boldsymbol{\Sigma}^\top\mathbf{U}^\top\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top = \mathbf{V}\boldsymbol{\Sigma}^\top\boldsymbol{\Sigma}\mathbf{V}^\top$ 로 나온다.
 
@@ -250,7 +256,7 @@ Table 3. Derivation of equation (1)
 단위 원 위의 점 $N = 360$ 개를 열로 모은 $2 \times N$ 행렬 $\mathbf{P}$ 에 꼭지 5 의 $\mathbf{A}$ 를 곱하면, 모든 점이 식 (1) 의 세 행렬을 오른쪽부터 차례로 거쳐 타원 위로 옮겨진다.
 
 ```math
-\mathbf{P} = \begin{bmatrix} \cos\theta_1 & \cos\theta_2 & \cdots & \cos\theta_N \\ \sin\theta_1 & \sin\theta_2 & \cdots & \sin\theta_N \end{bmatrix}, \quad \theta_k = \frac{360^\circ (k - 1)}{N}, \quad \mathbf{A}\mathbf{P} = \mathbf{U} \left( \boldsymbol{\Sigma} \left( \mathbf{V}^\top \mathbf{P} \right) \right) \hspace{19em} (13)
+\mathbf{P} = \begin{bmatrix} \cos\theta_1 & \cos\theta_2 & \cdots & \cos\theta_N \\ \sin\theta_1 & \sin\theta_2 & \cdots & \sin\theta_N \end{bmatrix}, \quad \theta_k = \frac{360^\circ (k - 1)}{N}, \quad \mathbf{A}\mathbf{P} = \mathbf{U} \left( \boldsymbol{\Sigma} \left( \mathbf{V}^\top \mathbf{P} \right) \right) \hspace{19em} (14)
 ```
 
 세 단계를 차례로 계산한 결과는 아래 Fig 1 과 같다.
@@ -281,4 +287,4 @@ Fig 2. Image of the unit circle as the second singular value shrinks
 
 $\sigma_2$ 가 작아질수록 $\mathbf{u}_2$ 방향의 정보가 줄고, 0 이 되면 $\mathbf{v}_2$ 방향의 입력은 모두 원점으로 옮겨져 되찾을 수 없다. 6.2 의 저차원 근사는 Fig 2 의 (b) 를 (d) 로 바꾸는 계산이고, 6.3 에서 작은 특이값의 역수가 잡음을 키우는 것은 (c) 처럼 납작한 타원을 원으로 되돌리려면 $\mathbf{u}_2$ 방향을 $1/\sigma_2$ 배 늘여야 하기 때문이다.
 
-Fig 1 과 Fig 2 는 같은 folder 의 [`src/svd_circle_to_ellipse.py`](src/svd_circle_to_ellipse.py) 가 그린다. 이 script 는 식 (13) 의 $\mathbf{P}$ 를 만들어 세 행렬을 차례로 곱하고, $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{P}$ 가 $\mathbf{A}\mathbf{P}$ 와 같은지 확인한 뒤, 위의 가장 먼 점과 가장 가까운 점의 거리를 출력한다. 이 folder 에서 `python3 src/svd_circle_to_ellipse.py --output-folder .` 를 실행하면 두 그림을 `singular-value-decomposition-primer-ko_fig/` 에 쓴다.
+Fig 1 과 Fig 2 는 같은 folder 의 [`src/svd_circle_to_ellipse.py`](src/svd_circle_to_ellipse.py) 가 그린다. 이 script 는 식 (14) 의 $\mathbf{P}$ 를 만들어 세 행렬을 차례로 곱하고, $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top\mathbf{P}$ 가 $\mathbf{A}\mathbf{P}$ 와 같은지 확인한 뒤, 위의 가장 먼 점과 가장 가까운 점의 거리를 출력한다. 이 folder 에서 `python3 src/svd_circle_to_ellipse.py --output-folder .` 를 실행하면 두 그림을 `singular-value-decomposition-primer-ko_fig/` 에 쓴다.

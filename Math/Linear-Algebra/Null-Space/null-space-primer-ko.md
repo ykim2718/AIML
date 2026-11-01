@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 21 | Created: 2026-10-31 | Updated: 2026-10-31 20:42 CDT
+Rev. 22 | Created: 2026-10-31 | Updated: 2026-11-01 14:47 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -35,30 +35,31 @@ Null space 의 차원인 nullity 와 계수 (rank) 를 더하면 입력 공간�
 
 Table 1. Symbols
 
-| Symbol                         | Meaning                                                                | Shape                          | Assumption                                                 |
-| :----------------------------: | :--------------------------------------------------------------------: | :----------------------------: | :--------------------------------------------------------: |
-| $\mathbf{A}$                   | 선형 변환을 나타내는 행렬, 예를 들어 행이 sample 이고 열이 센서인 자료 | $m \times n$                   | 실수 원소                                                  |
-| $m$, $n$                       | $\mathbf{A}$ 의 행의 수와 열의 수                                      | scalar                         | 양의 정수                                                  |
-| $\mathbf{x}$                   | 입력 vector, 선형방정식의 해                                           | $n \times 1$                   | 실수 원소                                                  |
-| $\mathbf{b}$                   | 선형방정식의 우변                                                      | $m \times 1$                   | 실수 원소                                                  |
-| $\mathbf{0}$                   | zero vector                                                            | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
-| $\mathrm{Null}(\mathbf{A})$    | $\mathbf{A}$ 의 null space                                             | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 언제나 포함                                 |
-| $x_j$, $b_j$                   | $\mathbf{x}$ 와 $\mathbf{b}$ 의 $j$ 번째 원소                          | scalar                         | 실수                                                       |
-| $\mathbf{p}$, $\mathbf{q}$     | null space 에 속하는 임의의 vector 두 개                               | $n \times 1$                   | $\mathbf{A}\mathbf{p} = \mathbf{A}\mathbf{q} = \mathbf{0}$ |
-| $c$                            | 임의의 상수                                                            | scalar                         | 실수                                                       |
-| $\mathbf{x}_0$                 | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 특수해 하나                     | $n \times 1$                   | $\mathbf{A}\mathbf{x}_0 = \mathbf{b}$                      |
-| $\mathbf{x}_{\mathrm{null}}$   | null space 에 속하는 vector                                            | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
-| $\mathbf{x}'$                  | $\mathbf{x}_0$ 와 다른 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해       | $n \times 1$                   | $\mathbf{A}\mathbf{x}' = \mathbf{b}$                       |
-| $[\mathbf{A} \mid \mathbf{b}]$ | $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열로 붙인 첨가 행렬           | $m \times (n + 1)$             | 실수 원소                                                  |
-| $\mathrm{rank}(\mathbf{A})$    | $\mathbf{A}$ 의 계수                                                   | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
-| $\mathrm{nullity}(\mathbf{A})$ | $\mathrm{Null}(\mathbf{A})$ 의 차원                                    | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
-| $\mathbf{n}$                   | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | zero vector 가 아님                                        |
-| $\mathbf{B}$                   | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                   | $3 \times 3$                   | rank 3                                                     |
-| $\mathbf{R}$                   | $\mathbf{A}$ 의 기약 행사다리꼴                                        | $m \times n$                   | 기본 행 연산으로 얻음                                      |
-| $\mathbf{w}$                   | 선형 회귀의 weight vector                                              | $n \times 1$                   | 실수 원소                                                  |
-| $\hat{\mathbf{y}}$             | 선형 회귀의 예측값 vector                                              | $m \times 1$                   | 실수 원소                                                  |
-| $\sigma_i$                     | $\mathbf{A}$ 의 $i$ 번째 특이값                                        | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
-| $\mathbf{v}_i$                 | $\mathbf{A}$ 의 $i$ 번째 우특이벡터                                    | $n \times 1$                   | 단위 vector                                                |
+| Symbol                                    | Meaning                                                                | Shape                          | Assumption                                                 |
+| :---------------------------------------: | :--------------------------------------------------------------------: | :----------------------------: | :--------------------------------------------------------: |
+| $\mathbf{A}$                              | 선형 변환을 나타내는 행렬, 예를 들어 행이 sample 이고 열이 센서인 자료 | $m \times n$                   | 실수 원소                                                  |
+| $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                      | scalar                         | 양의 정수                                                  |
+| $\mathbf{x}$                              | 입력 vector, 선형방정식의 해                                           | $n \times 1$                   | 실수 원소                                                  |
+| $\mathbf{b}$                              | 선형방정식의 우변                                                      | $m \times 1$                   | 실수 원소                                                  |
+| $\mathbf{0}$                              | zero vector                                                            | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
+| $\mathrm{Null}(\mathbf{A})$               | $\mathbf{A}$ 의 null space                                             | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 언제나 포함                                 |
+| $x_j$, $b_j$                              | $\mathbf{x}$ 와 $\mathbf{b}$ 의 $j$ 번째 원소                          | scalar                         | 실수                                                       |
+| $\mathbf{p}$, $\mathbf{q}$                | null space 에 속하는 임의의 vector 두 개                               | $n \times 1$                   | $\mathbf{A}\mathbf{p} = \mathbf{A}\mathbf{q} = \mathbf{0}$ |
+| $c$                                       | 임의의 상수                                                            | scalar                         | 실수                                                       |
+| $\mathbf{x}_0$                            | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 특수해 하나                     | $n \times 1$                   | $\mathbf{A}\mathbf{x}_0 = \mathbf{b}$                      |
+| $\mathbf{x}_{\mathrm{null}}$              | null space 에 속하는 vector                                            | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
+| $\mathbf{x}'$                             | $\mathbf{x}_0$ 와 다른 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해       | $n \times 1$                   | $\mathbf{A}\mathbf{x}' = \mathbf{b}$                       |
+| $[\mathbf{A} \mid \mathbf{b}]$            | $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열로 붙인 첨가 행렬           | $m \times (n + 1)$             | 실수 원소                                                  |
+| $\mathrm{rank}(\mathbf{A})$               | $\mathbf{A}$ 의 계수                                                   | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
+| $\mathrm{nullity}(\mathbf{A})$            | $\mathrm{Null}(\mathbf{A})$ 의 차원                                    | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
+| $\mathbf{n}$                              | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | zero vector 가 아님                                        |
+| $\mathbf{B}$                              | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                   | $3 \times 3$                   | rank 3                                                     |
+| $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                        | $m \times n$                   | 기본 행 연산으로 얻음                                      |
+| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot 열의 수와 자유 열의 수                           | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$               |
+| $\mathbf{w}$                              | 선형 회귀의 weight vector                                              | $n \times 1$                   | 실수 원소                                                  |
+| $\hat{\mathbf{y}}$                        | 선형 회귀의 예측값 vector                                              | $m \times 1$                   | 실수 원소                                                  |
+| $\sigma_i$                                | $\mathbf{A}$ 의 $i$ 번째 특이값                                        | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
+| $\mathbf{v}_i$                            | $\mathbf{A}$ 의 $i$ 번째 우특이벡터                                    | $n \times 1$                   | 단위 vector                                                |
 
 특수 기호는 아래와 같이 읽는다.
 
@@ -218,26 +219,31 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 ## Appendix B. Derivation
 
-식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다. 단계마다 쓴 성질은 아래 Table 4 와 같다.
+식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다.
 
-Table 4. Derivation of equation (4)
+```math
+\begin{aligned}
+\mathrm{nullity}(\mathbf{A})
+&= \dim \mathrm{Null}(\mathbf{R}) \\
+&= n_{\mathrm{free}} \\
+&= n - n_{\mathrm{pivot}} \\
+&= n - \mathrm{rank}(\mathbf{A})
+\end{aligned}
+\hspace{19em} (7)
+```
 
-| Step  | Statement                                                                               | Property                                             |
-| :---: | :-------------------------------------------------------------------------------------: | :--------------------------------------------------: |
-| 1     | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 과 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 의 해가 같다 | 기본 행 연산은 가역 행렬을 왼쪽에 곱하는 것          |
-| 2     | $\mathbf{R}$ 의 pivot 열의 수 $= \mathrm{rank}(\mathbf{A})$                             | 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않음 |
-| 3     | 자유 열의 수 $= n - \mathrm{rank}(\mathbf{A})$                                          | 모든 열은 pivot 열이거나 자유 열                     |
-| 4     | 자유 변수 하나를 1, 나머지를 0 으로 둔 해가 자유 열마다 하나씩 있다                     | pivot 변수는 자유 변수로 하나씩 정해짐               |
-| 5     | 단계 4 의 해들은 일차독립이고 $\mathrm{Null}(\mathbf{A})$ 를 생성한다                   | 해마다 값이 1 인 자유 변수가 다름                    |
-| 6     | $\mathrm{nullity}(\mathbf{A}) = n - \mathrm{rank}(\mathbf{A})$                          | 기저의 원소 수가 차원                                |
+- 첫째 등호: 기본 행 연산은 가역 행렬을 왼쪽에 곱하는 것이므로 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 과 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 의 해가 같다.
+- 둘째 등호: 자유 변수 하나를 1, 나머지를 0 으로 둔 해가 자유 열마다 하나씩 있다. 해마다 값이 1 인 자유 변수가 달라 이 해들은 일차독립이고 $\mathrm{Null}(\mathbf{R})$ 를 생성하므로, 기저의 원소 수인 차원이 자유 열의 수와 같다.
+- 셋째 등호: 모든 열은 pivot 열이거나 자유 열이다.
+- 넷째 등호: 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않으므로 pivot 열의 수가 $\mathbf{A}$ 의 rank 이다.
 
-$\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, 자유 열이 세 번째 열 하나이며, 단계 4 의 해가 식 (6) 의 $\mathbf{n}$ 이다.
+$\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, 자유 열이 세 번째 열 하나이며, 둘째 등호에서 쓴 해가 식 (6) 의 $\mathbf{n}$ 이다.
 
 ## Appendix C. Counting the Solutions of Equation (2)
 
 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 rank 와 열의 수 $n$ 을 견주어 가린다. 해가 있는지는 첨가 행렬 (augmented matrix) $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 로 먼저 확인한다.
 
-첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 에 두 우변을 붙인 첨가 행렬은 아래 식 (7) 과 같다. 세로선의 왼쪽이 $\mathbf{A}$, 오른쪽이 $\mathbf{b}$ 이다.
+첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 에 두 우변을 붙인 첨가 행렬은 아래 식 (8) 과 같다. 세로선의 왼쪽이 $\mathbf{A}$, 오른쪽이 $\mathbf{b}$ 이다.
 
 ```math
 \begin{gathered}
@@ -248,7 +254,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 \mathbf{b} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix} : \quad
 [\mathbf{A} \mid \mathbf{b}] = \left[\begin{array}{ccc|c} 1 & 0 & 1 & 1 \\ 0 & 1 & 1 & 0 \\ 1 & 1 & 2 & 0 \end{array}\right]
 \end{gathered}
-\hspace{19em} (7)
+\hspace{19em} (8)
 ```
 
 왼쪽 첨가 행렬의 첫 행 $[1, 0, 1 \mid 2]$ 는 $\mathbf{A}$ 의 첫 행 $[1, 0, 1]$ 에 $\mathbf{x}$ 를 곱한 값이 $\mathbf{b}$ 의 첫 원소 2 와 같다는 방정식을 뜻한다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합이면 붙인 열이 새 방향을 더하지 않아 rank 가 그대로이고, 아니면 rank 가 1 늘어난다. 왼쪽은 셋째 행이 첫 두 행의 합 ($5 = 2 + 3$) 이어서 rank 가 $\mathbf{A}$ 와 같은 2 이고, 오른쪽은 셋째 행의 우변이 $0 \ne 1 + 0$ 이어서 rank 가 3 으로 늘어난다.
@@ -260,9 +266,9 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 2 번에서 해가 하나뿐인 것은 아래와 같이 보인다. $\mathbf{x}_0$ 와 다른 해 $\mathbf{x}'$ 가 있다고 두고 두 해의 차이에 $\mathbf{A}$ 를 곱한다.
 
 ```math
-\mathbf{A}(\mathbf{x}' - \mathbf{x}_0) = \mathbf{A}\mathbf{x}' - \mathbf{A}\mathbf{x}_0 = \mathbf{b} - \mathbf{b} = \mathbf{0} \hspace{19em} (8)
+\mathbf{A}(\mathbf{x}' - \mathbf{x}_0) = \mathbf{A}\mathbf{x}' - \mathbf{A}\mathbf{x}_0 = \mathbf{b} - \mathbf{b} = \mathbf{0} \hspace{19em} (9)
 ```
 
-식 (8) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 4.3 의 식 (3) 과 같다.
+식 (9) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 4.3 의 식 (3) 과 같다.
 
 [Table 3](#5-worked-example) 의 세 경우에 이 절차를 적용하면, 셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.

@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 0 | Created: 2026-10-26 | Updated: 2026-10-26 01:30 CDT
+Rev. 1 | Created: 2026-10-26 | Updated: 2026-11-01 14:47 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -383,36 +383,54 @@ p(\mathbf{x}) = \frac{1}{\sqrt{(2\pi)^n \det(\boldsymbol{\Sigma})}} \exp\!\left(
 
 ## Appendix B. Derivation
 
-식 (12) 는 이차형식을 원소로 풀어 $x_k$ 로 미분하면 나온다. 단계마다 쓴 성질은 아래 Table 8 과 같다.
+식 (12) 는 이차형식을 원소로 풀어 $x_k$ 로 미분하면 나온다.
 
-Table 8. Derivation of equation (12)
+```math
+\begin{aligned}
+\frac{\partial (\mathbf{x}^\top \mathbf{A} \mathbf{x})}{\partial x_k}
+&= \frac{\partial}{\partial x_k} \sum_{i} \sum_{j} x_i\, a_{ij}\, x_j \\
+&= \sum_{j} a_{kj} x_j + \sum_{i} x_i\, a_{ik} \\
+&= (\mathbf{A}\mathbf{x})_k + (\mathbf{A}^\top\mathbf{x})_k
+\end{aligned}
+\hspace{19em} (22)
+```
 
-| Step  | Expression                                                                                                            | Property             |
-| :---: | :-------------------------------------------------------------------------------------------------------------------: | :------------------: |
-| 1     | $\mathbf{x}^\top \mathbf{A} \mathbf{x} = \sum_{i} \sum_{j} x_i\, a_{ij}\, x_j$                                        | 식 (5) 를 두 번 적용 |
-| 2     | $\partial (\mathbf{x}^\top \mathbf{A} \mathbf{x}) / \partial x_k = \sum_{j} a_{kj} x_j + \sum_{i} x_i\, a_{ik}$       | 곱의 미분            |
-| 3     | $\sum_{j} a_{kj} x_j = (\mathbf{A}\mathbf{x})_k, \quad \sum_{i} a_{ik} x_i = (\mathbf{A}^\top\mathbf{x})_k$           | 식 (5), 전치의 정의  |
-| 4     | $\partial (\mathbf{x}^\top \mathbf{A} \mathbf{x}) / \partial \mathbf{x} = (\mathbf{A} + \mathbf{A}^\top)\,\mathbf{x}$ | $k$ 번째 원소를 모음 |
+- 첫째 등호: 식 (5) 를 두 번 적용해 이차형식을 원소로 푼다.
+- 둘째 등호: 곱의 미분이다.
+- 셋째 등호: 식 (5) 와 전치의 정의이다.
 
-식 (13) 은 제곱오차를 전개한 뒤 식 (11) 과 식 (12) 를 적용하면 나온다. 단계마다 쓴 성질은 아래 Table 9 와 같다.
+식 (22) 의 $k$ 번째 원소를 $k = 1, \dots, n$ 에 대해 모으면 식 (12) 가 된다.
 
-Table 9. Derivation of equation (13)
+식 (13) 은 제곱오차를 전개한 뒤 식 (11) 과 식 (12) 를 적용하면 나온다.
 
-| Step  | Expression                                                                                                                                                                          | Property                                          |
-| :---: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------: |
-| 1     | $\lVert \mathbf{X}\mathbf{w} - \mathbf{y} \rVert^2 = \mathbf{w}^\top \mathbf{X}^\top \mathbf{X} \mathbf{w} - 2\,\mathbf{y}^\top \mathbf{X} \mathbf{w} + \mathbf{y}^\top \mathbf{y}$ | 분배법칙, 식 (7)                                  |
-| 2     | $\partial (\mathbf{w}^\top \mathbf{X}^\top \mathbf{X} \mathbf{w}) / \partial \mathbf{w} = 2\,\mathbf{X}^\top \mathbf{X} \mathbf{w}$                                                 | 식 (12), $\mathbf{X}^\top\mathbf{X}$ 는 대칭      |
-| 3     | $\partial (2\,\mathbf{y}^\top \mathbf{X} \mathbf{w}) / \partial \mathbf{w} = 2\,\mathbf{X}^\top \mathbf{y}$                                                                         | 식 (11), $\mathbf{a} = \mathbf{X}^\top\mathbf{y}$ |
-| 4     | $\partial \lVert \mathbf{X}\mathbf{w} - \mathbf{y} \rVert^2 / \partial \mathbf{w} = 2\,\mathbf{X}^\top (\mathbf{X}\mathbf{w} - \mathbf{y})$                                         | 단계 2 에서 단계 3 을 뺌                          |
+```math
+\begin{aligned}
+\frac{\partial \lVert \mathbf{X}\mathbf{w} - \mathbf{y} \rVert^2}{\partial \mathbf{w}}
+&= \frac{\partial}{\partial \mathbf{w}} \left( \mathbf{w}^\top \mathbf{X}^\top \mathbf{X} \mathbf{w} - 2\,\mathbf{y}^\top \mathbf{X} \mathbf{w} + \mathbf{y}^\top \mathbf{y} \right) \\
+&= 2\,\mathbf{X}^\top \mathbf{X} \mathbf{w} - 2\,\mathbf{X}^\top \mathbf{y} \\
+&= 2\,\mathbf{X}^\top (\mathbf{X}\mathbf{w} - \mathbf{y})
+\end{aligned}
+\hspace{19em} (23)
+```
 
-식 (19) 는 고윳값 분해로 좌표를 돌려 1 차원 Gaussian 적분 $n$ 개의 곱으로 만들면 나온다. 단계마다 쓴 성질은 아래 Table 10 과 같다.
+- 첫째 등호: 분배법칙과 식 (7) 로 제곱오차를 전개한다.
+- 둘째 등호: 첫 항은 $\mathbf{X}^\top\mathbf{X}$ 가 대칭이므로 식 (12) 로, 둘째 항은 $\mathbf{a} = \mathbf{X}^\top\mathbf{y}$ 로 둔 식 (11) 로 미분하고, 셋째 항은 $\mathbf{w}$ 와 상관없어 0 이 된다.
+- 셋째 등호: 분배법칙으로 $2\,\mathbf{X}^\top$ 을 묶는다.
 
-Table 10. Derivation of equation (19)
+식 (19) 는 고윳값 분해로 좌표를 돌려 1 차원 Gaussian 적분 $n$ 개의 곱으로 만들면 나온다.
 
-| Step  | Expression                                                                                                                                                | Property                                                   |
-| :---: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------: |
-| 1     | $\mathbf{S} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^\top, \quad \boldsymbol{\Lambda} = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$                   | 대칭 행렬의 고윳값 분해                                    |
-| 2     | $\mathbf{z} = \mathbf{Q}^\top \mathbf{x}, \quad \mathbf{x}^\top \mathbf{S} \mathbf{x} = \sum_{i} \lambda_i z_i^2, \quad d\mathbf{x} = d\mathbf{z}$        | $\mathbf{Q}$ 는 직교, $\lvert \det(\mathbf{Q}) \rvert = 1$ |
-| 3     | $\int_{\mathbb{R}^n} \exp(-\tfrac{1}{2} \sum_{i} \lambda_i z_i^2)\, d\mathbf{z} = \prod_{i} \int_{\mathbb{R}} \exp(-\tfrac{1}{2} \lambda_i z_i^2)\, dz_i$ | 지수의 합은 곱으로 나뉨                                    |
-| 4     | $\int_{\mathbb{R}} \exp(-\tfrac{1}{2} \lambda_i z_i^2)\, dz_i = \sqrt{2\pi / \lambda_i}$                                                                  | 1 차원 Gaussian 적분, $\lambda_i \gt 0$                    |
-| 5     | $\prod_{i} \sqrt{2\pi / \lambda_i} = \sqrt{(2\pi)^n / \det(\mathbf{S})}$                                                                                  | $\det(\mathbf{S}) = \prod_{i} \lambda_i$                   |
+```math
+\begin{aligned}
+\int_{\mathbb{R}^n} \exp\!\left( -\tfrac{1}{2}\, \mathbf{x}^\top \mathbf{S} \mathbf{x} \right) d\mathbf{x}
+&= \int_{\mathbb{R}^n} \exp\!\left( -\tfrac{1}{2} \sum_{i} \lambda_i z_i^2 \right) d\mathbf{z} \\
+&= \prod_{i} \int_{\mathbb{R}} \exp\!\left( -\tfrac{1}{2} \lambda_i z_i^2 \right) dz_i \\
+&= \prod_{i} \sqrt{2\pi / \lambda_i} \\
+&= \sqrt{(2\pi)^n / \det(\mathbf{S})}
+\end{aligned}
+\hspace{19em} (24)
+```
+
+- 첫째 등호: 대칭 행렬의 고윳값 분해 $\mathbf{S} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^\top$ 에서 $\boldsymbol{\Lambda} = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$ 이고, $\mathbf{z} = \mathbf{Q}^\top \mathbf{x}$ 로 좌표를 바꾼다. $\mathbf{Q}$ 는 직교이고 $\lvert \det(\mathbf{Q}) \rvert = 1$ 이어서 $d\mathbf{x} = d\mathbf{z}$ 이다.
+- 둘째 등호: 지수의 합은 지수 함수의 곱으로 나뉜다.
+- 셋째 등호: 1 차원 Gaussian 적분이며, $\lambda_i \gt 0$ 이어야 한다.
+- 넷째 등호: $\det(\mathbf{S}) = \prod_{i} \lambda_i$ 이다.

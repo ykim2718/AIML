@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 3 | Created: 2026-10-25 | Updated: 2026-10-25 16:10 CDT
+Rev. 4 | Created: 2026-10-25 | Updated: 2026-11-01 14:47 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -189,16 +189,22 @@ t_i = \mathbf{x}_i^\top \mathbf{w}, \quad \lVert \mathbf{w} \rVert = 1 \hspace{1
 
 ## Appendix B. Derivation
 
-식 (1) 의 두 변이 같다는 것은 $\mathbf{x}_i$, $\mathbf{w}$, $\mathbf{x}_i - \mathbf{w}$ 를 세 변으로 하는 삼각형에서 나온다. 두 vector 는 모두 영 vector 가 아니라고 둔다. 단계마다 쓴 성질은 아래 Table 4 와 같다.
+식 (1) 의 두 변이 같다는 것은 $\mathbf{x}_i$, $\mathbf{w}$, $\mathbf{x}_i - \mathbf{w}$ 를 세 변으로 하는 삼각형에서 나온다. 두 vector 는 모두 영 vector 가 아니라고 둔다.
 
-Table 4. Derivation of equation (1)
+```math
+\begin{aligned}
+\lVert \mathbf{x}_i \rVert^2 + \lVert \mathbf{w} \rVert^2 - 2 \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta
+&= \lVert \mathbf{x}_i - \mathbf{w} \rVert^2 \\
+&= (\mathbf{x}_i - \mathbf{w})^\top (\mathbf{x}_i - \mathbf{w}) \\
+&= \mathbf{x}_i^\top \mathbf{x}_i - 2\,\mathbf{x}_i^\top \mathbf{w} + \mathbf{w}^\top \mathbf{w} \\
+&= \lVert \mathbf{x}_i \rVert^2 + \lVert \mathbf{w} \rVert^2 - 2\,\mathbf{x}_i^\top \mathbf{w}
+\end{aligned}
+\hspace{19em} (10)
+```
 
-| Step  | Expression                                                                                                                                                                 | Property                                                                |
-| :---: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------: |
-| 1     | $\lVert \mathbf{x}_i - \mathbf{w} \rVert^2 = \lVert \mathbf{x}_i \rVert^2 + \lVert \mathbf{w} \rVert^2 - 2 \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta$ | 코사인 법칙                                                             |
-| 2     | $\lVert \mathbf{x}_i - \mathbf{w} \rVert^2 = (\mathbf{x}_i - \mathbf{w})^\top (\mathbf{x}_i - \mathbf{w})$                                                                 | 식 (2) 의 norm 정의                                                     |
-| 3     | $(\mathbf{x}_i - \mathbf{w})^\top (\mathbf{x}_i - \mathbf{w}) = \mathbf{x}_i^\top \mathbf{x}_i - 2\,\mathbf{x}_i^\top \mathbf{w} + \mathbf{w}^\top \mathbf{w}$             | 분배법칙, $\mathbf{w}^\top \mathbf{x}_i = \mathbf{x}_i^\top \mathbf{w}$ |
-| 4     | $\lVert \mathbf{x}_i - \mathbf{w} \rVert^2 = \lVert \mathbf{x}_i \rVert^2 + \lVert \mathbf{w} \rVert^2 - 2\,\mathbf{x}_i^\top \mathbf{w}$                                  | 식 (2) 를 단계 3 에 대입                                                |
-| 5     | $\mathbf{x}_i^\top \mathbf{w} = \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta$                                                                            | 단계 1 과 단계 4 의 우변 비교                                           |
+- 첫째 등호: 코사인 법칙이다.
+- 둘째 등호: 식 (2) 의 norm 정의이다.
+- 셋째 등호: 분배법칙과 $\mathbf{w}^\top \mathbf{x}_i = \mathbf{x}_i^\top \mathbf{w}$ 이다.
+- 넷째 등호: 식 (2) 를 다시 쓴다.
 
-단계 5 의 왼쪽 $\mathbf{x}_i^\top \mathbf{w}$ 를 원소로 풀면 식 (1) 의 가운데 변인 원소별 곱의 합이 되므로, 식 (1) 의 세 변이 모두 같다.
+식 (10) 의 첫 변과 마지막 변에서 같은 두 제곱을 지우면 내적이 두 길이의 곱에 $\cos\theta$ 를 곱한 값과 같다. 이 내적을 원소로 풀면 식 (1) 의 가운데 변인 원소별 곱의 합이 되므로, 식 (1) 의 세 변이 모두 같다.
