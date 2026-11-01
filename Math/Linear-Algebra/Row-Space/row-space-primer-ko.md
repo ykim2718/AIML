@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 15 | Created: 2026-11-01 | Updated: 2026-11-01 23:30 UTC
+Rev. 16 | Created: 2026-11-01 | Updated: 2026-11-01 23:33 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -222,7 +222,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **정규직교 기저 (orthonormal basis)**: 서로 직교하는 단위 vector 로 이루어진 기저.
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
 - **직교 여공간 (orthogonal complement)**: 한 부분공간의 모든 vector 와 직교하는 vector 전체. 여집합은 원래 집합에 없는 점을 모두 모은 것이지만, 직교 여공간은 직교하는 방향만 모은 것이다.
-- **치역 (range)**: 한 행렬에 곱할 수 있는 모든 vector 에 그 행렬을 곱한 결과의 집합.
+- **치역 (range)**: 행렬의 치역(Range of a Matrix)은 행렬을 하나의 선형 변환(Linear Transformation)으로 보았을 때, 입력 벡터들을 변환하여 만들어낼 수 있는 모든 출력 벡터들의 집합을 의미한다. 행렬의 치역은 곧 행렬의 열공간(Column Space)이다. $\mathrm{Range}(\mathbf{A}) = \mathrm{Col}(\mathbf{A})$
 
 ## Appendix B. Derivation
 
