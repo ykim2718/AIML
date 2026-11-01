@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 11 | Created: 2026-10-31 | Updated: 2026-10-31 20:23 CDT
+Rev. 12 | Created: 2026-10-31 | Updated: 2026-10-31 20:24 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -51,7 +51,6 @@ Table 1. Symbols
 | $\mathrm{rank}(\mathbf{A})$    | $\mathbf{A}$ 의 계수                                                   | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
 | $\mathrm{nullity}(\mathbf{A})$ | $\mathrm{Null}(\mathbf{A})$ 의 차원                                    | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
 | $\mathbf{n}$                   | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | zero vector 가 아님                                        |
-| $t$                            | $\mathbf{n}$ 에 곱하는 배율                                            | scalar                         | 실수                                                       |
 | $\mathbf{B}$                   | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                   | $3 \times 3$                   | rank 3                                                     |
 | $\mathbf{R}$                   | $\mathbf{A}$ 의 기약 행사다리꼴                                        | $m \times n$                   | 기본 행 연산으로 얻음                                      |
 | $\mathbf{w}$                   | 선형 회귀의 weight vector                                              | $n \times 1$                   | 실수 원소                                                  |
@@ -98,18 +97,18 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면,
 \mathbf{A}(\mathbf{x}_0 + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{b} + \mathbf{0} = \mathbf{b} \hspace{19em} (2)
 ```
 
-식 (2) 에서 해의 개수는 아래와 같이 갈린다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 아래와 같이 갈린다.
 
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
 - $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 모두 해이므로 해가 무수히 많다.
 
-$\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해인지는, 그 vector 를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 왼쪽 변에 넣어 $\mathbf{b}$ 가 나오는지로 확인한다.
+두 번째 경우는 상수배를 더한 vector 를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 왼쪽 변에 넣어 $\mathbf{b}$ 가 나오는지로 확인한다.
 
 ```math
 \mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + c\,\mathbf{A}\mathbf{x}_{\mathrm{null}} = \underbrace{\mathbf{b}}_{\mathbf{A}\mathbf{x}_0 = \mathbf{b}} + c\,\underbrace{\mathbf{0}}_{\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}} = \mathbf{b} \hspace{19em} (3)
 ```
 
-식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $t = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다. 식 (3) 의 각 항을 숫자로 계산한 예는 [Appendix C](#appendix-c-numeric-check-of-equation-3) 에 있다.
+식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $c = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다. 식 (3) 의 각 항을 숫자로 계산한 예는 [Appendix C](#appendix-c-numeric-check-of-equation-3) 에 있다.
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 null space 와 상관없이 0 개이다. Null space 로 해가 하나인지 무수히 많은지를 가리는 것은 해가 하나라도 있을 때만 맞다.
 
@@ -123,7 +122,7 @@ Null space 의 차원을 nullity 라 하며, 계수 (rank) 와 nullity 를 더�
 
 식 (4) 의 $\mathrm{rank}(\mathbf{A})$ 는 변환 뒤에 남는 차원이고, $\mathrm{nullity}(\mathbf{A})$ 는 원점으로 가는 차원이다. 행의 수 $m$ 은 식 (4) 에 들지 않으므로, $m \lt n$ 이면 $\mathrm{rank}(\mathbf{A}) \le m \lt n$ 이어서 nullity 가 1 이상이고 해가 있으면 언제나 무수히 많다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
-식 (5) 의 $\mathbf{A}$ 로 식 (4) 을 그리면 아래 Fig 1 과 같다.
+식 (5) 의 $\mathbf{A}$ 로 식 (4) 를 그리면 아래 Fig 1 과 같다.
 
 <img src="null-space-primer-ko_fig/fig1.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
@@ -148,13 +147,13 @@ $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 첫 행과 둘째 행에서 $x_1 = -x_3$
 \mathbf{n} = \begin{bmatrix} -1 \\ -1 \\ 1 \end{bmatrix}, \quad \mathbf{A}\mathbf{n} = \begin{bmatrix} -1 + 0 + 1 \\ 0 - 1 + 1 \\ -1 - 1 + 2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix} \hspace{19em} (6)
 ```
 
-$\mathrm{Null}(\mathbf{A})$ 는 $\mathbf{n}$ 의 상수배 전체인 직선이므로 nullity 는 1 이다. 일차독립인 열은 첫 번째와 두 번째 열 둘이므로 rank 는 2 이고, $2 + 1 = 3 = n$ 으로 식 (4) 이 성립한다. $\mathbf{A}$ 는 $\mathbb{R}^3$ 을 두 열이 생성하는 평면으로 옮기고, $\mathbf{n}$ 방향의 직선을 원점으로 보낸다.
+$\mathrm{Null}(\mathbf{A})$ 는 $\mathbf{n}$ 의 상수배 전체인 직선이므로 nullity 는 1 이다. 일차독립인 열은 첫 번째와 두 번째 열 둘이므로 rank 는 2 이고, $2 + 1 = 3 = n$ 으로 식 (4) 가 성립한다. $\mathbf{A}$ 는 $\mathbb{R}^3$ 을 두 열이 생성하는 평면으로 옮기고, $\mathbf{n}$ 방향의 직선을 원점으로 보낸다.
 
-특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (2) 대로 $\mathbf{x}_0 + t\,\mathbf{n}$ 을 넣으면 $t$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 2 와 같다.
+특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (3) 대로 $\mathbf{x}_0 + c\,\mathbf{n}$ 을 넣으면 $c$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 2 와 같다.
 
 Table 2. Solutions along the null space
 
-| $t$   | $\mathbf{x}_0 + t\,\mathbf{n}$ | $\mathbf{A}(\mathbf{x}_0 + t\,\mathbf{n})$ |
+| $c$   | $\mathbf{x}_0 + c\,\mathbf{n}$ | $\mathbf{A}(\mathbf{x}_0 + c\,\mathbf{n})$ |
 | :---: | :----------------------------: | :----------------------------------------: |
 | $0$   | $[2, 3, 0]$                    | $[2, 3, 5]$                                |
 | $1$   | $[1, 2, 1]$                    | $[2, 3, 5]$                                |
@@ -166,7 +165,7 @@ Table 3. Number of solutions by null space
 
 | Matrix       | Right-hand side | Rank  | Nullity | Solutions                        |
 | :----------: | :-------------: | :---: | :-----: | :------------------------------: |
-| $\mathbf{A}$ | $[2, 3, 5]$     | $2$   | $1$     | 무수히 많음, $[2 - t, 3 - t, t]$ |
+| $\mathbf{A}$ | $[2, 3, 5]$     | $2$   | $1$     | 무수히 많음, $[2 - c, 3 - c, c]$ |
 | $\mathbf{B}$ | $[2, 3, 5]$     | $3$   | $0$     | 하나, $[2, 3, 0]$                |
 | $\mathbf{A}$ | $[1, 0, 0]$     | $2$   | $1$     | 없음                             |
 
@@ -178,7 +177,7 @@ Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주
 
 ### 6.1 Collinear Features in Linear Regression
 
-선형 회귀의 예측값은 $\hat{\mathbf{y}} = \mathbf{A}\mathbf{w}$ 이며, $\mathbf{A}$ 의 열이 센서이고 $\mathbf{w}$ 가 weight 이다. 한 센서가 다른 센서들의 일차결합이면 (collinearity) null space 에 zero vector 가 아닌 vector 가 있고, 식 (2) 대로 그 vector 의 상수배를 $\mathbf{w}$ 에 더해도 $\hat{\mathbf{y}}$ 가 바뀌지 않는다.
+선형 회귀의 예측값은 $\hat{\mathbf{y}} = \mathbf{A}\mathbf{w}$ 이며, $\mathbf{A}$ 의 열이 센서이고 $\mathbf{w}$ 가 weight 이다. 한 센서가 다른 센서들의 일차결합이면 (collinearity) null space 에 zero vector 가 아닌 vector 가 있고, 식 (3) 대로 그 vector 의 상수배를 $\mathbf{w}$ 에 더해도 $\hat{\mathbf{y}}$ 가 바뀌지 않는다.
 
 식 (5) 의 $\mathbf{A}$ 에서 세 번째 센서는 첫 두 센서의 합이다. $\mathbf{w} = [2, 3, 0]^\top$ 과 $[0, 1, 2]^\top$ 은 예측값이 모두 $[2, 3, 5]^\top$ 이지만, 앞의 것은 세 번째 센서의 weight 가 0 이고 뒤의 것은 2 이다. 이때 weight 의 크기로 센서의 중요도를 해석할 수 없다. 정규방정식의 $\mathbf{A}^\top\mathbf{A}$ 도 같은 null space 를 가져 역행렬이 없으므로, 열을 빼거나 regularization 을 써서 nullity 를 0 으로 만든다.
 
@@ -186,7 +185,7 @@ Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주
 
 Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (5) 의 $\mathbf{A}$ 의 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (6) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
 
-Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + t\,\mathbf{n}$ 에서 $t = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다.
+Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + c\,\mathbf{n}$ 에서 $c = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다.
 
 부동소수점 계산에서는 특이값이 정확히 0 이 되지 않으므로, 문턱값보다 작은 특이값을 0 으로 보고 rank 와 nullity 를 정한다. 문턱값을 크게 잡으면 거의 collinear 한 센서까지 null space 에 들어가고, 작게 잡으면 측정 noise 때문에 nullity 가 0 으로 나온다.
 
@@ -215,7 +214,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 ## Appendix B. Derivation
 
-식 (4) 은 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다. 단계마다 쓴 성질은 아래 Table 4 와 같다.
+식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 자유 열로 나누면 나온다. 단계마다 쓴 성질은 아래 Table 4 와 같다.
 
 Table 4. Derivation of equation (4)
 
