@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 4 | Created: 2026-10-31 | Updated: 2026-10-31 19:30 CDT
+Rev. 5 | Created: 2026-10-31 | Updated: 2026-10-31 19:33 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -24,8 +24,8 @@ Rev. 4 | Created: 2026-10-31 | Updated: 2026-10-31 19:30 CDT
 
 ## 2. Summary
 
-Null space (kernel) 는 $m \times n$ 행렬 $\mathbf{A}$ 에 곱했을 때 영 vector 가 되는 모든 입력 vector 의 집합 $\mathrm{Null}(\mathbf{A})$ 이고, $\mathbb{R}^n$ 의 부분공간이다.
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 있을 때, null space 에 영 vector 만 있으면 해는 하나이고 영이 아닌 vector 가 있으면 해는 무수히 많다.
+Null space (kernel) 는 $m \times n$ 행렬 $\mathbf{A}$ 에 곱했을 때 zero vector 가 되는 모든 입력 vector 의 집합 $\mathrm{Null}(\mathbf{A})$ 이고, $\mathbb{R}^n$ 의 부분공간이다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 있을 때, null space 에 zero vector 만 있으면 해는 하나이고 zero vector 가 아닌 vector 가 있으면 해는 무수히 많다.
 Null space 의 차원인 nullity 와 계수 (rank) 를 더하면 입력 공간의 차원 $n$ 이 된다.
 
 ## 3. Notation
@@ -40,8 +40,8 @@ Table 1. Symbols
 | $m$, $n$                       | $\mathbf{A}$ 의 행의 수와 열의 수                                      | scalar                         | 양의 정수                                                  |
 | $\mathbf{x}$                   | 입력 vector, 선형방정식의 해                                           | $n \times 1$                   | 실수 원소                                                  |
 | $\mathbf{b}$                   | 선형방정식의 우변                                                      | $m \times 1$                   | 실수 원소                                                  |
-| $\mathbf{0}$                   | 영 vector                                                              | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
-| $\mathrm{Null}(\mathbf{A})$    | $\mathbf{A}$ 의 null space                                             | $\mathbb{R}^n$ 의 부분공간     | 영 vector 를 언제나 포함                                   |
+| $\mathbf{0}$                   | zero vector                                                            | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
+| $\mathrm{Null}(\mathbf{A})$    | $\mathbf{A}$ 의 null space                                             | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 언제나 포함                                 |
 | $x_j$, $b_j$                   | $\mathbf{x}$ 와 $\mathbf{b}$ 의 $j$ 번째 원소                          | scalar                         | 실수                                                       |
 | $\mathbf{p}$, $\mathbf{q}$     | null space 에 속하는 임의의 vector 두 개                               | $n \times 1$                   | $\mathbf{A}\mathbf{p} = \mathbf{A}\mathbf{q} = \mathbf{0}$ |
 | $c$                            | 임의의 상수                                                            | scalar                         | 실수                                                       |
@@ -49,7 +49,7 @@ Table 1. Symbols
 | $\mathbf{x}_{\mathrm{null}}$   | null space 에 속하는 vector                                            | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
 | $\mathrm{rank}(\mathbf{A})$    | $\mathbf{A}$ 의 계수                                                   | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
 | $\mathrm{nullity}(\mathbf{A})$ | $\mathrm{Null}(\mathbf{A})$ 의 차원                                    | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
-| $\mathbf{n}$                   | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | 영 vector 가 아님                                          |
+| $\mathbf{n}$                   | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | zero vector 가 아님                                        |
 | $t$                            | $\mathbf{n}$ 에 곱하는 배율                                            | scalar                         | 실수                                                       |
 | $\mathbf{B}$                   | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                   | $3 \times 3$                   | rank 3                                                     |
 | $\mathbf{R}$                   | $\mathbf{A}$ 의 기약 행사다리꼴                                        | $m \times n$                   | 기본 행 연산으로 얻음                                      |
@@ -62,7 +62,7 @@ Table 1. Symbols
 
 - $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
 - $\in$: 영어로 "in" 또는 "is an element of", 한국어로 "에 속한다" 라 읽는다.
-- $\{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \}$ 의 $\mid$: 영어로 "such that", 한국어로 "인" 이라 읽는다. 식 (1) 전체는 영어로 "the set of x in R n such that A x equals zero", 한국어로 "A x 가 영 vector 인 R n 의 x 의 집합" 이라 읽는다.
+- $\{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \}$ 의 $\mid$: 영어로 "such that", 한국어로 "인" 이라 읽는다. 식 (1) 전체는 영어로 "the set of x in R n such that A x equals zero", 한국어로 "A x 가 zero vector 인 R n 의 x 의 집합" 이라 읽는다.
 - $\mathbf{A}^\top$: 영어로 "A transpose", 한국어로 "A 의 전치" 또는 "A 트랜스포즈" 라 읽는다.
 - $\mathbf{A}^{+}$: 영어로 "A plus" 또는 "the pseudo-inverse of A", 한국어로 "A 의 pseudo-inverse" 라 읽는다.
 - $\hat{\mathbf{y}}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다. 기호 위의 hat 은 그 값이 model 의 추정값임을 나타낸다.
@@ -70,7 +70,7 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Null space 는 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 영 vector (zero vector) 일 때 식을 만족하는 모든 해 $\mathbf{x}$ 의 집합이다. 다시 말해 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해들이 이루는 공간이다.
+Null space 는 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때 식을 만족하는 모든 해 $\mathbf{x}$ 의 집합이다. 다시 말해 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해들이 이루는 공간이다.
 
 ```math
 \mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)
@@ -80,7 +80,7 @@ Null space 는 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\math
 
 $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다.
 
-식 (1) 에서 바로 찾을 수 있는 해는 영 vector 이며, 식 (4) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 영 vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 영 vector 를 포함해야 하므로, 영 vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다.
+식 (1) 에서 바로 찾을 수 있는 해는 zero vector 이며, 식 (4) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 zero vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다. 🌳
 
 또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다.
 
@@ -99,7 +99,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면,
 식 (2) 에서 해의 개수는 아래와 같이 갈린다.
 
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
-- $\mathrm{Null}(\mathbf{A})$ 에 영이 아닌 vector 가 있음: 그 vector 의 모든 상수배를 더할 수 있으므로 해가 무수히 많다.
+- $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: 그 vector 의 모든 상수배를 더할 수 있으므로 해가 무수히 많다.
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) 해가 없고, null space 는 해의 개수를 정하지 않는다.
 
@@ -112,6 +112,17 @@ Null space 의 차원을 nullity 라 하며, 계수 (rank) 와 nullity 를 더�
 ```
 
 식 (3) 의 $\mathrm{rank}(\mathbf{A})$ 는 변환 뒤에 남는 차원이고, $\mathrm{nullity}(\mathbf{A})$ 는 원점으로 가는 차원이다. 행의 수 $m$ 은 식 (3) 에 들지 않으므로, $m \lt n$ 이면 $\mathrm{rank}(\mathbf{A}) \le m \lt n$ 이어서 nullity 가 1 이상이고 해가 있으면 언제나 무수히 많다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+
+식 (4) 의 $\mathbf{A}$ 로 식 (3) 을 그리면 아래 Fig 1 과 같다.
+
+<img src="null-space-primer-ko_fig/fig1.png" width="900" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Rank and nullity of the matrix in equation (4)
+
+- (a): 입력 공간 $\mathbb{R}^3$ 의 격자점 125 개 (회색) 와 $\mathbf{n}$ 방향의 null space 직선 (주황). Null space 가 직선 하나이므로 nullity 는 1 이다.
+- (b): 같은 격자점을 $\mathbf{A}$ 로 옮긴 점. 모든 점이 첫 두 열이 생성하는 column space 평면 (파랑) 위에 있어 rank 는 2 이고, (a) 의 주황 직선 위의 점은 모두 원점으로 간다. 두 차원을 더하면 $2 + 1 = 3 = n$ 이다.
+
+Fig 1 은 같은 folder 의 [`src/null_space_rank_nullity.py`](src/null_space_rank_nullity.py) 로 그렸다. 이 script 는 $\mathbf{A}\mathbf{n} = \mathbf{0}$ 과 rank, nullity 를 확인하고, 옮긴 점이 모두 column space 평면 위에 있는지 검사한 뒤 그림을 저장한다. 이 folder 에서 `python3 src/null_space_rank_nullity.py --output-folder .` 를 실행하면 `null-space-primer-ko_fig/fig1.png` 가 생긴다.
 
 ## 5. Worked Example
 
@@ -149,15 +160,15 @@ Table 3. Number of solutions by null space
 | $\mathbf{B}$ | $[2, 3, 5]$     | $3$   | $0$     | 하나, $[2, 3, 0]$                |
 | $\mathbf{A}$ | $[1, 0, 0]$     | $2$   | $1$     | 없음                             |
 
-$\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 rank 3 이어서 null space 에 영 vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
+$\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 rank 3 이어서 null space 에 zero vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
 
 ## 6. Application
 
-Null space 에 영이 아닌 vector 가 있으면, 같은 출력을 주는 입력이 하나로 정해지지 않는다.
+Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주는 입력이 하나로 정해지지 않는다.
 
 ### 6.1 Collinear Features in Linear Regression
 
-선형 회귀의 예측값은 $\hat{\mathbf{y}} = \mathbf{A}\mathbf{w}$ 이며, $\mathbf{A}$ 의 열이 센서이고 $\mathbf{w}$ 가 weight 이다. 한 센서가 다른 센서들의 일차결합이면 (collinearity) null space 에 영이 아닌 vector 가 있고, 식 (2) 대로 그 vector 의 상수배를 $\mathbf{w}$ 에 더해도 $\hat{\mathbf{y}}$ 가 바뀌지 않는다.
+선형 회귀의 예측값은 $\hat{\mathbf{y}} = \mathbf{A}\mathbf{w}$ 이며, $\mathbf{A}$ 의 열이 센서이고 $\mathbf{w}$ 가 weight 이다. 한 센서가 다른 센서들의 일차결합이면 (collinearity) null space 에 zero vector 가 아닌 vector 가 있고, 식 (2) 대로 그 vector 의 상수배를 $\mathbf{w}$ 에 더해도 $\hat{\mathbf{y}}$ 가 바뀌지 않는다.
 
 식 (4) 의 $\mathbf{A}$ 에서 세 번째 센서는 첫 두 센서의 합이다. $\mathbf{w} = [2, 3, 0]^\top$ 과 $[0, 1, 2]^\top$ 은 예측값이 모두 $[2, 3, 5]^\top$ 이지만, 앞의 것은 세 번째 센서의 weight 가 0 이고 뒤의 것은 2 이다. 이때 weight 의 크기로 센서의 중요도를 해석할 수 없다. 정규방정식의 $\mathbf{A}^\top\mathbf{A}$ 도 같은 null space 를 가져 역행렬이 없으므로, 열을 빼거나 regularization 을 써서 nullity 를 0 으로 만든다.
 
@@ -173,20 +184,20 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 ## Appendix A. Terminology
 
-- **collinearity**: 한 feature 가 다른 feature 들의 일차결합으로 나타나는 것. Null space 에 영이 아닌 vector 가 생긴다.
+- **collinearity**: 한 feature 가 다른 feature 들의 일차결합으로 나타나는 것. Null space 에 zero vector 가 아닌 vector 가 생긴다.
 - **column space**: 행렬의 열들의 일차결합으로 나타나는 vector 전체. $\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 여기에 속할 때만 해가 있다.
 - **nullity**: Null space 의 차원.
 - **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.
 - **regularization**: 손실 함수에 weight 의 크기에 대한 벌점을 더해 weight 를 하나로 정하는 방법.
-- **vector space**: 영 vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
+- **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
-- **동차 선형방정식 (homogeneous linear equation)**: 우변이 영 vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
+- **동차 선형방정식 (homogeneous linear equation)**: 우변이 zero vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합. $\mathbb{R}^n$ 의 부분공간은 $\mathbb{R}^n$ 안에 있는 vector space 이다.
 - **선형 변환 (linear transformation)**: 덧셈과 상수배를 보존하는 vector 사이의 함수. 행렬 곱 $\mathbf{x} \mapsto \mathbf{A}\mathbf{x}$ 로 나타난다.
 - **우특이벡터 (right singular vector)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\mathbf{V}$ 의 열. 입력 공간 $\mathbb{R}^n$ 의 단위 vector 이다.
-- **자명해 (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 영 vector $\mathbf{x} = \mathbf{0}$.
+- **자명해 (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 zero vector $\mathbf{x} = \mathbf{0}$.
 - **자유 열**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (자유 변수) 는 아무 값이나 가질 수 있다.
 - **정규방정식 (normal equation)**: 최소제곱 weight 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\mathbf{w} = \mathbf{A}^\top\mathbf{y}$. $\mathbf{y}$ 는 관측값 vector 이다.
 - **특수해 (particular solution)**: $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족하는 해 하나.
