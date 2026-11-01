@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 30 | Created: 2026-10-25 | Updated: 2026-11-01 13:39 UTC
+Rev. 31 | Created: 2026-10-25 | Updated: 2026-11-01 13:40 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -33,7 +33,7 @@ Rev. 30 | Created: 2026-10-25 | Updated: 2026-11-01 13:39 UTC
 - [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
-- [Appendix H. PLS Inversion and the Null Space: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-h-pls-inversion-and-the-null-space-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
+- [Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-h-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
 - [Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe)
 
 A trained model usually runs from input to output. An inverse problem fixes the desired output first and recovers the input that produces it, and model inversion is the way of running an already trained model backwards for that purpose. This document defines the two terms, classifies the solutions along five axes, summarises the classical results of latent variable model inversion and the inversion methods for each model family, and covers the case where the model cannot be called and the validation of the solution.
@@ -258,7 +258,7 @@ The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B i
 
 (b) carries (a) over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of (a) mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4), and the red dashed line is the null space line of (a) mapped the same way. The blue points and the green diamond are not in (a); they come from fitting PLS anew to each bootstrap sample.
 
-The 200 blue points are the solutions of the PLS bootstrap ensemble (row 2 of Table 1, [Appendix C](#appendix-c-bagging-ensemble)). Each is the minimum-norm solution of one PLS fitted to a bootstrap sample and inverted by the procedure of Eq. (4), with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives. A schematic of this ensemble drawn in the input space is in [Appendix H](#appendix-h-pls-inversion-and-the-null-space-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution).
+The 200 blue points are the solutions of the PLS bootstrap ensemble (row 2 of Table 1, [Appendix C](#appendix-c-bagging-ensemble)). Each is the minimum-norm solution of one PLS fitted to a bootstrap sample and inverted by the procedure of Eq. (4), with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives. A schematic of this ensemble drawn in the input space is in [Appendix H](#appendix-h-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution).
 
 #### Design space and product transfer
 
@@ -833,7 +833,7 @@ SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\
 
 The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4) lies on the model plane, so its SPE is 0. So for the solution of Eq. (4) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
 
-## Appendix H. PLS Inversion and the Null Space: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
+## Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
 
 Drawing the PLS bootstrap ensemble of Fig 3 (b) for three inputs gives Fig 9 below.
 
