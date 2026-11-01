@@ -1,14 +1,15 @@
 # Row Space Primer
-Rev. 14 | Created: 2026-11-01 | Updated: 2026-11-01 23:28 UTC
+Rev. 15 | Created: 2026-11-01 | Updated: 2026-11-01 23:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Notation](#3-notation)
 - [4. Interpretation](#4-interpretation)
-  - [4.1 Set Definition](#41-set-definition)
-  - [4.2 Orthogonality to the Null Space](#42-orthogonality-to-the-null-space)
-  - [4.3 Dimension and Rank](#43-dimension-and-rank)
-  - [4.4 Orthogonal Decomposition of the Input Space](#44-orthogonal-decomposition-of-the-input-space)
+  - [4.1 Row and Column Space Definition](#41-row-and-column-space-definition)
+  - [4.2 Set Definition](#42-set-definition)
+  - [4.3 Orthogonality to the Null Space](#43-orthogonality-to-the-null-space)
+  - [4.4 Dimension and Rank](#44-dimension-and-rank)
+  - [4.5 Orthogonal Decomposition of the Input Space](#45-orthogonal-decomposition-of-the-input-space)
 - [5. Worked Example](#5-worked-example)
 - [6. Application](#6-application)
   - [6.1 Minimum-Norm Solution](#61-minimum-norm-solution)
@@ -74,14 +75,7 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-$\mathbf{A}$ 는 행이 $m$ 개, 열이 $n$ 개인 행렬이고, $\mathbf{x}$ 는 원소가 $n$ 개인 열 vector, $\mathbf{y}$ 는 원소가 $m$ 개인 열 vector 이다. 이 셋으로 쓴 column space 와 row space 의 정의는 아래이다.
-
-- **Column space**: $\mathbf{A}$ 의 치역 (range). $\mathbf{x} \in \mathbb{R}^n$ 인 모든 $\mathbf{x}$ 에 대한 $\mathbf{A}\mathbf{x}$ 의 집합이며, $\mathbb{R}^m$ 의 부분공간이다.
-- **Row space**: $\mathbf{A}^\top$ 의 치역. $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합이며, $\mathbb{R}^n$ 의 부분공간이다.
-
-두 정의를 가르는 것은 곱하는 행렬이 $\mathbf{A}$ 인지 $\mathbf{A}^\top$ 인지이고, $\mathbf{x}$ 와 $\mathbf{y}$ 는 그 행렬에 곱할 수 있는 vector 의 이름이다. $\mathbf{A}$ 는 열이 $n$ 개여서 $\mathbb{R}^n$ 의 vector 에, $\mathbf{A}^\top$ 는 열이 $m$ 개여서 $\mathbb{R}^m$ 의 vector 에 곱한다.
-
-일차결합 (linear combination) 은 vector 여러 개에 각각 상수를 곱해 모두 더한 vector 이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 $j$ 번째 열에 $\mathbf{x}$ 의 $j$ 번째 원소를 곱해 $j = 1, \dots, n$ 에 대해 더한 vector 이므로 열들의 일차결합이다. $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 $i$ 번째 행에 $\mathbf{y}$ 의 $i$ 번째 원소를 곱해 $i = 1, \dots, m$ 에 대해 더한 vector 이므로 행들의 일차결합이다. 따라서 column space 의 원소는 모두 $\mathbf{A}$ 의 열들의 일차결합이고, row space 의 원소는 모두 $\mathbf{A}$ 의 행들의 일차결합이다.
+Column space 와 row space 는 각각 $\mathbf{A}$ 와 $\mathbf{A}^\top$ 의 치역이다.
 
 ```math
 \begin{aligned}
@@ -91,7 +85,18 @@ $\mathbf{A}$ 는 행이 $m$ 개, 열이 $n$ 개인 행렬이고, $\mathbf{x}$ �
 \hspace{19em} (1)
 ```
 
-### 4.1 Set Definition
+### 4.1 Row and Column Space Definition
+
+$\mathbf{A}$ 는 행이 $m$ 개, 열이 $n$ 개인 행렬이고, $\mathbf{x}$ 는 원소가 $n$ 개인 열 vector, $\mathbf{y}$ 는 원소가 $m$ 개인 열 vector 이다. 이 셋으로 쓴 column space 와 row space 의 정의는 아래이다.
+
+- **Column space**: $\mathbf{A}$ 의 치역 (range). $\mathbf{x} \in \mathbb{R}^n$ 인 모든 $\mathbf{x}$ 에 대한 $\mathbf{A}\mathbf{x}$ 의 집합이며, $\mathbb{R}^m$ 의 부분공간이다.
+- **Row space**: $\mathbf{A}^\top$ 의 치역. $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합이며, $\mathbb{R}^n$ 의 부분공간이다.
+
+두 정의를 가르는 것은 곱하는 행렬이 $\mathbf{A}$ 인지 $\mathbf{A}^\top$ 인지이고, $\mathbf{x}$ 와 $\mathbf{y}$ 는 그 행렬에 곱할 수 있는 vector 의 이름이다. $\mathbf{A}$ 는 열이 $n$ 개여서 $\mathbb{R}^n$ 의 vector 에, $\mathbf{A}^\top$ 는 열이 $m$ 개여서 $\mathbb{R}^m$ 의 vector 에 곱한다.
+
+일차결합 (linear combination) 은 vector 여러 개에 각각 상수를 곱해 모두 더한 vector 이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 $j$ 번째 열에 $\mathbf{x}$ 의 $j$ 번째 원소를 곱해 $j = 1, \dots, n$ 에 대해 더한 vector 이므로 열들의 일차결합이다. $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 $i$ 번째 행에 $\mathbf{y}$ 의 $i$ 번째 원소를 곱해 $i = 1, \dots, m$ 에 대해 더한 vector 이므로 행들의 일차결합이다. 따라서 column space 의 원소는 모두 $\mathbf{A}$ 의 열들의 일차결합이고, row space 의 원소는 모두 $\mathbf{A}$ 의 행들의 일차결합이다.
+
+### 4.2 Set Definition
 
 $\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, 식 (1) 의 row space 는 $\mathbf{A}^\top$ 의 column space 와 같다. Column space 와 row space 를 견주면 아래 Table 2 이다.
 
@@ -107,7 +112,7 @@ Table 2. Column space and row space
 
 Column space 의 직교 여공간은 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체인 left null space $\mathrm{Null}(\mathbf{A}^\top)$ 이다. 네 부분공간의 차원은 column space 와 row space 가 $r$, null space 가 $n - r$, left null space 가 $m - r$ 이다.
 
-### 4.2 Orthogonality to the Null Space
+### 4.3 Orthogonality to the Null Space
 
 $\mathbf{A}\mathbf{x}$ 의 $i$ 번째 원소는 $i$ 번째 행과 $\mathbf{x}$ 의 내적이다. 따라서 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 모든 행과 직교한다는 뜻이다.
 
@@ -120,7 +125,7 @@ $\mathbf{A}\mathbf{x}$ 의 $i$ 번째 원소는 $i$ 번째 행과 $\mathbf{x}$ �
 
 $\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이를 $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 로 적으며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
 
-### 4.3 Dimension and Rank
+### 4.4 Dimension and Rank
 
 Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 $\mathbf{A}$ 의 rank 이다.
 
@@ -130,7 +135,7 @@ Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 
 
 $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (3) 이 성립한다.
 
-### 4.4 Orthogonal Decomposition of the Input Space
+### 4.5 Orthogonal Decomposition of the Input Space
 
 입력 공간 $\mathbb{R}^n$ 은 row space 와 null space 의 직합이다. 모든 $\mathbf{x}$ 는 두 성분의 합으로 하나씩만 나뉘고, $\mathbf{A}$ 의 출력은 row space 성분만으로 정해진다.
 
