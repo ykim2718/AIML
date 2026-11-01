@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 105 | Created: 2026-08-28 | Updated: 2026-11-01 09:21 UTC
+Rev. 106 | Created: 2026-08-28 | Updated: 2026-11-01 10:47 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -236,7 +236,7 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고, $\mathbf{t}^{\ast}$ 는 그 가운데 목표 $\mathbf{y}^{\ast}$ 를 내는 score, $\mathbf{x}^{\ast}$ 는 $\mathbf{t}^{\ast}$ 를 loading 으로 되돌린 입력이다. $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
 
 - Null space 는 출력을 바꾸지 않고 움직일 수 있는 입력의 자유도이다. 비용 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
-- Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE (Squared Prediction Error) 에 상한을 두고 그 안으로 해를 가둔다 [[7](#ref-7)].
+- Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model plane까지의 거리를 재는 SPE (Squared Prediction Error) 에 상한을 두고 그 안으로 해를 가둔다 [[7](#ref-7)].
 
 ```math
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
@@ -393,7 +393,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - **Pseudo-inverse**: 정방이 아니거나 특이한 행렬에 대해 minimum-norm 최소제곱 해를 주는 일반화 역행렬이다.
 - **Regularization**: 해의 크기나 형태에 벌점을 주어 ill-posed problem 을 안정화하는 방법이다.
 - **Score**: 관측을 latent 좌표계로 투영한 값이다.
-- **SPE**: 관측이 model 평면에서 벗어난 거리의 제곱이며 squared prediction error 의 약자이다.
+- **SPE**: 관측이 model plane에서 벗어난 거리의 제곱이며 squared prediction error 의 약자이다.
 - **Surrogate model**: 원래 model (physical model 이나 직접 부를 수 없는 model) 을 대신해 (x, y) 쌍으로 학습한 data-driven forward model 이다.
 - **TreeSHAP**: Tree model 에서 각 입력의 기여도를 다항 시간에 정확히 계산하는 방법이다.
 - **VAE**: Latent 변수의 분포를 학습하는 생성 model 이며 variational autoencoder 의 약자이다.
@@ -824,20 +824,20 @@ $s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산�
 T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (13)
 ```
 
-SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 의 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model 평면에서 떨어진 거리의 제곱이다.
+SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 의 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
 
 ```math
 \mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (14)
 ```
 
-식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model 평면 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
+식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model plane 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
 
 ## Appendix H. Schematic of SPE and the Model Plane
 
-SPE 와 model 평면의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
+SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
 
 <img src="inverse-problem-ko_fig/spe-schematic.png" width="600" style="max-width: 100%;" alt="Fig 9">
 
 Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
 
-파란 면이 $\mathbf{P}$ 의 열이 이루는 model 평면이고, 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (14) 의 SPE 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
+파란 면은 model plane, 곧 $\mathbf{P}$ 의 column space 이다. $\mathbf{P} \in \mathbb{R}^{K \times A}$ 는 행이 입력 변수 $K$ 개, 열이 latent 변수 $A$ 개인 행렬이며 이 그림에서는 $3 \times 2$ 이고, 열 $\mathbf{p}_a$ 하나는 $a$ 번째 latent 변수가 각 입력 변수에 얼마나 실리는지를 나타내는 loading 이다. 이 평면 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (14) 의 SPE 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
