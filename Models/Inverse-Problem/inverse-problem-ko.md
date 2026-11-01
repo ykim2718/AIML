@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 103 | Created: 2026-08-28 | Updated: 2026-11-01 09:11 UTC
+Rev. 104 | Created: 2026-08-28 | Updated: 2026-11-01 09:15 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -233,7 +233,7 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
 ```
 
-$\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
+$\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고, $\mathbf{t}^{\ast}$ 는 그 가운데 목표 $\mathbf{y}^{\ast}$ 를 내는 score, $\mathbf{x}^{\ast}$ 는 $\mathbf{t}^{\ast}$ 를 loading 으로 되돌린 입력이다. $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면 $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남으며, 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
 
 - Null space 는 출력을 바꾸지 않고 움직일 수 있는 입력의 자유도이다. 비용 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model 평면까지의 거리를 재는 SPE (Squared Prediction Error) 에 상한을 두고 그 안으로 해를 가둔다 [[7](#ref-7)].
@@ -242,7 +242,7 @@ $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-no
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane) 에 있다.
+$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane) 에 있다.
 
 두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
@@ -774,14 +774,28 @@ $a$ 번째 성분은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 의 공분산이 가장 �
 \mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (7)
 ```
 
-$A$ 개 성분을 뽑은 뒤 빼낸 몫을 모두 더하면 식 (3) 이 된다. Score 와 loading 을 열로 모은 행렬이 $\mathbf{T}$, $\mathbf{P}$, $\mathbf{Q}$ 이고, 마지막에 남은 $\mathbf{E}$ 와 $\mathbf{F}$ 가 잔차이다.
+식 (7) 의 빼는 식을 $\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}$ 로 바꾸어 $a = 1$ 부터 $A$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $\mathbf{t}_a \mathbf{p}_a^{\top}$ 가 하나씩 쌓인다.
 
 ```math
-\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (8)
+\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (8)
 ```
 
+$\mathbf{Y}$ 도 같은 방법으로 $\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}$ 이다. Score 와 loading 을 열로 모은 행렬이 $\mathbf{T}$, $\mathbf{P}$, $\mathbf{Q}$ 이고, 마지막에 남은 $\mathbf{E}$ 와 $\mathbf{F}$ 가 잔차이다.
+
 ```math
-\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (9)
+\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (9)
+```
+
+열을 모은 행렬의 곱은 열마다의 곱을 더한 것과 같아 $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$ 이므로, 두 합은 아래와 같다.
+
+```math
+\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (10)
+```
+
+따라서 식 (3) 이 유도된다.
+
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
 빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (5) 에서 쓴다. Score 를 뽑는 단계와 score 의 직교성은 [[19](#ref-19)] 의 Appendix C 에서도 유도한다.
@@ -791,13 +805,13 @@ $A$ 개 성분을 뽑은 뒤 빼낸 몫을 모두 더하면 식 (3) 이 된다. 
 식 (3) 의 한 행을 열 벡터로 적으면, 잔차를 뺀 입력과 출력은 같은 score $\mathbf{t} \in \mathbb{R}^{A}$ 로 $\mathbf{x} = \mathbf{P}\mathbf{t}$, $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 된다. 그래서 목표 $\mathbf{y}^{\ast}$ 를 내는 score 는 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 의 해이다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 rank 가 $M$ 이고 $A \ge M$ 이면 해가 있으며, 그 가운데 norm 이 가장 작은 해를 Lagrange 승수 $\boldsymbol{\lambda} \in \mathbb{R}^{M}$ 으로 구한다.
 
 ```math
-\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (10)
+\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (11)
 ```
 
 $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므로 $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$ 이다. 이것을 대입하면 식 (4) 의 앞 식이 되고, 이 행렬 $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ 이 rank 가 $M$ 인 $\mathbf{Q}$ 의 pseudo-inverse $\mathbf{Q}^{+}$ 이다.
 
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (11)
+\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (12)
 ```
 
 뒤 식은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 $\boldsymbol{\alpha}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
@@ -807,13 +821,13 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므�
 $s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix C 에도 있다.
 
 ```math
-T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (12)
+T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (13)
 ```
 
 SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 의 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model 평면에서 떨어진 거리의 제곱이다.
 
 ```math
-\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (13)
+\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (14)
 ```
 
 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model 평면 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
@@ -826,4 +840,4 @@ SPE 와 model 평면의 관계를 입력이 3 개인 경우로 그리면 아래 
 
 Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
 
-파란 면이 $\mathbf{P}$ 의 열이 이루는 model 평면이고, 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (13) 의 SPE 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
+파란 면이 $\mathbf{P}$ 의 열이 이루는 model 평면이고, 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (14) 의 SPE 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.

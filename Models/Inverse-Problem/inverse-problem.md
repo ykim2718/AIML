@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 17 | Created: 2026-10-25 | Updated: 2026-11-01 09:11 UTC
+Rev. 18 | Created: 2026-10-25 | Updated: 2026-11-01 09:15 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -233,7 +233,7 @@ $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings ob
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
 ```
 
-Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy $\mathbf{Q}\mathbf{n} = \mathbf{0}$, and the subspace they span is the null space [[2](#ref-2)].
+$\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mathbf{t}^{\ast}$ is the score among them that delivers the target $\mathbf{y}^{\ast}$, and $\mathbf{x}^{\ast}$ is the input recovered from $\mathbf{t}^{\ast}$ through the loading. Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy $\mathbf{Q}\mathbf{n} = \mathbf{0}$, and the subspace they span is the null space [[2](#ref-2)].
 
 - The null space is the freedom to move the input without changing the output. A secondary goal such as cost can be optimised over this freedom.
 - Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[7](#ref-7)].
@@ -242,7 +242,7 @@ Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minim
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane).
+$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane).
 
 How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 
@@ -774,14 +774,28 @@ The solution is the first pair of singular vectors of $\mathbf{X}_a^{\top} \math
 \mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (7)
 ```
 
-Adding up all the parts subtracted after extracting $A$ components gives Eq. (3). The matrices that collect the scores and loadings as columns are $\mathbf{T}$, $\mathbf{P}$ and $\mathbf{Q}$, and the $\mathbf{E}$ and $\mathbf{F}$ left at the end are the residuals.
+Rewriting the subtraction of Eq. (7) as $\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}$ and substituting it in turn from $a = 1$ to $A$ stacks up the part $\mathbf{t}_a \mathbf{p}_a^{\top}$ subtracted at each component.
 
 ```math
-\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (8)
+\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (8)
 ```
 
+In the same way $\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}$. The matrices that collect the scores and loadings as columns are $\mathbf{T}$, $\mathbf{P}$ and $\mathbf{Q}$, and the $\mathbf{E}$ and $\mathbf{F}$ left at the end are the residuals.
+
 ```math
-\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (9)
+\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (9)
+```
+
+A product of matrices built from columns equals the sum of the column-by-column products, $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$, so the two sums become the following.
+
+```math
+\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (10)
+```
+
+Eq. (3) therefore follows.
+
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
 Because of the subtraction step, $\mathbf{t}_{a+1}$ is orthogonal to the earlier scores, and the scores of different components satisfy $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$. Eq. (5) uses this property. The score extraction steps and the orthogonality of the scores are also derived in Appendix C of [[19](#ref-19)].
@@ -791,13 +805,13 @@ Because of the subtraction step, $\mathbf{t}_{a+1}$ is orthogonal to the earlier
 Writing one row of Eq. (3) as a column vector, the input and output without residuals become $\mathbf{x} = \mathbf{P}\mathbf{t}$ and $\mathbf{y} = \mathbf{Q}\mathbf{t}$ with the same score $\mathbf{t} \in \mathbb{R}^{A}$. So the score that delivers the target $\mathbf{y}^{\ast}$ is a solution of $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$. When the rank of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is $M$ and $A \ge M$, solutions exist, and the one with the smallest norm among them is found with the Lagrange multiplier $\boldsymbol{\lambda} \in \mathbb{R}^{M}$.
 
 ```math
-\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (10)
+\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (11)
 ```
 
 $\mathbf{Q}\mathbf{Q}^{\top}$ has rank $M$ and so is invertible, giving $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$. Substituting it gives the first equation of Eq. (4), and the matrix $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ is the pseudo-inverse $\mathbf{Q}^{+}$ of a $\mathbf{Q}$ of rank $M$.
 
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (11)
+\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (12)
 ```
 
 The second equation puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ with $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and coefficients $\boldsymbol{\alpha}$. Since $\mathbf{Q}\mathbf{N} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
@@ -807,13 +821,13 @@ The second equation puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathb
 $s_a^{2}$ is the sample variance of the $a$-th score $\mathbf{t}_a$ of the training samples. As seen in Eq. (3), the scores of different components are orthogonal, so the covariance matrix of the scores is the diagonal matrix $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$. Hotelling $T^{2}$ is the squared Mahalanobis distance of a score $\mathbf{t}$ from the centre of the training samples, and since $\mathbf{S}$ is diagonal it resolves into a sum over components. The same derivation is also in Appendix C of [[19](#ref-19)].
 
 ```math
-T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (12)
+T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (13)
 ```
 
 SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ left after reducing the input $\mathbf{x}$ to a score and mapping it back. One row of $\mathbf{E}$ in Eq. (3) is this $\mathbf{e}$, so SPE is the squared distance of $\mathbf{x}$ from the model plane spanned by the columns of $\mathbf{P}$.
 
 ```math
-\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (13)
+\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (14)
 ```
 
 The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4) lies on the model plane, so its SPE is 0. So for the solution of Eq. (4) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
@@ -826,4 +840,4 @@ Drawing the relation between SPE and the model plane for three inputs gives Fig 
 
 Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
 
-The blue surface is the model plane spanned by the columns of $\mathbf{P}$, and the ellipse, the null space line, the segment A–B and $\mathbf{x}^{\ast}$ on it are the score plane of Fig 3 (a) carried into the input space by $\mathbf{P}$. When an $\mathbf{x}$ solved directly in the input space (purple) leaves the plane, the squared length of the perpendicular $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ dropped to the plane is the SPE of Eq. (13). The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. The figure can be drawn only when the score space has fewer dimensions than the input space, $A \lt K$, and this condition is not an arbitrary choice. When $A = K$ the columns of $\mathbf{P}$ span the whole input space, so every $\mathbf{x}$ is written exactly as $\mathbf{P}\mathbf{t}$, the residual $\mathbf{e}$ is 0, SPE is always 0, and the figure has nothing to show. Appendix D, with 2 inputs and 2 latent variables, is such a case, so this figure adds one more input.
+The blue surface is the model plane spanned by the columns of $\mathbf{P}$, and the ellipse, the null space line, the segment A–B and $\mathbf{x}^{\ast}$ on it are the score plane of Fig 3 (a) carried into the input space by $\mathbf{P}$. When an $\mathbf{x}$ solved directly in the input space (purple) leaves the plane, the squared length of the perpendicular $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ dropped to the plane is the SPE of Eq. (14). The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. The figure can be drawn only when the score space has fewer dimensions than the input space, $A \lt K$, and this condition is not an arbitrary choice. When $A = K$ the columns of $\mathbf{P}$ span the whole input space, so every $\mathbf{x}$ is written exactly as $\mathbf{P}\mathbf{t}$, the residual $\mathbf{e}$ is 0, SPE is always 0, and the figure has nothing to show. Appendix D, with 2 inputs and 2 latent variables, is such a case, so this figure adds one more input.
