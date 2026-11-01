@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 16 | Created: 2026-11-01 | Updated: 2026-11-01 23:33 UTC
+Rev. 17 | Created: 2026-11-01 | Updated: 2026-11-01 23:42 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -110,7 +110,14 @@ Table 2. Column space and row space
 | Dimension     | $r$                                              | $r$                                        |
 | Orthogonal to | $\mathrm{Null}(\mathbf{A}^\top)$                 | $\mathrm{Null}(\mathbf{A})$                |
 
-Column space 의 직교 여공간은 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체인 left null space $\mathrm{Null}(\mathbf{A}^\top)$ 이다. 네 부분공간의 차원은 column space 와 row space 가 $r$, null space 가 $n - r$, left null space 가 $m - r$ 이다.
+Column space 의 직교 여공간은 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y} \in \mathbb{R}^m$ 의 집합인 left null space $\mathrm{Null}(\mathbf{A}^\top)$ 이다. $m \times n$ 행렬 $\mathbf{A}$ 가 정하는 네 부분공간과 그 차원은 아래이다.
+
+- Column space $\mathrm{Col}(\mathbf{A})$: $\mathbb{R}^m$ 의 부분공간, 차원 $r$
+- Left null space $\mathrm{Null}(\mathbf{A}^\top)$: $\mathbb{R}^m$ 의 부분공간, 차원 $m - r$
+- Row space $\mathrm{Row}(\mathbf{A})$: $\mathbb{R}^n$ 의 부분공간, 차원 $r$
+- Null space $\mathrm{Null}(\mathbf{A})$: $\mathbb{R}^n$ 의 부분공간, 차원 $n - r$
+
+Left null space 는 [Left Null Space Primer](../Left-Null-Space/left-null-space-primer-ko.md) 에 있다.
 
 ### 4.3 Orthogonality to the Null Space
 
