@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 14:54 UTC
+Rev. 2 | Created: 2026-11-01 | Updated: 2026-11-01 21:16 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,7 +40,6 @@ Table 1. Symbols
 | $\mathbf{A}$                 | 선형 변환을 나타내는 행렬                              | $m \times n$                   | 실수 원소                                                |
 | $m$, $n$                     | $\mathbf{A}$ 의 행의 수와 열의 수                      | scalar                         | 양의 정수                                                |
 | $\mathbf{r}_i^\top$          | $\mathbf{A}$ 의 $i$ 번째 행                            | $1 \times n$                   | $i = 1, \dots, m$                                        |
-| $y_i$                        | $\mathbf{y}$ 의 $i$ 번째 원소                          | scalar                         | 실수                                                     |
 | $\mathbf{R}$                 | $\mathbf{A}$ 의 기약 행사다리꼴                        | $m \times n$                   | 기본 행 연산으로 얻음                                    |
 | $\mathbf{x}$                 | 입력 vector                                            | $n \times 1$                   | 실수 원소                                                |
 | $\mathbf{y}$                 | $\mathbf{A}^\top$ 에 곱하는 계수 vector                | $m \times 1$                   | 실수 원소                                                |
@@ -61,6 +60,7 @@ Table 1. Symbols
 - $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
 - $\mathbf{A}^\top$: 영어로 "A transpose", 한국어로 "A 의 전치" 또는 "A 트랜스포즈" 라 읽는다.
 - $\{ \mathbf{A}^\top\mathbf{y} \mid \mathbf{y} \in \mathbb{R}^m \}$ 의 $\mid$ 와 $\in$: 영어로 "such that" 과 "in", 한국어로 "인" 과 "에 속하는" 이라 읽는다.
+- $\subseteq$: 영어로 "is a subset of", 한국어로 "의 부분집합이다" 라 읽는다.
 - $\perp$: 영어로 "is orthogonal to", 한국어로 "직교한다" 라 읽는다.
 - $\oplus$: 영어로 "direct sum", 한국어로 "직합" 이라 읽는다. 두 부분공간이 zero vector 만 공유하고, 두 공간의 vector 를 더해 전체 공간을 만든다는 뜻이다.
 - $\Longleftrightarrow$: 영어로 "if and only if", 한국어로 "필요충분조건" 또는 "동치" 라 읽는다.
@@ -71,15 +71,20 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Row space 는 $\mathbf{A}$ 의 행 vector 들을 일차결합해 얻는 vector 전체이며, $\mathbf{A}^\top$ 에 계수 vector 를 곱한 결과 전체로 적을 수 있다.
+Column space 는 $\mathbf{A}$ 의 열들의 일차결합 전체로, $\mathbf{A}$ 에 $\mathbb{R}^n$ 의 vector $\mathbf{x}$ 를 곱한 $\mathbf{A}\mathbf{x}$ 전체이며 $\mathbb{R}^m$ 의 부분공간이다.
+Row space 는 $\mathbf{A}$ 의 행들의 일차결합 전체로, $\mathbf{A}^\top$ 에 $\mathbb{R}^m$ 의 vector $\mathbf{y}$ 를 곱한 $\mathbf{A}^\top\mathbf{y}$ 전체이며 $\mathbb{R}^n$ 의 부분공간이다.
 
 ```math
-\mathrm{Row}(\mathbf{A}) = \{ y_1 \mathbf{r}_1 + \cdots + y_m \mathbf{r}_m \} = \{ \mathbf{A}^\top\mathbf{y} \mid \mathbf{y} \in \mathbb{R}^m \} = \mathrm{Col}(\mathbf{A}^\top) \hspace{19em} (1)
+\begin{aligned}
+\mathrm{Col}(\mathbf{A}) &= \{ \mathbf{A}\mathbf{x} \mid \mathbf{x} \in \mathbb{R}^n \} \subseteq \mathbb{R}^m \\
+\mathrm{Row}(\mathbf{A}) &= \{ \mathbf{A}^\top\mathbf{y} \mid \mathbf{y} \in \mathbb{R}^m \} = \mathrm{Col}(\mathbf{A}^\top) \subseteq \mathbb{R}^n
+\end{aligned}
+\hspace{19em} (1)
 ```
 
 ### 4.1 Set Definition
 
-$\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 행들을 $\mathbf{y}$ 의 원소로 일차결합한 vector 이다. 행 vector 는 원소가 $n$ 개이므로 row space 는 입력 공간 $\mathbb{R}^n$ 의 부분공간이고, column space 는 출력 공간 $\mathbb{R}^m$ 의 부분공간이다. Column space 와 row space 를 견주면 아래 Table 2 와 같다.
+$\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 행들을 $\mathbf{y}$ 의 원소로 일차결합한 vector 이다. 그래서 식 (1) 의 row space 는 $\mathbf{A}^\top$ 의 column space 와 같다. Column space 와 row space 를 견주면 아래 Table 2 와 같다.
 
 Table 2. Column space and row space
 
@@ -104,7 +109,7 @@ $\mathbf{A}\mathbf{x}$ 의 $i$ 번째 원소는 $i$ 번째 행과 $\mathbf{x}$ �
 \hspace{19em} (2)
 ```
 
-$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이를 $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 로 적으며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이를 $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 로 적으며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
 
 ### 4.3 Dimension and Rank
 
