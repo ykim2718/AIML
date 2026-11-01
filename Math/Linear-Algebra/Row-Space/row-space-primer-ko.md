@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 4 | Created: 2026-11-01 | Updated: 2026-11-01 21:20 UTC
+Rev. 5 | Created: 2026-11-01 | Updated: 2026-11-01 21:22 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -235,22 +235,34 @@ $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 는 row space 의 vec
 
 ## Appendix C. Column Vector Convention
 
-, 현대 선형대수학 및 대부분의 기술 문서(수학, AI/머신러닝 등)에서 별도의 언급 없이 "벡터(Vector)"라고 쓰면 기본적으로 열벡터(Column Vector, $n \times 1$ 행렬)를 의미합니다.
+**현대 선형대수학 및 대부분의 기술 문서(수학, AI/머신러닝 등)에서 별도의 언급 없이 "벡터(Vector)"라고 쓰면 기본적으로 열벡터(Column Vector, $n \times 1$ 행렬)를 의미합니다.**
+
 이처럼 벡터를 열벡터로 간주하는 규약과 표현법을 다음과 같은 용어 및 표기법으로 나타냅니다.
-1. 이러한 표기 규약/관례를 부르는 명칭
 
-* 열벡터 표기 관례 (Column Vector Convention / Standard Convention) 선형 변환 및 행렬 곱셈 시 $Ax = b$ 형태로 행렬을 왼쪽에, 벡터를 오른쪽에 두고 곱하는 표준 방식을 의미합니다.
-* Right-Multiplication / Post-Multiplication Convention 변환 행렬 $A$가 입력 벡터 $x$의 왼쪽에서 적용되는(오른쪽 곱셈을 받는) 관례입니다.
+#### 1. 이러한 표기 규약/관례를 부르는 명칭
 
-2. 열벡터임을 명시하는 표기법 (Notation)
-① 전치(Transpose) 표기법: $\mathbf{x} = [x_1, x_2, \dots, x_n]^T$
+- **열벡터 표기 관례 (Column Vector Convention / Standard Convention)**<br>선형 변환 및 행렬 곱셈 시 $Ax = b$ 형태로 **행렬을 왼쪽에, 벡터를 오른쪽에 두고 곱하는 표준 방식**을 의미합니다.
+- **Right-Multiplication / Post-Multiplication Convention**<br>변환 행렬 $A$가 입력 벡터 $x$의 왼쪽에서 적용되는(오른쪽 곱셈을 받는) 관례입니다.
+
+#### 2. 열벡터임을 명시하는 표기법 (Notation)
+
+**① 전치(Transpose) 표기법:** $\mathbf{x} = [x_1, x_2, \dots, x_n]^T$
+
 줄바꿈으로 길어지는 열벡터를 문서(가로 줄)에 적기 위해, 행벡터로 표기한 뒤 어깨에 전치 기호 $T$ (또는 $\top$)를 붙여 "이 벡터는 본래 열벡터이다"라고 표현합니다.
-$$x = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix} \quad \iff \quad x = [x_1, x_2, \dots, x_n]^T$$
-② 차원 표시법: $\mathbf{x} \in \mathbb{R}^{n \times 1}$
-단순히 $\mathbb{R}^n$ 대신 $n \times 1$ 공간(행 갯수 $n$, 열 갯수 1)의 행렬임을 명시하여 완벽하게 열벡터로 고정하는 표기입니다. (참고로 행벡터는 $\mathbb{R}^{1 \times n}$으로 표기합니다.)
-③ 세미콜론(;) 구분 표기법: $\mathbf{x} = [x_1; x_2; \dots; x_n]$
-LaTeX나 MATLAB/NumPy 표기식에서 성분을 콤마(,) 대신 세미콜론(;)으로 구분하면 줄바꿈(새로운 행)을 의미하므로 열벡터라는 뜻이 됩니다.
-💡 요약
 
-* 일반적인 수학 문맥에서 Vector = Column Vector가 기본입니다.
-* 텍스트 형태나 수식 표현에서 열벡터임을 명확히 보이기 위해 가장 자주 쓰이는 표준 표기는 $[x_1, x_2, \dots, x_n]^T$ 입니다.
+```math
+x = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix} \quad \iff \quad x = [x_1, x_2, \dots, x_n]^T
+```
+
+**② 차원 표시법:** $\mathbf{x} \in \mathbb{R}^{n \times 1}$
+
+단순히 $\mathbb{R}^n$ 대신 **$n \times 1$ 공간(행 갯수 $n$, 열 갯수 1)의 행렬임을 명시**하여 완벽하게 열벡터로 고정하는 표기입니다. (참고로 행벡터는 $\mathbb{R}^{1 \times n}$ 으로 표기합니다.)
+
+**③ 세미콜론(;) 구분 표기법:** $\mathbf{x} = [x_1; x_2; \dots; x_n]$
+
+LaTeX나 MATLAB/NumPy 표기식에서 성분을 **콤마(,) 대신 세미콜론(;)으로 구분**하면 줄바꿈(새로운 행)을 의미하므로 열벡터라는 뜻이 됩니다.
+
+#### 💡 요약
+
+- 일반적인 수학 문맥에서 **Vector = Column Vector**가 기본입니다.
+- 텍스트 형태나 수식 표현에서 열벡터임을 명확히 보이기 위해 가장 자주 쓰이는 표준 표기는 $[x_1, x_2, \dots, x_n]^T$ 입니다.
