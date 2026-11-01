@@ -5,7 +5,7 @@ Panels (b) and (c) fit four models on a wide design and compare their held-out e
 count grows, first when the signal sits in a few columns and then when it is spread over many.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.2.2026.9.6"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.3+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -24,7 +24,7 @@ __all__ = ['chance_correlation', 'sparse_design', 'factor_design', 'held_out_err
 
 FIGSIZE: tuple = (13.5, 4.0)
 REFERENCE_WIDTH: float = 13.5        # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 10.0
+BASE_FONT_SIZE: float = 12.0
 COLORS: list = list(matplotlib.colors.TABLEAU_COLORS.values())
 FITS: tuple = ('least squares', 'ridge', 'lasso', 'random subspace')
 
@@ -149,9 +149,12 @@ def draw_wide_data_overfitting(chance: pd.DataFrame, sparse: pd.DataFrame, facto
 
     for axis in axes:
         axis.set_xscale('log')
-        axis.legend(frameon=False, fontsize=font_size * 0.85)
-
-    fig.subplots_adjust(bottom=0.22, top=0.96, wspace=0.30)
+    axes[0].legend(frameon=False, fontsize=font_size)
+    fig.subplots_adjust(bottom=0.22, top=0.88, wspace=0.30)
+    # Panels (b) and (c) share the four fits and their curves fill the plot area, so one legend sits above both.
+    handles, names = axes[1].get_legend_handles_labels()
+    fig.legend(handles, names, loc='upper center', ncol=len(names), frameon=False, fontsize=font_size,
+               bbox_to_anchor=((axes[1].get_position().x0 + axes[2].get_position().x1) / 2, 1.0))
     for axis, label in zip(axes, ('(a)', '(b)', '(c)')):
         position = axis.get_position()
         fig.text(position.x0 + position.width / 2, 0.04, label, ha='center', fontsize=font_size)

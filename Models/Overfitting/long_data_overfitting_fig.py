@@ -6,7 +6,7 @@ whose rows come in groups. Panel (c) adds rows two ways, from new groups and ins
 already present, and follows the error on unseen groups.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.2.2026.9.7"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.0.3+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -26,7 +26,7 @@ __all__ = ['grouped_draw', 'capacity_curve', 'split_comparison', 'row_curve',
 
 FIGSIZE: tuple = (13.5, 4.0)
 REFERENCE_WIDTH: float = 13.5        # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 10.0
+BASE_FONT_SIZE: float = 12.0
 COLORS: list = list(matplotlib.colors.TABLEAU_COLORS.values())
 FULL_DEPTH: int = 40                 # the x position standing for an unlimited tree
 
@@ -129,13 +129,14 @@ def draw_long_data_overfitting(capacity: pd.DataFrame, splits: pd.Series, rows: 
                      label=name)
     axes[0].set_xlabel('tree depth (10000 rows, 6 columns)')
     axes[0].set_ylabel('RMSE')
-    axes[0].legend(frameon=False, fontsize=font_size * 0.85)
+    axes[0].legend(frameon=False, fontsize=font_size)
 
-    axes[1].bar(splits.index, splits.to_numpy(), width=0.6,
+    # Two-line tick labels keep the three names apart at the larger font size.
+    axes[1].bar([name.replace(' ', '\n') for name in splits.index], splits.to_numpy(), width=0.6,
                 color=[COLORS[3], COLORS[0], '0.4'])
     for index, value in enumerate(splits.to_numpy()):
         axes[1].text(index, value, f"{value:.2f}", ha='center', va='bottom',
-                     fontsize=font_size * 0.9)
+                     fontsize=font_size)
     axes[1].set_ylabel('RMSE reported')
     axes[1].set_xlabel('how the validation rows were chosen')
     axes[1].set_ylim(0, splits.max() * 1.25)
@@ -145,12 +146,12 @@ def draw_long_data_overfitting(capacity: pd.DataFrame, splits: pd.Series, rows: 
     axes[2].set_xscale('log')
     axes[2].set_xlabel('rows used for fitting, added two ways')
     axes[2].set_ylabel('RMSE on unseen groups')
-    axes[2].legend(frameon=False, fontsize=font_size * 0.85)
+    axes[2].legend(frameon=False, fontsize=font_size)
 
-    fig.subplots_adjust(bottom=0.22, top=0.96, wspace=0.30)
+    fig.subplots_adjust(bottom=0.28, top=0.96, wspace=0.30)
     for axis, label in zip(axes, ('(a)', '(b)', '(c)')):
         position = axis.get_position()
-        fig.text(position.x0 + position.width / 2, 0.04, label, ha='center', fontsize=font_size)
+        fig.text(position.x0 + position.width / 2, 0.02, label, ha='center', fontsize=font_size)
 
     figure_path = output_folder / 'long-data-overfitting.png'
     fig.savefig(figure_path, dpi=300)

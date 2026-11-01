@@ -5,7 +5,7 @@ and then falls. The curves are drawn from closed-form shapes, not from a fitted 
 no ticks because only the shape is meant to be read.
 """
 __author__ = 'yRocket'
-__version__ = "0.2.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.1+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -19,10 +19,10 @@ import pandas as pd
 __all__ = ['concept_curves', 'draw_training_curve']
 
 AXES_SIZE: tuple = (4.0, 3.0)        # x and y length of the chart's axis lines, in inches
-MARGINS: dict = {'left': 0.45, 'right': 0.15, 'bottom': 0.50, 'top': 0.40}  # inches around the chart
+MARGINS: dict = {'left': 0.45, 'right': 0.25, 'bottom': 0.60, 'top': 0.50}  # inches around the chart
 DPI: int = 200
 REFERENCE_AXES_WIDTH: float = 4.0    # the chart width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 9.0
+BASE_FONT_SIZE: float = 12.0
 X_AXIS_END: float = 1.23             # iterations where the x axis line ends; the curves end at 1
 COLORS: dict = matplotlib.colors.TABLEAU_COLORS
 TRAINING_COLOR: str = COLORS['tab:blue']
@@ -85,7 +85,7 @@ def draw_training_curve(curve: pd.DataFrame, output_folder: pathlib.Path) -> pat
     axis.plot(t, curve['validation'], color=VALIDATION_COLOR, linewidth=2.5)
     axis.text(0.92, curve['training'].iloc[-1] + 0.05, 'training-set', color=TRAINING_COLOR,
               fontsize=font_size, ha='center', va='bottom')
-    axis.text(1.25, VALIDATION_PEAK - 0.06, 'validation-set', color=VALIDATION_COLOR,
+    axis.text(1.25, VALIDATION_PEAK + 0.01, 'validation-set', color=VALIDATION_COLOR,
               fontsize=font_size, ha='right', va='center')
 
     figure_path = output_folder / 'training-curve.png'
