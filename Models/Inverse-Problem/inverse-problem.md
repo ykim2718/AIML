@@ -774,13 +774,13 @@ The solution is the first pair of singular vectors of $\mathbf{X}_a^{\top} \math
 \mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (7)
 ```
 
-Rewriting the subtraction of Eq. (7) as $\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}$ and substituting it in turn from $a = 1$ to $A$ stacks up the part $\mathbf{t}_a \mathbf{p}_a^{\top}$ subtracted at each component.
+Rewriting the subtraction of Eq. (7) as $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ and substituting it in turn from $`a = 1`$ to $`A`$ stacks up the part $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ subtracted at each component.
 
 ```math
 \mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (8)
 ```
 
-In the same way $\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}$. The matrices that collect the scores and loadings as columns are $\mathbf{T}$, $\mathbf{P}$ and $\mathbf{Q}$, and the $\mathbf{E}$ and $\mathbf{F}$ left at the end are the residuals.
+In the same way $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}`$. The matrices that collect the scores and loadings as columns are $`\mathbf{T}`$, $`\mathbf{P}`$ and $`\mathbf{Q}`$, and the $`\mathbf{E}`$ and $`\mathbf{F}`$ left at the end are the residuals.
 
 ```math
 \mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (9)

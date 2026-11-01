@@ -774,13 +774,13 @@ $a$ 번째 성분은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 의 공분산이 가장 �
 \mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (7)
 ```
 
-식 (7) 의 빼는 식을 $\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}$ 로 바꾸어 $a = 1$ 부터 $A$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $\mathbf{t}_a \mathbf{p}_a^{\top}$ 가 하나씩 쌓인다.
+식 (7) 의 빼는 식을 $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ 로 바꾸어 $`a = 1`$ 부터 $`A`$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ 가 하나씩 쌓인다.
 
 ```math
 \mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (8)
 ```
 
-$\mathbf{Y}$ 도 같은 방법으로 $\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}$ 이다. Score 와 loading 을 열로 모은 행렬이 $\mathbf{T}$, $\mathbf{P}$, $\mathbf{Q}$ 이고, 마지막에 남은 $\mathbf{E}$ 와 $\mathbf{F}$ 가 잔차이다.
+$`\mathbf{Y}`$ 도 같은 방법으로 $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}`$ 이다. Score 와 loading 을 열로 모은 행렬이 $`\mathbf{T}`$, $`\mathbf{P}`$, $`\mathbf{Q}`$ 이고, 마지막에 남은 $`\mathbf{E}`$ 와 $`\mathbf{F}`$ 가 잔차이다.
 
 ```math
 \mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (9)
