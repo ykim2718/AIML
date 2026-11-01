@@ -1,19 +1,19 @@
 # Overfitting In Wide Data
-Rev. 5 | Created: 2026-09-06 | Updated: 2026-11-01 00:56 CDT
+Rev. 6 | Created: 2026-09-06 | Updated: 2026-11-01 01:02 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
-- [3. Principle](#3-principle)
-  - [3.1 Three Sources](#31-three-sources)
-  - [3.2 Evidence From A Simulation](#32-evidence-from-a-simulation)
-- [4. Application](#4-application)
-  - [4.1 Families Of Defense](#41-families-of-defense)
-  - [4.2 Random Subspace Method](#42-random-subspace-method)
-  - [4.3 Regularization](#43-regularization)
-  - [4.4 Projection Before Regression](#44-projection-before-regression)
-  - [4.5 Feature Selection Without Selection Bias](#45-feature-selection-without-selection-bias)
-  - [4.6 Validation Protocol](#46-validation-protocol)
-- [5. Comparison](#5-comparison)
+- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
+  - [3.1 Comparison](#31-comparison)
+- [4. Principle](#4-principle)
+  - [4.1 Three Sources](#41-three-sources)
+  - [4.2 Evidence From A Simulation](#42-evidence-from-a-simulation)
+- [5. Application](#5-application)
+  - [5.1 Random Subspace Method](#51-random-subspace-method)
+  - [5.2 Regularization](#52-regularization)
+  - [5.3 Projection Before Regression](#53-projection-before-regression)
+  - [5.4 Feature Selection Without Selection Bias](#54-feature-selection-without-selection-bias)
+  - [5.5 Validation Protocol](#55-validation-protocol)
 - [6. Further Work](#6-further-work)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
@@ -26,19 +26,90 @@ Rev. 5 | Created: 2026-09-06 | Updated: 2026-11-01 00:56 CDT
 
 ## 2. Summary
 
-방어의 우열은 방법 자체로 정해지지 않고 **자료의 신호가 몇 개의 열에 모여 있는지** 로 갈린다. 신호가 소수의 열에 있으면 선택을 함께 수행하는 lasso 가, 여러 열에 퍼져 있으면 계수를 고르게 줄이는 ridge 와 projection 과 random subspace 가 맞는다.
+방어의 우열은 **자료의 신호가 몇 개의 열에 모여 있는지** 로 갈려, 소수의 열에 있으면 lasso 가, 여러 열에 퍼져 있으면 ridge 와 projection 과 random subspace 가 맞는다. 신호가 5 개 열에만 있는 모의 자료에서 held-out 오차는 lasso 1.32, ridge 2.50, random subspace 2.55 였고, 모든 열에 퍼진 자료에서는 셋이 1.04 와 1.05 로 나란했다. 어느 방어를 고르든 전처리와 열 선택과 hyperparameter 조정은 학습 fold 안에서 끝내고, 성능은 nested cross-validation 과 permutation test 로 확인한다.
 
-3.2 의 모의 실험이 그 갈림을 보인다. 신호가 5 개 열에만 있는 자료에서 lasso 는 도달 가능한 바닥 1.0 에 가까운 1.32 를 냈지만 ridge 는 2.50, random subspace 는 2.55 에 머물렀다. 신호가 모든 열에 퍼진 자료에서는 ridge 1.04, random subspace 1.04, lasso 1.05 로 셋이 나란해졌다. 최소제곱은 두 경우 모두 $p$ 가 $n$ 에 가까워지는 지점에서 무너졌다.
+## 3. Taxonomy and its Hierarchy
 
-방어를 무엇으로 고르든 절차는 하나로 고정된다. 중심과 척도, 열 선택, hyperparameter 조정, projection 적합은 모두 학습 fold 안에서 끝내고, 성능은 nested cross-validation 으로 재며, 그 값이 우연 수준을 넘는지 permutation test 로 확인한다.
+Wide data 의 overfitting 은 원인, 신호의 모양, 열의 묶음, 응답의 형태라는 네 축으로 갈리고, 방어는 신호가 놓인 모양에 대한 가정에 따라 계층을 이룬다. 네 축과 축마다의 값은 아래 [Fig 1](#fig-1) 과 같다.
 
-## 3. Principle
+```text
+Overfitting in wide data
+├── Axis 1. Source
+│   ├── more parameters than rows
+│   ├── chance correlation
+│   └── selection bias
+├── Axis 2. Signal shape
+│   ├── concentrated in a few columns
+│   └── spread over correlated columns
+├── Axis 3. Column grouping
+│   ├── independent columns
+│   └── grouped by sensor or wafer
+└── Axis 4. Response form
+    ├── linear in the columns
+    └── non-linear in the columns
+```
 
-### 3.1 Three Sources
+<a id="fig-1"></a>Fig 1. Four axes of overfitting in wide data
 
-원인은 셋이며 각각 대수, 확률, 절차에서 생긴다. 세 원인은 Table 1 과 같다.
+네 축은 서로 독립이다. Source 축은 4.1 의 세 원인이며, 나머지 세 축은 3.1 의 Table 2 에서 방법을 고를 때 자료에서 읽는 성질이다.
 
-Table 1. Three sources of overfitting in wide data
+방어의 계층은 아래 [Fig 2](#fig-2) 와 같다.
+
+```text
+Defense
+├── Protocol: no assumption on the model
+│   └── nested cross-validation, permutation test
+└── Model change: assumes where the signal lies
+    ├── Signal in a few columns: discards the other columns
+    │   ├── Selection: filter, wrapper, embedded
+    │   └── L1 regularization: lasso, elastic net
+    └── Signal spread over many columns: keeps every column
+        ├── L2 regularization: ridge
+        ├── Projection: PCR, PLS
+        └── Subspace ensemble: random subspace, random forest
+```
+
+<a id="fig-2"></a>Fig 2. Hierarchy of defenses by the assumption on the signal
+
+맨 위의 protocol 은 model 에 아무 가정도 두지 않으므로 아래의 모든 방어와 함께 쓴다. 그 아래에서 model 을 바꾸는 방어는 신호가 놓인 모양을 가정한다. 소수의 열을 가정하는 갈래는 잡음 열을 버리는 대신 고를 수 있는 열이 많아야 $n$ 개이고, 상관이 큰 열 무리에서 표본에 따라 선택이 바뀐다 (5.2). 여러 열을 가정하는 갈래는 모든 열을 남기는 대신 신호가 소수의 열에 있으면 잡음 열에도 계수를 나누어, [Fig 5](#fig-5)(b) 에서 ridge 의 held-out 오차가 2.50 에 머문다.
+
+방어는 무엇을 줄이는지에 따라 다섯 갈래이며, 갈래마다 줄이는 대상은 Table 1 과 같다.
+
+Table 1. Five families of defense
+
+| #     | Family            | What it reduces                         | Representative method                     |
+| :---: | :---------------: | :-------------------------------------: | :---------------------------------------: |
+| 1     | Regularization    | The size the coefficients may take      | Ridge, lasso, elastic net                 |
+| 2     | Subspace ensemble | The columns one model may see           | Random subspace, random forest            |
+| 3     | Projection        | The dimension the model is fitted in    | PCR, PLS                                  |
+| 4     | Selection         | The columns that enter the model at all | Filter, wrapper, embedded                 |
+| 5     | Protocol          | The optimism of the reported error      | Nested cross-validation, permutation test |
+
+앞의 넷은 model 을 바꾸고, 다섯째는 model 을 바꾸지 않는다. 다섯째를 빼면 앞의 넷이 정말 도움이 되었는지 알 수 없으므로, 순서로는 다섯째가 먼저이다.
+
+### 3.1 Comparison
+
+방법은 자료의 모양에서 정해지며, 정하는 순서는 늘 같다. 신호가 어디에 있다고 보는지를 먼저 정하고, 그에 맞는 방어를 고르고, 마지막으로 그 선택이 옳았는지를 정직한 절차로 확인한다. 첫 단계에서 자료의 모양에 따라 고르는 방법은 Table 2 와 같다.
+
+Table 2. Method by the shape of the data
+
+| #     | Situation                             | Method                                       | Why                                          |
+| :---: | :-----------------------------------: | :------------------------------------------: | :------------------------------------------: |
+| 1     | Signal expected in a few columns      | Lasso or elastic net                         | Selection is part of the fit                 |
+| 2     | Signal spread over correlated columns | Ridge, PLS, or random subspace               | Nothing has to be discarded                  |
+| 3     | Columns grouped by sensor or wafer    | Group-aware split with any of the above      | The split has to match the grouping          |
+| 4     | Response non-linear in the columns    | Random forest                                | Subspace sampling and trees in one fit       |
+| 5     | Any of the above, before reporting    | Nested cross-validation and permutation test | The number has to survive an honest protocol |
+
+세 단계 가운데 마지막을 건너뛰면 앞의 둘이 무엇을 했는지 알 수 없다. 그 확인이 5.5 의 절차이며, 자료의 모양을 잘못 짚었더라도 거기서 드러난다.
+
+## 4. Principle
+
+### 4.1 Three Sources
+
+원인은 셋이며 각각 대수, 확률, 절차에서 생긴다. 세 원인은 Table 3 과 같다.
+
+Table 3. Three sources of overfitting in wide data
 
 | #     | Source                    | What happens                                      | What it looks like                                 |
 | :---: | :-----------------------: | :-----------------------------------------------: | :------------------------------------------------: |
@@ -52,11 +123,11 @@ Table 1. Three sources of overfitting in wide data
 \hat{\beta} = (X^{\top}X)^{-1} X^{\top} y \hspace{19em} (1)
 ```
 
-훈련 오차가 0 인 model 이 새 자료에서 나빠지는 모습은 열이 하나뿐인 자료에서도 보인다. 같은 점 16 개에 유연성이 다른 세 model 을 맞추면 아래 Fig 1 과 같다.
+훈련 오차가 0 인 model 이 새 자료에서 나빠지는 모습은 열이 하나뿐인 자료에서도 보인다. 같은 점 16 개에 유연성이 다른 세 model 을 맞추면 아래 [Fig 3](#fig-3) 과 같다.
 
-<img src="overfitting-in-wide-data_fig/fit-capacity.png" width="1100" style="max-width: 100%;" alt="Fig 1">
+<img src="overfitting-in-wide-data_fig/fit-capacity.png" width="1100" style="max-width: 100%;" alt="Fig 3">
 
-Fig 1. One noisy sample fitted by three models of growing capacity
+<a id="fig-3"></a>Fig 3. One noisy sample fitted by three models of growing capacity
 
 점은 $y = 4(x - 0.5)^2$ 에 표준편차 0.12 의 잡음을 더해 뽑은 학습 자료이며, 세 panel 이 같은 점을 쓴다.
 
@@ -64,13 +135,13 @@ Fig 1. One noisy sample fitted by three models of growing capacity
 - (b) Well-fitted: 2 차 곡선은 참 곡선과 같은 모양이어서 점과의 차이가 잡음 크기에 머문다.
 - (c) Overfitted: 모든 점을 지나는 cubic spline 은 훈련 오차가 0 이지만 점 사이에서 출렁여, 새 자료에서 잰 오차가 (b) 보다 크다.
 
-반복하며 학습하는 model 에서는 같은 갈림이 iteration 을 따라 나타나며, 그 모양은 아래 Fig 2 와 같다.
+반복하며 학습하는 model 에서는 같은 갈림이 iteration 을 따라 나타나며, 그 모양은 아래 [Fig 4](#fig-4) 와 같다.
 
-<img src="overfitting-in-wide-data_fig/training-curve.png" width="700" style="max-width: 100%;" alt="Fig 2">
+<img src="overfitting-in-wide-data_fig/training-curve.png" width="600" style="max-width: 100%;" alt="Fig 4">
 
-Fig 2. Training and validation accuracy against boosting iterations
+<a id="fig-4"></a>Fig 4. Training and validation accuracy against iterations
 
-자료는 열 20 개 가운데 4 개에만 신호가 있고 label 의 25 % 를 무작위로 다시 매긴 600 행이며, 절반으로 gradient boosting 을 학습하고 나머지 절반으로 검증했다. 훈련 정확도는 0.857 에서 출발해 iteration 49 에서 1.0 에 닿는다. 검증 정확도는 0.700 에서 iteration 33 의 0.757 까지 오른 뒤 iteration 300 에서 0.703 으로 내려온다. Iteration 33 이후의 학습은 무작위로 매긴 label 을 외우는 데 쓰였으며, 훈련 정확도만 보면 그 구간이 개선으로 보인다.
+모양만 보이려는 개념도이므로 축에 눈금이 없다. Training-set 정확도는 iteration 이 늘수록 오르다가 평평해진다. Validation-set 정확도는 한 iteration 에서 가장 높고 그 뒤로 떨어지며, 그 뒤의 학습은 학습 자료의 잡음을 따라가는 overfitting 이다. Training-set 정확도만 보면 validation-set 정확도가 떨어지는 구간도 개선으로 보인다.
 
 둘째 원인은 확률적이다. 응답과 아무 관계가 없는 열이라도 $n$ 개의 관측에서는 우연히 상관 (correlation) 을 보인다. 열이 많아질수록 그중 가장 큰 상관은 커지며, 독립인 열 $p$ 개에서 그 크기는 아래 값에 가깝다.
 
@@ -80,41 +151,29 @@ Fig 2. Training and validation accuracy against boosting iterations
 
 셋째 원인은 절차에서 온다. 전체 자료를 보고 열을 고른 뒤 그 열로 cross-validation 을 돌리면, 고르는 단계에서 이미 검증 자료를 쓴 것이므로 오차가 낙관적으로 나온다. 이 편향은 열이 많을수록 커지며, 식 (2) 규모의 우연 상관이 그 편향의 재료가 된다.
 
-### 3.2 Evidence From A Simulation
+### 4.2 Evidence From A Simulation
 
-앞의 세 원인 가운데 둘은 숫자로 바로 보인다. $n = 100$ 을 고정하고 열의 수만 늘리며 관찰하면 아래 Fig 3 과 같다.
+앞의 세 원인 가운데 둘은 숫자로 바로 보인다. $n = 100$ 을 고정하고 열의 수만 늘리며 관찰하면 아래 [Fig 5](#fig-5) 와 같다.
 
-<img src="overfitting-in-wide-data_fig/wide-data-overfitting.png" width="1100" style="max-width: 100%;" alt="Fig 3">
+<img src="overfitting-in-wide-data_fig/wide-data-overfitting.png" width="1100" style="max-width: 100%;" alt="Fig 5">
 
-Fig 3. Chance correlation and held-out error as the column count grows
+<a id="fig-5"></a>Fig 5. Chance correlation and held-out error as the column count grows
 
-(a) 는 응답과 아무 관계가 없는 열만으로 만든 자료에서 가장 큰 절대 상관이다. 열이 100 개면 0.26, 10000 개면 0.39 에 이른다. 실무에서 0.39 의 상관은 보고서에 실릴 만한 값이지만, 여기서는 신호가 하나도 없는 자료에서 나온 값이다. 점선은 식 (2) 의 근사이며, 모의 실험의 중앙값이 그 아래에서 같은 모양으로 자란다.
+- (a) 응답과 아무 관계가 없는 열만으로 만든 자료에서 가장 큰 절대 상관이다. 열이 100 개면 0.26, 10000 개면 0.39 에 이른다. 실무에서 0.39 의 상관은 보고서에 실릴 만한 값이지만, 여기서는 신호가 하나도 없는 자료에서 나온 값이다. 점선은 식 (2) 의 근사이며, 모의 실험의 중앙값이 그 아래에서 같은 모양으로 자란다.
+- (b) 신호가 5 개 열에만 있는 자료에서 held-out 오차이다. 잡음 (noise) 의 표준편차가 1 이므로 1.0 이 도달 가능한 바닥이다. 최소제곱은 $p$ 가 $n$ 에 가까워지는 90 에서 6.76 까지 치솟고, ridge 도 $p = 1000$ 에서 2.50 에 머문다. Lasso 만 1.32 로 바닥 가까이 남는다.
+- (c) 신호가 몇 개의 잠재 factor 를 통해 모든 열에 퍼져 있는 자료이다. 여기서는 ridge 1.04, random subspace 1.04, lasso 1.05 로 셋이 모두 바닥에 붙고, 최소제곱만 $p = 90$ 에서 3.65 로 무너진다.
 
-(b) 는 신호가 5 개 열에만 있는 자료에서 held-out 오차이다. 잡음 (noise) 의 표준편차가 1 이므로 1.0 이 도달 가능한 바닥이다. 최소제곱은 $p$ 가 $n$ 에 가까워지는 90 에서 6.76 까지 치솟고, ridge 도 $p = 1000$ 에서 2.50 에 머문다. Lasso 만 1.32 로 바닥 가까이 남는다.
+Panel (b) 와 (c) 의 차이가 2 장의 결론을 만든 근거이다. 같은 $p$ 와 같은 $n$ 에서 방법의 순위가 뒤집혔으므로, 순위를 정하는 것은 방법이 아니라 신호가 놓인 모양이다.
 
-(c) 는 신호가 몇 개의 잠재 factor 를 통해 모든 열에 퍼져 있는 자료이다. 여기서는 ridge 1.04, random subspace 1.04, lasso 1.05 로 셋이 모두 바닥에 붙고, 최소제곱만 $p = 90$ 에서 3.65 로 무너진다.
+## 5. Application
 
-두 panel 의 차이가 2 장의 결론을 만든 근거이다. 같은 $p$ 와 같은 $n$ 에서 방법의 순위가 뒤집혔으므로, 순위를 정하는 것은 방법이 아니라 신호가 놓인 모양이다.
+방법마다 가정, 설정값, 깨지는 조건을 같은 형식으로 먼저 적고, 그 아래에 원리를 적는다.
 
-## 4. Application
+### 5.1 Random Subspace Method
 
-### 4.1 Families Of Defense
-
-방어는 무엇을 줄이는지에 따라 다섯 갈래이다. 갈래마다 줄이는 대상은 Table 2 와 같다.
-
-Table 2. Five families of defense
-
-| #     | Family            | What it reduces                         | Representative method                     |
-| :---: | :---------------: | :-------------------------------------: | :---------------------------------------: |
-| 1     | Regularization    | The size the coefficients may take      | Ridge, lasso, elastic net                 |
-| 2     | Subspace ensemble | The columns one model may see           | Random subspace, random forest            |
-| 3     | Projection        | The dimension the model is fitted in    | PCR, PLS                                  |
-| 4     | Selection         | The columns that enter the model at all | Filter, wrapper, embedded                 |
-| 5     | Protocol          | The optimism of the reported error      | Nested cross-validation, permutation test |
-
-앞의 넷은 model 을 바꾸고, 다섯째는 model 을 바꾸지 않는다. 다섯째를 빼면 앞의 넷이 정말 도움이 되었는지 알 수 없으므로, 순서로는 다섯째가 먼저이다.
-
-### 4.2 Random Subspace Method
+- **가정**: 신호가 여러 열에 퍼져 있어, 무작위로 뽑은 $k$ 개 열 안에 신호가 든 열이 들어간다.
+- **설정값**: Subspace 크기 $k$ 이며, 관례값은 분류에서 $\sqrt{p}$, 회귀에서 $p/3$ 이다.
+- **깨지는 조건**: 신호가 소수의 열에만 있을 때이며, Fig 5(b) 에서 held-out 오차가 2.55 이다.
 
 #### How It Works
 
@@ -132,17 +191,21 @@ $B$ 를 키우면 둘째 항은 0 으로 가지만 첫째 항은 남는다. 그�
 
 #### Choosing The Subspace Size
 
-$k$ 는 이 방법의 유일한 주요 hyperparameter 이다. $k$ 를 키우면 개별 model 이 정확해지지만 서로 닮아 $\rho$ 가 올라가고, 줄이면 $\rho$ 는 내려가지만 개별 model 이 약해진다. Random forest 의 관례는 분류에서 $k = \sqrt{p}$, 회귀에서 $k = p/3$ 이며 [[2](#ref-2)], 출발점으로 쓰고 검증으로 조정한다.
+$k$ 는 이 방법의 유일한 주요 hyperparameter 이다. $k$ 를 키우면 개별 model 이 정확해지지만 서로 닮아 $\rho$ 가 올라가고, 줄이면 $\rho$ 는 내려가지만 개별 model 이 약해진다. 관례값은 random forest 에서 쓰는 값이며 [[2](#ref-2)], 출발점으로 쓰고 검증으로 조정한다.
 
 #### When It Does Not Help
 
-이 방법은 신호가 여러 열에 퍼져 있어야 쓸모가 있다. 개별 model 은 무작위로 뽑은 $k$ 개 열만 보므로, 그 안에 신호가 든 열이 있어야 예측에 쓸 수 있다. Fig 3(b) 처럼 신호가 5 개 열에만 있고 $p$ 가 1000 이면 $k = \sqrt{p} \approx 31$ 개를 뽑아도 그 5 개가 들어갈 확률이 낮아, 대부분의 model 이 잡음만 보고 학습한다. 그래서 같은 그림에서 random subspace 는 2.55 로 lasso 의 1.32 보다 훨씬 나쁘다. 반대로 Fig 3(c) 처럼 신호가 모든 열에 퍼져 있으면 1.04 로 최선의 방법들과 같아진다.
+이 방법은 신호가 여러 열에 퍼져 있어야 쓸모가 있다. 개별 model 은 무작위로 뽑은 $k$ 개 열만 보므로, 그 안에 신호가 든 열이 있어야 예측에 쓸 수 있다. Fig 5(b) 처럼 신호가 5 개 열에만 있고 $p$ 가 1000 이면 $k = \sqrt{p} \approx 31$ 개를 뽑아도 그 5 개가 들어갈 확률이 낮아, 대부분의 model 이 잡음만 보고 학습한다. 그래서 같은 그림에서 random subspace 는 2.55 로 lasso 의 1.32 보다 훨씬 나쁘다. 반대로 Fig 5(c) 처럼 신호가 모든 열에 퍼져 있으면 1.04 로 최선의 방법들과 같아진다.
 
 #### Relation To Bagging And Random Forest
 
 Bagging 은 행을 무작위로 뽑고, random subspace method 는 열을 무작위로 뽑는다. Random forest 는 이 둘을 함께 쓰되 열을 node 분할마다 새로 뽑는 방법이다 [[2](#ref-2)]. 그러므로 random forest 를 쓰고 있다면 이 방법을 이미 쓰고 있는 것이며, 따로 얹을 필요는 없다.
 
-### 4.3 Regularization
+### 5.2 Regularization
+
+- **가정**: Ridge 는 신호가 상관이 큰 여러 열에 퍼져 있다고, lasso 는 소수의 열에 모여 있다고 가정한다.
+- **설정값**: 벌점의 크기 $\lambda$ 와 elastic net 의 혼합 비율이며, 둘 다 nested cross-validation 의 안쪽 loop 에서 정한다.
+- **깨지는 조건**: 가정한 모양이 자료와 어긋날 때이며, 신호가 5 개 열에만 있는 Fig 5(b) 에서 ridge 의 held-out 오차가 2.50 이다.
 
 #### Ridge
 
@@ -172,23 +235,35 @@ Lasso 에는 wide data 에서 두 가지 약점이 있다. 고를 수 있는 열
 
 선택 기준은 신호가 몇 개의 열에 있다고 보는지이다. 신호가 소수의 열에 있으면 lasso 가, 모든 열에 퍼져 있으면 ridge 가 맞으며, 상관이 큰 무리에 신호가 있으면 elastic net 이 둘 사이를 메운다. 어느 쪽인지 모르면 elastic net 의 혼합 비율을 검증으로 정하는 것이 가장 단순한 답이다.
 
-### 4.4 Projection Before Regression
+### 5.3 Projection Before Regression
+
+- **가정**: 신호가 열들의 선형 결합 몇 개에 모여 있다.
+- **설정값**: 성분 (component) 의 수이며, 학습 fold 안에서 정한다.
+- **깨지는 조건**: PCR 은 예측에 쓸모없는 방향의 분산이 클 때 신호가 든 성분을 잘라 내고, PLS 는 성분 수를 학습 fold 밖에서 정할 때 오차가 낙관적으로 나온다.
 
 투영 (projection) 은 열을 고르는 대신 열들의 선형 결합 몇 개로 자료를 줄인 뒤 그 위에서 회귀한다. PCR 은 분산이 큰 방향으로 줄이고, PLS 는 응답과의 공분산 (covariance) 이 큰 방향으로 줄인다 [[6](#ref-6)].
 
-둘의 차이는 응답을 보는지에 있다. PCR 의 방향은 $y$ 를 보지 않고 정해지므로 분산은 크지만 예측에 쓸모없는 방향이 앞자리를 차지할 수 있고, 그러면 뒤로 밀린 성분 (component) 을 잘라 낼 때 신호까지 잘려 나간다. PLS 는 그 위험이 없는 대신 응답을 보았으므로, 성분 수를 정하는 일이 곧 model 복잡도를 정하는 일이 되어 4.5 와 4.6 의 절차가 더 중요해진다.
+둘의 차이는 응답을 보는지에 있다. PCR 의 방향은 $y$ 를 보지 않고 정해지므로 분산은 크지만 예측에 쓸모없는 방향이 앞 순위를 차지할 수 있고, 그러면 뒤로 밀린 성분을 잘라 낼 때 신호까지 잘려 나간다. PLS 는 그 위험이 없는 대신 응답을 보았으므로, 성분 수를 정하는 일이 곧 model 복잡도를 정하는 일이 되어 5.4 와 5.5 의 절차가 더 중요해진다.
 
-### 4.5 Feature Selection Without Selection Bias
+### 5.4 Feature Selection Without Selection Bias
+
+- **가정**: 신호가 소수의 열에 있다.
+- **설정값**: 남길 열의 수이며, filter 에서는 그 지표의 문턱값이다.
+- **깨지는 조건**: 선택이 학습 fold 밖에서 일어날 때이며, 무작위 label 로 만든 자료에서도 오차가 낮게 나온다.
 
 열 선택은 세 갈래이다. Filter 는 model 과 무관한 지표로 미리 거르고, wrapper 는 model 성능으로 열 조합을 탐색하며, embedded 는 lasso 처럼 학습 과정에서 선택이 함께 일어난다. Wide data 에서 wrapper 는 탐색 공간이 $2^p$ 로 커져 실용적이지 않으므로 filter 와 embedded 가 주로 쓰인다.
 
 어느 갈래를 쓰든 규칙은 하나다. **선택은 학습 fold 안에서만 일어나야 한다.** 전체 자료로 열을 고른 뒤 cross-validation 을 돌리면, 무작위 label 로 만든 자료에서도 오차가 크게 낮아진다. 유전자 발현 자료에서 이 편향이 실제로 얼마나 큰지를 보인 보고가 있으며, 신호가 전혀 없는 자료에서도 낙관적인 오차가 나왔다 [[7](#ref-7)].
 
-### 4.6 Validation Protocol
+### 5.5 Validation Protocol
 
-방어를 얹었는지보다 그 효과를 어떻게 쟀는지가 더 자주 문제가 된다. 학습 fold 안에서 해야 하는 일과 그 일을 fold 밖에서 하면 생기는 결과는 Table 3 과 같다.
+- **가정**: 학습 fold 와 검증 fold 가 서로 독립이다.
+- **설정값**: 바깥 loop 와 안쪽 loop 의 fold 수, 그리고 permutation test 의 반복 횟수이다.
+- **깨지는 조건**: Table 4 의 네 단계 가운데 하나라도 학습 fold 밖에서 할 때이다.
 
-Table 3. What belongs inside the training fold
+방어를 얹었는지보다 그 효과를 어떻게 쟀는지가 더 자주 문제가 된다. 학습 fold 안에서 해야 하는 일과 그 일을 fold 밖에서 하면 생기는 결과는 Table 4 와 같다.
+
+Table 4. What belongs inside the training fold
 
 | #     | Step                  | If done outside the fold                               |
 | :---: | :-------------------: | :----------------------------------------------------: |
@@ -201,25 +276,9 @@ Hyperparameter 를 cross-validation 으로 고르고 같은 cross-validation 의
 
 두 가지를 함께 두면 판단이 쉬워진다. 하나는 permutation test 로, 응답을 무작위로 섞은 자료에 같은 절차를 그대로 돌려 성능이 우연 수준으로 떨어지는지 확인한다. 다른 하나는 learning curve 로, 행을 늘려 가며 오차가 내려가는지 본다. 앞의 것은 절차의 편향을, 뒤의 것은 표본 부족을 드러낸다.
 
-## 5. Comparison
-
-방법은 자료의 모양에서 정해지며, 정하는 순서는 늘 같다. 신호가 어디에 있다고 보는지를 먼저 정하고, 그에 맞는 방어를 고르고, 마지막으로 그 선택이 옳았는지를 정직한 절차로 확인한다. 첫 단계에서 자료의 모양에 따라 고르는 방법은 Table 4 와 같다.
-
-Table 4. Method by the shape of the data
-
-| #     | Situation                             | Method                                       | Why                                          |
-| :---: | :-----------------------------------: | :------------------------------------------: | :------------------------------------------: |
-| 1     | Signal expected in a few columns      | Lasso or elastic net                         | Selection is part of the fit                 |
-| 2     | Signal spread over correlated columns | Ridge, PLS, or random subspace               | Nothing has to be discarded                  |
-| 3     | Columns grouped by sensor or wafer    | Group-aware split with any of the above      | The split has to match the grouping          |
-| 4     | Response non-linear in the columns    | Random forest                                | Subspace sampling and trees in one fit       |
-| 5     | Any of the above, before reporting    | Nested cross-validation and permutation test | The number has to survive an honest protocol |
-
-세 단계 가운데 마지막을 건너뛰면 앞의 둘이 무엇을 했는지 알 수 없다. 그 확인이 4.6 의 절차이며, 자료의 모양을 잘못 짚었더라도 거기서 드러난다.
-
 ## 6. Further Work
 
-- **신호가 놓인 모양을 자료에서 추정하는 절차**: 2 장의 갈림을 짐작이 아니라 자료로 정하는 일. Lasso 와 ridge 를 같은 분할에서 나란히 돌려 held-out 오차를 견주고, lasso 가 남긴 계수의 수를 함께 보아 신호가 몇 개의 열에 모여 있는지를 추정한 뒤 방어를 고르는 단계를 표준 흐름에 넣는다. 지금인 이유는 Fig 3 이 두 모양에서 방법의 순위가 뒤집힌다는 것을 보였으므로, 모양을 모르는 채 방법을 고르는 것이 곧 오차를 두 배로 두는 선택임이 확인되었기 때문이다. 필요한 것은 과거 자료에서 잰 held-out 오차와, 두 방법을 같은 분할에 태우는 script 이다.
+- **신호가 놓인 모양을 자료에서 추정하는 절차**: 2 장의 갈림을 짐작이 아니라 자료로 정하는 일. Lasso 와 ridge 를 같은 분할에서 나란히 돌려 held-out 오차를 견주고, lasso 가 남긴 계수의 수를 함께 보아 신호가 몇 개의 열에 모여 있는지를 추정한 뒤 방어를 고르는 단계를 표준 흐름에 넣는다. 지금인 이유는 Fig 5 에서 두 모양 사이에 방법의 순위가 뒤집혀, 모양을 모르는 채 방법을 고르면 오차를 두 배로 둘 수 있음이 확인되었기 때문이다. 필요한 것은 과거 자료에서 잰 held-out 오차와, 두 방법을 같은 분할에 태우는 script 이다.
 - **열의 group 을 단위로 뽑는 subspace**: Random subspace 가 열을 하나씩 독립으로 뽑는 대신, 같은 sensor 나 같은 계측 단계에서 나온 열 묶음을 단위로 뽑는 일. 이 방법은 식 (3) 의 $\rho$ 를 낮추어서만 분산을 줄이는데, 상관이 큰 열들이 여러 subspace 에 흩어져 들어가면 model 들이 서로 닮아 $\rho$ 가 다시 올라간다. 지금인 이유는 계측 자료의 열 이름이 sensor 와 단계의 식별자를 이미 담고 있어 묶음을 자료에서 바로 읽을 수 있기 때문이다. 필요한 것은 열 group 식별자의 규약과, 그 단위로 subspace 를 뽑아 $\rho$ 의 변화를 재는 구현이다.
 
 ## References
@@ -243,7 +302,6 @@ Table 4. Method by the shape of the data
 - **elastic net**: 절대값 벌점과 제곱 벌점을 함께 두는 정칙화.
 - **embedded selection**: 학습 과정 안에서 열 선택이 함께 일어나는 방식.
 - **filter selection**: model 과 무관한 지표로 열을 미리 거르는 방식.
-- **gradient boosting**: 앞 단계 model 의 잔차를 다음 tree 가 맞추도록 tree 를 하나씩 더해 가는 ensemble.
 - **held-out error**: 학습에 쓰지 않은 자료에서 잰 오차.
 - **hyperparameter**: 학습으로 정해지지 않고 밖에서 정해 주는 값.
 - **lasso**: 절대값 벌점을 두어 일부 계수를 0 으로 만드는 정칙화.
@@ -257,5 +315,6 @@ Table 4. Method by the shape of the data
 - **random subspace method**: 열만 무작위로 뽑아 학습시킨 model 여럿을 합치는 방법.
 - **ridge**: 제곱 벌점을 두어 계수의 크기를 줄이는 정칙화.
 - **underfitting**: model 의 용량이 모자라 학습 자료의 체계적인 모양조차 따라가지 못하는 현상.
+- **validation set**: 학습에 쓰지 않고 학습 도중의 성능을 재는 데 남겨 둔 자료.
 - **wide data**: 열의 수가 행의 수에 견주어 크거나 더 큰 자료.
 - **wrapper selection**: model 성능을 기준으로 열 조합을 탐색하는 방식.

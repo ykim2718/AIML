@@ -1,12 +1,11 @@
-"""Draw training and validation accuracy against boosting iterations.
+"""Draw the concept of training and validation accuracy against iterations.
 
-A gradient boosting classifier is fitted on a sample whose labels are partly reassigned at random, and its accuracy is
-read after every iteration on the training half and on the held-out validation half. Training accuracy keeps
-rising toward 1 while validation accuracy peaks and then falls, which marks where the model starts to fit
-the reassigned labels. The two curves are written to CSV so the text can quote them.
+The training-set curve rises and levels off near its ceiling, while the validation-set curve rises, peaks
+and then falls. The curves are drawn from closed-form shapes, not from a fitted model, and the axes carry
+no ticks because only the shape is meant to be read.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -16,69 +15,76 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.datasets import make_classification
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import train_test_split
 
-__all__ = ['accuracy_by_iteration', 'draw_training_curve']
+__all__ = ['concept_curves', 'draw_training_curve']
 
-FIGSIZE: tuple = (7.0, 4.2)
+FIGSIZE: tuple = (7.0, 5.1)
 REFERENCE_WIDTH: float = 7.0         # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 11.0
-COLORS: list = list(matplotlib.colors.TABLEAU_COLORS.values())
+BASE_FONT_SIZE: float = 14.0
+COLORS: dict = matplotlib.colors.TABLEAU_COLORS
+TRAINING_COLOR: str = COLORS['tab:blue']
+VALIDATION_COLOR: str = COLORS['tab:red']
+
+# Shapes in axis units, with iterations t in [0, 1] and accuracy in [0, 1].
+TRAINING_START: float = 0.22
+TRAINING_RISE: float = 0.75
+TRAINING_SCALE: float = 0.25         # iterations over which the training curve closes 63 % of its rise
+VALIDATION_PEAK_AT: float = 0.65
+VALIDATION_PEAK: float = 0.57
+VALIDATION_START: float = 0.13
+VALIDATION_END: float = 0.35
 
 
-def accuracy_by_iteration(n_samples: int, flip_fraction: float, n_iterations: int, seed: int) -> pd.DataFrame:
-    """Fit gradient boosting and read the accuracy after each iteration.
+def concept_curves(n_points: int = 400) -> pd.DataFrame:
+    """Evaluate the two concept curves on evenly spaced iterations.
 
-    Returns a DataFrame indexed by 'iteration' (starting at 1) with columns 'training' and 'validation'.
+    Returns a DataFrame indexed by 'iteration' (in [0, 1]) with columns 'training' and 'validation'.
     """
-    if n_samples < 20:
-        raise ValueError(f"n_samples must be at least 20, got {n_samples}")
-    if not 0 <= flip_fraction < 0.5:
-        raise ValueError(f"flip_fraction must be in [0, 0.5), got {flip_fraction}")
-    x, y = make_classification(n_samples=n_samples, n_features=20, n_informative=4, flip_y=flip_fraction,
-                               random_state=seed)
-    x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.5, random_state=seed)
-    model = GradientBoostingClassifier(n_estimators=n_iterations, learning_rate=0.1, max_depth=4,
-                                       random_state=seed)
-    model.fit(x_train, y_train)
-    frame = pd.DataFrame({
-        'training': [float(np.mean(p == y_train)) for p in model.staged_predict(x_train)],
-        'validation': [float(np.mean(p == y_valid)) for p in model.staged_predict(x_valid)],
-    })
-    frame.index = pd.RangeIndex(start=1, stop=len(frame) + 1, name='iteration')
-    return frame
+    if n_points < 2:
+        raise ValueError(f"n_points must be at least 2, got {n_points}")
+    t = np.linspace(0.0, 1.0, n_points)
+    training = TRAINING_START + TRAINING_RISE * (1.0 - np.exp(-t / TRAINING_SCALE))
+
+    # A cubic in u = t - peak with zero slope at the peak, passing through the start and end values.
+    u_start, u_end = -VALIDATION_PEAK_AT, 1.0 - VALIDATION_PEAK_AT
+    system = np.array([[u_start ** 2, u_start ** 3], [u_end ** 2, u_end ** 3]])
+    target = np.array([VALIDATION_START - VALIDATION_PEAK, VALIDATION_END - VALIDATION_PEAK])
+    quadratic, cubic = np.linalg.solve(system, target)
+    u = t - VALIDATION_PEAK_AT
+    validation = VALIDATION_PEAK + quadratic * u ** 2 + cubic * u ** 3
+    return pd.DataFrame({'training': training, 'validation': validation},
+                        index=pd.Index(t, name='iteration'))
 
 
 def draw_training_curve(curve: pd.DataFrame, output_folder: pathlib.Path) -> pathlib.Path:
-    """Write the figure and the curve it was drawn from. Returns the figure path."""
+    """Write the concept figure. Returns the figure path."""
     output_folder.mkdir(parents=True, exist_ok=True)
     font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
-    plt.rcParams.update({'font.size': font_size})
 
-    best = int(curve['validation'].idxmax())
     fig, axis = plt.subplots(figsize=FIGSIZE)
-    axis.plot(curve.index, curve['training'], color=COLORS[0], linewidth=2.0, label='training set')
-    axis.plot(curve.index, curve['validation'], color=COLORS[3], linewidth=2.0, label='validation set')
-    axis.axvline(best, color='0.4', linestyle='--', linewidth=1.0)
-    label_height = (curve['validation'].max() + curve['training'].min()) / 2
-    axis.annotate(f"best validation\niteration {best}", xy=(best, label_height),
-                  xytext=(6, 0), textcoords='offset points', color='0.3', fontsize=font_size * 0.9)
-    axis.set_xlabel('iterations')
-    axis.set_ylabel('accuracy')
-    axis.set_xlim(0, curve.index.max())
-    axis.spines[['top', 'right']].set_visible(False)
-    axis.legend(frameon=False, loc='center right')
-    fig.tight_layout()
+    axis.set_xlim(-0.12, 1.29)
+    axis.set_ylim(-0.17, 1.17)
+    axis.set_axis_off()
 
+    # Two crossing axis lines, as in a hand-drawn sketch: each runs a little past the other.
+    axis.plot([0.0, 0.0], [-0.12, 1.0], color='black', linewidth=1.5)
+    axis.plot([-0.05, 1.23], [0.0, 0.0], color='black', linewidth=1.5)
+    axis.text(-0.11, 1.07, 'Accuracy', fontsize=font_size * 1.5, ha='left', va='center')
+    axis.text(1.23, -0.10, 'Iterations', fontsize=font_size * 1.5, ha='right', va='center')
+
+    t = curve.index.to_numpy()
+    axis.plot(t, curve['training'], color=TRAINING_COLOR, linewidth=3.0)
+    axis.plot(t, curve['validation'], color=VALIDATION_COLOR, linewidth=3.0)
+    axis.text(0.92, curve['training'].iloc[-1] + 0.05, 'training-set', color=TRAINING_COLOR,
+              fontsize=font_size, ha='center', va='bottom')
+    axis.text(1.25, VALIDATION_PEAK - 0.06, 'validation-set', color=VALIDATION_COLOR,
+              fontsize=font_size, ha='right', va='center')
+
+    fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=1.0)
     figure_path = output_folder / 'training-curve.png'
     fig.savefig(figure_path, dpi=300)
     plt.close(fig)
-
-    curve.to_csv(output_folder / 'training-curve.csv')
     print(f"wrote {figure_path}")
-    print(curve.loc[[1, best, curve.index.max()]].round(3).to_string())
     return figure_path
 
 
@@ -86,30 +92,17 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=pathlib.Path(__file__).name,
         description=f"{pathlib.Path(__file__).name} {__version__}\n"
-                    f"Draw training and validation accuracy against boosting iterations.",
+                    f"Draw the concept of training and validation accuracy against iterations.",
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument('--output-folder', type=pathlib.Path, required=True,
-                        help="folder the figure and its curve are written to")
-    parser.add_argument('--n-samples', type=int, default=600, help="rows, split half for training")
-    parser.add_argument('--flip-fraction', type=float, default=0.25, help="fraction of labels reassigned at random")
-    parser.add_argument('--n-iterations', type=int, default=300, help="boosting iterations")
-    parser.add_argument('--seed', type=int, default=1, help="seed of the sample and the model")
+                        help="folder the figure is written to")
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
-    args = parser.parse_args()
-    if args.n_samples < 20:
-        parser.error(f"--n-samples must be at least 20, got {args.n_samples}")
-    if not 0 <= args.flip_fraction < 0.5:
-        parser.error(f"--flip-fraction must be in [0, 0.5), got {args.flip_fraction}")
-    if args.n_iterations < 2:
-        parser.error(f"--n-iterations must be at least 2, got {args.n_iterations}")
-    return args
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
     arguments = parse_args()
-    curve_frame = accuracy_by_iteration(n_samples=arguments.n_samples, flip_fraction=arguments.flip_fraction,
-                                        n_iterations=arguments.n_iterations, seed=arguments.seed)
-    draw_training_curve(curve=curve_frame, output_folder=arguments.output_folder)
+    draw_training_curve(curve=concept_curves(), output_folder=arguments.output_folder)
