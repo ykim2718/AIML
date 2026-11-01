@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 25 | Created: 2026-10-25 | Updated: 2026-11-01 11:24 UTC
+Rev. 26 | Created: 2026-10-25 | Updated: 2026-11-01 11:30 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -33,7 +33,8 @@ Rev. 25 | Created: 2026-10-25 | Updated: 2026-11-01 11:24 UTC
 - [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
-- [Appendix H. Schematic of SPE and the Model Plane](#appendix-h-schematic-of-spe-and-the-model-plane)
+- [Appendix H. Schematic of the PLS Bootstrap Ensemble](#appendix-h-schematic-of-the-pls-bootstrap-ensemble)
+- [Appendix I. Schematic of SPE and the Model Plane in PLS Inversion](#appendix-i-schematic-of-spe-and-the-model-plane-in-pls-inversion)
 
 A trained model usually runs from input to output. An inverse problem fixes the desired output first and recovers the input that produces it, and model inversion is the way of running an already trained model backwards for that purpose. This document defines the two terms, classifies the solutions along five axes, summarises the classical results of latent variable model inversion and the inversion methods for each model family, and covers the case where the model cannot be called and the validation of the solution.
 
@@ -242,7 +243,7 @@ $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mat
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane).
+$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix I](#appendix-i-schematic-of-spe-and-the-model-plane-in-pls-inversion).
 
 How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 
@@ -257,7 +258,7 @@ The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B i
 
 (b) carries (a) over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of (a) mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4), and the red dashed line is the null space line of (a) mapped the same way. The blue points and the green diamond are not in (a); they come from fitting PLS anew to each bootstrap sample.
 
-The 200 blue points are the solutions of the PLS bootstrap ensemble (row 2 of Table 1, [Appendix C](#appendix-c-bagging-ensemble)). Each is the minimum-norm solution of one PLS fitted to a bootstrap sample and inverted by the procedure of Eq. (4), with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives.
+The 200 blue points are the solutions of the PLS bootstrap ensemble (row 2 of Table 1, [Appendix C](#appendix-c-bagging-ensemble)). Each is the minimum-norm solution of one PLS fitted to a bootstrap sample and inverted by the procedure of Eq. (4), with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives. A schematic of this ensemble drawn in the input space is in [Appendix H](#appendix-h-schematic-of-the-pls-bootstrap-ensemble).
 
 #### Design space and product transfer
 
@@ -832,13 +833,23 @@ SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\
 
 The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4) lies on the model plane, so its SPE is 0. So for the solution of Eq. (4) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
 
-## Appendix H. Schematic of SPE and the Model Plane
+## Appendix H. Schematic of the PLS Bootstrap Ensemble
 
-Drawing the relation between SPE and the model plane for three inputs gives Fig 9 below.
+Drawing the PLS bootstrap ensemble of Fig 3 (b) for three inputs gives Fig 9 below.
 
-<img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 9">
+<img src="inverse-problem-ko_fig/bootstrap-schematic.png" width="700" style="max-width: 100%;" alt="Fig 9">
 
-Fig 9. Row space and column space of the loading matrix P, the T^2 limit and SPE
+Fig 9. Model planes of the bootstrap PLS models and their minimum-norm solutions
+
+The blue surfaces are the model planes of the PLS fitted to each bootstrap sample, that is, the column space of the $\mathbf{P}$ of each PLS, and 12 of the 200 are drawn. The red surface is the model plane of the single PLS fitted to all rows, and the gray points are the rows of $\mathbf{X}$ used for training. A change of training sample changes the loading matrix $\mathbf{P}$ and the sample mean, so the tilt and the position of the model plane change together. The 200 blue points are the minimum-norm solutions $\mathbf{x}^{\ast}$ of the 200 bootstrap PLS, each inverted by the procedure of Eq. (4), and each point lies on the model plane of its own PLS. The spread of the blue points therefore follows from how far the model plane moves. The green diamond is the mean of the 200 solutions, the solution of the PLS bootstrap ensemble, and the orange star is the minimum-norm solution of the single PLS. The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. In Fig 3 (b) the inputs and the latent variables are both 2, so the model plane is the whole input plane and a change of its tilt cannot be seen; this figure adds one more input.
+
+## Appendix I. Schematic of SPE and the Model Plane in PLS Inversion
+
+Drawing the relation between SPE and the model plane for three inputs gives Fig 10 below.
+
+<img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 10">
+
+Fig 10. Row space and column space of the loading matrix P, the T^2 limit and SPE
 
 - (a): the row space of $\mathbf{P}$, the score space. The ellipse, the null space line, the segment A–B and $\mathbf{t}^{\ast}$ on it are laid out as in Fig 3 (a).
 - (b): the column space of $\mathbf{P}$, the model plane. It holds the points of (a) carried by $\mathbf{x} = \mathbf{P}\mathbf{t}$, and the squared length of the perpendicular from an $\mathbf{x}$ off the plane is SPE.

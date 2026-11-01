@@ -1,14 +1,15 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.20.0: Add fig_9, a schematic of the PLS bootstrap ensemble; the SPE schematic becomes fig_10.
     0.19.0: Add the row space panel (a) to fig_9 and mark the column space in panel (b).
-    0.18.0: Add fig_9, a schematic of SPE and the model plane in a three-input space.
+    0.18.0: Add fig_10, a schematic of SPE and the model plane in a three-input space.
     0.17.0: Merge fig_3 and fig_4 into the two panels of fig_3, with text twice as large.
     0.16.0: Add fig_4, the spread of the minimum-norm solution over bootstrap PLS models.
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.19.2.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.20.0.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -28,7 +29,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
 __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'build_appendix_d_model',
-           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8', 'fig_9']
+           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8', 'fig_9', 'fig_10']
 
 APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
@@ -658,8 +659,85 @@ def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
-def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 9: (a) the row space of P (score space), (b) its image, the column space of P, and SPE.
+def fig_9(out_folder: pathlib.Path, n_boot: int = 200, n_planes: int = 12) -> pathlib.Path:
+    """Fig 9: schematic of the PLS bootstrap ensemble with the model plane of each bootstrap PLS.
+
+    The numbers are made up for the drawing: three inputs and two latent variables, so that each
+    model plane is a tilted plane inside the input space.
+    """
+    if n_boot < 2 or not 1 <= n_planes <= n_boot:
+        raise ValueError(f'need n_boot >= 2 and 1 <= n_planes <= n_boot, got {n_boot}, {n_planes}')
+    text_size = font_size(1.45)
+    p1 = np.array([1.0, 0.0, 0.35])
+    p1 = p1 / np.linalg.norm(p1)
+    p2 = np.array([0.0, 1.0, 0.25])
+    p2 = p2 - (p2 @ p1) * p1
+    p2 = p2 / np.linalg.norm(p2)
+    normal = np.cross(p1, p2)
+    rng = np.random.default_rng(5)
+    n_rows = 15
+    scores = rng.normal(0.0, 1.0, (n_rows, 2)) * np.array([1.6, 0.8])
+    x_data = scores @ np.column_stack([p1, p2]).T + rng.normal(0.0, 0.6, (n_rows, 1)) * normal
+    y_data = scores @ np.array([0.6, 1.0]) + rng.normal(0.0, 0.4, n_rows)
+    y_des = 1.0
+
+    def fit_and_invert(rows: np.ndarray) -> tuple:
+        xb, yb = x_data[rows], y_data[rows]
+        xb_mean, yb_mean = xb.mean(axis=0), yb.mean()
+        model = PLSRegression(n_components=2, scale=False).fit(xb - xb_mean, yb - yb_mean)
+        t_min = np.linalg.pinv(model.y_loadings_) @ np.array([y_des - yb_mean])
+        basis, _ = np.linalg.qr(model.x_loadings_)
+        return model.x_loadings_ @ t_min + xb_mean, xb_mean, basis
+
+    x_single, centre_single, basis_single = fit_and_invert(np.arange(n_rows))
+    boot = [fit_and_invert(rng.integers(0, n_rows, n_rows)) for _ in range(n_boot)]
+    x_boot = np.array([b[0] for b in boot])
+    x_ensemble = x_boot.mean(axis=0)
+
+    fig = plt.figure(figsize=(FIGSIZE[0] * 1.05, FIGSIZE[0] * 0.9))
+    ax = fig.add_subplot(projection='3d', computed_zorder=False)
+    u, v = np.meshgrid(np.linspace(-3.0, 3.0, 2), np.linspace(-2.0, 2.0, 2))
+
+    def draw_plane(centre: np.ndarray, basis: np.ndarray, color: str, alpha: float) -> None:
+        plane = centre + u[..., None] * basis[:, 0] + v[..., None] * basis[:, 1]
+        ax.plot_surface(plane[..., 0], plane[..., 1], plane[..., 2], color=color, alpha=alpha,
+                        edgecolor='none')
+
+    for _, centre, basis in boot[:n_planes]:
+        draw_plane(centre, basis, COLORS[0], 0.06)
+    draw_plane(centre_single, basis_single, COLORS[3], 0.12)
+    ax.scatter(*x_data.T, s=12, color='0.55', depthshade=False, zorder=3,
+               label='historical data (rows of X)')
+    ax.scatter(*x_boot.T, s=10, color=COLORS[0], alpha=0.6, depthshade=False, zorder=4,
+               label=f'x* of {n_boot} bootstrap PLS (PLS bootstrap ensemble)')
+    ax.scatter(*x_ensemble, s=110, marker='D', color=COLORS[2], depthshade=False, zorder=5,
+               label='ensemble mean')
+    ax.scatter(*x_single, s=260, marker='*', color=COLORS[1], depthshade=False, zorder=6,
+               label='x* of the PLS on all rows')
+    ax.text(*(centre_single - 3.0 * basis_single[:, 0] + 2.0 * basis_single[:, 1] + 0.3 * normal),
+            'model planes of\nthe bootstrap PLS', color=COLORS[0], fontsize=text_size)
+    for setter, name in ((ax.set_xlabel, 'x1'), (ax.set_ylabel, 'x2'), (ax.set_zlabel, 'x3')):
+        setter(name, fontsize=text_size)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.view_init(elev=30, azim=-62)
+    ax.set_box_aspect((1.3, 1.0, 0.8))
+    ax.legend(fontsize=font_size(1.15), loc='upper center', bbox_to_anchor=(0.5, 0.06), ncol=1,
+              frameon=False)
+
+    out_path = out_folder / 'bootstrap-schematic.png'
+    out_folder.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
+    plt.close(fig)
+    spread = x_boot.std(axis=0, ddof=1)
+    print(f'wrote {out_path}, single={np.round(x_single, 3)}, ensemble={np.round(x_ensemble, 3)}, '
+          f'spread (sd)={np.round(spread, 3)}')
+    return out_path
+
+
+def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 10: (a) the row space of P (score space), (b) its image, the column space of P, and SPE.
 
     The numbers are made up for the drawing: with two inputs and two latent variables the
     model plane of Appendix D fills the whole input space, so its SPE is always 0.
@@ -805,3 +883,4 @@ if __name__ == '__main__':
     fig_7(out_folder=arguments.output_folder)
     fig_8(out_folder=arguments.output_folder)
     fig_9(out_folder=arguments.output_folder)
+    fig_10(out_folder=arguments.output_folder)
