@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 20 | Created: 2026-10-31 | Updated: 2026-10-31 20:39 CDT
+Rev. 21 | Created: 2026-10-31 | Updated: 2026-10-31 20:42 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -251,7 +251,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 \hspace{19em} (7)
 ```
 
-왼쪽 첨가 행렬의 첫 행은 방정식 $x_1 + x_3 = 2$ 를 뜻한다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합이면 붙인 열이 새 방향을 더하지 않아 rank 가 그대로이고, 아니면 rank 가 1 늘어난다. 왼쪽은 셋째 행이 첫 두 행의 합 ($5 = 2 + 3$) 이어서 rank 가 $\mathbf{A}$ 와 같은 2 이고, 오른쪽은 셋째 행의 우변이 $0 \ne 1 + 0$ 이어서 rank 가 3 으로 늘어난다.
+왼쪽 첨가 행렬의 첫 행 $[1, 0, 1 \mid 2]$ 는 $\mathbf{A}$ 의 첫 행 $[1, 0, 1]$ 에 $\mathbf{x}$ 를 곱한 값이 $\mathbf{b}$ 의 첫 원소 2 와 같다는 방정식을 뜻한다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합이면 붙인 열이 새 방향을 더하지 않아 rank 가 그대로이고, 아니면 rank 가 1 늘어난다. 왼쪽은 셋째 행이 첫 두 행의 합 ($5 = 2 + 3$) 이어서 rank 가 $\mathbf{A}$ 와 같은 2 이고, 오른쪽은 셋째 행의 우변이 $0 \ne 1 + 0$ 이어서 rank 가 3 으로 늘어난다.
 
 1. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) \gt \mathrm{rank}(\mathbf{A})$ 이면 해가 없다. 위의 오른쪽 첨가 행렬이 이 경우이다.
 2. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) = n$ 이면 해가 하나이다. 식 (4) 에서 nullity 가 0 이어서 null space 에 zero vector 만 있다.
