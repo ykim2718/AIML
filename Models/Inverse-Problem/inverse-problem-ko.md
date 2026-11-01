@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 115 | Created: 2026-08-28 | Updated: 2026-11-01 13:35 UTC
+Rev. 116 | Created: 2026-08-28 | Updated: 2026-11-01 13:39 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -33,8 +33,8 @@ Rev. 115 | Created: 2026-08-28 | Updated: 2026-11-01 13:35 UTC
 - [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
-- [Appendix H. PLS Inversion and the Null Space: Schematic of the PLS Bootstrap Ensemble](#appendix-h-pls-inversion-and-the-null-space-schematic-of-the-pls-bootstrap-ensemble)
-- [Appendix I. PLS Inversion and the Null Space: Schematic of SPE and the Model Plane](#appendix-i-pls-inversion-and-the-null-space-schematic-of-spe-and-the-model-plane)
+- [Appendix H. PLS Inversion and the Null Space: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-h-pls-inversion-and-the-null-space-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
+- [Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -243,7 +243,7 @@ $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고,
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-and-the-null-space-schematic-of-spe-and-the-model-plane) 에 있다.
+$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-and-the-null-space-model-plane-of-one-pls-and-spe) 에 있다.
 
 두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
@@ -258,7 +258,7 @@ Fig 3. Null space in the score plane and the bootstrap spread of the solution in
 
 (b) 는 (a) 를 입력 평면으로 옮긴 것이다. 주황 별은 (a) 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 (a) 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 (a) 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
 
-파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix C](#appendix-c-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다. 이 ensemble 을 입력 공간에 그린 schematic 은 [Appendix H](#appendix-h-pls-inversion-and-the-null-space-schematic-of-the-pls-bootstrap-ensemble) 에 있다.
+파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix C](#appendix-c-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다. 이 ensemble 을 입력 공간에 그린 schematic 은 [Appendix H](#appendix-h-pls-inversion-and-the-null-space-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution) 에 있다.
 
 #### Design space and product transfer
 
@@ -833,7 +833,7 @@ SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 �
 
 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model plane 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
 
-## Appendix H. PLS Inversion and the Null Space: Schematic of the PLS Bootstrap Ensemble
+## Appendix H. PLS Inversion and the Null Space: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
 
 Fig 3 (b) 의 PLS bootstrap ensemble 을 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
 
@@ -846,7 +846,7 @@ Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 
 파란 면은 각 bootstrap PLS 의 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 그래서 파란 점의 퍼짐은 model plane 이 흔들린 만큼 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
 
-## Appendix I. PLS Inversion and the Null Space: Schematic of SPE and the Model Plane
+## Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE
 
 SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 10 과 같다.
 
