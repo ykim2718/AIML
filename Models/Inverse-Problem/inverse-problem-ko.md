@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 101 | Created: 2026-08-28 | Updated: 2026-11-01 09:08 UTC
+Rev. 102 | Created: 2026-08-28 | Updated: 2026-11-01 09:09 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -33,6 +33,7 @@ Rev. 101 | Created: 2026-08-28 | Updated: 2026-11-01 09:08 UTC
 - [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
+- [Appendix H. Schematic of SPE and the Model Plane](#appendix-h-schematic-of-spe-and-the-model-plane)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -241,7 +242,7 @@ $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-no
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다.
+식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane) 에 있다.
 
 두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
@@ -816,6 +817,8 @@ SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 �
 ```
 
 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model 평면 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
+
+## Appendix H. Schematic of SPE and the Model Plane
 
 SPE 와 model 평면의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
 

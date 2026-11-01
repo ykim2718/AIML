@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 15 | Created: 2026-10-25 | Updated: 2026-11-01 09:08 UTC
+Rev. 16 | Created: 2026-10-25 | Updated: 2026-11-01 09:09 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -33,6 +33,7 @@ Rev. 15 | Created: 2026-10-25 | Updated: 2026-11-01 09:08 UTC
 - [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
 - [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
 - [Appendix G. Derivation of Eq. (3), (4) and (5)](#appendix-g-derivation-of-eq-3-4-and-5)
+- [Appendix H. Schematic of SPE and the Model Plane](#appendix-h-schematic-of-spe-and-the-model-plane)
 
 A trained model usually runs from input to output. An inverse problem fixes the desired output first and recovers the input that produces it, and model inversion is the way of running an already trained model backwards for that purpose. This document defines the two terms, classifies the solutions along five axes, summarises the classical results of latent variable model inversion and the inversion methods for each model family, and covers the case where the model cannot be called and the validation of the solution.
 
@@ -241,7 +242,7 @@ Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minim
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5).
+The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix H](#appendix-h-schematic-of-spe-and-the-model-plane).
 
 How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 
@@ -816,6 +817,8 @@ SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\
 ```
 
 The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4) lies on the model plane, so its SPE is 0. So for the solution of Eq. (4) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
+
+## Appendix H. Schematic of SPE and the Model Plane
 
 Drawing the relation between SPE and the model plane for three inputs gives Fig 9 below.
 
