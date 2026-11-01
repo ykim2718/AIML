@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 13 | Created: 2026-10-25 | Updated: 2026-10-28 10:09 UTC
+Rev. 14 | Created: 2026-10-25 | Updated: 2026-11-01 03:20 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -816,3 +816,11 @@ SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\
 ```
 
 The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4) lies on the model plane, so its SPE is 0. So for the solution of Eq. (4) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
+
+Drawing the relation between SPE and the model plane for three inputs gives Fig 9 below.
+
+<img src="inverse-problem-ko_fig/spe-schematic.png" width="600" style="max-width: 100%;" alt="Fig 9">
+
+Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
+
+The blue surface is the model plane spanned by the columns of $\mathbf{P}$, and the ellipse, the null space line, the segment A–B and $\mathbf{x}^{\ast}$ on it are the score plane of Fig 3 (a) carried into the input space by $\mathbf{P}$. When an $\mathbf{x}$ solved directly in the input space (purple) leaves the plane, the squared length of the perpendicular $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ dropped to the plane is the SPE of Eq. (13). The numbers are made up for the drawing. In Appendix D both the inputs and the latent variables number 2, so the model plane fills the whole input space and SPE is always 0; the figure therefore adds one more input.

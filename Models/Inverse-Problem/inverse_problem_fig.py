@@ -1,12 +1,13 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.18.0: Add fig_9, a schematic of SPE and the model plane in a three-input space.
     0.17.0: Merge fig_3 and fig_4 into the two panels of fig_3, with text twice as large.
     0.16.0: Add fig_4, the spread of the minimum-norm solution over bootstrap PLS models.
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.17.0.2026.10.28"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.18.0.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -25,7 +26,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import GradientBoostingRegressor
 
 __all__ = ['build_appendix_b_model', 'build_appendix_c_model', 'build_appendix_d_model',
-           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8']
+           'panel_caption', 'fig_3', 'fig_4', 'fig_5', 'fig_6', 'fig_7', 'fig_8', 'fig_9']
 
 APPENDIX_D_FEATURES: list = ['A', 'B', 'C', 'D', 'E']
 APPENDIX_D_FREE: list = ['A', 'B']
@@ -655,6 +656,86 @@ def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
     return out_path
 
 
+def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
+    """Fig 9: schematic of the model plane, the T^2 limit, the null space segment and SPE.
+
+    The numbers are made up for the drawing: with two inputs and two latent variables the
+    model plane of Appendix D fills the whole input space, so its SPE is always 0.
+    """
+    text_size = font_size(1.45)
+    p1 = np.array([1.0, 0.0, 0.35])
+    p1 = p1 / np.linalg.norm(p1)
+    p2 = np.array([0.0, 1.0, 0.25])
+    p2 = p2 - (p2 @ p1) * p1
+    p2 = p2 / np.linalg.norm(p2)
+    loadings = np.column_stack([p1, p2])            # P: the model plane in three inputs
+    normal = np.cross(p1, p2)
+    score_sd = np.array([1.6, 0.8])
+    t2_limit = chi2.ppf(0.95, df=2)
+
+    rng = np.random.default_rng(3)
+    scores = rng.normal(0.0, 1.0, (80, 2)) * score_sd
+    x_data = scores @ loadings.T + rng.normal(0.0, 0.08, (80, 1)) * normal
+
+    y_loadings = np.array([0.35, 1.0])              # Q of one output
+    t_star = y_loadings * 0.6 / (y_loadings @ y_loadings)
+    null_dir = np.array([-y_loadings[1], y_loadings[0]]) / np.linalg.norm(y_loadings)
+    quad = [np.sum(null_dir ** 2 / score_sd ** 2), 2.0 * np.sum(t_star * null_dir / score_sd ** 2),
+            np.sum(t_star ** 2 / score_sd ** 2) - t2_limit]
+    alpha_a, alpha_b = np.sort(np.roots(quad).real)
+    point_a = loadings @ (t_star + alpha_a * null_dir)
+    point_b = loadings @ (t_star + alpha_b * null_dir)
+    x_star = loadings @ t_star
+
+    # a candidate solved in the input space that leaves the model plane
+    x_off = loadings @ np.array([-2.3, -0.6]) + 1.8 * normal
+    foot = loadings @ (loadings.T @ x_off)
+
+    fig = plt.figure(figsize=(FIGSIZE[0] * 1.05, FIGSIZE[0] * 0.9))
+    ax = fig.add_subplot(projection='3d')
+    u, v = np.meshgrid(np.linspace(-4.5, 4.5, 2), np.linspace(-3.0, 3.0, 2))
+    plane = u[..., None] * p1 + v[..., None] * p2
+    ax.plot_surface(plane[..., 0], plane[..., 1], plane[..., 2], color=COLORS[0], alpha=0.12,
+                    edgecolor='none')
+    ax.scatter(*x_data.T, s=10, color='0.55', depthshade=False, label='historical data (rows of X)')
+    angle = np.linspace(0.0, 2.0 * np.pi, 300)
+    ellipse = (np.sqrt(t2_limit) * score_sd[None, :]
+               * np.column_stack([np.cos(angle), np.sin(angle)])) @ loadings.T
+    ax.plot(*ellipse.T, color=COLORS[0], linewidth=2.0, label='T^2 = limit on the model plane')
+    line = np.array([loadings @ (t_star + k * null_dir) for k in (alpha_a - 1.2, alpha_b + 1.2)])
+    ax.plot(*line.T, color=COLORS[3], linewidth=1.2, linestyle='--', label='null space line through t*')
+    ax.plot(*np.array([point_a, point_b]).T, color=COLORS[3], linewidth=4.0, label='segment A-B')
+    ax.scatter(*x_star, s=260, marker='*', color=COLORS[1], depthshade=False,
+               label='x* = P t* (SPE = 0)')
+    ax.scatter(*x_off, s=70, color=COLORS[4], depthshade=False, label='x solved in the input space')
+    ax.scatter(*foot, s=40, marker='x', color=COLORS[4], depthshade=False)
+    ax.plot(*np.array([x_off, foot]).T, color=COLORS[4], linewidth=2.2)
+    ax.text(*(x_off + np.array([-0.4, 0.0, 0.35])), 'e = x - P t\nSPE = ||e||^2', color=COLORS[4],
+            fontsize=text_size)
+    ax.text(*(foot + np.array([0.2, 0.3, -0.45])), 'P t', color=COLORS[4], fontsize=text_size)
+    for name, point in (('A', point_a), ('B', point_b)):
+        ax.text(*(point + np.array([0.15, 0.15, 0.15])), name, color=COLORS[3], fontsize=text_size)
+    ax.text(*(loadings @ np.array([3.0, -3.4])), 'model plane\n(columns of P)', color=COLORS[0],
+            fontsize=text_size)
+    for setter, name in ((ax.set_xlabel, 'x1'), (ax.set_ylabel, 'x2'), (ax.set_zlabel, 'x3')):
+        setter(name, fontsize=text_size)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.view_init(elev=30, azim=-62)
+    ax.set_box_aspect((1.3, 1.0, 0.8))
+    ax.legend(fontsize=font_size(1.15), loc='upper center', bbox_to_anchor=(0.5, 0.06), ncol=2,
+              frameon=False)
+
+    out_path = out_folder / 'spe-schematic.png'
+    out_folder.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=DPI, bbox_inches='tight')
+    plt.close(fig)
+    print(f'wrote {out_path}, A={np.round(point_a, 2)}, B={np.round(point_b, 2)}, '
+          f'SPE of the off-plane x={float(np.sum((x_off - foot) ** 2)):.3f}')
+    return out_path
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=pathlib.Path(__file__).name,
@@ -683,3 +764,4 @@ if __name__ == '__main__':
     fig_6(out_folder=arguments.output_folder)
     fig_7(out_folder=arguments.output_folder)
     fig_8(out_folder=arguments.output_folder)
+    fig_9(out_folder=arguments.output_folder)

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 99 | Created: 2026-08-28 | Updated: 2026-10-28 10:09 UTC
+Rev. 100 | Created: 2026-08-28 | Updated: 2026-11-01 03:20 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -816,3 +816,11 @@ SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 �
 ```
 
 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model 평면 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
+
+SPE 와 model 평면의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
+
+<img src="inverse-problem-ko_fig/spe-schematic.png" width="600" style="max-width: 100%;" alt="Fig 9">
+
+Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
+
+파란 면이 $\mathbf{P}$ 의 열이 이루는 model 평면이고, 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (13) 의 SPE 이다. 수치는 그림을 위해 만든 값이다. Appendix D 는 입력과 latent 변수가 모두 2 개여서 model 평면이 입력 공간 전체가 되고 SPE 가 늘 0 이므로, 입력을 하나 더한 경우로 그렸다.
