@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 120 | Created: 2026-08-28 | Updated: 2026-11-01 14:24 UTC
+Rev. 121 | Created: 2026-08-28 | Updated: 2026-11-01 14:24 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -230,8 +230,9 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 
 $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다. 목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀어 입력을 구하며, 해를 구하는 방법은 아래 둘이다.
 
-- Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
-- Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
+1\) Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
+
+2\) Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
 
 Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
 
