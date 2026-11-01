@@ -1,5 +1,5 @@
 # Agile AI/ML Modeling Meeting
-Rev. 19 | Created: 2026-09-21 | Updated: 2026-10-22 18:20 CDT
+Rev. 20 | Created: 2026-09-21 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -206,7 +206,7 @@ Insight : <what moved the metric, and what it was read from>
 Handoff : <OWNER> runs <EXPERIMENT> by <DATE>, backlog item <ITEM_ID>
 ```
 
-한 sprint 를 채워 넣으면 세 줄은 아래와 같이 읽힌다. 각 줄이 양을 하나씩 대고 있어, 석 달 뒤의 독자도 무엇이 시도되었는지가 아니라 무엇이 확립되었는지를 가릴 수 있다.
+한 sprint 를 채워 넣으면 세 줄은 아래처럼 읽힌다. 각 줄이 양을 하나씩 대고 있어, 석 달 뒤의 독자도 무엇이 시도되었는지가 아니라 무엇이 확립되었는지를 가릴 수 있다.
 
 ```text
 Verdict : ACCEPTED on "1D-CNN autoencoder reduces the trace to 200 dimensions"

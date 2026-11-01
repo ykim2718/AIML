@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 124 | Created: 2026-09-01 | Updated: 2026-09-23 11:08 CDT
+Rev. 125 | Created: 2026-09-01 | Updated: 2026-11-01 21:36 UTC
 
 - [1. One-Way Variance Components](#1-one-way-variance-components)
   - [1.1 Notation](#11-notation)
@@ -57,11 +57,11 @@ $$\mathrm{SST} = \mathrm{SSW} + \mathrm{SSB} \hspace{19em} (1)$$
 - SSW: within-group sum of squares. group 내 변동. 각 member 값이 제 group 평균에서 벗어난 정도. 모형이 설명하지 못하고 남은 몫이므로 SSE (error sum of squares) 로도 쓴다.
 - SSB: between-group sum of squares. group 간 변동. 각 group 평균이 총평균에서 벗어난 정도. 인자가 설명하는 몫이므로 SSA (factor sum of squares) 로도 쓴다.
 
-세 제곱합을 풀어쓰면 아래와 같으며, 이 항등식의 유도는 [Appendix B](#appendix-b-decomposition-of-the-total-sum-of-squares) 에 적었다.
+세 제곱합을 풀어쓰면 아래이며, 이 항등식의 유도는 [Appendix B](#appendix-b-decomposition-of-the-total-sum-of-squares) 에 적었다.
 
 $$\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2 = \sum_{i}\sum_{j} (X_{ij} - \bar{X}_i)^2 + N \sum_{i} (\bar{X}_i - \bar{X})^2 \hspace{19em} (2)$$
 
-각 제곱합을 제 자유도로 나누면 평균제곱 (mean square, MS) 이 되고, 그것이 곧 분산이다. 우변의 두 항을 각각 within-group 분산의 평균과 group 평균의 분산으로 바꾸면 아래와 같다.
+각 제곱합을 제 자유도로 나누면 평균제곱 (mean square, MS) 이 되고, 그것이 곧 분산이다. 우변의 두 항을 각각 within-group 분산의 평균과 group 평균의 분산으로 바꾸면 아래이다.
 
 $$\overline{S_{\mathrm{within}}^2} = \frac{1}{K} \sum_{i=1}^{K} s_i^2, \qquad S_{\mathrm{between}}^2 = \frac{1}{K-1} \sum_{i=1}^{K} (\bar{X}_i - \bar{X})^2 \hspace{19em} (3)$$
 
@@ -71,7 +71,7 @@ $$S_{\mathrm{total}}^2 = \frac{K(N-1)}{M-1} \overline{S_{\mathrm{within}}^2} + \
 
 $$S_{\mathrm{total}} \approx \sqrt{\overline{S_{\mathrm{within}}^2} + S_{\mathrm{between}}^2} \hspace{19em} (5) 🌳$$
 
-두 성분의 크기에 따라 전체 표준편차가 갈리는 두 경우는 아래와 같다.
+두 성분의 크기에 따라 전체 표준편차가 갈리는 두 경우는 아래이다.
 
 - $`S_{\mathrm{between}}^2 = 0`$ 일 때: group 평균이 모두 같은 경우이며, 전체 표준편차는 group 내 표준편차의 제곱평균제곱근으로 줄어든다.
 - $`S_{\mathrm{between}}^2 \gt 0`$ 일 때: group 내 표준편차가 아무리 작아도 group 평균이 서로 벌어져 있으면 전체 표준편차는 개별 group 의 표준편차보다 훨씬 커진다.
@@ -181,7 +181,7 @@ Table 1. One-way ANOVA with wafer as the factor
 | Between wafer | 2,338,049 | 199 | 11,749.0 | 51.92 | ~0 | $`\sigma_{between} = \sqrt{(\mathrm{MS}_{between} - \mathrm{MS}_{within})/N} = 29.77`$ |
 | Within wafer | 543,060 | 2400 | 226.3 | | | $`\sigma_{within} = \sqrt{\mathrm{MS}_{within}} = 15.04`$ |
 
-표의 각 열이 뜻하는 바는 아래와 같다.
+표의 각 열이 뜻하는 바는 아래이다.
 
 - SS: sum of squares. Between wafer 행이 section 1.2 의 SSB, within wafer 행이 SSW 이며, 둘을 더하면 SST 2,881,109 가 된다.
 - df: degrees of freedom. 그 제곱합이 담은 독립한 정보의 개수. Wafer 200 장이므로 between 은 199, wafer 마다 site 13 개에서 평균 하나를 뺀 12 를 200 배 하여 within 은 2400.
@@ -208,7 +208,7 @@ Table 2 의 두 성분은 200 장 전체를 한 번에 본 값이다. Wafer 한 
 
 ### 2.3 W2W Threshold
 
-Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래와 같다.
+Fig 2 는 식 (13) 의 두 항을 처음 $`n`$ 장으로 계산해 함께 보인다. 세 곡선을 얻는 방법은 아래이다.
 
 - 왼쪽 항 $`\sigma_{within}/\sqrt{N}`$: wafer 마다의 site 분산 $`s_i^2`$ 를 처음 $`n`$ 장까지 평균한 $`\sigma_{within}(1..n) = \sqrt{\frac{1}{n} \sum_{i \le n} s_i^2}`$ 을 $`\sqrt{N}`$ 으로 나눈 값. Site 를 $`N`$ 개 평균해도 wafer 평균에 남는 측정 잡음이며, wafer 가 모두 같아도 사라지지 않는 바닥이다. Wafer 평균을 쓰지 않으므로 자료에서 바로 나온다.
 - 관측 곡선 $`\sigma_{\mu_n}`$: 처음 $`n`$ 장의 wafer 평균의 표본표준편차.
@@ -282,7 +282,7 @@ $$\underbrace{\sum_{i}\sum_{j} (X_{ij} - \bar{X})^2}_{\mathrm{SST}} = \underbrac
 
 ### C.1 The Two Coefficients
 
-Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래와 같다.
+Section 1.2 의 두 계수를 $`a`$ 와 $`b`$ 로 두면 아래이다.
 
 $$a = \frac{K(N-1)}{M-1} = \frac{KN-K}{KN-1}, \qquad b = \frac{N(K-1)}{M-1} = \frac{KN-N}{KN-1} \hspace{19em} (23)$$
 
@@ -338,7 +338,7 @@ $$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 - \frac{N-1}{N} \sigma_{within}^
 
 $$\sigma_{within}^2 = S_{\mathrm{total}}^2 - \sigma_{between}^2 \hspace{19em} (30)$$
 
-이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래와 같다.
+이를 대입하고 $`S_{\mathrm{total}}^2`$ 의 계수를 정리하면 아래이다.
 
 $$\hat{\sigma}_{\mu_K}^2 = S_{\mathrm{total}}^2 \left(1 - \frac{N-1}{N}\right) + \frac{N-1}{N} \sigma_{between}^2 = \frac{S_{\mathrm{total}}^2 + (N-1) \sigma_{between}^2}{N} \hspace{19em} (31)$$
 

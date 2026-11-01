@@ -1,5 +1,5 @@
 # Graph Attention-Based Virtual Metrology for Film Deposition Processes in Semiconductor Manufacturing
-Rev. 11 | Created: 2026-10-29 | Updated: 2026-10-30 06:32 UTC
+Rev. 12 | Created: 2026-10-29 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -49,7 +49,7 @@ Model 은 parameter node embedding, parameter-to-layer graph attention, thicknes
 
 논문은 film 두께에 대한 영향을 공정 조건과 film 형성 결과 사이의 의존 관계로 보고, 이 관계를 directed bipartite graph 로 나타냈다 (논문 3.3절). 공정 조건은 parameter node, 결과는 layer node 이며, edge 는 parameter node 에서 layer node 로만 간다. 이 구조에서 layer 마다 필요한 공정 정보만 골라 모으고, 가중치 $`\alpha_{l,(s,p)}`$ 를 parameter $(s, p)$ 가 layer $l$ 두께에 갖는 중요도로 읽는다. 논문은 이 해석 가능성으로 기존 deep learning VM 의 black-box 한계를 푸는 것을 주 목표로 밝혔다. Parameter node 끼리 연결하는 graph 같은 다른 구조와 견주어 bipartite graph 를 고른 이유는 논문에 적혀 있지 않다.
 
-논문의 graph 와 신경망 layer 의 directed acyclic graph (DAG) 는 아래 Table 1 과 같이 다르다. 논문은 DAG 를 언급하지 않으며, 이 표는 리뷰어의 분석이다.
+논문의 graph 와 신경망 layer 의 directed acyclic graph (DAG) 는 아래 Table 1 처럼 다르다. 논문은 DAG 를 언급하지 않으며, 이 표는 리뷰어의 분석이다.
 
 Table 1. Graph in the paper versus layer DAG
 
@@ -86,7 +86,7 @@ Step 마다 다른 길이 $`T_s`$ 를 시간 평균으로 없애 parameter node 
 
 $`\mathbf{z}_{s,p}^{(t)}`$ 는 $`\mathbf{z}_{s,p}`$ 의 $t$ 번째 행이다.
 
-Layer node $l$ 이 parameter node $(s, p)$ 에 거는 attention 가중치는 아래와 같다 (논문 Eq. 8). 유도는 [B.3](#b3-parameter-to-layer-attention-weight-eq-3) 에 있다.
+Layer node $l$ 이 parameter node $(s, p)$ 에 거는 attention 가중치는 아래이다 (논문 Eq. 8). 유도는 [B.3](#b3-parameter-to-layer-attention-weight-eq-3) 에 있다.
 
 ```math
 \alpha_{l,(s,p)} = \frac{\exp\left(\mathbf{q}_l^\top \mathbf{h}_{s,p} / \sqrt{d_h}\right)}{\sum_{s'=1}^{S} \sum_{p'=1}^{P} \exp\left(\mathbf{q}_l^\top \mathbf{h}_{s',p'} / \sqrt{d_h}\right)} \hspace{19em} (3)
@@ -151,7 +151,7 @@ predicted thickness y_hat_l,  trained with Eq. (5)
 - **Baselines**: MLP baseline 은 같은 입력 feature 에 hidden layer 128, 64 개와 ReLU 를 쓴다. 학습 자료가 작아 구조를 단순하게 두었다. 제안 model 에서 parameter-to-layer attention 을 뺀 ablation model 도 비교한다.
 - **Evaluation Metrics**: 식 (6) 의 $R^2$ 를 layer 마다 원래 단위로 계산하고, Film B 두께 네 개의 값을 평균한다.
 
-학습 설정은 아래 Table 2 와 같다.
+학습 설정은 아래 Table 2 이다.
 
 Table 2. Dataset and training settings
 
@@ -280,7 +280,7 @@ z_{s,p}^{(t,c)} = b_c + \sum_{k=0}^{K-1} w_{c,k}\, x_{s,p}^{(t + k - \lfloor K/2
 
 $\exp$ 는 언제나 양수이므로 $`0 \lt \alpha_{l,(s,p)} \lt 1`$ 이다.
 
-$`\sqrt{d_h}`$ 로 나누면 점수의 분산이 1 이 된다. $`\mathbf{q}_l`$ 과 $`\mathbf{h}_{s,p}`$ 의 성분이 서로 독립이고 평균 0, 분산 1 이라고 두면 아래와 같다.
+$`\sqrt{d_h}`$ 로 나누면 점수의 분산이 1 이 된다. $`\mathbf{q}_l`$ 과 $`\mathbf{h}_{s,p}`$ 의 성분이 서로 독립이고 평균 0, 분산 1 이라고 두면 아래이다.
 
 ```math
 \mathrm{Var}\left(\mathbf{q}_l^\top \mathbf{h}_{s,p}\right) = \sum_{c=1}^{d_h} \mathrm{Var}(q_{l,c} h_{s,p,c}) = \sum_{c=1}^{d_h} 1 = d_h \hspace{19em} (9)
@@ -301,7 +301,7 @@ $`\sqrt{d_h}`$ 로 나누면 점수의 분산이 1 이 된다. $`\mathbf{q}_l`$ 
 - 식 (8) 에 따라 가중치 $`\alpha_{l,(s,p)}`$ 는 모두 양수이고 합이 1 이므로, $`\mathbf{e}_l`$ 은 $`\mathbf{h}_{s,p}`$ 들의 convex combination 이다. 성분마다 $`\min_{s,p} h_{s,p,c} \le e_{l,c} \le \max_{s,p} h_{s,p,c}`$ 가 성립한다.
 - 한 node 의 가중치가 1 에 가까우면 $`\mathbf{e}_l`$ 은 그 node 의 embedding 에 가깝다. 식 (5) 를 줄이려면 두께 예측에 쓸모 있는 node 의 가중치가 커져야 하므로, $`\alpha_{l,(s,p)}`$ 를 중요도로 읽을 수 있다.
 
-$`\mathbf{q}_l`$ 은 softmax 를 거쳐 학습된다. Node 를 $j, k$ 로 줄여 적으면 softmax 의 미분은 아래와 같다.
+$`\mathbf{q}_l`$ 은 softmax 를 거쳐 학습된다. Node 를 $j, k$ 로 줄여 적으면 softmax 의 미분은 아래이다.
 
 ```math
 \frac{\partial \alpha_{l,j}}{\partial u_{l,k}} = \alpha_{l,j} \left( \delta_{jk} - \alpha_{l,k} \right) \hspace{19em} (11)

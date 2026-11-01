@@ -1,5 +1,5 @@
 # AI Deployment Locations For Semiconductor Equipment
-Rev. 1 | Created: 2026-10-17 | Updated: 2026-10-22 18:20 CDT
+Rev. 2 | Created: 2026-10-17 | Updated: 2026-11-01 21:36 UTC
 
 ## 1. Purpose
 
@@ -16,7 +16,7 @@ Rev. 1 | Created: 2026-10-17 | Updated: 2026-10-22 18:20 CDT
 
 배포는 서로 독립인 두 축으로 나뉘며, 배포 방식을 서로 구별하는 축은 실행 위치 하나다.
 
-두 축과 축마다의 값은 Fig 1 과 같다.
+두 축과 축마다의 값은 Fig 1 이다.
 
 ```text
 AI deployment for semiconductor equipment
@@ -32,7 +32,7 @@ Fig 1. Two axes of AI deployment
 한 축의 값은 다른 축의 어느 값과도 짝을 이룬다.
 Vendor 의 FDC 제품을 fab 안 server 에 설치하면 on-premise 이고, 같은 제품을 장비 옆 PC 에 설치하면 edge 다.
 
-실행 위치는 장비에서 먼 순서로 Fig 2 와 같이 놓인다.
+실행 위치는 장비에서 먼 순서로 Fig 2 처럼 놓인다.
 
 ```text
 Location (distance from the tool)

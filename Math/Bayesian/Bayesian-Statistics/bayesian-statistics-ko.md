@@ -1,5 +1,5 @@
 # Bayesian Statistics
-Rev. 9 | Created: 2026-09-20 | Updated: 2026-10-22 18:20 CDT
+Rev. 10 | Created: 2026-09-20 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -86,7 +86,7 @@ Bayes 통계학의 계산은 조건부 확률과 Bayes 정리 둘로 이루어�
 P(A \mid B) = \frac{P(A \cap B)}{P(B)} \hspace{19em} (1)
 ```
 
-사건이 아니라 확률변수로 적으면 아래와 같고, $B$ 가 값 $b$ 로 관측되었을 때 $A$ 가 값 $a$ 를 가질 확률을 뜻한다.
+사건이 아니라 확률변수로 적으면 아래이고, $B$ 가 값 $b$ 로 관측되었을 때 $A$ 가 값 $a$ 를 가질 확률을 뜻한다.
 
 ```math
 P(A = a \mid B = b) = \frac{P(A = a,\, B = b)}{P(B = b)} \hspace{19em} (2)
@@ -127,7 +127,7 @@ Table 2. Terms of Bayes' rule
 비율을 묻는다.
 
 앨리스는 1 점만 더 얻으면 이기고, 밥은 남은 세 판을 연속으로 가져가야 이긴다. 따라서 $p$ 가 주어졌을
-때 밥이 이길 확률은 아래와 같다.
+때 밥이 이길 확률은 아래이다.
 
 ```math
 P(\mathrm{Bob\ wins} \mid p) = (1 - p)^3 \hspace{19em} (4)
@@ -146,7 +146,7 @@ P(\mathrm{Bob\ wins} \mid p) = (1 - p)^3 \hspace{19em} (4)
 ### 5.3 The Classical Answer
 
 고전 통계학은 $p$ 를 point estimate 하나로 고정한 뒤 식 (4) 에 넣는다. 관측한 득점 비율을 쓰면
-$\hat{p} = 5/8$ 이고, 밥이 이길 확률은 아래와 같다.
+$\hat{p} = 5/8$ 이고, 밥이 이길 확률은 아래이다.
 
 ```math
 P(\mathrm{Bob\ wins}) = (1 - \hat{p})^3 = \left(\frac{3}{8}\right)^3 = \frac{27}{512} \approx 0.053 \hspace{19em} (5)
@@ -354,7 +354,7 @@ P(\mathrm{Bob\ wins} \mid p) = P(R_1 = R_2 = R_3 = \mathrm{Bob} \mid p) = (1-p)(
 
 ### B.2 Evaluation of the Expectation
 
-식 (6) 에 식 (7) 을 넣으면 분자와 분모가 모두 $p$ 에 대한 적분이 된다. Likelihood 는 여덟 판 가운데 다섯 판을 앨리스가 가져간 확률이므로 $P(A = 5, B = 3 \mid p) = \binom{8}{5} p^5 (1-p)^3$ 이고, 이항계수와 상수 prior 는 분자와 분모에 함께 있어 약분된다. 남는 것은 아래와 같다.
+식 (6) 에 식 (7) 을 넣으면 분자와 분모가 모두 $p$ 에 대한 적분이 된다. Likelihood 는 여덟 판 가운데 다섯 판을 앨리스가 가져간 확률이므로 $P(A = 5, B = 3 \mid p) = \binom{8}{5} p^5 (1-p)^3$ 이고, 이항계수와 상수 prior 는 분자와 분모에 함께 있어 약분된다. 남는 것은 아래이다.
 
 ```math
 E = \frac{\int_{0}^{1} p^5 (1-p)^3 (1-p)^3\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} = \frac{\int_{0}^{1} p^5 (1-p)^6\, dp}{\int_{0}^{1} p^5 (1-p)^3\, dp} \hspace{19em} (16)

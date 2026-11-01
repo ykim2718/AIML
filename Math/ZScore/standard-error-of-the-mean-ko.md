@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 11 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+Rev. 12 | Created: 2026-08-30 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Scope](#1-scope)
 - [2. Relation](#2-relation)
@@ -60,7 +60,7 @@ Table 1. The two standard deviations compared.
 ## 3. Effect of the Sample Size
 
 Standard error 는 표본 크기 자체가 아니라 그 제곱근에 반비례해 줄어든다. 줄어드는 비율은
-Table 2 와 같다.
+Table 2 이다.
 
 Table 2. Standard error as a fraction of the population standard deviation.
 

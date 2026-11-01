@@ -1,5 +1,5 @@
 # Semiconductor Deposition Equipment AI Agent Proposal
-Rev. 34 | Created: 2026-10-14 | Updated: 2026-10-18 04:38 CDT
+Rev. 35 | Created: 2026-10-14 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Quick Start and Architecture](#2-quick-start-and-architecture)
@@ -323,7 +323,7 @@ Table 6. Orchestrator functions
 | Dispatching (웨이퍼 배정)                        | 장비 상태와 VM reliability 를 보고 lot·wafer 를 최적 장비에 배정                                                                                    |
 | Knowledge base (공통 지식 축적)                  | Feature extraction 방식, failure case, 검증 기준을 template 으로 재사용                                                                             |
 
-구성 예는 Table 7 과 같다.
+구성 예는 Table 7 이다.
 
 Table 7. Example technology stack
 
@@ -336,7 +336,7 @@ Table 7. Example technology stack
 
 ## Appendix E. Onboarding Gate Metrics
 
-Table 3 의 gate 마다 함께 보는 지표는 Table 8 과 같다.
+Table 3 의 gate 마다 함께 보는 지표는 Table 8 이다.
 
 Table 8. Gate metrics
 
@@ -379,7 +379,7 @@ Fig 3. Lifecycle of one model version
 
 Validation 에서 champion 보다 나아지지 않은 challenger 는 버리고, 엔지니어의 승인을 받은 challenger 만 production version 이 된다.
 
-Challenger 가 만들어지는 경우는 Table 9 와 같다.
+Challenger 가 만들어지는 경우는 Table 9 이다.
 
 Table 9. Sources of challenger versions
 

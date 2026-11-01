@@ -1,5 +1,5 @@
 # Temporal Convolutional Network Quick Start
-Rev. 9 | Created: 2026-10-23 | Updated: 2026-10-24 10:37 UTC
+Rev. 10 | Created: 2026-10-23 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -92,7 +92,7 @@ Fig 2. Input and output of standard TCN and TCN-based encoder
 
 Standard TCN 은 시간 축의 길이 $T$ 를 유지하고 step 마다 출력을 하나씩 준다. TCN 기반 encoder 는 TCN block 의 출력 $(h_1, \ldots, h_T)$ 를 GAP (Global Average Pooling) 나 마지막 step 으로 시간 축에 대해 요약하여, wafer 한 장을 대표하는 embedding vector $z$ 하나를 만든다.
 
-두 구성의 차이는 Table 1 과 같다.
+두 구성의 차이는 Table 1 이다.
 
 Table 1. Standard TCN and TCN-based encoder
 
@@ -131,7 +131,7 @@ Transformer 에 wafer 진행 순서 (wafer index), lot 내 slot 번호, PM (Prev
 
 ### 5.3 Comparison
 
-시간 범위마다 쓸 model 은 Table 2 와 같다.
+시간 범위마다 쓸 model 은 Table 2 이다.
 
 Table 2. Model by time scope
 
@@ -142,7 +142,7 @@ Table 2. Model by time scope
 
 ## 6. Models and Libraries
 
-TCN 은 `torch.nn` 의 layer 를 조합해 만들고, Transformer 는 `torch.nn` 의 encoder class 를 그대로 쓴다. 방법별 model 과 library 는 Table 3 과 같다.
+TCN 은 `torch.nn` 의 layer 를 조합해 만들고, Transformer 는 `torch.nn` 의 encoder class 를 그대로 쓴다. 방법별 model 과 library 는 Table 3 이다.
 
 Table 3. Models and libraries by method
 

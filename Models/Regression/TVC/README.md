@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 34 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+Rev. 35 | Created: 2026-08-30 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Scope](#1-scope)
 - [2. Why The Coefficient Moves](#2-why-the-coefficient-moves)
@@ -167,7 +167,7 @@ Filter 는 $t$ 시점까지의 정보만으로 $\beta_t$ 를 추정하므로 실
 
 #### Extra Coefficients
 
-시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 degrees of freedom 은 $n$ 이 아니다. penalty 나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 effective degrees of freedom $\mathrm{edf} = \mathrm{tr}(S)$ 이고, constant-coefficient model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래와 같이 다르다.
+시점 $t$ 까지의 관측 $n$ 개로 적합할 때 계수를 시변으로 두어 실제로 더 쓰는 degrees of freedom 은 $n$ 이 아니다. penalty 나 $Q$ 가 그 $n$ 개를 서로 묶어 두므로, 세어야 할 것은 smoother matrix $S$ 의 대각합으로 정의되는 effective degrees of freedom $\mathrm{edf} = \mathrm{tr}(S)$ 이고, constant-coefficient model 이 이미 하나를 쓰므로 추가분은 $\mathrm{edf} - 1$ 이다. 두 형태가 그 값을 정하는 방식은 아래처럼 다르다.
 
 Spline 의 smoother matrix 는 $S_\lambda = X(X^{\top}X + \lambda \Omega)^{-1} X^{\top}$ 이다. $\Omega$ 를 $X^{\top}X$ 에 대해 generalized eigendecomposition 하여 얻은 값을 $\gamma_j$ 라 하면 edf 는 다음과 같이 적힌다.
 

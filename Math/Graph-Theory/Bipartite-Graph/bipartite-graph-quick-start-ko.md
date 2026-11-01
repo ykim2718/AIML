@@ -1,5 +1,5 @@
 # Bipartite Graph Quick Start
-Rev. 3 | Created: 2026-10-30 | Updated: 2026-10-30 19:57 CDT
+Rev. 4 | Created: 2026-10-30 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -25,7 +25,7 @@ Rev. 3 | Created: 2026-10-30 | Updated: 2026-10-30 19:57 CDT
 
 ## 2. Taxonomy
 
-Bipartite graph 와 그 아래 갈래는 아래 Fig 1 과 같다.
+Bipartite graph 와 그 아래 갈래는 아래 Fig 1 이다.
 
 ```text
 Graph                           G = (V, E)                     vertices and edges
@@ -60,7 +60,7 @@ Fig 1. Hierarchy of bipartite graphs
 - **Property**: 같은 $m$, $n$ 의 bipartite graph 가운데 간선이 가장 많다. $K(3, 2)$ 의 간선은 6 개이다.
 - **Use**: 두 집합의 모든 쌍을 후보로 두는 문제, 예를 들어 작업 $m$ 개를 기계 $n$ 대에 배정할 때 모든 배정에 비용을 매기는 assignment problem 의 출발점이다.
 
-같은 정점 다섯 개로 만든 general bipartite graph 와 $K(3, 2)$ 는 아래 Fig 2 와 같다.
+같은 정점 다섯 개로 만든 general bipartite graph 와 $K(3, 2)$ 는 아래 Fig 2 이다.
 
 <a id="fig-2"></a>
 <img src="bipartite-graph-quick-start-ko_fig/fig2.png" width="800" style="max-width: 100%;" alt="Fig 2">
@@ -72,7 +72,7 @@ Fig 2. A bipartite graph and the complete bipartite graph K(3, 2) on the same ve
 
 (a) 에 간선 b–d 와 c–e 를 더하면 (b) 가 된다. 정점과 두 집합이 같아도 간선 수가 $m n$ 에 못 미치면 general bipartite graph 이고, $m n$ 개를 모두 가지면 complete bipartite graph 이다.
 
-정점 8 개의 $K(4, 4)$ 를 두 가지로 배치하면 아래 Fig 3 과 같다.
+정점 8 개의 $K(4, 4)$ 를 두 가지로 배치하면 아래 Fig 3 이다.
 
 <a id="fig-3"></a>
 <img src="bipartite-graph-quick-start-ko_fig/fig3.png" width="800" style="max-width: 100%;" alt="Fig 3">
@@ -110,7 +110,7 @@ Weight 가 0 인 간선은 연결이 없는 것과 같으므로, pruning 이나 
 
 ## 5. Applications and Courses
 
-Bipartite graph 를 쓰는 대표 문제는 아래 Table 2 와 같다.
+Bipartite graph 를 쓰는 대표 문제는 아래 Table 2 이다.
 
 Table 2. Problems modeled as bipartite graphs
 
@@ -126,7 +126,7 @@ Table 2. Problems modeled as bipartite graphs
 
 출처가 있는 사용처와, feature selection 과 trace data 에 쓸 때의 득실은 [Appendix B](#appendix-b-application) 에 있다.
 
-Bipartite graph 를 배우는 과목은 아래 Table 3 과 같다.
+Bipartite graph 를 배우는 과목은 아래 Table 3 이다.
 
 Table 3. Courses that teach bipartite graphs
 
@@ -140,7 +140,7 @@ Table 3. Courses that teach bipartite graphs
 
 ## 6. Models and Libraries
 
-꼭지 3 부터 꼭지 5 의 계산에 쓰는 Python 함수는 아래 Table 4 와 같다.
+꼭지 3 부터 꼭지 5 의 계산에 쓰는 Python 함수는 아래 Table 4 이다.
 
 Table 4. Python functions for bipartite graphs
 
@@ -193,7 +193,7 @@ Table 4. Python functions for bipartite graphs
 
 ### B.1 Applications with References
 
-출처가 있는 bipartite graph 의 사용처는 아래 Table 5 와 같다.
+출처가 있는 bipartite graph 의 사용처는 아래 Table 5 이다.
 
 Table 5. Applications of bipartite graphs with references
 

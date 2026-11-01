@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 18 | Created: 2026-09-04 | Updated: 2026-09-28 15:06 CDT
+Rev. 19 | Created: 2026-09-04 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -30,7 +30,7 @@ Uniformity index 같은 지표는 공정이 끝난 뒤의 결과물 $y$ 를 본�
 그것을 푸는 두 통계량인 Hotelling $T^2$ 와 PCA 기반 SPE 를 정리한다. 본문에서 정의 없이 쓴 용어는
 [Appendix A](#appendix-a-terminology) 에 모았다.
 
-세 통계량이 쓰는 주성분과 거리와 관리한계는 Table 1 과 같다.
+세 통계량이 쓰는 주성분과 거리와 관리한계는 Table 1 이다.
 
 Table 1. Principal components, distance and control limit of the three statistics.
 

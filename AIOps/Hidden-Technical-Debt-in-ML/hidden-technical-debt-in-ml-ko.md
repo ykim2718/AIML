@@ -1,5 +1,5 @@
 # Hidden Technical Debt in Machine Learning Systems
-Rev. 0 | Created: 2026-11-01 | Updated: 2026-11-01 00:31 CDT
+Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)
@@ -26,7 +26,7 @@ Rev. 0 | Created: 2026-11-01 | Updated: 2026-11-01 00:31 CDT
 
 - **Model Design**: 새 model 을 제안하지 않는 position paper 이며, ML 고유의 부채를 일곱 영역으로 나눈다 ([Table 1](#4-main-results-and-ablation-studies)).
 - **Key Equations**: 논문에 수식이 없어 Appendix B 를 두지 않는다.
-- **Pipeline / Flow**: 실제 ML system 에서 ML code 가 차지하는 비중은 Fig 1 과 같다.
+- **Pipeline / Flow**: 실제 ML system 에서 ML code 가 차지하는 비중은 Fig 1 이다.
 
 <img src="hidden-technical-debt-in-ml-ko_fig/fig1.png" width="800" style="max-width: 100%;" alt="Fig 1">
 
@@ -45,7 +45,7 @@ Fig 1. Only a small fraction of a real-world ML system is ML code
 
 - **Performance**: 정량 결과는 없다. 성숙한 system 은 ML code 가 많아야 5%, glue code 가 적어도 95% 일 수 있다고 본다.
 - **Ablation Study**: 없음.
-- **Qualitative / Quantitative Analysis**: 영역별 부채와 완화책은 Table 1 과 같다.
+- **Qualitative / Quantitative Analysis**: 영역별 부채와 완화책은 Table 1 이다.
 
 Table 1. ML-specific technical debt and mitigation
 

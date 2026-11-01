@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 13 | Created: 2026-10-24 | Updated: 2026-10-26 06:18 UTC
+Rev. 14 | Created: 2026-10-24 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -44,7 +44,7 @@ PLS 가 score 를 추출하는 이유는 $\mathbf{X}$ 와 $\mathbf{Y}$ 사이의
 
 ## 3. Taxonomy and its Hierarchy
 
-Latent variable 방법은 방향을 고를 때 $\mathbf{Y}$ 를 쓰는지와 무엇을 최대로 하는지의 두 축으로 갈리고, PLS 는 $\mathbf{Y}$ 를 쓰며 공분산을 최대로 하는 쪽에 놓인다. 두 축은 아래 Fig 1 과 같다.
+Latent variable 방법은 방향을 고를 때 $\mathbf{Y}$ 를 쓰는지와 무엇을 최대로 하는지의 두 축으로 갈리고, PLS 는 $\mathbf{Y}$ 를 쓰며 공분산을 최대로 하는 쪽에 놓인다. 두 축은 아래 Fig 1 이다.
 
 ```text
 Axis 1. Supervision            Axis 2. Criterion maximized by a direction w
@@ -58,7 +58,7 @@ Fig 1. Two axes of latent variable methods
 
 PCA 는 unsupervised 이고 variance 를 최대로 하며, PLS 는 supervised 이고 covariance 를 최대로 한다. 두 축의 값은 서로 독립이지만, 이 문서가 다루는 방법은 이 두 조합뿐이다.
 
-OLS 에서 latent projection 으로 한 단계 내려가면 가정 하나를 버리는 대신 쓸 수 있는 데이터가 넓어진다. 그 계층은 아래 Fig 2 와 같다.
+OLS 에서 latent projection 으로 한 단계 내려가면 가정 하나를 버리는 대신 쓸 수 있는 데이터가 넓어진다. 그 계층은 아래 Fig 2 이다.
 
 ```text
 OLS                       uses every column of X; needs X^T X invertible
@@ -78,7 +78,7 @@ Fig 2. Hierarchy from OLS to latent projection
 
 ### 3.1 Comparison
 
-데이터 조건과 목적에 따라 쓰는 방법과 score 의 쓸모는 Table 1 과 같다.
+데이터 조건과 목적에 따라 쓰는 방법과 score 의 쓸모는 Table 1 이다.
 
 Table 1. Method and use of the score by data condition
 
@@ -94,7 +94,7 @@ Table 1. Method and use of the score by data condition
 
 $N$ 은 sample 수이고 $P$ 는 입력 변수의 수이다. PLS 의 네 행은 서로 배타적이지 않아서, 센서 데이터에서는 네 조건이 함께 성립하는 경우가 많다.
 
-방법마다 가정, 설정값, 깨지는 조건, 쓰이는 곳은 Table 2 와 같다.
+방법마다 가정, 설정값, 깨지는 조건, 쓰이는 곳은 Table 2 이다.
 
 Table 2. Assumption, setting, failure condition and usage of each method
 
@@ -113,7 +113,7 @@ $\mathbf{w}$ 와 $\mathbf{c}$ 는 sample 을 투영할 방향을 나타내는 �
 - $\mathbf{c} \in \mathbb{R}^M$ 은 타겟 변수 $M$ 개에 하나씩 주는 가중치이고, 같은 방법으로 Y-score 는 $\mathbf{u} = \mathbf{Y}\mathbf{c}$ 이다.
 - 두 벡터의 값은 식 (2) 에서 정해진다. 길이를 1 로 묶은 채 $\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{Y}\mathbf{c})$ 를 최대로 하는 값이며, 타겟이 하나이고 그 열이 $\mathbf{y}$ 이면 $\mathbf{w} \propto \mathbf{X}^\top \mathbf{y}$ 이고 $\mathbf{c} = \pm 1$ 이므로, $\mathbf{w}$ 의 각 원소는 그 입력 변수와 $\mathbf{y}$ 의 공분산에 비례한다.
 
-방향 $\mathbf{w} \in \mathbb{R}^{P}$ 와 $\mathbf{c} \in \mathbb{R}^{M}$ 으로 투영한 X-score $\mathbf{t}$ 와 Y-score $\mathbf{u}$ 는 아래와 같다.
+방향 $\mathbf{w} \in \mathbb{R}^{P}$ 와 $\mathbf{c} \in \mathbb{R}^{M}$ 으로 투영한 X-score $\mathbf{t}$ 와 Y-score $\mathbf{u}$ 는 아래이다.
 
 ```math
 \mathbf{t} = \mathbf{X}\mathbf{w}, \qquad \mathbf{u} = \mathbf{Y}\mathbf{c} \hspace{19em} (1)
@@ -129,7 +129,7 @@ $\mathbf{w}$ 와 $\mathbf{c}$ 는 sample 을 투영할 방향을 나타내는 �
 \mathbf{p} = \frac{\mathbf{X}^\top \mathbf{t}}{\mathbf{t}^\top \mathbf{t}}, \qquad \mathbf{X} \leftarrow \mathbf{X} - \mathbf{t}\mathbf{p}^\top \hspace{19em} (3)
 ```
 
-성분 $K$ 개를 찾으면 X-score 를 열로 모은 $\mathbf{T} \in \mathbb{R}^{N \times K}$ 와 Y-score 를 열로 모은 $\mathbf{U} \in \mathbb{R}^{N \times K}$ 를 얻고, $\mathbf{X}$ 와 $\mathbf{Y}$ 는 아래와 같이 분해된다. $\mathbf{P}$ 와 $\mathbf{Q}$ 는 각 행렬의 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 성분 $K$ 개가 설명하지 못한 잔차이다.
+성분 $K$ 개를 찾으면 X-score 를 열로 모은 $\mathbf{T} \in \mathbb{R}^{N \times K}$ 와 Y-score 를 열로 모은 $\mathbf{U} \in \mathbb{R}^{N \times K}$ 를 얻고, $\mathbf{X}$ 와 $\mathbf{Y}$ 는 아래처럼 분해된다. $\mathbf{P}$ 와 $\mathbf{Q}$ 는 각 행렬의 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 성분 $K$ 개가 설명하지 못한 잔차이다.
 
 ```math
 \mathbf{X} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^\top + \mathbf{F} \hspace{19em} (4)
@@ -149,7 +149,7 @@ PLS 는 입력 변수 $P$ 개를 score $K$ 개로 줄이며, $K$ 는 $P$ 보다 
 
 ## 6. Supervised Feature Extraction
 
-PCA 의 score 는 $\mathbf{X}$ 내부의 variance 만 최대로 하는 unsupervised 방식이고, PLS 의 score 는 $\mathbf{X}$ 와 $\mathbf{Y}$ 사이의 covariance 를 최대로 하는 supervised 방식이다. 두 방법이 방향 $\mathbf{w}$ 를 고르는 기준은 아래와 같다.
+PCA 의 score 는 $\mathbf{X}$ 내부의 variance 만 최대로 하는 unsupervised 방식이고, PLS 의 score 는 $\mathbf{X}$ 와 $\mathbf{Y}$ 사이의 covariance 를 최대로 하는 supervised 방식이다. 두 방법이 방향 $\mathbf{w}$ 를 고르는 기준은 아래이다.
 
 ```math
 \mathrm{PCA}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Var}(\mathbf{X}\mathbf{w}), \qquad \mathrm{PLS}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) \hspace{19em} (6)
@@ -264,7 +264,7 @@ PLS (Partial Least Squares, 부분최소제곱) 는 OLS 가 실패하는 고차�
 
 ### B.3 Summary
 
-두 방법의 차이는 Table 3 과 같다.
+두 방법의 차이는 Table 3 이다.
 
 Table 3. OLS and PLS by data condition
 
@@ -283,7 +283,7 @@ Score $t_i$ 는 sample $i$ 의 입력값 $\mathbf{x}_i$ 에서 방향 $\mathbf{w
 
 $\mathbf{x}_i$ 와 $\mathbf{w}$ 사이의 각을 $\theta$ 라 하면 원점에서 수선의 발까지의 부호 있는 거리는 $\lVert \mathbf{x}_i \rVert \cos\theta$ 이고, $\lVert \mathbf{w} \rVert = 1$ 이므로 이 값은 내적 $\mathbf{x}_i^\top \mathbf{w} = \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta$ 와 같다. 따라서 $t_i = \mathbf{x}_i^\top \mathbf{w}$ 이고, 수선 $\mathbf{x}_i - t_i \mathbf{w}$ 는 $\mathbf{w}$ 와 직교한다.
 
-$\mathbf{X}$ 의 $i$ 번째 행이 $\mathbf{x}_i^\top$ 이므로, $t_i$ 를 sample 마다 모은 열은 $\mathbf{X}\mathbf{w}$ 이다. $\mathbf{Y}$ 의 $i$ 번째 행을 길이 1 인 방향 $\mathbf{c}$ 위로 투영하면 같은 방법으로 $\mathbf{Y}\mathbf{c}$ 를 얻으므로, 두 score 는 아래와 같다.
+$\mathbf{X}$ 의 $i$ 번째 행이 $\mathbf{x}_i^\top$ 이므로, $t_i$ 를 sample 마다 모은 열은 $\mathbf{X}\mathbf{w}$ 이다. $\mathbf{Y}$ 의 $i$ 번째 행을 길이 1 인 방향 $\mathbf{c}$ 위로 투영하면 같은 방법으로 $\mathbf{Y}\mathbf{c}$ 를 얻으므로, 두 score 는 아래이다.
 
 ```math
 \mathbf{t} = \mathbf{X}\mathbf{w}, \qquad \mathbf{u} = \mathbf{Y}\mathbf{c} \hspace{19em} (1)
@@ -291,13 +291,13 @@ $\mathbf{X}$ 의 $i$ 번째 행이 $\mathbf{x}_i^\top$ 이므로, $t_i$ 를 samp
 
 ### C.2 Equation (2)
 
-PLS 는 X-score 와 Y-score 가 함께 움직이는 정도, 곧 두 score 의 공분산이 가장 큰 방향을 고른다. $\mathbf{X}$ 와 $\mathbf{Y}$ 의 열을 centering 했으므로 $\mathbf{t}$ 와 $\mathbf{u}$ 의 평균도 0 이고, 식 (1) 을 넣으면 두 score 의 공분산은 아래와 같다.
+PLS 는 X-score 와 Y-score 가 함께 움직이는 정도, 곧 두 score 의 공분산이 가장 큰 방향을 고른다. $\mathbf{X}$ 와 $\mathbf{Y}$ 의 열을 centering 했으므로 $\mathbf{t}$ 와 $\mathbf{u}$ 의 평균도 0 이고, 식 (1) 을 넣으면 두 score 의 공분산은 아래이다.
 
 ```math
 \mathrm{Cov}(\mathbf{t}, \mathbf{u}) = \frac{\mathbf{t}^\top \mathbf{u}}{N - 1} = \frac{\mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c}}{N - 1} \hspace{19em} (12)
 ```
 
-식 (12) 는 $\mathbf{w}$ 나 $\mathbf{c}$ 의 길이를 $a$ 배 하면 값도 $a$ 배가 되므로, 길이를 묶지 않으면 최대값이 없다. 방향만 고르도록 두 벡터의 길이를 1 로 묶으면 PLS 가 푸는 문제는 아래와 같다.
+식 (12) 는 $\mathbf{w}$ 나 $\mathbf{c}$ 의 길이를 $a$ 배 하면 값도 $a$ 배가 되므로, 길이를 묶지 않으면 최대값이 없다. 방향만 고르도록 두 벡터의 길이를 1 로 묶으면 PLS 가 푸는 문제는 아래이다.
 
 ```math
 (\mathbf{w}, \mathbf{c}) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{Y}\mathbf{c}) \hspace{19em} (2)
@@ -315,13 +315,13 @@ $N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로, 식 (2) 는 아�
 \mathbf{X}^\top \mathbf{Y} \mathbf{c} = 2\lambda \mathbf{w}, \qquad \mathbf{Y}^\top \mathbf{X} \mathbf{w} = 2\mu \mathbf{c} \hspace{19em} (13)
 ```
 
-식 (13) 의 첫 식의 왼쪽에 $\mathbf{w}^\top$ 를 곱하고 제약조건 $\mathbf{w}^\top \mathbf{w} = 1$ 을 쓰면 아래와 같다.
+식 (13) 의 첫 식의 왼쪽에 $\mathbf{w}^\top$ 를 곱하고 제약조건 $\mathbf{w}^\top \mathbf{w} = 1$ 을 쓰면 아래이다.
 
 ```math
 \mathbf{w}^\top \mathbf{X}^\top \mathbf{Y} \mathbf{c} = 2\lambda \, \mathbf{w}^\top \mathbf{w} = 2\lambda \hspace{19em} (14)
 ```
 
-둘째 식의 왼쪽에 $\mathbf{c}^\top$ 를 곱하고 제약조건 $\mathbf{c}^\top \mathbf{c} = 1$ 을 쓰면 아래와 같다.
+둘째 식의 왼쪽에 $\mathbf{c}^\top$ 를 곱하고 제약조건 $\mathbf{c}^\top \mathbf{c} = 1$ 을 쓰면 아래이다.
 
 ```math
 \mathbf{c}^\top \mathbf{Y}^\top \mathbf{X} \mathbf{w} = 2\mu \, \mathbf{c}^\top \mathbf{c} = 2\mu \hspace{19em} (15)
@@ -339,13 +339,13 @@ $N - 1$ 은 $\mathbf{w}$ 와 $\mathbf{c}$ 에 무관하므로, 식 (2) 는 아�
 
 ### C.3 Equation (3)
 
-첫 성분을 찾은 뒤에는 $\mathbf{t}$ 가 설명한 부분을 $\mathbf{X}$ 에서 빼야 다음 성분이 남은 정보에서 찾아진다. $\mathbf{t}$ 가 설명한 부분은 $\mathbf{X}$ 의 각 열을 $\mathbf{t}$ 하나에 회귀한 값 $\mathbf{t}\mathbf{p}^\top$ 이고, 계수 $\mathbf{p}$ 는 잔차 제곱합 $\lVert \mathbf{X} - \mathbf{t}\mathbf{p}^\top \rVert^2$ 를 최소로 하는 값이다. 잔차 제곱합을 $\mathbf{p}$ 로 미분하여 0 으로 놓으면 아래와 같다.
+첫 성분을 찾은 뒤에는 $\mathbf{t}$ 가 설명한 부분을 $\mathbf{X}$ 에서 빼야 다음 성분이 남은 정보에서 찾아진다. $\mathbf{t}$ 가 설명한 부분은 $\mathbf{X}$ 의 각 열을 $\mathbf{t}$ 하나에 회귀한 값 $\mathbf{t}\mathbf{p}^\top$ 이고, 계수 $\mathbf{p}$ 는 잔차 제곱합 $\lVert \mathbf{X} - \mathbf{t}\mathbf{p}^\top \rVert^2$ 를 최소로 하는 값이다. 잔차 제곱합을 $\mathbf{p}$ 로 미분하여 0 으로 놓으면 아래이다.
 
 ```math
 -2\mathbf{X}^\top \mathbf{t} + 2\mathbf{p}\,\mathbf{t}^\top \mathbf{t} = \mathbf{0} \hspace{19em} (17)
 ```
 
-식 (17) 을 $\mathbf{p}$ 에 대해 풀고, 구한 $\mathbf{t}\mathbf{p}^\top$ 를 $\mathbf{X}$ 에서 빼면 loading 과 deflation 은 아래와 같다.
+식 (17) 을 $\mathbf{p}$ 에 대해 풀고, 구한 $\mathbf{t}\mathbf{p}^\top$ 를 $\mathbf{X}$ 에서 빼면 loading 과 deflation 은 아래이다.
 
 ```math
 \mathbf{p} = \frac{\mathbf{X}^\top \mathbf{t}}{\mathbf{t}^\top \mathbf{t}}, \qquad \mathbf{X} \leftarrow \mathbf{X} - \mathbf{t}\mathbf{p}^\top \hspace{19em} (3)
@@ -367,7 +367,7 @@ Deflation 한 행렬 $\mathbf{X}_{k+1} = \mathbf{X}_k - \mathbf{t}_k \mathbf{p}_
 \mathbf{X} = \mathbf{X}_1 = \sum_{k=1}^{K} \mathbf{t}_k \mathbf{p}_k^\top + \mathbf{X}_{K+1} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \qquad \mathbf{E} = \mathbf{X}_{K+1} \hspace{19em} (19)
 ```
 
-$\mathbf{Y}$ 도 같은 방법으로 각 $\mathbf{t}_k$ 에 회귀한 계수 $\mathbf{q}_k = \mathbf{Y}^\top \mathbf{t}_k / (\mathbf{t}_k^\top \mathbf{t}_k)$ 를 열로 모아 $\mathbf{Q}$ 로 두고, 남은 부분을 $\mathbf{F} = \mathbf{Y} - \mathbf{T}\mathbf{Q}^\top$ 로 둔다. C.8 에서 보이듯 $\mathbf{t}_k$ 가 서로 직교하므로, $\mathbf{Y}$ 를 성분마다 deflation 하든 원래 $\mathbf{Y}$ 를 그대로 쓰든 $\mathbf{q}_k$ 는 같다. 식 (19) 과 함께 쓰면 아래와 같다.
+$\mathbf{Y}$ 도 같은 방법으로 각 $\mathbf{t}_k$ 에 회귀한 계수 $\mathbf{q}_k = \mathbf{Y}^\top \mathbf{t}_k / (\mathbf{t}_k^\top \mathbf{t}_k)$ 를 열로 모아 $\mathbf{Q}$ 로 두고, 남은 부분을 $\mathbf{F} = \mathbf{Y} - \mathbf{T}\mathbf{Q}^\top$ 로 둔다. C.8 에서 보이듯 $\mathbf{t}_k$ 가 서로 직교하므로, $\mathbf{Y}$ 를 성분마다 deflation 하든 원래 $\mathbf{Y}$ 를 그대로 쓰든 $\mathbf{q}_k$ 는 같다. 식 (19) 과 함께 쓰면 아래이다.
 
 ```math
 \mathbf{X} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^\top + \mathbf{F} \hspace{19em} (4)
@@ -387,7 +387,7 @@ $\mathbf{t}_k = \mathbf{X}_k \mathbf{w}_k$ 이므로 deflation 은 $\mathbf{X}_k
 \mathbf{T} = \mathbf{X}\mathbf{R}, \qquad \mathbf{X} \in \mathbb{R}^{N \times P}, \;\; \mathbf{R} \in \mathbb{R}^{P \times K} \;\Rightarrow\; \mathbf{T} \in \mathbb{R}^{N \times K} \hspace{19em} (21)
 ```
 
-모든 score 는 원래 $\mathbf{X}$ 의 선형결합이므로, 새 sample 의 score 도 그 sample 의 입력값에 $\mathbf{R}$ 을 곱해 구한다. $\mathbf{R}$ 의 열 수 $K$ 는 고른 성분 수이고 입력 변수의 수 $P$ 보다 훨씬 작게 고르므로, $\mathbf{X}$ 에서 $\mathbf{T}$ 로 가는 변환은 아래와 같다.
+모든 score 는 원래 $\mathbf{X}$ 의 선형결합이므로, 새 sample 의 score 도 그 sample 의 입력값에 $\mathbf{R}$ 을 곱해 구한다. $\mathbf{R}$ 의 열 수 $K$ 는 고른 성분 수이고 입력 변수의 수 $P$ 보다 훨씬 작게 고르므로, $\mathbf{X}$ 에서 $\mathbf{T}$ 로 가는 변환은 아래이다.
 
 ```math
 \mathbf{X} \in \mathbb{R}^{N \times P} \;\longrightarrow\; \mathbf{T} \in \mathbb{R}^{N \times K}, \qquad K \ll P \hspace{19em} (5)
@@ -404,7 +404,7 @@ PCA 는 $\mathbf{X}\mathbf{w}$ 의 variance 를, PLS 는 $\mathbf{X}\mathbf{w}$ 
   - 목적함수: $\mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) = \mathbf{w}^\top \mathbf{X}^\top \mathbf{y} / (N - 1)$ 의 최대화
   - 제약조건: $\mathbf{w}^\top \mathbf{w} = 1$
 
-두 목적함수와 제약조건을 한 줄씩 적으면 아래와 같다.
+두 목적함수와 제약조건을 한 줄씩 적으면 아래이다.
 
 ```math
 \mathrm{PCA}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Var}(\mathbf{X}\mathbf{w}), \qquad \mathrm{PLS}: \max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w}, \mathbf{y}) \hspace{19em} (6)
@@ -444,7 +444,7 @@ $`j \lt k`$ 일 때 $`\mathbf{t}_j^\top \mathbf{X}_k = \mathbf{0}^\top`$ 임을 
 
 ### C.9 Equation (9)
 
-$\mathbf{y}$ 를 $\mathbf{T}$ 에 회귀한 최소제곱 계수는 정규방정식 (normal equation) 의 해 $\mathbf{q} = (\mathbf{T}^\top \mathbf{T})^{-1} \mathbf{T}^\top \mathbf{y}$ 이다. 식 (8) 에서 $\mathbf{T}^\top \mathbf{T} = \mathrm{diag}(\mathbf{t}_1^\top \mathbf{t}_1, \ldots, \mathbf{t}_K^\top \mathbf{t}_K)$ 이므로, 역행렬은 각 대각 원소의 역수를 대각에 둔 행렬이다. $\mathbf{T}^\top \mathbf{y}$ 의 $k$ 번째 원소는 $\mathbf{t}_k^\top \mathbf{y}$ 이므로, $\mathbf{q}$ 의 $k$ 번째 원소는 아래와 같다.
+$\mathbf{y}$ 를 $\mathbf{T}$ 에 회귀한 최소제곱 계수는 정규방정식 (normal equation) 의 해 $\mathbf{q} = (\mathbf{T}^\top \mathbf{T})^{-1} \mathbf{T}^\top \mathbf{y}$ 이다. 식 (8) 에서 $\mathbf{T}^\top \mathbf{T} = \mathrm{diag}(\mathbf{t}_1^\top \mathbf{t}_1, \ldots, \mathbf{t}_K^\top \mathbf{t}_K)$ 이므로, 역행렬은 각 대각 원소의 역수를 대각에 둔 행렬이다. $\mathbf{T}^\top \mathbf{y}$ 의 $k$ 번째 원소는 $\mathbf{t}_k^\top \mathbf{y}$ 이므로, $\mathbf{q}$ 의 $k$ 번째 원소는 아래이다.
 
 ```math
 q_k = \frac{\mathbf{t}_k^\top \mathbf{y}}{\mathbf{t}_k^\top \mathbf{t}_k}, \qquad k = 1, \ldots, K \hspace{19em} (9)
@@ -452,7 +452,7 @@ q_k = \frac{\mathbf{t}_k^\top \mathbf{y}}{\mathbf{t}_k^\top \mathbf{t}_k}, \qqua
 
 ### C.10 Equation (10)
 
-Sample $`i`$ 의 score 를 모은 벡터 $`\mathbf{t}_{(i)} = (t_{i1}, \ldots, t_{iK})^\top`$ 의 Hotelling $`T^2`$ 는 score 의 공분산 행렬 $`\mathbf{S}_T`$ 로 가중한 거리의 제곱이다. $`\mathbf{X}`$ 를 centering 했으므로 score 의 평균은 0 이고, 아래와 같다.
+Sample $`i`$ 의 score 를 모은 벡터 $`\mathbf{t}_{(i)} = (t_{i1}, \ldots, t_{iK})^\top`$ 의 Hotelling $`T^2`$ 는 score 의 공분산 행렬 $`\mathbf{S}_T`$ 로 가중한 거리의 제곱이다. $`\mathbf{X}`$ 를 centering 했으므로 score 의 평균은 0 이고, 아래이다.
 
 ```math
 T_i^2 = \mathbf{t}_{(i)}^\top \mathbf{S}_T^{-1} \mathbf{t}_{(i)}, \qquad \mathbf{S}_T = \frac{\mathbf{T}^\top \mathbf{T}}{N - 1} \hspace{19em} (24)
@@ -546,7 +546,7 @@ for name, value in zip(["normal", "excursion"], t_squared):
     print(f"{name:>9} wafer: T^2 = {value:7.2f}  {'OUT' if value > limit else 'in'}")
 ```
 
-실행 결과는 아래와 같다.
+실행 결과는 아래이다.
 
 ```text
 X: (40, 300), rank of X^T X: 40 of 300

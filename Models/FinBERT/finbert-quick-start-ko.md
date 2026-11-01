@@ -1,5 +1,5 @@
 # FinBERT Quick Start
-Rev. 0 | Created: 2026-10-24 | Updated: 2026-10-24 05:45 CDT
+Rev. 1 | Created: 2026-10-24 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -63,7 +63,7 @@ FinBERT 의 감성 label 과 score 는 주식 거래, risk 관리, 기업 IR 에
 
 ### 4.1 Comparison
 
-분야마다 분석하는 text 와 쓰임은 Table 1 과 같다.
+분야마다 분석하는 text 와 쓰임은 Table 1 이다.
 
 Table 1. Applications of FinBERT
 
@@ -75,7 +75,7 @@ Table 1. Applications of FinBERT
 
 ## 5. Models and Libraries
 
-두 model 모두 Hugging Face Hub 에 공개되어 있어 `transformers` 로 불러 쓴다. Model 과 library 는 Table 2 와 같다.
+두 model 모두 Hugging Face Hub 에 공개되어 있어 `transformers` 로 불러 쓴다. Model 과 library 는 Table 2 이다.
 
 Table 2. Models and libraries for FinBERT
 

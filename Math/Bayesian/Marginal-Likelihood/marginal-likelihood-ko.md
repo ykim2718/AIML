@@ -1,5 +1,5 @@
 # Marginal Likelihood and its Laplace Approximation
-Rev. 7 | Created: 2026-09-20 | Updated: 2026-10-22 18:20 CDT
+Rev. 8 | Created: 2026-09-20 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -113,7 +113,7 @@ Numerical 적분이 이 벽을 넘지 못하는 이유는 따로 있다. 차원�
 
 ## 5. Laplace Approximation
 
-Laplace approximation 은 log posterior 를 MAP 점 $\hat\theta$ 둘레에서 2차까지 전개해 적분 대상을 Gaussian 으로 바꾸고, 그 Gaussian 적분을 닫힌 형태로 푼다. 결과는 아래와 같으며, $A$ 는 $\hat\theta$ 에서의 음의 Hessian 이다. 유도는 [Appendix B](#appendix-b-derivation-of-equations-3-and-4) 에 있다.
+Laplace approximation 은 log posterior 를 MAP 점 $\hat\theta$ 둘레에서 2차까지 전개해 적분 대상을 Gaussian 으로 바꾸고, 그 Gaussian 적분을 닫힌 형태로 푼다. 결과는 아래이며, $A$ 는 $\hat\theta$ 에서의 음의 Hessian 이다. 유도는 [Appendix B](#appendix-b-derivation-of-equations-3-and-4) 에 있다.
 
 ```math
 \log p(D) \approx \log p(D \mid \hat\theta) + \log p(\hat\theta) + \frac{d}{2}\log 2\pi - \frac{1}{2}\log |A| \hspace{19em} (3)
@@ -187,7 +187,7 @@ h(\theta) \approx h(\hat\theta) + \nabla h(\hat\theta)^{\top}(\theta - \hat\thet
 p(D) \approx e^{h(\hat\theta)} \int \exp\left(-\frac{1}{2}(\theta - \hat\theta)^{\top} A\, (\theta - \hat\theta)\right) d\theta \hspace{19em} (7)
 ```
 
-적분은 Gaussian 적분이므로 닫힌 형태로 풀린다. $A$ 가 positive definite 이면 값은 아래와 같다.
+적분은 Gaussian 적분이므로 닫힌 형태로 풀린다. $A$ 가 positive definite 이면 값은 아래이다.
 
 ```math
 \int \exp\left(-\frac{1}{2} x^{\top} A\, x\right) dx = (2\pi)^{d/2} |A|^{-1/2} \hspace{19em} (8)

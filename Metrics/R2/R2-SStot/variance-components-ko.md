@@ -1,5 +1,5 @@
 # Variance Components in $R^2$
-Rev. 6 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
+Rev. 7 | Created: 2026-09-04 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
@@ -35,7 +35,7 @@ Coefficient of determination $R^2$ 는 선형회귀 model 의 적합도를 재�
 - 설명된 변동 `SS_reg` 는 $X$ 와 $Y$ 의 관계가 감당하는 변동이다.
 - 설명되지 않은 변동 `SS_res` 는 잔차, 곧 잡음 $\epsilon$ 에서 오는 변동이다.
 
-기본이 되는 항등식은 아래와 같다.
+기본이 되는 항등식은 아래이다.
 
 $$SS_{tot} = SS_{reg} + SS_{res} \hspace{19em} (1)$$
 
@@ -76,7 +76,7 @@ $$SS_{res} = \sum (y_i - \hat{y}_i)^2, \qquad SS_{tot} = \sum (y_i - \bar{y})^2 
 
 ### 4.1. The Expansion Of The Denominator
 
-단순 선형회귀에서 설명된 분산은 아래와 같이 적힌다.
+단순 선형회귀에서 설명된 분산은 아래처럼 적힌다.
 
 $$SS_{reg} = \beta_1^2 \cdot \sum (x_i - \bar{x})^2 \hspace{19em} (4)$$
 

@@ -1,5 +1,5 @@
 # PLS Bootstrap Ensemble
-Rev. 1 | Created: 2026-10-19 | Updated: 2026-10-22 18:20 CDT
+Rev. 2 | Created: 2026-10-19 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -154,7 +154,7 @@ Member 사이에서 합치는 양은 예측값과 회귀계수이며, weight 와
 
 ## 5. Application
 
-[Section 4](#4-principle) 의 절차를 쓸 수 있는 조건, 설정값, 깨지는 조건, 쓰이는 공정은 아래와 같다.
+[Section 4](#4-principle) 의 절차를 쓸 수 있는 조건, 설정값, 깨지는 조건, 쓰이는 공정은 아래이다.
 
 ### 5.1 Assumptions
 

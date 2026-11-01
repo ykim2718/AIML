@@ -1,5 +1,5 @@
 # Intervals from the RMSE and Their Use in SPC
-Rev. 49 | Created: 2026-10-05 | Updated: 2026-10-22 18:20 CDT
+Rev. 50 | Created: 2026-10-05 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -184,7 +184,7 @@ $c_n$ 은 n 이 커지면 1 로 간다. n 이 10 이면 0.9754, 28 이면 0.9911
 P\left(|e^{\ast}| \le 1.96\,\mathrm{RMSE}\right) = 2F_{t_n}(1.96) - 1 \hspace{19em} (7)
 ```
 
-식 (7) 의 $F_{t_n}$ 은 자유도 n 의 t distribution 의 누적분포함수다. n 마다 그 값과, 95% 를 지키려면 1.96 대신 쓸 배율은 Table 2 와 같다.
+식 (7) 의 $F_{t_n}$ 은 자유도 n 의 t distribution 의 누적분포함수다. n 마다 그 값과, 95% 를 지키려면 1.96 대신 쓸 배율은 Table 2 이다.
 
 Table 2. Coverage of the RMSE interval by sample count
 
@@ -300,7 +300,7 @@ Prediction interval 에서는 다음 오차 하나가 들어올 확률이 평균
 
 ### 8.1 What the Limit Is Drawn On
 
-Error limit 과 guard band 는 RMSE 로 구하고, control limit 은 공정의 변동으로 구한다. 세 한계를 견주면 Table 3 과 같다.
+Error limit 과 guard band 는 RMSE 로 구하고, control limit 은 공정의 변동으로 구한다. 세 한계를 견주면 Table 3 이다.
 
 Table 3. Limits around a predicted value
 
@@ -438,7 +438,7 @@ X = \sum_{i=1}^{k} Z_i^2 = Z_1^2 + Z_2^2 + \dots + Z_k^2 \sim \chi^2(k) \hspace{
 
 ### C.2 Probability Density Function
 
-자유도가 $k$ 인 chi-squared distribution 의 확률밀도함수 (probability density function) 는 $x \gt 0$ 에서 아래와 같다.
+자유도가 $k$ 인 chi-squared distribution 의 확률밀도함수 (probability density function) 는 $x \gt 0$ 에서 아래이다.
 
 ```math
 f(x; k) = \frac{1}{2^{k/2}\,\Gamma(k/2)}\; x^{(k/2) - 1}\, e^{-x/2} \hspace{19em} (16)
@@ -481,7 +481,7 @@ Chi-squared distribution 의 누적분포함수는 닫힌 형태 (elementary fun
 S = \sum_{i=1}^{n} \left(\frac{e_i}{\sigma}\right)^2 \sim \chi^2_n, \qquad S = \frac{n\,\mathrm{RMSE}^2}{\sigma^2} \hspace{19em} (20)
 ```
 
-두 번째 등식은 식 (1) 의 양변을 제곱해 n 을 곱한 것이며, 이것이 식 (4) 다. 식 (5) 는 여기서 제곱근의 기댓값으로 나온다. 자유도 n 의 chi-squared 값에 제곱근을 취한 값의 기댓값이 아래와 같다.
+두 번째 등식은 식 (1) 의 양변을 제곱해 n 을 곱한 것이며, 이것이 식 (4) 다. 식 (5) 는 여기서 제곱근의 기댓값으로 나온다. 자유도 n 의 chi-squared 값에 제곱근을 취한 값의 기댓값이 아래이다.
 
 ```math
 E\left[\sqrt{S}\right] = \sqrt{2}\;\frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\Gamma\!\left(\frac{n}{2}\right)} \hspace{19em} (21)

@@ -1,5 +1,5 @@
 # Model Deployment Quick Start
-Rev. 5 | Created: 2026-10-14 | Updated: 2026-10-23 09:52 UTC
+Rev. 6 | Created: 2026-10-14 | Updated: 2026-11-01 21:36 UTC
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 5 | Created: 2026-10-14 | Updated: 2026-10-23 09:52 UTC
 
 ## 2. Taxonomy
 
-Model 배포의 계층은 아래 Fig 1 과 같다.
+Model 배포의 계층은 아래 Fig 1 이다.
 
 ```text
 Deployment
@@ -94,7 +94,7 @@ Table 3. Deployment Transition
 
 ### 3.4 Comparison
 
-실시간으로 다음 작업 조건을 바꾸는 model 의 배포 조합은 Table 4 와 같다.
+실시간으로 다음 작업 조건을 바꾸는 model 의 배포 조합은 Table 4 이다.
 
 Table 4. Deployment choice for real-time control
 
@@ -108,7 +108,7 @@ Shadow 로 시작해 추천값만 보여 주고, 신뢰가 쌓이면 Canary 로 
 
 ## 4. Models and Libraries
 
-Serving 방식마다 학습된 model 을 불러 예측을 내주는 library 가 다르며, 방식별 model 형식과 library 는 Table 5 와 같다.
+Serving 방식마다 학습된 model 을 불러 예측을 내주는 library 가 다르며, 방식별 model 형식과 library 는 Table 5 이다.
 
 Table 5. Models and libraries by serving method
 

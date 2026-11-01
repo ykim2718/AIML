@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 21 | Created: 2026-10-22 | Updated: 2026-10-23 08:30 UTC
+Rev. 22 | Created: 2026-10-22 | Updated: 2026-11-01 21:36 UTC
 
 ## 1. Purpose
 
@@ -9,7 +9,7 @@ Rev. 21 | Created: 2026-10-22 | Updated: 2026-10-23 08:30 UTC
 
 ## 2. Taxonomy
 
-Problem 과 그 해법의 계층은 아래 Fig 1 과 같다.
+Problem 과 그 해법의 계층은 아래 Fig 1 이다.
 
 ```text
 Problem
@@ -46,7 +46,7 @@ Forward problem 을 푸는 model f 는 physical model 을 대신해 (x, y) 쌍�
 
 ### 3.3 Comparison
 
-두 방식의 차이는 Table 1 과 같다.
+두 방식의 차이는 Table 1 이다.
 
 Table 1. Inverse model and model inversion
 
@@ -62,7 +62,7 @@ Use when 행은 Speed 행과 Multi-solution 행에서 나온다. Multi-solution 
 
 ## 4. Models and Libraries
 
-Inverse model 은 y → x 방향의 model 하나와 그것을 학습할 library 를 쓰고, model inversion 은 surrogate model 과 그것을 거꾸로 풀 solver library 를 함께 쓴다. 방식별 model 과 library 는 Table 2 와 같으며, model 종류별 inversion 방법의 세부는 [[1](#ref-1)] 에 있다.
+Inverse model 은 y → x 방향의 model 하나와 그것을 학습할 library 를 쓰고, model inversion 은 surrogate model 과 그것을 거꾸로 풀 solver library 를 함께 쓴다. 방식별 model 과 library 는 Table 2 이며, model 종류별 inversion 방법의 세부는 [[1](#ref-1)] 에 있다.
 
 Table 2. Models and libraries by method
 

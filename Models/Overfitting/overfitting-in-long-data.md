@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 18 | Created: 2026-09-07 | Updated: 2026-11-01 01:08 CDT
+Rev. 19 | Created: 2026-09-07 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -58,7 +58,7 @@ Overfitting in long data
 
 <a id="fig-1"></a>Fig 1. Three axes of overfitting in long data
 
-세 축은 서로 독립이다. Path 축이 이 문서의 taxonomy 이며, 해석과 대응책과 검사는 모두 이 축의 값을 먼저 가린 뒤에 정해진다. 나머지 두 축은 분할 단위를 정할 때 자료에서 읽는 성질이며, 두 축을 함께 써서 정한 분할 단위는 5.6 의 Table 5 와 같다.
+세 축은 서로 독립이다. Path 축이 이 문서의 taxonomy 이며, 해석과 대응책과 검사는 모두 이 축의 값을 먼저 가린 뒤에 정해진다. 나머지 두 축은 분할 단위를 정할 때 자료에서 읽는 성질이며, 두 축을 함께 써서 정한 분할 단위는 5.6 의 Table 5 이다.
 
 대응책의 계층은 아래 [Fig 2](#fig-2) 와 같다.
 
@@ -80,7 +80,7 @@ Countermeasure
 
 맨 위의 measurement 갈래는 model 을 그대로 두고 보고되는 숫자가 어떤 물음에 답하는지를 바로잡는다. 그 아래 data 갈래는 자료를 모으는 계획과 자료 사전을 바꾸고, 맨 아래 model 갈래만 model 자체를 바꾼다. 아래로 내려갈수록 바꾸는 대상이 model 에 가까워지지만, 위의 갈래를 거치지 않고 model 을 고치면 그 효과를 잴 숫자가 4.3 의 무작위 분할처럼 다른 물음에 답한 숫자가 된다.
 
-세 경로가 각각 이용하는 것과 드러나는 곳은 Table 1 과 같다.
+세 경로가 각각 이용하는 것과 드러나는 곳은 Table 1 이다.
 
 Table 1. Three paths into a long-data model
 
@@ -92,7 +92,7 @@ Table 1. Three paths into a long-data model
 
 ### 3.1 Comparison
 
-경로를 가리면 그 경로를 확인할 검사와 쓸 대응책이 함께 정해지며, 경로마다의 짝은 Table 2 와 같다.
+경로를 가리면 그 경로를 확인할 검사와 쓸 대응책이 함께 정해지며, 경로마다의 짝은 Table 2 이다.
 
 Table 2. Check and countermeasure by path
 
@@ -104,7 +104,7 @@ Table 2. Check and countermeasure by path
 
 검사의 전체 목록은 6 장의 Table 6 에 있다. 어느 경로든 최종 보고는 5.5 대로 한 번만 연 test 자료로 한다.
 
-Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪으며, 두 자료의 대비는 Table 3 과 같다.
+Wide data 와 long data 는 같은 이름의 문제를 서로 다른 이유로 겪으며, 두 자료의 대비는 Table 3 이다.
 
 Table 3. The same failure from two different causes
 
@@ -143,7 +143,7 @@ Table 3. The same failure from two different causes
 
 ### 4.3 Dependent Rows
 
-행이 group 으로 묶여 있으면 정보의 양은 행의 수보다 작은 유효 표본으로 정해진다. Group 안의 행들이 서로 닮은 정도를 intracluster correlation $\rho$ 로 두고 group 의 크기를 $m$ 이라 하면, 유효 표본은 아래와 같다 [[1](#ref-1)]. $\rho$ 를 자료에서 구하는 방법은 [Appendix D](#appendix-d-estimating-the-intracluster-correlation) 에 있다.
+행이 group 으로 묶여 있으면 정보의 양은 행의 수보다 작은 유효 표본으로 정해진다. Group 안의 행들이 서로 닮은 정도를 intracluster correlation $\rho$ 로 두고 group 의 크기를 $m$ 이라 하면, 유효 표본은 아래이다 [[1](#ref-1)]. $\rho$ 를 자료에서 구하는 방법은 [Appendix D](#appendix-d-estimating-the-intracluster-correlation) 에 있다.
 
 ```math
 n_{\mathrm{eff}} = \frac{n}{1 + (m-1)\rho} \hspace{19em} (1)
@@ -161,7 +161,7 @@ $m = 25$, $\rho = 0.5$ 이면 분모가 13 이므로 10000 행이 실제로는 7
 
 ### 4.5 Where The Paths Come From In The Process
 
-세 경로는 통계의 성질이기 전에 자료가 만들어진 방식의 결과이다. 반도체 계측 자료에서 각 경로의 출처는 Table 4 와 같다.
+세 경로는 통계의 성질이기 전에 자료가 만들어진 방식의 결과이다. 반도체 계측 자료에서 각 경로의 출처는 Table 4 이다.
 
 Table 4. The physical origin of each path in process data
 
@@ -233,7 +233,7 @@ Hyperparameter 를 고르는 안쪽 loop 과 성능을 재는 바깥 loop 을 �
 
 ### 5.6 Applying The Countermeasures To Semiconductor Data
 
-반도체 자료에서 대응책은 공정의 계층에 그대로 얹힌다. 가장 많이 틀리는 것은 분할 단위이며, 그것을 정하는 물음은 "model 이 답해야 하는 것이 새로운 무엇인가" 하나이다. 물음마다의 분할 단위는 Table 5 와 같다.
+반도체 자료에서 대응책은 공정의 계층에 그대로 얹힌다. 가장 많이 틀리는 것은 분할 단위이며, 그것을 정하는 물음은 "model 이 답해야 하는 것이 새로운 무엇인가" 하나이다. 물음마다의 분할 단위는 Table 5 이다.
 
 Table 5. Split unit by the question the model answers
 
@@ -255,7 +255,7 @@ Table 5. Split unit by the question the model answers
 
 ## 6. Detection
 
-Overfitting 은 3 장의 경로마다 다른 검사로 확인한다. 가장 먼저 돌릴 것은 둘째 검사이다. 같은 자료에 분할만 바꾸어 두 번 재면 끝나고, 실무에서 가장 큰 경로를 바로 드러내기 때문이다. 검사와 각 검사가 가리키는 경로는 Table 6 과 같다.
+Overfitting 은 3 장의 경로마다 다른 검사로 확인한다. 가장 먼저 돌릴 것은 둘째 검사이다. 같은 자료에 분할만 바꾸어 두 번 재면 끝나고, 실무에서 가장 큰 경로를 바로 드러내기 때문이다. 검사와 각 검사가 가리키는 경로는 Table 6 이다.
 
 Table 6. Checks that confirm overfitting
 
@@ -343,7 +343,7 @@ Table 6. Checks that confirm overfitting
 
 6 장의 [마지막 꼭지](#when-training-is-good-and-test-is-bad) 에 있는 다섯 원인 가운데 셋이 이 숫자에 함께 걸린다. Model 이 외웠을 가능성, 추론 자료가 학습 자료의 범위 밖으로 나간 covariate shift, 그리고 산포가 다른 두 자료에서 잰 $R^2$ 의 분모이다.
 
-$R^2$ 의 분모는 그 집합의 분산이므로, 산포가 다른 두 집합에서 잰 0.99 와 0.7 의 차이에는 model 이 나빠진 몫과 분모가 바뀐 몫이 함께 들어 있다. 셋을 갈라내는 순서는 Table 7 과 같다.
+$R^2$ 의 분모는 그 집합의 분산이므로, 산포가 다른 두 집합에서 잰 0.99 와 0.7 의 차이에는 model 이 나빠진 몫과 분모가 바뀐 몫이 함께 들어 있다. 셋을 갈라내는 순서는 Table 7 이다.
 
 Table 7. Separating the three causes of the gap
 
@@ -363,7 +363,7 @@ Table 7. Separating the three causes of the gap
 
 Fig 3 의 자료를 여섯 행만 그대로 옮기면 같은 group 의 행들이 무엇을 공유하는지가 표에서 바로 보인다. 열은 여섯이고 그 가운데 첫째 열은 group 안에서 값이 바뀌지 않으며, 나머지 다섯은 행마다 따로 뽑힌다. 응답은 둘째와 셋째 열의 비선형 함수에 그 group 의 offset 과 잡음을 더한 값이다.
 
-두 group 에서 세 행씩 뽑은 여섯 행은 Table 8 과 같다.
+두 group 에서 세 행씩 뽑은 여섯 행은 Table 8 이다.
 
 Table 8. Six rows drawn from two groups
 
@@ -396,7 +396,7 @@ $\rho$ 는 한 번의 one-way analysis of variance 로 얻는다. 응답의 변�
 \rho = \frac{\sigma_b^2}{\sigma_b^2 + \sigma_w^2} \hspace{19em} (2)
 ```
 
-$\sigma_b^2$ 는 group 사이의 분산, $\sigma_w^2$ 는 group 안의 분산이다. 둘 다 관측되지 않으므로 표본에서 추정하며, 추정에 쓰는 값은 Table 9 와 같다.
+$\sigma_b^2$ 는 group 사이의 분산, $\sigma_w^2$ 는 group 안의 분산이다. 둘 다 관측되지 않으므로 표본에서 추정하며, 추정에 쓰는 값은 Table 9 이다.
 
 Table 9. Quantities in the one-way analysis of variance
 
@@ -414,7 +414,7 @@ MSW 가 그대로 $\sigma_w^2$ 의 추정값이고, $\sigma_b^2$ 의 추정값�
 \hat{\rho} = \frac{\mathrm{MSB} - \mathrm{MSW}}{\mathrm{MSB} + (m_0 - 1)\,\mathrm{MSW}} \hspace{19em} (3)
 ```
 
-$m_0$ 는 group 의 크기가 서로 다를 때 쓰는 대푯값이며, $m_i$ 를 $i$ 번째 group 의 행 수라 하면 아래와 같다.
+$m_0$ 는 group 의 크기가 서로 다를 때 쓰는 대푯값이며, $m_i$ 를 $i$ 번째 group 의 행 수라 하면 아래이다.
 
 ```math
 m_0 = \frac{1}{k-1}\left(N - \frac{\sum_i m_i^2}{N}\right) \hspace{19em} (4)
@@ -435,7 +435,7 @@ Group 이 모두 같은 크기 $m$ 이면 $m_0 = m$ 이 되어 식 (3) 이 그�
 
 #### A Worked Example
 
-Fig 3(b) 의 자료, 곧 200 개 group 에 group 마다 25 행씩 둔 5000 행에 이 절차를 적용한 결과는 아래와 같다.
+Fig 3(b) 의 자료, 곧 200 개 group 에 group 마다 25 행씩 둔 5000 행에 이 절차를 적용한 결과는 아래이다.
 
 - **응답에 대해**: MSB 54.26, MSW 1.24, $m_0 = 25$ 이므로 $\hat{\rho} = 0.63$ 이다. 이 자료는 offset 의 표준편차가 1.5 이고 group 안의 변동이 분산 1.25 이므로 참값이 0.64 이며, 추정값이 거기에 닿는다.
 - **잔차에 대해**: group 을 지킨 분할에서 얻은 out-of-fold 잔차로 다시 재면 MSB 68.11, MSW 0.36 으로 $\hat{\rho} = 0.88$ 이다. 열이 설명한 몫은 잔차에서 빠져나가지만 학습에 없던 group 의 offset 은 model 이 맞출 수 없어 그대로 남기 때문에 값이 더 크다.

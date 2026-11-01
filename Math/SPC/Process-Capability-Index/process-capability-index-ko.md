@@ -1,5 +1,5 @@
 # Process Capability Indices
-Rev. 37 | Created: 2026-09-04 | Updated: 2026-09-29 11:54 CDT
+Rev. 38 | Created: 2026-09-04 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)
@@ -320,7 +320,7 @@ ISBN 978-1-119-72309-7.
 
 ## Appendix B. Derivation of Equation (5)
 
-공정은 평균 $\mu$ 와 표준편차 $\sigma$ 인 정규분포를 따르므로 그 밀도는 아래와 같다.
+공정은 평균 $\mu$ 와 표준편차 $\sigma$ 인 정규분포를 따르므로 그 밀도는 아래이다.
 
 $$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right) \hspace{19em} (7)$$
 

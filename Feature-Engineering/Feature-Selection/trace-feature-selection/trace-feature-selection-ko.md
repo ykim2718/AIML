@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 22 | Created: 2026-09-10 | Updated: 2026-10-30 09:49 UTC
+Rev. 23 | Created: 2026-09-10 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -100,7 +100,7 @@ Fig 2. Hierarchy of the evaluation criterion axis by use of the learning algorit
 
 ### 3.1 Comparison
 
-Use case 마다 답하는 Fig 2 의 가지는 Table 1 과 같다.
+Use case 마다 답하는 Fig 2 의 가지는 Table 1 이다.
 
 Table 1. Use case and the branch that answers it
 
@@ -123,7 +123,7 @@ Table 1. Use case and the branch that answers it
 
 ## 4. Evaluation Criterion Axis
 
-Evaluation criterion 축은 선택이 학습 algorithm 을 어떻게 쓰는가로 가지를 나누며, 이에 따라 답이 무엇의 성질인지와 비용이 정해진다. 가지마다의 값은 Table 2 와 같다.
+Evaluation criterion 축은 선택이 학습 algorithm 을 어떻게 쓰는가로 가지를 나누며, 이에 따라 답이 무엇의 성질인지와 비용이 정해진다. 가지마다의 값은 Table 2 이다.
 
 Table 2. Branches of the evaluation criterion axis
 
@@ -158,7 +158,7 @@ $|\cos(a, b)|$ 가 0.95 같은 threshold τ 를 넘는 두 열은 같은 신호�
 
 **Key features.** Filter 가지는 model 을 적합하기 전에 feature 에 점수를 매기며, trace feature list 전체에 돌릴 수 있을 만큼 계산이 싸다. Pearson correlation, Spearman correlation, ANOVA F, mutual information 은 열 하나를 target 과 견주어 점수를 매긴다. mRMR 은 열 하나를 target 및 이미 고른 열과 견주어 점수를 매긴다 [[5](#ref-5)]. Relief 와 그 변형은 열 하나를 각 행의 같은 class 와 다른 class 의 nearest neighbour 와 견주어 점수를 매기므로, 다른 feature 와 함께일 때만 의미를 갖는 feature 도 점수를 얻는다 [[6](#ref-6)].
 
-구성원끼리의 비교는 Table 3 과 같다.
+구성원끼리의 비교는 Table 3 이다.
 
 Table 3. Filter methods
 
@@ -185,7 +185,7 @@ Table 3. Filter methods
 
 k 는 적합한 parameter 의 수, n 은 행의 수, $\hat{L}$ 은 그 행에서 model 의 최대 likelihood 다. BIC 가 가장 낮은 부분집합이 model 의 성능과 간결함을 가장 잘 함께 만족하며, feature 하나는 $2 \ln \hat{L}$ 을 ln n 보다 크게 올릴 때만 BIC 를 낮춘다.
 
-구성원마다의 탐색 방향과 비용은 Table 4 와 같다.
+구성원마다의 탐색 방향과 비용은 Table 4 이다.
 
 Table 4. Wrapper methods
 
@@ -203,7 +203,7 @@ Table 4. Wrapper methods
 
 **Key features.** Embedded 가지의 비용은 적합 한 번이다. 선택이 바깥 탐색 없이 학습 중 최소화하는 목적함수에서 바로 정해진다.
 
-구성원마다의 penalty 와 selection unit 은 Table 5 와 같다.
+구성원마다의 penalty 와 selection unit 은 Table 5 이다.
 
 Table 5. Embedded methods
 
@@ -225,7 +225,7 @@ Table 5. Embedded methods
 
 **Key features.** Post-hoc ranking 가지는 적합된 model 에 적용한 filter 이며, 순위만 주고 문턱은 주지 않는다. SHAP, LIME, attention weight 가 여기에 속한다. Embedded 는 선택이 학습 목적함수의 한 항이라는 뜻인데 [[2](#ref-2)], SHAP [[15](#ref-15)] 과 LIME [[16](#ref-16)] 은 적합이 끝난 뒤 model 을 black box 로 다루어 계산하며 학습된 가중치를 바꾸지 않는다.
 
-구성원마다 흔드는 대상과 label 필요 여부는 Table 6 과 같다.
+구성원마다 흔드는 대상과 label 필요 여부는 Table 6 이다.
 
 Table 6. Post-hoc ranking methods
 
@@ -243,7 +243,7 @@ Table 6. Post-hoc ranking methods
 
 **Key features.** Error-controlled 가지는 비용이 더 드는 대신, 고른 feature 가운데 우연히 들어온 것이 몇 개인지에 한계를 준다. 다른 가지에는 이 한계가 없다. Model-X knockoffs 는 각 feature 의 상관 구조를 유지하면서 나머지 feature 가 주어졌을 때 target 과 독립인 합성 사본을 만들고, 자기 사본보다 정해진 차이 이상으로 점수가 높은 feature 만 남겨 false discovery rate 를 정한 수준 아래로 유지한다 [[19](#ref-19)]. Stability selection 은 base selector 를 subsample 마다 다시 실행하고, feature 마다 선택 빈도를 세어 문턱을 넘는 feature 를 남기며, 잘못 선택된 feature 수의 기댓값에 유한표본 한계를 준다 [[20](#ref-20)].
 
-구성원마다의 구성 방법과 한계의 대상은 Table 7 과 같다.
+구성원마다의 구성 방법과 한계의 대상은 Table 7 이다.
 
 Table 7. Error-controlled methods
 
@@ -265,13 +265,13 @@ Unsupervised 선택은 target 과 무관하게 열을 덜어 내고, supervised 
 
 Search strategy 축은 후보 부분집합을 어떻게 만들어 가는가로 방법을 나누며, 값은 exhaustive, sequential, randomized 셋이다 [[1](#ref-1)]. 이 축은 부분집합을 탐색하는 방법에만 값이 있고, Fig 2 에서는 가지 1.2 와 가지 2 의 세 줄이 해당하며 나머지 줄은 - 로 두었다.
 
-Sequential 탐색은 feature 를 하나씩 또는 한 묶음씩 더하거나 뺀다. 가지 1.2 의 mRMR 은 feature 를 하나씩 더해 가고 [[5](#ref-5)], 가지 2.1 과 2.2 의 RFE, backward elimination, forward selection, stepwise 는 wrapper 안에서 같은 방식으로 탐색한다. Randomized 탐색은 부분집합 위에서 확률적으로 움직이며, 가지 2.3 의 genetic search 와 simulated annealing 이 여기에 속한다. Exhaustive 탐색은 모든 부분집합을 평가하는데, 부분집합의 수는 열이 하나 늘 때마다 두 배가 되므로 열이 수천 개인 trace 표에서는 Fig 2 의 어느 줄도 이 값을 갖지 않는다. Wrapper 마다의 탐색 방향과 재적합 비용은 Table 4 와 같다.
+Sequential 탐색은 feature 를 하나씩 또는 한 묶음씩 더하거나 뺀다. 가지 1.2 의 mRMR 은 feature 를 하나씩 더해 가고 [[5](#ref-5)], 가지 2.1 과 2.2 의 RFE, backward elimination, forward selection, stepwise 는 wrapper 안에서 같은 방식으로 탐색한다. Randomized 탐색은 부분집합 위에서 확률적으로 움직이며, 가지 2.3 의 genetic search 와 simulated annealing 이 여기에 속한다. Exhaustive 탐색은 모든 부분집합을 평가하는데, 부분집합의 수는 열이 하나 늘 때마다 두 배가 되므로 열이 수천 개인 trace 표에서는 Fig 2 의 어느 줄도 이 값을 갖지 않는다. Wrapper 마다의 탐색 방향과 재적합 비용은 Table 4 이다.
 
 ## 7. Selection Unit Axis
 
 열 단위 선택은 model 입력으로는 타당하지만 line 이 실행할 조치로 이어지지 않는다. Trace 의 열 하나는 sensor, recipe step, 요약통계를 함께 가리키고, line 이 바꿀 수 있는 것은 sensor 와 step 뿐이다. 열 단위 집합은 forward RF power 의 최댓값은 남기고 평균은 버리면서 reflected RF power 의 최댓값을 남길 수 있으며, 아무도 이 집합을 실행할 수 없다.
 
-단위마다 이어지는 line 조치는 Table 8 과 같다.
+단위마다 이어지는 line 조치는 Table 8 이다.
 
 Table 8. Selection units
 

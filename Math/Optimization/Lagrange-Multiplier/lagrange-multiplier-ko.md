@@ -1,5 +1,5 @@
 # Lagrange Multiplier Method
-Rev. 2 | Created: 2026-10-25 | Updated: 2026-10-26 00:09 UTC
+Rev. 3 | Created: 2026-10-25 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -68,7 +68,7 @@ Table 1. Symbols
 
 ### 4.1 Gradient Condition
 
-최적점은 목적 함수의 등고선과 제약 조건의 곡선이 접하는 점이다. 2 차원 공간에서 세 요소는 아래와 같다.
+최적점은 목적 함수의 등고선과 제약 조건의 곡선이 접하는 점이다. 2 차원 공간에서 세 요소는 아래이다.
 
 1. **목적 함수 (objective function) $f(x, y)$ 의 등고선 (contour line)**: 지도에서 산의 높이를 나타내는 동심원이며, 올라가야 할 정상이 목표다.
 2. **제약 조건 (constraint) $g(x, y) = C$**: 반드시 따라 걸어야 하는 등산로다.
@@ -90,7 +90,7 @@ Table 1. Symbols
 - $g(x, y) = C$: 반드시 만족해야 하는 제약 조건이다.
 - $\lambda \left( g(x, y) - C \right)$: 제약 조건을 어긴 정도에 $\lambda$ 를 곱한 항이다.
 
-식 (2) 를 $x, y, \lambda$ 로 각각 편미분하여 0 으로 둔 연립방정식은 아래와 같다.
+식 (2) 를 $x, y, \lambda$ 로 각각 편미분하여 0 으로 둔 연립방정식은 아래이다.
 
 ```math
 \begin{aligned}
@@ -122,7 +122,7 @@ $x + y = 10$ 을 만족하면서 $f(x, y) = xy$ 를 최대화한다. $g(x, y) = 
 식 (1) 로 풀면 $\nabla f = (y, x)$, $\nabla g = (1, 1)$ 이므로 $y = \lambda$, $x = \lambda$ 이다.
 제약 조건 $x + y = 10$ 에 넣으면 $2\lambda = 10$ 이 되어 $\lambda = 5$, $x = y = 5$, $f^\ast = 25$ 이다.
 
-식 (3) 으로 풀면 $\mathcal{L} = xy - \lambda (x + y - 10)$ 이고, 세 편미분은 아래와 같다.
+식 (3) 으로 풀면 $\mathcal{L} = xy - \lambda (x + y - 10)$ 이고, 세 편미분은 아래이다.
 
 ```math
 \begin{aligned}
@@ -134,7 +134,7 @@ $x + y = 10$ 을 만족하면서 $f(x, y) = xy$ 를 최대화한다. $g(x, y) = 
 ```
 
 식 (5) 의 해도 $x = y = 5$, $\lambda = 5$ 로, 식 (1) 로 구한 값과 같다.
-제약 조건 위의 다른 점과 견준 값은 아래 Table 2 와 같다.
+제약 조건 위의 다른 점과 견준 값은 아래 Table 2 이다.
 
 Table 2. Objective along the constraint x + y = 10
 

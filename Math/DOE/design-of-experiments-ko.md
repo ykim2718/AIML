@@ -1,5 +1,5 @@
 # Design of Experiments
-Rev. 7 | Created: 2026-09-04 | Updated: 2026-10-22 18:20 CDT
+Rev. 8 | Created: 2026-09-04 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -93,7 +93,7 @@ Full factorial 에서 한 단계 내려갈 때마다 model 에 두는 가정이 
 
 ### 3.1 Comparison
 
-Design 을 고르는 기준은 Table 1 과 같다.
+Design 을 고르는 기준은 Table 1 이다.
 
 Table 1. Comparison of designs
 
@@ -191,7 +191,7 @@ General fractional design 은 basic factor 들로 이루어진 full factorial �
 다룬다.
 
 Defining relation 은 generator 가 함의하는 word 들이 생성하며, resolution 은 그 word 들이 생성하는 부분군에서
-가장 짧은 word 의 길이이다. 네 generator 집합의 resolution 은 Table 3 과 같다.
+가장 짧은 word 의 길이이다. 네 generator 집합의 resolution 은 Table 3 이다.
 
 Table 3. Resolution of four generator sets
 

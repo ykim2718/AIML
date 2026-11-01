@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 124 | Created: 2026-08-28 | Updated: 2026-11-01 14:53 UTC
+Rev. 125 | Created: 2026-08-28 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -46,7 +46,7 @@ Forward problem 은 입력 변수 $K$ 개로 이루어진 $\mathbf{x} \in \mathb
 
 두 문제는 성질이 다르다. Forward 는 입력마다 하나의 출력을 주지만, inverse 는 답이 없거나 여러 개이거나 관측의 작은 잡음에 크게 흔들린다.
 
-Forward problem 과 inverse problem, 그리고 inverse problem 의 두 해법인 inverse model 과 model inversion 의 관계는 아래 Fig 1 과 같다.
+Forward problem 과 inverse problem, 그리고 inverse problem 의 두 해법인 inverse model 과 model inversion 의 관계는 아래 Fig 1 이다.
 
 ```text
 Problem
@@ -259,7 +259,7 @@ Fig 3. Null space in the score plane and the bootstrap spread of the solution in
 - (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다.
 - (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, PLS bootstrap ensemble 이 주는 bootstrap PLS 200 개의 minimum-norm solution 이다.
 
-Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래와 같다.
+Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
 
 1. Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 주황 별 $\mathbf{x}^{\ast}$ 이다. (b) 의 파란 점 200 개도 bootstrap PLS 마다 이 방법으로 구한 해이다.
 2. Null space 방법: (a) 의 null space 직선 가운데 $T^{2}$ 상한 타원 안의 선분 A–B 와, 그 직선을 입력 평면으로 옮긴 (b) 의 빨간 점선이다.
@@ -726,7 +726,7 @@ print("rows within 2%    :", len(near))
 print("their true T      :", np.round(np.sort(near["T"].to_numpy()), 2))
 ```
 
-실행 결과는 아래와 같다.
+실행 결과는 아래이다.
 
 ```text
 rows              : 100
@@ -797,7 +797,7 @@ $`\mathbf{Y}`$ 도 같은 방법으로 $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_
 \mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (9)
 ```
 
-열을 모은 행렬의 곱은 열마다의 곱을 더한 것과 같아 $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$ 이므로, 두 합은 아래와 같다.
+열을 모은 행렬의 곱은 열마다의 곱을 더한 것과 같아 $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$ 이므로, 두 합은 아래이다.
 
 ```math
 \mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (10)
@@ -845,7 +845,7 @@ SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 �
 
 ## Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
 
-Fig 3 (b) 의 PLS bootstrap ensemble 을 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
+Fig 3 (b) 의 PLS bootstrap ensemble 을 입력이 3 개인 경우로 그리면 아래 Fig 9 이다.
 
 <img src="inverse-problem-ko_fig/bootstrap-schematic.png" width="900" style="max-width: 100%;" alt="Fig 9">
 
@@ -858,7 +858,7 @@ Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 
 ## Appendix I. PLS Inversion: Model Plane of One PLS and SPE
 
-SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 10 과 같다.
+SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 10 이다.
 
 <img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 10">
 
@@ -867,7 +867,7 @@ Fig 10. Row space and column space of the loading matrix P, the T^2 limit and SP
 - (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다.
 - (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 $\mathbf{x}$ 의 수선 길이 제곱이 SPE 이다.
 
-Fig 10 에서 PLS inversion 의 두 방법이 구하는 해는 아래와 같다.
+Fig 10 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
 
 - Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 $\mathbf{x}^{\ast}$ 하나이다.
 - Null space 방법: (a) 와 (b) 의 null space 직선 가운데 $T^{2}$ 상한 안의 선분 A–B 이다.

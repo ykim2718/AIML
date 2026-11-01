@@ -1,5 +1,5 @@
 # Overfitting In Wide Data
-Rev. 7 | Created: 2026-09-06 | Updated: 2026-11-01 07:27 UTC
+Rev. 8 | Created: 2026-09-06 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -73,7 +73,7 @@ Defense
 
 맨 위의 protocol 은 model 에 아무 가정도 두지 않으므로 아래의 모든 방어와 함께 쓴다. 그 아래에서 model 을 바꾸는 방어는 신호가 놓인 모양을 가정한다. 소수의 열을 가정하는 갈래는 잡음 열을 버리는 대신 고를 수 있는 열이 많아야 $n$ 개이고, 상관이 큰 열 무리에서 표본에 따라 선택이 바뀐다 (5.2). 여러 열을 가정하는 갈래는 모든 열을 남기는 대신 신호가 소수의 열에 있으면 잡음 열에도 계수를 나누어, [Fig 5](#fig-5)(b) 에서 ridge 의 held-out 오차가 2.50 에 머문다.
 
-방어는 무엇을 줄이는지에 따라 다섯 갈래이며, 갈래마다 줄이는 대상은 Table 1 과 같다.
+방어는 무엇을 줄이는지에 따라 다섯 갈래이며, 갈래마다 줄이는 대상은 Table 1 이다.
 
 Table 1. Five families of defense
 
@@ -89,7 +89,7 @@ Table 1. Five families of defense
 
 ### 3.1 Comparison
 
-방법은 자료의 모양에서 정해지며, 정하는 순서는 늘 같다. 신호가 어디에 있다고 보는지를 먼저 정하고, 그에 맞는 방어를 고르고, 마지막으로 그 선택이 옳았는지를 정직한 절차로 확인한다. 첫 단계에서 자료의 모양에 따라 고르는 방법은 Table 2 와 같다.
+방법은 자료의 모양에서 정해지며, 정하는 순서는 늘 같다. 신호가 어디에 있다고 보는지를 먼저 정하고, 그에 맞는 방어를 고르고, 마지막으로 그 선택이 옳았는지를 정직한 절차로 확인한다. 첫 단계에서 자료의 모양에 따라 고르는 방법은 Table 2 이다.
 
 Table 2. Method by the shape of the data
 
@@ -107,7 +107,7 @@ Table 2. Method by the shape of the data
 
 ### 4.1 Three Sources
 
-원인은 셋이며 각각 대수, 확률, 절차에서 생긴다. 세 원인은 Table 3 과 같다.
+원인은 셋이며 각각 대수, 확률, 절차에서 생긴다. 세 원인은 Table 3 이다.
 
 Table 3. Three sources of overfitting in wide data
 
@@ -181,7 +181,7 @@ Random subspace method 는 행은 모두 그대로 두고 열만 무작위로 $k
 
 #### Why Averaging Helps
 
-$B$ 개 model 의 예측이 각각 분산 (variance) $\sigma^2$ 을 가지고 서로 상관 $\rho$ 를 가질 때, 평균한 예측의 분산은 아래와 같다.
+$B$ 개 model 의 예측이 각각 분산 (variance) $\sigma^2$ 을 가지고 서로 상관 $\rho$ 를 가질 때, 평균한 예측의 분산은 아래이다.
 
 ```math
 \sigma_{\mathrm{avg}}^2 = \rho \sigma^2 + \frac{1 - \rho}{B} \sigma^2 \hspace{19em} (3)
@@ -261,7 +261,7 @@ Lasso 에는 wide data 에서 두 가지 약점이 있다. 고를 수 있는 열
 - **설정값**: 바깥 loop 와 안쪽 loop 의 fold 수, 그리고 permutation test 의 반복 횟수이다.
 - **깨지는 조건**: Table 4 의 네 단계 가운데 하나라도 학습 fold 밖에서 할 때이다.
 
-방어를 얹었는지보다 그 효과를 어떻게 쟀는지가 더 자주 문제가 된다. 학습 fold 안에서 해야 하는 일과 그 일을 fold 밖에서 하면 생기는 결과는 Table 4 와 같다.
+방어를 얹었는지보다 그 효과를 어떻게 쟀는지가 더 자주 문제가 된다. 학습 fold 안에서 해야 하는 일과 그 일을 fold 밖에서 하면 생기는 결과는 Table 4 이다.
 
 Table 4. What belongs inside the training fold
 

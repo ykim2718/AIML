@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 72 | Created: 2026-05-29 | Updated: 2026-10-22 18:20 CDT
+Rev. 73 | Created: 2026-05-29 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -170,7 +170,7 @@ P(Y|X)<sub>model</sub> 이 실제 관계를 반영하지 못하는 원인은 아
 - **Extrapolation**: P(X<sub>i</sub>) 가 드문 영역에서는 model 을 묶어 줄 학습 표본이 없어 추정이 정해지지 않는다. P(X) shift 나 drift 가 P(X<sub>o</sub>) 를 그 영역으로 옮기면 식 (5) 에서 이 몫이 커진다.
 - **Unobserved state**: chamber 상태 Z 가 측정 데이터 X 에 없으면 model 은 학습 시점의 Z 분포로 평균한 관계를 배운다. 학습 뒤 Z 의 분포가 바뀌면 그 차이가 둘째 항이 된다 (section 5.3).
 
-식 (5) 로 보면 세 요소는 아래와 같다.
+식 (5) 로 보면 세 요소는 아래이다.
 
 - **좋은 예측**: P(Y)<sub>pred</sub> 는 식 (5) 의 두 항이 모두 작을 때 실제 P(Y) 에 가깝다.
 - **좋은 데이터**: X<sub>i</sub> 는 wafer 계측값과 짝지어 model 학습에 쓰는, 장비 sensor 등에서 측정한 학습 데이터이고, P(X<sub>o</sub>)<sub>true</sub> 는 추론 때 실제로 측정되는 추론 데이터의 분포다. P(X<sub>i</sub>) 가 P(X<sub>o</sub>) 를 덮어야 Extrapolation 몫이 작다.

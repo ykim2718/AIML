@@ -1,5 +1,5 @@
 # Domain-specific Transformer Models Quick Start
-Rev. 4 | Created: 2026-10-24 | Updated: 2026-10-24 10:59 UTC
+Rev. 5 | Created: 2026-10-24 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)
@@ -70,7 +70,7 @@ Transformer 는 자연어뿐 아니라 이미지, 시계열, 음성, 단백질 �
 
 ### 4.1 Comparison
 
-도메인별 대표 Transformer model 은 Table 1 과 같다.
+도메인별 대표 Transformer model 은 Table 1 이다.
 
 Table 1. Representative Transformer models by domain
 
@@ -84,7 +84,7 @@ Table 1. Representative Transformer models by domain
 
 ## 5. Models and Libraries
 
-Table 1 의 model 은 대부분 `transformers` 의 class 로 불러 쓴다. 도메인별 model 과 library 는 Table 2 와 같다.
+Table 1 의 model 은 대부분 `transformers` 의 class 로 불러 쓴다. 도메인별 model 과 library 는 Table 2 이다.
 
 Table 2. Models and libraries by domain
 

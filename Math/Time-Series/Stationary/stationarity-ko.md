@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 21 | Created: 2026-09-07 | Updated: 2026-09-23 11:29 CDT
+Rev. 22 | Created: 2026-09-07 | Updated: 2026-11-01 21:36 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)
@@ -115,7 +115,7 @@ Table 2. Stationary and non-stationary states
 | Stationary | 정속 운전 중인 회전기계의 진동. 일정 유량에서의 난류 압력. 고정된 채널의 열잡음. 세기가 고른 바람 |
 | Non-stationary | 시동과 가속 segment 의 진동 transient. 지진파. 마모로 서서히 나빠지는 장비. 조건이 자리를 잡아 가는 중인 공정 |
 
-같은 구별을 기록 위에서 보면 Fig 1 과 같다. 네 기록은 같은 innovation 열 하나에서 만든 것이어서 서로
+같은 구별을 기록 위에서 보면 Fig 1 이다. 네 기록은 같은 innovation 열 하나에서 만든 것이어서 서로
 다른 점은 그 열을 어떻게 다루었는가뿐이며, (a) 만 stationary 이고 나머지 셋은 각각 평균과 산포와 누적 구조에서
 stationarity 를 잃는다. 굵은 선은 60 sample 창의 이동평균이고 띠는 같은 창의 이동표준편차이다.
 
