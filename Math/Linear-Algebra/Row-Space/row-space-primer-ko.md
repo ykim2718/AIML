@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 11 | Created: 2026-11-01 | Updated: 2026-11-01 23:20 UTC
+Rev. 12 | Created: 2026-11-01 | Updated: 2026-11-01 23:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -214,7 +214,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **일차결합 (linear combination)**: vector 여러 개에 각각 상수를 곱해 모두 더한 vector.
 - **정규직교 기저 (orthonormal basis)**: 서로 직교하는 단위 vector 로 이루어진 기저.
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
-- **직교 여공간 (orthogonal complement)**: 한 부분공간의 모든 vector 와 직교하는 vector 전체. 여집합은 원래 집합에 없는 점을 모두 모은 것이지만, 직교 여공간은 직교하는 방향만 모은 것이어서 두 공간이 zero vector 를 함께 가진다.
+- **직교 여공간 (orthogonal complement)**: 한 부분공간의 모든 vector 와 직교하는 vector 전체. 여집합은 원래 집합에 없는 점을 모두 모은 것이지만, 직교 여공간은 직교하는 방향만 모은 것이다.
 
 ## Appendix B. Derivation
 
