@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 18 | Created: 2026-10-25 | Updated: 2026-11-01 09:15 UTC
+Rev. 19 | Created: 2026-10-25 | Updated: 2026-11-01 09:21 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -762,7 +762,7 @@ The three equations come in turn from the procedure by which PLS extracts the sc
 
 #### Eq. (3) PLS decomposition
 
-The $a$-th component is extracted along the direction of largest covariance between $\mathbf{X}_a$ and $\mathbf{Y}_a$. $\mathbf{X}_1 = \mathbf{X}$ and $\mathbf{Y}_1 = \mathbf{Y}$, and $\mathbf{w}_a \in \mathbb{R}^{K}$ and $\mathbf{c}_a \in \mathbb{R}^{M}$ are weight vectors of length 1.
+PLS extracts the $A$ latent variables one component at a time, and $a = 1, \dots, A$ counts which component is being extracted. The $a$-th component is extracted from $\mathbf{X}_a$ and $\mathbf{Y}_a$, what is left after removing the parts the earlier $a - 1$ components explain, along the direction of largest covariance between the two. $\mathbf{X}_1 = \mathbf{X}$ and $\mathbf{Y}_1 = \mathbf{Y}$, and $\mathbf{w}_a \in \mathbb{R}^{K}$ and $\mathbf{c}_a \in \mathbb{R}^{M}$ are weight vectors of length 1.
 
 ```math
 (\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (6)

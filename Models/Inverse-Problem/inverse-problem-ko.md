@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 104 | Created: 2026-08-28 | Updated: 2026-11-01 09:15 UTC
+Rev. 105 | Created: 2026-08-28 | Updated: 2026-11-01 09:21 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -762,7 +762,7 @@ Fig 8. Appendix F hidden model against T, the search in the A–B plane, the sur
 
 #### Eq. (3) PLS decomposition
 
-$a$ 번째 성분은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 의 공분산이 가장 큰 방향으로 뽑는다. $\mathbf{X}_1 = \mathbf{X}$, $\mathbf{Y}_1 = \mathbf{Y}$ 이고, $\mathbf{w}_a \in \mathbb{R}^{K}$ 와 $\mathbf{c}_a \in \mathbb{R}^{M}$ 는 길이가 1 인 가중치 벡터이다.
+PLS 는 latent 변수 $A$ 개를 성분 하나씩 차례로 뽑으며, $a = 1, \dots, A$ 는 그중 몇 번째로 뽑는 성분인지를 나타낸다. $a$ 번째 성분은 앞선 $a - 1$ 개 성분이 설명한 몫을 빼고 남은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 에서, 둘의 공분산이 가장 큰 방향으로 뽑는다. $\mathbf{X}_1 = \mathbf{X}$, $\mathbf{Y}_1 = \mathbf{Y}$ 이고, $\mathbf{w}_a \in \mathbb{R}^{K}$ 와 $\mathbf{c}_a \in \mathbb{R}^{M}$ 는 길이가 1 인 가중치 벡터이다.
 
 ```math
 (\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (6)
