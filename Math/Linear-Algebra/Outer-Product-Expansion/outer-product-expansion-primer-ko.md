@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 10:14 UTC
+Rev. 2 | Created: 2026-11-01 | Updated: 2026-11-01 21:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -30,7 +30,7 @@ $m \times n$ 행렬 $\mathbf{A}$ 와 $n \times p$ 행렬 $\mathbf{B}$ 의 곱은
 
 ## 3. Notation
 
-이 문서가 쓰는 기호는 아래 Table 1 과 같다.
+이 문서가 쓰는 기호는 아래 Table 1 이다.
 
 Table 1. Symbols
 
@@ -51,7 +51,7 @@ Table 1. Symbols
 | $\sigma_k$, $\mathbf{u}_k$, $\mathbf{v}_k$ | $k$ 번째 특이값, 좌특이벡터, 우특이벡터                                | scalar, $m \times 1$, $n \times 1$ | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$ |
 | $r$                                        | $\mathbf{A}$ 의 계수                                                   | scalar                             | $r \le \min(m, n)$                       |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbf{b}_k^\top$: 영어로 "b k transpose", 한국어로 "b k 의 전치" 라 읽는다. 열 vector $\mathbf{b}_k$ 를 눕혀 행 vector 로 쓴 것이다.
 - $\mathbf{a}_k \mathbf{b}_k^\top$: 영어로 "the outer product of a k and b k", 한국어로 "a k 와 b k 의 외적" 이라 읽는다.
@@ -73,7 +73,7 @@ Table 1. Symbols
 
 ### 4.2 Outer Product Form
 
-식 (1) 의 오른쪽 변은 안쪽 번호 $k$ 마다 $\mathbf{A}$ 의 $k$ 번째 열과 $\mathbf{B}$ 의 $k$ 번째 행을 곱해 $m \times p$ 행렬 하나를 만들고, 그 행렬 $n$ 개를 더한다. 외적 하나의 원소는 아래 식 (2) 와 같이 $\mathbf{A}$ 의 원소 하나와 $\mathbf{B}$ 의 원소 하나를 곱한 값이다.
+식 (1) 의 오른쪽 변은 안쪽 번호 $k$ 마다 $\mathbf{A}$ 의 $k$ 번째 열과 $\mathbf{B}$ 의 $k$ 번째 행을 곱해 $m \times p$ 행렬 하나를 만들고, 그 행렬 $n$ 개를 더한다. 외적 하나의 원소는 아래 식 (2) 처럼 $\mathbf{A}$ 의 원소 하나와 $\mathbf{B}$ 의 원소 하나를 곱한 값이다.
 
 ```math
 \mathbf{a}_k \mathbf{b}_k^\top =
@@ -100,7 +100,7 @@ $2 \times 2$ 행렬 두 개를 둔다.
 \hspace{19em} (3)
 ```
 
-내적 형태로 원소마다 계산하면 아래와 같다.
+내적 형태로 원소마다 계산하면 아래이다.
 
 ```math
 \mathbf{A}\mathbf{B} =

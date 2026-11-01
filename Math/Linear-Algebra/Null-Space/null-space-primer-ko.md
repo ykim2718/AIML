@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 23 | Created: 2026-10-31 | Updated: 2026-11-01 21:16 UTC
+Rev. 24 | Created: 2026-10-31 | Updated: 2026-11-01 21:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -31,7 +31,7 @@ Null space 의 차원인 nullity 와 계수 (rank) 를 더하면 입력 공간�
 
 ## 3. Notation
 
-이 문서가 쓰는 기호는 아래 Table 1 과 같다.
+이 문서가 쓰는 기호는 아래 Table 1 이다.
 
 Table 1. Symbols
 
@@ -61,7 +61,7 @@ Table 1. Symbols
 | $\sigma_i$                                | $\mathbf{A}$ 의 $i$ 번째 특이값                                        | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
 | $\mathbf{v}_i$                            | $\mathbf{A}$ 의 $i$ 번째 우특이벡터                                    | $n \times 1$                   | 단위 vector                                                |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
 - $\in$: 영어로 "in" 또는 "is an element of", 한국어로 "에 속한다" 라 읽는다.
@@ -101,7 +101,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면,
 \mathbf{A}(\mathbf{x}_0 + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{b} + \mathbf{0} = \mathbf{b} \hspace{19em} (2)
 ```
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 아래와 같이 갈린다. 주어진 $\mathbf{A}$ 와 $\mathbf{b}$ 로 해가 없는지, 하나인지, 무수히 많은지를 가리는 절차는 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 에 있다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 아래처럼 갈린다. 주어진 $\mathbf{A}$ 와 $\mathbf{b}$ 로 해가 없는지, 하나인지, 무수히 많은지를 가리는 절차는 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 에 있다.
 
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
 - $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 모두 해이므로 해가 무수히 많다.
@@ -126,7 +126,7 @@ Null space 의 차원을 nullity 라 하며, 계수 (rank) 와 nullity 를 더�
 
 식 (4) 의 $\mathrm{rank}(\mathbf{A})$ 는 변환 뒤에 남는 차원이고, $\mathrm{nullity}(\mathbf{A})$ 는 원점으로 가는 차원이다. 행의 수 $m$ 은 식 (4) 에 들지 않으므로, $m \lt n$ 이면 $\mathrm{rank}(\mathbf{A}) \le m \lt n$ 이어서 nullity 가 1 이상이고 해가 있으면 언제나 무수히 많다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
-식 (5) 의 $\mathbf{A}$ 로 식 (4) 를 그리면 아래 Fig 1 과 같다.
+식 (5) 의 $\mathbf{A}$ 로 식 (4) 를 그리면 아래 Fig 1 이다.
 
 <img src="null-space-primer-ko_fig/fig1.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
@@ -145,7 +145,7 @@ Fig 1 은 같은 folder 의 [`src/null_space_rank_nullity.py`](src/null_space_ra
 \mathbf{A} = \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \\ 1 & 1 & 2 \end{bmatrix}, \quad \mathbf{b} = \begin{bmatrix} 2 \\ 3 \\ 5 \end{bmatrix} \hspace{19em} (5)
 ```
 
-$\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 첫 행과 둘째 행에서 $x_1 = -x_3$, $x_2 = -x_3$ 이고, 셋째 행은 첫 행과 둘째 행의 합이어서 조건을 더하지 않는다. $x_3 = 1$ 로 두면 null space 를 생성하는 vector 는 아래와 같다.
+$\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 첫 행과 둘째 행에서 $x_1 = -x_3$, $x_2 = -x_3$ 이고, 셋째 행은 첫 행과 둘째 행의 합이어서 조건을 더하지 않는다. $x_3 = 1$ 로 두면 null space 를 생성하는 vector 는 아래이다.
 
 ```math
 \mathbf{n} = \begin{bmatrix} -1 \\ -1 \\ 1 \end{bmatrix}, \quad \mathbf{A}\mathbf{n} = \begin{bmatrix} -1 + 0 + 1 \\ 0 - 1 + 1 \\ -1 - 1 + 2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix} \hspace{19em} (6)
@@ -153,7 +153,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 첫 행과 둘째 행에서 $x_1 = -x_3$
 
 $\mathrm{Null}(\mathbf{A})$ 는 $\mathbf{n}$ 의 상수배 전체인 직선이므로 nullity 는 1 이다. 일차독립인 열은 첫 번째와 두 번째 열 둘이므로 rank 는 2 이고, $2 + 1 = 3 = n$ 으로 식 (4) 가 성립한다. $\mathbf{A}$ 는 $\mathbb{R}^3$ 을 두 열이 생성하는 평면으로 옮기고, $\mathbf{n}$ 방향의 직선을 원점으로 보낸다.
 
-특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (3) 대로 $\mathbf{x}_0 + c\,\mathbf{n}$ 을 넣으면 $c$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 2 와 같다.
+특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 $\mathbf{A}\mathbf{x}_0 = [2, 3, 5]^\top = \mathbf{b}$ 를 만족한다. 식 (3) 대로 $\mathbf{x}_0 + c\,\mathbf{n}$ 을 넣으면 $c$ 와 상관없이 $\mathbf{b}$ 가 나오며, 그 값은 아래 Table 2 이다.
 
 Table 2. Solutions along the null space
 
@@ -163,7 +163,7 @@ Table 2. Solutions along the null space
 | $1$   | $[1, 2, 1]$                    | $[2, 3, 5]$                                |
 | $2$   | $[0, 1, 2]$                    | $[2, 3, 5]$                                |
 
-오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 3 과 같다. 첨가 행렬의 rank 를 적은 열은 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 의 절차에서 쓴다.
+오른쪽 아래 원소만 2 에서 3 으로 바꾼 행렬을 $\mathbf{B}$ 로 두고, 세 행렬의 해를 견주면 아래 Table 3 이다. 첨가 행렬의 rank 를 적은 열은 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 의 절차에서 쓴다.
 
 Table 3. Number of solutions by null space
 
@@ -243,7 +243,7 @@ $\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\ma
 
 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 rank 와 열의 수 $n$ 을 견주어 가린다. 해가 있는지는 첨가 행렬 (augmented matrix) $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 로 먼저 확인한다.
 
-첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 에 두 우변을 붙인 첨가 행렬은 아래 식 (8) 과 같다. 세로선의 왼쪽이 $\mathbf{A}$, 오른쪽이 $\mathbf{b}$ 이다.
+첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 에 두 우변을 붙인 첨가 행렬은 아래 식 (8) 이다. 세로선의 왼쪽이 $\mathbf{A}$, 오른쪽이 $\mathbf{b}$ 이다.
 
 ```math
 \begin{gathered}
@@ -263,7 +263,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 2. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) = n$ 이면 해가 하나이다. 식 (4) 에서 nullity 가 0 이어서 null space 에 zero vector 만 있다.
 3. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) \lt n$ 이면 해가 무수히 많다. 식 (4) 에서 nullity 가 1 이상이어서 null space 에 zero vector 가 아닌 vector 가 있다.
 
-2 번에서 해가 하나뿐인 것은 아래와 같이 보인다. $\mathbf{x}_0$ 와 다른 해 $\mathbf{x}'$ 가 있다고 두고 두 해의 차이에 $\mathbf{A}$ 를 곱한다.
+2 번에서 해가 하나뿐인 것은 아래처럼 보인다. $\mathbf{x}_0$ 와 다른 해 $\mathbf{x}'$ 가 있다고 두고 두 해의 차이에 $\mathbf{A}$ 를 곱한다.
 
 ```math
 \mathbf{A}(\mathbf{x}' - \mathbf{x}_0) = \mathbf{A}\mathbf{x}' - \mathbf{A}\mathbf{x}_0 = \mathbf{b} - \mathbf{b} = \mathbf{0} \hspace{19em} (9)

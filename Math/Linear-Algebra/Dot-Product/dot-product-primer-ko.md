@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 4 | Created: 2026-10-25 | Updated: 2026-11-01 14:47 UTC
+Rev. 5 | Created: 2026-10-25 | Updated: 2026-11-01 21:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -30,7 +30,7 @@ $\lVert \mathbf{w} \rVert = 1$ 이면 내적은 $\mathbf{x}_i$ 를 $\mathbf{w}$ 
 
 ## 3. Notation
 
-이 문서가 쓰는 기호는 아래 Table 1 과 같다.
+이 문서가 쓰는 기호는 아래 Table 1 이다.
 
 Table 1. Symbols
 
@@ -46,7 +46,7 @@ Table 1. Symbols
 | $\hat{y}_i$                | sample $i$ 의 예측값                            | scalar          | 실수                                                                 |
 | $t_i$                      | sample $i$ 의 score                             | scalar          | $\lVert \mathbf{w} \rVert = 1$                                       |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbf{x}_i^\top$: 영어로 "x i transpose", 한국어로 "x i 의 전치" 또는 "엑스 아이 트랜스포즈" 라 읽는다.
 - $\sum$: 영어로 "sum" 또는 "sigma", 한국어로 "합" 또는 "시그마" 라 읽는다. 식 (1) 처럼 아래위에 $j = 1$ 과 $p$ 가 붙으면 영어로 "the sum over j from 1 to p", 한국어로 "j 가 1 부터 p 까지의 합" 이라 읽는다.
@@ -83,7 +83,7 @@ Vector 의 길이 (norm) 는 자기 자신과의 내적의 제곱근이다.
 
 식 (3) 은 분모가 0 이 아닐 때, 곧 두 vector 가 모두 영 vector 가 아닐 때만 성립한다. 영 vector 에는 방향이 없어 $\theta$ 가 정의되지 않는다.
 
-사잇각에 따른 내적의 값은 아래 Table 2 와 같다.
+사잇각에 따른 내적의 값은 아래 Table 2 이다.
 
 Table 2. Dot product by angle
 
@@ -97,7 +97,7 @@ $\theta$ 가 $0^\circ$ 에서 $180^\circ$ 로 커지는 동안 $\cos\theta$ 는 
 
 ### 4.3 Projection
 
-$\lVert \mathbf{w} \rVert = 1$ 인 단위 vector 이면 식 (1) 은 아래와 같이 줄어든다.
+$\lVert \mathbf{w} \rVert = 1$ 인 단위 vector 이면 식 (1) 은 아래처럼 줄어든다.
 
 ```math
 \mathbf{x}_i^\top \mathbf{w} = \lVert \mathbf{x}_i \rVert \cos\theta \hspace{19em} (4)
@@ -121,7 +121,7 @@ $\lVert \mathbf{w} \rVert = \sqrt{0.6^2 + 0.8^2 + 0.0^2} = 1.0$ 이므로 $\math
 \mathbf{x}_i^\top \mathbf{w} = (10 \times 0.6) + (5 \times 0.8) + (2 \times 0.0) = 6 + 4 + 0 = 10 \hspace{19em} (6)
 ```
 
-기하학적 정의는 내적을 쓰지 않고 세 변의 길이만으로 구한다. $\mathbf{x}_i - \mathbf{w} = [9.4, 4.2, 2.0]^\top$ 이므로 $\lVert \mathbf{x}_i - \mathbf{w} \rVert^2 = 110$ 이고, 코사인 법칙 ([Appendix B](#appendix-b-derivation) 의 첫 단계) 에 넣으면 아래와 같다.
+기하학적 정의는 내적을 쓰지 않고 세 변의 길이만으로 구한다. $\mathbf{x}_i - \mathbf{w} = [9.4, 4.2, 2.0]^\top$ 이므로 $\lVert \mathbf{x}_i - \mathbf{w} \rVert^2 = 110$ 이고, 코사인 법칙 ([Appendix B](#appendix-b-derivation) 의 첫 단계) 에 넣으면 아래이다.
 
 ```math
 \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta = \frac{\lVert \mathbf{x}_i \rVert^2 + \lVert \mathbf{w} \rVert^2 - \lVert \mathbf{x}_i - \mathbf{w} \rVert^2}{2} = \frac{129 + 1 - 110}{2} = 10 \hspace{19em} (7)
@@ -131,7 +131,7 @@ $\lVert \mathbf{w} \rVert = \sqrt{0.6^2 + 0.8^2 + 0.0^2} = 1.0$ 이므로 $\math
 
 정사영으로 보면 수선의 발은 $10\,\mathbf{w} = [6, 8, 0]^\top$ 이고 수선은 $\mathbf{x}_i - 10\,\mathbf{w} = [4, -3, 2]^\top$ 이다. 수선과 $\mathbf{w}$ 의 내적은 $4 \times 0.6 + (-3) \times 0.8 + 2 \times 0.0 = 0$ 이므로 식 (4) 의 해석대로 둘은 직교한다.
 
-RF Power 와 압력의 비율이 달라진 wafer 의 입력이 $[2, 10, 8]^\top$ 이면 값은 아래 Table 3 과 같이 바뀐다.
+RF Power 와 압력의 비율이 달라진 wafer 의 입력이 $[2, 10, 8]^\top$ 이면 값은 아래 Table 3 처럼 바뀐다.
 
 Table 3. Normal and shifted wafer
 

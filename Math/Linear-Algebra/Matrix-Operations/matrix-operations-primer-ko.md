@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 1 | Created: 2026-10-26 | Updated: 2026-11-01 14:47 UTC
+Rev. 2 | Created: 2026-10-26 | Updated: 2026-11-01 21:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -49,7 +49,7 @@ Rev. 1 | Created: 2026-10-26 | Updated: 2026-11-01 14:47 UTC
 
 ### 3.1 Notation
 
-이 꼭지가 쓰는 기호는 아래 Table 1 과 같으며, 뒤 꼭지들도 이 기호를 그대로 쓴다.
+이 꼭지가 쓰는 기호는 아래 Table 1 이며, 뒤 꼭지들도 이 기호를 그대로 쓴다.
 
 Table 1. Symbols for addition and subtraction
 
@@ -78,13 +78,13 @@ Table 1. Symbols for addition and subtraction
 
 ### 3.3 Worked Example
 
-두 $2 \times 2$ 행렬을 아래와 같이 둔다. 꼭지 4 와 꼭지 5 도 같은 두 행렬을 쓴다.
+두 $2 \times 2$ 행렬을 아래처럼 둔다. 꼭지 4 와 꼭지 5 도 같은 두 행렬을 쓴다.
 
 ```math
 \mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad \mathbf{B} = \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix} \hspace{19em} (3)
 ```
 
-식 (1) 과 식 (2) 에 넣으면 아래와 같다.
+식 (1) 과 식 (2) 에 넣으면 아래이다.
 
 ```math
 \mathbf{A} + \mathbf{B} = \begin{bmatrix} 6 & 8 \\ 10 & 12 \end{bmatrix}, \quad \mathbf{A} - \mathbf{B} = \begin{bmatrix} -4 & -4 \\ -4 & -4 \end{bmatrix}, \quad 2\mathbf{A} = \begin{bmatrix} 2 & 4 \\ 6 & 8 \end{bmatrix} \hspace{19em} (4)
@@ -102,7 +102,7 @@ Table 1. Symbols for addition and subtraction
 
 ### 4.1 Notation
 
-꼭지 3 의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 2 와 같다.
+꼭지 3 의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 2 이다.
 
 Table 2. Symbols for multiplication
 
@@ -113,7 +113,7 @@ Table 2. Symbols for multiplication
 | $p$                           | 뒤 행렬의 열의 수            | scalar       | 양의 정수                                                  |
 | $k$                           | 곱한 뒤 더하는 원소의 번호   | scalar       | $k = 1, \dots, n$                                          |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\sum$: 영어로 "sum" 또는 "sigma", 한국어로 "합" 또는 "시그마" 라 읽는다.
 - $\mathbf{A} \odot \mathbf{B}$: 영어로 "A Hadamard B" 또는 "the element-wise product of A and B", 한국어로 "A 와 B 의 원소별 곱" 이라 읽는다.
@@ -140,7 +140,7 @@ Table 2. Symbols for multiplication
 
 ### 4.3 Worked Example
 
-식 (3) 의 두 행렬로 세 곱을 계산하면 아래 Table 3 과 같다.
+식 (3) 의 두 행렬로 세 곱을 계산하면 아래 Table 3 이다.
 
 Table 3. Three products of A and B
 
@@ -164,7 +164,7 @@ $\mathbf{A}\mathbf{B}$ 와 $\mathbf{B}\mathbf{A}$ 는 네 원소가 모두 다�
 
 ### 5.1 Notation
 
-꼭지 3 과 꼭지 4 의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 4 와 같다.
+꼭지 3 과 꼭지 4 의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 4 이다.
 
 Table 4. Symbols for the inverse
 
@@ -174,7 +174,7 @@ Table 4. Symbols for the inverse
 | $\mathbf{I}$       | 단위 행렬              | $n \times n$ | 대각 원소 1, 나머지 0                            |
 | $\det(\mathbf{A})$ | $\mathbf{A}$ 의 행렬식 | scalar       | $\mathbf{A}$ 는 정사각                           |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbf{A}^{-1}$: 영어로 "A inverse", 한국어로 "A 의 역행렬" 또는 "A 인버스" 라 읽는다.
 - $\det(\mathbf{A})$: 영어로 "the determinant of A" 또는 "det A", 한국어로 "A 의 행렬식" 이라 읽는다.
@@ -197,13 +197,13 @@ $2 \times 2$ 행렬의 역행렬은 아래 식으로 바로 구한다.
 
 ### 5.3 Worked Example
 
-식 (3) 의 $\mathbf{A}$ 는 $\det(\mathbf{A}) = 1 \times 4 - 2 \times 3 = -2$ 이므로 역행렬이 있다. 식 (9) 에 넣으면 아래와 같고, $\mathbf{A}\mathbf{A}^{-1}$ 을 계산하면 $\mathbf{I}$ 가 된다.
+식 (3) 의 $\mathbf{A}$ 는 $\det(\mathbf{A}) = 1 \times 4 - 2 \times 3 = -2$ 이므로 역행렬이 있다. 식 (9) 에 넣으면 아래이고, $\mathbf{A}\mathbf{A}^{-1}$ 을 계산하면 $\mathbf{I}$ 가 된다.
 
 ```math
 \mathbf{A}^{-1} = \frac{1}{-2} \begin{bmatrix} 4 & -2 \\ -3 & 1 \end{bmatrix} = \begin{bmatrix} -2 & 1 \\ 1.5 & -0.5 \end{bmatrix} \hspace{19em} (10)
 ```
 
-두 가지 나눗셈은 아래 Table 5 와 같이 다른 값을 준다.
+두 가지 나눗셈은 아래 Table 5 처럼 다른 값을 준다.
 
 Table 5. Right and left division of B by A
 
@@ -224,7 +224,7 @@ Table 5. Right and left division of B by A
 
 ### 6.1 Notation
 
-이 문서는 scalar 함수를 vector 로 미분한 결과를 열 vector 로 적는다 (denominator layout). 꼭지 3 부터 꼭지 5 까지의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 6 과 같다.
+이 문서는 scalar 함수를 vector 로 미분한 결과를 열 vector 로 적는다 (denominator layout). 꼭지 3 부터 꼭지 5 까지의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 6 이다.
 
 Table 6. Symbols for differentiation
 
@@ -238,7 +238,7 @@ Table 6. Symbols for differentiation
 | $\mathbf{w}$                       | weight vector                      | $p \times 1$ | 실수 원소                                   |
 | $\mathbf{A}(t)$                    | 원소가 $t$ 의 함수인 행렬          | $m \times n$ | 각 원소가 $t$ 로 미분 가능                  |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbf{A}^\top$: 영어로 "A transpose", 한국어로 "A 의 전치" 또는 "A 트랜스포즈" 라 읽는다.
 - $\partial f / \partial \mathbf{x}$: 영어로 "partial f partial x" 또는 "the gradient of f with respect to x", 한국어로 "f 를 x 로 편미분" 이라 읽는다.
@@ -311,7 +311,7 @@ $t = 0.5$ 에서 식 (17) 의 미분은 $[[1, 1], [0.878, 0]]$ 이다.
 
 ### 7.1 Notation
 
-꼭지 3 부터 꼭지 6 까지의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 7 과 같다.
+꼭지 3 부터 꼭지 6 까지의 기호에 더해 이 꼭지가 쓰는 기호는 아래 Table 7 이다.
 
 Table 7. Symbols for integration
 
@@ -323,7 +323,7 @@ Table 7. Symbols for integration
 | $\boldsymbol{\Sigma}$ | 공분산 행렬                           | $n \times n$ | 대칭, 양의 정부호          |
 | $\boldsymbol{\mu}$    | 평균 vector                           | $n \times 1$ | 실수 원소                  |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\int$: 영어로 "integral", 한국어로 "적분" 또는 "인테그랄" 이라 읽는다. $\int_0^1$ 은 영어로 "the integral from 0 to 1", 한국어로 "0 부터 1 까지의 적분" 이라 읽는다.
 - $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.

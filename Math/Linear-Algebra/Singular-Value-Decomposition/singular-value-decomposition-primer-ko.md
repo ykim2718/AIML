@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 3 | Created: 2026-10-26 | Updated: 2026-11-01 14:47 UTC
+Rev. 4 | Created: 2026-10-26 | Updated: 2026-11-01 21:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -33,7 +33,7 @@ Rev. 3 | Created: 2026-10-26 | Updated: 2026-11-01 14:47 UTC
 
 ## 3. Notation
 
-이 문서가 쓰는 기호는 아래 Table 1 과 같다.
+이 문서가 쓰는 기호는 아래 Table 1 이다.
 
 Table 1. Symbols
 
@@ -55,7 +55,7 @@ Table 1. Symbols
 | $\mathbf{T}$               | 주성분 score 행렬                                              | $N \times p$               | $\mathbf{T} = \mathbf{X}\mathbf{V}$      |
 | $\mathbf{x}$, $\mathbf{b}$ | 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해와 우변    | $n \times 1$, $m \times 1$ | 실수 원소                                |
 
-특수 기호는 아래와 같이 읽는다.
+특수 기호는 아래처럼 읽는다.
 
 - $\mathbf{V}^\top$: 영어로 "V transpose", 한국어로 "V 의 전치" 또는 "V 트랜스포즈" 라 읽는다.
 - $\mathbf{u}_i \mathbf{v}_i^\top$: 영어로 "u i v i transpose" 또는 "the outer product of u i and v i", 한국어로 "u i 와 v i 의 외적" 이라 읽는다.
@@ -126,13 +126,13 @@ $2 \times 2$ 행렬에서는 이 세 단계가 단위 원을 타원으로 바꾼
 \mathbf{A} = \begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix}, \quad \mathbf{A}^\top\mathbf{A} = \begin{bmatrix} 25 & 20 \\ 20 & 25 \end{bmatrix} \hspace{19em} (6)
 ```
 
-$\mathbf{A}^\top\mathbf{A}$ 의 고윳값은 45 와 5 이므로 식 (2) 에서 $\sigma_1 = \sqrt{45} = 3\sqrt{5} \approx 6.708$, $\sigma_2 = \sqrt{5} \approx 2.236$ 이다. 고유벡터와 식 (4) 로 구한 특이벡터는 아래와 같다.
+$\mathbf{A}^\top\mathbf{A}$ 의 고윳값은 45 와 5 이므로 식 (2) 에서 $\sigma_1 = \sqrt{45} = 3\sqrt{5} \approx 6.708$, $\sigma_2 = \sqrt{5} \approx 2.236$ 이다. 고유벡터와 식 (4) 로 구한 특이벡터는 아래이다.
 
 ```math
 \mathbf{v}_1 = \tfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \quad \mathbf{v}_2 = \tfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \quad \mathbf{u}_1 = \tfrac{1}{\sqrt{10}} \begin{bmatrix} 1 \\ 3 \end{bmatrix}, \quad \mathbf{u}_2 = \tfrac{1}{\sqrt{10}} \begin{bmatrix} 3 \\ -1 \end{bmatrix} \hspace{19em} (7)
 ```
 
-계산한 값을 정리하면 아래 Table 2 와 같다.
+계산한 값을 정리하면 아래 Table 2 이다.
 
 Table 2. Checks on the decomposition of A
 
@@ -148,7 +148,7 @@ Table 2. Checks on the decomposition of A
 
 $\mathbf{A}$ 의 고유벡터는 특이벡터와 다르다. 고윳값 5 의 고유벡터는 $[0, 1]^\top$ 이고 고윳값 3 의 고유벡터는 $[1, -2]^\top / \sqrt{5}$ 인 반면, $\mathbf{v}_1 = [0.707, 0.707]^\top$ 은 $\mathbf{A}$ 로 옮기면 $[2.121, 6.364]^\top$ 이 되어 방향이 바뀐다.
 
-큰 특이값 하나만 남긴 근사 행렬과 그 오차는 아래와 같다.
+큰 특이값 하나만 남긴 근사 행렬과 그 오차는 아래이다.
 
 ```math
 \mathbf{A}_1 = \sigma_1 \mathbf{u}_1 \mathbf{v}_1^\top = \begin{bmatrix} 1.5 & 1.5 \\ 4.5 & 4.5 \end{bmatrix}, \quad \lVert \mathbf{A} - \mathbf{A}_1 \rVert_F = \sqrt{1.5^2 + 1.5^2 + 0.5^2 + 0.5^2} = \sqrt{5} = \sigma_2 \hspace{19em} (8)
@@ -164,7 +164,7 @@ NumPy 의 `numpy.linalg.svd` 는 네 특이벡터를 모두 식 (7) 과 부호�
 
 ### 6.1 PCA
 
-행이 sample 이고 열이 센서인 자료 행렬 $\mathbf{X}$ ($N \times p$) 를 열마다 centering 한 뒤 SVD 하면, 주성분 분석의 결과가 아래와 같이 나온다.
+행이 sample 이고 열이 센서인 자료 행렬 $\mathbf{X}$ ($N \times p$) 를 열마다 centering 한 뒤 SVD 하면, 주성분 분석의 결과가 아래처럼 나온다.
 
 ```math
 \mathbf{X} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top, \quad \frac{\mathbf{X}^\top\mathbf{X}}{N-1} = \mathbf{V} \frac{\boldsymbol{\Sigma}^\top\boldsymbol{\Sigma}}{N-1} \mathbf{V}^\top, \quad \mathbf{T} = \mathbf{X}\mathbf{V} = \mathbf{U}\boldsymbol{\Sigma} \hspace{19em} (9)
@@ -259,7 +259,7 @@ $\boldsymbol{\Sigma}^{+}$ 는 $\boldsymbol{\Sigma}$ 를 전치한 $n \times m$ �
 \mathbf{P} = \begin{bmatrix} \cos\theta_1 & \cos\theta_2 & \cdots & \cos\theta_N \\ \sin\theta_1 & \sin\theta_2 & \cdots & \sin\theta_N \end{bmatrix}, \quad \theta_k = \frac{360^\circ (k - 1)}{N}, \quad \mathbf{A}\mathbf{P} = \mathbf{U} \left( \boldsymbol{\Sigma} \left( \mathbf{V}^\top \mathbf{P} \right) \right) \hspace{19em} (14)
 ```
 
-세 단계를 차례로 계산한 결과는 아래 Fig 1 과 같다.
+세 단계를 차례로 계산한 결과는 아래 Fig 1 이다.
 
 <a id="fig-1"></a>
 <img src="singular-value-decomposition-primer-ko_fig/fig1.png" width="900" style="max-width: 100%;" alt="Fig 1">
@@ -273,7 +273,7 @@ Fig 1. Unit circle points through the three factors of A
 
 360 개 점의 상 가운데 원점에서 가장 먼 점의 거리는 6.708, 가장 가까운 점의 거리는 2.236 이고, 가장 먼 점의 방향은 $\pm[0.316, 0.949]^\top = \pm\mathbf{u}_1$ 이다. 반축 끝으로 옮겨지는 단위 원 위의 점은 (a) 의 $\mathbf{v}_1$, $\mathbf{v}_2$ 이므로, 우특이벡터는 $\mathbf{A}$ 가 가장 길게 늘이는 입력 방향과 그에 직교하는 입력 방향이다. 좌특이벡터는 그 두 입력이 옮겨진 타원의 반축 방향이고, 특이값은 그 반축의 길이이다.
 
-$\mathbf{U}$, $\mathbf{V}$, $\sigma_1$ 을 그대로 두고 $\sigma_2$ 만 바꾸어 같은 계산을 하면 아래 Fig 2 와 같다.
+$\mathbf{U}$, $\mathbf{V}$, $\sigma_1$ 을 그대로 두고 $\sigma_2$ 만 바꾸어 같은 계산을 하면 아래 Fig 2 이다.
 
 <a id="fig-2"></a>
 <img src="singular-value-decomposition-primer-ko_fig/fig2.png" width="900" style="max-width: 100%;" alt="Fig 2">
