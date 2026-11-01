@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 3 | Created: 2026-11-01 | Updated: 2026-11-01 21:19 UTC
+Rev. 4 | Created: 2026-11-01 | Updated: 2026-11-01 21:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -42,6 +42,7 @@ Table 1. Symbols
 | $m$, $n$                     | $\mathbf{A}$ 의 행의 수와 열의 수                      | scalar                         | 양의 정수                                                |
 | $\mathbf{r}_i^\top$          | $\mathbf{A}$ 의 $i$ 번째 행                            | $1 \times n$                   | $i = 1, \dots, m$                                        |
 | $\mathbf{R}$                 | $\mathbf{A}$ 의 기약 행사다리꼴                        | $m \times n$                   | 기본 행 연산으로 얻음                                    |
+| $j$                          | $\mathbf{A}$ 의 열 번호                                | scalar                         | $j = 1, \dots, n$                                        |
 | $\mathbf{x}$                 | 입력 vector                                            | $n \times 1$                   | 실수 원소                                                |
 | $\mathbf{y}$                 | $\mathbf{A}^\top$ 에 곱하는 계수 vector                | $m \times 1$                   | 실수 원소                                                |
 | $\mathbf{b}$                 | 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 우변 | $m \times 1$                   | 실수 원소                                                |
@@ -72,8 +73,10 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Column space 는 $\mathbf{A}$ 의 열들의 일차결합 전체로, $\mathbf{A}$ 에 $\mathbb{R}^n$ 의 vector $\mathbf{x}$ 를 곱한 $\mathbf{A}\mathbf{x}$ 전체이며 $\mathbb{R}^m$ 의 부분공간이다.
-Row space 는 $\mathbf{A}$ 의 행들의 일차결합 전체로, $\mathbf{A}^\top$ 에 $\mathbb{R}^m$ 의 vector $\mathbf{y}$ 를 곱한 $\mathbf{A}^\top\mathbf{y}$ 전체이며 $\mathbb{R}^n$ 의 부분공간이다.
+- **Column space**: $\mathbf{A}$ 의 열들의 일차결합 전체. $\mathbf{A}$ 에 $\mathbb{R}^n$ 의 vector $\mathbf{x}$ 를 곱한 $\mathbf{A}\mathbf{x}$ 전체이며, $\mathbb{R}^m$ 의 부분공간이다.
+- **Row space**: $\mathbf{A}$ 의 행들의 일차결합 전체. $\mathbf{A}^\top$ 에 $\mathbb{R}^m$ 의 vector $\mathbf{y}$ 를 곱한 $\mathbf{A}^\top\mathbf{y}$ 전체이며, $\mathbb{R}^n$ 의 부분공간이다.
+
+일차결합 (linear combination) 은 vector 여러 개에 각각 상수를 곱해 모두 더한 vector 이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 $j$ 번째 열에 $\mathbf{x}$ 의 $j$ 번째 원소를 곱해 $j = 1, \dots, n$ 에 대해 더한 vector 이므로 열들의 일차결합이다. $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 $i$ 번째 행에 $\mathbf{y}$ 의 $i$ 번째 원소를 곱해 $i = 1, \dots, m$ 에 대해 더한 vector 이므로 행들의 일차결합이다. $\mathbf{x}$ 와 $\mathbf{y}$ 에 각 공간의 모든 vector 를 넣으면, 곱하는 상수의 모든 조합을 얻는다.
 
 ```math
 \begin{aligned}
@@ -85,7 +88,7 @@ Row space 는 $\mathbf{A}$ 의 행들의 일차결합 전체로, $\mathbf{A}^\to
 
 ### 4.1 Set Definition
 
-$\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 행들을 $\mathbf{y}$ 의 원소로 일차결합한 vector 이다. 그래서 식 (1) 의 row space 는 $\mathbf{A}^\top$ 의 column space 와 같다. Column space 와 row space 를 견주면 아래 Table 2 와 같다.
+$\mathbf{A}^\top$ 의 열은 $\mathbf{A}$ 의 행을 전치한 것이므로, 식 (1) 의 row space 는 $\mathbf{A}^\top$ 의 column space 와 같다. Column space 와 row space 를 견주면 아래 Table 2 와 같다.
 
 Table 2. Column space and row space
 
@@ -205,6 +208,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **기저 (basis)**: 부분공간을 생성하는 일차독립인 vector 의 모임. 원소의 수가 그 부분공간의 차원이다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **우특이벡터 (right singular vector)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\mathbf{V}$ 의 열. 입력 공간 $\mathbb{R}^n$ 의 단위 vector 이다.
+- **일차결합 (linear combination)**: vector 여러 개에 각각 상수를 곱해 모두 더한 vector.
 - **정규직교 기저 (orthonormal basis)**: 서로 직교하는 단위 vector 로 이루어진 기저.
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
 - **직교 여공간 (orthogonal complement)**: 한 부분공간의 모든 vector 와 직교하는 vector 전체.
