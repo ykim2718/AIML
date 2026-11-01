@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 9 | Created: 2026-11-01 | Updated: 2026-11-01 21:29 UTC
+Rev. 10 | Created: 2026-11-01 | Updated: 2026-11-01 23:11 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -76,10 +76,10 @@ Table 1. Symbols
 
 Column space 와 row space 의 정의는 아래이다.
 
-- **Column space**: $\mathbf{A}$ 의 열들의 일차결합 전체. $\mathbf{A}$ 에 $\mathbb{R}^n$ 의 vector $\mathbf{x}$ 를 곱한 $\mathbf{A}\mathbf{x}$ 전체이며, $\mathbb{R}^m$ 의 부분공간이다.
-- **Row space**: $\mathbf{A}$ 의 행들의 일차결합 전체. $\mathbf{A}^\top$ 에 $\mathbb{R}^m$ 의 vector $\mathbf{y}$ 를 곱한 $\mathbf{A}^\top\mathbf{y}$ 전체이며, $\mathbb{R}^n$ 의 부분공간이다.
+- **Column space**: $\mathbf{x}$ 에 $\mathbb{R}^n$ 의 모든 vector 를 넣어 얻은 $\mathbf{A}\mathbf{x}$ 의 집합. $\mathbb{R}^m$ 의 부분공간이다.
+- **Row space**: $\mathbf{y}$ 에 $\mathbb{R}^m$ 의 모든 vector 를 넣어 얻은 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbb{R}^n$ 의 부분공간이다.
 
-일차결합 (linear combination) 은 vector 여러 개에 각각 상수를 곱해 모두 더한 vector 이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 $j$ 번째 열에 $\mathbf{x}$ 의 $j$ 번째 원소를 곱해 $j = 1, \dots, n$ 에 대해 더한 vector 이므로 열들의 일차결합이다. $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 $i$ 번째 행에 $\mathbf{y}$ 의 $i$ 번째 원소를 곱해 $i = 1, \dots, m$ 에 대해 더한 vector 이므로 행들의 일차결합이다. $\mathbf{x}$ 와 $\mathbf{y}$ 에 각 공간의 모든 vector 를 넣으면, 곱하는 상수의 모든 조합을 얻는다.
+일차결합 (linear combination) 은 vector 여러 개에 각각 상수를 곱해 모두 더한 vector 이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 $j$ 번째 열에 $\mathbf{x}$ 의 $j$ 번째 원소를 곱해 $j = 1, \dots, n$ 에 대해 더한 vector 이므로 열들의 일차결합이다. $\mathbf{A}^\top\mathbf{y}$ 는 $\mathbf{A}$ 의 $i$ 번째 행에 $\mathbf{y}$ 의 $i$ 번째 원소를 곱해 $i = 1, \dots, m$ 에 대해 더한 vector 이므로 행들의 일차결합이다. 따라서 column space 의 원소는 모두 $\mathbf{A}$ 의 열들의 일차결합이고, row space 의 원소는 모두 $\mathbf{A}$ 의 행들의 일차결합이다.
 
 ```math
 \begin{aligned}
