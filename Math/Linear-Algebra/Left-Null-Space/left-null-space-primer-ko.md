@@ -1,5 +1,5 @@
 # Left Null Space Primer
-Rev. 0 | Created: 2026-11-01 | Updated: 2026-11-01 23:37 UTC
+Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 23:39 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -75,6 +75,11 @@ Left null space 는 $\mathbf{A}^\top$ 의 null space 이며, 같은 조건을 $\
 ```
 
 ### 4.1 Transpose Form
+
+**왜 "좌영공간 (Left Null Space)" 이라 부를까? ($\mathbf{y}^\top\mathbf{A} = \mathbf{0}^\top$ 의 의미)**
+
+- 일반적인 영공간 ($\mathbf{A}\mathbf{x} = \mathbf{0}$) 은 vector $\mathbf{x}$ 가 행렬 $\mathbf{A}$ 의 오른쪽에 곱해진다 (right-multiplication).
+- 좌영공간 ($\mathbf{y}^\top\mathbf{A} = \mathbf{0}^\top$) 은 vector $\mathbf{y}^\top$ 이 행렬 $\mathbf{A}$ 의 왼쪽에 곱해진다 (left-multiplication).
 
 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 의 양변을 전치하면 $\mathbf{y}^\top\mathbf{A} = \mathbf{0}^\top$ 이다. $\mathbf{y}^\top$ 이 $\mathbf{A}$ 의 왼쪽에 곱해져 zero vector 를 만들기 때문에 left null space 라 부른다. $\mathbf{A}^\top$ 는 열이 $m$ 개이므로 $\mathbf{y}$ 는 $\mathbb{R}^m$ 의 vector 이고, left null space 는 출력 공간 $\mathbb{R}^m$ 의 부분공간이다. Null space $\mathrm{Null}(\mathbf{A})$ 가 입력 공간 $\mathbb{R}^n$ 의 부분공간인 것과 대비된다.
 
