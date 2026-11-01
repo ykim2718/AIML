@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 2 | Created: 2026-10-31 | Updated: 2026-10-31 19:29 CDT
+Rev. 3 | Created: 2026-10-31 | Updated: 2026-10-31 19:29 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -70,7 +70,7 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Null space 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 전체이다.
+Null space 는 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 영 vector (zero vector) 일 때 식을 만족하는 모든 해 $\mathbf{x}$ 의 집합이다. 다시 말해 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해들이 이루는 공간이다.
 
 ```math
 \mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)
