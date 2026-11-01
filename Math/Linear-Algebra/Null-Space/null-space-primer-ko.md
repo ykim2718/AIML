@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 19 | Created: 2026-10-31 | Updated: 2026-10-31 20:38 CDT
+Rev. 20 | Created: 2026-10-31 | Updated: 2026-10-31 20:39 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -237,12 +237,17 @@ $\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\ma
 
 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 rank 와 열의 수 $n$ 을 견주어 가린다. 해가 있는지는 첨가 행렬 (augmented matrix) $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 로 먼저 확인한다.
 
-첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 에 $\mathbf{b} = [2, 3, 5]^\top$ 을 붙인 첨가 행렬 (왼쪽) 과 $\mathbf{b} = [1, 0, 0]^\top$ 을 붙인 첨가 행렬 (오른쪽) 은 아래 식 (7) 과 같다. 세로선의 왼쪽이 $\mathbf{A}$, 오른쪽이 $\mathbf{b}$ 이다.
+첨가 행렬은 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. 각 행에는 방정식 하나의 계수와 우변이 함께 들어 있어, 연립방정식 전체를 행렬 하나로 적은 것이다. 식 (5) 의 $\mathbf{A}$ 에 두 우변을 붙인 첨가 행렬은 아래 식 (7) 과 같다. 세로선의 왼쪽이 $\mathbf{A}$, 오른쪽이 $\mathbf{b}$ 이다.
 
 ```math
-\left[\begin{array}{ccc|c} 1 & 0 & 1 & 2 \\ 0 & 1 & 1 & 3 \\ 1 & 1 & 2 & 5 \end{array}\right],
+\begin{gathered}
+\mathbf{A} = \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \\ 1 & 1 & 2 \end{bmatrix} \\[2ex]
+\mathbf{b} = \begin{bmatrix} 2 \\ 3 \\ 5 \end{bmatrix} : \quad
+[\mathbf{A} \mid \mathbf{b}] = \left[\begin{array}{ccc|c} 1 & 0 & 1 & 2 \\ 0 & 1 & 1 & 3 \\ 1 & 1 & 2 & 5 \end{array}\right]
 \qquad
-\left[\begin{array}{ccc|c} 1 & 0 & 1 & 1 \\ 0 & 1 & 1 & 0 \\ 1 & 1 & 2 & 0 \end{array}\right]
+\mathbf{b} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix} : \quad
+[\mathbf{A} \mid \mathbf{b}] = \left[\begin{array}{ccc|c} 1 & 0 & 1 & 1 \\ 0 & 1 & 1 & 0 \\ 1 & 1 & 2 & 0 \end{array}\right]
+\end{gathered}
 \hspace{19em} (7)
 ```
 
