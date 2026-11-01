@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 6 | Created: 2026-10-31 | Updated: 2026-10-31 19:37 CDT
+Rev. 7 | Created: 2026-10-31 | Updated: 2026-10-31 19:39 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -101,13 +101,13 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면,
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
 - $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: 그 vector 의 모든 상수배를 더할 수 있으므로 해가 무수히 많다.
 
-zero vector 가 아닌 $\mathbf{x}_{\mathrm{null}}$ 에 어떤 상수 $c$ 를 곱해도 null space 에 들고, 그 상수배를 $\mathbf{x}_0$ 에 더한 vector 도 해이다.
+상수배한 vector 가 null space 에 드는지는 식 (1) 의 조건 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는지로 확인한다. 행렬 곱은 상수를 곱한 뒤에 하든 먼저 하든 결과가 같으므로 (선형성), null space 의 vector 에 상수 $c$ 를 곱한 vector 에 $\mathbf{A}$ 를 곱하면 아래와 같다.
 
 ```math
-\mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + c\,\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{b} + c\,\mathbf{0} = \mathbf{b} \hspace{19em} (3)
+\mathbf{A}(c\,\mathbf{x}_{\mathrm{null}}) = c\,(\mathbf{A}\mathbf{x}_{\mathrm{null}}) = c\,\mathbf{0} = \mathbf{0} \hspace{19em} (3)
 ```
 
-식 (3) 의 가운데 변에서 상수배를 $\mathbf{A}$ 에 곱한 결과는 $c\,\mathbf{0} = \mathbf{0}$ 으로, 어떤 $c$ 를 곱해도 zero vector 로 남는다. 상수배하기 전의 vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오고 $c$ 는 모든 실수를 가질 수 있으므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $t = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다.
+식 (3) 의 결과가 zero vector 이므로 상수배한 vector 도 식 (1) 을 만족하여 null space 에 든다. 따라서 식 (2) 대로 상수배한 vector 를 $\mathbf{x}_0$ 에 더한 vector 도 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. 상수배하기 전의 vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오고 $c$ 는 모든 실수를 가질 수 있으므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $t = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다.
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) 해가 없고, null space 는 해의 개수를 정하지 않는다.
 
