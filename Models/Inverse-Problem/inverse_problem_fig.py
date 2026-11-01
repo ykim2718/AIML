@@ -8,7 +8,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.19.1.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.19.2.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -144,9 +144,9 @@ def fig_3(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
     ax.plot(input_line[:, 0], input_line[:, 1], color=COLORS[3], linewidth=1.2, linestyle='--',
             label='solution line')
     ax.scatter(x_boot[:, 0], x_boot[:, 1], s=12, color=COLORS[0], alpha=0.6,
-               label=f'{n_boot} bootstrap x*')
+               label=f'PLS bootstrap ensemble ({n_boot} x*)')
     ax.scatter([x_ensemble[0]], [x_ensemble[1]], s=110, marker='D', color=COLORS[2], zorder=4,
-               label='bootstrap mean')
+               label='ensemble mean')
     ax.scatter([x_single[0]], [x_single[1]], s=200, marker='*', color=COLORS[1], zorder=5, label='x*')
     ax.set_xlabel('x1', fontsize=font_size(text_scale))
     ax.set_ylabel('x2', fontsize=font_size(text_scale))
@@ -161,7 +161,7 @@ def fig_3(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
 
     fig.tight_layout(rect=(0.0, 0.08, 1.0, 1.0))
     panel_caption(fig, [axes[0]], '(a)', y=0.0)
-    panel_caption(fig, [axes[1]], '(b)', y=0.0)
+    panel_caption(fig, [axes[1]], '(b) PLS bootstrap ensemble', y=0.0)
     for text in fig.texts:
         text.set_fontsize(font_size(text_scale))
     out_path = out_folder / 'score-plane-null-space.png'
