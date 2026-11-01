@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 0 | Created: 2026-11-01 | Updated: 2026-11-01 10:04 UTC
+Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 10:14 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -167,12 +167,18 @@ $\mathbf{A}$ 의 열의 수와 $\mathbf{B}$ 의 행의 수가 다르면 $\mathbf
 
 ## Appendix B. Derivation
 
-식 (1) 의 오른쪽 변의 $i$ 행 $j$ 열 원소가 가운데 변의 원소와 같음을 보이면 된다. 단계마다 쓴 성질은 아래 Table 2 와 같다.
+식 (1) 의 오른쪽 변의 $i$ 행 $j$ 열 원소가 가운데 변의 원소와 같음을 보이면 된다.
 
-Table 2. Derivation of equation (1)
+```math
+\begin{aligned}
+\left( \sum_{k=1}^{n} \mathbf{a}_k \mathbf{b}_k^\top \right)_{ij}
+&= \sum_{k=1}^{n} \left( \mathbf{a}_k \mathbf{b}_k^\top \right)_{ij} \\
+&= \sum_{k=1}^{n} a_{ik} b_{kj} \\
+&= (\mathbf{A}\mathbf{B})_{ij}
+\end{aligned}
+\hspace{19em} (8)
+```
 
-| Step  | Expression                                                                                                                 | Property                  |
-| :---: | :------------------------------------------------------------------------------------------------------------------------: | :-----------------------: |
-| 1     | $\left( \sum_{k=1}^{n} \mathbf{a}_k \mathbf{b}_k^\top \right)_{ij} = \sum_{k=1}^{n} (\mathbf{a}_k \mathbf{b}_k^\top)_{ij}$ | 행렬의 합은 원소마다의 합 |
-| 2     | $(\mathbf{a}_k \mathbf{b}_k^\top)_{ij} = a_{ik} b_{kj}$                                                                    | 식 (2) 의 외적의 원소     |
-| 3     | $\sum_{k=1}^{n} a_{ik} b_{kj} = (\mathbf{A}\mathbf{B})_{ij}$                                                               | 행렬 곱의 원소의 정의     |
+- 첫째 등호: 행렬의 합은 원소마다의 합이다.
+- 둘째 등호: 식 (2) 의 외적의 원소이다.
+- 셋째 등호: 행렬 곱의 원소의 정의이다.
