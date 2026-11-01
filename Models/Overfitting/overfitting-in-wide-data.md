@@ -1,5 +1,5 @@
 # Overfitting In Wide Data
-Rev. 6 | Created: 2026-09-06 | Updated: 2026-11-01 01:02 CDT
+Rev. 7 | Created: 2026-09-06 | Updated: 2026-11-01 07:27 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -125,7 +125,7 @@ Table 3. Three sources of overfitting in wide data
 
 훈련 오차가 0 인 model 이 새 자료에서 나빠지는 모습은 열이 하나뿐인 자료에서도 보인다. 같은 점 16 개에 유연성이 다른 세 model 을 맞추면 아래 [Fig 3](#fig-3) 과 같다.
 
-<img src="overfitting-in-wide-data_fig/fit-capacity.png" width="1100" style="max-width: 100%;" alt="Fig 3">
+<img src="overfitting-in-wide-data_fig/fit-capacity.png" width="998" style="max-width: 100%;" alt="Fig 3">
 
 <a id="fig-3"></a>Fig 3. One noisy sample fitted by three models of growing capacity
 
@@ -137,7 +137,7 @@ Table 3. Three sources of overfitting in wide data
 
 반복하며 학습하는 model 에서는 같은 갈림이 iteration 을 따라 나타나며, 그 모양은 아래 [Fig 4](#fig-4) 와 같다.
 
-<img src="overfitting-in-wide-data_fig/training-curve.png" width="600" style="max-width: 100%;" alt="Fig 4">
+<img src="overfitting-in-wide-data_fig/training-curve.png" width="345" style="max-width: 100%;" alt="Fig 4">
 
 <a id="fig-4"></a>Fig 4. Training and validation accuracy against iterations
 

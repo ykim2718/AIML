@@ -5,7 +5,7 @@ spline that passes through every training point. The held-out RMSE of each fit i
 quote it.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -19,9 +19,13 @@ from scipy.interpolate import CubicSpline
 
 __all__ = ['noisy_quadratic', 'fit_curves', 'draw_fit_capacity']
 
-FIGSIZE: tuple = (12.0, 3.6)
-REFERENCE_WIDTH: float = 12.0        # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 11.0
+AXES_SIZE: tuple = (4.0, 3.0)        # x and y length of each pane's chart, in inches
+PANEL_GAP: float = 0.35              # inches between two charts
+MARGINS: dict = {'left': 0.45, 'right': 0.15, 'bottom': 0.90, 'top': 0.15}  # inches around the charts
+PANEL_LABEL_HEIGHT: float = 0.20     # inches from the bottom edge to the panel labels
+DPI: int = 200
+REFERENCE_AXES_WIDTH: float = 4.0    # the chart width BASE_FONT_SIZE was chosen for
+BASE_FONT_SIZE: float = 12.0
 COLORS: list = list(matplotlib.colors.TABLEAU_COLORS.values())
 PANEL_LABELS: tuple = ('(a) Underfitted', '(b) Well-fitted', '(c) Overfitted')
 
@@ -52,15 +56,21 @@ def fit_curves(train: pd.DataFrame) -> list:
 def draw_fit_capacity(train: pd.DataFrame, test: pd.DataFrame, output_folder: pathlib.Path) -> pathlib.Path:
     """Write the three-panel figure and print the train and held-out RMSE. Returns the figure path."""
     output_folder.mkdir(parents=True, exist_ok=True)
-    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
+    font_size = BASE_FONT_SIZE * AXES_SIZE[0] / REFERENCE_AXES_WIDTH
     plt.rcParams.update({'font.size': font_size})
+    n_panels = len(PANEL_LABELS)
+    fig_width = MARGINS['left'] + n_panels * AXES_SIZE[0] + (n_panels - 1) * PANEL_GAP + MARGINS['right']
+    fig_height = MARGINS['bottom'] + AXES_SIZE[1] + MARGINS['top']
 
     curves = fit_curves(train=train)
     grid = np.linspace(0.0, 1.0, 400)
     margin = 0.25 * (train['y'].max() - train['y'].min())
     y_limits = (train['y'].min() - margin, train['y'].max() + margin)
 
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=FIGSIZE, sharey=True)
+    fig = plt.figure(figsize=(fig_width, fig_height))
+    axes = [fig.add_axes((
+        (MARGINS['left'] + k * (AXES_SIZE[0] + PANEL_GAP)) / fig_width, MARGINS['bottom'] / fig_height,
+        AXES_SIZE[0] / fig_width, AXES_SIZE[1] / fig_height)) for k in range(n_panels)]
     for axis, curve in zip(axes, curves):
         axis.plot(grid, curve(grid), color=COLORS[1], linewidth=2.5, zorder=1)
         axis.scatter(train['x'], train['y'], s=30, color=COLORS[0], zorder=2)
@@ -71,13 +81,13 @@ def draw_fit_capacity(train: pd.DataFrame, test: pd.DataFrame, output_folder: pa
         axis.spines[['top', 'right']].set_visible(False)
     axes[0].set_ylabel('y')
 
-    fig.subplots_adjust(left=0.04, right=0.99, bottom=0.22, top=0.97, wspace=0.12)
     for axis, label in zip(axes, PANEL_LABELS):
         position = axis.get_position()
-        fig.text(position.x0 + position.width / 2, 0.03, label, ha='center', fontsize=font_size)
+        fig.text(position.x0 + position.width / 2, PANEL_LABEL_HEIGHT / fig_height, label,
+                 ha='center', fontsize=font_size)
 
     figure_path = output_folder / 'fit-capacity.png'
-    fig.savefig(figure_path, dpi=300)
+    fig.savefig(figure_path, dpi=DPI)
     plt.close(fig)
 
     for label, curve in zip(PANEL_LABELS, curves):

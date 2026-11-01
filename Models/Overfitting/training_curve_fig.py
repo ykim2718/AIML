@@ -5,7 +5,7 @@ and then falls. The curves are drawn from closed-form shapes, not from a fitted 
 no ticks because only the shape is meant to be read.
 """
 __author__ = 'yRocket'
-__version__ = "0.1.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.0+20261101"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -18,9 +18,12 @@ import pandas as pd
 
 __all__ = ['concept_curves', 'draw_training_curve']
 
-FIGSIZE: tuple = (7.0, 5.1)
-REFERENCE_WIDTH: float = 7.0         # the width BASE_FONT_SIZE was chosen for
-BASE_FONT_SIZE: float = 14.0
+AXES_SIZE: tuple = (4.0, 3.0)        # x and y length of the chart's axis lines, in inches
+MARGINS: dict = {'left': 0.45, 'right': 0.15, 'bottom': 0.50, 'top': 0.40}  # inches around the chart
+DPI: int = 200
+REFERENCE_AXES_WIDTH: float = 4.0    # the chart width BASE_FONT_SIZE was chosen for
+BASE_FONT_SIZE: float = 9.0
+X_AXIS_END: float = 1.23             # iterations where the x axis line ends; the curves end at 1
 COLORS: dict = matplotlib.colors.TABLEAU_COLORS
 TRAINING_COLOR: str = COLORS['tab:blue']
 VALIDATION_COLOR: str = COLORS['tab:red']
@@ -59,30 +62,34 @@ def concept_curves(n_points: int = 400) -> pd.DataFrame:
 def draw_training_curve(curve: pd.DataFrame, output_folder: pathlib.Path) -> pathlib.Path:
     """Write the concept figure. Returns the figure path."""
     output_folder.mkdir(parents=True, exist_ok=True)
-    font_size = BASE_FONT_SIZE * FIGSIZE[0] / REFERENCE_WIDTH
+    font_size = BASE_FONT_SIZE * AXES_SIZE[0] / REFERENCE_AXES_WIDTH
+    fig_width = MARGINS['left'] + AXES_SIZE[0] + MARGINS['right']
+    fig_height = MARGINS['bottom'] + AXES_SIZE[1] + MARGINS['top']
 
-    fig, axis = plt.subplots(figsize=FIGSIZE)
-    axis.set_xlim(-0.12, 1.29)
-    axis.set_ylim(-0.17, 1.17)
+    # The axes box spans exactly the two axis lines, so the chart is AXES_SIZE inches.
+    fig = plt.figure(figsize=(fig_width, fig_height))
+    axis = fig.add_axes((MARGINS['left'] / fig_width, MARGINS['bottom'] / fig_height,
+                         AXES_SIZE[0] / fig_width, AXES_SIZE[1] / fig_height))
+    axis.set_xlim(0.0, X_AXIS_END)
+    axis.set_ylim(0.0, 1.0)
     axis.set_axis_off()
 
     # Two crossing axis lines, as in a hand-drawn sketch: each runs a little past the other.
-    axis.plot([0.0, 0.0], [-0.12, 1.0], color='black', linewidth=1.5)
-    axis.plot([-0.05, 1.23], [0.0, 0.0], color='black', linewidth=1.5)
+    axis.plot([0.0, 0.0], [-0.12, 1.0], color='black', linewidth=1.2, clip_on=False)
+    axis.plot([-0.05, X_AXIS_END], [0.0, 0.0], color='black', linewidth=1.2, clip_on=False)
     axis.text(-0.11, 1.07, 'Accuracy', fontsize=font_size * 1.5, ha='left', va='center')
-    axis.text(1.23, -0.10, 'Iterations', fontsize=font_size * 1.5, ha='right', va='center')
+    axis.text(X_AXIS_END, -0.10, 'Iterations', fontsize=font_size * 1.5, ha='right', va='center')
 
     t = curve.index.to_numpy()
-    axis.plot(t, curve['training'], color=TRAINING_COLOR, linewidth=3.0)
-    axis.plot(t, curve['validation'], color=VALIDATION_COLOR, linewidth=3.0)
+    axis.plot(t, curve['training'], color=TRAINING_COLOR, linewidth=2.5)
+    axis.plot(t, curve['validation'], color=VALIDATION_COLOR, linewidth=2.5)
     axis.text(0.92, curve['training'].iloc[-1] + 0.05, 'training-set', color=TRAINING_COLOR,
               fontsize=font_size, ha='center', va='bottom')
     axis.text(1.25, VALIDATION_PEAK - 0.06, 'validation-set', color=VALIDATION_COLOR,
               fontsize=font_size, ha='right', va='center')
 
-    fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=1.0)
     figure_path = output_folder / 'training-curve.png'
-    fig.savefig(figure_path, dpi=300)
+    fig.savefig(figure_path, dpi=DPI)
     plt.close(fig)
     print(f"wrote {figure_path}")
     return figure_path
