@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 14 | Created: 2026-10-31 | Updated: 2026-10-31 20:29 CDT
+Rev. 15 | Created: 2026-10-31 | Updated: 2026-10-31 20:31 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -15,6 +15,7 @@ Rev. 14 | Created: 2026-10-31 | Updated: 2026-10-31 20:29 CDT
   - [6.2 Numerical Computation with SVD](#62-numerical-computation-with-svd)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
+- [Appendix C. Counting the Solutions of Equation (2)](#appendix-c-counting-the-solutions-of-equation-2)
 
 ## 1. Purpose
 
@@ -47,6 +48,8 @@ Table 1. Symbols
 | $c$                            | 임의의 상수                                                            | scalar                         | 실수                                                       |
 | $\mathbf{x}_0$                 | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 특수해 하나                     | $n \times 1$                   | $\mathbf{A}\mathbf{x}_0 = \mathbf{b}$                      |
 | $\mathbf{x}_{\mathrm{null}}$   | null space 에 속하는 vector                                            | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
+| $\mathbf{x}'$                  | $\mathbf{x}_0$ 와 다른 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해       | $n \times 1$                   | $\mathbf{A}\mathbf{x}' = \mathbf{b}$                       |
+| $[\mathbf{A} \mid \mathbf{b}]$ | $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열로 붙인 첨가 행렬           | $m \times (n + 1)$             | 실수 원소                                                  |
 | $\mathrm{rank}(\mathbf{A})$    | $\mathbf{A}$ 의 계수                                                   | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
 | $\mathrm{nullity}(\mathbf{A})$ | $\mathrm{Null}(\mathbf{A})$ 의 차원                                    | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
 | $\mathbf{n}$                   | Worked Example 에서 null space 를 생성하는 vector                      | $3 \times 1$                   | zero vector 가 아님                                        |
@@ -66,6 +69,7 @@ Table 1. Symbols
 - $\mathbf{A}^{+}$: 영어로 "A plus" 또는 "the pseudo-inverse of A", 한국어로 "A 의 pseudo-inverse" 라 읽는다.
 - $\hat{\mathbf{y}}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다. 기호 위의 hat 은 그 값이 model 의 추정값임을 나타낸다.
 - $\underbrace{\mathbf{b}}_{\mathbf{A}\mathbf{x} = \mathbf{b}}$: 영어로 "b, because A x equals b", 한국어로 "A x 가 b 이므로 b" 라 읽는다. 식 (3) 에서 아래 괄호 밑의 식은 위의 값이 나오는 근거이다.
+- $[\mathbf{A} \mid \mathbf{b}]$: 영어로 "the augmented matrix A b", 한국어로 "A 와 b 의 첨가 행렬" 이라 읽는다. 여기의 $\mid$ 는 식 (1) 의 조건 기호와 달리 열의 경계를 나타낸다.
 - $\lVert \mathbf{x} \rVert$: 영어로 "the norm of x" 또는 "norm x", 한국어로 "x 의 노름" 이라 읽는다.
 
 ## 4. Interpretation
@@ -96,7 +100,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면,
 \mathbf{A}(\mathbf{x}_0 + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{b} + \mathbf{0} = \mathbf{b} \hspace{19em} (2)
 ```
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 아래와 같이 갈린다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 아래와 같이 갈린다. 주어진 $\mathbf{A}$ 와 $\mathbf{b}$ 로 해가 없는지, 하나인지, 무수히 많은지를 가리는 절차는 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 에 있다.
 
 - $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{0} \}$: 해는 $\mathbf{x}_0$ 하나이다.
 - $\mathrm{Null}(\mathbf{A})$ 에 zero vector 가 아닌 vector 가 있음: $\mathbf{x}_0$ 에 null space vector 의 상수배를 더한 vector 가 모두 해이므로 해가 무수히 많다.
@@ -224,6 +228,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - **자명해 (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 zero vector $\mathbf{x} = \mathbf{0}$.
 - **자유 열**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (자유 변수) 는 아무 값이나 가질 수 있다.
 - **정규방정식 (normal equation)**: 최소제곱 weight 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\mathbf{w} = \mathbf{A}^\top\mathbf{y}$. $\mathbf{y}$ 는 관측값 vector 이다.
+- **첨가 행렬 (augmented matrix)**: 계수 행렬 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 행렬 $[\mathbf{A} \mid \mathbf{b}]$.
 - **특수해 (particular solution)**: $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족하는 해 하나.
 - **특이값 분해 (Singular Value Decomposition, SVD)**: 실수 행렬을 직교 행렬, 0 이상의 대각 원소를 가진 대각 행렬, 직교 행렬의 곱으로 나타내는 분해. 대각 원소가 특이값이다.
 
@@ -243,3 +248,31 @@ Table 4. Derivation of equation (5)
 | 6     | $\mathrm{nullity}(\mathbf{A}) = n - \mathrm{rank}(\mathbf{A})$                          | 기저의 원소 수가 차원                                |
 
 $\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (6) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, 자유 열이 세 번째 열 하나이며, 단계 4 의 해가 식 (7) 의 $\mathbf{n}$ 이다.
+
+## Appendix C. Counting the Solutions of Equation (2)
+
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지는 $\mathbf{A}$ 의 rank 와 열의 수 $n$ 을 견주어 가린다. 그 전에 해가 있는지를 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 로 먼저 확인한다.
+
+1. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) \gt \mathrm{rank}(\mathbf{A})$ 이면 해가 없다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않아, $\mathbf{b}$ 를 붙이면 일차독립인 열이 하나 늘어난다.
+2. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) = n$ 이면 해가 하나이다. 식 (5) 에서 nullity 가 0 이어서 null space 에 zero vector 만 있다.
+3. $\mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = \mathrm{rank}(\mathbf{A}) \lt n$ 이면 해가 무수히 많다. 식 (5) 에서 nullity 가 1 이상이어서 null space 에 zero vector 가 아닌 vector 가 있다.
+
+2 번에서 해가 하나뿐인 것은 아래와 같이 보인다. $\mathbf{x}_0$ 와 다른 해 $\mathbf{x}'$ 가 있다고 두고 두 해의 차이에 $\mathbf{A}$ 를 곱한다.
+
+```math
+\mathbf{A}(\mathbf{x}' - \mathbf{x}_0) = \mathbf{A}\mathbf{x}' - \mathbf{A}\mathbf{x}_0 = \mathbf{b} - \mathbf{b} = \mathbf{0} \hspace{19em} (8)
+```
+
+식 (8) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 4.3 의 식 (3) 과 같다.
+
+꼭지 5 의 세 경우에 이 절차를 적용하면 아래 Table 5 와 같다.
+
+Table 5. Counting solutions by rank
+
+| Matrix       | Right-hand side | Rank of A | Rank of [A \| b] | n     | Solutions   |
+| :----------: | :-------------: | :-------: | :--------------: | :---: | :---------: |
+| $\mathbf{A}$ | $[2, 3, 5]$     | $2$       | $2$              | $3$   | 무수히 많음 |
+| $\mathbf{B}$ | $[2, 3, 5]$     | $3$       | $3$              | $3$   | 하나        |
+| $\mathbf{A}$ | $[1, 0, 0]$     | $2$       | $3$              | $3$   | 없음        |
+
+셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.
