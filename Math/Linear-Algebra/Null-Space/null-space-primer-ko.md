@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 0 | Created: 2026-10-31 | Updated: 2026-10-31 19:10 CDT
+Rev. 1 | Created: 2026-10-31 | Updated: 2026-10-31 19:27 CDT
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -78,7 +78,9 @@ Null space 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\
 
 ### 4.1 Set Definition
 
-식 (1) 의 $\mathbf{x}$ 는 $n$ 차원 입력 공간 (domain) 의 vector 이므로, null space 는 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다. $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 그래서 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이고, 영 vector 를 언제나 포함한다.
+$m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다. 식 (4) 의 $\mathbf{A}$ 는 $m = n = 3$ 이어서 두 공간이 모두 $\mathbb{R}^3$ 이다.
+
+$\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 그래서 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이고, 영 vector 를 언제나 포함한다.
 
 ### 4.2 Linear Transformation
 
