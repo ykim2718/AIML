@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 5 | Created: 2026-11-01 | Updated: 2026-11-01 21:22 UTC
+Rev. 6 | Created: 2026-11-01 | Updated: 2026-11-01 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -72,6 +72,8 @@ Table 1. Symbols
 - $\lVert \mathbf{x} \rVert$: 영어로 "the norm of x", 한국어로 "x 의 노름" 이라 읽는다.
 
 ## 4. Interpretation
+
+Column space 와 row space 의 정의는 아래와 같다.
 
 - **Column space**: $\mathbf{A}$ 의 열들의 일차결합 전체. $\mathbf{A}$ 에 $\mathbb{R}^n$ 의 vector $\mathbf{x}$ 를 곱한 $\mathbf{A}\mathbf{x}$ 전체이며, $\mathbb{R}^m$ 의 부분공간이다.
 - **Row space**: $\mathbf{A}$ 의 행들의 일차결합 전체. $\mathbf{A}^\top$ 에 $\mathbb{R}^m$ 의 vector $\mathbf{y}$ 를 곱한 $\mathbf{A}^\top\mathbf{y}$ 전체이며, $\mathbb{R}^n$ 의 부분공간이다.
