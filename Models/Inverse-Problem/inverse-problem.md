@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 31 | Created: 2026-10-25 | Updated: 2026-11-01 13:40 UTC
+Rev. 32 | Created: 2026-10-25 | Updated: 2026-11-01 13:47 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -844,7 +844,7 @@ Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 - (a): the model plane of the single PLS fitted to all rows (red surface) and its minimum-norm solution $\mathbf{x}^{\ast}$ (orange star). The gray points are the rows of $\mathbf{X}$ used for training.
 - (b): the model planes of the PLS fitted to each bootstrap sample (blue surfaces) and their minimum-norm solutions (blue points). The red surface and the orange star are the same as in (a).
 
-Each blue surface is the column space of the $\mathbf{P}$ of one bootstrap PLS, and 12 of the 200 are drawn. A change of training sample changes the loading matrix $\mathbf{P}$ and the sample mean, so the tilt and the position of the model plane change together. The 200 blue points are the minimum-norm solutions $\mathbf{x}^{\ast}$ of the 200 bootstrap PLS. Each $\mathbf{x}^{\ast}$ is obtained by Eq. (4) and so lies on the model plane of its own PLS, and its SPE with respect to that model plane is 0. The spread of the blue points therefore follows from how far the model plane moves. The green diamond is the mean of the 200 solutions, the solution of the PLS bootstrap ensemble. The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. In Fig 3 (b) the inputs and the latent variables are both 2, so the model plane is the whole input plane and a change of its tilt cannot be seen; this figure adds one more input.
+Each blue surface is the column space of the $\mathbf{P}$ of one bootstrap PLS, and 12 of the 200 are drawn. A change of training sample changes the loading matrix $\mathbf{P}$ and the sample mean, so the tilt and the position of the model plane change together. The 200 blue points are the minimum-norm solutions $\mathbf{x}^{\ast}$ of the 200 bootstrap PLS. Each $\mathbf{x}^{\ast}$ is obtained by Eq. (4) and so lies on the model plane of its own PLS, and its SPE with respect to that model plane is 0. Each $\mathbf{x}^{\ast}$ is computed with the pseudo-inverse of Eq. (4) alone and is not moved along the null space, the directions of the other solutions that give the same $\mathbf{y}^{\ast}$. The spread of the blue points therefore comes from the moving model plane, not from the null space. The green diamond is the mean of the 200 solutions, the solution of the PLS bootstrap ensemble. The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. In Fig 3 (b) the inputs and the latent variables are both 2, so the model plane is the whole input plane and a change of its tilt cannot be seen; this figure adds one more input.
 
 ## Appendix I. PLS Inversion and the Null Space: Model Plane of One PLS and SPE
 
