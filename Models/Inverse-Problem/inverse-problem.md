@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 22 | Created: 2026-10-25 | Updated: 2026-11-01 10:57 UTC
+Rev. 23 | Created: 2026-10-25 | Updated: 2026-11-01 11:01 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -836,8 +836,11 @@ The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (4) lies on the mod
 
 Drawing the relation between SPE and the model plane for three inputs gives Fig 9 below.
 
-<img src="inverse-problem-ko_fig/spe-schematic.png" width="600" style="max-width: 100%;" alt="Fig 9">
+<img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 9">
 
-Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
+Fig 9. Row space and column space of the loading matrix P, the T^2 limit and SPE
+
+- (a): the row space of $\mathbf{P}$, the score space. The ellipse, the null space line, the segment A–B and $\mathbf{t}^{\ast}$ on it are laid out as in Fig 3 (a).
+- (b): the column space of $\mathbf{P}$, the model plane. It holds the points of (a) carried by $\mathbf{x} = \mathbf{P}\mathbf{t}$, and the squared length of the perpendicular from an $\mathbf{x}$ off the plane is SPE.
 
 The blue surface is the model plane, that is, the column space made of the columns of $\mathbf{P}$. The loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ has one row per input variable and one column per latent variable, $3 \times 2$ in this figure, and each column $\mathbf{p}_a$ is the $a$-th loading, whose $k$-th element shows how much the input variable $x_k$ changes when the $a$-th score increases by 1. The row space of $\mathbf{P}$ is a subspace of $\mathbb{R}^{A}$, the score space or latent space, and it is all of $\mathbb{R}^{A}$ when the columns of $\mathbf{P}$ are linearly independent. So $\mathbf{x} = \mathbf{P}\mathbf{t}$ carries a point $\mathbf{t}$ of the row space to a point of the column space, the model plane. The ellipse, the null space line, the segment A–B and $\mathbf{x}^{\ast}$ on it are the score plane of Fig 3 (a) carried into the input space by $\mathbf{P}$. When an $\mathbf{x}$ solved directly in the input space (purple) leaves the plane, the squared length of the perpendicular $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ dropped to the plane is the SPE of Eq. (14). The numbers are made up for the drawing, with $A = 2$ latent variables and $K = 3$ inputs. The figure can be drawn only when the score space has fewer dimensions than the input space, $A \lt K$, and this condition is not an arbitrary choice. When $A = K$ the columns of $\mathbf{P}$ span the whole input space, so every $\mathbf{x}$ is written exactly as $\mathbf{P}\mathbf{t}$, the residual $\mathbf{e}$ is 0, SPE is always 0, and the figure has nothing to show. Appendix D, with 2 inputs and 2 latent variables, is such a case, so this figure adds one more input.

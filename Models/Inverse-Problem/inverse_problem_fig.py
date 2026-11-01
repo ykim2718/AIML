@@ -1,13 +1,14 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.19.0: Add the row space panel (a) to fig_9 and mark the column space in panel (b).
     0.18.0: Add fig_9, a schematic of SPE and the model plane in a three-input space.
     0.17.0: Merge fig_3 and fig_4 into the two panels of fig_3, with text twice as large.
     0.16.0: Add fig_4, the spread of the minimum-norm solution over bootstrap PLS models.
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.18.0.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.19.0.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -18,6 +19,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
+from matplotlib.patches import FancyArrowPatch
 from scipy.linalg import null_space
 from scipy.optimize import minimize
 from scipy.stats import chi2
@@ -657,7 +659,7 @@ def fig_8(out_folder: pathlib.Path) -> pathlib.Path:
 
 
 def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
-    """Fig 9: schematic of the model plane, the T^2 limit, the null space segment and SPE.
+    """Fig 9: (a) the row space of P (score space), (b) its image, the column space of P, and SPE.
 
     The numbers are made up for the drawing: with two inputs and two latent variables the
     model plane of Appendix D fills the whole input space, so its SPE is always 0.
@@ -691,14 +693,45 @@ def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
     x_off = loadings @ np.array([-2.3, -0.6]) + 1.8 * normal
     foot = loadings @ (loadings.T @ x_off)
 
-    fig = plt.figure(figsize=(FIGSIZE[0] * 1.05, FIGSIZE[0] * 0.9))
-    ax = fig.add_subplot(projection='3d')
+    fig = plt.figure(figsize=(FIGSIZE[0] * 1.9, FIGSIZE[0] * 0.95))
+    grid = fig.add_gridspec(1, 2, width_ratios=[0.8, 1.2], wspace=0.15)
+    t_off = loadings.T @ x_off
+
+    # (a) row space of P: the score space where t lives
+    ax2 = fig.add_subplot(grid[0, 0])
+    ax2.scatter(scores[:, 0], scores[:, 1], s=10, color='0.55')
+    angle = np.linspace(0.0, 2.0 * np.pi, 300)
+    ellipse_t = np.sqrt(t2_limit) * score_sd[None, :] * np.column_stack([np.cos(angle), np.sin(angle)])
+    ax2.plot(*ellipse_t.T, color=COLORS[0], linewidth=2.0)
+    line_t = np.array([t_star + k * null_dir for k in (alpha_a - 1.2, alpha_b + 1.2)])
+    ax2.plot(*line_t.T, color=COLORS[3], linewidth=1.2, linestyle='--')
+    seg_t = np.array([t_star + alpha_a * null_dir, t_star + alpha_b * null_dir])
+    ax2.plot(*seg_t.T, color=COLORS[3], linewidth=4.0)
+    ax2.scatter(*t_star, s=260, marker='*', color=COLORS[1], zorder=5)
+    ax2.scatter(*t_off, s=60, marker='x', color=COLORS[4], zorder=5)
+    ax2.annotate('t*', t_star, textcoords='offset points', xytext=(10, -22), fontsize=text_size,
+                 color=COLORS[1])
+    ax2.annotate('t of x', t_off, textcoords='offset points', xytext=(-10, 10), fontsize=text_size,
+                 color=COLORS[4])
+    for name, point in zip(('A', 'B'), seg_t):
+        ax2.annotate(name, point, textcoords='offset points', xytext=(6, 6), fontsize=text_size,
+                     color=COLORS[3])
+    ax2.text(0.03, 0.97, 'row space of P\n(score space, R^A)', transform=ax2.transAxes, va='top',
+             fontsize=text_size, color='0.25')
+    ax2.set_xlim(-5.0, 5.0)
+    ax2.set_ylim(-3.2, 3.6)
+    ax2.set_aspect('equal', adjustable='box')
+    ax2.set_xlabel('t1', fontsize=text_size)
+    ax2.set_ylabel('t2', fontsize=text_size)
+    ax2.tick_params(labelsize=font_size(1.3))
+
+    # (b) input space: the column space of P is the model plane
+    ax = fig.add_subplot(grid[0, 1], projection='3d')
     u, v = np.meshgrid(np.linspace(-4.5, 4.5, 2), np.linspace(-3.0, 3.0, 2))
     plane = u[..., None] * p1 + v[..., None] * p2
     ax.plot_surface(plane[..., 0], plane[..., 1], plane[..., 2], color=COLORS[0], alpha=0.12,
                     edgecolor='none')
     ax.scatter(*x_data.T, s=10, color='0.55', depthshade=False, label='historical data (rows of X)')
-    angle = np.linspace(0.0, 2.0 * np.pi, 300)
     ellipse = (np.sqrt(t2_limit) * score_sd[None, :]
                * np.column_stack([np.cos(angle), np.sin(angle)])) @ loadings.T
     ax.plot(*ellipse.T, color=COLORS[0], linewidth=2.0, label='T^2 = limit on the model plane')
@@ -715,7 +748,7 @@ def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
     ax.text(*(foot + np.array([0.2, 0.3, -0.45])), 'P t', color=COLORS[4], fontsize=text_size)
     for name, point in (('A', point_a), ('B', point_b)):
         ax.text(*(point + np.array([0.15, 0.15, 0.15])), name, color=COLORS[3], fontsize=text_size)
-    ax.text(*(loadings @ np.array([3.0, -3.4])), 'model plane\n(columns of P)', color=COLORS[0],
+    ax.text(*(loadings @ np.array([3.0, -3.4])), 'column space of P\n(model plane, R^K)', color=COLORS[0],
             fontsize=text_size)
     for setter, name in ((ax.set_xlabel, 'x1'), (ax.set_ylabel, 'x2'), (ax.set_zlabel, 'x3')):
         setter(name, fontsize=text_size)
@@ -726,6 +759,15 @@ def fig_9(out_folder: pathlib.Path) -> pathlib.Path:
     ax.set_box_aspect((1.3, 1.0, 0.8))
     ax.legend(fontsize=font_size(1.15), loc='upper center', bbox_to_anchor=(0.5, 0.06), ncol=2,
               frameon=False)
+    fig.text(0.415, 0.565, 'x = P t', fontsize=font_size(1.6), ha='center', va='bottom')
+    fig.patches.append(FancyArrowPatch(
+        (0.37, 0.53), (0.46, 0.53), transform=fig.transFigure, arrowstyle='-|>', mutation_scale=25,
+        color='0.3', linewidth=1.8))
+    panel_caption(fig, [ax2], '(a)', y=0.0)
+    panel_caption(fig, [ax], '(b)', y=0.0)
+    for text in fig.texts:
+        if text.get_text() in ('(a)', '(b)'):
+            text.set_fontsize(font_size(1.6))
 
     out_path = out_folder / 'spe-schematic.png'
     out_folder.mkdir(parents=True, exist_ok=True)

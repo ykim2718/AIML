@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 108 | Created: 2026-08-28 | Updated: 2026-11-01 10:57 UTC
+Rev. 109 | Created: 2026-08-28 | Updated: 2026-11-01 11:01 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -836,8 +836,11 @@ SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 �
 
 SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 9 와 같다.
 
-<img src="inverse-problem-ko_fig/spe-schematic.png" width="600" style="max-width: 100%;" alt="Fig 9">
+<img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 9">
 
-Fig 9. Schematic of the model plane, the T^2 limit and SPE in a three-input space
+Fig 9. Row space and column space of the loading matrix P, the T^2 limit and SPE
+
+- (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다.
+- (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 $\mathbf{x}$ 의 수선 길이 제곱이 SPE 이다.
 
 파란 면은 model plane, 곧 $\mathbf{P}$ 의 열로 구성된 column space 이다. loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ 는 행이 입력 변수 $K$ 개, 열이 latent 변수 $A$ 개인 행렬이며 이 그림에서는 $3 \times 2$ 이고, 열 $\mathbf{p}_a$ 는 $a$ 번째 loading 이며, 그 $k$ 번째 원소는 $a$ 번째 score 가 1 늘 때 입력 변수 $x_k$ 가 얼마나 바뀌는지를 나타낸다. $\mathbf{P}$ 의 row space 는 $\mathbb{R}^{A}$ 의 부분공간으로 score 공간, 곧 latent space 이며, $\mathbf{P}$ 의 열이 선형독립이면 $\mathbb{R}^{A}$ 전체가 된다. 그래서 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 는 row space 의 점 $\mathbf{t}$ 를 column space, 곧 model plane 의 점으로 옮긴다. 이 평면 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 공간에서 직접 푼 $\mathbf{x}$ (보라) 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (14) 의 SPE 이다. 수치는 그림을 위해 만든 값이며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
