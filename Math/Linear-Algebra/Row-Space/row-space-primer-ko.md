@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 26 | Created: 2026-11-01 | Updated: 2026-11-02 07:27 UTC
+Rev. 27 | Created: 2026-11-01 | Updated: 2026-11-02 07:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -37,28 +37,28 @@ Row space 는 null space 와 직교하고, 그 차원은 column space 의 차원
 
 Table 1. Symbols
 
-| Symbol                       | Meaning                                                                                      | Shape                          | Assumption                                               |
-| :--------------------------: | :------------------------------------------------------------------------------------------: | :----------------------------: | :------------------------------------------------------: |
-| $\mathbb{R}$                 | 실수 전체의 집합. $\mathbb{R}^n$ 은 원소가 실수 $n$ 개인 열 vector 전체이다                  | 집합                           | 실수                                                     |
-| $\mathbf{A}$                 | 선형 변환을 나타내는 행렬                                                                    | $m \times n$                   | 실수 원소                                                |
-| $m$, $n$                     | $\mathbf{A}$ 의 행의 수와 열의 수                                                            | scalar                         | 양의 정수                                                |
-| $\mathbf{r}_i^\top$          | $\mathbf{A}$ 의 $i$ 번째 행                                                                  | $1 \times n$                   | $i = 1, \dots, m$                                        |
-| $\mathbf{R}$                 | $\mathbf{A}$ 의 기약 행사다리꼴                                                              | $m \times n$                   | 기본 행 연산으로 얻음                                    |
-| $i$, $j$                     | $\mathbf{A}$ 의 행 번호와 열 번호                                                            | scalar                         | $i = 1, \dots, m$, $j = 1, \dots, n$                     |
-| $\mathbf{x}$                 | 입력 vector                                                                                  | $n \times 1$                   | 실수 원소                                                |
-| $\lVert \mathbf{x} \rVert$   | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert^2 = x_1^2 + \cdots + x_n^2$ | scalar                         | 0 이상                                                   |
-| $\mathbf{y}$                 | $\mathbf{A}^\top$ 에 곱하는 계수 vector                                                      | $m \times 1$                   | 실수 원소                                                |
-| $\mathbf{b}$                 | 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 우변                                       | $m \times 1$                   | 실수 원소                                                |
-| $\mathbf{0}$                 | zero vector                                                                                  | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                            |
-| $\mathrm{Row}(\mathbf{A})$   | $\mathbf{A}$ 의 row space                                                                    | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 포함                                      |
-| $\mathrm{Col}(\mathbf{A})$   | $\mathbf{A}$ 의 column space                                                                 | $\mathbb{R}^m$ 의 부분공간     | zero vector 를 포함                                      |
-| $\mathrm{Null}(\mathbf{A})$  | $\mathbf{A}$ 의 null space                                                                   | $\mathbb{R}^n$ 의 부분공간     | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
-| $\mathrm{rank}(\mathbf{A})$  | $\mathbf{A}$ 의 계수                                                                         | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$         |
-| $r$                          | $\mathrm{rank}(\mathbf{A})$ 를 줄여 쓴 것                                                    | scalar                         | $r = \mathrm{rank}(\mathbf{A})$                          |
-| $\mathbf{x}_{\mathrm{row}}$  | $\mathbf{x}$ 의 row space 성분                                                               | $n \times 1$                   | $\mathrm{Row}(\mathbf{A})$ 에 속함                       |
-| $\mathbf{x}_{\mathrm{null}}$ | $\mathbf{x}$ 의 null space 성분                                                              | $n \times 1$                   | $\mathrm{Null}(\mathbf{A})$ 에 속함                      |
-| $\mathbf{n}$                 | Worked Example 에서 null space 를 생성하는 vector                                            | $3 \times 1$                   | zero vector 가 아님                                      |
-| $\sigma_k$, $\mathbf{v}_k$   | $\mathbf{A}$ 의 $k$ 번째 특이값과 우특이벡터                                                 | scalar, $n \times 1$           | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                 |
+| Symbol                       | Meaning                                                                                            | Shape                          | Assumption                                               |
+| :--------------------------: | :------------------------------------------------------------------------------------------------: | :----------------------------: | :------------------------------------------------------: |
+| $\mathbb{R}$                 | 실수 전체의 집합. $\mathbb{R}^n$ 은 원소가 실수 $n$ 개인 열 vector 전체이다                        | 집합                           | 실수                                                     |
+| $\mathbf{A}$                 | 선형 변환을 나타내는 행렬                                                                          | $m \times n$                   | 실수 원소                                                |
+| $m$, $n$                     | $\mathbf{A}$ 의 행의 수와 열의 수                                                                  | scalar                         | 양의 정수                                                |
+| $\mathbf{r}_i^\top$          | $\mathbf{A}$ 의 $i$ 번째 행                                                                        | $1 \times n$                   | $i = 1, \dots, m$                                        |
+| $\mathbf{R}$                 | $\mathbf{A}$ 의 기약 행사다리꼴                                                                    | $m \times n$                   | 기본 행 연산으로 얻음                                    |
+| $i$, $j$                     | $\mathbf{A}$ 의 행 번호와 열 번호                                                                  | scalar                         | $i = 1, \dots, m$, $j = 1, \dots, n$                     |
+| $\mathbf{x}$                 | 입력 vector                                                                                        | $n \times 1$                   | 실수 원소                                                |
+| $\lVert \mathbf{x} \rVert$   | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ | scalar                         | 0 이상                                                   |
+| $\mathbf{y}$                 | $\mathbf{A}^\top$ 에 곱하는 계수 vector                                                            | $m \times 1$                   | 실수 원소                                                |
+| $\mathbf{b}$                 | 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 우변                                             | $m \times 1$                   | 실수 원소                                                |
+| $\mathbf{0}$                 | zero vector                                                                                        | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                            |
+| $\mathrm{Row}(\mathbf{A})$   | $\mathbf{A}$ 의 row space                                                                          | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 포함                                      |
+| $\mathrm{Col}(\mathbf{A})$   | $\mathbf{A}$ 의 column space                                                                       | $\mathbb{R}^m$ 의 부분공간     | zero vector 를 포함                                      |
+| $\mathrm{Null}(\mathbf{A})$  | $\mathbf{A}$ 의 null space                                                                         | $\mathbb{R}^n$ 의 부분공간     | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
+| $\mathrm{rank}(\mathbf{A})$  | $\mathbf{A}$ 의 계수                                                                               | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$         |
+| $r$                          | $\mathrm{rank}(\mathbf{A})$ 를 줄여 쓴 것                                                          | scalar                         | $r = \mathrm{rank}(\mathbf{A})$                          |
+| $\mathbf{x}_{\mathrm{row}}$  | $\mathbf{x}$ 의 row space 성분                                                                     | $n \times 1$                   | $\mathrm{Row}(\mathbf{A})$ 에 속함                       |
+| $\mathbf{x}_{\mathrm{null}}$ | $\mathbf{x}$ 의 null space 성분                                                                    | $n \times 1$                   | $\mathrm{Null}(\mathbf{A})$ 에 속함                      |
+| $\mathbf{n}$                 | Worked Example 에서 null space 를 생성하는 vector                                                  | $3 \times 1$                   | zero vector 가 아님                                      |
+| $\sigma_k$, $\mathbf{v}_k$   | $\mathbf{A}$ 의 $k$ 번째 특이값과 우특이벡터                                                       | scalar, $n \times 1$           | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                 |
 
 특수 기호는 아래처럼 읽는다.
 

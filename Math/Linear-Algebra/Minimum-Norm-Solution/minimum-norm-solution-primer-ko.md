@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 4 | Created: 2026-11-02 | Updated: 2026-11-02 07:27 UTC
+Rev. 5 | Created: 2026-11-02 | Updated: 2026-11-02 07:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -33,24 +33,24 @@ $\mathbf{A}$ 의 rank 가 행의 수 $m$ 과 같으면 $\mathbf{A}^\top(\mathbf{
 
 Table 1. Symbols
 
-| Symbol                                                     | Meaning                                                                                      | Shape                      | Assumption                                               |
-| :--------------------------------------------------------: | :------------------------------------------------------------------------------------------: | :------------------------: | :------------------------------------------------------: |
-| $\mathbb{R}$                                               | 실수 전체의 집합. $\mathbb{R}^n$ 은 원소가 실수 $n$ 개인 열 vector 전체이다                  | 집합                       | 실수                                                     |
-| $\mathbf{A}$                                               | 선형방정식의 계수 행렬                                                                       | $m \times n$               | 실수 원소                                                |
-| $m$, $n$                                                   | $\mathbf{A}$ 의 행의 수 (식의 수) 와 열의 수 (미지수의 수)                                   | scalar                     | 양의 정수                                                |
-| $\mathbf{x}$                                               | 미지수 vector, $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해                                     | $n \times 1$               | 실수 원소                                                |
-| $\lVert \mathbf{x} \rVert$                                 | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert^2 = x_1^2 + \cdots + x_n^2$ | scalar                     | 0 이상                                                   |
-| $\mathbf{b}$                                               | 선형방정식의 우변                                                                            | $m \times 1$               | $\mathrm{Col}(\mathbf{A})$ 에 속함                       |
-| $\mathbf{y}$                                               | $\mathbf{A}^\top$ 에 곱하는 vector                                                           | $m \times 1$               | 실수 원소                                                |
-| $\mathbf{0}$                                               | zero vector                                                                                  | $n \times 1$               | 모든 원소가 0                                            |
-| $r$                                                        | $\mathbf{A}$ 의 계수 (rank)                                                                  | scalar                     | $r \le \min(m, n)$                                       |
-| $\mathrm{Row}(\mathbf{A})$                                 | $\mathbf{A}$ 의 row space                                                                    | $\mathbb{R}^n$ 의 부분공간 | $\mathbf{A}^\top\mathbf{y}$ 전체                         |
-| $\mathrm{Null}(\mathbf{A})$                                | $\mathbf{A}$ 의 null space                                                                   | $\mathbb{R}^n$ 의 부분공간 | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
-| $\mathrm{Col}(\mathbf{A})$                                 | $\mathbf{A}$ 의 column space                                                                 | $\mathbb{R}^m$ 의 부분공간 | $\mathbf{A}\mathbf{x}$ 전체                              |
-| $\mathbf{x}_{\mathrm{row}}$                                | 해 $\mathbf{x}$ 의 row space 성분                                                            | $n \times 1$               | $\mathrm{Row}(\mathbf{A})$ 에 속함                       |
-| $\mathbf{x}_{\mathrm{null}}$                               | 해 $\mathbf{x}$ 의 null space 성분                                                           | $n \times 1$               | $\mathrm{Null}(\mathbf{A})$ 에 속함                      |
-| $\mathbf{x}^{\ast}$                                        | 최소 노름 해                                                                                 | $n \times 1$               | $\mathbf{x}_{\mathrm{null}} = \mathbf{0}$                |
-| $\mathbf{x}^{(1)}$, $\mathbf{x}^{(2)}$, $\mathbf{x}^{(3)}$ | Worked Example 의 해 세 개                                                                   | $3 \times 1$               | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족              |
+| Symbol                                                     | Meaning                                                                                            | Shape                      | Assumption                                               |
+| :--------------------------------------------------------: | :------------------------------------------------------------------------------------------------: | :------------------------: | :------------------------------------------------------: |
+| $\mathbb{R}$                                               | 실수 전체의 집합. $\mathbb{R}^n$ 은 원소가 실수 $n$ 개인 열 vector 전체이다                        | 집합                       | 실수                                                     |
+| $\mathbf{A}$                                               | 선형방정식의 계수 행렬                                                                             | $m \times n$               | 실수 원소                                                |
+| $m$, $n$                                                   | $\mathbf{A}$ 의 행의 수 (식의 수) 와 열의 수 (미지수의 수)                                         | scalar                     | 양의 정수                                                |
+| $\mathbf{x}$                                               | 미지수 vector, $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해                                           | $n \times 1$               | 실수 원소                                                |
+| $\lVert \mathbf{x} \rVert$                                 | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ | scalar                     | 0 이상                                                   |
+| $\mathbf{b}$                                               | 선형방정식의 우변                                                                                  | $m \times 1$               | $\mathrm{Col}(\mathbf{A})$ 에 속함                       |
+| $\mathbf{y}$                                               | $\mathbf{A}^\top$ 에 곱하는 vector                                                                 | $m \times 1$               | 실수 원소                                                |
+| $\mathbf{0}$                                               | zero vector                                                                                        | $n \times 1$               | 모든 원소가 0                                            |
+| $r$                                                        | $\mathbf{A}$ 의 계수 (rank)                                                                        | scalar                     | $r \le \min(m, n)$                                       |
+| $\mathrm{Row}(\mathbf{A})$                                 | $\mathbf{A}$ 의 row space                                                                          | $\mathbb{R}^n$ 의 부분공간 | $\mathbf{A}^\top\mathbf{y}$ 전체                         |
+| $\mathrm{Null}(\mathbf{A})$                                | $\mathbf{A}$ 의 null space                                                                         | $\mathbb{R}^n$ 의 부분공간 | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
+| $\mathrm{Col}(\mathbf{A})$                                 | $\mathbf{A}$ 의 column space                                                                       | $\mathbb{R}^m$ 의 부분공간 | $\mathbf{A}\mathbf{x}$ 전체                              |
+| $\mathbf{x}_{\mathrm{row}}$                                | 해 $\mathbf{x}$ 의 row space 성분                                                                  | $n \times 1$               | $\mathrm{Row}(\mathbf{A})$ 에 속함                       |
+| $\mathbf{x}_{\mathrm{null}}$                               | 해 $\mathbf{x}$ 의 null space 성분                                                                 | $n \times 1$               | $\mathrm{Null}(\mathbf{A})$ 에 속함                      |
+| $\mathbf{x}^{\ast}$                                        | 최소 노름 해                                                                                       | $n \times 1$               | $\mathbf{x}_{\mathrm{null}} = \mathbf{0}$                |
+| $\mathbf{x}^{(1)}$, $\mathbf{x}^{(2)}$, $\mathbf{x}^{(3)}$ | Worked Example 의 해 세 개                                                                         | $3 \times 1$               | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족              |
 
 특수 기호는 아래처럼 읽는다.
 
