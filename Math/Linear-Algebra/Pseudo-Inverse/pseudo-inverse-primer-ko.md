@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 2 | Created: 2026-11-02 | Updated: 2026-11-02 21:23 UTC
+Rev. 3 | Created: 2026-11-02 | Updated: 2026-11-02 21:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -176,7 +176,7 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 - **full column rank**: 행렬의 rank 가 열의 수 $n$ 과 같은 것.
 - **full row rank**: 행렬의 rank 가 행의 수 $m$ 과 같은 것.
 - **left inverse**: $\mathbf{A}$ 의 왼쪽에 곱하여 단위 행렬을 만드는 행렬.
-- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
 - **right inverse**: $\mathbf{A}$ 의 오른쪽에 곱하여 단위 행렬을 만드는 행렬.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.

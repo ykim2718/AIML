@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 6 | Created: 2026-10-25 | Updated: 2026-11-02 21:23 UTC
+Rev. 7 | Created: 2026-10-25 | Updated: 2026-11-02 21:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -180,7 +180,7 @@ t_i = \mathbf{x}_i^\top \mathbf{w}, \quad \lVert \mathbf{w} \rVert = 1 \hspace{1
 
 - **centering**: 각 열에서 그 열의 평균을 빼서 평균을 0 으로 만드는 전처리.
 - **latent space**: 원래 입력을 몇 개의 축으로 정사영하여 얻은 저차원 좌표 공간.
-- **norm**: Vector 의 길이. 이 문서에서는 식 (2) 의 Euclidean norm 이다.
+- **norm**: Vector 의 길이. 이 문서에서는 식 (2) 의 Euclidean norm 이다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **PCA**: Principal Component Analysis. 입력의 분산이 가장 큰 방향을 차례로 축으로 고르는 차원 축소 방법.
 - **perceptron**: 입력과 weight 의 내적에 절편을 더한 값의 부호로 class 를 정하는 선형 분류기.
 - **PLS**: Partial Least Squares. 입력의 score 와 출력의 공분산이 가장 큰 방향을 차례로 축으로 고르는 회귀 방법.

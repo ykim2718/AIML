@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 21:30 UTC
+Rev. 2 | Created: 2026-11-02 | Updated: 2026-11-02 21:46 UTC
 
 ## 1. Purpose
 
@@ -110,7 +110,7 @@ Table 2 로 해의 개수를 정한 뒤 아래 풀이를 쓴다.
 ## Appendix A. Terminology
 
 - **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 의 집합. Column space 와 직교한다.
-- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.

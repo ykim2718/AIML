@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 6 | Created: 2026-10-26 | Updated: 2026-11-02 21:23 UTC
+Rev. 7 | Created: 2026-10-26 | Updated: 2026-11-02 21:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -216,7 +216,7 @@ $\boldsymbol{\Sigma}^{+}$ 는 $\boldsymbol{\Sigma}$ 를 전치한 $n \times m$ �
 - **centering**: 각 열에서 그 열의 평균을 빼서 평균을 0 으로 만드는 전처리.
 - **condition number**: 가장 큰 특이값을 가장 작은 특이값으로 나눈 값. 클수록 입력의 작은 오차가 해에서 크게 커진다.
 - **Eckart–Young 정리**: 큰 특이값 $k$ 개만 남긴 행렬이 계수 $k$ 이하의 행렬 가운데 Frobenius norm 으로 원래 행렬에 가장 가깝다는 정리.
-- **Frobenius norm**: 행렬의 모든 원소의 제곱합의 제곱근.
+- **Frobenius norm**: 행렬의 모든 원소의 제곱합의 제곱근. 특이값으로 재는 spectral norm, nuclear norm 과의 비교는 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **PCA**: Principal Component Analysis. 자료의 분산이 가장 큰 방향을 차례로 축으로 고르는 차원 축소 방법.
 - **pseudo-inverse**: 정사각이 아니거나 특이한 행렬에도 정의되며, 최소제곱 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화. Moore–Penrose inverse 라고도 한다.
 - **score**: Sample 을 한 축에 정사영한 부호 있는 길이.

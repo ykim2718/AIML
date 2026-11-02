@@ -1,5 +1,5 @@
 # Regularization
-Rev. 5 | Created: 2026-09-12 | Updated: 2026-11-01 21:36 UTC
+Rev. 6 | Created: 2026-09-12 | Updated: 2026-11-02 21:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -89,7 +89,7 @@ ElasticNet 은 L1 규제와 L2 규제를 결합한 방식이다.
 
 ## 5. Comparison
 
-세 방법을 가르는 것은 계수를 완전한 0 으로 만드는지이며, 그 차이는 penalty 가 그리는 제약 영역의 모양에서 온다. Penalty 를 더해 비용함수를 최소화하는 것은 계수 벡터를 일정한 크기 안에 묶어 두고 $RSS$ 를 최소화하는 것과 같고, 그 크기를 재는 norm 이 영역의 모양을 정한다.
+세 방법을 가르는 것은 계수를 완전한 0 으로 만드는지이며, 그 차이는 penalty 가 그리는 제약 영역의 모양에서 온다. Penalty 를 더해 비용함수를 최소화하는 것은 계수 벡터를 일정한 크기 안에 묶어 두고 $RSS$ 를 최소화하는 것과 같고, 그 크기를 재는 norm 이 영역의 모양을 정한다. L1 과 L2 를 포함한 norm 의 종류와 정의는 [Types of Norms](../../Linear-Algebra/Norm-Types/norm-types-ko.md) 에 있다.
 
 두 penalty 의 제약 영역은 Fig 1 이다.
 
