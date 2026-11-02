@@ -10,7 +10,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.21.0.2026.11.1"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.21.1.2026.11.2"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -840,12 +840,12 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
     ax.plot(*np.array([point_a, point_b]).T, color=COLORS[3], linewidth=4.0, label='segment A-B')
     ax.scatter(*x_star, s=260, marker='*', color=COLORS[1], depthshade=False,
                label='x* = P t* (SPE = 0)')
-    ax.scatter(*x_off, s=70, color=COLORS[4], depthshade=False, label='x solved in the input space')
+    ax.scatter(*x_off, s=70, color=COLORS[4], depthshade=False, label='x: candidate solved in the input space, not a row of X')
     ax.scatter(*foot, s=40, marker='x', color=COLORS[4], depthshade=False)
     ax.plot(*np.array([x_off, foot]).T, color=COLORS[4], linewidth=2.2)
-    ax.text(*(x_off + np.array([-0.4, 0.0, 0.35])), 'e = x - P t\nSPE = ||e||^2', color=COLORS[4],
+    ax.text(*(x_off + np.array([-0.4, 0.0, 0.35])), 'x (candidate)\ne = x - P t\nSPE = ||e||^2', color=COLORS[4],
             fontsize=text_size)
-    ax.text(*(foot + np.array([0.2, 0.3, -0.45])), 'P t', color=COLORS[4], fontsize=text_size)
+    ax.text(*(foot + np.array([-2.6, -0.4, -2.0])), 'P t\n(projection of x)', color=COLORS[4], fontsize=text_size)
     for name, point in (('A', point_a), ('B', point_b)):
         ax.text(*(point + np.array([0.15, 0.15, 0.15])), name, color=COLORS[3], fontsize=text_size)
     ax.text(*(loadings @ np.array([3.0, -3.4])), 'model plane', color=COLORS[0],
