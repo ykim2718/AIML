@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 2 | Created: 2026-10-26 | Updated: 2026-11-01 21:30 UTC
+Rev. 3 | Created: 2026-10-26 | Updated: 2026-11-02 21:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -216,7 +216,7 @@ Table 5. Right and left division of B by A
 
 - **최소제곱 해**: 선형 회귀의 weight 는 $\mathbf{w} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}$ 이다. 식은 꼭지 6 의 식 (13) 에서 나온다.
 - **계산 방법**: 역행렬을 구해 곱하는 대신 연립방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 직접 푼다. NumPy 의 `numpy.linalg.solve` 가 이 계산을 하며, `numpy.linalg.inv` 로 역행렬을 구해 곱하는 것보다 반올림 오차가 작고 빠르다.
-- **깨지는 조건**: $\det(\mathbf{A}) = 0$ 인 특이 행렬과 정사각이 아닌 행렬에는 역행렬이 없다. Feature 사이의 공선성이 강하면 $\mathbf{X}^\top\mathbf{X}$ 의 행렬식이 0 에 가까워져 역행렬의 원소가 매우 커진다. 이때는 pseudo-inverse 나 regularization 을 쓴다.
+- **깨지는 조건**: $\det(\mathbf{A}) = 0$ 인 특이 행렬과 정사각이 아닌 행렬에는 역행렬이 없다. Feature 사이의 공선성이 강하면 $\mathbf{X}^\top\mathbf{X}$ 의 행렬식이 0 에 가까워져 역행렬의 원소가 매우 커진다. 이때는 pseudo-inverse 나 regularization 을 쓴다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ## 6. Differentiation
 

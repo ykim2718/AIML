@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 51 | Created: 2026-10-25 | Updated: 2026-11-02 10:56 UTC
+Rev. 52 | Created: 2026-10-25 | Updated: 2026-11-02 21:21 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -234,7 +234,7 @@ $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings ob
 2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
 3. Model-agnostic numerical optimization method: finds the solution by moving all $K$ inputs directly with the method of [4.7](#47-model-agnostic-numerical-optimization).
 
-The minimum-norm solution method of PLS inversion solves the equation with the pseudo-inverse and maps the score back through the loading to recover the input.
+The minimum-norm solution method of PLS inversion solves the equation with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)

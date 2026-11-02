@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 4 | Created: 2026-10-26 | Updated: 2026-11-01 21:30 UTC
+Rev. 5 | Created: 2026-10-26 | Updated: 2026-11-02 21:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -189,7 +189,7 @@ NumPy 의 `numpy.linalg.svd` 는 네 특이벡터를 모두 식 (7) 과 부호�
 
 ### 6.3 Pseudo-Inverse
 
-정사각이 아니거나 계수가 모자라 역행렬이 없는 행렬에도 SVD 로 pseudo-inverse 를 만든다.
+정사각이 아니거나 계수가 모자라 역행렬이 없는 행렬에도 SVD 로 pseudo-inverse 를 만든다. Rank 가 열의 수나 행의 수와 같을 때 SVD 없이 쓰는 식과 숫자 예시는 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ```math
 \mathbf{A}^{+} = \mathbf{V}\boldsymbol{\Sigma}^{+}\mathbf{U}^\top, \quad (\boldsymbol{\Sigma}^{+})_{ii} = \begin{cases} 1/\sigma_i & \sigma_i \gt 0 \\ 0 & \sigma_i = 0 \end{cases} \hspace{19em} (11)

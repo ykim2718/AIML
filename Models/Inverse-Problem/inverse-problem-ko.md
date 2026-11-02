@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 138 | Created: 2026-08-28 | Updated: 2026-11-02 10:56 UTC
+Rev. 139 | Created: 2026-08-28 | Updated: 2026-11-02 21:21 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -234,7 +234,7 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 2. PLS inversion 의 Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
 3. Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 해를 구한다.
 
-PLS inversion 의 Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
+PLS inversion 의 Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
