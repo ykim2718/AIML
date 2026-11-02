@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 21:40 UTC
+Rev. 2 | Created: 2026-11-02 | Updated: 2026-11-02 21:42 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -66,7 +66,7 @@ Not a norm: "L0" = number of nonzero elements (fails homogeneity)
 <a id="fig-2"></a>
 Fig 2. Hierarchy of norms
 
-- 양수성, 동차성, 삼각부등식의 세 조건을 만족해야 norm 이다. 세 조건의 식은 [꼭지 4](#4-definition) 의 식 (1) 에 있다. 조건만 지키면 되므로 크기를 재는 방식이 여럿이다.
+- 양수성, 동차성, 삼각부등식의 세 조건을 만족해야 norm 이다. 세 조건의 식은 [꼭지 4](#4-definition) 의 식 (1), 식 (2), 식 (3) 에 있다. 조건만 지키면 되므로 크기를 재는 방식이 여럿이다.
 - Lp norm 은 $p \ge 1$ 일 때 norm 이다. $p = 1, 2, \infty$ 가 L1, L2, L∞ 이다.
 - Frobenius norm 은 행렬을 vector 로 펼친 L2 norm 이고, 특이값 제곱합의 제곱근과도 같다.
 - L0 는 이름에 norm 이 붙지만 동차성을 만족하지 않아 norm 이 아니다.
@@ -83,11 +83,11 @@ Table 1. Vector norms of x = [3, 4]
 | L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | 원        | 최소제곱, ridge, 최소 노름 해 |
 | L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | 정사각형  | 원소별 한계                   |
 
-Unit ball 은 norm 이 1 인 vector 의 끝점이 이루는 2 차원 도형이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (3) 대로 $4 \le 5 \le 7$ 이다.
+Unit ball 은 norm 이 1 인 vector 의 끝점이 이루는 2 차원 도형이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (5) 대로 $4 \le 5 \le 7$ 이다.
 
-Matrix norm 을 식 (5) 의 $\mathbf{A}$ 에서 견주면 아래 Table 2 이다. $\mathbf{A}$ 의 특이값은 $\sigma_1 = \sqrt{3} \approx 1.732$, $\sigma_2 = 1$ 이다.
+Matrix norm 을 식 (7) 의 $\mathbf{A}$ 에서 견주면 아래 Table 2 이다. $\mathbf{A}$ 의 특이값은 $\sigma_1 = \sqrt{3} \approx 1.732$, $\sigma_2 = 1$ 이다.
 
-Table 2. Matrix norms of A in equation (5)
+Table 2. Matrix norms of A in equation (7)
 
 | Norm      | Definition                                                | Value                        | Used in                                |
 | :-------: | :-------------------------------------------------------: | :--------------------------: | :------------------------------------: |
@@ -99,30 +99,42 @@ Table 2. Matrix norms of A in equation (5)
 
 Norm 은 vector 마다 0 이상의 실수 하나를 주는 함수 $\lVert \cdot \rVert$ 이며, 모든 vector $\mathbf{x}$, $\mathbf{y}$ 와 상수 $c$ 에 대해 아래 세 조건을 만족한다.
 
+양수성 (positivity) 은 norm 이 0 이상이고, 0 이 되는 것은 zero vector 뿐이라는 조건이다.
+
 ```math
-\begin{aligned}
-& \lVert \mathbf{x} \rVert \ge 0, \quad \lVert \mathbf{x} \rVert = 0 \iff \mathbf{x} = \mathbf{0} \\
-& \lVert c\,\mathbf{x} \rVert = \lvert c \rvert \, \lVert \mathbf{x} \rVert \\
-& \lVert \mathbf{x} + \mathbf{y} \rVert \le \lVert \mathbf{x} \rVert + \lVert \mathbf{y} \rVert
-\end{aligned}
+\lVert \mathbf{x} \rVert \ge 0, \quad \lVert \mathbf{x} \rVert = 0 \iff \mathbf{x} = \mathbf{0}
 \hspace{19em} (1)
 ```
 
-첫 줄은 양수성, 둘째 줄은 동차성, 셋째 줄은 삼각부등식이다. 두 vector 사이의 거리는 차이의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 이다.
+동차성 (homogeneity) 은 vector 에 상수를 곱하면 norm 에 그 상수의 절댓값이 곱해진다는 조건이다.
+
+```math
+\lVert c\,\mathbf{x} \rVert = \lvert c \rvert \, \lVert \mathbf{x} \rVert
+\hspace{19em} (2)
+```
+
+삼각부등식 (triangle inequality) 은 두 vector 의 합의 norm 이 두 norm 의 합을 넘지 않는다는 조건이다.
+
+```math
+\lVert \mathbf{x} + \mathbf{y} \rVert \le \lVert \mathbf{x} \rVert + \lVert \mathbf{y} \rVert
+\hspace{19em} (3)
+```
+
+두 vector 사이의 거리는 차이의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 이다.
 
 Lp norm 은 아래 식이며, $p \to \infty$ 의 극한이 L∞ norm 이다.
 
 ```math
 \lVert \mathbf{x} \rVert_p = \left( \sum_{i=1}^{n} \lvert x_i \rvert^p \right)^{1/p} \quad (p \ge 1), \qquad
 \lVert \mathbf{x} \rVert_\infty = \max_i \lvert x_i \rvert
-\hspace{19em} (2)
+\hspace{19em} (4)
 ```
 
 아래첨자 없이 $\lVert \mathbf{x} \rVert$ 로 적으면 L2 norm 이다. 같은 vector 에서 세 norm 은 언제나 아래 순서이며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
 \lVert \mathbf{x} \rVert_\infty \le \lVert \mathbf{x} \rVert_2 \le \lVert \mathbf{x} \rVert_1
-\hspace{19em} (3)
+\hspace{19em} (5)
 ```
 
 Matrix norm 은 특이값으로 아래처럼 적는다. $r$ 은 $\mathbf{A}$ 의 rank 이다.
@@ -131,14 +143,14 @@ Matrix norm 은 특이값으로 아래처럼 적는다. $r$ 은 $\mathbf{A}$ 의
 \lVert \mathbf{A} \rVert_F = \left( \sum_{i=1}^{r} \sigma_i^2 \right)^{1/2}, \qquad
 \lVert \mathbf{A} \rVert_2 = \sigma_1, \qquad
 \lVert \mathbf{A} \rVert_\ast = \sum_{i=1}^{r} \sigma_i
-\hspace{19em} (4)
+\hspace{19em} (6)
 ```
 
 Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ```math
 \mathbf{A} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}
-\hspace{19em} (5)
+\hspace{19em} (7)
 ```
 
 ## 5. Application
@@ -169,7 +181,7 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ## Appendix B. Derivation
 
-식 (3) 은 두 부등식을 제곱하여 견주면 나온다.
+식 (5) 는 두 부등식을 제곱하여 견주면 나온다.
 
 ```math
 \begin{aligned}
@@ -178,15 +190,15 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 \lVert \mathbf{x} \rVert_1^2
 &= \Big( \sum_{i} \lvert x_i \rvert \Big)^2 = \sum_{i} x_i^2 + \sum_{i \ne j} \lvert x_i \rvert \lvert x_j \rvert \ge \lVert \mathbf{x} \rVert_2^2
 \end{aligned}
-\hspace{19em} (6)
+\hspace{19em} (8)
 ```
 
 - 첫째 줄: 가장 큰 제곱 하나는 0 이상인 제곱을 모두 더한 값을 넘지 않는다.
 - 둘째 줄: 합의 제곱을 전개하면 제곱의 합에 0 이상인 교차항이 더해진다.
 
-세 norm 은 모두 0 이상이므로 제곱의 순서가 norm 의 순서와 같다. 따라서 식 (3) 이 성립한다.
+세 norm 은 모두 0 이상이므로 제곱의 순서가 norm 의 순서와 같다. 따라서 식 (5) 가 성립한다.
 
 ```math
 \lVert \mathbf{x} \rVert_\infty \le \lVert \mathbf{x} \rVert_2 \le \lVert \mathbf{x} \rVert_1
-\hspace{19em} (3)
+\hspace{19em} (5)
 ```
