@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 17 | Created: 2026-11-01 | Updated: 2026-11-01 23:42 UTC
+Rev. 18 | Created: 2026-11-01 | Updated: 2026-11-02 00:16 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -130,7 +130,7 @@ $\mathbf{A}\mathbf{x}$ 의 $i$ 번째 원소는 $i$ 번째 행과 $\mathbf{x}$ �
 \hspace{19em} (2)
 ```
 
-$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이를 $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 로 적으며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이를 $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 🌳 로 적으며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
 
 ### 4.4 Dimension and Rank
 
