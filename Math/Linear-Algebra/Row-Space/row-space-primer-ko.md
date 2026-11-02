@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 18 | Created: 2026-11-01 | Updated: 2026-11-02 00:16 UTC
+Rev. 19 | Created: 2026-11-01 | Updated: 2026-11-02 00:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -121,26 +121,32 @@ Left null space 는 [Left Null Space Primer](../Left-Null-Space/left-null-space-
 
 ### 4.3 Orthogonality to the Null Space
 
+Row space 와 null space 는 직교한다.
+
+```math
+\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A}) \hspace{19em} (2) \ \text{🌳}
+```
+
 $\mathbf{A}\mathbf{x}$ 의 $i$ 번째 원소는 $i$ 번째 행과 $\mathbf{x}$ 의 내적이다. 따라서 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 모든 행과 직교한다는 뜻이다.
 
 ```math
 \mathbf{A}\mathbf{x} = \begin{bmatrix} \mathbf{r}_1^\top \mathbf{x} \\ \vdots \\ \mathbf{r}_m^\top \mathbf{x} \end{bmatrix} = \mathbf{0}
 \quad \Longleftrightarrow \quad
 \mathbf{r}_i^\top \mathbf{x} = 0 \ \ (i = 1, \dots, m)
-\hspace{19em} (2)
+\hspace{19em} (3)
 ```
 
-$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이를 $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 🌳 로 적으며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이것이 식 (2) 이며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
 
 ### 4.4 Dimension and Rank
 
 Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 $\mathbf{A}$ 의 rank 이다.
 
 ```math
-\dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A}) = r \hspace{19em} (3)
+\dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A}) = r \hspace{19em} (4) \ \text{🌳}
 ```
 
-$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (3) 이 성립한다.
+$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (4) 가 성립한다.
 
 ### 4.5 Orthogonal Decomposition of the Input Space
 
@@ -150,7 +156,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \mathbb{R}^n = \mathrm{Row}(\mathbf{A}) \oplus \mathrm{Null}(\mathbf{A}), \qquad
 \mathbf{x} = \mathbf{x}_{\mathrm{row}} + \mathbf{x}_{\mathrm{null}}, \qquad
 \mathbf{A}\mathbf{x} = \mathbf{A}\mathbf{x}_{\mathrm{row}}
-\hspace{19em} (4)
+\hspace{19em} (5)
 ```
 
 두 부분공간의 차원은 $r$ 과 $n - r$ 이어서 더하면 $n$ 이고, 서로 직교하므로 둘 다에 속하는 vector 는 zero vector 하나뿐이다. $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$ 이므로 null space 성분은 출력에 아무것도 더하지 않는다.
@@ -163,7 +169,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \mathbf{A} = \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix}, \quad
 \mathbf{r}_1 = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}, \quad
 \mathbf{r}_2 = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}
-\hspace{19em} (5)
+\hspace{19em} (6)
 ```
 
 두 행은 일차독립이므로 row space 는 $\mathbb{R}^3$ 안의 평면이고 rank 는 2 이다. Column space 는 $\mathbb{R}^2$ 전체이고, null space 는 아래 $\mathbf{n}$ 의 상수배 전체인 직선이다.
@@ -172,10 +178,10 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \mathbf{n} = \begin{bmatrix} -1 \\ -1 \\ 1 \end{bmatrix}, \quad
 \mathbf{r}_1^\top \mathbf{n} = -1 + 0 + 1 = 0, \quad
 \mathbf{r}_2^\top \mathbf{n} = 0 - 1 + 1 = 0
-\hspace{19em} (6)
+\hspace{19em} (7)
 ```
 
-식 (6) 에서 $\mathbf{n}$ 은 두 행과 모두 직교한다. 차원은 row space 가 2, null space 가 1 로 더하면 $n = 3$ 이고, left null space 는 $m - r = 0$ 차원이어서 zero vector 만 있다.
+식 (7) 에서 $\mathbf{n}$ 은 두 행과 모두 직교한다. 차원은 row space 가 2, null space 가 1 로 더하면 $n = 3$ 이고, left null space 는 $m - r = 0$ 차원이어서 zero vector 만 있다.
 
 입력 $\mathbf{x} = [3, 0, 0]^\top$ 을 두 성분으로 나누면 아래이다.
 
@@ -187,10 +193,10 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \mathbf{A}\mathbf{x}_{\mathrm{row}} = \begin{bmatrix} 2 + 1 \\ -1 + 1 \end{bmatrix} = \begin{bmatrix} 3 \\ 0 \end{bmatrix}, \qquad
 \mathbf{A}\mathbf{x}_{\mathrm{null}} = \begin{bmatrix} 1 - 1 \\ 1 - 1 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}
 \end{gathered}
-\hspace{19em} (7)
+\hspace{19em} (8)
 ```
 
-Row space 성분 $[2, -1, 1]^\top$ 은 식 (7) 첫 줄처럼 두 행의 일차결합이고, $\mathbf{n}$ 과의 내적이 $2 \cdot (-1) + (-1) \cdot (-1) + 1 \cdot 1 = 0$ 이다. $\mathbf{x}$ 와 row space 성분에 $\mathbf{A}$ 를 곱한 결과는 같은 $[3, 0]^\top$ 이고, null space 성분에 곱한 결과는 zero vector 이다.
+Row space 성분 $[2, -1, 1]^\top$ 은 식 (8) 첫 줄처럼 두 행의 일차결합이고, $\mathbf{n}$ 과의 내적이 $2 \cdot (-1) + (-1) \cdot (-1) + 1 \cdot 1 = 0$ 이다. $\mathbf{x}$ 와 row space 성분에 $\mathbf{A}$ 를 곱한 결과는 같은 $[3, 0]^\top$ 이고, null space 성분에 곱한 결과는 zero vector 이다.
 
 ## 6. Application
 
@@ -198,17 +204,17 @@ Row space 는 해가 무수히 많은 선형방정식에서 하나를 고르거�
 
 ### 6.1 Minimum-Norm Solution
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 같은 row space 성분에 서로 다른 null space 성분을 더한 것이다. 식 (4) 의 두 성분이 직교하므로 해의 norm 의 제곱은 두 성분의 norm 의 제곱을 더한 값이고, null space 성분이 zero vector 인 해의 norm 이 가장 작다. Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b}$ 가 이 해이다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 같은 row space 성분에 서로 다른 null space 성분을 더한 것이다. 식 (5) 의 두 성분이 직교하므로 해의 norm 의 제곱은 두 성분의 norm 의 제곱을 더한 값이고, null space 성분이 zero vector 인 해의 norm 이 가장 작다. Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b}$ 가 이 해이다.
 
-식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b} = [3, 0]^\top$ 에서 $\mathbf{A}^{+}\mathbf{b} = [2, -1, 1]^\top$ 이며, 식 (7) 의 row space 성분과 같다. 선형 회귀에서 feature 가 collinear 하면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 자료 행렬의 row space 에 있는 weight 를 고른다.
+식 (6) 의 $\mathbf{A}$ 와 $\mathbf{b} = [3, 0]^\top$ 에서 $\mathbf{A}^{+}\mathbf{b} = [2, -1, 1]^\top$ 이며, 식 (8) 의 row space 성분과 같다. 선형 회귀에서 feature 가 collinear 하면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 자료 행렬의 row space 에 있는 weight 를 고른다.
 
 ### 6.2 Right Singular Vectors
 
-특이값 분해에서 0 이 아닌 특이값에 대응하는 우특이벡터 $r$ 개는 row space 의 정규직교 기저이고, 특이값 0 에 대응하는 나머지 $n - r$ 개는 null space 의 정규직교 기저이다. 식 (5) 의 $\mathbf{A}$ 는 특이값이 $\sigma_1 = \sqrt{3} \approx 1.7321$, $\sigma_2 = 1$ 이다. $\mathbf{v}_1 \propto [1, 1, 2]^\top = \mathbf{r}_1 + \mathbf{r}_2$ 와 $\mathbf{v}_2 \propto [-1, 1, 0]^\top = \mathbf{r}_2 - \mathbf{r}_1$ 이 row space 를 생성한다. 셋째 우특이벡터 $\mathbf{v}_3 \propto [-1, -1, 1]^\top$ 은 식 (6) 의 $\mathbf{n}$ 방향이다.
+특이값 분해에서 0 이 아닌 특이값에 대응하는 우특이벡터 $r$ 개는 row space 의 정규직교 기저이고, 특이값 0 에 대응하는 나머지 $n - r$ 개는 null space 의 정규직교 기저이다. 식 (6) 의 $\mathbf{A}$ 는 특이값이 $\sigma_1 = \sqrt{3} \approx 1.7321$, $\sigma_2 = 1$ 이다. $\mathbf{v}_1 \propto [1, 1, 2]^\top = \mathbf{r}_1 + \mathbf{r}_2$ 와 $\mathbf{v}_2 \propto [-1, 1, 0]^\top = \mathbf{r}_2 - \mathbf{r}_1$ 이 row space 를 생성한다. 셋째 우특이벡터 $\mathbf{v}_3 \propto [-1, -1, 1]^\top$ 은 식 (7) 의 $\mathbf{n}$ 방향이다.
 
 ### 6.3 Breaking Conditions
 
-부동소수점 계산에서는 특이값이 정확히 0 이 되지 않으므로, row space 와 null space 의 경계를 문턱값보다 작은 특이값으로 정한다. 문턱값을 크게 잡으면 출력에 작게나마 쓰이는 방향이 null space 로 넘어가고, 작게 잡으면 측정 noise 때문에 null space 에 zero vector 만 남는다. 축마다 단위가 다른 입력은 단위를 바꾸면 내적이 바뀌어 식 (4) 의 분해도 달라지므로, scale 을 맞춘 뒤에 나눈다.
+부동소수점 계산에서는 특이값이 정확히 0 이 되지 않으므로, row space 와 null space 의 경계를 문턱값보다 작은 특이값으로 정한다. 문턱값을 크게 잡으면 출력에 작게나마 쓰이는 방향이 null space 로 넘어가고, 작게 잡으면 측정 noise 때문에 null space 에 zero vector 만 남는다. 축마다 단위가 다른 입력은 단위를 바꾸면 내적이 바뀌어 식 (5) 의 분해도 달라지므로, scale 을 맞춘 뒤에 나눈다.
 
 ---
 
@@ -242,14 +248,14 @@ $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 는 row space 의 vec
 &= \mathbf{y}^\top \mathbf{0} \\
 &= 0
 \end{aligned}
-\hspace{19em} (8)
+\hspace{19em} (9)
 ```
 
 - 첫째 등호: 전치의 성질 $(\mathbf{A}^\top\mathbf{y})^\top = \mathbf{y}^\top\mathbf{A}$ 이다.
 - 둘째 등호: $\mathbf{x}$ 가 null space 에 속하므로 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 이다.
 - 셋째 등호: zero vector 와의 내적은 0 이다.
 
-식 (4) 의 분해는 하나뿐이다. 두 분해의 차이는 두 부분공간에 함께 속하므로 식 (8) 에 따라 자기 자신과의 내적이 0 이고, 따라서 zero vector 이다.
+식 (5) 의 분해는 하나뿐이다. 두 분해의 차이는 두 부분공간에 함께 속하므로 식 (9) 에 따라 자기 자신과의 내적이 0 이고, 따라서 zero vector 이다.
 
 ## Appendix C. Column Vector Convention
 
