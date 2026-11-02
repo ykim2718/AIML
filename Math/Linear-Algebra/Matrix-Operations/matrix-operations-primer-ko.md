@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 4 | Created: 2026-10-26 | Updated: 2026-11-02 21:23 UTC
+Rev. 5 | Created: 2026-10-26 | Updated: 2026-11-02 21:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -373,7 +373,7 @@ p(\mathbf{x}) = \frac{1}{\sqrt{(2\pi)^n \det(\boldsymbol{\Sigma})}} \exp\!\left(
 - **denominator layout**: Scalar 를 열 vector 로 미분한 결과를 열 vector 로 적는 배치.
 - **gradient**: Scalar 함수를 vector 의 각 원소로 편미분한 값을 모은 vector.
 - **numerator layout**: Scalar 를 열 vector 로 미분한 결과를 행 vector 로 적는 배치.
-- **pseudo-inverse**: 정사각이 아니거나 특이한 행렬에도 정의되며, 최소제곱 해를 주는 역행렬의 일반화.
+- **pseudo-inverse**: 역행렬이 없는 $m \times n$ 행렬에도 정의되는 역행렬의 일반화. 정식 명칭은 Moore–Penrose pseudo-inverse 이다. 식이 미지수보다 많으면 $(\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고 최소제곱 해를 주며, 미지수가 식보다 많으면 $\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고 해 가운데 norm 이 가장 작은 해를 준다.
 - **regularization**: 계수의 크기에 벌점을 더해 $\mathbf{X}^\top\mathbf{X}$ 가 특이에 가까워도 해가 안정되게 하는 방법.
 - **고윳값 분해**: 대칭 행렬을 $\mathbf{Q}\boldsymbol{\Lambda}\mathbf{Q}^\top$ 로 나타내는 분해. $\mathbf{Q}$ 의 열은 서로 직교하는 단위 vector 이고 $\boldsymbol{\Lambda}$ 는 고윳값을 대각에 둔 행렬이다.
 - **양의 정부호**: 영 vector 가 아닌 모든 $\mathbf{x}$ 에서 $\mathbf{x}^\top\mathbf{S}\mathbf{x} \gt 0$ 인 대칭 행렬의 성질. 고윳값이 모두 양수인 것과 같다.

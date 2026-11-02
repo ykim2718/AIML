@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 0 | Created: 2026-11-02 | Updated: 2026-11-02 21:30 UTC
+Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 21:30 UTC
 
 ## 1. Purpose
 
@@ -101,7 +101,7 @@ Table 2 로 해의 개수를 정한 뒤 아래 풀이를 쓴다.
 - **역행렬**: 해가 하나이고 $m = n$ 일 때 $\mathbf{A}^{-1}\mathbf{b}$ 로 구한다. $\det(\mathbf{A})$ 가 0 에 가까우면 역행렬의 원소가 매우 커져 결과를 믿을 수 없다. 자세한 내용은 [Matrix Operations Primer](../Matrix-Operations/matrix-operations-primer-ko.md) 에 있다.
 - **최소제곱 해**: 해가 없을 때 잔차 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 를 구한다. 측정값 여러 개로 직선 하나를 맞추는 선형 회귀가 이 경우이다. 잔차는 $\mathbf{b}$ 의 left null space 성분이며, [Left Null Space Primer](../Left-Null-Space/left-null-space-primer-ko.md) 에 있다.
 - **최소 노름 해**: 해가 무수히 많을 때 해 가운데 norm 이 가장 작은 하나를 고른다. Sample 수보다 feature 수가 많은 선형 회귀가 이 경우이다. [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다.
-- **pseudo-inverse**: 위 세 풀이를 $\mathbf{A}^{+}\mathbf{b}$ 하나로 적는다. Rank 가 $m$ 과 $n$ 보다 모두 작아 Table 1 의 식을 쓸 수 없으면 특이값 분해로 $\mathbf{A}^{+}$ 를 구한다. [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
+- **pseudo-inverse**: Pseudo-inverse $\mathbf{A}^{+}$ 는 정식 명칭이 Moore–Penrose pseudo-inverse 이며, 역행렬이 없는 $m \times n$ 행렬에도 정의되는 역행렬의 일반화이다. 과결정 시스템에서는 $\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고 $\mathbf{A}^{+}\mathbf{b}$ 가 최소제곱 해이다. 부정 방정식에서는 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이다. 정방 시스템에서 $\det(\mathbf{A}) \ne 0$ 이면 두 식이 모두 $\mathbf{A}^{-1}$ 과 같아, 세 풀이가 $\mathbf{A}^{+}\mathbf{b}$ 하나로 적힌다. Rank 가 $m$ 과 $n$ 보다 모두 작아 Table 1 의 식을 쓸 수 없으면 특이값 분해로 $\mathbf{A}^{+}$ 를 구한다. [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 해의 개수를 첨가 행렬로 세는 숫자 예시는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 의 Appendix C 에 있다.
 
