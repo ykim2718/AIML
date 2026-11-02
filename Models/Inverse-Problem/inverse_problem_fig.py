@@ -10,7 +10,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.21.3.2026.11.2"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.21.4.2026.11.2"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -22,6 +22,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.colors import TABLEAU_COLORS
 from matplotlib.patches import FancyArrowPatch
+from mpl_toolkits.mplot3d import proj3d
 from scipy.linalg import null_space
 from scipy.optimize import minimize
 from scipy.stats import chi2
@@ -843,9 +844,6 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
     ax.scatter(*x_off, s=70, color=COLORS[4], depthshade=False, label=r'$x_c$: candidate solved in the input space, not a row of X')
     ax.scatter(*foot, s=40, marker='x', color=COLORS[4], depthshade=False)
     ax.plot(*np.array([x_off, foot]).T, color=COLORS[4], linewidth=2.2)
-    ax.text(*(x_off + np.array([-0.4, 0.0, 0.35])), r'$x_c$ (candidate)' '\n' r'$e = x_c - P\,t_c$' '\n' r'SPE = $\|e\|^2$', color=COLORS[4],
-            fontsize=text_size)
-    ax.text(*(foot + np.array([-2.6, -0.4, -2.0])), r'$P\,t_c$' '\n' r'(projection of $x_c$)', color=COLORS[4], fontsize=text_size)
     for name, point in (('A', point_a), ('B', point_b)):
         ax.text(*(point + np.array([0.15, 0.15, 0.15])), name, color=COLORS[3], fontsize=text_size)
     ax.text(*(loadings @ np.array([3.0, -3.4])), 'model plane', color=COLORS[0],
@@ -857,6 +855,17 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
     ax.set_zticks([])
     ax.view_init(elev=30, azim=-62)
     ax.set_box_aspect((1.3, 1.0, 0.8))
+
+    def label_at(point: np.ndarray, text: str, offset: tuple, ha: str, va: str) -> None:
+        # place a label a fixed number of points away from where a 3D point is drawn
+        x2, y2, _ = proj3d.proj_transform(*point, ax.get_proj())
+        ax.annotate(text, (x2, y2), xytext=offset, textcoords='offset points', ha=ha, va=va,
+                    color=COLORS[4], fontsize=text_size,
+                    bbox=dict(boxstyle='round,pad=0.15', facecolor='white', alpha=0.8, edgecolor='none'))
+
+    label_at(x_off, r'$x_c$ (candidate)', (0, 10), 'center', 'bottom')
+    label_at(foot, r'$P\,t_c$ (projection of $x_c$)', (0, -12), 'center', 'top')
+    label_at((x_off + foot) / 2, r'$e = x_c - P\,t_c$' '\n' r'SPE = $\|e\|^2$', (-30, 0), 'right', 'center')
     ax.legend(fontsize=font_size(1.15), loc='upper center', bbox_to_anchor=(0.5, 0.06), ncol=2,
               frameon=False)
     fig.text(0.415, 0.565, 'x = P t', fontsize=font_size(1.6), ha='center', va='bottom')
