@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 19 | Created: 2026-11-01 | Updated: 2026-11-02 00:17 UTC
+Rev. 20 | Created: 2026-11-01 | Updated: 2026-11-02 00:18 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -121,22 +121,22 @@ Left null space 는 [Left Null Space Primer](../Left-Null-Space/left-null-space-
 
 ### 4.3 Orthogonality to the Null Space
 
-Row space 와 null space 는 직교한다.
-
-```math
-\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A}) \hspace{19em} (2) \ \text{🌳}
-```
-
 $\mathbf{A}\mathbf{x}$ 의 $i$ 번째 원소는 $i$ 번째 행과 $\mathbf{x}$ 의 내적이다. 따라서 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 모든 행과 직교한다는 뜻이다.
 
 ```math
 \mathbf{A}\mathbf{x} = \begin{bmatrix} \mathbf{r}_1^\top \mathbf{x} \\ \vdots \\ \mathbf{r}_m^\top \mathbf{x} \end{bmatrix} = \mathbf{0}
 \quad \Longleftrightarrow \quad
 \mathbf{r}_i^\top \mathbf{x} = 0 \ \ (i = 1, \dots, m)
-\hspace{19em} (3)
+\hspace{19em} (2)
 ```
 
-$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이것이 식 (2) 이며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+Row space 와 null space 는 직교한다.
+
+```math
+\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A}) \hspace{19em} (3) \ \text{🌳}
+```
+
+$\mathbf{x}$ 가 행 하나하나와 직교하면 행들의 일차결합과도 직교하므로, null space 의 모든 vector 는 row space 의 모든 vector 와 직교한다. 이것이 식 (3) 이며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. Null space 의 정의와 해의 개수는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
 
 ### 4.4 Dimension and Rank
 
