@@ -10,7 +10,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.21.2.2026.11.2"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.21.3.2026.11.2"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -813,7 +813,7 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
     ax2.scatter(*t_off, s=60, marker='x', color=COLORS[4], zorder=5)
     ax2.annotate('t*', t_star, textcoords='offset points', xytext=(10, -22), fontsize=text_size,
                  color=COLORS[1])
-    ax2.annotate('t_c', t_off, textcoords='offset points', xytext=(-10, 10), fontsize=text_size,
+    ax2.annotate(r'$t_c$', t_off, textcoords='offset points', xytext=(-10, 10), fontsize=text_size,
                  color=COLORS[4])
     for name, point in zip(('A', 'B'), seg_t):
         ax2.annotate(name, point, textcoords='offset points', xytext=(6, 6), fontsize=text_size,
@@ -840,12 +840,12 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
     ax.plot(*np.array([point_a, point_b]).T, color=COLORS[3], linewidth=4.0, label='segment A-B')
     ax.scatter(*x_star, s=260, marker='*', color=COLORS[1], depthshade=False,
                label='x* = P t* (SPE = 0)')
-    ax.scatter(*x_off, s=70, color=COLORS[4], depthshade=False, label='x_c: candidate solved in the input space, not a row of X')
+    ax.scatter(*x_off, s=70, color=COLORS[4], depthshade=False, label=r'$x_c$: candidate solved in the input space, not a row of X')
     ax.scatter(*foot, s=40, marker='x', color=COLORS[4], depthshade=False)
     ax.plot(*np.array([x_off, foot]).T, color=COLORS[4], linewidth=2.2)
-    ax.text(*(x_off + np.array([-0.4, 0.0, 0.35])), 'x_c (candidate)\ne = x_c - P t_c\nSPE = ||e||^2', color=COLORS[4],
+    ax.text(*(x_off + np.array([-0.4, 0.0, 0.35])), r'$x_c$ (candidate)' '\n' r'$e = x_c - P\,t_c$' '\n' r'SPE = $\|e\|^2$', color=COLORS[4],
             fontsize=text_size)
-    ax.text(*(foot + np.array([-2.6, -0.4, -2.0])), 'P t_c\n(projection of x_c)', color=COLORS[4], fontsize=text_size)
+    ax.text(*(foot + np.array([-2.6, -0.4, -2.0])), r'$P\,t_c$' '\n' r'(projection of $x_c$)', color=COLORS[4], fontsize=text_size)
     for name, point in (('A', point_a), ('B', point_b)):
         ax.text(*(point + np.array([0.15, 0.15, 0.15])), name, color=COLORS[3], fontsize=text_size)
     ax.text(*(loadings @ np.array([3.0, -3.4])), 'model plane', color=COLORS[0],
