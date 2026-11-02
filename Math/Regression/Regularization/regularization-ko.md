@@ -1,5 +1,5 @@
 # Regularization
-Rev. 6 | Created: 2026-09-12 | Updated: 2026-11-02 21:46 UTC
+Rev. 7 | Created: 2026-09-12 | Updated: 2026-11-02 23:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -44,7 +44,7 @@ Section 3 의 두 문제를 해결하는 대표적인 방법은 비용함수 (lo
 
 ### 4.1 Ridge Regression
 
-Ridge 는 기존 잔차 제곱합 ($RSS$) 에 계수 제곱합 (L2 norm) 을 penalty 로 추가한다.
+Ridge 는 기존 잔차 제곱합 ($RSS$) 에 계수 제곱합 (L2 norm 의 제곱) 을 penalty 로 추가한다.
 
 ```math
 \mathrm{Loss}_{\mathrm{Ridge}} = \|y - X\beta\|_2^2 + \lambda \|\beta\|_2^2 = (y - X\beta)^\top (y - X\beta) + \lambda \beta^\top \beta
