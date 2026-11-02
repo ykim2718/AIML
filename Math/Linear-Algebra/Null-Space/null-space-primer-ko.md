@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 30 | Created: 2026-10-31 | Updated: 2026-11-02 21:12 UTC
+Rev. 31 | Created: 2026-10-31 | Updated: 2026-11-02 21:19 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -190,7 +190,7 @@ Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주
 
 Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (5) 의 $\mathbf{A}$ 의 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (6) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
 
-Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + c\,\mathbf{n}$ 에서 $c = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다.
+Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + c\,\mathbf{n}$ 에서 $c = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 부동소수점 계산에서는 특이값이 정확히 0 이 되지 않으므로, 문턱값보다 작은 특이값을 0 으로 보고 rank 와 nullity 를 정한다. 문턱값을 크게 잡으면 거의 collinear 한 센서까지 null space 에 들어가고, 작게 잡으면 측정 noise 때문에 nullity 가 0 으로 나온다.
 
