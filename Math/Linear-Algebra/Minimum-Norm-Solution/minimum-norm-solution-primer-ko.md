@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-02 21:12 UTC
+Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-02 21:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -146,7 +146,7 @@ $\mathbf{A}$ 의 row space 는 $[1, 1, 1]^\top$ 의 상수배 전체인 직선�
 
 ### 6.1 Pseudo-Inverse
 
-Pseudo-inverse $\mathbf{A}^{+}$ 로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이고, full row rank 이면 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (3) 에서 $\mathbf{A}^{+} = [1/3, 1/3, 1/3]^\top$ 이어서 $\mathbf{A}^{+}\mathbf{b} = [1, 1, 1]^\top$ 로 식 (5) 와 같다. 선형 회귀에서 sample 수보다 feature 수가 많으면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 norm 이 가장 작은 weight 를 고른다.
+Pseudo-inverse $\mathbf{A}^{+}$ 로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이고, full row rank 이면 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (3) 에서 $\mathbf{A}^{+} = [1/3, 1/3, 1/3]^\top$ 이어서 $\mathbf{A}^{+}\mathbf{b} = [1, 1, 1]^\top$ 로 식 (5) 와 같다. 선형 회귀에서 sample 수보다 feature 수가 많으면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 norm 이 가장 작은 weight 를 고른다. 식이 미지수보다 많은 경우의 pseudo-inverse 와 숫자 예시는 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ### 6.2 Breaking Conditions
 
