@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 50 | Created: 2026-10-25 | Updated: 2026-11-02 10:38 UTC
+Rev. 51 | Created: 2026-10-25 | Updated: 2026-11-02 10:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -249,7 +249,7 @@ $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mat
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe).
+$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. Hotelling $T^{2}$ measures, in the score space, how far $\mathbf{t}$ lies from the center (the origin) of the scores of the historical data, with each score divided by its variance. Each row of the historical data is also turned into a score and becomes a row of the score matrix $\mathbf{T}$, so the two are compared in the same score space. The $T$ of Hotelling $T^{2}$ is the name of the statistic and differs from the score matrix $\mathbf{T}$. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe).
 
 How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 

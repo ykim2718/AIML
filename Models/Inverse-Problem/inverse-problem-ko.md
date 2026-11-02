@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 137 | Created: 2026-08-28 | Updated: 2026-11-02 10:38 UTC
+Rev. 138 | Created: 2026-08-28 | Updated: 2026-11-02 10:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -249,7 +249,7 @@ $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고,
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (5)
 ```
 
-$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
+$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. Hotelling $T^{2}$ 는 score 공간에서 $\mathbf{t}$ 가 historical data 의 score 중심 (원점) 에서 얼마나 떨어졌는지를 각 score 의 분산으로 나눠 잰 값이다. historical data 의 각 행도 score 로 바뀌어 score matrix $\mathbf{T}$ 의 행이 되므로, 두 값은 같은 score 공간에서 비교된다. Hotelling $T^{2}$ 의 $T$ 는 통계량의 이름이며 score matrix $\mathbf{T}$ 와는 다르다. 식 (3), (4), (5) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
 
 두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
