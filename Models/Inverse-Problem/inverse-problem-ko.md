@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 136 | Created: 2026-08-28 | Updated: 2026-11-02 04:20 UTC
+Rev. 137 | Created: 2026-08-28 | Updated: 2026-11-02 10:38 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -866,7 +866,7 @@ SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 F
 Fig 10. Row space and column space of the loading matrix P, the T^2 limit and SPE
 
 - (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다.
-- (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 $\mathbf{x}$ 의 수선 길이 제곱이 SPE 이다.
+- (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 $`\mathbf{x}_{c}`$ 의 수선 길이 제곱이 SPE 이다.
 
 Fig 10 에서 해를 구하는 방법은 아래의 3 가지이다.
 
@@ -878,4 +878,4 @@ Fig 10 에서 해를 구하는 방법은 아래의 3 가지이다.
 
 $\mathbf{P}$ 의 row space 는 $\mathbb{R}^{A}$ 의 부분공간으로 score 공간, 곧 latent space 이며, $\mathbf{P}$ 의 열이 선형독립이면 $\mathbb{R}^{A}$ 전체가 된다. 그래서 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 는 row space 의 점 $\mathbf{t}$ 를 column space, 곧 model plane 의 점으로 옮긴다. 이 평면 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 $\mathbf{x}$ 는 $x_1$, $x_2$, $x_3$ 의 값 한 set, 곧 $\mathbf{x} = (x_1, x_2, x_3)$ 이다. Model-agnostic numerical optimization 방법은 score 를 거치지 않고 $x_1$, $x_2$, $x_3$ 세 값을 바꿔 가며 예측이 목표 $\mathbf{y}^{\ast}$ 에 맞는 set 을 찾는다. 반대로 PLS inversion 의 Minimum-norm solution 방법과 Null space 방법은 모두 $t_1$, $t_2$ 두 값을 먼저 찾고 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 $x_1$, $x_2$, $x_3$ 를 계산하므로, 두 방법의 해는 늘 model plane 위에 놓여 SPE 가 0 이다. $`\mathbf{P}\mathbf{t} = t_{1} \mathbf{p}_{1} + t_{2} \mathbf{p}_{2}`$ 는 $\mathbf{P}$ 의 열들의 선형결합이고, 이 선형결합을 모두 모은 집합이 column space, 곧 model plane 이다. 그래서 $\mathbf{t}$ 를 어떤 값으로 두어도 $\mathbf{P}\mathbf{t}$ 는 그 평면 위에 놓인다.
 
-Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $\mathbf{x}$ 가 평면을 벗어나면, 평면에 내린 수선 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 길이 제곱이 식 (14) 의 SPE 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
+Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $`\mathbf{x}_{c}`$ (c 는 candidate) 가 평면을 벗어나면, 평면에 내린 수선 $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ 의 길이 제곱이 식 (14) 의 SPE 이다. $`\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 의 score 이고, $`\mathbf{P}\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 를 평면에 내린 projection 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
