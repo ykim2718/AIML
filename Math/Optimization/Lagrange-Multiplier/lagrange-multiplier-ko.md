@@ -1,5 +1,5 @@
 # Lagrange Multiplier Method
-Rev. 3 | Created: 2026-10-25 | Updated: 2026-11-01 21:36 UTC
+Rev. 4 | Created: 2026-10-25 | Updated: 2026-11-02 21:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -93,27 +93,33 @@ Table 1. Symbols
 식 (2) 를 $x, y, \lambda$ 로 각각 편미분하여 0 으로 둔 연립방정식은 아래이다.
 
 ```math
-\begin{aligned}
-\frac{\partial \mathcal{L}}{\partial x} &= \frac{\partial f}{\partial x} - \lambda \frac{\partial g}{\partial x} = 0 \\
-\frac{\partial \mathcal{L}}{\partial y} &= \frac{\partial f}{\partial y} - \lambda \frac{\partial g}{\partial y} = 0 \\
-\frac{\partial \mathcal{L}}{\partial \lambda} &= -\left( g(x, y) - C \right) = 0
-\end{aligned}
+\frac{\partial \mathcal{L}}{\partial x} = \frac{\partial f}{\partial x} - \lambda \frac{\partial g}{\partial x} = 0
 \hspace{15em} (3)
 ```
 
-식 (3) 의 앞 두 식은 $\nabla f = \lambda \nabla g$ 와 같고, 마지막 식은 $g(x, y) = C$ 와 같다.
-따라서 식 (3) 을 푸는 것과 식 (1) 을 푸는 것은 같은 점을 구한다.
+```math
+\frac{\partial \mathcal{L}}{\partial y} = \frac{\partial f}{\partial y} - \lambda \frac{\partial g}{\partial y} = 0
+\hspace{15em} (4)
+```
+
+```math
+\frac{\partial \mathcal{L}}{\partial \lambda} = -\left( g(x, y) - C \right) = 0
+\hspace{15em} (5)
+```
+
+식 (3) 과 식 (4) 는 $\nabla f = \lambda \nabla g$ 와 같고, 식 (5) 는 $g(x, y) = C$ 와 같다.
+따라서 식 (3), 식 (4), 식 (5) 를 푸는 것과 식 (1) 을 푸는 것은 같은 점을 구한다.
 
 ### 4.3 Multiplier
 
 라그랑주 승수 $\lambda$ 는 제약 조건의 상수 $C$ 를 조금 바꿀 때 최적값 $f^\ast$ 가 변하는 비율이다.
 
 ```math
-\lambda = \frac{d f^\ast}{d C} \hspace{19em} (4)
+\lambda = \frac{d f^\ast}{d C} \hspace{19em} (6)
 ```
 
 $\lambda$ 가 크면 제약 조건을 조금 늦출 때 목적 함수가 많이 좋아지고, $\lambda = 0$ 이면 그 제약 조건이 최적값에 영향을 주지 않는다.
-식 (4) 는 최적점과 $\lambda$ 가 $C$ 에 대해 미분 가능하게 변할 때 성립한다.
+식 (6) 은 최적점과 $\lambda$ 가 $C$ 에 대해 미분 가능하게 변할 때 성립한다.
 
 ## 5. Worked Example
 
@@ -122,18 +128,24 @@ $x + y = 10$ 을 만족하면서 $f(x, y) = xy$ 를 최대화한다. $g(x, y) = 
 식 (1) 로 풀면 $\nabla f = (y, x)$, $\nabla g = (1, 1)$ 이므로 $y = \lambda$, $x = \lambda$ 이다.
 제약 조건 $x + y = 10$ 에 넣으면 $2\lambda = 10$ 이 되어 $\lambda = 5$, $x = y = 5$, $f^\ast = 25$ 이다.
 
-식 (3) 으로 풀면 $\mathcal{L} = xy - \lambda (x + y - 10)$ 이고, 세 편미분은 아래이다.
+식 (3), 식 (4), 식 (5) 로 풀면 $\mathcal{L} = xy - \lambda (x + y - 10)$ 이고, 세 편미분은 아래이다.
 
 ```math
-\begin{aligned}
-\frac{\partial \mathcal{L}}{\partial x} &= y - \lambda = 0 \\
-\frac{\partial \mathcal{L}}{\partial y} &= x - \lambda = 0 \\
-\frac{\partial \mathcal{L}}{\partial \lambda} &= -(x + y - 10) = 0
-\end{aligned}
-\hspace{15em} (5)
+\frac{\partial \mathcal{L}}{\partial x} = y - \lambda = 0
+\hspace{15em} (7)
 ```
 
-식 (5) 의 해도 $x = y = 5$, $\lambda = 5$ 로, 식 (1) 로 구한 값과 같다.
+```math
+\frac{\partial \mathcal{L}}{\partial y} = x - \lambda = 0
+\hspace{15em} (8)
+```
+
+```math
+\frac{\partial \mathcal{L}}{\partial \lambda} = -(x + y - 10) = 0
+\hspace{15em} (9)
+```
+
+식 (7), 식 (8), 식 (9) 의 해도 $x = y = 5$, $\lambda = 5$ 로, 식 (1) 로 구한 값과 같다.
 제약 조건 위의 다른 점과 견준 값은 아래 Table 2 이다.
 
 Table 2. Objective along the constraint x + y = 10
@@ -148,7 +160,7 @@ Table 2. Objective along the constraint x + y = 10
 
 $x = y = 5$ 에서 $f$ 가 가장 크므로 식 (1) 의 후보는 최댓값이다.
 $C$ 를 10 에서 10.1 로 늘리면 $x = y = 5.05$ 이고 $f^\ast = 25.5025$ 이다.
-$f^\ast$ 의 변화율은 $(25.5025 - 25) / 0.1 = 5.025$ 로 $\lambda = 5$ 에 가깝고, 식 (4) 와 맞는다.
+$f^\ast$ 의 변화율은 $(25.5025 - 25) / 0.1 = 5.025$ 로 $\lambda = 5$ 에 가깝고, 식 (6) 과 맞는다.
 
 ## 6. Application
 
@@ -158,7 +170,7 @@ $f^\ast$ 의 변화율은 $(25.5025 - 25) / 0.1 = 5.025$ 로 $\lambda = 5$ 에 �
 
 실무에는 반드시 지켜야 하는 조건이 걸린 최적화 문제가 많다.
 
-- 원가 예산 1000 만 원을 정확히 맞추면서 성능을 최대화한다. 예산이 $g(x, y) = C$ 의 $C$ 이며, 식 (4) 의 $\lambda$ 는 예산 1 원을 늘릴 때 성능이 늘어나는 양이다.
+- 원가 예산 1000 만 원을 정확히 맞추면서 성능을 최대화한다. 예산이 $g(x, y) = C$ 의 $C$ 이며, 식 (6) 의 $\lambda$ 는 예산 1 원을 늘릴 때 성능이 늘어나는 양이다.
 - 센서 작동 범위 $x^2 + y^2 \le 1$ 을 벗어나지 않으면서 model 오차를 최소화한다. 이 제약 조건은 부등식이므로 식 (1) 대신 KKT 조건으로 푼다.
 
 ### 6.2 Support Vector Machine
@@ -206,10 +218,10 @@ SVM (support vector machine) 은 마진 (margin) 을 최대화하며, 데이터�
 &\nabla f \parallel \nabla g && \text{in 2D, two vectors orthogonal to the same nonzero t are parallel} \\
 &\nabla f = \lambda \nabla g && \text{nabla g is nonzero, so f's gradient is a multiple of it}
 \end{aligned}
-\hspace{5em} (6)
+\hspace{5em} (10)
 ```
 
-식 (4) 는 최적점 $(x^\ast(C), y^\ast(C))$ 에서 $f^\ast(C) = f(x^\ast, y^\ast)$ 를 $C$ 로 미분하여 얻는다.
+식 (6) 은 최적점 $(x^\ast(C), y^\ast(C))$ 에서 $f^\ast(C) = f(x^\ast, y^\ast)$ 를 $C$ 로 미분하여 얻는다.
 
 ```math
 \begin{aligned}
@@ -217,5 +229,5 @@ SVM (support vector machine) 은 마진 (margin) 을 최대화하며, 데이터�
 &= \lambda \nabla g \cdot \frac{d (x^\ast, y^\ast)}{d C} && \text{eq. (1)} \\
 &= \lambda \frac{d}{d C} g(x^\ast, y^\ast) = \lambda \frac{d C}{d C} = \lambda && \text{chain rule, constraint holds at the optimum}
 \end{aligned}
-\hspace{5em} (7)
+\hspace{5em} (11)
 ```

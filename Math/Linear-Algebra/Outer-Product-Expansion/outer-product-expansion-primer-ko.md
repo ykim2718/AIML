@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 3 | Created: 2026-11-01 | Updated: 2026-11-02 21:23 UTC
+Rev. 4 | Created: 2026-11-01 | Updated: 2026-11-02 21:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -113,16 +113,18 @@ $2 \times 2$ 행렬 두 개를 둔다.
 외적 형태로는 $\mathbf{A}$ 의 첫 열과 $\mathbf{B}$ 의 첫 행, $\mathbf{A}$ 의 둘째 열과 $\mathbf{B}$ 의 둘째 행을 각각 곱해 더한다.
 
 ```math
-\begin{gathered}
 \mathbf{a}_1 \mathbf{b}_1^\top = \begin{bmatrix} 1 \\ 3 \end{bmatrix} \begin{bmatrix} 5 & 6 \end{bmatrix} = \begin{bmatrix} 5 & 6 \\ 15 & 18 \end{bmatrix},
 \qquad
-\mathbf{a}_2 \mathbf{b}_2^\top = \begin{bmatrix} 2 \\ 4 \end{bmatrix} \begin{bmatrix} 7 & 8 \end{bmatrix} = \begin{bmatrix} 14 & 16 \\ 28 & 32 \end{bmatrix} \\[2ex]
-\mathbf{a}_1 \mathbf{b}_1^\top + \mathbf{a}_2 \mathbf{b}_2^\top = \begin{bmatrix} 5 + 14 & 6 + 16 \\ 15 + 28 & 18 + 32 \end{bmatrix} = \begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix}
-\end{gathered}
+\mathbf{a}_2 \mathbf{b}_2^\top = \begin{bmatrix} 2 \\ 4 \end{bmatrix} \begin{bmatrix} 7 & 8 \end{bmatrix} = \begin{bmatrix} 14 & 16 \\ 28 & 32 \end{bmatrix}
 \hspace{19em} (5)
 ```
 
-식 (4) 와 식 (5) 의 결과가 같으므로 식 (1) 의 두 변이 같다. 식 (5) 의 두 외적은 둘째 행이 첫째 행의 3 배, 2 배여서 각각 계수가 1 이고, 두 외적의 합인 $\mathbf{A}\mathbf{B}$ 는 계수가 2 이다.
+```math
+\mathbf{a}_1 \mathbf{b}_1^\top + \mathbf{a}_2 \mathbf{b}_2^\top = \begin{bmatrix} 5 + 14 & 6 + 16 \\ 15 + 28 & 18 + 32 \end{bmatrix} = \begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix}
+\hspace{19em} (6)
+```
+
+식 (4) 와 식 (6) 의 결과가 같으므로 식 (1) 의 두 변이 같다. 식 (5) 의 두 외적은 둘째 행이 첫째 행의 3 배, 2 배여서 각각 계수가 1 이고, 두 외적의 합인 $\mathbf{A}\mathbf{B}$ 는 계수가 2 이다.
 
 ## 6. Application
 
@@ -133,7 +135,7 @@ $2 \times 2$ 행렬 두 개를 둔다.
 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에 식 (1) 을 쓰면, $\mathbf{U}\boldsymbol{\Sigma}$ 의 $k$ 번째 열 $\sigma_k \mathbf{u}_k$ 와 $\mathbf{V}^\top$ 의 $k$ 번째 행 $\mathbf{v}_k^\top$ 의 외적을 더한 것이 된다.
 
 ```math
-\mathbf{A} = \sum_{k=1}^{r} \sigma_k\, \mathbf{u}_k \mathbf{v}_k^\top \hspace{19em} (6)
+\mathbf{A} = \sum_{k=1}^{r} \sigma_k\, \mathbf{u}_k \mathbf{v}_k^\top \hspace{19em} (7)
 ```
 
 특이값이 0 인 항은 zero 행렬이어서 합에서 빠지므로, 항의 수는 $\mathbf{A}$ 의 계수 $r$ 이다. 큰 특이값의 항 몇 개만 남기면 계수가 낮은 근사 행렬이 된다. 식 (3) 의 곱 $\mathbf{A}\mathbf{B}$ 의 특이값은 $72.07$ 과 $0.0555$ 이고, 첫 항 하나만 남긴 근사 행렬과 $\mathbf{A}\mathbf{B}$ 의 차이는 Frobenius norm 으로 둘째 특이값과 같은 $0.0555$ 이다.
@@ -143,10 +145,10 @@ $2 \times 2$ 행렬 두 개를 둔다.
 자료 행렬 $\mathbf{X}$ 의 Gram 행렬 $\mathbf{X}^\top\mathbf{X}$ 는 $\mathbf{X}^\top$ 의 열과 $\mathbf{X}$ 의 행이 모두 sample 이므로, 식 (1) 에 따라 sample 마다의 외적을 더한 것이다.
 
 ```math
-\mathbf{X}^\top\mathbf{X} = \sum_{i=1}^{N} \mathbf{x}_i \mathbf{x}_i^\top \hspace{19em} (7)
+\mathbf{X}^\top\mathbf{X} = \sum_{i=1}^{N} \mathbf{x}_i \mathbf{x}_i^\top \hspace{19em} (8)
 ```
 
-식 (7) 은 sample 을 하나 받을 때마다 $d \times d$ 행렬 $\mathbf{x}_i \mathbf{x}_i^\top$ 을 더해 두면 되므로, 자료 전체를 memory 에 올리지 않고 $\mathbf{X}^\top\mathbf{X}$ 를 누적할 수 있다. 식 (3) 의 $\mathbf{A}$ 를 sample 두 개의 자료 행렬로 보면 $[1, 2]$ 와 $[3, 4]$ 의 외적 $\begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$ 와 $\begin{bmatrix} 9 & 12 \\ 12 & 16 \end{bmatrix}$ 를 더해 $\mathbf{A}^\top\mathbf{A} = \begin{bmatrix} 10 & 14 \\ 14 & 20 \end{bmatrix}$ 이 나온다. 선형 회귀의 정규방정식과 공분산 행렬이 이 누적으로 계산된다.
+식 (8) 은 sample 을 하나 받을 때마다 $d \times d$ 행렬 $\mathbf{x}_i \mathbf{x}_i^\top$ 을 더해 두면 되므로, 자료 전체를 memory 에 올리지 않고 $\mathbf{X}^\top\mathbf{X}$ 를 누적할 수 있다. 식 (3) 의 $\mathbf{A}$ 를 sample 두 개의 자료 행렬로 보면 $[1, 2]$ 와 $[3, 4]$ 의 외적 $\begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$ 와 $\begin{bmatrix} 9 & 12 \\ 12 & 16 \end{bmatrix}$ 를 더해 $\mathbf{A}^\top\mathbf{A} = \begin{bmatrix} 10 & 14 \\ 14 & 20 \end{bmatrix}$ 이 나온다. 선형 회귀의 정규방정식과 공분산 행렬이 이 누적으로 계산된다.
 
 ### 6.3 Breaking Conditions
 
@@ -176,7 +178,7 @@ $\mathbf{A}$ 의 열의 수와 $\mathbf{B}$ 의 행의 수가 다르면 $\mathbf
 &= \sum_{k=1}^{n} a_{ik} b_{kj} \\
 &= (\mathbf{A}\mathbf{B})_{ij}
 \end{aligned}
-\hspace{19em} (8)
+\hspace{19em} (9)
 ```
 
 - 첫째 등호: 행렬의 합은 원소마다의 합이다.
