@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 5 | Created: 2026-10-25 | Updated: 2026-11-01 21:30 UTC
+Rev. 6 | Created: 2026-10-25 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -208,3 +208,7 @@ t_i = \mathbf{x}_i^\top \mathbf{w}, \quad \lVert \mathbf{w} \rVert = 1 \hspace{1
 - 넷째 등호: 식 (2) 를 다시 쓴다.
 
 식 (10) 의 첫 변과 마지막 변에서 같은 두 제곱을 지우면 내적이 두 길이의 곱에 $\cos\theta$ 를 곱한 값과 같다. 이 내적을 원소로 풀면 식 (1) 의 가운데 변인 원소별 곱의 합이 되므로, 식 (1) 의 세 변이 모두 같다.
+
+```math
+\mathbf{x}_i^\top \mathbf{w} = \sum_{j=1}^{p} x_{ij} w_j = \lVert \mathbf{x}_i \rVert \lVert \mathbf{w} \rVert \cos\theta \hspace{19em} (1)
+```

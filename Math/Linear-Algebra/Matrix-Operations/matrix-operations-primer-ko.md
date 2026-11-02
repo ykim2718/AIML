@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 3 | Created: 2026-10-26 | Updated: 2026-11-02 21:21 UTC
+Rev. 4 | Created: 2026-10-26 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -399,7 +399,11 @@ p(\mathbf{x}) = \frac{1}{\sqrt{(2\pi)^n \det(\boldsymbol{\Sigma})}} \exp\!\left(
 - 둘째 등호: 곱의 미분이다.
 - 셋째 등호: 식 (5) 와 전치의 정의이다.
 
-식 (22) 의 $k$ 번째 원소를 $k = 1, \dots, n$ 에 대해 모으면 식 (12) 가 된다.
+식 (22) 의 $k$ 번째 원소를 $k = 1, \dots, n$ 에 대해 모으면 아래 식 (12) 가 된다.
+
+```math
+\frac{\partial (\mathbf{x}^\top \mathbf{A} \mathbf{x})}{\partial \mathbf{x}} = (\mathbf{A} + \mathbf{A}^\top)\,\mathbf{x} \hspace{19em} (12)
+```
 
 식 (13) 은 제곱오차를 전개한 뒤 식 (11) 과 식 (12) 를 적용하면 나온다.
 
@@ -416,6 +420,12 @@ p(\mathbf{x}) = \frac{1}{\sqrt{(2\pi)^n \det(\boldsymbol{\Sigma})}} \exp\!\left(
 - 첫째 등호: 분배법칙과 식 (7) 로 제곱오차를 전개한다.
 - 둘째 등호: 첫 항은 $\mathbf{X}^\top\mathbf{X}$ 가 대칭이므로 식 (12) 로, 둘째 항은 $\mathbf{a} = \mathbf{X}^\top\mathbf{y}$ 로 둔 식 (11) 로 미분하고, 셋째 항은 $\mathbf{w}$ 와 상관없어 0 이 된다.
 - 셋째 등호: 분배법칙으로 $2\,\mathbf{X}^\top$ 을 묶는다.
+
+따라서 식 (13) 이 성립한다.
+
+```math
+\frac{\partial \lVert \mathbf{X}\mathbf{w} - \mathbf{y} \rVert^2}{\partial \mathbf{w}} = 2\,\mathbf{X}^\top (\mathbf{X}\mathbf{w} - \mathbf{y}) \hspace{19em} (13)
+```
 
 식 (19) 는 고윳값 분해로 좌표를 돌려 1 차원 Gaussian 적분 $n$ 개의 곱으로 만들면 나온다.
 
@@ -434,3 +444,9 @@ p(\mathbf{x}) = \frac{1}{\sqrt{(2\pi)^n \det(\boldsymbol{\Sigma})}} \exp\!\left(
 - 둘째 등호: 지수의 합은 지수 함수의 곱으로 나뉜다.
 - 셋째 등호: 1 차원 Gaussian 적분이며, $\lambda_i \gt 0$ 이어야 한다.
 - 넷째 등호: $\det(\mathbf{S}) = \prod_{i} \lambda_i$ 이다.
+
+따라서 식 (19) 가 성립한다.
+
+```math
+\int_{\mathbb{R}^n} \exp\!\left( -\tfrac{1}{2}\, \mathbf{x}^\top \mathbf{S} \mathbf{x} \right) d\mathbf{x} = \sqrt{\frac{(2\pi)^n}{\det(\mathbf{S})}} \hspace{19em} (19)
+```

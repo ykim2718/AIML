@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 5 | Created: 2026-10-26 | Updated: 2026-11-02 21:21 UTC
+Rev. 6 | Created: 2026-10-26 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -248,6 +248,12 @@ $\boldsymbol{\Sigma}^{+}$ 는 $\boldsymbol{\Sigma}$ 를 전치한 $n \times m$ �
 - 셋째 줄: 첫째 줄에서 $\mathbf{A}^\top\mathbf{A}\mathbf{v}_j = \lambda_j\mathbf{v}_j$ 이고, $\mathbf{V}$ 가 직교이며 $\lambda_i = \sigma_i^2$ 이므로 $\mathbf{u}_i$ 들은 서로 직교하는 단위 vector 이다.
 - 넷째 줄: 둘째 줄을 열마다 모은다. $\sigma_i = 0$ 인 $\mathbf{u}_i$ 는 직교 보완으로 채운다.
 - 다섯째 줄: 넷째 줄의 오른쪽에 $\mathbf{V}^\top$ 을 곱하고 $\mathbf{V}\mathbf{V}^\top = \mathbf{I}$ 를 쓴다.
+
+따라서 식 (1) 이 성립한다.
+
+```math
+\mathbf{A} = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^\top \hspace{19em} (1)
+```
 
 식 (9) 의 가운데 식은 식 (1) 을 $\mathbf{X}^\top\mathbf{X}$ 에 넣고 $\mathbf{U}^\top\mathbf{U} = \mathbf{I}$ 를 쓰면 $\mathbf{X}^\top\mathbf{X} = \mathbf{V}\boldsymbol{\Sigma}^\top\mathbf{U}^\top\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top = \mathbf{V}\boldsymbol{\Sigma}^\top\boldsymbol{\Sigma}\mathbf{V}^\top$ 로 나온다.
 

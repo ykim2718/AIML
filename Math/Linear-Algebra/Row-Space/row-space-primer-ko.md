@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 29 | Created: 2026-11-01 | Updated: 2026-11-02 21:19 UTC
+Rev. 30 | Created: 2026-11-01 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -256,6 +256,12 @@ $\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A})$ 는 row space 의 vec
 - 첫째 등호: 전치의 성질 $(\mathbf{A}^\top\mathbf{y})^\top = \mathbf{y}^\top\mathbf{A}$ 이다.
 - 둘째 등호: $\mathbf{x}$ 가 null space 에 속하므로 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 이다.
 - 셋째 등호: zero vector 와의 내적은 0 이다.
+
+따라서 식 (3) 이 성립한다.
+
+```math
+\mathrm{Row}(\mathbf{A}) \perp \mathrm{Null}(\mathbf{A}) \hspace{19em} (3) \ \text{🌳}
+```
 
 식 (5) 의 분해는 하나뿐이다. 두 분해의 차이는 두 부분공간에 함께 속하므로 식 (9) 에 따라 자기 자신과의 내적이 0 이고, 따라서 zero vector 이다.
 

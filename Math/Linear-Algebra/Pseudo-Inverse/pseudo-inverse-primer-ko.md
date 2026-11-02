@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 21:21 UTC
+Rev. 2 | Created: 2026-11-02 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -210,6 +210,14 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 - 둘째 줄: 괄호를 풀고 $\mathbf{A}^\top\mathbf{A}\hat{\mathbf{x}}$ 를 우변으로 옮긴 정규방정식이다.
 - 셋째 줄: $r = n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 있으므로 양변의 왼쪽에 곱한다.
 
+따라서 식 (2) 가 성립한다.
+
+```math
+\hat{\mathbf{x}} = \mathbf{A}^{+}\mathbf{b} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top\mathbf{b}, \qquad
+\mathbf{A}^{+}\mathbf{A} = \mathbf{I}
+\hspace{19em} (2)
+```
+
 식 (3) 은 최소 노름 해가 row space 에 있어 $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 로 적힌다는 조건에서 나온다.
 
 ```math
@@ -224,3 +232,11 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 - 첫째 줄: $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 넣는다. $\mathbf{y}$ 는 $m \times 1$ vector 이다.
 - 둘째 줄: $r = m$ 이면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 있으므로 양변의 왼쪽에 곱한다.
 - 셋째 줄: 둘째 줄의 $\mathbf{y}$ 를 $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 에 넣는다.
+
+따라서 식 (3) 이 성립한다.
+
+```math
+\mathbf{x}^{\ast} = \mathbf{A}^{+}\mathbf{b} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b}, \qquad
+\mathbf{A}\mathbf{A}^{+} = \mathbf{I}
+\hspace{19em} (3)
+```

@@ -1,5 +1,5 @@
 # Left Null Space Primer
-Rev. 2 | Created: 2026-11-01 | Updated: 2026-11-02 21:20 UTC
+Rev. 3 | Created: 2026-11-01 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -187,3 +187,9 @@ $\mathrm{Null}(\mathbf{A}^\top) \perp \mathrm{Col}(\mathbf{A})$ 는 column space
 - 첫째 등호: 전치의 성질 $(\mathbf{A}\mathbf{x})^\top = \mathbf{x}^\top\mathbf{A}^\top$ 이다.
 - 둘째 등호: $\mathbf{y}$ 가 left null space 에 속하므로 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 이다.
 - 셋째 등호: zero vector 와의 내적은 0 이다.
+
+따라서 left null space 와 column space 는 직교한다.
+
+```math
+\mathrm{Null}(\mathbf{A}^\top) \perp \mathrm{Col}(\mathbf{A})
+```

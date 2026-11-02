@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 2 | Created: 2026-11-01 | Updated: 2026-11-01 21:30 UTC
+Rev. 3 | Created: 2026-11-01 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -182,3 +182,9 @@ $\mathbf{A}$ 의 열의 수와 $\mathbf{B}$ 의 행의 수가 다르면 $\mathbf
 - 첫째 등호: 행렬의 합은 원소마다의 합이다.
 - 둘째 등호: 식 (2) 의 외적의 원소이다.
 - 셋째 등호: 행렬 곱의 원소의 정의이다.
+
+따라서 식 (1) 이 성립한다.
+
+```math
+\mathbf{A}\mathbf{B} = \left[ \sum_{k=1}^{n} a_{ik} b_{kj} \right]_{ij} = \sum_{k=1}^{n} \mathbf{a}_k \mathbf{b}_k^\top \hspace{19em} (1)
+```

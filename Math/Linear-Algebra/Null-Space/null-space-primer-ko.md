@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 31 | Created: 2026-10-31 | Updated: 2026-11-02 21:19 UTC
+Rev. 32 | Created: 2026-10-31 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -240,6 +240,12 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - 넷째 등호: 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않으므로 pivot 열의 수가 $\mathbf{A}$ 의 rank 이다.
 
 $\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, 자유 열이 세 번째 열 하나이며, 둘째 등호에서 쓴 해가 식 (6) 의 $\mathbf{n}$ 이다.
+
+따라서 식 (4) 가 성립한다.
+
+```math
+\mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n \hspace{19em} (4)
+```
 
 ## Appendix C. Counting the Solutions of Equation (2)
 

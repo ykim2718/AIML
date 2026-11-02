@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-02 21:17 UTC
+Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-02 21:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -188,5 +188,14 @@ Rank 가 $m$ 보다 작으면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없�
 - 둘째 줄: $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 를 넣는다.
 - 셋째 줄: full row rank 이면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 있으므로 양변의 왼쪽에 곱한다.
 - 넷째 줄: 셋째 줄의 $\mathbf{y}$ 를 $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 에 넣는다.
+
+따라서 식 (1) 이 성립한다.
+
+```math
+\mathbf{x}^{\ast}
+= \mathrm{arg\,min}_{\mathbf{x} \,\mid\, \mathbf{A}\mathbf{x} = \mathbf{b}} \lVert \mathbf{x} \rVert
+= \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b}
+\hspace{19em} (1)
+```
 
 Row space 에 속하는 해가 하나뿐인 것은 식 (2) 에서 나온다. Row space 에 속하는 두 해의 차이는 row space 에도, null space 에도 속하므로 자기 자신과 직교하고, 자기 자신과의 내적이 0 인 vector 는 zero vector 이다.
