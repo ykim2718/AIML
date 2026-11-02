@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 27 | Created: 2026-10-31 | Updated: 2026-11-02 07:25 UTC
+Rev. 28 | Created: 2026-10-31 | Updated: 2026-11-02 07:27 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -35,32 +35,32 @@ Null space 의 차원인 nullity 와 계수 (rank) 를 더하면 입력 공간�
 
 Table 1. Symbols
 
-| Symbol                                    | Meaning                                                                             | Shape                          | Assumption                                                 |
-| :---------------------------------------: | :---------------------------------------------------------------------------------: | :----------------------------: | :--------------------------------------------------------: |
-| $\mathbf{A}$                              | 선형 변환을 나타내는 행렬, 예를 들어 행이 sample 이고 열이 센서인 자료              | $m \times n$                   | 실수 원소                                                  |
-| $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                                   | scalar                         | 양의 정수                                                  |
-| $\mathbf{x}$                              | 입력 vector, 선형방정식의 해                                                        | $n \times 1$                   | 실수 원소                                                  |
-| $\lVert \mathbf{x} \rVert$                | $\mathbf{x}$ 의 norm (Euclidean norm). 정의는 [Appendix A](#appendix-a-terminology) | scalar                         | 0 이상                                                     |
-| $\mathbf{b}$                              | 선형방정식의 우변                                                                   | $m \times 1$                   | 실수 원소                                                  |
-| $\mathbf{0}$                              | zero vector                                                                         | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
-| $\mathrm{Null}(\mathbf{A})$               | $\mathbf{A}$ 의 null space                                                          | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 언제나 포함                                 |
-| $x_j$, $b_j$                              | $\mathbf{x}$ 와 $\mathbf{b}$ 의 $j$ 번째 원소                                       | scalar                         | 실수                                                       |
-| $\mathbf{p}$, $\mathbf{q}$                | null space 에 속하는 임의의 vector 두 개                                            | $n \times 1$                   | $\mathbf{A}\mathbf{p} = \mathbf{A}\mathbf{q} = \mathbf{0}$ |
-| $c$                                       | 임의의 상수                                                                         | scalar                         | 실수                                                       |
-| $\mathbf{x}_0$                            | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 특수해 하나                                  | $n \times 1$                   | $\mathbf{A}\mathbf{x}_0 = \mathbf{b}$                      |
-| $\mathbf{x}_{\mathrm{null}}$              | null space 에 속하는 vector                                                         | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
-| $\mathbf{x}'$                             | $\mathbf{x}_0$ 와 다른 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해                    | $n \times 1$                   | $\mathbf{A}\mathbf{x}' = \mathbf{b}$                       |
-| $[\mathbf{A} \mid \mathbf{b}]$            | $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열로 붙인 첨가 행렬                        | $m \times (n + 1)$             | 실수 원소                                                  |
-| $\mathrm{rank}(\mathbf{A})$               | $\mathbf{A}$ 의 계수                                                                | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
-| $\mathrm{nullity}(\mathbf{A})$            | $\mathrm{Null}(\mathbf{A})$ 의 차원                                                 | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
-| $\mathbf{n}$                              | Worked Example 에서 null space 를 생성하는 vector                                   | $3 \times 1$                   | zero vector 가 아님                                        |
-| $\mathbf{B}$                              | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                                | $3 \times 3$                   | rank 3                                                     |
-| $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                                     | $m \times n$                   | 기본 행 연산으로 얻음                                      |
-| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot 열의 수와 자유 열의 수                                        | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$               |
-| $\mathbf{w}$                              | 선형 회귀의 weight vector                                                           | $n \times 1$                   | 실수 원소                                                  |
-| $\hat{\mathbf{y}}$                        | 선형 회귀의 예측값 vector                                                           | $m \times 1$                   | 실수 원소                                                  |
-| $\sigma_i$                                | $\mathbf{A}$ 의 $i$ 번째 특이값                                                     | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
-| $\mathbf{v}_i$                            | $\mathbf{A}$ 의 $i$ 번째 우특이벡터                                                 | $n \times 1$                   | 단위 vector                                                |
+| Symbol                                    | Meaning                                                                                      | Shape                          | Assumption                                                 |
+| :---------------------------------------: | :------------------------------------------------------------------------------------------: | :----------------------------: | :--------------------------------------------------------: |
+| $\mathbf{A}$                              | 선형 변환을 나타내는 행렬, 예를 들어 행이 sample 이고 열이 센서인 자료                       | $m \times n$                   | 실수 원소                                                  |
+| $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                                            | scalar                         | 양의 정수                                                  |
+| $\mathbf{x}$                              | 입력 vector, 선형방정식의 해                                                                 | $n \times 1$                   | 실수 원소                                                  |
+| $\lVert \mathbf{x} \rVert$                | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert^2 = x_1^2 + \cdots + x_n^2$ | scalar                         | 0 이상                                                     |
+| $\mathbf{b}$                              | 선형방정식의 우변                                                                            | $m \times 1$                   | 실수 원소                                                  |
+| $\mathbf{0}$                              | zero vector                                                                                  | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
+| $\mathrm{Null}(\mathbf{A})$               | $\mathbf{A}$ 의 null space                                                                   | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 언제나 포함                                 |
+| $x_j$, $b_j$                              | $\mathbf{x}$ 와 $\mathbf{b}$ 의 $j$ 번째 원소                                                | scalar                         | 실수                                                       |
+| $\mathbf{p}$, $\mathbf{q}$                | null space 에 속하는 임의의 vector 두 개                                                     | $n \times 1$                   | $\mathbf{A}\mathbf{p} = \mathbf{A}\mathbf{q} = \mathbf{0}$ |
+| $c$                                       | 임의의 상수                                                                                  | scalar                         | 실수                                                       |
+| $\mathbf{x}_0$                            | $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 특수해 하나                                           | $n \times 1$                   | $\mathbf{A}\mathbf{x}_0 = \mathbf{b}$                      |
+| $\mathbf{x}_{\mathrm{null}}$              | null space 에 속하는 vector                                                                  | $n \times 1$                   | $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$        |
+| $\mathbf{x}'$                             | $\mathbf{x}_0$ 와 다른 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해                             | $n \times 1$                   | $\mathbf{A}\mathbf{x}' = \mathbf{b}$                       |
+| $[\mathbf{A} \mid \mathbf{b}]$            | $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열로 붙인 첨가 행렬                                 | $m \times (n + 1)$             | 실수 원소                                                  |
+| $\mathrm{rank}(\mathbf{A})$               | $\mathbf{A}$ 의 계수                                                                         | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$           |
+| $\mathrm{nullity}(\mathbf{A})$            | $\mathrm{Null}(\mathbf{A})$ 의 차원                                                          | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$                 |
+| $\mathbf{n}$                              | Worked Example 에서 null space 를 생성하는 vector                                            | $3 \times 1$                   | zero vector 가 아님                                        |
+| $\mathbf{B}$                              | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                                         | $3 \times 3$                   | rank 3                                                     |
+| $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                                              | $m \times n$                   | 기본 행 연산으로 얻음                                      |
+| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot 열의 수와 자유 열의 수                                                 | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$               |
+| $\mathbf{w}$                              | 선형 회귀의 weight vector                                                                    | $n \times 1$                   | 실수 원소                                                  |
+| $\hat{\mathbf{y}}$                        | 선형 회귀의 예측값 vector                                                                    | $m \times 1$                   | 실수 원소                                                  |
+| $\sigma_i$                                | $\mathbf{A}$ 의 $i$ 번째 특이값                                                              | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
+| $\mathbf{v}_i$                            | $\mathbf{A}$ 의 $i$ 번째 우특이벡터                                                          | $n \times 1$                   | 단위 vector                                                |
 
 특수 기호는 아래처럼 읽는다.
 
