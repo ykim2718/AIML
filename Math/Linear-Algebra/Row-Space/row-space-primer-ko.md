@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 23 | Created: 2026-11-01 | Updated: 2026-11-02 07:22 UTC
+Rev. 24 | Created: 2026-11-01 | Updated: 2026-11-02 07:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -46,6 +46,7 @@ Table 1. Symbols
 | $\mathbf{R}$                 | $\mathbf{A}$ 의 기약 행사다리꼴                                             | $m \times n$                   | 기본 행 연산으로 얻음                                    |
 | $i$, $j$                     | $\mathbf{A}$ 의 행 번호와 열 번호                                           | scalar                         | $i = 1, \dots, m$, $j = 1, \dots, n$                     |
 | $\mathbf{x}$                 | 입력 vector                                                                 | $n \times 1$                   | 실수 원소                                                |
+| $\lVert \mathbf{x} \rVert$   | $\mathbf{x}$ 의 norm (Euclidean norm), $\sqrt{x_1^2 + \cdots + x_n^2}$      | scalar                         | 0 이상                                                   |
 | $\mathbf{y}$                 | $\mathbf{A}^\top$ 에 곱하는 계수 vector                                     | $m \times 1$                   | 실수 원소                                                |
 | $\mathbf{b}$                 | 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 우변                      | $m \times 1$                   | 실수 원소                                                |
 | $\mathbf{0}$                 | zero vector                                                                 | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                            |
@@ -222,6 +223,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 
 - **column space**: 행렬의 열들의 일차결합으로 나타나는 vector 전체.
 - **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체. $\mathbb{R}^m$ 의 부분공간이며 column space 와 직교한다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = \sqrt{x_1^2 + \cdots + x_n^2}$ 로 적는다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 norm 이 가장 작은 해를 주는 역행렬의 일반화.
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체.

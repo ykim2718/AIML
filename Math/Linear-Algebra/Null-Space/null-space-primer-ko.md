@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 25 | Created: 2026-10-31 | Updated: 2026-11-02 07:22 UTC
+Rev. 26 | Created: 2026-10-31 | Updated: 2026-11-02 07:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,6 +40,7 @@ Table 1. Symbols
 | $\mathbf{A}$                              | 선형 변환을 나타내는 행렬, 예를 들어 행이 sample 이고 열이 센서인 자료 | $m \times n$                   | 실수 원소                                                  |
 | $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                      | scalar                         | 양의 정수                                                  |
 | $\mathbf{x}$                              | 입력 vector, 선형방정식의 해                                           | $n \times 1$                   | 실수 원소                                                  |
+| $\lVert \mathbf{x} \rVert$                | $\mathbf{x}$ 의 norm (Euclidean norm), $\sqrt{x_1^2 + \cdots + x_n^2}$ | scalar                         | 0 이상                                                     |
 | $\mathbf{b}$                              | 선형방정식의 우변                                                      | $m \times 1$                   | 실수 원소                                                  |
 | $\mathbf{0}$                              | zero vector                                                            | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                              |
 | $\mathrm{Null}(\mathbf{A})$               | $\mathbf{A}$ 의 null space                                             | $\mathbb{R}^n$ 의 부분공간     | zero vector 를 언제나 포함                                 |
@@ -199,6 +200,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 - **collinearity**: 한 feature 가 다른 feature 들의 일차결합으로 나타나는 것. Null space 에 zero vector 가 아닌 vector 가 생긴다.
 - **column space**: 행렬의 열들의 일차결합으로 나타나는 vector 전체. $\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 여기에 속할 때만 해가 있다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = \sqrt{x_1^2 + \cdots + x_n^2}$ 로 적는다.
 - **nullity**: Null space 의 차원.
 - **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.
