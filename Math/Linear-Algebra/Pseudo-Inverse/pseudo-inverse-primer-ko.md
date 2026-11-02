@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 0 | Created: 2026-11-02 | Updated: 2026-11-02 21:13 UTC
+Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 21:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,6 +27,7 @@ Rev. 0 | Created: 2026-11-02 | Updated: 2026-11-02 21:13 UTC
 ## 2. Summary
 
 Pseudo-inverse $\mathbf{A}^{+}$ 는 정식 명칭이 Moore–Penrose pseudo-inverse 이며, 역행렬이 없는 $m \times n$ 행렬에도 정의되는 역행렬의 일반화이다.
+
 식이 미지수보다 많은 과결정 시스템에서는 $(\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고 $\mathbf{A}^{+}\mathbf{b}$ 가 최소제곱 해이다.
 미지수가 식보다 많은 부정 방정식에서는 $\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이다.
 
