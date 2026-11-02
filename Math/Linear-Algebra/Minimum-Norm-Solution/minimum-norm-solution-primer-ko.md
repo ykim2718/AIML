@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 0 | Created: 2026-11-02 | Updated: 2026-11-02 07:15 UTC
+Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 07:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -59,7 +59,7 @@ Table 1. Symbols
 - $\lVert \mathbf{x} \rVert$: 영어로 "the norm of x", 한국어로 "x 의 노름" 이라 읽는다.
 - $\mathbf{x}^{\ast}$: 영어로 "x star", 한국어로 "엑스 스타" 라 읽는다.
 - $\mathbf{x}^{(1)}$: 영어로 "x superscript one", 한국어로 "x 위첨자 1" 이라 읽는다. 괄호 안의 수는 거듭제곱이 아니라 해의 번호이다.
-- $\operatorname*{arg\,min}$: 영어로 "argument of the minimum", 한국어로 "최소가 되게 하는 인자" 라 읽는다.
+- $\mathrm{arg\,min}$: 영어로 "argument of the minimum", 한국어로 "최소가 되게 하는 인자" 라 읽는다.
 - $\in$, $\mid$: 영어로 "in" 과 "such that", 한국어로 "에 속하는" 과 "인" 이라 읽는다.
 - $\perp$: 영어로 "is orthogonal to", 한국어로 "직교한다" 라 읽는다.
 
@@ -69,7 +69,7 @@ Table 1. Symbols
 
 ```math
 \mathbf{x}^{\ast}
-= \operatorname*{arg\,min}_{\mathbf{x} \,\mid\, \mathbf{A}\mathbf{x} = \mathbf{b}} \lVert \mathbf{x} \rVert
+= \mathrm{arg\,min}_{\mathbf{x} \,\mid\, \mathbf{A}\mathbf{x} = \mathbf{b}} \lVert \mathbf{x} \rVert
 = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b}
 \hspace{19em} (1)
 ```
