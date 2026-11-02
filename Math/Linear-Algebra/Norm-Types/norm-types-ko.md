@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 0 | Created: 2026-11-02 | Updated: 2026-11-02 21:32 UTC
+Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-02 21:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -66,7 +66,7 @@ Not a norm: "L0" = number of nonzero elements (fails homogeneity)
 <a id="fig-2"></a>
 Fig 2. Hierarchy of norms
 
-- 맨 위의 세 조건을 만족해야 norm 이다. 조건만 지키면 되므로 크기를 재는 방식이 여럿이다.
+- 양수성, 동차성, 삼각부등식의 세 조건을 만족해야 norm 이다. 세 조건의 식은 [꼭지 4](#4-definition) 의 식 (1) 에 있다. 조건만 지키면 되므로 크기를 재는 방식이 여럿이다.
 - Lp norm 은 $p \ge 1$ 일 때 norm 이다. $p = 1, 2, \infty$ 가 L1, L2, L∞ 이다.
 - Frobenius norm 은 행렬을 vector 로 펼친 L2 norm 이고, 특이값 제곱합의 제곱근과도 같다.
 - L0 는 이름에 norm 이 붙지만 동차성을 만족하지 않아 norm 이 아니다.
