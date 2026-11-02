@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 22 | Created: 2026-11-01 | Updated: 2026-11-02 00:22 UTC
+Rev. 23 | Created: 2026-11-01 | Updated: 2026-11-02 07:22 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -204,7 +204,7 @@ Row space 는 해가 무수히 많은 선형방정식에서 하나를 고르거�
 
 ### 6.1 Minimum-Norm Solution
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 같은 row space 성분에 서로 다른 null space 성분을 더한 것이다. 식 (5) 의 두 성분이 직교하므로 해의 norm 의 제곱은 두 성분의 norm 의 제곱을 더한 값이고, null space 성분이 zero vector 인 해의 norm 이 가장 작다. Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b}$ 가 이 해이다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 같은 row space 성분에 서로 다른 null space 성분을 더한 것이다. 식 (5) 의 두 성분이 직교하므로 해의 norm 의 제곱은 두 성분의 norm 의 제곱을 더한 값이고, null space 성분이 zero vector 인 해의 norm 이 가장 작다. Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b}$ 가 이 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다.
 
 식 (6) 의 $\mathbf{A}$ 와 $\mathbf{b} = [3, 0]^\top$ 에서 $\mathbf{A}^{+}\mathbf{b} = [2, -1, 1]^\top$ 이며, 식 (8) 의 row space 성분과 같다. 선형 회귀에서 feature 가 collinear 하면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 자료 행렬의 row space 에 있는 weight 를 고른다.
 
