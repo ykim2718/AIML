@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 43 | Created: 2026-10-25 | Updated: 2026-11-02 03:50 UTC
+Rev. 44 | Created: 2026-10-25 | Updated: 2026-11-02 04:02 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -869,7 +869,7 @@ Fig 10. Row space and column space of the loading matrix P, the T^2 limit and SP
 
 The solutions that the two methods of PLS inversion find in Fig 10 are as follows.
 
-- Minimum-norm solution method: the single $\mathbf{t}^{\ast}$ in (a) and $\mathbf{x}^{\ast}$ in (b).
+- Minimum-norm solution method: a single point, $\mathbf{t}^{\ast}$ in (a) and $\mathbf{x}^{\ast}$ in (b).
 - Null space method: the segment A–B of the null space line in (a) and (b), inside the $T^{2}$ limit.
 
 The blue surface is the model plane, that is, the column space made of the columns of $\mathbf{P}$. The loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ has one row per input variable and one column per latent variable, $3 \times 2$ in this figure, and each column $\mathbf{p}_a$ is the $a$-th loading, whose $k$-th element shows how much the input variable $x_k$ changes when the $a$-th score increases by 1.

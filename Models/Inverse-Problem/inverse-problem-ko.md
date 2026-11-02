@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 130 | Created: 2026-08-28 | Updated: 2026-11-02 03:50 UTC
+Rev. 131 | Created: 2026-08-28 | Updated: 2026-11-02 04:02 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -869,7 +869,7 @@ Fig 10. Row space and column space of the loading matrix P, the T^2 limit and SP
 
 Fig 10 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
 
-- Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 $\mathbf{x}^{\ast}$ 하나이다.
+- Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 $\mathbf{x}^{\ast}$ 점 하나이다.
 - Null space 방법: (a) 와 (b) 의 null space 직선 가운데 $T^{2}$ 상한 안의 선분 A–B 이다.
 
 파란 면은 model plane, 곧 $\mathbf{P}$ 의 열로 구성된 column space 이다. loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ 는 행이 입력 변수 $K$ 개, 열이 latent 변수 $A$ 개인 행렬이며 이 그림에서는 $3 \times 2$ 이고, 열 $\mathbf{p}_a$ 는 $a$ 번째 loading 이며, 그 $k$ 번째 원소는 $a$ 번째 score 가 1 늘 때 입력 변수 $x_k$ 가 얼마나 바뀌는지를 나타낸다.
