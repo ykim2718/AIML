@@ -1,5 +1,5 @@
 # Left Null Space Primer
-Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 23:39 UTC
+Rev. 2 | Created: 2026-11-01 | Updated: 2026-11-02 21:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -143,7 +143,7 @@ Left null space 는 해가 없는 선형방정식의 잔차와 해의 존재 조
 
 ### 6.1 Least Squares Residual
 
-$\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 최소제곱 해 $\hat{\mathbf{x}}$ 에 $\mathbf{A}$ 를 곱하면 $\mathbf{b}$ 의 column space 성분이 되고, 잔차 $\mathbf{b} - \mathbf{A}\hat{\mathbf{x}}$ 는 $\mathbf{b}$ 의 left null space 성분이다. 정규방정식 $\mathbf{A}^\top(\mathbf{b} - \mathbf{A}\hat{\mathbf{x}}) = \mathbf{0}$ 은 잔차가 left null space 에 속한다는 식이다. 식 (3) 의 $\mathbf{A}$ 와 $\mathbf{b} = [1, 0, 0]^\top$ 에서 잔차는 $[1/3, 1/3, -1/3]^\top$ 으로 식 (4) 의 left null space 성분과 같고, $\mathbf{A}^\top$ 을 곱하면 $[0, 0]^\top$ 이다.
+$\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 최소제곱 해 $\hat{\mathbf{x}}$ 에 $\mathbf{A}$ 를 곱하면 $\mathbf{b}$ 의 column space 성분이 되고, 잔차 $\mathbf{b} - \mathbf{A}\hat{\mathbf{x}}$ 는 $\mathbf{b}$ 의 left null space 성분이다. 정규방정식 $\mathbf{A}^\top(\mathbf{b} - \mathbf{A}\hat{\mathbf{x}}) = \mathbf{0}$ 은 잔차가 left null space 에 속한다는 식이다. 식 (3) 의 $\mathbf{A}$ 와 $\mathbf{b} = [1, 0, 0]^\top$ 에서 잔차는 $[1/3, 1/3, -1/3]^\top$ 으로 식 (4) 의 left null space 성분과 같고, $\mathbf{A}^\top$ 을 곱하면 $[0, 0]^\top$ 이다. 같은 $\mathbf{A}$ 와 $\mathbf{b}$ 의 최소제곱 해를 pseudo-inverse 로 구하는 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ### 6.2 Solvability of Ax = b
 
@@ -160,6 +160,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 left null space 의 모
 - **column space**: $\mathbf{x} \in \mathbb{R}^n$ 인 모든 $\mathbf{x}$ 에 대한 $\mathbf{A}\mathbf{x}$ 의 집합. $\mathbf{A}$ 의 열들의 일차결합 전체이다.
 - **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 의 집합. $\mathbf{A}^\top$ 의 null space 이다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
+- **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
