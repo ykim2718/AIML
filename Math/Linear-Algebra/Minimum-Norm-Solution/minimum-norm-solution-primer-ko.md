@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 5 | Created: 2026-11-02 | Updated: 2026-11-02 07:29 UTC
+Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-02 21:12 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -158,7 +158,7 @@ Rank 가 $m$ 보다 작으면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없�
 
 - **column space**: $\mathbf{x} \in \mathbb{R}^n$ 인 모든 $\mathbf{x}$ 에 대한 $\mathbf{A}\mathbf{x}$ 의 집합. $\mathbf{A}$ 의 열들의 일차결합 전체이다.
 - **full row rank**: 행렬의 rank 가 행의 수 $m$ 과 같은 것.
-- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = \sqrt{x_1^2 + \cdots + x_n^2}$ 로 적는다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 norm 이 가장 작은 해를 주는 역행렬의 일반화.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.

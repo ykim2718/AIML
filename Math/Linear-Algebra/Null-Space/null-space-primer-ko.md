@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 29 | Created: 2026-10-31 | Updated: 2026-11-02 07:29 UTC
+Rev. 30 | Created: 2026-10-31 | Updated: 2026-11-02 21:12 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -200,7 +200,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 - **collinearity**: 한 feature 가 다른 feature 들의 일차결합으로 나타나는 것. Null space 에 zero vector 가 아닌 vector 가 생긴다.
 - **column space**: 행렬의 열들의 일차결합으로 나타나는 vector 전체. $\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 여기에 속할 때만 해가 있다.
-- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = \sqrt{x_1^2 + \cdots + x_n^2}$ 로 적는다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다.
 - **nullity**: Null space 의 차원.
 - **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.

@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 27 | Created: 2026-11-01 | Updated: 2026-11-02 07:29 UTC
+Rev. 28 | Created: 2026-11-01 | Updated: 2026-11-02 21:12 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -223,7 +223,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 
 - **column space**: 행렬의 열들의 일차결합으로 나타나는 vector 전체.
 - **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체. $\mathbb{R}^m$ 의 부분공간이며 column space 와 직교한다.
-- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = \sqrt{x_1^2 + \cdots + x_n^2}$ 로 적는다.
+- **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 norm 이 가장 작은 해를 주는 역행렬의 일반화.
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체.
