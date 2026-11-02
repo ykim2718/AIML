@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 47 | Created: 2026-10-25 | Updated: 2026-11-02 04:11 UTC
+Rev. 48 | Created: 2026-10-25 | Updated: 2026-11-02 04:19 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,12 +228,13 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores. Given a target output $\mathbf{y}^{\ast}$, the input is found by solving the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, and there are two methods for the solution.
+$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores. Given a target output $\mathbf{y}^{\ast}$, there are three methods for finding the input. The first two solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, and the third does not go through the score.
 
-1. Minimum-norm solution method: finds one solution with the pseudo-inverse of Eq. (4).
-2. Null space method: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
+1. Minimum-norm solution method of PLS inversion: finds one solution with the pseudo-inverse of Eq. (4).
+2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
+3. Model-agnostic numerical optimization method: finds the solution by moving all $K$ inputs directly with the method of [4.7](#47-model-agnostic-numerical-optimization).
 
-The minimum-norm solution method solves the equation with the pseudo-inverse and maps the score back through the loading to recover the input.
+The minimum-norm solution method of PLS inversion solves the equation with the pseudo-inverse and maps the score back through the loading to recover the input.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
@@ -261,8 +262,8 @@ Fig 3. Null space in the score plane and the bootstrap spread of the solution in
 
 The solutions that the two methods of PLS inversion find in Fig 3 are as follows.
 
-1. Minimum-norm solution method: $\mathbf{t}^{\ast}$ in (a) and the orange star $\mathbf{x}^{\ast}$ in (b). The 200 blue points in (b) are also solutions found by this method, one per bootstrap PLS.
-2. Null space method: the segment A–B of the null space line inside the $T^{2}$ limit ellipse in (a), and the red dashed line in (b) that carries that line into the input plane.
+1. Minimum-norm solution method of PLS inversion: $\mathbf{t}^{\ast}$ in (a) and the orange star $\mathbf{x}^{\ast}$ in (b). The 200 blue points in (b) are also solutions found by this method, one per bootstrap PLS.
+2. Null space method of PLS inversion: the segment A–B of the null space line inside the $T^{2}$ limit ellipse in (a), and the red dashed line in (b) that carries that line into the input plane.
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix D](#appendix-d-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix D, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
 

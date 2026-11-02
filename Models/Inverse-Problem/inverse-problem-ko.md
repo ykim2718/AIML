@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 134 | Created: 2026-08-28 | Updated: 2026-11-02 04:11 UTC
+Rev. 135 | Created: 2026-08-28 | Updated: 2026-11-02 04:19 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,12 +228,13 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-$\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다. 목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀어 입력을 구하며, 해를 구하는 방법은 아래 둘이다.
+$\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다. 목표 출력 $\mathbf{y}^{\ast}$ 가 주어졌을 때 입력을 구하는 방법은 아래 셋이다. 앞의 둘은 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 셋째는 score 를 거치지 않는다.
 
-1. Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
-2. Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
+1. PLS inversion 의 Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
+2. PLS inversion 의 Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
+3. Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 해를 구한다.
 
-Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
+PLS inversion 의 Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
@@ -261,8 +262,8 @@ Fig 3. Null space in the score plane and the bootstrap spread of the solution in
 
 Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
 
-1. Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 주황 별 $\mathbf{x}^{\ast}$ 이다. (b) 의 파란 점 200 개도 bootstrap PLS 마다 이 방법으로 구한 해이다.
-2. Null space 방법: (a) 의 null space 직선 가운데 $T^{2}$ 상한 타원 안의 선분 A–B 와, 그 직선을 입력 평면으로 옮긴 (b) 의 빨간 점선이다.
+1. PLS inversion 의 Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 주황 별 $\mathbf{x}^{\ast}$ 이다. (b) 의 파란 점 200 개도 bootstrap PLS 마다 이 방법으로 구한 해이다.
+2. PLS inversion 의 Null space 방법: (a) 의 null space 직선 가운데 $T^{2}$ 상한 타원 안의 선분 A–B 와, 그 직선을 입력 평면으로 옮긴 (b) 의 빨간 점선이다.
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 
