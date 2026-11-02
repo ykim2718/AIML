@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 3 | Created: 2026-11-02 | Updated: 2026-11-02 23:29 UTC
+Rev. 4 | Created: 2026-11-02 | Updated: 2026-11-02 23:34 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -176,7 +176,7 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 - **삼각부등식 (triangle inequality)**: 두 vector 의 합의 norm 이 두 norm 의 합을 넘지 않는다는 조건.
 - **최소 노름 해 (minimum norm solution)**: 해가 무수히 많은 선형방정식의 해 가운데 norm 이 가장 작은 해.
 - **최소제곱 (least squares)**: 잔차의 L2 norm 의 제곱을 가장 작게 하는 방법.
-- **특이값 (singular value)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\boldsymbol{\Sigma}$ 의 대각 원소 $\sigma_i$. $\mathbf{V}$ 의 $i$ 번째 열 $\mathbf{v}_i$ 는 길이가 1 인 vector 이고, 여기에 $\mathbf{A}$ 를 곱하면 $\mathbf{U}$ 의 $i$ 번째 열 $\mathbf{u}_i$ (길이 1) 의 $\sigma_i$ 배인 $\mathbf{A}\mathbf{v}_i = \sigma_i \mathbf{u}_i$ 가 된다. 따라서 $\sigma_i$ 는 길이 1 인 $\mathbf{v}_i$ 를 $\mathbf{A}$ 로 보낸 vector 의 길이 $\lVert \mathbf{A}\mathbf{v}_i \rVert$ 이고, 가장 큰 특이값 $\sigma_1$ 은 길이 1 인 모든 $\mathbf{x}$ 에 대한 $\lVert \mathbf{A}\mathbf{x} \rVert$ 의 최댓값이다.
+- **특이값 (singular value)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\boldsymbol{\Sigma}$ 의 대각 원소. 행렬이 단위 vector 를 늘이는 배율이다.
 - **특이값 분해 (singular value decomposition)**: 행렬을 $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 로 나누는 분해. $\mathbf{U}$ 와 $\mathbf{V}$ 의 열은 단위 vector 이다.
 
 ## Appendix B. Derivation
