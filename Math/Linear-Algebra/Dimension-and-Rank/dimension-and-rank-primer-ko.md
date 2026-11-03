@@ -1,0 +1,194 @@
+# Dimension and Rank Primer
+Rev. 0 | Created: 2026-11-03 | Updated: 2026-11-03 06:35 UTC
+
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Notation](#3-notation)
+- [4. Definitions](#4-definitions)
+- [5. Interpretation](#5-interpretation)
+  - [5.1 Dimension of a Space and Rank of a Matrix](#51-dimension-of-a-space-and-rank-of-a-matrix)
+  - [5.2 Row Rank and Column Rank](#52-row-rank-and-column-rank)
+- [6. Worked Example](#6-worked-example)
+- [7. Application](#7-application)
+  - [7.1 Rank Conditions of a Linear System](#71-rank-conditions-of-a-linear-system)
+- [Appendix A. Terminology](#appendix-a-terminology)
+
+## 1. Purpose
+
+- **Problem Statement**: $m \ne n$ 인 $m \times n$ 행렬에서 행은 $\mathbb{R}^n$ 에, 열은 $\mathbb{R}^m$ 에 있어, 공간의 차원과 행렬의 rank 를 섞어 읽으면 row space 와 column space 의 rank 가 다를 수 있다고 잘못 읽는다.
+- **Goal**: 독자가 vector space 의 차원과 행렬의 rank 를 구별하고, $m \ne n$ 인 행렬에서도 row space 의 차원과 column space 의 차원이 같은 값임을 숫자로 확인할 수 있게 한다.
+- **Non-Goal**: 무한 차원 vector space 와, 부동소수점 계산에서 rank 를 정하는 문턱값은 다루지 않는다.
+
+## 2. Summary
+
+차원 (dimension) 은 vector space 의 기저에 든 vector 의 개수이고, rank 는 행렬 $\mathbf{A}$ 의 column space 의 차원이다.
+$\mathbf{A}$ 가 $m \times n$ 이고 $m \ne n$ 이어도 row space 의 차원과 column space 의 차원은 언제나 같은 $\mathrm{rank}(\mathbf{A})$ 이다.
+$m$ 과 $n$ 은 열과 행이 놓인 공간 $\mathbb{R}^m$ 과 $\mathbb{R}^n$ 의 차원이고, rank 는 그 안에서 서로 일차독립인 열이나 행의 최대 개수이다.
+
+## 3. Notation
+
+이 문서가 쓰는 기호는 아래 Table 1 이다.
+
+Table 1. Symbols
+
+| Symbol                                         | Meaning                                                                           | Shape                      | Assumption                                               |
+| :--------------------------------------------: | :-------------------------------------------------------------------------------: | :------------------------: | :------------------------------------------------------: |
+| $\mathbf{A}$                                   | 행렬                                                                              | $m \times n$               | 실수 원소                                                |
+| $m$, $n$                                       | $\mathbf{A}$ 의 행의 수와 열의 수                                                 | scalar                     | 양의 정수                                                |
+| $\mathbb{R}^n$                                 | 원소가 실수 $n$ 개인 열 vector 전체의 집합                                        | vector space               | 차원 $n$                                                 |
+| $V$                                            | 차원을 재는 vector space                                                          | vector space               | 유한 차원                                                |
+| $\dim V$                                       | $V$ 의 차원                                                                       | scalar                     | 0 이상의 정수                                            |
+| $\mathrm{Col}(\mathbf{A})$                     | $\mathbf{A}$ 의 column space                                                      | $\mathbb{R}^m$ 의 부분공간 | 열들의 일차결합 전체                                     |
+| $\mathrm{Row}(\mathbf{A})$                     | $\mathbf{A}$ 의 row space                                                         | $\mathbb{R}^n$ 의 부분공간 | 행들의 일차결합 전체                                     |
+| $\mathrm{Null}(\mathbf{A})$                    | $\mathbf{A}$ 의 null space                                                        | $\mathbb{R}^n$ 의 부분공간 | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
+| $\mathrm{rank}(\mathbf{A})$, $r$               | $\mathbf{A}$ 의 계수                                                              | scalar                     | $0 \le r \le \min(m, n)$                                 |
+| $\mathbf{x}$                                   | 입력 vector                                                                       | $n \times 1$               | 실수 원소                                                |
+| $\mathbf{r}_1$, $\mathbf{r}_2$                 | Worked Example 의 $\mathbf{A}$ 의 첫째 행과 둘째 행                               | $3 \times 1$               | 열 vector 로 적음                                        |
+| $\mathbf{c}_1$, $\mathbf{c}_2$, $\mathbf{c}_3$ | Worked Example 의 $\mathbf{A}$ 의 첫째, 둘째, 셋째 열                             | $2 \times 1$               | 실수 원소                                                |
+| $x_1$, $x_2$                                   | $\mathbf{c}_3$ 를 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 의 일차결합으로 적을 때의 계수 | scalar                     | 실수                                                     |
+
+특수 기호는 아래처럼 읽는다.
+
+- $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
+- $\dim V$: 영어로 "the dimension of V", 한국어로 "V 의 차원" 이라 읽는다.
+- $[1, 0, 0]^\top$ 의 $\top$: 영어로 "transpose", 한국어로 "전치" 라 읽는다. 가로로 적은 원소를 열 vector 로 바꾼다는 뜻이다.
+- $\det$: 영어로 "the determinant of", 한국어로 "행렬식" 이라 읽는다.
+
+## 4. Definitions
+
+> **Definition (dimension)**: Vector space $V$ 의 기저 (basis) 는 서로 일차독립이면서 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합이고, $V$ 의 차원 $\dim V$ 는 그 기저에 든 vector 의 개수이다. $V$ 의 기저는 여럿이지만 그 개수는 모두 같다.
+
+> **Definition (rank)**: $m \times n$ 행렬 $\mathbf{A}$ 의 rank $\mathrm{rank}(\mathbf{A})$ 는 column space $\mathrm{Col}(\mathbf{A})$ 의 차원, 곧 $\mathbf{A}$ 의 열 가운데 서로 일차독립인 열의 최대 개수이다 (식 (1)).
+
+```math
+\mathrm{rank}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A})
+\hspace{19em} (1)
+```
+
+$\mathbb{R}^3$ 의 차원은 3 이고, $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 기저의 하나이다. $\mathbb{R}^3$ 안에서 원점을 지나는 평면은 일차독립인 vector 두 개로 생성되므로 차원이 2 이고, 원점을 지나는 직선은 vector 하나로 생성되므로 차원이 1 이다.
+
+## 5. Interpretation
+
+차원은 vector space 에 매기는 수이고, rank 는 행렬에 매기는 수이다. 행렬의 rank 는 그 행렬이 만드는 부분공간인 column space 의 차원이므로, rank 는 차원의 한 경우이다.
+
+### 5.1 Dimension of a Space and Rank of a Matrix
+
+두 수를 견주면 아래 Table 2 와 같다.
+
+Table 2. Dimension and rank
+
+| Aspect     | Dimension                | Rank                                                                                        |
+| :--------: | :----------------------: | :-----------------------------------------------------------------------------------------: |
+| Applies to | Vector space             | 행렬                                                                                        |
+| Counts     | 기저에 든 vector 의 개수 | 서로 일차독립인 열 (또는 행) 의 최대 개수                                                   |
+| Example    | $\dim \mathbb{R}^3 = 3$  | $\mathrm{rank}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \dim \mathrm{Row}(\mathbf{A})$ |
+
+$m \times n$ 행렬 $\mathbf{A}$ 에는 차원이 다른 공간 다섯이 함께 나온다. 열이 놓인 $\mathbb{R}^m$ 의 차원은 $m$, 행이 놓인 $\mathbb{R}^n$ 의 차원은 $n$ 이고, $\mathrm{Col}(\mathbf{A})$ 와 $\mathrm{Row}(\mathbf{A})$ 의 차원은 $r$, $\mathrm{Null}(\mathbf{A})$ 의 차원은 $n - r$ 이다. Null space 의 차원 $n - r$ 은 rank-nullity 정리에서 나오며, 그 유도는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+
+### 5.2 Row Rank and Column Rank
+
+$\mathbf{A}$ 의 row space 의 차원은 column space 의 차원과 언제나 같다.
+
+```math
+\dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A})
+\hspace{19em} (2)
+```
+
+$m \ne n$ 이면 행은 $\mathbb{R}^n$ 의 vector 이고 열은 $\mathbb{R}^m$ 의 vector 여서, 행과 열이 놓인 공간의 차원이 다르다. 식 (2) 는 그 공간의 차원이 아니라 그 안에서 서로 일차독립인 행의 최대 개수와 열의 최대 개수가 같다는 식이다.
+
+$\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴로 바꾸어도 행의 일차결합만 만들어지므로 row space 는 바뀌지 않고, 열 사이의 일차독립 관계도 바뀌지 않는다. 기약 행사다리꼴에서 0 이 아닌 행은 각각 pivot 하나를 갖고 서로 일차독립이어서, 그 개수가 row space 의 차원이다. Pivot 열은 서로 일차독립이고 나머지 열은 pivot 열의 일차결합이어서, pivot 열의 개수가 column space 의 차원이다. 0 이 아닌 행의 개수와 pivot 열의 개수는 pivot 의 개수로 같으므로 식 (2) 가 성립한다. Row space 와 null space 의 관계는 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에 있다.
+
+## 6. Worked Example
+
+행이 두 개이고 열이 세 개인 행렬을 둔다 ($m = 2$, $n = 3$).
+
+```math
+\mathbf{A} = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 6 & 9 \end{bmatrix}
+\hspace{19em} (3)
+```
+
+행은 $\mathbb{R}^3$ 의 vector 두 개이다.
+
+```math
+\mathbf{r}_1 = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}, \qquad
+\mathbf{r}_2 = \begin{bmatrix} 4 \\ 6 \\ 9 \end{bmatrix}
+\hspace{19em} (4)
+```
+
+$\mathbf{r}_2$ 를 $\mathbf{r}_1$ 의 상수배로 적으려면 첫 원소에서 $4 / 1 = 4$ 배, 둘째 원소에서 $6 / 2 = 3$ 배여서 배수가 하나로 정해지지 않는다. 두 행은 서로 일차독립이므로 row space 는 $\mathbb{R}^3$ 안의 평면이고 차원은 2 이다.
+
+열은 $\mathbb{R}^2$ 의 vector 세 개이다.
+
+```math
+\mathbf{c}_1 = \begin{bmatrix} 1 \\ 4 \end{bmatrix}, \qquad
+\mathbf{c}_2 = \begin{bmatrix} 2 \\ 6 \end{bmatrix}, \qquad
+\mathbf{c}_3 = \begin{bmatrix} 3 \\ 9 \end{bmatrix}
+\hspace{19em} (5)
+```
+
+$\mathbf{c}_1$ 과 $\mathbf{c}_2$ 를 열로 하는 $2 \times 2$ 행렬의 행렬식은 0 이 아니므로, 두 열은 서로 일차독립이다.
+
+```math
+\det \begin{bmatrix} 1 & 2 \\ 4 & 6 \end{bmatrix} = 1 \cdot 6 - 2 \cdot 4 = -2
+\hspace{19em} (6)
+```
+
+$\mathbb{R}^2$ 에서 서로 일차독립인 vector 는 많아야 두 개이므로, $\mathbf{c}_3$ 는 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 의 일차결합 $x_1 \mathbf{c}_1 + x_2 \mathbf{c}_2$ 이다. 계수는 아래 두 식을 풀어 구한다.
+
+```math
+x_1 + 2 x_2 = 3
+\hspace{19em} (7)
+```
+
+```math
+4 x_1 + 6 x_2 = 9
+\hspace{19em} (8)
+```
+
+식 (7) 에서 $x_1 = 3 - 2 x_2$ 이고, 이를 식 (8) 에 넣으면 $12 - 2 x_2 = 9$ 이어서 $x_2 = 1.5$, $x_1 = 0$ 이다.
+
+```math
+\mathbf{c}_3 = 0 \cdot \mathbf{c}_1 + 1.5 \cdot \mathbf{c}_2 = \begin{bmatrix} 0 + 3 \\ 0 + 9 \end{bmatrix} = \begin{bmatrix} 3 \\ 9 \end{bmatrix}
+\hspace{19em} (9)
+```
+
+$\mathbf{c}_3$ 는 $\mathbf{c}_2$ 의 1.5 배여서 새 방향을 더하지 않으므로, 서로 일차독립인 열은 최대 두 개이고 column space 는 $\mathbb{R}^2$ 전체이며 차원은 2 이다. 행과 열을 견주면 아래 Table 3 과 같다.
+
+Table 3. Row space and column space of the matrix in equation (3)
+
+| Space        | Vectors | Lives in       | Linearly independent | Dimension |
+| :----------: | :-----: | :------------: | :------------------: | :-------: |
+| Row space    | 2       | $\mathbb{R}^3$ | 2                    | 2         |
+| Column space | 3       | $\mathbb{R}^2$ | 2                    | 2         |
+
+행과 열이 놓인 공간의 차원은 3 과 2 로 다르지만, row space 와 column space 의 차원은 모두 2 여서 식 (2) 대로 $\mathrm{rank}(\mathbf{A}) = 2$ 이다. Null space 의 차원은 $n - r = 3 - 2 = 1$ 이며, 식 (9) 에서 $1.5\,\mathbf{c}_2 - \mathbf{c}_3 = \mathbf{0}$ 이므로 $\mathbf{x} = [0, 1.5, -1]^\top$ 이 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족한다.
+
+## 7. Application
+
+Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 어떻게 되는지가 정해진다.
+
+### 7.1 Rank Conditions of a Linear System
+
+- $r = n$: $\mathrm{Null}(\mathbf{A})$ 의 차원이 $n - r = 0$ 이어서 null space 에 zero vector 만 있고, 해가 있으면 하나뿐이다.
+- $r = m$: $\mathrm{Col}(\mathbf{A})$ 의 차원이 $\mathbb{R}^m$ 의 차원과 같아 column space 가 $\mathbb{R}^m$ 전체이고, 모든 우변 $\mathbf{b}$ 에 대해 해가 있다.
+- $r \lt n$: null space 의 차원이 1 이상이어서, 해가 있으면 무수히 많다. 식 (3) 의 $\mathbf{A}$ 는 $r = m = 2 \lt n = 3$ 이어서 모든 $\mathbf{b}$ 에 해가 있고 그 해는 무수히 많다.
+
+해의 개수를 가리는 절차는 [Types of Linear Systems](../Linear-System-Types/linear-system-types-ko.md) 에, 해가 무수히 많을 때 norm 이 가장 작은 해는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다.
+
+---
+
+## Appendix A. Terminology
+
+- **column space**: 행렬의 열들의 일차결합 전체. $\mathbb{R}^m$ 의 부분공간이다.
+- **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체. $\mathbb{R}^n$ 의 부분공간이다.
+- **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
+- **rank-nullity 정리 (rank-nullity theorem)**: $\mathbf{A}$ 의 rank 와 null space 의 차원을 더하면 열의 수 $n$ 이라는 정리.
+- **row space**: 행렬의 행들의 일차결합 전체. $\mathbb{R}^n$ 의 부분공간이다.
+- **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. Column space 의 차원과 같다.
+- **기본 행 연산 (elementary row operation)**: 두 행을 맞바꾸기, 한 행에 0 이 아닌 수를 곱하기, 한 행에 다른 행의 상수배를 더하기의 세 연산.
+- **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
+- **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
+- **일차결합 (linear combination)**: vector 들에 각각 상수를 곱해 더한 것.
+- **일차독립 (linear independence)**: 어느 vector 도 나머지 vector 들의 일차결합으로 적히지 않는 것.
+- **행렬식 (determinant)**: 정사각 행렬에 매기는 수. $2 \times 2$ 행렬에서는 대각선 두 원소의 곱에서 나머지 두 원소의 곱을 뺀 값이고, 0 이 아니면 두 열이 서로 일차독립이다.
