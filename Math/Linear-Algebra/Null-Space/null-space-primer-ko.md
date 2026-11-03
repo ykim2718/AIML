@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 42 | Created: 2026-10-31 | Updated: 2026-11-03 07:40 UTC
+Rev. 43 | Created: 2026-10-31 | Updated: 2026-11-03 08:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -58,7 +58,7 @@ Table 1. Symbols
 | $\mathbf{n}$                              | Worked Example 에서 null space 를 생성하는 vector                                                  | $3 \times 1$                   | zero vector 가 아님                                        |
 | $\mathbf{B}$                              | Worked Example 에서 $\mathbf{A}$ 와 견주는 가역 행렬                                               | $3 \times 3$                   | rank 3                                                     |
 | $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                                                    | $m \times n$                   | 기본 행 연산으로 얻음                                      |
-| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot 열의 수와 free column 의 수                                                  | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$               |
+| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot column 의 수와 free column 의 수                                             | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$               |
 | $\mathbf{w}$                              | 선형 회귀의 weight vector                                                                          | $n \times 1$                   | 실수 원소                                                  |
 | $\hat{\mathbf{y}}$                        | 선형 회귀의 예측값 vector                                                                          | $m \times 1$                   | 실수 원소                                                  |
 | $\sigma_i$                                | $\mathbf{A}$ 의 $i$ 번째 특이값                                                                    | scalar                         | $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$                   |
@@ -128,12 +128,12 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 �
 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 를 기본 행 연산으로 기약 행사다리꼴로 바꾼 뒤 아래 순서로 구한다. 첨가 행렬과 그 rank 는 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 에 있다.
 
 1. 해가 있는지 확인한다. 왼쪽이 모두 0 인데 우변이 0 이 아닌 행이 있으면, 그 행은 0 이 0 이 아닌 수와 같다는 식이 되어 해가 없다.
-2. 열을 pivot 열과 free column 으로 나눈다. Pivot 열의 변수 (pivot 변수) 는 free variable 의 값으로 정해지고, free variable 은 아무 값이나 가질 수 있다.
+2. 열을 pivot column 과 free column 으로 나눈다. Pivot column 의 변수 (pivot 변수) 는 free variable 의 값으로 정해지고, free variable 은 아무 값이나 가질 수 있다.
 3. 특수해 $\mathbf{x}_0$ 를 구한다. free variable 을 모두 0 으로 두면 pivot 변수는 각 행의 우변과 같다.
 4. Null space 를 생성하는 vector 를 구한다. 우변을 모두 0 으로 두고 free variable 하나만 1, 나머지는 0 으로 두어 pivot 변수를 구한다. free variable 마다 vector 하나를 얻으므로, 그 개수가 nullity 이다.
 5. 해 전체는 $\mathbf{x}_0$ 에 4 번의 vector 들의 상수배를 더한 것이다 (식 (2)).
 
-식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$ 에서 $[\mathbf{A} \mid \mathbf{b}]$ 의 셋째 행에서 첫 두 행을 빼면 기약 행사다리꼴의 세 행은 $[1, 0, 1 \mid 2]$, $[0, 1, 1 \mid 3]$, $[0, 0, 0 \mid 0]$ 이다. 셋째 행의 우변이 0 이어서 해가 있고, pivot 열은 첫째와 둘째 열, free column 은 셋째 열이다. $x_3 = 0$ 으로 두면 $\mathbf{x}_0 = [2, 3, 0]^\top$ 이고, 우변을 0 으로 두고 $x_3 = 1$ 로 두면 $x_1 = -1$, $x_2 = -1$ 이어서 식 (6) 의 $\mathbf{n} = [-1, -1, 1]^\top$ 이다. 해 전체는 $\mathbf{x}_0 + c\,\mathbf{n} = [2 - c, 3 - c, c]^\top$ 이며, [Table 2](#6-worked-example) 가 $c = 0, 1, 2$ 일 때의 값이다. 같은 기약 행사다리꼴로 null space, row space, column space 의 기저를 함께 구하는 방법은 [Dimension and Rank Primer 의 Appendix B](../Dimension-and-Rank/dimension-and-rank-primer-ko.md#appendix-b-finding-a-basis) 에 있다.
+식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$ 에서 $[\mathbf{A} \mid \mathbf{b}]$ 의 셋째 행에서 첫 두 행을 빼면 기약 행사다리꼴의 세 행은 $[1, 0, 1 \mid 2]$, $[0, 1, 1 \mid 3]$, $[0, 0, 0 \mid 0]$ 이다. 셋째 행의 우변이 0 이어서 해가 있고, pivot column 은 첫째와 둘째 열, free column 은 셋째 열이다. $x_3 = 0$ 으로 두면 $\mathbf{x}_0 = [2, 3, 0]^\top$ 이고, 우변을 0 으로 두고 $x_3 = 1$ 로 두면 $x_1 = -1$, $x_2 = -1$ 이어서 식 (6) 의 $\mathbf{n} = [-1, -1, 1]^\top$ 이다. 해 전체는 $\mathbf{x}_0 + c\,\mathbf{n} = [2 - c, 3 - c, c]^\top$ 이며, [Table 2](#6-worked-example) 가 $c = 0, 1, 2$ 일 때의 값이다. 같은 기약 행사다리꼴로 null space, row space, column space 의 기저를 함께 구하는 방법은 [Dimension and Rank Primer 의 Appendix B](../Dimension-and-Rank/dimension-and-rank-primer-ko.md#appendix-b-finding-a-basis) 에 있다.
 
 ### 5.4 Rank-Nullity Theorem
 
@@ -229,7 +229,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - **free column**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (free variable) 는 아무 값이나 가질 수 있다.
 - **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **nullity**: Null space 의 차원.
-- **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
+- **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.
 - **regularization**: 손실 함수에 weight 의 크기에 대한 벌점을 더해 weight 를 하나로 정하는 방법.
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체. $\mathbb{R}^n$ 의 부분공간이며 차원은 rank 이다.
@@ -250,7 +250,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 ## Appendix B. Derivation
 
-식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot 열과 free column 으로 나누면 나온다.
+식 (4) 는 $\mathbf{A}$ 를 기약 행사다리꼴 (reduced row echelon form) 로 바꾸어 열을 pivot column 과 free column 으로 나누면 나온다.
 
 ```math
 \begin{aligned}
@@ -265,10 +265,10 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 
 - 첫째 등호: 기본 행 연산은 가역 행렬을 왼쪽에 곱하는 것이므로 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 과 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 의 해가 같다.
 - 둘째 등호: free variable 하나를 1, 나머지를 0 으로 둔 해가 free column 마다 하나씩 있다. 해마다 값이 1 인 free variable 이 달라 이 해들은 일차독립이고 $\mathrm{Null}(\mathbf{R})$ 를 생성하므로, 기저의 원소 수인 차원이 free column 의 수와 같다.
-- 셋째 등호: 모든 열은 pivot 열이거나 free column 이다.
-- 넷째 등호: 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않으므로 pivot 열의 수가 $\mathbf{A}$ 의 rank 이다.
+- 셋째 등호: 모든 열은 pivot column 이거나 free column 이다.
+- 넷째 등호: 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않으므로 pivot column 의 수가 $\mathbf{A}$ 의 rank 이다.
 
-$\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot 열이 두 개, free column 이 세 번째 열 하나이며, 둘째 등호에서 쓴 해가 식 (6) 의 $\mathbf{n}$ 이다.
+$\mathbf{R}$ 은 $\mathbf{A}$ 의 기약 행사다리꼴이다. 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{R} = [[1, 0, 1], [0, 1, 1], [0, 0, 0]]$ 이고, pivot column 이 두 개, free column 이 세 번째 열 하나이며, 둘째 등호에서 쓴 해가 식 (6) 의 $\mathbf{n}$ 이다.
 
 따라서 식 (4) 가 성립한다.
 

@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 8 | Created: 2026-09-06 | Updated: 2026-11-03 06:55 UTC
+Rev. 9 | Created: 2026-09-06 | Updated: 2026-11-03 08:00 UTC
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)

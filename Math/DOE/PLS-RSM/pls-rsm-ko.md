@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 8 | Created: 2026-09-06 | Updated: 2026-11-03 06:55 UTC
+Rev. 9 | Created: 2026-09-06 | Updated: 2026-11-03 08:00 UTC
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -35,7 +35,7 @@ PLS 는 그 역행렬을 요구하지 않는다. 성분 방향 $\mathbf{w}$ 를 
 
 $$\max_{\lVert \mathbf{w} \rVert = 1} \mathrm{Cov}(\mathbf{X}\mathbf{w},\, y)^2$$
 
-성분 수 $A$ 가 유일한 hyperparameter 이자 유일한 정칙화 강도이며, $A$ 를 키우면 PLS 는 OLS 로 수렴한다. 이것이 이 조합의 성격을 정한다 — PLS-RSM 은 OLS 를 대체하는 것이 아니라, $A$ 를 통해 OLS 와 축약된 해 사이 어디쯤에 설 것인지를 고르는 장치다.
+성분 수 $A$ 가 유일한 hyperparameter 이자 유일한 정칙화 강도이며, $A$ 를 키우면 PLS 는 OLS 로 수렴한다. 이것이 이 조합의 성격을 정한다 — PLS-RSM 은 OLS 를 대체하는 것이 아니라, $A$ 를 통해 OLS 와 축약된 해 사이 어디쯤에 둘 것인지를 고르는 방법이다.
 
 ## 3. The Expanded Input Matrix
 

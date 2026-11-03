@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 22 | Created: 2026-09-07 | Updated: 2026-11-01 21:36 UTC
+Rev. 23 | Created: 2026-09-07 | Updated: 2026-11-03 08:00 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)
@@ -375,5 +375,5 @@ Table 6. What each domain assumes to be time-invariant
 | Domain | Time-invariant quantity | Tool that depends on it |
 |--------|-------------------------|-------------------------|
 | Signal processing | 잡음과 채널의 2차 통계량 | 고정 계수 최적 필터 |
-| Condition monitoring | 정속 운전 중의 진동 통계량 | 스펙트럼 기준선과 그 이탈 판정 |
+| Condition monitoring | 정속 운전 중의 진동 통계량 | 정속 운전 때 구한 기준 스펙트럼과 그 이탈 판정 |
 | Reliability | 하중의 power spectral density | 스펙트럼 기반 피로 수명 계산 |

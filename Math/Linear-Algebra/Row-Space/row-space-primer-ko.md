@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 33 | Created: 2026-11-01 | Updated: 2026-11-03 06:55 UTC
+Rev. 34 | Created: 2026-11-01 | Updated: 2026-11-03 08:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -149,7 +149,7 @@ Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 
 \dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A}) = r \hspace{19em} (5) \ \text{🌳}
 ```
 
-$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (5) 가 성립한다. 공간의 차원과 행렬의 rank 의 구별, 그리고 $m \ne n$ 인 행렬의 숫자 예시는 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
+$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot column 의 수와 같다. Pivot column 의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (5) 가 성립한다. 공간의 차원과 행렬의 rank 의 구별, 그리고 $m \ne n$ 인 행렬의 숫자 예시는 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 
 ### 4.5 Orthogonal Decomposition of the Input Space
 
