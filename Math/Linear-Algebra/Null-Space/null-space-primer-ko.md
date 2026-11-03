@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 40 | Created: 2026-10-31 | Updated: 2026-11-03 06:55 UTC
+Rev. 41 | Created: 2026-10-31 | Updated: 2026-11-03 07:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -133,7 +133,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 첨가 행렬 $[\mathbf{A} \mid \
 4. Null space 를 생성하는 vector 를 구한다. 우변을 모두 0 으로 두고 자유 변수 하나만 1, 나머지는 0 으로 두어 pivot 변수를 구한다. 자유 변수마다 vector 하나를 얻으므로, 그 개수가 nullity 이다.
 5. 해 전체는 $\mathbf{x}_0$ 에 4 번의 vector 들의 상수배를 더한 것이다 (식 (2)).
 
-식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$ 에서 $[\mathbf{A} \mid \mathbf{b}]$ 의 셋째 행에서 첫 두 행을 빼면 기약 행사다리꼴의 세 행은 $[1, 0, 1 \mid 2]$, $[0, 1, 1 \mid 3]$, $[0, 0, 0 \mid 0]$ 이다. 셋째 행의 우변이 0 이어서 해가 있고, pivot 열은 첫째와 둘째 열, 자유 열은 셋째 열이다. $x_3 = 0$ 으로 두면 $\mathbf{x}_0 = [2, 3, 0]^\top$ 이고, 우변을 0 으로 두고 $x_3 = 1$ 로 두면 $x_1 = -1$, $x_2 = -1$ 이어서 식 (6) 의 $\mathbf{n} = [-1, -1, 1]^\top$ 이다. 해 전체는 $\mathbf{x}_0 + c\,\mathbf{n} = [2 - c, 3 - c, c]^\top$ 이며, [Table 2](#6-worked-example) 가 $c = 0, 1, 2$ 일 때의 값이다.
+식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$ 에서 $[\mathbf{A} \mid \mathbf{b}]$ 의 셋째 행에서 첫 두 행을 빼면 기약 행사다리꼴의 세 행은 $[1, 0, 1 \mid 2]$, $[0, 1, 1 \mid 3]$, $[0, 0, 0 \mid 0]$ 이다. 셋째 행의 우변이 0 이어서 해가 있고, pivot 열은 첫째와 둘째 열, 자유 열은 셋째 열이다. $x_3 = 0$ 으로 두면 $\mathbf{x}_0 = [2, 3, 0]^\top$ 이고, 우변을 0 으로 두고 $x_3 = 1$ 로 두면 $x_1 = -1$, $x_2 = -1$ 이어서 식 (6) 의 $\mathbf{n} = [-1, -1, 1]^\top$ 이다. 해 전체는 $\mathbf{x}_0 + c\,\mathbf{n} = [2 - c, 3 - c, c]^\top$ 이며, [Table 2](#6-worked-example) 가 $c = 0, 1, 2$ 일 때의 값이다. 같은 기약 행사다리꼴로 null space, row space, column space 의 기저를 함께 구하는 방법은 [Dimension and Rank Primer 의 Appendix B](../Dimension-and-Rank/dimension-and-rank-primer-ko.md#appendix-b-finding-a-basis) 에 있다.
 
 ### 5.4 Rank-Nullity Theorem
 
