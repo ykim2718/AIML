@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 00:00 UTC
+Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-03 00:08 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -83,11 +83,11 @@ Table 1. Vector norms of x = [3, 4]
 | L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | 원        | 최소제곱, ridge, 최소 노름 해 |
 | L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | 정사각형  | 원소별 한계                   |
 
-Unit ball 은 norm 이 1 인 vector 의 끝점이 이루는 2 차원 도형이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (5) 대로 $4 \le 5 \le 7$ 이다.
+Unit ball 은 norm 이 1 인 vector 의 끝점이 이루는 2 차원 도형이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
 
-Matrix norm 을 식 (7) 의 $\mathbf{A}$ 에서 견주면 아래 Table 2 이다. $\mathbf{A}$ 의 특이값은 $\sigma_1 = \sqrt{3} \approx 1.732$, $\sigma_2 = 1$ 이다.
+Matrix norm 을 식 (10) 의 $\mathbf{A}$ 에서 견주면 아래 Table 2 이다. $\mathbf{A}$ 의 특이값은 $\sigma_1 = \sqrt{3} \approx 1.732$, $\sigma_2 = 1$ 이다.
 
-Table 2. Matrix norms of A in equation (7)
+Table 2. Matrix norms of A in equation (10)
 
 | Norm      | Definition                                                | Value                        | Used in                                |
 | :-------: | :-------------------------------------------------------: | :--------------------------: | :------------------------------------: |
@@ -125,37 +125,49 @@ Norm 은 vector 마다 0 이상의 실수 하나를 주는 함수 $\lVert \cdot 
 Lp norm 은 아래 식이며, $p \to \infty$ 의 극한이 L∞ norm 이다.
 
 ```math
-\lVert \mathbf{x} \rVert_p = \left( \sum_{i=1}^{n} \lvert x_i \rvert^p \right)^{1/p} \quad (p \ge 1), \qquad
-\lVert \mathbf{x} \rVert_\infty = \max_i \lvert x_i \rvert
+\lVert \mathbf{x} \rVert_p = \left( \sum_{i=1}^{n} \lvert x_i \rvert^p \right)^{1/p} \quad (p \ge 1)
 \hspace{19em} (4)
+```
+
+```math
+\lVert \mathbf{x} \rVert_\infty = \max_i \lvert x_i \rvert
+\hspace{19em} (5)
 ```
 
 아래첨자 없이 $\lVert \mathbf{x} \rVert$ 로 적으면 L2 norm 이다. 같은 vector 에서 세 norm 은 언제나 아래 순서이며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
 \lVert \mathbf{x} \rVert_\infty \le \lVert \mathbf{x} \rVert_2 \le \lVert \mathbf{x} \rVert_1
-\hspace{19em} (5)
+\hspace{19em} (6)
 ```
 
 Matrix norm 은 특이값으로 아래처럼 적는다. $r$ 은 $\mathbf{A}$ 의 rank 이다.
 
 ```math
-\lVert \mathbf{A} \rVert_F = \left( \sum_{i=1}^{r} \sigma_i^2 \right)^{1/2}, \qquad
-\lVert \mathbf{A} \rVert_2 = \sigma_1, \qquad
-\lVert \mathbf{A} \rVert_\ast = \sum_{i=1}^{r} \sigma_i
-\hspace{19em} (6)
+\lVert \mathbf{A} \rVert_F = \left( \sum_{i=1}^{r} \sigma_i^2 \right)^{1/2}
+\hspace{19em} (7)
 ```
 
-특이값은 vector norm 에는 필요 없고, matrix norm 가운데 spectral norm 과 nuclear norm 을 정의할 때 필요하다. 식 (6) 에서 spectral norm 은 가장 큰 특이값 $\sigma_1$, nuclear norm 은 특이값의 합이므로, 이 두 norm 은 특이값 없이 적을 수 없다. Frobenius norm 은 원소 제곱합의 제곱근으로 정의되어 특이값 없이도 구할 수 있지만, 특이값 제곱합의 제곱근과 같은 값이어서 세 matrix norm 을 식 (6) 하나에 나란히 적을 수 있다.
+```math
+\lVert \mathbf{A} \rVert_2 = \sigma_1
+\hspace{19em} (8)
+```
+
+```math
+\lVert \mathbf{A} \rVert_\ast = \sum_{i=1}^{r} \sigma_i
+\hspace{19em} (9)
+```
+
+특이값은 vector norm 에는 필요 없고, matrix norm 가운데 spectral norm 과 nuclear norm 을 정의할 때 필요하다. 식 (8) 의 spectral norm 은 가장 큰 특이값 $\sigma_1$ 이고 식 (9) 의 nuclear norm 은 특이값의 합이므로, 이 두 norm 은 특이값 없이 적을 수 없다. Frobenius norm 은 원소 제곱합의 제곱근으로 정의되어 특이값 없이도 구할 수 있지만, 특이값 제곱합의 제곱근과 같은 값이어서 세 matrix norm 을 식 (7), 식 (8), 식 (9) 처럼 모두 특이값으로 적을 수 있다.
 
 Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ```math
 \mathbf{A} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}
-\hspace{19em} (7)
+\hspace{19em} (10)
 ```
 
-식 (7) 의 $\mathbf{A}$ 에서도 Frobenius norm 2 는 $(\sigma_1^2 + \sigma_2^2)^{1/2} = (3 + 1)^{1/2}$ 와 같다.
+식 (10) 의 $\mathbf{A}$ 에서도 Frobenius norm 2 는 $(\sigma_1^2 + \sigma_2^2)^{1/2} = (3 + 1)^{1/2}$ 와 같다.
 
 ## 5. Application
 
@@ -185,7 +197,7 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ## Appendix B. Derivation
 
-식 (5) 는 두 부등식을 제곱하여 견주면 나온다.
+식 (6) 은 두 부등식을 제곱하여 견주면 나온다.
 
 ```math
 \begin{aligned}
@@ -194,15 +206,15 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 \lVert \mathbf{x} \rVert_1^2
 &= \Big( \sum_{i} \lvert x_i \rvert \Big)^2 = \sum_{i} x_i^2 + \sum_{i \ne j} \lvert x_i \rvert \lvert x_j \rvert \ge \lVert \mathbf{x} \rVert_2^2
 \end{aligned}
-\hspace{19em} (8)
+\hspace{19em} (11)
 ```
 
 - 첫째 줄: 가장 큰 제곱 하나는 0 이상인 제곱을 모두 더한 값을 넘지 않는다.
 - 둘째 줄: 합의 제곱을 전개하면 제곱의 합에 0 이상인 교차항이 더해진다.
 
-세 norm 은 모두 0 이상이므로 제곱의 순서가 norm 의 순서와 같다. 따라서 식 (5) 가 성립한다.
+세 norm 은 모두 0 이상이므로 제곱의 순서가 norm 의 순서와 같다. 따라서 식 (6) 이 성립한다.
 
 ```math
 \lVert \mathbf{x} \rVert_\infty \le \lVert \mathbf{x} \rVert_2 \le \lVert \mathbf{x} \rVert_1
-\hspace{19em} (5)
+\hspace{19em} (6)
 ```
