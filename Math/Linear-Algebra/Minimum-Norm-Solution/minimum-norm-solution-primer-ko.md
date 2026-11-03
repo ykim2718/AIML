@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 00:10 UTC
+Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 02:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -94,6 +94,13 @@ Table 1. Symbols
 ### 4.3 Closed Form
 
 식 (1) 의 오른쪽 변은 rank 가 $m$ 인 full row rank 일 때만 성립한다. 이때 $m \times m$ 행렬 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 있다. $\mathbf{A}^\top(\cdot)$ 꼴이므로 이 해는 row space 에 속하고, $\mathbf{A}$ 를 곱하면 $\mathbf{A}\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b} = \mathbf{b}$ 이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+
+식 (1) 의 오른쪽 변을 쓸 수 있는지와 최소 노름 해가 무엇인지는 rank $r$ 에 따라 아래이다.
+
+- $r = m$ 이고 $r \lt n$: 식 (1) 의 오른쪽 변으로 구한다. 모든 $\mathbf{b}$ 가 column space 에 속하므로 해가 언제나 있고 무수히 많다.
+- $r = n$: null space 에 zero vector 만 있어 해가 있으면 하나뿐이고, 그 해가 곧 최소 노름 해이다. $r = m = n$ 이면 그 해는 $\mathbf{A}^{-1}\mathbf{b}$ 이다.
+- $r \lt m$ 이고 $r \lt n$, $\mathbf{b}$ 가 column space 에 속함: $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없어 식 (1) 의 오른쪽 변을 쓸 수 없고, 특이값 분해로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이다 ([6.2](#62-breaking-conditions)).
+- $\mathbf{b}$ 가 column space 에 속하지 않음: 해가 없어 최소 노름 해도 없다 ([6.2](#62-breaking-conditions)).
 
 ## 5. Worked Example
 
