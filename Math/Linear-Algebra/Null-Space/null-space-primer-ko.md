@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 36 | Created: 2026-10-31 | Updated: 2026-11-03 04:25 UTC
+Rev. 37 | Created: 2026-10-31 | Updated: 2026-11-03 06:25 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -83,7 +83,7 @@ Table 1. Symbols
 \mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)
 ```
 
-> **Definition (nullity)**: $m \times n$ 행렬 $\mathbf{A}$ 의 nullity $\mathrm{nullity}(\mathbf{A})$ 는 $\mathrm{Null}(\mathbf{A})$ 의 차원이다.
+> **Definition (nullity)**: $m \times n$ 행렬 $\mathbf{A}$ 의 nullity $\mathrm{nullity}(\mathbf{A})$ 는 $\mathrm{Null}(\mathbf{A})$ 의 차원, 곧 $\mathrm{Null}(\mathbf{A})$ 안에서 서로 일차독립인 vector 의 최대 개수이다.
 
 $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다.
 
