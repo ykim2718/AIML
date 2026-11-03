@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 34 | Created: 2026-10-31 | Updated: 2026-11-02 21:46 UTC
+Rev. 35 | Created: 2026-10-31 | Updated: 2026-11-03 04:10 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -9,6 +9,7 @@ Rev. 34 | Created: 2026-10-31 | Updated: 2026-11-02 21:46 UTC
   - [4.2 Linear Transformation](#42-linear-transformation)
   - [4.3 Uniqueness of Solutions](#43-uniqueness-of-solutions)
   - [4.4 Rank-Nullity Theorem](#44-rank-nullity-theorem)
+  - [4.5 Orthogonality to the Row Space](#45-orthogonality-to-the-row-space)
 - [5. Worked Example](#5-worked-example)
 - [6. Application](#6-application)
   - [6.1 Collinear Features in Linear Regression](#61-collinear-features-in-linear-regression)
@@ -92,7 +93,7 @@ $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\
 
 ### 4.2 Linear Transformation
 
-$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다.
+$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다. 정사각 행렬 ($m = n$) 의 null space 에 zero vector 가 아닌 vector 가 있으면, 그 vector 를 $\mathbf{x}$ 에 더해도 $\mathbf{A}\mathbf{x}$ 가 바뀌지 않는다. 출력 $\mathbf{A}\mathbf{x}$ 에서 입력 $\mathbf{x}$ 를 하나로 정할 수 없으므로 $\mathbf{A}$ 의 역행렬이 없으며, 식 (5) 의 $\mathbf{A}$ 가 이 경우이다.
 
 ### 4.3 Uniqueness of Solutions
 
@@ -137,6 +138,14 @@ Fig 1. Rank and nullity of the matrix in equation (5)
 - (b): 같은 격자점을 $\mathbf{A}$ 로 옮긴 점. 모든 점이 첫 두 열이 생성하는 column space 평면 (파랑) 위에 있어 rank 는 2 이고, (a) 의 주황 직선 위의 점은 모두 원점으로 간다. 두 차원을 더하면 $2 + 1 = 3 = n$ 이다.
 
 Fig 1 은 같은 folder 의 [`src/null_space_rank_nullity.py`](src/null_space_rank_nullity.py) 로 그렸다. 이 script 는 $\mathbf{A}\mathbf{n} = \mathbf{0}$ 과 rank, nullity 를 확인하고, 옮긴 점이 모두 column space 평면 위에 있는지 검사한 뒤 그림을 저장한다. 이 folder 에서 `python3 src/null_space_rank_nullity.py --output-folder .` 를 실행하면 `null-space-primer-ko_fig/fig1.png` 가 생긴다.
+
+### 4.5 Orthogonality to the Row Space
+
+$\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 각 행은 $\mathbf{A}$ 의 한 행과 $\mathbf{x}$ 의 내적이 0 이라는 식이다. 그래서 null space 의 vector 는 $\mathbf{A}$ 의 모든 행과 직교하고, 행들의 일차결합인 row space 의 모든 vector 와도 직교한다. Row space 의 차원은 rank 이므로 식 (4) 에서 두 공간의 차원을 더하면 $n$ 이고, 입력 공간 $\mathbb{R}^n$ 의 모든 vector 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다.
+
+식 (5) 의 $\mathbf{A}$ 에서 row space 는 첫 두 행 $[1, 0, 1]^\top$ 과 $[0, 1, 1]^\top$ 이 생성하는 평면이고, 식 (6) 의 $\mathbf{n}$ 과의 내적은 $-1 + 0 + 1 = 0$ 과 $0 - 1 + 1 = 0$ 이다. 특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 row space 성분 $[1/3, 4/3, 5/3]^\top$ 과 null space 성분 $[5/3, 5/3, -5/3]^\top$ 의 합이다. 두 성분이 직교하므로 $\lVert \mathbf{x}_0 \rVert^2 = 13$ 은 두 성분의 norm 의 제곱 $14/3$ 과 $25/3$ 을 더한 값이다.
+
+식 (2) 의 해들은 null space 성분만 다르고 row space 성분은 모두 같다. Null space 성분이 zero vector 인 해가 norm 이 가장 작은 최소 노름 해이며, 식 (5) 에서는 [6.2](#62-numerical-computation-with-svd) 의 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 이다. Row space 의 정의와 성질은 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에 있다.
 
 ## 5. Worked Example
 
@@ -205,6 +214,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - **pivot 열**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화.
 - **regularization**: 손실 함수에 weight 의 크기에 대한 벌점을 더해 weight 를 하나로 정하는 방법.
+- **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체. $\mathbb{R}^n$ 의 부분공간이며 차원은 rank 이다.
 - **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
@@ -215,7 +225,9 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - **자명해 (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 zero vector $\mathbf{x} = \mathbf{0}$.
 - **자유 열**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (자유 변수) 는 아무 값이나 가질 수 있다.
 - **정규방정식 (normal equation)**: 최소제곱 weight 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\mathbf{w} = \mathbf{A}^\top\mathbf{y}$. $\mathbf{y}$ 는 관측값 vector 이다.
+- **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
 - **첨가 행렬 (augmented matrix)**: 계수 행렬 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 행렬 $[\mathbf{A} \mid \mathbf{b}]$.
+- **최소 노름 해 (minimum norm solution)**: $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해 가운데 norm 이 가장 작은 해.
 - **특수해 (particular solution)**: $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족하는 해 하나.
 - **특이값 분해 (Singular Value Decomposition, SVD)**: 실수 행렬을 직교 행렬, 0 이상의 대각 원소를 가진 대각 행렬, 직교 행렬의 곱으로 나타내는 분해. 대각 원소가 특이값이다.
 
