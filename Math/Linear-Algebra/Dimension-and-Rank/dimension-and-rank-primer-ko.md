@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 9 | Created: 2026-11-03 | Updated: 2026-11-03 09:15 UTC
+Rev. 10 | Created: 2026-11-03 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -57,12 +57,10 @@ Table 1. Symbols
 
 ## 4. Definitions
 
-> **Definition: Dimension**
->
+> **Definition: Dimension**<br>
 > Vector space $V$ 의 기저 (basis) 는 서로 일차독립이면서 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합이고, $V$ 의 차원 $\dim V$ 는 그 기저에 든 vector 의 개수이다. $V$ 의 기저는 여럿이지만 그 개수는 모두 같다.
 
-> **Definition: Rank**
->
+> **Definition: Rank**<br>
 > $m \times n$ 행렬 $\mathbf{A}$ 의 rank $\mathrm{rank}(\mathbf{A})$ 는 column space $\mathrm{Col}(\mathbf{A})$ 의 차원, 곧 $\mathbf{A}$ 의 열 가운데 서로 일차독립인 열의 최대 개수이다 (식 (1)).
 
 ```math
@@ -203,12 +201,10 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 
 ## Appendix B. Finding a Basis
 
-> **Definition: Basis**
->
+> **Definition: Basis**<br>
 > 기저 (basis) 는 vector space $V$ 의 vector 가운데 서로 일차독립이면서, 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합이다.
 
-> **Definition: Basis vector**
->
+> **Definition: Basis vector**<br>
 > 기저 vector (basis vector) 는 기저에 든 vector 하나하나이다.
 
 기저가 있으면 $V$ 의 모든 vector 를 기저 vector 의 일차결합으로 적을 수 있고, 기저 vector 가 서로 일차독립이므로 그 계수는 하나로 정해진다. $\mathbb{R}^3$ 의 기저 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 에서 $[2, 3, 0]^\top$ 은 $2 \cdot [1, 0, 0]^\top + 3 \cdot [0, 1, 0]^\top + 0 \cdot [0, 0, 1]^\top$ 으로만 적힌다. 같은 $V$ 에 기저는 여럿이지만 기저 vector 의 개수는 모두 같으며, 그 개수가 $V$ 의 차원이다.

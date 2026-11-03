@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 19 | Created: 2026-04-25 | Updated: 2026-11-03 09:15 UTC
+Rev. 20 | Created: 2026-04-25 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Introduction: R² and Its Relation to RSQ](#1-introduction-r²-and-its-relation-to-rsq)
 - [2. Comparison of the Two Formulas](#2-comparison-of-the-two-formulas)
@@ -165,8 +165,7 @@ $$\sum y_i^2 = \sum \hat{y}_i^2 + \sum e_i^2 \quad \Longleftrightarrow \quad TSS
 
 Dividing both sides by $TSS_u$ gives $1 = ESS_u/TSS_u + RSS/TSS_u$.
 
-> **Definition: Uncentered R²**
->
+> **Definition: Uncentered R²**<br>
 > Uncentered R² is the ratio of the sum of squares explained by the model, $ESS_u$, to the total sum of squares around zero, $TSS_u$.
 
 $$R^2_u \equiv \frac{ESS_u}{TSS_u} = \frac{\sum \hat{y}_i^2}{\sum y_i^2} = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum y_i^2}$$

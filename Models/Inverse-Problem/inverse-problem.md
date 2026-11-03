@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 55 | Created: 2026-10-25 | Updated: 2026-11-03 09:15 UTC
+Rev. 56 | Created: 2026-10-25 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -436,8 +436,7 @@ Bagging is short for bootstrap aggregating, an ensemble method that trains sever
 
 Sampling with replacement draws one row, puts it back among the candidates, and then draws the next row. With n rows in the original data the draw is repeated n times, so some rows are drawn more than once and some are never drawn. Each individual model thus gets a slightly different training sample of n rows.
 
-> **Definition: Bagging ensemble**
->
+> **Definition: Bagging ensemble**<br>
 > The method that combines the three steps is called a bagging ensemble.
 
 The PLS bootstrap ensemble is a bagging ensemble whose individual model is PLS [[6](#ref-6)].

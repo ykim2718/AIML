@@ -1,5 +1,5 @@
 # Variance Components in $R^2$
-Rev. 17 | Created: 2026-04-08 | Updated: 2026-11-03 09:15 UTC
+Rev. 18 | Created: 2026-04-08 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
@@ -45,8 +45,7 @@ The fundamental identity is
 
 $$SS_{tot} = SS_{reg} + SS_{res} \hspace{19em} (1)$$
 
-> **Definition: $R^2$**
->
+> **Definition: $R^2$**<br>
 > $R^2$ is the proportion of the total variance in $Y$ that is explained by $X$ (equation (2)).
 
 $$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}} \hspace{19em} (2)$$

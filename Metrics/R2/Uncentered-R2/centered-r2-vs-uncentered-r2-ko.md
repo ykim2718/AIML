@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 7 | Created: 2026-09-05 | Updated: 2026-11-03 09:15 UTC
+Rev. 8 | Created: 2026-09-05 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Introduction: R² and Its Relation to RSQ](#1-introduction-r²-and-its-relation-to-rsq)
 - [2. Comparison of the Two Formulas](#2-comparison-of-the-two-formulas)
@@ -153,8 +153,7 @@ $$\sum y_i^2 = \sum \hat{y}_i^2 + \sum e_i^2 \quad \Longleftrightarrow \quad TSS
 
 양변을 $TSS_u$ 로 나누면 $1 = ESS_u/TSS_u + RSS/TSS_u$ 가 된다.
 
-> **Definition: Uncentered R²**
->
+> **Definition: Uncentered R²**<br>
 > Uncentered R² 는 0 을 기준으로 한 총제곱합 $TSS_u$ 가운데 model 이 설명한 $ESS_u$ 의 비율이다.
 
 $$R^2_u \equiv \frac{ESS_u}{TSS_u} = \frac{\sum \hat{y}_i^2}{\sum y_i^2} = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum y_i^2}$$

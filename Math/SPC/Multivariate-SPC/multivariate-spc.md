@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 2 | Created: 2026-09-28 | Updated: 2026-11-03 09:15 UTC
+Rev. 3 | Created: 2026-09-28 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -159,8 +159,7 @@ of the $j$-th principal component.
 
 $$T^{2} = \sum_{j=1}^{a} \frac{t_j^{2}}{\lambda_j} \hspace{19em} (5)$$
 
-> **Definition: SPE**
->
+> **Definition: SPE**<br>
 > The sum of squared residuals, the distance out of the subspace, is called the squared prediction error (SPE) or the $Q$ statistic.
 
 $$SPE = \left\lVert \mathbf{x} - \hat{\mathbf{x}} \right\rVert^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$

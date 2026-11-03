@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 21 | Created: 2026-11-02 | Updated: 2026-11-03 09:15 UTC
+Rev. 22 | Created: 2026-11-02 | Updated: 2026-11-03 09:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -84,8 +84,7 @@ Table 1. Vector norms of x = [3, 4]
 | L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | Circle    | 최소제곱, ridge, 최소 노름 해 |
 | L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | Square    | 원소별 한계                   |
 
-> **Definition: Unit ball**
->
+> **Definition: Unit ball**<br>
 > Unit ball 은 norm 이 1 이하인 vector 의 집합이다.
 
 Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다. "ball" 은 L2 norm 일 때 집합이 둥근 모양인 데서 온 이름이며, 모양과 관계없이 norm 이 1 이하인 집합을 모두 unit ball 이라 부른다. 그래서 같은 정의라도 L1 norm 이면 Diamond, L∞ norm 이면 Square 가 된다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
@@ -102,8 +101,7 @@ Table 2. Matrix norms of A in equation (10)
 
 ## 4. Definitions
 
-> **Definition: Norm**
->
+> **Definition: Norm**<br>
 > $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $\mathbb{R}^n$ 위의 norm 은 $\mathbb{R}^n$ 의 vector 마다 실수 하나를 주는 함수 $\lVert \cdot \rVert : \mathbb{R}^n \to \mathbb{R}$ 로서, 모든 $\mathbf{x}, \mathbf{y} \in \mathbb{R}^n$ 과 모든 실수 $c$ 에 대해 양수성 (식 (1)), 동차성 (식 (2)), 삼각부등식 (식 (3)) 의 세 조건을 모두 만족하는 함수이다. $m \times n$ 행렬 전체의 집합 $\mathbb{R}^{m \times n}$ 위의 norm 도 vector 대신 행렬을 넣어 같은 세 조건으로 정의한다.
 
 세 조건은 아래이다.
@@ -131,8 +129,7 @@ Table 2. Matrix norms of A in equation (10)
 
 삼각부등식의 이름과 숫자 예시는 [Appendix C](#appendix-c-triangle-inequality) 에 있다.
 
-> **Definition: Distance**
->
+> **Definition: Distance**<br>
 > 두 vector $\mathbf{x}$, $\mathbf{y}$ 사이의 거리는 두 vector 의 차 $\mathbf{x} - \mathbf{y}$ 의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 이다.
 
 거리는 어느 norm 을 쓰느냐에 따라 달라져, L2 norm 이면 원점에서 잰 직선 거리처럼 두 점을 곧게 이은 거리가 되고 L1 norm 이면 좌표축을 따라 가로와 세로로만 움직인 거리가 된다.
