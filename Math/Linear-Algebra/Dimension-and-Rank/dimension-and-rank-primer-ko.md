@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 1 | Created: 2026-11-03 | Updated: 2026-11-03 06:45 UTC
+Rev. 2 | Created: 2026-11-03 | Updated: 2026-11-03 07:05 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,6 +12,7 @@ Rev. 1 | Created: 2026-11-03 | Updated: 2026-11-03 06:45 UTC
 - [7. Application](#7-application)
   - [7.1 Rank Conditions of a Linear System](#71-rank-conditions-of-a-linear-system)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Finding a Basis](#appendix-b-finding-a-basis)
 
 ## 1. Purpose
 
@@ -65,7 +66,7 @@ Table 1. Symbols
 \hspace{19em} (1)
 ```
 
-$\mathbb{R}^3$ 의 차원은 3 이고, $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 기저의 하나이다. $\mathbb{R}^3$ 안에서 원점을 지나는 평면은 일차독립인 vector 두 개로 생성되므로 차원이 2 이고, 원점을 지나는 직선은 vector 하나로 생성되므로 차원이 1 이다.
+$\mathbb{R}^3$ 의 차원은 3 이고, $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 기저의 하나이다. $\mathbb{R}^3$ 안에서 원점을 지나는 평면은 일차독립인 vector 두 개로 생성되므로 차원이 2 이고, 원점을 지나는 직선은 vector 하나로 생성되므로 차원이 1 이다. 행렬에서 기저를 구하는 방법은 [Appendix B](#appendix-b-finding-a-basis) 에 있다.
 
 ## 5. Interpretation
 
@@ -192,4 +193,35 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **일차결합 (linear combination)**: vector 들에 각각 상수를 곱해 더한 것.
 - **일차독립 (linear independence)**: 어느 vector 도 나머지 vector 들의 일차결합으로 적히지 않는 것.
+- **자유 열**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (자유 변수) 는 아무 값이나 가질 수 있고, pivot 열의 변수 (pivot 변수) 는 자유 변수의 값으로 정해진다.
 - **행렬식 (determinant)**: 정사각 행렬에 매기는 수. $2 \times 2$ 행렬에서는 대각선 두 원소의 곱에서 나머지 두 원소의 곱을 뺀 값이고, 0 이 아니면 두 열이 서로 일차독립이다.
+
+## Appendix B. Finding a Basis
+
+$\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴로 바꾸면 column space, row space, null space 의 기저를 모두 구할 수 있다. 식 (3) 의 $\mathbf{A}$ 에서 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, 이를 $-2$ 로 나누면 $[0, 1, 1.5]$ 이고, 첫째 행에서 이 행의 2 배를 빼면 $[1, 0, 0]$ 이다.
+
+```math
+\begin{bmatrix} 1 & 2 & 3 \\ 4 & 6 & 9 \end{bmatrix}
+\;\longrightarrow\;
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
+\hspace{19em} (10)
+```
+
+식 (10) 의 오른쪽 행렬에서 pivot 열은 첫째와 둘째 열이고, 자유 열은 셋째 열이다. 세 공간의 기저는 아래처럼 구한다.
+
+- Column space: pivot 열과 같은 번호의 $\mathbf{A}$ 의 열이 기저이다. 기본 행 연산은 열이 놓인 공간 $\mathbb{R}^m$ 의 vector 를 바꾸므로, 기약 행사다리꼴의 열이 아니라 원래 $\mathbf{A}$ 의 열을 쓴다. 식 (3) 에서는 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 이다.
+- Row space: 기약 행사다리꼴의 0 이 아닌 행이 기저이다. 기본 행 연산은 행의 일차결합만 만들어 row space 를 바꾸지 않는다. 식 (10) 에서는 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 이다.
+- Null space: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 에서 자유 변수 하나만 1, 나머지 자유 변수는 0 으로 두고, 기약 행사다리꼴의 각 행에서 pivot 변수를 구한다. 자유 변수마다 기저 vector 하나를 얻는다. 식 (10) 에서 $\mathbf{x}$ 의 셋째 원소를 1 로 두면 첫 행에서 첫째 원소가 0, 둘째 행에서 둘째 원소가 $-1.5$ 여서 $[0, -1.5, 1]^\top$ 이다.
+
+세 기저를 모으면 아래 Table 4 와 같다.
+
+Table 4. Bases of the three spaces of the matrix in equation (3)
+
+| Space        | Basis                                                      | Dimension |
+| :----------: | :--------------------------------------------------------: | :-------: |
+| Column space | $\mathbf{c}_1 = [1, 4]^\top$, $\mathbf{c}_2 = [2, 6]^\top$ | 2         |
+| Row space    | $[1, 0, 0]^\top$, $[0, 1, 1.5]^\top$                       | 2         |
+| Null space   | $[0, -1.5, 1]^\top$                                        | 1         |
+
+Row space 의 기저 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 은 식 (4) 의 $\mathbf{r}_1$, $\mathbf{r}_2$ 와 다르지만, $[1, 0, 0]^\top = -3\,\mathbf{r}_1 + \mathbf{r}_2$ 와 $[0, 1, 1.5]^\top = 2\,\mathbf{r}_1 - 0.5\,\mathbf{r}_2$ 로 같은 평면을 생성하고 개수도 2 로 같다. Null space 의 기저 $[0, -1.5, 1]^\top$ 은 [6](#6-worked-example) 의 $[0, 1.5, -1]^\top$ 에 $-1$ 을 곱한 것이다. 기약 행사다리꼴, pivot 열, 자유 변수로 해를 구하는 순서는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에도 있다.
+
