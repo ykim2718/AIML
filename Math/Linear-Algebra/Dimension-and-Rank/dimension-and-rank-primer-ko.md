@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 0 | Created: 2026-11-03 | Updated: 2026-11-03 06:35 UTC
+Rev. 1 | Created: 2026-11-03 | Updated: 2026-11-03 06:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -188,6 +188,7 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. Column space 의 차원과 같다.
 - **기본 행 연산 (elementary row operation)**: 두 행을 맞바꾸기, 한 행에 0 이 아닌 수를 곱하기, 한 행에 다른 행의 상수배를 더하기의 세 연산.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
+- **기저 (basis)**: Vector space $V$ 의 vector 가운데 서로 일차독립이면서, 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합. $\mathbb{R}^3$ 에서는 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 하나이다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **일차결합 (linear combination)**: vector 들에 각각 상수를 곱해 더한 것.
 - **일차독립 (linear independence)**: 어느 vector 도 나머지 vector 들의 일차결합으로 적히지 않는 것.
