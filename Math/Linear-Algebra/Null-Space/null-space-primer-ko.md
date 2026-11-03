@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 38 | Created: 2026-10-31 | Updated: 2026-11-03 06:30 UTC
+Rev. 39 | Created: 2026-10-31 | Updated: 2026-11-03 06:50 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -8,8 +8,9 @@ Rev. 38 | Created: 2026-10-31 | Updated: 2026-11-03 06:30 UTC
 - [5. Interpretation](#5-interpretation)
   - [5.1 Linear Transformation](#51-linear-transformation)
   - [5.2 Uniqueness of Solutions](#52-uniqueness-of-solutions)
-  - [5.3 Rank-Nullity Theorem](#53-rank-nullity-theorem)
-  - [5.4 Orthogonality to the Row Space](#54-orthogonality-to-the-row-space)
+  - [5.3 Finding the Solutions](#53-finding-the-solutions)
+  - [5.4 Rank-Nullity Theorem](#54-rank-nullity-theorem)
+  - [5.5 Orthogonality to the Row Space](#55-orthogonality-to-the-row-space)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
   - [7.1 Collinear Features in Linear Regression](#71-collinear-features-in-linear-regression)
@@ -89,11 +90,11 @@ $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\
 
 식 (1) 에서 바로 찾을 수 있는 해는 zero vector 이며, 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 zero vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다. 🌳
 
-또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다. $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 $\mathbf{A}$ 의 모든 행과 직교한다는 뜻이다.🌳 행들이 생성하는 row space 와 null space 의 관계는 [5.4](#54-orthogonality-to-the-row-space) 에 있다.
+또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다. $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 $\mathbf{A}$ 의 모든 행과 직교한다는 뜻이다.🌳 행들이 생성하는 row space 와 null space 의 관계는 [5.5](#55-orthogonality-to-the-row-space) 에 있다.
 
 ## 5. Interpretation
 
-식 (1) 의 null space 는 선형 변환에서 원점으로 가는 입력 ([5.1](#51-linear-transformation)), 해의 개수 ([5.2](#52-uniqueness-of-solutions)), rank 와 nullity 의 합 ([5.3](#53-rank-nullity-theorem)), row space 와의 직교 ([5.4](#54-orthogonality-to-the-row-space)) 의 네 가지로 해석한다.
+식 (1) 의 null space 는 선형 변환에서 원점으로 가는 입력 ([5.1](#51-linear-transformation)), 해의 개수 ([5.2](#52-uniqueness-of-solutions)), rank 와 nullity 의 합 ([5.4](#54-rank-nullity-theorem)), row space 와의 직교 ([5.5](#55-orthogonality-to-the-row-space)) 의 네 가지로 해석한다. 해를 구하는 순서는 [5.3](#53-finding-the-solutions) 에 있다.
 
 ### 5.1 Linear Transformation
 
@@ -122,7 +123,19 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 �
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 null space 와 상관없이 0 개이다. Null space 로 해가 하나인지 무수히 많은지를 가리는 것은 해가 하나라도 있을 때만 맞다.
 
-### 5.3 Rank-Nullity Theorem
+### 5.3 Finding the Solutions
+
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 를 기본 행 연산으로 기약 행사다리꼴로 바꾼 뒤 아래 순서로 구한다. 첨가 행렬과 그 rank 는 [Appendix C](#appendix-c-counting-the-solutions-of-equation-2) 에 있다.
+
+1. 해가 있는지 확인한다. 왼쪽이 모두 0 인데 우변이 0 이 아닌 행이 있으면, 그 행은 0 이 0 이 아닌 수와 같다는 식이 되어 해가 없다.
+2. 열을 pivot 열과 자유 열로 나눈다. Pivot 열의 변수 (pivot 변수) 는 자유 변수의 값으로 정해지고, 자유 변수는 아무 값이나 가질 수 있다.
+3. 특수해 $\mathbf{x}_0$ 를 구한다. 자유 변수를 모두 0 으로 두면 pivot 변수는 각 행의 우변과 같다.
+4. Null space 를 생성하는 vector 를 구한다. 우변을 모두 0 으로 두고 자유 변수 하나만 1, 나머지는 0 으로 두어 pivot 변수를 구한다. 자유 변수마다 vector 하나를 얻으므로, 그 개수가 nullity 이다.
+5. 해 전체는 $\mathbf{x}_0$ 에 4 번의 vector 들의 상수배를 더한 것이다 (식 (2)).
+
+식 (5) 의 $\mathbf{A}$ 와 $\mathbf{b}$ 에서 $[\mathbf{A} \mid \mathbf{b}]$ 의 셋째 행에서 첫 두 행을 빼면 기약 행사다리꼴의 세 행은 $[1, 0, 1 \mid 2]$, $[0, 1, 1 \mid 3]$, $[0, 0, 0 \mid 0]$ 이다. 셋째 행의 우변이 0 이어서 해가 있고, pivot 열은 첫째와 둘째 열, 자유 열은 셋째 열이다. $x_3 = 0$ 으로 두면 $\mathbf{x}_0 = [2, 3, 0]^\top$ 이고, 우변을 0 으로 두고 $x_3 = 1$ 로 두면 $x_1 = -1$, $x_2 = -1$ 이어서 식 (6) 의 $\mathbf{n} = [-1, -1, 1]^\top$ 이다. 해 전체는 $\mathbf{x}_0 + c\,\mathbf{n} = [2 - c, 3 - c, c]^\top$ 이며, [Table 2](#6-worked-example) 가 $c = 0, 1, 2$ 일 때의 값이다.
+
+### 5.4 Rank-Nullity Theorem
 
 계수 (rank) 와 nullity 를 더하면 열의 수 $n$ 이 된다.
 
@@ -143,7 +156,7 @@ Fig 1. Rank and nullity of the matrix in equation (5)
 
 Fig 1 은 같은 folder 의 [`src/null_space_rank_nullity.py`](src/null_space_rank_nullity.py) 로 그렸다. 이 script 는 $\mathbf{A}\mathbf{n} = \mathbf{0}$ 과 rank, nullity 를 확인하고, 옮긴 점이 모두 column space 평면 위에 있는지 검사한 뒤 그림을 저장한다. 이 folder 에서 `python3 src/null_space_rank_nullity.py --output-folder .` 를 실행하면 `null-space-primer-ko_fig/fig1.png` 가 생긴다.
 
-### 5.4 Orthogonality to the Row Space
+### 5.5 Orthogonality to the Row Space
 
 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 각 행은 $\mathbf{A}$ 의 한 행과 $\mathbf{x}$ 의 내적이 0 이라는 식이다. 그래서 null space 의 vector 는 $\mathbf{A}$ 의 모든 행과 직교하고, 행들의 일차결합인 row space 의 모든 vector 와도 직교한다. Row space 의 차원은 rank 이므로 식 (4) 에서 두 공간의 차원을 더하면 $n$ 이고, 입력 공간 $\mathbb{R}^n$ 의 모든 vector 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다.
 
