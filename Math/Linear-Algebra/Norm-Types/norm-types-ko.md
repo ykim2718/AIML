@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-03 00:08 UTC
+Rev. 9 | Created: 2026-11-02 | Updated: 2026-11-03 00:11 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -97,7 +97,9 @@ Table 2. Matrix norms of A in equation (10)
 
 ## 4. Definition
 
-Norm 은 vector 마다 0 이상의 실수 하나를 주는 함수 $\lVert \cdot \rVert$ 이며, 모든 vector $\mathbf{x}$, $\mathbf{y}$ 와 상수 $c$ 에 대해 아래 세 조건을 만족한다.
+> **Definition (norm)**: $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $\mathbb{R}^n$ 위의 norm 은 $\mathbb{R}^n$ 의 vector 마다 실수 하나를 주는 함수 $\lVert \cdot \rVert : \mathbb{R}^n \to \mathbb{R}$ 로서, 모든 $\mathbf{x}, \mathbf{y} \in \mathbb{R}^n$ 과 모든 실수 $c$ 에 대해 양수성 (식 (1)), 동차성 (식 (2)), 삼각부등식 (식 (3)) 의 세 조건을 모두 만족하는 함수이다. $m \times n$ 행렬 전체의 집합 $\mathbb{R}^{m \times n}$ 위의 norm 도 vector 대신 행렬을 넣어 같은 세 조건으로 정의한다.
+
+세 조건은 아래이다.
 
 양수성 (positivity) 은 norm 이 0 이상이고, 0 이 되는 것은 zero vector 뿐이라는 조건이다.
 
