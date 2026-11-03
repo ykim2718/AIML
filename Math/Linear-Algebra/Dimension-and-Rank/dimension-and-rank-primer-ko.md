@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 11 | Created: 2026-11-03 | Updated: 2026-11-03 09:45 UTC
+Rev. 12 | Created: 2026-11-03 | Updated: 2026-11-03 09:50 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -241,7 +241,7 @@ $\mathbf{A}$ 의 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, �
 - Row space: 기약 행사다리꼴의 0 이 아닌 행이 기저이다. 기본 행 연산은 행의 일차결합만 만들어 row space 를 바꾸지 않는다. 식 (10) 에서는 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 이다.
 - Null space: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 에서 free variable 하나만 1, 나머지 free variable 은 0 으로 두고, 기약 행사다리꼴의 각 행에서 pivot 변수를 구한다. free variable 마다 기저 vector 하나를 얻는다. 식 (10) 에서 $\mathbf{x}$ 의 셋째 원소를 1 로 두면 첫 행에서 첫째 원소가 0, 둘째 행에서 둘째 원소가 $-1.5$ 여서 $[0, -1.5, 1]^\top$ 이다.
 
-네 부분공간의 기저를 모으면 아래 Table 4 와 같다.
+행렬 $\mathbf{A}$ 하나에는 부분공간이 네 개 있다. Column space, row space, null space 에 left null space 가 더해지고, 네 공간마다 기저가 있다. 네 부분공간의 기저를 모으면 아래 Table 4 와 같다.
 
 Table 4. Bases of the four subspaces of the matrix in equation (3)
 
