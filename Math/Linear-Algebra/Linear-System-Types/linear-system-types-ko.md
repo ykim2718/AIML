@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-03 02:50 UTC
+Rev. 9 | Created: 2026-11-02 | Updated: 2026-11-03 02:53 UTC
 
 ## 1. Purpose
 
@@ -61,12 +61,6 @@ Ax = b
              any null space vector added to a solution is a solution
              -> null space method      x = (one solution) + (null space vector), all solutions
              -> minimum norm solution  x = A^T (A A^T)^-1 b   (rank(A) = m), one of them
-
-Pseudo-inverse: x = A^+ b gives the least squares solution, the inverse and the minimum norm solution
-  rank(A) = n ........... A^+ = (A^T A)^-1 A^T
-  rank(A) = m ........... A^+ = A^T (A A^T)^-1
-  rank(A) = m = n ....... A^+ = A^-1
-  rank(A) < m, n ........ A^+ from the singular value decomposition
 ```
 
 <a id="fig-2"></a>
@@ -78,7 +72,11 @@ Fig 2. Hierarchy of the rank test
 - 해가 무수히 많은 갈래에는 풀이가 둘이다.
   - Null space 방법: 해 하나에 null space vector 를 더해 모든 해를 적는다. 자세한 내용은 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
   - 최소 노름 해: null space 방법이 적은 모든 해 가운데 null space 성분이 zero vector 인 해 하나를 고른다.
-- 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}\mathbf{b}$ 로 하나로 적힌다.
+- 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}$ 로 $\mathbf{x} = \mathbf{A}^{+}\mathbf{b}$ 라 적는다. 세 식에서 $\mathbf{b}$ 앞에 곱한 행렬이 각 rank 조건에서의 $\mathbf{A}^{+}$ 이다.
+  - $\mathrm{rank}(\mathbf{A}) = n$: $\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고, 최소제곱 해를 준다.
+  - $\mathrm{rank}(\mathbf{A}) = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고, 최소 노름 해를 준다.
+  - $\mathrm{rank}(\mathbf{A}) = m = n$: $\mathbf{A}^{+} = \mathbf{A}^{-1}$ 이고, 하나뿐인 해를 준다.
+  - $\mathrm{rank}(\mathbf{A}) \lt m$ 이고 $\mathrm{rank}(\mathbf{A}) \lt n$: $\mathbf{A}^{+}$ 는 특이값 분해로 구한다.
 
 ### 3.1 Comparison
 
