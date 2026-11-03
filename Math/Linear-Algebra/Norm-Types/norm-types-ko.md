@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-03 00:00 UTC
+Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 00:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -24,23 +24,23 @@ Vector norm 은 Lp norm 의 $p$ 로 갈리며 L1, L2, L∞ 가 대표이고, mat
 
 ## 3. Taxonomy and its Hierarchy
 
-이 문서에서 $\mathbf{x}$ 는 원소 $x_1, \dots, x_n$ 으로 이루어진 $n$ 차원 열 vector, $\mathbf{A}$ 는 $m \times n$ 실수 행렬, $\sigma_1 \ge \sigma_2 \ge \cdots$ 는 $\mathbf{A}$ 의 특이값이다. Norm 은 재는 대상과 재는 방식의 두 축으로 나뉘며, 축마다의 값은 아래 [Fig 1](#fig-1) 이다.
+이 문서에서 $\mathbf{x}$ 는 원소 $x_1, \dots, x_n$ 으로 이루어진 $n$ 차원 열 vector, $\mathbf{A}$ 는 $m \times n$ 실수 행렬, $\sigma_1 \ge \sigma_2 \ge \cdots$ 는 $\mathbf{A}$ 의 특이값이다. Norm 은 무엇의 크기를 재는지와 무엇으로 크기를 계산하는지의 두 축으로 나뉘며, 축마다의 값은 아래 [Fig 1](#fig-1) 이다.
 
 ```text
-Axis 1. Object
+Axis 1. Object measured
   vector               x in R^n
   matrix               A in R^(m x n)
 
-Axis 2. What is measured
-  elements             sum or maximum of |x_i| or |a_ij|
+Axis 2. Values computed from
+  elements             sum, root of sum of squares, or maximum of |x_i| or |a_ij|
   singular values      sum, root of sum of squares, or maximum of sigma_i
 ```
 
 <a id="fig-1"></a>
 Fig 1. Two axes of norms
 
-- Axis 1 은 재는 대상이다. Vector norm 은 vector 의 크기를, matrix norm 은 행렬의 크기를 잰다.
-- Axis 2 는 재는 방식이다. Vector 는 원소로만 잰다. 행렬은 원소로 재거나, 행렬이 vector 를 늘이는 배율인 특이값으로 잰다.
+- Axis 1 은 크기를 재는 대상이다. Vector norm 은 vector 의 크기를 재고, matrix norm 은 행렬의 크기를 잰다.
+- Axis 2 는 크기를 계산하는 데 쓰는 값이다. 원소로 계산하는 norm 은 원소 절댓값의 합, 제곱합의 제곱근, 최댓값을 쓰고, 특이값으로 계산하는 norm 은 특이값의 합, 제곱합의 제곱근, 최댓값을 쓴다. Vector norm 은 원소로만 계산하고, matrix norm 은 원소나 특이값으로 계산한다.
 
 Norm 의 종류는 아래 [Fig 2](#fig-2) 의 차례로 내려간다.
 
@@ -57,7 +57,7 @@ Norm axioms: positivity, homogeneity, triangle inequality
       +-- by elements
       |    +-- Frobenius ............ (sum a_ij^2)^(1/2)
       +-- by singular values
-           +-- spectral ............. sigma_1, the largest stretch
+           +-- spectral ............. sigma_1, the largest singular value
            +-- nuclear .............. sum sigma_i
 
 Not a norm: "L0" = number of nonzero elements (fails homogeneity)
