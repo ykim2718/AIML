@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 03:03 UTC
+Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 03:04 UTC
 
 ## 1. Purpose
 
@@ -96,9 +96,9 @@ Table 2. Number of solutions by the rank test
 
 | Number of solutions | Rank condition                                                                  | Null space                         | Left null space component of b |
 | :-----------------: | :-----------------------------------------------------------------------------: | :--------------------------------: | :----------------------------: |
-| 없음                | $\mathrm{rank}(\mathbf{A}) \lt \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$     | 판정에 쓰지 않음                   | zero vector 가 아님            |
-| 하나                | $\mathrm{rank}(\mathbf{A}) = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = n$   | zero vector 만 있음                | zero vector                    |
-| 무수히 많음         | $\mathrm{rank}(\mathbf{A}) = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) \lt n$ | zero vector 가 아닌 vector 가 있음 | zero vector                    |
+| None                | $\mathrm{rank}(\mathbf{A}) \lt \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$     | 판정에 쓰지 않음                   | zero vector 가 아님            |
+| Exactly one         | $\mathrm{rank}(\mathbf{A}) = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) = n$   | zero vector 만 있음                | zero vector                    |
+| Infinitely many     | $\mathrm{rank}(\mathbf{A}) = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}]) \lt n$ | zero vector 가 아닌 vector 가 있음 | zero vector                    |
 
 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{b} = \mathbf{0}$ 이어서 두 rank 가 언제나 같으므로 Table 2 의 아래 두 행만 나온다. 비동차 선형방정식 (nonhomogeneous linear equation) 은 세 행이 모두 나올 수 있다.
 
