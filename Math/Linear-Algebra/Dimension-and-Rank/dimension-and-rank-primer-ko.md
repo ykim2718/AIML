@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 2 | Created: 2026-11-03 | Updated: 2026-11-03 07:05 UTC
+Rev. 3 | Created: 2026-11-03 | Updated: 2026-11-03 07:25 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -198,7 +198,22 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 
 ## Appendix B. Finding a Basis
 
-$\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴로 바꾸면 column space, row space, null space 의 기저를 모두 구할 수 있다. 식 (3) 의 $\mathbf{A}$ 에서 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, 이를 $-2$ 로 나누면 $[0, 1, 1.5]$ 이고, 첫째 행에서 이 행의 2 배를 빼면 $[1, 0, 0]$ 이다.
+$\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴 (reduced row echelon form) 로 바꾸면 column space, row space, null space 의 기저를 모두 구할 수 있다. 기약 행사다리꼴은 각 행의 첫 0 이 아닌 원소 (pivot) 가 1 이고, pivot 이 있는 열의 다른 원소가 모두 0 이며, 아래 행의 pivot 이 위 행의 pivot 보다 오른쪽에 있는 꼴이다.
+
+식 (3) 의 $\mathbf{A}$ 와 식 (4) 의 두 행은 아래이다.
+
+```math
+\mathbf{A} = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 6 & 9 \end{bmatrix}
+\hspace{19em} (3)
+```
+
+```math
+\mathbf{r}_1 = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}, \qquad
+\mathbf{r}_2 = \begin{bmatrix} 4 \\ 6 \\ 9 \end{bmatrix}
+\hspace{19em} (4)
+```
+
+$\mathbf{A}$ 의 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, 이를 $-2$ 로 나누면 $[0, 1, 1.5]$ 이고, 첫째 행에서 이 행의 2 배를 빼면 $[1, 0, 0]$ 이다.
 
 ```math
 \begin{bmatrix} 1 & 2 & 3 \\ 4 & 6 & 9 \end{bmatrix}
@@ -209,7 +224,7 @@ $\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴로 바꾸면 col
 
 식 (10) 의 오른쪽 행렬에서 pivot 열은 첫째와 둘째 열이고, 자유 열은 셋째 열이다. 세 공간의 기저는 아래처럼 구한다.
 
-- Column space: pivot 열과 같은 번호의 $\mathbf{A}$ 의 열이 기저이다. 기본 행 연산은 열이 놓인 공간 $\mathbb{R}^m$ 의 vector 를 바꾸므로, 기약 행사다리꼴의 열이 아니라 원래 $\mathbf{A}$ 의 열을 쓴다. 식 (3) 에서는 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 이다.
+- Column space: pivot 열과 같은 번호의 $\mathbf{A}$ 의 열이 기저이다. 기본 행 연산은 열이 놓인 공간 $\mathbb{R}^m$ 의 vector 를 바꾸므로, 기약 행사다리꼴의 열이 아니라 원래 $\mathbf{A}$ 의 열을 쓴다. 식 (3) 에서는 첫째와 둘째 열 $\mathbf{c}_1 = [1, 4]^\top$ 과 $\mathbf{c}_2 = [2, 6]^\top$ 이다.
 - Row space: 기약 행사다리꼴의 0 이 아닌 행이 기저이다. 기본 행 연산은 행의 일차결합만 만들어 row space 를 바꾸지 않는다. 식 (10) 에서는 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 이다.
 - Null space: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 에서 자유 변수 하나만 1, 나머지 자유 변수는 0 으로 두고, 기약 행사다리꼴의 각 행에서 pivot 변수를 구한다. 자유 변수마다 기저 vector 하나를 얻는다. 식 (10) 에서 $\mathbf{x}$ 의 셋째 원소를 1 로 두면 첫 행에서 첫째 원소가 0, 둘째 행에서 둘째 원소가 $-1.5$ 여서 $[0, -1.5, 1]^\top$ 이다.
 
