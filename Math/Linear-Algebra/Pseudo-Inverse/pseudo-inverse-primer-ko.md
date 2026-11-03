@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 3 | Created: 2026-11-02 | Updated: 2026-11-02 21:46 UTC
+Rev. 4 | Created: 2026-11-02 | Updated: 2026-11-03 00:10 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -117,13 +117,23 @@ $\mathbf{A}^{+}$ 를 $\mathbf{A}$ 의 오른쪽에 곱하면 $m \times m$ 단위
 식 (3) 의 $\mathbf{A}^{+}$ 를 차례로 계산하면 아래이다.
 
 ```math
-\begin{aligned}
-\mathbf{A}\mathbf{A}^\top &= \begin{bmatrix} 1 & 1 & 1 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 1 \cdot 1 + 1 \cdot 1 + 1 \cdot 1 \end{bmatrix} = \begin{bmatrix} 3 \end{bmatrix} \\
-(\mathbf{A}\mathbf{A}^\top)^{-1} &= \begin{bmatrix} 1/3 \end{bmatrix} \\
-\mathbf{A}^{+} &= \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \begin{bmatrix} 1/3 \end{bmatrix} = \begin{bmatrix} 1/3 \\ 1/3 \\ 1/3 \end{bmatrix} \\
-\mathbf{x}^{\ast} &= \mathbf{A}^{+}\mathbf{b} = \begin{bmatrix} 1/3 \\ 1/3 \\ 1/3 \end{bmatrix} \begin{bmatrix} 3 \end{bmatrix} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}
-\end{aligned}
+\mathbf{A}\mathbf{A}^\top = \begin{bmatrix} 1 & 1 & 1 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 1 \cdot 1 + 1 \cdot 1 + 1 \cdot 1 \end{bmatrix} = \begin{bmatrix} 3 \end{bmatrix}
 \hspace{19em} (5)
+```
+
+```math
+(\mathbf{A}\mathbf{A}^\top)^{-1} = \begin{bmatrix} 1/3 \end{bmatrix}
+\hspace{19em} (6)
+```
+
+```math
+\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \begin{bmatrix} 1/3 \end{bmatrix} = \begin{bmatrix} 1/3 \\ 1/3 \\ 1/3 \end{bmatrix}
+\hspace{19em} (7)
+```
+
+```math
+\mathbf{x}^{\ast} = \mathbf{A}^{+}\mathbf{b} = \begin{bmatrix} 1/3 \\ 1/3 \\ 1/3 \end{bmatrix} \begin{bmatrix} 3 \end{bmatrix} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}
+\hspace{19em} (8)
 ```
 
 $\mathbf{A}^{+}$ 는 $3 \times 1$ 행렬이고 $\mathbf{A}\mathbf{A}^{+} = [1/3 + 1/3 + 1/3] = [1]$ 이다. $\mathbf{x}^{\ast} = [1, 1, 1]^\top$ 은 원소의 합이 3 인 해 가운데 norm 이 가장 작은 해이며, Minimum Norm Solution Primer 의 Worked Example 에서 구한 값과 같다.
@@ -135,19 +145,29 @@ $\mathbf{A}^{+}$ 는 $3 \times 1$ 행렬이고 $\mathbf{A}\mathbf{A}^{+} = [1/3 
 ```math
 \mathbf{A} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}, \qquad
 \mathbf{b} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}
-\hspace{19em} (6)
+\hspace{19em} (9)
 ```
 
 세 식 $x_1 = 1$, $x_2 = 0$, $x_1 + x_2 = 0$ 을 동시에 만족하는 해는 없다. 식 (2) 의 $\mathbf{A}^{+}$ 를 차례로 계산하면 아래이다.
 
 ```math
-\begin{aligned}
-\mathbf{A}^\top\mathbf{A} &= \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix} = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix} \\
-(\mathbf{A}^\top\mathbf{A})^{-1} &= \frac{1}{3} \begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix} \\
-\mathbf{A}^{+} &= (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top = \frac{1}{3} \begin{bmatrix} 2 & -1 & 1 \\ -1 & 2 & 1 \end{bmatrix} \\
-\hat{\mathbf{x}} &= \mathbf{A}^{+}\mathbf{b} = \begin{bmatrix} 2/3 \\ -1/3 \end{bmatrix}
-\end{aligned}
-\hspace{19em} (7)
+\mathbf{A}^\top\mathbf{A} = \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix} = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}
+\hspace{19em} (10)
+```
+
+```math
+(\mathbf{A}^\top\mathbf{A})^{-1} = \frac{1}{3} \begin{bmatrix} 2 & -1 \\ -1 & 2 \end{bmatrix}
+\hspace{19em} (11)
+```
+
+```math
+\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top = \frac{1}{3} \begin{bmatrix} 2 & -1 & 1 \\ -1 & 2 & 1 \end{bmatrix}
+\hspace{19em} (12)
+```
+
+```math
+\hat{\mathbf{x}} = \mathbf{A}^{+}\mathbf{b} = \begin{bmatrix} 2/3 \\ -1/3 \end{bmatrix}
+\hspace{19em} (13)
 ```
 
 $\mathbf{A}^{+}$ 는 $2 \times 3$ 행렬이고 $\mathbf{A}^{+}\mathbf{A}$ 는 $2 \times 2$ 단위 행렬이다. 잔차는 $\mathbf{b} - \mathbf{A}\hat{\mathbf{x}} = [1/3, 1/3, -1/3]^\top$ 이고 $\mathbf{A}^\top$ 을 곱하면 $[0, 0]^\top$ 이어서, 잔차가 $\mathbf{A}$ 의 두 열과 모두 직교한다. 같은 $\mathbf{A}$ 와 $\mathbf{b}$ 의 잔차 분해는 [Left Null Space Primer](../Left-Null-Space/left-null-space-primer-ko.md) 에 있다.
@@ -203,7 +223,7 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 \mathbf{A}^\top\mathbf{A}\hat{\mathbf{x}} &= \mathbf{A}^\top\mathbf{b} \\
 \hat{\mathbf{x}} &= (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top\mathbf{b}
 \end{aligned}
-\hspace{19em} (8)
+\hspace{19em} (14)
 ```
 
 - 첫째 줄: $\mathbf{A}\hat{\mathbf{x}}$ 가 column space 에서 $\mathbf{b}$ 와 가장 가까운 점이면 잔차는 column space 와 직교하고, 이는 $\mathbf{A}$ 의 각 열과 잔차의 내적이 0 이라는 뜻이다.
@@ -226,7 +246,7 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 \mathbf{y} &= (\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b} \\
 \mathbf{x}^{\ast} &= \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b}
 \end{aligned}
-\hspace{19em} (9)
+\hspace{19em} (15)
 ```
 
 - 첫째 줄: $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 넣는다. $\mathbf{y}$ 는 $m \times 1$ vector 이다.
