@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 03:20 UTC
+Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 03:31 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -71,19 +71,21 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 $r = m = n$ 이면 $\mathbf{x} = 
 \mathbf{A}^{+} =
 \begin{cases}
 (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top & r = n \ \ (\text{full column rank}) \\
-\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1} & r = m \ \ (\text{full row rank})
+\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1} & r = m \ \ (\text{full row rank}) \\
+\mathbf{A}^{-1} & r = m = n \\
+\text{from singular value decomposition} & r \lt m,\ r \lt n
 \end{cases}
 \hspace{19em} (1)
 ```
 
 $\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고, rank 는 $\mathbf{A}^{+}$ 를 구하는 식만 정한다. 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이에서 $\mathbf{b}$ 앞에 곱한 행렬이 각 rank 조건에서의 $\mathbf{A}^{+}$ 이다.
 
-- $r = n$: $\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고, 최소제곱 해를 준다. 식 (1) 의 첫 줄이다.
-- $r = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고, 최소 노름 해를 준다. 식 (1) 의 둘째 줄이다.
-- $r = m = n$: $\mathbf{A}^{+} = \mathbf{A}^{-1}$ 이고, 하나뿐인 해를 준다 ([4.1](#41-condition-for-the-inverse)).
-- $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 두 식을 쓸 수 없으므로, $\mathbf{A}^{+}$ 는 특이값 분해로 구한다 ([6.3](#63-breaking-conditions)).
+- $r = n$: 최소제곱 해를 준다.
+- $r = m$: 최소 노름 해를 준다.
+- $r = m = n$: 하나뿐인 해를 준다 ([4.1](#41-condition-for-the-inverse)).
+- $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 첫째 줄과 둘째 줄을 쓸 수 없으므로, 특이값 분해로 구한다 ([6.3](#63-breaking-conditions)).
 
-$\mathbf{A}^\top\mathbf{A}$ 는 $n \times n$, $\mathbf{A}\mathbf{A}^\top$ 는 $m \times m$ 의 정사각 행렬이지만, 정사각 행렬은 rank 가 그 크기와 같을 때만 역행렬이 있다. 두 행렬의 rank 는 모두 $\mathbf{A}$ 의 rank $r$ 과 같으므로, $r = n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 만, $r = m$ 이면 $\mathbf{A}\mathbf{A}^\top$ 만 역행렬이 있고, 역행렬이 있는 쪽 식만 쓸 수 있다. $r = m = n$ 이면 두 식이 같은 $\mathbf{A}^{-1}$ 을 주므로, rank 는 $\mathbf{A}^{+}$ 를 바꾸는 것이 아니라 쓸 수 있는 식을 정한다.
+$\mathbf{A}^\top\mathbf{A}$ 는 $n \times n$, $\mathbf{A}\mathbf{A}^\top$ 는 $m \times m$ 의 정사각 행렬이지만, 정사각 행렬은 rank 가 그 크기와 같을 때만 역행렬이 있다. 두 행렬의 rank 는 모두 $\mathbf{A}$ 의 rank $r$ 과 같으므로, $r = n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 만, $r = m$ 이면 $\mathbf{A}\mathbf{A}^\top$ 만 역행렬이 있고, 식 (1) 에서 역행렬이 있는 쪽 줄만 쓸 수 있다. $r = m = n$ 이면 첫째 줄과 둘째 줄이 모두 셋째 줄의 $\mathbf{A}^{-1}$ 과 같으므로, rank 는 $\mathbf{A}^{+}$ 를 바꾸는 것이 아니라 쓸 수 있는 식을 정한다.
 
 $\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지 않으므로, 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와는 무관하다. $\mathbf{A}^{+}\mathbf{b}$ 는 언제나 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 가운데 norm 이 가장 작은 하나이다. 다만 norm 으로 고르는 일은 그런 $\mathbf{x}$ 가 여럿일 때만 일어나며, 아래처럼 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와 $r$ 에 따라 갈린다.
 
@@ -93,7 +95,7 @@ $\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지
 
 ### 4.1 Condition for the Inverse
 
-역행렬 $\mathbf{A}^{-1}$ 은 $\mathbf{A}$ 가 정사각 행렬 ($m = n$) 이고 $\det(\mathbf{A}) \ne 0$ 일 때만 있다. 실제 data 의 선형방정식은 식의 수와 미지수의 수가 다르거나, 한 열이 다른 열들의 일차결합이어서 이 조건을 만족하지 않는 경우가 많다. 정사각이고 $\det(\mathbf{A}) \ne 0$ 이면 식 (1) 의 두 식은 모두 $\mathbf{A}^{-1}$ 과 같다.
+역행렬 $\mathbf{A}^{-1}$ 은 $\mathbf{A}$ 가 정사각 행렬 ($m = n$) 이고 $\det(\mathbf{A}) \ne 0$ 일 때만 있다. 실제 data 의 선형방정식은 식의 수와 미지수의 수가 다르거나, 한 열이 다른 열들의 일차결합이어서 이 조건을 만족하지 않는 경우가 많다. 정사각이고 $\det(\mathbf{A}) \ne 0$ 이면 식 (1) 의 첫째 줄과 둘째 줄은 모두 셋째 줄의 $\mathbf{A}^{-1}$ 과 같다.
 
 ### 4.2 Overdetermined System
 
@@ -203,7 +205,7 @@ Pseudo-inverse 는 역행렬이 없는 선형방정식에서 해를 하나로 �
 
 ### 6.3 Breaking Conditions
 
-$r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 이면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없어 식 (1) 의 해당 식을 쓸 수 없다. Feature 사이의 공선성이 강하면 $r = n$ 이어도 $\mathbf{A}^\top\mathbf{A}$ 의 행렬식이 0 에 가까워져 역행렬의 원소가 매우 커진다. 이때는 특이값 분해로 $\mathbf{A}^{+}$ 를 구하며, 그 계산은 [Singular Value Decomposition Primer](../Singular-Value-Decomposition/singular-value-decomposition-primer-ko.md) 에 있다.
+$r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 이면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없어 식 (1) 의 해당 줄을 쓸 수 없다. Feature 사이의 공선성이 강하면 $r = n$ 이어도 $\mathbf{A}^\top\mathbf{A}$ 의 행렬식이 0 에 가까워져 역행렬의 원소가 매우 커진다. 이때는 특이값 분해로 $\mathbf{A}^{+}$ 를 구하며, 그 계산은 [Singular Value Decomposition Primer](../Singular-Value-Decomposition/singular-value-decomposition-primer-ko.md) 에 있다.
 
 ---
 
