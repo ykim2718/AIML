@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 19 | Created: 2026-11-02 | Updated: 2026-11-03 08:15 UTC
+Rev. 20 | Created: 2026-11-02 | Updated: 2026-11-03 09:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -84,7 +84,9 @@ Table 1. Vector norms of x = [3, 4]
 | L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | Circle    | 최소제곱, ridge, 최소 노름 해 |
 | L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | Square    | 원소별 한계                   |
 
-Unit ball 은 norm 이 1 이하인 vector 의 집합이며, Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다. "ball" 은 L2 norm 일 때 집합이 둥근 모양인 데서 온 이름이며, 모양과 관계없이 norm 이 1 이하인 집합을 모두 unit ball 이라 부른다. 그래서 같은 정의라도 L1 norm 이면 Diamond, L∞ norm 이면 Square 가 된다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
+> **Definition (unit ball)**: Unit ball 은 norm 이 1 이하인 vector 의 집합이다.
+
+Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다. "ball" 은 L2 norm 일 때 집합이 둥근 모양인 데서 온 이름이며, 모양과 관계없이 norm 이 1 이하인 집합을 모두 unit ball 이라 부른다. 그래서 같은 정의라도 L1 norm 이면 Diamond, L∞ norm 이면 Square 가 된다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
 
 Matrix norm 을 식 (10) 의 $\mathbf{A}$ 에서 견주면 아래 Table 2 이다. $\mathbf{A}$ 의 특이값은 $\sigma_1 = \sqrt{3} \approx 1.732$, $\sigma_2 = 1$ 이다.
 
@@ -123,7 +125,11 @@ Table 2. Matrix norms of A in equation (10)
 \hspace{19em} (3)
 ```
 
-삼각부등식의 이름과 숫자 예시는 [Appendix C](#appendix-c-triangle-inequality) 에 있다. 두 vector $\mathbf{x}$, $\mathbf{y}$ 사이의 거리는 두 vector 의 차 $\mathbf{x} - \mathbf{y}$ 의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 로 정의한다. 거리는 어느 norm 을 쓰느냐에 따라 달라져, L2 norm 이면 원점에서 잰 직선 거리처럼 두 점을 곧게 이은 거리가 되고 L1 norm 이면 좌표축을 따라 가로와 세로로만 움직인 거리가 된다.
+삼각부등식의 이름과 숫자 예시는 [Appendix C](#appendix-c-triangle-inequality) 에 있다.
+
+> **Definition (distance)**: 두 vector $\mathbf{x}$, $\mathbf{y}$ 사이의 거리는 두 vector 의 차 $\mathbf{x} - \mathbf{y}$ 의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 이다.
+
+거리는 어느 norm 을 쓰느냐에 따라 달라져, L2 norm 이면 원점에서 잰 직선 거리처럼 두 점을 곧게 이은 거리가 되고 L1 norm 이면 좌표축을 따라 가로와 세로로만 움직인 거리가 된다.
 
 Lp norm 은 아래 식이며, $p \to \infty$ 의 극한이 L∞ norm 이다.
 

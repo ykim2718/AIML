@@ -1,5 +1,5 @@
 # Design of Experiments
-Rev. 8 | Created: 2026-09-04 | Updated: 2026-11-01 21:36 UTC
+Rev. 9 | Created: 2026-09-04 | Updated: 2026-11-03 09:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -186,8 +186,11 @@ Design 은 Hadamard matrix 로 만든다. Run 수가 2 의 거듭제곱이면 Ha
 ### 6.3 General Fractional Designs
 
 General fractional design 은 basic factor 들로 이루어진 full factorial 에서 출발해, 나머지 factor 를 basic factor
-의 곱으로 정의한다. 한 factor 를 정의하는 곱이 그 factor 의 generator 이며, generator 가 design 과 그 confounding
-을 함께 정한다. Generator `a b c abc` 는 factor 4 개를 full factorial 이 요구하는 16 개의 절반인 run 8 개로
+의 곱으로 정의한다.
+
+> **Definition (generator)**: 한 factor 를 basic factor 의 곱으로 정의할 때, 그 곱을 그 factor 의 generator 라 한다.
+
+Generator 가 design 과 그 confounding 을 함께 정한다. Generator `a b c abc` 는 factor 4 개를 full factorial 이 요구하는 16 개의 절반인 run 8 개로
 다룬다.
 
 Defining relation 은 generator 가 함의하는 word 들이 생성하며, resolution 은 그 word 들이 생성하는 부분군에서

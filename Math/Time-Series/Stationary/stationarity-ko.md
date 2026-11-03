@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 23 | Created: 2026-09-07 | Updated: 2026-11-03 08:00 UTC
+Rev. 24 | Created: 2026-09-07 | Updated: 2026-11-03 09:00 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)
@@ -48,14 +48,18 @@ Rev. 23 | Created: 2026-09-07 | Updated: 2026-11-03 08:00 UTC
 
 ### 2.1 Strict and Weak Stationarity
 
-엄밀한 정의는 분포에 대한 것이다. 어떤 확률과정의 유한 차원 결합분포가 시간을 $h$ 만큼 옮겨도
-그대로이면 그 과정을 strict stationary 라 한다.
+엄밀한 정의는 분포에 대한 것이다.
+
+> **Definition (strict stationarity)**: 어떤 확률과정의 유한 차원 결합분포가 시간을 $h$ 만큼 옮겨도 그대로이면 (식 (1)) 그 과정을 strict stationary 라 한다.
 
 $$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + h, \ldots, t_k + h) \hspace{19em} (1)$$
 
 이 조건은 유한한 기록으로 확인할 수 없다. 모든 order 의 결합분포를 요구하는데 손에 있는 것은 한 개의
-실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이며, 이것을 weak
-stationarity 또는 wide-sense stationarity 라 한다. 여기서 2차 통계량은 평균 같은 1차 moment 와 분산이나
+실현뿐이기 때문이다. 그래서 공학에서 쓰는 것은 2차 통계량까지만 요구하는 약한 형태이다.
+
+> **Definition (weak stationarity)**: 2차 통계량까지만 시점에 따라 바뀌지 않는 확률과정의 성질을 weak stationarity 또는 wide-sense stationarity 라 한다.
+
+여기서 2차 통계량은 평균 같은 1차 moment 와 분산이나
 autocovariance 같은 2차 moment 를 함께 이르는 말이다. Skewness 나 kurtosis 처럼 3차 이상의 moment 는
 여기에 들지 않으므로, 그것들은 시점에 따라 움직여도 무방하다. 조건은 세 가지다.
 

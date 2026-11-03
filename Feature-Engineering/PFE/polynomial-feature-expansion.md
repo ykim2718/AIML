@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 84 | Created: 2026-09-09 | Updated: 2026-09-23 11:09 CDT
+Rev. 85 | Created: 2026-09-09 | Updated: 2026-11-03 09:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -92,7 +92,13 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 ### 4.2 Standardization
 
-Bring each column to mean 0 and standard deviation 1 before expanding. This is standardization, and subtracting the mean alone is centering. The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
+Bring each column to mean 0 and standard deviation 1 before expanding.
+
+> **Definition (standardization)**: Subtracting the mean from each column and dividing by its standard deviation, so that the column has mean 0 and standard deviation 1, is standardization.
+
+> **Definition (centering)**: The part of standardization that subtracts the mean alone is centering.
+
+The two parts do different work. Subtracting the mean lowers the correlation between the columns and leaves the coefficients readable, which is the two paragraphs below; dividing by the standard deviation removes the differences in column size, and that part is sections 4.3 and 5.2.
 
 The first reason to center is the drop in correlation. For two variables $X$ and $Y$ the covariance and the correlation are defined as equation (6) and equation (7), where $E[\cdot]$ is the expected value and $\mathrm{sd}$ is the standard deviation.
 

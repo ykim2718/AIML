@@ -1,5 +1,5 @@
 # Variance Components in $R^2$
-Rev. 7 | Created: 2026-09-04 | Updated: 2026-11-01 21:36 UTC
+Rev. 8 | Created: 2026-09-04 | Updated: 2026-11-03 09:00 UTC
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)
@@ -39,7 +39,7 @@ Coefficient of determination $R^2$ 는 선형회귀 model 의 적합도를 재�
 
 $$SS_{tot} = SS_{reg} + SS_{res} \hspace{19em} (1)$$
 
-여기서 $R^2$ 는 $Y$ 의 총분산 가운데 $X$ 가 설명하는 비율로 정의된다.
+> **Definition ($R^2$)**: $R^2$ 는 $Y$ 의 총분산 가운데 $X$ 가 설명하는 비율이다 (식 (2)).
 
 $$R^2 = \frac{SS_{reg}}{SS_{tot}} = 1 - \frac{SS_{res}}{SS_{tot}} \hspace{19em} (2)$$
 

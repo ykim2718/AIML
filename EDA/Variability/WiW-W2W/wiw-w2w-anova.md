@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 2 | Created: 2026-09-22 | Updated: 2026-09-23 11:08 CDT
+Rev. 3 | Created: 2026-09-22 | Updated: 2026-11-03 09:00 UTC
 
 - [1. One-Way Variance Components](#1-one-way-variance-components)
   - [1.1 Notation](#11-notation)
@@ -394,7 +394,9 @@ The first term of equation (8) is of that shape, so $`\mathrm{Cov}(\alpha_i, \al
 
 ## Appendix G. The Chi-Square Distribution
 
-The limit of equation (18) comes from a quantile of the chi-square distribution. The chi-square distribution is the distribution followed by the sum of the squares of $`m`$ independent standard normal variables, and that $`m`$ is called its degrees of freedom.
+The limit of equation (18) comes from a quantile of the chi-square distribution.
+
+> **Definition (chi-square distribution)**: The chi-square distribution is the distribution followed by the sum of the squares of $`m`$ independent standard normal variables, and that $`m`$ is called its degrees of freedom.
 
 $$\chi^2_m = \sum_{k=1}^{m} Z_k^2, \qquad Z_k \sim \mathcal{N}(0, 1) \hspace{19em} (41)$$
 

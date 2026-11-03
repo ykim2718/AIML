@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 22 | Created: 2026-10-22 | Updated: 2026-11-01 21:36 UTC
+Rev. 23 | Created: 2026-10-22 | Updated: 2026-11-03 09:00 UTC
 
 ## 1. Purpose
 
@@ -126,4 +126,6 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 
 복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
 
-세 단계를 합친 방식을 bagging ensemble 이라 부른다. PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[2](#ref-2)].
+> **Definition (bagging ensemble)**: 세 단계를 합친 방식을 bagging ensemble 이라 부른다.
+
+PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[2](#ref-2)].

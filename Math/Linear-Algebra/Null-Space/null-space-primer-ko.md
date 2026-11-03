@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 44 | Created: 2026-10-31 | Updated: 2026-11-03 08:15 UTC
+Rev. 45 | Created: 2026-10-31 | Updated: 2026-11-03 09:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -88,7 +88,11 @@ Table 1. Symbols
 
 $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다.
 
-식 (1) 에서 바로 찾을 수 있는 해는 zero vector 이며, 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 zero vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다. 🌳
+식 (1) 에서 바로 찾을 수 있는 해는 zero vector 이며, 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 zero vector 를 반드시 포함한다.
+
+> **Definition (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 zero vector $\mathbf{x} = \mathbf{0}$ 을 자명해 (trivial solution) 라 한다.
+
+Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다. 🌳
 
 또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다. $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 $\mathbf{A}$ 의 모든 행과 직교한다는 뜻이다.🌳 행들이 생성하는 row space 와 null space 의 관계는 [5.5](#55-orthogonality-to-the-row-space) 에 있다.
 
