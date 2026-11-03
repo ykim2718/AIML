@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 9 | Created: 2026-11-02 | Updated: 2026-11-03 03:02 UTC
+Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 03:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -65,7 +65,7 @@ Table 1. Symbols
 
 ## 4. Interpretation
 
-Pseudo-inverse 는 $\mathbf{A}$ 의 rank 가 열의 수 $n$ 과 같은지, 행의 수 $m$ 과 같은지에 따라 아래 두 식 가운데 하나로 구한다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 $r = m = n$ 이면 $\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$ 이고, 일반적으로는 $\mathbf{x} = \mathbf{A}^{+}\mathbf{b}$ 로 적는다. $\mathbf{A}^{+}$ 는 rank $r$ 이 열의 수 $n$ 과 같은지, 행의 수 $m$ 과 같은지에 따라 아래처럼 구한다.
 
 ```math
 \mathbf{A}^{+} =
@@ -76,7 +76,7 @@ Pseudo-inverse 는 $\mathbf{A}$ 의 rank 가 열의 수 $n$ 과 같은지, 행�
 \hspace{19em} (1)
 ```
 
-$\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고, rank 는 $\mathbf{A}^{+}$ 를 구하는 식만 정한다. 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}$ 로 $\mathbf{x} = \mathbf{A}^{+}\mathbf{b}$ 라 적는다. 세 식에서 $\mathbf{b}$ 앞에 곱한 행렬이 각 rank 조건에서의 $\mathbf{A}^{+}$ 이다.
+$\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고, rank 는 $\mathbf{A}^{+}$ 를 구하는 식만 정한다. 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이에서 $\mathbf{b}$ 앞에 곱한 행렬이 각 rank 조건에서의 $\mathbf{A}^{+}$ 이다.
 
 - $r = n$: $\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고, 최소제곱 해를 준다. 식 (1) 의 첫 줄이다.
 - $r = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고, 최소 노름 해를 준다. 식 (1) 의 둘째 줄이다.
