@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 2 | Created: 2026-11-02 | Updated: 2026-11-02 21:46 UTC
+Rev. 3 | Created: 2026-11-02 | Updated: 2026-11-03 02:16 UTC
 
 ## 1. Purpose
 
@@ -40,7 +40,7 @@ Fig 1. Three axes of linear systems
 
 - Axis 1 은 행렬의 모양만 본다. 식이 겹치거나 모순되는지는 보지 않는다.
 - Axis 2 는 rank 로 해의 개수를 정한다. 이 축이 풀이를 고르는 기준이다.
-- Axis 3 은 우변만 본다. 동차 선형방정식은 zero vector 가 언제나 해이므로 Axis 2 의 none 이 나오지 않는다.
+- Axis 3 은 우변만 본다. 동차 선형방정식 (homogeneous linear equation) 은 zero vector 가 언제나 해이므로 Axis 2 의 none 이 나오지 않는다.
 
 해의 개수를 가리는 판정은 아래 [Fig 2](#fig-2) 의 차례로 내려간다.
 
