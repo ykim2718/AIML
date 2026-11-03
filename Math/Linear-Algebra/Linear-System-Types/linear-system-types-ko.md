@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 9 | Created: 2026-11-02 | Updated: 2026-11-03 02:53 UTC
+Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 03:03 UTC
 
 ## 1. Purpose
 
@@ -84,11 +84,11 @@ Axis 1 의 모양마다 흔히 나오는 해의 개수와 쓰는 풀이는 아�
 
 Table 1. Shape of a linear system
 
-| Type                                  | Condition | Usual number of solutions | Solution used                                                            | Rank condition of the formula |
-| :-----------------------------------: | :-------: | :-----------------------: | :----------------------------------------------------------------------: | :---------------------------: |
-| 정방 시스템 (square system)           | $m = n$   | 하나                      | $\mathbf{A}^{-1}\mathbf{b}$                                              | $\det(\mathbf{A}) \ne 0$      |
-| 과결정 시스템 (overdetermined system) | $m \gt n$ | 없음                      | 최소제곱 해 $(\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top\mathbf{b}$  | rank $= n$                    |
-| 부정 방정식 (underdetermined system)  | $m \lt n$ | 있으면 무수히 많음        | 최소 노름 해 $\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b}$ | rank $= m$                    |
+| Type                                     | Condition | Usual number of solutions | Solution used                                                            | Rank condition of the formula |
+| :--------------------------------------: | :-------: | :-----------------------: | :----------------------------------------------------------------------: | :---------------------------: |
+| 정방 시스템<br>(square system)           | $m = n$   | 하나                      | $\mathbf{A}^{-1}\mathbf{b}$                                              | $\det(\mathbf{A}) \ne 0$      |
+| 과결정 시스템<br>(overdetermined system) | $m \gt n$ | 없음                      | 최소제곱 해 $(\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top\mathbf{b}$  | rank $= n$                    |
+| 부정 방정식<br>(underdetermined system)  | $m \lt n$ | 있으면 무수히 많음        | 최소 노름 해 $\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b}$ | rank $= m$                    |
 
 Usual number of solutions 열은 식이 겹치지도 모순되지도 않을 때의 경우이다. 과결정 시스템이라도 식이 겹치면 해가 하나 있을 수 있고, 부정 방정식이라도 식끼리 모순되면 해가 없을 수 있다. 그래서 실제 해의 개수는 아래 Table 2 의 rank 판정으로 정한다.
 
