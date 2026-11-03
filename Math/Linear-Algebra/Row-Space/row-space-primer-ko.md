@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 32 | Created: 2026-11-01 | Updated: 2026-11-02 21:46 UTC
+Rev. 33 | Created: 2026-11-01 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -149,7 +149,7 @@ Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 
 \dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A}) = r \hspace{19em} (5) \ \text{🌳}
 ```
 
-$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (5) 가 성립한다.
+$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot 열의 수와 같다. Pivot 열의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (5) 가 성립한다. 공간의 차원과 행렬의 rank 의 구별, 그리고 $m \ne n$ 인 행렬의 숫자 예시는 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 
 ### 4.5 Orthogonal Decomposition of the Input Space
 
@@ -231,7 +231,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 norm 이 가장 작은 해를 주는 역행렬의 일반화.
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **기본 행 연산 (elementary row operation)**: 행 둘을 맞바꾸기, 한 행에 0 이 아닌 상수 곱하기, 한 행에 다른 행의 상수배 더하기의 세 연산.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
 - **기저 (basis)**: 부분공간을 생성하는 일차독립인 vector 의 모임. 원소의 수가 그 부분공간의 차원이다.

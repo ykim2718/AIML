@@ -1,5 +1,5 @@
 # Conditions Under Which PLS Works Where OLS Fails
-Rev. 0 | Created: 2026-11-02 | Updated: 2026-11-02 11:14 UTC
+Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -141,7 +141,7 @@ $\mathbf{t}_k$ 는 $\mathbf{T}$ 의 $k$ 번째 열이다. 원래 입력 변수�
 - **eigenvector**: 행렬 $\mathbf{A}$ 에 곱해도 방향이 바뀌지 않는 벡터 $\mathbf{v}$ 이며, $\mathbf{A}\mathbf{v} = \lambda\mathbf{v}$ 의 $\lambda$ 를 그 eigenvector 의 eigenvalue 라 한다.
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소로 하는 계수를 구하는 선형 회귀.
 - **PLS (Partial Least Squares)**: $\mathbf{X}$ 와 타겟의 공분산이 큰 방향으로 score 를 뽑고 그 score 에 회귀하는 방법.
-- **rank**: 행렬의 선형독립인 열의 수.
+- **rank**: 행렬의 선형독립인 열의 수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../../Linear-Algebra/Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **score**: Sample 을 한 방향으로 투영한 좌표값.
 - **singular matrix**: 역행렬이 없는 정사각행렬이며, rank 가 행렬의 크기보다 작다.
 - **다중공선성 (multicollinearity)**: 입력 변수 열 사이의 선형 상관이 높아, 한 열이 다른 열들의 선형결합에 가까운 상태.

@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 39 | Created: 2026-10-31 | Updated: 2026-11-03 06:50 UTC
+Rev. 40 | Created: 2026-10-31 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -233,7 +233,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 - **regularization**: 손실 함수에 weight 의 크기에 대한 벌점을 더해 weight 를 하나로 정하는 방법.
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체. $\mathbb{R}^n$ 의 부분공간이며 차원은 rank 이다.
 - **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
 - **동차 선형방정식 (homogeneous linear equation)**: 우변이 zero vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합. $\mathbb{R}^n$ 의 부분공간은 $\mathbb{R}^n$ 안에 있는 vector space 이다.

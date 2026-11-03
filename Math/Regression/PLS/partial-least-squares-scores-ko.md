@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 14 | Created: 2026-10-24 | Updated: 2026-11-01 21:36 UTC
+Rev. 15 | Created: 2026-10-24 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -232,7 +232,7 @@ $T^2$ 는 score 가 펼치는 부분공간 안의 변화만 잰다. 식 (4) 의 
 - **OLS (Ordinary Least Squares)**: 잔차 제곱합을 최소로 하는 계수를 $(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}$ 로 구하는 회귀.
 - **PCA (Principal Component Analysis)**: $\mathbf{X}$ 의 variance 를 최대로 하는 서로 직교하는 방향을 차례로 찾는 unsupervised 방법.
 - **PCR (Principal Component Regression)**: PCA score 에 $\mathbf{y}$ 를 회귀하는 방법.
-- **rank**: 행렬의 선형독립인 열의 수.
+- **rank**: 행렬의 선형독립인 열의 수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../../Linear-Algebra/Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **score**: Sample 을 한 방향으로 투영한 좌표값이며, PLS 에서는 X-score $\mathbf{t}$ 와 Y-score $\mathbf{u}$ 가 있다.
 - **score plot**: 두 score 를 두 축으로 하여 sample 을 점으로 찍은 그림.
 - **singular vector**: 행렬 $\mathbf{A}$ 에 대해 $\mathbf{A}\mathbf{c} = \sigma\mathbf{w}$ 와 $\mathbf{A}^\top\mathbf{w} = \sigma\mathbf{c}$ 를 함께 만족하는 길이 1 인 벡터 $\mathbf{w}$ 와 $\mathbf{c}$ 이며, 각각 왼쪽과 오른쪽 singular vector 라 하고 $\sigma \ge 0$ 을 singular value 라 한다.

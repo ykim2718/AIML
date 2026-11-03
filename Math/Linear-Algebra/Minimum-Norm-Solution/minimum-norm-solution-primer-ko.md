@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-03 03:55 UTC
+Rev. 14 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -175,7 +175,7 @@ Rank 가 $m$ 보다 작으면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없�
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 가운데 norm 이 가장 작은 하나를 주는 역행렬의 일반화.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **부정 방정식 (underdetermined system)**: 미지수의 수가 식의 수보다 많은 선형방정식.
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.

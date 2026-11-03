@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 4 | Created: 2026-11-01 | Updated: 2026-11-02 21:45 UTC
+Rev. 5 | Created: 2026-11-01 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -160,7 +160,7 @@ $\mathbf{A}$ 의 열의 수와 $\mathbf{B}$ 의 행의 수가 다르면 $\mathbf
 
 - **Frobenius norm**: 행렬의 모든 원소의 제곱합의 제곱근.
 - **Gram 행렬 (Gram matrix)**: 자료 행렬 $\mathbf{X}$ 의 열끼리의 내적을 모은 행렬 $\mathbf{X}^\top\mathbf{X}$.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **공분산 행렬 (covariance matrix)**: 열마다 평균을 뺀 자료 행렬의 Gram 행렬을 sample 수로 나눈 행렬.
 - **내적 (dot product)**: 같은 크기의 두 vector 에서 같은 위치의 원소를 곱해 모두 더한 scalar.
 - **외적 (outer product)**: 열 vector $\mathbf{a}$ 와 행 vector $\mathbf{b}^\top$ 를 곱한 행렬 $\mathbf{a}\mathbf{b}^\top$. 원소 $(i, j)$ 는 $a_i b_j$ 이다.

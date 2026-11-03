@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 03:31 UTC
+Rev. 12 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -219,7 +219,7 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
 - **right inverse**: $\mathbf{A}$ 의 오른쪽에 곱하여 단위 행렬을 만드는 행렬.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **공선성 (collinearity)**: 한 feature 가 다른 feature 들의 일차결합에 가까운 것.
 - **과결정 시스템 (overdetermined system)**: 식의 수가 미지수의 수보다 많은 선형방정식.
 - **부정 방정식 (underdetermined system)**: 미지수의 수가 식의 수보다 많은 선형방정식.

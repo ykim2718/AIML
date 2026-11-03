@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 7 | Created: 2026-09-06 | Updated: 2026-10-25 16:20 CDT
+Rev. 8 | Created: 2026-09-06 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -146,7 +146,7 @@ Table 2. Distance from the located optimum to the true optimum
 - **condition number**: 행렬의 최대 특이값과 최소 특이값의 비이며, 클수록 계수 추정이 자료의 흔들림에 민감하다.
 - **desirability**: 여러 응답을 각각 0 과 1 사이로 옮긴 뒤 하나로 묶어 최적화하는 함수이다.
 - **OLS**: ordinary least squares 이며, 잔차 제곱합을 최소화하는 회귀이다.
-- **rank**: 행렬의 선형독립인 열의 수이며, PLS 성분 수의 상한이다.
+- **rank**: 행렬의 선형독립인 열의 수이며, PLS 성분 수의 상한이다. 차원과 rank 의 구별은 [Dimension and Rank Primer](../../Linear-Algebra/Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **RMSE**: root mean squared error 이며, 잔차 제곱 평균의 제곱근이다.
 - **rotatable design**: 중심에서 같은 거리에 있는 모든 점에서 예측 분산이 같은 설계이다.
 - **stationary point**: 적합된 곡면의 기울기가 0 이 되는 점이다.

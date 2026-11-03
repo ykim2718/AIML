@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 17 | Created: 2026-11-02 | Updated: 2026-11-03 06:40 UTC
+Rev. 18 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -206,7 +206,7 @@ Norm 마다의 쓰임은 아래이다.
 - **lasso**: 손실에 weight 의 L1 norm 을 더해 일부 weight 를 0 으로 만드는 선형 회귀.
 - **Lp norm**: 원소 절댓값의 $p$ 제곱을 모두 더한 값의 $1/p$ 제곱인 norm (식 (4)). L 은 수학자 Lebesgue 의 머리글자이고, $p$ 는 원소 절댓값에 씌우는 지수이다. $p = 1, 2, \infty$ 일 때가 L1, L2, L∞ norm 이다.
 - **MAE (mean absolute error)**: 오차 절댓값의 평균. 오차 vector 의 L1 norm 을 원소 수로 나눈 값이다.
-- **rank**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **rank**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **ridge**: 손실에 weight 의 L2 norm 의 제곱을 더해 weight 를 작게 만드는 선형 회귀.
 - **RMSE (root mean square error)**: 오차 제곱의 평균의 제곱근. 오차 vector 의 L2 norm 을 원소 수의 제곱근으로 나눈 값이다.
 - **unit ball**: norm 이 1 이하인 vector 의 집합. Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다.

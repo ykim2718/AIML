@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 03:04 UTC
+Rev. 12 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
 
 ## 1. Purpose
 
@@ -121,7 +121,7 @@ Table 2 로 해의 개수를 정한 뒤 아래 풀이를 쓴다.
 - **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
 - **pseudo-inverse**: 기호는 $\mathbf{A}^{+}$. 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **과결정 시스템 (overdetermined system)**: 식의 수가 미지수의 수보다 많은 선형방정식.
 - **동차 선형방정식 (homogeneous linear equation)**: 우변이 zero vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
 - **부정 방정식 (underdetermined system)**: 미지수의 수가 식의 수보다 많은 선형방정식.

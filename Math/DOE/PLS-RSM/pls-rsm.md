@@ -1,5 +1,5 @@
 # PLS-RSM (Partial Least Squares Response Surface Methodology)
-Rev. 7 | Created: 2026-09-06 | Updated: 2026-10-25 16:20 CDT
+Rev. 8 | Created: 2026-09-06 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Scope](#1-scope)
 - [2. Why The Two Are Combined](#2-why-the-two-are-combined)
@@ -146,7 +146,7 @@ Third, **the gap between the two data sets is far wider than the gap between the
 - **condition number**: the ratio of the largest singular value of a matrix to the smallest; the larger it is, the more the coefficient estimates move with a disturbance of the data.
 - **desirability**: a function that maps several responses each into the interval between 0 and 1 and ties them into one quantity to optimise.
 - **OLS**: ordinary least squares, the regression that minimises the sum of squared residuals.
-- **rank**: the number of linearly independent columns of a matrix, which caps the PLS component count.
+- **rank**: the number of linearly independent columns of a matrix, which caps the PLS component count. The difference between dimension and rank is in the [Dimension and Rank Primer](../../Linear-Algebra/Dimension-and-Rank/dimension-and-rank-primer-ko.md) (Korean).
 - **RMSE**: root mean squared error, the square root of the mean squared residual.
 - **rotatable design**: a design whose prediction variance is the same at every point equidistant from the centre.
 - **stationary point**: the point at which the gradient of the fitted surface is zero.

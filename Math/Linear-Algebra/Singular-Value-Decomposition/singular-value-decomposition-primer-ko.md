@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 7 | Created: 2026-10-26 | Updated: 2026-11-02 21:46 UTC
+Rev. 8 | Created: 2026-10-26 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -221,7 +221,7 @@ $\boldsymbol{\Sigma}^{+}$ 는 $\boldsymbol{\Sigma}$ 를 전치한 $n \times m$ �
 - **pseudo-inverse**: 정사각이 아니거나 특이한 행렬에도 정의되며, 최소제곱 해 가운데 길이가 가장 짧은 해를 주는 역행렬의 일반화. Moore–Penrose inverse 라고도 한다.
 - **score**: Sample 을 한 축에 정사영한 부호 있는 길이.
 - **standardization**: 각 열에서 평균을 빼고 표준편차로 나누어 열마다 평균 0, 표준편차 1 로 맞추는 전처리.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **고유벡터**: $\mathbf{A}\mathbf{x} = \lambda\mathbf{x}$ 를 만족하는 영이 아닌 vector. $\lambda$ 는 그 고윳값이다.
 - **반사 (reflection)**: 한 직선을 거울로 삼아 평면의 점을 맞은편으로 옮기는 변환. 길이를 바꾸지 않으며, 행렬식이 -1 인 직교 행렬이다.
 - **반장축**: 타원의 중심에서 가장 먼 점까지의 선분. 가장 가까운 점까지의 선분은 반단축이다.

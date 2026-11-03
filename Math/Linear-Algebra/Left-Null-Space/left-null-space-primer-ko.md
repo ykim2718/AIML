@@ -1,5 +1,5 @@
 # Left Null Space Primer
-Rev. 3 | Created: 2026-11-01 | Updated: 2026-11-02 21:23 UTC
+Rev. 4 | Created: 2026-11-01 | Updated: 2026-11-03 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -162,7 +162,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 left null space 의 모
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
 - **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.
-- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
+- **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **일차결합 (linear combination)**: vector 여러 개에 각각 상수를 곱해 모두 더한 vector.
 - **정규방정식 (normal equation)**: 최소제곱 해 $\hat{\mathbf{x}}$ 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\hat{\mathbf{x}} = \mathbf{A}^\top\mathbf{b}$.
