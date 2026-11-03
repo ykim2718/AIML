@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-03 00:48 UTC
+Rev. 14 | Created: 2026-11-02 | Updated: 2026-11-03 00:48 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -9,6 +9,7 @@ Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-03 00:48 UTC
 - [5. Application](#5-application)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
+- [Appendix C. Triangle Inequality](#appendix-c-triangle-inequality)
 
 ## 1. Purpose
 
@@ -122,7 +123,7 @@ Table 2. Matrix norms of A in equation (10)
 \hspace{19em} (3)
 ```
 
-두 vector 사이의 거리는 차이의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 이다.
+삼각부등식의 이름과 숫자 예시는 [Appendix C](#appendix-c-triangle-inequality) 에 있다. 두 vector $\mathbf{x}$, $\mathbf{y}$ 사이의 거리는 두 vector 의 차 $\mathbf{x} - \mathbf{y}$ 의 norm $\lVert \mathbf{x} - \mathbf{y} \rVert$ 로 정의한다. 거리는 어느 norm 을 쓰느냐에 따라 달라져, L2 norm 이면 원점에서 잰 직선 거리처럼 두 점을 곧게 이은 거리가 되고 L1 norm 이면 좌표축을 따라 가로와 세로로만 움직인 거리가 된다.
 
 Lp norm 은 아래 식이며, $p \to \infty$ 의 극한이 L∞ norm 이다.
 
@@ -208,7 +209,9 @@ Norm 마다의 쓰임은 아래이다.
 - **ridge**: 손실에 weight 의 L2 norm 의 제곱을 더해 weight 를 작게 만드는 선형 회귀.
 - **RMSE (root mean square error)**: 오차 제곱의 평균의 제곱근. 오차 vector 의 L2 norm 을 원소 수의 제곱근으로 나눈 값이다.
 - **unit ball**: norm 이 1 이하인 vector 의 집합. Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다.
-- **삼각부등식 (triangle inequality)**: 두 vector 의 합의 norm 이 두 norm 의 합을 넘지 않는다는 조건.
+- **동차성 (homogeneity)**: vector 에 상수를 곱하면 norm 에 그 상수의 절댓값이 곱해진다는 조건. 식 (2) 이다.
+- **삼각부등식 (triangle inequality)**: 두 vector 의 합의 norm 이 두 norm 의 합을 넘지 않는다는 조건. 식 (3) 이다.
+- **양수성 (positivity)**: norm 이 0 이상이고, 0 이 되는 것은 zero vector 뿐이라는 조건. 식 (1) 이다.
 - **최소 노름 해 (minimum norm solution)**: 해가 무수히 많은 선형방정식의 해 가운데 norm 이 가장 작은 해.
 - **최소제곱 (least squares)**: 잔차의 L2 norm 의 제곱을 가장 작게 하는 방법.
 - **특이값 (singular value)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\boldsymbol{\Sigma}$ 의 대각 원소.
@@ -237,3 +240,19 @@ Norm 마다의 쓰임은 아래이다.
 \lVert \mathbf{x} \rVert_\infty \le \lVert \mathbf{x} \rVert_2 \le \lVert \mathbf{x} \rVert_1
 \hspace{19em} (6)
 ```
+
+## Appendix C. Triangle Inequality
+
+삼각부등식 (식 (3)) 은 삼각형의 한 변이 나머지 두 변의 합보다 길 수 없다는 성질에서 온 이름이다. $\mathbf{x}$ 를 한 변, $\mathbf{y}$ 를 그 끝에서 이어 붙인 변으로 두면 $\mathbf{x} + \mathbf{y}$ 는 처음과 끝을 잇는 셋째 변이고, 식 (3) 은 그 셋째 변의 norm 이 두 변의 norm 의 합을 넘지 않는다는 뜻이다. 등호는 두 vector 가 같은 방향을 가리켜 삼각형이 한 직선으로 납작해질 때 성립한다.
+
+식 (10) 의 $\mathbf{A}$ 의 두 열 $\mathbf{x} = [1, 0, 1]^\top$, $\mathbf{y} = [0, 1, 1]^\top$ 에서 세 norm 으로 식 (3) 을 확인하면 아래 Table 4 이다. 두 vector 의 합은 $\mathbf{x} + \mathbf{y} = [1, 1, 2]^\top$ 이다.
+
+Table 4. Triangle inequality for the two columns of A in equation (10)
+
+| Norm | $\lVert \mathbf{x} \rVert$ | $\lVert \mathbf{y} \rVert$ | $\lVert \mathbf{x} \rVert + \lVert \mathbf{y} \rVert$ | $\lVert \mathbf{x} + \mathbf{y} \rVert$ |
+| :--: | :------------------------: | :------------------------: | :---------------------------------------------------: | :-------------------------------------: |
+| L1   | 2                          | 2                          | 4                                                     | 4                                       |
+| L2   | $\sqrt{2} \approx 1.414$   | $\sqrt{2} \approx 1.414$   | $2\sqrt{2} \approx 2.828$                             | $\sqrt{6} \approx 2.449$                |
+| L∞   | 1                          | 1                          | 2                                                     | 2                                       |
+
+세 norm 모두에서 $\lVert \mathbf{x} + \mathbf{y} \rVert$ 가 $\lVert \mathbf{x} \rVert + \lVert \mathbf{y} \rVert$ 를 넘지 않는다. L1 과 L∞ 에서는 등호가 성립하고, L2 에서는 $2.449 \lt 2.828$ 로 등호가 성립하지 않는다. L1 은 두 vector 의 원소가 모두 0 이상이어서 절댓값의 합이 그대로 더해지고, L∞ 는 두 vector 의 가장 큰 원소 1 이 셋째 원소로 겹쳐 그대로 더해진다. L2 는 $\mathbf{x}$ 와 $\mathbf{y}$ 가 같은 방향이 아니어서 등호가 성립하지 않는다.
