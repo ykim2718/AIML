@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 12 | Created: 2026-11-02 | Updated: 2026-11-03 03:45 UTC
+Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-03 03:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -185,7 +185,7 @@ Rank 가 $m$ 보다 작으면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없�
 
 ## Appendix B. Derivation
 
-최소 노름 해는 row space 에 속하므로 어떤 $\mathbf{y} \in \mathbb{R}^m$ 에 대해 $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 이다. 이를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 넣어 $\mathbf{y}$ 를 구한다.
+최소 노름 해는 row space 에 속하므로 ([4.2](#42-orthogonal-decomposition-of-a-solution)) 어떤 $\mathbf{y} \in \mathbb{R}^m$ 에 대해 $\mathbf{x}^{\ast} = \mathbf{A}^\top\mathbf{y}$ 이다. 이를 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 넣어 $\mathbf{y}$ 를 구한다.
 
 ```math
 \begin{aligned}
