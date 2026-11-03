@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 12 | Created: 2026-11-02 | Updated: 2026-11-03 00:39 UTC
+Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-03 00:48 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -173,6 +173,21 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ## 5. Application
 
+Norm 은 vector 나 행렬의 크기, 또는 두 vector 나 두 행렬의 차이를 숫자 하나로 잰 값이며, 쓰는 곳은 아래 Table 3 이다.
+
+Table 3. Uses of norms
+
+| Use                           | Norm                          | Role                                                                                                                        |
+| :---------------------------: | :---------------------------: | :-------------------------------------------------------------------------------------------------------------------------: |
+| Error measurement             | Frobenius norm                | 예측 행렬과 실제 행렬의 차이를 숫자 하나로 만든다. 원소가 $N$ 개이면 RMSE 는 이 값을 $\sqrt{N}$ 으로 나눈 값이다            |
+| Regularization                | L2 norm, L1 norm              | weight 가 너무 커지지 않게 손실에 penalty 를 더한다. Ridge 는 L2 norm 의 제곱, lasso 는 L1 norm 을 쓴다                     |
+| Numerical stability           | Condition number              | 입력이 조금 변할 때 결과가 얼마나 흔들리는지 잰다. 값이 크면 feature 가 서로 겹쳐 회귀 계수가 불안정하다                    |
+| Approximation and convergence | Frobenius norm, spectral norm | 특이값 분해로 줄인 행렬과 원래 행렬의 차이를 재고, 반복 계산에서 새 값과 옛 값의 차이의 norm 이 허용 오차보다 작으면 멈춘다 |
+
+Table 3 의 쓰는 곳은 오차 크기 재기, weight 의 penalty, 계산이 안정한지 확인, 반복을 멈출 시점 판정의 넷이다. 어느 norm 을 쓰느냐에 따라 큰 오차를 더 크게 벌주는지 (L2) 와 작은 값을 0 으로 만드는지 (L1) 가 달라진다. Condition number 는 행렬의 norm 과 역행렬의 norm 의 곱 $\lVert \mathbf{A} \rVert \, \lVert \mathbf{A}^{-1} \rVert$ 이며, spectral norm 으로 재면 가장 큰 특이값을 가장 작은 특이값으로 나눈 값이다. 식 (10) 의 $\mathbf{A}$ 에서는 $\sqrt{3} / 1 \approx 1.732$ 이다.
+
+Norm 마다의 쓰임은 아래이다.
+
 - **L2 의 제곱**: 최소제곱 손실 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert_2^2$ 과 ridge regularization 이 쓴다. 해가 무수히 많을 때 L2 norm 이 가장 작은 해를 고르면 최소 노름 해이며, [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다. 제곱하면 미분이 선형이 되어 해를 식으로 구할 수 있다.
 - **L1**: Lasso regularization 이 쓴다. Unit ball 이 마름모여서 손실의 등고선이 꼭짓점에서 먼저 닿기 쉽고, 꼭짓점에서는 일부 원소가 0 이므로 일부 weight 가 0 이 되어 쓰는 feature 가 줄어든다. 손실로 쓰면 MAE 이며, 이상치 하나가 손실에 더하는 몫이 L2 보다 작다.
 - **L∞**: 원소 가운데 가장 큰 편차를 제한할 때 쓴다. 모든 원소가 spec 한계 안에 들어야 하는 판정이 이 경우이다.
@@ -186,10 +201,12 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ## Appendix A. Terminology
 
+- **condition number**: 행렬의 norm 과 역행렬의 norm 의 곱. 입력의 작은 변화가 결과를 얼마나 크게 바꾸는지를 나타낸다.
 - **lasso**: 손실에 weight 의 L1 norm 을 더해 일부 weight 를 0 으로 만드는 선형 회귀.
 - **MAE (mean absolute error)**: 오차 절댓값의 평균. 오차 vector 의 L1 norm 을 원소 수로 나눈 값이다.
 - **rank**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **ridge**: 손실에 weight 의 L2 norm 의 제곱을 더해 weight 를 작게 만드는 선형 회귀.
+- **RMSE (root mean square error)**: 오차 제곱의 평균의 제곱근. 오차 vector 의 L2 norm 을 원소 수의 제곱근으로 나눈 값이다.
 - **unit ball**: norm 이 1 이하인 vector 의 집합. Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다.
 - **삼각부등식 (triangle inequality)**: 두 vector 의 합의 norm 이 두 norm 의 합을 넘지 않는다는 조건.
 - **최소 노름 해 (minimum norm solution)**: 해가 무수히 많은 선형방정식의 해 가운데 norm 이 가장 작은 해.
