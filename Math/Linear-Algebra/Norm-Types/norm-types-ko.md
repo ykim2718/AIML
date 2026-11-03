@@ -1,11 +1,11 @@
 # Types of Norms
-Rev. 16 | Created: 2026-11-02 | Updated: 2026-11-03 02:08 UTC
+Rev. 17 | Created: 2026-11-02 | Updated: 2026-11-03 06:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
   - [3.1 Comparison](#31-comparison)
-- [4. Definition](#4-definition)
+- [4. Definitions](#4-definitions)
 - [5. Application](#5-application)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
@@ -67,7 +67,7 @@ Not a norm: "L0" = number of nonzero elements (fails homogeneity)
 <a id="fig-2"></a>
 Fig 2. Hierarchy of norms
 
-- 양수성, 동차성, 삼각부등식의 세 조건을 만족해야 norm 이다. 세 조건의 식은 [꼭지 4](#4-definition) 의 식 (1), 식 (2), 식 (3) 에 있다. 조건만 지키면 되므로 크기를 재는 방식이 여럿이다.
+- 양수성, 동차성, 삼각부등식의 세 조건을 만족해야 norm 이다. 세 조건의 식은 [꼭지 4](#4-definitions) 의 식 (1), 식 (2), 식 (3) 에 있다. 조건만 지키면 되므로 크기를 재는 방식이 여럿이다.
 - Lp norm 은 $p \ge 1$ 일 때 norm 이다. $p = 1, 2, \infty$ 가 L1, L2, L∞ 이다.
 - Frobenius norm 은 행렬을 vector 로 펼친 L2 norm 이고, 특이값 제곱합의 제곱근과도 같다.
 - L0 는 이름에 norm 이 붙지만 동차성을 만족하지 않아 norm 이 아니다.
@@ -96,7 +96,7 @@ Table 2. Matrix norms of A in equation (10)
 | Spectral  | $\sigma_1$                                                | $\sqrt{3} \approx 1.732$     | 가장 크게 늘어나는 배율, 계산의 안정성 |
 | Nuclear   | $\sum_i \sigma_i$                                         | $1 + \sqrt{3} \approx 2.732$ | rank 를 줄이는 regularization          |
 
-## 4. Definition
+## 4. Definitions
 
 > **Definition (norm)**: $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $\mathbb{R}^n$ 위의 norm 은 $\mathbb{R}^n$ 의 vector 마다 실수 하나를 주는 함수 $\lVert \cdot \rVert : \mathbb{R}^n \to \mathbb{R}$ 로서, 모든 $\mathbf{x}, \mathbf{y} \in \mathbb{R}^n$ 과 모든 실수 $c$ 에 대해 양수성 (식 (1)), 동차성 (식 (2)), 삼각부등식 (식 (3)) 의 세 조건을 모두 만족하는 함수이다. $m \times n$ 행렬 전체의 집합 $\mathbb{R}^{m \times n}$ 위의 norm 도 vector 대신 행렬을 넣어 같은 세 조건으로 정의한다.
 
