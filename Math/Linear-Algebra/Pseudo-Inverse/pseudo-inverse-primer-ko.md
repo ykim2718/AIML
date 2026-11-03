@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-03 02:40 UTC
+Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 02:41 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -83,10 +83,11 @@ $\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고,
 - $r = m = n$: 두 식이 모두 $\mathbf{A}^{-1}$ 과 같다 ([4.1](#41-condition-for-the-inverse)).
 - $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 두 식을 쓸 수 없고, 특이값 분해로 $\mathbf{A}^{+}$ 를 구한다 ([6.3](#63-breaking-conditions)).
 
-$\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지 않으므로, 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와는 무관하다. $\mathbf{A}^{+}\mathbf{b}$ 가 무엇인지는 아래처럼 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 에 따라 달라진다.
+$\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지 않으므로, 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와는 무관하다. $\mathbf{A}^{+}\mathbf{b}$ 는 언제나 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 가운데 norm 이 가장 작은 하나이다. 다만 norm 으로 고르는 일은 그런 $\mathbf{x}$ 가 여럿일 때만 일어나며, 아래처럼 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와 $r$ 에 따라 갈린다.
 
-- $r = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$: 해가 있고, $\mathbf{A}^{+}\mathbf{b}$ 는 해 가운데 최소 노름 해이다. 해가 하나뿐이면 그 해이다.
-- $r \lt \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$: 해가 없고, $\mathbf{A}^{+}\mathbf{b}$ 는 최소제곱 해이다. 최소제곱 해가 여럿이면 그 가운데 norm 이 가장 작은 해이다.
+- $r = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$ 이고 $r = n$: 해가 하나뿐이어서 고를 것이 없고, $\mathbf{A}^{+}\mathbf{b}$ 는 그 해 자체이다. 정사각이면 $\mathbf{A}^{-1}\mathbf{b}$ 이다.
+- $r = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$ 이고 $r \lt n$: 해가 무수히 많고, $\mathbf{A}^{+}\mathbf{b}$ 는 해 가운데 최소 노름 해이다.
+- $r \lt \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$: 해가 없고, $\mathbf{A}^{+}\mathbf{b}$ 는 최소제곱 해이다. $r = n$ 이면 최소제곱 해가 하나뿐이어서 그 해이고, $r \lt n$ 이면 최소제곱 해 가운데 norm 이 가장 작은 해이다.
 
 ### 4.1 Condition for the Inverse
 
