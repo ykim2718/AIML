@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-03 02:55 UTC
+Rev. 9 | Created: 2026-11-02 | Updated: 2026-11-03 03:02 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -82,6 +82,8 @@ $\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고,
 - $r = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고, 최소 노름 해를 준다. 식 (1) 의 둘째 줄이다.
 - $r = m = n$: $\mathbf{A}^{+} = \mathbf{A}^{-1}$ 이고, 하나뿐인 해를 준다 ([4.1](#41-condition-for-the-inverse)).
 - $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 두 식을 쓸 수 없으므로, $\mathbf{A}^{+}$ 는 특이값 분해로 구한다 ([6.3](#63-breaking-conditions)).
+
+$\mathbf{A}^\top\mathbf{A}$ 는 $n \times n$, $\mathbf{A}\mathbf{A}^\top$ 는 $m \times m$ 의 정사각 행렬이지만, 정사각 행렬은 rank 가 그 크기와 같을 때만 역행렬이 있다. 두 행렬의 rank 는 모두 $\mathbf{A}$ 의 rank $r$ 과 같으므로, $r = n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 만, $r = m$ 이면 $\mathbf{A}\mathbf{A}^\top$ 만 역행렬이 있고, 역행렬이 있는 쪽 식만 쓸 수 있다. $r = m = n$ 이면 두 식이 같은 $\mathbf{A}^{-1}$ 을 주므로, rank 는 $\mathbf{A}^{+}$ 를 바꾸는 것이 아니라 쓸 수 있는 식을 정한다.
 
 $\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지 않으므로, 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와는 무관하다. $\mathbf{A}^{+}\mathbf{b}$ 는 언제나 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 가운데 norm 이 가장 작은 하나이다. 다만 norm 으로 고르는 일은 그런 $\mathbf{x}$ 가 여럿일 때만 일어나며, 아래처럼 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와 $r$ 에 따라 갈린다.
 
