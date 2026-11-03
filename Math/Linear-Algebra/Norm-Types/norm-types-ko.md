@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 9 | Created: 2026-11-02 | Updated: 2026-11-03 00:11 UTC
+Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 00:13 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -83,7 +83,7 @@ Table 1. Vector norms of x = [3, 4]
 | L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | 원        | 최소제곱, ridge, 최소 노름 해 |
 | L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | 정사각형  | 원소별 한계                   |
 
-Unit ball 은 norm 이 1 인 vector 의 끝점이 이루는 2 차원 도형이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
+Unit ball 은 norm 이 1 이하인 vector 의 집합이며, Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
 
 Matrix norm 을 식 (10) 의 $\mathbf{A}$ 에서 견주면 아래 Table 2 이다. $\mathbf{A}$ 의 특이값은 $\sigma_1 = \sqrt{3} \approx 1.732$, $\sigma_2 = 1$ 이다.
 
@@ -190,7 +190,7 @@ Table 2 의 숫자는 아래 행렬에서 구했다.
 - **MAE (mean absolute error)**: 오차 절댓값의 평균. 오차 vector 의 L1 norm 을 원소 수로 나눈 값이다.
 - **rank**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **ridge**: 손실에 weight 의 L2 norm 의 제곱을 더해 weight 를 작게 만드는 선형 회귀.
-- **unit ball**: norm 이 1 이하인 vector 의 집합. 이 문서의 그림은 그 경계를 말한다.
+- **unit ball**: norm 이 1 이하인 vector 의 집합. Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다.
 - **삼각부등식 (triangle inequality)**: 두 vector 의 합의 norm 이 두 norm 의 합을 넘지 않는다는 조건.
 - **최소 노름 해 (minimum norm solution)**: 해가 무수히 많은 선형방정식의 해 가운데 norm 이 가장 작은 해.
 - **최소제곱 (least squares)**: 잔차의 L2 norm 의 제곱을 가장 작게 하는 방법.
