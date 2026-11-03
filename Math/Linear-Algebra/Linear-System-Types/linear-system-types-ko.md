@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-03 02:26 UTC
+Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 02:32 UTC
 
 ## 1. Purpose
 
@@ -63,6 +63,10 @@ Ax = b
              -> minimum norm solution  x = A^T (A A^T)^-1 b   (rank(A) = m), one of them
 
 Pseudo-inverse: x = A^+ b gives the least squares solution, the inverse and the minimum norm solution
+  rank(A) = n ........... A^+ = (A^T A)^-1 A^T
+  rank(A) = m ........... A^+ = A^T (A A^T)^-1
+  rank(A) = m = n ....... A^+ = A^-1
+  rank(A) < m, n ........ A^+ from the singular value decomposition
 ```
 
 <a id="fig-2"></a>
