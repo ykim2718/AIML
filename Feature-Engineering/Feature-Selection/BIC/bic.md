@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 6 | Created: 2026-09-20 | Updated: 2026-11-03 08:15 UTC
+Rev. 7 | Created: 2026-09-20 | Updated: 2026-11-03 08:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

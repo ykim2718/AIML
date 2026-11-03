@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 6 | Created: 2026-09-20 | Updated: 2026-11-03 08:15 UTC
+Rev. 7 | Created: 2026-09-20 | Updated: 2026-11-03 08:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -33,11 +33,11 @@ BIC 는 적합이 끝난 model 을 deviance 에 parameter 하나당 $\ln n$ 의 
 
 Table 1. The three values the formula reads
 
-| Symbol      | Meaning                                                           | Read from                    |
-| :---------: | :---------------------------------------------------------------: | :--------------------------: |
-| $\hat{L}$   | 적합이 끝난 parameter 값에서의 likelihood                          | 채점하는 적합 자체           |
-| $k$         | 자유 parameter 의 개수, intercept 와 noise variance 포함           | Model 의 설정                |
-| $n$         | Likelihood 를 계산한 관측의 개수                                   | Data 집합                    |
+| Symbol    | Meaning                                                  | Read from          |
+| :-------: | :------------------------------------------------------: | :----------------: |
+| $\hat{L}$ | 적합이 끝난 parameter 값에서의 likelihood                | 채점하는 적합 자체 |
+| $k$       | Free parameter 의 개수, intercept 와 noise variance 포함 | Model 의 설정      |
+| $n$       | Likelihood 를 계산한 관측의 개수                         | Data 집합          |
 
 BIC 값은 같은 관측과 같은 response 에서 계산한 다른 BIC 값과 견주어 읽으며, 두 값의 차이가 결과의 전부다.
 
