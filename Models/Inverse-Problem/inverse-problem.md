@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 56 | Created: 2026-10-25 | Updated: 2026-11-03 09:30 UTC
+Rev. 57 | Created: 2026-10-25 | Updated: 2026-11-03 22:54 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -250,6 +250,12 @@ T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert
 ```
 
 $\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. Hotelling $T^{2}$ measures, in the score space, how far $\mathbf{t}$ lies from the center (the origin) of the scores of the historical data, with each score divided by its variance. Each row of the historical data is also turned into a score and becomes a row of the score matrix $\mathbf{T}$, so the two are compared in the same score space. The $T$ of Hotelling $T^{2}$ is the name of the statistic and differs from the score matrix $\mathbf{T}$. The derivations of Eq. (3), (4) and (5) are in [Appendix G](#appendix-g-derivation-of-eq-3-4-and-5). A schematic of SPE drawn in the input space is in [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe).
+
+The null space method of PLS inversion finds the solution in the order point, line, segment. The minimum-norm solution method of PLS inversion stops at step 1.
+
+1. Point: find the minimum-norm solution $\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}$ with the pseudo-inverse of Eq. (4).
+2. Line: find the null space direction $\mathbf{n}$ that satisfies $\mathbf{Q}\mathbf{n} = \mathbf{0}$, and form the line $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ through $\mathbf{t}^{\ast}$.
+3. Segment: set the range of $\alpha$ with the $T^{2}$ limit and cut the line to the segment A–B of Fig 3 (a).
 
 How far the two limits allow the null space in the score plane is shown in Fig 3 (a) below, and the minimum-norm solutions for the target 2.0 from PLS fitted to each of 200 bootstrap samples of the Appendix D data are shown in Fig 3 (b).
 
