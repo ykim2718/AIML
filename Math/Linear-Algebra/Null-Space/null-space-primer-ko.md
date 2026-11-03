@@ -1,19 +1,19 @@
 # Null Space Primer
-Rev. 35 | Created: 2026-10-31 | Updated: 2026-11-03 04:10 UTC
+Rev. 36 | Created: 2026-10-31 | Updated: 2026-11-03 04:25 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Notation](#3-notation)
-- [4. Interpretation](#4-interpretation)
-  - [4.1 Set Definition](#41-set-definition)
-  - [4.2 Linear Transformation](#42-linear-transformation)
-  - [4.3 Uniqueness of Solutions](#43-uniqueness-of-solutions)
-  - [4.4 Rank-Nullity Theorem](#44-rank-nullity-theorem)
-  - [4.5 Orthogonality to the Row Space](#45-orthogonality-to-the-row-space)
-- [5. Worked Example](#5-worked-example)
-- [6. Application](#6-application)
-  - [6.1 Collinear Features in Linear Regression](#61-collinear-features-in-linear-regression)
-  - [6.2 Numerical Computation with SVD](#62-numerical-computation-with-svd)
+- [4. Definitions](#4-definitions)
+- [5. Interpretation](#5-interpretation)
+  - [5.1 Linear Transformation](#51-linear-transformation)
+  - [5.2 Uniqueness of Solutions](#52-uniqueness-of-solutions)
+  - [5.3 Rank-Nullity Theorem](#53-rank-nullity-theorem)
+  - [5.4 Orthogonality to the Row Space](#54-orthogonality-to-the-row-space)
+- [6. Worked Example](#6-worked-example)
+- [7. Application](#7-application)
+  - [7.1 Collinear Features in Linear Regression](#71-collinear-features-in-linear-regression)
+  - [7.2 Numerical Computation with SVD](#72-numerical-computation-with-svd)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
 - [Appendix C. Counting the Solutions of Equation (2)](#appendix-c-counting-the-solutions-of-equation-2)
@@ -75,27 +75,31 @@ Table 1. Symbols
 - $[\mathbf{A} \mid \mathbf{b}]$: 영어로 "the augmented matrix A b", 한국어로 "A 와 b 의 첨가 행렬" 이라 읽는다. 여기의 $\mid$ 는 식 (1) 의 조건 기호와 달리 열의 경계를 나타낸다.
 - $\lVert \mathbf{x} \rVert$: 영어로 "the norm of x" 또는 "norm x", 한국어로 "x 의 노름" 이라 읽는다.
 
-## 4. Interpretation
+## 4. Definitions
 
-Null space 는 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때 식을 만족하는 모든 해 $\mathbf{x}$ 의 집합이다. 다시 말해 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해들이 이루는 공간이다.
+> **Definition (null space)**: $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $m \times n$ 행렬 $\mathbf{A}$ 의 null space $\mathrm{Null}(\mathbf{A})$ 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는 $\mathbf{x} \in \mathbb{R}^n$ 전체의 집합이다 (식 (1)). 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때의 해 전체와 같다.
 
 ```math
 \mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)
 ```
 
-### 4.1 Set Definition
+> **Definition (nullity)**: $m \times n$ 행렬 $\mathbf{A}$ 의 nullity $\mathrm{nullity}(\mathbf{A})$ 는 $\mathrm{Null}(\mathbf{A})$ 의 차원이다.
 
 $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다.
 
 식 (1) 에서 바로 찾을 수 있는 해는 zero vector 이며, 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 zero vector 를 반드시 포함하고, 이 해를 자명해 (trivial solution) 라 한다. Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다. 🌳
 
-또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다. $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 $\mathbf{A}$ 의 모든 행과 직교한다는 뜻이며, 행들이 생성하는 row space 와 null space 의 관계는 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에 있다.
+또한 $\mathbf{A}\mathbf{p} = \mathbf{0}$ 과 $\mathbf{A}\mathbf{q} = \mathbf{0}$ 이면 $\mathbf{A}(c\mathbf{p} + \mathbf{q}) = c\mathbf{A}\mathbf{p} + \mathbf{A}\mathbf{q} = \mathbf{0}$ 이므로, 해끼리 더하거나 상수배한 vector 도 null space 에 든다. 두 성질을 함께 갖추므로 null space 는 $\mathbb{R}^n$ 의 부분공간 (subspace) 이다. $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{x}$ 가 $\mathbf{A}$ 의 모든 행과 직교한다는 뜻이며, 행들이 생성하는 row space 와 null space 의 관계는 [5.4](#54-orthogonality-to-the-row-space) 에 있다.
 
-### 4.2 Linear Transformation
+## 5. Interpretation
+
+식 (1) 의 null space 는 선형 변환에서 원점으로 가는 입력 ([5.1](#51-linear-transformation)), 해의 개수 ([5.2](#52-uniqueness-of-solutions)), rank 와 nullity 의 합 ([5.3](#53-rank-nullity-theorem)), row space 와의 직교 ([5.4](#54-orthogonality-to-the-row-space)) 의 네 가지로 해석한다.
+
+### 5.1 Linear Transformation
 
 $\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다. 정사각 행렬 ($m = n$) 의 null space 에 zero vector 가 아닌 vector 가 있으면, 그 vector 를 $\mathbf{x}$ 에 더해도 $\mathbf{A}\mathbf{x}$ 가 바뀌지 않는다. 출력 $\mathbf{A}\mathbf{x}$ 에서 입력 $\mathbf{x}$ 를 하나로 정할 수 없으므로 $\mathbf{A}$ 의 역행렬이 없으며, 식 (5) 의 $\mathbf{A}$ 가 이 경우이다.
 
-### 4.3 Uniqueness of Solutions
+### 5.2 Uniqueness of Solutions
 
 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면, 해 전체는 $\mathbf{x}_0$ 에 null space 의 vector 를 더한 것이다.
 
@@ -114,13 +118,13 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해의 개수는 null space 에 따라 �
 \mathbf{A}(\mathbf{x}_0 + c\,\mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + c\,\mathbf{A}\mathbf{x}_{\mathrm{null}} = \underbrace{\mathbf{b}}_{\mathbf{A}\mathbf{x}_0 = \mathbf{b}} + c\,\underbrace{\mathbf{0}}_{\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}} = \mathbf{b} \hspace{19em} (3)
 ```
 
-식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 2](#5-worked-example) 의 $c = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다.
+식 (3) 의 결과가 $c$ 와 상관없이 $\mathbf{b}$ 이므로, 모든 실수 $c$ 에 대해 식 (3) 의 왼쪽 변에 넣은 vector 가 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해이다. Null space vector 가 zero vector 가 아니면 $c$ 가 다를 때마다 서로 다른 해가 나오므로, 해가 무수히 많다. [Table 2](#6-worked-example) 의 $c = 0, 1, 2$ 가 이 경우이며, 세 해가 모두 $\mathbf{A}\mathbf{x} = [2, 3, 5]^\top$ 을 만족한다.
 
 식 (2) 는 $\mathbf{x}_0$ 가 있을 때만 쓸 수 있다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열의 일차결합으로 나타나지 않으면 (column space 밖에 있으면) $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 null space 와 상관없이 0 개이다. Null space 로 해가 하나인지 무수히 많은지를 가리는 것은 해가 하나라도 있을 때만 맞다.
 
-### 4.4 Rank-Nullity Theorem
+### 5.3 Rank-Nullity Theorem
 
-Null space 의 차원을 nullity 라 하며, 계수 (rank) 와 nullity 를 더하면 열의 수 $n$ 이 된다.
+계수 (rank) 와 nullity 를 더하면 열의 수 $n$ 이 된다.
 
 ```math
 \mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n \hspace{19em} (4)
@@ -139,15 +143,15 @@ Fig 1. Rank and nullity of the matrix in equation (5)
 
 Fig 1 은 같은 folder 의 [`src/null_space_rank_nullity.py`](src/null_space_rank_nullity.py) 로 그렸다. 이 script 는 $\mathbf{A}\mathbf{n} = \mathbf{0}$ 과 rank, nullity 를 확인하고, 옮긴 점이 모두 column space 평면 위에 있는지 검사한 뒤 그림을 저장한다. 이 folder 에서 `python3 src/null_space_rank_nullity.py --output-folder .` 를 실행하면 `null-space-primer-ko_fig/fig1.png` 가 생긴다.
 
-### 4.5 Orthogonality to the Row Space
+### 5.4 Orthogonality to the Row Space
 
 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 각 행은 $\mathbf{A}$ 의 한 행과 $\mathbf{x}$ 의 내적이 0 이라는 식이다. 그래서 null space 의 vector 는 $\mathbf{A}$ 의 모든 행과 직교하고, 행들의 일차결합인 row space 의 모든 vector 와도 직교한다. Row space 의 차원은 rank 이므로 식 (4) 에서 두 공간의 차원을 더하면 $n$ 이고, 입력 공간 $\mathbb{R}^n$ 의 모든 vector 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다.
 
 식 (5) 의 $\mathbf{A}$ 에서 row space 는 첫 두 행 $[1, 0, 1]^\top$ 과 $[0, 1, 1]^\top$ 이 생성하는 평면이고, 식 (6) 의 $\mathbf{n}$ 과의 내적은 $-1 + 0 + 1 = 0$ 과 $0 - 1 + 1 = 0$ 이다. 특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 row space 성분 $[1/3, 4/3, 5/3]^\top$ 과 null space 성분 $[5/3, 5/3, -5/3]^\top$ 의 합이다. 두 성분이 직교하므로 $\lVert \mathbf{x}_0 \rVert^2 = 13$ 은 두 성분의 norm 의 제곱 $14/3$ 과 $25/3$ 을 더한 값이다.
 
-식 (2) 의 해들은 null space 성분만 다르고 row space 성분은 모두 같다. Null space 성분이 zero vector 인 해가 norm 이 가장 작은 최소 노름 해이며, 식 (5) 에서는 [6.2](#62-numerical-computation-with-svd) 의 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 이다. Row space 의 정의와 성질은 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에 있다.
+식 (2) 의 해들은 null space 성분만 다르고 row space 성분은 모두 같다. Null space 성분이 zero vector 인 해가 norm 이 가장 작은 최소 노름 해이며, 식 (5) 에서는 [7.2](#72-numerical-computation-with-svd) 의 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 이다. Row space 의 정의와 성질은 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에 있다.
 
-## 5. Worked Example
+## 6. Worked Example
 
 세 번째 열이 첫 번째 열과 두 번째 열의 합인 $3 \times 3$ 행렬을 둔다.
 
@@ -185,17 +189,17 @@ Table 3. Number of solutions by null space
 
 $\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 rank 3 이어서 null space 에 zero vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
 
-## 6. Application
+## 7. Application
 
 Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주는 입력이 하나로 정해지지 않는다.
 
-### 6.1 Collinear Features in Linear Regression
+### 7.1 Collinear Features in Linear Regression
 
 선형 회귀의 예측값은 $\hat{\mathbf{y}} = \mathbf{A}\mathbf{w}$ 이며, $\mathbf{A}$ 의 열이 센서이고 $\mathbf{w}$ 가 weight 이다. 한 센서가 다른 센서들의 일차결합이면 (collinearity) null space 에 zero vector 가 아닌 vector 가 있고, 식 (3) 대로 그 vector 의 상수배를 $\mathbf{w}$ 에 더해도 $\hat{\mathbf{y}}$ 가 바뀌지 않는다.
 
 식 (5) 의 $\mathbf{A}$ 에서 세 번째 센서는 첫 두 센서의 합이다. $\mathbf{w} = [2, 3, 0]^\top$ 과 $[0, 1, 2]^\top$ 은 예측값이 모두 $[2, 3, 5]^\top$ 이지만, 앞의 것은 세 번째 센서의 weight 가 0 이고 뒤의 것은 2 이다. 이때 weight 의 크기로 센서의 중요도를 해석할 수 없다. 정규방정식의 $\mathbf{A}^\top\mathbf{A}$ 도 같은 null space 를 가져 역행렬이 없으므로, 열을 빼거나 regularization 을 써서 nullity 를 0 으로 만든다.
 
-### 6.2 Numerical Computation with SVD
+### 7.2 Numerical Computation with SVD
 
 Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (5) 의 $\mathbf{A}$ 의 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (6) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
 
@@ -293,4 +297,4 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 
 식 (10) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 4.3 의 식 (3) 과 같다.
 
-[Table 3](#5-worked-example) 의 세 경우에 이 절차를 적용하면, 셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.
+[Table 3](#6-worked-example) 의 세 경우에 이 절차를 적용하면, 셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.
