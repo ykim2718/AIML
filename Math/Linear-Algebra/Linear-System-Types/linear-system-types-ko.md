@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 02:32 UTC
+Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-03 02:50 UTC
 
 ## 1. Purpose
 
@@ -15,7 +15,7 @@ Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 02:32 UTC
 
 ## 3. Taxonomy and its Hierarchy
 
-$\mathbf{A}$ 는 $m \times n$ 계수 행렬, $\mathbf{x}$ 는 미지수 $n$ 개로 이루어진 vector, $\mathbf{b}$ 는 우변 $m$ 개로 이루어진 vector 이다. $m$ 은 식의 수, $n$ 은 미지수의 수이고, rank 는 $\mathbf{A}$ 에서 서로 일차독립인 열의 최대 개수이다. 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 는 $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다.
+$\mathbf{A}$ 는 $m \times n$ 계수 행렬, $\mathbf{x}$ 는 미지수 $n$ 개로 이루어진 vector, $\mathbf{b}$ 는 우변 $m$ 개로 이루어진 vector 이다. $m$ 은 식의 수, $n$ 은 미지수의 수이고, rank 는 $\mathbf{A}$ 에서 서로 일차독립인 열의 최대 개수이다. 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 는 $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열 하나로 붙인 $m \times (n + 1)$ 행렬이다. $\mathbf{A}^{+}$ 는 $\mathbf{A}$ 의 pseudo-inverse 이며, 영어로 "A plus", 한국어로 "A 의 pseudo-inverse" 라 읽는다. 역행렬이 없는 $m \times n$ 행렬에도 정의되는 역행렬의 일반화이다.
 
 세 기준은 서로 독립이며, 축마다의 값은 아래 [Fig 1](#fig-1) 이다.
 
@@ -122,7 +122,7 @@ Table 2 로 해의 개수를 정한 뒤 아래 풀이를 쓴다.
 - **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 의 집합. Column space 와 직교한다.
 - **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
-- **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
+- **pseudo-inverse**: 기호는 $\mathbf{A}^{+}$. 정사각이 아니거나 역행렬이 없는 행렬에도 정의되는 역행렬의 일반화. Moore–Penrose pseudo-inverse 라고도 한다.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **과결정 시스템 (overdetermined system)**: 식의 수가 미지수의 수보다 많은 선형방정식.
 - **동차 선형방정식 (homogeneous linear equation)**: 우변이 zero vector 인 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$.
