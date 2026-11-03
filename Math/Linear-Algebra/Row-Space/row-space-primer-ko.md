@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 34 | Created: 2026-11-01 | Updated: 2026-11-03 08:00 UTC
+Rev. 35 | Created: 2026-11-01 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -149,7 +149,7 @@ Row space 의 차원은 column space 의 차원과 언제나 같고, 그 값이 
 \dim \mathrm{Row}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \mathrm{rank}(\mathbf{A}) = r \hspace{19em} (5) \ \text{🌳}
 ```
 
-$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot column 의 수와 같다. Pivot column 의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (5) 가 성립한다. 공간의 차원과 행렬의 rank 의 구별, 그리고 $m \ne n$ 인 행렬의 숫자 예시는 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
+$\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 연산은 행의 일차결합만 만들므로 row space 가 바뀌지 않는다. $\mathbf{R}$ 의 0 이 아닌 행은 일차독립이어서 그 수가 row space 의 차원이고, 그 수는 pivot column 의 수와 같다. Pivot column 의 수는 일차독립인 열의 최대 개수인 rank 이므로 식 (5) 가 성립한다. 공간의 차원과 행렬의 rank 를 구별하는 방법, 그리고 $m \ne n$ 인 행렬의 숫자 예시는 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 
 ### 4.5 Orthogonal Decomposition of the Input Space
 
@@ -209,7 +209,7 @@ Row space 는 해가 무수히 많은 선형방정식에서 하나를 고르거�
 
 ### 6.1 Minimum-Norm Solution
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 같은 row space 성분에 서로 다른 null space 성분을 더한 것이다. 식 (6) 의 두 성분이 직교하므로 해의 norm 의 제곱은 두 성분의 norm 의 제곱을 더한 값이고, null space 성분이 zero vector 인 해의 norm 이 가장 작다. Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b}$ 가 이 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 같은 row space 성분에 서로 다른 null space 성분을 더한 것이다. 식 (6) 의 두 성분이 직교하므로 해의 norm 제곱은 두 성분의 norm 제곱을 더한 값이고, null space 성분이 zero vector 인 해의 norm 이 가장 작다. Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b}$ 가 이 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다.
 
 식 (7) 의 $\mathbf{A}$ 와 $\mathbf{b} = [3, 0]^\top$ 에서 $\mathbf{A}^{+}\mathbf{b} = [2, -1, 1]^\top$ 이며, 식 (9) 의 row space 성분과 같다. 선형 회귀에서 feature 가 collinear 하면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 자료 행렬의 row space 에 있는 weight 를 고른다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 

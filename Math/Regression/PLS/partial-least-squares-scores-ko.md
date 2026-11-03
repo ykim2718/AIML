@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 15 | Created: 2026-10-24 | Updated: 2026-11-03 06:55 UTC
+Rev. 16 | Created: 2026-10-24 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -249,7 +249,7 @@ PLS 와 OLS 는 회귀 계수를 구하는 대상이 다른 별개의 방법이�
 
 ### B.1 Ordinary Least Squares
 
-OLS (Ordinary Least Squares, 일반최소제곱) 는 가장 전통적이고 기본적인 선형 회귀 방법이며, 잔차 (관측값과 예측값의 차이) 의 제곱합을 최소로 하는 회귀 계수를 구한다.
+OLS (Ordinary Least Squares, 일반최소제곱) 는 가장 전통적이고 기본적인 선형 회귀 방법이며, 잔차 (관측값과 예측값의 차이) 를 제곱해 더한 값을 최소로 하는 회귀 계수를 구한다.
 
 - 조건: 입력 변수의 수 $P$ 가 sample 수 $N$ 보다 적고, 변수 사이에 다중공선성이 없을 때 가장 잘 작동한다.
 - 한계: 반도체 장비 센서 데이터처럼 입력 변수가 수백 개 이상이고 서로 강하게 상관되면, $\mathbf{X}^\top \mathbf{X}$ 의 역행렬을 구할 수 없거나 과적합 (overfitting) 이 일어난다. 앞의 경우는 계수를 하나로 정할 수 없고, 뒤의 경우는 학습 데이터에는 맞지만 새 데이터의 예측 오차가 크다.

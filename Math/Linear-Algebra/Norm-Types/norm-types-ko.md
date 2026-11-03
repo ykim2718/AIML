@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 18 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
+Rev. 19 | Created: 2026-11-02 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -185,7 +185,7 @@ Table 3. Uses of norms
 | Numerical stability           | Condition number              | 입력이 조금 변할 때 결과가 얼마나 흔들리는지 잰다. 값이 크면 feature 가 서로 겹쳐 회귀 계수가 불안정하다                    |
 | Approximation and convergence | Frobenius norm, spectral norm | 특이값 분해로 줄인 행렬과 원래 행렬의 차이를 재고, 반복 계산에서 새 값과 옛 값의 차이의 norm 이 허용 오차보다 작으면 멈춘다 |
 
-Table 3 의 쓰는 곳은 오차 크기 재기, weight 의 penalty, 계산이 안정한지 확인, 반복을 멈출 시점 판정의 넷이다. 어느 norm 을 쓰느냐에 따라 큰 오차를 더 크게 벌주는지 (L2) 와 작은 값을 0 으로 만드는지 (L1) 가 달라진다. Condition number 는 행렬의 norm 과 역행렬의 norm 의 곱 $\lVert \mathbf{A} \rVert \, \lVert \mathbf{A}^{-1} \rVert$ 이며, spectral norm 으로 재면 가장 큰 특이값을 가장 작은 특이값으로 나눈 값이다. 식 (10) 의 $\mathbf{A}$ 에서는 $\sqrt{3} / 1 \approx 1.732$ 이다.
+Table 3 의 쓰는 곳은 오차 크기 재기, weight 의 penalty, 계산이 안정한지 확인, 반복을 멈출 시점 판정의 넷이다. 어느 norm 을 쓰느냐에 따라 큰 오차를 더 크게 벌주는지 (L2) 와 작은 값을 0 으로 만드는지 (L1) 가 달라진다. Condition number 는 행렬 norm 과 역행렬 norm 을 곱한 값 $\lVert \mathbf{A} \rVert \, \lVert \mathbf{A}^{-1} \rVert$ 이며, spectral norm 으로 재면 가장 큰 특이값을 가장 작은 특이값으로 나눈 값이다. 식 (10) 의 $\mathbf{A}$ 에서는 $\sqrt{3} / 1 \approx 1.732$ 이다.
 
 Norm 마다의 쓰임은 아래이다.
 
@@ -202,7 +202,7 @@ Norm 마다의 쓰임은 아래이다.
 
 ## Appendix A. Terminology
 
-- **condition number**: 행렬의 norm 과 역행렬의 norm 의 곱. 입력의 작은 변화가 결과를 얼마나 크게 바꾸는지를 나타낸다.
+- **condition number**: 행렬 norm 과 역행렬 norm 을 곱한 값. 입력의 작은 변화가 결과를 얼마나 크게 바꾸는지를 나타낸다.
 - **lasso**: 손실에 weight 의 L1 norm 을 더해 일부 weight 를 0 으로 만드는 선형 회귀.
 - **Lp norm**: 원소 절댓값의 $p$ 제곱을 모두 더한 값의 $1/p$ 제곱인 norm (식 (4)). L 은 수학자 Lebesgue 의 머리글자이고, $p$ 는 원소 절댓값에 씌우는 지수이다. $p = 1, 2, \infty$ 일 때가 L1, L2, L∞ norm 이다.
 - **MAE (mean absolute error)**: 오차 절댓값의 평균. 오차 vector 의 L1 norm 을 원소 수로 나눈 값이다.
@@ -253,9 +253,9 @@ Fig 3. Triangle inequality with the L2 norm
 - **(a)**: $\mathbf{x}$ 의 끝에 $\mathbf{y}$ 를 이어 붙이면 $\mathbf{x} + \mathbf{y}$ 는 처음과 끝을 잇는 셋째 변이다. 세 변이 삼각형을 이루므로 셋째 변의 L2 norm 은 두 변의 L2 norm 의 합보다 작다.
 - **(b)**: $\mathbf{y}$ 가 $\mathbf{x}$ 와 같은 방향이면 삼각형이 한 직선으로 납작해져, 셋째 변의 L2 norm 이 두 변의 L2 norm 의 합과 같다. $\mathbf{x} + \mathbf{y}$ 는 $\mathbf{x}$, $\mathbf{y}$ 와 겹치지 않게 아래로 옮겨 그렸다.
 
-Fig 3 의 (a) 와 (b) 를 합하면 식 (3) 이 된다. 셋째 변의 norm 은 두 변의 norm 의 합을 넘지 않고, 등호는 두 vector 가 같은 방향일 때만 성립한다. Fig 3 은 [src/triangle_inequality.py](src/triangle_inequality.py) 가 그리며, `python3 src/triangle_inequality.py --output-folder .` 로 실행하면 `norm-types-ko_fig/fig3.png` 를 만든다.
+Fig 3 의 (a) 와 (b) 를 합하면 식 (3) 이 된다. 셋째 변의 norm 은 두 변의 norm 을 더한 값을 넘지 않고, 등호는 두 vector 가 같은 방향일 때만 성립한다. Fig 3 은 [src/triangle_inequality.py](src/triangle_inequality.py) 가 그리며, `python3 src/triangle_inequality.py --output-folder .` 로 실행하면 `norm-types-ko_fig/fig3.png` 를 만든다.
 
-식 (10) 의 $\mathbf{A}$ 의 두 열 $\mathbf{x} = [1, 0, 1]^\top$, $\mathbf{y} = [0, 1, 1]^\top$ 에서 세 norm 으로 식 (3) 을 확인하면 아래 Table 4 이다. 두 vector 의 합은 $\mathbf{x} + \mathbf{y} = [1, 1, 2]^\top$ 이다.
+식 (10) 의 $\mathbf{A}$ 에서 두 열 $\mathbf{x} = [1, 0, 1]^\top$, $\mathbf{y} = [0, 1, 1]^\top$ 에서 세 norm 으로 식 (3) 을 확인하면 아래 Table 4 이다. 두 vector 의 합은 $\mathbf{x} + \mathbf{y} = [1, 1, 2]^\top$ 이다.
 
 Table 4. Triangle inequality for the two columns of A in equation (10)
 

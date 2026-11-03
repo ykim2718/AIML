@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 12 | Created: 2026-08-30 | Updated: 2026-11-01 21:36 UTC
+Rev. 13 | Created: 2026-08-30 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Scope](#1-scope)
 - [2. Relation](#2-relation)
@@ -179,7 +179,7 @@ $\sigma^{2}$ 를 넣게 해 주고, 식 (5) 의 두 번째 성질은 independent
 covariance 가 0 이라는 데까지만 쓴다. Covariance 가 0 이 아니게 되는 경우가 둘 있다.
 1) Draw 끼리 상관이 있으면 variance 의 합이 빠뜨린 covariance 항이 더해져 식 (6) 이 성립하지
 않는다. 2) 비복원으로 뽑을 때, 곧 뽑은 값을 모집단에 되돌리지 않고 다음 draw 를 뽑을 때는
-뒤의 draw 가 고를 값이 줄어, 앞의 draw 가 뒤의 draw 의 분포를 바꾼다. 그러면 크기 $N$ 의
+뒤의 draw 가 고를 값이 줄어, 앞 draw 가 뒤 draw 의 분포를 바꾼다. 그러면 크기 $N$ 의
 모집단에 대해 평균의 variance 에 finite population correction 인자 $(N-n)/(N-1)$ 이 붙는다
 [[2](#ref-2)].
 

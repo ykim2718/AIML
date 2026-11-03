@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 139 | Created: 2026-08-28 | Updated: 2026-11-02 21:21 UTC
+Rev. 140 | Created: 2026-08-28 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -836,7 +836,7 @@ $s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산�
 T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (13)
 ```
 
-SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 의 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
+SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 에서 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
 
 ```math
 \mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (14)
@@ -855,7 +855,7 @@ Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
 - (a): 모든 행으로 적합한 PLS 하나의 model plane (빨간 면) 과 그 minimum-norm solution $\mathbf{x}^{\ast}$ (주황 별) 이다. 회색 점은 학습에 쓴 $\mathbf{X}$ 의 행이다.
 - (b): bootstrap 표본마다 적합한 PLS 의 model plane (파란 면) 과 그 minimum-norm solution (파란 점) 이다. 빨간 면과 주황 별은 (a) 와 같다.
 
-파란 면은 각 bootstrap PLS 의 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
+파란 면은 bootstrap PLS 마다 구한 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
 
 ## Appendix I. PLS Inversion: Model Plane of One PLS and SPE
 

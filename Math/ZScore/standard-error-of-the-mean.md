@@ -1,5 +1,5 @@
 # Standard Deviation of a Population and of Its Sample Mean
-Rev. 11 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+Rev. 12 | Created: 2026-08-30 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Scope](#1-scope)
 - [2. Relation](#2-relation)

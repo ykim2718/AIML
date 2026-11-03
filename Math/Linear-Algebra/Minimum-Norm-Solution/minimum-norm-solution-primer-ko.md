@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 14 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
+Rev. 15 | Created: 2026-11-02 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -81,7 +81,7 @@ Table 1. Symbols
 
 ### 4.2 Orthogonal Decomposition of a Solution
 
-입력 공간 $\mathbb{R}^n$ 은 row space 와 null space 로 나뉘고 두 공간은 서로 직교하므로, 해 $\mathbf{x}$ 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다. 두 성분이 직교하므로 피타고라스 정리에 따라 norm 의 제곱은 두 성분의 norm 의 제곱을 더한 값이다.
+입력 공간 $\mathbb{R}^n$ 은 row space 와 null space 로 나뉘고 두 공간은 서로 직교하므로, 해 $\mathbf{x}$ 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다. 두 성분이 직교하므로 피타고라스 정리에 따라 norm 제곱은 두 성분의 norm 제곱을 더한 값이다.
 
 ```math
 \mathbf{x} = \mathbf{x}_{\mathrm{row}} + \mathbf{x}_{\mathrm{null}}, \qquad
@@ -149,7 +149,7 @@ Table 2. Norm of each solution
 | $\mathbf{x}^{(2)}$ | $[1, 1, 1]$   | $1^2 + 1^2 + 1^2 = 3$        | $[0, 0, 0]$                  | 0                                            |
 | $\mathbf{x}^{(3)}$ | $[5, -1, -1]$ | $5^2 + (-1)^2 + (-1)^2 = 27$ | $[4, -2, -2]$                | 24                                           |
 
-세 해의 row space 성분은 모두 $[1, 1, 1]^\top$ 이고 그 norm 의 제곱은 3 이다. $\lVert \mathbf{x} \rVert^2$ 는 3 에 null space 성분의 norm 의 제곱을 더한 값이어서, null space 성분이 zero vector 인 $\mathbf{x}^{(2)}$ 의 값 3 이 가장 작다.
+세 해의 row space 성분은 모두 $[1, 1, 1]^\top$ 이고 그 norm 제곱은 3 이다. $\lVert \mathbf{x} \rVert^2$ 는 3 에 null space 성분의 norm 제곱을 더한 값이어서, null space 성분이 zero vector 인 $\mathbf{x}^{(2)}$ 의 값 3 이 가장 작다.
 
 $\mathbf{A}$ 의 row space 는 $[1, 1, 1]^\top$ 의 상수배 전체인 직선이고, $\mathbf{x}^{(2)}$ 는 이 직선 위에 있다. Null space 는 원소의 합이 0 인 vector 전체인 평면이며 $[1, -1, 0]^\top$ 이 그 예이다. Table 2 의 null space 성분 $[2, -1, -1]^\top$ 과 $[4, -2, -2]^\top$ 은 원소의 합이 0 이고 $[1, 1, 1]^\top$ 과의 내적이 0 이다.
 
@@ -181,7 +181,7 @@ Rank 가 $m$ 보다 작으면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없�
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
 - **최소제곱 해 (least squares solution)**: $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$.
 - **특이값 분해 (singular value decomposition)**: 행렬을 $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 로 나누는 분해. $\mathbf{U}$ 와 $\mathbf{V}$ 의 열은 단위 vector 이고 $\boldsymbol{\Sigma}$ 의 대각 원소가 특이값이다.
-- **피타고라스 정리 (Pythagorean theorem)**: 직교하는 두 vector 의 합의 norm 의 제곱은 두 vector 의 norm 의 제곱을 더한 값이다.
+- **피타고라스 정리 (Pythagorean theorem)**: 직교하는 두 vector 를 더한 vector 의 norm 제곱은 두 vector 의 norm 제곱을 더한 값이다.
 
 ## Appendix B. Derivation
 

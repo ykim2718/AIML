@@ -1,5 +1,5 @@
 # Bayesian Information Criterion
-Rev. 5 | Created: 2026-09-20 | Updated: 2026-09-23 11:29 CDT
+Rev. 6 | Created: 2026-09-20 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -131,7 +131,7 @@ Table 2. What a BIC difference in favour of the smaller score is worth
 - **Consistency**: Data 를 만든 model 이 후보 안에 있을 때, 표본이 커질수록 그 model 을 고를 확률이 1 로 가는 성질.
 - **Deviance**: 적합이 끝난 model 의 maximized log-likelihood 에 $-2$ 를 곱한 값.
 - **Laplace approximation**: 적분 안의 log 를 최댓값 둘레에서 2 차까지 전개하고 그 Gaussian 을 적분하여 얻는 적분값.
-- **Marginal likelihood**: Parameter 를 그 prior 에 대해 적분하여 없앤 model 아래에서의 data 의 likelihood.
+- **Marginal likelihood**: Parameter 를 그 prior 에 대해 적분하여 없앤 model 아래에서 구한 data 의 likelihood.
 - **Regular model**: Maximum likelihood 추정값에서 Fisher information matrix 가 특이하지 않게 유지되는 model.
 
 ## Appendix B. The Derivation Of The Criterion

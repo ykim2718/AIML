@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 43 | Created: 2026-10-31 | Updated: 2026-11-03 08:00 UTC
+Rev. 44 | Created: 2026-10-31 | Updated: 2026-11-03 08:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -68,7 +68,7 @@ Table 1. Symbols
 
 - $\mathbb{R}^n$: 영어로 "R n" 또는 "real n-space", 한국어로 "n 차원 실수 공간" 이라 읽는다.
 - $\in$: 영어로 "in" 또는 "is an element of", 한국어로 "에 속한다" 라 읽는다.
-- $\{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \}$ 의 $\mid$: 영어로 "such that", 한국어로 "인" 이라 읽는다. 식 (1) 전체는 영어로 "the set of x in R n such that A x equals zero", 한국어로 "A x 가 zero vector 인 R n 의 x 의 집합" 이라 읽는다.
+- $\{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \}$ 의 $\mid$: 영어로 "such that", 한국어로 "인" 이라 읽는다. 식 (1) 전체는 영어로 "the set of x in R n such that A x equals zero", 한국어로 "A x 가 zero vector 인, R n 에 속한 x 의 집합" 이라 읽는다.
 - $\mathbf{A}^\top$: 영어로 "A transpose", 한국어로 "A 의 전치" 또는 "A 트랜스포즈" 라 읽는다.
 - $\mathbf{A}^{+}$: 영어로 "A plus" 또는 "the pseudo-inverse of A", 한국어로 "A 의 pseudo-inverse" 라 읽는다.
 - $\hat{\mathbf{y}}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다. 기호 위의 hat 은 그 값이 model 의 추정값임을 나타낸다.
@@ -160,7 +160,7 @@ Fig 1 은 같은 folder 의 [`src/null_space_rank_nullity.py`](src/null_space_ra
 
 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 각 행은 $\mathbf{A}$ 의 한 행과 $\mathbf{x}$ 의 내적이 0 이라는 식이다. 그래서 null space 의 vector 는 $\mathbf{A}$ 의 모든 행과 직교하고, 행들의 일차결합인 row space 의 모든 vector 와도 직교한다. Row space 의 차원은 rank 이므로 식 (4) 에서 두 공간의 차원을 더하면 $n$ 이고, 입력 공간 $\mathbb{R}^n$ 의 모든 vector 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다.
 
-식 (5) 의 $\mathbf{A}$ 에서 row space 는 첫 두 행 $[1, 0, 1]^\top$ 과 $[0, 1, 1]^\top$ 이 생성하는 평면이고, 식 (6) 의 $\mathbf{n}$ 과의 내적은 $-1 + 0 + 1 = 0$ 과 $0 - 1 + 1 = 0$ 이다. 특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 row space 성분 $[1/3, 4/3, 5/3]^\top$ 과 null space 성분 $[5/3, 5/3, -5/3]^\top$ 의 합이다. 두 성분이 직교하므로 $\lVert \mathbf{x}_0 \rVert^2 = 13$ 은 두 성분의 norm 의 제곱 $14/3$ 과 $25/3$ 을 더한 값이다.
+식 (5) 의 $\mathbf{A}$ 에서 row space 는 첫 두 행 $[1, 0, 1]^\top$ 과 $[0, 1, 1]^\top$ 이 생성하는 평면이고, 식 (6) 의 $\mathbf{n}$ 과의 내적은 $-1 + 0 + 1 = 0$ 과 $0 - 1 + 1 = 0$ 이다. 특수해 $\mathbf{x}_0 = [2, 3, 0]^\top$ 은 row space 성분 $[1/3, 4/3, 5/3]^\top$ 과 null space 성분 $[5/3, 5/3, -5/3]^\top$ 의 합이다. 두 성분이 직교하므로 $\lVert \mathbf{x}_0 \rVert^2 = 13$ 은 두 성분의 norm 제곱 $14/3$ 과 $25/3$ 을 더한 값이다.
 
 식 (2) 의 해들은 null space 성분만 다르고 row space 성분은 모두 같다. Null space 성분이 zero vector 인 해가 norm 이 가장 작은 최소 노름 해이며, 식 (5) 에서는 [7.2](#72-numerical-computation-with-svd) 의 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 이다. Row space 의 정의와 성질은 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에 있다.
 
@@ -214,7 +214,7 @@ Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주
 
 ### 7.2 Numerical Computation with SVD
 
-Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (5) 의 $\mathbf{A}$ 의 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (6) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
+Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (5) 의 $\mathbf{A}$ 에서 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (6) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
 
 Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + c\,\mathbf{n}$ 에서 $c = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
