@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 5 | Created: 2026-11-02 | Updated: 2026-11-02 23:36 UTC
+Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-03 00:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -146,12 +146,16 @@ Matrix norm 은 특이값으로 아래처럼 적는다. $r$ 은 $\mathbf{A}$ 의
 \hspace{19em} (6)
 ```
 
+특이값은 vector norm 에는 필요 없고, matrix norm 가운데 spectral norm 과 nuclear norm 을 정의할 때 필요하다. 식 (6) 에서 spectral norm 은 가장 큰 특이값 $\sigma_1$, nuclear norm 은 특이값의 합이므로, 이 두 norm 은 특이값 없이 적을 수 없다. Frobenius norm 은 원소 제곱합의 제곱근으로 정의되어 특이값 없이도 구할 수 있지만, 특이값 제곱합의 제곱근과 같은 값이어서 세 matrix norm 을 식 (6) 하나에 나란히 적을 수 있다.
+
 Table 2 의 숫자는 아래 행렬에서 구했다.
 
 ```math
 \mathbf{A} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}
 \hspace{19em} (7)
 ```
+
+식 (7) 의 $\mathbf{A}$ 에서도 Frobenius norm 2 는 $(\sigma_1^2 + \sigma_2^2)^{1/2} = (3 + 1)^{1/2}$ 와 같다.
 
 ## 5. Application
 
