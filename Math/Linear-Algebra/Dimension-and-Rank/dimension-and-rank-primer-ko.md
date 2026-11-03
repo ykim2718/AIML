@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 10 | Created: 2026-11-03 | Updated: 2026-11-03 09:30 UTC
+Rev. 11 | Created: 2026-11-03 | Updated: 2026-11-03 09:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -44,6 +44,7 @@ Table 1. Symbols
 | $\mathrm{Null}(\mathbf{A})$                    | $\mathbf{A}$ 의 null space                                                        | $\mathbb{R}^n$ 의 부분공간 | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
 | $\mathrm{rank}(\mathbf{A})$, $r$               | $\mathbf{A}$ 의 계수                                                              | scalar                     | $0 \le r \le \min(m, n)$                                 |
 | $\mathbf{x}$                                   | 입력 vector                                                                       | $n \times 1$               | 실수 원소                                                |
+| $\mathbf{y}$                                   | left null space 의 vector                                                         | $m \times 1$               | $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$                 |
 | $\mathbf{r}_1$, $\mathbf{r}_2$                 | Worked Example 에서 $\mathbf{A}$ 의 첫째 행과 둘째 행                             | $3 \times 1$               | 열 vector 로 적음                                        |
 | $\mathbf{c}_1$, $\mathbf{c}_2$, $\mathbf{c}_3$ | Worked Example 에서 $\mathbf{A}$ 의 첫째, 둘째, 셋째 열                           | $2 \times 1$               | 실수 원소                                                |
 | $x_1$, $x_2$                                   | $\mathbf{c}_3$ 를 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 의 일차결합으로 적을 때의 계수 | scalar                     | 실수                                                     |
@@ -184,6 +185,7 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 
 - **column space**: 행렬의 열들의 일차결합 전체. $\mathbb{R}^m$ 의 부분공간이다.
 - **free column**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (free variable) 는 아무 값이나 가질 수 있고, pivot column 의 변수 (pivot 변수) 는 free variable 의 값으로 정해진다.
+- **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체. $\mathbb{R}^m$ 의 부분공간이며 차원은 $m - r$ 이다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체. $\mathbb{R}^n$ 의 부분공간이다.
 - **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **rank-nullity 정리 (rank-nullity theorem)**: $\mathbf{A}$ 의 rank 와 null space 의 차원을 더하면 열의 수 $n$ 이라는 정리.
@@ -239,15 +241,18 @@ $\mathbf{A}$ 의 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, �
 - Row space: 기약 행사다리꼴의 0 이 아닌 행이 기저이다. 기본 행 연산은 행의 일차결합만 만들어 row space 를 바꾸지 않는다. 식 (10) 에서는 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 이다.
 - Null space: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 에서 free variable 하나만 1, 나머지 free variable 은 0 으로 두고, 기약 행사다리꼴의 각 행에서 pivot 변수를 구한다. free variable 마다 기저 vector 하나를 얻는다. 식 (10) 에서 $\mathbf{x}$ 의 셋째 원소를 1 로 두면 첫 행에서 첫째 원소가 0, 둘째 행에서 둘째 원소가 $-1.5$ 여서 $[0, -1.5, 1]^\top$ 이다.
 
-세 기저를 모으면 아래 Table 4 와 같다.
+네 부분공간의 기저를 모으면 아래 Table 4 와 같다.
 
-Table 4. Bases of the three spaces of the matrix in equation (3)
+Table 4. Bases of the four subspaces of the matrix in equation (3)
 
-| Space        | Basis                                                      | Dimension |
-| :----------: | :--------------------------------------------------------: | :-------: |
-| Column space | $\mathbf{c}_1 = [1, 4]^\top$, $\mathbf{c}_2 = [2, 6]^\top$ | 2         |
-| Row space    | $[1, 0, 0]^\top$, $[0, 1, 1.5]^\top$                       | 2         |
-| Null space   | $[0, -1.5, 1]^\top$                                        | 1         |
+| Space           | Basis                                                      | Dimension |
+| :-------------: | :--------------------------------------------------------: | :-------: |
+| Column space    | $\mathbf{c}_1 = [1, 4]^\top$, $\mathbf{c}_2 = [2, 6]^\top$ | 2         |
+| Row space       | $[1, 0, 0]^\top$, $[0, 1, 1.5]^\top$                       | 2         |
+| Null space      | $[0, -1.5, 1]^\top$                                        | 1         |
+| Left null space | None                                                       | 0         |
+
+Table 4 에서 left null space 의 기저가 None 인 것은 식 (3) 의 $\mathbf{A}$ 가 $m = 2$, $r = 2$ 이기 때문이다. 이때 left null space 의 차원이 $m - r = 0$ 이어서 zero vector 만 있고, 기저 vector 가 하나도 없다. Left null space 는 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체이며, 그 정의와 성질은 [Left Null Space Primer](../Left-Null-Space/left-null-space-primer-ko.md) 에 있다.
 
 Row space 의 기저 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 은 식 (4) 의 $\mathbf{r}_1$, $\mathbf{r}_2$ 와 다르지만, $[1, 0, 0]^\top = -3\,\mathbf{r}_1 + \mathbf{r}_2$ 와 $[0, 1, 1.5]^\top = 2\,\mathbf{r}_1 - 0.5\,\mathbf{r}_2$ 로 같은 평면을 생성하고 개수도 2 로 같다. Null space 의 기저 $[0, -1.5, 1]^\top$ 은 [꼭지 6](#6-worked-example) 의 $[0, 1.5, -1]^\top$ 에 $-1$ 을 곱한 것이다. 기약 행사다리꼴, pivot column, free variable 로 해를 구하는 순서는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에도 있다.
 
