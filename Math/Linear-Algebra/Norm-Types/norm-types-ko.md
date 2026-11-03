@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 10 | Created: 2026-11-02 | Updated: 2026-11-03 00:13 UTC
+Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 00:38 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -79,9 +79,9 @@ Table 1. Vector norms of x = [3, 4]
 
 | Norm           | Definition                 | Value                | Unit ball | Used in                       |
 | :------------: | :------------------------: | :------------------: | :-------: | :---------------------------: |
-| L1 (Manhattan) | $\sum_i \lvert x_i \rvert$ | $3 + 4 = 7$          | 마름모    | Lasso, MAE                    |
-| L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | 원        | 최소제곱, ridge, 최소 노름 해 |
-| L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | 정사각형  | 원소별 한계                   |
+| L1 (Manhattan) | $\sum_i \lvert x_i \rvert$ | $3 + 4 = 7$          | Diamond   | Lasso, MAE                    |
+| L2 (Euclidean) | $(\sum_i x_i^2)^{1/2}$     | $(9 + 16)^{1/2} = 5$ | Circle    | 최소제곱, ridge, 최소 노름 해 |
+| L∞ (max)       | $\max_i \lvert x_i \rvert$ | $\max(3, 4) = 4$     | Square    | 원소별 한계                   |
 
 Unit ball 은 norm 이 1 이하인 vector 의 집합이며, Table 1 의 Unit ball 열은 2 차원에서 그 집합의 경계가 이루는 모양이다. L1 은 좌표축을 따라 가로와 세로로만 움직인 거리이고, L2 는 원점에서 잰 직선 거리이며, L∞ 는 원소 가운데 가장 크게 벗어난 하나만 본다. 세 값은 식 (6) 대로 $4 \le 5 \le 7$ 이다.
 
