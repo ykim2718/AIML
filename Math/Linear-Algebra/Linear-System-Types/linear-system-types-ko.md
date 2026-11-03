@@ -71,7 +71,7 @@ Fig 2. Hierarchy of the rank test
 - 한 단계 내려갈 때마다 해의 조건이 약해진다. 해가 없으면 식을 모두 만족하는 것을 포기하고 잔차를 가장 작게 하며, 해가 무수히 많으면 해 가운데 norm 이 가장 작은 하나를 고른다.
 - 해가 무수히 많은 갈래에는 풀이가 둘이다.
   - Null space 방법: 해 하나에 null space vector 를 더해 모든 해를 적는다. 자세한 내용은 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
-  - 최소 노름 해: 그 가운데 null space 성분이 zero vector 인 해 하나를 고른다.
+  - 최소 노름 해: null space 방법이 적은 모든 해 가운데 null space 성분이 zero vector 인 해 하나를 고른다.
 - 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}\mathbf{b}$ 로 하나로 적힌다.
 
 ### 3.1 Comparison
