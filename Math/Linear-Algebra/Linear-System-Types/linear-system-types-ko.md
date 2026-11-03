@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 5 | Created: 2026-11-02 | Updated: 2026-11-03 02:25 UTC
+Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-03 02:26 UTC
 
 ## 1. Purpose
 
@@ -61,6 +61,8 @@ Ax = b
              any null space vector added to a solution is a solution
              -> null space method      x = (one solution) + (null space vector), all solutions
              -> minimum norm solution  x = A^T (A A^T)^-1 b   (rank(A) = m), one of them
+
+Pseudo-inverse: x = A^+ b gives the least squares solution, the inverse and the minimum norm solution
 ```
 
 <a id="fig-2"></a>
