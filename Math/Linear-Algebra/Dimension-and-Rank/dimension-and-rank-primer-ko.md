@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 6 | Created: 2026-11-03 | Updated: 2026-11-03 08:15 UTC
+Rev. 7 | Created: 2026-11-03 | Updated: 2026-11-03 08:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -190,13 +190,18 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. Column space 의 차원과 같다.
 - **기본 행 연산 (elementary row operation)**: 두 행을 맞바꾸기, 한 행에 0 이 아닌 수를 곱하기, 한 행에 다른 행의 상수배를 더하기의 세 연산.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
-- **기저 (basis)**: Vector space $V$ 의 vector 가운데 서로 일차독립이면서, 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합. $\mathbb{R}^3$ 에서는 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 하나이다.
+- **기저 (basis)**: Vector space $V$ 의 vector 가운데 서로 일차독립이면서, 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합. $\mathbb{R}^3$ 에서는 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 하나이다. 공간이 여럿이면 공간마다 기저가 하나씩 있으며, 그 여럿을 복수형 bases 로 부른다. Table 4 에는 세 공간의 기저가 한 행에 하나씩 있다.
+- **기저 vector (basis vector)**: 기저에 든 vector 하나하나. Table 4 에서 column space 의 기저 $\{\mathbf{c}_1, \mathbf{c}_2\}$ 에서는 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 가 각각 기저 vector 이며, 기저 vector 의 개수가 그 공간의 차원이다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **일차결합 (linear combination)**: vector 들에 각각 상수를 곱해 더한 것.
 - **일차독립 (linear independence)**: 어느 vector 도 나머지 vector 들의 일차결합으로 적히지 않는 것.
 - **행렬식 (determinant)**: 정사각 행렬에 매기는 수. $2 \times 2$ 행렬에서는 대각선 두 원소의 곱에서 나머지 두 원소의 곱을 뺀 값이고, 0 이 아니면 두 열이 서로 일차독립이다.
 
 ## Appendix B. Finding a Basis
+
+기저 (basis) 는 vector space $V$ 의 vector 가운데 서로 일차독립이면서, 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합이다. 기저에 든 vector 하나하나를 기저 vector (basis vector) 라 한다.
+
+기저가 있으면 $V$ 의 모든 vector 를 기저 vector 의 일차결합으로 적을 수 있고, 기저 vector 가 서로 일차독립이므로 그 계수는 하나로 정해진다. $\mathbb{R}^3$ 의 기저 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 에서 $[2, 3, 0]^\top$ 은 $2 \cdot [1, 0, 0]^\top + 3 \cdot [0, 1, 0]^\top + 0 \cdot [0, 0, 1]^\top$ 으로만 적힌다. 같은 $V$ 에 기저는 여럿이지만 기저 vector 의 개수는 모두 같으며, 그 개수가 $V$ 의 차원이다.
 
 $\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴 (reduced row echelon form) 로 바꾸면 column space, row space, null space 의 기저를 모두 구할 수 있다. 기약 행사다리꼴은 각 행의 첫 0 이 아닌 원소 (pivot) 가 1 이고, pivot 이 있는 열의 다른 원소가 모두 0 이며, 아래 행의 pivot 이 위 행의 pivot 보다 오른쪽에 있는 꼴이다.
 
