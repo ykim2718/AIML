@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 3 | Created: 2026-11-02 | Updated: 2026-11-03 02:16 UTC
+Rev. 4 | Created: 2026-11-02 | Updated: 2026-11-03 02:21 UTC
 
 ## 1. Purpose
 
@@ -59,7 +59,8 @@ Ax = b
        |
        +-- rank(A) < n ............ infinitely many solutions
              any null space vector added to a solution is a solution
-             -> minimum norm solution  x = A^T (A A^T)^-1 b   (rank(A) = m)
+             -> null space method      x = (one solution) + (null space vector), all solutions
+             -> minimum norm solution  x = A^T (A A^T)^-1 b   (rank(A) = m), one of them
 ```
 
 <a id="fig-2"></a>
@@ -68,7 +69,8 @@ Fig 2. Hierarchy of the rank test
 - 첫 갈림은 해가 있는지이다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열들의 일차결합이면 붙인 열이 새 방향을 더하지 않아 두 rank 가 같다.
 - 둘째 갈림은 해가 하나인지이다. $\mathbf{A}$ 의 rank 가 $n$ 보다 작으면 null space 에 zero vector 가 아닌 vector 가 있다.
 - 한 단계 내려갈 때마다 해의 조건이 약해진다. 해가 없으면 식을 모두 만족하는 것을 포기하고 잔차를 가장 작게 하며, 해가 무수히 많으면 해 가운데 norm 이 가장 작은 하나를 고른다.
-- 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}\mathbf{b}$ 로 하나로 적힌다.
+- 해가 무수히 많은 갈래에는 풀이가 둘이다. Null space 방법은 해 하나에 null space vector 를 더해 모든 해를 적고, 최소 노름 해는 그 가운데 null space 성분이 zero vector 인 해 하나를 고른다. Null space 방법은 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+- 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}\mathbf{b}$ 로 하나로 적힌다.
 
 ### 3.1 Comparison
 
