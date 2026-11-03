@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 5 | Created: 2026-11-02 | Updated: 2026-11-03 02:33 UTC
+Rev. 6 | Created: 2026-11-02 | Updated: 2026-11-03 02:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -37,19 +37,20 @@ Pseudo-inverse $\mathbf{A}^{+}$ 는 정식 명칭이 Moore–Penrose pseudo-inve
 
 Table 1. Symbols
 
-| Symbol                     | Meaning                                                                                            | Shape                          | Assumption                |
-| :------------------------: | :------------------------------------------------------------------------------------------------: | :----------------------------: | :-----------------------: |
-| $\mathbb{R}$               | 실수 전체의 집합. $\mathbb{R}^n$ 은 원소가 실수 $n$ 개인 열 vector 전체이다                        | 집합                           | 실수                      |
-| $\mathbf{A}$               | 선형방정식의 계수 행렬                                                                             | $m \times n$                   | 실수 원소                 |
-| $m$, $n$                   | $\mathbf{A}$ 의 행의 수 (식의 수) 와 열의 수 (미지수의 수)                                         | scalar                         | 양의 정수                 |
-| $r$                        | $\mathbf{A}$ 의 계수 (rank)                                                                        | scalar                         | $r \le \min(m, n)$        |
-| $\mathbf{x}$               | 미지수 vector                                                                                      | $n \times 1$                   | 실수 원소                 |
-| $\lVert \mathbf{x} \rVert$ | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ | scalar                         | 0 이상                    |
-| $\mathbf{b}$               | 선형방정식의 우변                                                                                  | $m \times 1$                   | 실수 원소                 |
-| $\mathbf{y}$               | $\mathbf{A}^\top$ 에 곱하는 vector                                                                 | $m \times 1$                   | 실수 원소                 |
-| $\mathbf{I}$               | 단위 행렬                                                                                          | $m \times m$ 또는 $n \times n$ | 대각 원소가 1, 나머지가 0 |
-| $\hat{\mathbf{x}}$         | 과결정 시스템의 최소제곱 해                                                                        | $n \times 1$                   | $r = n$                   |
-| $\mathbf{x}^{\ast}$        | 부정 방정식의 최소 노름 해                                                                         | $n \times 1$                   | $r = m$                   |
+| Symbol                         | Meaning                                                                                            | Shape                          | Assumption                |
+| :----------------------------: | :------------------------------------------------------------------------------------------------: | :----------------------------: | :-----------------------: |
+| $\mathbb{R}$                   | 실수 전체의 집합. $\mathbb{R}^n$ 은 원소가 실수 $n$ 개인 열 vector 전체이다                        | 집합                           | 실수                      |
+| $\mathbf{A}$                   | 선형방정식의 계수 행렬                                                                             | $m \times n$                   | 실수 원소                 |
+| $m$, $n$                       | $\mathbf{A}$ 의 행의 수 (식의 수) 와 열의 수 (미지수의 수)                                         | scalar                         | 양의 정수                 |
+| $r$                            | $\mathbf{A}$ 의 계수 (rank)                                                                        | scalar                         | $r \le \min(m, n)$        |
+| $\mathbf{x}$                   | 미지수 vector                                                                                      | $n \times 1$                   | 실수 원소                 |
+| $\lVert \mathbf{x} \rVert$     | $\mathbf{x}$ 의 norm (Euclidean norm), $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ | scalar                         | 0 이상                    |
+| $\mathbf{b}$                   | 선형방정식의 우변                                                                                  | $m \times 1$                   | 실수 원소                 |
+| $[\mathbf{A} \mid \mathbf{b}]$ | $\mathbf{A}$ 의 오른쪽에 $\mathbf{b}$ 를 열로 붙인 첨가 행렬                                       | $m \times (n + 1)$             | 실수 원소                 |
+| $\mathbf{y}$                   | $\mathbf{A}^\top$ 에 곱하는 vector                                                                 | $m \times 1$                   | 실수 원소                 |
+| $\mathbf{I}$                   | 단위 행렬                                                                                          | $m \times m$ 또는 $n \times n$ | 대각 원소가 1, 나머지가 0 |
+| $\hat{\mathbf{x}}$             | 과결정 시스템의 최소제곱 해                                                                        | $n \times 1$                   | $r = n$                   |
+| $\mathbf{x}^{\ast}$            | 부정 방정식의 최소 노름 해                                                                         | $n \times 1$                   | $r = m$                   |
 
 특수 기호는 아래처럼 읽는다.
 
@@ -57,6 +58,7 @@ Table 1. Symbols
 - $\mathbf{A}^{-1}$: 영어로 "A inverse", 한국어로 "A 의 역행렬" 이라 읽는다.
 - $\mathbf{A}^{+}$: 영어로 "A plus" 또는 "the pseudo-inverse of A", 한국어로 "A 의 pseudo-inverse" 라 읽는다.
 - $\det(\mathbf{A})$: 영어로 "the determinant of A", 한국어로 "A 의 행렬식" 이라 읽는다.
+- $[\mathbf{A} \mid \mathbf{b}]$: 영어로 "the augmented matrix A b", 한국어로 "A 와 b 의 첨가 행렬" 이라 읽는다. 여기의 $\mid$ 는 열의 경계를 나타낸다.
 - $\lVert \mathbf{x} \rVert$: 영어로 "the norm of x", 한국어로 "x 의 노름" 이라 읽는다.
 - $\hat{\mathbf{x}}$: 영어로 "x hat", 한국어로 "엑스 햇" 이라 읽는다. 기호 위의 hat 은 그 값이 최소제곱으로 구한 해임을 나타낸다.
 - $\mathbf{x}^{\ast}$: 영어로 "x star", 한국어로 "엑스 스타" 라 읽는다.
@@ -80,6 +82,11 @@ $\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고,
 - $r = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (1) 의 둘째 줄이며, 부정 방정식에서 최소 노름 해를 준다.
 - $r = m = n$: 두 식이 모두 $\mathbf{A}^{-1}$ 과 같다 ([4.1](#41-condition-for-the-inverse)).
 - $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 두 식을 쓸 수 없고, 특이값 분해로 $\mathbf{A}^{+}$ 를 구한다 ([6.3](#63-breaking-conditions)).
+
+$\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지 않으므로, 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와는 무관하다. $\mathbf{A}^{+}\mathbf{b}$ 가 무엇인지는 아래처럼 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 에 따라 달라진다.
+
+- $r = \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$: 해가 있고, $\mathbf{A}^{+}\mathbf{b}$ 는 해 가운데 최소 노름 해이다. 해가 하나뿐이면 그 해이다.
+- $r \lt \mathrm{rank}([\mathbf{A} \mid \mathbf{b}])$: 해가 없고, $\mathbf{A}^{+}\mathbf{b}$ 는 최소제곱 해이다. 최소제곱 해가 여럿이면 그 가운데 norm 이 가장 작은 해이다.
 
 ### 4.1 Condition for the Inverse
 
@@ -215,6 +222,7 @@ $r \lt n$ 이면 $\mathbf{A}^\top\mathbf{A}$ 의 역행렬이 없고, $r \lt m$ 
 - **일차결합 (linear combination)**: vector 여러 개에 각각 상수를 곱해 모두 더한 vector.
 - **정규방정식 (normal equation)**: 최소제곱 해 $\hat{\mathbf{x}}$ 를 구하는 식 $\mathbf{A}^\top\mathbf{A}\hat{\mathbf{x}} = \mathbf{A}^\top\mathbf{b}$.
 - **직교 (orthogonal)**: 두 vector 의 내적이 0 인 것.
+- **첨가 행렬 (augmented matrix)**: 계수 행렬 $\mathbf{A}$ 의 오른쪽에 우변 $\mathbf{b}$ 를 열 하나로 붙인 행렬 $[\mathbf{A} \mid \mathbf{b}]$.
 - **최소 노름 해 (minimum norm solution)**: 해가 무수히 많은 선형방정식의 해 가운데 norm 이 가장 작은 해.
 - **최소제곱 해 (least squares solution)**: $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$.
 - **특이값 분해 (singular value decomposition)**: 행렬을 $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 로 나누는 분해. $\mathbf{U}$ 와 $\mathbf{V}$ 의 열은 단위 vector 이고 $\boldsymbol{\Sigma}$ 의 대각 원소가 특이값이다.
