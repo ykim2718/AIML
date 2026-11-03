@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 14 | Created: 2026-11-02 | Updated: 2026-11-03 00:48 UTC
+Rev. 15 | Created: 2026-11-02 | Updated: 2026-11-03 00:53 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -243,7 +243,16 @@ Norm 마다의 쓰임은 아래이다.
 
 ## Appendix C. Triangle Inequality
 
-삼각부등식 (식 (3)) 은 삼각형의 한 변이 나머지 두 변의 합보다 길 수 없다는 성질에서 온 이름이다. $\mathbf{x}$ 를 한 변, $\mathbf{y}$ 를 그 끝에서 이어 붙인 변으로 두면 $\mathbf{x} + \mathbf{y}$ 는 처음과 끝을 잇는 셋째 변이고, 식 (3) 은 그 셋째 변의 norm 이 두 변의 norm 의 합을 넘지 않는다는 뜻이다. 등호는 두 vector 가 같은 방향을 가리켜 삼각형이 한 직선으로 납작해질 때 성립한다.
+삼각부등식 (식 (3)) 은 삼각형의 한 변이 나머지 두 변의 합보다 길 수 없다는 성질에서 온 이름이며, L2 norm 으로 그 모양을 그리면 아래 Fig 3 이다.
+
+<img src="norm-types-ko_fig/fig3.png" width="800" style="max-width: 100%;" alt="Fig 3">
+
+Fig 3. Triangle inequality with the L2 norm
+
+- **(a)**: $\mathbf{x}$ 의 끝에 $\mathbf{y}$ 를 이어 붙이면 $\mathbf{x} + \mathbf{y}$ 는 처음과 끝을 잇는 셋째 변이다. 세 변이 삼각형을 이루므로 셋째 변의 L2 norm 은 두 변의 L2 norm 의 합보다 작다.
+- **(b)**: $\mathbf{y}$ 가 $\mathbf{x}$ 와 같은 방향이면 삼각형이 한 직선으로 납작해져, 셋째 변의 L2 norm 이 두 변의 L2 norm 의 합과 같다. $\mathbf{x} + \mathbf{y}$ 는 $\mathbf{x}$, $\mathbf{y}$ 와 겹치지 않게 아래로 옮겨 그렸다.
+
+Fig 3 의 (a) 와 (b) 를 합하면 식 (3) 이 된다. 셋째 변의 norm 은 두 변의 norm 의 합을 넘지 않고, 등호는 두 vector 가 같은 방향일 때만 성립한다. Fig 3 은 [src/triangle_inequality.py](src/triangle_inequality.py) 가 그리며, `python3 src/triangle_inequality.py --output-folder .` 로 실행하면 `norm-types-ko_fig/fig3.png` 를 만든다.
 
 식 (10) 의 $\mathbf{A}$ 의 두 열 $\mathbf{x} = [1, 0, 1]^\top$, $\mathbf{y} = [0, 1, 1]^\top$ 에서 세 norm 으로 식 (3) 을 확인하면 아래 Table 4 이다. 두 vector 의 합은 $\mathbf{x} + \mathbf{y} = [1, 1, 2]^\top$ 이다.
 
