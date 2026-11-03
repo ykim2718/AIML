@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 144 | Created: 2026-08-28 | Updated: 2026-11-03 22:54 UTC
+Rev. 145 | Created: 2026-08-28 | Updated: 2026-11-03 22:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -149,7 +149,7 @@ Input space 에서 직접 찾으면 model 종류를 가리지 않지만, 입력�
 
 ### 2.4 Ambiguity handling (What fixes the answer)
 
-답이 여럿인 것은 유일성이 깨진 경우이며 ([1.2](#12-ill-posedness)), 그중 하나를 무엇으로 고르는가가 방법을 가른다. Null space 는 예측을 바꾸지 않는 방향을 명시해 남은 자유도를 다른 목적에 쓰게 한다. Regularization 은 크기가 작은 해를 고른다. Validity constraint 는 historical data 가 덮은 영역 안으로 해를 가둔다. Prior 는 있을 법한 입력에 확률을 몰아준다. 앞의 셋은 deterministic 정식화에, 마지막은 Bayesian 정식화에 자연스럽게 붙는다.
+답이 여럿인 것은 유일성이 깨진 경우이며 ([1.2](#12-ill-posedness)), 그중 하나를 무엇으로 고르는가가 방법을 가른다. Null space 는 예측을 바꾸지 않는 방향을 명시해 남은 자유도 (degree of freedom)를 다른 목적에 쓰게 한다. Regularization 은 크기가 작은 해를 고른다. Validity constraint 는 historical data 가 덮은 영역 안으로 해를 가둔다. Prior 는 있을 법한 입력에 확률을 몰아준다. 앞의 셋은 deterministic 정식화에, 마지막은 Bayesian 정식화에 자연스럽게 붙는다.
 
 ### 2.5 Answer form (What to return)
 
@@ -886,5 +886,7 @@ Fig 10 에서 해를 구하는 방법은 아래의 3 가지이다.
 파란 면은 model plane, 곧 $\mathbf{P}$ 의 열로 구성된 column space 이다. loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ 는 행이 입력 변수 $K$ 개, 열이 latent 변수 $A$ 개인 행렬이며 이 그림에서는 $3 \times 2$ 이고, 열 $\mathbf{p}_a$ 는 $a$ 번째 loading 이며, 그 $k$ 번째 원소는 $a$ 번째 score 가 1 늘 때 입력 변수 $x_k$ 가 얼마나 바뀌는지를 나타낸다.
 
 $\mathbf{P}$ 의 row space 는 $\mathbb{R}^{A}$ 의 부분공간으로 score 공간, 곧 latent space 이며, $\mathbf{P}$ 의 열이 선형독립이면 $\mathbb{R}^{A}$ 전체가 된다. 그래서 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 는 row space 의 점 $\mathbf{t}$ 를 column space, 곧 model plane 의 점으로 옮긴다. 이 평면 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 $\mathbf{x}$ 는 $x_1$, $x_2$, $x_3$ 의 값 한 set, 곧 $\mathbf{x} = (x_1, x_2, x_3)$ 이다. Model-agnostic numerical optimization 방법은 score 를 거치지 않고 $x_1$, $x_2$, $x_3$ 세 값을 바꿔 가며 예측이 목표 $\mathbf{y}^{\ast}$ 에 맞는 set 을 찾는다. 반대로 PLS inversion 의 Minimum-norm solution 방법과 Null space 방법은 모두 $t_1$, $t_2$ 두 값을 먼저 찾고 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 $x_1$, $x_2$, $x_3$ 를 계산하므로, 두 방법의 해는 늘 model plane 위에 놓여 SPE 가 0 이다. $`\mathbf{P}\mathbf{t} = t_{1} \mathbf{p}_{1} + t_{2} \mathbf{p}_{2}`$ 는 $\mathbf{P}$ 의 열들의 선형결합이고, 이 선형결합을 모두 모은 집합이 column space, 곧 model plane 이다. 그래서 $\mathbf{t}$ 를 어떤 값으로 두어도 $\mathbf{P}\mathbf{t}$ 는 그 평면 위에 놓인다.
+
+$\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 움직일 수 있는 자유도는 score 개수 $A$ 뿐이다. 이 그림에서는 입력이 $x_1$, $x_2$, $x_3$ 세 개이지만 $t_1$, $t_2$ 두 값만 바꿀 수 있고, 목표 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 가 식 하나를 쓰므로 남는 자유도는 1 개, 곧 선분 A–B 이다. 여기에 $x_3$ 를 어떤 값으로 고정하는 조건이 붙으면 식이 하나 더 늘어, 맞출 수 있는 점이 선분 위의 한 점 이하로 줄어든다. 그 점이 $T^{2}$ 상한 밖에 있거나 다른 입력의 물리적 한계를 넘으면, 조건을 모두 만족하는 $\mathbf{t}$ 가 없다. 그때는 평면을 벗어나서라도 입력 세 개를 직접 움직여 해를 찾는 Model-agnostic numerical optimization 방법을 쓰고, 그 대가로 0 보다 커지는 SPE 를 상한으로 묶는다.
 
 Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $`\mathbf{x}_{c}`$ (c 는 candidate) 가 평면을 벗어나면, 평면에 내린 수선 $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ 의 길이 제곱이 식 (14) 의 SPE 이다. $`\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 의 score 이고, $`\mathbf{P}\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 를 평면에 내린 projection 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
