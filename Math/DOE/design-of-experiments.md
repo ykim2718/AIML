@@ -1,5 +1,5 @@
 # Design of Experiments
-Rev. 9 | Created: 2026-08-30 | Updated: 2026-11-03 09:00 UTC
+Rev. 10 | Created: 2026-08-30 | Updated: 2026-11-03 09:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -193,7 +193,9 @@ used directly; otherwise a final row of $-1$ is placed under the circulant of a 
 A general fractional design starts from a full factorial in a set of basic factors and defines the remaining factors as
 products of them.
 
-> **Definition (generator)**: When a factor is defined as a product of basic factors, that product is the generator of the factor.
+> **Definition: Generator**
+>
+> When a factor is defined as a product of basic factors, that product is the generator of the factor.
 
 The generators fix both the design and its confounding. The generators `a b c abc` handle four factors in eight runs, half of the sixteen a full factorial needs.
 

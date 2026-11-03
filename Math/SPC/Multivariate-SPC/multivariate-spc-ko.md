@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 20 | Created: 2026-09-04 | Updated: 2026-11-03 09:00 UTC
+Rev. 21 | Created: 2026-09-04 | Updated: 2026-11-03 09:15 UTC
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)
@@ -142,7 +142,9 @@ $\mathbf{T}\mathbf{P}^{\top}$ 가 이 model 이 재구성하는 부분이고, $\
 
 $$T^{2} = \sum_{j=1}^{a} \frac{t_j^{2}}{\lambda_j} \hspace{19em} (5)$$
 
-> **Definition (SPE)**: 부분공간에서 벗어난 거리인 잔차의 제곱합을 squared prediction error (SPE) 또는 $Q$ 통계량이라 부른다.
+> **Definition: SPE**
+>
+> 부분공간에서 벗어난 거리인 잔차의 제곱합을 squared prediction error (SPE) 또는 $Q$ 통계량이라 부른다.
 
 $$SPE = \left\lVert \mathbf{x} - \hat{\mathbf{x}} \right\rVert^{2} = \sum_{j=1}^{p} \left( x_j - \hat{x}_j \right)^{2}, \qquad \hat{\mathbf{x}} = \mathbf{P}\mathbf{P}^{\top}\mathbf{x} \hspace{19em} (6)$$
 

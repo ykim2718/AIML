@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 126 | Created: 2026-09-01 | Updated: 2026-11-03 09:00 UTC
+Rev. 127 | Created: 2026-09-01 | Updated: 2026-11-03 09:15 UTC
 
 - [1. One-Way Variance Components](#1-one-way-variance-components)
   - [1.1 Notation](#11-notation)
@@ -396,7 +396,9 @@ $$\mathrm{Cov}(Y, Y) = E[(Y - E[Y])(Y - E[Y])] = E[(Y - E[Y])^2] = \mathrm{Var}(
 
 식 (18) 의 한계는 카이제곱 분포의 분위에서 나온다.
 
-> **Definition (chi-square distribution)**: 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값이 따르는 분포이고, 그 $`m`$ 을 degrees of freedom 이라 부른다.
+> **Definition: Chi-square distribution**
+>
+> 카이제곱 분포는 서로 독립인 표준정규 변수 $`m`$ 개를 제곱해 더한 값이 따르는 분포이고, 그 $`m`$ 을 degrees of freedom 이라 부른다.
 
 $$\chi^2_m = \sum_{k=1}^{m} Z_k^2, \qquad Z_k \sim \mathcal{N}(0, 1) \hspace{19em} (41)$$
 

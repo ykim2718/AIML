@@ -1,5 +1,5 @@
 # Polynomial Feature Expansion
-Rev. 88 | Created: 2026-09-07 | Updated: 2026-11-03 09:00 UTC
+Rev. 89 | Created: 2026-09-07 | Updated: 2026-11-03 09:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -94,9 +94,13 @@ $$y = \beta_0 + \sum_{i=1}^{n} \beta_i x_i + \sum_{1 \le i \le j \le n} \beta_{i
 
 Expansion 전에 각 열을 평균 0, 표준편차 1 로 맞춘다.
 
-> **Definition (standardization)**: 각 열에서 평균을 빼고 표준편차로 나누어 평균 0, 표준편차 1 로 맞추는 것을 standardization 이라 한다.
+> **Definition: Standardization**
+>
+> 각 열에서 평균을 빼고 표준편차로 나누어 평균 0, 표준편차 1 로 맞추는 것을 standardization 이라 한다.
 
-> **Definition (centering)**: Standardization 가운데 평균을 빼는 부분만 따로 centering 이라 한다.
+> **Definition: Centering**
+>
+> Standardization 가운데 평균을 빼는 부분만 따로 centering 이라 한다.
 
 두 부분이 하는 일은 다르다. 평균을 빼면 열 사이의 상관이 낮아지고 계수를 읽을 수 있게 되며, 이것이 아래 두 문단이다. 표준편차로 나누면 열마다 다른 크기가 없어지고, 그 몫은 4.3 절과 5.2 절에 있다.
 

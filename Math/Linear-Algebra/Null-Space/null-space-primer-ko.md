@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 45 | Created: 2026-10-31 | Updated: 2026-11-03 09:00 UTC
+Rev. 46 | Created: 2026-10-31 | Updated: 2026-11-03 09:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -78,19 +78,25 @@ Table 1. Symbols
 
 ## 4. Definitions
 
-> **Definition (null space)**: $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $m \times n$ 행렬 $\mathbf{A}$ 의 null space $\mathrm{Null}(\mathbf{A})$ 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는 $\mathbf{x} \in \mathbb{R}^n$ 전체의 집합이다 (식 (1)). 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때의 해 전체와 같다.
+> **Definition: Null space**
+>
+> $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $m \times n$ 행렬 $\mathbf{A}$ 의 null space $\mathrm{Null}(\mathbf{A})$ 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는 $\mathbf{x} \in \mathbb{R}^n$ 전체의 집합이다 (식 (1)). 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때의 해 전체와 같다.
 
 ```math
 \mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)
 ```
 
-> **Definition (nullity)**: $m \times n$ 행렬 $\mathbf{A}$ 의 nullity $\mathrm{nullity}(\mathbf{A})$ 는 $\mathrm{Null}(\mathbf{A})$ 의 차원, 곧 $\mathrm{Null}(\mathbf{A})$ 안에서 서로 일차독립인 vector 의 최대 개수이다.
+> **Definition: Nullity**
+>
+> $m \times n$ 행렬 $\mathbf{A}$ 의 nullity $\mathrm{nullity}(\mathbf{A})$ 는 $\mathrm{Null}(\mathbf{A})$ 의 차원, 곧 $\mathrm{Null}(\mathbf{A})$ 안에서 서로 일차독립인 vector 의 최대 개수이다.
 
 $m$ 은 $\mathbf{A}$ 의 행의 수이고 $n$ 은 열의 수이다. $\mathbf{A}\mathbf{x}$ 를 계산하려면 $\mathbf{x}$ 의 원소가 $\mathbf{A}$ 의 열과 같은 $n$ 개여야 하고, 계산한 $\mathbf{A}\mathbf{x}$ 의 원소는 $\mathbf{A}$ 의 행과 같은 $m$ 개이다. 식 (1) 의 $\mathbf{x}$ 는 이 $n$ 차원 입력 공간 (domain) $\mathbb{R}^n$ 의 vector 이므로, null space 는 출력 공간 $\mathbb{R}^m$ 이 아니라 $\mathbb{R}^n$ 안에 있다.
 
 식 (1) 에서 바로 찾을 수 있는 해는 zero vector 이며, 식 (5) 의 $\mathbf{A}$ 에서는 $\mathbf{x} = [0, 0, 0]^\top$ 이다. 어떤 $\mathbf{A}$ 든 $\mathbf{A}\mathbf{0} = \mathbf{0}$ 이므로 모든 null space 는 zero vector 를 반드시 포함한다.
 
-> **Definition (trivial solution)**: 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 zero vector $\mathbf{x} = \mathbf{0}$ 을 자명해 (trivial solution) 라 한다.
+> **Definition: Trivial solution**
+>
+> 동차 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해 가운데 zero vector $\mathbf{x} = \mathbf{0}$ 을 자명해 (trivial solution) 라 한다.
 
 Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드시 포함한다는 성질이 null space 를 vector space 로 정의할 수 있는 첫 조건이다. 🌳
 
