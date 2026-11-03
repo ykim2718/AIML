@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 15 | Created: 2026-11-02 | Updated: 2026-11-03 00:53 UTC
+Rev. 16 | Created: 2026-11-02 | Updated: 2026-11-03 02:08 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -204,6 +204,7 @@ Norm 마다의 쓰임은 아래이다.
 
 - **condition number**: 행렬의 norm 과 역행렬의 norm 의 곱. 입력의 작은 변화가 결과를 얼마나 크게 바꾸는지를 나타낸다.
 - **lasso**: 손실에 weight 의 L1 norm 을 더해 일부 weight 를 0 으로 만드는 선형 회귀.
+- **Lp norm**: 원소 절댓값의 $p$ 제곱을 모두 더한 값의 $1/p$ 제곱인 norm (식 (4)). L 은 수학자 Lebesgue 의 머리글자이고, $p$ 는 원소 절댓값에 씌우는 지수이다. $p = 1, 2, \infty$ 일 때가 L1, L2, L∞ norm 이다.
 - **MAE (mean absolute error)**: 오차 절댓값의 평균. 오차 vector 의 L1 norm 을 원소 수로 나눈 값이다.
 - **rank**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **ridge**: 손실에 weight 의 L2 norm 의 제곱을 더해 weight 를 작게 만드는 선형 회귀.
