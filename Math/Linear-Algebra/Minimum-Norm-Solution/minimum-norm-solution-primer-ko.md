@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 11 | Created: 2026-11-02 | Updated: 2026-11-03 02:35 UTC
+Rev. 12 | Created: 2026-11-02 | Updated: 2026-11-03 03:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -77,7 +77,7 @@ Table 1. Symbols
 
 ### 4.1 Solution Set
 
-미지수가 식보다 많은 부정 방정식 (underdetermined system) 처럼 $\mathbf{b}$ 가 column space 에 속하고 null space 에 zero vector 가 아닌 vector 가 있으면, $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 무수히 많다. 해 하나에 null space 의 vector 를 더해도 $\mathbf{A}$ 를 곱한 값은 그대로 $\mathbf{b}$ 이다. 해의 크기를 Euclidean norm 으로 재고, 그 값이 가장 작은 해를 고르는 것이 최소 노름 해 문제이다.
+미지수가 식보다 많은 부정 방정식 (underdetermined system) 처럼 $\mathbf{b}$ 가 column space 에 속하고 null space 에 zero vector 가 아닌 vector 가 있으면, $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 무수히 많다. 해 하나에 null space 의 vector 를 더해도 $\mathbf{A}$ 를 곱한 값은 그대로 $\mathbf{b}$ 이다. 이 해들은 모두 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 를 만족해 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert = 0$ 으로 같으므로, $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 로는 하나를 고를 수 없다. 그래서 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 가 0 인 해들 가운데 Euclidean norm $\lVert \mathbf{x} \rVert$ 가 가장 작은 해를 고르는 것이 최소 노름 해 문제이다.
 
 ### 4.2 Orthogonal Decomposition of a Solution
 
@@ -159,7 +159,7 @@ $\mathbf{A}$ 의 row space 는 $[1, 1, 1]^\top$ 의 상수배 전체인 직선�
 
 ### 6.1 Pseudo-Inverse
 
-Pseudo-inverse $\mathbf{A}^{+}$ 로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이고, full row rank 이면 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (3) 에서 $\mathbf{A}^{+} = [1/3, 1/3, 1/3]^\top$ 이어서 $\mathbf{A}^{+}\mathbf{b} = [1, 1, 1]^\top$ 로 식 (7) 과 같다. 선형 회귀에서 sample 수보다 feature 수가 많으면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 norm 이 가장 작은 weight 를 고른다. 식이 미지수보다 많은 경우의 pseudo-inverse 와 숫자 예시는 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
+Pseudo-inverse $\mathbf{A}^{+}$ 로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이고, full row rank 이면 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (3) 에서 $\mathbf{A}^{+} = [1/3, 1/3, 1/3]^\top$ 이어서 $\mathbf{A}^{+}\mathbf{b} = [1, 1, 1]^\top$ 로 식 (7) 과 같다. 선형 회귀에서 sample 수보다 feature 수가 많으면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 norm 이 가장 작은 weight 를 고른다. 해가 없으면 pseudo-inverse 는 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 를 먼저 찾고, 그런 $\mathbf{x}$ 가 여럿일 때만 그 가운데 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해를 준다. 식이 미지수보다 많은 경우의 pseudo-inverse 와 숫자 예시는 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ### 6.2 Breaking Conditions
 
@@ -173,7 +173,7 @@ Rank 가 $m$ 보다 작으면 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없�
 - **full row rank**: 행렬의 rank 가 행의 수 $m$ 과 같은 것.
 - **norm (Euclidean norm)**: vector 원소의 제곱을 모두 더한 값의 제곱근. Vector 의 길이이며, $\lVert \mathbf{x} \rVert = (x_1^2 + \cdots + x_n^2)^{1/2}$ 로 적는다. L1, L∞ 같은 다른 vector norm 과 matrix norm 은 [Types of Norms](../Norm-Types/norm-types-ko.md) 에 있다.
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 의 집합.
-- **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, 해 가운데 norm 이 가장 작은 해를 주는 역행렬의 일반화.
+- **pseudo-inverse**: 정사각이 아니거나 역행렬이 없는 행렬에도 정의되며, $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 가운데 norm 이 가장 작은 하나를 주는 역행렬의 일반화.
 - **row space**: $\mathbf{y} \in \mathbb{R}^m$ 인 모든 $\mathbf{y}$ 에 대한 $\mathbf{A}^\top\mathbf{y}$ 의 집합. $\mathbf{A}$ 의 행들의 일차결합 전체이다.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
