@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 7 | Created: 2026-11-02 | Updated: 2026-11-03 02:41 UTC
+Rev. 8 | Created: 2026-11-02 | Updated: 2026-11-03 02:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -76,12 +76,12 @@ Pseudo-inverse 는 $\mathbf{A}$ 의 rank 가 열의 수 $n$ 과 같은지, 행�
 \hspace{19em} (1)
 ```
 
-$\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고, rank 는 $\mathbf{A}^{+}$ 를 구하는 식만 정한다. Rank 조건마다의 식은 아래이다.
+$\mathbf{A}^{+}$ 는 rank 와 관계없이 모든 $m \times n$ 행렬에 있고, rank 는 $\mathbf{A}^{+}$ 를 구하는 식만 정한다. 최소제곱 해, 역행렬, 최소 노름 해의 세 풀이는 모두 pseudo-inverse $\mathbf{A}^{+}$ 로 $\mathbf{x} = \mathbf{A}^{+}\mathbf{b}$ 라 적는다. 세 식에서 $\mathbf{b}$ 앞에 곱한 행렬이 각 rank 조건에서의 $\mathbf{A}^{+}$ 이다.
 
-- $r = n$: $\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이다. 식 (1) 의 첫 줄이며, 과결정 시스템에서 최소제곱 해를 준다.
-- $r = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (1) 의 둘째 줄이며, 부정 방정식에서 최소 노름 해를 준다.
-- $r = m = n$: 두 식이 모두 $\mathbf{A}^{-1}$ 과 같다 ([4.1](#41-condition-for-the-inverse)).
-- $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 두 식을 쓸 수 없고, 특이값 분해로 $\mathbf{A}^{+}$ 를 구한다 ([6.3](#63-breaking-conditions)).
+- $r = n$: $\mathbf{A}^{+} = (\mathbf{A}^\top\mathbf{A})^{-1}\mathbf{A}^\top$ 이고, 최소제곱 해를 준다. 식 (1) 의 첫 줄이다.
+- $r = m$: $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이고, 최소 노름 해를 준다. 식 (1) 의 둘째 줄이다.
+- $r = m = n$: $\mathbf{A}^{+} = \mathbf{A}^{-1}$ 이고, 하나뿐인 해를 준다 ([4.1](#41-condition-for-the-inverse)).
+- $r \lt m$ 이고 $r \lt n$: $\mathbf{A}^\top\mathbf{A}$ 와 $\mathbf{A}\mathbf{A}^\top$ 모두 역행렬이 없어 식 (1) 의 두 식을 쓸 수 없으므로, $\mathbf{A}^{+}$ 는 특이값 분해로 구한다 ([6.3](#63-breaking-conditions)).
 
 $\mathbf{A}^{+}$ 는 $\mathbf{A}$ 만으로 정해지고 $\mathbf{b}$ 를 쓰지 않으므로, 첨가 행렬 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와는 무관하다. $\mathbf{A}^{+}\mathbf{b}$ 는 언제나 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 가운데 norm 이 가장 작은 하나이다. 다만 norm 으로 고르는 일은 그런 $\mathbf{x}$ 가 여럿일 때만 일어나며, 아래처럼 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 와 $r$ 에 따라 갈린다.
 
