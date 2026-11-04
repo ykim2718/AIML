@@ -1,6 +1,7 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.22.0: Mark the null space direction n with an arrow from t* in fig_3 (a).
     0.21.0: Split fig_9 into (a) one model plane of a single PLS and (b) the bootstrap model planes.
     0.20.0: Add fig_9, a schematic of the PLS bootstrap ensemble; the SPE schematic becomes fig_10.
     0.19.0: Add the row space panel (a) to fig_9 and mark the column space in panel (b).
@@ -10,7 +11,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.21.4.2026.11.2"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.22.0.2026.11.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -135,6 +136,14 @@ def fig_3(out_folder: pathlib.Path, n_boot: int = 200) -> pathlib.Path:
     ax.plot([point_a[0], point_b[0]], [point_a[1], point_b[1]], color=COLORS[3], linewidth=3.5,
             label='segment A-B')
     ax.scatter([t_star[0]], [t_star[1]], s=200, marker='*', color=COLORS[1], zorder=4, label='t*')
+    # n drawn beside the segment, from t* towards B (alpha_a < 0 < alpha_b)
+    side = 0.22 * np.array([-null_dir[1], null_dir[0]])
+    arrow_tail = t_star + side
+    arrow_head = arrow_tail + 0.75 * alpha_b * null_dir
+    ax.add_patch(FancyArrowPatch(tuple(arrow_tail), tuple(arrow_head), arrowstyle='-|>',
+                                 mutation_scale=22, color='black', linewidth=2.0, zorder=5))
+    ax.annotate(r'$\mathbf{n}$', (arrow_tail + arrow_head) / 2.0, textcoords='offset points',
+                xytext=(-22, 0), ha='center', va='center', fontsize=font_size(text_scale))
     for name, point in (('A', point_a), ('B', point_b)):
         ax.scatter([point[0]], [point[1]], s=40, color=COLORS[3], zorder=4)
         ax.annotate(name, point, textcoords='offset points', xytext=(6, 6),

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 161 | Created: 2026-08-28 | Updated: 2026-11-04 09:56 UTC
+Rev. 162 | Created: 2026-08-28 | Updated: 2026-11-04 10:01 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -230,16 +230,6 @@ PLS model 로 목표 출력 $\mathbf{y}^{\ast}$ 를 주는 입력을 구하는 �
 
 PLS 는 학습 표본 $n$ 개의 입력 $\mathbf{x}$ 와 출력 $\mathbf{y}$ 를 한 행씩 쌓은 행렬 $\mathbf{X}$ 와 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
 
-```math
-\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
-```
-
-```math
-\mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (4)
-```
-
-$\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다.
-
 행렬마다의 크기는 아래와 같다.
 
 - $\mathbf{X} \in \mathbb{R}^{n \times K}$: 입력. 행은 표본 $n$ 개, 열은 입력 변수 $K$ 개
@@ -250,7 +240,17 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 - $\mathbf{E} \in \mathbb{R}^{n \times K}$: 입력의 잔차. $\mathbf{X}$ 와 같은 크기
 - $\mathbf{F} \in \mathbb{R}^{n \times M}$: 출력의 잔차. $\mathbf{Y}$ 와 같은 크기
 
-목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면, PLS inversion 의 Minimum-norm solution 방법은 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
+```
+
+```math
+\mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (4)
+```
+
+$\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다.
+
+목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면, PLS inversion 의 Minimum-norm solution 방법은 score vector $\mathbf{t} \in \mathbb{R}^{A}$ 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast} \hspace{19em} (5)
@@ -264,11 +264,11 @@ $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고,
 
 Minimum-norm solution 은 해 하나일 뿐이고, 목표 $\mathbf{y}^{\ast}$ 를 주는 score 는 그 밖에도 있다. 표본 하나의 출력과 score 사이의 관계는 식 (4) 에서 아래 순서로 유도한다.
 
-- 표본 하나에 대해 식 (4) 의 한 행은 $\mathbf{y}^{\top} = \mathbf{t}^{\top}\mathbf{Q}^{\top} + \mathbf{f}^{\top}$ 이고, 이 식에서 $\mathbf{y}$, $\mathbf{t}$, $\mathbf{f}$ 는 $\mathbf{Y}$, $\mathbf{T}$, $\mathbf{F}$ 의 한 행을 전치한 열 벡터이다.
+- 표본 하나에 대해 식 (4) 의 한 행은 $\mathbf{y}^{\top} = \mathbf{t}^{\top}\mathbf{Q}^{\top} + \mathbf{f}^{\top}$ 이고, 이 식에서 $\mathbf{y} \in \mathbb{R}^{M}$, $\mathbf{t} \in \mathbb{R}^{A}$, $\mathbf{f} \in \mathbb{R}^{M}$ 는 $\mathbf{Y}$, $\mathbf{T}$, $\mathbf{F}$ 의 한 행을 전치한 열 벡터이다.
 - 양변을 전치하면 $(\mathbf{t}^{\top}\mathbf{Q}^{\top})^{\top} = \mathbf{Q}\mathbf{t}$ 이므로 $\mathbf{y} = \mathbf{Q}\mathbf{t} + \mathbf{f}$ 가 된다.
 - 잔차 $\mathbf{f}$ 를 빼면 $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 이다.
 
-이 $\mathbf{Q}\mathbf{t}$ 를 예측이라 한다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 행 개수 $M$ 은 출력 변수의 개수 ($\mathbf{y}$ 의 행 개수) 이므로, 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 는 식 $M$ 개로 미지수인 score 값 $A$ 개를 정한다. 그래서 $A \gt M$ 이면 해가 하나로 정해지지 않는다. 목표 $\mathbf{y}^{\ast}$ 를 주는 두 score vector $`\mathbf{t}_{1}`$ 과 $`\mathbf{t}_{2}`$ 는 $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$ 이므로, 그 차이 $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1}`$ 은 아래 식 (7) 을 만족한다. $\mathbf{Q}$ 의 rank 가 $M$ 이면 서로 독립인 $\mathbf{n}$ 이 $A - M$ 개 있다.
+이 $\mathbf{Q}\mathbf{t}$ 를 예측이라 한다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 행 개수 $M$ 은 출력 변수의 개수 ($\mathbf{y}$ 의 행 개수) 이므로, 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 는 식 $M$ 개로 미지수인 score 값 $A$ 개를 정한다. 그래서 $A \gt M$ 이면 해가 하나로 정해지지 않는다. 목표 $\mathbf{y}^{\ast}$ 를 주는 두 score vector $`\mathbf{t}_{1}`$ 과 $`\mathbf{t}_{2}`$ 는 $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$ 이므로, 그 차이 $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1} \in \mathbb{R}^{A}`$ 은 아래 식 (7) 을 만족한다. $\mathbf{Q}$ 의 rank 가 $M$ 이면 서로 독립인 $\mathbf{n}$ 이 $A - M$ 개 있다.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
@@ -301,7 +301,7 @@ PLS inversion 의 Null space 방법은 점, 직선, 선분의 순서로 해를 �
 
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
-- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다.
+- (a): score 평면의 $T^{2}$ 상한 타원과, $\mathbf{t}^{\ast}$ 를 지나는 null space 직선 가운데 타원 안에 든 선분 A–B 이다. 검은 화살표는 식 (7) 의 $\mathbf{n}$ 방향이다.
 - (b): (a) 의 $\mathbf{t}^{\ast}$ 와 null space 직선을 입력 평면으로 옮긴 것과, PLS bootstrap ensemble 이 주는 bootstrap PLS 200 개의 minimum-norm solution 이다.
 
 Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
@@ -568,17 +568,17 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므�
 \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (28)
 ```
 
-식 (28) 은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 $\boldsymbol{\alpha}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
+식 (28) 은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 vector $\boldsymbol{\alpha} \in \mathbb{R}^{A - M}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
 
 #### Eq. (8) and (9) Hotelling T² and SPE
 
-$s_a^{2}$ 는 학습 표본의 $a$ 번째 score vector $\mathbf{t}_a$ 의 표본분산이다. 식 (3), (4) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix F 에도 있다.
+$s_a^{2}$ 는 학습 표본의 $a$ 번째 score vector $\mathbf{t}_a$ 의 표본분산이다. 식 (3), (4) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2}) \in \mathbb{R}^{A \times A}$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix F 에도 있다.
 
 ```math
 T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (29)
 ```
 
-SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 에서 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
+SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t} \in \mathbb{R}^{K}$ 의 제곱합이다. 식 (3) 에서 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
 
 ```math
 \mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (30)
@@ -732,7 +732,7 @@ Minimum-norm solution 은 목표 출력을 내되 입력의 평균에서 가장 
 
 Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 7 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
-Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다. 세 이름의 관계는 해집합 = minimum-norm solution + null space 이다. Null space 는 원점을 지나는 방향의 집합이고, 그것을 $\mathbf{x}^{\ast}$ 만큼 평행이동한 직선이 해집합이며, minimum-norm solution 은 그 직선 위의 한 점이다.
+Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측은 회귀 계수 vector $\mathbf{b} \in \mathbb{R}^{2}$, 학습 표본의 입력 평균 $\bar{\mathbf{x}} \in \mathbb{R}^{2}$ 와 출력 평균 $\bar{y}$ 로 적은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다. 세 이름의 관계는 해집합 = minimum-norm solution + null space 이다. Null space 는 원점을 지나는 방향의 집합이고, 그것을 $\mathbf{x}^{\ast}$ 만큼 평행이동한 직선이 해집합이며, minimum-norm solution 은 그 직선 위의 한 점이다.
 
 해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 6 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 6 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
 

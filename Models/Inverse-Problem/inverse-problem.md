@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 74 | Created: 2026-10-25 | Updated: 2026-11-04 09:56 UTC
+Rev. 75 | Created: 2026-10-25 | Updated: 2026-11-04 10:01 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -230,16 +230,6 @@ There are three methods for finding, with a PLS model, the input that gives a ta
 
 PLS decomposes the matrices $\mathbf{X}$ and $\mathbf{Y}$, which stack the inputs $\mathbf{x}$ and the outputs $\mathbf{y}$ of $n$ training samples one row each, through a common score $\mathbf{T}$. $A$ is the number of latent variables.
 
-```math
-\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
-```
-
-```math
-\mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (4)
-```
-
-$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
-
 The size of each matrix is as follows.
 
 - $\mathbf{X} \in \mathbb{R}^{n \times K}$: inputs. Rows are the $n$ samples, columns the $K$ input variables
@@ -250,7 +240,17 @@ The size of each matrix is as follows.
 - $\mathbf{E} \in \mathbb{R}^{n \times K}$: input residuals. Same size as $\mathbf{X}$
 - $\mathbf{F} \in \mathbb{R}^{n \times M}$: output residuals. Same size as $\mathbf{Y}$
 
-Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of PLS inversion solves the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
+```
+
+```math
+\mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (4)
+```
+
+$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
+
+Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of PLS inversion solves the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score vector $\mathbf{t} \in \mathbb{R}^{A}$ with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast} \hspace{19em} (5)
@@ -264,11 +264,11 @@ $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mat
 
 The minimum-norm solution is only one solution; other scores also give the target $\mathbf{y}^{\ast}$. The relation between the output and the score of one sample is derived from Eq. (4) in the steps below.
 
-- For one sample, one row of Eq. (4) is $\mathbf{y}^{\top} = \mathbf{t}^{\top}\mathbf{Q}^{\top} + \mathbf{f}^{\top}$, where $\mathbf{y}$, $\mathbf{t}$ and $\mathbf{f}$ are the column vectors obtained by transposing one row of $\mathbf{Y}$, $\mathbf{T}$ and $\mathbf{F}$.
+- For one sample, one row of Eq. (4) is $\mathbf{y}^{\top} = \mathbf{t}^{\top}\mathbf{Q}^{\top} + \mathbf{f}^{\top}$, where $\mathbf{y} \in \mathbb{R}^{M}$, $\mathbf{t} \in \mathbb{R}^{A}$ and $\mathbf{f} \in \mathbb{R}^{M}$ are the column vectors obtained by transposing one row of $\mathbf{Y}$, $\mathbf{T}$ and $\mathbf{F}$.
 - Transposing both sides, with $(\mathbf{t}^{\top}\mathbf{Q}^{\top})^{\top} = \mathbf{Q}\mathbf{t}$, gives $\mathbf{y} = \mathbf{Q}\mathbf{t} + \mathbf{f}$.
 - Removing the residual $\mathbf{f}$ gives $\mathbf{y} = \mathbf{Q}\mathbf{t}$.
 
-This $\mathbf{Q}\mathbf{t}$ is called the prediction. The number of rows $M$ of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is the number of output variables (the number of rows of $\mathbf{y}$), so the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ fixes $A$ score values, the unknowns, with $M$ equations. When $A \gt M$, the solution is therefore not unique. Two score vectors $`\mathbf{t}_{1}`$ and $`\mathbf{t}_{2}`$ that give the target $\mathbf{y}^{\ast}$ satisfy $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$, so their difference $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1}`$ satisfies Eq. (7) below. When the rank of $\mathbf{Q}$ is $M$, there are $A - M$ independent such vectors $\mathbf{n}$.
+This $\mathbf{Q}\mathbf{t}$ is called the prediction. The number of rows $M$ of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is the number of output variables (the number of rows of $\mathbf{y}$), so the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ fixes $A$ score values, the unknowns, with $M$ equations. When $A \gt M$, the solution is therefore not unique. Two score vectors $`\mathbf{t}_{1}`$ and $`\mathbf{t}_{2}`$ that give the target $\mathbf{y}^{\ast}$ satisfy $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$, so their difference $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1} \in \mathbb{R}^{A}`$ satisfies Eq. (7) below. When the rank of $\mathbf{Q}$ is $M$, there are $A - M$ independent such vectors $\mathbf{n}$.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
@@ -301,7 +301,7 @@ How far the two limits allow the null space in the score plane is shown in Fig 3
 
 Fig 3. Null space in the score plane and the bootstrap spread of the solution in the input plane
 
-- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse.
+- (a): the $T^{2}$ limit ellipse in the score plane and the segment A–B of the null space line through $\mathbf{t}^{\ast}$ that lies inside the ellipse. The black arrow is the direction of $\mathbf{n}$ in Eq. (7).
 - (b): the $\mathbf{t}^{\ast}$ and null space line of (a) mapped to the input plane, and the minimum-norm solutions of 200 bootstrap PLS models given by the PLS bootstrap ensemble.
 
 The solutions that the two methods of PLS inversion find in Fig 3 are as follows.
@@ -568,17 +568,17 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ has rank $M$ and so is invertible, giving $\boldsy
 \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (28)
 ```
 
-Eq. (28) puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ with $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and coefficients $\boldsymbol{\alpha}$. Since $\mathbf{Q}\mathbf{N} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
+Eq. (28) puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ with $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and the coefficient vector $\boldsymbol{\alpha} \in \mathbb{R}^{A - M}$. Since $\mathbf{Q}\mathbf{N} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
 
 #### Eq. (8) and (9) Hotelling T² and SPE
 
-$s_a^{2}$ is the sample variance of the $a$-th score vector $\mathbf{t}_a$ of the training samples. As seen in Eq. (3) and (4), the scores of different components are orthogonal, so the covariance matrix of the scores is the diagonal matrix $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$. Hotelling $T^{2}$ is the squared Mahalanobis distance of a score $\mathbf{t}$ from the centre of the training samples, and since $\mathbf{S}$ is diagonal it resolves into a sum over components. The same derivation is also in Appendix F of [[19](#ref-19)].
+$s_a^{2}$ is the sample variance of the $a$-th score vector $\mathbf{t}_a$ of the training samples. As seen in Eq. (3) and (4), the scores of different components are orthogonal, so the covariance matrix of the scores is the diagonal matrix $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2}) \in \mathbb{R}^{A \times A}$. Hotelling $T^{2}$ is the squared Mahalanobis distance of a score $\mathbf{t}$ from the centre of the training samples, and since $\mathbf{S}$ is diagonal it resolves into a sum over components. The same derivation is also in Appendix F of [[19](#ref-19)].
 
 ```math
 T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (29)
 ```
 
-SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ left after reducing the input $\mathbf{x}$ to a score and mapping it back. One row of $\mathbf{E}$ in Eq. (3) is this $\mathbf{e}$, so SPE is the squared distance of $\mathbf{x}$ from the model plane spanned by the columns of $\mathbf{P}$.
+SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t} \in \mathbb{R}^{K}$ left after reducing the input $\mathbf{x}$ to a score and mapping it back. One row of $\mathbf{E}$ in Eq. (3) is this $\mathbf{e}$, so SPE is the squared distance of $\mathbf{x}$ from the model plane spanned by the columns of $\mathbf{P}$.
 
 ```math
 \mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (30)
@@ -732,7 +732,7 @@ The minimum-norm solution is the combination that delivers the target output whi
 
 A null space direction is a direction along which moving the score leaves the prediction unchanged, namely an $\mathbf{n}$ that satisfies $\mathbf{Q}\mathbf{n} = \mathbf{0}$. In this example with $A = 2$ latent variables and $M = 1$ output, $A - M = 1$ such direction remains, and `null_space(Q)` returns it as a unit vector. The 37 `x_alt` are made by moving $\alpha$ from $-2$ to $2$ along that direction, and the line of Fig 7 (b) is that very direction. The amount moved along it is the freedom available while keeping the target.
 
-The model is linear in the input, so the solution set is a line. The prediction is the linear expression $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$, so the set of inputs that deliver the target 2.0 is the points satisfying $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$, a level set of that linear expression. With two inputs and one equation the set is a line in the plane, and its direction is perpendicular to $\mathbf{b}$. Moving along $\mathbf{b}$ changes the prediction fastest, and moving perpendicular to it does not change the prediction at all. That perpendicular direction is the null space direction above. The three names relate as solution set = minimum-norm solution + null space. The null space is a set of directions through the origin, the line obtained by shifting it by $\mathbf{x}^{\ast}$ is the solution set, and the minimum-norm solution is one point on that line.
+The model is linear in the input, so the solution set is a line. The prediction is the linear expression $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ in the regression coefficient vector $\mathbf{b} \in \mathbb{R}^{2}$, the input mean $\bar{\mathbf{x}} \in \mathbb{R}^{2}$ and the output mean $\bar{y}$ of the training samples, so the set of inputs that deliver the target 2.0 is the points satisfying $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$, a level set of that linear expression. With two inputs and one equation the set is a line in the plane, and its direction is perpendicular to $\mathbf{b}$. Moving along $\mathbf{b}$ changes the prediction fastest, and moving perpendicular to it does not change the prediction at all. That perpendicular direction is the null space direction above. The three names relate as solution set = minimum-norm solution + null space. The null space is a set of directions through the origin, the line obtained by shifting it by $\mathbf{x}^{\ast}$ is the solution set, and the minimum-norm solution is one point on that line.
 
 What fixes the solution set is the model prediction $\hat{y}$, not the measured value $y$, and the prediction does not carry the sample order. So the line does not bend even with the trend of Fig 6 (a). The trend stays in the residual and only widens the scatter of Fig 6 (c); it cannot touch the property that the prediction is a linear expression of the input. Put another way, the trend can push the value a condition on that line actually delivers away from the target, but it cannot change the shape of the solution set.
 
