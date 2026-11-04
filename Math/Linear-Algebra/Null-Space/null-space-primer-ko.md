@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 47 | Created: 2026-10-31 | Updated: 2026-11-03 09:30 UTC
+Rev. 48 | Created: 2026-10-31 | Updated: 2026-11-04 10:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -150,7 +150,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 첨가 행렬 $[\mathbf{A} \mid \
 \mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n \hspace{19em} (4)
 ```
 
-식 (4) 의 $\mathrm{rank}(\mathbf{A})$ 는 변환 뒤에 남는 차원이고, $\mathrm{nullity}(\mathbf{A})$ 는 원점으로 가는 차원이다. 행의 수 $m$ 은 식 (4) 에 들지 않으므로, $m \lt n$ 이면 $\mathrm{rank}(\mathbf{A}) \le m \lt n$ 이어서 nullity 가 1 이상이고 해가 있으면 언제나 무수히 많다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+식 (4) 의 $\mathrm{rank}(\mathbf{A})$ 는 변환 뒤에 남는 차원이고, $\mathrm{nullity}(\mathbf{A})$ 는 원점으로 가는 차원이다. 행의 수 $m$ 은 식 (4) 에 들지 않으므로, $m \lt n$ 이면 $\mathrm{rank}(\mathbf{A}) \le m \lt n$ 이어서 nullity 가 1 이상이고 해가 있으면 언제나 무수히 많다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다. 정리를 따로 다룬 문서는 [Rank-Nullity Theorem Primer](../Rank-Nullity-Theorem/rank-nullity-theorem-primer-ko.md) 이다.
 
 식 (5) 의 $\mathbf{A}$ 로 식 (4) 를 그리면 아래 Fig 1 이다.
 

@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 12 | Created: 2026-11-03 | Updated: 2026-11-03 09:50 UTC
+Rev. 13 | Created: 2026-11-03 | Updated: 2026-11-04 10:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -87,7 +87,7 @@ Table 2. Dimension and rank
 | Counts     | 기저에 든 vector 의 개수 | 서로 일차독립인 열 (또는 행) 의 최대 개수                                                   |
 | Example    | $\dim \mathbb{R}^3 = 3$  | $\mathrm{rank}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A}) = \dim \mathrm{Row}(\mathbf{A})$ |
 
-$m \times n$ 행렬 $\mathbf{A}$ 에는 차원이 다른 공간 다섯이 함께 나온다. 열이 놓인 $\mathbb{R}^m$ 의 차원은 $m$, 행이 놓인 $\mathbb{R}^n$ 의 차원은 $n$ 이고, $\mathrm{Col}(\mathbf{A})$ 와 $\mathrm{Row}(\mathbf{A})$ 의 차원은 $r$, $\mathrm{Null}(\mathbf{A})$ 의 차원은 $n - r$ 이다. Null space 의 차원 $n - r$ 은 rank-nullity 정리에서 나오며, 그 유도는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+$m \times n$ 행렬 $\mathbf{A}$ 에는 차원이 다른 공간 다섯이 함께 나온다. 열이 놓인 $\mathbb{R}^m$ 의 차원은 $m$, 행이 놓인 $\mathbb{R}^n$ 의 차원은 $n$ 이고, $\mathrm{Col}(\mathbf{A})$ 와 $\mathrm{Row}(\mathbf{A})$ 의 차원은 $r$, $\mathrm{Null}(\mathbf{A})$ 의 차원은 $n - r$ 이다. Null space 의 차원 $n - r$ 은 rank-nullity 정리에서 나오며, 그 유도는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다. 정리의 해석과 숫자 예시는 [Rank-Nullity Theorem Primer](../Rank-Nullity-Theorem/rank-nullity-theorem-primer-ko.md) 에 있다.
 
 ### 5.2 Row Rank and Column Rank
 
