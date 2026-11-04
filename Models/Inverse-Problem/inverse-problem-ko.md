@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 166 | Created: 2026-08-28 | Updated: 2026-11-04 10:11 UTC
+Rev. 167 | Created: 2026-08-28 | Updated: 2026-11-04 10:17 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -268,7 +268,7 @@ Minimum-norm solution 은 해 하나일 뿐이고, 목표 $\mathbf{y}^{\ast}$ �
 - 양변을 전치하면 $(\mathbf{t}^{\top}\mathbf{Q}^{\top})^{\top} = \mathbf{Q}\mathbf{t}$ 이므로 $\mathbf{y} = \mathbf{Q}\mathbf{t} + \mathbf{f}$ 가 된다.
 - 잔차 $\mathbf{f}$ 를 빼면 $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 이다.
 
-이 $\mathbf{Q}\mathbf{t}$ 를 예측이라 한다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 행 개수 $M$ 은 출력 변수의 개수 ($\mathbf{y}$ 의 행 개수) 이므로, 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 는 식 $M$ 개로 미지수인 score 값 $A$ 개를 정한다. 그래서 $A \gt M$ 이면 해가 하나로 정해지지 않는다. 목표 $\mathbf{y}^{\ast}$ 를 주는 두 score vector $`\mathbf{t}_{1}`$ 과 $`\mathbf{t}_{2}`$ 는 $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$ 이므로, 그 차이 $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1} \in \mathbb{R}^{A}`$ 은 아래 식 (7) 을 만족한다. $\mathbf{Q}$ 의 rank 가 $M$ 이면 서로 독립인 $\mathbf{n}$ 이 $A - M$ 개 있다.
+이 $\mathbf{Q}\mathbf{t}$ 를 예측이라 한다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 행 개수 $M$ 은 출력 변수의 개수 ($\mathbf{y}$ 의 행 개수) 이므로, 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 는 식 $M$ 개로 미지수인 score 값 $A$ 개를 정한다. 그래서 $A \gt M$ 이면 해가 하나로 정해지지 않는다. 목표 $\mathbf{y}^{\ast}$ 를 얻는 데는 식 (5) 의 $\mathbf{t}^{\ast}$ 하나로 충분하지만, 해집합을 구하려면 같은 $\mathbf{y}^{\ast}$ 를 주는 score vector 두 개의 차이가 필요하다. 목표 $\mathbf{y}^{\ast}$ 를 주는 두 score vector $`\mathbf{t}_{1}`$ 과 $`\mathbf{t}_{2}`$ 는 $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$ 이므로, 그 차이 $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1} \in \mathbb{R}^{A}`$ 은 아래 식 (7) 을 만족한다. $\mathbf{Q}$ 의 rank 가 $M$ 이면 서로 독립인 $\mathbf{n}$ 이 $A - M$ 개 있다.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
