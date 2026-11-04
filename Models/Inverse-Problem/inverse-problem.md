@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 64 | Created: 2026-10-25 | Updated: 2026-11-04 02:45 UTC
+Rev. 65 | Created: 2026-10-25 | Updated: 2026-11-04 02:48 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -27,7 +27,7 @@ Rev. 64 | Created: 2026-10-25 | Updated: 2026-11-04 02:45 UTC
 - [5. Solution Validity](#5-solution-validity)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Derivation of Eq. (3), (4), (5), (7) and (8)](#appendix-b-derivation-of-eq-3-4-5-7-and-8)
+- [Appendix B. Derivation of Eq. (3), (4), (5), (6), (8) and (9)](#appendix-b-derivation-of-eq-3-4-5-6-8-and-9)
 - [Appendix C. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
 - [Appendix D. PLS Inversion: Model Plane of One PLS and SPE](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe)
 - [Appendix E. Tools and Libraries](#appendix-e-tools-and-libraries)
@@ -222,8 +222,8 @@ Inverting a PLS model is the oldest industrial case of solving an inverse proble
 
 There are three methods for finding, with a PLS model, the input that gives a target output $\mathbf{y}^{\ast}$. The first two find the solution in the score space and map it back to the input, and the third moves the input directly without going through the score. The first two are in the [PLS inversion](#pls-inversion) subsection below, and the third is in [4.7](#47-model-agnostic-numerical-optimization).
 
-1. Minimum-norm solution method of PLS inversion: finds one solution with the pseudo-inverse of Eq. (4).
-2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (7) and (8).
+1. Minimum-norm solution method of PLS inversion: finds one solution with the pseudo-inverse of Eq. (5).
+2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (8) and (9).
 3. Model-agnostic numerical optimization method: finds the solution by moving all $K$ inputs directly with the method of [4.7](#47-model-agnostic-numerical-optimization).
 
 #### PLS inversion
@@ -231,7 +231,11 @@ There are three methods for finding, with a PLS model, the input that gives a ta
 PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a common score $\mathbf{T}$. $A$ is the number of latent variables.
 
 ```math
-\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
+```
+
+```math
+\mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (4)
 ```
 
 $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
@@ -239,19 +243,19 @@ $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings ob
 Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of PLS inversion solves the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
 
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast} \hspace{19em} (4)
+\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast} \hspace{19em} (5)
 ```
 
 ```math
-\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (5)
+\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (6)
 ```
 
 $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mathbf{t}^{\ast}$ is the score among them that delivers the target $\mathbf{y}^{\ast}$, and $\mathbf{x}^{\ast}$ is the input recovered from $\mathbf{t}^{\ast}$ through the loading. Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution.
 
-The minimum-norm solution is only one solution. To find all solutions that give the target $\mathbf{y}^{\ast}$, the solution set, the directions along which $\mathbf{t}^{\ast}$ can move without changing the prediction must also be considered, and those directions are $\mathbf{n}$. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy Eq. (6) below.
+The minimum-norm solution is only one solution. To find all solutions that give the target $\mathbf{y}^{\ast}$, the solution set, the directions along which $\mathbf{t}^{\ast}$ can move without changing the prediction must also be considered, and those directions are $\mathbf{n}$. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy Eq. (7) below.
 
 ```math
-\mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (6)
+\mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
 ```
 
 $\mathbf{n} \in \mathbb{R}^{A}$ is a direction vector in the score space: moving the score along it does not change the predicted output $\mathbf{Q}\mathbf{t}$. The subspace these directions span is the null space [[2](#ref-2)]. The solution set is therefore $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$, $\mathbf{t}^{\ast}$ plus multiples of $\mathbf{n}$ (a linear combination when there are several $\mathbf{n}$), and $\mathbf{n}$ sets the direction in which the solutions spread.
@@ -260,18 +264,18 @@ $\mathbf{n} \in \mathbb{R}^{A}$ is a direction vector in the score space: moving
 - Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[7](#ref-7)].
 
 ```math
-T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (7)
+T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (8)
 ```
 
 ```math
-\mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (8)
+\mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (9)
 ```
 
-$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. Hotelling $T^{2}$ measures, in the score space, how far $\mathbf{t}$ lies from the center (the origin) of the scores of the historical data, with each score divided by its variance. Each row of the historical data is also turned into a score and becomes a row of the score matrix $\mathbf{T}$, so the two are compared in the same score space. The $T$ of Hotelling $T^{2}$ is the name of the statistic and differs from the score matrix $\mathbf{T}$. The derivations of Eq. (3), (4), (5), (7) and (8) are in [Appendix B](#appendix-b-derivation-of-eq-3-4-5-7-and-8). A schematic of SPE drawn in the input space is in [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe).
+$\mathbf{x}$ is the input being evaluated and $\mathbf{t}$ its score, $t_{a}$ is the $a$-th element of $\mathbf{t}$, and $s_{a}^{2}$ is the variance of the $a$-th score over the training samples. Hotelling $T^{2}$ measures, in the score space, how far $\mathbf{t}$ lies from the center (the origin) of the scores of the historical data, with each score divided by its variance. Each row of the historical data is also turned into a score and becomes a row of the score matrix $\mathbf{T}$, so the two are compared in the same score space. The $T$ of Hotelling $T^{2}$ is the name of the statistic and differs from the score matrix $\mathbf{T}$. The derivations of Eq. (3), (4), (5), (6), (8) and (9) are in [Appendix B](#appendix-b-derivation-of-eq-3-4-5-6-8-and-9). A schematic of SPE drawn in the input space is in [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe).
 
 The null space method of PLS inversion finds the solution in the order point, line, segment. The minimum-norm solution method of PLS inversion stops at step 1.
 
-1. Point: find the minimum-norm solution $\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}$ with the pseudo-inverse of Eq. (4).
+1. Point: find the minimum-norm solution $\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}$ with the pseudo-inverse of Eq. (5).
 2. Line: find the null space direction $\mathbf{n}$ that satisfies $\mathbf{Q}\mathbf{n} = \mathbf{0}$, and form the line $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ through $\mathbf{t}^{\ast}$.
 3. Segment: set the range of $\alpha$ with the $T^{2}$ limit and cut the line to the segment A–B of Fig 3 (a).
 
@@ -291,9 +295,9 @@ The solutions that the two methods of PLS inversion find in Fig 3 are as follows
 
 The ellipse is where $T^{2}$ equals its limit, and the segment joining A and B is the null space direction through $\mathbf{t}^{\ast}$. Every score on that segment predicts the same $\mathbf{y}^{\ast}$, but the part that leaves the ellipse is not supported by historical data and is not used. The freedom that remains is the stretch where the segment and the ellipse overlap. An example that runs this procedure as it is is in [Appendix G](#appendix-g-python-example-pls-model-inversion). The figure is drawn from the data and PLS model of Appendix G, with the limit $\chi^{2}_{0.95}(2) = 5.99$.
 
-(b) carries (a) over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of (a) mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (5), and the red dashed line is the null space line of (a) mapped the same way. The blue points and the green diamond are not in (a); they come from fitting PLS anew to each bootstrap sample.
+(b) carries (a) over to the input plane. The orange star is the $\mathbf{t}^{\ast}$ of (a) mapped by $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (6), and the red dashed line is the null space line of (a) mapped the same way. The blue points and the green diamond are not in (a); they come from fitting PLS anew to each bootstrap sample.
 
-The 200 blue points are the solutions of the PLS bootstrap ensemble (row 2 of Table 1, [Appendix F](#appendix-f-bagging-ensemble)). Each is the minimum-norm solution of one PLS fitted to a bootstrap sample and inverted by the procedure of Eq. (4) and (5), with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives. A schematic of this ensemble drawn in the input space is in [Appendix C](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution).
+The 200 blue points are the solutions of the PLS bootstrap ensemble (row 2 of Table 1, [Appendix F](#appendix-f-bagging-ensemble)). Each is the minimum-norm solution of one PLS fitted to a bootstrap sample and inverted by the procedure of Eq. (5) and (6), with standard deviation 0.126 along $x_1$ and 0.101 along $x_2$. Their mean (green diamond) nearly coincides with the minimum-norm solution of the single PLS (orange star). The red dashed line is the solution set that gives the same target for the single PLS, and every point on it is a correct answer. The spread of the blue points is different: it is how far the solution moves when the model moves with a change of training sample, and this spread is the uncertainty of the solution the PLS bootstrap ensemble gives. A schematic of this ensemble drawn in the input space is in [Appendix C](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution).
 
 #### Design space and product transfer
 
@@ -436,81 +440,135 @@ The result of inversion is a proposal made under the assumption that the model i
 - **Validity domain**: The input region where the model is supported by the training data.
 - **Well-posed problem**: A problem whose solution exists, is unique, and depends continuously on the data.
 
-## Appendix B. Derivation of Eq. (3), (4), (5), (7) and (8)
+## Appendix B. Derivation of Eq. (3), (4), (5), (6), (8) and (9)
 
-The three equations come in turn from the procedure by which PLS extracts the scores. $\mathbf{X} \in \mathbb{R}^{n \times K}$ and $\mathbf{Y} \in \mathbb{R}^{n \times M}$ are matrices with the $n$ samples as rows and the mean of each column removed, and the code of Appendix G also fits PLS on mean-removed values.
+These equations come in turn from the procedure by which PLS extracts the scores. $\mathbf{X} \in \mathbb{R}^{n \times K}$ and $\mathbf{Y} \in \mathbb{R}^{n \times M}$ are matrices with the $n$ samples as rows and the mean of each column removed, and the code of Appendix G also fits PLS on mean-removed values.
 
-#### Eq. (3) PLS decomposition
+#### Eq. (3) and (4) PLS decomposition
 
 PLS extracts the $A$ latent variables one component at a time, and $a = 1, \dots, A$ counts which component is being extracted. The $a$-th component is extracted from $\mathbf{X}_a$ and $\mathbf{Y}_a$, what is left after removing the parts the earlier $a - 1$ components explain, along the direction of largest covariance between the two. $\mathbf{X}_1 = \mathbf{X}$ and $\mathbf{Y}_1 = \mathbf{Y}$, and $\mathbf{w}_a \in \mathbb{R}^{K}$ and $\mathbf{c}_a \in \mathbb{R}^{M}$ are weight vectors of length 1.
 
 ```math
-(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (9)
+(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c} \hspace{19em} (10)
+```
+
+```math
+\mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (11)
 ```
 
 The solution is the first pair of singular vectors of $\mathbf{X}_a^{\top} \mathbf{Y}_a$, and $\mathbf{t}_a \in \mathbb{R}^{n}$ is the $a$-th score. Regressing $\mathbf{X}_a$ and $\mathbf{Y}_a$ on $\mathbf{t}_a$ gives the loadings $\mathbf{p}_a \in \mathbb{R}^{K}$ and $\mathbf{q}_a \in \mathbb{R}^{M}$, and subtracting that part passes the rest to the next component.
 
 ```math
-\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (10)
+\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a} \hspace{19em} (12)
 ```
 
-Rewriting the subtraction of Eq. (10) as $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ and substituting it in turn from $`a = 1`$ to $`A`$ stacks up the part $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ subtracted at each component.
+```math
+\mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a} \hspace{19em} (13)
+```
 
 ```math
-\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (11)
+\mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top} \hspace{19em} (14)
+```
+
+```math
+\mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (15)
+```
+
+Rewriting the subtraction of Eq. (14) as $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ and substituting it in turn from $`a = 1`$ to $`A`$ stacks up the part $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ subtracted at each component.
+
+```math
+\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (16)
 ```
 
 In the same way $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}`$. The matrices that collect the scores and loadings as columns are $`\mathbf{T}`$, $`\mathbf{P}`$ and $`\mathbf{Q}`$, and the $`\mathbf{E}`$ and $`\mathbf{F}`$ left at the end are the residuals.
 
 ```math
-\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (12)
+\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}] \hspace{19em} (17)
+```
+
+```math
+\mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}] \hspace{19em} (18)
+```
+
+```math
+\mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}] \hspace{19em} (19)
+```
+
+```math
+\mathbf{E} = \mathbf{X}_{A+1} \hspace{19em} (20)
+```
+
+```math
+\mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (21)
 ```
 
 A product of matrices built from columns equals the sum of the column-by-column products, $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$, so the two sums become the following.
 
 ```math
-\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (13)
+\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (22)
 ```
 
-Eq. (3) therefore follows.
-
 ```math
-\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
+\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (23)
 ```
 
-Because of the subtraction step, $\mathbf{t}_{a+1}$ is orthogonal to the earlier scores, and the scores of different components satisfy $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$. Eq. (7) uses this property. The score extraction steps and the orthogonality of the scores are also derived in Appendix F of [[19](#ref-19)].
-
-#### Eq. (4) and (5) Minimum-norm score and input
-
-Writing one row of Eq. (3) as a column vector, the input and output without residuals become $\mathbf{x} = \mathbf{P}\mathbf{t}$ and $\mathbf{y} = \mathbf{Q}\mathbf{t}$ with the same score $\mathbf{t} \in \mathbb{R}^{A}$. So the score that delivers the target $\mathbf{y}^{\ast}$ is a solution of $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$. When the rank of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is $M$ and $A \ge M$, solutions exist, and the one with the smallest norm among them is found with the Lagrange multiplier $\boldsymbol{\lambda} \in \mathbb{R}^{M}$.
+Eq. (3) and (4) therefore follow.
 
 ```math
-\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (14)
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
 ```
 
-$\mathbf{Q}\mathbf{Q}^{\top}$ has rank $M$ and so is invertible, giving $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$. Substituting it gives Eq. (4), and the matrix $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ is the pseudo-inverse $\mathbf{Q}^{+}$ of a $\mathbf{Q}$ of rank $M$.
-
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (15)
+\mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (4)
 ```
 
-The second equation puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ with $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and coefficients $\boldsymbol{\alpha}$. Since $\mathbf{Q}\mathbf{N} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
+Because of the subtraction step, $\mathbf{t}_{a+1}$ is orthogonal to the earlier scores, and the scores of different components satisfy $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$. Eq. (8) uses this property. The score extraction steps and the orthogonality of the scores are also derived in Appendix F of [[19](#ref-19)].
 
-#### Eq. (7) and (8) Hotelling T² and SPE
+#### Eq. (5) and (6) Minimum-norm score and input
 
-$s_a^{2}$ is the sample variance of the $a$-th score $\mathbf{t}_a$ of the training samples. As seen in Eq. (3), the scores of different components are orthogonal, so the covariance matrix of the scores is the diagonal matrix $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$. Hotelling $T^{2}$ is the squared Mahalanobis distance of a score $\mathbf{t}$ from the centre of the training samples, and since $\mathbf{S}$ is diagonal it resolves into a sum over components. The same derivation is also in Appendix F of [[19](#ref-19)].
+Writing one row of Eq. (3) and (4) as a column vector, the input and output without residuals become $\mathbf{x} = \mathbf{P}\mathbf{t}$ and $\mathbf{y} = \mathbf{Q}\mathbf{t}$ with the same score $\mathbf{t} \in \mathbb{R}^{A}$. So the score that delivers the target $\mathbf{y}^{\ast}$ is a solution of $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$. When the rank of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is $M$ and $A \ge M$, solutions exist, and the one with the smallest norm among them is found with the Lagrange multiplier $\boldsymbol{\lambda} \in \mathbb{R}^{M}$.
 
 ```math
-T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (16)
+\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \hspace{19em} (24)
+```
+
+Its solution satisfies the two equations below.
+
+```math
+\mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda} \hspace{19em} (25)
+```
+
+```math
+\mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (26)
+```
+
+$\mathbf{Q}\mathbf{Q}^{\top}$ has rank $M$ and so is invertible, giving $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$. Substituting it gives Eq. (5), and the matrix $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ is the pseudo-inverse $\mathbf{Q}^{+}$ of a $\mathbf{Q}$ of rank $M$.
+
+```math
+\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast} \hspace{19em} (27)
+```
+
+```math
+\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (28)
+```
+
+Eq. (28) puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ with $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and coefficients $\boldsymbol{\alpha}$. Since $\mathbf{Q}\mathbf{N} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
+
+#### Eq. (8) and (9) Hotelling T² and SPE
+
+$s_a^{2}$ is the sample variance of the $a$-th score $\mathbf{t}_a$ of the training samples. As seen in Eq. (3) and (4), the scores of different components are orthogonal, so the covariance matrix of the scores is the diagonal matrix $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$. Hotelling $T^{2}$ is the squared Mahalanobis distance of a score $\mathbf{t}$ from the centre of the training samples, and since $\mathbf{S}$ is diagonal it resolves into a sum over components. The same derivation is also in Appendix F of [[19](#ref-19)].
+
+```math
+T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (29)
 ```
 
 SPE is the sum of squares of the residual $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ left after reducing the input $\mathbf{x}$ to a score and mapping it back. One row of $\mathbf{E}$ in Eq. (3) is this $\mathbf{e}$, so SPE is the squared distance of $\mathbf{x}$ from the model plane spanned by the columns of $\mathbf{P}$.
 
 ```math
-\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (17)
+\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (30)
 ```
 
-The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (5) lies on the model plane, so its SPE is 0. So for the solution of Eq. (4) and (5) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
+The $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ of Eq. (6) lies on the model plane, so its SPE is 0. So for the solution of Eq. (5) and (6) $T^{2}$ detects extrapolation, and SPE is needed as well when solving directly in the input space lets $\mathbf{x}$ leave the plane.
 
 ## Appendix C. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
 
@@ -523,7 +581,7 @@ Fig 4. Model plane of one PLS and model planes of the bootstrap PLS models
 - (a): the model plane of the single PLS fitted to all rows (red surface) and its minimum-norm solution $\mathbf{x}^{\ast}$ (orange star). The gray points are the rows of $\mathbf{X}$ used for training.
 - (b): the model planes of the PLS fitted to each bootstrap sample (blue surfaces) and their minimum-norm solutions (blue points). The red surface and the orange star are the same as in (a).
 
-Each blue surface is the column space of the $\mathbf{P}$ of one bootstrap PLS, and 12 of the 200 are drawn. A change of training sample changes the loading matrix $\mathbf{P}$ and the sample mean, so the tilt and the position of the model plane change together. The 200 blue points are the minimum-norm solutions $\mathbf{x}^{\ast}$ of the 200 bootstrap PLS. Each $\mathbf{x}^{\ast}$ is obtained by Eq. (4) and (5) and so lies on the model plane of its own PLS, and its SPE with respect to that model plane is 0. Each $\mathbf{x}^{\ast}$ is computed with the pseudo-inverse of Eq. (4) alone and is not moved along the null space, the directions of the other solutions that give the same $\mathbf{y}^{\ast}$. The spread of the blue points therefore comes from the moving model plane, not from the null space. The green diamond is the mean of the 200 solutions, the solution of the PLS bootstrap ensemble. The points and planes are drawn from data made up for the figure, with $A = 2$ latent variables and $K = 3$ inputs. In Fig 3 (b) the inputs and the latent variables are both 2, so the model plane is the whole input plane and a change of its tilt cannot be seen; this figure adds one more input.
+Each blue surface is the column space of the $\mathbf{P}$ of one bootstrap PLS, and 12 of the 200 are drawn. A change of training sample changes the loading matrix $\mathbf{P}$ and the sample mean, so the tilt and the position of the model plane change together. The 200 blue points are the minimum-norm solutions $\mathbf{x}^{\ast}$ of the 200 bootstrap PLS. Each $\mathbf{x}^{\ast}$ is obtained by Eq. (5) and (6) and so lies on the model plane of its own PLS, and its SPE with respect to that model plane is 0. Each $\mathbf{x}^{\ast}$ is computed with the pseudo-inverse of Eq. (5) alone and is not moved along the null space, the directions of the other solutions that give the same $\mathbf{y}^{\ast}$. The spread of the blue points therefore comes from the moving model plane, not from the null space. The green diamond is the mean of the 200 solutions, the solution of the PLS bootstrap ensemble. The points and planes are drawn from data made up for the figure, with $A = 2$ latent variables and $K = 3$ inputs. In Fig 3 (b) the inputs and the latent variables are both 2, so the model plane is the whole input plane and a change of its tilt cannot be seen; this figure adds one more input.
 
 ## Appendix D. PLS Inversion: Model Plane of One PLS and SPE
 
@@ -548,7 +606,7 @@ The row space of $\mathbf{P}$ is a subspace of $\mathbb{R}^{A}$, the score space
 
 The only freedom that $\mathbf{x} = \mathbf{P}\mathbf{t}$ can move along is the $A$ scores. In this figure the inputs are the three $x_1$, $x_2$ and $x_3$, but only the two values $t_1$ and $t_2$ can change, and the target $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ takes one equation, so one degree of freedom remains, the segment A–B. A condition that fixes $x_3$ at some value adds one more equation, and the points that can be matched shrink to at most one point on the segment. If that point lies outside the $T^{2}$ limit or breaks the physical limits of another input, no $\mathbf{t}$ meets all the conditions. The model-agnostic numerical optimization method then moves the three inputs directly, even off the plane, to find the solution, and the SPE that becomes greater than 0 as a result is held under its limit.
 
-When the purple circle $`\mathbf{x}_{c}`$ (c for candidate), a solution of the model-agnostic numerical optimization method, leaves the plane, the squared length of the perpendicular $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ dropped to the plane is the SPE of Eq. (17). $`\mathbf{t}_{c}`$ is the score of $`\mathbf{x}_{c}`$, and $`\mathbf{P}\mathbf{t}_{c}`$ is the projection of $`\mathbf{x}_{c}`$ onto the plane. The points and planes are drawn from data made up for the figure, with $A = 2$ latent variables and $K = 3$ inputs. The figure can be drawn only when the score space has fewer dimensions than the input space, $A \lt K$, and this condition is not an arbitrary choice. When $A = K$ the columns of $\mathbf{P}$ span the whole input space, so every $\mathbf{x}$ is written exactly as $\mathbf{P}\mathbf{t}$, the residual $\mathbf{e}$ is 0, SPE is always 0, and the figure has nothing to show. Appendix G, with 2 inputs and 2 latent variables, is such a case, so this figure adds one more input.
+When the purple circle $`\mathbf{x}_{c}`$ (c for candidate), a solution of the model-agnostic numerical optimization method, leaves the plane, the squared length of the perpendicular $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ dropped to the plane is the SPE of Eq. (30). $`\mathbf{t}_{c}`$ is the score of $`\mathbf{x}_{c}`$, and $`\mathbf{P}\mathbf{t}_{c}`$ is the projection of $`\mathbf{x}_{c}`$ onto the plane. The points and planes are drawn from data made up for the figure, with $A = 2$ latent variables and $K = 3$ inputs. The figure can be drawn only when the score space has fewer dimensions than the input space, $A \lt K$, and this condition is not an arbitrary choice. When $A = K$ the columns of $\mathbf{P}$ span the whole input space, so every $\mathbf{x}$ is written exactly as $\mathbf{P}\mathbf{t}$, the residual $\mathbf{e}$ is 0, SPE is always 0, and the figure has nothing to show. Appendix G, with 2 inputs and 2 latent variables, is such a case, so this figure adds one more input.
 
 ## Appendix E. Tools and Libraries
 
