@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 149 | Created: 2026-08-28 | Updated: 2026-11-04 02:40 UTC
+Rev. 150 | Created: 2026-08-28 | Updated: 2026-11-04 02:43 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -27,7 +27,7 @@ Rev. 149 | Created: 2026-08-28 | Updated: 2026-11-04 02:40 UTC
 - [5. Solution Validity](#5-solution-validity)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Derivation of Eq. (3), (4) and (6)](#appendix-b-derivation-of-eq-3-4-and-6)
+- [Appendix B. Derivation of Eq. (3), (4), (5), (7) and (8)](#appendix-b-derivation-of-eq-3-4-5-7-and-8)
 - [Appendix C. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
 - [Appendix D. PLS Inversion: Model Plane of One PLS and SPE](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe)
 - [Appendix E. Tools and Libraries](#appendix-e-tools-and-libraries)
@@ -223,7 +223,7 @@ PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 �
 PLS model 로 목표 출력 $\mathbf{y}^{\ast}$ 를 주는 입력을 구하는 방법은 아래 셋이다. 앞의 둘은 score 공간에서 해를 구한 뒤 입력으로 되돌리고, 셋째는 score 를 거치지 않고 입력을 직접 움직인다. 앞의 둘은 아래 [PLS inversion](#pls-inversion) 꼭지에, 셋째는 [4.7](#47-model-agnostic-numerical-optimization) 에 있다.
 
 1. PLS inversion 의 Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
-2. PLS inversion 의 Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (6) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
+2. PLS inversion 의 Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (7), (8) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
 3. Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 해를 구한다.
 
 #### PLS inversion
@@ -239,15 +239,19 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면, PLS inversion 의 Minimum-norm solution 방법은 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
+\mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast} \hspace{19em} (4)
+```
+
+```math
+\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (5)
 ```
 
 $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고, $\mathbf{t}^{\ast}$ 는 그 가운데 목표 $\mathbf{y}^{\ast}$ 를 내는 score, $\mathbf{x}^{\ast}$ 는 $\mathbf{t}^{\ast}$ 를 loading 으로 되돌린 입력이다. $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다.
 
-$\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면, 아래 식 (5) 를 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남는다.
+$\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면, 아래 식 (6) 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남는다.
 
 ```math
-\mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (5)
+\mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (6)
 ```
 
 $\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 방향 벡터로, score 를 이 방향으로 움직여도 예측 출력 $\mathbf{Q}\mathbf{t}$ 가 바뀌지 않는다. 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
@@ -256,10 +260,14 @@ $\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 방향 벡터로, score 를 
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model plane까지의 거리를 재는 SPE (Squared Prediction Error) 에 상한을 두고 그 안으로 해를 가둔다 [[7](#ref-7)].
 
 ```math
-T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (6)
+T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (7)
 ```
 
-$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. Hotelling $T^{2}$ 는 score 공간에서 $\mathbf{t}$ 가 historical data 의 score 중심 (원점) 에서 얼마나 떨어졌는지를 각 score 의 분산으로 나눠 잰 값이다. historical data 의 각 행도 score 로 바뀌어 score matrix $\mathbf{T}$ 의 행이 되므로, 두 값은 같은 score 공간에서 비교된다. Hotelling $T^{2}$ 의 $T$ 는 통계량의 이름이며 score matrix $\mathbf{T}$ 와는 다르다. 식 (3), (4), (6) 의 유도는 [Appendix B](#appendix-b-derivation-of-eq-3-4-and-6) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
+```math
+\mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (8)
+```
+
+$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. Hotelling $T^{2}$ 는 score 공간에서 $\mathbf{t}$ 가 historical data 의 score 중심 (원점) 에서 얼마나 떨어졌는지를 각 score 의 분산으로 나눠 잰 값이다. historical data 의 각 행도 score 로 바뀌어 score matrix $\mathbf{T}$ 의 행이 되므로, 두 값은 같은 score 공간에서 비교된다. Hotelling $T^{2}$ 의 $T$ 는 통계량의 이름이며 score matrix $\mathbf{T}$ 와는 다르다. 식 (3), (4), (5), (7), (8) 의 유도는 [Appendix B](#appendix-b-derivation-of-eq-3-4-5-7-and-8) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
 
 PLS inversion 의 Null space 방법은 점, 직선, 선분의 순서로 해를 구한다. PLS inversion 의 Minimum-norm solution 방법은 1 단계에서 멈춘다.
 
@@ -283,9 +291,9 @@ Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
 
 타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix G](#appendix-g-python-example-pls-model-inversion) 에 있다. 그림은 Appendix G 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 
-(b) 는 (a) 를 입력 평면으로 옮긴 것이다. 주황 별은 (a) 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 (a) 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 (a) 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
+(b) 는 (a) 를 입력 평면으로 옮긴 것이다. 주황 별은 (a) 의 $\mathbf{t}^{\ast}$ 를 식 (5) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 (a) 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 (a) 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
 
-파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix F](#appendix-f-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다. 이 ensemble 을 입력 공간에 그린 schematic 은 [Appendix C](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution) 에 있다.
+파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix F](#appendix-f-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4), (5) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다. 이 ensemble 을 입력 공간에 그린 schematic 은 [Appendix C](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution) 에 있다.
 
 #### Design space and product transfer
 
@@ -428,7 +436,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - **Validity domain**: model 이 학습 데이터로 뒷받침되는 입력 영역이다.
 - **Well-posed problem**: 해가 존재하고 유일하며 데이터에 연속적으로 의존하는 문제이다.
 
-## Appendix B. Derivation of Eq. (3), (4) and (6)
+## Appendix B. Derivation of Eq. (3), (4), (5), (7) and (8)
 
 세 식은 PLS 가 score 를 뽑는 절차에서 차례로 나온다. $\mathbf{X} \in \mathbb{R}^{n \times K}$ 와 $\mathbf{Y} \in \mathbb{R}^{n \times M}$ 는 표본 $n$ 개를 행으로 두고 열마다 평균을 뺀 행렬이며, Appendix G 의 code 도 평균을 뺀 값으로 PLS 를 적합한다.
 
@@ -437,31 +445,31 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 PLS 는 latent 변수 $A$ 개를 성분 하나씩 차례로 뽑으며, $a = 1, \dots, A$ 는 그중 몇 번째로 뽑는 성분인지를 나타낸다. $a$ 번째 성분은 앞선 $a - 1$ 개 성분이 설명한 몫을 빼고 남은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 에서, 둘의 공분산이 가장 큰 방향으로 뽑는다. $\mathbf{X}_1 = \mathbf{X}$, $\mathbf{Y}_1 = \mathbf{Y}$ 이고, $\mathbf{w}_a \in \mathbb{R}^{K}$ 와 $\mathbf{c}_a \in \mathbb{R}^{M}$ 는 길이가 1 인 가중치 벡터이다.
 
 ```math
-(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (7)
+(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (9)
 ```
 
 해는 $\mathbf{X}_a^{\top} \mathbf{Y}_a$ 의 첫 번째 특이벡터 쌍이고, $\mathbf{t}_a \in \mathbb{R}^{n}$ 이 $a$ 번째 score 이다. $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 를 $\mathbf{t}_a$ 에 회귀해 loading $\mathbf{p}_a \in \mathbb{R}^{K}$ 와 $\mathbf{q}_a \in \mathbb{R}^{M}$ 을 얻고, 그만큼을 빼서 다음 성분으로 넘긴다.
 
 ```math
-\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (8)
+\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (10)
 ```
 
-식 (8) 의 빼는 식을 $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ 로 바꾸어 $`a = 1`$ 부터 $`A`$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ 가 하나씩 쌓인다.
+식 (10) 의 빼는 식을 $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ 로 바꾸어 $`a = 1`$ 부터 $`A`$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ 가 하나씩 쌓인다.
 
 ```math
-\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (9)
+\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (11)
 ```
 
 $`\mathbf{Y}`$ 도 같은 방법으로 $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}`$ 이다. Score 와 loading 을 열로 모은 행렬이 $`\mathbf{T}`$, $`\mathbf{P}`$, $`\mathbf{Q}`$ 이고, 마지막에 남은 $`\mathbf{E}`$ 와 $`\mathbf{F}`$ 가 잔차이다.
 
 ```math
-\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (10)
+\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (12)
 ```
 
 열을 모은 행렬의 곱은 열마다의 곱을 더한 것과 같아 $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$ 이므로, 두 합은 아래이다.
 
 ```math
-\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (11)
+\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (13)
 ```
 
 따라서 식 (3) 이 유도된다.
@@ -470,39 +478,39 @@ $`\mathbf{Y}`$ 도 같은 방법으로 $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (6) 에서 쓴다. Score 를 뽑는 단계와 score 의 직교성은 [[19](#ref-19)] 의 Appendix F 에서도 유도한다.
+빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (7) 에서 쓴다. Score 를 뽑는 단계와 score 의 직교성은 [[19](#ref-19)] 의 Appendix F 에서도 유도한다.
 
-#### Eq. (4) Minimum-norm score and input
+#### Eq. (4) and (5) Minimum-norm score and input
 
 식 (3) 의 한 행을 열 벡터로 적으면, 잔차를 뺀 입력과 출력은 같은 score $\mathbf{t} \in \mathbb{R}^{A}$ 로 $\mathbf{x} = \mathbf{P}\mathbf{t}$, $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 된다. 그래서 목표 $\mathbf{y}^{\ast}$ 를 내는 score 는 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 의 해이다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 rank 가 $M$ 이고 $A \ge M$ 이면 해가 있으며, 그 가운데 norm 이 가장 작은 해를 Lagrange 승수 $\boldsymbol{\lambda} \in \mathbb{R}^{M}$ 으로 구한다.
 
 ```math
-\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (12)
+\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (14)
 ```
 
-$\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므로 $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$ 이다. 이것을 대입하면 식 (4) 의 앞 식이 되고, 이 행렬 $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ 이 rank 가 $M$ 인 $\mathbf{Q}$ 의 pseudo-inverse $\mathbf{Q}^{+}$ 이다.
+$\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므로 $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$ 이다. 이것을 대입하면 식 (4) 가 되고, 이 행렬 $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ 이 rank 가 $M$ 인 $\mathbf{Q}$ 의 pseudo-inverse $\mathbf{Q}^{+}$ 이다.
 
 ```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (13)
+\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (15)
 ```
 
 뒤 식은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 $\boldsymbol{\alpha}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
 
-#### Eq. (6) Hotelling T² and SPE
+#### Eq. (7) and (8) Hotelling T² and SPE
 
 $s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix F 에도 있다.
 
 ```math
-T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (14)
+T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (16)
 ```
 
 SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 에서 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
 
 ```math
-\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (15)
+\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (17)
 ```
 
-식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model plane 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
+식 (5) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model plane 위에 있어 SPE 가 0 이다. 그래서 식 (4), (5) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
 
 ## Appendix C. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
 
@@ -515,7 +523,7 @@ Fig 4. Model plane of one PLS and model planes of the bootstrap PLS models
 - (a): 모든 행으로 적합한 PLS 하나의 model plane (빨간 면) 과 그 minimum-norm solution $\mathbf{x}^{\ast}$ (주황 별) 이다. 회색 점은 학습에 쓴 $\mathbf{X}$ 의 행이다.
 - (b): bootstrap 표본마다 적합한 PLS 의 model plane (파란 면) 과 그 minimum-norm solution (파란 점) 이다. 빨간 면과 주황 별은 (a) 와 같다.
 
-파란 면은 bootstrap PLS 마다 구한 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
+파란 면은 bootstrap PLS 마다 구한 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4), (5) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
 
 ## Appendix D. PLS Inversion: Model Plane of One PLS and SPE
 
@@ -540,7 +548,7 @@ $\mathbf{P}$ 의 row space 는 $\mathbb{R}^{A}$ 의 부분공간으로 score 공
 
 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 움직일 수 있는 자유도는 score 개수 $A$ 뿐이다. 이 그림에서는 입력이 $x_1$, $x_2$, $x_3$ 세 개이지만 $t_1$, $t_2$ 두 값만 바꿀 수 있고, 목표 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 가 식 하나를 쓰므로 남는 자유도는 1 개, 곧 선분 A–B 이다. 여기에 $x_3$ 를 어떤 값으로 고정하는 조건이 붙으면 식이 하나 더 늘어, 맞출 수 있는 점이 선분 위의 한 점 이하로 줄어든다. 그 점이 $T^{2}$ 상한 밖에 있거나 다른 입력의 물리적 한계를 넘으면, 조건을 모두 만족하는 $\mathbf{t}$ 가 없다. 그때는 평면을 벗어나서라도 입력 세 개를 직접 움직여 해를 찾는 Model-agnostic numerical optimization 방법을 쓰고, 그 대가로 0 보다 커지는 SPE 를 상한으로 묶는다.
 
-Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $`\mathbf{x}_{c}`$ (c 는 candidate) 가 평면을 벗어나면, 평면에 내린 수선 $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ 의 길이 제곱이 식 (15) 의 SPE 이다. $`\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 의 score 이고, $`\mathbf{P}\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 를 평면에 내린 projection 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix G 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
+Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $`\mathbf{x}_{c}`$ (c 는 candidate) 가 평면을 벗어나면, 평면에 내린 수선 $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ 의 길이 제곱이 식 (17) 의 SPE 이다. $`\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 의 score 이고, $`\mathbf{P}\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 를 평면에 내린 projection 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix G 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
 
 ## Appendix E. Tools and Libraries
 
