@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 77 | Created: 2026-10-25 | Updated: 2026-11-04 10:06 UTC
+Rev. 78 | Created: 2026-10-25 | Updated: 2026-11-04 10:08 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -607,7 +607,7 @@ Drawing the relation between SPE and the model plane for three inputs gives Fig 
 
 Fig 5. Row space and column space of the loading matrix P, the T^2 limit and SPE
 
-- (a): the row space of $\mathbf{P}$, the score space. The ellipse, the null space line, the segment A–B and $\mathbf{t}^{\ast}$ on it are laid out as in Fig 3 (a).
+- (a): the row space of $\mathbf{P}$, the score space. The ellipse, the null space line, the segment A–B and $\mathbf{t}^{\ast}$ on it are laid out as in Fig 3 (a). The black arrow is the direction of $\mathbf{n}$ in Eq. (7).
 - (b): the column space of $\mathbf{P}$, the model plane. It holds the points of (a) carried by $\mathbf{x} = \mathbf{P}\mathbf{t}$, and the squared length of the perpendicular from a vector $`\mathbf{x}_{c}`$ off the plane is SPE.
 
 Fig 5 shows the following three methods for finding the solution.

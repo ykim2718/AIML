@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 164 | Created: 2026-08-28 | Updated: 2026-11-04 10:06 UTC
+Rev. 165 | Created: 2026-08-28 | Updated: 2026-11-04 10:08 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -607,7 +607,7 @@ SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 F
 
 Fig 5. Row space and column space of the loading matrix P, the T^2 limit and SPE
 
-- (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다.
+- (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다. 검은 화살표는 식 (7) 의 $\mathbf{n}$ 방향이다.
 - (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 vector $`\mathbf{x}_{c}`$ 의 수선 길이 제곱이 SPE 이다.
 
 Fig 5 에서 해를 구하는 방법은 아래의 3 가지이다.
