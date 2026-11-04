@@ -13,7 +13,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.24.0.2026.11.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.24.1.2026.11.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -897,10 +897,15 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
                 bbox=dict(boxstyle='round,pad=0.15', facecolor='white', alpha=0.8, edgecolor='none'))
     ax.legend(fontsize=font_size(1.15), loc='upper center', bbox_to_anchor=(0.5, 0.06), ncol=2,
               frameon=False)
-    fig.text(0.415, 0.565, 'x = P t', fontsize=font_size(1.6), ha='center', va='bottom')
+    # the x = P t arrow starts right of panel (a), in the gap between the two panels
+    box_a = ax2.get_position()
+    arrow_x0, arrow_y = box_a.x1 + 0.015, (box_a.y0 + box_a.y1) / 2.0
+    arrow_x1 = arrow_x0 + 0.07
+    fig.text((arrow_x0 + arrow_x1) / 2.0, arrow_y + 0.02, 'x = P t', fontsize=font_size(1.6),
+             ha='center', va='bottom')
     fig.patches.append(FancyArrowPatch(
-        (0.37, 0.53), (0.46, 0.53), transform=fig.transFigure, arrowstyle='-|>', mutation_scale=25,
-        color='0.3', linewidth=1.8))
+        (arrow_x0, arrow_y), (arrow_x1, arrow_y), transform=fig.transFigure, arrowstyle='-|>',
+        mutation_scale=25, color='0.3', linewidth=1.8))
     panel_caption(fig, [ax2], '(a) row space of P: score space R^A', y=0.0)
     panel_caption(fig, [ax], '(b) column space of P: model plane in input space R^K', y=0.0)
     for text in fig.texts:
