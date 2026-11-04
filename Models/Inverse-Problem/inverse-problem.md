@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 73 | Created: 2026-10-25 | Updated: 2026-11-04 09:53 UTC
+Rev. 74 | Created: 2026-10-25 | Updated: 2026-11-04 09:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,7 +228,7 @@ There are three methods for finding, with a PLS model, the input that gives a ta
 
 #### PLS inversion
 
-PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a common score $\mathbf{T}$. $A$ is the number of latent variables.
+PLS decomposes the matrices $\mathbf{X}$ and $\mathbf{Y}$, which stack the inputs $\mathbf{x}$ and the outputs $\mathbf{y}$ of $n$ training samples one row each, through a common score $\mathbf{T}$. $A$ is the number of latent variables.
 
 ```math
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
@@ -240,7 +240,7 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 
 $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
 
-The size of each matrix is as follows, where $n$ is the number of samples.
+The size of each matrix is as follows.
 
 - $\mathbf{X} \in \mathbb{R}^{n \times K}$: inputs. Rows are the $n$ samples, columns the $K$ input variables
 - $\mathbf{Y} \in \mathbb{R}^{n \times M}$: outputs. Rows are the $n$ samples, columns the $M$ output variables

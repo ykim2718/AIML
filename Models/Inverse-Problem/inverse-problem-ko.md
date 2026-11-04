@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 160 | Created: 2026-08-28 | Updated: 2026-11-04 09:53 UTC
+Rev. 161 | Created: 2026-08-28 | Updated: 2026-11-04 09:56 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,7 +228,7 @@ PLS model 로 목표 출력 $\mathbf{y}^{\ast}$ 를 주는 입력을 구하는 �
 
 #### PLS inversion
 
-PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
+PLS 는 학습 표본 $n$ 개의 입력 $\mathbf{x}$ 와 출력 $\mathbf{y}$ 를 한 행씩 쌓은 행렬 $\mathbf{X}$ 와 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
 
 ```math
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
@@ -240,7 +240,7 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 
 $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다.
 
-행렬마다의 크기는 아래와 같으며, $n$ 은 표본의 개수이다.
+행렬마다의 크기는 아래와 같다.
 
 - $\mathbf{X} \in \mathbb{R}^{n \times K}$: 입력. 행은 표본 $n$ 개, 열은 입력 변수 $K$ 개
 - $\mathbf{Y} \in \mathbb{R}^{n \times M}$: 출력. 행은 표본 $n$ 개, 열은 출력 변수 $M$ 개
