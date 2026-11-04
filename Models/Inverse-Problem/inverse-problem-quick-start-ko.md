@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 25 | Created: 2026-10-22 | Updated: 2026-11-03 09:30 UTC
+Rev. 26 | Created: 2026-10-22 | Updated: 2026-11-04 10:04 UTC
 
 ## 1. Purpose
 
@@ -124,7 +124,7 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
 3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
 
-복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
+복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 $N$ 행이면 이 뽑기를 $N$ 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 $N$ 행의 학습 표본을 얻는다.
 
 > **Definition: Bagging ensemble**<br>
 > 세 단계를 합친 방식을 bagging ensemble 이라 부른다.
