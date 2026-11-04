@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 48 | Created: 2026-10-31 | Updated: 2026-11-04 10:45 UTC
+Rev. 49 | Created: 2026-10-31 | Updated: 2026-11-04 11:05 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -79,7 +79,7 @@ Table 1. Symbols
 ## 4. Definitions
 
 > **Definition: Null space**<br>
-> $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $m \times n$ 행렬 $\mathbf{A}$ 의 null space $\mathrm{Null}(\mathbf{A})$ 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는 $\mathbf{x} \in \mathbb{R}^n$ 전체의 집합이다 (식 (1)). 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때의 해 전체와 같다.
+> $\mathbb{R}^n$ 을 원소가 실수 $n$ 개인 열 vector 전체의 집합이라 할 때, $m \times n$ 행렬 $\mathbf{A}$ 의 null space $\mathrm{Null}(\mathbf{A})$ 는 동차 선형방정식 (homogeneous linear equation) $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족하는 $\mathbf{x} \in \mathbb{R}^n$ 전체의 집합이다. 선형방정식 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에서 $\mathbf{b}$ 가 zero vector 일 때의 해 전체와 같다.
 
 ```math
 \mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \} \hspace{19em} (1)

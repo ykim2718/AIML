@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 13 | Created: 2026-11-03 | Updated: 2026-11-04 10:45 UTC
+Rev. 14 | Created: 2026-11-03 | Updated: 2026-11-04 11:05 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -62,7 +62,7 @@ Table 1. Symbols
 > Vector space $V$ 의 기저 (basis) 는 서로 일차독립이면서 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합이고, $V$ 의 차원 $\dim V$ 는 그 기저에 든 vector 의 개수이다. $V$ 의 기저는 여럿이지만 그 개수는 모두 같다.
 
 > **Definition: Rank**<br>
-> $m \times n$ 행렬 $\mathbf{A}$ 의 rank $\mathrm{rank}(\mathbf{A})$ 는 column space $\mathrm{Col}(\mathbf{A})$ 의 차원, 곧 $\mathbf{A}$ 의 열 가운데 서로 일차독립인 열의 최대 개수이다 (식 (1)).
+> $m \times n$ 행렬 $\mathbf{A}$ 의 rank $\mathrm{rank}(\mathbf{A})$ 는 column space $\mathrm{Col}(\mathbf{A})$ 의 차원, 곧 $\mathbf{A}$ 의 열 가운데 서로 일차독립인 열의 최대 개수이다.
 
 ```math
 \mathrm{rank}(\mathbf{A}) = \dim \mathrm{Col}(\mathbf{A})

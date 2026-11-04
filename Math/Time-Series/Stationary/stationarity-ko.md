@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 26 | Created: 2026-09-07 | Updated: 2026-11-03 09:30 UTC
+Rev. 27 | Created: 2026-09-07 | Updated: 2026-11-04 11:05 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)
@@ -51,7 +51,7 @@ Rev. 26 | Created: 2026-09-07 | Updated: 2026-11-03 09:30 UTC
 엄밀한 정의는 분포에 대한 것이다.
 
 > **Definition: Strict stationarity**<br>
-> 어떤 확률과정의 유한 차원 결합분포가 시간을 $h$ 만큼 옮겨도 그대로이면 (식 (1)) 그 과정을 strict stationary 라 한다.
+> 어떤 확률과정의 유한 차원 결합분포가 시간을 $h$ 만큼 옮겨도 그대로이면 그 과정을 strict stationary 라 한다.
 
 $$F(x_1, \ldots, x_k; t_1, \ldots, t_k) = F(x_1, \ldots, x_k; t_1 + h, \ldots, t_k + h) \hspace{19em} (1)$$
 
