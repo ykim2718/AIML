@@ -1,6 +1,7 @@
 """Draw Fig 3 and the Appendix D, Appendix E and Appendix F figures of inverse-problem-ko.md.
 
 Changelog:
+    0.24.0: Mark P n, the direction n carried into the input space, in fig_10 (b).
     0.23.0: Mark the null space direction n with an arrow from t* in fig_10 (a).
     0.22.0: Mark the null space direction n with an arrow from t* in fig_3 (a).
     0.21.0: Split fig_9 into (a) one model plane of a single PLS and (b) the bootstrap model planes.
@@ -12,7 +13,7 @@ Changelog:
     0.15.0: Add fig_3, the null space and the T^2 validity region in the score plane.
 """
 __author__ = 'yRocket'
-__version__ = "0.23.0.2026.11.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
+__version__ = "0.24.0.2026.11.4"  # Semantic Versioning: Major.Minor.Patch.Date(YYYY.M.D)
 
 import argparse
 import pathlib
@@ -883,6 +884,17 @@ def fig_10(out_folder: pathlib.Path) -> pathlib.Path:
     label_at(x_off, r'$x_c$ (candidate)', (0, 10), 'center', 'bottom')
     label_at(foot, r'$P\,t_c$ (projection of $x_c$)', (0, -12), 'center', 'top')
     label_at((x_off + foot) / 2, r'$e = x_c - P\,t_c$' '\n' r'SPE = $\|e\|^2$', (-30, 0), 'right', 'center')
+    # P n: the direction n of (a) carried into the input space, drawn below the segment
+    tail_b = loadings @ (t_star + 0.8 * np.array([-null_dir[1], null_dir[0]]))
+    head_b = tail_b + loadings @ (0.75 * alpha_b * null_dir)
+    tail_2d, head_2d = (proj3d.proj_transform(*p, ax.get_proj())[:2] for p in (tail_b, head_b))
+    ax.annotate('', xy=head_2d, xytext=tail_2d,
+                arrowprops=dict(arrowstyle='-|>', mutation_scale=22, linewidth=2.0, color='black'),
+                zorder=20)
+    ax.annotate(r'$\mathbf{P}\mathbf{n}$', tuple((np.array(tail_2d) + np.array(head_2d)) / 2.0),
+                xytext=(0, -10), textcoords='offset points', ha='center', va='top',
+                fontsize=text_size, zorder=20,
+                bbox=dict(boxstyle='round,pad=0.15', facecolor='white', alpha=0.8, edgecolor='none'))
     ax.legend(fontsize=font_size(1.15), loc='upper center', bbox_to_anchor=(0.5, 0.06), ncol=2,
               frameon=False)
     fig.text(0.415, 0.565, 'x = P t', fontsize=font_size(1.6), ha='center', va='bottom')
