@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 167 | Created: 2026-08-28 | Updated: 2026-11-04 10:17 UTC
+Rev. 168 | Created: 2026-08-28 | Updated: 2026-11-04 10:20 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -274,7 +274,7 @@ Minimum-norm solution 은 해 하나일 뿐이고, 목표 $\mathbf{y}^{\ast}$ �
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
 ```
 
-$\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 벡터다. $\mathbf{t}^{\ast}$ 에 $\mathbf{n}$ 의 $\alpha$ 배를 더한 $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ 의 예측은 $\mathbf{Q}\mathbf{t}^{\ast} + \alpha\mathbf{Q}\mathbf{n} = \mathbf{y}^{\ast}$ 로, $\alpha$ 가 얼마이든 목표 $\mathbf{y}^{\ast}$ 와 같다. 그래서 해집합은 $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ 이며 ($\mathbf{n}$ 이 여럿이면 그 선형결합을 더한다), score 평면에서 $\mathbf{t}^{\ast}$ 를 지나 $\mathbf{n}$ 과 나란한 직선이다. Fig 3 (a) 의 null space 직선이 이 직선이다. 식 (7) 을 만족하는 $\mathbf{n}$ 전체가 이루는 부분공간이 null space 이다 [[2](#ref-2)].
+$\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 벡터다. $\mathbf{t}^{\ast}$ 에 $\mathbf{n}$ 의 $\alpha$ 배를 더한 $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ 의 예측은 $\mathbf{Q}\mathbf{t}^{\ast} + \alpha\mathbf{Q}\mathbf{n} = \mathbf{y}^{\ast}$ 로, $\alpha$ 가 얼마이든 목표 $\mathbf{y}^{\ast}$ 와 같다. 그래서 해집합은 $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ 이며 ($\mathbf{n}$ 이 여럿이면 그 선형결합을 더한다), score 평면에서 $\mathbf{t}^{\ast}$ 를 지나 $\mathbf{n}$ 과 나란한 직선이다. Fig 3 (a) 의 null space 직선이 이 직선이다. 식 (7) 을 만족하는 $\mathbf{n}$ 전체가 이루는 부분공간이 null space 이다 [[2](#ref-2)]. Null space 의 차원은 $\mathbf{Q}$ 만으로 정해지는 $A - M$ 이며, 해를 구할 때 쓴 score vector 의 개수와는 관계가 없다. 목표 $\mathbf{y}^{\ast}$ 를 주는 score vector 를 더 찾아도 모두 같은 null space 직선 위에 놓이고, 그 가운데 어느 두 개의 차이도 $\mathbf{n}$ 과 나란하다. 해가 점 하나로 줄어드는 것은 $A = M$ 이어서 null space 가 없을 때와, [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe) 처럼 입력의 element $x_3$ 을 고정하는 조건으로 식이 하나 더 늘 때이다.
 
 - Null space 는 출력을 바꾸지 않고 움직일 수 있는 입력의 자유도이다. 비용 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model plane까지의 거리를 재는 SPE (Squared Prediction Error) 에 상한을 두고 그 안으로 해를 가둔다 [[7](#ref-7)].

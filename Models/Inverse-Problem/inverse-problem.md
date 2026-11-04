@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 80 | Created: 2026-10-25 | Updated: 2026-11-04 10:17 UTC
+Rev. 81 | Created: 2026-10-25 | Updated: 2026-11-04 10:20 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -274,7 +274,7 @@ This $\mathbf{Q}\mathbf{t}$ is called the prediction. The number of rows $M$ of 
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
 ```
 
-$\mathbf{n} \in \mathbb{R}^{A}$ is a vector in the score space. The score $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$, which adds $\alpha$ times $\mathbf{n}$ to $\mathbf{t}^{\ast}$, predicts $\mathbf{Q}\mathbf{t}^{\ast} + \alpha\mathbf{Q}\mathbf{n} = \mathbf{y}^{\ast}$, the target $\mathbf{y}^{\ast}$ for any $\alpha$. The solution set is therefore $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ (a linear combination when there are several $\mathbf{n}$), which in the score plane is the line through $\mathbf{t}^{\ast}$ parallel to $\mathbf{n}$. This line is the null space line in Fig 3 (a). The subspace of all $\mathbf{n}$ that satisfy Eq. (7) is the null space [[2](#ref-2)].
+$\mathbf{n} \in \mathbb{R}^{A}$ is a vector in the score space. The score $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$, which adds $\alpha$ times $\mathbf{n}$ to $\mathbf{t}^{\ast}$, predicts $\mathbf{Q}\mathbf{t}^{\ast} + \alpha\mathbf{Q}\mathbf{n} = \mathbf{y}^{\ast}$, the target $\mathbf{y}^{\ast}$ for any $\alpha$. The solution set is therefore $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ (a linear combination when there are several $\mathbf{n}$), which in the score plane is the line through $\mathbf{t}^{\ast}$ parallel to $\mathbf{n}$. This line is the null space line in Fig 3 (a). The subspace of all $\mathbf{n}$ that satisfy Eq. (7) is the null space [[2](#ref-2)]. The dimension of the null space is $A - M$, set by $\mathbf{Q}$ alone, and does not depend on how many score vectors were used to find the solution. Further score vectors that give the target $\mathbf{y}^{\ast}$ all lie on the same null space line, and the difference of any two of them is parallel to $\mathbf{n}$. The solution shrinks to a single point only when $A = M$, so that there is no null space, or when a condition such as fixing the input element $x_3$ in [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe) adds one more equation.
 
 - The null space is the freedom to move the input without changing the output. A secondary goal such as cost can be optimised over this freedom.
 - Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[7](#ref-7)].
