@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 75 | Created: 2026-10-25 | Updated: 2026-11-04 10:01 UTC
+Rev. 76 | Created: 2026-10-25 | Updated: 2026-11-04 10:03 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,17 +228,17 @@ There are three methods for finding, with a PLS model, the input that gives a ta
 
 #### PLS inversion
 
-PLS decomposes the matrices $\mathbf{X}$ and $\mathbf{Y}$, which stack the inputs $\mathbf{x}$ and the outputs $\mathbf{y}$ of $n$ training samples one row each, through a common score $\mathbf{T}$. $A$ is the number of latent variables.
+PLS decomposes the matrices $\mathbf{X}$ and $\mathbf{Y}$, which stack the inputs $\mathbf{x}$ and the outputs $\mathbf{y}$ of $N$ training samples one row each, through a common score $\mathbf{T}$. $A$ is the number of latent variables.
 
 The size of each matrix is as follows.
 
-- $\mathbf{X} \in \mathbb{R}^{n \times K}$: inputs. Rows are the $n$ samples, columns the $K$ input variables
-- $\mathbf{Y} \in \mathbb{R}^{n \times M}$: outputs. Rows are the $n$ samples, columns the $M$ output variables
-- $\mathbf{T} \in \mathbb{R}^{n \times A}$: scores. Rows are the $n$ samples, columns the $A$ latent variables
+- $\mathbf{X} \in \mathbb{R}^{N \times K}$: inputs. Rows are the $N$ samples, columns the $K$ input variables
+- $\mathbf{Y} \in \mathbb{R}^{N \times M}$: outputs. Rows are the $N$ samples, columns the $M$ output variables
+- $\mathbf{T} \in \mathbb{R}^{N \times A}$: scores. Rows are the $N$ samples, columns the $A$ latent variables
 - $\mathbf{P} \in \mathbb{R}^{K \times A}$: input loadings. Rows are the $K$ input variables, columns the $A$ latent variables
 - $\mathbf{Q} \in \mathbb{R}^{M \times A}$: output loadings. Rows are the $M$ output variables, columns the $A$ latent variables
-- $\mathbf{E} \in \mathbb{R}^{n \times K}$: input residuals. Same size as $\mathbf{X}$
-- $\mathbf{F} \in \mathbb{R}^{n \times M}$: output residuals. Same size as $\mathbf{Y}$
+- $\mathbf{E} \in \mathbb{R}^{N \times K}$: input residuals. Same size as $\mathbf{X}$
+- $\mathbf{F} \in \mathbb{R}^{N \times M}$: output residuals. Same size as $\mathbf{Y}$
 
 ```math
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
@@ -458,7 +458,7 @@ The result of inversion is a proposal made under the assumption that the model i
 
 ## Appendix B. Derivation of Eq. (3), (4), (5), (6), (8) and (9)
 
-These equations come in turn from the procedure by which PLS extracts the scores. $\mathbf{X} \in \mathbb{R}^{n \times K}$ and $\mathbf{Y} \in \mathbb{R}^{n \times M}$ are matrices with the $n$ samples as rows and the mean of each column removed, and the code of Appendix G also fits PLS on mean-removed values.
+These equations come in turn from the procedure by which PLS extracts the scores. $\mathbf{X} \in \mathbb{R}^{N \times K}$ and $\mathbf{Y} \in \mathbb{R}^{N \times M}$ are matrices with the $N$ samples as rows and the mean of each column removed, and the code of Appendix G also fits PLS on mean-removed values.
 
 #### Eq. (3) and (4) PLS decomposition
 
@@ -472,7 +472,7 @@ PLS extracts the $A$ latent variables one component at a time, and $a = 1, \dots
 \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (11)
 ```
 
-The solution is the first pair of singular vectors of $\mathbf{X}_a^{\top} \mathbf{Y}_a$, and vector $\mathbf{t}_a \in \mathbb{R}^{n}$ is the $a$-th score. Regressing $\mathbf{X}_a$ and $\mathbf{Y}_a$ on $\mathbf{t}_a$ gives the loadings $\mathbf{p}_a \in \mathbb{R}^{K}$ and $\mathbf{q}_a \in \mathbb{R}^{M}$, and subtracting that part passes the rest to the next component.
+The solution is the first pair of singular vectors of $\mathbf{X}_a^{\top} \mathbf{Y}_a$, and vector $\mathbf{t}_a \in \mathbb{R}^{N}$ is the $a$-th score. Regressing $\mathbf{X}_a$ and $\mathbf{Y}_a$ on $\mathbf{t}_a$ gives the loadings $\mathbf{p}_a \in \mathbb{R}^{K}$ and $\mathbf{q}_a \in \mathbb{R}^{M}$, and subtracting that part passes the rest to the next component.
 
 ```math
 \mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a} \hspace{19em} (12)
@@ -568,7 +568,7 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ has rank $M$ and so is invertible, giving $\boldsy
 \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (28)
 ```
 
-Eq. (28) puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ with $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and the coefficient vector $\boldsymbol{\alpha} \in \mathbb{R}^{A - M}$. Since $\mathbf{Q}\mathbf{N} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
+Eq. (28) puts $\mathbf{t}^{\ast}$ into $\mathbf{x} = \mathbf{P}\mathbf{t}$. The full solution is $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{Z}\boldsymbol{\alpha}$ with $\mathbf{Z} \in \mathbb{R}^{A \times (A - M)}$, whose columns are a basis of the null space, and the coefficient vector $\boldsymbol{\alpha} \in \mathbb{R}^{A - M}$. Since $\mathbf{Q}\mathbf{Z} = \mathbf{0}$, $\mathbf{t}^{\ast\top}\mathbf{Z} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{Z} = \mathbf{0}$, so $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{Z}\boldsymbol{\alpha} \rVert^{2}$, which confirms that $\mathbf{t}^{\ast}$ is the shortest solution.
 
 #### Eq. (8) and (9) Hotelling T² and SPE
 
@@ -646,7 +646,7 @@ Bagging is short for bootstrap aggregating, an ensemble method that trains sever
 2. Individual training and prediction: train one model on each sample, and let each model predict on its own.
 3. Aggregating: combine the individual predictions into the final prediction, the mean for regression and the majority vote for classification.
 
-Sampling with replacement draws one row, puts it back among the candidates, and then draws the next row. With n rows in the original data the draw is repeated n times, so some rows are drawn more than once and some are never drawn. Each individual model thus gets a slightly different training sample of n rows.
+Sampling with replacement draws one row, puts it back among the candidates, and then draws the next row. With $N$ rows in the original data the draw is repeated $N$ times, so some rows are drawn more than once and some are never drawn. Each individual model thus gets a slightly different training sample of $N$ rows.
 
 > **Definition: Bagging ensemble**<br>
 > The method that combines the three steps is called a bagging ensemble.

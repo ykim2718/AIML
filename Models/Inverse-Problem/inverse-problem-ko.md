@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 162 | Created: 2026-08-28 | Updated: 2026-11-04 10:01 UTC
+Rev. 163 | Created: 2026-08-28 | Updated: 2026-11-04 10:03 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,17 +228,17 @@ PLS model 로 목표 출력 $\mathbf{y}^{\ast}$ 를 주는 입력을 구하는 �
 
 #### PLS inversion
 
-PLS 는 학습 표본 $n$ 개의 입력 $\mathbf{x}$ 와 출력 $\mathbf{y}$ 를 한 행씩 쌓은 행렬 $\mathbf{X}$ 와 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
+PLS 는 학습 표본 $N$ 개의 입력 $\mathbf{x}$ 와 출력 $\mathbf{y}$ 를 한 행씩 쌓은 행렬 $\mathbf{X}$ 와 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
 
 행렬마다의 크기는 아래와 같다.
 
-- $\mathbf{X} \in \mathbb{R}^{n \times K}$: 입력. 행은 표본 $n$ 개, 열은 입력 변수 $K$ 개
-- $\mathbf{Y} \in \mathbb{R}^{n \times M}$: 출력. 행은 표본 $n$ 개, 열은 출력 변수 $M$ 개
-- $\mathbf{T} \in \mathbb{R}^{n \times A}$: score. 행은 표본 $n$ 개, 열은 latent 변수 $A$ 개
+- $\mathbf{X} \in \mathbb{R}^{N \times K}$: 입력. 행은 표본 $N$ 개, 열은 입력 변수 $K$ 개
+- $\mathbf{Y} \in \mathbb{R}^{N \times M}$: 출력. 행은 표본 $N$ 개, 열은 출력 변수 $M$ 개
+- $\mathbf{T} \in \mathbb{R}^{N \times A}$: score. 행은 표본 $N$ 개, 열은 latent 변수 $A$ 개
 - $\mathbf{P} \in \mathbb{R}^{K \times A}$: 입력의 loading. 행은 입력 변수 $K$ 개, 열은 latent 변수 $A$ 개
 - $\mathbf{Q} \in \mathbb{R}^{M \times A}$: 출력의 loading. 행은 출력 변수 $M$ 개, 열은 latent 변수 $A$ 개
-- $\mathbf{E} \in \mathbb{R}^{n \times K}$: 입력의 잔차. $\mathbf{X}$ 와 같은 크기
-- $\mathbf{F} \in \mathbb{R}^{n \times M}$: 출력의 잔차. $\mathbf{Y}$ 와 같은 크기
+- $\mathbf{E} \in \mathbb{R}^{N \times K}$: 입력의 잔차. $\mathbf{X}$ 와 같은 크기
+- $\mathbf{F} \in \mathbb{R}^{N \times M}$: 출력의 잔차. $\mathbf{Y}$ 와 같은 크기
 
 ```math
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E} \hspace{19em} (3)
@@ -458,7 +458,7 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 
 ## Appendix B. Derivation of Eq. (3), (4), (5), (6), (8) and (9)
 
-이 식들은 PLS 가 score 를 뽑는 절차에서 차례로 나온다. $\mathbf{X} \in \mathbb{R}^{n \times K}$ 와 $\mathbf{Y} \in \mathbb{R}^{n \times M}$ 는 표본 $n$ 개를 행으로 두고 열마다 평균을 뺀 행렬이며, Appendix G 의 code 도 평균을 뺀 값으로 PLS 를 적합한다.
+이 식들은 PLS 가 score 를 뽑는 절차에서 차례로 나온다. $\mathbf{X} \in \mathbb{R}^{N \times K}$ 와 $\mathbf{Y} \in \mathbb{R}^{N \times M}$ 는 표본 $N$ 개를 행으로 두고 열마다 평균을 뺀 행렬이며, Appendix G 의 code 도 평균을 뺀 값으로 PLS 를 적합한다.
 
 #### Eq. (3) and (4) PLS decomposition
 
@@ -472,7 +472,7 @@ PLS 는 latent 변수 $A$ 개를 성분 하나씩 차례로 뽑으며, $a = 1, \
 \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (11)
 ```
 
-해는 $\mathbf{X}_a^{\top} \mathbf{Y}_a$ 의 첫 번째 특이벡터 쌍이고, vector $\mathbf{t}_a \in \mathbb{R}^{n}$ 이 $a$ 번째 score 이다. $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 를 $\mathbf{t}_a$ 에 회귀해 loading $\mathbf{p}_a \in \mathbb{R}^{K}$ 와 $\mathbf{q}_a \in \mathbb{R}^{M}$ 을 얻고, 그만큼을 빼서 다음 성분으로 넘긴다.
+해는 $\mathbf{X}_a^{\top} \mathbf{Y}_a$ 의 첫 번째 특이벡터 쌍이고, vector $\mathbf{t}_a \in \mathbb{R}^{N}$ 이 $a$ 번째 score 이다. $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 를 $\mathbf{t}_a$ 에 회귀해 loading $\mathbf{p}_a \in \mathbb{R}^{K}$ 와 $\mathbf{q}_a \in \mathbb{R}^{M}$ 을 얻고, 그만큼을 빼서 다음 성분으로 넘긴다.
 
 ```math
 \mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a} \hspace{19em} (12)
@@ -568,7 +568,7 @@ $\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므�
 \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (28)
 ```
 
-식 (28) 은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 vector $\boldsymbol{\alpha} \in \mathbb{R}^{A - M}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
+식 (28) 은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{Z} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 vector $\boldsymbol{\alpha} \in \mathbb{R}^{A - M}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{Z}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{Z} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{Z} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{Z} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{Z}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
 
 #### Eq. (8) and (9) Hotelling T² and SPE
 
@@ -646,7 +646,7 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 2. 개별 학습과 예측: 표본마다 model 을 하나씩 학습하고, 각 model 이 따로 예측한다.
 3. Aggregating: 개별 예측을 합쳐 최종 예측을 정한다. 회귀에서는 평균을, 분류에서는 다수결을 쓴다.
 
-복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 n 행이면 이 뽑기를 n 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 n 행의 학습 표본을 얻는다.
+복원추출 (sampling with replacement) 은 한 행을 뽑은 뒤 그 행을 다시 후보로 되돌려 놓고 다음 행을 뽑는 방식이다. 원래 데이터가 $N$ 행이면 이 뽑기를 $N$ 번 되풀이하므로, 같은 행이 여러 번 뽑히기도 하고 한 번도 뽑히지 않는 행도 생긴다. 그래서 개별 model 마다 조금씩 다른 $N$ 행의 학습 표본을 얻는다.
 
 > **Definition: Bagging ensemble**<br>
 > 세 단계를 합친 방식을 bagging ensemble 이라 부른다.
