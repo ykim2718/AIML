@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 59 | Created: 2026-10-25 | Updated: 2026-11-04 02:26 UTC
+Rev. 60 | Created: 2026-10-25 | Updated: 2026-11-04 02:32 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -220,6 +220,12 @@ In the classification of Fig 2, PLS inversion combines Deterministic for Formula
 
 Inverting a PLS model is the oldest industrial case of solving an inverse problem in the latent space, and it already has the skeleton the later methods repeat. Its three steps are to reduce the dimension and sort out the degrees of freedom, to find the inverse solution in the reduced space, and to prevent extrapolation with a validity constraint [[2](#ref-2)], [[7](#ref-7)].
 
+There are three methods for finding, with a PLS model, the input that gives a target output $\mathbf{y}^{\ast}$. The first two find the solution in the score space and map it back to the input, and the third moves the input directly without going through the score. The first two are in the [PLS inversion](#pls-inversion) subsection below, and the third is in [4.7](#47-model-agnostic-numerical-optimization).
+
+1. Minimum-norm solution method of PLS inversion: finds one solution with the pseudo-inverse of Eq. (4).
+2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
+3. Model-agnostic numerical optimization method: finds the solution by moving all $K$ inputs directly with the method of [4.7](#47-model-agnostic-numerical-optimization).
+
 #### PLS inversion
 
 PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a common score $\mathbf{T}$. $A$ is the number of latent variables.
@@ -230,13 +236,7 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 
 $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
 
-Given a target output $\mathbf{y}^{\ast}$, there are three methods for finding the input. The first two solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, and the third does not go through the score.
-
-1. Minimum-norm solution method of PLS inversion: finds one solution with the pseudo-inverse of Eq. (4).
-2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
-3. Model-agnostic numerical optimization method: finds the solution by moving all $K$ inputs directly with the method of [4.7](#47-model-agnostic-numerical-optimization).
-
-The minimum-norm solution method of PLS inversion solves the equation with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
+Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of PLS inversion solves the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)

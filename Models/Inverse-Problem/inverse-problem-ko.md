@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 146 | Created: 2026-08-28 | Updated: 2026-11-04 02:26 UTC
+Rev. 147 | Created: 2026-08-28 | Updated: 2026-11-04 02:32 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -220,6 +220,12 @@ Fig 2 의 분류에서 PLS inversion 은 Formulation 은 Deterministic, Search s
 
 PLS model 의 inversion 은 inverse problem 을 latent space 에서 푼 가장 오래된 산업 사례이며, 이후의 방법들이 되풀이하는 골격을 이미 갖추고 있다. 차원을 줄여 자유도를 정리하고, 줄인 공간에서 역해를 구하고, 유효 영역 제약으로 외삽을 막는 세 단계가 그것이다 [[2](#ref-2)], [[7](#ref-7)].
 
+PLS model 로 목표 출력 $\mathbf{y}^{\ast}$ 를 주는 입력을 구하는 방법은 아래 셋이다. 앞의 둘은 score 공간에서 해를 구한 뒤 입력으로 되돌리고, 셋째는 score 를 거치지 않고 입력을 직접 움직인다. 앞의 둘은 아래 [PLS inversion](#pls-inversion) 꼭지에, 셋째는 [4.7](#47-model-agnostic-numerical-optimization) 에 있다.
+
+1. PLS inversion 의 Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
+2. PLS inversion 의 Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
+3. Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 해를 구한다.
+
 #### PLS inversion
 
 PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf{T}$ 로 분해한다. $A$ 는 latent 변수의 개수이다.
@@ -230,13 +236,7 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 
 $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다.
 
-목표 출력 $\mathbf{y}^{\ast}$ 가 주어졌을 때 입력을 구하는 방법은 아래 셋이다. 앞의 둘은 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 풀고, 셋째는 score 를 거치지 않는다.
-
-1. PLS inversion 의 Minimum-norm solution 방법: 식 (4) 의 pseudo-inverse 로 해 하나를 구한다.
-2. PLS inversion 의 Null space 방법: minimum-norm solution 을 null space 방향으로 옮겨, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해를 식 (5) 의 $T^{2}$ 와 SPE 상한 안에서 구한다.
-3. Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 해를 구한다.
-
-PLS inversion 의 Minimum-norm solution 방법은 방정식을 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
+목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면, PLS inversion 의 Minimum-norm solution 방법은 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ```math
 \mathbf{t}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (4)
