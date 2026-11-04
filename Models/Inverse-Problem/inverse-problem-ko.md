@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 148 | Created: 2026-08-28 | Updated: 2026-11-04 02:38 UTC
+Rev. 149 | Created: 2026-08-28 | Updated: 2026-11-04 02:40 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -27,14 +27,14 @@ Rev. 148 | Created: 2026-08-28 | Updated: 2026-11-04 02:38 UTC
 - [5. Solution Validity](#5-solution-validity)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Tools and Libraries](#appendix-b-tools-and-libraries)
-- [Appendix C. Bagging Ensemble](#appendix-c-bagging-ensemble)
-- [Appendix D. Python Example: PLS Model Inversion](#appendix-d-python-example-pls-model-inversion)
-- [Appendix E. Python Example: Constrained Numerical Inversion](#appendix-e-python-example-constrained-numerical-inversion)
-- [Appendix F. Python Example: Inversion without Model Access](#appendix-f-python-example-inversion-without-model-access)
-- [Appendix G. Derivation of Eq. (3), (4) and (6)](#appendix-g-derivation-of-eq-3-4-and-6)
-- [Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-h-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
-- [Appendix I. PLS Inversion: Model Plane of One PLS and SPE](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe)
+- [Appendix B. Derivation of Eq. (3), (4) and (6)](#appendix-b-derivation-of-eq-3-4-and-6)
+- [Appendix C. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution)
+- [Appendix D. PLS Inversion: Model Plane of One PLS and SPE](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe)
+- [Appendix E. Tools and Libraries](#appendix-e-tools-and-libraries)
+- [Appendix F. Bagging Ensemble](#appendix-f-bagging-ensemble)
+- [Appendix G. Python Example: PLS Model Inversion](#appendix-g-python-example-pls-model-inversion)
+- [Appendix H. Python Example: Constrained Numerical Inversion](#appendix-h-python-example-constrained-numerical-inversion)
+- [Appendix I. Python Example: Inversion without Model Access](#appendix-i-python-example-inversion-without-model-access)
 
 학습된 model 은 보통 입력에서 출력을 계산하는 방향으로 쓰인다. 원하는 출력을 먼저 정하고 그것을 만들어 내는 입력을 되찾는 문제가 inverse problem 이고, 이미 학습된 model 을 그 목적에 되돌려 쓰는 방법이 model inversion 이다. 이 문서는 두 용어를 정의하고, 해법을 다섯 축으로 분류한 다음, latent variable model inversion 의 고전적 결과와 model 종류별 inversion 방법을 정리하고, model 을 부를 수 없는 경우와 해의 검증까지 다룬다.
 
@@ -162,13 +162,13 @@ Inverse model 은 학습한 $g$ 에 $\mathbf{y}^{\ast}$ 를 넣어 $\mathbf{x}$ 
 - $g$ 가 해 하나를 내놓으면 [3.1 Learned Inverse Map](#31-learned-inverse-map) 의 방법을 쓴다.
 - $g$ 가 사후분포를 내놓으면 [3.2 Invertible Models](#32-invertible-models) 의 방법을 쓴다.
 
-이 방법들을 구현하는 library 는 [Appendix B](#appendix-b-tools-and-libraries) 에 있다.
+이 방법들을 구현하는 library 는 [Appendix E](#appendix-e-tools-and-libraries) 에 있다.
 
 ### 3.1 Learned Inverse Map
 
 Fig 2 의 분류에서 이 절의 방법은 Solution method 는 Learned inverse map, Answer form 은 Point 를 고른 조합이다.
 
-Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한다 ([2.3](#23-solution-method-how-to-solve)). Model 을 부를 수 없고 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y}_i)$ 만 있어도 그 쌍으로 바로 학습할 수 있다. 학습이 끝나면 목표를 한 번 넣어 $\mathbf{x}$ 를 얻으므로 반복 탐색이 없다. 같은 $\hat{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 잔차 제곱합을 최소화하는 학습이 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다. 쌍이 덮은 영역 밖에서는 원 model 과 다르게 움직이므로, 해를 그 영역 안으로 가두는 제약이 필요하다. 4.8 의 두 방법과 이어 붙인 예시는 [Appendix F](#appendix-f-python-example-inversion-without-model-access) 에 있다.
+Learned inverse map 은 $\mathbf{y}$ 에서 $\mathbf{x}$ 로 가는 model 을 $(\mathbf{x}, \mathbf{y})$ 쌍으로 학습한다 ([2.3](#23-solution-method-how-to-solve)). Model 을 부를 수 없고 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y}_i)$ 만 있어도 그 쌍으로 바로 학습할 수 있다. 학습이 끝나면 목표를 한 번 넣어 $\mathbf{x}$ 를 얻으므로 반복 탐색이 없다. 같은 $\hat{y}$ 를 주는 $\mathbf{x}$ 가 여럿이면 잔차 제곱합을 최소화하는 학습이 그 여럿의 조건부 평균 하나를 내놓는데, 그 평균은 해집합 위에 있지 않아 목표를 만족하지 않을 수 있다. 쌍이 덮은 영역 밖에서는 원 model 과 다르게 움직이므로, 해를 그 영역 안으로 가두는 제약이 필요하다. 4.8 의 두 방법과 이어 붙인 예시는 [Appendix I](#appendix-i-python-example-inversion-without-model-access) 에 있다.
 
 ### 3.2 Invertible Models
 
@@ -185,7 +185,7 @@ Model inversion 은 $f$ 를 그대로 두고 $\mathbf{y}^{\ast} = f(\mathbf{x})$
 
 Latent variable 은 입력 변수들을 적은 수로 요약한 내부 좌표이며, PLS 에서는 score 라고 부른다. Latent variable 들이 이루는 공간이 latent space 이며, 이 좌표계에는 입력들 사이의 상관 구조가 이미 들어 있다 ([2.2](#22-search-space-where-to-search)). Latent variable model 은 입력과 출력을 이 좌표로 함께 설명하며, PLS 와 PCR 이 여기에 속한다.
 
-이 방법들을 구현하는 library 는 [Appendix B](#appendix-b-tools-and-libraries) 에 있다.
+이 방법들을 구현하는 library 는 [Appendix E](#appendix-e-tools-and-libraries) 에 있다.
 
 ### 4.1 Model-Specific Inversion Methods
 
@@ -197,24 +197,24 @@ Table 1. Inversion method by model family
 
 |  #  |         Model          |              Inversion method               | Section |                                                                                                                            Characteristics                                                                                                                             |
 | :-: | :--------------------: | :-----------------------------------------: | :-----: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|  1  |       PLS / PCR        |          해석적 역해와 null space           |   4.2   |                                                   선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix D](#appendix-d-python-example-pls-model-inversion) 가 이 행을 실행한다                                                    |
+|  1  |       PLS / PCR        |          해석적 역해와 null space           |   4.2   |                                                   선형이고 해가 유일하지 않으므로 minimum-norm solution 또는 제약 최적화로 고른다. [Appendix G](#appendix-g-python-example-pls-model-inversion) 가 이 행을 실행한다                                                    |
 |  2  | PLS bootstrap ensemble |        Bootstrap 표본별 해석적 역해         |   4.2   |                                                                                       Bootstrap 표본마다 적합한 PLS 를 1 행의 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다                                                                                        |
 |  3  |      OLS / Ridge       |               Pseudo-inverse                |   4.2   |                                                                                      잠재공간 제약이 없어 외삽 위험이 크다. Ridge 는 해를 줄일 뿐 입력 상관 구조를 지키지 않는다                                                                                       |
 |  4  |          PCA           |              Pre-image problem              |   4.2   |                                                                                   출력이 없으므로 재구성 관점이다. 선형은 닫힌 해, kernel PCA 는 pre-image 를 반복 최적화로 근사한다                                                                                   |
 |  5  |       Kernel PLS       |        Latent space 역해와 pre-image        |   4.3   |                                                                                             비선형 관계를 담되 score 에서 입력으로 되돌리는 단계가 pre-image 문제로 남는다                                                                                             |
 |  6  |           GP           |            사후분포 기반 역설계             |   4.3   |                                                                                                      불확실성을 함께 주므로 Bayesian optimization 의 기반이 된다                                                                                                       |
-|  7  |  Random forest / GBM   | Surrogate search, TreeSHAP 기반 국소 선형화 |   4.4   |                                                     미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다                                                     |
+|  7  |  Random forest / GBM   | Surrogate search, TreeSHAP 기반 국소 선형화 |   4.4   |                                                     미분이 불가하여 이산 탐색이나 genetic algorithm 을 쓴다. [Appendix H](#appendix-h-python-example-constrained-numerical-inversion) 가 뒤집는 model 이 이 행이다                                                     |
 |  8  |     Neural network     |             입력에 대한 역전파              |   4.5   |                                                                                          가장 직접적이며 activation maximization 과 같은 계산이다. Regularization 이 필수이다                                                                                          |
 |  9  |   Autoencoder / VAE    |         Latent space 탐색 후 디코딩         |   4.6   |                                                                                                                      생성 model 방식의 역설계이다                                                                                                                      |
 | 10  |    Diffusion model     |                사후 sampling                |   4.6   |                                                                                                     잡음이 있는 비선형 문제에서 multi-solution 을 표본으로 얻는다                                                                                                      |
-| 11  |     Model-agnostic     |     제약이 있는 numerical optimization      |   4.7   |                                                                어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다                                                                 |
-| 12  |   Model access 없음    | Surrogate re-fitting, nearest-sample lookup |   4.8   | Model 을 부를 수 없어 $(\mathbf{x}_i, \hat{y}_i)$ 쌍만으로 푼다. 다시 학습한 surrogate 를 1 행부터 11 행의 방법으로 뒤집으며, 해의 오차는 surrogate 의 재현 오차가 정한다. [Appendix F](#appendix-f-python-example-inversion-without-model-access) 가 이 행을 실행한다 |
+| 11  |     Model-agnostic     |     제약이 있는 numerical optimization      |   4.7   |                                                                어떤 $f$ 에도 적용되어 가장 범용이다. [Appendix H](#appendix-h-python-example-constrained-numerical-inversion) 가 쓰는 방법이 이 행이다                                                                 |
+| 12  |   Model access 없음    | Surrogate re-fitting, nearest-sample lookup |   4.8   | Model 을 부를 수 없어 $(\mathbf{x}_i, \hat{y}_i)$ 쌍만으로 푼다. 다시 학습한 surrogate 를 1 행부터 11 행의 방법으로 뒤집으며, 해의 오차는 surrogate 의 재현 오차가 정한다. [Appendix I](#appendix-i-python-example-inversion-without-model-access) 가 이 행을 실행한다 |
 
 Model 의 구조가 쓸 수 있는 방법을 정한다. 선형 model 은 닫힌 해를 주고, 미분 가능한 model 은 입력에 대한 gradient 를 주며, 조각별 상수인 tree 계열은 탐색에 기댄다. 4.2 부터 4.7 의 여섯 절이 계열별로 설명한다.
 
 ### 4.2 Linear Projection Models
 
-PLS 와 PCR 은 [PLS inversion](#pls-inversion) 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-c-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[6](#ref-6)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.3 의 kernel 계열에서 다루는 pre-image 문제가 된다.
+PLS 와 PCR 은 [PLS inversion](#pls-inversion) 의 절차로 뒤집힌다. PLS bootstrap ensemble 은 PLS 의 [bagging](#appendix-f-bagging-ensemble) 으로, bootstrap 표본마다 적합한 PLS 를 같은 절차로 각각 뒤집어, 해 하나 대신 해의 퍼짐을 준다 [[6](#ref-6)]. OLS 와 Ridge 도 pseudo-inverse 로 같은 형태의 해를 주지만, 해가 놓이는 공간이 다르다. 투영 model 의 해는 score 공간을 거치므로 입력들 사이의 상관 구조를 그대로 물려받는 반면, OLS 의 해는 그 구조 밖으로 자유롭게 나갈 수 있다. 상관된 입력을 가진 문제에서 OLS 역해는 물리적으로 불가능한 조합을 내놓는다. PCA 에는 맞출 출력이 아예 없으므로 문제의 성격 자체가 달라진다. 선형 PCA 는 score 에서 loading 으로 되돌리는 닫힌 해를 가지지만, kernel PCA 로 가면 그 되돌림이 4.3 의 kernel 계열에서 다루는 pre-image 문제가 된다.
 
 Fig 2 의 분류에서 PLS inversion 은 Formulation 은 Deterministic, Search space 는 Latent space, Solution method 는 Analytical inverse, Ambiguity handling 은 Null space 와 Validity constraint, Answer form 은 Region 을 고른 조합이다.
 
@@ -259,7 +259,7 @@ $\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 방향 벡터로, score 를 
 T^{2} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}}, \qquad \mathrm{SPE} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} \hspace{19em} (6)
 ```
 
-$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. Hotelling $T^{2}$ 는 score 공간에서 $\mathbf{t}$ 가 historical data 의 score 중심 (원점) 에서 얼마나 떨어졌는지를 각 score 의 분산으로 나눠 잰 값이다. historical data 의 각 행도 score 로 바뀌어 score matrix $\mathbf{T}$ 의 행이 되므로, 두 값은 같은 score 공간에서 비교된다. Hotelling $T^{2}$ 의 $T$ 는 통계량의 이름이며 score matrix $\mathbf{T}$ 와는 다르다. 식 (3), (4), (6) 의 유도는 [Appendix G](#appendix-g-derivation-of-eq-3-4-and-6) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix I](#appendix-i-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
+$\mathbf{x}$ 는 평가할 입력이고 $\mathbf{t}$ 는 그 입력의 score, $t_{a}$ 는 $\mathbf{t}$ 의 $a$ 번째 원소, $s_{a}^{2}$ 는 학습 표본에서 $a$ 번째 score 의 분산이다. Hotelling $T^{2}$ 는 score 공간에서 $\mathbf{t}$ 가 historical data 의 score 중심 (원점) 에서 얼마나 떨어졌는지를 각 score 의 분산으로 나눠 잰 값이다. historical data 의 각 행도 score 로 바뀌어 score matrix $\mathbf{T}$ 의 행이 되므로, 두 값은 같은 score 공간에서 비교된다. Hotelling $T^{2}$ 의 $T$ 는 통계량의 이름이며 score matrix $\mathbf{T}$ 와는 다르다. 식 (3), (4), (6) 의 유도는 [Appendix B](#appendix-b-derivation-of-eq-3-4-and-6) 에 있다. SPE 를 입력 공간에 그린 schematic 은 [Appendix D](#appendix-d-pls-inversion-model-plane-of-one-pls-and-spe) 에 있다.
 
 PLS inversion 의 Null space 방법은 점, 직선, 선분의 순서로 해를 구한다. PLS inversion 의 Minimum-norm solution 방법은 1 단계에서 멈춘다.
 
@@ -267,7 +267,7 @@ PLS inversion 의 Null space 방법은 점, 직선, 선분의 순서로 해를 �
 2. 직선: $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 null space 방향 $\mathbf{n}$ 을 구해, $\mathbf{t}^{\ast}$ 를 지나는 직선 $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ 을 만든다.
 3. 선분: $T^{2}$ 상한으로 $\alpha$ 의 범위를 정해, 직선을 Fig 3 (a) 의 선분 A–B 로 자른다.
 
-두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix D 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
+두 상한이 score 평면에서 null space 를 어디까지 허용하는지는 아래 Fig 3 (a) 와 같고, Appendix G 의 데이터에서 bootstrap 표본 200 개마다 PLS 를 적합해 목표 2.0 의 minimum-norm solution 을 각각 구한 결과는 Fig 3 (b) 와 같다.
 
 <img src="inverse-problem-ko_fig/score-plane-null-space.png" width="600" style="max-width: 100%;" alt="Fig 3">
 
@@ -281,11 +281,11 @@ Fig 3 에서 PLS inversion 의 두 방법이 구하는 해는 아래이다.
 1. PLS inversion 의 Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 주황 별 $\mathbf{x}^{\ast}$ 이다. (b) 의 파란 점 200 개도 bootstrap PLS 마다 이 방법으로 구한 해이다.
 2. PLS inversion 의 Null space 방법: (a) 의 null space 직선 가운데 $T^{2}$ 상한 타원 안의 선분 A–B 와, 그 직선을 입력 평면으로 옮긴 (b) 의 빨간 점선이다.
 
-타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix D](#appendix-d-python-example-pls-model-inversion) 에 있다. 그림은 Appendix D 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
+타원은 $T^{2}$ 가 상한과 같아지는 자리이고, A 와 B 를 잇는 선분은 $\mathbf{t}^{\ast}$ 를 지나는 null space 방향이다. 그 선분 위의 score 는 모두 같은 $\mathbf{y}^{\ast}$ 를 예측하지만, 타원 밖으로 나간 부분은 historical data 가 뒷받침하지 않으므로 쓰지 않는다. 남는 자유도는 선분과 타원이 겹치는 구간이다. 이 절차를 그대로 실행하는 예시는 [Appendix G](#appendix-g-python-example-pls-model-inversion) 에 있다. 그림은 Appendix G 의 데이터와 PLS model 로 그렸으며, 상한은 $\chi^{2}_{0.95}(2) = 5.99$ 이다.
 
 (b) 는 (a) 를 입력 평면으로 옮긴 것이다. 주황 별은 (a) 의 $\mathbf{t}^{\ast}$ 를 식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 로 옮긴 점이고, 빨간 점선은 (a) 의 null space 직선을 같은 방식으로 옮긴 것이다. 파란 점과 초록 마름모는 (a) 에 없으며, bootstrap 표본마다 PLS 를 새로 적합해 얻었다.
 
-파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix C](#appendix-c-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다. 이 ensemble 을 입력 공간에 그린 schematic 은 [Appendix H](#appendix-h-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution) 에 있다.
+파란 점 200 개는 PLS bootstrap ensemble (Table 1 의 2 행, [Appendix F](#appendix-f-bagging-ensemble)) 의 해이다. Bootstrap 표본마다 적합한 PLS 를 식 (4) 의 절차로 각각 뒤집어 minimum-norm solution 을 하나씩 구한 것이며, 표준편차는 $x_1$ 쪽이 0.126, $x_2$ 쪽이 0.101 이다. 그 평균 (초록 마름모) 은 PLS 하나의 minimum-norm solution (주황 별) 과 거의 겹친다. 빨간 점선은 PLS 하나에서 같은 목표를 주는 해집합이며, 그 위의 점은 모두 맞는 답이다. 파란 점의 퍼짐은 그와 달리 학습 표본이 바뀔 때 model 이 흔들려 해가 함께 흔들리는 정도이며, 이 퍼짐이 PLS bootstrap ensemble 이 주는 해의 불확실성이다. 이 ensemble 을 입력 공간에 그린 schematic 은 [Appendix C](#appendix-c-pls-inversion-model-planes-of-the-bootstrap-pls-models-and-the-spread-of-the-solution) 에 있다.
 
 #### Design space and product transfer
 
@@ -314,7 +314,7 @@ Random forest 와 gradient boosting 은 tree 를 base learner 로 쓴다. Tree �
 
 ### 4.7 Model-Agnostic Numerical Optimization
 
-Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가장 범용이다. 잔차를 목적 함수로 삼고, 유효 영역과 물리적 한계를 제약으로 걸어 최적화기를 돌린다. Gradient 를 쓸 수 있으면 쓰고 없으면 derivative-free 방법으로 바꾸기만 하면 되므로, 앞의 모든 계열에 대해 대안이 된다. 대가는 비용과 국소해이다. 목적 함수의 국소 최소점이 여럿이면 시작점에 따라 다른 해에 닿으므로, 여러 시작점에서 반복하고 얻은 해들을 함께 보고하는 편이 안전하다. 구현은 [Appendix E](#appendix-e-python-example-constrained-numerical-inversion) 에 있다.
+Model 구조를 전혀 쓰지 않고 $f$ 를 blackbox 로 두는 방법이 가장 범용이다. 잔차를 목적 함수로 삼고, 유효 영역과 물리적 한계를 제약으로 걸어 최적화기를 돌린다. Gradient 를 쓸 수 있으면 쓰고 없으면 derivative-free 방법으로 바꾸기만 하면 되므로, 앞의 모든 계열에 대해 대안이 된다. 대가는 비용과 국소해이다. 목적 함수의 국소 최소점이 여럿이면 시작점에 따라 다른 해에 닿으므로, 여러 시작점에서 반복하고 얻은 해들을 함께 보고하는 편이 안전하다. 구현은 [Appendix H](#appendix-h-python-example-constrained-numerical-inversion) 에 있다.
 
 ### 4.8 Inversion without Model Access
 
@@ -327,7 +327,7 @@ Model 을 부를 수 없어도 입력과 예측값의 쌍 $(\mathbf{x}_i, \hat{y
 
 유효 영역은 두 방법 모두 $\mathbf{X}$ 만으로 정한다. Hotelling $T^{2}$ 와 SPE 는 입력의 분포에서 나오므로 model 접근과 무관하며, 5 의 검증을 그대로 쓴다.
 
-한계는 쌍이 덮는 영역이다. Surrogate 는 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다. 두 방법과 3.1 의 learned inverse map 을 이어 붙인 예시는 [Appendix F](#appendix-f-python-example-inversion-without-model-access) 에 있다.
+한계는 쌍이 덮는 영역이다. Surrogate 는 그 영역 밖에서 원 model 과 다르게 움직이는데, 원 model 을 부를 수 없으므로 얼마나 다른지 확인할 길이 없다. 그래서 해를 그 영역 안으로 가두는 제약이 model 을 가진 경우보다 더 중요하다. 두 방법과 3.1 의 learned inverse map 을 이어 붙인 예시는 [Appendix I](#appendix-i-python-example-inversion-without-model-access) 에 있다.
 
 ## 5. Solution Validity
 
@@ -428,21 +428,135 @@ Inversion 의 결과는 model 이 참이라는 가정 아래 나온 제안이므
 - **Validity domain**: model 이 학습 데이터로 뒷받침되는 입력 영역이다.
 - **Well-posed problem**: 해가 존재하고 유일하며 데이터에 연속적으로 의존하는 문제이다.
 
-## Appendix B. Tools and Libraries
+## Appendix B. Derivation of Eq. (3), (4) and (6)
+
+세 식은 PLS 가 score 를 뽑는 절차에서 차례로 나온다. $\mathbf{X} \in \mathbb{R}^{n \times K}$ 와 $\mathbf{Y} \in \mathbb{R}^{n \times M}$ 는 표본 $n$ 개를 행으로 두고 열마다 평균을 뺀 행렬이며, Appendix G 의 code 도 평균을 뺀 값으로 PLS 를 적합한다.
+
+#### Eq. (3) PLS decomposition
+
+PLS 는 latent 변수 $A$ 개를 성분 하나씩 차례로 뽑으며, $a = 1, \dots, A$ 는 그중 몇 번째로 뽑는 성분인지를 나타낸다. $a$ 번째 성분은 앞선 $a - 1$ 개 성분이 설명한 몫을 빼고 남은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 에서, 둘의 공분산이 가장 큰 방향으로 뽑는다. $\mathbf{X}_1 = \mathbf{X}$, $\mathbf{Y}_1 = \mathbf{Y}$ 이고, $\mathbf{w}_a \in \mathbb{R}^{K}$ 와 $\mathbf{c}_a \in \mathbb{R}^{M}$ 는 길이가 1 인 가중치 벡터이다.
+
+```math
+(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (7)
+```
+
+해는 $\mathbf{X}_a^{\top} \mathbf{Y}_a$ 의 첫 번째 특이벡터 쌍이고, $\mathbf{t}_a \in \mathbb{R}^{n}$ 이 $a$ 번째 score 이다. $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 를 $\mathbf{t}_a$ 에 회귀해 loading $\mathbf{p}_a \in \mathbb{R}^{K}$ 와 $\mathbf{q}_a \in \mathbb{R}^{M}$ 을 얻고, 그만큼을 빼서 다음 성분으로 넘긴다.
+
+```math
+\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (8)
+```
+
+식 (8) 의 빼는 식을 $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ 로 바꾸어 $`a = 1`$ 부터 $`A`$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ 가 하나씩 쌓인다.
+
+```math
+\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (9)
+```
+
+$`\mathbf{Y}`$ 도 같은 방법으로 $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}`$ 이다. Score 와 loading 을 열로 모은 행렬이 $`\mathbf{T}`$, $`\mathbf{P}`$, $`\mathbf{Q}`$ 이고, 마지막에 남은 $`\mathbf{E}`$ 와 $`\mathbf{F}`$ 가 잔차이다.
+
+```math
+\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (10)
+```
+
+열을 모은 행렬의 곱은 열마다의 곱을 더한 것과 같아 $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$ 이므로, 두 합은 아래이다.
+
+```math
+\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (11)
+```
+
+따라서 식 (3) 이 유도된다.
+
+```math
+\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
+```
+
+빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (6) 에서 쓴다. Score 를 뽑는 단계와 score 의 직교성은 [[19](#ref-19)] 의 Appendix F 에서도 유도한다.
+
+#### Eq. (4) Minimum-norm score and input
+
+식 (3) 의 한 행을 열 벡터로 적으면, 잔차를 뺀 입력과 출력은 같은 score $\mathbf{t} \in \mathbb{R}^{A}$ 로 $\mathbf{x} = \mathbf{P}\mathbf{t}$, $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 된다. 그래서 목표 $\mathbf{y}^{\ast}$ 를 내는 score 는 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 의 해이다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 rank 가 $M$ 이고 $A \ge M$ 이면 해가 있으며, 그 가운데 norm 이 가장 작은 해를 Lagrange 승수 $\boldsymbol{\lambda} \in \mathbb{R}^{M}$ 으로 구한다.
+
+```math
+\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (12)
+```
+
+$\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므로 $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$ 이다. 이것을 대입하면 식 (4) 의 앞 식이 되고, 이 행렬 $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ 이 rank 가 $M$ 인 $\mathbf{Q}$ 의 pseudo-inverse $\mathbf{Q}^{+}$ 이다.
+
+```math
+\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (13)
+```
+
+뒤 식은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 $\boldsymbol{\alpha}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
+
+#### Eq. (6) Hotelling T² and SPE
+
+$s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix F 에도 있다.
+
+```math
+T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (14)
+```
+
+SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 에서 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
+
+```math
+\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (15)
+```
+
+식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model plane 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
+
+## Appendix C. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
+
+Fig 3 (b) 의 PLS bootstrap ensemble 을 입력이 3 개인 경우로 그리면 아래 Fig 4 이다.
+
+<img src="inverse-problem-ko_fig/bootstrap-schematic.png" width="900" style="max-width: 100%;" alt="Fig 4">
+
+Fig 4. Model plane of one PLS and model planes of the bootstrap PLS models
+
+- (a): 모든 행으로 적합한 PLS 하나의 model plane (빨간 면) 과 그 minimum-norm solution $\mathbf{x}^{\ast}$ (주황 별) 이다. 회색 점은 학습에 쓴 $\mathbf{X}$ 의 행이다.
+- (b): bootstrap 표본마다 적합한 PLS 의 model plane (파란 면) 과 그 minimum-norm solution (파란 점) 이다. 빨간 면과 주황 별은 (a) 와 같다.
+
+파란 면은 bootstrap PLS 마다 구한 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
+
+## Appendix D. PLS Inversion: Model Plane of One PLS and SPE
+
+SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 5 이다.
+
+<img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 5">
+
+Fig 5. Row space and column space of the loading matrix P, the T^2 limit and SPE
+
+- (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다.
+- (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 $`\mathbf{x}_{c}`$ 의 수선 길이 제곱이 SPE 이다.
+
+Fig 5 에서 해를 구하는 방법은 아래의 3 가지이다.
+
+- PLS inversion 의 Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 $\mathbf{x}^{\ast}$ 점 하나이다.
+- PLS inversion 의 Null space 방법: (a) 와 (b) 의 null space 직선 가운데 $T^{2}$ 상한 안의 선분 A–B 이다.
+- Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 구한 해이며, (b) 의 보라 동그라미가 그 예이다. [4.2 Design space](#design-space-and-product-transfer) 목록처럼 일부 입력이 고정되거나 [4.7](#47-model-agnostic-numerical-optimization) 처럼 입력에 물리적 한계가 걸려, 그 제약과 목표 $\mathbf{y}^{\ast}$ 를 함께 만족하는 $\mathbf{t}$ 가 없을 때 쓴다.
+
+파란 면은 model plane, 곧 $\mathbf{P}$ 의 열로 구성된 column space 이다. loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ 는 행이 입력 변수 $K$ 개, 열이 latent 변수 $A$ 개인 행렬이며 이 그림에서는 $3 \times 2$ 이고, 열 $\mathbf{p}_a$ 는 $a$ 번째 loading 이며, 그 $k$ 번째 원소는 $a$ 번째 score 가 1 늘 때 입력 변수 $x_k$ 가 얼마나 바뀌는지를 나타낸다.
+
+$\mathbf{P}$ 의 row space 는 $\mathbb{R}^{A}$ 의 부분공간으로 score 공간, 곧 latent space 이며, $\mathbf{P}$ 의 열이 선형독립이면 $\mathbb{R}^{A}$ 전체가 된다. 그래서 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 는 row space 의 점 $\mathbf{t}$ 를 column space, 곧 model plane 의 점으로 옮긴다. 이 평면 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 $\mathbf{x}$ 는 $x_1$, $x_2$, $x_3$ 의 값 한 set, 곧 $\mathbf{x} = (x_1, x_2, x_3)$ 이다. Model-agnostic numerical optimization 방법은 score 를 거치지 않고 $x_1$, $x_2$, $x_3$ 세 값을 바꿔 가며 예측이 목표 $\mathbf{y}^{\ast}$ 에 맞는 set 을 찾는다. 반대로 PLS inversion 의 Minimum-norm solution 방법과 Null space 방법은 모두 $t_1$, $t_2$ 두 값을 먼저 찾고 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 $x_1$, $x_2$, $x_3$ 를 계산하므로, 두 방법의 해는 늘 model plane 위에 놓여 SPE 가 0 이다. $`\mathbf{P}\mathbf{t} = t_{1} \mathbf{p}_{1} + t_{2} \mathbf{p}_{2}`$ 는 $\mathbf{P}$ 의 열들의 선형결합이고, 이 선형결합을 모두 모은 집합이 column space, 곧 model plane 이다. 그래서 $\mathbf{t}$ 를 어떤 값으로 두어도 $\mathbf{P}\mathbf{t}$ 는 그 평면 위에 놓인다.
+
+$\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 움직일 수 있는 자유도는 score 개수 $A$ 뿐이다. 이 그림에서는 입력이 $x_1$, $x_2$, $x_3$ 세 개이지만 $t_1$, $t_2$ 두 값만 바꿀 수 있고, 목표 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 가 식 하나를 쓰므로 남는 자유도는 1 개, 곧 선분 A–B 이다. 여기에 $x_3$ 를 어떤 값으로 고정하는 조건이 붙으면 식이 하나 더 늘어, 맞출 수 있는 점이 선분 위의 한 점 이하로 줄어든다. 그 점이 $T^{2}$ 상한 밖에 있거나 다른 입력의 물리적 한계를 넘으면, 조건을 모두 만족하는 $\mathbf{t}$ 가 없다. 그때는 평면을 벗어나서라도 입력 세 개를 직접 움직여 해를 찾는 Model-agnostic numerical optimization 방법을 쓰고, 그 대가로 0 보다 커지는 SPE 를 상한으로 묶는다.
+
+Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $`\mathbf{x}_{c}`$ (c 는 candidate) 가 평면을 벗어나면, 평면에 내린 수선 $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ 의 길이 제곱이 식 (15) 의 SPE 이다. $`\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 의 score 이고, $`\mathbf{P}\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 를 평면에 내린 projection 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix G 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
+
+## Appendix E. Tools and Libraries
 
 Table 2. Libraries for inverse model and model inversion
 
 |      Library       |                  Role                   |       Section        |                                   Note                                    |
 | :----------------: | :-------------------------------------: | :------------------: | :-----------------------------------------------------------------------: |
 |   NumPy / SciPy    | Pseudo-inverse, null space, 제약 최적화 |       4.2, 4.7       | `numpy.linalg.pinv`, `scipy.linalg.null_space`, `scipy.optimize.minimize` |
-|    scikit-learn    |   Latent variable model 과 유효 영역    | 4.2, 4.3, Appendix C |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
+|    scikit-learn    |   Latent variable model 과 유효 영역    | 4.2, 4.3, Appendix F |      `PLSRegression`, `PCA`, `GaussianProcessRegressor`, `resample`       |
 |      PyTorch       |          입력에 대한 gradient           |         4.5          |                입력 tensor 에 gradient 를 켜고 역전파한다                 |
 | BoTorch / GPyTorch |      GP 기반 Bayesian optimization      |         4.3          |                  Acquisition function 최적화를 제공한다                   |
 |        SHAP        |        Tree model 의 국소 선형화        |         4.4          |                  TreeSHAP 으로 기여도를 정확히 계산한다                   |
 |       FrEIA        |        Invertible neural network        |         3.2          |                           cINN 구조를 조립한다                            |
 |    PyMC / emcee    |            사후분포 sampling            |       2.1, 2.3       |                   Bayesian 정식화의 표본 기반 해법이다                    |
 
-## Appendix C. Bagging Ensemble
+## Appendix F. Bagging Ensemble
 
 Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 개 학습하고 그 예측을 합쳐 최종 예측을 정하는 ensemble 방식이다. 절차는 아래 세 단계이다.
 
@@ -457,9 +571,9 @@ Bagging 은 bootstrap aggregating 의 줄임말이며, 같은 model 을 여러 �
 
 PLS bootstrap ensemble 은 개별 model 을 PLS 로 둔 bagging ensemble 이다 [[6](#ref-6)].
 
-## Appendix D. Python Example: PLS Model Inversion
+## Appendix G. Python Example: PLS Model Inversion
 
-4.2 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix D, E, F 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix F 의 pandas 만 있으면 그대로 돌아간다.
+4.2 의 절차를 그대로 실행한다. Minimum-norm solution 을 구한 뒤 null space 방향으로 움직여도 예측값이 같은지 확인한다. Appendix G, E, F 의 예시는 모두 난수 데이터를 쓰는 최소 실행 예시이며, NumPy, SciPy, scikit-learn 과 Appendix I 의 pandas 만 있으면 그대로 돌아간다.
 
 ```python
 import numpy as np
@@ -505,25 +619,25 @@ print("input spread   :", np.round(x_alt.max(axis=0) - x_alt.min(axis=0), 3))
 
 뒤집기 전에 뒤집을 model 부터 본다.
 
-<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 4">
+<img src="inverse-problem-ko_fig/appendix-b-parity.png" width="1200" style="max-width: 100%;" alt="Fig 6">
 
-Fig 4. Appendix D measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
+Fig 6. Appendix G measured values in sample order, the inputs $x_1 \sim N(0, 1.0^{2})$ and $x_2 \sim N(0, 0.5^{2})$, and the parity plot of the forward model
 
-Fig 4 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
+Fig 6 (a) 는 표본이 들어온 순서대로 측정값 $y$ 를 그린 것이다. 값은 순서를 따라 비선형으로 올라가 50 번째 부근부터 눈에 띄게 커지고, 80 번째에서는 목표 2.0 을 중심으로 오르내린다. 주황 선이 그 추세이며, 두 입력에는 이 추세가 들어 있지 않으므로 model 은 그것을 설명하지 못한다. 목표 2.0 이 후반부의 보통 값이라는 점에서 그 목표가 데이터 안에 있음을 알 수 있다.
 
-Fig 4 (b) 는 같은 표본의 두 입력을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
+Fig 6 (b) 는 같은 표본의 두 입력을 그린 것이다. 등고선은 표본이 흩어진 모양을 나타내고, 위와 오른쪽의 막대는 각 입력이 따로 이루는 분포이다. 두 입력은 평균이 0 으로 같고 산포만 달라 $x_1$ 의 표준편차가 $x_2$ 의 두 배이며, 그래서 표본이 가로로 늘어난 타원으로 흩어진다. 그 타원이 곧 model 이 배운 영역이다.
 
-등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 4.2 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix E 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
+등고선은 표본 중심에서 잰 Mahalanobis distance 이며, 안쪽부터 1, 2, 3 이다. 이 거리는 각 방향의 산포로 나누어 재므로, 산포가 큰 $x_1$ 쪽으로는 같은 거리라도 더 멀리까지 뻗는다. 그래서 등고선이 가로로 늘어난 타원이 되고, 한 점이 중심에서 표준편차 몇 배만큼 떨어졌는지를 그 타원으로 바로 읽는다. 4.2 의 Hotelling $T^{2}$ 가 score 공간에서 잰 이 거리의 제곱이며, Appendix H 는 그 값에 상한을 두어 해를 데이터가 덮은 영역 안에 가둔다.
 
-Fig 4 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
+Fig 6 (c) 는 같은 100 개 표본의 parity plot 이며, 점 하나가 표본 하나이다. 가로축은 그 표본의 측정값 $y$ 이고 세로축은 같은 표본에 대한 model 의 예측 $\hat{y}$ 이므로, 점이 1:1 선 위에 있으면 그 표본을 정확히 맞춘 것이고 선에서 세로로 벗어난 거리가 그 표본의 잔차 $y - \hat{y}$ 이다.
 
 이 예시의 model 은 $R^{2} = 0.518$, RMSE 1.38 이다. 잔차의 대부분은 (a) 의 추세에서 온다. Model 이 보지 못하는 변수가 있으면 그만큼 설명되지 않고 남는다. 목표 2.0 은 표본이 덮는 $-4.1$ 에서 $6.2$ 안에 있어 외삽은 아니지만, 뒤집어 얻은 조건이 실제로 낼 값은 RMSE 만큼 흔들린다. Inversion 의 정확도는 forward model 의 정확도를 넘지 못하므로, 이 그림을 먼저 보고 뒤집을지를 정한다.
 
-Code 가 만든 `x_alt` 37 개를 Fig 5 에 그린다.
+Code 가 만든 `x_alt` 37 개를 Fig 7 에 그린다.
 
-<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 5">
+<img src="inverse-problem-ko_fig/appendix-b-null-space.png" width="800" style="max-width: 100%;" alt="Fig 7">
 
-Fig 5. Predicted value and inputs along the null space
+Fig 7. Predicted value and inputs along the null space
 
 두 panel 의 점 하나는 모두 같은 것, 곧 null space 방향 $\mathbf{n}$ 으로 $\alpha$ 만큼 움직여 만든 입력 $\mathbf{x}(\alpha) = \mathbf{P}(\mathbf{t}^{\ast} + \alpha \mathbf{n}) + \bar{\mathbf{x}}$ 하나이며, $\bar{\mathbf{x}}$ 는 입력의 평균이다.
 
@@ -532,17 +646,17 @@ Fig 5. Predicted value and inputs along the null space
 
 Minimum-norm solution 은 목표를 똑같이 만족하는 해가 여럿일 때 그중 norm 이 가장 작은 해이다. 이 예시에서 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 만족하는 score 는 null space 만큼 무수히 많은데, pseudo-inverse $\mathbf{Q}^{+}$ 가 그중 $\lVert \mathbf{t} \rVert$ 가 최소인 하나를 골라 준다. 기하로 보면 해집합 (null space 를 따라 뻗은 직선) 에서 원점에 가장 가까운 점이며, 그래서 null space 방향 성분이 0 이다.
 
-Minimum-norm solution 은 목표 출력을 내되 입력의 평균에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 비용 같은 다른 기준이 있으면 Fig 5 처럼 null space 를 따라 옮겨 간다.
+Minimum-norm solution 은 목표 출력을 내되 입력의 평균에서 가장 적게 벗어난 조합이다. 유일하게 정해지는 기준점이므로 출발점으로 쓰며, 비용 같은 다른 기준이 있으면 Fig 7 처럼 null space 를 따라 옮겨 간다.
 
-Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 5 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
+Null space 방향은 그쪽으로 score 를 움직여도 예측이 바뀌지 않는 방향이며, $\mathbf{Q}\mathbf{n} = \mathbf{0}$ 을 만족하는 $\mathbf{n}$ 이 그것이다. Latent 변수가 $A = 2$ 개이고 출력이 $M = 1$ 개인 이 예시에서는 그런 방향이 $A - M = 1$ 개 남으며, `null_space(Q)` 가 그것을 단위 벡터로 돌려준다. `x_alt` 37 개는 그 방향으로 $\alpha$ 를 $-2$ 에서 $2$ 까지 옮겨 만든 것이고, Fig 7 (b) 의 직선이 바로 그 방향이다. 이 방향으로 움직인 만큼이 목표를 유지한 채 쓸 수 있는 자유도가 된다.
 
 Model 이 입력에 대해 선형이므로 해집합은 직선이 된다. 예측은 $\hat{y} = \mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) + \bar{y}$ 라는 1차식이므로, 목표 2.0 을 내는 입력의 집합은 $\mathbf{b}^{\top}(\mathbf{x} - \bar{\mathbf{x}}) = 2.0 - \bar{y}$ 를 만족하는 점들, 곧 그 1차식의 등위집합이다. 입력이 2 개인데 방정식은 1 개이므로 이 집합은 평면 위의 직선이 되고, 그 직선의 방향은 $\mathbf{b}$ 에 수직이다. $\mathbf{b}$ 방향으로 움직이면 예측이 가장 빠르게 바뀌고, 거기에 수직인 방향으로 움직이면 예측이 전혀 바뀌지 않는다. 그 수직 방향이 앞에서 말한 null space 방향이다. 세 이름의 관계는 해집합 = minimum-norm solution + null space 이다. Null space 는 원점을 지나는 방향의 집합이고, 그것을 $\mathbf{x}^{\ast}$ 만큼 평행이동한 직선이 해집합이며, minimum-norm solution 은 그 직선 위의 한 점이다.
 
-해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 4 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 4 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
+해집합을 정하는 것은 측정값 $y$ 가 아니라 model 의 예측 $\hat{y}$ 이며, 그 예측에는 sample order 가 들어 있지 않다. 그래서 Fig 6 (a) 의 추세가 있어도 이 직선은 휘지 않는다. 추세는 잔차로 남아 Fig 6 (c) 의 흩어짐을 키울 뿐, 예측을 입력의 1차식으로 두는 성질은 건드리지 못한다. 바꾸어 말하면 추세는 그 직선 위의 조건이 실제로 낼 값을 목표에서 밀어낼 수는 있어도, 해집합의 모양을 바꾸지는 못한다.
 
-입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix D 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
+입력이 $K$ 개, 출력이 $M$ 개인 일반적인 경우에도 같은 계산이며, 해집합은 $K - M$ 차원의 평면이 된다. 입력이 3 개이면 직선 대신 평면이 되고, 그래서 Appendix G 는 그 집합을 종이에 그대로 그릴 수 있는 $K = 2$ 를 쓴다.
 
-## Appendix E. Python Example: Constrained Numerical Inversion
+## Appendix H. Python Example: Constrained Numerical Inversion
 
 미분이 되지 않는 gradient boosting model 을 blackbox 로 두고 4.7 의 model-agnostic numerical optimization 방식으로 뒤집는다. 유효 영역은 historical data 에 맞춘 PCA 의 $T^{2}$ 와 SPE 로 정의하고, 두 상한을 제약으로 건다.
 
@@ -555,7 +669,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 rng = np.random.default_rng(0)
 
-# the same 100 samples and the same value as Appendix D
+# the same 100 samples and the same value as Appendix G
 n = 100
 x1 = rng.normal(0.0, 1.0, n)
 x2 = rng.normal(0.0, 0.5, n)
@@ -615,28 +729,28 @@ print("x_sol       :", np.round(x_sol, 3))
 
 뒤집기 전에 이 예시의 데이터도 같은 방식으로 본다.
 
-<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 6">
+<img src="inverse-problem-ko_fig/appendix-c-data.png" width="1200" style="max-width: 100%;" alt="Fig 8">
 
-Fig 6. Appendix E measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
+Fig 8. Appendix H measured values in sample order, the correlated inputs `x2` and `x4`, and the parity plot of the forward model
 
-Fig 6 (a) 는 측정값을 순서대로 그린 것이다. Appendix D 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
+Fig 8 (a) 는 측정값을 순서대로 그린 것이다. Appendix G 와 같은 100 개 표본에 같은 값을 쓰므로 순서를 따르는 추세도 그대로이며, 목표만 1.0 으로 다르다.
 
-Fig 6 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
+Fig 8 (b) 는 상관이 있는 두 입력 `x2` 와 `x4` 의 평면이다. `x4` 가 `x2` 를 $-0.7$ 배로 따라가므로 등고선이 기울어진 좁은 타원이 되며, 이 띠를 벗어나는 조건이 곧 SPE 가 잡아내는 이탈이다.
 
-Fig 6 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix D 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
+Fig 8 (c) 는 gradient boosting model 의 parity plot 이며, $R^{2} = 0.951$, RMSE 0.44 이다. Tree 가 같은 값을 학습 표본에 맞춰 잘게 나누어 담으므로 Appendix G 의 PLS 보다 잔차가 작다. 학습 데이터에 대한 값이므로 새 조건에서의 정확도는 $R^{2} = 0.951$ 보다 낮다.
 
-두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 7 에 나란히 그린다.
+두 제약을 모두 건 해와 $T^{2}$ 만 건 해를 Fig 9 에 나란히 그린다.
 
-<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 7">
+<img src="inverse-problem-ko_fig/appendix-c-constrained-inversion.png" width="800" style="max-width: 100%;" alt="Fig 9">
 
-Fig 7. Constrained solution against the validity limits
+Fig 9. Constrained solution against the validity limits
 
 - (a) 는 `x2`–`x4` 평면이다. 두 제약을 모두 건 해는 historical data 가 이루는 띠 위에 놓여 목표 1.0 을 맞추고, $T^{2}$ 만 건 해는 띠에서 한참 벗어난 자리에 놓이며 값도 0.65 에 그친다.
 - (b) 는 두 해의 통계량을 각자의 상한으로 나눈 값이다. $T^{2}$ 만 건 해의 SPE 는 상한의 13 배이고, $T^{2}$ 는 두 해 모두 상한 아래이다.
 
 $T^{2}$ 하나만 보면 상한의 13 배인 SPE 를 잡아내지 못하므로, 5 의 외삽 항목에서 말한 대로 두 통계량을 함께 걸어야 데이터가 뒷받침하는 해가 된다. 띠 밖은 model 이 배우지 않은 영역이라 예측이 목표를 벗어나기도 쉽다.
 
-## Appendix F. Python Example: Inversion without Model Access
+## Appendix I. Python Example: Inversion without Model Access
 
 4.8 의 방법을 그대로 실행한다. Feature `A`, `B`, `C`, `D`, `E` 와 참값 `T` 를 가진 100 행의 표에서 예측 `P` 를 얻은 뒤 model 을 가리고, 남은 표만으로 `P` 가 목표 19.0 이 되는 `A` 와 `B` 를 구한다. `C`, `D`, `E` 는 바꿀 수 없는 조건으로 주어져 평균에 고정하고, 손댈 수 있는 것은 `A` 와 `B` 뿐이다.
 
@@ -766,11 +880,11 @@ their true T      : [17.85 18.56 19.01 19.8 ]
 
 세 방법이 한 줄기로 이어진다. Surrogate 가 `P` 를 $R^{2} = 0.9995$ 로 재현하여 뒤집을 대상을 만들고, nearest-sample lookup 이 목표 19.0 에 가장 가까운 다섯 행에서 출발점을 준다. 각 출발점에서 `C`, `D`, `E` 를 평균에 고정한 채 COBYLA 를 돌려 얻은 `P` 는 18.869 에서 19.184 까지 흩어지며, 그중 가장 가까운 `A` = 10.066, `B` = 5.531 이 `P` = 19.002 를 낸다.
 
-이 결과를 Fig 8 에 그린다.
+이 결과를 Fig 10 에 그린다.
 
-<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 8">
+<img src="inverse-problem-ko_fig/appendix-d-inversion.png" width="1400" style="max-width: 100%;" alt="Fig 10">
 
-Fig 8. Appendix F hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
+Fig 10. Appendix I hidden model against T, the search in the A–B plane, the surrogate against P, and the rows run within 2% of the solution
 
 - (a) 는 가려진 model 의 parity plot 이다. 가로축은 참값 `T` 이고 세로축은 그 model 이 남긴 `P` 이며, $R^{2} = 0.712$ 이다. `T` 는 평균 19.1, 표준편차 1.3 으로 목표 19.0 을 중심에 두고 몰려 있어 100 행 가운데 51 행이 목표에서 1 이내에 들며, 뒤집을 대상의 정확도가 여기까지이므로 inversion 의 정확도도 이 값을 넘지 못한다.
 - (b) 는 `A`–`B` 평면이다. 회색 등고선은 `C`, `D`, `E` 를 평균에 고정했을 때 surrogate 가 내는 `P` 이고, 굵은 선이 목표 19.0 의 등위선이다. 주황 표식 다섯 개가 출발점이고, 별이 그중 목표에 가장 가까운 해이다.
@@ -786,117 +900,3 @@ Fig 8. Appendix F hidden model against T, the search in the A–B plane, the sur
 출발점을 다섯 개 쓰는 이유도 그 계단에 있다. 한 상자 안에서는 목적 함수가 평평해 탐색이 움직일 방향을 찾지 못하고 그 자리에서 멈추므로, 한 출발점만 쓰면 18.869 나 19.184 처럼 목표에서 벗어난 자리에 갇힌다. 4.7 이 말한 대로 여러 시작점에서 반복하고 그중 가장 좋은 해를 고른다.
 
 해는 유효 영역 안에 있다. $T^{2}$ 는 0.00 으로 상한 5.99 보다, SPE 는 0.063 으로 상한 0.468 보다 작으므로, 4.8 에서 말한 대로 model 접근 없이 $\mathbf{X}$ 만으로 정한 제약이 그대로 작동한다. 다만 `P` 는 surrogate 의 예측이므로, 가려진 model 이 이 조건에서 실제로 낼 값과는 (c) 가 보이는 재현 오차만큼 벌어질 수 있다.
-
-## Appendix G. Derivation of Eq. (3), (4) and (6)
-
-세 식은 PLS 가 score 를 뽑는 절차에서 차례로 나온다. $\mathbf{X} \in \mathbb{R}^{n \times K}$ 와 $\mathbf{Y} \in \mathbb{R}^{n \times M}$ 는 표본 $n$ 개를 행으로 두고 열마다 평균을 뺀 행렬이며, Appendix D 의 code 도 평균을 뺀 값으로 PLS 를 적합한다.
-
-#### Eq. (3) PLS decomposition
-
-PLS 는 latent 변수 $A$ 개를 성분 하나씩 차례로 뽑으며, $a = 1, \dots, A$ 는 그중 몇 번째로 뽑는 성분인지를 나타낸다. $a$ 번째 성분은 앞선 $a - 1$ 개 성분이 설명한 몫을 빼고 남은 $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 에서, 둘의 공분산이 가장 큰 방향으로 뽑는다. $\mathbf{X}_1 = \mathbf{X}$, $\mathbf{Y}_1 = \mathbf{Y}$ 이고, $\mathbf{w}_a \in \mathbb{R}^{K}$ 와 $\mathbf{c}_a \in \mathbb{R}^{M}$ 는 길이가 1 인 가중치 벡터이다.
-
-```math
-(\mathbf{w}_a, \mathbf{c}_a) = \arg\max_{\lVert \mathbf{w} \rVert = \lVert \mathbf{c} \rVert = 1} \mathbf{w}^{\top} \mathbf{X}_a^{\top} \mathbf{Y}_a \mathbf{c}, \qquad \mathbf{t}_a = \mathbf{X}_a \mathbf{w}_a \hspace{19em} (7)
-```
-
-해는 $\mathbf{X}_a^{\top} \mathbf{Y}_a$ 의 첫 번째 특이벡터 쌍이고, $\mathbf{t}_a \in \mathbb{R}^{n}$ 이 $a$ 번째 score 이다. $\mathbf{X}_a$ 와 $\mathbf{Y}_a$ 를 $\mathbf{t}_a$ 에 회귀해 loading $\mathbf{p}_a \in \mathbb{R}^{K}$ 와 $\mathbf{q}_a \in \mathbb{R}^{M}$ 을 얻고, 그만큼을 빼서 다음 성분으로 넘긴다.
-
-```math
-\mathbf{p}_a = \frac{\mathbf{X}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{q}_a = \frac{\mathbf{Y}_a^{\top} \mathbf{t}_a}{\mathbf{t}_a^{\top} \mathbf{t}_a}, \qquad \mathbf{X}_{a+1} = \mathbf{X}_a - \mathbf{t}_a \mathbf{p}_a^{\top}, \qquad \mathbf{Y}_{a+1} = \mathbf{Y}_a - \mathbf{t}_a \mathbf{q}_a^{\top} \hspace{19em} (8)
-```
-
-식 (8) 의 빼는 식을 $`\mathbf{X}_a = \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{a+1}`$ 로 바꾸어 $`a = 1`$ 부터 $`A`$ 까지 차례로 대입하면, 성분마다 빼낸 몫 $`\mathbf{t}_a \mathbf{p}_a^{\top}`$ 가 하나씩 쌓인다.
-
-```math
-\mathbf{X} = \mathbf{X}_1 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{X}_2 = \mathbf{t}_1 \mathbf{p}_1^{\top} + \mathbf{t}_2 \mathbf{p}_2^{\top} + \mathbf{X}_3 = \cdots = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} \hspace{19em} (9)
-```
-
-$`\mathbf{Y}`$ 도 같은 방법으로 $`\mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1}`$ 이다. Score 와 loading 을 열로 모은 행렬이 $`\mathbf{T}`$, $`\mathbf{P}`$, $`\mathbf{Q}`$ 이고, 마지막에 남은 $`\mathbf{E}`$ 와 $`\mathbf{F}`$ 가 잔차이다.
-
-```math
-\mathbf{T} = [\mathbf{t}_{1}, \dots, \mathbf{t}_{A}], \qquad \mathbf{P} = [\mathbf{p}_{1}, \dots, \mathbf{p}_{A}], \qquad \mathbf{Q} = [\mathbf{q}_{1}, \dots, \mathbf{q}_{A}], \qquad \mathbf{E} = \mathbf{X}_{A+1}, \qquad \mathbf{F} = \mathbf{Y}_{A+1} \hspace{19em} (10)
-```
-
-열을 모은 행렬의 곱은 열마다의 곱을 더한 것과 같아 $\sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} = \mathbf{T}\mathbf{P}^{\top}$ 이므로, 두 합은 아래이다.
-
-```math
-\mathbf{X} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{p}_a^{\top} + \mathbf{X}_{A+1} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \sum_{a=1}^{A} \mathbf{t}_a \mathbf{q}_a^{\top} + \mathbf{Y}_{A+1} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (11)
-```
-
-따라서 식 (3) 이 유도된다.
-
-```math
-\mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
-```
-
-빼는 단계 때문에 $\mathbf{t}_{a+1}$ 은 앞선 score 와 직교하며, 서로 다른 성분의 score 는 $\mathbf{t}_a^{\top} \mathbf{t}_b = 0$ 을 만족한다. 이 성질은 식 (6) 에서 쓴다. Score 를 뽑는 단계와 score 의 직교성은 [[19](#ref-19)] 의 Appendix C 에서도 유도한다.
-
-#### Eq. (4) Minimum-norm score and input
-
-식 (3) 의 한 행을 열 벡터로 적으면, 잔차를 뺀 입력과 출력은 같은 score $\mathbf{t} \in \mathbb{R}^{A}$ 로 $\mathbf{x} = \mathbf{P}\mathbf{t}$, $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 된다. 그래서 목표 $\mathbf{y}^{\ast}$ 를 내는 score 는 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 의 해이다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 rank 가 $M$ 이고 $A \ge M$ 이면 해가 있으며, 그 가운데 norm 이 가장 작은 해를 Lagrange 승수 $\boldsymbol{\lambda} \in \mathbb{R}^{M}$ 으로 구한다.
-
-```math
-\min_{\mathbf{t}} \mathbf{t}^{\top}\mathbf{t} \;\; \mathrm{s.t.} \;\; \mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast} \quad \Rightarrow \quad \mathbf{t} = \mathbf{Q}^{\top}\boldsymbol{\lambda}, \quad \mathbf{Q}\mathbf{Q}^{\top}\boldsymbol{\lambda} = \mathbf{y}^{\ast} \hspace{19em} (12)
-```
-
-$\mathbf{Q}\mathbf{Q}^{\top}$ 는 rank 가 $M$ 이어서 역행렬이 있으므로 $\boldsymbol{\lambda} = (\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast}$ 이다. 이것을 대입하면 식 (4) 의 앞 식이 되고, 이 행렬 $\mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}$ 이 rank 가 $M$ 인 $\mathbf{Q}$ 의 pseudo-inverse $\mathbf{Q}^{+}$ 이다.
-
-```math
-\mathbf{t}^{\ast} = \mathbf{Q}^{\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{y}^{\ast} = \mathbf{Q}^{+}\mathbf{y}^{\ast}, \qquad \mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast} \hspace{19em} (13)
-```
-
-뒤 식은 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 에 $\mathbf{t}^{\ast}$ 를 넣은 것이다. 해 전체는 null space 의 기저를 열로 둔 $\mathbf{N} \in \mathbb{R}^{A \times (A - M)}$ 과 계수 $\boldsymbol{\alpha}$ 로 $\mathbf{t} = \mathbf{t}^{\ast} + \mathbf{N}\boldsymbol{\alpha}$ 이다. $\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이므로 $\mathbf{t}^{\ast\top}\mathbf{N} = \mathbf{y}^{\ast\top}(\mathbf{Q}\mathbf{Q}^{\top})^{-1}\mathbf{Q}\mathbf{N} = \mathbf{0}$ 이고, 그래서 $\lVert \mathbf{t} \rVert^{2} = \lVert \mathbf{t}^{\ast} \rVert^{2} + \lVert \mathbf{N}\boldsymbol{\alpha} \rVert^{2}$ 이 되어 $\mathbf{t}^{\ast}$ 가 가장 짧은 해임이 확인된다.
-
-#### Eq. (6) Hotelling T² and SPE
-
-$s_a^{2}$ 는 학습 표본의 $a$ 번째 score $\mathbf{t}_a$ 의 표본분산이다. 식 (3) 에서 본 대로 서로 다른 성분의 score 는 직교하므로, score 의 공분산 행렬은 대각 행렬 $\mathbf{S} = \mathrm{diag}(s_1^{2}, \dots, s_A^{2})$ 이다. Score $\mathbf{t}$ 가 학습 표본의 중심에서 떨어진 Mahalanobis distance 의 제곱이 Hotelling $T^{2}$ 이며, $\mathbf{S}$ 가 대각이므로 성분별 합으로 풀린다. 같은 유도는 [[19](#ref-19)] 의 Appendix C 에도 있다.
-
-```math
-T^{2} = \mathbf{t}^{\top}\mathbf{S}^{-1}\mathbf{t} = \sum_{a=1}^{A} \frac{t_{a}^{2}}{s_{a}^{2}} \hspace{19em} (14)
-```
-
-SPE 는 입력 $\mathbf{x}$ 를 score 로 줄였다가 되돌렸을 때 남는 잔차 $\mathbf{e} = \mathbf{x} - \mathbf{P}\mathbf{t}$ 의 제곱합이다. 식 (3) 에서 $\mathbf{E}$ 의 한 행이 이 $\mathbf{e}$ 이므로, SPE 는 $\mathbf{x}$ 가 $\mathbf{P}$ 의 열이 이루는 model plane에서 떨어진 거리의 제곱이다.
-
-```math
-\mathrm{SPE} = \lVert \mathbf{e} \rVert^{2} = \lVert \mathbf{x} - \mathbf{P}\mathbf{t} \rVert^{2} = \sum_{k=1}^{K} e_{k}^{2} \hspace{19em} (15)
-```
-
-식 (4) 의 $\mathbf{x}^{\ast} = \mathbf{P}\mathbf{t}^{\ast}$ 는 model plane 위에 있어 SPE 가 0 이다. 그래서 식 (4) 의 해에서는 $T^{2}$ 가 외삽을 가리고, 입력 공간에서 직접 풀어 $\mathbf{x}$ 가 평면을 벗어날 수 있을 때 SPE 가 함께 필요하다.
-
-## Appendix H. PLS Inversion: Model Planes of the Bootstrap PLS Models and the Spread of the Solution
-
-Fig 3 (b) 의 PLS bootstrap ensemble 을 입력이 3 개인 경우로 그리면 아래 Fig 9 이다.
-
-<img src="inverse-problem-ko_fig/bootstrap-schematic.png" width="900" style="max-width: 100%;" alt="Fig 9">
-
-Fig 9. Model plane of one PLS and model planes of the bootstrap PLS models
-
-- (a): 모든 행으로 적합한 PLS 하나의 model plane (빨간 면) 과 그 minimum-norm solution $\mathbf{x}^{\ast}$ (주황 별) 이다. 회색 점은 학습에 쓴 $\mathbf{X}$ 의 행이다.
-- (b): bootstrap 표본마다 적합한 PLS 의 model plane (파란 면) 과 그 minimum-norm solution (파란 점) 이다. 빨간 면과 주황 별은 (a) 와 같다.
-
-파란 면은 bootstrap PLS 마다 구한 $\mathbf{P}$ 의 column space 이며, 200 개 가운데 12 개를 그렸다. 학습 표본이 바뀌면 loading matrix $\mathbf{P}$ 와 표본 평균이 바뀌므로, model plane 의 기울기와 위치가 함께 바뀐다. 파란 점 200 개는 bootstrap PLS 200 개의 minimum-norm solution $\mathbf{x}^{\ast}$ 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 로 구해 자기 PLS 의 model plane 위에 놓이므로, 자기 model plane 에 대한 SPE 는 0 이다. 각 $\mathbf{x}^{\ast}$ 는 식 (4) 의 pseudo-inverse 만으로 구하며, 같은 $\mathbf{y}^{\ast}$ 를 주는 다른 해들의 방향인 null space 를 따라 옮기지 않는다. 그래서 파란 점의 퍼짐은 null space 때문이 아니라 model plane 이 흔들려서 생긴다. 초록 마름모는 200 개 해의 평균, 곧 PLS bootstrap ensemble 의 해이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. Fig 3 (b) 는 입력과 latent 변수가 모두 2 개여서 model plane 이 입력 평면 전체이므로 model plane 의 기울기가 바뀌는 것이 보이지 않고, 이 그림은 입력을 하나 더한 경우로 그렸다.
-
-## Appendix I. PLS Inversion: Model Plane of One PLS and SPE
-
-SPE 와 model plane의 관계를 입력이 3 개인 경우로 그리면 아래 Fig 10 이다.
-
-<img src="inverse-problem-ko_fig/spe-schematic.png" width="900" style="max-width: 100%;" alt="Fig 10">
-
-Fig 10. Row space and column space of the loading matrix P, the T^2 limit and SPE
-
-- (a): $\mathbf{P}$ 의 row space, 곧 score 공간이다. 그 위의 타원, null space 직선, 선분 A–B, $\mathbf{t}^{\ast}$ 는 Fig 3 (a) 와 같은 구성이다.
-- (b): $\mathbf{P}$ 의 column space, 곧 model plane 이다. (a) 의 점을 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 옮긴 것이며, 평면을 벗어난 $`\mathbf{x}_{c}`$ 의 수선 길이 제곱이 SPE 이다.
-
-Fig 10 에서 해를 구하는 방법은 아래의 3 가지이다.
-
-- PLS inversion 의 Minimum-norm solution 방법: (a) 의 $\mathbf{t}^{\ast}$ 와 (b) 의 $\mathbf{x}^{\ast}$ 점 하나이다.
-- PLS inversion 의 Null space 방법: (a) 와 (b) 의 null space 직선 가운데 $T^{2}$ 상한 안의 선분 A–B 이다.
-- Model-agnostic numerical optimization 방법: [4.7](#47-model-agnostic-numerical-optimization) 의 방법으로 입력 $K$ 개를 모두 직접 움직여 구한 해이며, (b) 의 보라 동그라미가 그 예이다. [4.2 Design space](#design-space-and-product-transfer) 목록처럼 일부 입력이 고정되거나 [4.7](#47-model-agnostic-numerical-optimization) 처럼 입력에 물리적 한계가 걸려, 그 제약과 목표 $\mathbf{y}^{\ast}$ 를 함께 만족하는 $\mathbf{t}$ 가 없을 때 쓴다.
-
-파란 면은 model plane, 곧 $\mathbf{P}$ 의 열로 구성된 column space 이다. loading matrix $\mathbf{P} \in \mathbb{R}^{K \times A}$ 는 행이 입력 변수 $K$ 개, 열이 latent 변수 $A$ 개인 행렬이며 이 그림에서는 $3 \times 2$ 이고, 열 $\mathbf{p}_a$ 는 $a$ 번째 loading 이며, 그 $k$ 번째 원소는 $a$ 번째 score 가 1 늘 때 입력 변수 $x_k$ 가 얼마나 바뀌는지를 나타낸다.
-
-$\mathbf{P}$ 의 row space 는 $\mathbb{R}^{A}$ 의 부분공간으로 score 공간, 곧 latent space 이며, $\mathbf{P}$ 의 열이 선형독립이면 $\mathbb{R}^{A}$ 전체가 된다. 그래서 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 는 row space 의 점 $\mathbf{t}$ 를 column space, 곧 model plane 의 점으로 옮긴다. 이 평면 위의 타원, null space 직선, 선분 A–B, $\mathbf{x}^{\ast}$ 는 Fig 3 (a) 의 score 평면을 $\mathbf{P}$ 로 입력 공간에 옮긴 것이다. 입력 $\mathbf{x}$ 는 $x_1$, $x_2$, $x_3$ 의 값 한 set, 곧 $\mathbf{x} = (x_1, x_2, x_3)$ 이다. Model-agnostic numerical optimization 방법은 score 를 거치지 않고 $x_1$, $x_2$, $x_3$ 세 값을 바꿔 가며 예측이 목표 $\mathbf{y}^{\ast}$ 에 맞는 set 을 찾는다. 반대로 PLS inversion 의 Minimum-norm solution 방법과 Null space 방법은 모두 $t_1$, $t_2$ 두 값을 먼저 찾고 $\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 $x_1$, $x_2$, $x_3$ 를 계산하므로, 두 방법의 해는 늘 model plane 위에 놓여 SPE 가 0 이다. $`\mathbf{P}\mathbf{t} = t_{1} \mathbf{p}_{1} + t_{2} \mathbf{p}_{2}`$ 는 $\mathbf{P}$ 의 열들의 선형결합이고, 이 선형결합을 모두 모은 집합이 column space, 곧 model plane 이다. 그래서 $\mathbf{t}$ 를 어떤 값으로 두어도 $\mathbf{P}\mathbf{t}$ 는 그 평면 위에 놓인다.
-
-$\mathbf{x} = \mathbf{P}\mathbf{t}$ 로 움직일 수 있는 자유도는 score 개수 $A$ 뿐이다. 이 그림에서는 입력이 $x_1$, $x_2$, $x_3$ 세 개이지만 $t_1$, $t_2$ 두 값만 바꿀 수 있고, 목표 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 가 식 하나를 쓰므로 남는 자유도는 1 개, 곧 선분 A–B 이다. 여기에 $x_3$ 를 어떤 값으로 고정하는 조건이 붙으면 식이 하나 더 늘어, 맞출 수 있는 점이 선분 위의 한 점 이하로 줄어든다. 그 점이 $T^{2}$ 상한 밖에 있거나 다른 입력의 물리적 한계를 넘으면, 조건을 모두 만족하는 $\mathbf{t}$ 가 없다. 그때는 평면을 벗어나서라도 입력 세 개를 직접 움직여 해를 찾는 Model-agnostic numerical optimization 방법을 쓰고, 그 대가로 0 보다 커지는 SPE 를 상한으로 묶는다.
-
-Model-agnostic numerical optimization 방법의 해인 보라 동그라미 $`\mathbf{x}_{c}`$ (c 는 candidate) 가 평면을 벗어나면, 평면에 내린 수선 $`\mathbf{e} = \mathbf{x}_{c} - \mathbf{P}\mathbf{t}_{c}`$ 의 길이 제곱이 식 (15) 의 SPE 이다. $`\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 의 score 이고, $`\mathbf{P}\mathbf{t}_{c}`$ 는 $`\mathbf{x}_{c}`$ 를 평면에 내린 projection 이다. 그림의 점과 평면은 그림을 위해 만든 데이터로 그렸으며, latent 변수의 개수 $A$ 를 2 로, 입력의 개수 $K$ 를 3 으로 두었다. 이 그림은 score 공간의 차원이 입력 공간보다 낮은 $A \lt K$ 일 때만 그릴 수 있으며, 이 조건은 임의로 정한 것이 아니다. $A = K$ 이면 $\mathbf{P}$ 의 열이 입력 공간 전체를 이루어 어떤 $\mathbf{x}$ 도 $\mathbf{P}\mathbf{t}$ 로 정확히 나타나므로, 잔차 $\mathbf{e}$ 가 0 이 되어 SPE 가 늘 0 이고 그림에 보일 것이 없다. 입력과 latent 변수가 모두 2 개인 Appendix D 가 그런 경우여서, 이 그림은 입력을 하나 더한 경우로 그렸다.
