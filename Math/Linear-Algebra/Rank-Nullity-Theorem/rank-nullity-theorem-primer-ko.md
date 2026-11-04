@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 0 | Created: 2026-11-04 | Updated: 2026-11-04 10:35 UTC
+Rev. 1 | Created: 2026-11-04 | Updated: 2026-11-04 10:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -65,6 +65,9 @@ Table 1. Symbols
 
 > **Definition: Nullity**<br>
 > $m \times n$ 행렬 $\mathbf{A}$ 의 nullity $\mathrm{nullity}(\mathbf{A})$ 는 null space $\mathrm{Null}(\mathbf{A}) = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{A}\mathbf{x} = \mathbf{0} \}$ 의 차원, 곧 $\mathrm{Null}(\mathbf{A})$ 안에서 서로 일차독립인 vector 의 최대 개수이다.
+
+> **Definition: Rank-nullity theorem**<br>
+> 실수 원소를 갖는 모든 $m \times n$ 행렬 $\mathbf{A}$ 에서 rank 와 nullity 를 더한 값은 열의 수 $n$ 과 같다 (식 (1)). Rank-nullity 정리는 dimension theorem 이라고도 부른다.
 
 Column space 는 출력 공간 $\mathbb{R}^m$ 의 부분공간이고 null space 는 입력 공간 $\mathbb{R}^n$ 의 부분공간이어서, 두 차원은 서로 다른 공간에서 잰 값이다. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 
