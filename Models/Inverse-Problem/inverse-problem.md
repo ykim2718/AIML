@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 63 | Created: 2026-10-25 | Updated: 2026-11-04 02:43 UTC
+Rev. 64 | Created: 2026-10-25 | Updated: 2026-11-04 02:45 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -248,13 +248,13 @@ Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of P
 
 $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mathbf{t}^{\ast}$ is the score among them that delivers the target $\mathbf{y}^{\ast}$, and $\mathbf{x}^{\ast}$ is the input recovered from $\mathbf{t}^{\ast}$ through the loading. Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution.
 
-When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy Eq. (6) below.
+The minimum-norm solution is only one solution. To find all solutions that give the target $\mathbf{y}^{\ast}$, the solution set, the directions along which $\mathbf{t}^{\ast}$ can move without changing the prediction must also be considered, and those directions are $\mathbf{n}$. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy Eq. (6) below.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (6)
 ```
 
-$\mathbf{n} \in \mathbb{R}^{A}$ is a direction vector in the score space: moving the score along it does not change the predicted output $\mathbf{Q}\mathbf{t}$. The subspace these directions span is the null space [[2](#ref-2)].
+$\mathbf{n} \in \mathbb{R}^{A}$ is a direction vector in the score space: moving the score along it does not change the predicted output $\mathbf{Q}\mathbf{t}$. The subspace these directions span is the null space [[2](#ref-2)]. The solution set is therefore $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$, $\mathbf{t}^{\ast}$ plus multiples of $\mathbf{n}$ (a linear combination when there are several $\mathbf{n}$), and $\mathbf{n}$ sets the direction in which the solutions spread.
 
 - The null space is the freedom to move the input without changing the output. A secondary goal such as cost can be optimised over this freedom.
 - Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[7](#ref-7)].

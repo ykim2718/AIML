@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 150 | Created: 2026-08-28 | Updated: 2026-11-04 02:43 UTC
+Rev. 151 | Created: 2026-08-28 | Updated: 2026-11-04 02:45 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -248,13 +248,13 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 
 $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고, $\mathbf{t}^{\ast}$ 는 그 가운데 목표 $\mathbf{y}^{\ast}$ 를 내는 score, $\mathbf{x}^{\ast}$ 는 $\mathbf{t}^{\ast}$ 를 loading 으로 되돌린 입력이다. $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다.
 
-$\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면, 아래 식 (6) 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남는다.
+Minimum-norm solution 은 해 하나일 뿐이다. 목표 $\mathbf{y}^{\ast}$ 를 주는 해 전체, 곧 해집합 (solution set) 을 구하려면 $\mathbf{t}^{\ast}$ 에서 예측을 바꾸지 않고 움직일 수 있는 방향을 함께 고려해야 하며, 그 방향이 $\mathbf{n}$ 이다. $\mathbf{Q}$ 의 rank 가 $M$ 이고 $A \gt M$ 이면, 아래 식 (6) 을 만족하는 방향 $\mathbf{n}$ 이 $A - M$ 개 남는다.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (6)
 ```
 
-$\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 방향 벡터로, score 를 이 방향으로 움직여도 예측 출력 $\mathbf{Q}\mathbf{t}$ 가 바뀌지 않는다. 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)].
+$\mathbf{n} \in \mathbb{R}^{A}$ 은 score 공간의 방향 벡터로, score 를 이 방향으로 움직여도 예측 출력 $\mathbf{Q}\mathbf{t}$ 가 바뀌지 않는다. 이 방향들이 이루는 부분공간이 null space 이다 [[2](#ref-2)]. 그래서 해집합은 $\mathbf{t}^{\ast}$ 에 $\mathbf{n}$ 의 배수를 더한 $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ 이며 ($\mathbf{n}$ 이 여럿이면 그 선형결합을 더한다), $\mathbf{n}$ 이 해가 퍼지는 방향을 정한다.
 
 - Null space 는 출력을 바꾸지 않고 움직일 수 있는 입력의 자유도이다. 비용 같은 2차 목적을 이 자유도 위에서 최적화할 수 있다.
 - Null space 를 따라 멀리 가면 historical data 가 뒷받침하지 않는 조건에 닿는다. 그래서 score 의 크기를 재는 Hotelling $T^{2}$ 와 model plane까지의 거리를 재는 SPE (Squared Prediction Error) 에 상한을 두고 그 안으로 해를 가둔다 [[7](#ref-7)].
