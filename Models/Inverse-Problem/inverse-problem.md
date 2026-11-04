@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 76 | Created: 2026-10-25 | Updated: 2026-11-04 10:03 UTC
+Rev. 77 | Created: 2026-10-25 | Updated: 2026-11-04 10:06 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -682,9 +682,9 @@ t_star = np.linalg.pinv(Q) @ np.array([y_des - y_mean])
 x_star = P @ t_star + x_mean
 
 # 2. null space: 37 inputs along the direction that leaves the prediction unchanged
-N = null_space(Q)            # (n_comp, n_comp - 1)
+Z = null_space(Q)            # (n_comp, n_comp - 1)
 alphas = np.linspace(-2.0, 2.0, 37)
-x_alt = np.array([P @ (t_star + N @ np.array([a])) + x_mean for a in alphas])
+x_alt = np.array([P @ (t_star + Z @ np.array([a])) + x_mean for a in alphas])
 
 
 def predict(x):
@@ -692,7 +692,7 @@ def predict(x):
 
 
 preds = np.array([predict(x) for x in x_alt])
-print("null space dim :", N.shape[1])
+print("null space dim :", Z.shape[1])
 print("solutions      :", len(x_alt))
 print("prediction min :", round(preds.min(), 6))
 print("prediction max :", round(preds.max(), 6))
