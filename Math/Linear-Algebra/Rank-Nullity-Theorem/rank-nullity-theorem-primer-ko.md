@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 2 | Created: 2026-11-04 | Updated: 2026-11-04 11:05 UTC
+Rev. 3 | Created: 2026-11-04 | Updated: 2026-11-04 11:25 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -156,6 +156,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해가 하나라도 있으면, 해 전�
 - **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.
 - **row space**: 행렬의 행들의 일차결합 전체. $\mathbb{R}^n$ 의 부분공간이다.
 - **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
+- **가역 행렬 (invertible matrix)**: 역행렬이 있는 정사각 행렬. 왼쪽에 곱해도 vector 가 zero vector 인지 아닌지가 바뀌지 않는다.
 - **기본 행 연산 (elementary row operation)**: 두 행을 맞바꾸기, 한 행에 0 이 아닌 수를 곱하기, 한 행에 다른 행의 상수배를 더하기의 세 연산.
 - **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 이며, 아래 행의 pivot 이 위 행의 pivot 보다 오른쪽에 있는 꼴.
 - **기저 (basis)**: Vector space 의 vector 가운데 서로 일차독립이면서, 일차결합으로 그 공간의 모든 vector 를 만드는 vector 의 집합.
@@ -179,9 +180,23 @@ n &= n_{\mathrm{pivot}} + n_{\mathrm{free}} \\
 \hspace{19em} (5)
 ```
 
-- 첫째 등호: $\mathbf{R}$ 의 모든 열은 pivot column 이거나 free column 이다.
-- 둘째 등호: 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않으므로, $\mathbf{R}$ 에서 일차독립인 pivot column 의 개수가 $\mathbf{A}$ 에서 일차독립인 열의 최대 개수인 rank 와 같다.
-- 셋째 등호: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 은 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 과 해가 같다. free variable 하나만 1, 나머지 free variable 은 0 으로 둔 해가 free column 마다 하나씩 있고, 이 해들은 1 이 놓인 원소가 서로 달라 일차독립이며 null space 의 모든 vector 를 일차결합으로 만든다. 그래서 이 해들이 null space 의 기저이고, 그 개수 $n_{\mathrm{free}}$ 가 nullity 이다.
+- 첫째 등호: $\mathbf{R}$ 의 열은 pivot column 과 free column 의 두 가지로만 나뉜다.
+  - 기약 행사다리꼴의 각 열은 어떤 행의 pivot 을 담거나 담지 않거나 둘 중 하나이다. Pivot 을 담으면 pivot column 이고, 담지 않으면 free column 이다.
+  - 한 열이 두 가지에 함께 들 수 없고 어느 쪽에도 들지 않을 수도 없으므로, 두 개수를 더하면 열의 수 $n$ 이다.
+  - 예를 들어 $\mathbf{R} = [[1, 0, 0], [0, 1, 1.5]]$ 에서는 첫째와 둘째 열이 pivot column, 셋째 열이 free column 이어서 $2 + 1 = 3$ 이다.
+- 둘째 등호: pivot column 의 개수 $n_{\mathrm{pivot}}$ 은 $\mathbf{A}$ 의 rank 와 같다.
+  - 기본 행 연산 하나는 가역 행렬 하나를 왼쪽에 곱하는 것과 같으므로, $\mathbf{R}$ 은 가역 행렬을 $\mathbf{A}$ 의 왼쪽에 곱한 행렬이다.
+  - $\mathbf{A}$ 의 열들의 일차결합이 zero vector 이면, 같은 계수로 만든 $\mathbf{R}$ 의 열들의 일차결합도 zero vector 이다. 가역 행렬을 곱한 결과가 zero vector 인 것은 곱하기 전의 vector 가 zero vector 일 때뿐이므로 반대 방향도 성립한다. 그래서 $\mathbf{A}$ 와 $\mathbf{R}$ 은 같은 번호의 열 사이에 같은 일차독립 관계를 갖는다.
+  - $\mathbf{R}$ 의 pivot column 은 pivot 원소만 1 이고 나머지가 0 이며, pivot 이 놓인 행이 열마다 달라 서로 일차독립이다.
+  - $\mathbf{R}$ 의 free column 은 0 이 아닌 원소가 pivot 이 있는 행에만 있으므로, 그 원소를 계수로 한 pivot column 의 일차결합이다. 위 예의 셋째 열 $[0, 1.5]^\top$ 은 둘째 열 $[0, 1]^\top$ 의 1.5 배이다.
+  - 따라서 $\mathbf{R}$ 에서 서로 일차독립인 열의 최대 개수는 $n_{\mathrm{pivot}}$ 이고, 일차독립 관계가 같은 $\mathbf{A}$ 에서도 그 개수, 곧 $\mathrm{rank}(\mathbf{A})$ 가 $n_{\mathrm{pivot}}$ 이다.
+- 셋째 등호: free column 의 개수 $n_{\mathrm{free}}$ 는 nullity 와 같다.
+  - $\mathbf{R}$ 은 가역 행렬을 $\mathbf{A}$ 의 왼쪽에 곱한 행렬이므로, $\mathbf{A}\mathbf{x} = \mathbf{0}$ 과 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 은 해가 같고 두 행렬의 null space 도 같다.
+  - $\mathbf{R}\mathbf{x} = \mathbf{0}$ 의 0 이 아닌 행 하나에는 pivot 변수가 하나만 계수 1 로 들어 있고, 나머지 항은 free variable 이다. 그래서 free variable 의 값을 정하면 pivot 변수가 하나씩 정해진다.
+  - free column 마다 그 free variable 만 1, 나머지 free variable 은 0 으로 두고 pivot 변수를 구하면 해가 하나 나온다. 위 예에서는 셋째 원소를 1 로 두어 $[0, -1.5, 1]^\top$ 을 얻는다.
+  - 이렇게 얻은 해들은 서로 일차독립이다. 각 해는 자기 free variable 의 원소만 1 이고 다른 free variable 의 원소는 0 이므로, 일차결합이 zero vector 이려면 그 원소들에서 계수가 모두 0 이어야 한다.
+  - Null space 의 vector 하나를 잡아 그 vector 의 free variable 값을 계수로 이 해들을 일차결합하면, free variable 원소가 같고 pivot 변수는 free variable 로 정해지므로 처음 vector 와 같아진다. 그래서 이 해들은 null space 의 모든 vector 를 만든다.
+  - 서로 일차독립이면서 null space 의 모든 vector 를 만드는 이 해들이 null space 의 기저이므로, 그 개수 $n_{\mathrm{free}}$ 가 nullity 이다.
 
 따라서 식 (1) 이 성립한다.
 
