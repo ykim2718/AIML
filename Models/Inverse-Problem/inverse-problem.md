@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 65 | Created: 2026-10-25 | Updated: 2026-11-04 02:48 UTC
+Rev. 66 | Created: 2026-10-25 | Updated: 2026-11-04 02:51 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -252,13 +252,13 @@ Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of P
 
 $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mathbf{t}^{\ast}$ is the score among them that delivers the target $\mathbf{y}^{\ast}$, and $\mathbf{x}^{\ast}$ is the input recovered from $\mathbf{t}^{\ast}$ through the loading. Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution.
 
-The minimum-norm solution is only one solution. To find all solutions that give the target $\mathbf{y}^{\ast}$, the solution set, the directions along which $\mathbf{t}^{\ast}$ can move without changing the prediction must also be considered, and those directions are $\mathbf{n}$. When the rank of $\mathbf{Q}$ is $M$ and $A \gt M$, there remain $A - M$ directions $\mathbf{n}$ that satisfy Eq. (7) below.
+The minimum-norm solution is only one solution; other scores also give the target $\mathbf{y}^{\ast}$. The score $\mathbf{t}$ has $A$ values, while the target $\mathbf{y}^{\ast}$ fixes only the $M$ values of the prediction $\mathbf{Q}\mathbf{t}$. So when $A \gt M$, there is a vector $\mathbf{n}$ that, added to $\mathbf{t}^{\ast}$, leaves the prediction $\mathbf{Q}\mathbf{t}$ unchanged. This $\mathbf{n}$ is a vector that satisfies Eq. (7) below, and when the rank of $\mathbf{Q}$ is $M$ there are $A - M$ independent such vectors.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
 ```
 
-$\mathbf{n} \in \mathbb{R}^{A}$ is a direction vector in the score space: moving the score along it does not change the predicted output $\mathbf{Q}\mathbf{t}$. The subspace these directions span is the null space [[2](#ref-2)]. The solution set is therefore $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$, $\mathbf{t}^{\ast}$ plus multiples of $\mathbf{n}$ (a linear combination when there are several $\mathbf{n}$), and $\mathbf{n}$ sets the direction in which the solutions spread.
+$\mathbf{n} \in \mathbb{R}^{A}$ is a vector in the score space. The score $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$, which adds $\alpha$ times $\mathbf{n}$ to $\mathbf{t}^{\ast}$, predicts $\mathbf{Q}\mathbf{t}^{\ast} + \alpha\mathbf{Q}\mathbf{n} = \mathbf{y}^{\ast}$, the target $\mathbf{y}^{\ast}$ for any $\alpha$. The solution set is therefore $\mathbf{t} = \mathbf{t}^{\ast} + \alpha\mathbf{n}$ (a linear combination when there are several $\mathbf{n}$), which in the score plane is the line through $\mathbf{t}^{\ast}$ parallel to $\mathbf{n}$. This line is the null space line in Fig 3 (a). The subspace of all $\mathbf{n}$ that satisfy Eq. (7) is the null space [[2](#ref-2)].
 
 - The null space is the freedom to move the input without changing the output. A secondary goal such as cost can be optimised over this freedom.
 - Going far along the null space reaches conditions that historical data does not support. So upper limits are placed on Hotelling $T^{2}$, which measures the size of the score, and on SPE (Squared Prediction Error), which measures the distance to the model plane, and the solution is held inside them [[7](#ref-7)].
