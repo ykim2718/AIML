@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 155 | Created: 2026-08-28 | Updated: 2026-11-04 09:09 UTC
+Rev. 156 | Created: 2026-08-28 | Updated: 2026-11-04 09:10 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -252,7 +252,7 @@ $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해
 
 $\mathbf{t} \in \mathbb{R}^{A}$ 는 한 표본의 score 를 모은 벡터이고, $\mathbf{t}^{\ast}$ 는 그 가운데 목표 $\mathbf{y}^{\ast}$ 를 내는 score, $\mathbf{x}^{\ast}$ 는 $\mathbf{t}^{\ast}$ 를 loading 으로 되돌린 입력이다. $\mathbf{Q}^{+}$ 는 pseudo-inverse 이므로 $\mathbf{t}^{\ast}$ 는 minimum-norm solution 이다.
 
-Minimum-norm solution 은 해 하나일 뿐이고, 목표 $\mathbf{y}^{\ast}$ 를 주는 score 는 그 밖에도 있다. 식 (4) 의 한 행에서 잔차 $\mathbf{F}$ 를 빼면 출력 $\mathbf{y}$ 는 score $\mathbf{t}$ 에 $\mathbf{Q}$ 를 곱한 $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 되며, 이 $\mathbf{Q}\mathbf{t}$ 를 예측이라 한다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 행 개수 $M$ 은 출력 변수의 개수이므로, 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 는 식 $M$ 개로 미지수인 score 값 $A$ 개를 정한다. 그래서 $A \gt M$ 이면 해가 하나로 정해지지 않는다. 목표 $\mathbf{y}^{\ast}$ 를 주는 두 score $`\mathbf{t}_{1}`$ 과 $`\mathbf{t}_{2}`$ 는 $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$ 이므로, 그 차이 $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1}`$ 은 아래 식 (7) 을 만족한다. $\mathbf{Q}$ 의 rank 가 $M$ 이면 서로 독립인 $\mathbf{n}$ 이 $A - M$ 개 있다.
+Minimum-norm solution 은 해 하나일 뿐이고, 목표 $\mathbf{y}^{\ast}$ 를 주는 score 는 그 밖에도 있다. 식 (4) 의 한 행에서 잔차 $\mathbf{F}$ 를 빼면 출력은 $\mathbf{y} = \mathbf{Q}\mathbf{t}$ 가 되며, 이 $\mathbf{Q}\mathbf{t}$ 를 예측이라 한다. $\mathbf{Q} \in \mathbb{R}^{M \times A}$ 의 행 개수 $M$ 은 출력 변수의 개수이므로, 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 는 식 $M$ 개로 미지수인 score 값 $A$ 개를 정한다. 그래서 $A \gt M$ 이면 해가 하나로 정해지지 않는다. 목표 $\mathbf{y}^{\ast}$ 를 주는 두 score $`\mathbf{t}_{1}`$ 과 $`\mathbf{t}_{2}`$ 는 $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$ 이므로, 그 차이 $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1}`$ 은 아래 식 (7) 을 만족한다. $\mathbf{Q}$ 의 rank 가 $M$ 이면 서로 독립인 $\mathbf{n}$ 이 $A - M$ 개 있다.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 68 | Created: 2026-10-25 | Updated: 2026-11-04 09:09 UTC
+Rev. 69 | Created: 2026-10-25 | Updated: 2026-11-04 09:10 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -252,7 +252,7 @@ Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of P
 
 $\mathbf{t} \in \mathbb{R}^{A}$ is the vector of the scores of one sample, $\mathbf{t}^{\ast}$ is the score among them that delivers the target $\mathbf{y}^{\ast}$, and $\mathbf{x}^{\ast}$ is the input recovered from $\mathbf{t}^{\ast}$ through the loading. Because $\mathbf{Q}^{+}$ is the pseudo-inverse, $\mathbf{t}^{\ast}$ is the minimum-norm solution.
 
-The minimum-norm solution is only one solution; other scores also give the target $\mathbf{y}^{\ast}$. Removing the residual $\mathbf{F}$ from one row of Eq. (4) gives the output $\mathbf{y}$ as the score $\mathbf{t}$ multiplied by $\mathbf{Q}$, $\mathbf{y} = \mathbf{Q}\mathbf{t}$, and this $\mathbf{Q}\mathbf{t}$ is called the prediction. The number of rows $M$ of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is the number of output variables, so the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ fixes $A$ score values, the unknowns, with $M$ equations. When $A \gt M$, the solution is therefore not unique. Two scores $`\mathbf{t}_{1}`$ and $`\mathbf{t}_{2}`$ that give the target $\mathbf{y}^{\ast}$ satisfy $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$, so their difference $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1}`$ satisfies Eq. (7) below. When the rank of $\mathbf{Q}$ is $M$, there are $A - M$ independent such vectors $\mathbf{n}$.
+The minimum-norm solution is only one solution; other scores also give the target $\mathbf{y}^{\ast}$. Removing the residual $\mathbf{F}$ from one row of Eq. (4) gives the output $\mathbf{y} = \mathbf{Q}\mathbf{t}$, and this $\mathbf{Q}\mathbf{t}$ is called the prediction. The number of rows $M$ of $\mathbf{Q} \in \mathbb{R}^{M \times A}$ is the number of output variables, so the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ fixes $A$ score values, the unknowns, with $M$ equations. When $A \gt M$, the solution is therefore not unique. Two scores $`\mathbf{t}_{1}`$ and $`\mathbf{t}_{2}`$ that give the target $\mathbf{y}^{\ast}$ satisfy $`\mathbf{Q}\mathbf{t}_{1} = \mathbf{Q}\mathbf{t}_{2} = \mathbf{y}^{\ast}`$, so their difference $`\mathbf{n} = \mathbf{t}_{2} - \mathbf{t}_{1}`$ satisfies Eq. (7) below. When the rank of $\mathbf{Q}$ is $M$, there are $A - M$ independent such vectors $\mathbf{n}$.
 
 ```math
 \mathbf{Q}\mathbf{n} = \mathbf{0} \hspace{19em} (7)
