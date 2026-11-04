@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 72 | Created: 2026-10-25 | Updated: 2026-11-04 09:46 UTC
+Rev. 73 | Created: 2026-10-25 | Updated: 2026-11-04 09:53 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -239,6 +239,16 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 ```
 
 $\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
+
+The size of each matrix is as follows, where $n$ is the number of samples.
+
+- $\mathbf{X} \in \mathbb{R}^{n \times K}$: inputs. Rows are the $n$ samples, columns the $K$ input variables
+- $\mathbf{Y} \in \mathbb{R}^{n \times M}$: outputs. Rows are the $n$ samples, columns the $M$ output variables
+- $\mathbf{T} \in \mathbb{R}^{n \times A}$: scores. Rows are the $n$ samples, columns the $A$ latent variables
+- $\mathbf{P} \in \mathbb{R}^{K \times A}$: input loadings. Rows are the $K$ input variables, columns the $A$ latent variables
+- $\mathbf{Q} \in \mathbb{R}^{M \times A}$: output loadings. Rows are the $M$ output variables, columns the $A$ latent variables
+- $\mathbf{E} \in \mathbb{R}^{n \times K}$: input residuals. Same size as $\mathbf{X}$
+- $\mathbf{F} \in \mathbb{R}^{n \times M}$: output residuals. Same size as $\mathbf{Y}$
 
 Given a target output $\mathbf{y}^{\ast}$, the minimum-norm solution method of PLS inversion solves the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score with the pseudo-inverse and maps the score back through the loading to recover the input. The definition and computation of the pseudo-inverse are in the [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) (Korean only).
 

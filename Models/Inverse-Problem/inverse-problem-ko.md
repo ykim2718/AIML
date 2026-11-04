@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 159 | Created: 2026-08-28 | Updated: 2026-11-04 09:46 UTC
+Rev. 160 | Created: 2026-08-28 | Updated: 2026-11-04 09:53 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -239,6 +239,16 @@ PLS 는 입력 $\mathbf{X}$ 와 출력 $\mathbf{Y}$ 를 공통의 score $\mathbf
 ```
 
 $\mathbf{P}$ 와 $\mathbf{Q}$ 는 입력과 출력을 각각 score 에 회귀해 얻은 loading 을 열로 모은 행렬이고, $\mathbf{E}$ 와 $\mathbf{F}$ 는 score $A$ 개로 설명되지 않고 남은 입력과 출력의 잔차이다.
+
+행렬마다의 크기는 아래와 같으며, $n$ 은 표본의 개수이다.
+
+- $\mathbf{X} \in \mathbb{R}^{n \times K}$: 입력. 행은 표본 $n$ 개, 열은 입력 변수 $K$ 개
+- $\mathbf{Y} \in \mathbb{R}^{n \times M}$: 출력. 행은 표본 $n$ 개, 열은 출력 변수 $M$ 개
+- $\mathbf{T} \in \mathbb{R}^{n \times A}$: score. 행은 표본 $n$ 개, 열은 latent 변수 $A$ 개
+- $\mathbf{P} \in \mathbb{R}^{K \times A}$: 입력의 loading. 행은 입력 변수 $K$ 개, 열은 latent 변수 $A$ 개
+- $\mathbf{Q} \in \mathbb{R}^{M \times A}$: 출력의 loading. 행은 출력 변수 $M$ 개, 열은 latent 변수 $A$ 개
+- $\mathbf{E} \in \mathbb{R}^{n \times K}$: 입력의 잔차. $\mathbf{X}$ 와 같은 크기
+- $\mathbf{F} \in \mathbb{R}^{n \times M}$: 출력의 잔차. $\mathbf{Y}$ 와 같은 크기
 
 목표 출력 $\mathbf{y}^{\ast}$ 가 주어지면, PLS inversion 의 Minimum-norm solution 방법은 score 에 대한 방정식 $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ 를 pseudo-inverse 로 풀고, 얻은 score 를 loading 으로 되돌려 입력을 복원한다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../../Math/Linear-Algebra/Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
