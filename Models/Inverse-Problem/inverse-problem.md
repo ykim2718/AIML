@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 58 | Created: 2026-10-25 | Updated: 2026-11-03 22:56 UTC
+Rev. 59 | Created: 2026-10-25 | Updated: 2026-11-04 02:26 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)
@@ -228,7 +228,9 @@ PLS decomposes the input $\mathbf{X}$ and the output $\mathbf{Y}$ through a comm
 \mathbf{X} = \mathbf{T}\mathbf{P}^{\top} + \mathbf{E}, \qquad \mathbf{Y} = \mathbf{T}\mathbf{Q}^{\top} + \mathbf{F} \hspace{19em} (3)
 ```
 
-$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores. Given a target output $\mathbf{y}^{\ast}$, there are three methods for finding the input. The first two solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, and the third does not go through the score.
+$\mathbf{P}$ and $\mathbf{Q}$ are the matrices whose columns are the loadings obtained by regressing the input and the output on the score, and $\mathbf{E}$ and $\mathbf{F}$ are the residuals of the input and the output left unexplained by the $A$ scores.
+
+Given a target output $\mathbf{y}^{\ast}$, there are three methods for finding the input. The first two solve the equation $\mathbf{Q}\mathbf{t} = \mathbf{y}^{\ast}$ for the score, and the third does not go through the score.
 
 1. Minimum-norm solution method of PLS inversion: finds one solution with the pseudo-inverse of Eq. (4).
 2. Null space method of PLS inversion: moves the minimum-norm solution along the null space and finds the other solutions that give the same $\mathbf{y}^{\ast}$, inside the upper limits on $T^{2}$ and SPE of Eq. (5).
