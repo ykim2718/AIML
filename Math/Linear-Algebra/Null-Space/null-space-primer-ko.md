@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 49 | Created: 2026-10-31 | Updated: 2026-11-04 11:05 UTC
+Rev. 50 | Created: 2026-10-31 | Updated: 2026-11-07 04:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -105,7 +105,7 @@ Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드�
 
 ### 5.1 Linear Transformation
 
-$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다. 정사각 행렬 ($m = n$) 의 null space 에 zero vector 가 아닌 vector 가 있으면, 그 vector 를 $\mathbf{x}$ 에 더해도 $\mathbf{A}\mathbf{x}$ 가 바뀌지 않는다. 출력 $\mathbf{A}\mathbf{x}$ 에서 입력 $\mathbf{x}$ 를 하나로 정할 수 없으므로 $\mathbf{A}$ 의 역행렬이 없으며, 식 (5) 의 $\mathbf{A}$ 가 이 경우이다.
+$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다. 정사각 행렬 ($m = n$) 의 null space 에 zero vector 가 아닌 vector 가 있다고 하자. 입력 $\mathbf{x}$ 에 $`\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}`$ 을 만족하는 null space 의 vector $`\mathbf{x}_{\mathrm{null}}`$ 을 더하면, $`\mathbf{A}(\mathbf{x} + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}`$ 이어서 출력이 바뀌지 않는다. 출력 $\mathbf{A}\mathbf{x}$ 에서 입력 $\mathbf{x}$ 를 하나로 정할 수 없으므로 $\mathbf{A}$ 의 역행렬이 없으며, 식 (5) 의 $\mathbf{A}$ 가 이 경우이다.
 
 ### 5.2 Uniqueness of Solutions
 
