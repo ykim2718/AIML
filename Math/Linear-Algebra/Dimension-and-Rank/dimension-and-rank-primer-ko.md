@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 14 | Created: 2026-11-03 | Updated: 2026-11-04 11:05 UTC
+Rev. 15 | Created: 2026-11-03 | Updated: 2026-11-07 06:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -156,7 +156,7 @@ x_1 + 2 x_2 = 3
 \hspace{19em} (9)
 ```
 
-$\mathbf{c}_3$ 는 $\mathbf{c}_2$ 의 1.5 배여서 새 방향을 더하지 않으므로, 서로 일차독립인 열은 최대 두 개이고 column space 는 $\mathbb{R}^2$ 전체이며 차원은 2 이다. 행과 열을 견주면 아래 Table 3 과 같다.
+$\mathbf{c}_3$ 는 $\mathbf{c}_2$ 의 1.5 배여서 새 방향을 더하지 않으므로, 서로 일차독립인 열은 최대 두 개이다. 서로 일차독립인 $\mathbf{c}_1$, $\mathbf{c}_2$ 두 개가 차원이 2 인 $\mathbb{R}^2$ 의 기저가 되므로, column space 는 $\mathbb{R}^2$ 전체이며 차원은 2 이다. 행과 열을 견주면 아래 Table 3 과 같다.
 
 Table 3. Row space and column space of the matrix in equation (3)
 
@@ -165,7 +165,7 @@ Table 3. Row space and column space of the matrix in equation (3)
 | Row space    | 2       | $\mathbb{R}^3$ | 2                    | 2         |
 | Column space | 3       | $\mathbb{R}^2$ | 2                    | 2         |
 
-행과 열이 놓인 공간의 차원은 3 과 2 로 다르지만, row space 와 column space 의 차원은 모두 2 여서 식 (2) 대로 $\mathrm{rank}(\mathbf{A}) = 2$ 이다. Null space 의 차원은 $n - r = 3 - 2 = 1$ 이며, 식 (9) 에서 $1.5\,\mathbf{c}_2 - \mathbf{c}_3 = \mathbf{0}$ 이므로 $\mathbf{x} = [0, 1.5, -1]^\top$ 이 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족한다.
+행과 열이 놓인 공간의 차원은 3 과 2 로 다르지만, row space 와 column space 의 차원은 모두 2 여서 식 (2) 대로 $\mathrm{rank}(\mathbf{A}) = 2$ 이다. Null space 의 차원은 $n - r = 3 - 2 = 1$ 이며, $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 열을 $\mathbf{x}$ 의 원소로 일차결합한 값이고, 식 (9) 에서 $0 \cdot \mathbf{c}_1 + 1.5\,\mathbf{c}_2 - \mathbf{c}_3 = \mathbf{0}$ 이므로 $\mathbf{x} = [0, 1.5, -1]^\top$ 이 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 을 만족한다.
 
 ## 7. Application
 
@@ -237,9 +237,9 @@ $\mathbf{A}$ 의 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, �
 
 식 (10) 의 오른쪽 행렬에서 pivot column 은 첫째와 둘째 열이고, free column 은 셋째 열이다. 세 공간의 기저는 아래처럼 구한다.
 
-- Column space: $\mathbf{A}$ 에서 pivot column 과 번호가 같은 열이 기저이다. 기본 행 연산은 열이 놓인 공간 $\mathbb{R}^m$ 의 vector 를 바꾸므로, 기약 행사다리꼴의 열이 아니라 원래 $\mathbf{A}$ 의 열을 쓴다. 식 (3) 에서는 첫째와 둘째 열 $\mathbf{c}_1 = [1, 4]^\top$ 과 $\mathbf{c}_2 = [2, 6]^\top$ 이다.
+- Column space: $\mathbf{A}$ 에서 pivot column 과 번호가 같은 열이 기저이다. 기본 행 연산은 열 사이의 일차독립 관계를 바꾸지 않으므로, 기약 행사다리꼴에서 서로 일차독립인 pivot column 과 번호가 같은 $\mathbf{A}$ 의 열도 서로 일차독립이고, 나머지 열은 그 열들의 일차결합이다. 다만 기본 행 연산은 열이 놓인 공간 $\mathbb{R}^m$ 의 vector 를 바꾸므로, 기약 행사다리꼴의 열이 아니라 원래 $\mathbf{A}$ 의 열을 쓴다. 식 (3) 에서는 첫째와 둘째 열 $\mathbf{c}_1 = [1, 4]^\top$ 과 $\mathbf{c}_2 = [2, 6]^\top$ 이다.
 - Row space: 기약 행사다리꼴의 0 이 아닌 행이 기저이다. 기본 행 연산은 행의 일차결합만 만들어 row space 를 바꾸지 않는다. 식 (10) 에서는 $[1, 0, 0]^\top$ 과 $[0, 1, 1.5]^\top$ 이다.
-- Null space: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 에서 free variable 하나만 1, 나머지 free variable 은 0 으로 두고, 기약 행사다리꼴의 각 행에서 pivot 변수를 구한다. free variable 마다 기저 vector 하나를 얻는다. 식 (10) 에서 $\mathbf{x}$ 의 셋째 원소를 1 로 두면 첫 행에서 첫째 원소가 0, 둘째 행에서 둘째 원소가 $-1.5$ 여서 $[0, -1.5, 1]^\top$ 이다.
+- Null space: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 에서 free variable 하나만 1, 나머지 free variable 은 0 으로 두고, 기약 행사다리꼴의 각 행에서 pivot 변수를 구한다. free variable 마다 기저 vector 하나를 얻는다. 기본 행 연산은 해를 바꾸지 않으므로 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 대신 식 (10) 의 오른쪽 행렬을 $\mathbf{x}$ 에 곱한 값이 zero vector 가 되는 식을 푼다. 그 두 행은 "$\mathbf{x}$ 의 첫째 원소 $= 0$" 과 "둘째 원소 $+ 1.5 \times$ 셋째 원소 $= 0$" 이므로, 셋째 원소를 1 로 두면 첫째 원소가 0, 둘째 원소가 $-1.5$ 여서 $[0, -1.5, 1]^\top$ 이다.
 
 행렬 $\mathbf{A}$ 하나에는 부분공간이 네 개 있다. Column space, row space, null space 에 left null space 가 더해지고, 네 공간마다 기저가 있다. 네 부분공간의 기저를 모으면 아래 Table 4 와 같다.
 

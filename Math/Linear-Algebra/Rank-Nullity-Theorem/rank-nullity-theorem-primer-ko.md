@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 18 | Created: 2026-11-04 | Updated: 2026-11-07 06:00 UTC
+Rev. 19 | Created: 2026-11-04 | Updated: 2026-11-07 06:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -123,7 +123,9 @@ Null space 를 직접 구해 이 값을 확인한다. Null space 는 $\mathbf{A}
 \hspace{19em} (4)
 ```
 
-Free variable $x_3$ 를 1 대신 임의의 실수 $c$ 로 두면 해는 $c\,\mathbf{v}$ 이므로, null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다. $n$, $\mathrm{rank}(\mathbf{A})$, $\mathrm{nullity}(\mathbf{A})$ 의 세 값을 모으면 아래 Table 2 와 같다.
+Free variable $x_3$ 를 1 대신 임의의 실수 $c$ 로 두면 해는 $c\,\mathbf{v}$ 이므로, null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다.
+
+$n$, $\mathrm{rank}(\mathbf{A})$, $\mathrm{nullity}(\mathbf{A})$ 의 세 값을 모으면 아래 Table 2 와 같다.
 
 Table 2. Rank and nullity of the matrix in equation (2)
 

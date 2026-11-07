@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 7 | Created: 2026-10-25 | Updated: 2026-11-02 21:46 UTC
+Rev. 8 | Created: 2026-10-25 | Updated: 2026-11-07 06:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -103,7 +103,7 @@ $\lVert \mathbf{w} \rVert = 1$ 인 단위 vector 이면 식 (1) 은 아래처럼
 \mathbf{x}_i^\top \mathbf{w} = \lVert \mathbf{x}_i \rVert \cos\theta \hspace{19em} (4)
 ```
 
-식 (4) 의 값은 $\mathbf{x}_i$ 의 끝점에서 $\mathbf{w}$ 축에 수선을 내렸을 때 원점에서 수선의 발까지의 부호 있는 거리이다. 수선의 발은 $(\mathbf{x}_i^\top \mathbf{w})\,\mathbf{w}$ 이고, 수선 $\mathbf{x}_i - (\mathbf{x}_i^\top \mathbf{w})\,\mathbf{w}$ 는 $\mathbf{w}$ 와 직교한다. $\lVert \mathbf{w} \rVert \ne 1$ 이면 내적은 정사영 길이에 $\lVert \mathbf{w} \rVert$ 를 곱한 값이 된다.
+식 (4) 의 값은 $\mathbf{x}_i$ 의 끝점에서 $\mathbf{w}$ 축에 수선을 내렸을 때 원점에서 수선의 발까지의 부호 있는 거리이다. 수선의 발은 $(\mathbf{x}_i^\top \mathbf{w})\,\mathbf{w}$ 이고, 수선 $\mathbf{x}_i - (\mathbf{x}_i^\top \mathbf{w})\,\mathbf{w}$ 는 $\mathbf{w}$ 와 직교한다. 수선과 $\mathbf{w}$ 의 내적은 $\mathbf{x}_i^\top \mathbf{w} - (\mathbf{x}_i^\top \mathbf{w})\,\mathbf{w}^\top \mathbf{w}$ 이고, $\mathbf{w}^\top \mathbf{w} = \lVert \mathbf{w} \rVert^2 = 1$ 이므로 0 이다. $\lVert \mathbf{w} \rVert \ne 1$ 이면 내적은 정사영 길이에 $\lVert \mathbf{w} \rVert$ 를 곱한 값이 된다.
 
 ## 5. Worked Example
 
@@ -154,7 +154,7 @@ Shifted wafer 는 길이가 11.36 에서 12.96 으로 늘었으나 사잇각이 
 \hat{y}_i = \mathbf{x}_i^\top \mathbf{w} + b \hspace{19em} (8)
 ```
 
-식 (8) 의 $\mathbf{x}_i^\top \mathbf{w}$ 는 입력이 $\mathbf{w}$ 방향으로 가진 성분이 예측값에 더하는 몫이다. $\mathbf{w}$ 와 직교하는 입력 성분은 예측값을 바꾸지 않는다.
+식 (8) 의 $\mathbf{x}_i^\top \mathbf{w}$ 는 입력이 $\mathbf{w}$ 방향으로 가진 성분이 예측값에 더하는 몫이다. $\mathbf{w}$ 와 직교하는 입력 성분은 $\mathbf{w}$ 와의 내적이 0 이어서 $\mathbf{x}_i^\top \mathbf{w}$ 에 아무 값도 보태지 않으므로, 예측값을 바꾸지 않는다.
 
 ### 6.2 PLS and PCA Scores
 
