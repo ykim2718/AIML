@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 6 | Created: 2026-11-04 | Updated: 2026-11-07 03:40 UTC
+Rev. 7 | Created: 2026-11-04 | Updated: 2026-11-07 03:50 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -208,7 +208,7 @@ n &= n_{\mathrm{pivot}} + n_{\mathrm{free}} \\
 
 ## Appendix C. Intuitive Meaning
 
-1. 직관적인 의미: "에너지(정보) 보존 법칙"
+직관적인 의미: "에너지(정보) 보존 법칙"
 입력 공간 $\mathbb{R}^n$에 존재하는 모든 벡터들은 선형 변환 $T(x) = Ax$를 통과하면서 단 두 가지 중 하나의 운명을 맞이하게 됩니다.
 
 1. 변환을 견디고 살아남는 성분: 결과물(출력 공간)로 전달되어 열공간(Column Space)을 형성합니다. 이 차원의 크기를 $\text{Rank}(A)$라고 부릅니다.
