@@ -1,5 +1,5 @@
 # AI Deployment Locations For Semiconductor Equipment
-Rev. 2 | Created: 2026-10-17 | Updated: 2026-11-01 21:36 UTC
+Version 3 | Created: 2026-10-17 | Updated: 2026-11-07 13:46 UTC
 
 ## 1. Purpose
 

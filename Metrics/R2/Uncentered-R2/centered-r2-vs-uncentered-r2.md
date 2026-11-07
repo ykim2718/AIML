@@ -1,5 +1,5 @@
 # Centered R² vs Uncentered R²
-Rev. 20 | Created: 2026-04-25 | Updated: 2026-11-03 09:30 UTC
+Version 21 | Created: 2026-04-25 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Introduction: R² and Its Relation to RSQ](#1-introduction-r²-and-its-relation-to-rsq)
 - [2. Comparison of the Two Formulas](#2-comparison-of-the-two-formulas)

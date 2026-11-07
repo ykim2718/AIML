@@ -1,5 +1,5 @@
 # The 1.5 Sigma Shift Between Long-Term and Short-Term Capability
-Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+Version 4 | Created: 2026-08-30 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Two Estimates of Sigma](#2-two-estimates-of-sigma)

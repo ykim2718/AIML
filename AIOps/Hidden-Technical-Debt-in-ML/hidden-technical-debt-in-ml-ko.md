@@ -1,5 +1,5 @@
 # Hidden Technical Debt in Machine Learning Systems
-Rev. 1 | Created: 2026-11-01 | Updated: 2026-11-01 21:36 UTC
+Version 2 | Created: 2026-11-01 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Problem and Motivation](#1-problem-and-motivation)
 - [2. Architecture and Key Mechanisms](#2-architecture-and-key-mechanisms)

@@ -1,5 +1,5 @@
 # The s Control Chart
-Rev. 3 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
+Version 4 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. The s Statistic](#2-the-s-statistic)

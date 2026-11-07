@@ -1,5 +1,5 @@
 # Multivariate Statistical Process Control
-Rev. 3 | Created: 2026-09-28 | Updated: 2026-11-03 09:30 UTC
+Version 4 | Created: 2026-09-28 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
   - [1.1. False Alarm Inflation](#11-false-alarm-inflation)

@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 37 | Created: 2026-11-01 | Updated: 2026-11-07 08:35 UTC
+Version 38 | Created: 2026-11-01 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

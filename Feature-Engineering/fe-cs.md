@@ -1,5 +1,5 @@
 # 🗺️ Feature Engineering (FE) — Cross-sectional
-Rev. 1 | Created: 2026-06-27 | Updated: 2026-08-10 22:02 CDT
+Version 2 | Created: 2026-06-27 | Updated: 2026-11-07 13:46 UTC
 
 > 행끼리 독립 (i.i.d.) 인 정형 데이터 기준 — 한 시점의 snapshot 처럼 행 순서가 정보가 아니다.
 

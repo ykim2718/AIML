@@ -1,5 +1,5 @@
 # The Chi-Squared Distribution
-Rev. 5 | Created: 2026-09-04 | Updated: 2026-09-23 11:09 CDT
+Version 6 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)

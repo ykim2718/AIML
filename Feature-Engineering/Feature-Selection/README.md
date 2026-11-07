@@ -1,5 +1,5 @@
 # Feature Selection
-Rev. 9 | Created: 2026-09-12 | Updated: 2026-09-20 09:50 CDT
+Version 10 | Created: 2026-09-12 | Updated: 2026-11-07 13:46 UTC
 
 > This folder collects the methods that choose which input columns a model is given.
 > The documents divide by what the selection looks at: one feature at a time, several features together, or the trace columns a semiconductor equipment produces.

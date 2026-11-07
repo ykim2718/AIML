@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 6 | Created: 2026-11-01 | Updated: 2026-11-07 07:30 UTC
+Version 7 | Created: 2026-11-01 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

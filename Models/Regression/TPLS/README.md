@@ -1,5 +1,5 @@
 # TPLS (Temporal Partial Least Squares)
-Rev. 3 | Created: 2026-08-30 | Updated: 2026-09-23 11:08 CDT
+Version 4 | Created: 2026-08-30 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Where Time Enters](#2-where-time-enters)

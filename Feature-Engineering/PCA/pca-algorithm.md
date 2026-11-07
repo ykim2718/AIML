@@ -1,5 +1,5 @@
 # PCA Algorithm
-Rev. 8 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+Version 9 | Created: 2026-08-11 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Notation](#1-notation)
 - [2. The Procedure](#2-the-procedure)

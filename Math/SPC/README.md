@@ -1,5 +1,5 @@
 # SPC (Statistical Process Control)
-Rev. 6 | Created: 2026-09-04 | Updated: 2026-10-10 10:19 CDT
+Version 7 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 > This folder covers the statistics that decide whether a running process is behaving, and whether
 > its behaviour is good enough for the product.

@@ -1,5 +1,5 @@
 # Semiconductor Sensor Trace Wide-to-Narrow Conversion
-Rev. 3 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+Version 4 | Created: 2026-07-29 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Problem Definition](#1-problem-definition)
   - [1.1 Data Structure and Scale](#11-data-structure-and-scale)

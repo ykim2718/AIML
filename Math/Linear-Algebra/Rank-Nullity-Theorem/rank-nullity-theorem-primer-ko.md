@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 25 | Created: 2026-11-04 | Updated: 2026-11-07 08:55 UTC
+Version 26 | Created: 2026-11-04 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

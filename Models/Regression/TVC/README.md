@@ -1,5 +1,5 @@
 # TVC (Time-Varying Coefficient) Regression
-Rev. 35 | Created: 2026-08-30 | Updated: 2026-11-01 21:36 UTC
+Version 36 | Created: 2026-08-30 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Why The Coefficient Moves](#2-why-the-coefficient-moves)

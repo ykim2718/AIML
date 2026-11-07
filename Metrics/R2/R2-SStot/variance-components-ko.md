@@ -1,5 +1,5 @@
 # Variance Components in $R^2$
-Rev. 11 | Created: 2026-09-04 | Updated: 2026-11-04 11:05 UTC
+Version 12 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. Mathematical Definition Of $R^2$](#2-mathematical-definition-of-r2)

@@ -1,5 +1,5 @@
 # Lagrange Multiplier Method
-Rev. 4 | Created: 2026-10-25 | Updated: 2026-11-02 21:45 UTC
+Version 5 | Created: 2026-10-25 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

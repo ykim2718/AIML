@@ -1,5 +1,5 @@
 # Stationarity in Engineering Data
-Rev. 27 | Created: 2026-09-07 | Updated: 2026-11-04 11:05 UTC
+Version 28 | Created: 2026-09-07 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definition](#2-definition)

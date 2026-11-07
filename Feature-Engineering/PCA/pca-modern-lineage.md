@@ -1,5 +1,5 @@
 # PCA Modern Lineage
-Rev. 3 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+Version 4 | Created: 2026-08-11 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Reading The Map](#1-reading-the-map)
 - [2. Collapse Prevention And Whitening](#2-collapse-prevention-and-whitening)

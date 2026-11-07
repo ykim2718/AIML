@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Quantized Signals
-Rev. 6 | Created: 2026-08-01 | Updated: 2026-09-23 11:08 CDT
+Version 7 | Created: 2026-08-01 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope And Framing](#1-scope-and-framing)
   - [1.1 When This Document Applies](#11-when-this-document-applies)

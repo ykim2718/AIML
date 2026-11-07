@@ -1,5 +1,5 @@
 # Conditions Under Which PLS Works Where OLS Fails
-Rev. 1 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
+Version 2 | Created: 2026-11-02 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

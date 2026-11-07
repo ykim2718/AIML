@@ -1,5 +1,5 @@
 # Bayesian Optimization for Semiconductor Process Tuning
-Rev. 2 | Created: 2026-08-27 | Updated: 2026-09-23 11:08 CDT
+Version 3 | Created: 2026-08-27 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Problem Setting](#1-problem-setting)
 - [2. Method](#2-method)

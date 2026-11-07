@@ -1,7 +1,7 @@
 > ⚠️ **This is an auto-synced copy. Do not edit here.**
 
 # Automatic Rule Loading via Plugin Marketplace
-Rev. 197 | Created: 2026-08-16 | Updated: 2026-10-25 06:57 CDT
+Version 198 | Created: 2026-08-16 | Updated: 2026-11-07 13:46 UTC
 
 <img src="assets/claude-logo.png" height="100" alt="Claude logo">
 

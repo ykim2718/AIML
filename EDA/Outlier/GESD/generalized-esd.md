@@ -1,5 +1,5 @@
 # Generalized ESD — Detecting an Unknown Number of Outliers
-Rev. 10 | Created: 2026-08-17 | Updated: 2026-09-23 11:08 CDT
+Version 11 | Created: 2026-08-17 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Principle](#2-principle)

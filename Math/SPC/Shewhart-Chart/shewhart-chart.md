@@ -1,5 +1,5 @@
 # The Shewhart Control Chart
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:33 CDT
+Version 5 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Chart Structure](#2-chart-structure)

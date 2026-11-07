@@ -1,5 +1,5 @@
 # Inverse Model Quick Start
-Rev. 26 | Created: 2026-10-22 | Updated: 2026-11-04 10:04 UTC
+Version 27 | Created: 2026-10-22 | Updated: 2026-11-07 13:46 UTC
 
 ## 1. Purpose
 

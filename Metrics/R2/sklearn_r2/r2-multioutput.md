@@ -1,5 +1,5 @@
 # The multioutput Argument of r2_score
-Rev. 1 | Created: 2026-09-05 | Updated: 2026-09-23 11:08 CDT
+Version 2 | Created: 2026-09-05 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Definitions](#2-definitions)

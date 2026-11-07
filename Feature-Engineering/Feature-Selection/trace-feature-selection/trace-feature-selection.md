@@ -1,5 +1,5 @@
 # Trace Feature Selection
-Rev. 22 | Created: 2026-09-10 | Updated: 2026-10-30 09:49 UTC
+Version 23 | Created: 2026-09-10 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

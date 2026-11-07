@@ -1,5 +1,5 @@
 # Structured Data Manifest for Semiconductor Machine Data
-Rev. 75 | Created: 2026-08-07 | Updated: 2026-09-23 11:33 CDT
+Version 76 | Created: 2026-08-07 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Manifest Files](#1-manifest-files)
 - [2. Catalog](#2-catalog)

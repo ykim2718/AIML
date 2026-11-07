@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 9 | Created: 2026-10-26 | Updated: 2026-11-07 07:50 UTC
+Version 10 | Created: 2026-10-26 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

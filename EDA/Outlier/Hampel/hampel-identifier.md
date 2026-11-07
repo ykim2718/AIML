@@ -1,5 +1,5 @@
 # Hampel Identifier — Flagging Outliers with the Median and the MAD
-Rev. 40 | Created: 2026-08-17 | Updated: 2026-09-23 11:08 CDT
+Version 41 | Created: 2026-08-17 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Modified z-score](#2-modified-z-score)

@@ -1,5 +1,5 @@
 # Bayesian R² — Obtaining R² as a Distribution Instead of a Point
-Rev. 4 | Created: 2026-09-04 | Updated: 2026-09-23 11:29 CDT
+Version 5 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Motivation](#1-motivation)
 - [2. Core Idea](#2-core-idea)

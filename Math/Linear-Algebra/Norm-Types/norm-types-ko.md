@@ -1,5 +1,5 @@
 # Types of Norms
-Rev. 24 | Created: 2026-11-02 | Updated: 2026-11-07 07:10 UTC
+Version 25 | Created: 2026-11-02 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

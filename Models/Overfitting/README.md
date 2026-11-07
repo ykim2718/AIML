@@ -1,5 +1,5 @@
 # Overfitting
-Rev. 1 | Created: 2026-09-07 | Updated: 2026-09-07 16:33 CDT
+Version 2 | Created: 2026-09-07 | Updated: 2026-11-07 13:46 UTC
 
 이 폴더는 overfitting 을 자료의 모양에 따라 나누어 다룬다. 열이 행보다 많은 자료와 행이 열보다 많은 자료는 같은 이름의 실패를 서로 다른 이유로 겪으므로, 방어도 검증도 다르게 설계해야 한다.
 

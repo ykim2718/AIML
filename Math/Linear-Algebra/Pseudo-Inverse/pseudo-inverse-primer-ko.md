@@ -1,5 +1,5 @@
 # Pseudo-Inverse Primer
-Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-07 07:35 UTC
+Version 14 | Created: 2026-11-02 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

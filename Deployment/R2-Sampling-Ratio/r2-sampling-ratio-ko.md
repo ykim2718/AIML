@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Rev. 2 | Created: 2026-11-05 | Updated: 2026-11-07 07:32 CST
+Version 3 | Created: 2026-11-05 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

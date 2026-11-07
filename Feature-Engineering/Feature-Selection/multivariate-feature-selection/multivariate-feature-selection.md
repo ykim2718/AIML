@@ -1,5 +1,5 @@
 # Multivariate Feature Selection
-Rev. 11 | Created: 2026-09-14 | Updated: 2026-09-23 11:33 CDT
+Version 12 | Created: 2026-09-14 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
   - [1.1 Motivation](#11-motivation)

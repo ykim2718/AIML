@@ -1,5 +1,5 @@
 # Dot Product Primer
-Rev. 8 | Created: 2026-10-25 | Updated: 2026-11-07 06:30 UTC
+Version 9 | Created: 2026-10-25 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

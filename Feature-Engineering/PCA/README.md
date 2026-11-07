@@ -1,5 +1,5 @@
 # PCA
-Rev. 5 | Created: 2026-08-11 | Updated: 2026-08-14 09:52 CDT
+Version 6 | Created: 2026-08-11 | Updated: 2026-11-07 13:46 UTC
 
 > This folder treats PCA as a lineage rather than as a single technique.
 > The documents divide into building that lineage, holding it against field data, and placing it in the era of representation learning.

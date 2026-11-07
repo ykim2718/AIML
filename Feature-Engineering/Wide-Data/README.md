@@ -1,5 +1,5 @@
 # Wide-Data
-Rev. 1 | Created: 2026-08-15 | Updated: 2026-08-15 10:48 CDT
+Version 2 | Created: 2026-08-15 | Updated: 2026-11-07 13:46 UTC
 
 > This folder holds strategies for wide data, where the columns that describe one wafer far outnumber the wafers themselves.
 > The documents start from the (wafer, feature, trace) sensor tensor and work toward a narrow per-wafer table.

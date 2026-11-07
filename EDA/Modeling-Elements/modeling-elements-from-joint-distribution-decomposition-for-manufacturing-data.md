@@ -1,5 +1,5 @@
 # Modeling Elements from Joint Distribution Decomposition for Manufacturing Data
-Rev. 20 | Created: 2026-10-03 | Updated: 2026-10-22 18:20 CDT
+Version 21 | Created: 2026-10-03 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

@@ -1,5 +1,5 @@
 # Medallion architecture in practice: six stages from raw source files to a model-ready dataset
-Rev. 28 | Created: 2026-06-23 | Updated: 2026-09-23 11:33 CDT
+Version 29 | Created: 2026-06-23 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Overview](#1-overview)
 - [2. Medallion Architecture Mapping](#2-medallion-architecture-mapping)

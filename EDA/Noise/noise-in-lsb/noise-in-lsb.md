@@ -1,5 +1,5 @@
 # Noise in LSB
-Rev. 7 | Created: 2026-08-22 | Updated: 2026-09-23 11:08 CDT
+Version 8 | Created: 2026-08-22 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Definition](#1-definition)
 - [2. Physical Meaning](#2-physical-meaning)

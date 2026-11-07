@@ -1,5 +1,5 @@
 # Ceiling of the Classical z-Score
-Rev. 6 | Created: 2026-08-18 | Updated: 2026-10-25 16:20 CDT
+Version 7 | Created: 2026-08-18 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. Bound](#2-bound)

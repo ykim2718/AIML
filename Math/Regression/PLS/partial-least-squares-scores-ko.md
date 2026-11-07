@@ -1,5 +1,5 @@
 # Scores in Partial Least Squares
-Rev. 16 | Created: 2026-10-24 | Updated: 2026-11-03 08:15 UTC
+Version 17 | Created: 2026-10-24 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

@@ -1,5 +1,5 @@
 # Temporal Convolutional Network Quick Start
-Rev. 10 | Created: 2026-10-23 | Updated: 2026-11-01 21:36 UTC
+Version 11 | Created: 2026-10-23 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Taxonomy](#2-taxonomy)

@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Shape-based Taxonomy
-Rev. 181 | Created: 2026-08-01 | Updated: 2026-09-23 11:33 CDT
+Version 182 | Created: 2026-08-01 | Updated: 2026-11-07 13:46 UTC
 
 - [Goals](#goals)
 - [1. Shape Vocabulary](#1-shape-vocabulary)

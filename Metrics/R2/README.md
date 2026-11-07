@@ -1,5 +1,5 @@
 # R² (Coefficient of Determination)
-Rev. 11 | Created: 2026-09-04 | Updated: 2026-09-05 21:25 CDT
+Version 12 | Created: 2026-09-04 | Updated: 2026-11-07 13:46 UTC
 
 > This folder covers the one metric that reports a fit as a fraction of variance, and what that
 > fraction is actually a fraction of.

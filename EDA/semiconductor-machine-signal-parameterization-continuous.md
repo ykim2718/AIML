@@ -1,5 +1,5 @@
 # Semiconductor Machine Signal Parameterization for ML Modeling: Continuous Signals
-Rev. 9 | Created: 2026-07-31 | Updated: 2026-09-23 11:08 CDT
+Version 10 | Created: 2026-07-31 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope And Framing](#1-scope-and-framing)
   - [1.1 Two Regimes](#11-two-regimes)

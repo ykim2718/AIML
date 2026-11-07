@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 6 | Created: 2026-10-26 | Updated: 2026-11-07 06:55 UTC
+Version 7 | Created: 2026-10-26 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

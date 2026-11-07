@@ -1,5 +1,5 @@
 # Overfitting In Long Data
-Rev. 19 | Created: 2026-09-07 | Updated: 2026-11-01 21:36 UTC
+Version 20 | Created: 2026-09-07 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

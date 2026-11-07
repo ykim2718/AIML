@@ -1,5 +1,5 @@
 # Model Deployment Quick Start
-Rev. 6 | Created: 2026-10-14 | Updated: 2026-11-01 21:36 UTC
+Version 7 | Created: 2026-10-14 | Updated: 2026-11-07 13:46 UTC
 
 ## 1. Purpose
 

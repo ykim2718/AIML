@@ -1,5 +1,5 @@
 # Noise Color Taxonomy
-Rev. 11 | Created: 2026-08-20 | Updated: 2026-09-23 11:08 CDT
+Version 12 | Created: 2026-08-20 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Waveform](#1-waveform)
 - [2. Spectral Slope](#2-spectral-slope)

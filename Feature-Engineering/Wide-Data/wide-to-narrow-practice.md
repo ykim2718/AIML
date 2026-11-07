@@ -1,5 +1,5 @@
 # Wide-to-Narrow Practice
-Rev. 4 | Created: 2026-07-29 | Updated: 2026-09-23 11:08 CDT
+Version 5 | Created: 2026-07-29 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope and Premise](#1-scope-and-premise)
 - [2. Weight-Shared Channel-Independent Encoding](#2-weight-shared-channel-independent-encoding)

@@ -1,5 +1,5 @@
 # Inverse Problem and Model Inversion
-Rev. 169 | Created: 2026-08-28 | Updated: 2026-11-04 10:29 UTC
+Version 170 | Created: 2026-08-28 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Definition](#1-definition)
   - [1.1 Forward problem and inverse problem](#11-forward-problem-and-inverse-problem)

@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 20 | Created: 2026-11-03 | Updated: 2026-11-07 08:45 UTC
+Version 21 | Created: 2026-11-03 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

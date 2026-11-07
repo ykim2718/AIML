@@ -1,5 +1,5 @@
 # PCA Classical Lineage
-Rev. 5 | Created: 2026-08-11 | Updated: 2026-09-23 11:08 CDT
+Version 6 | Created: 2026-08-11 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Reading The Map](#1-reading-the-map)
 - [2. Root](#2-root)

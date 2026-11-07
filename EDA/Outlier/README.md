@@ -1,5 +1,5 @@
 # Outlier Detection
-Rev. 7 | Created: 2026-08-17 | Updated: 2026-10-25 16:20 CDT
+Version 8 | Created: 2026-08-17 | Updated: 2026-11-07 13:46 UTC
 
 > This folder covers the detection of observations that are discordant with the model the rest of a sample follows.
 > A survey names the methods and picks among them, and each method worked out in full keeps its own subfolder, holding the document that fixes it and the scripts that run it.

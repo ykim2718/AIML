@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Non-Integral Summary Statistics
-Rev. 29 | Created: 2026-07-29 | Updated: 2026-09-23 11:33 CDT
+Version 30 | Created: 2026-07-29 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Non-Integral Statistics](#1-non-integral-statistics)
   - [1.1 Closed-Form Statistics](#11-closed-form-statistics)

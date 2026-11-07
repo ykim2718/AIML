@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-07 06:45 UTC
+Version 14 | Created: 2026-11-02 | Updated: 2026-11-07 13:46 UTC
 
 ## 1. Purpose
 

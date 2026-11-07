@@ -1,5 +1,5 @@
 # Bayesian Statistics
-Rev. 11 | Created: 2026-09-20 | Updated: 2026-11-03 08:00 UTC
+Version 12 | Created: 2026-09-20 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

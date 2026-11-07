@@ -1,5 +1,5 @@
 # CLAUDE.md
-Rev. 10 | Created: 2026-07-31 | Updated: 2026-11-01 23:17 UTC
+Version 11 | Created: 2026-07-31 | Updated: 2026-11-07 13:46 UTC
 
 ## Git Workflow
 

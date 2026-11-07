@@ -1,5 +1,5 @@
 # Within-Wafer and Wafer-to-Wafer Variance Decomposition
-Rev. 5 | Created: 2026-09-22 | Updated: 2026-11-03 09:30 UTC
+Version 6 | Created: 2026-09-22 | Updated: 2026-11-07 13:46 UTC
 
 - [1. One-Way Variance Components](#1-one-way-variance-components)
   - [1.1 Notation](#11-notation)

@@ -1,5 +1,5 @@
 # Claude Rules Setup
-Rev. 11 | Created: 2026-08-03 | Updated: 2026-10-25 06:55 CDT
+Version 12 | Created: 2026-08-03 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Layout](#1-layout)
 - [2. Settings](#2-settings)

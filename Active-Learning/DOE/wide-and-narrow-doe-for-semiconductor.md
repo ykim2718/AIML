@@ -1,5 +1,5 @@
 # Wide and Narrow DOE for Semiconductor Process Models
-Rev. 12 | Created: 2026-08-27 | Updated: 2026-09-23 11:33 CDT
+Version 13 | Created: 2026-08-27 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Proposition](#1-proposition)
 - [2. Range](#2-range)

@@ -1,5 +1,5 @@
 # Spec-Driven Development (SDD)
-Rev. 7 | Created: 2026-09-26 | Updated: 2026-10-26 18:26 CDT
+Version 8 | Created: 2026-09-26 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)

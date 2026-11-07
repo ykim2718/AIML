@@ -1,5 +1,5 @@
 # Semiconductor Equipment Trace Integral Summary Statistics
-Rev. 25 | Created: 2026-07-29 | Updated: 2026-09-23 11:33 CDT
+Version 26 | Created: 2026-07-29 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Integral Statistics](#1-integral-statistics)
   - [1.1 Plain AUC Carries No Information](#11-plain-auc-carries-no-information)

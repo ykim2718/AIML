@@ -1,5 +1,5 @@
 # The xbar-s Control Chart
-Rev. 15 | Created: 2026-09-05 | Updated: 2026-09-23 11:33 CDT
+Version 16 | Created: 2026-09-05 | Updated: 2026-11-07 13:46 UTC
 
 - [1. Scope](#1-scope)
 - [2. The Chart Pair](#2-the-chart-pair)
