@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 17 | Created: 2026-11-04 | Updated: 2026-11-07 05:30 UTC
+Rev. 18 | Created: 2026-11-04 | Updated: 2026-11-07 06:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -52,6 +52,7 @@ Table 1. Symbols
 | $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                           | $m \times n$                   | 기본 행 연산으로 얻음                                    |
 | $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot column 개수와 free column 개수                      | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$             |
 | $\mathbf{v}$                              | null space 의 vector, Worked Example 에서는 null space 를 생성하는 vector | $n \times 1$                   | zero vector 가 아님                                      |
+| $c$                                       | 임의의 상수                                                               | scalar                         | 실수                                                     |
 
 특수 기호는 아래처럼 읽는다.
 
@@ -90,11 +91,11 @@ $\mathrm{rank}(\mathbf{A})$ 는 입력 $\mathbf{x}$ 를 $\mathbf{A}\mathbf{x}$ �
 
 ### 5.2 Nullity Term
 
-$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. Nullity 가 1 이상이면 $\mathbf{A}\mathbf{v} = \mathbf{0}$ 을 만족하고 zero vector 가 아닌 null space 의 vector $\mathbf{v}$ 가 있고, 입력 $\mathbf{x}$ 에 $\mathbf{v}$ 를 더하면 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}$ 이어서 출력이 바뀌지 않는다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
+$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. Nullity 가 1 이상이면 $\mathbf{A}\mathbf{v} = \mathbf{0}$ 을 만족하고 zero vector 가 아닌 null space 의 vector $\mathbf{v}$ 가 있고, 입력 $\mathbf{x}$ 에 $\mathbf{v}$ 를 더하면 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}$ 이어서 출력이 바뀌지 않는다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다. $\mathrm{rank}(\mathbf{A}) \le \min(m, n)$ 이므로 $\mathrm{nullity}(\mathbf{A}) = n - \mathrm{rank}(\mathbf{A}) \ge n - \min(m, n)$ 이다.
 
 ### 5.3 Split of the Input Space
 
-$\mathrm{Row}(\mathbf{A})$ 의 차원은 $\mathrm{Col}(\mathbf{A})$ 의 차원과 같은 $\mathrm{rank}(\mathbf{A})$ 이고, row space 와 null space 는 서로 직교하는 $\mathbb{R}^n$ 의 부분공간이다. 식 (1) 은 입력 공간 $\mathbb{R}^n$ 의 차원 $n$ 이 row space 의 차원과 null space 의 차원으로 나뉜다는 식이기도 하다. 입력 vector 하나를 두 성분으로 나누는 계산은 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 의 5.5 Orthogonality to the Row Space 에 있다.
+$\mathrm{Row}(\mathbf{A})$ 의 차원은 $\mathrm{Col}(\mathbf{A})$ 의 차원과 같은 $\mathrm{rank}(\mathbf{A})$ 이며, 두 차원이 같은 까닭은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 의 5.2 Row Rank and Column Rank 에 있다. $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 각 행은 $\mathbf{A}$ 의 한 행과 $\mathbf{x}$ 의 내적이 0 이라는 식이므로, null space 의 vector 는 $\mathbf{A}$ 의 모든 행과, 따라서 행들의 일차결합인 row space 의 모든 vector 와 직교한다. 식 (1) 은 입력 공간 $\mathbb{R}^n$ 의 차원 $n$ 이 row space 의 차원과 null space 의 차원으로 나뉜다는 식이기도 하다. 입력 vector 하나를 두 성분으로 나누는 계산은 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 의 5.5 Orthogonality to the Row Space 에 있다.
 
 ## 6. Worked Example
 
@@ -112,7 +113,7 @@ $\mathbf{A}$ 의 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, �
 \hspace{19em} (3)
 ```
 
-식 (3) 에서 pivot column 은 첫째와 둘째 열이어서 $\mathrm{rank}(\mathbf{A}) = 2$ 이고, free column 은 셋째 열 하나이다. 식 (1) 에 넣으면 null space 를 구하지 않고도 $\mathrm{nullity}(\mathbf{A}) = 3 - 2 = 1$ 이다.
+식 (3) 에서 pivot column 은 첫째와 둘째 열이고, pivot column 의 개수가 rank 이므로 ([Appendix B](#appendix-b-derivation) 의 둘째 등호) $\mathrm{rank}(\mathbf{A}) = 2$ 이다. Rank 가 행의 수 $m = 2$ 와 같으므로 column space 는 $\mathbb{R}^2$ 전체이다. Free column 은 셋째 열 하나이다. 식 (1) 에 넣으면 null space 를 구하지 않고도 $\mathrm{nullity}(\mathbf{A}) = 3 - 2 = 1$ 이다.
 
 Null space 를 직접 구해 이 값을 확인한다. Null space 는 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해이고, 기본 행 연산은 해를 바꾸지 않으므로 식 (3) 의 $\mathbf{R}$ 로 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 을 푼다. $\mathbf{R}$ 의 두 행은 $x_1 = 0$ 과 $x_2 + 1.5\,x_3 = 0$ 이므로, free variable $x_3$ 를 1 로 두면 $x_1 = 0$, $x_2 = -1.5$ 이다.
 
@@ -122,7 +123,7 @@ Null space 를 직접 구해 이 값을 확인한다. Null space 는 $\mathbf{A}
 \hspace{19em} (4)
 ```
 
-Null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다. $n$, $\mathrm{rank}(\mathbf{A})$, $\mathrm{nullity}(\mathbf{A})$ 의 세 값을 모으면 아래 Table 2 와 같다.
+Free variable $x_3$ 를 1 대신 임의의 실수 $c$ 로 두면 해는 $c\,\mathbf{v}$ 이므로, null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다. $n$, $\mathrm{rank}(\mathbf{A})$, $\mathrm{nullity}(\mathbf{A})$ 의 세 값을 모으면 아래 Table 2 와 같다.
 
 Table 2. Rank and nullity of the matrix in equation (2)
 
@@ -142,7 +143,7 @@ $\mathbf{A}$ 는 입력 공간 $\mathbb{R}^3$ 가운데 row space 성분 2 차�
 
 ### 7.1 Number of Solutions
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해가 하나라도 있으면, 해 전체는 그 해에 null space 의 vector 를 더한 것이다. 그래서 nullity 로 해의 개수가 갈린다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해가 하나라도 있으면, 해 전체는 그 해에 null space 의 vector 를 더한 것이다. 두 해를 빼면 $\mathbf{A}$ 를 곱한 값이 $\mathbf{b} - \mathbf{b} = \mathbf{0}$ 이어서 그 차이가 null space 에 속하고, 거꾸로 해에 null space 의 vector 를 더해도 $\mathbf{A}$ 를 곱한 값은 그대로 $\mathbf{b}$ 이다. 그래서 nullity 로 해의 개수가 갈린다.
 
 - $\mathrm{nullity}(\mathbf{A}) = 0$, 곧 $\mathrm{rank}(\mathbf{A}) = n$: null space 에 zero vector 만 있어 해가 있으면 하나뿐이다.
 - $\mathrm{nullity}(\mathbf{A}) \ge 1$, 곧 $\mathrm{rank}(\mathbf{A}) \lt n$: 해가 있으면 무수히 많다.
