@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 17 | Created: 2026-11-03 | Updated: 2026-11-07 08:10 UTC
+Rev. 18 | Created: 2026-11-03 | Updated: 2026-11-07 08:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -186,17 +186,19 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 - **column space**: 행렬의 열들의 일차결합 전체. $\mathbb{R}^m$ 의 부분공간이다.
 - **free column**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (free variable) 는 아무 값이나 가질 수 있고, pivot column 의 변수 (pivot 변수) 는 free variable 의 값으로 정해진다.<br>
   예: Worked Example 의 $\mathbf{A}$ 를 기약 행사다리꼴로 바꾼 아래 행렬에서는 pivot 이 없는 셋째 열 $[0, 1.5]^\top$ 이 free column 이고, 그 열의 변수가 free variable 이다.
-  ```math
-  \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
-  ```
-- **left null space**: $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ 인 $\mathbf{y}$ 전체. $\mathbb{R}^m$ 의 부분공간이며 차원은 $m - r$ 이다.
+
+```math
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
+```
+
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체. $\mathbb{R}^n$ 의 부분공간이다.
 - **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.<br>
   예: 같은 행렬에서는 첫 행의 pivot 1 이 있는 첫째 열과 둘째 행의 pivot 1 이 있는 둘째 열이 pivot column 이다.
-  ```math
-  \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
-  ```
-- **rank-nullity 정리 (rank-nullity theorem)**: $\mathbf{A}$ 의 rank 와 null space 의 차원을 더하면 열의 수 $n$ 이라는 정리.
+
+```math
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
+```
+
 - **row space**: 행렬의 행들의 일차결합 전체. $\mathbb{R}^n$ 의 부분공간이다.
 - **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. Column space 의 차원과 같다.
