@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Rev. 0 | Created: 2026-11-05 | Updated: 2026-11-05 05:32 CST
+Rev. 1 | Created: 2026-11-05 | Updated: 2026-11-06 21:15 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,7 +20,7 @@ Rev. 0 | Created: 2026-11-05 | Updated: 2026-11-05 05:32 CST
 
 ## 1. Purpose
 
-- **Problem Statement**: 증착 공정의 두께를 model 이 예측하고 일부 wafer 만 실측하면, 실측 wafer 로 계산한 R² 가 실측 wafer 가 늘 때마다 변동한다.
+- **Problem Statement**: 반도체 증착 공정의 두께를 model 이 예측하고 일부 wafer 만 실측하면, 실측 wafer 로 계산한 R² 가 실측 wafer 가 늘 때마다 변동한다.
 - **Goal**: 실측 R² 가 최저 R² 이상으로 유지될 확률을 정한 값 이상으로 두는 가장 작은 실측 wafer 비율을 model 마다 계산한다.
 - **Non-Goal**: 두께 예측 model 을 만들거나 고르는 방법은 다루지 않는다.
 
