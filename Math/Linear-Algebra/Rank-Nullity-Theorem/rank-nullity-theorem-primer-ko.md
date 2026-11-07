@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 23 | Created: 2026-11-04 | Updated: 2026-11-07 08:35 UTC
+Rev. 24 | Created: 2026-11-04 | Updated: 2026-11-07 08:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -165,7 +165,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해가 하나라도 있으면, 해 전�
 \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
 ```
 
-- **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.<br>
+- **pivot column**: 기약 행사다리꼴에서 각 행을 왼쪽부터 읽어 처음 나오는 0 이 아닌 원소 (pivot) 가 있는 열.<br>
   예: 같은 행렬에서는 첫 행의 pivot 1 이 있는 첫째 열과 둘째 행의 pivot 1 이 있는 둘째 열이 pivot column 이다.
 
 ```math

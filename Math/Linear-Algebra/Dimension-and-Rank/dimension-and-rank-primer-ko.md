@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 19 | Created: 2026-11-03 | Updated: 2026-11-07 08:35 UTC
+Rev. 20 | Created: 2026-11-03 | Updated: 2026-11-07 08:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -192,7 +192,7 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 ```
 
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체. $\mathbb{R}^n$ 의 부분공간이다.
-- **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.<br>
+- **pivot column**: 기약 행사다리꼴에서 각 행을 왼쪽부터 읽어 처음 나오는 0 이 아닌 원소 (pivot) 가 있는 열.<br>
   예: 같은 행렬에서는 첫 행의 pivot 1 이 있는 첫째 열과 둘째 행의 pivot 1 이 있는 둘째 열이 pivot column 이다.
 
 ```math
@@ -227,7 +227,7 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 
 기저가 있으면 $V$ 의 모든 vector 를 기저 vector 의 일차결합으로 적을 수 있고, 기저 vector 가 서로 일차독립이므로 그 계수는 하나로 정해진다. $\mathbb{R}^3$ 의 기저 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 에서 $[2, 3, 0]^\top$ 은 $2 \cdot [1, 0, 0]^\top + 3 \cdot [0, 1, 0]^\top + 0 \cdot [0, 0, 1]^\top$ 으로만 적힌다. 같은 $V$ 에 기저는 여럿이지만 기저 vector 의 개수는 모두 같으며, 그 개수가 $V$ 의 차원이다.
 
-$\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴 (reduced row echelon form) 로 바꾸면 column space, row space, null space 의 기저를 모두 구할 수 있다. 기약 행사다리꼴은 각 행의 첫 0 이 아닌 원소 (pivot) 가 1 이고, pivot 이 있는 열의 다른 원소가 모두 0 이며, 아래 행의 pivot 이 위 행의 pivot 보다 오른쪽에 있는 꼴이다.
+$\mathbf{A}$ 를 기본 행 연산으로 기약 행사다리꼴 (reduced row echelon form) 로 바꾸면 column space, row space, null space 의 기저를 모두 구할 수 있다. 기약 행사다리꼴은 각 행을 왼쪽부터 읽어 처음 나오는 0 이 아닌 원소 (pivot) 가 1 이고, pivot 이 있는 열의 다른 원소가 모두 0 이며, 아래 행의 pivot 이 위 행의 pivot 보다 오른쪽에 있는 꼴이다.
 
 식 (3) 의 $\mathbf{A}$ 와 식 (4) 의 두 행은 아래이다.
 

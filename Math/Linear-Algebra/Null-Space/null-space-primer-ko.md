@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 55 | Created: 2026-10-31 | Updated: 2026-11-07 08:35 UTC
+Rev. 56 | Created: 2026-10-31 | Updated: 2026-11-07 08:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -241,7 +241,7 @@ Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 
 ```
 
 - **nullity**: Null space 의 차원.
-- **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.<br>
+- **pivot column**: 기약 행사다리꼴에서 각 행을 왼쪽부터 읽어 처음 나오는 0 이 아닌 원소 (pivot) 가 있는 열.<br>
   예: 같은 행렬에서는 첫 행의 pivot 1 이 있는 첫째 열과 둘째 행의 pivot 1 이 있는 둘째 열이 pivot column 이다.
 
 ```math
