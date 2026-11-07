@@ -1,5 +1,5 @@
 # Dimension and Rank Primer
-Rev. 18 | Created: 2026-11-03 | Updated: 2026-11-07 08:20 UTC
+Rev. 19 | Created: 2026-11-03 | Updated: 2026-11-07 08:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -203,7 +203,13 @@ Rank 를 행의 수 $m$ 과 열의 수 $n$ 에 견주면 선형방정식 $\mathb
 - **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. Column space 의 차원과 같다.
 - **기본 행 연산 (elementary row operation)**: 두 행을 맞바꾸기, 한 행에 0 이 아닌 수를 곱하기, 한 행에 다른 행의 상수배를 더하기의 세 연산.
-- **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
+- **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.<br>
+  예: Worked Example 의 $\mathbf{A}$ 는 기본 행 연산으로 아래 오른쪽 행렬이 된다. 두 행의 pivot 1 이 첫째와 둘째 열에 있고, 그 두 열의 다른 원소는 0 이다.
+
+```math
+\begin{bmatrix} 1 & 2 & 3 \\ 4 & 6 & 9 \end{bmatrix} \;\longrightarrow\; \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
+```
+
 - **기저 (basis)**: Vector space $V$ 의 vector 가운데 서로 일차독립이면서, 일차결합으로 $V$ 의 모든 vector 를 만드는 vector 의 집합. $\mathbb{R}^3$ 에서는 $[1, 0, 0]^\top$, $[0, 1, 0]^\top$, $[0, 0, 1]^\top$ 이 그 하나이다. 공간이 여럿이면 공간마다 기저가 하나씩 있으며, 그 여럿을 복수형 bases 로 부른다. Table 4 에는 세 공간의 기저가 한 행에 하나씩 있다.
 - **기저 vector (basis vector)**: 기저에 든 vector 하나하나. Table 4 에서 column space 의 기저 $\{\mathbf{c}_1, \mathbf{c}_2\}$ 에서는 $\mathbf{c}_1$ 과 $\mathbf{c}_2$ 가 각각 기저 vector 이며, 기저 vector 의 개수가 그 공간의 차원이다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.

@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 36 | Created: 2026-11-01 | Updated: 2026-11-07 07:45 UTC
+Rev. 37 | Created: 2026-11-01 | Updated: 2026-11-07 08:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -233,7 +233,13 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 무수히 많으면, 해들은 �
 - **row space**: 행렬의 행들의 일차결합으로 나타나는 vector 전체.
 - **계수 (rank)**: 행렬에서 서로 일차독립인 열의 최대 개수. 차원과 rank 의 구별은 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 에 있다.
 - **기본 행 연산 (elementary row operation)**: 행 둘을 맞바꾸기, 한 행에 0 이 아닌 상수 곱하기, 한 행에 다른 행의 상수배 더하기의 세 연산.
-- **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.
+- **기약 행사다리꼴 (reduced row echelon form)**: 기본 행 연산으로 얻는 행렬로, 각 행의 pivot 이 1 이고 pivot 이 있는 열의 다른 원소가 모두 0 인 꼴.<br>
+  예: Worked Example 의 $\mathbf{A}$ 는 두 행의 pivot 1 이 첫째와 둘째 열에 있고 그 두 열의 다른 원소가 0 이어서, 기본 행 연산 없이 그대로 기약 행사다리꼴이다.
+
+```math
+\begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix}
+```
+
 - **기저 (basis)**: 부분공간을 생성하는 일차독립인 vector 의 모임. 원소의 수가 그 부분공간의 차원이다.
 - **부분공간 (subspace)**: Vector space 의 부분집합이면서 그 자체로 vector space 인 집합.
 - **우특이벡터 (right singular vector)**: 특이값 분해 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\top$ 에서 $\mathbf{V}$ 의 열. 입력 공간 $\mathbb{R}^n$ 의 단위 vector 이다.
