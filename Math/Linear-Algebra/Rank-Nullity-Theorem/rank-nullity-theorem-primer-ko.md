@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 10 | Created: 2026-11-04 | Updated: 2026-11-07 04:05 UTC
+Rev. 11 | Created: 2026-11-04 | Updated: 2026-11-07 04:15 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -34,23 +34,23 @@ Rank 는 column space 의 차원이고 nullity 는 null space 의 차원이며, 
 
 Table 1. Symbols
 
-| Symbol                                    | Meaning                                                               | Shape                          | Assumption                                               |
-| :---------------------------------------: | :-------------------------------------------------------------------: | :----------------------------: | :------------------------------------------------------: |
-| $\mathbf{A}$                              | 행렬                                                                  | $m \times n$                   | 실수 원소                                                |
-| $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                     | scalar                         | 양의 정수                                                |
-| $\mathbb{R}^n$                            | 원소가 실수 $n$ 개인 열 vector 전체의 집합, $\mathbf{A}$ 의 입력 공간 | vector space                   | 차원 $n$                                                 |
-| $\mathbf{x}$                              | 입력 vector                                                           | $n \times 1$                   | 실수 원소                                                |
-| $\mathbf{b}$                              | 선형방정식의 우변                                                     | $m \times 1$                   | 실수 원소                                                |
-| $\mathbf{0}$                              | zero vector                                                           | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                            |
-| $\mathrm{Col}(\mathbf{A})$                | $\mathbf{A}$ 의 column space                                          | $\mathbb{R}^m$ 의 부분공간     | 열들의 일차결합 전체                                     |
-| $\mathrm{Row}(\mathbf{A})$                | $\mathbf{A}$ 의 row space                                             | $\mathbb{R}^n$ 의 부분공간     | 행들의 일차결합 전체                                     |
-| $\mathrm{Null}(\mathbf{A})$               | $\mathbf{A}$ 의 null space                                            | $\mathbb{R}^n$ 의 부분공간     | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
-| $\mathrm{rank}(\mathbf{A})$               | $\mathbf{A}$ 의 rank                                                  | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$         |
-| $\mathrm{nullity}(\mathbf{A})$            | $\mathbf{A}$ 의 nullity                                               | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$               |
-| $\dim V$                                  | vector space $V$ 의 차원                                              | scalar                         | 0 이상의 정수                                            |
-| $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                       | $m \times n$                   | 기본 행 연산으로 얻음                                    |
-| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot column 개수와 free column 개수                  | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$             |
-| $\mathbf{v}$                              | Worked Example 에서 null space 를 생성하는 vector                     | $3 \times 1$                   | zero vector 가 아님                                      |
+| Symbol                                    | Meaning                                                                   | Shape                          | Assumption                                               |
+| :---------------------------------------: | :-----------------------------------------------------------------------: | :----------------------------: | :------------------------------------------------------: |
+| $\mathbf{A}$                              | 행렬                                                                      | $m \times n$                   | 실수 원소                                                |
+| $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                         | scalar                         | 양의 정수                                                |
+| $\mathbb{R}^n$                            | 원소가 실수 $n$ 개인 열 vector 전체의 집합, $\mathbf{A}$ 의 입력 공간     | vector space                   | 차원 $n$                                                 |
+| $\mathbf{x}$                              | 입력 vector                                                               | $n \times 1$                   | 실수 원소                                                |
+| $\mathbf{b}$                              | 선형방정식의 우변                                                         | $m \times 1$                   | 실수 원소                                                |
+| $\mathbf{0}$                              | zero vector                                                               | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                            |
+| $\mathrm{Col}(\mathbf{A})$                | $\mathbf{A}$ 의 column space                                              | $\mathbb{R}^m$ 의 부분공간     | 열들의 일차결합 전체                                     |
+| $\mathrm{Row}(\mathbf{A})$                | $\mathbf{A}$ 의 row space                                                 | $\mathbb{R}^n$ 의 부분공간     | 행들의 일차결합 전체                                     |
+| $\mathrm{Null}(\mathbf{A})$               | $\mathbf{A}$ 의 null space                                                | $\mathbb{R}^n$ 의 부분공간     | $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체 |
+| $\mathrm{rank}(\mathbf{A})$               | $\mathbf{A}$ 의 rank                                                      | scalar                         | $0 \le \mathrm{rank}(\mathbf{A}) \le \min(m, n)$         |
+| $\mathrm{nullity}(\mathbf{A})$            | $\mathbf{A}$ 의 nullity                                                   | scalar                         | $0 \le \mathrm{nullity}(\mathbf{A}) \le n$               |
+| $\dim V$                                  | vector space $V$ 의 차원                                                  | scalar                         | 0 이상의 정수                                            |
+| $\mathbf{R}$                              | $\mathbf{A}$ 의 기약 행사다리꼴                                           | $m \times n$                   | 기본 행 연산으로 얻음                                    |
+| $n_{\mathrm{pivot}}$, $n_{\mathrm{free}}$ | $\mathbf{R}$ 의 pivot column 개수와 free column 개수                      | scalar                         | $n_{\mathrm{pivot}} + n_{\mathrm{free}} = n$             |
+| $\mathbf{v}$                              | null space 의 vector, Worked Example 에서는 null space 를 생성하는 vector | $n \times 1$                   | zero vector 가 아님                                      |
 
 특수 기호는 아래처럼 읽는다.
 
@@ -89,7 +89,7 @@ $\mathrm{rank}(\mathbf{A})$ 는 입력 $\mathbf{x}$ 를 $\mathbf{A}\mathbf{x}$ �
 
 ### 5.2 Nullity Term
 
-$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. Null space 에 든 vector 는 $\mathbf{A}\mathbf{x}$ 에 아무것도 더하지 않으므로, nullity 가 1 이상이면 서로 다른 입력이 같은 출력을 갖는다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
+$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. 입력 $\mathbf{x}$ 에 null space 의 vector $\mathbf{v}$ 를 더해도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x}$ 이므로 출력이 바뀌지 않는다. 그래서 nullity 가 1 이상이면 서로 다른 두 입력 $\mathbf{x}$ 와 $\mathbf{x} + \mathbf{v}$ 가 같은 출력을 갖는다. 식 (2) 의 $\mathbf{A}$ 와 식 (4) 의 $\mathbf{v} = [0, -1.5, 1]^\top$ 로 보면, $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
 
 ### 5.3 Split of the Input Space
 
