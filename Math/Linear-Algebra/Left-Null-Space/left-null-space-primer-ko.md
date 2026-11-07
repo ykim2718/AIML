@@ -1,5 +1,5 @@
 # Left Null Space Primer
-Rev. 4 | Created: 2026-11-01 | Updated: 2026-11-03 06:55 UTC
+Rev. 5 | Created: 2026-11-01 | Updated: 2026-11-07 06:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -97,7 +97,7 @@ Left null space 의 모든 vector 는 column space 의 모든 vector 와 직교�
 \hspace{19em} (2)
 ```
 
-두 부분공간의 차원은 $r$ 과 $m - r$ 이어서 더하면 $m$ 이다. Column space 성분은 $\mathbf{A}\mathbf{x}$ 로 만들 수 있는 성분이고, left null space 성분은 어떤 $\mathbf{x}$ 로도 만들 수 없는 성분이다.
+Column space 의 차원은 rank $r$ 이다. Left null space 는 열이 $m$ 개이고 rank 가 $r$ 인 $\mathbf{A}^\top$ 의 null space 이므로, rank-nullity 정리에 따라 차원이 $m - r$ 이다. 두 차원을 더하면 $m$ 이다. $\mathbf{A}\mathbf{x}$ 는 언제나 column space 에 있으므로, column space 성분은 $\mathbf{A}\mathbf{x}$ 로 만들 수 있는 성분이고, column space 와 직교하는 left null space 성분은 어떤 $\mathbf{x}$ 로도 만들 수 없는 성분이다.
 
 ### 4.4 Four Fundamental Subspaces
 
@@ -135,7 +135,7 @@ $\mathbf{b} = [1, 0, 0]^\top$ 을 두 성분으로 나누면 아래이다.
 \hspace{19em} (4)
 ```
 
-Left null space 성분이 zero vector 가 아니므로 $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 없다. Column space 성분은 $\hat{\mathbf{x}} = [2/3, -1/3]^\top$ 으로 $\mathbf{A}\hat{\mathbf{x}} = [2/3, -1/3, 1/3]^\top$ 이 되어 column space 에 속한다.
+$\mathbf{A}\mathbf{x}$ 는 column space 성분만 가질 수 있는데 $\mathbf{b}$ 의 left null space 성분이 zero vector 가 아니므로, $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 없다. Column space 성분 $[2/3, -1/3, 1/3]^\top$ 은 첫째 열의 $2/3$ 배와 둘째 열의 $-1/3$ 배를 더한 값이므로, $\hat{\mathbf{x}} = [2/3, -1/3]^\top$ 으로 $\mathbf{A}\hat{\mathbf{x}} = [2/3, -1/3, 1/3]^\top$ 이 되어 column space 에 속한다.
 
 ## 6. Application
 
@@ -147,7 +147,7 @@ $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 최�
 
 ### 6.2 Solvability of Ax = b
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 left null space 의 모든 vector 와 직교할 때만 해가 있다. Left null space 의 기저 vector 와 $\mathbf{b}$ 의 내적이 모두 0 인지로 확인한다. 식 (3) 에서 $\mathbf{n}^\top[1, 0, 0]^\top = -1$ 이어서 해가 없고, $\mathbf{n}^\top[2, 3, 5]^\top = -2 - 3 + 5 = 0$ 이어서 $\mathbf{b} = [2, 3, 5]^\top$ 은 해 $[2, 3]^\top$ 을 가진다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 는 $\mathbf{b}$ 가 left null space 의 모든 vector 와 직교할 때만 해가 있다. 4.3 의 분해에서 $\mathbf{b}$ 가 left null space 의 모든 vector 와 직교하면 left null space 성분이 zero vector 이고, 그때만 $\mathbf{b}$ 가 $\mathbf{A}\mathbf{x}$ 로 만들 수 있는 column space 에 놓인다. Left null space 의 기저 vector 와 $\mathbf{b}$ 의 내적이 모두 0 인지로 확인한다. 식 (3) 에서 $\mathbf{n}^\top[1, 0, 0]^\top = -1$ 이어서 해가 없고, $\mathbf{n}^\top[2, 3, 5]^\top = -2 - 3 + 5 = 0$ 이어서 $\mathbf{b} = [2, 3, 5]^\top$ 은 해 $[2, 3]^\top$ 을 가진다.
 
 ### 6.3 Breaking Conditions
 

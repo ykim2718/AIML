@@ -1,5 +1,5 @@
 # Types of Linear Systems
-Rev. 12 | Created: 2026-11-02 | Updated: 2026-11-03 06:55 UTC
+Rev. 13 | Created: 2026-11-02 | Updated: 2026-11-07 06:45 UTC
 
 ## 1. Purpose
 
@@ -66,8 +66,8 @@ Ax = b
 <a id="fig-2"></a>
 Fig 2. Hierarchy of the rank test
 
-- 첫 갈림은 해가 있는지이다. $\mathbf{b}$ 가 $\mathbf{A}$ 의 열들의 일차결합이면 붙인 열이 새 방향을 더하지 않아 두 rank 가 같다.
-- 둘째 갈림은 해가 하나인지이다. $\mathbf{A}$ 의 rank 가 $n$ 보다 작으면 null space 에 zero vector 가 아닌 vector 가 있다.
+- 첫 갈림은 해가 있는지이다. $\mathbf{A}\mathbf{x}$ 는 $\mathbf{A}$ 의 열들의 일차결합이므로, 해가 있다는 것은 $\mathbf{b}$ 가 열들의 일차결합이라는 것과 같다. 그러면 붙인 열이 새 방향을 더하지 않아 두 rank 가 같고, 아니면 붙인 열이 새 방향을 더해 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 1 늘어난다.
+- 둘째 갈림은 해가 하나인지이다. Rank-nullity 정리에 따라 null space 의 차원은 $n - \mathrm{rank}(\mathbf{A})$ 이므로, $\mathbf{A}$ 의 rank 가 $n$ 보다 작으면 null space 에 zero vector 가 아닌 vector 가 있고, 그 vector 를 해에 더한 것도 해여서 해가 무수히 많다.
 - 한 단계 내려갈 때마다 해의 조건이 약해진다. 해가 없으면 식을 모두 만족하는 것을 포기하고 잔차를 가장 작게 하며, 해가 무수히 많으면 해 가운데 norm 이 가장 작은 하나를 고른다.
 - 해가 무수히 많은 갈래에는 풀이가 둘이다.
   - Null space 방법: 해 하나에 null space vector 를 더해 모든 해를 적는다. 자세한 내용은 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
