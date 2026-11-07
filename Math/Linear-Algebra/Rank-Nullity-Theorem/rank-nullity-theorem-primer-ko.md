@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 15 | Created: 2026-11-04 | Updated: 2026-11-07 05:10 UTC
+Rev. 16 | Created: 2026-11-04 | Updated: 2026-11-07 05:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -121,9 +121,7 @@ Null space 를 직접 구해 이 값을 확인한다. $\mathbf{x}$ 의 셋째 �
 \hspace{19em} (4)
 ```
 
-Null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다.
-
-입력에 $\mathbf{v}$ 를 더해도 출력이 바뀌지 않는 것 ([5.2](#52-nullity-term)) 도 이 $\mathbf{A}$ 로 확인한다. $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다. 세 값을 모으면 아래 Table 2 와 같다.
+Null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다. $n$, $\mathrm{rank}(\mathbf{A})$, $\mathrm{nullity}(\mathbf{A})$ 의 세 값을 모으면 아래 Table 2 와 같다.
 
 Table 2. Rank and nullity of the matrix in equation (2)
 
@@ -132,6 +130,8 @@ Table 2. Rank and nullity of the matrix in equation (2)
 | $n$                            | $\mathbb{R}^3$                            | 3     |
 | $\mathrm{rank}(\mathbf{A})$    | $\mathrm{Col}(\mathbf{A}) = \mathbb{R}^2$ | 2     |
 | $\mathrm{nullity}(\mathbf{A})$ | $\mathbf{v}$ 의 상수배 전체인 직선        | 1     |
+
+입력에 $\mathbf{v}$ 를 더해도 출력이 바뀌지 않는 것 ([5.2](#52-nullity-term)) 도 이 $\mathbf{A}$ 로 확인한다. $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다.
 
 $\mathbf{A}$ 는 입력 공간 $\mathbb{R}^3$ 가운데 row space 성분 2 차원을 $\mathbb{R}^2$ 전체로 옮기고, $\mathbf{v}$ 방향의 직선 1 차원을 원점으로 보낸다. 같은 행렬의 네 부분공간과 그 기저는 [Dimension and Rank Primer](../Dimension-and-Rank/dimension-and-rank-primer-ko.md) 의 Appendix B 에 있다.
 
