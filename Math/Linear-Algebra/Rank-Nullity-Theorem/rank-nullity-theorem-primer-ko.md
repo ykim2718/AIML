@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 16 | Created: 2026-11-04 | Updated: 2026-11-07 05:20 UTC
+Rev. 17 | Created: 2026-11-04 | Updated: 2026-11-07 05:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,6 +40,7 @@ Table 1. Symbols
 | $m$, $n$                                  | $\mathbf{A}$ 의 행의 수와 열의 수                                         | scalar                         | 양의 정수                                                |
 | $\mathbb{R}^n$                            | 원소가 실수 $n$ 개인 열 vector 전체의 집합, $\mathbf{A}$ 의 입력 공간     | vector space                   | 차원 $n$                                                 |
 | $\mathbf{x}$                              | 입력 vector                                                               | $n \times 1$                   | 실수 원소                                                |
+| $x_1$, $x_2$, $x_3$                       | Worked Example 에서 $\mathbf{x}$ 의 첫째, 둘째, 셋째 원소                 | scalar                         | 실수                                                     |
 | $\mathbf{b}$                              | 선형방정식의 우변                                                         | $m \times 1$                   | 실수 원소                                                |
 | $\mathbf{0}$                              | zero vector                                                               | $m \times 1$ 또는 $n \times 1$ | 모든 원소가 0                                            |
 | $\mathrm{Col}(\mathbf{A})$                | $\mathbf{A}$ 의 column space                                              | $\mathbb{R}^m$ 의 부분공간     | 열들의 일차결합 전체                                     |
@@ -113,7 +114,7 @@ $\mathbf{A}$ 의 둘째 행에서 첫째 행의 4 배를 빼면 $[0, -2, -3]$, �
 
 식 (3) 에서 pivot column 은 첫째와 둘째 열이어서 $\mathrm{rank}(\mathbf{A}) = 2$ 이고, free column 은 셋째 열 하나이다. 식 (1) 에 넣으면 null space 를 구하지 않고도 $\mathrm{nullity}(\mathbf{A}) = 3 - 2 = 1$ 이다.
 
-Null space 를 직접 구해 이 값을 확인한다. $\mathbf{x}$ 의 셋째 원소를 1 로 두면 식 (3) 의 첫 행에서 첫째 원소가 0, 둘째 행에서 둘째 원소가 $-1.5$ 이다.
+Null space 를 직접 구해 이 값을 확인한다. Null space 는 $\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 해이고, 기본 행 연산은 해를 바꾸지 않으므로 식 (3) 의 $\mathbf{R}$ 로 $\mathbf{R}\mathbf{x} = \mathbf{0}$ 을 푼다. $\mathbf{R}$ 의 두 행은 $x_1 = 0$ 과 $x_2 + 1.5\,x_3 = 0$ 이므로, free variable $x_3$ 를 1 로 두면 $x_1 = 0$, $x_2 = -1.5$ 이다.
 
 ```math
 \mathbf{v} = \begin{bmatrix} 0 \\ -1.5 \\ 1 \end{bmatrix}, \qquad
