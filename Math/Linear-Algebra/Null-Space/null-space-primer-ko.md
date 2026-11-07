@@ -1,5 +1,5 @@
 # Null Space Primer
-Rev. 50 | Created: 2026-10-31 | Updated: 2026-11-07 04:45 UTC
+Rev. 51 | Created: 2026-10-31 | Updated: 2026-11-07 07:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -105,11 +105,11 @@ Vector space 는 zero vector 를 포함해야 하므로, zero vector 를 반드�
 
 ### 5.1 Linear Transformation
 
-$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다. 정사각 행렬 ($m = n$) 의 null space 에 zero vector 가 아닌 vector 가 있다고 하자. 입력 $\mathbf{x}$ 에 $`\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}`$ 을 만족하는 null space 의 vector $`\mathbf{x}_{\mathrm{null}}`$ 을 더하면, $`\mathbf{A}(\mathbf{x} + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}`$ 이어서 출력이 바뀌지 않는다. 출력 $\mathbf{A}\mathbf{x}$ 에서 입력 $\mathbf{x}$ 를 하나로 정할 수 없으므로 $\mathbf{A}$ 의 역행렬이 없으며, 식 (5) 의 $\mathbf{A}$ 가 이 경우이다.
+$\mathbf{A}$ 를 $\mathbb{R}^n$ 의 vector 를 $\mathbb{R}^m$ 의 vector 로 옮기는 선형 변환 (linear transformation) 으로 보면, null space 는 이 변환이 원점으로 보내는 입력 vector 전체이다. 변환 뒤 공간의 차원이 줄어들면, 줄어든 차원만큼의 입력 방향이 모두 원점으로 가고 그 방향들이 null space 를 이룬다. 줄어든 차원이 null space 의 차원과 같다는 것은 [5.4](#54-rank-nullity-theorem) 의 rank-nullity 정리이다. 3 차원 공간이 평면으로 옮겨지면 원점으로 가는 방향은 직선 하나이고, 그 직선이 null space 이다. 정사각 행렬 ($m = n$) 의 null space 에 zero vector 가 아닌 vector 가 있다고 하자. 입력 $\mathbf{x}$ 에 $`\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}`$ 을 만족하는 null space 의 vector $`\mathbf{x}_{\mathrm{null}}`$ 을 더하면, $`\mathbf{A}(\mathbf{x} + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}`$ 이어서 출력이 바뀌지 않는다. 출력 $\mathbf{A}\mathbf{x}$ 에서 입력 $\mathbf{x}$ 를 하나로 정할 수 없으므로 $\mathbf{A}$ 의 역행렬이 없으며, 식 (5) 의 $\mathbf{A}$ 가 이 경우이다.
 
 ### 5.2 Uniqueness of Solutions
 
-$\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면, 해 전체는 $\mathbf{x}_0$ 에 null space 의 vector 를 더한 것이다.
+$\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해 $\mathbf{x}_0$ 가 하나 있으면, 해 전체는 $\mathbf{x}_0$ 에 null space 의 vector 를 더한 것이다. 식 (2) 는 그렇게 더한 vector 가 해라는 방향이고, 거꾸로 다른 해 $\mathbf{x}'$ 가 있으면 $\mathbf{A}(\mathbf{x}' - \mathbf{x}_0) = \mathbf{b} - \mathbf{b} = \mathbf{0}$ 이어서 $\mathbf{x}' - \mathbf{x}_0$ 가 null space 에 든다.
 
 ```math
 \mathbf{A}(\mathbf{x}_0 + \mathbf{x}_{\mathrm{null}}) = \mathbf{A}\mathbf{x}_0 + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{b} + \mathbf{0} = \mathbf{b} \hspace{19em} (2)
@@ -136,7 +136,7 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해는 첨가 행렬 $[\mathbf{A} \mid \
 
 1. 해가 있는지 확인한다. 왼쪽이 모두 0 인데 우변이 0 이 아닌 행이 있으면, 그 행은 0 이 0 이 아닌 수와 같다는 식이 되어 해가 없다.
 2. 열을 pivot column 과 free column 으로 나눈다. Pivot column 의 변수 (pivot 변수) 는 free variable 의 값으로 정해지고, free variable 은 아무 값이나 가질 수 있다.
-3. 특수해 $\mathbf{x}_0$ 를 구한다. free variable 을 모두 0 으로 두면 pivot 변수는 각 행의 우변과 같다.
+3. 특수해 $\mathbf{x}_0$ 를 구한다. 기약 행사다리꼴의 0 이 아닌 행에는 pivot 변수가 계수 1 로 하나만 있고 나머지 항은 free variable 이므로, free variable 을 모두 0 으로 두면 pivot 변수는 각 행의 우변과 같다.
 4. Null space 를 생성하는 vector 를 구한다. 우변을 모두 0 으로 두고 free variable 하나만 1, 나머지는 0 으로 두어 pivot 변수를 구한다. free variable 마다 vector 하나를 얻으므로, 그 개수가 nullity 이다.
 5. 해 전체는 $\mathbf{x}_0$ 에 4 번의 vector 들의 상수배를 더한 것이다 (식 (2)).
 
@@ -207,7 +207,7 @@ Table 3. Number of solutions by null space
 | $\mathbf{B}$ | $[2, 3, 5]$     | $3$       | $3$              | $0$     | 하나, $[2, 3, 0]$                |
 | $\mathbf{A}$ | $[1, 0, 0]$     | $2$       | $3$              | $1$     | 없음                             |
 
-$\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 rank 3 이어서 null space 에 zero vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
+$\mathbf{B} = [[1, 0, 1], [0, 1, 1], [1, 1, 3]]$ 는 행렬식이 $1 \cdot (3 - 1) - 0 + 1 \cdot (0 - 1) = 1$ 로 0 이 아니어서 rank 3 이고, null space 에 zero vector 만 있고 해가 $[2, 3, 0]$ 하나이다. $\mathbf{A}$ 의 셋째 행은 첫 두 행의 합이므로 해가 있으려면 우변도 $b_3 = b_1 + b_2$ 여야 한다. 우변 $[1, 0, 0]$ 은 $0 \ne 1 + 0$ 이어서 해가 없고, 이때는 nullity 가 1 이어도 해가 무수히 많아지지 않는다.
 
 ## 7. Application
 
@@ -223,7 +223,7 @@ Null space 에 zero vector 가 아닌 vector 가 있으면, 같은 출력을 주
 
 Null space 는 특이값 분해 (SVD) 에서 특이값 0 에 대응하는 우특이벡터 $\mathbf{v}_i$ 들이 생성한다. 식 (5) 의 $\mathbf{A}$ 에서 특이값은 $\sigma_1 = 3$, $\sigma_2 = 1$, $\sigma_3 = 0$ 이고, $\sigma_3$ 의 우특이벡터는 $\pm[0.5774, 0.5774, -0.5774]^\top$ 으로 식 (6) 의 $\mathbf{n}$ 을 길이 1 로 줄인 것이다.
 
-Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + c\,\mathbf{n}$ 에서 $c = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
+Pseudo-inverse 로 구한 해 $\mathbf{A}^{+}\mathbf{b} = [1/3, 4/3, 5/3]^\top$ 은 $\mathbf{x}_0 + c\,\mathbf{n}$ 에서 $c = 5/3$ 인 해이며, $\mathbf{n}$ 과의 내적이 0 이어서 null space 성분이 zero vector 이므로, [5.5](#55-orthogonality-to-the-row-space) 대로 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해이다. 이 해를 구하는 식과 숫자 예시는 [Minimum Norm Solution Primer](../Minimum-Norm-Solution/minimum-norm-solution-primer-ko.md) 에 있다. Pseudo-inverse 의 정의와 계산은 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 부동소수점 계산에서는 특이값이 정확히 0 이 되지 않으므로, 문턱값보다 작은 특이값을 0 으로 보고 rank 와 nullity 를 정한다. 문턱값을 크게 잡으면 거의 collinear 한 센서까지 null space 에 들어가고, 작게 잡으면 측정 noise 때문에 nullity 가 0 으로 나온다.
 
@@ -315,6 +315,6 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 의 해가 하나인지 무수히 많은지�
 \mathbf{A}(\mathbf{x}' - \mathbf{x}_0) = \mathbf{A}\mathbf{x}' - \mathbf{A}\mathbf{x}_0 = \mathbf{b} - \mathbf{b} = \mathbf{0} \hspace{19em} (10)
 ```
 
-식 (10) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 4.3 의 식 (3) 과 같다.
+식 (10) 에 따라 두 해의 차이는 null space 에 든다. Null space 에 zero vector 만 있으면 그 차이가 zero vector 여서 $\mathbf{x}' = \mathbf{x}_0$ 이므로, 다른 해는 없다. 3 번에서 해가 무수히 많은 것은 [5.2](#52-uniqueness-of-solutions) 의 식 (3) 과 같다.
 
 [Table 3](#6-worked-example) 의 세 경우에 이 절차를 적용하면, 셋째 행은 $[\mathbf{A} \mid \mathbf{b}]$ 의 rank 가 3 으로 $\mathbf{A}$ 의 rank 2 보다 커서 1 번에 해당한다. 첫째 행은 두 rank 가 같고 $n$ 보다 작아 3 번, 둘째 행은 두 rank 가 $n$ 과 같아 2 번에 해당한다.
