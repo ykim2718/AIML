@@ -1,5 +1,5 @@
 # Matrix Operations Primer
-Rev. 5 | Created: 2026-10-26 | Updated: 2026-11-02 21:30 UTC
+Rev. 6 | Created: 2026-10-26 | Updated: 2026-11-07 06:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -257,7 +257,7 @@ Table 6. Symbols for differentiation
 \frac{\partial (\mathbf{x}^\top \mathbf{A} \mathbf{x})}{\partial \mathbf{x}} = (\mathbf{A} + \mathbf{A}^\top)\,\mathbf{x} \hspace{19em} (12)
 ```
 
-식 (12) 는 $\mathbf{A}$ 가 $n \times n$ 정사각일 때 성립하고, $\mathbf{A}$ 가 대칭 ($\mathbf{A}^\top = \mathbf{A}$) 이면 $2\mathbf{A}\mathbf{x}$ 로 줄어든다. 식 (11) 과 식 (12) 를 묶으면 제곱오차의 gradient 가 나온다.
+식 (12) 는 $\mathbf{A}$ 가 $n \times n$ 정사각일 때 성립하고, $\mathbf{A}$ 가 대칭 ($\mathbf{A}^\top = \mathbf{A}$) 이면 $2\mathbf{A}\mathbf{x}$ 로 줄어든다. 제곱오차를 전개하면 $\lVert \mathbf{X}\mathbf{w} - \mathbf{y} \rVert^2 = \mathbf{w}^\top \mathbf{X}^\top \mathbf{X} \mathbf{w} - 2\,(\mathbf{X}^\top \mathbf{y})^\top \mathbf{w} + \mathbf{y}^\top \mathbf{y}$ 이다. 첫째 항에 대칭 행렬 $\mathbf{X}^\top \mathbf{X}$ 로 식 (12) 를, 둘째 항에 $\mathbf{a} = \mathbf{X}^\top \mathbf{y}$ 로 식 (11) 을 쓰고, $\mathbf{w}$ 가 없는 셋째 항은 미분하면 0 이므로 제곱오차의 gradient 가 나온다.
 
 ```math
 \frac{\partial \lVert \mathbf{X}\mathbf{w} - \mathbf{y} \rVert^2}{\partial \mathbf{w}} = 2\,\mathbf{X}^\top (\mathbf{X}\mathbf{w} - \mathbf{y}) \hspace{19em} (13)

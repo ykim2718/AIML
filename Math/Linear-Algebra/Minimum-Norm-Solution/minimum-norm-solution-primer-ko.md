@@ -1,5 +1,5 @@
 # Minimum Norm Solution Primer
-Rev. 15 | Created: 2026-11-02 | Updated: 2026-11-03 08:15 UTC
+Rev. 16 | Created: 2026-11-02 | Updated: 2026-11-07 07:05 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -81,7 +81,7 @@ Table 1. Symbols
 
 ### 4.2 Orthogonal Decomposition of a Solution
 
-입력 공간 $\mathbb{R}^n$ 은 row space 와 null space 로 나뉘고 두 공간은 서로 직교하므로, 해 $\mathbf{x}$ 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다. 두 성분이 직교하므로 피타고라스 정리에 따라 norm 제곱은 두 성분의 norm 제곱을 더한 값이다.
+$\mathbf{A}\mathbf{x} = \mathbf{0}$ 의 각 행은 $\mathbf{A}$ 의 한 행과 $\mathbf{x}$ 의 내적이 0 이라는 식이므로, null space 의 vector 는 행들의 일차결합인 row space 의 모든 vector 와 직교한다. 입력 공간 $\mathbb{R}^n$ 은 서로 직교하는 이 두 공간으로 나뉘므로, 해 $\mathbf{x}$ 는 row space 성분과 null space 성분의 합으로 하나씩만 나뉜다. 두 성분이 직교하므로 피타고라스 정리에 따라 norm 제곱은 두 성분의 norm 제곱을 더한 값이다.
 
 ```math
 \mathbf{x} = \mathbf{x}_{\mathrm{row}} + \mathbf{x}_{\mathrm{null}}, \qquad
@@ -89,15 +89,15 @@ Table 1. Symbols
 \hspace{19em} (2)
 ```
 
-두 해의 차이는 null space 에 속하므로, 모든 해는 같은 row space 성분을 갖고 null space 성분만 다르다. 따라서 식 (2) 의 norm 은 null space 성분이 zero vector 일 때 가장 작고, 최소 노름 해는 row space 에만 있는 유일한 해이다. Row space 와 null space 의 직교는 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에, 해의 구조는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
+두 해의 차이에 $\mathbf{A}$ 를 곱하면 $\mathbf{b} - \mathbf{b} = \mathbf{0}$ 이어서 그 차이는 null space 에 속하므로, 모든 해는 같은 row space 성분을 갖고 null space 성분만 다르다. 따라서 식 (2) 의 norm 은 null space 성분이 zero vector 일 때 가장 작고, 최소 노름 해는 row space 에만 있는 유일한 해이다. Row space 와 null space 의 직교는 [Row Space Primer](../Row-Space/row-space-primer-ko.md) 에, 해의 구조는 [Null Space Primer](../Null-Space/null-space-primer-ko.md) 에 있다.
 
 ### 4.3 Closed Form
 
-식 (1) 의 오른쪽 변은 rank 가 $m$ 인 full row rank 일 때만 성립한다. 이때 $m \times m$ 행렬 $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 있다. $\mathbf{A}^\top(\cdot)$ 꼴이므로 이 해는 row space 에 속하고, $\mathbf{A}$ 를 곱하면 $\mathbf{A}\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b} = \mathbf{b}$ 이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+식 (1) 의 오른쪽 변은 rank 가 $m$ 인 full row rank 일 때만 성립한다. $\mathbf{A}\mathbf{A}^\top$ 의 rank 는 $\mathbf{A}$ 의 rank 와 같으므로, 이때 $m \times m$ 행렬 $\mathbf{A}\mathbf{A}^\top$ 의 rank 가 $m$ 이어서 역행렬이 있다. $\mathbf{A}^\top(\cdot)$ 꼴이므로 이 해는 row space 에 속하고, $\mathbf{A}$ 를 곱하면 $\mathbf{A}\mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}\mathbf{b} = \mathbf{b}$ 이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 식 (1) 의 오른쪽 변을 쓸 수 있는지와 최소 노름 해가 무엇인지는 rank $r$ 에 따라 아래이다.
 
-- $r = m$ 이고 $r \lt n$: 식 (1) 의 오른쪽 변으로 구한다. 모든 $\mathbf{b}$ 가 column space 에 속하므로 해가 언제나 있고 무수히 많다.
+- $r = m$ 이고 $r \lt n$: 식 (1) 의 오른쪽 변으로 구한다. Column space 의 차원이 $m$ 이어서 $\mathbb{R}^m$ 전체이므로 모든 $\mathbf{b}$ 가 column space 에 속해 해가 언제나 있고, null space 의 차원 $n - r$ 이 1 이상이어서 해가 무수히 많다.
 - $r = n$: null space 에 zero vector 만 있어 해가 있으면 하나뿐이고, 그 해가 곧 최소 노름 해이다. $r = m = n$ 이면 그 해는 $\mathbf{A}^{-1}\mathbf{b}$ 이다.
 - $r \lt m$ 이고 $r \lt n$, $\mathbf{b}$ 가 column space 에 속함: $\mathbf{A}\mathbf{A}^\top$ 의 역행렬이 없어 식 (1) 의 오른쪽 변을 쓸 수 없고, 특이값 분해로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이다 ([6.2](#62-breaking-conditions)).
 - $\mathbf{b}$ 가 column space 에 속하지 않음: 해가 없어 최소 노름 해도 없다 ([6.2](#62-breaking-conditions)).
@@ -159,7 +159,7 @@ $\mathbf{A}$ 의 row space 는 $[1, 1, 1]^\top$ 의 상수배 전체인 직선�
 
 ### 6.1 Pseudo-Inverse
 
-Pseudo-inverse $\mathbf{A}^{+}$ 로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이고, full row rank 이면 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (3) 에서 $\mathbf{A}^{+} = [1/3, 1/3, 1/3]^\top$ 이어서 $\mathbf{A}^{+}\mathbf{b} = [1, 1, 1]^\top$ 로 식 (7) 과 같다. 선형 회귀에서 sample 수보다 feature 수가 많으면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 norm 이 가장 작은 weight 를 고른다. 해가 없으면 pseudo-inverse 는 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 를 먼저 찾고, 그런 $\mathbf{x}$ 가 여럿일 때만 그 가운데 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해를 준다. 식이 미지수보다 많은 경우의 pseudo-inverse 와 숫자 예시는 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
+Pseudo-inverse $\mathbf{A}^{+}$ 로 구한 $\mathbf{A}^{+}\mathbf{b}$ 가 최소 노름 해이고, full row rank 이면 $\mathbf{A}^{+} = \mathbf{A}^\top(\mathbf{A}\mathbf{A}^\top)^{-1}$ 이다. 식 (3) 의 $\mathbf{A}$ 에서 $\mathbf{A}^\top = [1, 1, 1]^\top$ 이고 식 (6) 의 $(\mathbf{A}\mathbf{A}^\top)^{-1} = 1/3$ 이므로 $\mathbf{A}^{+} = [1/3, 1/3, 1/3]^\top$ 이어서 $\mathbf{A}^{+}\mathbf{b} = [1, 1, 1]^\top$ 로 식 (7) 과 같다. 선형 회귀에서 sample 수보다 feature 수가 많으면 weight 가 하나로 정해지지 않고, pseudo-inverse 는 그 가운데 norm 이 가장 작은 weight 를 고른다. 해가 없으면 pseudo-inverse 는 $\lVert \mathbf{A}\mathbf{x} - \mathbf{b} \rVert$ 를 가장 작게 하는 $\mathbf{x}$ 를 먼저 찾고, 그런 $\mathbf{x}$ 가 여럿일 때만 그 가운데 $\lVert \mathbf{x} \rVert$ 가 가장 작은 해를 준다. 식이 미지수보다 많은 경우의 pseudo-inverse 와 숫자 예시는 [Pseudo-Inverse Primer](../Pseudo-Inverse/pseudo-inverse-primer-ko.md) 에 있다.
 
 ### 6.2 Breaking Conditions
 
