@@ -1,5 +1,5 @@
 # Row Space Primer
-Rev. 35 | Created: 2026-11-01 | Updated: 2026-11-03 08:15 UTC
+Rev. 36 | Created: 2026-11-01 | Updated: 2026-11-07 07:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -120,7 +120,7 @@ Column space 의 직교 여공간은 $\mathbf{A}^\top\mathbf{y} = \mathbf{0}$ �
 - Row space $\mathrm{Row}(\mathbf{A})$: $\mathbb{R}^n$ 의 부분공간, 차원 $r$
 - Null space $\mathrm{Null}(\mathbf{A})$: $\mathbb{R}^n$ 의 부분공간, 차원 $n - r$
 
-Left null space 는 [Left Null Space Primer](../Left-Null-Space/left-null-space-primer-ko.md) 에 있다.
+Null space 의 차원 $n - r$ 은 열이 $n$ 개인 $\mathbf{A}$ 에, left null space 의 차원 $m - r$ 은 열이 $m$ 개인 $\mathbf{A}^\top$ 에 rank-nullity 정리를 쓴 값이다. Left null space 는 [Left Null Space Primer](../Left-Null-Space/left-null-space-primer-ko.md) 에 있다.
 
 ### 4.3 Orthogonality to the Null Space
 
@@ -162,7 +162,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \hspace{19em} (6)
 ```
 
-두 부분공간의 차원은 $r$ 과 $n - r$ 이어서 더하면 $n$ 이고, 서로 직교하므로 둘 다에 속하는 vector 는 zero vector 하나뿐이다. $\mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{0}$ 이므로 null space 성분은 출력에 아무것도 더하지 않는다.
+두 부분공간의 차원은 $r$ 과 $n - r$ 이어서 더하면 $n$ 이고, 서로 직교하므로 둘 다에 속하는 vector 는 zero vector 하나뿐이다. $`\mathbf{A}\mathbf{x} = \mathbf{A}\mathbf{x}_{\mathrm{row}} + \mathbf{A}\mathbf{x}_{\mathrm{null}} = \mathbf{A}\mathbf{x}_{\mathrm{row}} + \mathbf{0}`$ 이므로, 출력은 row space 성분만으로 정해지고 null space 성분은 출력을 바꾸지 않는다.
 
 ## 5. Worked Example
 
@@ -175,7 +175,7 @@ $\mathbf{A}$ 를 기약 행사다리꼴 $\mathbf{R}$ 로 바꾸면 기본 행 �
 \hspace{19em} (7)
 ```
 
-두 행은 일차독립이므로 row space 는 $\mathbb{R}^3$ 안의 평면이고 rank 는 2 이다. Column space 는 $\mathbb{R}^2$ 전체이고, null space 는 아래 $\mathbf{n}$ 의 상수배 전체인 직선이다.
+두 행은 일차독립이므로 row space 는 $\mathbb{R}^3$ 안의 평면이고 rank 는 2 이다. Rank 가 행의 수 $m = 2$ 와 같으므로 column space 는 $\mathbb{R}^2$ 전체이고, null space 의 차원은 $n - r = 3 - 2 = 1$ 이어서 아래 $\mathbf{n}$ 의 상수배 전체인 직선이다.
 
 ```math
 \mathbf{n} = \begin{bmatrix} -1 \\ -1 \\ 1 \end{bmatrix}, \quad

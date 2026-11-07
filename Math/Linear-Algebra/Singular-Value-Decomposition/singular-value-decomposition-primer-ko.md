@@ -1,5 +1,5 @@
 # Singular Value Decomposition Primer
-Rev. 8 | Created: 2026-10-26 | Updated: 2026-11-03 06:55 UTC
+Rev. 9 | Created: 2026-10-26 | Updated: 2026-11-07 07:50 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -82,7 +82,7 @@ $\mathbf{A}$ 가 정사각이 아니어도, 역행렬이 없어도 식 (1) 은 �
 \sigma_i = \sqrt{\lambda_i(\mathbf{A}^\top\mathbf{A})} \hspace{19em} (2)
 ```
 
-$\mathbf{A}^\top\mathbf{A}$ 는 대칭이고 고윳값이 모두 0 이상이므로 특이값은 언제나 0 이상의 실수이며, 큰 순서로 $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$ 으로 적는다. 0 이 아닌 특이값의 개수가 $\mathbf{A}$ 의 계수 $r$ 이다. 모든 원소의 제곱합은 특이값의 제곱합과 같다.
+$\mathbf{A}^\top\mathbf{A}$ 는 대칭이고 고윳값이 모두 0 이상이므로 특이값은 언제나 0 이상의 실수이며, 큰 순서로 $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$ 으로 적는다. $\mathbf{A}^\top\mathbf{A}$ 의 계수는 $\mathbf{A}$ 의 계수와 같고, 대칭 행렬의 계수는 0 이 아닌 고윳값의 개수와 같으므로, 0 이 아닌 특이값의 개수가 $\mathbf{A}$ 의 계수 $r$ 이다. 모든 원소의 제곱합은 특이값의 제곱합과 같다.
 
 ```math
 \lVert \mathbf{A} \rVert_F^2 = \sum_{i,j} a_{ij}^2 = \sum_{i=1}^{r} \sigma_i^2 \hspace{19em} (3)
@@ -116,7 +116,7 @@ $2 \times 2$ 행렬에서는 이 세 단계가 단위 원을 타원으로 바꾼
 \mathbf{A} = \sum_{i=1}^{r} \sigma_i\, \mathbf{u}_i \mathbf{v}_i^\top \hspace{19em} (5)
 ```
 
-각 항 $\sigma_i\, \mathbf{u}_i \mathbf{v}_i^\top$ 의 Frobenius norm 은 $\sigma_i$ 이므로, 특이값이 큰 항일수록 $\mathbf{A}$ 의 제곱합에 더하는 몫이 크다.
+$\mathbf{u}_i \mathbf{v}_i^\top$ 의 원소 제곱합은 $\lVert \mathbf{u}_i \rVert^2 \lVert \mathbf{v}_i \rVert^2 = 1$ 이어서 각 항 $\sigma_i\, \mathbf{u}_i \mathbf{v}_i^\top$ 의 Frobenius norm 은 $\sigma_i$ 이므로, 특이값이 큰 항일수록 $\mathbf{A}$ 의 제곱합에 더하는 몫이 크다.
 
 ## 5. Worked Example
 
