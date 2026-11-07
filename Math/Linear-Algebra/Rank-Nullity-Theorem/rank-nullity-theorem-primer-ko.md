@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 3 | Created: 2026-11-04 | Updated: 2026-11-04 11:25 UTC
+Rev. 4 | Created: 2026-11-04 | Updated: 2026-11-07 03:22 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,6 +14,7 @@ Rev. 3 | Created: 2026-11-04 | Updated: 2026-11-04 11:25 UTC
   - [7.1 Number of Solutions](#71-number-of-solutions)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
+- [Appendix C. Intuitive Meaning](#appendix-c-intuitive-meaning)
 
 ## 1. Purpose
 
@@ -80,7 +81,7 @@ Rank-nullity 정리는 실수 원소를 갖는 모든 $m \times n$ 행렬 $\math
 \hspace{19em} (1)
 ```
 
-식 (1) 의 오른쪽 변은 열의 수 $n$, 곧 입력 공간 $\mathbb{R}^n$ 의 차원이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+식 (1) 의 오른쪽 변은 열의 수 $n$, 곧 입력 공간 $\mathbb{R}^n$ 의 차원이다. 유도는 [Appendix B](#appendix-b-derivation) 에, 비유로 풀어 쓴 직관적 의미는 [Appendix C](#appendix-c-intuitive-meaning) 에 있다.
 
 ### 5.1 Rank Term
 
@@ -204,3 +205,21 @@ n &= n_{\mathrm{pivot}} + n_{\mathrm{free}} \\
 \mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n
 \hspace{19em} (1)
 ```
+
+## Appendix C. Intuitive Meaning
+
+식 (1) 은 입력 공간의 차원이 어디로 가는지를 세는 "에너지 (정보) 보존 법칙" 처럼 읽을 수 있다.
+
+```math
+\mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n
+\hspace{19em} (1)
+```
+
+입력 공간 $\mathbb{R}^n$ 의 모든 vector 는 $\mathbf{A}$ 를 곱하는 선형 변환 $\mathbf{x} \mapsto \mathbf{A}\mathbf{x}$ 를 지나면서 두 가지 운명 가운데 하나를 맞는다.
+
+1. 변환을 견디고 살아남는 성분: 출력 공간으로 전달되어 column space 를 이룬다. 이 성분이 차지하는 차원이 $\mathrm{rank}(\mathbf{A})$ 이다.
+2. 0 으로 찌그러져 사라지는 성분: 완전히 zero vector 가 되어 null space 로 들어간다. 이 성분이 차지하는 차원이 $\mathrm{nullity}(\mathbf{A})$ 이다.
+
+그래서 살아남은 차원 (rank) 과 0 으로 사라진 차원 (nullity) 을 더하면 원래 입력 공간의 차원 $n$ 이 된다. 어떤 차원도 두 몫 밖으로 새어 나가지 않는다는 점에서 보존 법칙과 닮았다.
+
+$\mathbf{A} = [[1, 2, 3], [4, 6, 9]]$ 이면 입력 공간 $\mathbb{R}^3$ 의 3 차원 가운데 2 차원 분량은 살아남아 출력 공간 $\mathbb{R}^2$ 전체를 채우고, 나머지 1 차원 분량인 $[0, -1.5, 1]^\top$ 방향의 직선은 0 으로 완전히 압축되어 사라진다. 계산해 보지 않아도 $2 + \mathrm{nullity}(\mathbf{A}) = 3$ 이므로 사라지는 차원은 반드시 1 이다.
