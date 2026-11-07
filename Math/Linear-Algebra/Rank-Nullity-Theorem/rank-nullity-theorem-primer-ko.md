@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 20 | Created: 2026-11-04 | Updated: 2026-11-07 08:00 UTC
+Rev. 21 | Created: 2026-11-04 | Updated: 2026-11-07 08:10 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -158,9 +158,17 @@ $\mathbf{A}\mathbf{x} = \mathbf{b}$ 에 해가 하나라도 있으면, 해 전�
 ## Appendix A. Terminology
 
 - **column space**: 행렬의 열들의 일차결합 전체. $\mathbb{R}^m$ 의 부분공간이다.
-- **free column**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (free variable) 는 아무 값이나 가질 수 있고, pivot column 의 변수 (pivot 변수) 는 free variable 의 값으로 정해진다. 예: Worked Example 의 $\mathbf{A}$ 를 기약 행사다리꼴로 바꾼 $[[1, 0, 0], [0, 1, 1.5]]$ 에서는 pivot 이 없는 셋째 열 $[0, 1.5]^\top$ 이 free column 이고, 그 열의 변수가 free variable 이다.
+- **free column**: 기약 행사다리꼴에서 pivot 이 없는 열. 그 열의 변수 (free variable) 는 아무 값이나 가질 수 있고, pivot column 의 변수 (pivot 변수) 는 free variable 의 값으로 정해진다.<br>
+  예: Worked Example 의 $\mathbf{A}$ 를 기약 행사다리꼴로 바꾼 아래 행렬에서는 pivot 이 없는 셋째 열 $[0, 1.5]^\top$ 이 free column 이고, 그 열의 변수가 free variable 이다.
+  ```math
+  \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
+  ```
 - **null space**: $\mathbf{A}\mathbf{x} = \mathbf{0}$ 인 $\mathbf{x}$ 전체. $\mathbb{R}^n$ 의 부분공간이다.
-- **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열. 예: 같은 행렬 $[[1, 0, 0], [0, 1, 1.5]]$ 에서는 첫 행의 pivot 1 이 있는 첫째 열과 둘째 행의 pivot 1 이 있는 둘째 열이 pivot column 이다.
+- **pivot column**: 기약 행사다리꼴에서 각 행의 첫 0 이 아닌 원소 (pivot) 가 있는 열.<br>
+  예: 같은 행렬에서는 첫 행의 pivot 1 이 있는 첫째 열과 둘째 행의 pivot 1 이 있는 둘째 열이 pivot column 이다.
+  ```math
+  \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.5 \end{bmatrix}
+  ```
 - **row space**: 행렬의 행들의 일차결합 전체. $\mathbb{R}^n$ 의 부분공간이다.
 - **vector space**: zero vector 를 포함하고, 원소끼리의 덧셈과 상수배에 대해 닫혀 있는 vector 집합.
 - **가역 행렬 (invertible matrix)**: 역행렬이 있는 정사각 행렬. 왼쪽에 곱해도 vector 가 zero vector 인지 아닌지가 바뀌지 않는다.
