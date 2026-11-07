@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 5 | Created: 2026-11-04 | Updated: 2026-11-07 03:30 UTC
+Rev. 6 | Created: 2026-11-04 | Updated: 2026-11-07 03:40 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -214,4 +214,9 @@ n &= n_{\mathrm{pivot}} + n_{\mathrm{free}} \\
 1. 변환을 견디고 살아남는 성분: 결과물(출력 공간)로 전달되어 열공간(Column Space)을 형성합니다. 이 차원의 크기를 $\text{Rank}(A)$라고 부릅니다.
 2. 0으로 찌그러져 소멸하는 성분: 완전히 무(Zero)로 사라져 영공간(Null Space)으로 들어갑니다. 이 차원의 크기를 $\text{Nullity}(A)$라고 부릅니다.
 
-따라서 "살아남은 차원($\text{Rank}$)과 0으로 사라진 차원($\text{Nullity}$)을 더하면, 원래 입력 공간의 전체 차원($n$)이 된다"는 지극히 당연하고도 강력한 보존 법칙을 나타냅니다.
+따라서 "살아남은 차원($\text{Rank}$)과 0으로 사라진 차원($\text{Nullity}$)을 더하면, 원래 입력 공간의 전체 차원($n$)이 된다"는 지극히 당연하고도 강력한 보존 법칙 (식 (1)) 을 나타냅니다.
+
+```math
+\mathrm{rank}(\mathbf{A}) + \mathrm{nullity}(\mathbf{A}) = n
+\hspace{19em} (1)
+```
