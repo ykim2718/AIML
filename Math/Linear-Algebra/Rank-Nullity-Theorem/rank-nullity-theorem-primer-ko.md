@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 12 | Created: 2026-11-04 | Updated: 2026-11-07 04:25 UTC
+Rev. 13 | Created: 2026-11-04 | Updated: 2026-11-07 04:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -89,7 +89,7 @@ $\mathrm{rank}(\mathbf{A})$ 는 입력 $\mathbf{x}$ 를 $\mathbf{A}\mathbf{x}$ �
 
 ### 5.2 Nullity Term
 
-$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. 입력 $\mathbf{x}$ 에 null space 의 vector $\mathbf{v}$ 를 더하면, $\mathbf{A}\mathbf{v} = \mathbf{0}$ 이므로 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x}$ 이고 출력이 바뀌지 않는다. 그래서 nullity 가 1 이상이면 서로 다른 두 입력 $\mathbf{x}$ 와 $\mathbf{x} + \mathbf{v}$ 가 같은 출력을 갖는다. 식 (2) 의 $\mathbf{A}$ 와 식 (4) 의 $\mathbf{v} = [0, -1.5, 1]^\top$ 로 보면, $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
+$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. 입력 $\mathbf{x}$ 에 $\mathbf{A}\mathbf{v} = \mathbf{0}$ 을 만족하는 null space 의 vector $\mathbf{v}$ 를 더하면, $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}$ 이어서 출력이 바뀌지 않는다. 그래서 nullity 가 1 이상이면 서로 다른 두 입력 $\mathbf{x}$ 와 $\mathbf{x} + \mathbf{v}$ 가 같은 출력을 갖는다. 식 (2) 의 $\mathbf{A}$ 와 식 (4) 의 $\mathbf{v} = [0, -1.5, 1]^\top$ 로 보면, $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
 
 ### 5.3 Split of the Input Space
 
