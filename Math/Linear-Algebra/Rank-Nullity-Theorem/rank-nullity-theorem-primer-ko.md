@@ -1,5 +1,5 @@
 # Rank-Nullity Theorem Primer
-Rev. 14 | Created: 2026-11-04 | Updated: 2026-11-07 05:00 UTC
+Rev. 15 | Created: 2026-11-04 | Updated: 2026-11-07 05:10 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -89,7 +89,7 @@ $\mathrm{rank}(\mathbf{A})$ 는 입력 $\mathbf{x}$ 를 $\mathbf{A}\mathbf{x}$ �
 
 ### 5.2 Nullity Term
 
-$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. Nullity 가 1 이상이면 $\mathbf{A}\mathbf{v} = \mathbf{0}$ 을 만족하고 zero vector 가 아닌 null space 의 vector $\mathbf{v}$ 가 있고, 입력 $\mathbf{x}$ 에 $\mathbf{v}$ 를 더하면 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}$ 이어서 출력이 바뀌지 않는다. 식 (2) 의 $\mathbf{A}$ 와 식 (4) 의 $\mathbf{v} = [0, -1.5, 1]^\top$ 로 보면, $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
+$\mathrm{nullity}(\mathbf{A})$ 는 $\mathbf{A}$ 를 곱했을 때 zero vector 가 되는 입력 전체의 차원이다. Nullity 가 1 이상이면 $\mathbf{A}\mathbf{v} = \mathbf{0}$ 을 만족하고 zero vector 가 아닌 null space 의 vector $\mathbf{v}$ 가 있고, 입력 $\mathbf{x}$ 에 $\mathbf{v}$ 를 더하면 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = \mathbf{A}\mathbf{x} + \mathbf{A}\mathbf{v} = \mathbf{A}\mathbf{x} + \mathbf{0} = \mathbf{A}\mathbf{x}$ 이어서 출력이 바뀌지 않는다. 식 (1) 에 따라 nullity 는 $n - \mathrm{rank}(\mathbf{A})$ 이며, 행의 수 $m$ 은 nullity 를 직접 정하지 않고 rank 의 상한 $\min(m, n)$ 을 통해서만 영향을 준다.
 
 ### 5.3 Split of the Input Space
 
@@ -121,7 +121,9 @@ Null space 를 직접 구해 이 값을 확인한다. $\mathbf{x}$ 의 셋째 �
 \hspace{19em} (4)
 ```
 
-Null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다. 세 값을 모으면 아래 Table 2 와 같다.
+Null space 는 $\mathbf{v}$ 의 상수배 전체인 $\mathbb{R}^3$ 안의 직선이고, 차원은 1 이어서 식 (1) 로 구한 값과 같다.
+
+입력에 $\mathbf{v}$ 를 더해도 출력이 바뀌지 않는 것 ([5.2](#52-nullity-term)) 도 이 $\mathbf{A}$ 로 확인한다. $\mathbf{x} = [1, 0, 0]^\top$ 일 때 $\mathbf{A}\mathbf{x} = [1, 4]^\top$ 이고, $\mathbf{x} + \mathbf{v} = [1, -1.5, 1]^\top$ 일 때도 $\mathbf{A}(\mathbf{x} + \mathbf{v}) = [1 - 3 + 3, 4 - 9 + 9]^\top = [1, 4]^\top$ 이다. 세 값을 모으면 아래 Table 2 와 같다.
 
 Table 2. Rank and nullity of the matrix in equation (2)
 
