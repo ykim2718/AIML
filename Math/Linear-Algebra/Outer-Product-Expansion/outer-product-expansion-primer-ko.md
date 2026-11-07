@@ -1,5 +1,5 @@
 # Outer Product Expansion Primer
-Rev. 5 | Created: 2026-11-01 | Updated: 2026-11-03 06:55 UTC
+Rev. 6 | Created: 2026-11-01 | Updated: 2026-11-07 07:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -88,7 +88,7 @@ Table 1. Symbols
 
 ### 4.3 Rank of Each Term
 
-식 (2) 의 외적은 모든 행이 $\mathbf{b}_k^\top$ 의 상수배이므로, $\mathbf{a}_k$ 와 $\mathbf{b}_k$ 가 모두 zero vector 가 아니면 계수가 1 이고, 하나라도 zero vector 이면 계수가 0 이다. 계수가 1 이하인 행렬 $n$ 개를 더하므로 $\mathrm{rank}(\mathbf{A}\mathbf{B}) \le n$ 이다.
+식 (2) 의 외적은 모든 행이 $\mathbf{b}_k^\top$ 의 상수배이므로, $\mathbf{a}_k$ 와 $\mathbf{b}_k$ 가 모두 zero vector 가 아니면 계수가 1 이고, 하나라도 zero vector 이면 계수가 0 이다. 행렬을 더하면 합의 열은 각 행렬의 열을 더한 것이어서, 합의 column space 는 각 행렬의 column space 를 모두 합친 공간 안에 있고 합의 계수는 각 계수의 합을 넘지 않는다. 계수가 1 이하인 행렬 $n$ 개를 더하므로 $\mathrm{rank}(\mathbf{A}\mathbf{B}) \le n$ 이다.
 
 ## 5. Worked Example
 
@@ -138,7 +138,7 @@ $2 \times 2$ 행렬 두 개를 둔다.
 \mathbf{A} = \sum_{k=1}^{r} \sigma_k\, \mathbf{u}_k \mathbf{v}_k^\top \hspace{19em} (7)
 ```
 
-특이값이 0 인 항은 zero 행렬이어서 합에서 빠지므로, 항의 수는 $\mathbf{A}$ 의 계수 $r$ 이다. 큰 특이값의 항 몇 개만 남기면 계수가 낮은 근사 행렬이 된다. 식 (3) 의 곱 $\mathbf{A}\mathbf{B}$ 의 특이값은 $72.07$ 과 $0.0555$ 이고, 첫 항 하나만 남긴 근사 행렬과 $\mathbf{A}\mathbf{B}$ 의 차이는 Frobenius norm 으로 둘째 특이값과 같은 $0.0555$ 이다.
+특이값이 0 인 항은 zero 행렬이어서 합에서 빠진다. 0 이 아닌 특이값의 개수는 $\mathbf{A}$ 의 계수 $r$ 과 같으므로, 남는 항의 수는 $r$ 이다. 큰 특이값의 항 몇 개만 남기면 계수가 낮은 근사 행렬이 된다. 식 (3) 의 곱 $\mathbf{A}\mathbf{B}$ 의 특이값은 $72.07$ 과 $0.0555$ 이고, 첫 항 하나만 남긴 근사 행렬과 $\mathbf{A}\mathbf{B}$ 의 차이는 Frobenius norm 으로 둘째 특이값과 같은 $0.0555$ 이다.
 
 ### 6.2 Gram Matrix of Samples
 
