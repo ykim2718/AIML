@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 41 | Created: 2026-11-05 | Updated: 2026-11-09 00:35 UTC
+Version 42 | Created: 2026-11-05 | Updated: 2026-11-09 00:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -37,31 +37,27 @@ $m^{\ast}$ 는 $(1 - R^2_{\min})/(1 - R^2_p)$ 와 $\gamma$ 로 정해지며, 이
 
 Table 1. Symbols
 
-| Symbol                | Meaning                                                                        | Shape   | Assumption                        |
-| :-------------------: | :----------------------------------------------------------------------------: | :-----: | :-------------------------------: |
-| $N$                   | 한 lot 또는 한 기간의 전체 wafer 수                                            | integer | $N \ge 1$                         |
-| $m$                   | 실측 wafer 수. 예측 wafer 수는 $N-m$                                           | integer | $1 \le m \le N$                   |
-| $r$                   | 실측 wafer 비율. 전체 wafer $N$ 장 가운데 실측 wafer $m$ 장의 비율             | scalar  | $0 \lt r \le 1$                   |
-| $y_{m,i}$             | $i$ 번째 실측 wafer 의 실측 두께                                               | scalar  | -                                 |
-| $y_{p,i}$             | $i$ 번째 실측 wafer 에 대한 model 예측 두께                                    | scalar  | -                                 |
-| $e_i$                 | $i$ 번째 실측 wafer 의 예측 오차 $y_{m,i} - y_{p,i}$                           | scalar  | -                                 |
-| $s^2_m$               | 실측 wafer $m$ 장의 예측 오차 제곱 평균                                        | scalar  | -                                 |
-| $\sigma^2_y$          | 전체 두께 분산. 과거 실측으로 정한 wafer 사이 두께 분산                        | scalar  | $\sigma^2_y \gt 0$                |
-| $\sigma^2_e$          | 예측 오차 분산의 참값. $\sigma_e$ 는 그 제곱근                                 | scalar  | $\sigma^2_e \gt 0$                |
-| $R^2_m$               | 실측 R². 1 에서 $s^2_m$ 을 $\sigma^2_y$ 로 나눈 값을 뺀 값                     | scalar  | -                                 |
-| $R^2_t$               | 참값 R². 측정하지 않은 wafer 를 포함한 전체 wafer 의 $\sigma^2_e$ 로 계산한 R² | scalar  | -                                 |
-| $R^2_p$               | model 의 R² 예측값. model 이 과거 실측으로 계산해 둔 값                        | scalar  | $0 \lt R^2_p \lt 1$               |
-| $R^2_{\min}$          | 유지해야 할 최저 R²                                                            | scalar  | $R^2_{\min} \lt 1$                |
-| $\Delta$              | 허용 여유 $R^2_p - R^2_{\min}$                                                 | scalar  | -                                 |
-| $\alpha$              | $R^2_m \lt R^2_{\min}$ 이 될 허용 확률                                         | scalar  | $0 \lt \alpha \lt 1$              |
-| $\gamma$              | 목표 유지 확률. $\gamma = 1 - \alpha$                                          | scalar  | $0 \lt \gamma \lt 1$              |
-| $P(\cdot)$            | 확률                                                                           | scalar  | -                                 |
-| $P_{\mathrm{ret}}(m)$ | 유지 확률. $R^2_m \ge R^2_{\min}$ 이 될 확률                                   | scalar  | $0 \le P_{\mathrm{ret}}(m) \le 1$ |
-| $\chi^2_m$            | 자유도 $m$ 인 카이제곱 분포                                                    | -       | -                                 |
-| $F_{\chi^2_m}(\cdot)$ | $\chi^2_m$ 의 누적분포함수                                                     | scalar  | -                                 |
-| $m^{\ast}$            | wafer measurement count. 최소 실측 비율 $r^{\ast}$ 일 때의 실측 wafer 수       | integer | -                                 |
-| $r^{\ast}$            | 최소 실측 비율. $P_{\mathrm{ret}}(m) \ge \gamma$ 인 $r$ 가운데 가장 작은 값    | scalar  | -                                 |
-| $T^{\ast}$            | Measurement interval. 실측 wafer 한 장당 공정을 거치는 wafer 수의 평균         | scalar  | $T^{\ast} \ge 1$                  |
+| Symbol                | Meaning                                                                        | Shape   | Assumption           |
+| :-------------------: | :----------------------------------------------------------------------------: | :-----: | :------------------: |
+| $N$                   | 한 lot 또는 한 기간의 전체 wafer 수                                            | integer | $N \ge 1$            |
+| $m$                   | 실측 wafer 수. 예측 wafer 수는 $N-m$                                           | integer | $1 \le m \le N$      |
+| $r$                   | 실측 wafer 비율. 전체 wafer $N$ 장 가운데 실측 wafer $m$ 장의 비율             | scalar  | $0 \lt r \le 1$      |
+| $y_{m,i}$             | $i$ 번째 실측 wafer 의 실측 두께                                               | scalar  | -                    |
+| $y_{p,i}$             | $i$ 번째 실측 wafer 에 대한 model 예측 두께                                    | scalar  | -                    |
+| $e_i$                 | $i$ 번째 실측 wafer 의 예측 오차 $y_{m,i} - y_{p,i}$                           | scalar  | -                    |
+| $s^2_m$               | 실측 wafer $m$ 장의 예측 오차 제곱 평균                                        | scalar  | -                    |
+| $\sigma^2_y$          | 전체 두께 분산. 과거 실측으로 정한 wafer 사이 두께 분산                        | scalar  | $\sigma^2_y \gt 0$   |
+| $\sigma^2_e$          | 예측 오차 분산의 참값. $\sigma_e$ 는 그 제곱근                                 | scalar  | $\sigma^2_e \gt 0$   |
+| $R^2_m$               | 실측 R². 1 에서 $s^2_m$ 을 $\sigma^2_y$ 로 나눈 값을 뺀 값                     | scalar  | -                    |
+| $R^2_t$               | 참값 R². 측정하지 않은 wafer 를 포함한 전체 wafer 의 $\sigma^2_e$ 로 계산한 R² | scalar  | -                    |
+| $R^2_{\min}$          | 유지해야 할 최저 R²                                                            | scalar  | $R^2_{\min} \lt 1$   |
+| $\Delta$              | 허용 여유 $R^2_p - R^2_{\min}$                                                 | scalar  | -                    |
+| $\alpha$              | $R^2_m \lt R^2_{\min}$ 이 될 허용 확률                                         | scalar  | $0 \lt \alpha \lt 1$ |
+| $\gamma$              | 목표 유지 확률. $\gamma = 1 - \alpha$                                          | scalar  | $0 \lt \gamma \lt 1$ |
+| $P(\cdot)$            | 확률                                                                           | scalar  | -                    |
+| $\chi^2_m$            | 자유도 $m$ 인 카이제곱 분포                                                    | -       | -                    |
+| $F_{\chi^2_m}(\cdot)$ | $\chi^2_m$ 의 누적분포함수                                                     | scalar  | -                    |
+| $r^{\ast}$            | 최소 실측 비율. $P_{\mathrm{ret}}(m) \ge \gamma$ 인 $r$ 가운데 가장 작은 값    | scalar  | -                    |
 
 R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께로 구한 값을, $p$ 는 predicted 로 model 이 예측한 값을, $t$ 는 true 로 참값을 뜻한다. $\min$ 은 유지해야 할 최저값을, $\mathrm{ret}$ 은 retention 을, $y$ 와 $e$ 는 두께와 예측 오차를 뜻한다. 목표 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
 
@@ -73,7 +69,19 @@ R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타
 
 ## 4. Definitions
 
-Table 1 의 $e_i$, $s^2_m$, $R^2_m$, $R^2_t$, $r$, $P_{\mathrm{ret}}(m)$, $r^{\ast}$, $T^{\ast}$ 는 아래 식 (1) 부터 식 (8) 로 계산한다. Problem Statement 의 측정 wafer 수는 wafer measurement count $m^{\ast}$ 이고, measurement interval 은 식 (8) 의 $T^{\ast}$ 이다.
+> **Definition: Model R2 prediction**<br>
+> Model 의 R² 예측값 $R^2_p$ 는 model 이 과거 실측으로 계산해 둔 R² 이며, $0 \lt R^2_p \lt 1$ 이다.
+
+> **Definition: Retention probability**<br>
+> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 실측 R² $R^2_m$ 이 유지해야 할 최저 R² $R^2_{\min}$ 이상일 확률이다.
+
+> **Definition: Wafer measurement count**<br>
+> Wafer measurement count $m^{\ast}$ 는 유지 확률 $P_{\mathrm{ret}}(m)$ 이 목표 유지 확률 $\gamma$ 이상이 되는 가장 작은 실측 wafer 수이다.
+
+> **Definition: Measurement interval**<br>
+> Measurement interval $T^{\ast}$ 는 한 lot 의 전체 wafer $N$ 장 가운데 $m^{\ast}$ 장을 실측할 때, 실측 wafer 한 장당 공정을 거치는 wafer 수의 평균이다.
+
+유지 확률과 measurement interval 의 정의 식은 아래 식 (6) 과 식 (8) 이고, $m^{\ast}$ 는 식 (7) 의 최소 실측 비율 $r^{\ast}$ 에서 $m^{\ast} = N r^{\ast}$ 이다. Table 1 의 $e_i$, $s^2_m$, $R^2_m$, $R^2_t$, $r$, $r^{\ast}$ 는 식 (1) 부터 식 (5) 와 식 (7) 로 계산한다. Problem Statement 의 측정 wafer 수는 $m^{\ast}$ 이고, measurement interval 은 $T^{\ast}$ 이다.
 
 ```math
 e_i = y_{m,i} - y_{p,i}
