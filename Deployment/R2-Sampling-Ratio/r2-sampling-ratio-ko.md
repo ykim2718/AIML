@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Version 16 | Created: 2026-11-05 | Updated: 2026-11-08 03:19 UTC
+Version 17 | Created: 2026-11-05 | Updated: 2026-11-08 03:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,9 +40,9 @@ Table 1. Symbols
 |           $N$           |           한 lot 또는 한 기간의 전체 wafer 수            | integer |             $N \ge 2$             |
 |           $m$           |           실측 wafer 수. 예측 wafer 수는 $N-m$           | integer |          $1 \le m \le N$          |
 |           $r$           |                     실측 wafer 비율                      | scalar  |          $0 \lt r \le 1$          |
-|          $y_i$          |             $i$ 번째 실측 wafer 의 실측 두께             | scalar  |                 -                 |
-|       $\hat{y}_i$       |       $i$ 번째 실측 wafer 에 대한 model 예측 두께        | scalar  |                 -                 |
-|        $\bar{y}$        |                 실측 두께 $m$ 개의 평균                  | scalar  |                 -                 |
+|        $y_{m,i}$        |             $i$ 번째 실측 wafer 의 실측 두께             | scalar  |                 -                 |
+|        $y_{c,i}$        |       $i$ 번째 실측 wafer 에 대한 model 예측 두께        | scalar  |                 -                 |
+|       $\bar{y}_m$       |                 실측 두께 $m$ 개의 평균                  | scalar  |                 -                 |
 |        $R^2_m$          |   실측 R². 실측 wafer $m$ 장의 실측 두께로 계산한 R²   | scalar  |                 -                 |
 |         $R^2$           | 참값 R². 측정하지 않은 wafer 를 포함한 전체 wafer 에서 예측값의 R² | scalar  |          $0 \lt R^2 \lt 1$          |
 |         $R^2_c$         |  model 의 R² 예측값. model 이 과거 실측으로 계산해 둔 값  | scalar  |        $0 \lt R^2_c \lt 1$        |
@@ -63,12 +63,11 @@ Table 1. Symbols
 |       $r^{\ast}$        |                      최소 실측 비율                      | scalar  |                 -                 |
 |       $T^{\ast}$        | Measurement interval. 실측 wafer 한 장당 공정을 거치는 wafer 수 | scalar  |         $T^{\ast} \ge 1$          |
 
-R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께와 견주어 확인한 값을, $c$ 는 calculated by model 로 model 이 계산해 둔 값을 뜻한다. $\min$ 은 유지해야 할 최저값을, $\mathrm{ret}$ 은 retention 을 뜻한다. 목표 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
+R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께와 견주어 확인한 값을, $c$ 는 calculated by model 로 model 이 계산해 둔 값을 뜻한다. $\min$ 은 유지해야 할 최저값을, $\mathrm{ret}$ 은 retention 을 뜻한다. 목표 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
 
-Hat ( ˆ ) 은 추정값, 예측값, 적합값에만 붙인다. $\hat{y}_i$ 는 model 의 예측값이고, $\hat{\rho}$ 는 실측 wafer $m$ 장으로 구한 추정값이다. $R^2_c$ 도 model 의 예측값이지만, 아래첨자 $c$ 가 그 뜻을 담으므로 hat 을 붙이지 않는다. Hat 이 없는 $R^2_m$ 은 실측 wafer $m$ 장에서 계산한 실측값이고, $R^2$ 과 $\rho$ 는 참값이다.
+Hat ( ˆ ) 은 추정값, 예측값, 적합값에만 붙인다. $\hat{\rho}$ 는 실측 wafer $m$ 장으로 구한 추정값이다. $y_{c,i}$ 와 $R^2_c$ 는 model 의 예측값이지만, 아래첨자 $c$ 가 그 뜻을 담으므로 hat 을 붙이지 않는다. Hat 이 없는 $R^2_m$ 은 실측 wafer $m$ 장에서 계산한 실측값이고, $R^2$ 과 $\rho$ 는 참값이다.
 
-- $\hat{y}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다.
-- $\bar{y}$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
+- $\bar{y}_m$: 영어로 "y bar sub m", 한국어로 "와이 바 엠" 이라 읽는다.
 - $\hat{\rho}$: 영어로 "rho hat", 한국어로 "로 햇" 이라 읽는다.
 - $\Phi^{-1}$: 영어로 "Phi inverse", 한국어로 "파이 역함수" 라 읽는다.
 - $\sum$: 영어로 "sum", 한국어로 "합" 이라 읽는다.
@@ -81,7 +80,7 @@ Hat ( ˆ ) 은 추정값, 예측값, 적합값에만 붙인다. $\hat{y}_i$ 는 
 ## 4. Definitions
 
 > **Definition: Measured R2**<br>
-> 실측 R² $R^2_m$ 은 실측 wafer $m$ 장의 실측 두께 $y_i$ 와 model 예측 두께 $\hat{y}_i$ 로 계산한 R² 이며, 1 에서 예측 오차의 제곱합 (SSE) 을 실측 두께가 평균 $\bar{y}$ 에서 벗어난 제곱합 (SST) 으로 나눈 값을 뺀 값이다.
+> 실측 R² $R^2_m$ 은 실측 wafer $m$ 장의 실측 두께 $y_{m,i}$ 와 model 예측 두께 $y_{c,i}$ 로 계산한 R² 이며, 1 에서 예측 오차의 제곱합 (SSE) 을 실측 두께가 평균 $\bar{y}_m$ 에서 벗어난 제곱합 (SST) 으로 나눈 값을 뺀 값이다.
 
 > **Definition: Measured ratio**<br>
 > 실측 비율 $r$ 은 전체 wafer $N$ 장 가운데 실측한 wafer $m$ 장이 차지하는 비율이다.
@@ -98,7 +97,7 @@ Hat ( ˆ ) 은 추정값, 예측값, 적합값에만 붙인다. $\hat{y}_i$ 는 
 다섯 정의 식은 아래 식 (1) 부터 식 (5) 이다. Problem Statement 의 측정 wafer 수는 wafer measurement count $m^{\ast}$ 이고, measurement interval 은 식 (5) 의 $T^{\ast}$ 이다.
 
 ```math
-R^2_m = 1 - \frac{\sum_{i=1}^{m} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{m} (y_i - \bar{y})^2}
+R^2_m = 1 - \frac{\sum_{i=1}^{m} (y_{m,i} - y_{c,i})^2}{\sum_{i=1}^{m} (y_{m,i} - \bar{y}_m)^2}
 \hspace{19em} (1)
 ```
 
