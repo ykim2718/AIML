@@ -7,8 +7,7 @@ Version 31 | Created: 2026-11-05 | Updated: 2026-11-08 09:05 UTC
 - [4. Definitions](#4-definitions)
 - [5. Interpretation](#5-interpretation)
   - [5.1 Assumptions](#51-assumptions)
-  - [5.2 Retention Probability by Model R2](#52-retention-probability-by-model-r2)
-  - [5.3 Measured Count and Interval](#53-measured-count-and-interval)
+  - [5.2 Measured Count and Interval](#52-measured-count-and-interval)
 - [6. Worked Example](#6-worked-example)
   - [6.1 Retention Probability by Measured Count](#61-retention-probability-by-measured-count)
   - [6.2 Measured Count and Interval](#62-measured-count-and-interval)
@@ -148,7 +147,15 @@ P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \r
 \hspace{19em} (9)
 ```
 
-식 (9) 의 분자 $1 - R^2_{\min}$ 은 허용하는 예측 오차의 몫이고, 분모 $1 - R^2_c$ 는 model 이 예상하는 예측 오차의 몫이다. 전체 두께 분산 $\sigma^2_y$ 는 유도 중에 약분되어 식 (9) 에 남지 않는다. 식 (9) 는 정규 근사를 쓰지 않으므로 $m = 1$ 부터 성립하며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. 식 (9) 의 비가 유지 확률을 어떻게 정하는지는 [5.2](#52-retention-probability-by-model-r2) 에 있다.
+식 (9) 의 분자 $1 - R^2_{\min}$ 은 허용하는 예측 오차의 몫이고, 분모 $1 - R^2_c$ 는 model 이 예상하는 예측 오차의 몫이므로, 식 (9) 의 비 $(1 - R^2_{\min}) / (1 - R^2_c)$ 는 허용하는 몫이 예상하는 몫의 몇 배인지를 나타낸다. 실측 $m$ 장의 $s^2_m$ 을 $\sigma^2_e$ 로 나눈 값은 가정 1 에서 평균이 1 이고 표준편차가 $\sqrt{2/m}$ 이며, 유지 확률은 이 값이 식 (9) 의 비 이하일 확률이다. $m$ 이 늘면 표준편차가 줄어 이 값이 1 근처로 모이므로, $R^2_c$ 와 $R^2_{\min}$ 의 대소에 따라 유지 확률이 다가가는 값이 아래 세 경우로 나뉜다.
+
+- $R^2_c \gt R^2_{\min}$: 비가 1 보다 크고, $m$ 이 늘수록 유지 확률이 1 에 다가간다. $R^2_c = 0.90$, $R^2_{\min} = 0.85$ 이면 비는 1.5 이다. $m = 1$ 이면 한 장의 예측 오차가 우연히 크게 나오기 쉬워 표준편차가 1.414 이고 유지 확률은 0.779 이며, $m = 26$ 이면 표준편차가 0.277 로 줄어 유지 확률은 0.951 이다.
+- $R^2_c = R^2_{\min}$: 비가 1 이고, $m$ 이 늘수록 유지 확률이 0.5 에 다가간다. $m = 1$ 에서 0.683, $m = 60$ 에서 0.524 이다.
+- $R^2_c \lt R^2_{\min}$: 비가 1 보다 작고, $m$ 이 늘수록 유지 확률이 0 에 다가간다. $R^2_c = 0.75$, $R^2_{\min} = 0.80$ 이면 비는 0.8 이고, 유지 확률은 $m = 1$ 에서 0.629, $m = 60$ 에서 0.132 이다.
+
+따라서 $\gamma \gt 0.5$ 인 목표 유지 확률은 $R^2_c \gt R^2_{\min}$ 일 때만 채울 수 있다.
+
+전체 두께 분산 $\sigma^2_y$ 는 유도 중에 약분되어 식 (9) 에 남지 않는다. 식 (9) 는 정규 근사를 쓰지 않으므로 $m = 1$ 부터 성립하며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ### 5.1 Assumptions
 
@@ -161,17 +168,7 @@ P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \r
 
 네 가정에는 실측 wafer 수에 대한 조건이 없다. 가정 3 은 계산에 넣는 값을 정할 뿐이므로, 실제 예측 오차가 $R^2_c$ 로 예상한 것보다 크면 실제 유지 확률은 식 (9) 의 값보다 낮다.
 
-### 5.2 Retention Probability by Model R2
-
-식 (9) 의 비 $(1 - R^2_{\min}) / (1 - R^2_c)$ 는 허용하는 예측 오차의 몫이 model 이 예상하는 예측 오차의 몫의 몇 배인지를 나타낸다. 실측 $m$ 장의 $s^2_m$ 을 $\sigma^2_e$ 로 나눈 값은 가정 1 에서 평균이 1 이고 표준편차가 $\sqrt{2/m}$ 이며, 유지 확률은 이 값이 식 (9) 의 비 이하일 확률이다. $m$ 이 늘면 표준편차가 줄어 이 값이 1 근처로 모이므로, $R^2_c$ 와 $R^2_{\min}$ 의 대소에 따라 유지 확률이 다가가는 값이 아래 세 경우로 나뉜다.
-
-- $R^2_c \gt R^2_{\min}$: 비가 1 보다 크고, $m$ 이 늘수록 유지 확률이 1 에 다가간다. $R^2_c = 0.90$, $R^2_{\min} = 0.85$ 이면 비는 1.5 이다. $m = 1$ 이면 한 장의 예측 오차가 우연히 크게 나오기 쉬워 표준편차가 1.414 이고 유지 확률은 0.779 이며, $m = 26$ 이면 표준편차가 0.277 로 줄어 유지 확률은 0.951 이다.
-- $R^2_c = R^2_{\min}$: 비가 1 이고, $m$ 이 늘수록 유지 확률이 0.5 에 다가간다. $m = 1$ 에서 0.683, $m = 60$ 에서 0.524 이다.
-- $R^2_c \lt R^2_{\min}$: 비가 1 보다 작고, $m$ 이 늘수록 유지 확률이 0 에 다가간다. $R^2_c = 0.75$, $R^2_{\min} = 0.80$ 이면 비는 0.8 이고, 유지 확률은 $m = 1$ 에서 0.629, $m = 60$ 에서 0.132 이다.
-
-따라서 $\gamma \gt 0.5$ 인 목표 유지 확률은 $R^2_c \gt R^2_{\min}$ 일 때만 채울 수 있다.
-
-### 5.3 Measured Count and Interval
+### 5.2 Measured Count and Interval
 
 wafer measurement count 는 식 (9) 의 유지 확률이 목표 유지 확률 $\gamma$ 이상이 되는 가장 작은 $m$ 이며, 식 (10) 이다. 최소 실측 비율과 measurement interval 은 식 (10) 의 $m^{\ast}$ 를 식 (5) 와 식 (8) 에 넣은 식 (11) 과 식 (12) 이다.
 
@@ -230,7 +227,7 @@ Fig 1. Retention probability by measured wafer count
 
 - 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.95$ 이다.
 - 식 (9) 에는 전체 wafer 수 $N$ 이 없어, 곡선은 $N$ 과 관계없이 같다. 다만 $m^{\ast}$ 는 $N \ge m^{\ast}$ 인 lot 에서만 실측할 수 있다.
-- 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그 값은 범례에 있다. 그보다 적거나 많을 때의 뜻은 [5.3](#53-measured-count-and-interval) 에 있다. $R^2_c = 0.95$ 에서 1, $R^2_c = 0.90$ 에서 8, $R^2_c = 0.85$ 에서 55 이다.
+- 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그 값은 범례에 있다. 그보다 적거나 많을 때의 뜻은 [5.2](#52-measured-count-and-interval) 에 있다. $R^2_c = 0.95$ 에서 1, $R^2_c = 0.90$ 에서 8, $R^2_c = 0.85$ 에서 55 이다.
 - $R^2_c \gt R^2_{\min}$ 인 세 곡선은 $m$ 이 늘수록 1 에 다가가고, $m = 1$ 에서도 0.954, 0.843, 0.752 이다. $R^2_c = 0.85$ 의 곡선은 $m = 2$ 에서 0.736 으로 한 번 내려간 뒤 올라간다.
 - $R^2_c = R^2_{\min}$ 인 곡선은 $m = 1$ 의 0.683 에서 $m = 60$ 의 0.524 로 내려가 0.5 에 다가가고, $R^2_c \lt R^2_{\min}$ 인 곡선은 0.629 에서 내려가 $m = 8$ 에서 0.397 로 그림의 아래 끝을 벗어나고, $m = 60$ 에서 0.132 이다. 그림 밖의 값은 `fig1-retention-probability.csv` 에 있다. 두 곡선은 $\gamma$ 에 닿지 않는다.
 
