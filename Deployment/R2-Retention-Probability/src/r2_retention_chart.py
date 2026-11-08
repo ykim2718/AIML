@@ -1,6 +1,6 @@
 """Draw the R2 retention probability P_ret(m) against the measured wafer count m for several model R2 values.
 
-Each curve is Eq. (9), P_ret(m) = F_chi2(m; m (1 - R2_min) / (1 - R2_c)), for one model R2 prediction R2_c at a
+Each curve is Eq. (9), P_ret(m) = F_chi2(m; m (1 - R2_min) / (1 - R2_p)), for one model R2 prediction R2_p at a
 fixed floor R2_min. A dashed line marks the target retention probability gamma, and each curve's first crossing of
 that line, the wafer measurement count m*, is marked and given in the legend.
 
@@ -12,7 +12,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.0+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.3.1+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -81,7 +81,7 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
         crossings.append((r2_model, plan.measured))
         reached = f"m* = {plan.measured}" if plan.measured is not None else "not reached"
         ax.plot(curve['measured'], curve['retention'], color=color, linewidth=2.0, zorder=2,
-                label=f"R2_c = {r2_model:.2f}, {reached}")
+                label=f"R2_p = {r2_model:.2f}, {reached}")
         if plan.measured is not None:
             ax.plot(plan.measured, plan.retention, marker='o', markersize=8, color=color,
                     markeredgecolor='white', markeredgewidth=1.5, zorder=3)
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     crossings = draw_chart(curves=curves, confidence=args.confidence,
                            figure_path=args.output_folder / FIGURE_NAME)
     for r2_model, m_star in crossings:
-        print(f"R2_c = {r2_model:.2f}: m* = {m_star if m_star is not None else 'not reached'}")
+        print(f"R2_p = {r2_model:.2f}: m* = {m_star if m_star is not None else 'not reached'}")
     unreached = sum(m_star is None for _, m_star in crossings)
     if unreached:
         print(f"{unreached}/{len(crossings)} curves do not reach the target within m <= {args.max_measured}",

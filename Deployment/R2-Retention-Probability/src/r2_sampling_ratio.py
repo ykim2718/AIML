@@ -5,10 +5,10 @@ prediction errors of the m wafers and the thickness variance known from past mea
 
     R2_m = 1 - s2_m / sigma2_y,    s2_m = mean of (y_measured - y_predicted)^2
 
-With independent normal errors of mean 0 and the model R2 R2_c standing in for the unknown true R2, the
+With independent normal errors of mean 0 and the predicted model R2 R2_p standing in for the unknown true R2 R2_t, the
 retention probability P(R2_m >= R2_min) is exact for every m >= 1:
 
-    P_ret(m) = F_chi2(m; m (1 - R2_min) / (1 - R2_c))
+    P_ret(m) = F_chi2(m; m (1 - R2_min) / (1 - R2_p))
 
 and the wafer measurement count m* is the smallest m in 1..N with P_ret(m) >= gamma; r* = m* / N.
 
@@ -18,7 +18,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.1.0+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.1+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
