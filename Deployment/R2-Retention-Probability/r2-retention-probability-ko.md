@@ -1,5 +1,5 @@
-# Measured Wafer Ratio for R2 Retention
-Version 17 | Created: 2026-11-05 | Updated: 2026-11-08 03:20 UTC
+# R2 Retention Probability
+Version 18 | Created: 2026-11-05 | Updated: 2026-11-08 03:42 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -126,7 +126,7 @@ T^{\ast} = \frac{1}{r^{\ast}}
 
 ## 5. Interpretation
 
-식 (3) 의 유지 확률은 식 (6) 으로 계산한다.
+식 (3) 의 유지 확률은 식 (6) 으로 계산하며, 이 문서는 식 (6) 을 R2 retention probability 식이라 부른다.
 
 ```math
 P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(R^2_m)}} \right)
