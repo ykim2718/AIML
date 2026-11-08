@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Version 7 | Created: 2026-11-05 | Updated: 2026-11-08 00:19 UTC
+Version 8 | Created: 2026-11-05 | Updated: 2026-11-08 01:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,7 +21,7 @@ Version 7 | Created: 2026-11-05 | Updated: 2026-11-08 00:19 UTC
 ## 1. Purpose
 
 - **Problem Statement**: 반도체 증착 공정을 진행하면서 주기적으로 일부 wafer 에서 두께를 측정하면, 실측과 예측의 비교를 통해 예측값의 R² 를 동적으로 추출할 수 있고, 측정하지 않은 wafer 에 대한 예측값의 정확도를 알 수 있다. 그러나 예측값의 정확도를 검증하는 데 필요한 measurement interval 이나 측정 wafer 수를 계산하는 방법은 없다.
-- **Goal**: 실측 R² 가 최저 R² 이상으로 유지될 확률을 정한 값 이상으로 두는 가장 작은 실측 wafer 비율과, 그 비율에 따른 측정 wafer 수와 measurement interval 을 model 마다 계산한다.
+- **Goal**: measurement interval 을 model 의 R² 예측값 $R^2_c$ 에 따라 계산한다.
 - **Non-Goal**: 두께 예측 model 을 만들거나 고르는 방법은 다루지 않는다.
 
 ## 2. Summary
