@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 39 | Created: 2026-11-05 | Updated: 2026-11-09 00:15 UTC
+Version 40 | Created: 2026-11-05 | Updated: 2026-11-09 00:25 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -205,7 +205,7 @@ $R^2_{\min} = 0.80$ 으로 두고 $R^2_p$ 를 0.75, 0.80, 0.85, 0.90, 0.95 로 �
 
 Fig 1. Retention probability by measured wafer count
 
-- 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.90$ 이다.
+- 가로축은 실측 wafer 수 $m$ 을 로그 눈금으로, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.90$ 이다.
 - 식 (9) 에는 전체 wafer 수 $N$ 이 없어, 곡선은 $N$ 과 관계없이 같다. 다만 $m^{\ast}$ 는 $N \ge m^{\ast}$ 인 lot 에서만 실측할 수 있다.
 - 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그 값은 범례에 있다. 그보다 적거나 많을 때의 뜻은 [5.2](#52-measured-count-and-interval) 에 있다. $R^2_p = 0.95$ 에서 1, $R^2_p = 0.90$ 에서 4, $R^2_p = 0.85$ 에서 32 이다.
 - $R^2_p \gt R^2_{\min}$ 인 세 곡선은 $m$ 이 늘수록 1 에 다가가고, $m = 1$ 에서도 0.954, 0.843, 0.752 이다. $R^2_p = 0.85$ 의 곡선은 $m = 2$ 에서 0.736 으로 한 번 내려간 뒤 올라간다.

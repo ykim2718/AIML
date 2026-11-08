@@ -9,10 +9,11 @@ Changelog:
     0.1.0 - Draw the retention probability on a log y axis.
     0.2.0 - Return to a linear y axis from 0.4 to 1.
     0.3.0 - Show m* in the legend instead of a label beside each marker.
+    0.4.0 - Draw the measured wafer count on a log x axis.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.2+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.4.0+20261109"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -25,6 +26,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.colors import TABLEAU_COLORS
+from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
 
 from r2_sampling_ratio import required_measured, retention_probability
 
@@ -37,7 +39,8 @@ REFERENCE_WIDTH: Final[float] = 9.0
 FONT_SIZES: Final[dict] = {'text': 12.0, 'axis_label': 14.0, 'text_box': 12.0, 'pane_caption': 14.0}  # points
 DPI: Final[int] = 300
 Y_RANGE: Final[tuple] = (0.4, 1.02)  # curves below 0.4 leave the plot; the CSV keeps their full values
-TARGET_LABEL_FRACTION: Final[float] = 0.3  # x position of the target label, as a share of the x axis
+TARGET_LABEL_EXPONENT: Final[float] = 0.6  # target label at max_measured ** this, a share of the log x axis
+X_TICKS: Final[tuple] = (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
 
 
 def retention_curves(r2_models: list = None, r2_min: float = None, max_measured: int = None) -> pd.DataFrame:
@@ -71,7 +74,7 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
 
     fig, ax = plt.subplots(figsize=FIGSIZE)
     ax.axhline(confidence, color='0.45', linestyle='--', linewidth=1.2, zorder=1)
-    ax.text(TARGET_LABEL_FRACTION * max_measured, confidence + 0.008, f"target gamma = {confidence:.2f}",
+    ax.text(max_measured ** TARGET_LABEL_EXPONENT, confidence + 0.008, f"target gamma = {confidence:.2f}",
             ha='center', va='bottom',
             color='0.30', fontsize=FONT_SIZES['text_box'] * scale)
 
@@ -88,7 +91,11 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
             ax.plot(plan.measured, plan.retention, marker='o', markersize=8, color=color,
                     markeredgecolor='white', markeredgewidth=1.5, zorder=3)
 
-    ax.set_xlim(0, max_measured + 1)
+    ax.set_xscale('log')
+    ax.set_xlim(0.9, max_measured * 1.1)
+    ax.xaxis.set_major_locator(FixedLocator([x for x in X_TICKS if x <= max_measured]))
+    ax.xaxis.set_major_formatter(ScalarFormatter())
+    ax.xaxis.set_minor_formatter(NullFormatter())
     ax.set_ylim(*Y_RANGE)
     ax.set_xlabel('Measured wafer count m')
     ax.set_ylabel('Retention probability P_ret(m)')
