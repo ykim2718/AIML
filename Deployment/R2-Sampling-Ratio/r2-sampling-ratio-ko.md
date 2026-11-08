@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Version 12 | Created: 2026-11-05 | Updated: 2026-11-08 02:57 UTC
+Version 13 | Created: 2026-11-05 | Updated: 2026-11-08 03:03 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -43,7 +43,7 @@ Table 1. Symbols
 |          $y_i$          |             $i$ 번째 실측 wafer 의 실측 두께             | scalar  |                 -                 |
 |       $\hat{y}_i$       |       $i$ 번째 실측 wafer 에 대한 model 예측 두께        | scalar  |                 -                 |
 |        $\bar{y}$        |                 실측 두께 $m$ 개의 평균                  | scalar  |                 -                 |
-|      $\hat{R}^2_m$      |      실측 R². 실측 wafer $m$ 장의 실측 두께로 확인       | scalar  |                 -                 |
+|      $\hat{R}^2_m$      |        추정 R². 실측 wafer $m$ 장으로 추정한 R²        | scalar  |                 -                 |
 |         $\hat{R}^2_c$         |  model 의 R² 예측값. model 이 과거 실측으로 계산해 둔 값  | scalar  |        $0 \lt \hat{R}^2_c \lt 1$        |
 |      $R^2_{\min}$       |                   유지해야 할 최저 R²                    | scalar  |      $R^2_{\min} \lt \hat{R}^2_c$       |
 |        $\Delta$         |              허용 여유 $\hat{R}^2_c - R^2_{\min}$              | scalar  |          $\Delta \gt 0$           |
@@ -80,14 +80,14 @@ Hat ( ˆ ) 은 추정값, 예측값, 적합값에만 붙인다. $\hat{y}_i$ 와 
 
 ## 4. Definitions
 
-> **Definition: Measured R2**<br>
-> 실측 R² $\hat{R}^2_m$ 은 실측 wafer $m$ 장의 실측 두께 $y_i$ 와 model 예측 두께 $\hat{y}_i$ 로 계산하며, 1 에서 예측 오차의 제곱합 (SSE) 을 실측 두께가 평균 $\bar{y}$ 에서 벗어난 제곱합 (SST) 으로 나눈 값을 뺀 값이다.
+> **Definition: Estimated R2**<br>
+> 추정 R² $\hat{R}^2_m$ 은 상관계수 제곱의 참값 $\rho^2$ 을 실측 wafer $m$ 장의 실측 두께 $y_i$ 와 model 예측 두께 $\hat{y}_i$ 로 추정한 값이며, 1 에서 예측 오차의 제곱합 (SSE) 을 실측 두께가 평균 $\bar{y}$ 에서 벗어난 제곱합 (SST) 으로 나눈 값을 뺀 값이다.
 
 > **Definition: Measured ratio**<br>
 > 실측 비율 $r$ 은 전체 wafer $N$ 장 가운데 실측한 wafer $m$ 장이 차지하는 비율이다.
 
 > **Definition: Retention probability**<br>
-> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 실측 R² $\hat{R}^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률이다.
+> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 추정 R² $\hat{R}^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률이다.
 
 > **Definition: Minimum measured ratio**<br>
 > 최소 실측 비율 $r^{\ast}$ 는 유지 확률 $P_{\mathrm{ret}}(m)$ 이 목표 유지 확률 $\gamma$ 이상이 되는 실측 비율 $r$ 가운데 가장 작은 값이고, 그때의 실측 wafer 수가 wafer measurement count $m^{\ast}$ 이다.
