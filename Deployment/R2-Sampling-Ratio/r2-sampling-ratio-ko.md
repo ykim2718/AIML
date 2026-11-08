@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Version 11 | Created: 2026-11-05 | Updated: 2026-11-08 02:49 UTC
+Version 12 | Created: 2026-11-05 | Updated: 2026-11-08 02:57 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,14 +22,14 @@ Version 11 | Created: 2026-11-05 | Updated: 2026-11-08 02:49 UTC
 ## 1. Purpose
 
 - **Problem Statement**: 반도체 증착 공정을 진행하면서 주기적으로 일부 wafer 에서 두께를 측정하면, 실측과 예측의 비교를 통해 예측값의 R² 를 동적으로 추출할 수 있고, 측정하지 않은 wafer 에 대한 예측값의 정확도를 알 수 있다. 그러나 예측값의 정확도를 검증하는 데 필요한 measurement interval 이나 측정 wafer 수를 계산하는 방법은 없다.
-- **Goal**: model 의 R² 예측값 $R^2_c$ 로 유지 확률 $P_{\mathrm{ret}}(m)$ 을 구하고, 그 유지 확률로부터 wafer measurement count $m^{\ast}$ 와 measurement interval $T^{\ast}$ 를 구하는 수학 model 을 제시한다.
+- **Goal**: model 의 R² 예측값 $\hat{R}^2_c$ 로 유지 확률 $P_{\mathrm{ret}}(m)$ 을 구하고, 그 유지 확률로부터 wafer measurement count $m^{\ast}$ 와 measurement interval $T^{\ast}$ 를 구하는 수학 model 을 제시한다.
 - **Non-Goal**: 두께 예측 model 을 만들거나 고르는 방법은 다루지 않는다.
 
 ## 2. Summary
 
-실측 wafer $m$ 장으로 계산한 R² 가 최저 R² $R^2_{\min}$ 이상일 유지 확률 $P_{\mathrm{ret}}(m)$ 은 model 의 R² 예측값 $R^2_c$ 와 $m$ 으로 정해지며, $m$ 이 늘수록 커진다.
+실측 wafer $m$ 장으로 계산한 R² 가 최저 R² $R^2_{\min}$ 이상일 유지 확률 $P_{\mathrm{ret}}(m)$ 은 model 의 R² 예측값 $\hat{R}^2_c$ 와 $m$ 으로 정해지며, $m$ 이 늘수록 커진다.
 $P_{\mathrm{ret}}(m)$ 이 목표 유지 확률 $\gamma$ 이상이 되는 가장 작은 $m$ 이 wafer measurement count $m^{\ast}$ 이고, measurement interval 은 $T^{\ast} = N/m^{\ast}$ 이다.
-$R^2_c$ 가 높을수록, $R^2_c - R^2_{\min}$ 이 클수록, $\gamma$ 가 낮을수록 $m^{\ast}$ 가 줄고 $T^{\ast}$ 가 길어진다.
+$\hat{R}^2_c$ 가 높을수록, $\hat{R}^2_c - R^2_{\min}$ 이 클수록, $\gamma$ 가 낮을수록 $m^{\ast}$ 가 줄고 $T^{\ast}$ 가 길어진다.
 
 ## 3. Notation
 
@@ -44,9 +44,9 @@ Table 1. Symbols
 |       $\hat{y}_i$       |       $i$ 번째 실측 wafer 에 대한 model 예측 두께        | scalar  |                 -                 |
 |        $\bar{y}$        |                 실측 두께 $m$ 개의 평균                  | scalar  |                 -                 |
 |      $\hat{R}^2_m$      |      실측 R². 실측 wafer $m$ 장의 실측 두께로 확인       | scalar  |                 -                 |
-|         $R^2_c$         |  model 의 R² 예측값. model 이 과거 실측으로 계산해 둔 값  | scalar  |        $0 \lt R^2_c \lt 1$        |
-|      $R^2_{\min}$       |                   유지해야 할 최저 R²                    | scalar  |      $R^2_{\min} \lt R^2_c$       |
-|        $\Delta$         |              허용 여유 $R^2_c - R^2_{\min}$              | scalar  |          $\Delta \gt 0$           |
+|         $\hat{R}^2_c$         |  model 의 R² 예측값. model 이 과거 실측으로 계산해 둔 값  | scalar  |        $0 \lt \hat{R}^2_c \lt 1$        |
+|      $R^2_{\min}$       |                   유지해야 할 최저 R²                    | scalar  |      $R^2_{\min} \lt \hat{R}^2_c$       |
+|        $\Delta$         |              허용 여유 $\hat{R}^2_c - R^2_{\min}$              | scalar  |          $\Delta \gt 0$           |
 | $P_{\mathrm{ret}}(m)$   |  유지 확률. $\hat{R}^2_m \ge R^2_{\min}$ 이 될 확률       | scalar  | $0 \le P_{\mathrm{ret}}(m) \le 1$ |
 |        $\alpha$         |        $\hat{R}^2_m \lt R^2_{\min}$ 이 될 허용 확률        | scalar  |      $0 \lt \alpha \lt 0.5$       |
 |        $\gamma$         |         목표 유지 확률. $\gamma = 1 - \alpha$          | scalar  |      $0.5 \lt \gamma \lt 1$       |
@@ -63,6 +63,8 @@ Table 1. Symbols
 |       $T^{\ast}$        | Measurement interval. 실측 wafer 한 장당 공정을 거치는 wafer 수 | scalar  |         $T^{\ast} \ge 1$          |
 
 R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께와 견주어 확인한 값을, $c$ 는 calculated by model 로 model 이 계산해 둔 값을 뜻한다. $\min$ 은 유지해야 할 최저값을, $\mathrm{ret}$ 은 retention 을 뜻한다. 목표 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
+
+Hat ( ˆ ) 은 추정값, 예측값, 적합값에만 붙인다. $\hat{y}_i$ 와 $\hat{R}^2_c$ 는 model 의 예측값이고, $\hat{\rho}$ 와 $\hat{R}^2_m$ 은 실측 wafer $m$ 장으로 구한 추정값이다. Hat 이 없는 $\rho$ 는 상관계수의 참값이다.
 
 - $\hat{y}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다.
 - $\bar{y}$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
@@ -121,14 +123,14 @@ T^{\ast} = \frac{1}{r^{\ast}}
 ```
 
 - 식 (1) 의 분자는 SSE, 분모는 SST 이다.
-- 실측 wafer 가 바뀌면 분자와 분모가 함께 바뀌므로, model 이 같아도 $\hat{R}^2_m$ 은 $R^2_c$ 주위에서 변동한다. 그래서 $m \lt N$ 이면 식 (3) 의 유지 확률은 1 보다 작다.
+- 실측 wafer 가 바뀌면 분자와 분모가 함께 바뀌므로, model 이 같아도 $\hat{R}^2_m$ 은 $\hat{R}^2_c$ 주위에서 변동한다. 그래서 $m \lt N$ 이면 식 (3) 의 유지 확률은 1 보다 작다.
 
 ## 5. Interpretation
 
 식 (3) 의 유지 확률은 식 (6) 으로 계산한다.
 
 ```math
-P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right)
+P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{\hat{R}^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right)
 \hspace{19em} (6)
 ```
 
@@ -139,17 +141,17 @@ P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{V
 $\hat{R}^2_m$ 의 분산은 식 (7) 이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
-\mathrm{Var}(\hat{R}^2_m) \approx \frac{4 R^2_c (1 - R^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
+\mathrm{Var}(\hat{R}^2_m) \approx \frac{4 \hat{R}^2_c (1 - \hat{R}^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
 \hspace{19em} (7)
 ```
 
 - 앞 인자: 대표본 근사 (large-sample approximation) 에서 delta method 로 구한 R² 의 분산
 - 뒤 인자: 유한 모집단 보정 (finite population correction, FPC). $m = N$ 이면 0 이 되어, 전체를 실측하면 변동이 없다.
-- $R^2_c$ 가 1 에 가까울수록 $(1 - R^2_c)^2$ 이 작아져 분산이 줄어든다.
+- $\hat{R}^2_c$ 가 1 에 가까울수록 $(1 - \hat{R}^2_c)^2$ 이 작아져 분산이 줄어든다.
 
 식 (6) 과 식 (7) 은 아래 조건에서 성립한다.
 
-- 예측 두께에 bias 가 없고 실측 두께에 대한 기울기가 1 이어서, 식 (1) 의 R² 가 실측과 예측의 상관계수 제곱 $\rho^2$ 과 같고 $\hat{R}^2_m$ 의 기댓값이 $R^2_c$ 이다.
+- 예측 두께에 bias 가 없고 실측 두께에 대한 기울기가 1 이어서, 식 (1) 의 R² 가 실측과 예측의 상관계수 제곱 $\rho^2$ 과 같고 $\hat{R}^2_m$ 의 기댓값이 $\hat{R}^2_c$ 이다.
 - $m$ 이 충분히 커서 $\hat{R}^2_m$ 이 정규분포에 가깝다. 이 문서는 $m \ge m_{\min} = 10$ 으로 둔다.
 - 실측 wafer 를 전체 wafer 에서 무작위로 고른다.
 
@@ -160,7 +162,7 @@ $\hat{R}^2_m$ 의 분산은 식 (7) 이다. 유도는 [Appendix B](#appendix-b-d
 ```math
 P_{\mathrm{ret}}(m) \ge \gamma
 \iff
-R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
+\hat{R}^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
 \hspace{19em} (8)
 ```
 
@@ -177,7 +179,7 @@ m^{\ast} = \max\left( \left\lceil \frac{m_0}{1 + (m_0 - 1)/N} \right\rceil,\ m_{
 ```
 
 ```math
-m_0 = \left( \frac{2\, z_{\gamma} \sqrt{R^2_c}\, (1 - R^2_c)}{R^2_c - R^2_{\min}} \right)^2
+m_0 = \left( \frac{2\, z_{\gamma} \sqrt{\hat{R}^2_c}\, (1 - \hat{R}^2_c)}{\hat{R}^2_c - R^2_{\min}} \right)^2
 \hspace{19em} (10)
 ```
 
@@ -195,13 +197,13 @@ T^{\ast} = \frac{N}{m^{\ast}}
 - $m_0 / (1 + (m_0 - 1)/N)$: 유한 모집단 보정을 넣은 필요 실측 수. $N$ 이 작을수록 $m_0$ 보다 많이 줄어든다.
 - $m_{\min}$: 5.1 의 대표본 근사가 성립하도록 둔 하한
 
-식 (9) 는 $R^2_c \gt R^2_{\min}$ 일 때만 성립한다. $R^2_c \le R^2_{\min}$ 이면 식 (6) 의 분자가 0 이하여서 $m$ 을 $N$ 까지 늘려도 $P_{\mathrm{ret}}(m)$ 이 0.5 를 넘지 않고, 식 (8) 을 만족하지 못한다.
+식 (9) 는 $\hat{R}^2_c \gt R^2_{\min}$ 일 때만 성립한다. $\hat{R}^2_c \le R^2_{\min}$ 이면 식 (6) 의 분자가 0 이하여서 $m$ 을 $N$ 까지 늘려도 $P_{\mathrm{ret}}(m)$ 이 0.5 를 넘지 않고, 식 (8) 을 만족하지 못한다.
 
 ## 6. Worked Example
 
 ### 6.1 Retention Probability by Measured Count
 
-$N = 100$, $R^2_c = 0.90$, $R^2_{\min} = 0.85$ 로 식 (6) 과 식 (7) 을 $m$ 마다 계산하면 아래 Table 2 이다.
+$N = 100$, $\hat{R}^2_c = 0.90$, $R^2_{\min} = 0.85$ 로 식 (6) 과 식 (7) 을 $m$ 마다 계산하면 아래 Table 2 이다.
 
 Table 2. Retention probability by measured count, N = 100
 
@@ -241,7 +243,7 @@ Table 3. Measured count by model R2 and margin, N = 100, gamma = 95 %
 | 0.90 |   53 (0.53)     |   29 (0.29)     |   10\* (0.10)   |
 | 0.95 |   23 (0.23)     |   10 (0.10)     |   10\* (0.10)   |
 
-$\Delta$ 를 0.03 에서 0.10 으로 넓히면 $R^2_c = 0.80$ 에서 $r^{\ast}$ 가 0.80 에서 0.26 으로 줄어든다.
+$\Delta$ 를 0.03 에서 0.10 으로 넓히면 $\hat{R}^2_c = 0.80$ 에서 $r^{\ast}$ 가 0.80 에서 0.26 으로 줄어든다.
 
 Table 4. Measured count by retention probability, N = 100, margin = 0.05
 
@@ -252,7 +254,7 @@ Table 4. Measured count by retention probability, N = 100, margin = 0.05
 | 0.90 |  20 (0.20)    |  29 (0.29)    |  45 (0.45)    |
 | 0.95 | 10\* (0.10)   |  10 (0.10)    |  18 (0.18)    |
 
-목표 유지 확률을 95 % 에서 99 % 로 올리면 $R^2_c = 0.90$ 에서 $r^{\ast}$ 가 0.29 에서 0.45 로 늘어난다.
+목표 유지 확률을 95 % 에서 99 % 로 올리면 $\hat{R}^2_c = 0.90$ 에서 $r^{\ast}$ 가 0.29 에서 0.45 로 늘어난다.
 
 Table 5. Measured count by total wafers, gamma = 95 %, margin = 0.05
 
@@ -263,7 +265,7 @@ Table 5. Measured count by total wafers, gamma = 95 %, margin = 0.05
 | 0.90 |  16 (0.64)    |  29 (0.29)    |
 | 0.95 | 10\* (0.40)   |  10 (0.10)    |
 
-$N$ 이 25 이면 $m^{\ast}$ 는 줄지만 $r^{\ast}$ 는 커진다. $R^2_c = 0.90$ 에서 $N = 25$ 의 $r^{\ast}$ 는 0.64 로 $N = 100$ 의 0.29 보다 두 배 넘게 크다.
+$N$ 이 25 이면 $m^{\ast}$ 는 줄지만 $r^{\ast}$ 는 커진다. $\hat{R}^2_c = 0.90$ 에서 $N = 25$ 의 $r^{\ast}$ 는 0.64 로 $N = 100$ 의 0.29 보다 두 배 넘게 크다.
 
 ## 7. Application
 
@@ -286,8 +288,8 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 
 ### 7.2 Breaking Conditions
 
-- $R^2_c \le R^2_{\min}$: 식 (10) 의 분모가 0 이하가 되어 $m^{\ast}$ 가 없다. `required_measured` 는 오류로 끝나고, `build_table` 은 이 조건을 건너뛰고 건너뛴 개수를 출력한다.
-- $R^2_c$ 가 과거 실측의 값과 달라짐: 공정 변화로 model 의 실제 R² 가 $R^2_c$ 보다 낮아지면, 식 (9) 의 $m^{\ast}$ 에서 실제 유지 확률이 $\gamma$ 보다 낮다. $R^2_c$ 는 최근 실측으로 다시 추정한다.
+- $\hat{R}^2_c \le R^2_{\min}$: 식 (10) 의 분모가 0 이하가 되어 $m^{\ast}$ 가 없다. `required_measured` 는 오류로 끝나고, `build_table` 은 이 조건을 건너뛰고 건너뛴 개수를 출력한다.
+- $\hat{R}^2_c$ 가 과거 실측의 값과 달라짐: 공정 변화로 model 의 실제 R² 가 $\hat{R}^2_c$ 보다 낮아지면, 식 (9) 의 $m^{\ast}$ 에서 실제 유지 확률이 $\gamma$ 보다 낮다. $\hat{R}^2_c$ 는 최근 실측으로 다시 추정한다.
 - 예측에 bias 가 있음: 식 (1) 의 R² 가 상관계수 제곱보다 작아져 식 (7) 이 맞지 않는다.
 - $m$ 이 작음: 식 (6) 과 식 (7) 의 정규 근사가 맞지 않는다. $m_{\min}$ 은 이 경우를 막는 하한이다.
 
@@ -306,49 +308,49 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 
 ## Appendix B. Derivation
 
-5.1 의 조건에서 $R^2_c = \rho^2$ 이고, 실측 wafer $m$ 장으로 추정한 상관계수 $\hat{\rho}$ 의 대표본 분산은 $(1 - \rho^2)^2 / m$ 이다. 이 두 사실로 $\hat{R}^2_m$ 의 분산을 구한다.
+5.1 의 조건에서 model 의 R² 예측값 $\hat{R}^2_c$ 를 상관계수 제곱의 참값 $\rho^2$ 으로 쓰고, 실측 wafer $m$ 장으로 추정한 상관계수 $\hat{\rho}$ 의 대표본 분산은 $(1 - \rho^2)^2 / m$ 이다. 이 두 사실로 $\hat{R}^2_m$ 의 분산을 구한다.
 
 ```math
 \begin{aligned}
 \mathrm{Var}(\hat{R}^2_m)
 &\approx (2\rho)^2\, \mathrm{Var}(\hat{\rho}) \cdot \frac{N - m}{N - 1} \\
 &\approx 4 \rho^2\, \frac{(1 - \rho^2)^2}{m} \cdot \frac{N - m}{N - 1} \\
-&= \frac{4 R^2_c (1 - R^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
+&= \frac{4 \hat{R}^2_c (1 - \hat{R}^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
 \end{aligned}
 \hspace{19em} (13)
 ```
 
 - 첫째 근사: delta method 이다. $\rho^2$ 을 $\rho$ 로 미분하면 $2\rho$ 이므로 $\hat{\rho}^2$ 의 분산은 $\hat{\rho}$ 의 분산에 $(2\rho)^2$ 을 곱한 값이다. 전체 $N$ 장에서 비복원으로 $m$ 장을 뽑으므로 유한 모집단 보정 $(N - m)/(N - 1)$ 을 곱한다.
 - 둘째 근사: $\hat{\rho}$ 의 대표본 분산 $(1 - \rho^2)^2 / m$ 을 넣는다.
-- 셋째 등호: $\rho^2 = R^2_c$ 를 넣는다.
+- 셋째 등호: $\rho^2$ 대신 $\hat{R}^2_c$ 를 넣는다.
 
 따라서 식 (7) 이 성립한다.
 
 ```math
-\mathrm{Var}(\hat{R}^2_m) \approx \frac{4 R^2_c (1 - R^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
+\mathrm{Var}(\hat{R}^2_m) \approx \frac{4 \hat{R}^2_c (1 - \hat{R}^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
 \hspace{19em} (7)
 ```
 
-이어서 5.1 의 조건에서 $\hat{R}^2_m$ 이 평균 $R^2_c$, 분산이 식 (7) 인 정규분포를 따른다고 보고, 식 (3) 의 유지 확률을 구한다.
+이어서 5.1 의 조건에서 $\hat{R}^2_m$ 이 평균 $\hat{R}^2_c$, 분산이 식 (7) 인 정규분포를 따른다고 보고, 식 (3) 의 유지 확률을 구한다.
 
 ```math
 \begin{aligned}
 P_{\mathrm{ret}}(m)
-&= P\left( \frac{\hat{R}^2_m - R^2_c}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \ge \frac{R^2_{\min} - R^2_c}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right) \\
-&\approx 1 - \Phi\left( \frac{R^2_{\min} - R^2_c}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right) \\
-&= \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right)
+&= P\left( \frac{\hat{R}^2_m - \hat{R}^2_c}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \ge \frac{R^2_{\min} - \hat{R}^2_c}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right) \\
+&\approx 1 - \Phi\left( \frac{R^2_{\min} - \hat{R}^2_c}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right) \\
+&= \Phi\left( \frac{\hat{R}^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right)
 \end{aligned}
 \hspace{19em} (14)
 ```
 
-- 첫째 등호: 식 (3) 의 부등식 양변에서 $R^2_c$ 를 빼고 양수인 $\sqrt{\mathrm{Var}(\hat{R}^2_m)}$ 로 나눈다. 부등호의 방향은 바뀌지 않는다.
+- 첫째 등호: 식 (3) 의 부등식 양변에서 $\hat{R}^2_c$ 를 빼고 양수인 $\sqrt{\mathrm{Var}(\hat{R}^2_m)}$ 로 나눈다. 부등호의 방향은 바뀌지 않는다.
 - 둘째 근사: 왼쪽의 표준화한 값이 표준정규분포를 따르므로, 그 값이 어떤 수 이상일 확률은 1 에서 그 수까지의 누적확률을 뺀 값이다.
-- 셋째 등호: 표준정규분포는 0 에 대해 대칭이어서 $1 - \Phi(-z) = \Phi(z)$ 이다.
+- 셋째 등호: 표준정규분포는 0 에 대해 대칭이어서, 임의의 실수 $z$ 에 대해 $1 - \Phi(-z) = \Phi(z)$ 이다.
 
 따라서 식 (6) 이 성립한다.
 
 ```math
-P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right)
+P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{\hat{R}^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \right)
 \hspace{19em} (6)
 ```
 
@@ -357,7 +359,7 @@ P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{V
 ```math
 \begin{aligned}
 P_{\mathrm{ret}}(m) \ge \gamma
-&\iff \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \ge z_{\gamma} \\
+&\iff \frac{\hat{R}^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(\hat{R}^2_m)}} \ge z_{\gamma} \\
 &\iff z_{\gamma}^2\, \mathrm{Var}(\hat{R}^2_m) \le \Delta^2 \\
 &\iff m_0\, \frac{N - m}{N - 1} \le m \\
 &\iff m \ge \frac{m_0}{1 + (m_0 - 1)/N}
@@ -366,8 +368,8 @@ P_{\mathrm{ret}}(m) \ge \gamma
 ```
 
 - 첫째 동치: 식 (6) 을 넣고, $\Phi$ 가 증가함수이므로 양변에 $\Phi^{-1}$ 을 적용한다. $z_{\gamma} = \Phi^{-1}(\gamma)$ 이다.
-- 둘째 동치: $R^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
-- 셋째 동치: 식 (7) 을 넣고, $m_0 = 4 z_{\gamma}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $m$ 을 곱한다.
+- 둘째 동치: $\hat{R}^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
+- 셋째 동치: 식 (7) 을 넣고, $m_0 = 4 z_{\gamma}^2 \hat{R}^2_c (1 - \hat{R}^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $m$ 을 곱한다.
 - 넷째 동치: 양변에 $N - 1$ 을 곱해 정리하면 $m (N - 1 + m_0) \ge m_0 N$ 이고, 양변을 $N - 1 + m_0$ 로 나눈 뒤 분자와 분모를 $N$ 으로 나눈다.
 
 마지막 줄의 $m$ 을 정수로 올림하고 $m_{\min}$ 과 견주어 큰 쪽을 고르면 $m^{\ast}$ 이다. 따라서 식 (9) 가 성립한다.
