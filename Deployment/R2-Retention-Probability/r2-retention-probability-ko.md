@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 24 | Created: 2026-11-05 | Updated: 2026-11-08 07:00 UTC
+Version 25 | Created: 2026-11-05 | Updated: 2026-11-08 07:03 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -211,11 +211,11 @@ $R^2_{\min} = 0.85$ 로 두고 $R^2_c$ 를 0.80, 0.85, 0.90, 0.95 로 바꾸어 
 
 Fig 1. Retention probability by measured wafer count
 
-- 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 로그 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.95$ 이다.
+- 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.95$ 이다.
 - 식 (9) 에는 전체 wafer 수 $N$ 이 없어, 곡선은 $N$ 과 관계없이 같다. 다만 $m^{\ast}$ 는 $N \ge m^{\ast}$ 인 lot 에서만 실측할 수 있다.
 - 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이다. $R^2_c = 0.95$ 에서 2, $R^2_c = 0.90$ 에서 26 이다.
 - $R^2_c \gt R^2_{\min}$ 인 두 곡선은 $m$ 이 늘수록 1 에 다가가고, $m = 1$ 에서도 0.917 과 0.779 이다.
-- $R^2_c = R^2_{\min}$ 인 곡선은 $m = 1$ 의 0.683 에서 $m = 60$ 의 0.524 로 내려가 0.5 에 다가가고, $R^2_c \lt R^2_{\min}$ 인 곡선은 0.614 에서 0.075 로 내려간다. 두 곡선은 $\gamma$ 에 닿지 않는다.
+- $R^2_c = R^2_{\min}$ 인 곡선은 $m = 1$ 의 0.683 에서 $m = 60$ 의 0.524 로 내려가 0.5 에 다가가고, $R^2_c \lt R^2_{\min}$ 인 곡선은 0.614 에서 내려가 $m = 6$ 에서 0.391 로 그림의 아래 끝을 벗어나고, $m = 60$ 에서 0.075 이다. 그림 밖의 값은 `fig1-retention-probability.csv` 에 있다. 두 곡선은 $\gamma$ 에 닿지 않는다.
 
 ### 6.2 Measured Count and Interval
 

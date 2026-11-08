@@ -7,10 +7,11 @@ that line, the wafer measurement count m*, is marked and labelled.
 Changelog:
     0.0.0 - Initial release.
     0.1.0 - Draw the retention probability on a log y axis.
+    0.2.0 - Return to a linear y axis from 0.4 to 1.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.1.2+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.0+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -23,7 +24,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.colors import TABLEAU_COLORS
-from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator
 
 from r2_sampling_ratio import required_measured, retention_probability
 
@@ -35,8 +35,7 @@ FIGSIZE: Final[tuple] = (9.0, 5.5)
 REFERENCE_WIDTH: Final[float] = 9.0
 FONT_SIZES: Final[dict] = {'text': 12.0, 'axis_label': 14.0, 'text_box': 12.0, 'pane_caption': 14.0}  # points
 DPI: Final[int] = 300
-LOG_Y_RANGE: Final[tuple] = (0.05, 1.08)
-LOG_Y_TICKS: Final[list] = [0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0]
+Y_RANGE: Final[tuple] = (0.4, 1.02)  # curves below 0.4 leave the plot; the CSV keeps their full values
 
 
 def retention_curves(r2_models: list = None, r2_min: float = None, max_measured: int = None) -> pd.DataFrame:
@@ -70,7 +69,7 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
 
     fig, ax = plt.subplots(figsize=FIGSIZE)
     ax.axhline(confidence, color='0.45', linestyle='--', linewidth=1.2, zorder=1)
-    ax.text(max_measured, confidence * 0.985, f"target gamma = {confidence:.2f}", ha='right', va='top',
+    ax.text(max_measured, confidence - 0.008, f"target gamma = {confidence:.2f}", ha='right', va='top',
             color='0.30', fontsize=FONT_SIZES['text_box'] * scale)
 
     crossings = []
@@ -84,21 +83,17 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
         if plan.measured is not None:
             ax.plot(plan.measured, plan.retention, marker='o', markersize=8, color=color,
                     markeredgecolor='white', markeredgewidth=1.5, zorder=3)
-            ax.annotate(f"m* = {plan.measured}", xy=(plan.measured, plan.retention), xytext=(10, -36),
+            ax.annotate(f"m* = {plan.measured}", xy=(plan.measured, plan.retention), xytext=(10, -30),
                         textcoords='offset points', color='0.15', fontsize=FONT_SIZES['text_box'] * scale,
                         arrowprops={'arrowstyle': '-', 'color': '0.5', 'linewidth': 0.8})
 
     ax.set_xlim(0, max_measured + 1)
-    ax.set_yscale('log')
-    ax.set_ylim(*LOG_Y_RANGE)
-    ax.yaxis.set_major_locator(FixedLocator(LOG_Y_TICKS))
-    ax.yaxis.set_minor_locator(NullLocator())
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f'{value:g}'))
+    ax.set_ylim(*Y_RANGE)
     ax.set_xlabel('Measured wafer count m')
     ax.set_ylabel('Retention probability P_ret(m)')
     ax.grid(True, color='0.90', linewidth=0.8)
     ax.spines[['top', 'right']].set_visible(False)
-    ax.legend(title=f"R2_min = {r2_min:.2f}", loc='lower left', frameon=False)
+    ax.legend(title=f"R2_min = {r2_min:.2f}", loc='center right', frameon=False)
     fig.tight_layout()
     fig.savefig(figure_path, dpi=DPI)
     plt.close(fig)
