@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 27 | Created: 2026-11-05 | Updated: 2026-11-08 07:11 UTC
+Version 28 | Created: 2026-11-05 | Updated: 2026-11-08 08:01 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -17,6 +17,9 @@ Version 27 | Created: 2026-11-05 | Updated: 2026-11-08 07:11 UTC
   - [7.2 Breaking Conditions](#72-breaking-conditions)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
+- [Appendix C. Intuitive Meaning](#appendix-c-intuitive-meaning)
+  - [C.1 Retention Probability Equation](#c1-retention-probability-equation)
+  - [C.2 Wafer Measurement Count](#c2-wafer-measurement-count)
 
 ## 1. Purpose
 
@@ -145,7 +148,7 @@ P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \r
 \hspace{19em} (9)
 ```
 
-식 (9) 의 분자 $1 - R^2_{\min}$ 은 허용하는 예측 오차의 몫이고, 분모 $1 - R^2_c$ 는 model 이 예상하는 예측 오차의 몫이다. 전체 두께 분산 $\sigma^2_y$ 는 유도 중에 약분되어 식 (9) 에 남지 않는다. 식 (9) 는 정규 근사를 쓰지 않으므로 $m = 1$ 부터 성립하며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+식 (9) 의 분자 $1 - R^2_{\min}$ 은 허용하는 예측 오차의 몫이고, 분모 $1 - R^2_c$ 는 model 이 예상하는 예측 오차의 몫이다. 전체 두께 분산 $\sigma^2_y$ 는 유도 중에 약분되어 식 (9) 에 남지 않는다. 식 (9) 는 정규 근사를 쓰지 않으므로 $m = 1$ 부터 성립하며, 유도는 [Appendix B](#appendix-b-derivation) 에 있다. 식 (9) 의 직관적 의미는 [C.1](#c1-retention-probability-equation) 에 있다.
 
 ### 5.1 Assumptions
 
@@ -181,7 +184,7 @@ T^{\ast} = \frac{N}{m^{\ast}}
 - 식 (9) 의 유지 확률은 $m$ 이 작을 때 늘 커지지는 않는다. 6.1 의 예에서 $m = 1$ 은 0.779, $m = 2$ 는 0.777 이다.
 - $m^{\ast}$ 는 $N$ 에 따라 달라지지 않는다. $N$ 은 $m^{\ast} \le N$ 인지만 가리고, 그보다 크면 그 lot 에서는 목표 유지 확률을 채울 수 없다.
 
-$m^{\ast}$ 는 model 의 실제 정확도가 예측값 $R^2_c$ 와 같을 때, model 이 정확도를 잃었다고 잘못 판단할 확률을 허용 확률 $\alpha$ 이하로 낮추는 가장 적은 실측 wafer 수이다. Model 이 실제로 $R^2_c$ 만큼 정확해도, 이번에 고른 $m$ 장의 예측 오차가 우연히 크면 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 보다 작게 나오며, 이렇게 잘못 판단할 확률은 $1 - P_{\mathrm{ret}}(m)$ 이다. 실측 wafer 수에 따라 아래처럼 달라지며, 숫자는 6.1 의 예 ($R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$) 이다.
+$m^{\ast}$ 는 model 의 실제 정확도가 예측값 $R^2_c$ 와 같을 때, model 이 정확도를 잃었다고 잘못 판단할 확률을 허용 확률 $\alpha$ 이하로 낮추는 가장 적은 실측 wafer 수이다. Model 이 실제로 $R^2_c$ 만큼 정확해도, 이번에 고른 $m$ 장의 예측 오차가 우연히 크면 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 보다 작게 나오며, 이렇게 잘못 판단할 확률은 $1 - P_{\mathrm{ret}}(m)$ 이며, 실측 wafer 수와 실제 정확도의 관계는 [C.2](#c2-wafer-measurement-count) 에 있다. 실측 wafer 수에 따라 아래처럼 달라지며, 숫자는 6.1 의 예 ($R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$) 이다.
 
 - $m \lt m^{\ast}$: 유지 확률이 $\gamma$ 보다 낮다. Model 이 $R^2_c$ 만큼 정확해도 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 보다 작게 나와, model 이 정확도를 잃었다고 잘못 판단할 확률이 $\alpha$ 보다 크다. $m = 10$ 이면 잘못 판단할 확률은 $1 - 0.868 = 0.132$ 이다.
 - $m = m^{\ast}$: 잘못 판단할 확률이 처음으로 $\alpha$ 이하가 된다. $m = 26$ 이면 $1 - 0.951 = 0.049$ 이다.
@@ -351,3 +354,32 @@ P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \r
 P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \right)
 \hspace{19em} (9)
 ```
+
+## Appendix C. Intuitive Meaning
+
+### C.1 Retention Probability Equation
+
+식 (9) 는 예측 오차의 예산과 예상 지출을 견주는 식이다.
+
+```math
+P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \right)
+\hspace{19em} (9)
+```
+
+- 분자 $1 - R^2_{\min}$ 은 허용하는 예측 오차의 몫 (예산) 이고, 분모 $1 - R^2_c$ 는 model 이 예상하는 예측 오차의 몫 (예상 지출) 이다. 6.1 의 예 ($R^2_c = 0.90$, $R^2_{\min} = 0.85$) 에서 비는 $0.15 / 0.10 = 1.5$ 이므로, 예상한 예측 오차의 1.5 배까지 허용한다.
+- 실측 $m$ 장의 $s^2_m$ 을 $\sigma^2_e$ 로 나눈 값은 예상 지출을 1 로 잰 실제 지출이다. 가정 1 에서 이 값의 평균은 1 이고 표준편차는 $\sqrt{2/m}$ 이다.
+- 유지 확률은 실제 지출이 예산 1.5 안에 드는 확률이다. $m = 1$ 이면 한 장의 예측 오차가 우연히 크게 나오기 쉬워 표준편차가 1.414 이고 유지 확률은 0.779 이다. $m = 26$ 이면 큰 예측 오차와 작은 예측 오차가 함께 평균되어 표준편차가 0.277 로 줄고 유지 확률은 0.951 이다.
+- $R^2_c \le R^2_{\min}$ 이면 예산이 예상 지출 이하이다. 실측 wafer 가 늘수록 실제 지출이 1 근처로 모여 예산을 넘을 확률이 커지므로, 유지 확률이 오히려 줄어든다.
+
+### C.2 Wafer Measurement Count
+
+Model 의 실제 정확도는 model 과 공정이 정하며, 실측 wafer 수는 그 정확도를 검증할 뿐 바꾸지 않는다. 체중계에 여러 번 올라가도 체중이 바뀌지 않는 것과 같다.
+
+```math
+m^{\ast} = \min \left\{ m \in \{1, \dots, N\} \;\middle|\; F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \right) \ge \gamma \right\}
+\hspace{19em} (10)
+```
+
+- 식 (10) 이 보장하는 것: 실제 정확도가 예측값 $R^2_c$ 와 같다면, $m^{\ast}$ 장 이상을 실측할 때 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 이상으로 나올 확률이 $\gamma$ 이상이다.
+- 곧 정확한 model 을 정확도를 잃었다고 잘못 판단할 확률을 $\alpha$ 이하로 낮추려면 $m^{\ast}$ 장 이상 실측해야 한다. 6.1 의 예에서 $m = 10$ 이면 잘못 판단할 확률이 0.132 이고, $m = 26$ 이면 0.049, $m = 40$ 이면 0.022 이다.
+- 실제 정확도가 $R^2_c$ 보다 낮으면 같은 $m^{\ast}$ 장에서도 유지 확률이 $\gamma$ 보다 낮으며, 이 경우는 [7.2](#72-breaking-conditions) 의 마지막 항목에 있다.
