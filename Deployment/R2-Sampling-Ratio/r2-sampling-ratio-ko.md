@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Version 5 | Created: 2026-11-05 | Updated: 2026-11-08 00:05 UTC
+Version 6 | Created: 2026-11-05 | Updated: 2026-11-08 00:06 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,8 +26,8 @@ Version 5 | Created: 2026-11-05 | Updated: 2026-11-08 00:05 UTC
 
 ## 2. Summary
 
-전체 wafer $N$ 장 가운데 실측할 wafer 수 $n^{\ast}$ 는 model 이 계산한 기대 R² 인 $R^2_c$, 유지할 최저 R² 인 $R^2_{\min}$, 유지 확률 $1-\alpha$ 로 정해지며, 실측 비율은 $r^{\ast} = n^{\ast}/N$ 이다.
-$R^2_c$ 가 높을수록, $R^2_c - R^2_{\min}$ 이 클수록, $1-\alpha$ 가 낮을수록, $N$ 이 클수록 $r^{\ast}$ 가 줄어든다.
+전체 wafer $N$ 장 가운데 실측할 wafer 수 $n^{\ast}$ 는 model 이 계산한 기대 R² 인 $R^2_c$, 유지할 최저 R² 인 $R^2_{\min}$, 유지 확률 $\gamma$ 로 정해지며, 실측 비율은 $r^{\ast} = n^{\ast}/N$ 이다.
+$R^2_c$ 가 높을수록, $R^2_c - R^2_{\min}$ 이 클수록, $\gamma$ 가 낮을수록, $N$ 이 클수록 $r^{\ast}$ 가 줄어든다.
 
 ## 3. Notation
 
@@ -45,10 +45,11 @@ Table 1. Symbols
 |      $R^2_c$        |  기대 R². model 이 과거 실측으로 계산해 둔 값   |   scalar   |          $0 \lt R^2_c \lt 1$          |
 |    $R^2_{\min}$     |              유지해야 할 최저 R²                 |   scalar   |       $R^2_{\min} \lt R^2_c$          |
 |      $\Delta$       |      허용 여유 $R^2_c - R^2_{\min}$              |   scalar   |            $\Delta \gt 0$             |
-|     $1-\alpha$      |        $\hat{R}^2_m \ge R^2_{\min}$ 의 유지 확률  |   scalar   |       $0.5 \lt 1-\alpha \lt 1$        |
+|      $\alpha$       |  $\hat{R}^2_m \lt R^2_{\min}$ 이 될 허용 확률     |   scalar   |       $0 \lt \alpha \lt 0.5$          |
+|      $\gamma$       |  유지 확률. $\gamma = 1 - \alpha$               |   scalar   |       $0.5 \lt \gamma \lt 1$          |
 |   $P(\cdot)$        |                     확률                        |   scalar   |                  -                    |
 | $\mathrm{Var}(\cdot)$ |                     분산                        |   scalar   |                  -                    |
-|   $z_{1-\alpha}$    |       표준정규분포의 $1-\alpha$ 분위수           |   scalar   |                  -                    |
+|     $z_{\gamma}$     |       표준정규분포의 $\gamma$ 분위수             |   scalar   |                  -                    |
 |       $\rho$        |       실측 두께와 예측 두께의 상관계수           |   scalar   |          $0 \lt \rho \lt 1$           |
 |    $\hat{\rho}$     |   실측 wafer $n$ 장으로 추정한 상관계수          |   scalar   |                  -                    |
 |       $n_0$         |   유한 모집단 보정 전의 필요 실측 수             |   scalar   |                  -                    |
@@ -56,7 +57,7 @@ Table 1. Symbols
 |     $n^{\ast}$      |               최소 실측 wafer 수                 |  integer   |                  -                    |
 |     $r^{\ast}$      |                  최소 실측 비율                  |   scalar   |                  -                    |
 
-R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께와 견주어 확인한 값을, $c$ 는 calculated by model 로 model 이 계산해 둔 값을 뜻한다. $\min$ 은 유지해야 할 최저값을 뜻한다.
+R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께와 견주어 확인한 값을, $c$ 는 calculated by model 로 model 이 계산해 둔 값을 뜻한다. $\min$ 은 유지해야 할 최저값을 뜻한다. 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
 
 - $\hat{y}$: 영어로 "y hat", 한국어로 "와이 햇" 이라 읽는다.
 - $\bar{y}$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
@@ -78,7 +79,7 @@ R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $
 > 실측 비율 $r$ 은 전체 wafer $N$ 장 가운데 실측한 wafer $n$ 장이 차지하는 비율이다.
 
 > **Definition: Minimum measured ratio**<br>
-> 최소 실측 비율 $r^{\ast}$ 는 실측 R² $\hat{R}^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률을 유지 확률 $1-\alpha$ 이상으로 두는 실측 비율 $r$ 가운데 가장 작은 값이다. 이 문서의 Goal 은 $r^{\ast}$ 를 model 마다 계산하는 것이다.
+> 최소 실측 비율 $r^{\ast}$ 는 실측 R² $\hat{R}^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률을 유지 확률 $\gamma$ 이상으로 두는 실측 비율 $r$ 가운데 가장 작은 값이다. 이 문서의 Goal 은 $r^{\ast}$ 를 model 마다 계산하는 것이다.
 
 세 정의 식은 아래 식 (1), 식 (2), 식 (3) 이다.
 
@@ -93,7 +94,7 @@ r = \frac{n}{N}
 ```
 
 ```math
-r^{\ast} = \min \left\{ r = \frac{n}{N} \;\middle|\; P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge 1 - \alpha \right\}
+r^{\ast} = \min \left\{ r = \frac{n}{N} \;\middle|\; P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge \gamma \right\}
 \hspace{19em} (3)
 ```
 
@@ -110,7 +111,7 @@ n^{\ast} = \max\left( \left\lceil \frac{n_0}{1 + (n_0 - 1)/N} \right\rceil,\ n_{
 ```
 
 ```math
-n_0 = \left( \frac{2\, z_{1-\alpha} \sqrt{R^2_c}\, (1 - R^2_c)}{R^2_c - R^2_{\min}} \right)^2
+n_0 = \left( \frac{2\, z_{\gamma} \sqrt{R^2_c}\, (1 - R^2_c)}{R^2_c - R^2_{\min}} \right)^2
 \hspace{19em} (5)
 ```
 
@@ -142,12 +143,12 @@ $\hat{R}^2_m$ 의 분산은 식 (7) 이다. 유도는 [Appendix B](#appendix-b-d
 
 ### 5.2 Retention Condition
 
-$\hat{R}^2_m$ 이 $R^2_{\min}$ 이상일 확률을 $1-\alpha$ 이상으로 유지하는 조건은 식 (8) 이다.
+$\hat{R}^2_m$ 이 $R^2_{\min}$ 이상일 확률을 $\gamma$ 이상으로 유지하는 조건은 식 (8) 이다.
 
 ```math
-P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge 1 - \alpha
+P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge \gamma
 \iff
-R^2_c - z_{1-\alpha} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
+R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
 \hspace{19em} (8)
 ```
 
@@ -168,7 +169,7 @@ R^2_c - z_{1-\alpha} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
 
 ### 6.1 One Condition
 
-$N = 100$, $R^2_c = 0.90$, $R^2_{\min} = 0.85$, $1-\alpha = 0.95$ 로 식 (4) 부터 식 (6) 을 계산한다.
+$N = 100$, $R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$ 로 식 (4) 부터 식 (6) 을 계산한다.
 
 1. $z_{0.95} = 1.645$
 2. $n_0 = (2 \times 1.645 \times \sqrt{0.90} \times 0.10 / 0.05)^2 = (0.3121 / 0.05)^2 = 38.96$
@@ -190,7 +191,7 @@ $n = 28$ 에서는 아래쪽 5 % 분위수가 0.8497 로 0.85 보다 작고, $n 
 
 조건별 $n^{\ast}$ 와 $r^{\ast}$ 는 아래 Table 3, Table 4, Table 5 이다. Cell 은 `n* (r*)` 이고, * 는 $n_{\min} = 10$ 이 $n^{\ast}$ 를 정한 경우이다.
 
-Table 3. Measured count by model R2 and margin, N = 100, 1 - alpha = 95 %
+Table 3. Measured count by model R2 and margin, N = 100, gamma = 95 %
 
 | R2_c |  Margin = 0.03  |  Margin = 0.05  |  Margin = 0.10  |
 | :--: | :-------------: | :-------------: | :-------------: |
@@ -212,7 +213,7 @@ Table 4. Measured count by retention probability, N = 100, margin = 0.05
 
 유지 확률을 95 % 에서 99 % 로 올리면 $R^2_c = 0.90$ 에서 $r^{\ast}$ 가 0.29 에서 0.45 로 늘어난다.
 
-Table 5. Measured count by total wafers, 1 - alpha = 95 %, margin = 0.05
+Table 5. Measured count by total wafers, gamma = 95 %, margin = 0.05
 
 | R2_c |    N = 25     |    N = 100    |
 | :--: | :-----------: | :-----------: |
@@ -245,7 +246,7 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 ### 7.2 Breaking Conditions
 
 - $R^2_c \le R^2_{\min}$: 식 (5) 의 분모가 0 이하가 되어 $n^{\ast}$ 가 없다. `required_measured` 는 오류로 끝나고, `build_table` 은 이 조건을 건너뛰고 건너뛴 개수를 출력한다.
-- $R^2_c$ 가 과거 실측의 값과 달라짐: 공정 변화로 model 의 실제 R² 가 $R^2_c$ 보다 낮아지면, 식 (4) 의 $n^{\ast}$ 로는 유지 확률이 $1-\alpha$ 보다 낮다. $R^2_c$ 는 최근 실측으로 다시 추정한다.
+- $R^2_c$ 가 과거 실측의 값과 달라짐: 공정 변화로 model 의 실제 R² 가 $R^2_c$ 보다 낮아지면, 식 (4) 의 $n^{\ast}$ 로는 유지 확률이 $\gamma$ 보다 낮다. $R^2_c$ 는 최근 실측으로 다시 추정한다.
 - 예측에 bias 가 있음: 식 (1) 의 R² 가 상관계수 제곱보다 작아져 식 (7) 이 맞지 않는다.
 - $n$ 이 작음: 식 (7) 의 정규 근사가 맞지 않는다. $n_{\min}$ 은 이 경우를 막는 하한이다.
 
@@ -290,24 +291,24 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 이어서 식 (8) 의 우변을 $n$ 에 대해 푼다.
 
 ```math
-P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge 1 - \alpha
+P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge \gamma
 \iff
-R^2_c - z_{1-\alpha} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
+R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
 \hspace{19em} (8)
 ```
 
 ```math
 \begin{aligned}
-R^2_c - z_{1-\alpha} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
-&\iff z_{1-\alpha}^2\, \mathrm{Var}(\hat{R}^2_m) \le \Delta^2 \\
+R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
+&\iff z_{\gamma}^2\, \mathrm{Var}(\hat{R}^2_m) \le \Delta^2 \\
 &\iff n_0\, \frac{N - n}{N - 1} \le n \\
 &\iff n \ge \frac{n_0}{1 + (n_0 - 1)/N}
 \end{aligned}
 \hspace{19em} (10)
 ```
 
-- 첫째 동치: $R^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{1-\alpha} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
-- 둘째 동치: 식 (7) 을 넣고, $n_0 = 4 z_{1-\alpha}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $n$ 을 곱한다.
+- 첫째 동치: $R^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
+- 둘째 동치: 식 (7) 을 넣고, $n_0 = 4 z_{\gamma}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $n$ 을 곱한다.
 - 셋째 동치: 양변에 $N - 1$ 을 곱해 정리하면 $n (N - 1 + n_0) \ge n_0 N$ 이고, 양변을 $N - 1 + n_0$ 로 나눈 뒤 분자와 분모를 $N$ 으로 나눈다.
 
 마지막 줄의 $n$ 을 정수로 올림하고 $n_{\min}$ 과 견주어 큰 쪽을 고르면 $n^{\ast}$ 이다. 따라서 식 (4) 가 성립한다.
