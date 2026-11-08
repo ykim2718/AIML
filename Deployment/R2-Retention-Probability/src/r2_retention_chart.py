@@ -12,7 +12,7 @@ Changelog:
 """
 
 __author__ = 'yRocket'
-__version__ = "0.3.1+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.3.2+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -37,6 +37,7 @@ REFERENCE_WIDTH: Final[float] = 9.0
 FONT_SIZES: Final[dict] = {'text': 12.0, 'axis_label': 14.0, 'text_box': 12.0, 'pane_caption': 14.0}  # points
 DPI: Final[int] = 300
 Y_RANGE: Final[tuple] = (0.4, 1.02)  # curves below 0.4 leave the plot; the CSV keeps their full values
+TARGET_LABEL_FRACTION: Final[float] = 0.3  # x position of the target label, as a share of the x axis
 
 
 def retention_curves(r2_models: list = None, r2_min: float = None, max_measured: int = None) -> pd.DataFrame:
@@ -70,7 +71,8 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
 
     fig, ax = plt.subplots(figsize=FIGSIZE)
     ax.axhline(confidence, color='0.45', linestyle='--', linewidth=1.2, zorder=1)
-    ax.text(max_measured / 2.0, confidence - 0.008, f"target gamma = {confidence:.2f}", ha='center', va='top',
+    ax.text(TARGET_LABEL_FRACTION * max_measured, confidence + 0.008, f"target gamma = {confidence:.2f}",
+            ha='center', va='bottom',
             color='0.30', fontsize=FONT_SIZES['text_box'] * scale)
 
     crossings = []

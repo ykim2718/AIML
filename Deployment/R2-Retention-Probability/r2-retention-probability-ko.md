@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 36 | Created: 2026-11-05 | Updated: 2026-11-08 23:55 UTC
+Version 37 | Created: 2026-11-05 | Updated: 2026-11-09 00:05 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -205,9 +205,9 @@ $R^2_{\min} = 0.80$ 으로 두고 $R^2_p$ 를 0.75, 0.80, 0.85, 0.90, 0.95 로 �
 
 Fig 1. Retention probability by measured wafer count
 
-- 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.95$ 이다.
+- 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.90$ 이다.
 - 식 (9) 에는 전체 wafer 수 $N$ 이 없어, 곡선은 $N$ 과 관계없이 같다. 다만 $m^{\ast}$ 는 $N \ge m^{\ast}$ 인 lot 에서만 실측할 수 있다.
-- 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그 값은 범례에 있다. 그보다 적거나 많을 때의 뜻은 [5.2](#52-measured-count-and-interval) 에 있다. $R^2_p = 0.95$ 에서 1, $R^2_p = 0.90$ 에서 8, $R^2_p = 0.85$ 에서 55 이다.
+- 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그 값은 범례에 있다. 그보다 적거나 많을 때의 뜻은 [5.2](#52-measured-count-and-interval) 에 있다. $R^2_p = 0.95$ 에서 1, $R^2_p = 0.90$ 에서 4, $R^2_p = 0.85$ 에서 32 이다.
 - $R^2_p \gt R^2_{\min}$ 인 세 곡선은 $m$ 이 늘수록 1 에 다가가고, $m = 1$ 에서도 0.954, 0.843, 0.752 이다. $R^2_p = 0.85$ 의 곡선은 $m = 2$ 에서 0.736 으로 한 번 내려간 뒤 올라간다.
 - $R^2_p = R^2_{\min}$ 인 곡선은 $m = 1$ 의 0.683 에서 $m = 60$ 의 0.524 로 내려가 0.5 에 다가가고, $R^2_p \lt R^2_{\min}$ 인 곡선은 0.629 에서 내려가 $m = 8$ 에서 0.397 로 그림의 아래 끝을 벗어나고, $m = 60$ 에서 0.132 이다. 그림 밖의 값은 `fig1-retention-probability.csv` 에 있다. 두 곡선은 $\gamma$ 에 닿지 않는다.
 
@@ -267,7 +267,7 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 Fig 1 은 [src/r2_retention_chart.py](src/r2_retention_chart.py) 로 그린다. 같은 folder 의 `r2_sampling_ratio.py` 에서 식 (9) 와 식 (10) 을 불러 곡선과 $m^{\ast}$ 를 계산하고, 그림과 곡선의 값을 `--output-folder` 에 `fig1-retention-probability.png` 와 `fig1-retention-probability.csv` 로 저장한다.
 
 ```bash
-python src/r2_retention_chart.py --r2-model 0.75 0.80 0.85 0.90 0.95 --r2-min 0.80 --confidence 0.95 --max-measured 60 --output-folder r2-retention-probability-ko_fig
+python src/r2_retention_chart.py --r2-model 0.75 0.80 0.85 0.90 0.95 --r2-min 0.80 --confidence 0.90 --max-measured 60 --output-folder r2-retention-probability-ko_fig
 ```
 
 ### 7.2 Breaking Conditions
@@ -368,3 +368,4 @@ T^{\ast} = \frac{N}{m^{\ast}}
 - Model 이 정확할수록 간격이 길어진다. Table 3 의 허용 여유 0.05 에서 $R^2_p = 0.95$ 이면 $m^{\ast} = 8$ 이어서 $T^{\ast} = 12.5$ 이고, $R^2_p = 0.90$ 이면 3.85, $R^2_p = 0.85$ 이면 $m^{\ast} = 55$ 이어서 1.82 이다.
 - $m^{\ast}$ 는 $N$ 에 따라 달라지지 않으므로, lot 이 클수록 간격이 길어진다. 6.2 의 조건에서 $N = 200$ 이면 $m^{\ast}$ 는 그대로 26 이고 $T^{\ast} = 200/26 = 7.69$ 이다. 큰 lot 에서는 같은 26 장을 더 많은 wafer 사이에 나누어 실측한다.
 - 간격을 따라 한 장씩 실측하는 동안, 실측 wafer 가 $m^{\ast}$ 장이 되기 전에 계산한 $R^2_m$ 은 크게 흔들린다. $m$ 이 작으면 $s^2_m$ 을 $\sigma^2_e$ 로 나눈 값의 표준편차 $\sqrt{2/m}$ 가 크기 때문이며, [6.1](#61-retention-probability-by-measured-count) 의 Fig 1 에서 $m^{\ast}$ 앞의 유지 확률이 $\gamma$ 보다 낮게 그려진 것이 그 결과이다. Fig 1 은 이번 실측으로 계산한 $R^2_m$ 값이 아니라 $m$ 마다의 유지 확률을 그린 것이다. 따라서 $m^{\ast}$ 장을 다 채운 뒤에 계산한 $R^2_m$ 을 $R^2_{\min}$ 과 견주어 판단한다.
+- 의미 있는 $R^2_m$ 을 얻으려면, 곧 실제 정확도가 $R^2_p$ 와 같을 때 $R^2_m \ge R^2_{\min}$ 으로 나올 확률을 예를 들어 90 % 이상으로 하려면, $\gamma = 0.90$ 으로 구한 $m^{\ast}$ 장 이상을 반드시 실측해야 한다. $m^{\ast}$ 는 유지 확률이 $\gamma$ 이상이 되는 가장 작은 $m$ 이므로, 그보다 적게 실측하면 유지 확률은 언제나 $\gamma$ 보다 낮다. 6.1 의 예에서 $\gamma = 0.90$ 이면 $P_{\mathrm{ret}}(14) = 0.898$, $P_{\mathrm{ret}}(15) = 0.905$ 이므로 $m^{\ast} = 15$ 이고, Fig 1 의 $R^2_{\min} = 0.80$ 에서는 $R^2_p = 0.90$ 일 때 4, $R^2_p = 0.85$ 일 때 32 이다.
