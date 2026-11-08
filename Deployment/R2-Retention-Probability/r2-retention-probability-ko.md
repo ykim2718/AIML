@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 29 | Created: 2026-11-05 | Updated: 2026-11-08 08:31 UTC
+Version 30 | Created: 2026-11-05 | Updated: 2026-11-08 08:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -373,7 +373,7 @@ P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \r
 
 ### C.2 Wafer Measurement Count
 
-Model 의 실제 정확도는 model 과 공정이 정하며, 실측 wafer 수는 그 정확도를 검증할 뿐 바꾸지 않는다. 체중계에 여러 번 올라가도 체중이 바뀌지 않는 것과 같다.
+Model 의 실제 정확도는 model 과 공정이 정하며, 실측 wafer 수는 그 정확도를 검증할 뿐 바꾸지 않는다. 식 (10) 의 $m^{\ast}$ 는 실제 정확도가 예측값 $R^2_c$ 와 같을 때, model 이 정확도를 잃었다고 잘못 판단할 확률을 $\alpha$ 이하로 낮추기 위해 실측해야 하는 가장 적은 wafer 수를 나타내는 값이다.
 
 ```math
 m^{\ast} = \min \left\{ m \in \{1, \dots, N\} \;\middle|\; F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \right) \ge \gamma \right\}
