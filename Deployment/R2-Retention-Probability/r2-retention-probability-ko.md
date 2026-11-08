@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 34 | Created: 2026-11-05 | Updated: 2026-11-08 23:35 UTC
+Version 35 | Created: 2026-11-05 | Updated: 2026-11-08 23:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -19,6 +19,7 @@ Version 34 | Created: 2026-11-05 | Updated: 2026-11-08 23:35 UTC
 - [Appendix B. Derivation](#appendix-b-derivation)
 - [Appendix C. Intuitive Meaning](#appendix-c-intuitive-meaning)
   - [C.1 Wafer Measurement Count](#c1-wafer-measurement-count)
+  - [C.2 Measurement Interval](#c2-measurement-interval)
 
 ## 1. Purpose
 
@@ -353,3 +354,17 @@ m^{\ast} = \min \left\{ m \in \{1, \dots, N\} \;\middle|\; F_{\chi^2_m}\left( m\
 - 식 (10) 이 보장하는 것: 실제 정확도가 예측값 $R^2_p$ 와 같다면, $m^{\ast}$ 장 이상을 실측할 때 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 이상으로 나올 확률이 $\gamma$ 이상이다.
 - 곧 정확한 model 을 정확도를 잃었다고 잘못 판단할 확률을 $\alpha$ 이하로 낮추려면 $m^{\ast}$ 장 이상 실측해야 한다. 6.1 의 예에서 $m = 10$ 이면 잘못 판단할 확률이 0.132 이고, $m = 26$ 이면 0.049, $m = 40$ 이면 0.022 이다.
 - 실제 정확도가 $R^2_p$ 보다 낮으면 같은 $m^{\ast}$ 장에서도 유지 확률이 $\gamma$ 보다 낮으며, 이 경우는 [7.2](#72-breaking-conditions) 의 마지막 항목에 있다.
+
+### C.2 Measurement Interval
+
+식 (12) 의 measurement interval $T^{\ast}$ 는 공정을 거치는 wafer 몇 장마다 한 장을 실측하는지를 나타내는 값이다. 공정을 마친 wafer 가 한 장씩 나올 때, $T^{\ast}$ 장이 나올 때마다 한 장을 골라 두께를 재는 간격과 같다.
+
+```math
+T^{\ast} = \frac{N}{m^{\ast}}
+\hspace{19em} (12)
+```
+
+- 6.2 의 예 ($R^2_p = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$, $N = 100$) 에서 $T^{\ast} = 100/26 = 3.85$ 이므로, 평균 3.85 장마다 한 장을 실측한다. 실측 wafer 26 장을 lot 안에 고르게 나누어 골라야 [5.1](#51-assumptions) 의 가정 4 처럼 치우치지 않는다.
+- Model 이 정확할수록 간격이 길어진다. Table 3 의 허용 여유 0.05 에서 $R^2_p = 0.95$ 이면 $m^{\ast} = 8$ 이어서 $T^{\ast} = 12.5$ 이고, $R^2_p = 0.90$ 이면 3.85, $R^2_p = 0.85$ 이면 $m^{\ast} = 55$ 이어서 1.82 이다.
+- $m^{\ast}$ 는 $N$ 에 따라 달라지지 않으므로, lot 이 클수록 간격이 길어진다. 6.2 의 조건에서 $N = 200$ 이면 $m^{\ast}$ 는 그대로 26 이고 $T^{\ast} = 200/26 = 7.69$ 이다. 큰 lot 에서는 같은 26 장을 더 많은 wafer 사이에 나누어 실측한다.
+
