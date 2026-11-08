@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 26 | Created: 2026-11-05 | Updated: 2026-11-08 07:04 UTC
+Version 27 | Created: 2026-11-05 | Updated: 2026-11-08 07:11 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,12 +21,12 @@ Version 26 | Created: 2026-11-05 | Updated: 2026-11-08 07:04 UTC
 ## 1. Purpose
 
 - **Problem Statement**: 반도체 증착 공정을 진행하면서 주기적으로 일부 wafer 에서 두께를 측정하면, 실측과 예측의 비교를 통해 예측값의 R² 를 동적으로 추출할 수 있고, 측정하지 않은 wafer 에 대한 예측값의 정확도를 알 수 있다. 그러나 예측값의 정확도를 검증하는 데 필요한 measurement interval 이나 측정 wafer 수를 계산하는 방법은 없다.
-- **Goal**: model 의 R² 예측값 $R^2_c$ 로 유지 확률 $P_{\mathrm{ret}}(m)$ 을 구하고, 그 유지 확률로부터 wafer measurement count $m^{\ast}$ 와 measurement interval $T^{\ast}$ 를 구하는 수학 model 을 제시한다.
+- **Goal**: model 의 예측값 $R^2_c$ 로 유지 확률 $P_{\mathrm{ret}}(m)$ 을 구하고, 그 유지 확률로부터 wafer measurement count $m^{\ast}$ 와 measurement interval $T^{\ast}$ 를 구하는 수학 model 을 제시한다.
 - **Non-Goal**: 두께 예측 model 을 만들거나 고르는 방법은 다루지 않는다.
 
 ## 2. Summary
 
-유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장의 예측 오차로 계산한 실측 R² 가 최저 R² $R^2_{\min}$ 이상일 확률이며, 자유도 $m$ 인 카이제곱 분포로 $m = 1$ 부터 계산된다.
+유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장의 예측 오차로 계산한 실측 R² 가 최저값 $R^2_{\min}$ 이상일 확률이며, 자유도 $m$ 인 카이제곱 분포로 $m = 1$ 부터 계산된다.
 $P_{\mathrm{ret}}(m)$ 이 목표 유지 확률 $\gamma$ 이상이 되는 가장 작은 $m$ 이 wafer measurement count $m^{\ast}$ 이고, measurement interval 은 $T^{\ast} = N/m^{\ast}$ 이다.
 $m^{\ast}$ 는 $(1 - R^2_{\min})/(1 - R^2_c)$ 와 $\gamma$ 로 정해지며, 이 비가 클수록, $\gamma$ 가 낮을수록 줄어든다.
 
@@ -74,16 +74,16 @@ R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타
 > 예측 오차 $e_i$ 는 $i$ 번째 실측 wafer 의 실측 두께 $y_{m,i}$ 에서 model 예측 두께 $y_{c,i}$ 를 뺀 값이다.
 
 > **Definition: Measured R2**<br>
-> 실측 R² $R^2_m$ 은 1 에서, 실측 wafer $m$ 장의 예측 오차 제곱 평균 $s^2_m$ 을 과거 실측으로 정한 전체 두께 분산 $\sigma^2_y$ 로 나눈 값을 뺀 값이다.
+> 실측 $R^2_m$ 은 1 에서, 실측 wafer $m$ 장의 예측 오차 제곱 평균 $s^2_m$ 을 과거 실측으로 정한 전체 두께 분산 $\sigma^2_y$ 로 나눈 값을 뺀 값이다.
 
 > **Definition: True R2**<br>
-> 참값 R² $R^2$ 은 1 에서, 측정하지 않은 wafer 를 포함한 전체 wafer 의 예측 오차 분산 $\sigma^2_e$ 를 전체 두께 분산 $\sigma^2_y$ 로 나눈 값을 뺀 값이다.
+> 참값 $R^2$ 은 1 에서, 측정하지 않은 wafer 를 포함한 전체 wafer 의 예측 오차 분산 $\sigma^2_e$ 를 전체 두께 분산 $\sigma^2_y$ 로 나눈 값을 뺀 값이다.
 
 > **Definition: Measured ratio**<br>
 > 실측 비율 $r$ 은 전체 wafer $N$ 장 가운데 실측한 wafer $m$ 장이 차지하는 비율이다.
 
 > **Definition: Retention probability**<br>
-> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 실측 R² $R^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률이다.
+> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 실측 $R^2_m$ 이 최저값 $R^2_{\min}$ 이상일 확률이다.
 
 > **Definition: Minimum measured ratio**<br>
 > 최소 실측 비율 $r^{\ast}$ 는 유지 확률 $P_{\mathrm{ret}}(m)$ 이 목표 유지 확률 $\gamma$ 이상이 되는 실측 비율 $r$ 가운데 가장 작은 값이고, 그때의 실측 wafer 수가 wafer measurement count $m^{\ast}$ 이다.
@@ -153,7 +153,7 @@ P_{\mathrm{ret}}(m) = F_{\chi^2_m}\left( m\, \frac{1 - R^2_{\min}}{1 - R^2_c} \r
 
 - **가정 1**: wafer 마다의 예측 오차 $e_i$ 는 서로 독립이고 평균 0, 분산 $\sigma^2_e$ 인 정규분포를 따른다.
 - **가정 2**: 전체 두께 분산 $\sigma^2_y$ 는 과거 실측으로 알고 있고, 계산하는 기간 동안 변하지 않는다. 식 (3) 으로 $R^2_m$ 을 계산할 때 쓰인다.
-- **가정 3**: 참값 $R^2$ 은 알 수 없으므로, 측정 wafer 수를 미리 계산할 때는 그 대신 model 의 R² 예측값 $R^2_c$ 를 넣는다. 곧 식 (4) 에서 예측 오차 분산을 $\sigma^2_e = (1 - R^2_c)\, \sigma^2_y$ 로 둔다.
+- **가정 3**: 참값 $R^2$ 은 알 수 없으므로, 측정 wafer 수를 미리 계산할 때는 그 대신 model 의 예측값 $R^2_c$ 를 넣는다. 곧 식 (4) 에서 예측 오차 분산을 $\sigma^2_e = (1 - R^2_c)\, \sigma^2_y$ 로 둔다.
 - **가정 4**: 실측 wafer 는 전체 wafer 에서 치우치지 않게 고른다.
 
 네 가정에는 실측 wafer 수에 대한 조건이 없다. 가정 3 은 계산에 넣는 값을 정할 뿐이므로, 실제 예측 오차가 $R^2_c$ 로 예상한 것보다 크면 실제 유지 확률은 식 (9) 의 값보다 낮다.
@@ -181,9 +181,9 @@ T^{\ast} = \frac{N}{m^{\ast}}
 - 식 (9) 의 유지 확률은 $m$ 이 작을 때 늘 커지지는 않는다. 6.1 의 예에서 $m = 1$ 은 0.779, $m = 2$ 는 0.777 이다.
 - $m^{\ast}$ 는 $N$ 에 따라 달라지지 않는다. $N$ 은 $m^{\ast} \le N$ 인지만 가리고, 그보다 크면 그 lot 에서는 목표 유지 확률을 채울 수 없다.
 
-$m^{\ast}$ 는 model 의 실제 정확도가 R² 예측값 $R^2_c$ 와 같을 때, 실측 R² $R^2_m$ 이 우연히 $R^2_{\min}$ 아래로 내려갈 확률을 허용 확률 $\alpha$ 이하로 낮추는 가장 적은 실측 wafer 수이다. 실측 wafer 수에 따라 아래처럼 달라지며, 숫자는 6.1 의 예 ($R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$) 이다.
+$m^{\ast}$ 는 model 의 실제 정확도가 예측값 $R^2_c$ 와 같을 때, model 이 정확도를 잃었다고 잘못 판단할 확률을 허용 확률 $\alpha$ 이하로 낮추는 가장 적은 실측 wafer 수이다. Model 이 실제로 $R^2_c$ 만큼 정확해도, 이번에 고른 $m$ 장의 예측 오차가 우연히 크면 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 보다 작게 나오며, 이렇게 잘못 판단할 확률은 $1 - P_{\mathrm{ret}}(m)$ 이다. 실측 wafer 수에 따라 아래처럼 달라지며, 숫자는 6.1 의 예 ($R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$) 이다.
 
-- $m \lt m^{\ast}$: 유지 확률이 $\gamma$ 보다 낮다. Model 이 $R^2_c$ 만큼 정확해도 $R^2_m$ 이 $R^2_{\min}$ 아래로 내려가, model 이 정확도를 잃었다고 잘못 판단할 확률이 $\alpha$ 보다 크다. $m = 10$ 이면 잘못 판단할 확률은 $1 - 0.868 = 0.132$ 이다.
+- $m \lt m^{\ast}$: 유지 확률이 $\gamma$ 보다 낮다. Model 이 $R^2_c$ 만큼 정확해도 이번 실측으로 계산한 검증 값 $R^2_m$ 이 $R^2_{\min}$ 보다 작게 나와, model 이 정확도를 잃었다고 잘못 판단할 확률이 $\alpha$ 보다 크다. $m = 10$ 이면 잘못 판단할 확률은 $1 - 0.868 = 0.132$ 이다.
 - $m = m^{\ast}$: 잘못 판단할 확률이 처음으로 $\alpha$ 이하가 된다. $m = 26$ 이면 $1 - 0.951 = 0.049$ 이다.
 - $m \gt m^{\ast}$: 유지 확률이 더 커져 잘못 판단할 확률이 더 줄지만, 실측 wafer 가 늘고 measurement interval $N/m$ 이 짧아진다. $m = 40$ 이면 잘못 판단할 확률은 $1 - 0.978 = 0.022$ 이다.
 
