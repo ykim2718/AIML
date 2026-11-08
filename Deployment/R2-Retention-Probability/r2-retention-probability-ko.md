@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 28 | Created: 2026-11-05 | Updated: 2026-11-08 08:01 UTC
+Version 29 | Created: 2026-11-05 | Updated: 2026-11-08 08:31 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -214,7 +214,7 @@ Table 2. Retention probability by measured count
 
 `Argument 1.5 m` 은 식 (9) 에서 $F_{\chi^2_m}$ 에 넣는 값이다. 실측 wafer 한 장만으로도 유지 확률은 0.779 이고, 0.95 이상이 되는 가장 작은 $m$ 은 26 이다.
 
-$R^2_{\min} = 0.85$ 로 두고 $R^2_c$ 를 0.80, 0.85, 0.90, 0.95 로 바꾸어 식 (9) 를 $m = 1$ 부터 60 까지 그리면 아래 Fig 1 이다.
+$R^2_{\min} = 0.80$ 으로 두고 $R^2_c$ 를 0.75, 0.80, 0.85, 0.90, 0.95 로 바꾸어 식 (9) 를 $m = 1$ 부터 60 까지 그리면 아래 Fig 1 이다.
 
 <img src="r2-retention-probability-ko_fig/fig1-retention-probability.png" width="800" style="max-width: 100%;" alt="Fig 1">
 
@@ -222,9 +222,9 @@ Fig 1. Retention probability by measured wafer count
 
 - 가로축은 실측 wafer 수 $m$, 세로축은 식 (9) 의 유지 확률 $P_{\mathrm{ret}}(m)$ 을 0.4 부터 선형 눈금으로 그린 것이고, 점선은 목표 유지 확률 $\gamma = 0.95$ 이다.
 - 식 (9) 에는 전체 wafer 수 $N$ 이 없어, 곡선은 $N$ 과 관계없이 같다. 다만 $m^{\ast}$ 는 $N \ge m^{\ast}$ 인 lot 에서만 실측할 수 있다.
-- 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그보다 적거나 많을 때의 뜻은 [5.2](#52-measured-count-and-interval) 에 있다. $R^2_c = 0.95$ 에서 2, $R^2_c = 0.90$ 에서 26 이다.
-- $R^2_c \gt R^2_{\min}$ 인 두 곡선은 $m$ 이 늘수록 1 에 다가가고, $m = 1$ 에서도 0.917 과 0.779 이다.
-- $R^2_c = R^2_{\min}$ 인 곡선은 $m = 1$ 의 0.683 에서 $m = 60$ 의 0.524 로 내려가 0.5 에 다가가고, $R^2_c \lt R^2_{\min}$ 인 곡선은 0.614 에서 내려가 $m = 6$ 에서 0.391 로 그림의 아래 끝을 벗어나고, $m = 60$ 에서 0.075 이다. 그림 밖의 값은 `fig1-retention-probability.csv` 에 있다. 두 곡선은 $\gamma$ 에 닿지 않는다.
+- 곡선이 점선에 처음 닿는 점이 $m^{\ast}$ 이며, 그 값은 범례에 있다. 그보다 적거나 많을 때의 뜻은 [5.2](#52-measured-count-and-interval) 에 있다. $R^2_c = 0.95$ 에서 1, $R^2_c = 0.90$ 에서 8, $R^2_c = 0.85$ 에서 55 이다.
+- $R^2_c \gt R^2_{\min}$ 인 세 곡선은 $m$ 이 늘수록 1 에 다가가고, $m = 1$ 에서도 0.954, 0.843, 0.752 이다. $R^2_c = 0.85$ 의 곡선은 $m = 2$ 에서 0.736 으로 한 번 내려간 뒤 올라간다.
+- $R^2_c = R^2_{\min}$ 인 곡선은 $m = 1$ 의 0.683 에서 $m = 60$ 의 0.524 로 내려가 0.5 에 다가가고, $R^2_c \lt R^2_{\min}$ 인 곡선은 0.629 에서 내려가 $m = 8$ 에서 0.397 로 그림의 아래 끝을 벗어나고, $m = 60$ 에서 0.132 이다. 그림 밖의 값은 `fig1-retention-probability.csv` 에 있다. 두 곡선은 $\gamma$ 에 닿지 않는다.
 
 ### 6.2 Measured Count and Interval
 
@@ -282,7 +282,7 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 Fig 1 은 [src/r2_retention_chart.py](src/r2_retention_chart.py) 로 그린다. 같은 folder 의 `r2_sampling_ratio.py` 에서 식 (9) 와 식 (10) 을 불러 곡선과 $m^{\ast}$ 를 계산하고, 그림과 곡선의 값을 `--output-folder` 에 `fig1-retention-probability.png` 와 `fig1-retention-probability.csv` 로 저장한다.
 
 ```bash
-python src/r2_retention_chart.py --r2-model 0.80 0.85 0.90 0.95 --r2-min 0.85 --confidence 0.95 --max-measured 60 --output-folder r2-retention-probability-ko_fig
+python src/r2_retention_chart.py --r2-model 0.75 0.80 0.85 0.90 0.95 --r2-min 0.80 --confidence 0.95 --max-measured 60 --output-folder r2-retention-probability-ko_fig
 ```
 
 ### 7.2 Breaking Conditions

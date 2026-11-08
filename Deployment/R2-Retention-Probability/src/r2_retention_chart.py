@@ -2,16 +2,17 @@
 
 Each curve is Eq. (9), P_ret(m) = F_chi2(m; m (1 - R2_min) / (1 - R2_c)), for one model R2 prediction R2_c at a
 fixed floor R2_min. A dashed line marks the target retention probability gamma, and each curve's first crossing of
-that line, the wafer measurement count m*, is marked and labelled.
+that line, the wafer measurement count m*, is marked and given in the legend.
 
 Changelog:
     0.0.0 - Initial release.
     0.1.0 - Draw the retention probability on a log y axis.
     0.2.0 - Return to a linear y axis from 0.4 to 1.
+    0.3.0 - Show m* in the legend instead of a label beside each marker.
 """
 
 __author__ = 'yRocket'
-__version__ = "0.2.0+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.3.0+20261108"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -53,7 +54,7 @@ def retention_curves(r2_models: list = None, r2_min: float = None, max_measured:
 
 
 def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_path: pathlib.Path = None) -> list:
-    """Draw one line per model R2, the target line, and the m* marker of each curve that reaches the target.
+    """Draw one line per model R2, the target line, and the m* marker of each curve that reaches the target; the legend gives each m*.
 
     Returns:
         list of (r2_model, m*) pairs; m* is None for a curve that does not reach the target within the plotted m.
@@ -69,23 +70,21 @@ def draw_chart(curves: pd.DataFrame = None, confidence: float = None, figure_pat
 
     fig, ax = plt.subplots(figsize=FIGSIZE)
     ax.axhline(confidence, color='0.45', linestyle='--', linewidth=1.2, zorder=1)
-    ax.text(max_measured, confidence - 0.008, f"target gamma = {confidence:.2f}", ha='right', va='top',
+    ax.text(max_measured / 2.0, confidence - 0.008, f"target gamma = {confidence:.2f}", ha='center', va='top',
             color='0.30', fontsize=FONT_SIZES['text_box'] * scale)
 
     crossings = []
     for index, (r2_model, curve) in enumerate(curves.groupby('r2_model', sort=True)):
         color = colors[index]
-        ax.plot(curve['measured'], curve['retention'], color=color, linewidth=2.0, zorder=2,
-                label=f"R2_c = {r2_model:.2f}")
         plan = required_measured(r2_model=r2_model, r2_min=r2_min, confidence=confidence,
                                  total_wafers=max_measured)
         crossings.append((r2_model, plan.measured))
+        reached = f"m* = {plan.measured}" if plan.measured is not None else "not reached"
+        ax.plot(curve['measured'], curve['retention'], color=color, linewidth=2.0, zorder=2,
+                label=f"R2_c = {r2_model:.2f}, {reached}")
         if plan.measured is not None:
             ax.plot(plan.measured, plan.retention, marker='o', markersize=8, color=color,
                     markeredgecolor='white', markeredgewidth=1.5, zorder=3)
-            ax.annotate(f"m* = {plan.measured}", xy=(plan.measured, plan.retention), xytext=(10, -30),
-                        textcoords='offset points', color='0.15', fontsize=FONT_SIZES['text_box'] * scale,
-                        arrowprops={'arrowstyle': '-', 'color': '0.5', 'linewidth': 0.8})
 
     ax.set_xlim(0, max_measured + 1)
     ax.set_ylim(*Y_RANGE)
