@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 42 | Created: 2026-11-05 | Updated: 2026-11-09 00:45 UTC
+Version 43 | Created: 2026-11-05 | Updated: 2026-11-09 00:50 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -73,13 +73,13 @@ R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타
 > Model 의 R² 예측값 $R^2_p$ 는 model 이 과거 실측으로 계산해 둔 R² 이며, $0 \lt R^2_p \lt 1$ 이다.
 
 > **Definition: Retention probability**<br>
-> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 실측 R² $R^2_m$ 이 유지해야 할 최저 R² $R^2_{\min}$ 이상일 확률이다.
+> 유지 확률 $P_{\mathrm{ret}}(m)$ 은 실측 wafer $m$ 장으로 계산한 실측 R² $R^2_m$ 이 유지해야 할 최저 R² $R^2_{\min}$ 이상일 확률이며, $0 \le P_{\mathrm{ret}}(m) \le 1$ 이다.
 
 > **Definition: Wafer measurement count**<br>
 > Wafer measurement count $m^{\ast}$ 는 유지 확률 $P_{\mathrm{ret}}(m)$ 이 목표 유지 확률 $\gamma$ 이상이 되는 가장 작은 실측 wafer 수이다.
 
 > **Definition: Measurement interval**<br>
-> Measurement interval $T^{\ast}$ 는 한 lot 의 전체 wafer $N$ 장 가운데 $m^{\ast}$ 장을 실측할 때, 실측 wafer 한 장당 공정을 거치는 wafer 수의 평균이다.
+> Measurement interval $T^{\ast}$ 는 한 lot 의 전체 wafer $N$ 장 가운데 $m^{\ast}$ 장을 실측할 때, 실측 wafer 한 장당 공정을 거치는 wafer 수의 평균이며, $T^{\ast} \ge 1$ 이다.
 
 유지 확률과 measurement interval 의 정의 식은 아래 식 (6) 과 식 (8) 이고, $m^{\ast}$ 는 식 (7) 의 최소 실측 비율 $r^{\ast}$ 에서 $m^{\ast} = N r^{\ast}$ 이다. Table 1 의 $e_i$, $s^2_m$, $R^2_m$, $R^2_t$, $r$, $r^{\ast}$ 는 식 (1) 부터 식 (5) 와 식 (7) 로 계산한다. Problem Statement 의 측정 wafer 수는 $m^{\ast}$ 이고, measurement interval 은 $T^{\ast}$ 이다.
 
