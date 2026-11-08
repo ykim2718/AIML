@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 33 | Created: 2026-11-05 | Updated: 2026-11-08 23:17 UTC
+Version 34 | Created: 2026-11-05 | Updated: 2026-11-08 23:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -42,8 +42,8 @@ Table 1. Symbols
 | $m$                   | 실측 wafer 수. 예측 wafer 수는 $N-m$                                           | integer | $1 \le m \le N$                   |
 | $r$                   | 실측 wafer 비율. 전체 wafer $N$ 장 가운데 실측 wafer $m$ 장의 비율             | scalar  | $0 \lt r \le 1$                   |
 | $y_{m,i}$             | $i$ 번째 실측 wafer 의 실측 두께                                               | scalar  | -                                 |
-| $y_{c,i}$             | $i$ 번째 실측 wafer 에 대한 model 예측 두께                                    | scalar  | -                                 |
-| $e_i$                 | $i$ 번째 실측 wafer 의 예측 오차 $y_{m,i} - y_{c,i}$                           | scalar  | -                                 |
+| $y_{p,i}$             | $i$ 번째 실측 wafer 에 대한 model 예측 두께                                    | scalar  | -                                 |
+| $e_i$                 | $i$ 번째 실측 wafer 의 예측 오차 $y_{m,i} - y_{p,i}$                           | scalar  | -                                 |
 | $s^2_m$               | 실측 wafer $m$ 장의 예측 오차 제곱 평균                                        | scalar  | -                                 |
 | $\sigma^2_y$          | 전체 두께 분산. 과거 실측으로 정한 wafer 사이 두께 분산                        | scalar  | $\sigma^2_y \gt 0$                |
 | $\sigma^2_e$          | 예측 오차 분산의 참값. $\sigma_e$ 는 그 제곱근                                 | scalar  | $\sigma^2_e \gt 0$                |
@@ -62,7 +62,7 @@ Table 1. Symbols
 | $r^{\ast}$            | 최소 실측 비율. $P_{\mathrm{ret}}(m) \ge \gamma$ 인 $r$ 가운데 가장 작은 값    | scalar  | -                                 |
 | $T^{\ast}$            | Measurement interval. 실측 wafer 한 장당 공정을 거치는 wafer 수의 평균         | scalar  | $T^{\ast} \ge 1$                  |
 
-R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께로 구한 값을, $p$ 는 predicted 로 model 이 과거 실측으로 예측해 둔 값을, $t$ 는 true 로 참값을, $c$ 는 calculated by model 로 model 이 계산한 두께를 뜻한다. $\min$ 은 유지해야 할 최저값을, $\mathrm{ret}$ 은 retention 을, $y$ 와 $e$ 는 두께와 예측 오차를 뜻한다. 목표 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
+R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께로 구한 값을, $p$ 는 predicted 로 model 이 예측한 값을, $t$ 는 true 로 참값을 뜻한다. $\min$ 은 유지해야 할 최저값을, $\mathrm{ret}$ 은 retention 을, $y$ 와 $e$ 는 두께와 예측 오차를 뜻한다. 목표 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
 
 - $\sum$: 영어로 "sum", 한국어로 "합" 이라 읽는다.
 - $\chi^2_m$: 영어로 "chi-square with m degrees of freedom", 한국어로 "자유도 엠인 카이제곱" 이라 읽는다.
@@ -75,7 +75,7 @@ R² 와 두께의 아래첨자는 그 값을 무엇으로 구했는지를 나타
 Table 1 의 $e_i$, $s^2_m$, $R^2_m$, $R^2_t$, $r$, $P_{\mathrm{ret}}(m)$, $r^{\ast}$, $T^{\ast}$ 는 아래 식 (1) 부터 식 (8) 로 계산한다. Problem Statement 의 측정 wafer 수는 wafer measurement count $m^{\ast}$ 이고, measurement interval 은 식 (8) 의 $T^{\ast}$ 이다.
 
 ```math
-e_i = y_{m,i} - y_{c,i}
+e_i = y_{m,i} - y_{p,i}
 \hspace{19em} (1)
 ```
 
