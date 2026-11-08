@@ -1,5 +1,5 @@
 # Measured Wafer Ratio for R2 Retention
-Version 6 | Created: 2026-11-05 | Updated: 2026-11-08 00:06 UTC
+Version 7 | Created: 2026-11-05 | Updated: 2026-11-08 00:19 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -20,14 +20,15 @@ Version 6 | Created: 2026-11-05 | Updated: 2026-11-08 00:06 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: 반도체 증착 공정의 두께를 model 이 예측하고 일부 wafer 만 실측하면, 실측 wafer 로 계산한 R² 가 실측 wafer 가 늘 때마다 변동한다.
-- **Goal**: 실측 R² 가 최저 R² 이상으로 유지될 확률을 정한 값 이상으로 두는 가장 작은 실측 wafer 비율을 model 마다 계산한다.
+- **Problem Statement**: 반도체 증착 공정을 진행하면서 주기적으로 일부 wafer 에서 두께를 측정하면, 실측과 예측의 비교를 통해 예측값의 R² 를 동적으로 추출할 수 있고, 측정하지 않은 wafer 에 대한 예측값의 정확도를 알 수 있다. 그러나 예측값의 정확도를 검증하는 데 필요한 measurement interval 이나 측정 wafer 수를 계산하는 방법은 없다.
+- **Goal**: 실측 R² 가 최저 R² 이상으로 유지될 확률을 정한 값 이상으로 두는 가장 작은 실측 wafer 비율과, 그 비율에 따른 측정 wafer 수와 measurement interval 을 model 마다 계산한다.
 - **Non-Goal**: 두께 예측 model 을 만들거나 고르는 방법은 다루지 않는다.
 
 ## 2. Summary
 
 전체 wafer $N$ 장 가운데 실측할 wafer 수 $n^{\ast}$ 는 model 이 계산한 기대 R² 인 $R^2_c$, 유지할 최저 R² 인 $R^2_{\min}$, 유지 확률 $\gamma$ 로 정해지며, 실측 비율은 $r^{\ast} = n^{\ast}/N$ 이다.
 $R^2_c$ 가 높을수록, $R^2_c - R^2_{\min}$ 이 클수록, $\gamma$ 가 낮을수록, $N$ 이 클수록 $r^{\ast}$ 가 줄어든다.
+Measurement interval 은 $T^{\ast} = 1/r^{\ast}$ 이며, 평균 $T^{\ast}$ 장마다 wafer 한 장을 실측한다.
 
 ## 3. Notation
 
@@ -56,6 +57,7 @@ Table 1. Symbols
 |   $n_{\min}$        |   대표본 근사를 위한 실측 수 하한                |  integer   |   $2 \le n_{\min} \le N$. 기본값 10    |
 |     $n^{\ast}$      |               최소 실측 wafer 수                 |  integer   |                  -                    |
 |     $r^{\ast}$      |                  최소 실측 비율                  |   scalar   |                  -                    |
+|     $T^{\ast}$      |  Measurement interval. 실측 wafer 한 장당 공정을 거치는 wafer 수 |   scalar   |          $T^{\ast} \ge 1$            |
 
 R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $m$ 은 measured 로 실측 두께와 견주어 확인한 값을, $c$ 는 calculated by model 로 model 이 계산해 둔 값을 뜻한다. $\min$ 은 유지해야 할 최저값을 뜻한다. 유지 확률은 허용 확률 $\alpha$ 를 1 에서 뺀 값 $\gamma = 1 - \alpha$ 하나로 적는다.
 
@@ -79,9 +81,12 @@ R² 의 아래첨자는 그 R² 를 무엇으로 구했는지를 나타낸다. $
 > 실측 비율 $r$ 은 전체 wafer $N$ 장 가운데 실측한 wafer $n$ 장이 차지하는 비율이다.
 
 > **Definition: Minimum measured ratio**<br>
-> 최소 실측 비율 $r^{\ast}$ 는 실측 R² $\hat{R}^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률을 유지 확률 $\gamma$ 이상으로 두는 실측 비율 $r$ 가운데 가장 작은 값이다. 이 문서의 Goal 은 $r^{\ast}$ 를 model 마다 계산하는 것이다.
+> 최소 실측 비율 $r^{\ast}$ 는 실측 R² $\hat{R}^2_m$ 이 최저 R² $R^2_{\min}$ 이상일 확률을 유지 확률 $\gamma$ 이상으로 두는 실측 비율 $r$ 가운데 가장 작은 값이다.
 
-세 정의 식은 아래 식 (1), 식 (2), 식 (3) 이다.
+> **Definition: Measurement interval**<br>
+> Measurement interval $T^{\ast}$ 는 최소 실측 비율 $r^{\ast}$ 로 실측할 때 실측 wafer 한 장당 공정을 거치는 wafer 수의 평균이며, $r^{\ast}$ 의 역수이다.
+
+네 정의 식은 아래 식 (1), 식 (2), 식 (3), 식 (4) 이다. Problem Statement 의 측정 wafer 수는 최소 실측 wafer 수 $n^{\ast}$ 이고, measurement interval 은 식 (4) 의 $T^{\ast}$ 이다.
 
 ```math
 \hat{R}^2_m = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
@@ -98,44 +103,49 @@ r^{\ast} = \min \left\{ r = \frac{n}{N} \;\middle|\; P\left( \hat{R}^2_m \ge R^2
 \hspace{19em} (3)
 ```
 
+```math
+T^{\ast} = \frac{1}{r^{\ast}}
+\hspace{19em} (4)
+```
+
 - 식 (1) 의 분자는 SSE, 분모는 SST 이다.
 - 실측 wafer 가 바뀌면 분자와 분모가 함께 바뀌므로, model 이 같아도 $\hat{R}^2_m$ 은 $R^2_c$ 주위에서 변동한다.
 
 ## 5. Interpretation
 
-식 (3) 의 최소 실측 비율은 식 (6) 으로 계산한다. 식 (6) 의 최소 실측 wafer 수는 식 (4), 그 계산에 쓰는 $n_0$ 는 식 (5) 이다.
+식 (3) 의 최소 실측 비율은 식 (7) 로 계산한다. 식 (7) 의 최소 실측 wafer 수는 식 (5), 그 계산에 쓰는 $n_0$ 는 식 (6) 이다. 식 (7) 의 $r^{\ast}$ 를 식 (4) 에 넣으면 measurement interval 은 $T^{\ast} = N / n^{\ast}$ 이다.
 
 ```math
 n^{\ast} = \max\left( \left\lceil \frac{n_0}{1 + (n_0 - 1)/N} \right\rceil,\ n_{\min} \right)
-\hspace{19em} (4)
-```
-
-```math
-n_0 = \left( \frac{2\, z_{\gamma} \sqrt{R^2_c}\, (1 - R^2_c)}{R^2_c - R^2_{\min}} \right)^2
 \hspace{19em} (5)
 ```
 
 ```math
-r^{\ast} = \frac{n^{\ast}}{N}
+n_0 = \left( \frac{2\, z_{\gamma} \sqrt{R^2_c}\, (1 - R^2_c)}{R^2_c - R^2_{\min}} \right)^2
 \hspace{19em} (6)
 ```
 
-식 (4) 는 식 (1) 의 R² 가 식 (7) 의 분산으로 변동할 때 식 (8) 의 조건을 만족하는 가장 작은 $n$ 이고, 식 (6) 은 이 $n^{\ast}$ 를 식 (2) 에 넣은 값이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+```math
+r^{\ast} = \frac{n^{\ast}}{N}
+\hspace{19em} (7)
+```
+
+식 (5) 는 식 (1) 의 R² 가 식 (8) 의 분산으로 변동할 때 식 (9) 의 조건을 만족하는 가장 작은 $n$ 이고, 식 (7) 은 이 $n^{\ast}$ 를 식 (2) 에 넣은 값이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ### 5.1 Variance of R2
 
-$\hat{R}^2_m$ 의 분산은 식 (7) 이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
+$\hat{R}^2_m$ 의 분산은 식 (8) 이다. 유도는 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
 \mathrm{Var}(\hat{R}^2_m) \approx \frac{4 R^2_c (1 - R^2_c)^2}{n} \cdot \frac{N - n}{N - 1}
-\hspace{19em} (7)
+\hspace{19em} (8)
 ```
 
 - 앞 인자: 대표본 근사 (large-sample approximation) 에서 delta method 로 구한 R² 의 분산
 - 뒤 인자: 유한 모집단 보정 (finite population correction, FPC). $n = N$ 이면 0 이 되어, 전체를 실측하면 변동이 없다.
 - $R^2_c$ 가 1 에 가까울수록 $(1 - R^2_c)^2$ 이 작아져 분산이 줄어든다.
 
-식 (7) 은 아래 조건에서 성립한다.
+식 (8) 은 아래 조건에서 성립한다.
 
 - 예측 두께에 bias 가 없고 실측 두께에 대한 기울기가 1 이어서, 식 (1) 의 R² 가 실측과 예측의 상관계수 제곱 $\rho^2$ 과 같다.
 - $n$ 이 충분히 커서 $\hat{R}^2_m$ 이 정규분포에 가깝다. 이 문서는 $n \ge n_{\min} = 10$ 으로 둔다.
@@ -143,13 +153,13 @@ $\hat{R}^2_m$ 의 분산은 식 (7) 이다. 유도는 [Appendix B](#appendix-b-d
 
 ### 5.2 Retention Condition
 
-$\hat{R}^2_m$ 이 $R^2_{\min}$ 이상일 확률을 $\gamma$ 이상으로 유지하는 조건은 식 (8) 이다.
+$\hat{R}^2_m$ 이 $R^2_{\min}$ 이상일 확률을 $\gamma$ 이상으로 유지하는 조건은 식 (9) 이다.
 
 ```math
 P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge \gamma
 \iff
 R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
-\hspace{19em} (8)
+\hspace{19em} (9)
 ```
 
 - 좌변: 실측 R² 가 최저 R² 이상일 확률
@@ -157,26 +167,27 @@ R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
 
 ### 5.3 Minimum Measured Count
 
-식 (8) 에 식 (7) 을 넣고 $n$ 에 대해 풀면 식 (4) 가 된다.
+식 (9) 에 식 (8) 을 넣고 $n$ 에 대해 풀면 식 (5) 가 된다.
 
 - $n_0$: 전체 wafer 수가 무한할 때의 필요 실측 수
 - $n_0 / (1 + (n_0 - 1)/N)$: 유한 모집단 보정을 넣은 필요 실측 수. $N$ 이 작을수록 $n_0$ 보다 많이 줄어든다.
 - $n_{\min}$: 5.1 의 대표본 근사가 성립하도록 둔 하한
 
-식 (4) 는 $R^2_c \gt R^2_{\min}$ 일 때만 성립한다. $R^2_c \le R^2_{\min}$ 이면 $n$ 을 $N$ 까지 늘려도 식 (8) 을 만족하지 못한다.
+식 (5) 는 $R^2_c \gt R^2_{\min}$ 일 때만 성립한다. $R^2_c \le R^2_{\min}$ 이면 $n$ 을 $N$ 까지 늘려도 식 (9) 를 만족하지 못한다.
 
 ## 6. Worked Example
 
 ### 6.1 One Condition
 
-$N = 100$, $R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$ 로 식 (4) 부터 식 (6) 을 계산한다.
+$N = 100$, $R^2_c = 0.90$, $R^2_{\min} = 0.85$, $\gamma = 0.95$ 로 식 (5) 부터 식 (7) 을 계산한다.
 
 1. $z_{0.95} = 1.645$
 2. $n_0 = (2 \times 1.645 \times \sqrt{0.90} \times 0.10 / 0.05)^2 = (0.3121 / 0.05)^2 = 38.96$
 3. $n_0 / (1 + (n_0 - 1)/N) = 38.96 / 1.3796 = 28.24$, 올림하면 29
 4. $n^{\ast} = \max(29,\ 10) = 29$, $r^{\ast} = 29/100 = 0.29$
+5. $T^{\ast} = 100/29 = 3.45$ 이므로, wafer 평균 3.45 장마다 한 장을 실측한다.
 
-식 (8) 의 우변을 $n = 28$ 과 $n = 29$ 에서 계산하면 아래 Table 2 이다.
+식 (9) 의 우변을 $n = 28$ 과 $n = 29$ 에서 계산하면 아래 Table 2 이다.
 
 Table 2. Retention check around n = 29
 
@@ -189,7 +200,7 @@ $n = 28$ 에서는 아래쪽 5 % 분위수가 0.8497 로 0.85 보다 작고, $n 
 
 ### 6.2 Condition Comparison
 
-조건별 $n^{\ast}$ 와 $r^{\ast}$ 는 아래 Table 3, Table 4, Table 5 이다. Cell 은 `n* (r*)` 이고, * 는 $n_{\min} = 10$ 이 $n^{\ast}$ 를 정한 경우이다.
+조건별 $n^{\ast}$ 와 $r^{\ast}$ 는 아래 Table 3, Table 4, Table 5 이다. Cell 은 `n* (r*)` 이고, * 는 $n_{\min} = 10$ 이 $n^{\ast}$ 를 정한 경우이다. 각 cell 의 measurement interval $T^{\ast}$ 는 괄호 안 $r^{\ast}$ 의 역수이다.
 
 Table 3. Measured count by model R2 and margin, N = 100, gamma = 95 %
 
@@ -228,11 +239,11 @@ $N$ 이 25 이면 $n^{\ast}$ 는 줄지만 $r^{\ast}$ 는 커진다. $R^2_c = 0.
 
 ### 7.1 Calculation Script
 
-식 (1), 식 (4) 부터 식 (7) 을 계산하는 Python script 는 [src/r2_sampling_ratio.py](src/r2_sampling_ratio.py) 이다.
+식 (1), 식 (5) 부터 식 (8) 을 계산하는 Python script 는 [src/r2_sampling_ratio.py](src/r2_sampling_ratio.py) 이다.
 
 - `estimate_r2(measured=..., predicted=...)`: 식 (1) 의 $\hat{R}^2_m$
-- `r2_variance(r2_model=..., measured=..., total_wafers=...)`: 식 (7) 의 분산
-- `required_measured(r2_model=..., r2_min=..., confidence=..., total_wafers=..., min_measured=...)`: 식 (4) 부터 식 (6) 의 $n_0$, $n^{\ast}$, $r^{\ast}$
+- `r2_variance(r2_model=..., measured=..., total_wafers=...)`: 식 (8) 의 분산
+- `required_measured(r2_model=..., r2_min=..., confidence=..., total_wafers=..., min_measured=...)`: 식 (5) 부터 식 (7) 의 $n_0$, $n^{\ast}$, $r^{\ast}$
 - `build_table(...)`: 여러 조건의 $n^{\ast}$, $r^{\ast}$ 를 한 표로 계산
 
 허용 여유는 `--margin` 으로 $\Delta$ 를 주거나 `--r2-min` 으로 $R^2_{\min}$ 을 직접 주며, 둘을 함께 주면 오류로 끝난다. Table 3 은 아래 명령으로 계산한다.
@@ -245,10 +256,10 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 
 ### 7.2 Breaking Conditions
 
-- $R^2_c \le R^2_{\min}$: 식 (5) 의 분모가 0 이하가 되어 $n^{\ast}$ 가 없다. `required_measured` 는 오류로 끝나고, `build_table` 은 이 조건을 건너뛰고 건너뛴 개수를 출력한다.
-- $R^2_c$ 가 과거 실측의 값과 달라짐: 공정 변화로 model 의 실제 R² 가 $R^2_c$ 보다 낮아지면, 식 (4) 의 $n^{\ast}$ 로는 유지 확률이 $\gamma$ 보다 낮다. $R^2_c$ 는 최근 실측으로 다시 추정한다.
-- 예측에 bias 가 있음: 식 (1) 의 R² 가 상관계수 제곱보다 작아져 식 (7) 이 맞지 않는다.
-- $n$ 이 작음: 식 (7) 의 정규 근사가 맞지 않는다. $n_{\min}$ 은 이 경우를 막는 하한이다.
+- $R^2_c \le R^2_{\min}$: 식 (6) 의 분모가 0 이하가 되어 $n^{\ast}$ 가 없다. `required_measured` 는 오류로 끝나고, `build_table` 은 이 조건을 건너뛰고 건너뛴 개수를 출력한다.
+- $R^2_c$ 가 과거 실측의 값과 달라짐: 공정 변화로 model 의 실제 R² 가 $R^2_c$ 보다 낮아지면, 식 (5) 의 $n^{\ast}$ 로는 유지 확률이 $\gamma$ 보다 낮다. $R^2_c$ 는 최근 실측으로 다시 추정한다.
+- 예측에 bias 가 있음: 식 (1) 의 R² 가 상관계수 제곱보다 작아져 식 (8) 이 맞지 않는다.
+- $n$ 이 작음: 식 (8) 의 정규 근사가 맞지 않는다. $n_{\min}$ 은 이 경우를 막는 하한이다.
 
 ---
 
@@ -274,27 +285,27 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 &\approx 4 \rho^2\, \frac{(1 - \rho^2)^2}{n} \cdot \frac{N - n}{N - 1} \\
 &= \frac{4 R^2_c (1 - R^2_c)^2}{n} \cdot \frac{N - n}{N - 1}
 \end{aligned}
-\hspace{19em} (9)
+\hspace{19em} (10)
 ```
 
 - 첫째 근사: delta method 이다. $\rho^2$ 을 $\rho$ 로 미분하면 $2\rho$ 이므로 $\hat{\rho}^2$ 의 분산은 $\hat{\rho}$ 의 분산에 $(2\rho)^2$ 을 곱한 값이다. 전체 $N$ 장에서 비복원으로 $n$ 장을 뽑으므로 유한 모집단 보정 $(N - n)/(N - 1)$ 을 곱한다.
 - 둘째 근사: $\hat{\rho}$ 의 대표본 분산 $(1 - \rho^2)^2 / n$ 을 넣는다.
 - 셋째 등호: $\rho^2 = R^2_c$ 를 넣는다.
 
-따라서 식 (7) 이 성립한다.
+따라서 식 (8) 이 성립한다.
 
 ```math
 \mathrm{Var}(\hat{R}^2_m) \approx \frac{4 R^2_c (1 - R^2_c)^2}{n} \cdot \frac{N - n}{N - 1}
-\hspace{19em} (7)
+\hspace{19em} (8)
 ```
 
-이어서 식 (8) 의 우변을 $n$ 에 대해 푼다.
+이어서 식 (9) 의 우변을 $n$ 에 대해 푼다.
 
 ```math
 P\left( \hat{R}^2_m \ge R^2_{\min} \right) \ge \gamma
 \iff
 R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
-\hspace{19em} (8)
+\hspace{19em} (9)
 ```
 
 ```math
@@ -304,16 +315,16 @@ R^2_c - z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \ge R^2_{\min}
 &\iff n_0\, \frac{N - n}{N - 1} \le n \\
 &\iff n \ge \frac{n_0}{1 + (n_0 - 1)/N}
 \end{aligned}
-\hspace{19em} (10)
+\hspace{19em} (11)
 ```
 
 - 첫째 동치: $R^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{\gamma} \sqrt{\mathrm{Var}(\hat{R}^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
-- 둘째 동치: 식 (7) 을 넣고, $n_0 = 4 z_{\gamma}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $n$ 을 곱한다.
+- 둘째 동치: 식 (8) 을 넣고, $n_0 = 4 z_{\gamma}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $n$ 을 곱한다.
 - 셋째 동치: 양변에 $N - 1$ 을 곱해 정리하면 $n (N - 1 + n_0) \ge n_0 N$ 이고, 양변을 $N - 1 + n_0$ 로 나눈 뒤 분자와 분모를 $N$ 으로 나눈다.
 
-마지막 줄의 $n$ 을 정수로 올림하고 $n_{\min}$ 과 견주어 큰 쪽을 고르면 $n^{\ast}$ 이다. 따라서 식 (4) 가 성립한다.
+마지막 줄의 $n$ 을 정수로 올림하고 $n_{\min}$ 과 견주어 큰 쪽을 고르면 $n^{\ast}$ 이다. 따라서 식 (5) 가 성립한다.
 
 ```math
 n^{\ast} = \max\left( \left\lceil \frac{n_0}{1 + (n_0 - 1)/N} \right\rceil,\ n_{\min} \right)
-\hspace{19em} (4)
+\hspace{19em} (5)
 ```
