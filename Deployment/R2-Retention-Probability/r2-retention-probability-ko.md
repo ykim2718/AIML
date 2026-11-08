@@ -1,5 +1,5 @@
 # R2 Retention Probability
-Version 19 | Created: 2026-11-05 | Updated: 2026-11-08 03:56 UTC
+Version 20 | Created: 2026-11-05 | Updated: 2026-11-08 04:03 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -302,34 +302,56 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 - **R² (coefficient of determination)**: 1 에서 SSE 를 SST 로 나눈 값을 뺀 정확도 지표.
 - **SSE (sum of squared errors)**: 실측 두께와 예측 두께의 차이를 제곱해 더한 값.
 - **SST (total sum of squares)**: 실측 두께와 그 평균의 차이를 제곱해 더한 값.
+- **Taylor 전개 (Taylor expansion)**: 함수를 한 점 근처에서 그 점의 함숫값과 미분값으로 이루어진 다항식으로 근사하는 방법. 1차 Taylor 전개는 1차 항까지만 남긴다.
 - **대표본 근사 (large-sample approximation)**: 표본 수가 충분히 클 때 추정량의 분포를 정규분포로 보는 근사.
 - **분위수 (quantile)**: 누적확률이 주어진 값이 되는 확률변수의 값.
 - **유한 모집단 보정 (finite population correction, FPC)**: 전체 $N$ 개에서 비복원으로 $m$ 개를 뽑을 때 분산에 곱하는 $(N-m)/(N-1)$.
 
 ## Appendix B. Derivation
 
-5.1 의 조건에서 참값 $R^2$ 은 상관계수 제곱 $\rho^2$ 과 같고 model 의 R² 예측값 $R^2_c$ 와도 같다. 실측 wafer $m$ 장으로 추정한 상관계수 $\hat{\rho}$ 의 대표본 분산은 $(1 - \rho^2)^2 / m$ 이다. 실측 R² $R^2_m$ 은 상관계수 추정값의 제곱 $\hat{\rho}^2$ 과 같으므로, 이 사실들로 $R^2_m$ 의 분산을 구한다.
+5.1 의 조건에서 참값 $R^2$ 은 상관계수 제곱 $\rho^2$ 과 같고 model 의 R² 예측값 $R^2_c$ 와도 같다. 실측 wafer $m$ 장으로 추정한 상관계수 $\hat{\rho}$ 의 대표본 분산은 $(1 - \rho^2)^2 / m$ 이다. 이 사실들로 $R^2_m$ 의 분산을 구한다.
 
 ```math
-\mathrm{Var}(R^2_m) \approx (2\rho)^2\, \mathrm{Var}(\hat{\rho}) \cdot \frac{N - m}{N - 1}
+R^2_m = \hat{\rho}^2
 \hspace{19em} (13)
 ```
 
-- 식 (13): delta method 이다. $\rho^2$ 을 $\rho$ 로 미분하면 $2\rho$ 이므로 $\hat{\rho}^2$ 의 분산은 $\hat{\rho}$ 의 분산에 $(2\rho)^2$ 을 곱한 값이다. 전체 $N$ 장에서 비복원으로 $m$ 장을 뽑으므로 유한 모집단 보정 $(N - m)/(N - 1)$ 을 곱한다.
+- 식 (13): 5.1 의 조건에서 실측 R² 는 실측 wafer $m$ 장으로 추정한 상관계수의 제곱이다.
 
 ```math
-\mathrm{Var}(R^2_m) \approx 4 \rho^2\, \frac{(1 - \rho^2)^2}{m} \cdot \frac{N - m}{N - 1}
+\hat{\rho}^2 \approx \rho^2 + 2\rho\, (\hat{\rho} - \rho)
 \hspace{19em} (14)
 ```
 
-- 식 (14): 식 (13) 에 $\hat{\rho}$ 의 대표본 분산 $(1 - \rho^2)^2 / m$ 을 넣는다.
+- 식 (14): 함수 $\hat{\rho}^2$ 을 참값 $\rho$ 에서 1차 Taylor 전개 (first-order Taylor expansion) 한다. $\hat{\rho}^2$ 을 $\hat{\rho}$ 로 미분하면 $2\hat{\rho}$ 이고, $\hat{\rho} = \rho$ 에서 그 값은 $2\rho$ 이다. 대표본에서 $\hat{\rho}$ 가 $\rho$ 가까이에 모이므로 2차 이상의 항을 버린다.
 
 ```math
-\mathrm{Var}(R^2_m) \approx \frac{4 R^2_c (1 - R^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
+\mathrm{Var}(\hat{\rho}^2) \approx (2\rho)^2\, \mathrm{Var}(\hat{\rho})
 \hspace{19em} (15)
 ```
 
-- 식 (15): 식 (14) 에 $\rho^2 = R^2 = R^2_c$ 를 넣는다.
+- 식 (15): 식 (14) 의 양변에 분산을 취한다. 상수 $\rho^2$ 과 $2\rho \cdot \rho$ 의 분산은 0 이고, 상수 $a$ 와 확률변수 $X$ 에 대해 $\mathrm{Var}(aX) = a^2\, \mathrm{Var}(X)$ 이다. 이 단계가 delta method 이다.
+
+```math
+\mathrm{Var}(R^2_m) \approx (2\rho)^2\, \mathrm{Var}(\hat{\rho}) \cdot \frac{N - m}{N - 1}
+\hspace{19em} (16)
+```
+
+- 식 (16): 식 (13) 에 따라 $\mathrm{Var}(R^2_m) = \mathrm{Var}(\hat{\rho}^2)$ 이다. 식 (15) 는 wafer 를 무한한 모집단에서 뽑을 때의 분산이므로, 전체 $N$ 장에서 비복원으로 $m$ 장을 뽑는 경우에 맞게 유한 모집단 보정 $(N - m)/(N - 1)$ 을 곱한다.
+
+```math
+\mathrm{Var}(R^2_m) \approx 4 \rho^2\, \frac{(1 - \rho^2)^2}{m} \cdot \frac{N - m}{N - 1}
+\hspace{19em} (17)
+```
+
+- 식 (17): 식 (16) 에 $\hat{\rho}$ 의 대표본 분산 $(1 - \rho^2)^2 / m$ 을 넣는다.
+
+```math
+\mathrm{Var}(R^2_m) \approx \frac{4 R^2_c (1 - R^2_c)^2}{m} \cdot \frac{N - m}{N - 1}
+\hspace{19em} (18)
+```
+
+- 식 (18): 식 (17) 에 $\rho^2 = R^2 = R^2_c$ 를 넣는다.
 
 따라서 식 (7) 이 성립한다.
 
@@ -342,24 +364,24 @@ python src/r2_sampling_ratio.py --r2-model 0.80 0.85 0.90 0.95 --margin 0.03 0.0
 
 ```math
 P_{\mathrm{ret}}(m) = P\left( \frac{R^2_m - R^2_c}{\sqrt{\mathrm{Var}(R^2_m)}} \ge \frac{R^2_{\min} - R^2_c}{\sqrt{\mathrm{Var}(R^2_m)}} \right)
-\hspace{19em} (16)
+\hspace{19em} (19)
 ```
 
-- 식 (16): 식 (3) 의 부등식 양변에서 $R^2_c$ 를 빼고 양수인 $\sqrt{\mathrm{Var}(R^2_m)}$ 로 나눈다. 부등호의 방향은 바뀌지 않는다.
+- 식 (19): 식 (3) 의 부등식 양변에서 $R^2_c$ 를 빼고 양수인 $\sqrt{\mathrm{Var}(R^2_m)}$ 로 나눈다. 부등호의 방향은 바뀌지 않는다.
 
 ```math
 P_{\mathrm{ret}}(m) \approx 1 - \Phi\left( \frac{R^2_{\min} - R^2_c}{\sqrt{\mathrm{Var}(R^2_m)}} \right)
-\hspace{19em} (17)
+\hspace{19em} (20)
 ```
 
-- 식 (17): 식 (16) 의 왼쪽 표준화한 값이 표준정규분포를 따르므로, 그 값이 어떤 수 이상일 확률은 1 에서 그 수까지의 누적확률을 뺀 값이다.
+- 식 (20): 식 (19) 의 왼쪽 표준화한 값이 표준정규분포를 따르므로, 그 값이 어떤 수 이상일 확률은 1 에서 그 수까지의 누적확률을 뺀 값이다.
 
 ```math
 P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(R^2_m)}} \right)
-\hspace{19em} (18)
+\hspace{19em} (21)
 ```
 
-- 식 (18): 표준정규분포는 0 에 대해 대칭이어서, 임의의 실수 $z$ 에 대해 $1 - \Phi(-z) = \Phi(z)$ 이다. 이 관계를 식 (17) 에 쓴다.
+- 식 (21): 표준정규분포는 0 에 대해 대칭이어서, 임의의 실수 $z$ 에 대해 $1 - \Phi(-z) = \Phi(z)$ 이다. 이 관계를 식 (20) 에 쓴다.
 
 따라서 식 (6) 이 성립한다.
 
@@ -372,33 +394,33 @@ P_{\mathrm{ret}}(m) \approx \Phi\left( \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{V
 
 ```math
 P_{\mathrm{ret}}(m) \ge \gamma \iff \frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(R^2_m)}} \ge z_{\gamma}
-\hspace{19em} (19)
-```
-
-- 식 (19): 식 (6) 을 넣고, $\Phi$ 가 증가함수이므로 양변에 $\Phi^{-1}$ 을 적용한다. $z_{\gamma} = \Phi^{-1}(\gamma)$ 이다.
-
-```math
-\frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(R^2_m)}} \ge z_{\gamma} \iff z_{\gamma}^2\, \mathrm{Var}(R^2_m) \le \Delta^2
-\hspace{19em} (20)
-```
-
-- 식 (20): $R^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{\gamma} \sqrt{\mathrm{Var}(R^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
-
-```math
-z_{\gamma}^2\, \mathrm{Var}(R^2_m) \le \Delta^2 \iff m_0\, \frac{N - m}{N - 1} \le m
-\hspace{19em} (21)
-```
-
-- 식 (21): 식 (7) 을 넣고, $m_0 = 4 z_{\gamma}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $m$ 을 곱한다.
-
-```math
-m_0\, \frac{N - m}{N - 1} \le m \iff m \ge \frac{m_0}{1 + (m_0 - 1)/N}
 \hspace{19em} (22)
 ```
 
-- 식 (22): 양변에 $N - 1$ 을 곱해 정리하면 $m (N - 1 + m_0) \ge m_0 N$ 이고, 양변을 $N - 1 + m_0$ 로 나눈 뒤 분자와 분모를 $N$ 으로 나눈다.
+- 식 (22): 식 (6) 을 넣고, $\Phi$ 가 증가함수이므로 양변에 $\Phi^{-1}$ 을 적용한다. $z_{\gamma} = \Phi^{-1}(\gamma)$ 이다.
 
-식 (22) 의 오른쪽 부등식에서 $m$ 을 정수로 올림하고 $m_{\min}$ 과 견주어 큰 쪽을 고르면 $m^{\ast}$ 이다. 따라서 식 (9) 가 성립한다.
+```math
+\frac{R^2_c - R^2_{\min}}{\sqrt{\mathrm{Var}(R^2_m)}} \ge z_{\gamma} \iff z_{\gamma}^2\, \mathrm{Var}(R^2_m) \le \Delta^2
+\hspace{19em} (23)
+```
+
+- 식 (23): $R^2_c - R^2_{\min} = \Delta$ 로 옮기면 $z_{\gamma} \sqrt{\mathrm{Var}(R^2_m)} \le \Delta$ 이고, 양변이 0 이상이므로 제곱해도 부등호가 유지된다.
+
+```math
+z_{\gamma}^2\, \mathrm{Var}(R^2_m) \le \Delta^2 \iff m_0\, \frac{N - m}{N - 1} \le m
+\hspace{19em} (24)
+```
+
+- 식 (24): 식 (7) 을 넣고, $m_0 = 4 z_{\gamma}^2 R^2_c (1 - R^2_c)^2 / \Delta^2$ 로 묶은 뒤 양변에 $m$ 을 곱한다.
+
+```math
+m_0\, \frac{N - m}{N - 1} \le m \iff m \ge \frac{m_0}{1 + (m_0 - 1)/N}
+\hspace{19em} (25)
+```
+
+- 식 (25): 양변에 $N - 1$ 을 곱해 정리하면 $m (N - 1 + m_0) \ge m_0 N$ 이고, 양변을 $N - 1 + m_0$ 로 나눈 뒤 분자와 분모를 $N$ 으로 나눈다.
+
+식 (25) 의 오른쪽 부등식에서 $m$ 을 정수로 올림하고 $m_{\min}$ 과 견주어 큰 쪽을 고르면 $m^{\ast}$ 이다. 따라서 식 (9) 가 성립한다.
 
 ```math
 m^{\ast} = \max\left( \left\lceil \frac{m_0}{1 + (m_0 - 1)/N} \right\rceil,\ m_{\min} \right)
