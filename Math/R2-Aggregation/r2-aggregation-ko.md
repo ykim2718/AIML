@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 28 | Created: 2026-11-09 | Updated: 2026-11-10 17:28 CST
+Version 29 | Created: 2026-11-09 | Updated: 2026-11-10 17:31 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -803,5 +803,10 @@ SST 가중 평균이 의미를 갖는 까닭은 아래 세 가지이다.
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
 \hspace{19em} (22)
 ```
+
+가중치를 $`\mathrm{SST}_j`$ 가 아니라 $`\mathrm{SSE}_j`$ 로 두지 않는 까닭은 아래 두 가지이다.
+
+- **비율 하나로 줄어들지 않는다.** $`R^2_j = 1 - \mathrm{SSE}_j / \mathrm{SST}_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - \sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 1 의 예에서 SSE 가중 평균은 $`(10 \times 0.90 + 0.5 \times 0.50)/10.5 = 0.881`$ 이며, 어떤 변동의 몇 분의 일인지로 읽히지 않는다.
+- **가중치가 예측 model 에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해져 어떤 예측 model 을 쓰든 같지만, $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 같은 측정값에서 두 예측 model 을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 몫인지 가중치가 바뀐 몫인지 가릴 수 없다.
 
 Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
