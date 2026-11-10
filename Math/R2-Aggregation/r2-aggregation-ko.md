@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 13 | Created: 2026-11-09 | Updated: 2026-11-10 17:03 CST
+Version 14 | Created: 2026-11-09 | Updated: 2026-11-10 17:04 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,7 +25,7 @@ Version 13 | Created: 2026-11-09 | Updated: 2026-11-10 17:03 CST
 
 ## 1. Purpose
 
-- **Problem Statement**: wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정하면 측정값이 $`T = MN`$ 개 나온다. 같은 예측으로 R² 를 측정값 $`T`$ 개, wafer 평균 $`M`$ 개, 측정 위치마다의 wafer $`M`$ 장에서 구하면 세 R² 의 값이 서로 다르지만, 세 값 사이의 관계식은 없다.
+- **Problem Statement**: 반도체 wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정하면 측정값이 $`T = MN`$ 개 나온다. 같은 예측으로 R² 를 측정값 $`T`$ 개, wafer 평균 $`M`$ 개, 측정 위치마다의 wafer $`M`$ 장에서 구하면 세 R² 의 값이 서로 다르지만, 세 값 사이의 관계식은 없다.
 - **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
 - **Non-Goal**: 예측 model 을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
 
