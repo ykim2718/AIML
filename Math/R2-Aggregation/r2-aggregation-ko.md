@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 3 | Created: 2026-11-09 | Updated: 2026-11-10 05:35 CST
+Version 4 | Created: 2026-11-09 | Updated: 2026-11-10 05:39 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -10,6 +10,7 @@ Version 3 | Created: 2026-11-09 | Updated: 2026-11-10 05:35 CST
   - [5.2 Wafer Average Form](#52-wafer-average-form)
   - [5.3 Location Average Form](#53-location-average-form)
   - [5.4 Relation without the Pooled R2](#54-relation-without-the-pooled-r2)
+  - [5.5 Inequalities](#55-inequalities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
   - [7.1 Reporting R2 of a Wafer Model](#71-reporting-r2-of-a-wafer-model)
@@ -20,6 +21,7 @@ Version 3 | Created: 2026-11-09 | Updated: 2026-11-10 05:35 CST
   - [B.2 Wafer Average Form](#b2-wafer-average-form)
   - [B.3 Location Average Form](#b3-location-average-form)
   - [B.4 Relation without the Pooled R2](#b4-relation-without-the-pooled-r2)
+  - [B.5 Inequalities](#b5-inequalities)
 
 ## 1. Purpose
 
@@ -71,6 +73,8 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 - $`\bar{y}_{\cdot j}`$: 영어로 "y bar dot j", 한국어로 "와이 바 닷 제이" 라 읽는다.
 - $`\bar{\hat{y}}_{i\cdot}`$: 영어로 "y hat bar i dot", 한국어로 "와이 햇 바 아이 닷" 이라 읽는다.
 - $`\sum`$: 영어로 "sum", 한국어로 "합" 이라 읽는다.
+- $`\min_j`$, $`\max_j`$: 영어로 "minimum over j", "maximum over j", 한국어로 "제이에 대한 최솟값", "제이에 대한 최댓값" 이라 읽는다.
+- $`\iff`$: 영어로 "if and only if", 한국어로 "필요충분조건" 이라 읽는다.
 - $`\sum_{j \ne k}`$: 영어로 "sum over j not equal to k", 한국어로 "제이와 케이가 다른 모든 순서쌍에 대한 합" 이라 읽는다.
 
 ## 4. Definitions
@@ -249,19 +253,15 @@ R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathr
 
 ### 5.1 Total Form
 
-식 (22) 의 $`1 - \lambda`$ 는 $`\mathrm{SST}_{\mathrm{all}}`$ 가운데 측정 위치마다의 wafer 사이 변동 $`\sum_j \mathrm{SST}_j`$ 가 차지하는 비율이다. 식 (29) 에서 $`\mathrm{SST}_{\mathrm{all}}`$ 은 이 변동과 측정 위치 평균의 차이 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 로 나뉘지만, 식 (30) 에서 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`\mathrm{SSE}_j`$ 의 합과 같아 그대로 남는다. 그래서 $`R^2_{\mathrm{all}}`$ 은 측정 위치 평균의 차이를 맞힌 몫 $`\lambda (1 - R^2_{\mathrm{pool}})`$ 만큼 $`R^2_{\mathrm{pool}}`$ 보다 크다.
+식 (22) 의 $`1 - \lambda`$ 는 $`\mathrm{SST}_{\mathrm{all}}`$ 가운데 측정 위치마다의 wafer 사이 변동 $`\sum_j \mathrm{SST}_j`$ 가 차지하는 비율이다. 식 (36) 에서 $`\mathrm{SST}_{\mathrm{all}}`$ 은 이 변동과 측정 위치 평균의 차이 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 로 나뉘지만, 식 (37) 에서 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`\mathrm{SSE}_j`$ 의 합과 같아 그대로 남는다. 그래서 $`R^2_{\mathrm{all}}`$ 은 측정 위치 평균의 차이를 맞힌 몫 $`\lambda (1 - R^2_{\mathrm{pool}})`$ 만큼 $`R^2_{\mathrm{pool}}`$ 보다 크다.
 
-- $`R^2_{\mathrm{pool}} \le 1`$ 이고 $`0 \lt 1 - \lambda \le 1`$ 이므로 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}`$ 은 언제나 성립한다.
-- 두 값이 같은 경우는 측정 위치 평균이 모두 같은 $`\lambda = 0`$ 이거나 예측 오차가 모두 0 인 경우뿐이다.
 - 성립 조건은 $`\sum_j \mathrm{SST}_j \gt 0`$ 이며, 이때 $`\lambda \lt 1`$ 이다.
 
 ### 5.2 Wafer Average Form
 
-식 (23) 의 $`\kappa`$ 는 wafer 평균을 구할 때 측정값의 변동과 예측 오차가 각각 얼마나 줄어드는지의 비이다. 측정 위치 $`N`$ 곳을 평균하면 식 (35) 와 식 (38) 에서 SST 는 $`\sum_j \mathrm{SST}_j`$ 의 $`[1 + (N-1)\bar{r}_y]/N^2`$ 배가 되고, SSE 는 $`\sum_j \mathrm{SSE}_j`$ 의 $`[1 + (N-1)\bar{r}_e]/N^2`$ 배가 된다. 그래서 측정 위치 사이 상관이 예측 오차에서 측정값보다 작으면 평균하는 동안 SSE 가 SST 보다 더 줄어 $`R^2_{\mathrm{avgw}}`$ 가 커진다.
+식 (23) 의 $`\kappa`$ 는 wafer 평균을 구할 때 측정값의 변동과 예측 오차가 각각 얼마나 줄어드는지의 비이다. 측정 위치 $`N`$ 곳을 평균하면 식 (42) 와 식 (45) 에서 SST 는 $`\sum_j \mathrm{SST}_j`$ 의 $`[1 + (N-1)\bar{r}_y]/N^2`$ 배가 되고, SSE 는 $`\sum_j \mathrm{SSE}_j`$ 의 $`[1 + (N-1)\bar{r}_e]/N^2`$ 배가 된다. 그래서 측정 위치 사이 상관이 예측 오차에서 측정값보다 작으면 평균하는 동안 SSE 가 SST 보다 더 줄어 $`R^2_{\mathrm{avgw}}`$ 가 커진다.
 
-- $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}}`$ 은 $`\kappa \le 1`$, 곧 $`\bar{r}_e \le \bar{r}_y`$ 일 때 성립한다.
 - Wafer 사이 변동이 모든 측정 위치에서 같은 양인 $`\bar{r}_y = 1`$ 이고 예측 오차가 측정 위치 사이에서 상관이 없는 $`\bar{r}_e = 0`$ 이면 $`\kappa = 1/N`$ 이고, $`1 - R^2_{\mathrm{avgw}}`$ 는 $`1 - R^2_{\mathrm{pool}}`$ 의 $`1/N`$ 배이다.
-- 예측 오차가 모든 측정 위치에서 같은 양인 $`\bar{r}_e = 1`$ 이면 $`\kappa \ge 1`$ 이고, 평균해도 SSE 가 SST 보다 덜 줄어 $`R^2_{\mathrm{avgw}} \le R^2_{\mathrm{pool}}`$ 이다.
 - 성립 조건은 $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 이다. $`\sum_j \mathrm{SSE}_j = 0`$ 이면 $`\bar{r}_e`$ 가 정의되지 않지만, 그때는 $`R^2_{\mathrm{avgw}} = R^2_{\mathrm{pool}} = 1`$ 이다.
 
 ### 5.3 Location Average Form
@@ -273,7 +273,6 @@ R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
 \hspace{19em} (25)
 ```
 
-- $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 가 크면 $`R^2_{\mathrm{pool}} \gt R^2_{\mathrm{avgn}}`$ 이고, 작으면 $`R^2_{\mathrm{pool}} \lt R^2_{\mathrm{avgn}}`$ 이다.
 - 성립 조건은 모든 $`j`$ 에서 $`\mathrm{SST}_j \gt 0`$ 이다.
 
 ### 5.4 Relation without the Pooled R2
@@ -285,9 +284,61 @@ R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
 \hspace{19em} (26)
 ```
 
-- $`(1 - \lambda)/\kappa \lt 1`$ 이면 $`R^2_{\mathrm{all}} \gt R^2_{\mathrm{avgw}}`$ 이고, $`(1 - \lambda)/\kappa \gt 1`$ 이면 $`R^2_{\mathrm{all}} \lt R^2_{\mathrm{avgw}}`$ 이다.
 - $`\mathrm{SST}_j`$ 가 모두 같으면 식 (25) 에 따라 식 (22) 와 식 (23) 의 $`R^2_{\mathrm{pool}}`$ 을 $`R^2_{\mathrm{avgn}}`$ 으로 바꿀 수 있어, 세 R² 가 $`\lambda`$ 와 $`\kappa`$ 만으로 이어진다.
 - 성립 조건은 5.1 과 5.2 의 조건에 $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 을 더한 것이다. 이 조건에서 $`\kappa \gt 0`$ 이다.
+
+### 5.5 Inequalities
+
+세 R² 와 $`R^2_{\mathrm{pool}}`$ 사이의 부등식은 아래 식 (27) 부터 식 (33) 이며, 식 (22), 식 (23), 식 (24), 식 (26) 의 두 변의 차이에서 나오고, 식 (32) 는 여기에 $`\bar{r}_e \le 1`$ 을 더해 나온다. 증명은 [B.5](#b5-inequalities) 에 있다.
+
+```math
+R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}
+\hspace{19em} (27)
+```
+
+- 식 (27): 언제나 성립한다. 두 값의 차이는 $`\lambda (1 - R^2_{\mathrm{pool}})`$ 이며, 측정 위치 평균이 모두 같은 $`\lambda = 0`$ 이거나 예측 오차가 모두 0 일 때만 두 값이 같다.
+
+```math
+R^2_{\mathrm{pool}} \ge \min_{j} R^2_j
+\hspace{19em} (28)
+```
+
+```math
+R^2_{\mathrm{pool}} \le \max_{j} R^2_j
+\hspace{19em} (29)
+```
+
+- 식 (28), 식 (29): 언제나 성립한다. $`R^2_{\mathrm{pool}}`$ 은 식 (24) 에서 $`R^2_j`$ 의 가중 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 산술 평균인 $`R^2_{\mathrm{avgn}}`$ 도 같은 범위에 있다.
+- 식 (27) 과 식 (28) 을 이으면 $`R^2_{\mathrm{all}} \ge \min_j R^2_j`$ 이다. 전체 R² 는 가장 낮은 측정 위치 R² 보다 낮아지지 않는다.
+
+```math
+R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
+\hspace{19em} (30)
+```
+
+- 식 (30): 우변의 괄호는 측정 위치 $`j`$ 의 가중치가 $`1/N`$ 보다 큰 정도이다. $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 가 크면 우변이 0 이상이어서 $`R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}}`$ 이고, 작으면 $`R^2_{\mathrm{pool}} \lt R^2_{\mathrm{avgn}}`$ 일 수 있다.
+
+```math
+R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}} \iff \bar{r}_e \le \bar{r}_y
+\hspace{19em} (31)
+```
+
+- 식 (31): 측정 위치 사이 예측 오차 상관이 측정값 상관 이하이면 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{pool}}`$ 이상이다. 예측 오차가 모든 측정 위치에서 같은 양인 $`\bar{r}_e = 1`$ 이면 $`\bar{r}_y \le 1`$ 이므로 $`R^2_{\mathrm{avgw}} \le R^2_{\mathrm{pool}}`$ 이다.
+
+```math
+R^2_{\mathrm{avgw}} \ge 1 - \frac{N \left( 1 - R^2_{\mathrm{pool}} \right)}{1 + (N-1)\, \bar{r}_y}
+\hspace{19em} (32)
+```
+
+- 식 (32): 언제나 성립하는 $`R^2_{\mathrm{avgw}}`$ 의 하한이며, $`\bar{r}_e = 1`$ 일 때 등호가 성립한다. Wafer 사이 변동이 모든 측정 위치에서 같은 양인 $`\bar{r}_y = 1`$ 이면 하한이 $`R^2_{\mathrm{pool}}`$ 이 되어, 예측 오차 상관과 상관없이 $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}}`$ 이다.
+
+```math
+R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
+\hspace{19em} (33)
+```
+
+- 식 (33): 측정 위치 평균의 차이가 차지하는 비율 $`\lambda`$ 가 클수록, 상관 비 $`\kappa`$ 가 클수록 $`R^2_{\mathrm{all}}`$ 이 $`R^2_{\mathrm{avgw}}`$ 이상이 되기 쉽다.
+- 성립 조건: 식 (27) 은 $`\sum_j \mathrm{SST}_j \gt 0`$, 식 (28) 부터 식 (30) 은 모든 $`j`$ 에서 $`\mathrm{SST}_j \gt 0`$, 식 (31) 과 식 (32) 는 $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 이다. 식 (33) 은 여기에 $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 을 더한다.
 
 ## 6. Worked Example
 
@@ -318,14 +369,21 @@ Table 3. Sums of squares and R2 values
 | Error correlation    | cross sum = 1 (each order)      | r_e = 0.5        |
 | Correlation ratio    | 1.5 / 1.9474                    | kappa = 0.7703   |
 
-세 관계식에 Table 3 의 값을 넣으면 아래처럼 양변이 같다.
+식 (22) 부터 식 (26) 의 항등식에 Table 3 의 값을 넣으면 아래처럼 양변이 같다. 식 (25) 는 $`\mathrm{SST}_1 \ne \mathrm{SST}_2`$ 이어서 쓰지 않는다.
 
 - 식 (22): 좌변 $`1 - 0.9348 = 0.0652`$, 우변 $`(1 - 0.1739)(1 - 0.9211) = 0.8261 \times 0.0789 = 0.0652`$.
 - 식 (23): 좌변 $`1 - 0.9392 = 0.0608`$, 우변 $`0.7703 \times 0.0789 = 0.0608`$.
 - 식 (24): 가중치는 $`18/50.6667 = 0.3553`$ 과 $`32.6667/50.6667 = 0.6447`$ 이고, $`0.3553 \times 0.8889 + 0.6447 \times 0.9388 = 0.9211`$.
 - 식 (26): 좌변 $`0.0652`$, 우변 $`(0.8261/0.7703) \times 0.0608 = 1.0725 \times 0.0608 = 0.0652`$.
 
-$`\bar{r}_e = 0.5`$ 가 $`\bar{r}_y = 0.9474`$ 보다 작아 $`\kappa \lt 1`$ 이므로 $`R^2_{\mathrm{avgw}} = 0.9392`$ 가 $`R^2_{\mathrm{pool}} = 0.9211`$ 보다 크다. $`\mathrm{SST}_j`$ 가 큰 측정 위치 2 의 $`R^2_2`$ 가 더 커서 $`R^2_{\mathrm{pool}} = 0.9211`$ 이 $`R^2_{\mathrm{avgn}} = 0.9138`$ 보다 크다. $`\lambda = 0.1739`$ 로 측정 위치 평균의 차이를 맞힌 몫이 더해져 $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{pool}}`$ 보다 크다.
+부등식 식 (27) 부터 식 (33) 에 Table 3 의 값을 넣으면 아래처럼 모두 성립한다.
+
+- 식 (27): $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{pool}} = 0.9211`$ 보다 크고, 차이 $`0.0137`$ 은 $`\lambda (1 - R^2_{\mathrm{pool}}) = 0.1739 \times 0.0789 = 0.0137`$ 이다.
+- 식 (28), 식 (29): $`R^2_1 = 0.8889 \le R^2_{\mathrm{pool}} = 0.9211 \le R^2_2 = 0.9388`$.
+- 식 (30): 가중치에서 $`1/N = 0.5`$ 를 뺀 값은 $`-0.1447`$ 과 $`0.1447`$ 이고, $`-0.1447 \times 0.8889 + 0.1447 \times 0.9388 = 0.0072 \ge 0`$ 이므로 $`R^2_{\mathrm{pool}} = 0.9211`$ 이 $`R^2_{\mathrm{avgn}} = 0.9138`$ 보다 $`0.0072`$ 크다.
+- 식 (31): $`\bar{r}_e = 0.5 \le \bar{r}_y = 0.9474`$ 이므로 $`R^2_{\mathrm{avgw}} = 0.9392`$ 가 $`R^2_{\mathrm{pool}} = 0.9211`$ 이상이다.
+- 식 (32): 하한은 $`1 - 2 \times 0.0789 / 1.9474 = 0.9189`$ 이고, $`R^2_{\mathrm{avgw}} = 0.9392`$ 는 그 이상이다.
+- 식 (33): $`\kappa = 0.7703`$ 이 $`1 - \lambda = 0.8261`$ 보다 작으므로 $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{avgw}} = 0.9392`$ 보다 작다.
 
 ## 7. Application
 
@@ -339,7 +397,7 @@ $`\bar{r}_e = 0.5`$ 가 $`\bar{r}_y = 0.9474`$ 보다 작아 $`\kappa \lt 1`$ �
 
 ### 7.2 Breaking Conditions
 
-- Wafer 마다 측정 위치의 수나 위치가 다르면 식 (23) 이 성립하지 않는다. 식 (32) 에서 전체 평균을 측정 위치 평균의 산술 평균으로 바꾸는 단계에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
+- Wafer 마다 측정 위치의 수나 위치가 다르면 식 (23) 이 성립하지 않는다. 식 (39) 에서 전체 평균을 측정 위치 평균의 산술 평균으로 바꾸는 단계에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
 - Wafer 평균의 예측값을 측정 위치 예측값의 평균이 아니라 다른 model 로 구하면 식 (23) 과 식 (26) 이 성립하지 않는다.
 - R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (22) 부터 식 (26) 이 모두 성립하지 않는다.
 - 어떤 측정 위치에서 측정값이 wafer 사이에서 같아 $`\mathrm{SST}_j = 0`$ 이면 $`R^2_j`$ 와 $`R^2_{\mathrm{avgn}}`$ 이 정의되지 않는다.
@@ -405,40 +463,40 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{j=1}^{N} \sum_{i=1}^{M} \left[ \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\cdot j} - \bar{y} \right) \right]^2
-\hspace{19em} (27)
+\hspace{19em} (34)
 ```
 
-- 식 (27): 식 (7) 의 합의 순서를 바꾸고, $`y_{ij} - \bar{y}`$ 에 $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
+- 식 (34): 식 (7) 의 합의 순서를 바꾸고, $`y_{ij} - \bar{y}`$ 에 $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{j=1}^{N} \mathrm{SST}_j + 2 \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right) \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right) + M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2
-\hspace{19em} (28)
+\hspace{19em} (35)
 ```
 
-- 식 (28): 제곱을 전개하고, 첫 항에 식 (13) 을 썼다. $`\bar{y}_{\cdot j} - \bar{y}`$ 는 $`i`$ 에 따라 바뀌지 않으므로 $`i`$ 에 대한 합 밖으로 나온다.
+- 식 (35): 제곱을 전개하고, 첫 항에 식 (13) 을 썼다. $`\bar{y}_{\cdot j} - \bar{y}`$ 는 $`i`$ 에 따라 바뀌지 않으므로 $`i`$ 에 대한 합 밖으로 나온다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{j=1}^{N} \mathrm{SST}_j + \lambda\, \mathrm{SST}_{\mathrm{all}}
-\hspace{19em} (29)
+\hspace{19em} (36)
 ```
 
-- 식 (29): 식 (6) 에 따라 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = M \bar{y}_{\cdot j} - M \bar{y}_{\cdot j} = 0`$ 이므로 가운데 항이 0 이다. 마지막 항은 식 (18) 로 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 이다.
+- 식 (36): 식 (6) 에 따라 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = M \bar{y}_{\cdot j} - M \bar{y}_{\cdot j} = 0`$ 이므로 가운데 항이 0 이다. 마지막 항은 식 (18) 로 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 이다.
 
 ```math
 \mathrm{SSE}_{\mathrm{all}} = \sum_{j=1}^{N} \mathrm{SSE}_j
-\hspace{19em} (30)
+\hspace{19em} (37)
 ```
 
-- 식 (30): 식 (8) 의 합의 순서를 바꾸고 식 (14) 를 썼다.
+- 식 (37): 식 (8) 의 합의 순서를 바꾸고 식 (14) 를 썼다.
 
 ```math
 1 - R^2_{\mathrm{all}} = \frac{\sum_{j} \mathrm{SST}_j}{\mathrm{SST}_{\mathrm{all}}} \cdot \frac{\sum_{j} \mathrm{SSE}_j}{\sum_{j} \mathrm{SST}_j}
-\hspace{19em} (31)
+\hspace{19em} (38)
 ```
 
-- 식 (31): 식 (9) 에 식 (30) 을 넣고, 분자와 분모에 $`\sum_j \mathrm{SST}_j \gt 0`$ 을 곱했다.
+- 식 (38): 식 (9) 에 식 (37) 을 넣고, 분자와 분모에 $`\sum_j \mathrm{SST}_j \gt 0`$ 을 곱했다.
 
-식 (29) 에서 $`\sum_j \mathrm{SST}_j / \mathrm{SST}_{\mathrm{all}} = 1 - \lambda`$ 이고, 식 (17) 에서 $`\sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j = 1 - R^2_{\mathrm{pool}}`$ 이다. 따라서 식 (22) 가 성립한다.
+식 (36) 에서 $`\sum_j \mathrm{SST}_j / \mathrm{SST}_{\mathrm{all}} = 1 - \lambda`$ 이고, 식 (17) 에서 $`\sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j = 1 - R^2_{\mathrm{pool}}`$ 이다. 따라서 식 (22) 가 성립한다.
 
 ```math
 1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
@@ -521,68 +579,68 @@ R^2_{\mathrm{avgw}} = 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mat
 
 ```math
 \bar{y}_{i\cdot} - \bar{y} = \frac{1}{N} \sum_{j=1}^{N} \left( y_{ij} - \bar{y}_{\cdot j} \right)
-\hspace{19em} (32)
-```
-
-- 식 (32): 식 (3) 으로 $`\bar{y}_{i\cdot} = \frac{1}{N} \sum_j y_{ij}`$ 이고, 식 (2) 와 식 (6) 으로 $`\bar{y} = \frac{1}{N} \sum_j \bar{y}_{\cdot j}`$ 이다.
-
-```math
-\mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \sum_{i=1}^{M} \left[ \sum_{j=1}^{N} \left( y_{ij} - \bar{y}_{\cdot j} \right) \right]^2
-\hspace{19em} (33)
-```
-
-- 식 (33): 식 (10) 에 식 (32) 를 넣었다.
-
-```math
-\mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ \sum_{j=1}^{N} \mathrm{SST}_j + \sum_{j \ne k} \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right) \left( y_{ik} - \bar{y}_{\cdot k} \right) \right]
-\hspace{19em} (34)
-```
-
-- 식 (34): 합의 제곱 $`(\sum_j a_j)^2 = \sum_j a_j^2 + \sum_{j \ne k} a_j a_k`$ 를 쓰고, $`i`$ 에 대한 합을 안으로 넣었다. 첫 항은 식 (13) 이다.
-
-```math
-\mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ 1 + (N-1)\, \bar{r}_y \right] \sum_{j=1}^{N} \mathrm{SST}_j
-\hspace{19em} (35)
-```
-
-- 식 (35): 식 (19) 로 교차합은 $`(N-1)\, \bar{r}_y \sum_j \mathrm{SST}_j`$ 이다.
-
-```math
-\bar{e}_{i\cdot} = \frac{1}{N} \sum_{j=1}^{N} e_{ij}
-\hspace{19em} (36)
-```
-
-- 식 (36): 식 (5) 에 식 (3) 과 식 (4) 를 넣고 식 (1) 을 썼다. 식 (4) 의 성립 조건이 여기에 쓰인다.
-
-```math
-\mathrm{SSE}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ \sum_{j=1}^{N} \mathrm{SSE}_j + \sum_{j \ne k} \sum_{i=1}^{M} e_{ij}\, e_{ik} \right]
-\hspace{19em} (37)
-```
-
-- 식 (37): 식 (11) 에 식 (36) 을 넣고, 식 (34) 와 같이 합의 제곱을 전개했다. 첫 항은 식 (14) 이다.
-
-```math
-\mathrm{SSE}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ 1 + (N-1)\, \bar{r}_e \right] \sum_{j=1}^{N} \mathrm{SSE}_j
-\hspace{19em} (38)
-```
-
-- 식 (38): 식 (20) 으로 교차합은 $`(N-1)\, \bar{r}_e \sum_j \mathrm{SSE}_j`$ 이다.
-
-```math
-1 - R^2_{\mathrm{avgw}} = \frac{1 + (N-1)\, \bar{r}_e}{1 + (N-1)\, \bar{r}_y} \cdot \frac{\sum_j \mathrm{SSE}_j}{\sum_j \mathrm{SST}_j}
 \hspace{19em} (39)
 ```
 
-- 식 (39): 식 (12) 에 식 (35) 와 식 (38) 을 넣고 $`1/N^2`$ 을 약분했다.
+- 식 (39): 식 (3) 으로 $`\bar{y}_{i\cdot} = \frac{1}{N} \sum_j y_{ij}`$ 이고, 식 (2) 와 식 (6) 으로 $`\bar{y} = \frac{1}{N} \sum_j \bar{y}_{\cdot j}`$ 이다.
 
-식 (39) 의 첫 분수는 식 (21) 의 $`\kappa`$ 이고, 둘째 분수는 식 (17) 의 $`1 - R^2_{\mathrm{pool}}`$ 이다. 따라서 식 (23) 이 성립한다.
+```math
+\mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \sum_{i=1}^{M} \left[ \sum_{j=1}^{N} \left( y_{ij} - \bar{y}_{\cdot j} \right) \right]^2
+\hspace{19em} (40)
+```
+
+- 식 (40): 식 (10) 에 식 (39) 를 넣었다.
+
+```math
+\mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ \sum_{j=1}^{N} \mathrm{SST}_j + \sum_{j \ne k} \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right) \left( y_{ik} - \bar{y}_{\cdot k} \right) \right]
+\hspace{19em} (41)
+```
+
+- 식 (41): 합의 제곱 $`(\sum_j a_j)^2 = \sum_j a_j^2 + \sum_{j \ne k} a_j a_k`$ 를 쓰고, $`i`$ 에 대한 합을 안으로 넣었다. 첫 항은 식 (13) 이다.
+
+```math
+\mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ 1 + (N-1)\, \bar{r}_y \right] \sum_{j=1}^{N} \mathrm{SST}_j
+\hspace{19em} (42)
+```
+
+- 식 (42): 식 (19) 로 교차합은 $`(N-1)\, \bar{r}_y \sum_j \mathrm{SST}_j`$ 이다.
+
+```math
+\bar{e}_{i\cdot} = \frac{1}{N} \sum_{j=1}^{N} e_{ij}
+\hspace{19em} (43)
+```
+
+- 식 (43): 식 (5) 에 식 (3) 과 식 (4) 를 넣고 식 (1) 을 썼다. 식 (4) 의 성립 조건이 여기에 쓰인다.
+
+```math
+\mathrm{SSE}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ \sum_{j=1}^{N} \mathrm{SSE}_j + \sum_{j \ne k} \sum_{i=1}^{M} e_{ij}\, e_{ik} \right]
+\hspace{19em} (44)
+```
+
+- 식 (44): 식 (11) 에 식 (43) 을 넣고, 식 (41) 와 같이 합의 제곱을 전개했다. 첫 항은 식 (14) 이다.
+
+```math
+\mathrm{SSE}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ 1 + (N-1)\, \bar{r}_e \right] \sum_{j=1}^{N} \mathrm{SSE}_j
+\hspace{19em} (45)
+```
+
+- 식 (45): 식 (20) 으로 교차합은 $`(N-1)\, \bar{r}_e \sum_j \mathrm{SSE}_j`$ 이다.
+
+```math
+1 - R^2_{\mathrm{avgw}} = \frac{1 + (N-1)\, \bar{r}_e}{1 + (N-1)\, \bar{r}_y} \cdot \frac{\sum_j \mathrm{SSE}_j}{\sum_j \mathrm{SST}_j}
+\hspace{19em} (46)
+```
+
+- 식 (46): 식 (12) 에 식 (42) 와 식 (45) 을 넣고 $`1/N^2`$ 을 약분했다.
+
+식 (46) 의 첫 분수는 식 (21) 의 $`\kappa`$ 이고, 둘째 분수는 식 (17) 의 $`1 - R^2_{\mathrm{pool}}`$ 이다. 따라서 식 (23) 이 성립한다.
 
 ```math
 1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{pool}} \right)
 \hspace{19em} (23)
 ```
 
-식 (35) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 와 식 (38) 의 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 제곱합이므로 0 이상이다. $`\sum_j \mathrm{SST}_j \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 에서 $`1 + (N-1)\bar{r}_y \ge 0`$ 과 $`1 + (N-1)\bar{r}_e \ge 0`$ 이고, 각각 $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 과 $`\mathrm{SSE}_{\mathrm{avgw}} = 0`$ 일 때만 0 이다.
+식 (42) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 와 식 (45) 의 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 제곱합이므로 0 이상이다. $`\sum_j \mathrm{SST}_j \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 에서 $`1 + (N-1)\bar{r}_y \ge 0`$ 과 $`1 + (N-1)\bar{r}_e \ge 0`$ 이고, 각각 $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 과 $`\mathrm{SSE}_{\mathrm{avgw}} = 0`$ 일 때만 0 이다.
 
 ### B.3 Location Average Form
 
@@ -600,19 +658,19 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 ```math
 1 - R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k} \mathrm{SST}_k} \cdot \frac{\mathrm{SSE}_j}{\mathrm{SST}_j}
-\hspace{19em} (40)
+\hspace{19em} (47)
 ```
 
-- 식 (40): 식 (17) 의 분자의 항마다 $`\mathrm{SST}_j \gt 0`$ 을 곱하고 나누었다.
+- 식 (47): 식 (17) 의 분자의 항마다 $`\mathrm{SST}_j \gt 0`$ 을 곱하고 나누었다.
 
 ```math
 1 - R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k} \mathrm{SST}_k} \left( 1 - R^2_j \right)
-\hspace{19em} (41)
+\hspace{19em} (48)
 ```
 
-- 식 (41): 식 (15) 로 $`\mathrm{SSE}_j / \mathrm{SST}_j = 1 - R^2_j`$ 이다.
+- 식 (48): 식 (15) 로 $`\mathrm{SSE}_j / \mathrm{SST}_j = 1 - R^2_j`$ 이다.
 
-식 (41) 의 가중치 $`\mathrm{SST}_j / \sum_k \mathrm{SST}_k`$ 는 $`j`$ 에 대해 더하면 1 이므로, 1 을 빼고 부호를 바꾸면 식 (24) 가 성립한다.
+식 (48) 의 가중치 $`\mathrm{SST}_j / \sum_k \mathrm{SST}_k`$ 는 $`j`$ 에 대해 더하면 1 이므로, 1 을 빼고 부호를 바꾸면 식 (24) 가 성립한다.
 
 ```math
 R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
@@ -647,14 +705,225 @@ R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
 
 ```math
 1 - R^2_{\mathrm{pool}} = \frac{1 - R^2_{\mathrm{avgw}}}{\kappa}
-\hspace{19em} (42)
+\hspace{19em} (49)
 ```
 
-- 식 (42): 식 (23) 의 양변을 $`\kappa`$ 로 나누었다. $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 이면 B.2 의 끝 문단에 따라 $`\kappa \gt 0`$ 이다.
+- 식 (49): 식 (23) 의 양변을 $`\kappa`$ 로 나누었다. $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 이면 B.2 의 끝 문단에 따라 $`\kappa \gt 0`$ 이다.
 
-식 (42) 를 식 (22) 에 넣으면 식 (26) 이 성립한다.
+식 (49) 를 식 (22) 에 넣으면 식 (26) 이 성립한다.
 
 ```math
 1 - R^2_{\mathrm{all}} = \frac{1 - \lambda}{\kappa} \left( 1 - R^2_{\mathrm{avgw}} \right)
 \hspace{19em} (26)
+```
+
+### B.5 Inequalities
+
+식 (27) 부터 식 (33) 은 항등식의 두 변의 차이를 구하고 그 부호를 보아 증명한다. 쓰는 식은 아래 식 (14), 식 (16) 부터 식 (24), 식 (26) 이다.
+
+```math
+\mathrm{SSE}_j = \sum_{i=1}^{M} e_{ij}^2
+\hspace{19em} (14)
+```
+
+```math
+R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
+\hspace{19em} (16)
+```
+
+```math
+R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
+\hspace{19em} (17)
+```
+
+```math
+\lambda = \frac{M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2}{\mathrm{SST}_{\mathrm{all}}}
+\hspace{19em} (18)
+```
+
+```math
+\bar{r}_y = \frac{\sum_{j \ne k} \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right) \left( y_{ik} - \bar{y}_{\cdot k} \right)}{(N-1) \sum_{j=1}^{N} \mathrm{SST}_j}
+\hspace{19em} (19)
+```
+
+```math
+\bar{r}_e = \frac{\sum_{j \ne k} \sum_{i=1}^{M} e_{ij}\, e_{ik}}{(N-1) \sum_{j=1}^{N} \mathrm{SSE}_j}
+\hspace{19em} (20)
+```
+
+```math
+\kappa = \frac{1 + (N-1)\, \bar{r}_e}{1 + (N-1)\, \bar{r}_y}
+\hspace{19em} (21)
+```
+
+```math
+1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
+\hspace{19em} (22)
+```
+
+```math
+1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{pool}} \right)
+\hspace{19em} (23)
+```
+
+```math
+R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
+\hspace{19em} (24)
+```
+
+```math
+1 - R^2_{\mathrm{all}} = \frac{1 - \lambda}{\kappa} \left( 1 - R^2_{\mathrm{avgw}} \right)
+\hspace{19em} (26)
+```
+
+식 (17) 의 $`\mathrm{SSE}_j`$ 와 $`\mathrm{SST}_j`$ 는 제곱합이므로 $`1 - R^2_{\mathrm{pool}} \ge 0`$ 이고, 식 (18) 의 분자와 분모도 제곱합이므로 $`\lambda \ge 0`$ 이다. 아래 증명은 이 두 부호를 쓴다.
+
+#### Total and Pooled R2
+
+```math
+R^2_{\mathrm{all}} - R^2_{\mathrm{pool}} = \left( 1 - R^2_{\mathrm{pool}} \right) - \left( 1 - R^2_{\mathrm{all}} \right)
+\hspace{19em} (50)
+```
+
+- 식 (50): 좌변에 1 을 더하고 뺐다.
+
+```math
+R^2_{\mathrm{all}} - R^2_{\mathrm{pool}} = \lambda \left( 1 - R^2_{\mathrm{pool}} \right)
+\hspace{19em} (51)
+```
+
+- 식 (51): 식 (50) 의 둘째 괄호에 식 (22) 를 넣었다.
+
+식 (51) 의 우변은 $`\lambda \ge 0`$ 과 $`1 - R^2_{\mathrm{pool}} \ge 0`$ 의 곱이므로 0 이상이다. 따라서 식 (27) 이 성립한다.
+
+```math
+R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}
+\hspace{19em} (27)
+```
+
+#### Range of the Pooled R2
+
+```math
+R^2_{\mathrm{pool}} - \min_{k} R^2_k = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( R^2_j - \min_{k} R^2_k \right)
+\hspace{19em} (52)
+```
+
+- 식 (52): 식 (24) 의 가중치를 $`j`$ 에 대해 더하면 1 이므로, $`\min_k R^2_k`$ 에 가중치의 합을 곱해 뺐다.
+
+```math
+\max_{k} R^2_k - R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( \max_{k} R^2_k - R^2_j \right)
+\hspace{19em} (53)
+```
+
+- 식 (53): 식 (52) 와 같은 방법으로 $`\max_k R^2_k`$ 에서 식 (24) 를 뺐다.
+
+식 (52) 와 식 (53) 에서 가중치는 $`\mathrm{SST}_j \gt 0`$ 이므로 양수이고, 괄호는 최솟값과 최댓값의 정의로 0 이상이다. 두 우변이 0 이상이므로 식 (28) 과 식 (29) 가 성립한다.
+
+```math
+R^2_{\mathrm{pool}} \ge \min_{j} R^2_j
+\hspace{19em} (28)
+```
+
+```math
+R^2_{\mathrm{pool}} \le \max_{j} R^2_j
+\hspace{19em} (29)
+```
+
+#### Pooled and Location Average R2
+
+```math
+R^2_{\mathrm{pool}} - R^2_{\mathrm{avgn}} = \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j
+\hspace{19em} (54)
+```
+
+- 식 (54): 식 (24) 에서 식 (16) 을 빼고 같은 $`R^2_j`$ 의 계수를 묶었다.
+
+$`R^2_{\mathrm{pool}} - R^2_{\mathrm{avgn}} \ge 0`$ 은 식 (54) 의 우변이 0 이상인 것과 같으므로 식 (30) 이 성립한다.
+
+```math
+R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
+\hspace{19em} (30)
+```
+
+#### Wafer Average and Pooled R2
+
+```math
+R^2_{\mathrm{avgw}} - R^2_{\mathrm{pool}} = (1 - \kappa) \left( 1 - R^2_{\mathrm{pool}} \right)
+\hspace{19em} (55)
+```
+
+- 식 (55): 식 (50) 과 같이 1 을 더하고 뺀 뒤 $`1 - R^2_{\mathrm{avgw}}`$ 에 식 (23) 을 넣었다.
+
+$`\sum_j \mathrm{SSE}_j \gt 0`$ 이면 $`1 - R^2_{\mathrm{pool}} \gt 0`$ 이므로, 식 (55) 의 좌변이 0 이상인 것은 $`\kappa \le 1`$ 과 같다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 B.2 의 끝 문단에 따라 식 (21) 의 분모 $`1 + (N-1)\bar{r}_y`$ 가 양수이므로, $`\kappa \le 1`$ 은 $`1 + (N-1)\bar{r}_e \le 1 + (N-1)\bar{r}_y`$ 와 같고, $`N - 1 \gt 0`$ 으로 나누면 $`\bar{r}_e \le \bar{r}_y`$ 이다. 따라서 식 (31) 이 성립한다.
+
+```math
+R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}} \iff \bar{r}_e \le \bar{r}_y
+\hspace{19em} (31)
+```
+
+#### Lower Bound of the Wafer Average R2
+
+```math
+2\, e_{ij}\, e_{ik} \le e_{ij}^2 + e_{ik}^2
+\hspace{19em} (56)
+```
+
+- 식 (56): $`(e_{ij} - e_{ik})^2 \ge 0`$ 을 전개했다.
+
+```math
+2 \sum_{j \ne k} \sum_{i=1}^{M} e_{ij}\, e_{ik} \le \sum_{j \ne k} \left( \mathrm{SSE}_j + \mathrm{SSE}_k \right)
+\hspace{19em} (57)
+```
+
+- 식 (57): 식 (56) 을 wafer $`i`$ 와 모든 순서쌍 $`(j, k)`$ 에서 더하고, 식 (14) 를 썼다.
+
+```math
+2 \sum_{j \ne k} \sum_{i=1}^{M} e_{ij}\, e_{ik} \le 2 (N-1) \sum_{j=1}^{N} \mathrm{SSE}_j
+\hspace{19em} (58)
+```
+
+- 식 (58): $`j \ne k`$ 인 순서쌍에서 $`\mathrm{SSE}_j`$ 는 앞 번호로 $`N-1`$ 번, 뒤 번호로 $`N-1`$ 번 나온다.
+
+```math
+\bar{r}_e \le 1
+\hspace{19em} (59)
+```
+
+- 식 (59): 식 (58) 의 양변을 $`2(N-1)\sum_j \mathrm{SSE}_j \gt 0`$ 으로 나누고 식 (20) 을 썼다. $`e_{ij}`$ 대신 $`y_{ij} - \bar{y}_{\cdot j}`$ 로 같은 단계를 밟으면 식 (19) 에서 $`\bar{r}_y \le 1`$ 이다.
+
+```math
+\kappa \le \frac{N}{1 + (N-1)\, \bar{r}_y}
+\hspace{19em} (60)
+```
+
+- 식 (60): 식 (21) 의 분자에 식 (59) 를 넣었다. 분모 $`1 + (N-1)\bar{r}_y`$ 는 양수이다.
+
+```math
+1 - R^2_{\mathrm{avgw}} \le \frac{N \left( 1 - R^2_{\mathrm{pool}} \right)}{1 + (N-1)\, \bar{r}_y}
+\hspace{19em} (61)
+```
+
+- 식 (61): 식 (23) 에 식 (60) 을 넣었다. $`1 - R^2_{\mathrm{pool}} \ge 0`$ 이므로 부등호의 방향이 바뀌지 않는다.
+
+식 (61) 의 양변을 1 에서 빼면 식 (32) 가 성립하며, 등호는 식 (59) 의 등호인 $`\bar{r}_e = 1`$ 일 때 성립한다.
+
+```math
+R^2_{\mathrm{avgw}} \ge 1 - \frac{N \left( 1 - R^2_{\mathrm{pool}} \right)}{1 + (N-1)\, \bar{r}_y}
+\hspace{19em} (32)
+```
+
+#### Total and Wafer Average R2
+
+```math
+R^2_{\mathrm{all}} - R^2_{\mathrm{avgw}} = \left( 1 - R^2_{\mathrm{avgw}} \right) \left( 1 - \frac{1 - \lambda}{\kappa} \right)
+\hspace{19em} (62)
+```
+
+- 식 (62): 식 (50) 과 같이 1 을 더하고 뺀 뒤 $`1 - R^2_{\mathrm{all}}`$ 에 식 (26) 을 넣었다.
+
+$`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 이면 $`1 - R^2_{\mathrm{avgw}} \gt 0`$ 이고 $`\kappa \gt 0`$ 이다. 그래서 식 (62) 의 좌변이 0 이상인 것은 $`(1 - \lambda)/\kappa \le 1`$, 곧 $`\kappa \ge 1 - \lambda`$ 와 같고, 식 (33) 이 성립한다.
+
+```math
+R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
+\hspace{19em} (33)
 ```
