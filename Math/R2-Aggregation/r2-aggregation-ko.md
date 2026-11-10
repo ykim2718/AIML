@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 16 | Created: 2026-11-09 | Updated: 2026-11-10 17:08 CST
+Version 17 | Created: 2026-11-09 | Updated: 2026-11-10 17:09 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -56,6 +56,7 @@ Table 1. Symbols
 | $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                           | scalar  | -                                 |
 | $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                        | scalar  | -                                 |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)   | scalar  | $`\mathrm{SST}_j \gt 0`$          |
+| $`R^2_{\mathrm{pool}}`$            | SST 가중 측정 위치 R² 평균. $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값                                  | scalar  | -                                 |
 | $`\lambda`$                        | 측정 위치 패턴 비율 (location pattern fraction). 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 | scalar  | $`0 \le \lambda \lt 1`$           |
 | $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                                                                  | scalar  | $`\bar{r}_y \gt -1/(N-1)`$        |
 | $`\kappa`$                         | 오차 비 (error ratio). wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값                      | scalar  | $`\kappa \gt 0`$                  |
@@ -167,10 +168,7 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 - 네 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
 - 예측 오차가 모두 0 이면 네 R² 는 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
 
-> **Definition: SST-weighted location R2 average**<br>
-> SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 은 측정 위치 $`N`$ 곳의 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 모두 더한 값을, 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 를 모두 더한 값으로 나누어 1 에서 뺀 값이다.
-
-$`R^2_{\mathrm{pool}}`$ 의 정의 식은 아래 식 (16) 이며, 식 (22) 에 따라 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값과 같다. Table 1 의 $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 를 식으로 적으면 아래 식 (17) 부터 식 (19) 이다.
+Table 1 의 $`R^2_{\mathrm{pool}}`$, $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 를 식으로 적으면 아래 식 (16) 부터 식 (19) 이다.
 
 ```math
 R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
