@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 22 | Created: 2026-11-09 | Updated: 2026-11-10 17:21 CST
+Version 23 | Created: 2026-11-09 | Updated: 2026-11-10 17:21 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -8,7 +8,7 @@ Version 22 | Created: 2026-11-09 | Updated: 2026-11-10 17:21 CST
 - [5. Interpretation](#5-interpretation)
   - [5.1 Total Form](#51-total-form)
   - [5.2 Wafer Average Form](#52-wafer-average-form)
-  - [5.3 Location R2 Average Form](#53-location-r2-average-form)
+  - [5.3 R2 Average over N Locations Form](#53-r2-average-over-n-locations-form)
   - [5.4 Relation without the SST-weighted R2 Average over N Locations](#54-relation-without-the-sst-weighted-r2-average-over-n-locations)
   - [5.5 Inequalities](#55-inequalities)
 - [6. Worked Example](#6-worked-example)
@@ -19,7 +19,7 @@ Version 22 | Created: 2026-11-09 | Updated: 2026-11-10 17:21 CST
 - [Appendix B. Derivation](#appendix-b-derivation)
   - [B.1 Total Form](#b1-total-form)
   - [B.2 Wafer Average Form](#b2-wafer-average-form)
-  - [B.3 Location R2 Average Form](#b3-location-r2-average-form)
+  - [B.3 R2 Average over N Locations Form](#b3-r2-average-over-n-locations-form)
   - [B.4 Relation without the SST-weighted R2 Average over N Locations](#b4-relation-without-the-sst-weighted-r2-average-over-n-locations)
   - [B.5 Inequalities](#b5-inequalities)
 
@@ -83,7 +83,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > **Definition: R2 of wafer averages**<br>
 > Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 wafer 평균 하나를 직접 예측한 값이다.
 
-> **Definition: Location R2 average**<br>
+> **Definition: R2 average over N locations**<br>
 > 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`j`$ 마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 를, 측정 위치 $`N`$ 곳에서 산술 평균한 값이다.
 
 세 R² 의 정의 식은 아래 식 (1) 부터 식 (15) 이다. 식 (1) 부터 식 (5) 는 Table 1 의 $`e_{ij}`$, $`\bar{y}`$, $`\bar{y}_{i\cdot}`$, $`e_{iw}`$, $`\bar{y}_{\cdot j}`$ 를 식으로 적은 것이다. $`\hat{y}_{iw}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 식이 없다.
@@ -228,7 +228,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \math
 - Wafer 사이 변동이 모든 측정 위치에서 같은 양인 $`\bar{r}_y = 1`$ 이면 $`\kappa = N \mathrm{SSE}_{\mathrm{avgw}} / \sum_j \mathrm{SSE}_j`$ 이다. 이때 wafer 평균 예측의 SSE 가 측정 위치 SSE 합의 $`1/N`$ 보다 작으면 $`R^2_{\mathrm{avgw}} \gt R^2_{\mathrm{wavgn}}`$ 이다.
 - 성립 조건은 $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 이다. $`\sum_j \mathrm{SSE}_j = 0`$ 이면 $`\kappa`$ 가 정의되지 않는다.
 
-### 5.3 Location R2 Average Form
+### 5.3 R2 Average over N Locations Form
 
 식 (22) 에서 $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이고, $`R^2_{\mathrm{avgn}}`$ 은 같은 $`R^2_j`$ 를 가중치 $`1/N`$ 로 평균한 값이다. 그래서 $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 이 성립한다.
 
@@ -319,7 +319,7 @@ Table 3. Sums of squares and R2 values
 | Wafer averages                           | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392  |
 | Location 1                               | SST = 18, SSE = 2               | R2_1 = 0.8889     |
 | Location 2                               | SST = 32.6667, SSE = 2          | R2_2 = 0.9388     |
-| Location R2 average                      | -                               | R2_avgn = 0.9138  |
+| R2 average over N locations              | -                               | R2_avgn = 0.9138  |
 | SST-weighted R2 average over N locations | SST = 50.6667, SSE = 4          | R2_wavgn = 0.9211 |
 | Location pattern                         | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739   |
 | Measured correlation                     | cross sum = 24 (each order)     | r_y = 0.9474      |
@@ -558,7 +558,7 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 
 식 (39) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 는 제곱합이므로 0 이상이다. $`\sum_j \mathrm{SST}_j \gt 0`$ 에서 $`1 + (N-1)\bar{r}_y \ge 0`$ 이고, $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 일 때만 0 이다. 이 증명은 $`\hat{y}_{iw}`$ 를 어떻게 구했는지를 쓰지 않는다.
 
-### B.3 Location R2 Average Form
+### B.3 R2 Average over N Locations Form
 
 식 (22) 는 식 (16) 의 비를 측정 위치마다의 비로 나누어 증명한다. 쓰는 정의 식은 아래 식 (14) 와 식 (16) 이다.
 
