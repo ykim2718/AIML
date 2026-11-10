@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 20 | Created: 2026-11-09 | Updated: 2026-11-10 17:15 CST
+Version 21 | Created: 2026-11-09 | Updated: 2026-11-10 17:17 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -31,39 +31,39 @@ Version 20 | Created: 2026-11-09 | Updated: 2026-11-10 17:15 CST
 
 ## 2. Summary
 
-세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{pool}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{pool}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{pool}})`$ 이다.
-$`R^2_{\mathrm{pool}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 로 가중 평균한 값이고, $`\mathrm{SST}_j`$ 가 모두 같으면 $`R^2_{\mathrm{avgn}}`$ 과 같다.
-그래서 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}`$ 은 언제나 성립하고, $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}}`$ 은 오차 비 $`\kappa`$ 가 1 이하일 때 성립한다.
+세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{wavgn}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{wavgn}})`$ 이다.
+$`R^2_{\mathrm{wavgn}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 로 가중 평균한 값이고, $`\mathrm{SST}_j`$ 가 모두 같으면 $`R^2_{\mathrm{avgn}}`$ 과 같다.
+그래서 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{wavgn}}`$ 은 언제나 성립하고, $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}}`$ 은 오차 비 $`\kappa`$ 가 1 이하일 때 성립한다.
 
 ## 3. Notation
 
 Table 1. Symbols
 
-| Symbol                             | Meaning                                                                                                              | Shape   | Assumption                        |
-| :--------------------------------: | :------------------------------------------------------------------------------------------------------------------: | :-----: | :-------------------------------: |
-| $`M`$                              | wafer 수                                                                                                             | integer | $`M \ge 2`$                       |
-| $`N`$                              | wafer 한 장에서 측정하는 위치의 수                                                                                   | integer | $`N \ge 2`$, 모든 wafer 에서 같음 |
-| $`T`$                              | 전체 (all) 측정값의 개수 $`MN`$                                                                                      | integer | -                                 |
-| $`i`$                              | wafer 번호                                                                                                           | integer | $`1 \le i \le M`$                 |
-| $`j`$, $`k`$                       | 측정 위치의 번호                                                                                                     | integer | $`1 \le j, k \le N`$              |
-| $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                                           | scalar  | -                                 |
-| $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                                                        | scalar  | -                                 |
-| $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                  | scalar  | -                                 |
-| $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                                               | scalar  | -                                 |
-| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 (average of wafer, avgw)                                                                   | scalar  | -                                 |
-| $`\hat{y}_{iw}`$                   | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                           | scalar  | -                                 |
-| $`e_{iw}`$                         | wafer 평균에서 그 예측값을 뺀 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                               | scalar  | -                                 |
-| $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                    | scalar  | -                                 |
-| $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                 | scalar  | -                                 |
-| $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)      | scalar  | $`\mathrm{SST}_j \gt 0`$          |
-| $`R^2_{\mathrm{pool}}`$            | 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 (SST-weighted location R2 average) | scalar  | -                                 |
-| $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 (location pattern fraction)               | scalar  | $`0 \le \lambda \lt 1`$           |
-| $`\bar{r}_y`$                      | 서로 다른 두 측정 위치에서 측정값이 이루는 상관                                                                      | scalar  | $`\bar{r}_y \gt -1/(N-1)`$        |
-| $`\kappa`$                         | 오차 비 (error ratio). wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값               | scalar  | $`\kappa \gt 0`$                  |
+| Symbol                             | Meaning                                                                                                                     | Shape   | Assumption                        |
+| :--------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-----: | :-------------------------------: |
+| $`M`$                              | wafer 수                                                                                                                    | integer | $`M \ge 2`$                       |
+| $`N`$                              | wafer 한 장에서 측정하는 위치의 수                                                                                          | integer | $`N \ge 2`$, 모든 wafer 에서 같음 |
+| $`T`$                              | 전체 (all) 측정값의 개수 $`MN`$                                                                                             | integer | -                                 |
+| $`i`$                              | wafer 번호                                                                                                                  | integer | $`1 \le i \le M`$                 |
+| $`j`$, $`k`$                       | 측정 위치의 번호                                                                                                            | integer | $`1 \le j, k \le N`$              |
+| $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                                                  | scalar  | -                                 |
+| $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                                                               | scalar  | -                                 |
+| $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                         | scalar  | -                                 |
+| $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                                                      | scalar  | -                                 |
+| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 (average of wafer, avgw)                                                                          | scalar  | -                                 |
+| $`\hat{y}_{iw}`$                   | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                                  | scalar  | -                                 |
+| $`e_{iw}`$                         | wafer 평균에서 그 예측값을 뺀 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                                      | scalar  | -                                 |
+| $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                           | scalar  | -                                 |
+| $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                        | scalar  | -                                 |
+| $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)             | scalar  | $`\mathrm{SST}_j \gt 0`$          |
+| $`R^2_{\mathrm{wavgn}}`$           | 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 (SST-weighted location R2 average, wavgn) | scalar  | -                                 |
+| $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 (location pattern fraction)                      | scalar  | $`0 \le \lambda \lt 1`$           |
+| $`\bar{r}_y`$                      | 서로 다른 두 측정 위치에서 측정값이 이루는 상관                                                                             | scalar  | $`\bar{r}_y \gt -1/(N-1)`$        |
+| $`\kappa`$                         | 오차 비 (error ratio). wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값                      | scalar  | $`\kappa \gt 0`$                  |
 
 🥑 아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
 
-SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 합친 것을 뜻한다. $`\bar{r}_y`$ 의 아래첨자 $`y`$ 는 측정값을 뜻하고, $`\hat{y}_{iw}`$ 와 $`e_{iw}`$ 의 둘째 아래첨자 $`w`$ 는 측정 위치 번호가 아니라, 측정 위치마다 구하지 않고 wafer 한 장에 하나로 직접 예측한 값임을 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\hat{y}_{iw}`$ 는 예측값이다.
+SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{wavgn}`$ 은 측정 위치 $`N`$ 곳의 R² 를 SST 로 가중 평균한 것 (weighted average over $`N`$ locations) 을 뜻한다. $`\bar{r}_y`$ 의 아래첨자 $`y`$ 는 측정값을 뜻하고, $`\hat{y}_{iw}`$ 와 $`e_{iw}`$ 의 둘째 아래첨자 $`w`$ 는 측정 위치 번호가 아니라, 측정 위치마다 구하지 않고 wafer 한 장에 하나로 직접 예측한 값임을 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\hat{y}_{iw}`$ 는 예측값이다.
 
 - $`\hat{y}_{ij}`$: 영어로 "y hat i j", 한국어로 "와이 햇 아이 제이" 라 읽는다.
 - $`\bar{y}`$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
@@ -168,10 +168,10 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 - 네 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
 - 예측 오차가 모두 0 이면 네 R² 는 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
 
-Table 1 의 $`R^2_{\mathrm{pool}}`$, $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 를 식으로 적으면 아래 식 (16) 부터 식 (19) 이다.
+Table 1 의 $`R^2_{\mathrm{wavgn}}`$, $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 를 식으로 적으면 아래 식 (16) 부터 식 (19) 이다.
 
 ```math
-R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
+R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
 \hspace{19em} (16)
 ```
 
@@ -196,20 +196,20 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 ## 5. Interpretation
 
-세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{pool}}`$ 을 거쳐 아래 식 (20), 식 (21), 식 (22) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
+세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 을 거쳐 아래 식 (20), 식 (21), 식 (22) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
-1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (20)
 ```
 
 ```math
-1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (21)
 ```
 
 ```math
-R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
+R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
 \hspace{19em} (22)
 ```
 
@@ -217,23 +217,23 @@ R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathr
 
 ### 5.1 Total Form
 
-식 (20) 의 $`1 - \lambda`$ 는 $`\mathrm{SST}_{\mathrm{all}}`$ 가운데 측정 위치마다의 wafer 사이 변동 $`\sum_j \mathrm{SST}_j`$ 가 차지하는 비율이다. 식 (33) 에서 $`\mathrm{SST}_{\mathrm{all}}`$ 은 이 변동과 측정 위치 평균의 차이 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 로 나뉘지만, 식 (34) 에서 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`\mathrm{SSE}_j`$ 의 합과 같아 그대로 남는다. 그래서 $`R^2_{\mathrm{all}}`$ 은 측정 위치 평균의 차이를 맞힌 몫 $`\lambda (1 - R^2_{\mathrm{pool}})`$ 만큼 $`R^2_{\mathrm{pool}}`$ 보다 크다.
+식 (20) 의 $`1 - \lambda`$ 는 $`\mathrm{SST}_{\mathrm{all}}`$ 가운데 측정 위치마다의 wafer 사이 변동 $`\sum_j \mathrm{SST}_j`$ 가 차지하는 비율이다. 식 (33) 에서 $`\mathrm{SST}_{\mathrm{all}}`$ 은 이 변동과 측정 위치 평균의 차이 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 로 나뉘지만, 식 (34) 에서 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`\mathrm{SSE}_j`$ 의 합과 같아 그대로 남는다. 그래서 $`R^2_{\mathrm{all}}`$ 은 측정 위치 평균의 차이를 맞힌 몫 $`\lambda (1 - R^2_{\mathrm{wavgn}})`$ 만큼 $`R^2_{\mathrm{wavgn}}`$ 보다 크다.
 
 - 성립 조건은 $`\sum_j \mathrm{SST}_j \gt 0`$ 이며, 이때 $`\lambda \lt 1`$ 이다.
 
 ### 5.2 Wafer Average Form
 
-식 (21) 의 $`\kappa`$ 는 측정 위치 $`N`$ 곳에서 wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값이다. 식 (39) 에서 $`\mathrm{SST}_{\mathrm{avgw}}`$ 는 $`\sum_j \mathrm{SST}_j`$ 의 $`[1 + (N-1)\bar{r}_y]/N^2`$ 배이고, 식 (19) 에서 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 $`\sum_j \mathrm{SSE}_j`$ 의 $`\kappa [1 + (N-1)\bar{r}_y]/N^2`$ 배이다. 그래서 $`\kappa \lt 1`$ 이면 wafer 평균 예측의 SSE 가 SST 보다 더 줄어 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{pool}}`$ 보다 커진다.
+식 (21) 의 $`\kappa`$ 는 측정 위치 $`N`$ 곳에서 wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값이다. 식 (39) 에서 $`\mathrm{SST}_{\mathrm{avgw}}`$ 는 $`\sum_j \mathrm{SST}_j`$ 의 $`[1 + (N-1)\bar{r}_y]/N^2`$ 배이고, 식 (19) 에서 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 $`\sum_j \mathrm{SSE}_j`$ 의 $`\kappa [1 + (N-1)\bar{r}_y]/N^2`$ 배이다. 그래서 $`\kappa \lt 1`$ 이면 wafer 평균 예측의 SSE 가 SST 보다 더 줄어 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{wavgn}}`$ 보다 커진다.
 
-- Wafer 사이 변동이 모든 측정 위치에서 같은 양인 $`\bar{r}_y = 1`$ 이면 $`\kappa = N \mathrm{SSE}_{\mathrm{avgw}} / \sum_j \mathrm{SSE}_j`$ 이다. 이때 wafer 평균 예측의 SSE 가 측정 위치 SSE 합의 $`1/N`$ 보다 작으면 $`R^2_{\mathrm{avgw}} \gt R^2_{\mathrm{pool}}`$ 이다.
+- Wafer 사이 변동이 모든 측정 위치에서 같은 양인 $`\bar{r}_y = 1`$ 이면 $`\kappa = N \mathrm{SSE}_{\mathrm{avgw}} / \sum_j \mathrm{SSE}_j`$ 이다. 이때 wafer 평균 예측의 SSE 가 측정 위치 SSE 합의 $`1/N`$ 보다 작으면 $`R^2_{\mathrm{avgw}} \gt R^2_{\mathrm{wavgn}}`$ 이다.
 - 성립 조건은 $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 이다. $`\sum_j \mathrm{SSE}_j = 0`$ 이면 $`\kappa`$ 가 정의되지 않는다.
 
 ### 5.3 Location R2 Average Form
 
-식 (22) 에서 $`R^2_{\mathrm{pool}}`$ 은 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이고, $`R^2_{\mathrm{avgn}}`$ 은 같은 $`R^2_j`$ 를 가중치 $`1/N`$ 로 평균한 값이다. 그래서 $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 이 성립한다.
+식 (22) 에서 $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이고, $`R^2_{\mathrm{avgn}}`$ 은 같은 $`R^2_j`$ 를 가중치 $`1/N`$ 로 평균한 값이다. 그래서 $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 이 성립한다.
 
 ```math
-R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
+R^2_{\mathrm{wavgn}} = R^2_{\mathrm{avgn}}
 \hspace{19em} (23)
 ```
 
@@ -241,53 +241,53 @@ R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
 
 ### 5.4 Relation without the SST-weighted Location R2 Average
 
-식 (20) 을 식 (21) 으로 나누어 $`1 - R^2_{\mathrm{pool}}`$ 을 지우면 $`R^2_{\mathrm{all}}`$ 과 $`R^2_{\mathrm{avgw}}`$ 의 관계는 식 (24) 이다.
+식 (20) 을 식 (21) 으로 나누어 $`1 - R^2_{\mathrm{wavgn}}`$ 을 지우면 $`R^2_{\mathrm{all}}`$ 과 $`R^2_{\mathrm{avgw}}`$ 의 관계는 식 (24) 이다.
 
 ```math
 1 - R^2_{\mathrm{all}} = \frac{1 - \lambda}{\kappa} \left( 1 - R^2_{\mathrm{avgw}} \right)
 \hspace{19em} (24)
 ```
 
-- $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 에 따라 식 (20) 과 식 (21) 의 $`R^2_{\mathrm{pool}}`$ 을 $`R^2_{\mathrm{avgn}}`$ 으로 바꿀 수 있어, 세 R² 가 $`\lambda`$ 와 $`\kappa`$ 만으로 이어진다.
+- $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 에 따라 식 (20) 과 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 $`R^2_{\mathrm{avgn}}`$ 으로 바꿀 수 있어, 세 R² 가 $`\lambda`$ 와 $`\kappa`$ 만으로 이어진다.
 - 성립 조건은 5.1 과 5.2 의 조건에 $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 을 더한 것이다. 이 조건에서 식 (19) 의 분자와 분모가 양수이므로 $`\kappa \gt 0`$ 이다.
 
 ### 5.5 Inequalities
 
-세 R² 와 $`R^2_{\mathrm{pool}}`$ 사이의 부등식은 아래 식 (25) 부터 식 (30) 이며, 식 (20), 식 (21), 식 (22), 식 (24) 의 두 변의 차이에서 나온다. 증명은 [B.5](#b5-inequalities) 에 있다.
+세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 사이의 부등식은 아래 식 (25) 부터 식 (30) 이며, 식 (20), 식 (21), 식 (22), 식 (24) 의 두 변의 차이에서 나온다. 증명은 [B.5](#b5-inequalities) 에 있다.
 
 ```math
-R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}
+R^2_{\mathrm{all}} \ge R^2_{\mathrm{wavgn}}
 \hspace{19em} (25)
 ```
 
-- 식 (25): 언제나 성립한다. 두 값의 차이는 $`\lambda (1 - R^2_{\mathrm{pool}})`$ 이며, 측정 위치 평균이 모두 같은 $`\lambda = 0`$ 이거나 예측 오차가 모두 0 일 때만 두 값이 같다.
+- 식 (25): 언제나 성립한다. 두 값의 차이는 $`\lambda (1 - R^2_{\mathrm{wavgn}})`$ 이며, 측정 위치 평균이 모두 같은 $`\lambda = 0`$ 이거나 예측 오차가 모두 0 일 때만 두 값이 같다.
 
 ```math
-R^2_{\mathrm{pool}} \ge \min_{j} R^2_j
+R^2_{\mathrm{wavgn}} \ge \min_{j} R^2_j
 \hspace{19em} (26)
 ```
 
 ```math
-R^2_{\mathrm{pool}} \le \max_{j} R^2_j
+R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 \hspace{19em} (27)
 ```
 
-- 식 (26), 식 (27): 언제나 성립한다. $`R^2_{\mathrm{pool}}`$ 은 식 (22) 에서 $`R^2_j`$ 의 가중 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 산술 평균인 $`R^2_{\mathrm{avgn}}`$ 도 같은 범위에 있다.
+- 식 (26), 식 (27): 언제나 성립한다. $`R^2_{\mathrm{wavgn}}`$ 은 식 (22) 에서 $`R^2_j`$ 의 가중 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 산술 평균인 $`R^2_{\mathrm{avgn}}`$ 도 같은 범위에 있다.
 - 식 (25) 와 식 (26) 을 이으면 $`R^2_{\mathrm{all}} \ge \min_j R^2_j`$ 이다. 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 가장 낮은 측정 위치 $`R^2_j`$ 보다 낮아지지 않는다.
 
 ```math
-R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
+R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
 \hspace{19em} (28)
 ```
 
-- 식 (28): 우변의 괄호는 측정 위치 $`j`$ 의 가중치가 $`1/N`$ 보다 큰 정도이다. $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 가 크면 우변이 0 이상이어서 $`R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}}`$ 이고, 작으면 $`R^2_{\mathrm{pool}} \lt R^2_{\mathrm{avgn}}`$ 일 수 있다.
+- 식 (28): 우변의 괄호는 측정 위치 $`j`$ 의 가중치가 $`1/N`$ 보다 큰 정도이다. $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 가 크면 우변이 0 이상이어서 $`R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{avgn}}`$ 이고, 작으면 $`R^2_{\mathrm{wavgn}} \lt R^2_{\mathrm{avgn}}`$ 일 수 있다.
 
 ```math
-R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}} \iff \kappa \le 1
+R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}} \iff \kappa \le 1
 \hspace{19em} (29)
 ```
 
-- 식 (29): 오차 비 $`\kappa`$ 가 1 이하이면 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{pool}}`$ 이상이다. Wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측과 따로 구하므로, 측정 위치 예측이 아무리 좋아도 $`\hat{y}_{iw}`$ 의 오차가 크면 $`\kappa \gt 1`$ 이 되어 $`R^2_{\mathrm{avgw}}`$ 가 낮아진다.
+- 식 (29): 오차 비 $`\kappa`$ 가 1 이하이면 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{wavgn}}`$ 이상이다. Wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측과 따로 구하므로, 측정 위치 예측이 아무리 좋아도 $`\hat{y}_{iw}`$ 의 오차가 크면 $`\kappa \gt 1`$ 이 되어 $`R^2_{\mathrm{avgw}}`$ 가 낮아진다.
 
 ```math
 R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
@@ -313,17 +313,17 @@ Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로
 
 Table 3. Sums of squares and R2 values
 
-| Quantity                         | Value                           | R2 or ratio      |
-| :------------------------------: | :-----------------------------: | :--------------: |
-| All measured values              | SST = 61.3333, SSE = 4          | R2_all = 0.9348  |
-| Wafer averages                   | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392 |
-| Location 1                       | SST = 18, SSE = 2               | R2_1 = 0.8889    |
-| Location 2                       | SST = 32.6667, SSE = 2          | R2_2 = 0.9388    |
-| Location R2 average              | -                               | R2_avgn = 0.9138 |
-| SST-weighted location R2 average | SST = 50.6667, SSE = 4          | R2_pool = 0.9211 |
-| Location pattern                 | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739  |
-| Measured correlation             | cross sum = 24 (each order)     | r_y = 0.9474     |
-| Error ratio                      | 4 × 1.5 / (1.9474 × 4)          | kappa = 0.7703   |
+| Quantity                         | Value                           | R2 or ratio       |
+| :------------------------------: | :-----------------------------: | :---------------: |
+| All measured values              | SST = 61.3333, SSE = 4          | R2_all = 0.9348   |
+| Wafer averages                   | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392  |
+| Location 1                       | SST = 18, SSE = 2               | R2_1 = 0.8889     |
+| Location 2                       | SST = 32.6667, SSE = 2          | R2_2 = 0.9388     |
+| Location R2 average              | -                               | R2_avgn = 0.9138  |
+| SST-weighted location R2 average | SST = 50.6667, SSE = 4          | R2_wavgn = 0.9211 |
+| Location pattern                 | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739   |
+| Measured correlation             | cross sum = 24 (each order)     | r_y = 0.9474      |
+| Error ratio                      | 4 × 1.5 / (1.9474 × 4)          | kappa = 0.7703    |
 
 식 (20) 부터 식 (24) 의 항등식에 Table 3 의 값을 넣으면 아래처럼 양변이 같다. 식 (23) 은 $`\mathrm{SST}_1 \ne \mathrm{SST}_2`$ 이어서 쓰지 않는다.
 
@@ -334,10 +334,10 @@ Table 3. Sums of squares and R2 values
 
 부등식 식 (25) 부터 식 (30) 에 Table 3 의 값을 넣으면 아래처럼 모두 성립한다.
 
-- 식 (25): $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{pool}} = 0.9211`$ 보다 크고, 차이 $`0.0137`$ 은 $`\lambda (1 - R^2_{\mathrm{pool}}) = 0.1739 \times 0.0789 = 0.0137`$ 이다.
-- 식 (26), 식 (27): $`R^2_1 = 0.8889 \le R^2_{\mathrm{pool}} = 0.9211 \le R^2_2 = 0.9388`$.
-- 식 (28): 가중치에서 $`1/N = 0.5`$ 를 뺀 값은 $`-0.1447`$ 과 $`0.1447`$ 이고, $`-0.1447 \times 0.8889 + 0.1447 \times 0.9388 = 0.0072 \ge 0`$ 이므로 $`R^2_{\mathrm{pool}} = 0.9211`$ 이 $`R^2_{\mathrm{avgn}} = 0.9138`$ 보다 $`0.0072`$ 크다.
-- 식 (29): $`\kappa = 0.7703 \le 1`$ 이므로 $`R^2_{\mathrm{avgw}} = 0.9392`$ 가 $`R^2_{\mathrm{pool}} = 0.9211`$ 이상이다.
+- 식 (25): $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{wavgn}} = 0.9211`$ 보다 크고, 차이 $`0.0137`$ 은 $`\lambda (1 - R^2_{\mathrm{wavgn}}) = 0.1739 \times 0.0789 = 0.0137`$ 이다.
+- 식 (26), 식 (27): $`R^2_1 = 0.8889 \le R^2_{\mathrm{wavgn}} = 0.9211 \le R^2_2 = 0.9388`$.
+- 식 (28): 가중치에서 $`1/N = 0.5`$ 를 뺀 값은 $`-0.1447`$ 과 $`0.1447`$ 이고, $`-0.1447 \times 0.8889 + 0.1447 \times 0.9388 = 0.0072 \ge 0`$ 이므로 $`R^2_{\mathrm{wavgn}} = 0.9211`$ 이 $`R^2_{\mathrm{avgn}} = 0.9138`$ 보다 $`0.0072`$ 크다.
+- 식 (29): $`\kappa = 0.7703 \le 1`$ 이므로 $`R^2_{\mathrm{avgw}} = 0.9392`$ 가 $`R^2_{\mathrm{wavgn}} = 0.9211`$ 이상이다.
 - 식 (30): $`\kappa = 0.7703`$ 이 $`1 - \lambda = 0.8261`$ 보다 작으므로 $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{avgw}} = 0.9392`$ 보다 작다.
 
 ## 7. Application
@@ -348,7 +348,7 @@ Table 3. Sums of squares and R2 values
 
 - $`R^2_{\mathrm{all}}`$: 측정 위치 평균의 차이 (wafer 안의 고정된 패턴) 를 맞힌 몫 $`\lambda`$ 가 들어 있다. 측정 위치 평균만 맞히고 wafer 사이 변동을 전혀 맞히지 못한 예측도 $`R^2_{\mathrm{all}} = \lambda`$ 이다.
 - $`R^2_{\mathrm{avgw}}`$: wafer 평균을 직접 예측한 값으로 구하므로, 측정 위치 예측과 따로 오차 비 $`\kappa`$ 가 작을수록 커진다. Wafer 평균을 관리하는 공정에서 쓴다.
-- $`R^2_{\mathrm{avgn}}`$ 과 $`R^2_{\mathrm{pool}}`$: wafer 사이 변동을 측정 위치마다 얼마나 맞히는지를 나타낸다. 측정 위치 평균의 차이와 평균할 때 줄어드는 오차가 들어 있지 않다.
+- $`R^2_{\mathrm{avgn}}`$ 과 $`R^2_{\mathrm{wavgn}}`$: wafer 사이 변동을 측정 위치마다 얼마나 맞히는지를 나타낸다. 측정 위치 평균의 차이와 평균할 때 줄어드는 오차가 들어 있지 않다.
 
 ### 7.2 Breaking Conditions
 
@@ -365,7 +365,7 @@ Table 3. Sums of squares and R2 values
 - **location pattern fraction**: 식 (17) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
 - **measurement location**: wafer 위에서 측정값을 얻는 지점. 모든 wafer 에서 같은 번호 $`j`$ 는 같은 지점이다.
 - **R2 (coefficient of determination)**: $`1 - \mathrm{SSE}/\mathrm{SST}`$. 예측 오차 제곱합이 평균에서 벗어난 제곱합의 몇 분의 일인지를 1 에서 뺀 값.
-- **SST-weighted location R2 average**: 식 (16) 의 $`R^2_{\mathrm{pool}}`$. 측정 위치 R² $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이며, 측정 위치 $`N`$ 곳의 SSE 합과 SST 합으로 구한 R² 와 같다.
+- **SST-weighted location R2 average**: 식 (16) 의 $`R^2_{\mathrm{wavgn}}`$. 측정 위치 R² $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이며, 측정 위치 $`N`$ 곳의 SSE 합과 SST 합으로 구한 R² 와 같다.
 - **sum of squared errors (SSE)**: 예측 오차를 제곱해 더한 값.
 - **total sum of squares (SST)**: 측정값과 그 평균의 차이를 제곱해 더한 값.
 - **wafer average**: wafer 한 장의 측정값 $`N`$ 개를 산술 평균한 값.
@@ -407,7 +407,7 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathr
 ```
 
 ```math
-R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
+R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
 \hspace{19em} (16)
 ```
 
@@ -451,10 +451,10 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 - 식 (35): 식 (8) 에 식 (34) 를 넣고, 분자와 분모에 $`\sum_j \mathrm{SST}_j \gt 0`$ 을 곱했다.
 
-식 (33) 에서 $`\sum_j \mathrm{SST}_j / \mathrm{SST}_{\mathrm{all}} = 1 - \lambda`$ 이고, 식 (16) 에서 $`\sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j = 1 - R^2_{\mathrm{pool}}`$ 이다. 따라서 식 (20) 이 성립한다.
+식 (33) 에서 $`\sum_j \mathrm{SST}_j / \mathrm{SST}_{\mathrm{all}} = 1 - \lambda`$ 이고, 식 (16) 에서 $`\sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j = 1 - R^2_{\mathrm{wavgn}}`$ 이다. 따라서 식 (20) 이 성립한다.
 
 ```math
-1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (20)
 ```
 
@@ -493,7 +493,7 @@ R^2_{\mathrm{avgw}} = 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mat
 ```
 
 ```math
-R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
+R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
 \hspace{19em} (16)
 ```
 
@@ -549,10 +549,10 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 - 식 (41): 식 (40) 의 분자와 분모에 $`\sum_j \mathrm{SSE}_j \gt 0`$ 을 곱했다.
 
-식 (41) 의 첫 분수는 식 (19) 의 $`\kappa`$ 이고, 둘째 분수는 식 (16) 의 $`1 - R^2_{\mathrm{pool}}`$ 이다. 따라서 식 (21) 이 성립한다.
+식 (41) 의 첫 분수는 식 (19) 의 $`\kappa`$ 이고, 둘째 분수는 식 (16) 의 $`1 - R^2_{\mathrm{wavgn}}`$ 이다. 따라서 식 (21) 이 성립한다.
 
 ```math
-1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (21)
 ```
 
@@ -568,19 +568,19 @@ R^2_j = 1 - \frac{\mathrm{SSE}_j}{\mathrm{SST}_j}
 ```
 
 ```math
-R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
+R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
 \hspace{19em} (16)
 ```
 
 ```math
-1 - R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k} \mathrm{SST}_k} \cdot \frac{\mathrm{SSE}_j}{\mathrm{SST}_j}
+1 - R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k} \mathrm{SST}_k} \cdot \frac{\mathrm{SSE}_j}{\mathrm{SST}_j}
 \hspace{19em} (42)
 ```
 
 - 식 (42): 식 (16) 의 분자의 항마다 $`\mathrm{SST}_j \gt 0`$ 을 곱하고 나누었다.
 
 ```math
-1 - R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k} \mathrm{SST}_k} \left( 1 - R^2_j \right)
+1 - R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k} \mathrm{SST}_k} \left( 1 - R^2_j \right)
 \hspace{19em} (43)
 ```
 
@@ -589,7 +589,7 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 식 (43) 의 가중치 $`\mathrm{SST}_j / \sum_k \mathrm{SST}_k`$ 는 $`j`$ 에 대해 더하면 1 이므로, 1 을 빼고 부호를 바꾸면 식 (22) 가 성립한다.
 
 ```math
-R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
+R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
 \hspace{19em} (22)
 ```
 
@@ -601,26 +601,26 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 ```
 
 ```math
-R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
+R^2_{\mathrm{wavgn}} = R^2_{\mathrm{avgn}}
 \hspace{19em} (23)
 ```
 
 ### B.4 Relation without the SST-weighted Location R2 Average
 
-식 (24) 는 B.1 의 식 (20) 과 B.2 의 식 (21) 에서 $`1 - R^2_{\mathrm{pool}}`$ 을 지워 증명한다.
+식 (24) 는 B.1 의 식 (20) 과 B.2 의 식 (21) 에서 $`1 - R^2_{\mathrm{wavgn}}`$ 을 지워 증명한다.
 
 ```math
-1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (20)
 ```
 
 ```math
-1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (21)
 ```
 
 ```math
-1 - R^2_{\mathrm{pool}} = \frac{1 - R^2_{\mathrm{avgw}}}{\kappa}
+1 - R^2_{\mathrm{wavgn}} = \frac{1 - R^2_{\mathrm{avgw}}}{\kappa}
 \hspace{19em} (44)
 ```
 
@@ -643,7 +643,7 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 ```
 
 ```math
-R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
+R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
 \hspace{19em} (16)
 ```
 
@@ -658,17 +658,17 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 ```
 
 ```math
-1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (20)
 ```
 
 ```math
-1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{pool}} \right)
+1 - R^2_{\mathrm{avgw}} = \kappa \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (21)
 ```
 
 ```math
-R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
+R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
 \hspace{19em} (22)
 ```
 
@@ -677,42 +677,42 @@ R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathr
 \hspace{19em} (24)
 ```
 
-식 (16) 의 $`\mathrm{SSE}_j`$ 와 $`\mathrm{SST}_j`$ 는 제곱합이므로 $`1 - R^2_{\mathrm{pool}} \ge 0`$ 이고, 식 (17) 의 분자와 분모도 제곱합이므로 $`\lambda \ge 0`$ 이다. 아래 증명은 이 두 부호를 쓴다.
+식 (16) 의 $`\mathrm{SSE}_j`$ 와 $`\mathrm{SST}_j`$ 는 제곱합이므로 $`1 - R^2_{\mathrm{wavgn}} \ge 0`$ 이고, 식 (17) 의 분자와 분모도 제곱합이므로 $`\lambda \ge 0`$ 이다. 아래 증명은 이 두 부호를 쓴다.
 
 #### Total R2 and SST-weighted Location R2 Average
 
 ```math
-R^2_{\mathrm{all}} - R^2_{\mathrm{pool}} = \left( 1 - R^2_{\mathrm{pool}} \right) - \left( 1 - R^2_{\mathrm{all}} \right)
+R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \left( 1 - R^2_{\mathrm{wavgn}} \right) - \left( 1 - R^2_{\mathrm{all}} \right)
 \hspace{19em} (45)
 ```
 
 - 식 (45): 좌변에 1 을 더하고 뺐다.
 
 ```math
-R^2_{\mathrm{all}} - R^2_{\mathrm{pool}} = \lambda \left( 1 - R^2_{\mathrm{pool}} \right)
+R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \lambda \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (46)
 ```
 
 - 식 (46): 식 (45) 의 둘째 괄호에 식 (20) 을 넣었다.
 
-식 (46) 의 우변은 $`\lambda \ge 0`$ 과 $`1 - R^2_{\mathrm{pool}} \ge 0`$ 의 곱이므로 0 이상이다. 따라서 식 (25) 가 성립한다.
+식 (46) 의 우변은 $`\lambda \ge 0`$ 과 $`1 - R^2_{\mathrm{wavgn}} \ge 0`$ 의 곱이므로 0 이상이다. 따라서 식 (25) 가 성립한다.
 
 ```math
-R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}
+R^2_{\mathrm{all}} \ge R^2_{\mathrm{wavgn}}
 \hspace{19em} (25)
 ```
 
 #### Range of the SST-weighted Location R2 Average
 
 ```math
-R^2_{\mathrm{pool}} - \min_{k} R^2_k = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( R^2_j - \min_{k} R^2_k \right)
+R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( R^2_j - \min_{k} R^2_k \right)
 \hspace{19em} (47)
 ```
 
 - 식 (47): 식 (22) 의 가중치를 $`j`$ 에 대해 더하면 1 이므로, $`\min_k R^2_k`$ 에 가중치의 합을 곱해 뺐다.
 
 ```math
-\max_{k} R^2_k - R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( \max_{k} R^2_k - R^2_j \right)
+\max_{k} R^2_k - R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( \max_{k} R^2_k - R^2_j \right)
 \hspace{19em} (48)
 ```
 
@@ -721,44 +721,44 @@ R^2_{\mathrm{pool}} - \min_{k} R^2_k = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum
 식 (47) 과 식 (48) 에서 가중치는 $`\mathrm{SST}_j \gt 0`$ 이므로 양수이고, 괄호는 최솟값과 최댓값의 정의로 0 이상이다. 두 우변이 0 이상이므로 식 (26) 과 식 (27) 이 성립한다.
 
 ```math
-R^2_{\mathrm{pool}} \ge \min_{j} R^2_j
+R^2_{\mathrm{wavgn}} \ge \min_{j} R^2_j
 \hspace{19em} (26)
 ```
 
 ```math
-R^2_{\mathrm{pool}} \le \max_{j} R^2_j
+R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 \hspace{19em} (27)
 ```
 
 #### SST-weighted and Unweighted Location R2 Averages
 
 ```math
-R^2_{\mathrm{pool}} - R^2_{\mathrm{avgn}} = \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j
+R^2_{\mathrm{wavgn}} - R^2_{\mathrm{avgn}} = \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j
 \hspace{19em} (49)
 ```
 
 - 식 (49): 식 (22) 에서 식 (15) 를 빼고 같은 $`R^2_j`$ 의 계수를 묶었다.
 
-$`R^2_{\mathrm{pool}} - R^2_{\mathrm{avgn}} \ge 0`$ 은 식 (49) 의 우변이 0 이상인 것과 같으므로 식 (28) 이 성립한다.
+$`R^2_{\mathrm{wavgn}} - R^2_{\mathrm{avgn}} \ge 0`$ 은 식 (49) 의 우변이 0 이상인 것과 같으므로 식 (28) 이 성립한다.
 
 ```math
-R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
+R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
 \hspace{19em} (28)
 ```
 
 #### Wafer Average R2 and SST-weighted Location R2 Average
 
 ```math
-R^2_{\mathrm{avgw}} - R^2_{\mathrm{pool}} = (1 - \kappa) \left( 1 - R^2_{\mathrm{pool}} \right)
+R^2_{\mathrm{avgw}} - R^2_{\mathrm{wavgn}} = (1 - \kappa) \left( 1 - R^2_{\mathrm{wavgn}} \right)
 \hspace{19em} (50)
 ```
 
 - 식 (50): 식 (45) 와 같이 1 을 더하고 뺀 뒤 $`1 - R^2_{\mathrm{avgw}}`$ 에 식 (21) 을 넣었다.
 
-$`\sum_j \mathrm{SSE}_j \gt 0`$ 이면 $`1 - R^2_{\mathrm{pool}} \gt 0`$ 이므로, 식 (50) 의 좌변이 0 이상인 것은 $`\kappa \le 1`$ 과 같다. 따라서 식 (29) 가 성립한다.
+$`\sum_j \mathrm{SSE}_j \gt 0`$ 이면 $`1 - R^2_{\mathrm{wavgn}} \gt 0`$ 이므로, 식 (50) 의 좌변이 0 이상인 것은 $`\kappa \le 1`$ 과 같다. 따라서 식 (29) 가 성립한다.
 
 ```math
-R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}} \iff \kappa \le 1
+R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}} \iff \kappa \le 1
 \hspace{19em} (29)
 ```
 
