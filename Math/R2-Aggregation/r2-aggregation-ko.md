@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 10 | Created: 2026-11-09 | Updated: 2026-11-10 16:52 CST
+Version 11 | Created: 2026-11-09 | Updated: 2026-11-10 16:58 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -39,30 +39,30 @@ $`R^2_{\mathrm{pool}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_
 
 Table 1. Symbols
 
-| Symbol                             | Meaning                                                                                    | Shape   | Assumption                             |
-| :--------------------------------: | :----------------------------------------------------------------------------------------: | :-----: | :------------------------------------: |
-| $`M`$                              | wafer 수                                                                                   | integer | $`M \ge 2`$                            |
-| $`N`$                              | wafer 한 장의 측정 위치 수                                                                 | integer | $`N \ge 2`$, 모든 wafer 에서 같음      |
-| $`T`$                              | 측정값의 개수 $`MN`$                                                                       | integer | -                                      |
-| $`i`$                              | wafer 번호                                                                                 | integer | $`1 \le i \le M`$                      |
-| $`j`$, $`k`$                       | 측정 위치 번호                                                                             | integer | $`1 \le j, k \le N`$                   |
-| $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                 | scalar  | -                                      |
-| $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                              | scalar  | -                                      |
-| $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                        | scalar  | -                                      |
-| $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                     | scalar  | -                                      |
-| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균                                                                  | scalar  | -                                      |
-| $`\hat{y}^{w}_{i}`$                | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                 | scalar  | -                                      |
-| $`e^{w}_{i}`$                      | wafer $`i`$ 의 wafer 평균 예측 오차                                                        | scalar  | -                                      |
-| $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                          | scalar  | -                                      |
-| $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)       | scalar  | -                                      |
-| $`R^2_{\mathrm{all}}`$             | 전체 측정값 $`T`$ 개로 구한 R²                                                             | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
-| $`R^2_{\mathrm{avgw}}`$            | wafer 평균값 $`M`$ 개로 구한 R²                                                            | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
-| $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                                  | scalar  | $`\mathrm{SST}_j \gt 0`$               |
-| $`R^2_{\mathrm{avgn}}`$            | 측정 위치 R² 평균. $`R^2_j`$ 의 $`N`$ 개 산술 평균                                         | scalar  | -                                      |
-| $`R^2_{\mathrm{pool}}`$            | SST 가중 측정 위치 R² 평균. $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 | scalar  | -                                      |
-| $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율                 | scalar  | $`0 \le \lambda \lt 1`$                |
-| $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                                 | scalar  | $`\bar{r}_y \gt -1/(N-1)`$             |
-| $`\kappa`$                         | 오차 비 (error ratio)                                                                      | scalar  | $`\kappa \gt 0`$                       |
+| Symbol                             | Meaning                                                                                                                     | Shape   | Assumption                             |
+| :--------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-----: | :------------------------------------: |
+| $`M`$                              | wafer 수                                                                                                                    | integer | $`M \ge 2`$                            |
+| $`N`$                              | wafer 한 장의 측정 위치 수                                                                                                  | integer | $`N \ge 2`$, 모든 wafer 에서 같음      |
+| $`T`$                              | 측정값의 개수 $`MN`$                                                                                                        | integer | -                                      |
+| $`i`$                              | wafer 번호                                                                                                                  | integer | $`1 \le i \le M`$                      |
+| $`j`$, $`k`$                       | 측정 위치 번호                                                                                                              | integer | $`1 \le j, k \le N`$                   |
+| $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                                                  | scalar  | -                                      |
+| $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                                                               | scalar  | -                                      |
+| $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                         | scalar  | -                                      |
+| $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                                                      | scalar  | -                                      |
+| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균                                                                                                   | scalar  | -                                      |
+| $`\hat{y}^{w}_{i}`$                | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                                  | scalar  | -                                      |
+| $`e^{w}_{i}`$                      | wafer 평균 예측 오차 $`\bar{y}_{i\cdot} - \hat{y}^{w}_{i}`$                                                                 | scalar  | -                                      |
+| $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                           | scalar  | -                                      |
+| $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                        | scalar  | -                                      |
+| $`R^2_{\mathrm{all}}`$             | 전체 측정값 $`T`$ 개로 구한 R²                                                                                              | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
+| $`R^2_{\mathrm{avgw}}`$            | wafer 평균값 $`M`$ 개로 구한 R²                                                                                             | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
+| $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                                                                   | scalar  | $`\mathrm{SST}_j \gt 0`$               |
+| $`R^2_{\mathrm{avgn}}`$            | 측정 위치 R² 평균. $`R^2_j`$ 의 $`N`$ 개 산술 평균                                                                          | scalar  | -                                      |
+| $`R^2_{\mathrm{pool}}`$            | SST 가중 측정 위치 R² 평균. $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값                                  | scalar  | -                                      |
+| $`\lambda`$                        | 측정 위치 패턴 비율 (location pattern fraction). 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 | scalar  | $`0 \le \lambda \lt 1`$                |
+| $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                                                                  | scalar  | $`\bar{r}_y \gt -1/(N-1)`$             |
+| $`\kappa`$                         | 오차 비 (error ratio). wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값                      | scalar  | $`\kappa \gt 0`$                       |
 
 🥑 아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
 
@@ -80,16 +80,16 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 
 ## 4. Definitions
 
-> **Definition: Prediction error**<br>
-> 예측 오차 $`e_{ij}`$ 는 wafer $`i`$ 의 측정 위치 $`j`$ 에 대해, 측정값 $`y_{ij}`$ 에서 예측값 $`\hat{y}_{ij}`$ 를 뺀 값이다.
+> **Definition: R2 of all measured values**<br>
+> 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
 
-> **Definition: Wafer average**<br>
-> Wafer 평균 $`\bar{y}_{i\cdot}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개의 산술 평균이다. Wafer 평균의 예측값 $`\hat{y}^{w}_{i}`$ 는 wafer $`i`$ 의 wafer 평균 하나를 직접 예측한 값이고, wafer 평균 예측 오차 $`e^{w}_{i}`$ 는 $`\bar{y}_{i\cdot}`$ 에서 $`\hat{y}^{w}_{i}`$ 를 뺀 값이다.
+> **Definition: R2 of wafer averages**<br>
+> Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 wafer 평균 하나를 직접 예측한 값이다.
 
-> **Definition: Location mean**<br>
-> 측정 위치 평균 $`\bar{y}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값의 산술 평균이다.
+> **Definition: Location R2 average**<br>
+> 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`j`$ 마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 를, 측정 위치 $`N`$ 곳에서 산술 평균한 값이다.
 
-정의 식은 아래 식 (1) 부터 식 (5) 이며, $`\hat{y}^{w}_{i}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 정의 식이 없다. $`\bar{y}`$ 는 측정값 $`T`$ 개의 평균이다.
+세 R² 의 정의 식은 아래 식 (1) 부터 식 (15) 이다. 식 (1) 부터 식 (5) 는 Table 1 의 $`e_{ij}`$, $`\bar{y}`$, $`\bar{y}_{i\cdot}`$, $`e^{w}_{i}`$, $`\bar{y}_{\cdot j}`$ 를 식으로 적은 것이다. $`\hat{y}^{w}_{i}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 식이 없다.
 
 ```math
 e_{ij} = y_{ij} - \hat{y}_{ij}
@@ -116,19 +116,7 @@ e^{w}_{i} = \bar{y}_{i\cdot} - \hat{y}^{w}_{i}
 \hspace{19em} (5)
 ```
 
-> **Definition: R2 of all measured values**<br>
-> 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
-
-> **Definition: R2 of wafer averages**<br>
-> Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 wafer 평균 하나를 직접 예측한 값이다.
-
-> **Definition: Location R2**<br>
-> 측정 위치 $`R^2_j`$ 는 측정 위치 $`j`$ 의 wafer $`M`$ 장에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 로 나눈 값을 뺀 값이다.
-
-> **Definition: Location R2 average**<br>
-> 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`N`$ 곳의 측정 위치 $`R^2_j`$ 를 산술 평균한 값이다.
-
-네 R² 의 정의 식은 아래 식 (6) 부터 식 (15) 이다.
+식 (6) 부터 식 (8) 은 $`R^2_{\mathrm{all}}`$, 식 (9) 부터 식 (11) 은 $`R^2_{\mathrm{avgw}}`$, 식 (12) 부터 식 (15) 는 $`R^2_{\mathrm{avgn}}`$ 과 그것이 평균하는 $`R^2_j`$ 의 식이다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
@@ -183,19 +171,7 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 - 네 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
 - 예측 오차가 모두 0 이면 네 R² 는 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
 
-> **Definition: SST-weighted location R2 average**<br>
-> SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 은 측정 위치 $`N`$ 곳의 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 모두 더한 값을, 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 를 모두 더한 값으로 나누어 1 에서 뺀 값이다.
-
-> **Definition: Location pattern fraction**<br>
-> 측정 위치 패턴 비율 $`\lambda`$ 는 측정 위치 평균 $`\bar{y}_{\cdot j}`$ 와 전체 평균 $`\bar{y}`$ 의 차이의 제곱을 측정 위치 $`N`$ 곳에서 더하고 wafer 수 $`M`$ 을 곱한 값을, 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값이다.
-
-> **Definition: Between-location correlation**<br>
-> 측정 위치 사이 측정값 상관 $`\bar{r}_y`$ 는 측정값에서 측정 위치 평균을 뺀 값을 서로 다른 두 측정 위치 $`j \ne k`$ 에서 곱해 wafer $`M`$ 장과 모든 순서쌍 $`(j, k)`$ 에서 더한 값을, $`N - 1`$ 과 $`\mathrm{SST}_j`$ 의 합을 곱한 값으로 나눈 것이다.
-
-> **Definition: Error ratio**<br>
-> 오차 비 $`\kappa`$ 는 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 에 측정 위치 수의 제곱 $`N^2`$ 을 곱한 값을, $`1 + (N-1)\bar{r}_y`$ 와 측정 위치 $`N`$ 곳의 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 의 합을 곱한 값으로 나눈 것이다. $`\bar{r}_y`$ 는 측정 위치 사이 측정값 상관이다.
-
-정의 식은 아래 식 (16) 부터 식 (19) 이다.
+Table 1 의 $`R^2_{\mathrm{pool}}`$, $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 를 식으로 적으면 아래 식 (16) 부터 식 (19) 이다.
 
 ```math
 R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \mathrm{SST}_j}
