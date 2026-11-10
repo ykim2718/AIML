@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 26 | Created: 2026-11-09 | Updated: 2026-11-10 17:23 CST
+Version 27 | Created: 2026-11-09 | Updated: 2026-11-10 17:25 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,6 +22,7 @@ Version 26 | Created: 2026-11-09 | Updated: 2026-11-10 17:23 CST
   - [B.3 R2 Average over N Locations Form](#b3-r2-average-over-n-locations-form)
   - [B.4 Relation without the SST-weighted R2 Average over N Locations](#b4-relation-without-the-sst-weighted-r2-average-over-n-locations)
   - [B.5 Inequalities](#b5-inequalities)
+- [Appendix C. Intuitive Meaning](#appendix-c-intuitive-meaning)
 
 ## 1. Purpose
 
@@ -230,7 +231,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \math
 
 ### 5.3 R2 Average over N Locations Form
 
-식 (22) 에서 $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이고, $`R^2_{\mathrm{avgn}}`$ 은 같은 $`R^2_j`$ 를 가중치 $`1/N`$ 로 평균한 값이다. 그래서 $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 이 성립한다.
+식 (22) 에서 $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이고, $`R^2_{\mathrm{avgn}}`$ 은 같은 $`R^2_j`$ 를 가중치 $`1/N`$ 로 평균한 값이다. 그래서 $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 이 성립한다. $`R^2_{\mathrm{wavgn}}`$ 의 직관적 의미는 [Appendix C](#appendix-c-intuitive-meaning) 에 있다.
 
 ```math
 R^2_{\mathrm{wavgn}} = R^2_{\mathrm{avgn}}
@@ -777,3 +778,27 @@ $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 이면 $`1 - R^2_{\mathrm{avgw}} \gt 0`$ 
 R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
 \hspace{19em} (30)
 ```
+
+## Appendix C. Intuitive Meaning
+
+측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 을 Table 2 의 값으로 그리면 아래 Fig 1 이다.
+
+<img src="r2-aggregation-ko_fig/fig1.png" width="800" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Sums of squares of each measurement location and of the N locations pooled
+
+- (a): 측정 위치마다 막대의 높이가 $`\mathrm{SST}_j`$ 이고, 파란 부분은 예측이 맞힌 몫 $`\mathrm{SST}_j - \mathrm{SSE}_j`$, 주황 부분은 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 이다. 막대마다 파란 부분의 비율이 $`R^2_j`$ 이고, 두 비율을 산술 평균하면 $`R^2_{\mathrm{avgn}} = 0.9138`$ 이다.
+- (b): 측정 위치 두 곳의 막대를 한 막대에 쌓았다. 막대의 높이는 $`\sum_j \mathrm{SST}_j = 50.6667`$, 주황 부분은 $`\sum_j \mathrm{SSE}_j = 4`$ 이고, 파란 부분의 비율이 $`R^2_{\mathrm{wavgn}} = 0.9211`$ 이다.
+
+$`R^2_{\mathrm{wavgn}}`$ 은 측정 위치마다 따로 담긴 변동을 한 그릇에 모두 부은 뒤, 그 그릇에서 예측이 맞힌 몫을 잰 값이다. 그릇은 측정 위치 $`N`$ 곳의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 를 각각 더하는 것이고, 측정 위치 $`j`$ 가 붓는 양은 $`\mathrm{SST}_j`$ 이다. 그래서 변동이 큰 측정 위치가 그릇의 비율을 더 많이 정하며, 그 무게가 아래 식 (22) 의 가중치 $`\mathrm{SST}_j / \sum_k \mathrm{SST}_k`$ 이다.
+
+```math
+R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
+\hspace{19em} (22)
+```
+
+- Fig 1 에서 $`\mathrm{SST}_2 = 32.6667`$ 은 $`\mathrm{SST}_1 = 18`$ 의 1.81 배여서 가중치가 0.6447 대 0.3553 이 되고, $`R^2_{\mathrm{wavgn}} = 0.9211`$ 은 $`R^2_2 = 0.9388`$ 쪽에 더 가깝다.
+- $`R^2_{\mathrm{avgn}}`$ 은 그릇마다 비율을 먼저 잰 뒤 그릇의 크기와 상관없이 평균한 값이다 (Fig 1 (a)). 변동이 작은 측정 위치의 $`R^2_j`$ 도 변동이 큰 측정 위치와 같은 가중치 $`1/N`$ 으로 들어간다.
+- 두 값은 그릇의 크기가 모두 같을 때, 곧 $`\mathrm{SST}_j`$ 가 모두 같을 때 같아진다.
+
+Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 Table 2 의 측정값과 예측값으로 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 를 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
