@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 5 | Created: 2026-11-09 | Updated: 2026-11-10 05:46 CST
+Version 6 | Created: 2026-11-09 | Updated: 2026-11-10 05:47 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,7 +26,7 @@ Version 5 | Created: 2026-11-09 | Updated: 2026-11-10 05:46 CST
 ## 1. Purpose
 
 - **Problem Statement**: wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정하면 측정값이 $`T = MN`$ 개 나온다. 같은 예측으로 R² 를 측정값 $`T`$ 개, wafer 평균 $`M`$ 개, 측정 위치마다의 wafer $`M`$ 장에서 구하면 세 R² 의 값이 서로 다르지만, 세 값 사이의 관계식은 없다.
-- **Goal**: 전체 $`R^2_{\mathrm{all}}`$, wafer 평균 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
+- **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
 - **Non-Goal**: 예측 model 을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
 
 ## 2. Summary
@@ -55,8 +55,8 @@ Table 1. Symbols
 | $`\bar{e}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 예측 오차                                                  | scalar  | -                                      |
 | $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                    | scalar  | -                                      |
 | $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors) | scalar  | -                                      |
-| $`R^2_{\mathrm{all}}`$             | 측정값 $`T`$ 개로 구한 전체 R²                                                       | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
-| $`R^2_{\mathrm{avgw}}`$            | wafer 평균 $`M`$ 개로 구한 wafer 평균 R²                                             | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
+| $`R^2_{\mathrm{all}}`$             | 전체 측정값 $`T`$ 개로 구한 R²                                                       | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
+| $`R^2_{\mathrm{avgw}}`$            | wafer 평균값 $`M`$ 개로 구한 R²                                                      | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                            | scalar  | $`\mathrm{SST}_j \gt 0`$               |
 | $`R^2_{\mathrm{avgn}}`$            | 측정 위치 R² 평균. $`R^2_j`$ 의 $`N`$ 개 산술 평균                                   | scalar  | -                                      |
 | $`R^2_{\mathrm{pool}}`$            | 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 더해 구한 pooled R²                          | scalar  | -                                      |
@@ -65,7 +65,7 @@ Table 1. Symbols
 | $`\bar{r}_e`$                      | 측정 위치 사이 예측 오차 상관                                                        | scalar  | $`-1/(N-1) \lt \bar{r}_e \le 1`$       |
 | $`\kappa`$                         | 상관 비 (correlation ratio)                                                          | scalar  | $`\kappa \gt 0`$                       |
 
-SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳을 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
+SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳을 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
 
 - $`\hat{y}_{ij}`$: 영어로 "y hat i j", 한국어로 "와이 햇 아이 제이" 라 읽는다.
 - $`\bar{y}`$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
@@ -120,11 +120,11 @@ e_{ij} = y_{ij} - \hat{y}_{ij}
 \hspace{19em} (6)
 ```
 
-> **Definition: Total R2**<br>
-> 전체 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
+> **Definition: R2 of all measured values**<br>
+> 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
 
-> **Definition: Wafer average R2**<br>
-> Wafer 평균 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 같은 wafer 의 예측값 $`N`$ 개의 산술 평균이다.
+> **Definition: R2 of wafer averages**<br>
+> Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 같은 wafer 의 예측값 $`N`$ 개의 산술 평균이다.
 
 > **Definition: Location R2**<br>
 > 측정 위치 $`R^2_j`$ 는 측정 위치 $`j`$ 의 wafer $`M`$ 장에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 로 나눈 값을 뺀 값이다.
@@ -309,7 +309,7 @@ R^2_{\mathrm{pool}} \le \max_{j} R^2_j
 ```
 
 - 식 (28), 식 (29): 언제나 성립한다. $`R^2_{\mathrm{pool}}`$ 은 식 (24) 에서 $`R^2_j`$ 의 가중 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 산술 평균인 $`R^2_{\mathrm{avgn}}`$ 도 같은 범위에 있다.
-- 식 (27) 과 식 (28) 을 이으면 $`R^2_{\mathrm{all}} \ge \min_j R^2_j`$ 이다. 전체 R² 는 가장 낮은 측정 위치 R² 보다 낮아지지 않는다.
+- 식 (27) 과 식 (28) 을 이으면 $`R^2_{\mathrm{all}} \ge \min_j R^2_j`$ 이다. 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 가장 낮은 측정 위치 $`R^2_j`$ 보다 낮아지지 않는다.
 
 ```math
 R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j \ge 0
@@ -358,8 +358,8 @@ Table 3. Sums of squares and R2 values
 
 | Quantity             | Value                           | R2 or ratio      |
 | :------------------: | :-----------------------------: | :--------------: |
-| All                  | SST = 61.3333, SSE = 4          | R2_all = 0.9348  |
-| Wafer average        | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392 |
+| All measured values  | SST = 61.3333, SSE = 4          | R2_all = 0.9348  |
+| Wafer averages       | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392 |
 | Location 1           | SST = 18, SSE = 2               | R2_1 = 0.8889    |
 | Location 2           | SST = 32.6667, SSE = 2          | R2_2 = 0.9388    |
 | Location R2 average  | -                               | R2_avgn = 0.9138 |
