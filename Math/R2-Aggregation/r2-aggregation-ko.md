@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 12 | Created: 2026-11-09 | Updated: 2026-11-10 17:00 CST
+Version 13 | Created: 2026-11-09 | Updated: 2026-11-10 17:03 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -51,8 +51,8 @@ Table 1. Symbols
 | $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                         | scalar  | -                                 |
 | $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                                                      | scalar  | -                                 |
 | $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균                                                                                                   | scalar  | -                                 |
-| $`\hat{y}^{w}_{i}`$                | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                                  | scalar  | -                                 |
-| $`e^{w}_{i}`$                      | wafer 평균 예측 오차 $`\bar{y}_{i\cdot} - \hat{y}^{w}_{i}`$                                                                 | scalar  | -                                 |
+| $`\hat{y}_{iw}`$                   | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                                  | scalar  | -                                 |
+| $`e_{iw}`$                         | wafer 평균 예측 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                                                    | scalar  | -                                 |
 | $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                           | scalar  | -                                 |
 | $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                        | scalar  | -                                 |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                                                                   | scalar  | $`\mathrm{SST}_j \gt 0`$          |
@@ -63,13 +63,13 @@ Table 1. Symbols
 
 🥑 아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
 
-SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 합친 것을 뜻한다. $`\bar{r}_y`$ 의 아래첨자 $`y`$ 는 측정값을 뜻하고, $`\hat{y}^{w}_{i}`$ 와 $`e^{w}_{i}`$ 의 위첨자 $`w`$ 는 wafer 평균을 직접 예측한 것을 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\hat{y}^{w}_{i}`$ 는 예측값이다.
+SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 합친 것을 뜻한다. $`\bar{r}_y`$ 의 아래첨자 $`y`$ 는 측정값을 뜻하고, $`\hat{y}_{iw}`$ 와 $`e_{iw}`$ 의 둘째 아래첨자 $`w`$ 는 측정 위치 번호가 아니라, 측정 위치마다 구하지 않고 wafer 한 장에 하나로 직접 예측한 값임을 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}_y`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\hat{y}_{iw}`$ 는 예측값이다.
 
 - $`\hat{y}_{ij}`$: 영어로 "y hat i j", 한국어로 "와이 햇 아이 제이" 라 읽는다.
 - $`\bar{y}`$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
 - $`\bar{y}_{i\cdot}`$: 영어로 "y bar i dot", 한국어로 "와이 바 아이 닷" 이라 읽는다.
 - $`\bar{y}_{\cdot j}`$: 영어로 "y bar dot j", 한국어로 "와이 바 닷 제이" 라 읽는다.
-- $`\hat{y}^{w}_{i}`$: 영어로 "y hat w i", 한국어로 "와이 햇 더블유 아이" 라 읽는다.
+- $`\hat{y}_{iw}`$: 영어로 "y hat i w", 한국어로 "와이 햇 아이 더블유" 라 읽는다.
 - $`\sum`$: 영어로 "sum", 한국어로 "합" 이라 읽는다.
 - $`\min_j`$, $`\max_j`$: 영어로 "minimum over j", "maximum over j", 한국어로 "제이에 대한 최솟값", "제이에 대한 최댓값" 이라 읽는다.
 - $`\iff`$: 영어로 "if and only if", 한국어로 "필요충분조건" 이라 읽는다.
@@ -86,7 +86,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > **Definition: Location R2 average**<br>
 > 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`j`$ 마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 를, 측정 위치 $`N`$ 곳에서 산술 평균한 값이다.
 
-세 R² 의 정의 식은 아래 식 (1) 부터 식 (15) 이다. 식 (1) 부터 식 (5) 는 Table 1 의 $`e_{ij}`$, $`\bar{y}`$, $`\bar{y}_{i\cdot}`$, $`e^{w}_{i}`$, $`\bar{y}_{\cdot j}`$ 를 식으로 적은 것이다. $`\hat{y}^{w}_{i}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 식이 없다.
+세 R² 의 정의 식은 아래 식 (1) 부터 식 (15) 이다. 식 (1) 부터 식 (5) 는 Table 1 의 $`e_{ij}`$, $`\bar{y}`$, $`\bar{y}_{i\cdot}`$, $`e_{iw}`$, $`\bar{y}_{\cdot j}`$ 를 식으로 적은 것이다. $`\hat{y}_{iw}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 식이 없다.
 
 ```math
 e_{ij} = y_{ij} - \hat{y}_{ij}
@@ -104,7 +104,7 @@ e_{ij} = y_{ij} - \hat{y}_{ij}
 ```
 
 ```math
-e^{w}_{i} = \bar{y}_{i\cdot} - \hat{y}^{w}_{i}
+e_{iw} = \bar{y}_{i\cdot} - \hat{y}_{iw}
 \hspace{19em} (4)
 ```
 
@@ -136,7 +136,7 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathr
 ```
 
 ```math
-\mathrm{SSE}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( e^{w}_{i} \right)^2
+\mathrm{SSE}_{\mathrm{avgw}} = \sum_{i=1}^{M} e_{iw}^2
 \hspace{19em} (10)
 ```
 
@@ -213,7 +213,7 @@ R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathr
 \hspace{19em} (22)
 ```
 
-세 식은 모든 wafer 가 같은 측정 위치 $`N`$ 곳을 갖는다고 둔다. 식 (21) 은 wafer 평균의 예측값 $`\hat{y}^{w}_{i}`$ 를 측정 위치 예측값과 어떻게 관련지어 구했는지와 상관없이 성립한다.
+세 식은 모든 wafer 가 같은 측정 위치 $`N`$ 곳을 갖는다고 둔다. 식 (21) 은 wafer 평균의 예측값 $`\hat{y}_{iw}`$ 를 측정 위치 예측값과 어떻게 관련지어 구했는지와 상관없이 성립한다.
 
 ### 5.1 Total Form
 
@@ -287,7 +287,7 @@ R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}} \iff \kappa \le 1
 \hspace{19em} (29)
 ```
 
-- 식 (29): 오차 비 $`\kappa`$ 가 1 이하이면 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{pool}}`$ 이상이다. Wafer 평균 예측값 $`\hat{y}^{w}_{i}`$ 는 측정 위치 예측과 따로 구하므로, 측정 위치 예측이 아무리 좋아도 $`\hat{y}^{w}_{i}`$ 의 오차가 크면 $`\kappa \gt 1`$ 이 되어 $`R^2_{\mathrm{avgw}}`$ 가 낮아진다.
+- 식 (29): 오차 비 $`\kappa`$ 가 1 이하이면 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{pool}}`$ 이상이다. Wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측과 따로 구하므로, 측정 위치 예측이 아무리 좋아도 $`\hat{y}_{iw}`$ 의 오차가 크면 $`\kappa \gt 1`$ 이 되어 $`R^2_{\mathrm{avgw}}`$ 가 낮아진다.
 
 ```math
 R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
@@ -309,7 +309,7 @@ Table 2. Measured and predicted values
 | 2       | 13   | 15   | 13             | 14             | 0    | 1    | 14            | 13.0                    | 1.0                 |
 | 3       | 16   | 20   | 15             | 19             | 1    | 1    | 18            | 17.5                    | 0.5                 |
 
-Wafer 평균의 예측값 $`\hat{y}^{w}_{i}`$ 는 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 $`\hat{y}^{w}_{2} = 13.0`$ 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 $`\bar{y} = 86/6 = 14.3333`$ 이고, 측정 위치 평균은 $`\bar{y}_{\cdot 1} = 13`$, $`\bar{y}_{\cdot 2} = 15.6667`$ 이다. 식 (6) 부터 식 (19) 로 구한 값은 아래 Table 3 이다.
+Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 $`\hat{y}_{2w} = 13.0`$ 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 $`\bar{y} = 86/6 = 14.3333`$ 이고, 측정 위치 평균은 $`\bar{y}_{\cdot 1} = 13`$, $`\bar{y}_{\cdot 2} = 15.6667`$ 이다. 식 (6) 부터 식 (19) 로 구한 값은 아래 Table 3 이다.
 
 Table 3. Sums of squares and R2 values
 
@@ -556,7 +556,7 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 \hspace{19em} (21)
 ```
 
-식 (39) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 는 제곱합이므로 0 이상이다. $`\sum_j \mathrm{SST}_j \gt 0`$ 에서 $`1 + (N-1)\bar{r}_y \ge 0`$ 이고, $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 일 때만 0 이다. 이 증명은 $`\hat{y}^{w}_{i}`$ 를 어떻게 구했는지를 쓰지 않는다.
+식 (39) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 는 제곱합이므로 0 이상이다. $`\sum_j \mathrm{SST}_j \gt 0`$ 에서 $`1 + (N-1)\bar{r}_y \ge 0`$ 이고, $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 일 때만 0 이다. 이 증명은 $`\hat{y}_{iw}`$ 를 어떻게 구했는지를 쓰지 않는다.
 
 ### B.3 Location R2 Average Form
 
