@@ -12,7 +12,7 @@ Changelog:
     0.1.0 draw a circle schematic of an illustrative two-location case instead of bars of the worked example
 """
 __author__ = 'yRocket'
-__version__ = "0.3.0+20261110"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.3.1+20261110"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -125,7 +125,7 @@ parser = argparse.ArgumentParser(prog=pathlib.Path(__file__).name,
                                  description=f"{pathlib.Path(__file__).name} {__version__}: draw the R2_wavgn schematic.")
 parser.add_argument('-v', '--version', action='version', version=f"%(prog)s {__version__}")
 parser.add_argument('-o', '--out', type=pathlib.Path,
-                    default=pathlib.Path(__file__).resolve().parent.parent / 'r2-aggregation-ko_fig' / 'fig1.png',
+                    default=pathlib.Path(__file__).resolve().parent.parent / 'r2-aggregation-ko_fig' / 'fig1-weighting.png',
                     help='output PNG path')
 
 if __name__ == '__main__':

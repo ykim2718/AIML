@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 31 | Created: 2026-11-09 | Updated: 2026-11-10 23:41 UTC
+Version 32 | Created: 2026-11-09 | Updated: 2026-11-10 23:43 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -783,7 +783,7 @@ R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
 
 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균 $`R^2_{\mathrm{avgn}}`$ 을 측정 위치 두 곳의 예로 견주면 아래 Fig 1 이다.
 
-<img src="r2-aggregation-ko_fig/fig1.png" width="800" style="max-width: 100%;" alt="Fig 1">
+<img src="r2-aggregation-ko_fig/fig1-weighting.png" width="800" style="max-width: 100%;" alt="Fig 1">
 
 Fig 1. Plain and SST-weighted averages of location R2
 
