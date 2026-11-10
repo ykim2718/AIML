@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 6 | Created: 2026-11-09 | Updated: 2026-11-10 05:47 CST
+Version 7 | Created: 2026-11-09 | Updated: 2026-11-10 06:17 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -9,7 +9,7 @@ Version 6 | Created: 2026-11-09 | Updated: 2026-11-10 05:47 CST
   - [5.1 Total Form](#51-total-form)
   - [5.2 Wafer Average Form](#52-wafer-average-form)
   - [5.3 Location R2 Average Form](#53-location-r2-average-form)
-  - [5.4 Relation without the Pooled R2](#54-relation-without-the-pooled-r2)
+  - [5.4 Relation without the SST-weighted Location R2 Average](#54-relation-without-the-sst-weighted-location-r2-average)
   - [5.5 Inequalities](#55-inequalities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
@@ -20,7 +20,7 @@ Version 6 | Created: 2026-11-09 | Updated: 2026-11-10 05:47 CST
   - [B.1 Total Form](#b1-total-form)
   - [B.2 Wafer Average Form](#b2-wafer-average-form)
   - [B.3 Location R2 Average Form](#b3-location-r2-average-form)
-  - [B.4 Relation without the Pooled R2](#b4-relation-without-the-pooled-r2)
+  - [B.4 Relation without the SST-weighted Location R2 Average](#b4-relation-without-the-sst-weighted-location-r2-average)
   - [B.5 Inequalities](#b5-inequalities)
 
 ## 1. Purpose
@@ -31,7 +31,7 @@ Version 6 | Created: 2026-11-09 | Updated: 2026-11-10 05:47 CST
 
 ## 2. Summary
 
-세 R² 는 측정 위치마다의 오차를 합쳐 구한 pooled $`R^2_{\mathrm{pool}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{pool}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{pool}})`$ 이다.
+세 R² 는 SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{pool}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{pool}})`$ 이다.
 $`R^2_{\mathrm{pool}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 로 가중 평균한 값이고, $`\mathrm{SST}_j`$ 가 모두 같으면 $`R^2_{\mathrm{avgn}}`$ 과 같다.
 그래서 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}`$ 은 언제나 성립하고, $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}}`$ 은 측정 위치 사이 오차 상관 $`\bar{r}_e`$ 가 측정값 상관 $`\bar{r}_y`$ 이하일 때 성립한다.
 
@@ -39,33 +39,33 @@ $`R^2_{\mathrm{pool}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_
 
 Table 1. Symbols
 
-| Symbol                             | Meaning                                                                              | Shape   | Assumption                             |
-| :--------------------------------: | :----------------------------------------------------------------------------------: | :-----: | :------------------------------------: |
-| $`M`$                              | wafer 수                                                                             | integer | $`M \ge 2`$                            |
-| $`N`$                              | wafer 한 장의 측정 위치 수                                                           | integer | $`N \ge 2`$, 모든 wafer 에서 같음      |
-| $`T`$                              | 측정값의 개수 $`MN`$                                                                 | integer | -                                      |
-| $`i`$                              | wafer 번호                                                                           | integer | $`1 \le i \le M`$                      |
-| $`j`$, $`k`$                       | 측정 위치 번호                                                                       | integer | $`1 \le j, k \le N`$                   |
-| $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                           | scalar  | -                                      |
-| $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                        | scalar  | -                                      |
-| $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                  | scalar  | -                                      |
-| $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                               | scalar  | -                                      |
-| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균                                                            | scalar  | -                                      |
-| $`\bar{\hat{y}}_{i\cdot}`$         | wafer $`i`$ 의 예측값 $`N`$ 개의 평균                                                | scalar  | -                                      |
-| $`\bar{e}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 예측 오차                                                  | scalar  | -                                      |
-| $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                    | scalar  | -                                      |
-| $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors) | scalar  | -                                      |
-| $`R^2_{\mathrm{all}}`$             | 전체 측정값 $`T`$ 개로 구한 R²                                                       | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
-| $`R^2_{\mathrm{avgw}}`$            | wafer 평균값 $`M`$ 개로 구한 R²                                                      | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
-| $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                            | scalar  | $`\mathrm{SST}_j \gt 0`$               |
-| $`R^2_{\mathrm{avgn}}`$            | 측정 위치 R² 평균. $`R^2_j`$ 의 $`N`$ 개 산술 평균                                   | scalar  | -                                      |
-| $`R^2_{\mathrm{pool}}`$            | 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 더해 구한 pooled R²                          | scalar  | -                                      |
-| $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율           | scalar  | $`0 \le \lambda \lt 1`$                |
-| $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                           | scalar  | $`-1/(N-1) \lt \bar{r}_y \le 1`$       |
-| $`\bar{r}_e`$                      | 측정 위치 사이 예측 오차 상관                                                        | scalar  | $`-1/(N-1) \lt \bar{r}_e \le 1`$       |
-| $`\kappa`$                         | 상관 비 (correlation ratio)                                                          | scalar  | $`\kappa \gt 0`$                       |
+| Symbol                             | Meaning                                                                                    | Shape   | Assumption                             |
+| :--------------------------------: | :----------------------------------------------------------------------------------------: | :-----: | :------------------------------------: |
+| $`M`$                              | wafer 수                                                                                   | integer | $`M \ge 2`$                            |
+| $`N`$                              | wafer 한 장의 측정 위치 수                                                                 | integer | $`N \ge 2`$, 모든 wafer 에서 같음      |
+| $`T`$                              | 측정값의 개수 $`MN`$                                                                       | integer | -                                      |
+| $`i`$                              | wafer 번호                                                                                 | integer | $`1 \le i \le M`$                      |
+| $`j`$, $`k`$                       | 측정 위치 번호                                                                             | integer | $`1 \le j, k \le N`$                   |
+| $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                 | scalar  | -                                      |
+| $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                              | scalar  | -                                      |
+| $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                        | scalar  | -                                      |
+| $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                     | scalar  | -                                      |
+| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균                                                                  | scalar  | -                                      |
+| $`\bar{\hat{y}}_{i\cdot}`$         | wafer $`i`$ 의 예측값 $`N`$ 개의 평균                                                      | scalar  | -                                      |
+| $`\bar{e}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 예측 오차                                                        | scalar  | -                                      |
+| $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                          | scalar  | -                                      |
+| $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)       | scalar  | -                                      |
+| $`R^2_{\mathrm{all}}`$             | 전체 측정값 $`T`$ 개로 구한 R²                                                             | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
+| $`R^2_{\mathrm{avgw}}`$            | wafer 평균값 $`M`$ 개로 구한 R²                                                            | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
+| $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                                  | scalar  | $`\mathrm{SST}_j \gt 0`$               |
+| $`R^2_{\mathrm{avgn}}`$            | 측정 위치 R² 평균. $`R^2_j`$ 의 $`N`$ 개 산술 평균                                         | scalar  | -                                      |
+| $`R^2_{\mathrm{pool}}`$            | SST 가중 측정 위치 R² 평균. $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 | scalar  | -                                      |
+| $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율                 | scalar  | $`0 \le \lambda \lt 1`$                |
+| $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                                 | scalar  | $`-1/(N-1) \lt \bar{r}_y \le 1`$       |
+| $`\bar{r}_e`$                      | 측정 위치 사이 예측 오차 상관                                                              | scalar  | $`-1/(N-1) \lt \bar{r}_e \le 1`$       |
+| $`\kappa`$                         | 상관 비 (correlation ratio)                                                                | scalar  | $`\kappa \gt 0`$                       |
 
-SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳을 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
+SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
 
 - $`\hat{y}_{ij}`$: 영어로 "y hat i j", 한국어로 "와이 햇 아이 제이" 라 읽는다.
 - $`\bar{y}`$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
@@ -187,8 +187,8 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 - 네 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
 - 예측 오차가 모두 0 이면 네 R² 는 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
 
-> **Definition: Pooled location R2**<br>
-> Pooled $`R^2_{\mathrm{pool}}`$ 은 측정 위치 $`N`$ 곳의 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 모두 더한 값을, 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 를 모두 더한 값으로 나누어 1 에서 뺀 값이다.
+> **Definition: SST-weighted location R2 average**<br>
+> SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 은 측정 위치 $`N`$ 곳의 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 모두 더한 값을, 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 를 모두 더한 값으로 나누어 1 에서 뺀 값이다.
 
 > **Definition: Location pattern fraction**<br>
 > 측정 위치 패턴 비율 $`\lambda`$ 는 측정 위치 평균 $`\bar{y}_{\cdot j}`$ 와 전체 평균 $`\bar{y}`$ 의 차이의 제곱을 측정 위치 $`N`$ 곳에서 더하고 wafer 수 $`M`$ 을 곱한 값을, 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값이다.
@@ -232,7 +232,7 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 ## 5. Interpretation
 
-세 R² 는 pooled $`R^2_{\mathrm{pool}}`$ 을 거쳐 아래 식 (22), 식 (23), 식 (24) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
+세 R² 는 SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 을 거쳐 아래 식 (22), 식 (23), 식 (24) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
 1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
@@ -275,7 +275,7 @@ R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
 
 - 성립 조건은 모든 $`j`$ 에서 $`\mathrm{SST}_j \gt 0`$ 이다.
 
-### 5.4 Relation without the Pooled R2
+### 5.4 Relation without the SST-weighted Location R2 Average
 
 식 (22) 를 식 (23) 으로 나누어 $`1 - R^2_{\mathrm{pool}}`$ 을 지우면 $`R^2_{\mathrm{all}}`$ 과 $`R^2_{\mathrm{avgw}}`$ 의 관계는 식 (26) 이다.
 
@@ -356,18 +356,18 @@ Table 2. Measured and predicted values
 
 Table 3. Sums of squares and R2 values
 
-| Quantity             | Value                           | R2 or ratio      |
-| :------------------: | :-----------------------------: | :--------------: |
-| All measured values  | SST = 61.3333, SSE = 4          | R2_all = 0.9348  |
-| Wafer averages       | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392 |
-| Location 1           | SST = 18, SSE = 2               | R2_1 = 0.8889    |
-| Location 2           | SST = 32.6667, SSE = 2          | R2_2 = 0.9388    |
-| Location R2 average  | -                               | R2_avgn = 0.9138 |
-| Pooled               | SST = 50.6667, SSE = 4          | R2_pool = 0.9211 |
-| Location pattern     | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739  |
-| Measured correlation | cross sum = 24 (each order)     | r_y = 0.9474     |
-| Error correlation    | cross sum = 1 (each order)      | r_e = 0.5        |
-| Correlation ratio    | 1.5 / 1.9474                    | kappa = 0.7703   |
+| Quantity                         | Value                           | R2 or ratio      |
+| :------------------------------: | :-----------------------------: | :--------------: |
+| All measured values              | SST = 61.3333, SSE = 4          | R2_all = 0.9348  |
+| Wafer averages                   | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392 |
+| Location 1                       | SST = 18, SSE = 2               | R2_1 = 0.8889    |
+| Location 2                       | SST = 32.6667, SSE = 2          | R2_2 = 0.9388    |
+| Location R2 average              | -                               | R2_avgn = 0.9138 |
+| SST-weighted location R2 average | SST = 50.6667, SSE = 4          | R2_pool = 0.9211 |
+| Location pattern                 | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739  |
+| Measured correlation             | cross sum = 24 (each order)     | r_y = 0.9474     |
+| Error correlation                | cross sum = 1 (each order)      | r_e = 0.5        |
+| Correlation ratio                | 1.5 / 1.9474                    | kappa = 0.7703   |
 
 식 (22) 부터 식 (26) 의 항등식에 Table 3 의 값을 넣으면 아래처럼 양변이 같다. 식 (25) 는 $`\mathrm{SST}_1 \ne \mathrm{SST}_2`$ 이어서 쓰지 않는다.
 
@@ -409,8 +409,8 @@ Table 3. Sums of squares and R2 values
 - **correlation ratio**: 식 (21) 의 $`\kappa`$. 측정 위치 $`N`$ 곳을 평균할 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값.
 - **location pattern fraction**: 식 (18) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
 - **measurement location**: wafer 위에서 측정값을 얻는 지점. 모든 wafer 에서 같은 번호 $`j`$ 는 같은 지점이다.
-- **pooled R2**: 여러 묶음의 SSE 와 SST 를 각각 더한 뒤 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 로 구한 R².
 - **R2 (coefficient of determination)**: $`1 - \mathrm{SSE}/\mathrm{SST}`$. 예측 오차 제곱합이 평균에서 벗어난 제곱합의 몇 분의 일인지를 1 에서 뺀 값.
+- **SST-weighted location R2 average**: 식 (17) 의 $`R^2_{\mathrm{pool}}`$. 측정 위치 R² $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이며, 측정 위치 $`N`$ 곳의 SSE 합과 SST 합으로 구한 R² 와 같다.
 - **sum of squared errors (SSE)**: 예측 오차를 제곱해 더한 값.
 - **total sum of squares (SST)**: 측정값과 그 평균의 차이를 제곱해 더한 값.
 - **wafer average**: wafer 한 장의 측정값 $`N`$ 개를 산술 평균한 값.
@@ -689,7 +689,7 @@ R^2_{\mathrm{pool}} = R^2_{\mathrm{avgn}}
 \hspace{19em} (25)
 ```
 
-### B.4 Relation without the Pooled R2
+### B.4 Relation without the SST-weighted Location R2 Average
 
 식 (26) 은 B.1 의 식 (22) 와 B.2 의 식 (23) 에서 $`1 - R^2_{\mathrm{pool}}`$ 을 지워 증명한다.
 
@@ -778,7 +778,7 @@ R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathr
 
 식 (17) 의 $`\mathrm{SSE}_j`$ 와 $`\mathrm{SST}_j`$ 는 제곱합이므로 $`1 - R^2_{\mathrm{pool}} \ge 0`$ 이고, 식 (18) 의 분자와 분모도 제곱합이므로 $`\lambda \ge 0`$ 이다. 아래 증명은 이 두 부호를 쓴다.
 
-#### Total and Pooled R2
+#### Total R2 and SST-weighted Location R2 Average
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{pool}} = \left( 1 - R^2_{\mathrm{pool}} \right) - \left( 1 - R^2_{\mathrm{all}} \right)
@@ -801,7 +801,7 @@ R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}
 \hspace{19em} (27)
 ```
 
-#### Range of the Pooled R2
+#### Range of the SST-weighted Location R2 Average
 
 ```math
 R^2_{\mathrm{pool}} - \min_{k} R^2_k = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} \left( R^2_j - \min_{k} R^2_k \right)
@@ -829,7 +829,7 @@ R^2_{\mathrm{pool}} \le \max_{j} R^2_j
 \hspace{19em} (29)
 ```
 
-#### Pooled R2 and Location R2 Average
+#### SST-weighted and Unweighted Location R2 Averages
 
 ```math
 R^2_{\mathrm{pool}} - R^2_{\mathrm{avgn}} = \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j
@@ -845,7 +845,7 @@ R^2_{\mathrm{pool}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\ma
 \hspace{19em} (30)
 ```
 
-#### Wafer Average and Pooled R2
+#### Wafer Average R2 and SST-weighted Location R2 Average
 
 ```math
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{pool}} = (1 - \kappa) \left( 1 - R^2_{\mathrm{pool}} \right)
