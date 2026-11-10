@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 17 | Created: 2026-11-09 | Updated: 2026-11-10 17:09 CST
+Version 18 | Created: 2026-11-09 | Updated: 2026-11-10 17:11 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -31,7 +31,7 @@ Version 17 | Created: 2026-11-09 | Updated: 2026-11-10 17:09 CST
 
 ## 2. Summary
 
-세 R² 는 SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{pool}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{pool}})`$ 이다.
+세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{pool}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{pool}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{pool}})`$ 이다.
 $`R^2_{\mathrm{pool}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 로 가중 평균한 값이고, $`\mathrm{SST}_j`$ 가 모두 같으면 $`R^2_{\mathrm{avgn}}`$ 과 같다.
 그래서 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{pool}}`$ 은 언제나 성립하고, $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{pool}}`$ 은 오차 비 $`\kappa`$ 가 1 이하일 때 성립한다.
 
@@ -56,7 +56,7 @@ Table 1. Symbols
 | $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                           | scalar  | -                                 |
 | $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                        | scalar  | -                                 |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)   | scalar  | $`\mathrm{SST}_j \gt 0`$          |
-| $`R^2_{\mathrm{pool}}`$            | SST 가중 측정 위치 R² 평균. $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값                                  | scalar  | -                                 |
+| $`R^2_{\mathrm{pool}}`$            | 측정 위치 R² 의 SST 가중 평균. 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값            | scalar  | -                                 |
 | $`\lambda`$                        | 측정 위치 패턴 비율 (location pattern fraction). 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 | scalar  | $`0 \le \lambda \lt 1`$           |
 | $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                                                                  | scalar  | $`\bar{r}_y \gt -1/(N-1)`$        |
 | $`\kappa`$                         | 오차 비 (error ratio). wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값                      | scalar  | $`\kappa \gt 0`$                  |
@@ -196,7 +196,7 @@ R^2_{\mathrm{pool}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \m
 
 ## 5. Interpretation
 
-세 R² 는 SST 가중 측정 위치 R² 평균 $`R^2_{\mathrm{pool}}`$ 을 거쳐 아래 식 (20), 식 (21), 식 (22) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
+세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{pool}}`$ 을 거쳐 아래 식 (20), 식 (21), 식 (22) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
 1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{pool}} \right)
