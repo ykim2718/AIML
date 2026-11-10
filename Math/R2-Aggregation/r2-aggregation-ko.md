@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 25 | Created: 2026-11-09 | Updated: 2026-11-10 17:22 CST
+Version 26 | Created: 2026-11-09 | Updated: 2026-11-10 17:23 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -7,7 +7,7 @@ Version 25 | Created: 2026-11-09 | Updated: 2026-11-10 17:22 CST
 - [4. Definitions](#4-definitions)
 - [5. Interpretation](#5-interpretation)
   - [5.1 R2 over All Measured Values Form](#51-r2-over-all-measured-values-form)
-  - [5.2 Wafer Average Form](#52-wafer-average-form)
+  - [5.2 R2 over Wafer Averages Form](#52-r2-over-wafer-averages-form)
   - [5.3 R2 Average over N Locations Form](#53-r2-average-over-n-locations-form)
   - [5.4 Relation without the SST-weighted R2 Average over N Locations](#54-relation-without-the-sst-weighted-r2-average-over-n-locations)
   - [5.5 Inequalities](#55-inequalities)
@@ -18,7 +18,7 @@ Version 25 | Created: 2026-11-09 | Updated: 2026-11-10 17:22 CST
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
   - [B.1 R2 over All Measured Values Form](#b1-r2-over-all-measured-values-form)
-  - [B.2 Wafer Average Form](#b2-wafer-average-form)
+  - [B.2 R2 over Wafer Averages Form](#b2-r2-over-wafer-averages-form)
   - [B.3 R2 Average over N Locations Form](#b3-r2-average-over-n-locations-form)
   - [B.4 Relation without the SST-weighted R2 Average over N Locations](#b4-relation-without-the-sst-weighted-r2-average-over-n-locations)
   - [B.5 Inequalities](#b5-inequalities)
@@ -80,7 +80,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > **Definition: R2 over all measured values**<br>
 > 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
 
-> **Definition: R2 of wafer averages**<br>
+> **Definition: R2 over wafer averages**<br>
 > Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 wafer 평균 하나를 직접 예측한 값이다.
 
 > **Definition: R2 average over N locations**<br>
@@ -192,7 +192,7 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 
 - $`\mathrm{SST}_j`$ 가 모두 같으면 $`\bar{r}_y`$ 는 측정 위치 두 곳의 측정값 상관계수를 모든 쌍에서 산술 평균한 값이다.
 - $`\bar{r}_y = 1`$ 은 wafer 마다 측정값이 모든 측정 위치에서 같은 양만큼 움직이는 경우이다.
-- $`1 + (N-1)\bar{r}_y`$ 는 0 이상이다. 0 이 되는 것은 $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 인 경우뿐이며, 그 증명은 [B.2](#b2-wafer-average-form) 에 있다.
+- $`1 + (N-1)\bar{r}_y`$ 는 0 이상이다. 0 이 되는 것은 $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 인 경우뿐이며, 그 증명은 [B.2](#b2-r2-over-wafer-averages-form) 에 있다.
 
 ## 5. Interpretation
 
@@ -221,7 +221,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \math
 
 - 성립 조건은 $`\sum_j \mathrm{SST}_j \gt 0`$ 이며, 이때 $`\lambda \lt 1`$ 이다.
 
-### 5.2 Wafer Average Form
+### 5.2 R2 over Wafer Averages Form
 
 식 (21) 의 $`\kappa`$ 는 측정 위치 $`N`$ 곳에서 wafer 평균으로 옮겨 갈 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값이다. 식 (39) 에서 $`\mathrm{SST}_{\mathrm{avgw}}`$ 는 $`\sum_j \mathrm{SST}_j`$ 의 $`[1 + (N-1)\bar{r}_y]/N^2`$ 배이고, 식 (19) 에서 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 $`\sum_j \mathrm{SSE}_j`$ 의 $`\kappa [1 + (N-1)\bar{r}_y]/N^2`$ 배이다. 그래서 $`\kappa \lt 1`$ 이면 wafer 평균 예측의 SSE 가 SST 보다 더 줄어 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{wavgn}}`$ 보다 커진다.
 
@@ -316,7 +316,7 @@ Table 3. Sums of squares and R2 values
 | Quantity                                 | Value                           | R2 or ratio       |
 | :--------------------------------------: | :-----------------------------: | :---------------: |
 | R2 over all measured values              | SST = 61.3333, SSE = 4          | R2_all = 0.9348   |
-| Wafer averages                           | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392  |
+| R2 over wafer averages                   | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392  |
 | Location 1                               | SST = 18, SSE = 2               | R2_1 = 0.8889     |
 | Location 2                               | SST = 32.6667, SSE = 2          | R2_2 = 0.9388     |
 | R2 average over N locations              | -                               | R2_avgn = 0.9138  |
@@ -458,7 +458,7 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 \hspace{19em} (20)
 ```
 
-### B.2 Wafer Average Form
+### B.2 R2 over Wafer Averages Form
 
 식 (21) 은 $`\mathrm{SST}_{\mathrm{avgw}}`$ 를 측정 위치마다의 제곱합과 교차합으로 나누고, 그 결과를 식 (11) 에 넣어 증명한다. 쓰는 정의 식은 아래 식 (2), 식 (3), 식 (5), 식 (9), 식 (11), 식 (12), 식 (16), 식 (18), 식 (19) 이다.
 
@@ -746,7 +746,7 @@ R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{avgn}} \iff \sum_{j=1}^{N} \left( \frac{\m
 \hspace{19em} (28)
 ```
 
-#### Wafer Average R2 and SST-weighted R2 Average over N Locations
+#### R2 over Wafer Averages and SST-weighted R2 Average over N Locations
 
 ```math
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{wavgn}} = (1 - \kappa) \left( 1 - R^2_{\mathrm{wavgn}} \right)
@@ -762,7 +762,7 @@ R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}} \iff \kappa \le 1
 \hspace{19em} (29)
 ```
 
-#### R2 over All Measured Values and Wafer Average R2
+#### R2 over All Measured Values and R2 over Wafer Averages
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{avgw}} = \left( 1 - R^2_{\mathrm{avgw}} \right) \left( 1 - \frac{1 - \lambda}{\kappa} \right)
