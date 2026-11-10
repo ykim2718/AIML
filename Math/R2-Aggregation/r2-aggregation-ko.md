@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 7 | Created: 2026-11-09 | Updated: 2026-11-10 06:17 CST
+Version 8 | Created: 2026-11-09 | Updated: 2026-11-10 15:57 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -64,6 +64,8 @@ Table 1. Symbols
 | $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                                 | scalar  | $`-1/(N-1) \lt \bar{r}_y \le 1`$       |
 | $`\bar{r}_e`$                      | 측정 위치 사이 예측 오차 상관                                                              | scalar  | $`-1/(N-1) \lt \bar{r}_e \le 1`$       |
 | $`\kappa`$                         | 상관 비 (correlation ratio)                                                                | scalar  | $`\kappa \gt 0`$                       |
+
+아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
 
 SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
 
@@ -407,6 +409,7 @@ Table 3. Sums of squares and R2 values
 ## Appendix A. Terminology
 
 - **correlation ratio**: 식 (21) 의 $`\kappa`$. 측정 위치 $`N`$ 곳을 평균할 때 SSE 가 줄어드는 비율을 SST 가 줄어드는 비율로 나눈 값.
+- **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
 - **location pattern fraction**: 식 (18) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
 - **measurement location**: wafer 위에서 측정값을 얻는 지점. 모든 wafer 에서 같은 번호 $`j`$ 는 같은 지점이다.
 - **R2 (coefficient of determination)**: $`1 - \mathrm{SSE}/\mathrm{SST}`$. 예측 오차 제곱합이 평균에서 벗어난 제곱합의 몇 분의 일인지를 1 에서 뺀 값.
