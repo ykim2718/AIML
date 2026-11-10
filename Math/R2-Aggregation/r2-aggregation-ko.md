@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 27 | Created: 2026-11-09 | Updated: 2026-11-10 17:25 CST
+Version 28 | Created: 2026-11-09 | Updated: 2026-11-10 17:28 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -781,24 +781,27 @@ R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
 
 ## Appendix C. Intuitive Meaning
 
-측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 을 Table 2 의 값으로 그리면 아래 Fig 1 이다.
+SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균 $`R^2_{\mathrm{avgn}}`$ 을 측정 위치 두 곳의 예로 견주면 아래 Fig 1 이다.
 
 <img src="r2-aggregation-ko_fig/fig1.png" width="800" style="max-width: 100%;" alt="Fig 1">
 
-Fig 1. Sums of squares of each measurement location and of the N locations pooled
+Fig 1. Plain and SST-weighted averages of location R2
 
-- (a): 측정 위치마다 막대의 높이가 $`\mathrm{SST}_j`$ 이고, 파란 부분은 예측이 맞힌 몫 $`\mathrm{SST}_j - \mathrm{SSE}_j`$, 주황 부분은 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 이다. 막대마다 파란 부분의 비율이 $`R^2_j`$ 이고, 두 비율을 산술 평균하면 $`R^2_{\mathrm{avgn}} = 0.9138`$ 이다.
-- (b): 측정 위치 두 곳의 막대를 한 막대에 쌓았다. 막대의 높이는 $`\sum_j \mathrm{SST}_j = 50.6667`$, 주황 부분은 $`\sum_j \mathrm{SSE}_j = 4`$ 이고, 파란 부분의 비율이 $`R^2_{\mathrm{wavgn}} = 0.9211`$ 이다.
+- 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 몫이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 2 와 다른 예시이다.
+- (a): 두 측정 위치를 같은 크기로 그렸다. $`R^2_{\mathrm{avgn}}`$ 은 이처럼 측정 위치마다 가중치 $`1/N`$ 을 주어 $`(0.90 + 0.50)/2 = 0.70`$ 이다.
+- (b): 두 측정 위치를 $`\mathrm{SST}_j`$ 그대로의 크기로 그린 뒤 한 원으로 합쳤다. $`R^2_{\mathrm{wavgn}}`$ 은 합친 원에서 파란 고리의 몫이며 $`1 - 10.5/101 = 0.896`$ 이다.
 
-$`R^2_{\mathrm{wavgn}}`$ 은 측정 위치마다 따로 담긴 변동을 한 그릇에 모두 부은 뒤, 그 그릇에서 예측이 맞힌 몫을 잰 값이다. 그릇은 측정 위치 $`N`$ 곳의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 를 각각 더하는 것이고, 측정 위치 $`j`$ 가 붓는 양은 $`\mathrm{SST}_j`$ 이다. 그래서 변동이 큰 측정 위치가 그릇의 비율을 더 많이 정하며, 그 무게가 아래 식 (22) 의 가중치 $`\mathrm{SST}_j / \sum_k \mathrm{SST}_k`$ 이다.
+두 값의 차이는 측정 위치 2 를 얼마나 크게 세는지에서 생긴다. 측정 위치 2 는 wafer 사이에서 측정값이 거의 변하지 않아 ($`\mathrm{SST}_2 = 1`$) 예측이 맞힐 변동이 거의 없다. (a) 는 이 측정 위치를 측정 위치 1 과 같은 크기의 원으로 부풀려서, 크기가 0.5 인 오차가 원의 절반을 차지하게 만든다. (b) 에서는 측정 위치 2 가 제 크기인 작은 점으로 남고, 합친 원의 파란 몫은 측정 위치 1 의 몫과 거의 같다.
+
+SST 가중 평균이 의미를 갖는 까닭은 아래 세 가지이다.
+
+- **맞힐 변동이 큰 측정 위치에 무게를 둔다.** 측정 위치마다 담긴 변동을 한 그릇에 부어 합치면, 그릇의 비율은 많이 부은 측정 위치가 더 많이 정한다. 그 무게가 아래 식 (22) 의 가중치 $`\mathrm{SST}_j / \sum_k \mathrm{SST}_k`$ 이며, 측정 위치 $`j`$ 가 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체에서 차지하는 몫이다. Fig 1 의 예에서는 0.99 대 0.01 이다.
+- **변동이 거의 없는 측정 위치의 $`R^2_j`$ 에 흔들리지 않는다.** $`\mathrm{SST}_j`$ 가 작으면 $`R^2_j`$ 는 작은 오차에도 크게 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 늘리면 $`R^2_2`$ 는 0.50 에서 -1.00 으로, $`R^2_{\mathrm{avgn}}`$ 은 0.70 에서 -0.05 로 떨어지지만, $`R^2_{\mathrm{wavgn}}`$ 은 0.896 에서 0.881 로 거의 그대로이다.
+- **하나의 비율로 읽힌다.** $`R^2_{\mathrm{wavgn}} = 1 - \sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j`$ 는 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체 가운데 예측이 맞힌 몫이다. 그래서 [5.1](#51-r2-over-all-measured-values-form) 과 [5.2](#52-r2-over-wafer-averages-form) 의 항등식에서 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$ 와 $`\lambda`$, $`\kappa`$ 만으로 이어진다. $`R^2_{\mathrm{avgn}}`$ 은 $`\mathrm{SST}_j`$ 가 모두 같을 때만 이 값과 같아진다.
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k}\, R^2_j
 \hspace{19em} (22)
 ```
 
-- Fig 1 에서 $`\mathrm{SST}_2 = 32.6667`$ 은 $`\mathrm{SST}_1 = 18`$ 의 1.81 배여서 가중치가 0.6447 대 0.3553 이 되고, $`R^2_{\mathrm{wavgn}} = 0.9211`$ 은 $`R^2_2 = 0.9388`$ 쪽에 더 가깝다.
-- $`R^2_{\mathrm{avgn}}`$ 은 그릇마다 비율을 먼저 잰 뒤 그릇의 크기와 상관없이 평균한 값이다 (Fig 1 (a)). 변동이 작은 측정 위치의 $`R^2_j`$ 도 변동이 큰 측정 위치와 같은 가중치 $`1/N`$ 으로 들어간다.
-- 두 값은 그릇의 크기가 모두 같을 때, 곧 $`\mathrm{SST}_j`$ 가 모두 같을 때 같아진다.
-
-Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 Table 2 의 측정값과 예측값으로 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 를 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
+Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
