@@ -1,12 +1,12 @@
 # R2 by Aggregation Level
-Version 23 | Created: 2026-11-09 | Updated: 2026-11-10 17:21 CST
+Version 24 | Created: 2026-11-09 | Updated: 2026-11-10 17:22 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Notation](#3-notation)
 - [4. Definitions](#4-definitions)
 - [5. Interpretation](#5-interpretation)
-  - [5.1 Total Form](#51-total-form)
+  - [5.1 R2 over All Measured Values Form](#51-r2-over-all-measured-values-form)
   - [5.2 Wafer Average Form](#52-wafer-average-form)
   - [5.3 R2 Average over N Locations Form](#53-r2-average-over-n-locations-form)
   - [5.4 Relation without the SST-weighted R2 Average over N Locations](#54-relation-without-the-sst-weighted-r2-average-over-n-locations)
@@ -17,7 +17,7 @@ Version 23 | Created: 2026-11-09 | Updated: 2026-11-10 17:21 CST
   - [7.2 Breaking Conditions](#72-breaking-conditions)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Derivation](#appendix-b-derivation)
-  - [B.1 Total Form](#b1-total-form)
+  - [B.1 R2 over All Measured Values Form](#b1-r2-over-all-measured-values-form)
   - [B.2 Wafer Average Form](#b2-wafer-average-form)
   - [B.3 R2 Average over N Locations Form](#b3-r2-average-over-n-locations-form)
   - [B.4 Relation without the SST-weighted R2 Average over N Locations](#b4-relation-without-the-sst-weighted-r2-average-over-n-locations)
@@ -77,7 +77,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 
 ## 4. Definitions
 
-> **Definition: R2 of all measured values**<br>
+> **Definition: R2 over all measured values**<br>
 > 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
 
 > **Definition: R2 of wafer averages**<br>
@@ -215,7 +215,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \math
 
 세 식은 모든 wafer 가 같은 측정 위치 $`N`$ 곳을 갖는다고 둔다. 식 (21) 은 wafer 평균의 예측값 $`\hat{y}_{iw}`$ 를 측정 위치 예측값과 어떻게 관련지어 구했는지와 상관없이 성립한다.
 
-### 5.1 Total Form
+### 5.1 R2 over All Measured Values Form
 
 식 (20) 의 $`1 - \lambda`$ 는 $`\mathrm{SST}_{\mathrm{all}}`$ 가운데 측정 위치마다의 wafer 사이 변동 $`\sum_j \mathrm{SST}_j`$ 가 차지하는 비율이다. 식 (33) 에서 $`\mathrm{SST}_{\mathrm{all}}`$ 은 이 변동과 측정 위치 평균의 차이 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 로 나뉘지만, 식 (34) 에서 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`\mathrm{SSE}_j`$ 의 합과 같아 그대로 남는다. 그래서 $`R^2_{\mathrm{all}}`$ 은 측정 위치 평균의 차이를 맞힌 몫 $`\lambda (1 - R^2_{\mathrm{wavgn}})`$ 만큼 $`R^2_{\mathrm{wavgn}}`$ 보다 크다.
 
@@ -315,7 +315,7 @@ Table 3. Sums of squares and R2 values
 
 | Quantity                                 | Value                           | R2 or ratio       |
 | :--------------------------------------: | :-----------------------------: | :---------------: |
-| All measured values                      | SST = 61.3333, SSE = 4          | R2_all = 0.9348   |
+| R2 over all measured values              | SST = 61.3333, SSE = 4          | R2_all = 0.9348   |
 | Wafer averages                           | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392  |
 | Location 1                               | SST = 18, SSE = 2               | R2_1 = 0.8889     |
 | Location 2                               | SST = 32.6667, SSE = 2          | R2_2 = 0.9388     |
@@ -372,7 +372,7 @@ Table 3. Sums of squares and R2 values
 
 ## Appendix B. Derivation
 
-### B.1 Total Form
+### B.1 R2 over All Measured Values Form
 
 식 (20) 은 $`\mathrm{SST}_{\mathrm{all}}`$ 을 측정 위치마다 나누어 증명한다. 쓰는 정의 식은 아래 식 (5), 식 (6), 식 (7), 식 (8), 식 (12), 식 (13), 식 (16), 식 (17) 이다.
 
@@ -679,7 +679,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \math
 
 식 (16) 의 $`\mathrm{SSE}_j`$ 와 $`\mathrm{SST}_j`$ 는 제곱합이므로 $`1 - R^2_{\mathrm{wavgn}} \ge 0`$ 이고, 식 (17) 의 분자와 분모도 제곱합이므로 $`\lambda \ge 0`$ 이다. 아래 증명은 이 두 부호를 쓴다.
 
-#### Total R2 and SST-weighted R2 Average over N Locations
+#### R2 over All Measured Values and SST-weighted R2 Average over N Locations
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \left( 1 - R^2_{\mathrm{wavgn}} \right) - \left( 1 - R^2_{\mathrm{all}} \right)
