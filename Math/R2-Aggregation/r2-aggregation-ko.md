@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 14 | Created: 2026-11-09 | Updated: 2026-11-10 17:04 CST
+Version 15 | Created: 2026-11-09 | Updated: 2026-11-10 17:06 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -43,7 +43,7 @@ Table 1. Symbols
 | :--------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-----: | :-------------------------------: |
 | $`M`$                              | wafer 수                                                                                                                    | integer | $`M \ge 2`$                       |
 | $`N`$                              | wafer 한 장의 측정 위치 수                                                                                                  | integer | $`N \ge 2`$, 모든 wafer 에서 같음 |
-| $`T`$                              | 측정값의 개수 $`MN`$                                                                                                        | integer | -                                 |
+| $`T`$                              | 전체 (all) 측정값의 개수 $`MN`$                                                                                             | integer | -                                 |
 | $`i`$                              | wafer 번호                                                                                                                  | integer | $`1 \le i \le M`$                 |
 | $`j`$, $`k`$                       | 측정 위치 번호                                                                                                              | integer | $`1 \le j, k \le N`$              |
 | $`y_{ij}`$                         | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                                                  | scalar  | -                                 |
