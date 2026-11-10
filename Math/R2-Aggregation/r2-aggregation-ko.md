@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 30 | Created: 2026-11-09 | Updated: 2026-11-10 23:37 UTC
+Version 31 | Created: 2026-11-09 | Updated: 2026-11-10 23:41 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -781,16 +781,15 @@ R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
 
 ## Appendix C. Intuitive Meaning
 
-가중하지 않은 산술 평균 $`R^2_{\mathrm{avgn}}`$, SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$, SSE 가중 평균을 측정 위치 두 곳의 예로 견주면 아래 Fig 1 이다.
+SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균 $`R^2_{\mathrm{avgn}}`$ 을 측정 위치 두 곳의 예로 견주면 아래 Fig 1 이다.
 
 <img src="r2-aggregation-ko_fig/fig1.png" width="800" style="max-width: 100%;" alt="Fig 1">
 
-Fig 1. Plain, SST-weighted and SSE-weighted averages of location R2
+Fig 1. Plain and SST-weighted averages of location R2
 
 - 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 몫이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 2 와 다른 예시이다.
-- (a): 두 측정 위치를 같은 크기로 그렸다. $`R^2_{\mathrm{avgn}}`$ 은 이처럼 측정 위치마다 가중치 $`1/N`$ 을 주어 $`(0.90 + 0.50)/2 = 0.70`$ 이다.
+- (a): 두 측정 위치를 같은 크기로 그렸다. 측정 위치 1 의 두 화살표는 중심에서 바깥 원과 안쪽 원의 가장자리까지 그은 반지름이며, 두 원의 넓이가 각각 $`\mathrm{SST}_1`$ 과 $`\mathrm{SSE}_1`$ 이다. $`R^2_{\mathrm{avgn}}`$ 은 이처럼 측정 위치마다 가중치 $`1/N`$ 을 주어 $`(0.90 + 0.50)/2 = 0.70`$ 이다.
 - (b): 두 측정 위치를 $`\mathrm{SST}_j`$ 그대로의 크기로 그린 뒤 한 원으로 합쳤다. $`R^2_{\mathrm{wavgn}}`$ 은 합친 원에서 파란 고리의 몫이며 $`1 - 10.5/101 = 0.896`$ 이다.
-- (c): 두 측정 위치를 $`\mathrm{SSE}_j`$ 에 비례하는 넓이로 그렸으며, 원마다 안쪽 원이 차지하는 몫은 (a), (b) 와 같다. SSE 가중 평균은 $`(10 \times 0.90 + 0.5 \times 0.50)/10.5 = 0.881`$ 이고, 두 원을 한 원으로 합쳐 이 값을 얻는 그림은 없다.
 
 두 값의 차이는 측정 위치 2 를 얼마나 크게 세는지에서 생긴다. 측정 위치 2 는 wafer 사이에서 측정값이 거의 변하지 않아 ($`\mathrm{SST}_2 = 1`$) 예측이 맞힐 변동이 거의 없다. (a) 는 이 측정 위치를 측정 위치 1 과 같은 크기의 원으로 부풀려서, 크기가 0.5 인 오차가 원의 절반을 차지하게 만든다. (b) 에서는 측정 위치 2 가 제 크기인 작은 점으로 남고, 합친 원의 파란 몫은 측정 위치 1 의 몫과 거의 같다.
 
@@ -807,7 +806,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \math
 
 가중치를 $`\mathrm{SST}_j`$ 가 아니라 $`\mathrm{SSE}_j`$ 로 두지 않는 까닭은 아래 두 가지이다.
 
-- **비율 하나로 줄어들지 않는다.** $`R^2_j = 1 - \mathrm{SSE}_j / \mathrm{SST}_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - \sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 1 (c) 의 SSE 가중 평균 0.881 은 (b) 처럼 한 원의 몫으로 그릴 수 없어, 어떤 변동의 몇 분의 일인지로 읽히지 않는다.
+- **비율 하나로 줄어들지 않는다.** $`R^2_j = 1 - \mathrm{SSE}_j / \mathrm{SST}_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - \sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 1 의 예에서 SSE 가중 평균은 $`(10 \times 0.90 + 0.5 \times 0.50)/10.5 = 0.881`$ 이며, 어떤 변동의 몇 분의 일인지로 읽히지 않는다.
 - **가중치가 예측 model 에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해져 어떤 예측 model 을 쓰든 같지만, $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 같은 측정값에서 두 예측 model 을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 몫인지 가중치가 바뀐 몫인지 가릴 수 없다.
 
-Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$, SSE 가중 평균을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
+Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
