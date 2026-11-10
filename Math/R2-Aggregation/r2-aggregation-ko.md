@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 4 | Created: 2026-11-09 | Updated: 2026-11-10 05:39 CST
+Version 5 | Created: 2026-11-09 | Updated: 2026-11-10 05:46 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -8,7 +8,7 @@ Version 4 | Created: 2026-11-09 | Updated: 2026-11-10 05:39 CST
 - [5. Interpretation](#5-interpretation)
   - [5.1 Total Form](#51-total-form)
   - [5.2 Wafer Average Form](#52-wafer-average-form)
-  - [5.3 Location Average Form](#53-location-average-form)
+  - [5.3 Location R2 Average Form](#53-location-r2-average-form)
   - [5.4 Relation without the Pooled R2](#54-relation-without-the-pooled-r2)
   - [5.5 Inequalities](#55-inequalities)
 - [6. Worked Example](#6-worked-example)
@@ -19,14 +19,14 @@ Version 4 | Created: 2026-11-09 | Updated: 2026-11-10 05:39 CST
 - [Appendix B. Derivation](#appendix-b-derivation)
   - [B.1 Total Form](#b1-total-form)
   - [B.2 Wafer Average Form](#b2-wafer-average-form)
-  - [B.3 Location Average Form](#b3-location-average-form)
+  - [B.3 Location R2 Average Form](#b3-location-r2-average-form)
   - [B.4 Relation without the Pooled R2](#b4-relation-without-the-pooled-r2)
   - [B.5 Inequalities](#b5-inequalities)
 
 ## 1. Purpose
 
 - **Problem Statement**: wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정하면 측정값이 $`T = MN`$ 개 나온다. 같은 예측으로 R² 를 측정값 $`T`$ 개, wafer 평균 $`M`$ 개, 측정 위치마다의 wafer $`M`$ 장에서 구하면 세 R² 의 값이 서로 다르지만, 세 값 사이의 관계식은 없다.
-- **Goal**: 전체 $`R^2_{\mathrm{all}}`$, wafer 평균 $`R^2_{\mathrm{avgw}}`$, 측정 위치 평균 $`R^2_{\mathrm{avgn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
+- **Goal**: 전체 $`R^2_{\mathrm{all}}`$, wafer 평균 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
 - **Non-Goal**: 예측 model 을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
 
 ## 2. Summary
@@ -58,14 +58,14 @@ Table 1. Symbols
 | $`R^2_{\mathrm{all}}`$             | 측정값 $`T`$ 개로 구한 전체 R²                                                       | scalar  | $`\mathrm{SST}_{\mathrm{all}} \gt 0`$  |
 | $`R^2_{\mathrm{avgw}}`$            | wafer 평균 $`M`$ 개로 구한 wafer 평균 R²                                             | scalar  | $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 측정 위치 R²                            | scalar  | $`\mathrm{SST}_j \gt 0`$               |
-| $`R^2_{\mathrm{avgn}}`$            | $`R^2_j`$ 의 $`N`$ 개 산술 평균                                                      | scalar  | -                                      |
+| $`R^2_{\mathrm{avgn}}`$            | 측정 위치 R² 평균. $`R^2_j`$ 의 $`N`$ 개 산술 평균                                   | scalar  | -                                      |
 | $`R^2_{\mathrm{pool}}`$            | 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 더해 구한 pooled R²                          | scalar  | -                                      |
 | $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율           | scalar  | $`0 \le \lambda \lt 1`$                |
 | $`\bar{r}_y`$                      | 측정 위치 사이 측정값 상관                                                           | scalar  | $`-1/(N-1) \lt \bar{r}_y \le 1`$       |
 | $`\bar{r}_e`$                      | 측정 위치 사이 예측 오차 상관                                                        | scalar  | $`-1/(N-1) \lt \bar{r}_e \le 1`$       |
 | $`\kappa`$                         | 상관 비 (correlation ratio)                                                          | scalar  | $`\kappa \gt 0`$                       |
 
-SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 $`N`$ 곳의 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳을 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
+SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳을 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
 
 - $`\hat{y}_{ij}`$: 영어로 "y hat i j", 한국어로 "와이 햇 아이 제이" 라 읽는다.
 - $`\bar{y}`$: 영어로 "y bar", 한국어로 "와이 바" 라 읽는다.
@@ -129,8 +129,8 @@ e_{ij} = y_{ij} - \hat{y}_{ij}
 > **Definition: Location R2**<br>
 > 측정 위치 $`R^2_j`$ 는 측정 위치 $`j`$ 의 wafer $`M`$ 장에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_j`$ 를 측정값과 측정 위치 평균의 차이의 제곱합 $`\mathrm{SST}_j`$ 로 나눈 값을 뺀 값이다.
 
-> **Definition: Location average R2**<br>
-> 측정 위치 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`N`$ 곳의 측정 위치 $`R^2_j`$ 를 산술 평균한 값이다.
+> **Definition: Location R2 average**<br>
+> 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`N`$ 곳의 측정 위치 $`R^2_j`$ 를 산술 평균한 값이다.
 
 네 R² 의 정의 식은 아래 식 (7) 부터 식 (16) 이다.
 
@@ -264,7 +264,7 @@ R^2_{\mathrm{pool}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathr
 - Wafer 사이 변동이 모든 측정 위치에서 같은 양인 $`\bar{r}_y = 1`$ 이고 예측 오차가 측정 위치 사이에서 상관이 없는 $`\bar{r}_e = 0`$ 이면 $`\kappa = 1/N`$ 이고, $`1 - R^2_{\mathrm{avgw}}`$ 는 $`1 - R^2_{\mathrm{pool}}`$ 의 $`1/N`$ 배이다.
 - 성립 조건은 $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 이다. $`\sum_j \mathrm{SSE}_j = 0`$ 이면 $`\bar{r}_e`$ 가 정의되지 않지만, 그때는 $`R^2_{\mathrm{avgw}} = R^2_{\mathrm{pool}} = 1`$ 이다.
 
-### 5.3 Location Average Form
+### 5.3 Location R2 Average Form
 
 식 (24) 에서 $`R^2_{\mathrm{pool}}`$ 은 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이고, $`R^2_{\mathrm{avgn}}`$ 은 같은 $`R^2_j`$ 를 가중치 $`1/N`$ 로 평균한 값이다. 그래서 $`\mathrm{SST}_j`$ 가 모두 같으면 식 (25) 가 성립한다.
 
@@ -362,7 +362,7 @@ Table 3. Sums of squares and R2 values
 | Wafer average        | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392 |
 | Location 1           | SST = 18, SSE = 2               | R2_1 = 0.8889    |
 | Location 2           | SST = 32.6667, SSE = 2          | R2_2 = 0.9388    |
-| Location average     | -                               | R2_avgn = 0.9138 |
+| Location R2 average  | -                               | R2_avgn = 0.9138 |
 | Pooled               | SST = 50.6667, SSE = 4          | R2_pool = 0.9211 |
 | Location pattern     | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739  |
 | Measured correlation | cross sum = 24 (each order)     | r_y = 0.9474     |
@@ -642,7 +642,7 @@ R^2_{\mathrm{avgw}} = 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mat
 
 식 (42) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 와 식 (45) 의 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 제곱합이므로 0 이상이다. $`\sum_j \mathrm{SST}_j \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 에서 $`1 + (N-1)\bar{r}_y \ge 0`$ 과 $`1 + (N-1)\bar{r}_e \ge 0`$ 이고, 각각 $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 과 $`\mathrm{SSE}_{\mathrm{avgw}} = 0`$ 일 때만 0 이다.
 
-### B.3 Location Average Form
+### B.3 Location R2 Average Form
 
 식 (24) 는 식 (17) 의 비를 측정 위치마다의 비로 나누어 증명한다. 쓰는 정의 식은 아래 식 (15) 와 식 (17) 이다.
 
@@ -829,7 +829,7 @@ R^2_{\mathrm{pool}} \le \max_{j} R^2_j
 \hspace{19em} (29)
 ```
 
-#### Pooled and Location Average R2
+#### Pooled R2 and Location R2 Average
 
 ```math
 R^2_{\mathrm{pool}} - R^2_{\mathrm{avgn}} = \sum_{j=1}^{N} \left( \frac{\mathrm{SST}_j}{\sum_{k=1}^{N} \mathrm{SST}_k} - \frac{1}{N} \right) R^2_j
