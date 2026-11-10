@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 24 | Created: 2026-11-09 | Updated: 2026-11-10 17:22 CST
+Version 25 | Created: 2026-11-09 | Updated: 2026-11-10 17:22 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -762,7 +762,7 @@ R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}} \iff \kappa \le 1
 \hspace{19em} (29)
 ```
 
-#### Total and Wafer Average R2
+#### R2 over All Measured Values and Wafer Average R2
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{avgw}} = \left( 1 - R^2_{\mathrm{avgw}} \right) \left( 1 - \frac{1 - \lambda}{\kappa} \right)
