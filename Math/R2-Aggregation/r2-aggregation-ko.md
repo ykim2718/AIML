@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 8 | Created: 2026-11-09 | Updated: 2026-11-10 15:57 CST
+Version 9 | Created: 2026-11-09 | Updated: 2026-11-10 15:59 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -65,7 +65,7 @@ Table 1. Symbols
 | $`\bar{r}_e`$                      | 측정 위치 사이 예측 오차 상관                                                              | scalar  | $`-1/(N-1) \lt \bar{r}_e \le 1`$       |
 | $`\kappa`$                         | 상관 비 (correlation ratio)                                                                | scalar  | $`\kappa \gt 0`$                       |
 
-아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
+🥑 아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
 
 SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\mathrm{avgw}`$ 는 wafer 평균값, $`j`$ 는 측정 위치 $`j`$, $`\mathrm{avgn}`$ 은 측정 위치 R² 평균, $`\mathrm{pool}`$ 은 측정 위치 $`N`$ 곳의 SSE 와 SST 를 각각 합친 것을 뜻한다. $`\bar{r}`$ 의 아래첨자 $`y`$ 와 $`e`$ 는 측정값과 예측 오차를 뜻한다. 이 문서의 SST, SSE, R², $`\lambda`$, $`\bar{r}`$, $`\kappa`$ 는 주어진 측정값과 예측값으로 정의하는 양이며 모수를 추정한 값이 아니므로 hat 을 붙이지 않는다. Hat 을 붙인 $`\hat{y}_{ij}`$ 와 $`\bar{\hat{y}}_{i\cdot}`$ 는 예측값이다.
 
