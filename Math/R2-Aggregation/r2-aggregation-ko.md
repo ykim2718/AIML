@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 32 | Created: 2026-11-09 | Updated: 2026-11-10 23:43 UTC
+Version 33 | Created: 2026-11-09 | Updated: 2026-11-11 08:03 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -11,6 +11,7 @@ Version 32 | Created: 2026-11-09 | Updated: 2026-11-10 23:43 UTC
   - [5.3 R2 Average over N Locations Form](#53-r2-average-over-n-locations-form)
   - [5.4 Relation without the SST-weighted R2 Average over N Locations](#54-relation-without-the-sst-weighted-r2-average-over-n-locations)
   - [5.5 Inequalities](#55-inequalities)
+  - [5.6 Inequalities among the Goal Quantities](#56-inequalities-among-the-goal-quantities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
   - [7.1 Reporting R2 of a Wafer Model](#71-reporting-r2-of-a-wafer-model)
@@ -298,11 +299,28 @@ R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}} \iff \kappa \ge 1 - \lambda
 - 식 (30): 측정 위치 평균의 차이가 차지하는 비율 $`\lambda`$ 가 클수록, 오차 비 $`\kappa`$ 가 클수록 $`R^2_{\mathrm{all}}`$ 이 $`R^2_{\mathrm{avgw}}`$ 이상이 되기 쉽다.
 - 성립 조건: 식 (25) 는 $`\sum_j \mathrm{SST}_j \gt 0`$, 식 (26) 부터 식 (28) 은 모든 $`j`$ 에서 $`\mathrm{SST}_j \gt 0`$, 식 (29) 는 $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 과 $`\sum_j \mathrm{SSE}_j \gt 0`$ 이다. 식 (30) 은 여기에 $`\mathrm{SSE}_{\mathrm{avgw}} \gt 0`$ 을 더한다.
 
+### 5.6 Inequalities among the Goal Quantities
+
+Goal 의 세 R² 사이에는 언제나 성립하는 순서가 없고, 두 값의 순서는 아래 Table 2 의 조건으로 정해진다.
+
+Table 2. Inequalities among the three R2 in the Goal
+
+| Pair                                             | Inequality                                      | Condition                                           | From             |
+| :----------------------------------------------: | :---------------------------------------------: | :-------------------------------------------------: | :--------------: |
+| $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$  | $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}}`$  | $`\kappa \ge 1 - \lambda`$ 일 때, 그리고 그때만     | 식 (30)          |
+| $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgn}}`$  | $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgn}}`$  | 식 (28) 의 우변이 0 이상일 때                       | 식 (25), 식 (28) |
+| $`R^2_{\mathrm{avgw}}`$, $`R^2_{\mathrm{avgn}}`$ | $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{avgn}}`$ | $`\kappa \le 1`$ 이고 식 (28) 의 우변이 0 이상일 때 | 식 (29), 식 (28) |
+
+- 첫 행은 필요충분조건이고, 둘째 행과 셋째 행은 충분조건이다. $`R^2_{\mathrm{all}}`$ 과 $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{avgw}}`$ 와 $`R^2_{\mathrm{avgn}}`$ 은 두 값을 바로 잇는 항등식이 없어, $`R^2_{\mathrm{wavgn}}`$ 을 사이에 두고 두 부등식을 이어서 얻는다.
+- $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 에 따라 $`R^2_{\mathrm{wavgn}} = R^2_{\mathrm{avgn}}`$ 이므로, 둘째 행은 언제나 성립하고 셋째 행은 $`\kappa \le 1`$ 과 필요충분조건이 된다.
+- 조건이 없어도 식 (25) 와 식 (26) 을 이으면 $`R^2_{\mathrm{all}} \ge \min_j R^2_j`$ 이고, $`R^2_{\mathrm{avgn}}`$ 도 $`\min_j R^2_j`$ 와 $`\max_j R^2_j`$ 사이에 있다.
+- Table 4 의 예에서는 $`\kappa = 0.7703`$ 이 $`1 - \lambda = 0.8261`$ 보다 작고 식 (28) 의 우변이 0.0072 로 0 이상이어서, $`R^2_{\mathrm{avgw}} = 0.9392 \gt R^2_{\mathrm{all}} = 0.9348 \gt R^2_{\mathrm{avgn}} = 0.9138`$ 이다.
+
 ## 6. Worked Example
 
-Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 2 이다.
+Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 3 이다.
 
-Table 2. Measured and predicted values
+Table 3. Measured and predicted values
 
 | Wafer i | y_i1 | y_i2 | Predicted y_i1 | Predicted y_i2 | e_i1 | e_i2 | Wafer average | Predicted wafer average | Wafer average error |
 | :-----: | :--: | :--: | :------------: | :------------: | :--: | :--: | :-----------: | :---------------------: | :-----------------: |
@@ -310,9 +328,9 @@ Table 2. Measured and predicted values
 | 2       | 13   | 15   | 13             | 14             | 0    | 1    | 14            | 13.0                    | 1.0                 |
 | 3       | 16   | 20   | 15             | 19             | 1    | 1    | 18            | 17.5                    | 0.5                 |
 
-Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 $`\hat{y}_{2w} = 13.0`$ 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 $`\bar{y} = 86/6 = 14.3333`$ 이고, 측정 위치 평균은 $`\bar{y}_{\cdot 1} = 13`$, $`\bar{y}_{\cdot 2} = 15.6667`$ 이다. 식 (6) 부터 식 (19) 로 구한 값은 아래 Table 3 이다.
+Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 $`\hat{y}_{2w} = 13.0`$ 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 $`\bar{y} = 86/6 = 14.3333`$ 이고, 측정 위치 평균은 $`\bar{y}_{\cdot 1} = 13`$, $`\bar{y}_{\cdot 2} = 15.6667`$ 이다. 식 (6) 부터 식 (19) 로 구한 값은 아래 Table 4 이다.
 
-Table 3. Sums of squares and R2 values
+Table 4. Sums of squares and R2 values
 
 | Quantity                                 | Value                           | R2 or ratio       |
 | :--------------------------------------: | :-----------------------------: | :---------------: |
@@ -326,14 +344,14 @@ Table 3. Sums of squares and R2 values
 | Measured correlation                     | cross sum = 24 (each order)     | r_y = 0.9474      |
 | Error ratio                              | 4 × 1.5 / (1.9474 × 4)          | kappa = 0.7703    |
 
-식 (20) 부터 식 (24) 의 항등식에 Table 3 의 값을 넣으면 아래처럼 양변이 같다. 식 (23) 은 $`\mathrm{SST}_1 \ne \mathrm{SST}_2`$ 이어서 쓰지 않는다.
+식 (20) 부터 식 (24) 의 항등식에 Table 4 의 값을 넣으면 아래처럼 양변이 같다. 식 (23) 은 $`\mathrm{SST}_1 \ne \mathrm{SST}_2`$ 이어서 쓰지 않는다.
 
 - 식 (20): 좌변 $`1 - 0.9348 = 0.0652`$, 우변 $`(1 - 0.1739)(1 - 0.9211) = 0.8261 \times 0.0789 = 0.0652`$.
 - 식 (21): 좌변 $`1 - 0.9392 = 0.0608`$, 우변 $`0.7703 \times 0.0789 = 0.0608`$.
 - 식 (22): 가중치는 $`18/50.6667 = 0.3553`$ 과 $`32.6667/50.6667 = 0.6447`$ 이고, $`0.3553 \times 0.8889 + 0.6447 \times 0.9388 = 0.9211`$.
 - 식 (24): 좌변 $`0.0652`$, 우변 $`(0.8261/0.7703) \times 0.0608 = 1.0725 \times 0.0608 = 0.0652`$.
 
-부등식 식 (25) 부터 식 (30) 에 Table 3 의 값을 넣으면 아래처럼 모두 성립한다.
+부등식 식 (25) 부터 식 (30) 에 Table 4 의 값을 넣으면 아래처럼 모두 성립한다.
 
 - 식 (25): $`R^2_{\mathrm{all}} = 0.9348`$ 이 $`R^2_{\mathrm{wavgn}} = 0.9211`$ 보다 크고, 차이 $`0.0137`$ 은 $`\lambda (1 - R^2_{\mathrm{wavgn}}) = 0.1739 \times 0.0789 = 0.0137`$ 이다.
 - 식 (26), 식 (27): $`R^2_1 = 0.8889 \le R^2_{\mathrm{wavgn}} = 0.9211 \le R^2_2 = 0.9388`$.
@@ -787,7 +805,7 @@ SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균
 
 Fig 1. Plain and SST-weighted averages of location R2
 
-- 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 몫이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 2 와 다른 예시이다.
+- 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 몫이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 3 와 다른 예시이다.
 - (a): 두 측정 위치를 같은 크기로 그렸다. 측정 위치 1 의 두 화살표는 중심에서 바깥 원과 안쪽 원의 가장자리까지 그은 반지름이며, 두 원의 넓이가 각각 $`\mathrm{SST}_1`$ 과 $`\mathrm{SSE}_1`$ 이다. $`R^2_{\mathrm{avgn}}`$ 은 이처럼 측정 위치마다 가중치 $`1/N`$ 을 주어 $`(0.90 + 0.50)/2 = 0.70`$ 이다.
 - (b): 두 측정 위치를 $`\mathrm{SST}_j`$ 그대로의 크기로 그린 뒤 한 원으로 합쳤다. $`R^2_{\mathrm{wavgn}}`$ 은 합친 원에서 파란 고리의 몫이며 $`1 - 10.5/101 = 0.896`$ 이다.
 
