@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 33 | Created: 2026-11-09 | Updated: 2026-11-11 08:03 UTC
+Version 34 | Created: 2026-11-09 | Updated: 2026-11-11 08:05 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -311,6 +311,7 @@ Table 2. Inequalities among the three R2 in the Goal
 | $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgn}}`$  | $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgn}}`$  | 식 (28) 의 우변이 0 이상일 때                       | 식 (25), 식 (28) |
 | $`R^2_{\mathrm{avgw}}`$, $`R^2_{\mathrm{avgn}}`$ | $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{avgn}}`$ | $`\kappa \le 1`$ 이고 식 (28) 의 우변이 0 이상일 때 | 식 (29), 식 (28) |
 
+- 첫 행의 조건 $`\kappa \ge 1 - \lambda`$ 는 $`\lambda \ge 1 - \kappa`$ 와 같다. 식 (20) 과 식 (21) 에서 두 R² 는 모두 $`1 - R^2_{\mathrm{wavgn}}`$ 에 한 계수를 곱한 오차 몫을 1 에서 뺀 값이며, 그 계수가 $`R^2_{\mathrm{all}}`$ 은 $`1 - \lambda`$, $`R^2_{\mathrm{avgw}}`$ 는 $`\kappa`$ 이다. $`\lambda`$ 는 wafer 마다 되풀이되는 측정 위치 평균의 차이, 곧 wafer 안의 고정된 측정 위치 패턴이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율이고, 예측이 이 패턴을 맞히는 만큼 $`R^2_{\mathrm{all}}`$ 의 오차 몫이 줄어든다. $`1 - \kappa`$ 는 측정 위치 $`N`$ 곳을 wafer 평균 하나로 모을 때 SSE 가 SST 보다 더 줄어드는 비율이고, wafer 평균의 예측이 측정 위치 사이 오차를 덜 남길수록 커진다. 따라서 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}}`$ 는 wafer 안의 고정된 측정 위치 패턴이 차지하는 몫이 wafer 평균으로 모아 줄어드는 오차의 몫 이상이라는 뜻이다. Table 4 의 예에서는 $`\lambda = 0.1739`$ 가 $`1 - \kappa = 0.2297`$ 보다 작아 $`R^2_{\mathrm{avgw}}`$ 가 더 크다.
 - 첫 행은 필요충분조건이고, 둘째 행과 셋째 행은 충분조건이다. $`R^2_{\mathrm{all}}`$ 과 $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{avgw}}`$ 와 $`R^2_{\mathrm{avgn}}`$ 은 두 값을 바로 잇는 항등식이 없어, $`R^2_{\mathrm{wavgn}}`$ 을 사이에 두고 두 부등식을 이어서 얻는다.
 - $`\mathrm{SST}_j`$ 가 모두 같으면 식 (23) 에 따라 $`R^2_{\mathrm{wavgn}} = R^2_{\mathrm{avgn}}`$ 이므로, 둘째 행은 언제나 성립하고 셋째 행은 $`\kappa \le 1`$ 과 필요충분조건이 된다.
 - 조건이 없어도 식 (25) 와 식 (26) 을 이으면 $`R^2_{\mathrm{all}} \ge \min_j R^2_j`$ 이고, $`R^2_{\mathrm{avgn}}`$ 도 $`\min_j R^2_j`$ 와 $`\max_j R^2_j`$ 사이에 있다.
