@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 38 | Created: 2026-11-09 | Updated: 2026-11-11 23:45 UTC
+Version 39 | Created: 2026-11-09 | Updated: 2026-11-11 23:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -54,9 +54,9 @@ Table 1. Symbols
 | $`\hat{y}_{ij}`$                   | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                                                                           | per wafer, per location   | scalar  | -                                 |
 | $`e_{ij}`$                         | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                                     | per wafer, per location   | scalar  | -                                 |
 | $`\bar{y}`$                        | 측정값 $`T`$ 개의 평균                                                                                                                  | all wafers, all locations | scalar  | -                                 |
-| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 (average of wafer, avgw)                                                                                      | per wafer                 | scalar  | -                                 |
-| $`\hat{y}_{iw}`$                   | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                                              | per wafer                 | scalar  | -                                 |
-| $`e_{iw}`$                         | wafer 평균에서 그 예측값을 뺀 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                                                  | per wafer                 | scalar  | -                                 |
+| $`\bar{y}_{i\cdot}`$               | wafer $`i`$ 의 wafer 평균 (average of wafer, avgw)                                                                                      | per wafer, all locations  | scalar  | -                                 |
+| $`\hat{y}_{iw}`$                   | wafer $`i`$ 의 wafer 평균을 직접 예측한 값                                                                                              | per wafer, all locations  | scalar  | -                                 |
+| $`e_{iw}`$                         | wafer 평균에서 그 예측값을 뺀 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                                                  | per wafer, all locations  | scalar  | -                                 |
 | $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                                       | per location, all wafers  | scalar  | -                                 |
 | $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                                    | 아래첨자에 따름           | scalar  | -                                 |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)                         | per location, all wafers  | scalar  | $`\mathrm{SST}_j \gt 0`$          |
