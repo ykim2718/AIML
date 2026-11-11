@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 34 | Created: 2026-11-09 | Updated: 2026-11-11 08:05 UTC
+Version 35 | Created: 2026-11-09 | Updated: 2026-11-11 08:11 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -72,6 +72,8 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 - $`\bar{y}_{i\cdot}`$: 영어로 "y bar i dot", 한국어로 "와이 바 아이 닷" 이라 읽는다.
 - $`\bar{y}_{\cdot j}`$: 영어로 "y bar dot j", 한국어로 "와이 바 닷 제이" 라 읽는다.
 - $`\hat{y}_{iw}`$: 영어로 "y hat i w", 한국어로 "와이 햇 아이 더블유" 라 읽는다.
+- $`\lambda`$: 영어로 "lambda", 한국어로 "람다" 라 읽는다.
+- $`\kappa`$: 영어로 "kappa", 한국어로 "카파" 라 읽는다.
 - $`\sum`$: 영어로 "sum", 한국어로 "합" 이라 읽는다.
 - $`\min_j`$, $`\max_j`$: 영어로 "minimum over j", "maximum over j", 한국어로 "제이에 대한 최솟값", "제이에 대한 최댓값" 이라 읽는다.
 - $`\iff`$: 영어로 "if and only if", 한국어로 "필요충분조건" 이라 읽는다.
