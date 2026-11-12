@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 90 | Created: 2026-11-09 | Updated: 2026-11-12 21:48 UTC
+Version 91 | Created: 2026-11-09 | Updated: 2026-11-12 22:01 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -70,7 +70,7 @@ Table 1. Symbols
 | $`E`$                              | 측정 위치마다의 오차 제곱합 $`\mathrm{SSE}_j`$ 의 합                                                                                    | all wafers,<br>all locations | scalar  | $`E \ge 0`$                                                          |
 | $`\omega_j`$                       | 측정 위치 $`j`$ 의 SST 가중치. $`\mathrm{SST}_j`$ 를 $`A`$ 로 나눈 값                                                                   | per location,<br>all wafers  | scalar  | $`\sum_j \omega_j = 1`$                                              |
 | $`R^2_{\mathrm{wavgn}}`$           | 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 (SST-weighted R2 average over $`N`$ locations, wavgn) | all wafers,<br>all locations | scalar  | -                                                                    |
-| $`q`$                              | 측정 위치 예측의 FVU. $`E`$ 를 $`A`$ 로 나눈 값                                                                                         | all wafers,<br>all locations | scalar  | $`q \ge 0`$                                                          |
+| $`q`$                              | 측정 위치 예측의 FVU. FVU 는 측정값의 평균을 기준으로 정규화한 제곱예측오차 비율이다. $`E`$ 를 $`A`$ 로 나눈 값                         | all wafers,<br>all locations | scalar  | $`q \ge 0`$                                                          |
 | $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 (location pattern fraction)                                  | all wafers,<br>all locations | scalar  | $`0 \le \lambda \lt 1`$                                              |
 | $`\kappa`$                         | 오차 비 (error ratio). wafer 평균 예측의 FVU 를 측정 위치 예측의 FVU $`q`$ 로 나눈 값                                                   | all wafers,<br>all locations | scalar  | $`\kappa \ge 0`$, $`E \gt 0`$ 일 때만 정의                           |
 | $`\delta`$                         | $`R^2_{\mathrm{wavgn}}`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 뺀 값                                                                          | all wafers,<br>all locations | scalar  | -                                                                    |
