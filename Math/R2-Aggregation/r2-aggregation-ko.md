@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 72 | Created: 2026-11-09 | Updated: 2026-11-12 11:39 UTC
+Version 73 | Created: 2026-11-09 | Updated: 2026-11-12 11:41 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -621,7 +621,7 @@ y_{ij} - \bar{y} = \left( \bar{y}_{i\cdot} - \bar{y} \right) + \left( \bar{y}_{\
 - 식 (49): 세 항을 더하면 $`\bar{y}_{i\cdot}`$ 과 $`\bar{y}_{\cdot j}`$ 가 지워진다.
 - 식 (50): $`W = N\, \mathrm{SST}_{\mathrm{avgw}}`$, $`L = B`$, $`I`$ 는 식 (49) 의 셋째 항의 제곱합이다. 세 항은 모든 $`i`$, $`j`$ 에서 더할 때 서로의 교차항이 0 이다. 첫 항은 $`j`$ 에, 둘째 항은 $`i`$ 에 따라 바뀌지 않고, 셋째 항은 $`i`$ 와 $`j`$ 어느 쪽으로 더해도 0 이기 때문이다.
 
-$`I`$ 는 측정값을 wafer 효과와 측정 위치 효과의 합으로 맞추고 남은 제곱합이며, wafer 와 측정 위치마다 측정이 한 번이므로 상호작용과 측정 잡음을 가르지 못한다. 식 (29) 와 식 (50) 을 견주면 $`A = W + I`$ 이고, 식 (23) 은 $`\lambda = L / (W + L + I)`$ 가 되어 $`\lambda`$ 가 측정 위치 평균 사이 변동의 몫임이 드러난다.
+$`I`$ 는 측정값을 wafer 효과와 측정 위치 효과의 합으로 맞추고 남은 제곱합이며, wafer 와 측정 위치마다 측정이 한 번이므로 상호작용과 측정 잡음을 가르지 못한다. 식 (29) 와 식 (50) 을 견주면 $`A = W + I`$ 이고, 식 (23) 은 $`\lambda = L / (W + L + I)`$ 가 되어 $`\lambda`$ 가 측정 위치 평균 사이 변동의 비율임이 드러난다.
 
 측정 위치 오차 $`E`$ 도 같은 방법으로 wafer 마다의 오차 평균과 그 차이로 나뉜다.
 
@@ -632,7 +632,7 @@ E = N \sum_{i=1}^{M} \left( \frac{1}{N} \sum_{k=1}^{N} e_{ik} \right)^2 + \sum_{
 
 - 식 (51): 식 (19) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
 
-$`A = W + I`$ 와 식 (51) 을 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 몫과 wafer 평균과의 차이의 몫으로 적힌다.
+$`A = W + I`$ 와 식 (51) 을 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 비율과 wafer 평균과의 차이의 비율로 적힌다.
 
 ### C.2 Aggregate Cross-location Correlation
 
@@ -701,11 +701,11 @@ SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균
 
 Fig 1. Plain and SST-weighted averages of location R2
 
-- 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 몫이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 3 과 다른 예시이다. 이 그림은 $`0 \le R^2_j \le 1`$ 인 경우만 그릴 수 있으며, $`\mathrm{SSE}_j \gt \mathrm{SST}_j`$ 여서 R² 가 음수인 측정 위치는 그리지 못한다.
+- 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 비율이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 3 과 다른 예시이다. 이 그림은 $`0 \le R^2_j \le 1`$ 인 경우만 그릴 수 있으며, $`\mathrm{SSE}_j \gt \mathrm{SST}_j`$ 여서 R² 가 음수인 측정 위치는 그리지 못한다.
 - (a): 두 측정 위치를 같은 크기로 그렸다. 측정 위치 1 의 두 화살표는 중심에서 바깥 원과 안쪽 원의 가장자리까지 그은 반지름이며, 두 원의 넓이가 각각 $`\mathrm{SST}_1`$ 과 $`\mathrm{SSE}_1`$ 이다. $`R^2_{\mathrm{avgn}}`$ 은 이처럼 측정 위치마다 가중치 $`1/N`$ 을 주어 (0.90 + 0.50) / 2 = 0.70 이다.
-- (b): 두 측정 위치를 $`\mathrm{SST}_j`$ 그대로의 크기로 그린 뒤 한 원으로 합쳤다. $`R^2_{\mathrm{wavgn}}`$ 은 합친 원에서 파란 고리의 몫이며 1 - 10.5 / 101 = 0.896 이다.
+- (b): 두 측정 위치를 $`\mathrm{SST}_j`$ 그대로의 크기로 그린 뒤 한 원으로 합쳤다. $`R^2_{\mathrm{wavgn}}`$ 은 합친 원에서 파란 고리의 비율이며 1 - 10.5 / 101 = 0.896 이다.
 
-두 값의 차이는 측정 위치 2 를 얼마나 크게 세는지에서 생긴다. 측정 위치 2 는 wafer 사이에서 측정값이 거의 변하지 않아 ($`\mathrm{SST}_2 = 1`$) 기준 변동이 작다. (a) 는 이 측정 위치를 측정 위치 1 과 같은 크기의 원으로 부풀려서, 크기가 0.5 인 오차가 원의 절반을 차지하게 만든다. (b) 에서는 측정 위치 2 가 제 크기인 작은 점으로 남고, 합친 원의 파란 몫은 측정 위치 1 의 몫과 거의 같다.
+두 값의 차이는 측정 위치 2 를 얼마나 크게 세는지에서 생긴다. 측정 위치 2 는 wafer 사이에서 측정값이 거의 변하지 않아 ($`\mathrm{SST}_2 = 1`$) 기준 변동이 작다. (a) 는 이 측정 위치를 측정 위치 1 과 같은 크기의 원으로 부풀려서, 크기가 0.5 인 오차가 원의 절반을 차지하게 만든다. (b) 에서는 측정 위치 2 가 제 크기인 작은 점으로 남고, 합친 원의 파란 비율은 측정 위치 1 의 비율과 거의 같다.
 
 Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
 
@@ -723,7 +723,7 @@ Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 늘리면 $`R^2_2`$ 
 SSE 로 가중하면 가중 평균이 비율 하나로 줄어들지 않고, 가중치가 예측 model 에 따라 바뀐다. 근거는 아래 두 항목이다.
 
 - **비율 하나로 줄어들지 않는다.** $`R^2_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - E/A`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 1 의 예에서 SSE 가중 평균은 (10 × 0.90 + 0.5 × 0.50) / 10.5 = 0.881 이다.
-- **가중치가 예측 model 에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해지지만 $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 두 예측 model 을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 몫인지 가중치가 바뀐 몫인지 가릴 수 없다.
+- **가중치가 예측 model 에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해지지만 $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 두 예측 model 을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 비율인지 가중치가 바뀐 비율인지 가릴 수 없다.
 
 ## Appendix E. Example with Measured Data
 
@@ -786,7 +786,7 @@ Table 6. Three R2 from the data and from the identities
 
 ### E.2 How to Raise the Minimum Location R2
 
-$`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아지며, 이 데이터에서는 측정 위치마다의 mean error (offset) 를 빼는 보정이 가장 크게 높인다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 몫과 그 나머지로 나누면 아래 Table 7 이다.
+$`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아지며, 이 데이터에서는 측정 위치마다의 mean error (offset) 를 빼는 보정이 가장 크게 높인다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 7 이다.
 
 Table 7. Offset share of SSE and R2 after offset correction by location
 
@@ -806,7 +806,7 @@ Table 7. Offset share of SSE and R2 after offset correction by location
 | 12         | 0.7194 | -10.9931            | 0.7609                | 0.9329                       |
 | 13         | 0.6660 | -12.2198            | 0.7805                | 0.9267                       |
 
-- Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균인 mean error (offset) 이다. $`\mathrm{SSE}_j`$ 는 이 몫과, mean error (offset) 를 뺀 나머지의 제곱합으로 나뉜다.
+- Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균인 mean error (offset) 이다. $`\mathrm{SSE}_j`$ 는 이 비율과, mean error (offset) 를 뺀 나머지의 제곱합으로 나뉜다.
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이어서, 더 높이려면 측정 위치 3 의 예측 자체를 바꿔야 한다.
 - 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 FVU 를 직접 줄인다.
