@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 46 | Created: 2026-11-09 | Updated: 2026-11-12 05:14 UTC
+Version 47 | Created: 2026-11-09 | Updated: 2026-11-12 05:16 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -121,7 +121,7 @@ e_{iw} = \bar{y}_{i\cdot} - \hat{y}_{iw}
 \hspace{19em} (5)
 ```
 
-식 (6) 부터 식 (8) 은 $`R^2_{\mathrm{all}}`$, 식 (9) 부터 식 (11) 은 $`R^2_{\mathrm{avgw}}`$, 식 (12) 부터 식 (15) 는 $`R^2_{\mathrm{avgn}}`$ 과 그것이 평균하는 $`R^2_j`$ 의 식이다.
+식 (6) 부터 식 (8) 은 $`R^2_{\mathrm{all}}`$, 식 (9) 부터 식 (11) 은 $`R^2_{\mathrm{avgw}}`$, 식 (12) 부터 식 (15) 는 $`R^2_{\mathrm{avgn}}`$ 과, $`R^2_{\mathrm{avgn}}`$ 이 평균하는 $`R^2_j`$ 의 식이다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
@@ -174,7 +174,7 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 ```
 
 - $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$ 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
-- 예측 오차가 모두 0 이면 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$ 은 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
+- $`e_{ij}`$ 와 $`e_{iw}`$ 가 모두 0 이면 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$ 은 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
 
 Table 1 의 $`R^2_{\mathrm{wavgn}}`$, $`\lambda`$, $`\kappa`$, $`\omega_j`$ 를 식으로 적으면 아래 식 (16), 식 (17), 식 (18), 식 (19) 이다. $`\bar{r}_y`$ 는 B.2 에서만 쓰므로 그 정의 식은 [B.2](#b2-r2-over-wafer-averages-form) 에 있다.
 
