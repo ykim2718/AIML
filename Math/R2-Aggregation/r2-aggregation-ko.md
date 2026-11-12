@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 67 | Created: 2026-11-09 | Updated: 2026-11-12 10:42 UTC
+Version 68 | Created: 2026-11-09 | Updated: 2026-11-12 11:26 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -264,7 +264,6 @@ R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
 
 - 식 (27) 은 최악 측정 위치의 오차를 정확히 곱으로 나눈다. 좌변 $`1 - R^2_{\mathrm{minn}}`$ 은 최악 측정 위치의 오차 몫, $`\gamma_n`$ 은 오차 집중도, $`1 - R^2_{\mathrm{avgn}}`$ 은 측정 위치 오차 몫의 평균이다. 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
-- 식 (30) 의 아래쪽 범위는 식 (46) 의 아래쪽 범위보다 언제나 같거나 높다. $`\omega_j / \min_k \omega_k \ge 1`$ 이어서 $`q / \min_j \omega_j \ge N (1 - R^2_{\mathrm{avgn}})`$ 이기 때문이며, 측정 위치의 가중치가 모두 같을 때만 두 범위가 같다.
 
 ## 5. Practical Interpretation
 
@@ -358,7 +357,7 @@ Table 2. Necessary and sufficient conditions among the R2
 - 식 (41) 은 $`\kappa`$ 로 나누지 않으므로 $`\kappa = 0`$ 일 때도 성립한다.
 - $`q = 0`$ 이면 식 (39), 식 (40), 식 (41) 의 차이가 모두 0 이다.
 
-측정 위치 R² 의 최솟값과 최댓값은 아래 식 (44), 식 (45), 식 (46) 으로 범위가 정해진다.
+측정 위치 R² 의 최솟값과 최댓값은 아래 식 (44), 식 (45) 로 범위가 정해진다.
 
 ```math
 R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{minn}}
@@ -370,13 +369,8 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 \hspace{19em} (45)
 ```
 
-```math
-R^2_{\mathrm{minn}} \ge 1 - \frac{q}{\min_{j} \omega_j}
-\hspace{19em} (46)
-```
-
 - 식 (44), 식 (45): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`R^2_{\mathrm{minn}}`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
-- 식 (46): $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. 식 (46) 은 오차 몫 $`q`$ 가 가중치가 가장 작은 측정 위치 한 곳에 모이고 나머지 측정 위치의 $`R^2_j`$ 는 모두 1 인 경우에 같아진다.
+- $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (27) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (30) 과 식 (31) 이다.
 
 ### 5.3 Meaning of the Quantities
 
@@ -477,12 +471,12 @@ Table 4 의 값을 넣어 식 (34), 식 (35), 식 (36) 과 세 R² 의 순서를
 
 ```math
 y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\cdot j} - \bar{y} \right)
-\hspace{19em} (47)
+\hspace{19em} (46)
 ```
 
-- 식 (47): $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
+- 식 (46): $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
 
-식 (47) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (17) 로 $`A`$, 셋째 항의 합은 식 (18) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (32) 가 성립한다. 식 (33) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (19) 로 성립한다.
+식 (46) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (17) 로 $`A`$, 셋째 항의 합은 식 (18) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (32) 가 성립한다. 식 (33) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (19) 로 성립한다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = A + B
@@ -498,12 +492,12 @@ y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\
 
 ```math
 1 - R^2_{\mathrm{all}} = \frac{A}{A + B} \cdot \frac{E}{A}
-\hspace{19em} (48)
+\hspace{19em} (47)
 ```
 
-- 식 (48): 식 (5) 에 식 (32) 와 식 (33) 을 넣고, 분자와 분모에 $`A`$ 를 곱했다.
+- 식 (47): 식 (5) 에 식 (32) 와 식 (33) 을 넣고, 분자와 분모에 $`A`$ 를 곱했다.
 
-식 (48) 의 첫 분수는 식 (23) 으로 $`1 - \lambda`$, 둘째 분수는 식 (22) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (24) 와 식 (22) 로 $`\kappa q`$ 와 같고, 식 (25) 와 식 (21), 식 (22) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (34), 식 (35), 식 (36) 이 성립한다.
+식 (47) 의 첫 분수는 식 (23) 으로 $`1 - \lambda`$, 둘째 분수는 식 (22) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (24) 와 식 (22) 로 $`\kappa q`$ 와 같고, 식 (25) 와 식 (21), 식 (22) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (34), 식 (35), 식 (36) 이 성립한다.
 
 ```math
 R^2_{\mathrm{all}} = 1 - (1 - \lambda)\, q
@@ -522,12 +516,12 @@ R^2_{\mathrm{avgn}} = 1 - q - \delta
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{A} \left( 1 - \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \right)
-\hspace{19em} (49)
+\hspace{19em} (48)
 ```
 
-- 식 (49): 식 (21) 의 1 을 $`\sum_j \mathrm{SST}_j / A`$ 로, $`E/A`$ 를 $`\sum_j \mathrm{SSE}_j / A`$ 로 적고 항마다 묶었다.
+- 식 (48): 식 (21) 의 1 을 $`\sum_j \mathrm{SST}_j / A`$ 로, $`E/A`$ 를 $`\sum_j \mathrm{SSE}_j / A`$ 로 적고 항마다 묶었다.
 
-식 (49) 의 첫 분수는 식 (20) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (37) 이 성립한다.
+식 (48) 의 첫 분수는 식 (20) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (37) 이 성립한다.
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
@@ -536,12 +530,12 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 
 ```math
 \delta = \sum_{j=1}^{N} \left( \omega_j - \frac{1}{N} \right) R^2_j
-\hspace{19em} (50)
+\hspace{19em} (49)
 ```
 
-- 식 (50): 식 (25) 에 식 (37) 과 식 (15) 를 넣었다.
+- 식 (49): 식 (25) 에 식 (37) 과 식 (15) 를 넣었다.
 
-식 (50) 의 괄호는 $`(\mathrm{SST}_j - A/N)/A`$ 이고 $`j`$ 에 대해 더하면 0 이므로, $`R^2_j`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 빼도 합이 바뀌지 않는다. 따라서 식 (38) 이 성립한다.
+식 (49) 의 괄호는 $`(\mathrm{SST}_j - A/N)/A`$ 이고 $`j`$ 에 대해 더하면 0 이므로, $`R^2_j`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 빼도 합이 바뀌지 않는다. 따라서 식 (38) 이 성립한다.
 
 ```math
 \delta = \frac{1}{A} \sum_{j=1}^{N} \left( \mathrm{SST}_j - \frac{A}{N} \right) \left( R^2_j - R^2_{\mathrm{avgn}} \right)
@@ -579,12 +573,12 @@ R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
 
 ```math
 R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \omega_j \left( R^2_j - \min_{k} R^2_k \right)
-\hspace{19em} (51)
+\hspace{19em} (50)
 ```
 
-- 식 (51): 식 (37) 에서 가중치의 합이 1 인 것을 써서 $`\min_k R^2_k`$ 를 뺐다.
+- 식 (50): 식 (37) 에서 가중치의 합이 1 인 것을 써서 $`\min_k R^2_k`$ 를 뺐다.
 
-식 (51) 의 가중치와 괄호는 모두 0 이상이므로 식 (44) 가 성립한다. 최솟값 대신 최댓값으로 같은 식을 세우면 식 (45) 가 성립한다.
+식 (50) 의 가중치와 괄호는 모두 0 이상이므로 식 (44) 가 성립한다. 최솟값 대신 최댓값으로 같은 식을 세우면 식 (45) 가 성립한다.
 
 ```math
 R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{minn}}
@@ -596,30 +590,16 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 \hspace{19em} (45)
 ```
 
-```math
-\omega_k \left( 1 - R^2_k \right) \le q
-\hspace{19em} (52)
-```
-
-- 식 (52): 식 (49) 에서 $`q = \sum_j \omega_j (1 - R^2_j)`$ 이고 각 항은 $`\omega_j \gt 0`$ 과 $`1 - R^2_j = \mathrm{SSE}_j / \mathrm{SST}_j \ge 0`$ 의 곱이므로, 어느 측정 위치 $`k`$ 의 항도 합보다 크지 않다.
-
-식 (52) 를 $`\omega_k`$ 로 나누고 $`\omega_k \ge \min_j \omega_j`$ 를 쓰면, 모든 $`k`$ 에서 $`1 - R^2_k \le q / \min_j \omega_j`$ 이다. 따라서 식 (46) 이 성립한다.
-
-```math
-R^2_{\mathrm{minn}} \ge 1 - \frac{q}{\min_{j} \omega_j}
-\hspace{19em} (46)
-```
-
 식 (27) 부터 식 (31) 은 측정 위치마다의 오차 몫 $`1 - R^2_j = \mathrm{SSE}_j / \mathrm{SST}_j \ge 0`$ 의 평균과 최댓값을 견주어 증명한다.
 
 ```math
 1 - R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} \left( 1 - R^2_j \right)
-\hspace{19em} (53)
+\hspace{19em} (51)
 ```
 
-- 식 (53): 식 (15) 를 1 에서 빼고, $`1/N`$ 을 측정 위치에 대해 더하면 1 인 것을 썼다.
+- 식 (51): 식 (15) 를 1 에서 빼고, $`1/N`$ 을 측정 위치에 대해 더하면 1 인 것을 썼다.
 
-식 (16) 에서 $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (53) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 식 (26) 으로 나누면 $`\gamma_n`$ 의 범위가, 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위가 나온다. 따라서 식 (27) 부터 식 (31) 이 성립한다.
+식 (16) 에서 $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (51) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 식 (26) 으로 나누면 $`\gamma_n`$ 의 범위가, 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위가 나온다. 따라서 식 (27) 부터 식 (31) 이 성립한다.
 
 ```math
 1 - R^2_{\mathrm{minn}} = \gamma_n \left( 1 - R^2_{\mathrm{avgn}} \right)
@@ -654,29 +634,29 @@ $`\mathrm{SST}_{\mathrm{all}}`$ 은 wafer 평균 사이의 변동 $`W`$, 측정 
 
 ```math
 y_{ij} - \bar{y} = \left( \bar{y}_{i\cdot} - \bar{y} \right) + \left( \bar{y}_{\cdot j} - \bar{y} \right) + \left( y_{ij} - \bar{y}_{i\cdot} - \bar{y}_{\cdot j} + \bar{y} \right)
-\hspace{19em} (54)
+\hspace{19em} (52)
 ```
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = W + L + I
-\hspace{19em} (55)
+\hspace{19em} (53)
 ```
 
-- 식 (54): 세 항을 더하면 $`\bar{y}_{i\cdot}`$ 과 $`\bar{y}_{\cdot j}`$ 가 지워진다.
-- 식 (55): $`W = N\, \mathrm{SST}_{\mathrm{avgw}}`$, $`L = B`$, $`I`$ 는 식 (54) 의 셋째 항의 제곱합이다. 세 항은 모든 $`i`$, $`j`$ 에서 더할 때 서로의 교차항이 0 이다. 첫 항은 $`j`$ 에, 둘째 항은 $`i`$ 에 따라 바뀌지 않고, 셋째 항은 $`i`$ 와 $`j`$ 어느 쪽으로 더해도 0 이기 때문이다.
+- 식 (52): 세 항을 더하면 $`\bar{y}_{i\cdot}`$ 과 $`\bar{y}_{\cdot j}`$ 가 지워진다.
+- 식 (53): $`W = N\, \mathrm{SST}_{\mathrm{avgw}}`$, $`L = B`$, $`I`$ 는 식 (52) 의 셋째 항의 제곱합이다. 세 항은 모든 $`i`$, $`j`$ 에서 더할 때 서로의 교차항이 0 이다. 첫 항은 $`j`$ 에, 둘째 항은 $`i`$ 에 따라 바뀌지 않고, 셋째 항은 $`i`$ 와 $`j`$ 어느 쪽으로 더해도 0 이기 때문이다.
 
-$`I`$ 는 측정값을 wafer 효과와 측정 위치 효과의 합으로 맞추고 남은 제곱합이며, wafer 와 측정 위치마다 측정이 한 번이므로 상호작용과 측정 잡음을 가르지 못한다. 식 (32) 와 식 (55) 를 견주면 $`A = W + I`$ 이고, 식 (23) 은 $`\lambda = L / (W + L + I)`$ 가 되어 $`\lambda`$ 가 측정 위치 평균 사이 변동의 몫임이 드러난다.
+$`I`$ 는 측정값을 wafer 효과와 측정 위치 효과의 합으로 맞추고 남은 제곱합이며, wafer 와 측정 위치마다 측정이 한 번이므로 상호작용과 측정 잡음을 가르지 못한다. 식 (32) 와 식 (53) 을 견주면 $`A = W + I`$ 이고, 식 (23) 은 $`\lambda = L / (W + L + I)`$ 가 되어 $`\lambda`$ 가 측정 위치 평균 사이 변동의 몫임이 드러난다.
 
 측정 위치 오차 $`E`$ 도 같은 방법으로 wafer 마다의 오차 평균과 그 차이로 나뉜다.
 
 ```math
 E = N \sum_{i=1}^{M} \left( \frac{1}{N} \sum_{k=1}^{N} e_{ik} \right)^2 + \sum_{i=1}^{M} \sum_{j=1}^{N} \left( e_{ij} - \frac{1}{N} \sum_{k=1}^{N} e_{ik} \right)^2
-\hspace{19em} (56)
+\hspace{19em} (54)
 ```
 
-- 식 (56): 식 (19) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
+- 식 (54): 식 (19) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
 
-$`A = W + I`$ 와 식 (56) 을 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 몫과 wafer 평균과의 차이의 몫으로 적힌다.
+$`A = W + I`$ 와 식 (54) 를 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 몫과 wafer 평균과의 차이의 몫으로 적힌다.
 
 ### C.2 Aggregate Cross-location Correlation
 
@@ -685,7 +665,7 @@ $`A = W + I`$ 와 식 (56) 을 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가
 
 ```math
 \bar{r}_y = \frac{\sum_{j \ne k} \sum_{i=1}^{M} x_{ij}\, x_{ik}}{(N-1)\, A}
-\hspace{19em} (57)
+\hspace{19em} (55)
 ```
 
 - $`\bar{r}_y`$ 는 측정 위치 쌍마다의 Pearson 상관계수의 산술 평균이 아니다. $`\mathrm{SST}_j`$ 가 모두 같을 때만 그 평균과 같다.
@@ -693,26 +673,26 @@ $`A = W + I`$ 와 식 (56) 을 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가
 
 ```math
 N^2\, \mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \sum_{j=1}^{N} x_{ij} \right)^2
-\hspace{19em} (58)
+\hspace{19em} (56)
 ```
 
-- 식 (58): 식 (6), 식 (2), 식 (11) 로 $`\bar{y}_{i\cdot} - \bar{y} = \frac{1}{N} \sum_j x_{ij}`$ 이고, 이것을 식 (8) 에 넣었다.
+- 식 (56): 식 (6), 식 (2), 식 (11) 로 $`\bar{y}_{i\cdot} - \bar{y} = \frac{1}{N} \sum_j x_{ij}`$ 이고, 이것을 식 (8) 에 넣었다.
 
-식 (58) 의 우변을 $`\sum_{i,j} x_{ij}^2 + \sum_{j \ne k} \sum_i x_{ij} x_{ik}`$ 로 전개하면 첫 합은 $`A`$, 둘째 합은 식 (57) 로 $`(N-1)\, \bar{r}_y A`$ 이다.
+식 (56) 의 우변을 $`\sum_{i,j} x_{ij}^2 + \sum_{j \ne k} \sum_i x_{ij} x_{ik}`$ 로 전개하면 첫 합은 $`A`$, 둘째 합은 식 (55) 로 $`(N-1)\, \bar{r}_y A`$ 이다.
 
 ```math
 \mathrm{SST}_{\mathrm{avgw}} = \frac{A}{N^2} \left[ 1 + (N-1)\, \bar{r}_y \right]
-\hspace{19em} (59)
+\hspace{19em} (57)
 ```
 
 ```math
 \kappa = \frac{N^2\, \mathrm{SSE}_{\mathrm{avgw}}}{\left[ 1 + (N-1)\, \bar{r}_y \right] E}
-\hspace{19em} (60)
+\hspace{19em} (58)
 ```
 
-- 식 (60): 식 (24) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (59) 를 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
+- 식 (58): 식 (24) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (57) 을 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
 
-식 (58) 의 우변은 0 이상이고, 괄호 안의 합의 제곱은 $`N \sum_j x_{ij}^2`$ 를 넘지 않는다. 그래서 식 (59) 의 괄호는 0 이상 $`N`$ 이하이며, $`\bar{r}_y`$ 의 범위는 $`-1/(N-1) \le \bar{r}_y \le 1`$ 이다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 왼쪽 부등호가 엄격해진다.
+식 (56) 의 우변은 0 이상이고, 괄호 안의 합의 제곱은 $`N \sum_j x_{ij}^2`$ 를 넘지 않는다. 그래서 식 (57) 의 괄호는 0 이상 $`N`$ 이하이며, $`\bar{r}_y`$ 의 범위는 $`-1/(N-1) \le \bar{r}_y \le 1`$ 이다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 왼쪽 부등호가 엄격해진다.
 
 ### C.3 Wafer Average Prediction as the Mean of Location Predictions
 
@@ -720,16 +700,16 @@ Wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \fr
 
 ```math
 \mathrm{SSE}_{\mathrm{avgw}} \le \frac{E}{N}
-\hspace{19em} (61)
+\hspace{19em} (59)
 ```
 
 ```math
 \kappa \le \frac{N}{1 + (N-1)\, \bar{r}_y}
-\hspace{19em} (62)
+\hspace{19em} (60)
 ```
 
-- 식 (61): 평균의 제곱은 제곱의 평균을 넘지 않으므로 $`e_{iw}^2 \le \frac{1}{N} \sum_j e_{ij}^2`$ 이고, 이것을 wafer 에 대해 더했다.
-- 식 (62): 식 (60) 에 식 (61) 을 넣었다.
+- 식 (59): 평균의 제곱은 제곱의 평균을 넘지 않으므로 $`e_{iw}^2 \le \frac{1}{N} \sum_j e_{ij}^2`$ 이고, 이것을 wafer 에 대해 더했다.
+- 식 (60): 식 (58) 에 식 (59) 를 넣었다.
 
 이 범위는 wafer 평균을 따로 예측한 일반적인 경우에는 성립하지 않는다.
 
@@ -808,9 +788,8 @@ Table 5 와 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항
 - 식 (41): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 0.5964 × 0.2051 = 0.1223 만큼 크다. Wafer 평균 예측의 정규화된 제곱오차 몫 0.0564 가 측정 위치 예측의 0.2051 의 0.2748 배에 그친다.
 - 식 (42), 식 (43): R2_all 과 R2_avgw 는 R2_avgn 보다 각각 0.0264 + 0.0114 = 0.0378, 0.1487 + 0.0114 = 0.1601 만큼 크다. $`\delta`$ = 0.0114 가 양수이므로 두 조건 모두 성립한다.
 - 식 (38): $`\delta`$ 가 양수인 것은 SST 가 큰 측정 위치 1, 2, 5 (가중치 0.1252, 0.1082, 0.1105) 의 R2_j 가 0.8990, 0.8396, 0.8553 으로 R2_avgn 보다 크고, R2_j 가 가장 작은 측정 위치 3 (0.6370) 은 가중치가 0.0644 로 작기 때문이다.
-- 식 (44), 식 (46), 식 (27), 식 (30): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 오차 몫이 측정 위치 오차 몫의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이다. 아래쪽 범위는 식 (30) 으로 1 - 13 × (1 - 0.7835) = -1.8142 이고, 식 (46) 으로는 측정 위치 6 의 SST 가중치 0.0556 을 써서 1 - 0.2051 / 0.0556 = -2.6867 이다.
-    - 측정 위치 6 의 가중치가 작은 것은 wafer 사이에서 측정값이 덜 변해 SST_6 = 22525 가 13 곳 가운데 가장 작기 때문이며, 가장 큰 측정 위치 1 의 SST_1 = 50686 의 절반도 되지 않는다.
-    - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (46) 이 오차 몫 0.2051 이 가중치가 가장 작은 측정 위치 한 곳에 모이는 경우를 가정하기 때문이다. 실제로는 0.2051 이 13 곳에 나뉘어 있어, 측정 위치 3 의 몫은 0.0644 × (1 - 0.6370) = 0.0234 뿐이다.
+- 식 (44), 식 (27), 식 (30): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 오차 몫이 측정 위치 오차 몫의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (30) 으로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
+    - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (30) 이 $`\gamma_n = N`$, 곧 측정 위치 한 곳을 뺀 나머지의 R2_j 가 모두 1 인 경우를 가정하기 때문이다. 실제 $`\gamma_n`$ 은 1.6768 로 $`N`$ = 13 보다 훨씬 작다.
 
 Fig 2 와 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (34) 와 식 (35) 가 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
 
@@ -855,5 +834,5 @@ Table 7. Offset share of SSE and R2 after offset correction by location
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이어서, 더 높이려면 측정 위치 3 의 예측 자체를 바꿔야 한다.
 - 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 오차 몫을 직접 줄인다.
-- 식 (46) 의 아래쪽 범위는 $`q`$ 를 줄이면 오르지만, 가장 작은 가중치 0.0556 으로 나누므로 $`q`$ 를 줄여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다.
+- 식 (30) 의 아래쪽 범위는 R2_avgn 을 높이면 오르지만, $`1 - R^2_{\mathrm{avgn}}`$ 에 $`N`$ = 13 을 곱하므로 R2_avgn 을 높여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다. 식 (27) 대로 $`R^2_{\mathrm{minn}}`$ 을 높이려면 $`1 - R^2_{\mathrm{avgn}}`$ 과 함께 오차 집중도 $`\gamma_n`$ 을 줄여, 오차가 한 측정 위치에 몰리지 않게 해야 한다.
 - Table 7 의 mean error (offset) 는 이 시험 데이터로 구했다. 실제 보정에서는 mean error (offset) 를 학습 데이터로 구해야 하며, 시험 데이터로 구한 보정을 같은 시험 데이터에 적용하면 R² 를 높게 추정한다.
