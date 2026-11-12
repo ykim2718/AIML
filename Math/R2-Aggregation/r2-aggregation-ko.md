@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 54 | Created: 2026-11-09 | Updated: 2026-11-12 06:18 UTC
+Version 55 | Created: 2026-11-09 | Updated: 2026-11-12 06:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -820,19 +820,24 @@ Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로
 
 Table 5. Quantities of the measured data
 
-| Quantity             | Value                   |
-| :------------------: | :---------------------: |
-| M, N, T              | 44, 13, 572             |
-| SST_all, SSE_all     | 464746.9398, 83042.5789 |
-| SST_avgw, SSE_avgw   | 23830.3120, 1343.1469   |
-| sum SST_j, sum SSE_j | 404892.0942, 83042.5789 |
-| R2_all               | 0.8213                  |
-| R2_avgw              | 0.9436                  |
-| R2_avgn              | 0.7835                  |
-| R2_wavgn             | 0.7949                  |
-| lambda               | 0.1288                  |
-| kappa                | 0.2748                  |
-| r_y                  | 0.7456                  |
+| Quantity  | Value       |
+| :-------: | :---------: |
+| M         | 44          |
+| N         | 13          |
+| T         | 572         |
+| SST_all   | 464746.9398 |
+| SSE_all   | 83042.5789  |
+| SST_avgw  | 23830.3120  |
+| SSE_avgw  | 1343.1469   |
+| sum SST_j | 404892.0942 |
+| sum SSE_j | 83042.5789  |
+| R2_all    | 0.8213      |
+| R2_avgw   | 0.9436      |
+| R2_avgn   | 0.7835      |
+| R2_wavgn  | 0.7949      |
+| lambda    | 0.1288      |
+| kappa     | 0.2748      |
+| r_y       | 0.7456      |
 
 - 측정값 $`y_{ij}`$ 는 `true_p1` 부터 `true_p13`, 측정 위치 예측값 $`\hat{y}_{ij}`$ 는 `pred_p1` 부터 `pred_p13`, wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 `pred_avg` 열이다.
 - Wafer 평균 $`\bar{y}_{i\cdot}`$ 은 식 (6) 대로 `true_p1` 부터 `true_p13` 의 평균으로 다시 구했다. 첫 wafer `20260123_0001` 의 `true_avg` 열은 628 이지만 측정값 13 개의 평균은 614.4957 이어서, 이 열은 쓰지 않았다.
