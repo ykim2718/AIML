@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 95 | Created: 2026-11-09 | Updated: 2026-11-12 23:21 UTC
+Version 96 | Created: 2026-11-09 | Updated: 2026-11-12 23:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -35,7 +35,7 @@ Version 95 | Created: 2026-11-09 | Updated: 2026-11-12 23:21 UTC
 
 - **Problem Statement**: 반도체 wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정한 같은 데이터로 R² 를 전체 측정값, wafer 평균값, 측정 위치별 측정값에서 구하면 세 값이 서로 다르다. Wafer 평균의 예측값은 측정 위치 예측값의 평균일 수도, 따로 구한 값일 수도 있다.
 - **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$, 측정 위치 R² 의 최솟값 $`R^2_{\mathrm{minn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
-- **Non-Goal**: 예측 model 을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
+- **Non-Goal**: 예측을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
 
 ## 2. Summary
 
@@ -230,7 +230,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 \hspace{19em} (29)
 ```
 
-- 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [E.2](#e2-overall-error-versus-error-concentration) 에 있다.
+- 그래서 두 예측을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [E.2](#e2-overall-error-versus-error-concentration) 에 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
 
 ## 5. Practical Interpretation
@@ -390,7 +390,7 @@ Table 4 의 값을 넣어 식 (32), 식 (33), 식 (34) 와 세 R² 의 순서를
 
 ### 7.1 Choosing an Aggregation Level
 
-같은 측정 데이터와 예측으로도 어느 집계 수준의 R² 를 보고하는지에 따라 model 의 성능이 다르게 보이므로, 보고하는 R² 의 집계 수준을 함께 밝힌다.
+같은 측정 데이터와 예측으로도 어느 집계 수준의 R² 를 보고하는지에 따라 예측의 성능이 다르게 보이므로, 보고하는 R² 의 집계 수준을 함께 밝힌다.
 
 - $`R^2_{\mathrm{all}}`$: 기준 변동에 측정 위치 평균의 차이 $`B`$ 가 들어 있어, 같은 $`E`$ 에서도 $`R^2_{\mathrm{wavgn}}`$ 보다 $`\lambda q`$ 만큼 크다. 예를 들어 예측값을 측정 위치 평균 $`\bar{y}_{\cdot j}`$ 로 두면 측정 위치마다 $`\mathrm{SSE}_j = \mathrm{SST}_j`$ 이어서 $`R^2_{\mathrm{wavgn}} = 0`$ 이지만 $`R^2_{\mathrm{all}} = \lambda`$ 이다.
 - $`R^2_{\mathrm{avgw}}`$: wafer 평균 예측의 제곱오차를 wafer 평균 사이 변동과 견준다. Wafer 평균을 관리하는 공정에서 쓴다.
@@ -702,10 +702,10 @@ Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 늘리면 $`R^2_2`$ 
 
 ### D.3 Why not weight by SSE?
 
-SSE 로 가중하면 가중 평균이 비율 하나로 줄어들지 않고, 가중치가 예측 model 에 따라 바뀐다. 근거는 아래 두 항목이다.
+SSE 로 가중하면 가중 평균이 비율 하나로 줄어들지 않고, 가중치가 예측에 따라 바뀐다. 근거는 아래 두 항목이다.
 
 - **비율 하나로 줄어들지 않는다.** $`R^2_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - E/A`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 1 의 예에서 SSE 가중 평균은 (10 × 0.90 + 0.5 × 0.50) / 10.5 = 0.881 이다.
-- **가중치가 예측 model 에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해지지만 $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 두 예측 model 을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 비율인지 가중치가 바뀐 비율인지 가릴 수 없다.
+- **가중치가 예측에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해지지만 $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 두 예측을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 비율인지 가중치가 바뀐 비율인지 가릴 수 없다.
 
 ## Appendix E. Example with Measured Data
 
@@ -770,7 +770,7 @@ Table 6. Three R2 from the data and from the identities
 
 원래 예측, 곧 CSV 의 측정 위치 예측값을 보정 없이 그대로 쓴 예측의 $`R^2_{\mathrm{minn}}`$ = 0.6370 이 작은 것은 오차가 한 측정 위치에 몰려서가 아니라 측정 위치 전체의 오차가 커서이다. 오차 집중도 $`\gamma_n`$ = 1.6768 은 가장 큰 값 $`N`$ = 13 보다 1 에 훨씬 가깝고, 측정 위치 전체의 오차를 키운 것은 측정 위치마다의 mean error (offset) 이다 (Table 9).
 
-예측 model 두 개의 $`R^2_{\mathrm{minn}}`$ 을 견줄 때는 식 (29) 로, 그 차이를 측정 위치 FVU 의 평균 $`1 - R^2_{\mathrm{avgn}}`$ 의 변화와 오차 집중도 $`\gamma_n`$ 의 변화로 나눈다. Table 5 의 데이터에서 원래 예측과 두 보정 예측으로 구한 값은 아래 Table 7 이다.
+두 예측의 $`R^2_{\mathrm{minn}}`$ 을 견줄 때는 식 (29) 로, 그 차이를 측정 위치 FVU 의 평균 $`1 - R^2_{\mathrm{avgn}}`$ 의 변화와 오차 집중도 $`\gamma_n`$ 의 변화로 나눈다. Table 5 의 데이터에서 원래 예측과 두 보정 예측으로 구한 값은 아래 Table 7 이다.
 
 Table 7. Minimum location R2 split into overall error and error concentration
 
