@@ -1,17 +1,18 @@
 # R2 by Aggregation Level
-Version 61 | Created: 2026-11-09 | Updated: 2026-11-12 08:32 UTC
+Version 62 | Created: 2026-11-09 | Updated: 2026-11-12 08:35 UTC
 
-- [1. Purpose and Main Results](#1-purpose-and-main-results)
-- [2. Notation and Assumptions](#2-notation-and-assumptions)
-- [3. Definitions](#3-definitions)
-- [4. Relations and Inequalities](#4-relations-and-inequalities)
-  - [4.1 Core Identities](#41-core-identities)
-  - [4.2 Differences and Inequalities](#42-differences-and-inequalities)
-  - [4.3 Interpretation](#43-interpretation)
-- [5. Worked Example](#5-worked-example)
-- [6. Practical Interpretation](#6-practical-interpretation)
-  - [6.1 Choosing an Aggregation Level](#61-choosing-an-aggregation-level)
-  - [6.2 Breaking Conditions](#62-breaking-conditions)
+- [1. Purpose](#1-purpose)
+- [2. Summary](#2-summary)
+- [3. Notations and Assumptions](#3-notations-and-assumptions)
+- [4. Definitions](#4-definitions)
+- [5. Practical Interpretation](#5-practical-interpretation)
+  - [5.1 Core Identities](#51-core-identities)
+  - [5.2 Differences and Inequalities](#52-differences-and-inequalities)
+  - [5.3 Meaning of the Quantities](#53-meaning-of-the-quantities)
+- [6. Worked Example](#6-worked-example)
+- [7. Application](#7-application)
+  - [7.1 Choosing an Aggregation Level](#71-choosing-an-aggregation-level)
+  - [7.2 Breaking Conditions](#72-breaking-conditions)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Mathematical Derivations](#appendix-b-mathematical-derivations)
   - [B.1 Sums of Squares](#b1-sums-of-squares)
@@ -24,16 +25,18 @@ Version 61 | Created: 2026-11-09 | Updated: 2026-11-12 08:32 UTC
 - [Appendix D. Intuitive Meaning](#appendix-d-intuitive-meaning)
 - [Appendix E. Example with Measured Data](#appendix-e-example-with-measured-data)
 
-## 1. Purpose and Main Results
+## 1. Purpose
 
 - **Problem Statement**: 반도체 wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정한 같은 데이터로 R² 를 전체 측정값, wafer 평균값, 측정 위치별 측정값에서 구하면 세 값이 서로 다르다. Wafer 평균의 예측값은 측정 위치 예측값의 평균일 수도, 따로 구한 값일 수도 있다.
 - **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 사이의 항등식과 부등식을 구하고 증명한다.
 - **Non-Goal**: 예측 model 을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
 
-꼭지 3 에서 정의한 세 R² 는 측정 위치 오차 몫 $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$ 의 네 양으로 식 (27), 식 (28), 식 (29) 와 같이 모두 적힌다.
+## 2. Summary
+
+꼭지 4 에서 정의한 세 R² 는 측정 위치 오차 몫 $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$ 의 네 양으로 식 (27), 식 (28), 식 (29) 와 같이 모두 적힌다.
 세 R² 의 순서는 이 네 양의 계수 차이로 정해지며, 세 쌍 모두의 필요충분조건이 Table 2 에 있다.
 
-## 2. Notation and Assumptions
+## 3. Notations and Assumptions
 
 Table 1. Symbols
 
@@ -76,7 +79,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 - $`\kappa`$ 는 $`E \gt 0`$ 일 때만 정의한다. $`E = 0`$ 이면 $`\kappa`$ 대신 $`1 - R^2_{\mathrm{avgw}} = \mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 를 그대로 쓴다.
 - Wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값의 평균이어도 되고 따로 구한 값이어도 된다. 평균인 경우에만 성립하는 결과는 [C.3](#c3-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
 
-## 3. Definitions
+## 4. Definitions
 
 > **Definition: R2 over all measured values**<br>
 > 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
@@ -209,11 +212,11 @@ q = \frac{E}{A}
 \hspace{19em} (24)
 ```
 
-## 4. Relations and Inequalities
+## 5. Practical Interpretation
 
-### 4.1 Core Identities
+### 5.1 Core Identities
 
-꼭지 3 에서 정의한 세 R² 는 아래 식 (27), 식 (28), 식 (29) 와 같이 $`q`$, $`\lambda`$, $`\kappa`$, $`\delta`$ 로 모두 적힌다. 그 바탕은 식 (25) 와 식 (26) 의 제곱합 분해이며, 증명은 [Appendix B](#appendix-b-mathematical-derivations) 에 있다.
+꼭지 4 에서 정의한 세 R² 는 아래 식 (27), 식 (28), 식 (29) 와 같이 $`q`$, $`\lambda`$, $`\kappa`$, $`\delta`$ 로 모두 적힌다. 그 바탕은 식 (25) 와 식 (26) 의 제곱합 분해이며, 증명은 [Appendix B](#appendix-b-mathematical-derivations) 에 있다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = A + B
@@ -256,7 +259,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 - 식 (30): $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 SST 가중치 $`\omega_j`$ 로 평균한 값이다. 직관적 의미는 [Appendix D](#appendix-d-intuitive-meaning) 에 있다.
 - 식 (31): $`\delta`$ 는 측정 위치마다의 $`\mathrm{SST}_j`$ 와 $`R^2_j`$ 가 함께 움직이는 정도이다. $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 도 큰 경향이 있으면 $`\delta \gt 0`$ 이다. $`\mathrm{SST}_j`$ 가 모두 같으면 $`\delta = 0`$ 이지만, 이것은 충분조건일 뿐이다. 예를 들어 $`R^2_j`$ 가 모두 같으면 $`\mathrm{SST}_j`$ 가 달라도 $`\delta = 0`$ 이다.
 
-### 4.2 Differences and Inequalities
+### 5.2 Differences and Inequalities
 
 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 사이의 차이는 식 (27), 식 (28), 식 (29) 에서 아래 식 (32) 부터 식 (36) 으로 바로 나온다.
 
@@ -321,7 +324,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 - 식 (37), 식 (38): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`\min_j R^2_j`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
 - 식 (39): $`\min_j R^2_j`$ 를 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. 식 (39) 는 오차 몫 $`q`$ 가 가중치가 가장 작은 측정 위치 한 곳에 모이고 나머지 측정 위치의 $`R^2_j`$ 는 모두 1 인 경우에 같아진다.
 
-### 4.3 Interpretation
+### 5.3 Meaning of the Quantities
 
 - **$`q`$**: 측정 위치 $`N`$ 곳의 wafer 사이 변동 $`A`$ 에 대한 측정 위치 오차 $`E`$ 의 비율이다. 세 R² 가 공통으로 쓰는 기준이다.
 - **$`\lambda`$**: 측정값만으로 정해지며 예측값과 무관하다. 식 (32) 의 차이 $`\lambda q`$ 는 예측이 측정 위치 패턴을 맞혔다는 뜻이 아니다. $`\mathrm{SST}_{\mathrm{all}}`$ 에는 측정 위치 평균의 차이 $`B`$ 가 더해지지만 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`E`$ 그대로여서, 두 R² 의 기준 변동이 달라서 생기는 차이다.
@@ -331,7 +334,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 
 $`\lambda`$ 와 $`\kappa`$ 를 wafer 평균과 그 차이로 나누어 적는 방법과, $`\kappa`$ 를 측정값의 상관으로 적는 방법은 [Appendix C](#appendix-c-variance-decomposition-and-correlation) 에 있다.
 
-## 5. Worked Example
+## 6. Worked Example
 
 Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 3 이다.
 
@@ -343,7 +346,7 @@ Table 3. Measured and predicted values
 | 2       | 13   | 15   | 13             | 14             | 0    | 1    | 14            | 13.0                    | 1.0                 |
 | 3       | 16   | 20   | 15             | 19             | 1    | 1    | 18            | 17.5                    | 0.5                 |
 
-Wafer 평균 예측값은 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 13.0 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 86/6 = 14.3333, 측정 위치 평균은 13 과 15.6667 이다. 꼭지 3 의 정의 식으로 구한 값은 아래 Table 4 이다.
+Wafer 평균 예측값은 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 13.0 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 86/6 = 14.3333, 측정 위치 평균은 13 과 15.6667 이다. 꼭지 4 의 정의 식으로 구한 값은 아래 Table 4 이다.
 
 Table 4. Sums of squares and R2 values
 
@@ -367,9 +370,9 @@ Table 4 의 값을 넣어 식 (27), 식 (28), 식 (29) 와 세 R² 의 순서를
 - 식 (29): 1 - 0.0789 - 0.0072 = 0.9138 이 R2_avgn 이다.
 - 순서: $`\kappa`$ = 0.7703 이 $`1 - \lambda`$ = 0.8261 보다 작아 R2_avgw 가 R2_all 보다 크고, $`\delta`$ = 0.0072 가 $`-\lambda q`$ = -0.0137 보다 커서 R2_all 이 R2_avgn 보다 크다. 그래서 R2_avgw = 0.9392, R2_all = 0.9348, R2_avgn = 0.9138 의 차례이다.
 
-## 6. Practical Interpretation
+## 7. Application
 
-### 6.1 Choosing an Aggregation Level
+### 7.1 Choosing an Aggregation Level
 
 같은 측정 데이터와 예측으로도 어느 집계 수준의 R² 를 보고하는지에 따라 model 의 성능이 다르게 보이므로, 보고하는 R² 의 집계 수준을 함께 밝힌다.
 
@@ -377,7 +380,7 @@ Table 4 의 값을 넣어 식 (27), 식 (28), 식 (29) 와 세 R² 의 순서를
 - $`R^2_{\mathrm{avgw}}`$: wafer 평균 예측의 제곱오차를 wafer 평균 사이 변동과 견준다. Wafer 평균을 관리하는 공정에서 쓴다.
 - $`R^2_{\mathrm{avgn}}`$ 과 $`R^2_{\mathrm{wavgn}}`$: 측정 위치마다의 wafer 사이 변동을 기준으로 한다. 측정 위치마다 관리하는 공정에서 쓰며, 측정 위치마다 변동의 크기가 다르면 $`R^2_{\mathrm{wavgn}}`$ 이 변동이 거의 없는 측정 위치에 덜 흔들린다.
 
-### 6.2 Breaking Conditions
+### 7.2 Breaking Conditions
 
 - Wafer 마다 측정 위치의 수나 위치가 다르면 식 (25) 와 식 (28) 이 성립하지 않는다. 식 (25) 의 교차항이 0 이 되는 단계와 [C.2](#c2-aggregate-cross-location-correlation) 의 식에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
 - R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (27) 부터 식 (36) 이 모두 성립하지 않는다.
