@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 52 | Created: 2026-11-09 | Updated: 2026-11-12 05:34 UTC
+Version 53 | Created: 2026-11-09 | Updated: 2026-11-12 06:13 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,6 +26,7 @@ Version 52 | Created: 2026-11-09 | Updated: 2026-11-12 05:34 UTC
   - [B.5 Inequalities](#b5-inequalities)
   - [B.6 Wafer Average Form of Lambda and Kappa](#b6-wafer-average-form-of-lambda-and-kappa)
 - [Appendix C. Intuitive Meaning](#appendix-c-intuitive-meaning)
+- [Appendix D. Example with Measured Data](#appendix-d-example-with-measured-data)
 
 ## 1. Purpose
 
@@ -812,3 +813,46 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 - **가중치가 예측 model 에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해져 어떤 예측 model 을 쓰든 같지만, $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 같은 측정값에서 두 예측 model 을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 몫인지 가중치가 바뀐 몫인지 가릴 수 없다.
 
 Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
+
+## Appendix D. Example with Measured Data
+
+반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0-test-actual-and-predictions.csv](data/u0-test-actual-and-predictions.csv)) 으로 구한 양은 아래 Table 5 이다.
+
+Table 5. Quantities of the measured data
+
+| Quantity             | Value                   |
+| :------------------: | :---------------------: |
+| M, N, T              | 44, 13, 572             |
+| SST_all, SSE_all     | 464746.9398, 83042.5789 |
+| SST_avgw, SSE_avgw   | 23830.3120, 1343.1469   |
+| sum SST_j, sum SSE_j | 404892.0942, 83042.5789 |
+| R2_all               | 0.8213                  |
+| R2_avgw              | 0.9436                  |
+| R2_avgn              | 0.7835                  |
+| R2_wavgn             | 0.7949                  |
+| lambda               | 0.1288                  |
+| kappa                | 0.2748                  |
+| r_y                  | 0.7456                  |
+
+- 측정값 $`y_{ij}`$ 는 `true_p1` 부터 `true_p13`, 측정 위치 예측값 $`\hat{y}_{ij}`$ 는 `pred_p1` 부터 `pred_p13`, wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 `pred_avg` 열이다.
+- Wafer 평균 $`\bar{y}_{i\cdot}`$ 은 식 (6) 대로 `true_p1` 부터 `true_p13` 의 평균으로 다시 구했다. 첫 wafer `20260123_0001` 의 `true_avg` 열은 628 이지만 측정값 13 개의 평균은 614.4957 이어서, 이 열은 쓰지 않았다.
+
+세 R² 를 그리면 아래 Fig 2 이다.
+
+<img src="r2-aggregation-ko_fig/fig2-u0-r2.png" width="900" style="max-width: 100%;" alt="Fig 2">
+
+Fig 2. Three R2 of the measured data
+
+- (a): 측정값 572 개와 그 예측값의 산점도이며, 점선은 측정값과 예측값이 같은 선이다. R2_all = 0.8213 이다.
+- (b): wafer 평균 44 개와 wafer 평균 예측값의 산점도이다. 점이 (a) 보다 점선에 가까이 모여 R2_avgw = 0.9436 이다.
+- (c): 측정 위치 13 곳의 R2_j 이며, 점의 넓이는 가중치 $`\omega_j`$ 에 비례한다. 실선은 R2_avgn = 0.7835, 점선은 R2_wavgn = 0.7949 이다.
+
+Table 5 와 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항목이다.
+
+- 세 R² 의 순서는 R2_avgw = 0.9436, R2_all = 0.8213, R2_avgn = 0.7835 의 차례이다.
+- 식 (20): $`\lambda`$ = 0.1288 로 측정 위치 패턴이 SST_all 에서 차지하는 비율이 작다. R2_all 은 R2_wavgn 보다 $`\lambda (1 - R^2_{\mathrm{wavgn}})`$ = 0.1288 × 0.2051 = 0.0264 만큼 크다.
+- 식 (21) 과 식 (29): wafer 평균 예측의 오차 몫은 1343.1469 / 23830.3120 = 0.0564 로, 측정 위치 예측의 오차 몫 0.2051 의 $`\kappa`$ = 0.2748 배이다. $`\kappa \le 1`$ 이어서 R2_avgw 가 R2_wavgn 보다 크다.
+- 식 (30): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 크다. 측정 위치 패턴의 몫 0.1288 이 wafer 평균으로 모아 줄어드는 오차의 몫 $`1 - \kappa`$ = 0.7252 보다 작다.
+- 식 (28): R2_wavgn - R2_avgn = 0.0114 로 0 이상이다. 가중치가 큰 측정 위치 1, 2, 5 ($`\omega_j`$ = 0.1252, 0.1082, 0.1105) 의 R2_j 가 0.8990, 0.8396, 0.8553 으로 R2_avgn 보다 크고, R2_j 가 가장 작은 측정 위치 3 (0.6370) 은 가중치가 0.0644 로 작다.
+
+Fig 2 와 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 Table 1 의 양을 계산하고, 식 (20) 과 식 (21) 이 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
