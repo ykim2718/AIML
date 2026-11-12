@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 65 | Created: 2026-11-09 | Updated: 2026-11-12 10:22 UTC
+Version 66 | Created: 2026-11-09 | Updated: 2026-11-12 10:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -62,7 +62,6 @@ Table 1. Symbols
 | $`\bar{y}_{\cdot j}`$              | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                                       | per location,<br>all wafers  | scalar  | -                                          |
 | $`\mathrm{SST}`$, $`\mathrm{SSE}`$ | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                                    | 아래첨자에 따름              | scalar  | -                                          |
 | $`R^2_j`$                          | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)                         | per location,<br>all wafers  | scalar  | -                                          |
-| $`R^2_{\mathrm{minn}}`$            | 측정 위치 $`N`$ 곳의 $`R^2_j`$ 가운데 가장 작은 값 (min R2 across $`N`$ points, minn)                                                   | all wafers,<br>all locations | scalar  | -                                          |
 | $`A`$                              | 측정 위치마다의 wafer 사이 변동 $`\mathrm{SST}_j`$ 의 합                                                                                | all wafers,<br>all locations | scalar  | $`A \gt 0`$                                |
 | $`B`$                              | 측정 위치 평균이 서로 달라 생기는 제곱합                                                                                                | all wafers,<br>all locations | scalar  | $`B \ge 0`$                                |
 | $`E`$                              | 측정 위치마다의 오차 제곱합 $`\mathrm{SSE}_j`$ 의 합                                                                                    | all wafers,<br>all locations | scalar  | $`E \ge 0`$                                |
@@ -171,55 +170,58 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 \hspace{19em} (15)
 ```
 
-세 R² 를 잇는 데 쓰는 Table 1 의 양은 아래 식 (16) 부터 식 (25) 로 정의한다.
+> **Definition: Min R2 across N points**<br>
+> 측정 위치 R² 의 최솟값 $`R^2_{\mathrm{minn}}`$ 은 측정 위치마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 가운데, 측정 위치 $`N`$ 곳에서 가장 작은 값이다.
 
 ```math
-A = \sum_{j=1}^{N} \mathrm{SST}_j
+R^2_{\mathrm{minn}} = \min_{j} R^2_j
 \hspace{19em} (16)
 ```
 
+세 R² 를 잇는 데 쓰는 Table 1 의 양은 아래 식 (17) 부터 식 (25) 로 정의한다.
+
 ```math
-B = M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2
+A = \sum_{j=1}^{N} \mathrm{SST}_j
 \hspace{19em} (17)
 ```
 
 ```math
-E = \sum_{j=1}^{N} \mathrm{SSE}_j
+B = M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2
 \hspace{19em} (18)
 ```
 
 ```math
-\omega_j = \frac{\mathrm{SST}_j}{A}
+E = \sum_{j=1}^{N} \mathrm{SSE}_j
 \hspace{19em} (19)
 ```
 
 ```math
-R^2_{\mathrm{wavgn}} = 1 - \frac{E}{A}
+\omega_j = \frac{\mathrm{SST}_j}{A}
 \hspace{19em} (20)
 ```
 
 ```math
-q = \frac{E}{A}
+R^2_{\mathrm{wavgn}} = 1 - \frac{E}{A}
 \hspace{19em} (21)
 ```
 
 ```math
-\lambda = \frac{B}{A + B}
+q = \frac{E}{A}
 \hspace{19em} (22)
 ```
 
 ```math
-\kappa = \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \cdot \frac{A}{E}
+\lambda = \frac{B}{A + B}
 \hspace{19em} (23)
 ```
 
 ```math
-\delta = R^2_{\mathrm{wavgn}} - R^2_{\mathrm{avgn}}
+\kappa = \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \cdot \frac{A}{E}
 \hspace{19em} (24)
 ```
 
 ```math
-R^2_{\mathrm{minn}} = \min_{j} R^2_j
+\delta = R^2_{\mathrm{wavgn}} - R^2_{\mathrm{avgn}}
 \hspace{19em} (25)
 ```
 
@@ -402,12 +404,12 @@ Table 4 의 값을 넣어 식 (28), 식 (29), 식 (30) 과 세 R² 의 순서를
 ## Appendix A. Terminology
 
 - **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
-- **error ratio**: 식 (23) 의 $`\kappa`$. wafer 평균 예측의 오차 몫을 측정 위치 예측의 오차 몫으로 나눈 값.
-- **location pattern fraction**: 식 (22) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
+- **error ratio**: 식 (24) 의 $`\kappa`$. wafer 평균 예측의 오차 몫을 측정 위치 예측의 오차 몫으로 나눈 값.
+- **location pattern fraction**: 식 (23) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
 - **measurement location**: wafer 위에서 측정값을 얻는 지점. 모든 wafer 에서 같은 번호 $`j`$ 는 같은 지점이다.
-- **min R2 across N points**: 식 (25) 의 $`R^2_{\mathrm{minn}}`$. 측정 위치 $`N`$ 곳의 $`R^2_j`$ 가운데 가장 작은 값.
+- **min R2 across N points**: 식 (16) 의 $`R^2_{\mathrm{minn}}`$. 측정 위치 $`N`$ 곳의 $`R^2_j`$ 가운데 가장 작은 값.
 - **R2 (coefficient of determination)**: $`1 - \mathrm{SSE}/\mathrm{SST}`$. 평균을 예측값으로 쓸 때와 견주어 제곱오차가 줄어든 정도.
-- **SST-weighted R2 average over N locations**: 식 (20) 의 $`R^2_{\mathrm{wavgn}}`$. 측정 위치 R² $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이며, 측정 위치 $`N`$ 곳의 SSE 합과 SST 합으로 구한 R² 와 같다.
+- **SST-weighted R2 average over N locations**: 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$. 측정 위치 R² $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이며, 측정 위치 $`N`$ 곳의 SSE 합과 SST 합으로 구한 R² 와 같다.
 - **sum of squared errors (SSE)**: 예측 오차를 제곱해 더한 값.
 - **total sum of squares (SST)**: 측정값과 그 평균의 차이를 제곱해 더한 값.
 - **wafer average**: wafer 한 장의 측정값 $`N`$ 개를 산술 평균한 값.
@@ -438,7 +440,7 @@ y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\
 
 - 식 (41): $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
 
-식 (41) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (16) 으로 $`A`$, 셋째 항의 합은 식 (17) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (26) 이 성립한다. 식 (27) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (18) 로 성립한다.
+식 (41) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (17) 로 $`A`$, 셋째 항의 합은 식 (18) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (26) 이 성립한다. 식 (27) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (19) 로 성립한다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = A + B
@@ -459,7 +461,7 @@ y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\
 
 - 식 (42): 식 (5) 에 식 (26) 과 식 (27) 을 넣고, 분자와 분모에 $`A`$ 를 곱했다.
 
-식 (42) 의 첫 분수는 식 (22) 로 $`1 - \lambda`$, 둘째 분수는 식 (21) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (23) 과 식 (21) 로 $`\kappa q`$ 와 같고, 식 (24) 와 식 (20), 식 (21) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (28), 식 (29), 식 (30) 이 성립한다.
+식 (42) 의 첫 분수는 식 (23) 으로 $`1 - \lambda`$, 둘째 분수는 식 (22) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (24) 와 식 (22) 로 $`\kappa q`$ 와 같고, 식 (25) 와 식 (21), 식 (22) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (28), 식 (29), 식 (30) 이 성립한다.
 
 ```math
 R^2_{\mathrm{all}} = 1 - (1 - \lambda)\, q
@@ -481,9 +483,9 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{A} \left( 1 - \frac{
 \hspace{19em} (43)
 ```
 
-- 식 (43): 식 (20) 의 1 을 $`\sum_j \mathrm{SST}_j / A`$ 로, $`E/A`$ 를 $`\sum_j \mathrm{SSE}_j / A`$ 로 적고 항마다 묶었다.
+- 식 (43): 식 (21) 의 1 을 $`\sum_j \mathrm{SST}_j / A`$ 로, $`E/A`$ 를 $`\sum_j \mathrm{SSE}_j / A`$ 로 적고 항마다 묶었다.
 
-식 (43) 의 첫 분수는 식 (19) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (31) 이 성립한다.
+식 (43) 의 첫 분수는 식 (20) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (31) 이 성립한다.
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
@@ -495,7 +497,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 \hspace{19em} (44)
 ```
 
-- 식 (44): 식 (24) 에 식 (31) 과 식 (15) 를 넣었다.
+- 식 (44): 식 (25) 에 식 (31) 과 식 (15) 를 넣었다.
 
 식 (44) 의 괄호는 $`(\mathrm{SST}_j - A/N)/A`$ 이고 $`j`$ 에 대해 더하면 0 이므로, $`R^2_j`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 빼도 합이 바뀌지 않는다. 따라서 식 (32) 가 성립한다.
 
@@ -506,7 +508,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 
 ### B.3 Differences and Inequalities
 
-식 (33) 부터 식 (37) 은 식 (20), 식 (21) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (28), 식 (29), 식 (30) 에서 두 식을 빼어 얻는다. 따라서 식 (33) 부터 식 (37) 이 성립한다. Table 2 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
+식 (33) 부터 식 (37) 은 식 (21), 식 (22) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (28), 식 (29), 식 (30) 에서 두 식을 빼어 얻는다. 따라서 식 (33) 부터 식 (37) 이 성립한다. Table 2 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \lambda\, q
@@ -585,7 +587,7 @@ y_{ij} - \bar{y} = \left( \bar{y}_{i\cdot} - \bar{y} \right) + \left( \bar{y}_{\
 - 식 (47): 세 항을 더하면 $`\bar{y}_{i\cdot}`$ 과 $`\bar{y}_{\cdot j}`$ 가 지워진다.
 - 식 (48): $`W = N\, \mathrm{SST}_{\mathrm{avgw}}`$, $`L = B`$, $`I`$ 는 식 (47) 의 셋째 항의 제곱합이다. 세 항은 모든 $`i`$, $`j`$ 에서 더할 때 서로의 교차항이 0 이다. 첫 항은 $`j`$ 에, 둘째 항은 $`i`$ 에 따라 바뀌지 않고, 셋째 항은 $`i`$ 와 $`j`$ 어느 쪽으로 더해도 0 이기 때문이다.
 
-$`I`$ 는 측정값을 wafer 효과와 측정 위치 효과의 합으로 맞추고 남은 제곱합이며, wafer 와 측정 위치마다 측정이 한 번이므로 상호작용과 측정 잡음을 가르지 못한다. 식 (26) 과 식 (48) 을 견주면 $`A = W + I`$ 이고, 식 (22) 는 $`\lambda = L / (W + L + I)`$ 가 되어 $`\lambda`$ 가 측정 위치 평균 사이 변동의 몫임이 드러난다.
+$`I`$ 는 측정값을 wafer 효과와 측정 위치 효과의 합으로 맞추고 남은 제곱합이며, wafer 와 측정 위치마다 측정이 한 번이므로 상호작용과 측정 잡음을 가르지 못한다. 식 (26) 과 식 (48) 을 견주면 $`A = W + I`$ 이고, 식 (23) 은 $`\lambda = L / (W + L + I)`$ 가 되어 $`\lambda`$ 가 측정 위치 평균 사이 변동의 몫임이 드러난다.
 
 측정 위치 오차 $`E`$ 도 같은 방법으로 wafer 마다의 오차 평균과 그 차이로 나뉜다.
 
@@ -594,9 +596,9 @@ E = N \sum_{i=1}^{M} \left( \frac{1}{N} \sum_{k=1}^{N} e_{ik} \right)^2 + \sum_{
 \hspace{19em} (49)
 ```
 
-- 식 (49): 식 (18) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
+- 식 (49): 식 (19) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
 
-$`A = W + I`$ 와 식 (49) 를 식 (23) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 몫과 wafer 평균과의 차이의 몫으로 적힌다.
+$`A = W + I`$ 와 식 (49) 를 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 몫과 wafer 평균과의 차이의 몫으로 적힌다.
 
 ### C.2 Aggregate Cross-location Correlation
 
@@ -630,7 +632,7 @@ N^2\, \mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \sum_{j=1}^{N} x_{ij}
 \hspace{19em} (53)
 ```
 
-- 식 (53): 식 (23) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (52) 를 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
+- 식 (53): 식 (24) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (52) 를 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
 
 식 (51) 의 우변은 0 이상이고, 괄호 안의 합의 제곱은 $`N \sum_j x_{ij}^2`$ 를 넘지 않는다. 그래서 식 (52) 의 괄호는 0 이상 $`N`$ 이하이며, $`\bar{r}_y`$ 의 범위는 $`-1/(N-1) \le \bar{r}_y \le 1`$ 이다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 왼쪽 부등호가 엄격해진다.
 
@@ -678,7 +680,7 @@ Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로
 SST 가중 평균은 wafer 사이 변동이 큰 측정 위치에 무게를 두고, 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체를 기준으로 한 R² 하나로 읽힌다. 근거는 아래 두 항목이다.
 
 - **wafer 사이 변동이 큰 측정 위치에 무게를 둔다.** 측정 위치마다 담긴 변동을 한 그릇에 부어 합치면, 그릇의 비율은 많이 부은 측정 위치가 더 많이 정한다. 그 무게가 식 (31) 의 가중치 $`\omega_j`$ 이며, Fig 1 의 예에서는 0.99 대 0.01 이다.
-- **하나의 비율로 읽힌다.** 식 (20) 의 $`R^2_{\mathrm{wavgn}} = 1 - E/A`$ 는 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체를 기준으로 한 R² 이다. 그래서 식 (28) 과 식 (29) 처럼 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$ 와 $`\lambda`$, $`\kappa`$ 로 이어진다. $`R^2_{\mathrm{avgn}}`$ 은 식 (32) 의 $`\delta`$ 가 0 일 때 이 값과 같아지며, $`\mathrm{SST}_j`$ 가 모두 같은 것은 그 충분조건이다.
+- **하나의 비율로 읽힌다.** 식 (21) 의 $`R^2_{\mathrm{wavgn}} = 1 - E/A`$ 는 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체를 기준으로 한 R² 이다. 그래서 식 (28) 과 식 (29) 처럼 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$ 와 $`\lambda`$, $`\kappa`$ 로 이어진다. $`R^2_{\mathrm{avgn}}`$ 은 식 (32) 의 $`\delta`$ 가 0 일 때 이 값과 같아지며, $`\mathrm{SST}_j`$ 가 모두 같은 것은 그 충분조건이다.
 
 Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 늘리면 $`R^2_2`$ 는 0.50 에서 -1.00 으로, $`R^2_{\mathrm{avgn}}`$ 은 0.70 에서 -0.05 로 떨어지지만, $`R^2_{\mathrm{wavgn}}`$ 은 0.896 에서 0.881 로 거의 그대로이다.
 
@@ -735,7 +737,7 @@ Fig 2 와 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_th
 
 ### E.1 Identity Check against the Data
 
-데이터에서 정의 식대로 직접 구한 세 R² 는 식 (28), 식 (29), 식 (30) 로 구한 값과 같다. 두 값을 소수점 아래 10 자리까지 견주면 아래 Table 6 이다.
+데이터에서 정의 식대로 직접 구한 세 R² 는 식 (28), 식 (29), 식 (30) 으로 구한 값과 같다. 두 값을 소수점 아래 10 자리까지 견주면 아래 Table 6 이다.
 
 Table 6. Three R2 from the data and from the identities
 
@@ -750,29 +752,29 @@ Table 6. Three R2 from the data and from the identities
 
 ### E.2 How to Raise the Minimum Location R2
 
-$`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아지며, 이 데이터에서는 측정 위치마다의 평균 오차 (offset) 를 빼는 보정이 가장 크게 높인다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 평균 오차의 몫과 그 나머지로 나누면 아래 Table 7 이다.
+$`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아지며, 이 데이터에서는 측정 위치마다의 mean error (offset) 를 빼는 보정이 가장 크게 높인다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 몫과 그 나머지로 나누면 아래 Table 7 이다.
 
 Table 7. Offset share of SSE and R2 after offset correction by location
 
-| Location j | R2_j   | Mean error | Offset share of SSE_j | R2_j after offset correction |
-| :--------: | :----: | :--------: | :-------------------: | :--------------------------: |
-| 1          | 0.8990 | -1.0253    | 0.0090                | 0.8999                       |
-| 2          | 0.8396 | 0.1226     | 0.0001                | 0.8396                       |
-| 3          | 0.6370 | -10.8077   | 0.5428                | 0.8341                       |
-| 4          | 0.7534 | -12.2493   | 0.6318                | 0.9092                       |
-| 5          | 0.8553 | -2.2286    | 0.0338                | 0.8602                       |
-| 6          | 0.8461 | 5.3257     | 0.3599                | 0.9015                       |
-| 7          | 0.7980 | 7.3241     | 0.4851                | 0.8960                       |
-| 8          | 0.7534 | 8.2137     | 0.5025                | 0.8773                       |
-| 9          | 0.7390 | 8.9966     | 0.5510                | 0.8828                       |
-| 10         | 0.7457 | -10.8761   | 0.7743                | 0.9426                       |
-| 11         | 0.9340 | -0.4417    | 0.0051                | 0.9343                       |
-| 12         | 0.7194 | -10.9931   | 0.7609                | 0.9329                       |
-| 13         | 0.6660 | -12.2198   | 0.7805                | 0.9267                       |
+| Location j | R2_j   | Mean error (offset) | Offset share of SSE_j | R2_j after offset correction |
+| :--------: | :----: | :-----------------: | :-------------------: | :--------------------------: |
+| 1          | 0.8990 | -1.0253             | 0.0090                | 0.8999                       |
+| 2          | 0.8396 | 0.1226              | 0.0001                | 0.8396                       |
+| 3          | 0.6370 | -10.8077            | 0.5428                | 0.8341                       |
+| 4          | 0.7534 | -12.2493            | 0.6318                | 0.9092                       |
+| 5          | 0.8553 | -2.2286             | 0.0338                | 0.8602                       |
+| 6          | 0.8461 | 5.3257              | 0.3599                | 0.9015                       |
+| 7          | 0.7980 | 7.3241              | 0.4851                | 0.8960                       |
+| 8          | 0.7534 | 8.2137              | 0.5025                | 0.8773                       |
+| 9          | 0.7390 | 8.9966              | 0.5510                | 0.8828                       |
+| 10         | 0.7457 | -10.8761            | 0.7743                | 0.9426                       |
+| 11         | 0.9340 | -0.4417             | 0.0051                | 0.9343                       |
+| 12         | 0.7194 | -10.9931            | 0.7609                | 0.9329                       |
+| 13         | 0.6660 | -12.2198            | 0.7805                | 0.9267                       |
 
-- Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균이다. $`\mathrm{SSE}_j`$ 는 이 몫과, 평균 오차를 뺀 나머지의 제곱합으로 나뉜다.
-- 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 평균 오차 -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
+- Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균인 mean error (offset) 이다. $`\mathrm{SSE}_j`$ 는 이 몫과, mean error (offset) 를 뺀 나머지의 제곱합으로 나뉜다.
+- 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이어서, 더 높이려면 측정 위치 3 의 예측 자체를 바꿔야 한다.
-- 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (20) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 오차 몫을 직접 줄인다.
+- 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 오차 몫을 직접 줄인다.
 - 식 (40) 의 아래쪽 범위는 $`q`$ 를 줄이면 오르지만, 가장 작은 가중치 0.0556 으로 나누므로 $`q`$ 를 줄여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다.
-- Table 7 의 평균 오차는 이 시험 데이터로 구했다. 실제 보정에서는 평균 오차를 학습 데이터로 구해야 하며, 시험 데이터로 구한 보정을 같은 시험 데이터에 적용하면 R² 를 높게 추정한다.
+- Table 7 의 mean error (offset) 는 이 시험 데이터로 구했다. 실제 보정에서는 mean error (offset) 를 학습 데이터로 구해야 하며, 시험 데이터로 구한 보정을 같은 시험 데이터에 적용하면 R² 를 높게 추정한다.
