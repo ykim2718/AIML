@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 77 | Created: 2026-11-09 | Updated: 2026-11-12 11:56 UTC
+Version 78 | Created: 2026-11-09 | Updated: 2026-11-12 11:59 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -224,7 +224,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱하면, 최악 측정 위치의 FVU 가 아래 식 (29) 와 같이 오차 집중도와 측정 위치 FVU 의 평균의 곱으로 정확히 나뉜다.
 
 ```math
-\underbrace{1 - R^2_{\mathrm{minn}}}_{\text{FVU of the worst location}} = \underbrace{\gamma_n}_{\text{error concentration}} \, \underbrace{\left( 1 - R^2_{\mathrm{avgn}} \right)}_{\text{mean FVU over locations}}
+\underbrace{1 - R^2_{\mathrm{minn}}}_{\text{FVU of the worst location}} = \underbrace{\gamma_n}_{\text{error concentration}} \, \underbrace{(1 - R^2_{\mathrm{avgn}})}_{\text{mean FVU over locations}}
 \hspace{19em} (29)
 ```
 
@@ -765,6 +765,8 @@ Table 6. Three R2 from the data and from the identities
 - R2_all 의 차이 1.1e-16 은 부동소수점 계산의 반올림 오차이다. 세 식은 정의에서 유도한 항등식이어서 어떤 데이터에서도 두 값이 같다.
 
 ### E.2 Overall Error versus Error Concentration
+
+원래 예측의 $`R^2_{\mathrm{minn}}`$ = 0.6370 이 작은 것은 오차가 한 측정 위치에 몰려서가 아니라 측정 위치 전체의 오차가 커서이다. 오차 집중도 $`\gamma_n`$ = 1.6768 은 가장 큰 값 $`N`$ = 13 보다 1 에 훨씬 가깝고, 측정 위치 전체의 오차를 키운 것은 측정 위치마다의 mean error (offset) 이다 (Table 9).
 
 예측 model 두 개의 $`R^2_{\mathrm{minn}}`$ 을 견줄 때는 식 (29) 로, 그 차이를 측정 위치 FVU 의 평균 $`1 - R^2_{\mathrm{avgn}}`$ 의 변화와 오차 집중도 $`\gamma_n`$ 의 변화로 나눈다. Table 5 의 데이터에서 원래 예측과 두 보정 예측으로 구한 값은 아래 Table 7 이다.
 
