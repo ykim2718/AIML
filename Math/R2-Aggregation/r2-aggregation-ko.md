@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 51 | Created: 2026-11-09 | Updated: 2026-11-12 05:31 UTC
+Version 52 | Created: 2026-11-09 | Updated: 2026-11-12 05:34 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -35,7 +35,7 @@ Version 51 | Created: 2026-11-09 | Updated: 2026-11-12 05:31 UTC
 
 ## 2. Summary
 
-세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{wavgn}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{wavgn}})`$ 이다.
+꼭지 4 에서 정의한 세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 하나로 이어지며, $`1 - R^2_{\mathrm{all}} = (1 - \lambda)(1 - R^2_{\mathrm{wavgn}})`$, $`1 - R^2_{\mathrm{avgw}} = \kappa (1 - R^2_{\mathrm{wavgn}})`$ 이다.
 $`R^2_{\mathrm{wavgn}}`$ 은 측정 위치마다의 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 로 가중 평균한 값이고, $`\mathrm{SST}_j`$ 가 모두 같으면 $`R^2_{\mathrm{avgn}}`$ 과 같다.
 그래서 $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{wavgn}}`$ 은 언제나 성립하고, $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}}`$ 은 오차 비 $`\kappa`$ 가 1 이하일 때 성립한다.
 
@@ -216,7 +216,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 \hspace{19em} (22)
 ```
 
-세 식은 모든 wafer 가 같은 측정 위치 $`N`$ 곳을 갖는다고 둔다. 식 (21) 은 wafer 평균의 예측값 $`\hat{y}_{iw}`$ 를 측정 위치 예측값과 어떻게 관련지어 구했는지와 상관없이 성립한다.
+세 식은 모든 wafer 가 같은 측정 위치 $`N`$ 곳을 갖는다고 둔다.
 
 - $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$ 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
 - 예측 오차 $`e_{ij}`$ 와 $`e_{iw}`$ 가 모두 0 이면 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$ 은 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
