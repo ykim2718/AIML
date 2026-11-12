@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 48 | Created: 2026-11-09 | Updated: 2026-11-12 05:17 UTC
+Version 49 | Created: 2026-11-09 | Updated: 2026-11-12 05:26 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -88,13 +88,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > **Definition: R2 over all measured values**<br>
 > 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 wafer $`M`$ 장, 측정 위치 $`N`$ 곳의 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
 
-> **Definition: R2 over wafer averages**<br>
-> Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 wafer 평균 하나를 직접 예측한 값이다.
-
-> **Definition: R2 average over N locations**<br>
-> 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`j`$ 마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 를, 측정 위치 $`N`$ 곳에서 산술 평균한 값이다.
-
-세 R² 의 정의 식은 아래 식 (1) 부터 식 (15) 이다. 식 (1) 부터 식 (5) 는 Table 1 의 $`e_{ij}`$, $`\bar{y}`$, $`\bar{y}_{i\cdot}`$, $`e_{iw}`$, $`\bar{y}_{\cdot j}`$ 를 식으로 적은 것이다. $`\hat{y}_{iw}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 식이 없다.
+$`R^2_{\mathrm{all}}`$ 의 정의 식은 아래 식 (1) 부터 식 (5) 이다. 식 (1) 과 식 (2) 는 Table 1 의 $`e_{ij}`$ 와 $`\bar{y}`$ 를 식으로 적은 것이다.
 
 ```math
 e_{ij} = y_{ij} - \hat{y}_{ij}
@@ -107,49 +101,57 @@ e_{ij} = y_{ij} - \hat{y}_{ij}
 ```
 
 ```math
-\bar{y}_{i\cdot} = \frac{1}{N} \sum_{j=1}^{N} y_{ij}
+\mathrm{SST}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
 \hspace{19em} (3)
 ```
 
 ```math
-e_{iw} = \bar{y}_{i\cdot} - \hat{y}_{iw}
+\mathrm{SSE}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} e_{ij}^2
 \hspace{19em} (4)
 ```
 
 ```math
-\bar{y}_{\cdot j} = \frac{1}{M} \sum_{i=1}^{M} y_{ij}
+R^2_{\mathrm{all}} = 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}}
 \hspace{19em} (5)
 ```
 
-식 (6) 부터 식 (8) 은 $`R^2_{\mathrm{all}}`$, 식 (9) 부터 식 (11) 은 $`R^2_{\mathrm{avgw}}`$, 식 (12) 부터 식 (15) 는 $`R^2_{\mathrm{avgn}}`$ 과, $`R^2_{\mathrm{avgn}}`$ 이 평균하는 $`R^2_j`$ 의 식이다.
+> **Definition: R2 over wafer averages**<br>
+> Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다. Wafer 평균의 예측값은 wafer 평균 하나를 직접 예측한 값이다.
+
+$`R^2_{\mathrm{avgw}}`$ 의 정의 식은 아래 식 (6) 부터 식 (10) 이다. 식 (6) 과 식 (7) 은 Table 1 의 $`\bar{y}_{i\cdot}`$ 와 $`e_{iw}`$ 를 식으로 적은 것이다. $`\hat{y}_{iw}`$ 는 측정 위치 예측값 $`\hat{y}_{ij}`$ 와 따로 구한 값이어서 식이 없다.
 
 ```math
-\mathrm{SST}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
+\bar{y}_{i\cdot} = \frac{1}{N} \sum_{j=1}^{N} y_{ij}
 \hspace{19em} (6)
 ```
 
 ```math
-\mathrm{SSE}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} e_{ij}^2
+e_{iw} = \bar{y}_{i\cdot} - \hat{y}_{iw}
 \hspace{19em} (7)
 ```
 
 ```math
-R^2_{\mathrm{all}} = 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}}
+\mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \bar{y}_{i\cdot} - \bar{y} \right)^2
 \hspace{19em} (8)
 ```
 
 ```math
-\mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \bar{y}_{i\cdot} - \bar{y} \right)^2
+\mathrm{SSE}_{\mathrm{avgw}} = \sum_{i=1}^{M} e_{iw}^2
 \hspace{19em} (9)
 ```
 
 ```math
-\mathrm{SSE}_{\mathrm{avgw}} = \sum_{i=1}^{M} e_{iw}^2
+R^2_{\mathrm{avgw}} = 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}}
 \hspace{19em} (10)
 ```
 
+> **Definition: R2 average over N locations**<br>
+> 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치 $`j`$ 마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 를, 측정 위치 $`N`$ 곳에서 산술 평균한 값이다.
+
+$`R^2_{\mathrm{avgn}}`$ 의 정의 식은 아래 식 (11) 부터 식 (15) 이다. 식 (11) 은 Table 1 의 $`\bar{y}_{\cdot j}`$ 를 식으로 적은 것이고, 식 (12) 부터 식 (14) 는 $`R^2_{\mathrm{avgn}}`$ 이 평균하는 $`R^2_j`$ 의 식이다.
+
 ```math
-R^2_{\mathrm{avgw}} = 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}}
+\bar{y}_{\cdot j} = \frac{1}{M} \sum_{i=1}^{M} y_{ij}
 \hspace{19em} (11)
 ```
 
@@ -354,7 +356,7 @@ Table 3. Measured and predicted values
 | 2       | 13   | 15   | 13             | 14             | 0    | 1    | 14            | 13.0                    | 1.0                 |
 | 3       | 16   | 20   | 15             | 19             | 1    | 1    | 18            | 17.5                    | 0.5                 |
 
-Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 $`\hat{y}_{2w} = 13.0`$ 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 $`\bar{y} = 86/6 = 14.3333`$ 이고, 측정 위치 평균은 $`\bar{y}_{\cdot 1} = 13`$, $`\bar{y}_{\cdot 2} = 15.6667`$ 이다. 식 (6) 부터 식 (18) 로 구한 값은 아래 Table 4 이다.
+Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 $`\hat{y}_{2w} = 13.0`$ 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 $`\bar{y} = 86/6 = 14.3333`$ 이고, 측정 위치 평균은 $`\bar{y}_{\cdot 1} = 13`$, $`\bar{y}_{\cdot 2} = 15.6667`$ 이다. 식 (3) 부터 식 (18) 로 구한 값은 아래 Table 4 이다.
 
 Table 4. Sums of squares and R2 values
 
@@ -419,26 +421,26 @@ Table 4. Sums of squares and R2 values
 
 ### B.1 R2 over All Measured Values Form
 
-식 (20) 은 $`\mathrm{SST}_{\mathrm{all}}`$ 을 측정 위치마다 나누어 증명한다. 쓰는 정의 식은 아래 식 (5), 식 (6), 식 (7), 식 (8), 식 (12), 식 (13), 식 (16), 식 (17) 이다.
-
-```math
-\bar{y}_{\cdot j} = \frac{1}{M} \sum_{i=1}^{M} y_{ij}
-\hspace{19em} (5)
-```
+식 (20) 은 $`\mathrm{SST}_{\mathrm{all}}`$ 을 측정 위치마다 나누어 증명한다. 쓰는 정의 식은 아래 식 (3), 식 (4), 식 (5), 식 (11), 식 (12), 식 (13), 식 (16), 식 (17) 이다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
-\hspace{19em} (6)
+\hspace{19em} (3)
 ```
 
 ```math
 \mathrm{SSE}_{\mathrm{all}} = \sum_{i=1}^{M} \sum_{j=1}^{N} e_{ij}^2
-\hspace{19em} (7)
+\hspace{19em} (4)
 ```
 
 ```math
 R^2_{\mathrm{all}} = 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}}
-\hspace{19em} (8)
+\hspace{19em} (5)
+```
+
+```math
+\bar{y}_{\cdot j} = \frac{1}{M} \sum_{i=1}^{M} y_{ij}
+\hspace{19em} (11)
 ```
 
 ```math
@@ -466,7 +468,7 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 \hspace{19em} (33)
 ```
 
-- 식 (33): 식 (6) 의 합의 순서를 바꾸고, $`y_{ij} - \bar{y}`$ 에 $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
+- 식 (33): 식 (3) 의 합의 순서를 바꾸고, $`y_{ij} - \bar{y}`$ 에 $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = \sum_{j=1}^{N} \mathrm{SST}_j + 2 \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right) \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right) + M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2
@@ -480,21 +482,21 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 \hspace{19em} (35)
 ```
 
-- 식 (35): 식 (5) 에 따라 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = M \bar{y}_{\cdot j} - M \bar{y}_{\cdot j} = 0`$ 이므로 가운데 항이 0 이다. 마지막 항은 식 (17) 로 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 이다.
+- 식 (35): 식 (11) 에 따라 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = M \bar{y}_{\cdot j} - M \bar{y}_{\cdot j} = 0`$ 이므로 가운데 항이 0 이다. 마지막 항은 식 (17) 로 $`\lambda\, \mathrm{SST}_{\mathrm{all}}`$ 이다.
 
 ```math
 \mathrm{SSE}_{\mathrm{all}} = \sum_{j=1}^{N} \mathrm{SSE}_j
 \hspace{19em} (36)
 ```
 
-- 식 (36): 식 (7) 의 합의 순서를 바꾸고 식 (13) 을 썼다.
+- 식 (36): 식 (4) 의 합의 순서를 바꾸고 식 (13) 을 썼다.
 
 ```math
 1 - R^2_{\mathrm{all}} = \frac{\sum_{j} \mathrm{SST}_j}{\mathrm{SST}_{\mathrm{all}}} \cdot \frac{\sum_{j} \mathrm{SSE}_j}{\sum_{j} \mathrm{SST}_j}
 \hspace{19em} (37)
 ```
 
-- 식 (37): 식 (8) 에 식 (36) 을 넣고, 분자와 분모에 $`\sum_j \mathrm{SST}_j \gt 0`$ 을 곱했다.
+- 식 (37): 식 (5) 에 식 (36) 을 넣고, 분자와 분모에 $`\sum_j \mathrm{SST}_j \gt 0`$ 을 곱했다.
 
 식 (35) 에서 $`\sum_j \mathrm{SST}_j / \mathrm{SST}_{\mathrm{all}} = 1 - \lambda`$ 이고, 식 (16) 에서 $`\sum_j \mathrm{SSE}_j / \sum_j \mathrm{SST}_j = 1 - R^2_{\mathrm{wavgn}}`$ 이다. 따라서 식 (20) 이 성립한다.
 
@@ -505,7 +507,7 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 
 ### B.2 R2 over Wafer Averages Form
 
-식 (21) 은 식 (11) 의 오차 몫을 식 (18) 과 식 (16) 의 곱으로 나누어 증명한다. 식 (18) 의 $`\kappa`$ 를 $`\bar{r}_y`$ 로 적은 식 (43) 은 $`\mathrm{SST}_{\mathrm{avgw}}`$ 를 측정 위치마다의 제곱합과 교차합으로 나누어 구한다. 쓰는 정의 식은 아래 식 (2), 식 (3), 식 (9), 식 (11), 식 (18) 과 이 절에서 정의하는 식 (38) 이고, 식 (5), 식 (12), 식 (16) 은 B.1 에 있다.
+식 (21) 은 식 (10) 의 오차 몫을 식 (18) 과 식 (16) 의 곱으로 나누어 증명한다. 식 (18) 의 $`\kappa`$ 를 $`\bar{r}_y`$ 로 적은 식 (43) 은 $`\mathrm{SST}_{\mathrm{avgw}}`$ 를 측정 위치마다의 제곱합과 교차합으로 나누어 구한다. 쓰는 정의 식은 아래 식 (2), 식 (6), 식 (8), 식 (10), 식 (18) 과 이 절에서 정의하는 식 (38) 이고, 식 (11), 식 (12), 식 (16) 은 B.1 에 있다.
 
 ```math
 \bar{y} = \frac{1}{MN} \sum_{i=1}^{M} \sum_{j=1}^{N} y_{ij}
@@ -514,17 +516,17 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 
 ```math
 \bar{y}_{i\cdot} = \frac{1}{N} \sum_{j=1}^{N} y_{ij}
-\hspace{19em} (3)
+\hspace{19em} (6)
 ```
 
 ```math
 \mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \bar{y}_{i\cdot} - \bar{y} \right)^2
-\hspace{19em} (9)
+\hspace{19em} (8)
 ```
 
 ```math
 R^2_{\mathrm{avgw}} = 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}}
-\hspace{19em} (11)
+\hspace{19em} (10)
 ```
 
 > **Definition: Between-location correlation**<br>
@@ -550,14 +552,14 @@ $`\bar{r}_y`$ 의 정의 식은 아래 식 (38) 이다.
 \hspace{19em} (39)
 ```
 
-- 식 (39): 식 (3) 으로 $`\bar{y}_{i\cdot} = \frac{1}{N} \sum_j y_{ij}`$ 이고, 식 (2) 와 식 (5) 로 $`\bar{y} = \frac{1}{N} \sum_j \bar{y}_{\cdot j}`$ 이다.
+- 식 (39): 식 (6) 으로 $`\bar{y}_{i\cdot} = \frac{1}{N} \sum_j y_{ij}`$ 이고, 식 (2) 와 식 (11) 로 $`\bar{y} = \frac{1}{N} \sum_j \bar{y}_{\cdot j}`$ 이다.
 
 ```math
 \mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \sum_{i=1}^{M} \left[ \sum_{j=1}^{N} \left( y_{ij} - \bar{y}_{\cdot j} \right) \right]^2
 \hspace{19em} (40)
 ```
 
-- 식 (40): 식 (9) 에 식 (39) 를 넣었다.
+- 식 (40): 식 (8) 에 식 (39) 를 넣었다.
 
 ```math
 \mathrm{SST}_{\mathrm{avgw}} = \frac{1}{N^2} \left[ \sum_{j=1}^{N} \mathrm{SST}_j + \sum_{j \ne k} \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right) \left( y_{ik} - \bar{y}_{\cdot k} \right) \right]
@@ -585,7 +587,7 @@ $`\bar{r}_y`$ 의 정의 식은 아래 식 (38) 이다.
 \hspace{19em} (44)
 ```
 
-- 식 (44): 식 (11) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 에 $`\sum_j \mathrm{SST}_j / \sum_j \mathrm{SSE}_j`$ 와 그 역수를 곱했다.
+- 식 (44): 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 에 $`\sum_j \mathrm{SST}_j / \sum_j \mathrm{SSE}_j`$ 와 그 역수를 곱했다.
 
 식 (44) 의 앞 두 분수의 곱은 식 (18) 의 $`\kappa`$ 이고, 마지막 분수는 식 (16) 의 $`1 - R^2_{\mathrm{wavgn}}`$ 이다. 따라서 식 (21) 이 성립한다.
 
@@ -775,7 +777,7 @@ y_{ij} - \bar{y}_{\cdot j} = \left( \bar{y}_{i\cdot} - \bar{y} \right) + \left[ 
 
 - 식 (55): 우변의 두 항을 더하면 $`\bar{y}_{i\cdot}`$ 과 $`\bar{y}`$ 가 지워진다.
 
-식 (12) 를 측정 위치에 대해 더하고 식 (55) 를 넣어 제곱을 전개한다. 첫 항은 측정 위치에 따라 바뀌지 않으므로 그 합은 식 (9) 의 $`N`$ 배이다. 식 (2), 식 (3), 식 (5) 로 $`\sum_j (y_{ij} - \bar{y}_{i\cdot}) = 0`$ 이고 $`\sum_j (\bar{y}_{\cdot j} - \bar{y}) = 0`$ 이므로 교차항은 0 이다. 따라서 식 (31) 이 성립한다.
+식 (12) 를 측정 위치에 대해 더하고 식 (55) 를 넣어 제곱을 전개한다. 첫 항은 측정 위치에 따라 바뀌지 않으므로 그 합은 식 (8) 의 $`N`$ 배이다. 식 (2), 식 (6), 식 (11) 로 $`\sum_j (y_{ij} - \bar{y}_{i\cdot}) = 0`$ 이고 $`\sum_j (\bar{y}_{\cdot j} - \bar{y}) = 0`$ 이므로 교차항은 0 이다. 따라서 식 (31) 이 성립한다.
 
 식 (13) 을 측정 위치에 대해 더하고, $`e_{ij}`$ 에 $`\frac{1}{N} \sum_k e_{ik}`$ 를 빼고 더한 뒤 제곱을 전개한다. 이 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이고, 따라서 식 (32) 가 성립한다.
 
