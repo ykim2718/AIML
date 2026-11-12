@@ -5,7 +5,7 @@ For a given average of location R2, R2_avgn, eq (26) puts the minimum location R
 1 - N (1 - R2_avgn) and R2_avgn. The figure draws that range as a band over R2_avgn for a few values of N.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.1+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -23,7 +23,7 @@ FONT_SIZES: dict = {'text': 12.0, 'axis_label': 14.0, 'text_box': 12.0, 'pane_ca
 DPI: int = 300
 N_VALUES: tuple = (2, 5, 13)    # 13 is the number of locations in the measured data of Appendix E
 BAND_COLORS: tuple = (TABLEAU_COLORS['tab:blue'], TABLEAU_COLORS['tab:orange'], TABLEAU_COLORS['tab:green'])
-Y_RANGE: tuple = (-1.0, 1.0)
+Y_RANGE: tuple = (-0.1, 1.0)
 GRID_POINTS: int = 401
 
 

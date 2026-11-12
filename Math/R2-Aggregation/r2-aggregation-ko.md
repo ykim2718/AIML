@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 100 | Created: 2026-11-09 | Updated: 2026-11-12 23:33 UTC
+Version 101 | Created: 2026-11-09 | Updated: 2026-11-12 23:36 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,7 +18,8 @@ Version 100 | Created: 2026-11-09 | Updated: 2026-11-12 23:33 UTC
 - [Appendix B. Mathematical Derivations](#appendix-b-mathematical-derivations)
   - [B.1 Sums of Squares](#b1-sums-of-squares)
   - [B.2 Core Identities](#b2-core-identities)
-  - [B.3 Differences and Inequalities](#b3-differences-and-inequalities)
+  - [B.3 Differences](#b3-differences)
+  - [B.4 Inequalities](#b4-inequalities)
 - [Appendix C. Variance Decomposition and Correlation](#appendix-c-variance-decomposition-and-correlation)
   - [C.1 Two-way Decomposition](#c1-two-way-decomposition)
   - [C.2 Aggregate Cross-location Correlation](#c2-aggregate-cross-location-correlation)
@@ -222,7 +223,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > \hspace{19em} (28)
 > ```
 
-증명은 [B.3](#b3-differences-and-inequalities) 에 있다.
+증명은 [B.4](#b4-inequalities) 에 있다.
 
 식 (27) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱하면, 최악 측정 위치의 FVU 가 아래 식 (29) 와 같이 오차 집중도와 측정 위치 FVU 의 평균의 곱으로 정확히 나뉜다.
 
@@ -349,7 +350,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 
 Fig 1. Range of the minimum location R2 for each number of locations
 
-- 가로축은 R2_avgn, 세로축은 R2_minn 이며, 세로축은 -1 부터 1 까지만 그렸다. 검은 점선은 위쪽 범위 $`R^2_{\mathrm{minn}} = R^2_{\mathrm{avgn}}`$ 이고, 파란, 주황, 초록 실선은 $`N`$ = 2, 5, 13 의 아래쪽 범위 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이다.
+- 가로축은 R2_avgn, 세로축은 R2_minn 이며, 세로축은 -0.1 부터 1 까지만 그렸다. 검은 점선은 위쪽 범위 $`R^2_{\mathrm{minn}} = R^2_{\mathrm{avgn}}`$ 이고, 파란, 주황, 초록 실선은 $`N`$ = 2, 5, 13 의 아래쪽 범위 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이다.
 - $`N`$ 이 정해지면 $`R^2_{\mathrm{minn}}`$ 은 검은 점선과 그 $`N`$ 의 실선 사이에 있다. 색 띠는 $`N`$ 이 2 에서 5, 5 에서 13 으로 커질 때 그 범위가 아래로 넓어지는 부분이다.
 - 아래쪽 범위는 $`R^2_{\mathrm{avgn}} = 1 - 1/N`$ 에서 0 이 되며, 그 값은 $`N`$ = 2 에서 0.5, $`N`$ = 5 에서 0.8, $`N`$ = 13 에서 0.9231 이다. R2_avgn 이 그보다 작으면 식 (26) 만으로는 $`R^2_{\mathrm{minn}} \ge 0`$ 이 보장되지 않는다.
 
@@ -526,7 +527,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 \hspace{19em} (36)
 ```
 
-### B.3 Differences and Inequalities
+### B.3 Differences
 
 식 (37) 부터 식 (41) 은 식 (21), 식 (22) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (32), 식 (33), 식 (34) 에서 두 식을 빼어 얻는다. 따라서 식 (37) 부터 식 (41) 이 성립한다. Table 2 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
 
@@ -554,6 +555,8 @@ R^2_{\mathrm{all}} - R^2_{\mathrm{avgn}} = \lambda\, q + \delta
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
 \hspace{19em} (41)
 ```
+
+### B.4 Inequalities
 
 ```math
 R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \omega_j \left( R^2_j - \min_{k} R^2_k \right)
