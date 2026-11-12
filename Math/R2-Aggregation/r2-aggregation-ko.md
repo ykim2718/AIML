@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 60 | Created: 2026-11-09 | Updated: 2026-11-12 08:25 UTC
+Version 61 | Created: 2026-11-09 | Updated: 2026-11-12 08:32 UTC
 
 - [1. Purpose and Main Results](#1-purpose-and-main-results)
 - [2. Notation and Assumptions](#2-notation-and-assumptions)
@@ -423,7 +423,17 @@ y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\
 
 - 식 (40): $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
 
-식 (40) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (16) 으로 $`A`$, 셋째 항의 합은 식 (17) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (25) 가 성립한다. 식 (26) 은 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (18) 로 바로 나온다.
+식 (40) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (16) 으로 $`A`$, 셋째 항의 합은 식 (17) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (25) 가 성립한다. 식 (26) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (18) 로 성립한다.
+
+```math
+\mathrm{SST}_{\mathrm{all}} = A + B
+\hspace{19em} (25)
+```
+
+```math
+\mathrm{SSE}_{\mathrm{all}} = E
+\hspace{19em} (26)
+```
 
 ### B.2 Core Identities
 
@@ -434,7 +444,22 @@ y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\
 
 - 식 (41): 식 (5) 에 식 (25) 와 식 (26) 을 넣고, 분자와 분모에 $`A`$ 를 곱했다.
 
-식 (41) 의 첫 분수는 식 (22) 로 $`1 - \lambda`$, 둘째 분수는 식 (21) 의 $`q`$ 이므로 식 (27) 이 성립한다. 식 (28) 은 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 가 식 (23) 과 식 (21) 로 $`\kappa q`$ 와 같아 바로 나온다. 식 (29) 는 식 (24) 와 식 (20), 식 (21) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 로 나온다.
+식 (41) 의 첫 분수는 식 (22) 로 $`1 - \lambda`$, 둘째 분수는 식 (21) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (23) 과 식 (21) 로 $`\kappa q`$ 와 같고, 식 (24) 와 식 (20), 식 (21) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (27), 식 (28), 식 (29) 가 성립한다.
+
+```math
+R^2_{\mathrm{all}} = 1 - (1 - \lambda)\, q
+\hspace{19em} (27)
+```
+
+```math
+R^2_{\mathrm{avgw}} = 1 - \kappa\, q
+\hspace{19em} (28)
+```
+
+```math
+R^2_{\mathrm{avgn}} = 1 - q - \delta
+\hspace{19em} (29)
+```
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{A} \left( 1 - \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \right)
@@ -446,6 +471,11 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{A} \left( 1 - \frac{
 식 (42) 의 첫 분수는 식 (19) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (30) 이 성립한다.
 
 ```math
+R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
+\hspace{19em} (30)
+```
+
+```math
 \delta = \sum_{j=1}^{N} \left( \omega_j - \frac{1}{N} \right) R^2_j
 \hspace{19em} (43)
 ```
@@ -454,9 +484,39 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{A} \left( 1 - \frac{
 
 식 (43) 의 괄호는 $`(\mathrm{SST}_j - A/N)/A`$ 이고 $`j`$ 에 대해 더하면 0 이므로, $`R^2_j`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 빼도 합이 바뀌지 않는다. 따라서 식 (31) 이 성립한다.
 
+```math
+\delta = \frac{1}{A} \sum_{j=1}^{N} \left( \mathrm{SST}_j - \frac{A}{N} \right) \left( R^2_j - R^2_{\mathrm{avgn}} \right)
+\hspace{19em} (31)
+```
+
 ### B.3 Differences and Inequalities
 
-식 (32) 부터 식 (36) 은 식 (20), 식 (21) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (27), 식 (28), 식 (29) 에서 두 식을 빼면 바로 나온다. Table 2 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
+식 (32) 부터 식 (36) 은 식 (20), 식 (21) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (27), 식 (28), 식 (29) 에서 두 식을 빼어 얻는다. 따라서 식 (32) 부터 식 (36) 이 성립한다. Table 2 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
+
+```math
+R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \lambda\, q
+\hspace{19em} (32)
+```
+
+```math
+R^2_{\mathrm{avgw}} - R^2_{\mathrm{wavgn}} = (1 - \kappa)\, q
+\hspace{19em} (33)
+```
+
+```math
+R^2_{\mathrm{all}} - R^2_{\mathrm{avgw}} = (\kappa - 1 + \lambda)\, q
+\hspace{19em} (34)
+```
+
+```math
+R^2_{\mathrm{all}} - R^2_{\mathrm{avgn}} = \lambda\, q + \delta
+\hspace{19em} (35)
+```
+
+```math
+R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
+\hspace{19em} (36)
+```
 
 ```math
 R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \omega_j \left( R^2_j - \min_{k} R^2_k \right)
@@ -468,6 +528,16 @@ R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \omega_j \left( R^2_j - \
 식 (44) 의 가중치와 괄호는 모두 0 이상이므로 식 (37) 이 성립한다. 최솟값 대신 최댓값으로 같은 식을 세우면 식 (38) 이 성립한다.
 
 ```math
+R^2_{\mathrm{wavgn}} \ge \min_{j} R^2_j
+\hspace{19em} (37)
+```
+
+```math
+R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
+\hspace{19em} (38)
+```
+
+```math
 \omega_k \left( 1 - R^2_k \right) \le q
 \hspace{19em} (45)
 ```
@@ -475,6 +545,11 @@ R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \omega_j \left( R^2_j - \
 - 식 (45): 식 (42) 에서 $`q = \sum_j \omega_j (1 - R^2_j)`$ 이고 각 항은 $`\omega_j \gt 0`$ 과 $`1 - R^2_j = \mathrm{SSE}_j / \mathrm{SST}_j \ge 0`$ 의 곱이므로, 어느 측정 위치 $`k`$ 의 항도 합보다 크지 않다.
 
 식 (45) 를 $`\omega_k`$ 로 나누고 $`\omega_k \ge \min_j \omega_j`$ 를 쓰면, 모든 $`k`$ 에서 $`1 - R^2_k \le q / \min_j \omega_j`$ 이다. 따라서 식 (39) 가 성립한다.
+
+```math
+\min_{j} R^2_j \ge 1 - \frac{q}{\min_{j} \omega_j}
+\hspace{19em} (39)
+```
 
 ## Appendix C. Variance Decomposition and Correlation
 
