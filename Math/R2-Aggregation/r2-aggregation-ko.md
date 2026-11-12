@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 93 | Created: 2026-11-09 | Updated: 2026-11-12 23:19 UTC
+Version 94 | Created: 2026-11-09 | Updated: 2026-11-12 23:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -338,7 +338,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 ```
 
 - 식 (42), 식 (43): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`R^2_{\mathrm{minn}}`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
-- $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (26) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (28) 과 식 (28) 이다.
+- $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (26) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (27) 과 식 (28) 이다.
 
 ### 5.3 Meaning of the Quantities
 
@@ -398,7 +398,7 @@ Table 4 의 값을 넣어 식 (32), 식 (33), 식 (34) 와 세 R² 의 순서를
 
 ### 7.2 Breaking Conditions
 
-- Wafer 마다 측정 위치의 수나 위치가 다르면 식 (30) 과 식 (33) 이 성립하지 않는다. 식 (30) 의 교차항이 0 이 되는 단계와 [C.2](#c2-aggregate-cross-location-correlation) 의 식에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
+- Wafer 마다 측정 위치의 수나 위치가 다르면 식 (30) 과 식 (32) 가 성립하지 않는다. 식 (30) 의 교차항이 0 이 되는 단계와 [C.2](#c2-aggregate-cross-location-correlation) 의 식에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
 - R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (32) 부터 식 (41) 이 모두 성립하지 않는다.
 - 어떤 측정 위치에서 측정값이 wafer 사이에서 같아 $`\mathrm{SST}_j = 0`$ 이면 $`R^2_j`$ 와 $`R^2_{\mathrm{avgn}}`$ 이 정의되지 않는다.
 
@@ -620,7 +620,7 @@ E = N \sum_{i=1}^{M} \left( \frac{1}{N} \sum_{k=1}^{N} e_{ik} \right)^2 + \sum_{
 \hspace{19em} (52)
 ```
 
-- 식 (52): 식 (19) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
+- 식 (52): 식 (19) 와 식 (13) 의 $`e_{ij}`$ 에 wafer 마다의 오차 평균을 빼고 더해 전개했다. 그 차이를 측정 위치에 대해 더하면 0 이므로 교차항은 0 이다.
 
 $`A = W + I`$ 와 식 (52) 를 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가 wafer 평균의 비율과 wafer 평균과의 차이의 비율로 적힌다.
 
