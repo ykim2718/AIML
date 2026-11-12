@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 55 | Created: 2026-11-09 | Updated: 2026-11-12 06:20 UTC
+Version 56 | Created: 2026-11-09 | Updated: 2026-11-12 06:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -361,17 +361,17 @@ Wafer 평균의 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값과 따로
 
 Table 4. Sums of squares and R2 values
 
-| Quantity                                 | Value                           | R2 or ratio       |
-| :--------------------------------------: | :-----------------------------: | :---------------: |
-| R2 over all measured values              | SST = 61.3333, SSE = 4          | R2_all = 0.9348   |
-| R2 over wafer averages                   | SST = 24.6667, SSE = 1.5        | R2_avgw = 0.9392  |
-| Location 1                               | SST = 18, SSE = 2               | R2_1 = 0.8889     |
-| Location 2                               | SST = 32.6667, SSE = 2          | R2_2 = 0.9388     |
-| R2 average over N locations              | -                               | R2_avgn = 0.9138  |
-| SST-weighted R2 average over N locations | SST = 50.6667, SSE = 4          | R2_wavgn = 0.9211 |
-| Location pattern                         | 3 × (1.7778 + 1.7778) = 10.6667 | lambda = 0.1739   |
-| Measured correlation                     | cross sum = 24 (each order)     | r_y = 0.9474      |
-| Error ratio                              | (1.5 / 24.6667) × (50.6667 / 4) | kappa = 0.7703    |
+| Quantity                                 | SST     | SSE | Calculation                     | Symbol   | Value  |
+| :--------------------------------------: | :-----: | :-: | :-----------------------------: | :------: | :----: |
+| R2 over all measured values              | 61.3333 | 4   | 1 - 4 / 61.3333                 | R2_all   | 0.9348 |
+| R2 over wafer averages                   | 24.6667 | 1.5 | 1 - 1.5 / 24.6667               | R2_avgw  | 0.9392 |
+| Location 1                               | 18      | 2   | 1 - 2 / 18                      | R2_1     | 0.8889 |
+| Location 2                               | 32.6667 | 2   | 1 - 2 / 32.6667                 | R2_2     | 0.9388 |
+| R2 average over N locations              | -       | -   | (0.8889 + 0.9388) / 2           | R2_avgn  | 0.9138 |
+| SST-weighted R2 average over N locations | 50.6667 | 4   | 1 - 4 / 50.6667                 | R2_wavgn | 0.9211 |
+| Location pattern                         | -       | -   | 3 × (1.7778 + 1.7778) / 61.3333 | lambda   | 0.1739 |
+| Measured correlation                     | -       | -   | 2 × 24 / 50.6667                | r_y      | 0.9474 |
+| Error ratio                              | -       | -   | (1.5 / 24.6667) × (50.6667 / 4) | kappa    | 0.7703 |
 
 식 (20) 부터 식 (24) 의 항등식에 Table 4 의 값을 넣으면 아래처럼 양변이 같다. 식 (23) 은 $`\mathrm{SST}_1 \ne \mathrm{SST}_2`$ 이어서 쓰지 않는다.
 
