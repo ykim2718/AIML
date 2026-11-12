@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 88 | Created: 2026-11-09 | Updated: 2026-11-12 21:43 UTC
+Version 89 | Created: 2026-11-09 | Updated: 2026-11-12 21:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -41,6 +41,7 @@ Version 88 | Created: 2026-11-09 | Updated: 2026-11-12 21:43 UTC
 
 꼭지 4 에서 정의한 세 R² 는 측정 위치 fraction of variance unexplained (FVU) $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$ 의 네 양으로 식 (32), 식 (33), 식 (34) 와 같이 모두 적힌다.
 세 R² 의 순서는 이 네 양의 계수 차이로 정해지며, 세 쌍 모두의 필요충분조건이 Table 2 에 있다.
+예측하는 것은 wafer 마다 측정 위치의 측정값 $`y_{ij}`$ 와 wafer 평균 $`\bar{y}_{i\cdot}`$ 이며, 그 예측값이 $`\hat{y}_{ij}`$ 와 $`\hat{y}_{iw}`$ 이다. 이 R² 들은 예측의 성능을 wafer 평균을 관리하는 공정과 측정 위치마다 관리하는 공정 가운데 어디에 맞춰 보고할지 고르는 데 ([7.1](#71-choosing-an-aggregation-level)), 그리고 $`R^2_{\mathrm{minn}}`$ 이 낮은 까닭을 측정 위치 전체의 오차와 오차 집중도로 가르는 데 ([E.2](#e2-overall-error-versus-error-concentration)) 쓴다.
 
 ## 3. Notations and Assumptions
 
