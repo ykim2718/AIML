@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 99 | Created: 2026-11-09 | Updated: 2026-11-12 23:28 UTC
+Version 100 | Created: 2026-11-09 | Updated: 2026-11-12 23:33 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -7,8 +7,9 @@ Version 99 | Created: 2026-11-09 | Updated: 2026-11-12 23:28 UTC
 - [4. Definitions](#4-definitions)
 - [5. Practical Interpretation](#5-practical-interpretation)
   - [5.1 Core Identities](#51-core-identities)
-  - [5.2 Differences and Inequalities](#52-differences-and-inequalities)
-  - [5.3 Meaning of the Quantities](#53-meaning-of-the-quantities)
+  - [5.2 Differences](#52-differences)
+  - [5.3 Inequalities](#53-inequalities)
+  - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
   - [7.1 Choosing an Aggregation Level](#71-choosing-an-aggregation-level)
@@ -280,7 +281,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 - 식 (35): $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 SST 가중치 $`\omega_j`$ 로 평균한 값이다. 직관적 의미는 [Appendix D](#appendix-d-qa) 에 있다.
 - 식 (36): $`\delta`$ 는 측정 위치마다의 $`\mathrm{SST}_j`$ 와 $`R^2_j`$ 가 함께 움직이는 정도이다. $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 도 큰 경향이 있으면 $`\delta \gt 0`$ 이다. $`\mathrm{SST}_j`$ 가 모두 같으면 $`\delta = 0`$ 이지만, 이것은 충분조건일 뿐이다. 예를 들어 $`R^2_j`$ 가 모두 같으면 $`\mathrm{SST}_j`$ 가 달라도 $`\delta = 0`$ 이다.
 
-### 5.2 Differences and Inequalities
+### 5.2 Differences
 
 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 사이의 차이는 식 (32), 식 (33), 식 (34) 에서 아래 식 (37) 부터 식 (41) 로 바로 나온다.
 
@@ -309,7 +310,9 @@ R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
 \hspace{19em} (41)
 ```
 
-$`\lambda \ge 0`$ 이고 $`q \ge 0`$ 이므로, $`q \gt 0`$ 일 때 각 차이의 부호에서 아래 Table 2 의 필요충분조건이 나온다.
+### 5.3 Inequalities
+
+$`\lambda \ge 0`$ 이고 $`q \ge 0`$ 이므로, $`q \gt 0`$ 일 때 식 (37) 부터 식 (41) 의 각 차이의 부호에서 아래 Table 2 의 필요충분조건이 나온다.
 
 Table 2. Necessary and sufficient conditions among the R2
 
@@ -340,7 +343,19 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 - 식 (42), 식 (43): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`R^2_{\mathrm{minn}}`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
 - $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (27) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (26) 과 식 (28) 이다.
 
-### 5.3 Meaning of the Quantities
+식 (26) 이 허용하는 $`R^2_{\mathrm{minn}}`$ 의 범위를 측정 위치의 수 $`N`$ 마다 그리면 아래 Fig 1 이다.
+
+<img src="r2-aggregation-ko_fig/minn-bounds.png" width="700" style="max-width: 100%;" alt="Fig 1">
+
+Fig 1. Range of the minimum location R2 for each number of locations
+
+- 가로축은 R2_avgn, 세로축은 R2_minn 이며, 세로축은 -1 부터 1 까지만 그렸다. 검은 점선은 위쪽 범위 $`R^2_{\mathrm{minn}} = R^2_{\mathrm{avgn}}`$ 이고, 파란, 주황, 초록 실선은 $`N`$ = 2, 5, 13 의 아래쪽 범위 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이다.
+- $`N`$ 이 정해지면 $`R^2_{\mathrm{minn}}`$ 은 검은 점선과 그 $`N`$ 의 실선 사이에 있다. 색 띠는 $`N`$ 이 2 에서 5, 5 에서 13 으로 커질 때 그 범위가 아래로 넓어지는 부분이다.
+- 아래쪽 범위는 $`R^2_{\mathrm{avgn}} = 1 - 1/N`$ 에서 0 이 되며, 그 값은 $`N`$ = 2 에서 0.5, $`N`$ = 5 에서 0.8, $`N`$ = 13 에서 0.9231 이다. R2_avgn 이 그보다 작으면 식 (26) 만으로는 $`R^2_{\mathrm{minn}} \ge 0`$ 이 보장되지 않는다.
+
+Fig 1 은 같은 folder 의 [src/r2_minn_bounds_figure.py](src/r2_minn_bounds_figure.py) 로 그렸다. 이 script 는 $`N`$ = 2, 5, 13 마다 식 (26) 의 두 범위를 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_minn_bounds_figure.py` 로 실행한다.
+
+### 5.4 Meaning of the Quantities
 
 - **$`q`$**: 측정 위치 $`N`$ 곳의 wafer 사이 변동 $`A`$ 에 대한 측정 위치 오차 $`E`$ 의 비율이다. 세 R² 가 공통으로 쓰는 기준이다.
 - **$`\lambda`$**: 측정값만으로 정해지며 예측값과 무관하다. 식 (37) 의 차이 $`\lambda q`$ 는 예측이 측정 위치 패턴을 맞혔다는 뜻이 아니다. $`\mathrm{SST}_{\mathrm{all}}`$ 에는 측정 위치 평균의 차이 $`B`$ 가 더해지지만 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`E`$ 그대로여서, 두 R² 의 기준 변동이 달라서 생기는 차이다.
@@ -677,11 +692,11 @@ Wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \fr
 
 두 평균은 wafer 사이 변동이 작은 측정 위치를 얼마나 크게 세는지가 달라서 다르다.
 
-SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균 $`R^2_{\mathrm{avgn}}`$ 을 측정 위치 두 곳의 예로 견주면 아래 Fig 1 이다.
+SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 과 가중하지 않은 산술 평균 $`R^2_{\mathrm{avgn}}`$ 을 측정 위치 두 곳의 예로 견주면 아래 Fig 2 이다.
 
-<img src="r2-aggregation-ko_fig/fig1-weighting.png" width="800" style="max-width: 100%;" alt="Fig 1">
+<img src="r2-aggregation-ko_fig/fig1-weighting.png" width="800" style="max-width: 100%;" alt="Fig 2">
 
-Fig 1. Plain and SST-weighted averages of location R2
+Fig 2. Plain and SST-weighted averages of location R2
 
 - 원 하나가 측정 위치 하나이다. 바깥 원의 넓이는 $`\mathrm{SST}_j`$, 안쪽 주황 원의 넓이는 $`\mathrm{SSE}_j`$ 이고, 파란 고리가 바깥 원에서 차지하는 비율이 $`R^2_j`$ 이다. 측정 위치 1 은 $`\mathrm{SST}_1 = 100`$, $`\mathrm{SSE}_1 = 10`$ 이고 측정 위치 2 는 $`\mathrm{SST}_2 = 1`$, $`\mathrm{SSE}_2 = 0.5`$ 이며, Table 3 과 다른 예시이다. 이 그림은 $`0 \le R^2_j \le 1`$ 인 경우만 그릴 수 있으며, $`\mathrm{SSE}_j \gt \mathrm{SST}_j`$ 여서 R² 가 음수인 측정 위치는 그리지 못한다.
 - (a): 두 측정 위치를 같은 크기로 그렸다. 측정 위치 1 의 두 화살표는 중심에서 바깥 원과 안쪽 원의 가장자리까지 그은 반지름이며, 두 원의 넓이가 각각 $`\mathrm{SST}_1`$ 과 $`\mathrm{SSE}_1`$ 이다. $`R^2_{\mathrm{avgn}}`$ 은 이처럼 측정 위치마다 가중치 $`1/N`$ 을 주어 (0.90 + 0.50) / 2 = 0.70 이다.
@@ -689,23 +704,23 @@ Fig 1. Plain and SST-weighted averages of location R2
 
 두 값의 차이는 측정 위치 2 를 얼마나 크게 세는지에서 생긴다. 측정 위치 2 는 wafer 사이에서 측정값이 거의 변하지 않아 ($`\mathrm{SST}_2 = 1`$) 기준 변동이 작다. (a) 는 이 측정 위치를 측정 위치 1 과 같은 크기의 원으로 부풀려서, 크기가 0.5 인 오차가 원의 절반을 차지하게 만든다. (b) 에서는 측정 위치 2 가 제 크기인 작은 점으로 남고, 합친 원의 파란 비율은 측정 위치 1 의 비율과 거의 같다.
 
-Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
+Fig 2 는 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로 그렸다. 이 script 는 위 예시의 $`\mathrm{SST}_j`$ 와 $`\mathrm{SSE}_j`$ 로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{wavgn}}`$ 을 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_wavgn_figure.py` 로 실행한다.
 
 ### D.2 Why is the SST-weighted average meaningful?
 
 SST 가중 평균은 wafer 사이 변동이 큰 측정 위치에 무게를 두고, 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체를 기준으로 한 R² 하나로 읽힌다. 근거는 아래 두 항목이다.
 
-- **wafer 사이 변동이 큰 측정 위치에 무게를 둔다.** 측정 위치마다 담긴 변동을 한 그릇에 부어 합치면, 그릇의 비율은 많이 부은 측정 위치가 더 많이 정한다. 그 무게가 식 (35) 의 가중치 $`\omega_j`$ 이며, Fig 1 의 예에서는 0.99 대 0.01 이다.
+- **wafer 사이 변동이 큰 측정 위치에 무게를 둔다.** 측정 위치마다 담긴 변동을 한 그릇에 부어 합치면, 그릇의 비율은 많이 부은 측정 위치가 더 많이 정한다. 그 무게가 식 (35) 의 가중치 $`\omega_j`$ 이며, Fig 2 의 예에서는 0.99 대 0.01 이다.
 - **하나의 비율로 읽힌다.** 식 (21) 의 $`R^2_{\mathrm{wavgn}} = 1 - E/A`$ 는 측정 위치 $`N`$ 곳의 wafer 사이 변동 전체를 기준으로 한 R² 이다. 그래서 식 (32) 와 식 (33) 처럼 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$ 와 $`\lambda`$, $`\kappa`$ 로 이어진다. $`R^2_{\mathrm{avgn}}`$ 은 식 (36) 의 $`\delta`$ 가 0 일 때 이 값과 같아지며, $`\mathrm{SST}_j`$ 가 모두 같은 것은 그 충분조건이다.
 
-Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 늘리면 $`R^2_2`$ 는 0.50 에서 -1.00 으로, $`R^2_{\mathrm{avgn}}`$ 은 0.70 에서 -0.05 로 떨어지지만, $`R^2_{\mathrm{wavgn}}`$ 은 0.896 에서 0.881 로 거의 그대로이다.
+Fig 2 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 늘리면 $`R^2_2`$ 는 0.50 에서 -1.00 으로, $`R^2_{\mathrm{avgn}}`$ 은 0.70 에서 -0.05 로 떨어지지만, $`R^2_{\mathrm{wavgn}}`$ 은 0.896 에서 0.881 로 거의 그대로이다.
 
 ### D.3 Why not weight by SSE?
 
 SSE 로 가중하면 가중 평균이 비율 하나로 줄어들지 않고, 가중치가 예측에 따라 바뀐다. 근거는 아래 두 항목이다.
 
-- **비율 하나로 줄어들지 않는다.** $`R^2_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - E/A`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 1 의 예에서 SSE 가중 평균은 (10 × 0.90 + 0.5 × 0.50) / 10.5 = 0.881 이다.
-- **가중치가 예측에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해지지만 $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 1 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 두 예측을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 비율인지 가중치가 바뀐 비율인지 가릴 수 없다.
+- **비율 하나로 줄어들지 않는다.** $`R^2_j`$ 의 분모가 $`\mathrm{SST}_j`$ 이므로, $`\mathrm{SST}_j`$ 에 비례하는 가중치를 곱하면 분모가 약분되어 가중 평균이 $`1 - E/A`$ 하나로 줄어든다. $`\mathrm{SSE}_j`$ 에 비례하는 가중치를 곱하면 분모가 남아 그런 비율이 나오지 않고, 예측 오차가 큰 측정 위치일수록 무게가 커진다. Fig 2 의 예에서 SSE 가중 평균은 (10 × 0.90 + 0.5 × 0.50) / 10.5 = 0.881 이다.
+- **가중치가 예측에 따라 바뀐다.** $`\mathrm{SST}_j`$ 는 측정값만으로 정해지지만 $`\mathrm{SSE}_j`$ 는 예측값에 따라 바뀐다. Fig 2 의 예에서 $`\mathrm{SSE}_2`$ 를 0.5 에서 2 로 바꾸면 SSE 가중치는 0.952 대 0.048 에서 0.833 대 0.167 로 바뀌고, SSE 가중 평균은 0.881 에서 0.583 으로 떨어진다. 두 예측을 견줄 때 가중치까지 함께 바뀌면, R² 의 차이가 예측이 나아진 비율인지 가중치가 바뀐 비율인지 가릴 수 없다.
 
 ## Appendix E. Example with Measured Data
 
@@ -730,17 +745,17 @@ Table 5. Quantities of the measured data
 - 측정값 $`y_{ij}`$ 는 `true_p1` 부터 `true_p13`, 측정 위치 예측값 $`\hat{y}_{ij}`$ 는 `pred_p1` 부터 `pred_p13`, wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 `pred_avg` 열이다.
 - Wafer 평균은 식 (6) 대로 `true_p1` 부터 `true_p13` 의 평균으로 다시 구했다. 첫 wafer `20260123_0001` 의 `true_avg` 열은 628 이지만 측정값 13 개의 평균은 614.4957 이어서, 이 열은 쓰지 않았다.
 
-세 R² 를 그리면 아래 Fig 2 이다.
+세 R² 를 그리면 아래 Fig 3 이다.
 
-<img src="r2-aggregation-ko_fig/fig2-u0-r2.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="r2-aggregation-ko_fig/fig2-u0-r2.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-Fig 2. Three R2 of the measured data
+Fig 3. Three R2 of the measured data
 
 - (a): 측정값 572 개와 그 예측값의 산점도이며, 점선은 측정값과 예측값이 같은 선이다. R2_all = 0.8213 이다.
 - (b): wafer 평균 44 개와 wafer 평균 예측값의 산점도이다. 점이 (a) 보다 점선에 가까이 모여 R2_avgw = 0.9436 이다.
 - (c): 측정 위치 13 곳의 R2_j 이며, 점의 넓이는 가중치 $`\omega_j`$ 에 비례한다. 실선은 R2_avgn = 0.7835, 점선은 R2_wavgn = 0.7949 이다.
 
-Table 5 와 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항목이다.
+Table 5 와 Fig 3 을 문서의 식에 맞춰 읽은 결과는 아래 다섯 항목이다.
 
 - 세 R² 는 식 (32), 식 (33), 식 (34) 로 모두 맞는다. 1 - (1 - 0.1288) × 0.2051 = 0.8213, 1 - 0.2748 × 0.2051 = 0.9436, 1 - 0.2051 - 0.0114 = 0.7835 이다.
 - 식 (39): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 0.5964 × 0.2051 = 0.1223 만큼 크다. Wafer 평균 예측의 FVU 0.0564 가 측정 위치 예측의 0.2051 의 0.2748 배에 그친다.
@@ -749,7 +764,7 @@ Table 5 와 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항
 - 식 (42), 식 (26), 식 (27): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 FVU 가 측정 위치 FVU 의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (26) 으로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
     - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (26) 이 $`\gamma_n = N`$, 곧 측정 위치 한 곳을 뺀 나머지의 R2_j 가 모두 1 인 경우를 가정하기 때문이다. 실제 $`\gamma_n`$ 은 1.6768 로 $`N`$ = 13 보다 훨씬 작다.
 
-Fig 2 와 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (32) 와 식 (33) 이 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
+Fig 3 과 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (32) 와 식 (33) 이 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
 
 ### E.1 Identity Check against the Data
 
