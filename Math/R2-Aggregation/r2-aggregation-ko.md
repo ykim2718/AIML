@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 50 | Created: 2026-11-09 | Updated: 2026-11-12 05:29 UTC
+Version 51 | Created: 2026-11-09 | Updated: 2026-11-12 05:31 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -199,7 +199,7 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 
 ## 5. Interpretation
 
-세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 을 거쳐 아래 식 (20), 식 (21), 식 (22) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
+꼭지 4 에서 정의한 세 R² 는 측정 위치 R² 의 SST 가중 평균 $`R^2_{\mathrm{wavgn}}`$ 을 거쳐 아래 식 (20), 식 (21), 식 (22) 로 이어진다. 세 식은 예측값을 어떤 model 로 구했는지와 상관없이 성립하는 항등식이며, 증명은 [Appendix B](#appendix-b-derivation) 에 있다.
 
 ```math
 1 - R^2_{\mathrm{all}} = (1 - \lambda) \left( 1 - R^2_{\mathrm{wavgn}} \right)
