@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 98 | Created: 2026-11-09 | Updated: 2026-11-12 23:27 UTC
+Version 99 | Created: 2026-11-09 | Updated: 2026-11-12 23:28 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -210,7 +210,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > 모든 측정 위치에서 $`\mathrm{SST}_j \gt 0`$ 이라 하면, $`R^2_{\mathrm{minn}}`$ 은 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이상 $`R^2_{\mathrm{avgn}}`$ 이하이다. 여기에 $`R^2_{\mathrm{avgn}} \lt 1`$ 이라 하고, 측정 위치 R² 의 최솟값의 FVU $`1 - R^2_{\mathrm{minn}}`$ 을 측정 위치 R² 평균의 FVU $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값을 오차 집중도 $`\gamma_n`$ 이라 하면, $`\gamma_n`$ 은 1 이상 $`N`$ 이하이며, 모든 측정 위치의 $`R^2_j`$ 가 같을 때 $`\gamma_n = 1`$ 이다.
 > ```math
 > 1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
-> \hspace{19em} (26)
+> \hspace{19em} (26)\ \text{🌳}
 > ```
 > ```math
 > \gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
@@ -572,7 +572,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 
 ```math
 1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
-\hspace{19em} (26)
+\hspace{19em} (26)\ \text{🌳}
 ```
 
 ```math
