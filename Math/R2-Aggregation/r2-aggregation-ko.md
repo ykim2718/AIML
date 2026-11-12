@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 53 | Created: 2026-11-09 | Updated: 2026-11-12 06:13 UTC
+Version 54 | Created: 2026-11-09 | Updated: 2026-11-12 06:18 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -816,7 +816,7 @@ Fig 1 은 같은 folder 의 [src/r2_wavgn_figure.py](src/r2_wavgn_figure.py) 로
 
 ## Appendix D. Example with Measured Data
 
-반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0-test-actual-and-predictions.csv](data/u0-test-actual-and-predictions.csv)) 으로 구한 양은 아래 Table 5 이다.
+반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 구한 양은 아래 Table 5 이다.
 
 Table 5. Quantities of the measured data
 

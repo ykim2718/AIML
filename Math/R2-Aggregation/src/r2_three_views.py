@@ -5,7 +5,7 @@ The CSV holds one wafer per row with columns true_p1..true_pN, pred_p1..pred_pN 
 the wafer average). The wafer average of the measured values is recomputed from true_p1..true_pN, as in the definition.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.1+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -109,7 +109,7 @@ def draw(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarray = N
 parser = argparse.ArgumentParser(prog=pathlib.Path(__file__).name,
                                  description=f"{pathlib.Path(__file__).name} {__version__}: chart the three R2 of a wafer CSV.")
 parser.add_argument('-v', '--version', action='version', version=f"%(prog)s {__version__}")
-parser.add_argument('csv', type=pathlib.Path, nargs='?', default=pathlib.Path(__file__).resolve().parent.parent / 'data' / 'u0-test-actual-and-predictions.csv',
+parser.add_argument('csv', type=pathlib.Path, nargs='?', default=pathlib.Path(__file__).resolve().parent.parent / 'data' / 'u0_actuals_and_predictions.csv',
                     help='input CSV')
 parser.add_argument('-o', '--out', type=pathlib.Path, default=pathlib.Path(__file__).resolve().parent.parent / 'r2-aggregation-ko_fig' / 'fig2-u0-r2.png',
                     help='output PNG path')
