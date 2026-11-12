@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 74 | Created: 2026-11-09 | Updated: 2026-11-12 11:43 UTC
+Version 75 | Created: 2026-11-09 | Updated: 2026-11-12 11:46 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -164,72 +164,61 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > \hspace{19em} (16)
 > ```
 
-세 R² 를 잇는 데 쓰는 Table 1 의 양은 아래 식 (17) 부터 식 (25) 로 정의한다.
-
-```math
-A := \sum_{j=1}^{N} \mathrm{SST}_j
-\hspace{19em} (17)
-```
-
-```math
-B := M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2
-\hspace{19em} (18)
-```
-
-```math
-E := \sum_{j=1}^{N} \mathrm{SSE}_j
-\hspace{19em} (19)
-```
-
-```math
-\omega_j := \frac{\mathrm{SST}_j}{A}
-\hspace{19em} (20)
-```
-
-```math
-R^2_{\mathrm{wavgn}} := 1 - \frac{E}{A}
-\hspace{19em} (21)
-```
-
-```math
-q := \frac{E}{A}
-\hspace{19em} (22)
-```
-
-```math
-\lambda := \frac{B}{A + B}
-\hspace{19em} (23)
-```
-
-```math
-\kappa := \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \cdot \frac{A}{E}
-\hspace{19em} (24)
-```
-
-```math
-\delta := R^2_{\mathrm{wavgn}} - R^2_{\mathrm{avgn}}
-\hspace{19em} (25)
-```
+> **Definition: Quantities linking the three R2**<br>
+> 세 R² 를 잇는 데 쓰는 Table 1 의 양은 측정 위치마다의 제곱합 $`\mathrm{SST}_j`$, $`\mathrm{SSE}_j`$ 와 측정 위치 평균 $`\bar{y}_{\cdot j}`$, 그리고 wafer 평균의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$, $`\mathrm{SSE}_{\mathrm{avgw}}`$ 로 정한다.
+> ```math
+> A := \sum_{j=1}^{N} \mathrm{SST}_j
+> \hspace{19em} (17)
+> ```
+> ```math
+> B := M \sum_{j=1}^{N} \left( \bar{y}_{\cdot j} - \bar{y} \right)^2
+> \hspace{19em} (18)
+> ```
+> ```math
+> E := \sum_{j=1}^{N} \mathrm{SSE}_j
+> \hspace{19em} (19)
+> ```
+> ```math
+> \omega_j := \frac{\mathrm{SST}_j}{A}
+> \hspace{19em} (20)
+> ```
+> ```math
+> R^2_{\mathrm{wavgn}} := 1 - \frac{E}{A}
+> \hspace{19em} (21)
+> ```
+> ```math
+> q := \frac{E}{A}
+> \hspace{19em} (22)
+> ```
+> ```math
+> \lambda := \frac{B}{A + B}
+> \hspace{19em} (23)
+> ```
+> ```math
+> \kappa := \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \cdot \frac{A}{E}
+> \hspace{19em} (24)
+> ```
+> ```math
+> \delta := R^2_{\mathrm{wavgn}} - R^2_{\mathrm{avgn}}
+> \hspace{19em} (25)
+> ```
 
 > **Theorem: Minimum location R2 identity and bounds**<br>
 > 모든 측정 위치에서 $`\mathrm{SST}_j \gt 0`$ 이고 $`R^2_{\mathrm{avgn}} \lt 1`$ 이라 하고, 측정 위치 R² 의 최솟값의 FVU $`1 - R^2_{\mathrm{minn}}`$ 을 측정 위치 R² 평균의 FVU $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값을 오차 집중도 $`\gamma_n`$ 이라 하자. 그러면 $`\gamma_n`$ 은 1 이상 $`N`$ 이하이다. 그래서 $`R^2_{\mathrm{minn}}`$ 은 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이상 $`R^2_{\mathrm{avgn}}`$ 이하이며, 모든 측정 위치의 $`R^2_j`$ 가 같을 때 $`\gamma_n = 1`$ 이다.
+> ```math
+> \gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
+> \hspace{19em} (26)
+> ```
+> ```math
+> 1 \le \gamma_n \le N
+> \hspace{19em} (27)
+> ```
+> ```math
+> 1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
+> \hspace{19em} (28)
+> ```
 
-정리의 식은 아래 식 (26) 부터 식 (28) 이고, 증명은 [B.3](#b3-differences-and-inequalities) 에 있다.
-
-```math
-\gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
-\hspace{19em} (26)
-```
-
-```math
-1 \le \gamma_n \le N
-\hspace{19em} (27)
-```
-
-```math
-1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
-\hspace{19em} (28)
-```
+증명은 [B.3](#b3-differences-and-inequalities) 에 있다.
 
 - 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱한 $`1 - R^2_{\mathrm{minn}} = \gamma_n (1 - R^2_{\mathrm{avgn}})`$ 은 최악 측정 위치의 오차를 정확히 곱으로 나눈다. 좌변 $`1 - R^2_{\mathrm{minn}}`$ 은 최악 측정 위치의 FVU, $`\gamma_n`$ 은 오차 집중도, $`1 - R^2_{\mathrm{avgn}}`$ 은 측정 위치 FVU 의 평균이다. 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
