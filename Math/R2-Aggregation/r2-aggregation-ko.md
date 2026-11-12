@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 83 | Created: 2026-11-09 | Updated: 2026-11-12 21:37 UTC
+Version 84 | Created: 2026-11-09 | Updated: 2026-11-12 21:38 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -29,7 +29,7 @@ Version 83 | Created: 2026-11-09 | Updated: 2026-11-12 21:37 UTC
 - [Appendix E. Example with Measured Data](#appendix-e-example-with-measured-data)
   - [E.1 Identity Check against the Data](#e1-identity-check-against-the-data)
   - [E.2 Overall Error versus Error Concentration](#e2-overall-error-versus-error-concentration)
-  - [E.3 How to Raise the Minimum Location R2](#e3-how-to-raise-the-minimum-location-r2)
+  - [E.3 What Limits the Minimum Location R2](#e3-what-limits-the-minimum-location-r2)
 
 ## 1. Purpose
 
@@ -799,7 +799,7 @@ Table 8. Ratio of each factor between two predictions
 - 그래서 $`R^2_{\mathrm{avgn}}`$ 으로는 linear recalibration 이 offset correction 보다 낫지만, $`R^2_{\mathrm{minn}}`$ 으로는 두 예측이 같다. $`R^2_{\mathrm{minn}}`$ 을 더 높이려면 측정 위치 3 의 오차를 줄여 $`\gamma_n`$ 을 낮춰야 한다.
 - 두 보정은 시험 데이터의 측정값으로 구한 분석용이며, 예측에 쓰는 보정이 아니다.
 
-### E.3 How to Raise the Minimum Location R2
+### E.3 What Limits the Minimum Location R2
 
 $`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아진다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 9 이다.
 
