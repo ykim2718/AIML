@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 97 | Created: 2026-11-09 | Updated: 2026-11-12 23:25 UTC
+Version 98 | Created: 2026-11-09 | Updated: 2026-11-12 23:27 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -207,23 +207,23 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 > ```
 
 > **Theorem: Minimum location R2 identity and bounds**<br>
-> 모든 측정 위치에서 $`\mathrm{SST}_j \gt 0`$ 이고 $`R^2_{\mathrm{avgn}} \lt 1`$ 이라 하고, 측정 위치 R² 의 최솟값의 FVU $`1 - R^2_{\mathrm{minn}}`$ 을 측정 위치 R² 평균의 FVU $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값을 오차 집중도 $`\gamma_n`$ 이라 하자. 그러면 $`\gamma_n`$ 은 1 이상 $`N`$ 이하이다. 그래서 $`R^2_{\mathrm{minn}}`$ 은 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이상 $`R^2_{\mathrm{avgn}}`$ 이하이며, 모든 측정 위치의 $`R^2_j`$ 가 같을 때 $`\gamma_n = 1`$ 이다.
+> 모든 측정 위치에서 $`\mathrm{SST}_j \gt 0`$ 이라 하면, $`R^2_{\mathrm{minn}}`$ 은 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이상 $`R^2_{\mathrm{avgn}}`$ 이하이다. 여기에 $`R^2_{\mathrm{avgn}} \lt 1`$ 이라 하고, 측정 위치 R² 의 최솟값의 FVU $`1 - R^2_{\mathrm{minn}}`$ 을 측정 위치 R² 평균의 FVU $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값을 오차 집중도 $`\gamma_n`$ 이라 하면, $`\gamma_n`$ 은 1 이상 $`N`$ 이하이며, 모든 측정 위치의 $`R^2_j`$ 가 같을 때 $`\gamma_n = 1`$ 이다.
 > ```math
-> \gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
+> 1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
 > \hspace{19em} (26)
 > ```
 > ```math
-> 1 \le \gamma_n \le N
+> \gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
 > \hspace{19em} (27)
 > ```
 > ```math
-> 1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
+> 1 \le \gamma_n \le N
 > \hspace{19em} (28)
 > ```
 
 증명은 [B.3](#b3-differences-and-inequalities) 에 있다.
 
-식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱하면, 최악 측정 위치의 FVU 가 아래 식 (29) 와 같이 오차 집중도와 측정 위치 FVU 의 평균의 곱으로 정확히 나뉜다.
+식 (27) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱하면, 최악 측정 위치의 FVU 가 아래 식 (29) 와 같이 오차 집중도와 측정 위치 FVU 의 평균의 곱으로 정확히 나뉜다.
 
 ```math
 \underbrace{1 - R^2_{\mathrm{minn}}}_{\text{FVU of the worst location}} = \underbrace{\gamma_n}_{\text{error concentration}} \, \underbrace{(1 - R^2_{\mathrm{avgn}})}_{\text{mean FVU over locations}}
@@ -338,7 +338,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 ```
 
 - 식 (42), 식 (43): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`R^2_{\mathrm{minn}}`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
-- $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (26) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (27) 과 식 (28) 이다.
+- $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (27) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (26) 과 식 (28) 이다.
 
 ### 5.3 Meaning of the Quantities
 
@@ -407,7 +407,7 @@ Table 4 의 값을 넣어 식 (32), 식 (33), 식 (34) 와 세 R² 의 순서를
 ## Appendix A. Terminology
 
 - **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
-- **error concentration**: 식 (26) 의 $`\gamma_n`$. 측정 위치 R² 의 최솟값의 FVU 를 측정 위치 R² 평균의 FVU 로 나눈 값.
+- **error concentration**: 식 (27) 의 $`\gamma_n`$. 측정 위치 R² 의 최솟값의 FVU 를 측정 위치 R² 평균의 FVU 로 나눈 값.
 - **error ratio**: 식 (24) 의 $`\kappa`$. wafer 평균 예측의 FVU 를 측정 위치 예측의 FVU 로 나눈 값.
 - **fraction of variance unexplained (FVU)**: R² 를 1 에서 뺀 값. SSE 를 SST 로 나눈 값과 같다.
 - **location pattern fraction**: 식 (23) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
@@ -568,20 +568,20 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 
 - 식 (49): 식 (15) 를 1 에서 빼고, $`1/N`$ 을 측정 위치에 대해 더하면 1 인 것을 썼다.
 
-식 (16) 대로 $`R^2_{\mathrm{minn}}`$ 은 $`R^2_j`$ 의 최솟값이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (49) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 식 (26) 으로 나누면 $`\gamma_n`$ 의 범위가, 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위가 나온다. 따라서 식 (26) 부터 식 (28) 이 성립한다.
+식 (16) 대로 $`R^2_{\mathrm{minn}}`$ 은 $`R^2_j`$ 의 최솟값이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (49) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위인 식 (26) 이, 식 (27) 로 나누면 $`\gamma_n`$ 의 범위인 식 (28) 이 나온다. 따라서 식 (26) 부터 식 (28) 이 성립한다.
 
 ```math
-\gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
+1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
 \hspace{19em} (26)
 ```
 
 ```math
-1 \le \gamma_n \le N
+\gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
 \hspace{19em} (27)
 ```
 
 ```math
-1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
+1 \le \gamma_n \le N
 \hspace{19em} (28)
 ```
 
@@ -746,8 +746,8 @@ Table 5 와 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항
 - 식 (39): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 0.5964 × 0.2051 = 0.1223 만큼 크다. Wafer 평균 예측의 FVU 0.0564 가 측정 위치 예측의 0.2051 의 0.2748 배에 그친다.
 - 식 (40), 식 (41): R2_all 과 R2_avgw 는 R2_avgn 보다 각각 0.0264 + 0.0114 = 0.0378, 0.1487 + 0.0114 = 0.1601 만큼 크다. $`\delta`$ = 0.0114 가 양수이므로 두 조건 모두 성립한다.
 - 식 (36): $`\delta`$ 가 양수인 것은 SST 가 큰 측정 위치 1, 2, 5 (가중치 0.1252, 0.1082, 0.1105) 의 R2_j 가 0.8990, 0.8396, 0.8553 으로 R2_avgn 보다 크고, R2_j 가 가장 작은 측정 위치 3 (0.6370) 은 가중치가 0.0644 로 작기 때문이다.
-- 식 (42), 식 (26), 식 (28): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 FVU 가 측정 위치 FVU 의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (28) 로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
-    - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (28) 이 $`\gamma_n = N`$, 곧 측정 위치 한 곳을 뺀 나머지의 R2_j 가 모두 1 인 경우를 가정하기 때문이다. 실제 $`\gamma_n`$ 은 1.6768 로 $`N`$ = 13 보다 훨씬 작다.
+- 식 (42), 식 (26), 식 (27): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 FVU 가 측정 위치 FVU 의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (26) 으로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
+    - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (26) 이 $`\gamma_n = N`$, 곧 측정 위치 한 곳을 뺀 나머지의 R2_j 가 모두 1 인 경우를 가정하기 때문이다. 실제 $`\gamma_n`$ 은 1.6768 로 $`N`$ = 13 보다 훨씬 작다.
 
 Fig 2 와 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (32) 와 식 (33) 이 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
 
@@ -780,7 +780,7 @@ Table 7. Minimum location R2 split into overall error and error concentration
 | Offset correction    | 0.8952  | 0.1048      | 1.5827  | 0.1659      | 0.8341  | 3               |
 | Linear recalibration | 0.9201  | 0.0799      | 2.0745  | 0.1659      | 0.8341  | 3               |
 
-- Original 은 원래 예측이며, CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴다. 이 행의 값은 식 (14), 식 (15), 식 (16) 대로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{minn}}`$ 을 구하고, 식 (26) 대로 $`\gamma_n`$ 을 구한 것이다.
+- Original 은 원래 예측이며, CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴다. 이 행의 값은 식 (14), 식 (15), 식 (16) 대로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{minn}}`$ 을 구하고, 식 (27) 대로 $`\gamma_n`$ 을 구한 것이다.
 - Offset correction 은 측정 위치마다 예측 오차 $`M`$ 개의 평균인 mean error (offset) 를 예측값에 더한 예측이고, linear recalibration 은 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞춘 예측이다.
 - 행마다 $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_{\mathrm{avgn}}`$ 과 $`\gamma_n`$ 의 곱이다. 원래 예측에서는 0.2165 × 1.6768 = 0.3630 이다.
 - 세 예측 모두 최솟값은 측정 위치 3 이다. 두 보정 예측의 $`R^2_{\mathrm{minn}}`$ 은 0.83406 과 0.83415 로 소수점 아래 넷째 자리까지 같다.
@@ -826,4 +826,4 @@ Table 9. Offset share of SSE and R2 after offset correction by location
 - R2_j after offset correction 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 mean error (offset) 를 예측값에 더하는 보정으로 그 측정 위치에서 얻는 R² 이고, 1 과의 차이는 그 보정으로는 줄지 않는 FVU 이다.
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - Linear recalibration 은 측정 위치마다의 보정으로 측정 위치 3 에서 $`R^2_{\mathrm{minn}}`$ 을 어디까지 올릴 수 있는지를 보려고 쓴다. 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 이 보정도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이다.
-- 식 (28) 의 아래쪽 범위는 R2_avgn 을 높이면 오르지만, $`1 - R^2_{\mathrm{avgn}}`$ 에 $`N`$ = 13 을 곱하므로 R2_avgn 을 높여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다. 식 (26) 대로 $`R^2_{\mathrm{minn}}`$ 을 높이려면 $`1 - R^2_{\mathrm{avgn}}`$ 과 함께 오차 집중도 $`\gamma_n`$ 을 줄여, 오차가 한 측정 위치에 몰리지 않게 해야 한다.
+- 식 (26) 의 아래쪽 범위는 R2_avgn 을 높이면 오르지만, $`1 - R^2_{\mathrm{avgn}}`$ 에 $`N`$ = 13 을 곱하므로 R2_avgn 을 높여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다. 식 (27) 대로 $`R^2_{\mathrm{minn}}`$ 을 높이려면 $`1 - R^2_{\mathrm{avgn}}`$ 과 함께 오차 집중도 $`\gamma_n`$ 을 줄여, 오차가 한 측정 위치에 몰리지 않게 해야 한다.
