@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 75 | Created: 2026-11-09 | Updated: 2026-11-12 11:46 UTC
+Version 76 | Created: 2026-11-09 | Updated: 2026-11-12 11:54 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -28,7 +28,8 @@ Version 75 | Created: 2026-11-09 | Updated: 2026-11-12 11:46 UTC
   - [D.3 Why not weight by SSE?](#d3-why-not-weight-by-sse)
 - [Appendix E. Example with Measured Data](#appendix-e-example-with-measured-data)
   - [E.1 Identity Check against the Data](#e1-identity-check-against-the-data)
-  - [E.2 How to Raise the Minimum Location R2](#e2-how-to-raise-the-minimum-location-r2)
+  - [E.2 Overall Error versus Error Concentration](#e2-overall-error-versus-error-concentration)
+  - [E.3 How to Raise the Minimum Location R2](#e3-how-to-raise-the-minimum-location-r2)
 
 ## 1. Purpose
 
@@ -220,7 +221,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 
 증명은 [B.3](#b3-differences-and-inequalities) 에 있다.
 
-- 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱한 $`1 - R^2_{\mathrm{minn}} = \gamma_n (1 - R^2_{\mathrm{avgn}})`$ 은 최악 측정 위치의 오차를 정확히 곱으로 나눈다. 좌변 $`1 - R^2_{\mathrm{minn}}`$ 은 최악 측정 위치의 FVU, $`\gamma_n`$ 은 오차 집중도, $`1 - R^2_{\mathrm{avgn}}`$ 은 측정 위치 FVU 의 평균이다. 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다.
+- 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱한 $`1 - R^2_{\mathrm{minn}} = \gamma_n (1 - R^2_{\mathrm{avgn}})`$ 은 최악 측정 위치의 오차를 정확히 곱으로 나눈다. 좌변 $`1 - R^2_{\mathrm{minn}}`$ 은 최악 측정 위치의 FVU, $`\gamma_n`$ 은 오차 집중도, $`1 - R^2_{\mathrm{avgn}}`$ 은 측정 위치 FVU 의 평균이다. 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [E.2](#e2-overall-error-versus-error-concentration) 에 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
 
 ## 5. Practical Interpretation
@@ -756,11 +757,42 @@ Table 6. Three R2 from the data and from the identities
 - From data 는 식 (5), 식 (10), 식 (15) 대로 CSV 의 측정값과 예측값에서 구한 값이고, From identity 는 $`q`$, $`\lambda`$, $`\kappa`$, $`\delta`$ 를 먼저 구해 식에 넣은 값이다.
 - R2_all 의 차이 1.1e-16 은 부동소수점 계산의 반올림 오차이다. 세 식은 정의에서 유도한 항등식이어서 어떤 데이터에서도 두 값이 같다.
 
-### E.2 How to Raise the Minimum Location R2
+### E.2 Overall Error versus Error Concentration
 
-$`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아지며, 이 데이터에서는 측정 위치마다의 mean error (offset) 를 빼는 보정이 가장 크게 높인다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 7 이다.
+예측 model 두 개의 $`R^2_{\mathrm{minn}}`$ 을 견줄 때는 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱한 $`1 - R^2_{\mathrm{minn}} = \gamma_n (1 - R^2_{\mathrm{avgn}})`$ 으로, 그 차이를 측정 위치 FVU 의 평균 $`1 - R^2_{\mathrm{avgn}}`$ 의 변화와 오차 집중도 $`\gamma_n`$ 의 변화로 나눈다. Table 5 의 데이터에서 원래 예측과 두 보정 예측으로 구한 값은 아래 Table 7 이다.
 
-Table 7. Offset share of SSE and R2 after offset correction by location
+Table 7. Minimum location R2 split into overall error and error concentration
+
+| Prediction           | R2_avgn | 1 - R2_avgn | gamma_n | 1 - R2_minn | R2_minn | Location of min |
+| :------------------: | :-----: | :---------: | :-----: | :---------: | :-----: | :-------------: |
+| Original             | 0.7835  | 0.2165      | 1.6768  | 0.3630      | 0.6370  | 3               |
+| Offset correction    | 0.8952  | 0.1048      | 1.5827  | 0.1659      | 0.8341  | 3               |
+| Linear recalibration | 0.9201  | 0.0799      | 2.0745  | 0.1659      | 0.8341  | 3               |
+
+- Offset correction 은 측정 위치마다 예측 오차 $`M`$ 개의 평균인 mean error (offset) 를 예측값에서 뺀 예측이고, linear recalibration 은 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞춘 예측이다.
+- 행마다 $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_{\mathrm{avgn}}`$ 과 $`\gamma_n`$ 의 곱이다. 원래 예측에서는 0.2165 × 1.6768 = 0.3630 이다.
+- 세 예측 모두 최솟값은 측정 위치 3 이다. 두 보정 예측의 $`R^2_{\mathrm{minn}}`$ 은 0.83406 과 0.83415 로 소수점 아래 넷째 자리까지 같다.
+
+두 예측 사이에서 각 값이 몇 배가 되었는지를 구하면 아래 Table 8 이다.
+
+Table 8. Ratio of each factor between two predictions
+
+| Comparison                                | Ratio of 1 - R2_minn | Ratio of 1 - R2_avgn | Ratio of gamma_n |
+| :---------------------------------------: | :------------------: | :------------------: | :--------------: |
+| Original to offset correction             | 0.4572               | 0.4843               | 0.9439           |
+| Offset correction to linear recalibration | 0.9995               | 0.7625               | 1.3107           |
+
+- 각 행에서 Ratio of 1 - R2_minn 은 나머지 두 열의 곱이다. 원래 예측에서 offset correction 으로 갈 때 0.4843 × 0.9439 = 0.4572 이다.
+- 원래 예측에서 offset correction 으로 가면 $`R^2_{\mathrm{minn}}`$ 이 0.6370 에서 0.8341 로 오른다. 그동안 $`1 - R^2_{\mathrm{avgn}}`$ 은 0.4843 배로 줄고 $`\gamma_n`$ 은 0.9439 배로 조금만 준다. 그래서 $`R^2_{\mathrm{minn}}`$ 이 오른 것은 거의 모두 측정 위치 전체의 오차가 줄어든 결과이다. Table 9 대로 13 곳 가운데 9 곳에서 mean error (offset) 가 $`\mathrm{SSE}_j`$ 의 0.3 이상을 차지하므로, 이를 빼면 측정 위치 대부분의 FVU 가 함께 준다.
+- Offset correction 에서 linear recalibration 으로 가면 $`1 - R^2_{\mathrm{avgn}}`$ 은 0.7625 배로 더 줄지만 $`\gamma_n`$ 이 1.3107 배로 늘어, $`R^2_{\mathrm{minn}}`$ 은 거의 그대로이다. Linear recalibration 은 측정 위치 3 의 FVU 를 0.999 배로 거의 줄이지 못하고 다른 측정 위치의 FVU 를 0.514 배에서 0.985 배로 줄여, 남은 오차가 측정 위치 3 에 몰렸다.
+- 그래서 $`R^2_{\mathrm{avgn}}`$ 으로는 linear recalibration 이 offset correction 보다 낫지만, $`R^2_{\mathrm{minn}}`$ 으로는 두 예측이 같다. $`R^2_{\mathrm{minn}}`$ 을 더 높이려면 측정 위치 3 의 오차를 줄여 $`\gamma_n`$ 을 낮춰야 한다.
+- 두 보정은 이 시험 데이터로 구했다. 실제 보정에서는 학습 데이터로 구해야 하며, 그 까닭은 [E.3](#e3-how-to-raise-the-minimum-location-r2) 의 마지막 항목에 있다.
+
+### E.3 How to Raise the Minimum Location R2
+
+$`R^2_{\mathrm{minn}}`$ 은 R² 가 가장 작은 측정 위치의 $`\mathrm{SSE}_j / \mathrm{SST}_j`$ 를 줄여야 높아지며, 이 데이터에서는 측정 위치마다의 mean error (offset) 를 빼는 보정이 가장 크게 높인다. 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 9 이다.
+
+Table 9. Offset share of SSE and R2 after offset correction by location
 
 | Location j | R2_j   | Mean error (offset) | Offset share of SSE_j | R2_j after offset correction |
 | :--------: | :----: | :-----------------: | :-------------------: | :--------------------------: |
@@ -783,4 +815,4 @@ Table 7. Offset share of SSE and R2 after offset correction by location
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이어서, 더 높이려면 측정 위치 3 의 예측 자체를 바꿔야 한다.
 - 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 FVU 를 직접 줄인다.
 - 식 (28) 의 아래쪽 범위는 R2_avgn 을 높이면 오르지만, $`1 - R^2_{\mathrm{avgn}}`$ 에 $`N`$ = 13 을 곱하므로 R2_avgn 을 높여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다. 식 (26) 대로 $`R^2_{\mathrm{minn}}`$ 을 높이려면 $`1 - R^2_{\mathrm{avgn}}`$ 과 함께 오차 집중도 $`\gamma_n`$ 을 줄여, 오차가 한 측정 위치에 몰리지 않게 해야 한다.
-- Table 7 의 mean error (offset) 는 이 시험 데이터로 구했다. 실제 보정에서는 mean error (offset) 를 학습 데이터로 구해야 하며, 시험 데이터로 구한 보정을 같은 시험 데이터에 적용하면 R² 를 높게 추정한다.
+- Table 9 의 mean error (offset) 는 이 시험 데이터로 구했다. 실제 보정에서는 mean error (offset) 를 학습 데이터로 구해야 하며, 시험 데이터로 구한 보정을 같은 시험 데이터에 적용하면 R² 를 높게 추정한다.
