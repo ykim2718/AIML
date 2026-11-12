@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 49 | Created: 2026-11-09 | Updated: 2026-11-12 05:26 UTC
+Version 50 | Created: 2026-11-09 | Updated: 2026-11-12 05:29 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -175,9 +175,6 @@ R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} R^2_j
 \hspace{19em} (15)
 ```
 
-- $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$ 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
-- 예측 오차 $`e_{ij}`$ 와 $`e_{iw}`$ 가 모두 0 이면 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$ 은 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
-
 Table 1 의 $`R^2_{\mathrm{wavgn}}`$, $`\lambda`$, $`\kappa`$, $`\omega_j`$ 를 식으로 적으면 아래 식 (16), 식 (17), 식 (18), 식 (19) 이다. $`\bar{r}_y`$ 는 B.2 에서만 쓰므로 그 정의 식은 [B.2](#b2-r2-over-wafer-averages-form) 에 있다.
 
 ```math
@@ -220,6 +217,9 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 ```
 
 세 식은 모든 wafer 가 같은 측정 위치 $`N`$ 곳을 갖는다고 둔다. 식 (21) 은 wafer 평균의 예측값 $`\hat{y}_{iw}`$ 를 측정 위치 예측값과 어떻게 관련지어 구했는지와 상관없이 성립한다.
+
+- $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$ 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴이며, 측정값과 예측값의 상관계수를 제곱한 값과는 다르다.
+- 예측 오차 $`e_{ij}`$ 와 $`e_{iw}`$ 가 모두 0 이면 $`R^2_{\mathrm{all}}`$, $`R^2_{\mathrm{avgw}}`$, $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$ 은 모두 1 이다. 예측이 평균보다 나쁘면 R² 는 음수일 수 있다.
 
 ### 5.1 R2 over All Measured Values Form
 
