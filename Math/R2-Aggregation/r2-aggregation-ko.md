@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 86 | Created: 2026-11-09 | Updated: 2026-11-12 21:40 UTC
+Version 87 | Created: 2026-11-09 | Updated: 2026-11-12 21:42 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -796,7 +796,7 @@ Table 8. Ratio of each factor between two predictions
 - 각 행에서 Ratio of 1 - R2_minn 은 나머지 두 열의 곱이다. 원래 예측에서 offset correction 으로 갈 때 0.4843 × 0.9439 = 0.4572 이다.
 - 원래 예측에서 offset correction 으로 가면 $`R^2_{\mathrm{minn}}`$ 이 0.6370 에서 0.8341 로 오른다. 그동안 $`1 - R^2_{\mathrm{avgn}}`$ 은 0.4843 배로 줄고 $`\gamma_n`$ 은 0.9439 배로 조금만 준다. 그래서 $`R^2_{\mathrm{minn}}`$ 이 오른 것은 거의 모두 측정 위치 전체의 오차가 줄어든 결과이다. Table 9 대로 13 곳 가운데 9 곳에서 mean error (offset) 가 $`\mathrm{SSE}_j`$ 의 0.3 이상을 차지하므로, 이를 빼면 측정 위치 대부분의 FVU 가 함께 준다.
 - Offset correction 에서 linear recalibration 으로 가면 $`1 - R^2_{\mathrm{avgn}}`$ 은 0.7625 배로 더 줄지만 $`\gamma_n`$ 이 1.3107 배로 늘어, $`R^2_{\mathrm{minn}}`$ 은 거의 그대로이다. Linear recalibration 은 측정 위치 3 의 FVU 를 0.999 배로 거의 줄이지 못하고 다른 측정 위치의 FVU 를 0.514 배에서 0.985 배로 줄여, 남은 오차가 측정 위치 3 에 몰렸다.
-- 그래서 $`R^2_{\mathrm{avgn}}`$ 으로는 linear recalibration 이 offset correction 보다 낫지만, $`R^2_{\mathrm{minn}}`$ 으로는 두 예측이 같다.
+- 그래서 $`R^2_{\mathrm{avgn}}`$ 으로는 linear recalibration 이 offset correction 보다 낫지만, $`R^2_{\mathrm{minn}}`$ 으로는 두 예측이 같다. $`R^2_{\mathrm{minn}}`$ 을 더 높이려면 측정 위치 3 의 오차를 줄여 $`\gamma_n`$ 을 낮춰야 한다.
 - 두 보정은 시험 데이터의 측정값으로 구한 분석용이며, 예측에 쓰는 보정이 아니다.
 
 ### E.3 What Limits the Minimum Location R2
@@ -825,4 +825,4 @@ Table 9. Offset share of SSE and R2 after offset correction by location
 - R2_j after offset correction 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 mean error (offset) 를 빼는 보정으로 그 측정 위치에서 얻는 R² 이고, 1 과의 차이는 그 보정으로는 줄지 않는 FVU 이다.
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - Linear recalibration 은 측정 위치마다의 보정으로 측정 위치 3 에서 $`R^2_{\mathrm{minn}}`$ 을 어디까지 올릴 수 있는지를 보려고 쓴다. 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 이 보정도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이다.
-- Table 9 의 mean error (offset) 와 R2_j after offset correction 도 시험 데이터의 측정값으로 구한 분석용 값이며, 예측에 쓰는 보정이 아니다.
+- 식 (28) 의 아래쪽 범위는 R2_avgn 을 높이면 오르지만, $`1 - R^2_{\mathrm{avgn}}`$ 에 $`N`$ = 13 을 곱하므로 R2_avgn 을 높여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다. 식 (26) 대로 $`R^2_{\mathrm{minn}}`$ 을 높이려면 $`1 - R^2_{\mathrm{avgn}}`$ 과 함께 오차 집중도 $`\gamma_n`$ 을 줄여, 오차가 한 측정 위치에 몰리지 않게 해야 한다.
