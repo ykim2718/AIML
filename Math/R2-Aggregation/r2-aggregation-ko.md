@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 70 | Created: 2026-11-09 | Updated: 2026-11-12 11:30 UTC
+Version 71 | Created: 2026-11-09 | Updated: 2026-11-12 11:39 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -38,7 +38,7 @@ Version 70 | Created: 2026-11-09 | Updated: 2026-11-12 11:30 UTC
 
 ## 2. Summary
 
-꼭지 4 에서 정의한 세 R² 는 측정 위치 오차 몫 $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$ 의 네 양으로 식 (31), 식 (32), 식 (33) 과 같이 모두 적힌다.
+꼭지 4 에서 정의한 세 R² 는 측정 위치 오차 비율 $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$ 의 네 양으로 식 (31), 식 (32), 식 (33) 과 같이 모두 적힌다.
 세 R² 의 순서는 이 네 양의 계수 차이로 정해지며, 세 쌍 모두의 필요충분조건이 Table 2 에 있다.
 
 ## 3. Notations and Assumptions
@@ -67,9 +67,9 @@ Table 1. Symbols
 | $`E`$                              | 측정 위치마다의 오차 제곱합 $`\mathrm{SSE}_j`$ 의 합                                                                                    | all wafers,<br>all locations | scalar  | $`E \ge 0`$                                                          |
 | $`\omega_j`$                       | 측정 위치 $`j`$ 의 SST 가중치. $`\mathrm{SST}_j`$ 를 $`A`$ 로 나눈 값                                                                   | per location,<br>all wafers  | scalar  | $`\sum_j \omega_j = 1`$                                              |
 | $`R^2_{\mathrm{wavgn}}`$           | 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 (SST-weighted R2 average over $`N`$ locations, wavgn) | all wafers,<br>all locations | scalar  | -                                                                    |
-| $`q`$                              | 측정 위치 예측의 오차 몫. $`E`$ 를 $`A`$ 로 나눈 값                                                                                     | all wafers,<br>all locations | scalar  | $`q \ge 0`$                                                          |
+| $`q`$                              | 측정 위치 예측의 오차 비율. $`E`$ 를 $`A`$ 로 나눈 값                                                                                   | all wafers,<br>all locations | scalar  | $`q \ge 0`$                                                          |
 | $`\lambda`$                        | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 (location pattern fraction)                                  | all wafers,<br>all locations | scalar  | $`0 \le \lambda \lt 1`$                                              |
-| $`\kappa`$                         | 오차 비 (error ratio). wafer 평균 예측의 오차 몫을 측정 위치 예측의 오차 몫 $`q`$ 로 나눈 값                                            | all wafers,<br>all locations | scalar  | $`\kappa \ge 0`$, $`E \gt 0`$ 일 때만 정의                           |
+| $`\kappa`$                         | 오차 비 (error ratio). wafer 평균 예측의 오차 비율을 측정 위치 예측의 오차 비율 $`q`$ 로 나눈 값                                        | all wafers,<br>all locations | scalar  | $`\kappa \ge 0`$, $`E \gt 0`$ 일 때만 정의                           |
 | $`\delta`$                         | $`R^2_{\mathrm{wavgn}}`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 뺀 값                                                                          | all wafers,<br>all locations | scalar  | -                                                                    |
 | $`\gamma_n`$                       | 오차 집중도 (error concentration). $`1 - R^2_{\mathrm{minn}}`$ 을 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값                              | all wafers,<br>all locations | scalar  | $`1 \le \gamma_n \le N`$, $`R^2_{\mathrm{avgn}} \lt 1`$ 일 때만 정의 |
 
@@ -228,7 +228,7 @@ q := \frac{E}{A}
 ```
 
 > **Theorem: Minimum location R2 identity and bounds**<br>
-> 모든 측정 위치에서 $`\mathrm{SST}_j \gt 0`$ 이고 $`R^2_{\mathrm{avgn}} \lt 1`$ 이라 하고, 측정 위치 R² 의 최솟값의 오차 몫 $`1 - R^2_{\mathrm{minn}}`$ 을 측정 위치 R² 평균의 오차 몫 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값을 오차 집중도 $`\gamma_n`$ 이라 하자. 그러면 $`\gamma_n`$ 은 1 이상 $`N`$ 이하이다. 그래서 $`R^2_{\mathrm{minn}}`$ 은 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이상 $`R^2_{\mathrm{avgn}}`$ 이하이며, 모든 측정 위치의 $`R^2_j`$ 가 같을 때 $`\gamma_n = 1`$ 이다.
+> 모든 측정 위치에서 $`\mathrm{SST}_j \gt 0`$ 이고 $`R^2_{\mathrm{avgn}} \lt 1`$ 이라 하고, 측정 위치 R² 의 최솟값의 오차 비율 $`1 - R^2_{\mathrm{minn}}`$ 을 측정 위치 R² 평균의 오차 비율 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값을 오차 집중도 $`\gamma_n`$ 이라 하자. 그러면 $`\gamma_n`$ 은 1 이상 $`N`$ 이하이다. 그래서 $`R^2_{\mathrm{minn}}`$ 은 $`1 - N(1 - R^2_{\mathrm{avgn}})`$ 이상 $`R^2_{\mathrm{avgn}}`$ 이하이며, 모든 측정 위치의 $`R^2_j`$ 가 같을 때 $`\gamma_n = 1`$ 이다.
 
 정리의 식은 아래 식 (26) 부터 식 (28) 이고, 증명은 [B.3](#b3-differences-and-inequalities) 에 있다.
 
@@ -247,7 +247,7 @@ q := \frac{E}{A}
 \hspace{19em} (28)
 ```
 
-- 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱한 $`1 - R^2_{\mathrm{minn}} = \gamma_n (1 - R^2_{\mathrm{avgn}})`$ 은 최악 측정 위치의 오차를 정확히 곱으로 나눈다. 좌변 $`1 - R^2_{\mathrm{minn}}`$ 은 최악 측정 위치의 오차 몫, $`\gamma_n`$ 은 오차 집중도, $`1 - R^2_{\mathrm{avgn}}`$ 은 측정 위치 오차 몫의 평균이다. 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다.
+- 식 (26) 의 양변에 $`1 - R^2_{\mathrm{avgn}}`$ 을 곱한 $`1 - R^2_{\mathrm{minn}} = \gamma_n (1 - R^2_{\mathrm{avgn}})`$ 은 최악 측정 위치의 오차를 정확히 곱으로 나눈다. 좌변 $`1 - R^2_{\mathrm{minn}}`$ 은 최악 측정 위치의 오차 비율, $`\gamma_n`$ 은 오차 집중도, $`1 - R^2_{\mathrm{avgn}}`$ 은 측정 위치 오차 비율의 평균이다. 그래서 예측 model 을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
 
 ## 5. Practical Interpretation
@@ -424,8 +424,8 @@ Table 4 의 값을 넣어 식 (31), 식 (32), 식 (33) 과 세 R² 의 순서를
 ## Appendix A. Terminology
 
 - **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
-- **error concentration**: 식 (26) 의 $`\gamma_n`$. 측정 위치 R² 의 최솟값의 오차 몫을 측정 위치 R² 평균의 오차 몫으로 나눈 값.
-- **error ratio**: 식 (24) 의 $`\kappa`$. wafer 평균 예측의 오차 몫을 측정 위치 예측의 오차 몫으로 나눈 값.
+- **error concentration**: 식 (26) 의 $`\gamma_n`$. 측정 위치 R² 의 최솟값의 오차 비율을 측정 위치 R² 평균의 오차 비율으로 나눈 값.
+- **error ratio**: 식 (24) 의 $`\kappa`$. wafer 평균 예측의 오차 비율을 측정 위치 예측의 오차 비율으로 나눈 값.
 - **location pattern fraction**: 식 (23) 의 $`\lambda`$. 측정 위치 평균이 서로 달라 생기는 제곱합이 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율.
 - **measurement location**: wafer 위에서 측정값을 얻는 지점. 모든 wafer 에서 같은 번호 $`j`$ 는 같은 지점이다.
 - **min R2 across N points**: 식 (16) 의 $`R^2_{\mathrm{minn}}`$. 측정 위치 $`N`$ 곳의 $`R^2_j`$ 가운데 가장 작은 값.
@@ -575,7 +575,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 \hspace{19em} (42)
 ```
 
-식 (26) 부터 식 (28) 은 측정 위치마다의 오차 몫 $`1 - R^2_j = \mathrm{SSE}_j / \mathrm{SST}_j \ge 0`$ 의 평균과 최댓값을 견주어 증명한다.
+식 (26) 부터 식 (28) 은 측정 위치마다의 오차 비율 $`1 - R^2_j = \mathrm{SSE}_j / \mathrm{SST}_j \ge 0`$ 의 평균과 최댓값을 견주어 증명한다.
 
 ```math
 1 - R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} \left( 1 - R^2_j \right)
@@ -760,10 +760,10 @@ Fig 2. Three R2 of the measured data
 Table 5 와 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항목이다.
 
 - 세 R² 는 식 (31), 식 (32), 식 (33) 으로 모두 맞는다. 1 - (1 - 0.1288) × 0.2051 = 0.8213, 1 - 0.2748 × 0.2051 = 0.9436, 1 - 0.2051 - 0.0114 = 0.7835 이다.
-- 식 (38): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 0.5964 × 0.2051 = 0.1223 만큼 크다. Wafer 평균 예측의 정규화된 제곱오차 몫 0.0564 가 측정 위치 예측의 0.2051 의 0.2748 배에 그친다.
+- 식 (38): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 0.5964 × 0.2051 = 0.1223 만큼 크다. Wafer 평균 예측의 정규화된 제곱오차 비율 0.0564 가 측정 위치 예측의 0.2051 의 0.2748 배에 그친다.
 - 식 (39), 식 (40): R2_all 과 R2_avgw 는 R2_avgn 보다 각각 0.0264 + 0.0114 = 0.0378, 0.1487 + 0.0114 = 0.1601 만큼 크다. $`\delta`$ = 0.0114 가 양수이므로 두 조건 모두 성립한다.
 - 식 (35): $`\delta`$ 가 양수인 것은 SST 가 큰 측정 위치 1, 2, 5 (가중치 0.1252, 0.1082, 0.1105) 의 R2_j 가 0.8990, 0.8396, 0.8553 으로 R2_avgn 보다 크고, R2_j 가 가장 작은 측정 위치 3 (0.6370) 은 가중치가 0.0644 로 작기 때문이다.
-- 식 (41), 식 (26), 식 (28): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 오차 몫이 측정 위치 오차 몫의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (28) 로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
+- 식 (41), 식 (26), 식 (28): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 오차 비율이 측정 위치 오차 비율의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (28) 로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
     - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (28) 이 $`\gamma_n = N`$, 곧 측정 위치 한 곳을 뺀 나머지의 R2_j 가 모두 1 인 경우를 가정하기 때문이다. 실제 $`\gamma_n`$ 은 1.6768 로 $`N`$ = 13 보다 훨씬 작다.
 
 Fig 2 와 Table 5 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (31) 과 식 (32) 가 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
@@ -808,6 +808,6 @@ Table 7. Offset share of SSE and R2 after offset correction by location
 - Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균인 mean error (offset) 이다. $`\mathrm{SSE}_j`$ 는 이 몫과, mean error (offset) 를 뺀 나머지의 제곱합으로 나뉜다.
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이어서, 더 높이려면 측정 위치 3 의 예측 자체를 바꿔야 한다.
-- 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 오차 몫을 직접 줄인다.
+- 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 오차 비율을 직접 줄인다.
 - 식 (28) 의 아래쪽 범위는 R2_avgn 을 높이면 오르지만, $`1 - R^2_{\mathrm{avgn}}`$ 에 $`N`$ = 13 을 곱하므로 R2_avgn 을 높여도 $`R^2_{\mathrm{minn}}`$ 을 보장하는 폭이 작다. 식 (26) 대로 $`R^2_{\mathrm{minn}}`$ 을 높이려면 $`1 - R^2_{\mathrm{avgn}}`$ 과 함께 오차 집중도 $`\gamma_n`$ 을 줄여, 오차가 한 측정 위치에 몰리지 않게 해야 한다.
 - Table 7 의 mean error (offset) 는 이 시험 데이터로 구했다. 실제 보정에서는 mean error (offset) 를 학습 데이터로 구해야 하며, 시험 데이터로 구한 보정을 같은 시험 데이터에 적용하면 R² 를 높게 추정한다.
