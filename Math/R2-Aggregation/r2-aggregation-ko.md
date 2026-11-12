@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 94 | Created: 2026-11-09 | Updated: 2026-11-12 23:21 UTC
+Version 95 | Created: 2026-11-09 | Updated: 2026-11-12 23:21 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -568,14 +568,7 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 
 - 식 (49): 식 (15) 를 1 에서 빼고, $`1/N`$ 을 측정 위치에 대해 더하면 1 인 것을 썼다.
 
-식 (16) 대로 $`R^2_{\mathrm{minn}}`$ 은 $`R^2_j`$ 의 최솟값이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다.
-
-```math
-R^2_{\mathrm{minn}} := \min_{j} R^2_j
-\hspace{19em} (16)
-```
-
-0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (49) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 식 (26) 으로 나누면 $`\gamma_n`$ 의 범위가, 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위가 나온다. 따라서 식 (26) 부터 식 (28) 이 성립한다.
+식 (16) 대로 $`R^2_{\mathrm{minn}}`$ 은 $`R^2_j`$ 의 최솟값이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (49) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 식 (26) 으로 나누면 $`\gamma_n`$ 의 범위가, 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위가 나온다. 따라서 식 (26) 부터 식 (28) 이 성립한다.
 
 ```math
 \gamma_n := \frac{1 - R^2_{\mathrm{minn}}}{1 - R^2_{\mathrm{avgn}}}
