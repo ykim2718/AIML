@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 43 | Created: 2026-11-09 | Updated: 2026-11-12 00:05 UTC
+Version 44 | Created: 2026-11-09 | Updated: 2026-11-12 00:11 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -205,7 +205,6 @@ R^2_{\mathrm{wavgn}} = 1 - \frac{\sum_{j=1}^{N} \mathrm{SSE}_j}{\sum_{j=1}^{N} \
 
 - $`\mathrm{SST}_j`$ 가 모두 같으면 $`\bar{r}_y`$ 는 측정 위치 두 곳의 측정값 상관계수를 모든 쌍에서 산술 평균한 값이다.
 - $`\bar{r}_y = 1`$ 은 wafer 마다 측정값이 모든 측정 위치에서 같은 양만큼 움직이는 경우이다.
-- $`1 + (N-1)\bar{r}_y`$ 는 0 이상이다. 0 이 되는 것은 $`\mathrm{SST}_{\mathrm{avgw}} = 0`$ 인 경우뿐이며, 그 증명은 [B.2](#b2-r2-over-wafer-averages-form) 에 있다.
 
 ## 5. Interpretation
 
