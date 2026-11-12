@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 73 | Created: 2026-11-09 | Updated: 2026-11-12 11:41 UTC
+Version 74 | Created: 2026-11-09 | Updated: 2026-11-12 11:43 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -90,95 +90,79 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 
 > **Definition: R2 over all measured values**<br>
 > 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$ 은 측정값 $`T = MN`$ 개에서, 1 에서 예측 오차 제곱합 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 측정값과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{all}}`$ 로 나눈 값을 뺀 값이다.
-
-```math
-e_{ij} := y_{ij} - \hat{y}_{ij}
-\hspace{19em} (1)
-```
-
-```math
-\bar{y} := \frac{1}{MN} \sum_{i=1}^{M} \sum_{j=1}^{N} y_{ij}
-\hspace{19em} (2)
-```
-
-```math
-\mathrm{SST}_{\mathrm{all}} := \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
-\hspace{19em} (3)
-```
-
-```math
-\mathrm{SSE}_{\mathrm{all}} := \sum_{i=1}^{M} \sum_{j=1}^{N} e_{ij}^2
-\hspace{19em} (4)
-```
-
-```math
-R^2_{\mathrm{all}} := 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}}
-\hspace{19em} (5)
-```
+> ```math
+> e_{ij} := y_{ij} - \hat{y}_{ij}
+> \hspace{19em} (1)
+> ```
+> ```math
+> \bar{y} := \frac{1}{MN} \sum_{i=1}^{M} \sum_{j=1}^{N} y_{ij}
+> \hspace{19em} (2)
+> ```
+> ```math
+> \mathrm{SST}_{\mathrm{all}} := \sum_{i=1}^{M} \sum_{j=1}^{N} \left( y_{ij} - \bar{y} \right)^2
+> \hspace{19em} (3)
+> ```
+> ```math
+> \mathrm{SSE}_{\mathrm{all}} := \sum_{i=1}^{M} \sum_{j=1}^{N} e_{ij}^2
+> \hspace{19em} (4)
+> ```
+> ```math
+> R^2_{\mathrm{all}} := 1 - \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}}
+> \hspace{19em} (5)
+> ```
 
 > **Definition: R2 over wafer averages**<br>
 > Wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$ 는 wafer 평균 $`M`$ 개에서, 1 에서 wafer 평균 예측 오차의 제곱합 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 를 wafer 평균과 전체 평균의 차이의 제곱합 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나눈 값을 뺀 값이다.
-
-```math
-\bar{y}_{i\cdot} := \frac{1}{N} \sum_{j=1}^{N} y_{ij}
-\hspace{19em} (6)
-```
-
-```math
-e_{iw} := \bar{y}_{i\cdot} - \hat{y}_{iw}
-\hspace{19em} (7)
-```
-
-```math
-\mathrm{SST}_{\mathrm{avgw}} := \sum_{i=1}^{M} \left( \bar{y}_{i\cdot} - \bar{y} \right)^2
-\hspace{19em} (8)
-```
-
-```math
-\mathrm{SSE}_{\mathrm{avgw}} := \sum_{i=1}^{M} e_{iw}^2
-\hspace{19em} (9)
-```
-
-```math
-R^2_{\mathrm{avgw}} := 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}}
-\hspace{19em} (10)
-```
+> ```math
+> \bar{y}_{i\cdot} := \frac{1}{N} \sum_{j=1}^{N} y_{ij}
+> \hspace{19em} (6)
+> ```
+> ```math
+> e_{iw} := \bar{y}_{i\cdot} - \hat{y}_{iw}
+> \hspace{19em} (7)
+> ```
+> ```math
+> \mathrm{SST}_{\mathrm{avgw}} := \sum_{i=1}^{M} \left( \bar{y}_{i\cdot} - \bar{y} \right)^2
+> \hspace{19em} (8)
+> ```
+> ```math
+> \mathrm{SSE}_{\mathrm{avgw}} := \sum_{i=1}^{M} e_{iw}^2
+> \hspace{19em} (9)
+> ```
+> ```math
+> R^2_{\mathrm{avgw}} := 1 - \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}}
+> \hspace{19em} (10)
+> ```
 
 > **Definition: R2 average over N locations**<br>
 > 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$ 은 측정 위치마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 를, 측정 위치 $`N`$ 곳에서 산술 평균한 값이다.
-
-```math
-\bar{y}_{\cdot j} := \frac{1}{M} \sum_{i=1}^{M} y_{ij}
-\hspace{19em} (11)
-```
-
-```math
-\mathrm{SST}_j := \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right)^2
-\hspace{19em} (12)
-```
-
-```math
-\mathrm{SSE}_j := \sum_{i=1}^{M} e_{ij}^2
-\hspace{19em} (13)
-```
-
-```math
-R^2_j := 1 - \frac{\mathrm{SSE}_j}{\mathrm{SST}_j}
-\hspace{19em} (14)
-```
-
-```math
-R^2_{\mathrm{avgn}} := \frac{1}{N} \sum_{j=1}^{N} R^2_j
-\hspace{19em} (15)
-```
+> ```math
+> \bar{y}_{\cdot j} := \frac{1}{M} \sum_{i=1}^{M} y_{ij}
+> \hspace{19em} (11)
+> ```
+> ```math
+> \mathrm{SST}_j := \sum_{i=1}^{M} \left( y_{ij} - \bar{y}_{\cdot j} \right)^2
+> \hspace{19em} (12)
+> ```
+> ```math
+> \mathrm{SSE}_j := \sum_{i=1}^{M} e_{ij}^2
+> \hspace{19em} (13)
+> ```
+> ```math
+> R^2_j := 1 - \frac{\mathrm{SSE}_j}{\mathrm{SST}_j}
+> \hspace{19em} (14)
+> ```
+> ```math
+> R^2_{\mathrm{avgn}} := \frac{1}{N} \sum_{j=1}^{N} R^2_j
+> \hspace{19em} (15)
+> ```
 
 > **Definition: Min R2 across N points**<br>
 > 측정 위치 R² 의 최솟값 $`R^2_{\mathrm{minn}}`$ 은 측정 위치마다 wafer $`M`$ 장의 측정값과 예측값으로 구한 R² $`R^2_j`$ 가운데, 측정 위치 $`N`$ 곳에서 가장 작은 값이다.
-
-```math
-R^2_{\mathrm{minn}} := \min_{j} R^2_j
-\hspace{19em} (16)
-```
+> ```math
+> R^2_{\mathrm{minn}} := \min_{j} R^2_j
+> \hspace{19em} (16)
+> ```
 
 세 R² 를 잇는 데 쓰는 Table 1 의 양은 아래 식 (17) 부터 식 (25) 로 정의한다.
 
@@ -638,11 +622,10 @@ $`A = W + I`$ 와 식 (51) 을 식 (24) 의 $`A/E`$ 에 넣으면 $`\kappa`$ 가
 
 > **Definition: Aggregate cross-location correlation**<br>
 > $`\bar{r}_y`$ 는 측정 위치 평균에서 벗어난 양 $`x_{ij} = y_{ij} - \bar{y}_{\cdot j}`$ 의 곱을 서로 다른 측정 위치의 모든 순서쌍과 wafer $`M`$ 장에서 더한 값을, $`N - 1`$ 과 $`A`$ 의 곱으로 나눈 값이다.
-
-```math
-\bar{r}_y = \frac{\sum_{j \ne k} \sum_{i=1}^{M} x_{ij}\, x_{ik}}{(N-1)\, A}
-\hspace{19em} (52)
-```
+> ```math
+> \bar{r}_y := \frac{\sum_{j \ne k} \sum_{i=1}^{M} x_{ij}\, x_{ik}}{(N-1)\, A}
+> \hspace{19em} (52)
+> ```
 
 - $`\bar{r}_y`$ 는 측정 위치 쌍마다의 Pearson 상관계수의 산술 평균이 아니다. $`\mathrm{SST}_j`$ 가 모두 같을 때만 그 평균과 같다.
 - $`\bar{r}_y = 1`$ 은 모든 측정 위치의 $`x_{ij}`$ 가 wafer 마다 같은 경우이다. 상관이 완전한 것에 더해 변동의 크기까지 같아야 한다.
