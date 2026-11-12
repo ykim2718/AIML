@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 80 | Created: 2026-11-09 | Updated: 2026-11-12 12:09 UTC
+Version 81 | Created: 2026-11-09 | Updated: 2026-11-12 21:35 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -779,7 +779,7 @@ Table 7. Minimum location R2 split into overall error and error concentration
 | Linear recalibration | 0.9201  | 0.0799      | 2.0745  | 0.1659      | 0.8341  | 3               |
 
 - Original 은 원래 예측이며, CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴다. 이 행의 값은 식 (14), 식 (15), 식 (16) 대로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{minn}}`$ 을 구하고, 식 (26) 대로 $`\gamma_n`$ 을 구한 것이다.
-- Offset correction 은 측정 위치마다 예측 오차 $`M`$ 개의 평균인 mean error (offset) 를 예측값에서 뺀 예측이고, linear recalibration 은 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞춘 예측이다.
+- Offset correction 은 측정 위치마다 예측 오차 $`M`$ 개의 평균인 mean error (offset) 를 예측값에 더한 예측이고, linear recalibration 은 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞춘 예측이다.
 - 행마다 $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_{\mathrm{avgn}}`$ 과 $`\gamma_n`$ 의 곱이다. 원래 예측에서는 0.2165 × 1.6768 = 0.3630 이다.
 - 세 예측 모두 최솟값은 측정 위치 3 이다. 두 보정 예측의 $`R^2_{\mathrm{minn}}`$ 은 0.83406 과 0.83415 로 소수점 아래 넷째 자리까지 같다.
 
@@ -792,6 +792,7 @@ Table 8. Ratio of each factor between two predictions
 | Original to offset correction             | 0.4572               | 0.4843               | 0.9439           |
 | Offset correction to linear recalibration | 0.9995               | 0.7625               | 1.3107           |
 
+- 두 보정은 $`R^2_{\mathrm{minn}}`$ 이 낮은 원인을 가려내려고 쓴다. Offset correction 으로 오차가 측정 위치 전체에 퍼져 있는지 (Table 8 의 $`1 - R^2_{\mathrm{avgn}}`$) 아니면 한 측정 위치에 몰려 있는지 (Table 8 의 $`\gamma_n`$) 를 본다.
 - 각 행에서 Ratio of 1 - R2_minn 은 나머지 두 열의 곱이다. 원래 예측에서 offset correction 으로 갈 때 0.4843 × 0.9439 = 0.4572 이다.
 - 원래 예측에서 offset correction 으로 가면 $`R^2_{\mathrm{minn}}`$ 이 0.6370 에서 0.8341 로 오른다. 그동안 $`1 - R^2_{\mathrm{avgn}}`$ 은 0.4843 배로 줄고 $`\gamma_n`$ 은 0.9439 배로 조금만 준다. 그래서 $`R^2_{\mathrm{minn}}`$ 이 오른 것은 거의 모두 측정 위치 전체의 오차가 줄어든 결과이다. Table 9 대로 13 곳 가운데 9 곳에서 mean error (offset) 가 $`\mathrm{SSE}_j`$ 의 0.3 이상을 차지하므로, 이를 빼면 측정 위치 대부분의 FVU 가 함께 준다.
 - Offset correction 에서 linear recalibration 으로 가면 $`1 - R^2_{\mathrm{avgn}}`$ 은 0.7625 배로 더 줄지만 $`\gamma_n`$ 이 1.3107 배로 늘어, $`R^2_{\mathrm{minn}}`$ 은 거의 그대로이다. Linear recalibration 은 측정 위치 3 의 FVU 를 0.999 배로 거의 줄이지 못하고 다른 측정 위치의 FVU 를 0.514 배에서 0.985 배로 줄여, 남은 오차가 측정 위치 3 에 몰렸다.
