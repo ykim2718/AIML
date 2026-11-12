@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 79 | Created: 2026-11-09 | Updated: 2026-11-12 12:07 UTC
+Version 80 | Created: 2026-11-09 | Updated: 2026-11-12 12:09 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -821,6 +821,7 @@ Table 9. Offset share of SSE and R2 after offset correction by location
 | 13         | 0.6660 | -12.2198            | 0.7805                | 0.9267                       |
 
 - Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균인 mean error (offset) 이다. $`\mathrm{SSE}_j`$ 는 이 비율과, mean error (offset) 를 뺀 나머지의 제곱합으로 나뉜다.
+- R2_j after offset correction 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 mean error (offset) 를 빼는 보정으로 그 측정 위치에서 얻는 R² 이고, 1 과의 차이는 그 보정으로는 줄지 않는 FVU 이다.
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 도 측정 위치 3 에서 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 에서 측정값과 예측값의 상관계수의 제곱이어서, 더 높이려면 측정 위치 3 의 예측 자체를 바꿔야 한다.
 - 예측 model 을 $`E`$ 를 줄이도록 학습하면 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$ 을 높이는 것이어서, $`\mathrm{SST}_j`$ 가 작은 측정 위치는 가중치 $`\omega_j`$ 만큼 작게 반영된다. $`R^2_{\mathrm{minn}}`$ 을 높이려면 학습 손실을 측정 위치마다 $`\mathrm{SSE}_j`$ 를 $`\mathrm{SST}_j`$ 로 나눈 값의 합이나 그 최댓값으로 두어, 측정 위치마다의 FVU 를 직접 줄인다.
