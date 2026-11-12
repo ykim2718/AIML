@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 78 | Created: 2026-11-09 | Updated: 2026-11-12 11:59 UTC
+Version 79 | Created: 2026-11-09 | Updated: 2026-11-12 12:07 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -766,7 +766,7 @@ Table 6. Three R2 from the data and from the identities
 
 ### E.2 Overall Error versus Error Concentration
 
-원래 예측의 $`R^2_{\mathrm{minn}}`$ = 0.6370 이 작은 것은 오차가 한 측정 위치에 몰려서가 아니라 측정 위치 전체의 오차가 커서이다. 오차 집중도 $`\gamma_n`$ = 1.6768 은 가장 큰 값 $`N`$ = 13 보다 1 에 훨씬 가깝고, 측정 위치 전체의 오차를 키운 것은 측정 위치마다의 mean error (offset) 이다 (Table 9).
+원래 예측, 곧 CSV 의 측정 위치 예측값을 보정 없이 그대로 쓴 예측의 $`R^2_{\mathrm{minn}}`$ = 0.6370 이 작은 것은 오차가 한 측정 위치에 몰려서가 아니라 측정 위치 전체의 오차가 커서이다. 오차 집중도 $`\gamma_n`$ = 1.6768 은 가장 큰 값 $`N`$ = 13 보다 1 에 훨씬 가깝고, 측정 위치 전체의 오차를 키운 것은 측정 위치마다의 mean error (offset) 이다 (Table 9).
 
 예측 model 두 개의 $`R^2_{\mathrm{minn}}`$ 을 견줄 때는 식 (29) 로, 그 차이를 측정 위치 FVU 의 평균 $`1 - R^2_{\mathrm{avgn}}`$ 의 변화와 오차 집중도 $`\gamma_n`$ 의 변화로 나눈다. Table 5 의 데이터에서 원래 예측과 두 보정 예측으로 구한 값은 아래 Table 7 이다.
 
@@ -778,6 +778,7 @@ Table 7. Minimum location R2 split into overall error and error concentration
 | Offset correction    | 0.8952  | 0.1048      | 1.5827  | 0.1659      | 0.8341  | 3               |
 | Linear recalibration | 0.9201  | 0.0799      | 2.0745  | 0.1659      | 0.8341  | 3               |
 
+- Original 은 원래 예측이며, CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴다. 이 행의 값은 식 (14), 식 (15), 식 (16) 대로 $`R^2_j`$, $`R^2_{\mathrm{avgn}}`$, $`R^2_{\mathrm{minn}}`$ 을 구하고, 식 (26) 대로 $`\gamma_n`$ 을 구한 것이다.
 - Offset correction 은 측정 위치마다 예측 오차 $`M`$ 개의 평균인 mean error (offset) 를 예측값에서 뺀 예측이고, linear recalibration 은 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞춘 예측이다.
 - 행마다 $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_{\mathrm{avgn}}`$ 과 $`\gamma_n`$ 의 곱이다. 원래 예측에서는 0.2165 × 1.6768 = 0.3630 이다.
 - 세 예측 모두 최솟값은 측정 위치 3 이다. 두 보정 예측의 $`R^2_{\mathrm{minn}}`$ 은 0.83406 과 0.83415 로 소수점 아래 넷째 자리까지 같다.
