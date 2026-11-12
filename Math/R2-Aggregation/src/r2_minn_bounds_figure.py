@@ -5,7 +5,7 @@ For a given average of location R2, R2_avgn, eq (26) puts the minimum location R
 1 - N (1 - R2_avgn) and R2_avgn. The figure draws that range as a band over R2_avgn for a few values of N.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.1+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.2+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -52,9 +52,9 @@ def draw_bounds(n_values: tuple = N_VALUES, out_path: pathlib.Path = None) -> pa
     for n, color in zip(n_values, BAND_COLORS):
         lower, upper = minn_bounds(x, n)
         ax.fill_between(x, lower, previous_lower, facecolor=color, alpha=0.35, linewidth=0)
-        ax.plot(x, lower, color=color, linewidth=2, label=f"Lower bound for $N$ = {n}: $1 - {n}(1 - R^2_{{avgn}})$")
+        ax.plot(x, lower, color=color, linewidth=2, label=f"Lower bound for $N$ = {n}")
         previous_lower = lower
-    ax.plot(x, x, color='black', linewidth=2, linestyle='--', label='Upper bound: $R^2_{minn} = R^2_{avgn}$')
+    ax.plot(x, x, color='black', linewidth=2, linestyle='--', label='Upper bound')
     ax.set_xlim(0.0, 1.0)
     ax.set_ylim(*Y_RANGE)
     ax.set_xlabel('$R^2_{avgn}$')
