@@ -5,7 +5,7 @@ The CSV holds one wafer per row with columns true_p1..true_pN, pred_p1..pred_pN 
 the wafer average). The wafer average of the measured values is recomputed from true_p1..true_pN, as in the definition.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.1+20261112"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.2+20261113"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -19,6 +19,7 @@ POINT_COLOR: str = '#2a78b8'
 MEAN_COLOR: str = '#555555'
 WEIGHTED_COLOR: str = '#c2571a'
 DPI: int = 300
+R2_J_RANGE: tuple = (0.4, 1.0)    # y-axis range of panel (c)
 
 
 def load(csv_path: pathlib.Path = None) -> tuple:
@@ -90,7 +91,7 @@ def draw(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarray = N
     ax.set_xticks(loc)
     ax.set_xlabel('Measurement location j (marker area $\\propto$ $\\omega_j$)')
     ax.set_ylabel('R$^2_j$')
-    ax.set_ylim(min(0.0, q['R2_j'].min() - 0.05), 1.0)
+    ax.set_ylim(*R2_J_RANGE)
     ax.set_title(f"R$^2_{{avgn}}$ = {q['R2_avgn']:.4f}   (mean of N = {q['N']} R$^2_j$)", fontsize=11)
     ax.legend(loc='lower right', frameon=False)
     ax.grid(axis='y', color='0.9', linewidth=0.8)
