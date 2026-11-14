@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 141 | Created: 2026-11-09 | Updated: 2026-11-14 22:55 UTC
+Version 142 | Created: 2026-11-09 | Updated: 2026-11-14 23:01 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -18,6 +18,13 @@ Version 141 | Created: 2026-11-09 | Updated: 2026-11-14 22:55 UTC
 - [7. Target Reliability](#7-target-reliability)
 - [8. Error Reduction and Feasibility of Targets](#8-error-reduction-and-feasibility-of-targets)
 - [9. Worked Example](#9-worked-example)
+    - [9.1 Four R2 of the Example](#91-four-r2-of-the-example)
+    - [9.2 Targets by the Four Methods](#92-targets-by-the-four-methods)
+    - [9.3 Allowed Prediction Error](#93-allowed-prediction-error)
+    - [9.4 Conditions for Meeting the Targets Together](#94-conditions-for-meeting-the-targets-together)
+    - [9.5 Required Error Reduction](#95-required-error-reduction)
+    - [9.6 Error Component to Improve First](#96-error-component-to-improve-first)
+    - [9.7 Reliability of the Targets](#97-reliability-of-the-targets)
 - [10. Related Work](#10-related-work)
     - [10.1 Multi-output R2](#101-multi-output-r2)
     - [10.2 Analysis of Variance](#102-analysis-of-variance)
@@ -596,6 +603,10 @@ Table 4. Prediction error that each target constrains
 
 ## 9. Worked Example
 
+Wafer 3 장, 측정 위치 2 곳의 작은 데이터로 네 R² 와 그 관계를 구하고, 꼭지 6 의 방법으로 목표값을 정한 뒤, 그 목표로 Goal 의 다섯 항목을 차례로 계산한다.
+
+### 9.1 Four R2 of the Example
+
 Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 5 이다.
 
 Table 5. Measured and predicted values
@@ -629,13 +640,79 @@ Table 6 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 - 식 (34): 0.7703 × 0.0789 = 0.0608 이어서 R2_avgw = 1 - 0.0608 = 0.9392 이다.
 - 식 (35): 1 - 0.0789 - 0.0072 = 0.9138 이 R2_avgn 이다.
 - 순서: $`\kappa`$ = 0.7703 이 $`1 - \lambda`$ = 0.8261 보다 작아 R2_avgw 가 R2_all 보다 크고, $`\delta`$ = 0.0072 가 $`-\lambda q`$ = -0.0137 보다 커서 R2_all 이 R2_avgn 보다 크다. 그래서 R2_avgw = 0.9392, R2_all = 0.9348, R2_avgn = 0.9138 의 차례이다.
+- R2_minn 은 측정 위치 1 의 0.8889 이고, 식 (29) 로 γ_n = (1 - 0.8889) / (1 - 0.9138) = 1.2895 이다.
 
-목표를 $`T_{\mathrm{all}} = 0.95,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.90,\ T_{\mathrm{minn}} = 0.90`$ 으로 잡고 Table 6 의 값으로 식 (39) 부터 식 (42) 의 조건과, 목표와 현재 R² 의 차이를 1 에서 현재 R² 를 뺀 값으로 나눈 SSE 감소율을 구하면 아래 네 항목이다. R2_minn 은 측정 위치 1 의 0.8889 이고, $`\gamma_n`$ = (1 - 0.8889) / (1 - 0.9138) = 1.2895 이다.
+### 9.2 Targets by the Four Methods
 
-- 식 (39): SSE_all / SST_all = 4 / 61.3333 = 0.0652 이고 $`(1 - \lambda)\, q`$ = 0.8261 × 0.0789 = 0.0652 이다. 0.05 를 넘으므로 R2_all 의 목표를 충족하지 않으며, $`\eta_{\mathrm{all}}`$ = (0.95 - 0.9348) / (1 - 0.9348) = 0.2333 이다.
-- 식 (40): SSE_avgw / SST_avgw = 1.5 / 24.6667 = 0.0608 이고 $`\kappa q`$ = 0.7703 × 0.0789 = 0.0608 이다. 0.05 를 넘으므로 R2_avgw 의 목표를 충족하지 않으며, $`\eta_{\mathrm{avgw}}`$ = 0.1778 이다.
-- 식 (41): 측정 위치 FVU 의 합은 2 / 18 + 2 / 32.6667 = 0.1723 이고, 오차 예산 2 × (1 - 0.90) = 0.20 이하이므로 R2_avgn 의 목표를 충족한다. $`q + \delta`$ = 0.0789 + 0.0072 = 0.0862 은 그 합의 절반이다.
-- 식 (42): 측정 위치 FVU 의 최댓값은 2 / 18 = 0.1111 이고 $`\gamma_n (q + \delta)`$ = 1.2895 × 0.0862 = 0.1111 이다. 0.10 을 넘으므로 R2_minn 의 목표를 충족하지 않으며, $`\eta_{\mathrm{minn}}`$ = 0.1000 이다.
+꼭지 6 의 네 방법의 입력은 이 예에서 없앨 수 있는 오차 성분에 맞춘다. 식 (49) 의 mean error (offset) 는 측정 위치 1 에서 (-1 + 0 + 1) / 3 = 0, 측정 위치 2 에서 (0 + 1 + 1) / 3 = 0.6667 이다. 식 (50) 의 offset 성분은 측정 위치 2 의 3 × 0.6667² = 1.3333 뿐이어서 E = 4 의 0.3333 이다. 그래서 방법 2 의 η 는 0.3333 이고, 방법 1 의 T_all 은 식 (48) 로 1 - (1 - 0.3333) × (1 - 0.9348) = 0.9565 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, wafer 3 장에서 복원 추출로 뽑을 수 있는 3³ = 27 개 표본을 모두 써서 wafer bootstrap 을 구했다. 네 방법의 목표값은 아래 Table 7 이다.
+
+Table 7. Targets of the example by the four methods
+
+| Method                | T_all  | T_avgw | T_avgn | T_minn |
+| :-------------------: | :----: | :----: | :----: | :----: |
+| Current R2            | 0.9348 | 0.9392 | 0.9138 | 0.8889 |
+| 1                     | 0.9565 | 0.9595 | 0.9401 | 0.9228 |
+| 2                     | 0.9565 | 0.9595 | 0.9426 | 0.9259 |
+| 3                     | 0.9565 | 0.9392 | 0.9342 | 0.8889 |
+| 4, current prediction | 0.8333 | 0.6250 | 0.7433 | 0.6667 |
+| 4, offset removed     | 0.8333 | 0.6250 | 0.7500 | 0.6667 |
+
+- 방법 3 의 T_avgw 는 wafer 평균 예측값을 따로 구했으므로 현재의 0.9392 이고, T_minn 은 최악인 측정 위치 1 의 offset 이 0 이어서 현재의 0.8889 이다.
+- Bootstrap 표본 27 개 가운데 한 wafer 를 세 번 뽑은 3 개는 SST_j = 0 이어서 R² 가 정의되지 않으므로 뺐다. 나머지 24 개에서 0.05 분위수는 최솟값과 같으며, wafer 가 3 장뿐이어서 방법 4 의 목표값은 현재 R² 보다 크게 낮다.
+- 아래 계산은 방법 3 의 목표값으로 한다. 방법 3 은 예측값을 직접 고쳐 목표값을 구하므로, 그 예측으로 신뢰성까지 계산할 수 있다.
+
+### 9.3 Allowed Prediction Error
+
+Goal 의 항목 1 인 각 R² 목표가 허용하는 예측오차의 크기를 식 (39) 부터 식 (42) 에 방법 3 의 목표값을 넣어 구하면 아래 네 항목이다.
+
+- 식 (39): SSE_all 은 (1 - 0.9565) × 61.3333 = 2.6667 이하여야 하며, 현재 4 이다.
+- 식 (40): SSE_avgw 는 (1 - 0.9392) × 24.6667 = 1.5 이하여야 하며, 현재 1.5 이다.
+- 식 (41): 측정 위치 FVU 의 합은 오차 예산 2 × (1 - 0.9342) = 0.1315 이하여야 하며, 현재 2 / 18 + 2 / 32.6667 = 0.1723 이다.
+- 식 (42): 측정 위치 FVU 의 최댓값은 1 - 0.8889 = 0.1111 이하여야 하며, 현재 측정 위치 1 의 2 / 18 = 0.1111 이다.
+
+### 9.4 Conditions for Meeting the Targets Together
+
+Goal 의 항목 2 인 여러 목표를 함께 충족하는 조건을 식 (56) 과 식 (55) 로 보면 아래 두 항목이다.
+
+- 식 (39) 로 T_all = 0.9565 는 q ≤ (1 - 0.9565) / (1 - 0.1739) = 0.0526 이다. ω_1 = 0.3553, ω_2 = 0.6447 이어서, 식 (56) 으로 측정 위치 FVU 의 평균은 오차의 분포에 따라 0.0526 / (2 × 0.6447) = 0.0408 부터 0.0526 / (2 × 0.3553) = 0.0741 사이에 있다. 그래서 R2_avgn 은 0.9259 이상만 보장되고, 방법 3 의 T_avgn 0.9342 는 오차가 offset 성분을 없앤 꼴로 줄 때 이루어진다.
+- 식 (55) 의 계수 SST_all / (N SST_avgw) 는 61.3333 / (2 × 24.6667) = 1.2432 이어서, wafer 평균 예측값이 측정 위치 예측값의 평균이면 T_all = 0.9565 가 R2_avgw 를 1 - 1.2432 × (1 - 0.9565) = 0.9459 이상으로 보장한다. 이 예의 wafer 평균 예측값은 따로 구한 값이어서 식 (55) 가 성립하지 않으며, T_avgw 는 식 (40) 대로 wafer 평균 예측의 오차로 따로 이룬다.
+
+### 9.5 Required Error Reduction
+
+Goal 의 항목 3 인 목표 달성에 필요한 오차 감소량을 식 (47) 의 SSE 감소 비율로 구하면 아래 Table 8 이다.
+
+Table 8. Required SSE reduction of the example
+
+| Method | eta_all | eta_avgw | eta_avgn | eta_minn |
+| :----: | :-----: | :------: | :------: | :------: |
+| 1      | 0.3333  | 0.3333   | 0.3054   | 0.3054   |
+| 2      | 0.3333  | 0.3333   | 0.3333   | 0.3333   |
+| 3      | 0.3333  | 0.0000   | 0.2368   | 0.0000   |
+
+- 방법 4 는 목표값이 현재 R² 보다 낮아 네 비율이 모두 음수이므로 표에서 뺐다.
+- 세 방법의 eta_all 0.3333 은 E 에서 offset 성분이 차지하는 비율과 같다.
+
+### 9.6 Error Component to Improve First
+
+Goal 의 항목 4 인 먼저 개선할 오차 성분을 식 (50) 으로 측정 위치마다 SSE_j 를 offset 성분과 나머지로 나누어 정하면 아래 세 항목이다.
+
+- 측정 위치 1: SSE_1 = 2 가 모두 나머지이고, offset 성분은 0 이다.
+- 측정 위치 2: SSE_2 = 2 가운데 1.3333 (0.6667) 이 offset 성분이고, 나머지는 0.6667 이다.
+- 그래서 R2_all 과 R2_avgn 을 올리려면 측정 위치 2 의 offset 을 먼저 줄인다. R2_minn 은 최악인 측정 위치 1 의 R² 이고 그 오차에는 offset 성분이 없으므로, R2_minn 을 올리려면 측정 위치 1 에서 wafer 마다 달라지는 오차를 줄여야 한다.
+
+### 9.7 Reliability of the Targets
+
+Goal 의 항목 5 인 목표 달성 판정의 신뢰성을 식 (52) 와 식 (54) 로, 27 개 표본 가운데 R² 가 정의되는 24 개에서 구한다. 방법 3 의 목표값에 대한 충족 확률은 아래 Table 9 이다.
+
+Table 9. Probability of meeting the targets of method 3 in the example
+
+| Prediction         | p_all  | p_avgw | p_avgn | p_minn | p_joint |
+| :----------------: | :----: | :----: | :----: | :----: | :-----: |
+| Current prediction | 0.0000 | 0.5000 | 0.0000 | 0.2500 | 0.0000  |
+| Offset removed     | 0.3750 | 0.5000 | 0.2500 | 0.2500 | 0.2500  |
+
+- Offset 성분을 없앤 예측도 방법 3 의 목표값을 함께 넘는 표본은 0.25 뿐이다. 목표값이 그 예측의 점 추정값이어서, 다른 wafer 에서 목표를 넘을 확률이 1 - α = 0.95 보다 훨씬 작다.
+- Wafer 3 장으로는 표본이 24 개뿐이어서 확률이 1 / 24 단위로만 바뀐다. 신뢰성을 판정하려면 [Appendix D](#appendix-d-target-setting-with-measured-data) 처럼 wafer 가 많아야 한다.
 
 ## 10. Related Work
 
@@ -643,9 +720,9 @@ Table 6 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 
 ### 10.1 Multi-output R2
 
-측정 위치 하나를 output 하나로, wafer 한 장을 sample 하나로 두면, scikit-learn 의 `r2_score` [[1](#ref-1)] 가 `multioutput` 인자로 제공하는 세 집계는 이 문서의 지표와 아래 Table 7 처럼 대응한다.
+측정 위치 하나를 output 하나로, wafer 한 장을 sample 하나로 두면, scikit-learn 의 `r2_score` [[1](#ref-1)] 가 `multioutput` 인자로 제공하는 세 집계는 이 문서의 지표와 아래 Table 10 처럼 대응한다.
 
-Table 7. scikit-learn multioutput options and the R2 of this document
+Table 10. scikit-learn multioutput options and the R2 of this document
 
 | scikit-learn multioutput | R2 in this document |
 | :----------------------: | :-----------------: |
@@ -845,9 +922,9 @@ R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
 \hspace{19em} (67)
 ```
 
-$`\lambda \ge 0`$ 이고 $`q \ge 0`$ 이므로, $`q \gt 0`$ 일 때 식 (63) 부터 식 (67) 의 각 차이의 부호에서 아래 Table 8 의 필요충분조건이 나온다.
+$`\lambda \ge 0`$ 이고 $`q \ge 0`$ 이므로, $`q \gt 0`$ 일 때 식 (63) 부터 식 (67) 의 각 차이의 부호에서 아래 Table 11 의 필요충분조건이 나온다.
 
-Table 8. Necessary and sufficient conditions among the R2
+Table 11. Necessary and sufficient conditions among the R2
 
 | Inequality                                       | Condition                     | From    |
 | :----------------------------------------------: | :---------------------------: | :-----: |
@@ -980,9 +1057,9 @@ Wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \fr
 
 ## Appendix D. Target Setting with Measured Data
 
-반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 목표 조합을 정하고 그 달성 여부를 확인한다. 이 데이터의 현재 값은 아래 Table 9 이다.
+반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 목표 조합을 정하고 그 달성 여부를 확인한다. 이 데이터의 현재 값은 아래 Table 12 이다.
 
-Table 9. Quantities of the measured data
+Table 12. Quantities of the measured data
 
 | Quantity | Value       | Quantity | Value  |
 | :------: | :---------: | :------: | :----: |
@@ -1008,13 +1085,13 @@ Fig 2. Location R2 of the measured data
 
 - 점의 넓이는 가중치 $`\omega_j`$ 에 비례한다. 실선은 R2_avgn = 0.7835, 점선은 R2_wavgn = 0.7949 이다.
 
-Fig 2 와 Table 9 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (33) 과 식 (34) 가 성립하는지 확인한 뒤 측정 위치별 R2_j 의 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
+Fig 2 와 Table 12 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (33) 과 식 (34) 가 성립하는지 확인한 뒤 측정 위치별 R2_j 의 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
 
 ### D.1 Error to Reduce
 
-측정 위치 오차 $`e_{ij}`$ 를 전체 평균, wafer 마다의 평균, 측정 위치마다의 평균, 나머지로 나누면 $`E`$ 는 아래 Table 10 의 네 성분의 합이다.
+측정 위치 오차 $`e_{ij}`$ 를 전체 평균, wafer 마다의 평균, 측정 위치마다의 평균, 나머지로 나누면 $`E`$ 는 아래 Table 13 의 네 성분의 합이다.
 
-Table 10. Components of the location error sum E
+Table 13. Components of the location error sum E
 
 | Component           | Sum of squares | Share of E |
 | :-----------------: | :------------: | :--------: |
@@ -1027,9 +1104,9 @@ Table 10. Components of the location error sum E
 - 전체 평균과 측정 위치마다의 평균을 더한 성분은 측정 위치마다의 mean error (offset) 의 제곱합 $`M \sum_j \bar{e}_{\cdot j}^2`$ 이며, $`E`$ 의 0.4726 을 차지한다. 이 성분이 0 이면 $`E`$ 가 0.4726 만큼 줄어 $`q`$ 는 0.2051 에서 0.1082 가 된다.
 - 그래서 이 데이터에서 가장 먼저 줄일 오차는 측정 위치마다 wafer 사이에서 일정한 오차, 곧 mean error (offset) 이다.
 
-측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 11 이다.
+측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 14 이다.
 
-Table 11. Offset share of SSE and R2 without the offset by location
+Table 14. Offset share of SSE and R2 without the offset by location
 
 | Location j | R2_j   | Mean error (offset) | Offset share of SSE_j | R2_j without offset |
 | :--------: | :----: | :-----------------: | :-------------------: | :-----------------: |
@@ -1053,9 +1130,9 @@ Table 11. Offset share of SSE and R2 without the offset by location
 
 ### D.2 Targets by the Four Methods
 
-방법 1 부터 방법 3 의 입력은 D.1 에서 가장 먼저 줄일 오차로 본 mean error (offset) 성분을 없애는 개선에 맞추며, 방법 3 은 Table 11 의 R2_j without offset 을 측정 위치 R² 의 목표에 쓴다. 방법 2 의 $`\eta`$ 는 이 성분이 $`E`$ 에서 차지하는 0.4726 이고, 방법 1 의 T_all 은 식 (48) 에 이 $`\eta`$ 를 넣은 0.9058 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, 현재 예측과 방법 3 이 가정한 예측의 wafer bootstrap 을 n_b = 2000 번 되풀이해 구했다. 네 방법의 목표값은 아래 Table 12 이다.
+방법 1 부터 방법 3 의 입력은 D.1 에서 가장 먼저 줄일 오차로 본 mean error (offset) 성분을 없애는 개선에 맞추며, 방법 3 은 Table 14 의 R2_j without offset 을 측정 위치 R² 의 목표에 쓴다. 방법 2 의 $`\eta`$ 는 이 성분이 $`E`$ 에서 차지하는 0.4726 이고, 방법 1 의 T_all 은 식 (48) 에 이 $`\eta`$ 를 넣은 0.9058 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, 현재 예측과 방법 3 이 가정한 예측의 wafer bootstrap 을 n_b = 2000 번 되풀이해 구했다. 네 방법의 목표값은 아래 Table 15 이다.
 
-Table 12. Targets by the four target setting methods
+Table 15. Targets by the four target setting methods
 
 | Method                | T_all  | T_avgw | T_avgn | T_minn |
 | :-------------------: | :----: | :----: | :----: | :----: |
@@ -1076,9 +1153,9 @@ Table 12. Targets by the four target setting methods
 
 ### D.3 Conditions for the Targets
 
-네 방법의 목표값이 요구하는 SSE 감소 비율을 식 (47) 로 구하면 아래 Table 13 이다.
+네 방법의 목표값이 요구하는 SSE 감소 비율을 식 (47) 로 구하면 아래 Table 16 이다.
 
-Table 13. Required SSE reduction for the targets of each method
+Table 16. Required SSE reduction for the targets of each method
 
 | Method                | eta_all | eta_avgw | eta_avgn | eta_minn |
 | :-------------------: | :-----: | :------: | :------: | :------: |
@@ -1096,9 +1173,9 @@ Table 13. Required SSE reduction for the targets of each method
 
 ### D.4 Target Reliability for the Measured Data
 
-방법 3 이 가정한 예측, 곧 mean error (offset) 성분을 없앤 예측으로 wafer 44 장의 wafer bootstrap 을 n_b = 2000 번 되풀이해, Table 12 의 목표값마다 충족 확률을 구하면 아래 Table 14 이다.
+방법 3 이 가정한 예측, 곧 mean error (offset) 성분을 없앤 예측으로 wafer 44 장의 wafer bootstrap 을 n_b = 2000 번 되풀이해, Table 15 의 목표값마다 충족 확률을 구하면 아래 Table 17 이다.
 
-Table 14. Probability of meeting the targets for the prediction without the offset component
+Table 17. Probability of meeting the targets for the prediction without the offset component
 
 | Targets               | p_all  | p_avgw | p_avgn | p_minn | p_joint |
 | :-------------------: | :----: | :----: | :----: | :----: | :-----: |
@@ -1114,4 +1191,4 @@ Table 14. Probability of meeting the targets for the prediction without the offs
 - 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 현재 예측에서 R2_all 0.0585, R2_avgw 0.0383, R2_avgn 0.1033, R2_minn 0.2736 이고, 이 예측에서 0.0248, 0.0383, 0.0434, 0.1329 이다. R2_minn 은 측정 위치 하나의 값이어서 wafer 를 다시 뽑을 때 가장 크게 흔들린다.
 - 현재 예측으로 구하면 방법 1 부터 방법 3 의 목표값을 충족할 확률은 R2_avgw 의 0.0170, 0.0170, 0.4530 을 빼고 모두 0 이다.
 
-Table 12 와 Table 14 의 값은 같은 folder 의 [src/r2_bootstrap.py](src/r2_bootstrap.py) 로 구했다. 이 script 는 네 방법의 목표값을 구하고, 현재 예측과 mean error (offset) 성분을 없앤 예측의 wafer bootstrap 으로 목표값마다 $`\hat{p}`$ 와 $`\hat{p}_{\mathrm{joint}}`$ 를 출력하며, 문서 folder 에서 `python3 src/r2_bootstrap.py` 로 실행한다.
+Table 15 와 Table 17 의 값은 같은 folder 의 [src/r2_bootstrap.py](src/r2_bootstrap.py) 로 구했다. 이 script 는 네 방법의 목표값을 구하고, 현재 예측과 mean error (offset) 성분을 없앤 예측의 wafer bootstrap 으로 목표값마다 $`\hat{p}`$ 와 $`\hat{p}_{\mathrm{joint}}`$ 를 출력하며, 문서 folder 에서 `python3 src/r2_bootstrap.py` 로 실행한다.
