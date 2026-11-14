@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 119 | Created: 2026-11-09 | Updated: 2026-11-14 01:17 UTC
+Version 120 | Created: 2026-11-09 | Updated: 2026-11-14 01:22 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -912,6 +912,8 @@ Fig 2 와 Table 8 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_th
 
 ### D.1 Target Conditions
 
+목표값은 계산으로 정한 값이 아니라 예로 잡은 값이다. Original 예측, 곧 CSV 의 `pred_p1` 부터 `pred_p13` 과 `pred_avg` 로 구한 현재의 네 R² 는 R2_all = 0.8213, R2_avgw = 0.9436, R2_avgn = 0.7835, R2_minn = 0.6370 이고, 목표값은 각 R² 마다 현재 값보다 큰 0.05 단위의 값으로 잡았다. 목표마다 줄여야 할 SSE 의 비율 $`\eta`$ 를 먼저 정하면, SST 가 그대로이므로 식 (46) 에서 목표값은 $`T = 1 - (1 - \eta)(1 - R^2)`$ 이다. 여기서 $`R^2`$ 는 Original 의 값이며, 이 예의 목표값에 대응하는 $`\eta`$ 는 Table 10 이다.
+
 이 데이터에서 목표를 $`T_{\mathrm{all}} = 0.90,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.85,\ T_{\mathrm{minn}} = 0.80`$ 으로 잡으면, 5.2 와 7.3 의 조건과 현재 값은 아래 Table 9 이다.
 
 Table 9. Conditions for the targets and the current values
@@ -998,7 +1000,7 @@ Table 13. Four R2 with and without the offset component against the targets
 | Without offset component | 0.9058 | 0.9436  | 0.8952  | 0.8341  | 1.5827  |
 | Target                   | 0.90   | 0.95    | 0.85    | 0.80    | -       |
 
-- Original 은 CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴 예측이다. Offset 성분은 측정 위치 예측의 오차여서 `pred_avg` 와 무관하므로, R2_avgw 는 두 행이 같다.
+- Original 은 CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴 예측이다. Target 은 D.1 에서 잡은 목표값이다. Offset 성분은 측정 위치 예측의 오차여서 `pred_avg` 와 무관하므로, R2_avgw 는 두 행이 같다.
 - Offset 성분이 0 이면 R2_all, R2_avgn, R2_minn 의 점 추정값은 목표를 넘지만, R2_avgw 는 목표에 닿지 않는다. 그래서 R2_avgw 의 목표는 wafer 평균 예측의 오차를 따로 줄여야 이룬다.
 - 식 (30) 으로 나누면 offset 성분이 0 일 때 최악 측정 위치의 FVU 는 0.4572 배가 되고, 이것은 측정 위치 FVU 의 평균의 배수 0.4843 과 $`\gamma_n`$ 의 배수 0.9439 의 곱이다. 그래서 R2_minn 이 오르는 것은 주로 측정 위치 FVU 의 평균이 줄어든 결과이다.
 - Offset 성분이 0 일 때의 $`\gamma_n`$ = 1.5827 은 D.1 의 한계 1.3333 보다 크지만, 측정 위치 FVU 의 평균이 0.1048 로 0.15 보다 충분히 작아 1.5827 × 0.1048 = 0.1659 가 0.20 이하이다. 식 (42) 는 $`\gamma_n`$ 과 측정 위치 FVU 의 평균의 곱에 걸리므로, $`\gamma_n`$ 하나만으로 목표의 달성을 판단하지 않는다.
