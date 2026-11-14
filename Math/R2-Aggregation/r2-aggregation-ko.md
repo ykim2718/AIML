@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 135 | Created: 2026-11-09 | Updated: 2026-11-14 22:23 UTC
+Version 136 | Created: 2026-11-09 | Updated: 2026-11-14 22:24 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -10,16 +10,15 @@ Version 135 | Created: 2026-11-09 | Updated: 2026-11-14 22:23 UTC
     - [5.2 Target Constraints](#52-target-constraints)
     - [5.3 Range of the Minimum Location R2](#53-range-of-the-minimum-location-r2)
     - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
-- [6. Worked Example](#6-worked-example)
-- [7. Application](#7-application)
-    - [7.1 Target Setting Methods](#71-target-setting-methods)
-    - [7.2 Target Reliability](#72-target-reliability)
-    - [7.3 Error Reduction and Feasibility of Targets](#73-error-reduction-and-feasibility-of-targets)
-- [8. Related Work](#8-related-work)
-    - [8.1 Multi-output R2](#81-multi-output-r2)
-    - [8.2 Analysis of Variance](#82-analysis-of-variance)
-    - [8.3 Multi-objective Optimization](#83-multi-objective-optimization)
-    - [8.4 Group Distributionally Robust Optimization](#84-group-distributionally-robust-optimization)
+- [6. Target Setting Methods](#6-target-setting-methods)
+- [7. Target Reliability](#7-target-reliability)
+- [8. Error Reduction and Feasibility of Targets](#8-error-reduction-and-feasibility-of-targets)
+- [9. Worked Example](#9-worked-example)
+- [10. Related Work](#10-related-work)
+    - [10.1 Multi-output R2](#101-multi-output-r2)
+    - [10.2 Analysis of Variance](#102-analysis-of-variance)
+    - [10.3 Multi-objective Optimization](#103-multi-objective-optimization)
+    - [10.4 Group Distributionally Robust Optimization](#104-group-distributionally-robust-optimization)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Mathematical Derivations](#appendix-b-mathematical-derivations)
@@ -402,52 +401,7 @@ Fig 1 은 같은 folder 의 [src/r2_minn_bounds_figure.py](src/r2_minn_bounds_fi
 - **$`\delta`$**: 가중 평균과 산술 평균의 차이이며, 식 (38) 대로 $`\mathrm{SST}_j`$ 와 $`R^2_j`$ 가 함께 움직이는 정도로 정해진다.
 - **R² 의 뜻**: 이 문서의 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 이며, 그 집계 수준의 평균을 예측값으로 쓸 때와 견주어 제곱오차가 얼마나 줄었는지를 나타낸다. 측정값과 예측값의 상관계수를 제곱한 값과는 다르며, 예측이 평균보다 나쁘면 음수이다.
 
-## 6. Worked Example
-
-Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 3 이다.
-
-Table 3. Measured and predicted values
-
-| Wafer i | y_i1 | y_i2 | Predicted y_i1 | Predicted y_i2 | e_i1 | e_i2 | Wafer average | Predicted wafer average | Wafer average error |
-| :-----: | :--: | :--: | :------------: | :------------: | :--: | :--: | :-----------: | :---------------------: | :-----------------: |
-| 1       | 10   | 12   | 11             | 12             | -1   | 0    | 11            | 11.5                    | -0.5                |
-| 2       | 13   | 15   | 13             | 14             | 0    | 1    | 14            | 13.0                    | 1.0                 |
-| 3       | 16   | 20   | 15             | 19             | 1    | 1    | 18            | 17.5                    | 0.5                 |
-
-Wafer 평균 예측값은 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 13.0 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 86/6 = 14.3333, 측정 위치 평균은 13 과 15.6667 이다. 꼭지 4 의 정의 식으로 구한 값은 아래 Table 4 이다.
-
-Table 4. Sums of squares and R2 values
-
-| Quantity                                 | SST     | SSE | Calculation                     | Symbol   | Value  |
-| :--------------------------------------: | :-----: | :-: | :-----------------------------: | :------: | :----: |
-| R2 over all measured values              | 61.3333 | 4   | 1 - 4 / 61.3333                 | R2_all   | 0.9348 |
-| R2 over wafer averages                   | 24.6667 | 1.5 | 1 - 1.5 / 24.6667               | R2_avgw  | 0.9392 |
-| Location 1                               | 18      | 2   | 1 - 2 / 18                      | R2_1     | 0.8889 |
-| Location 2                               | 32.6667 | 2   | 1 - 2 / 32.6667                 | R2_2     | 0.9388 |
-| R2 average over N locations              | -       | -   | (0.8889 + 0.9388) / 2           | R2_avgn  | 0.9138 |
-| SST-weighted R2 average over N locations | 50.6667 | 4   | 1 - 4 / 50.6667                 | R2_wavgn | 0.9211 |
-| Location error share                     | -       | -   | 4 / 50.6667                     | q        | 0.0789 |
-| Location pattern                         | -       | -   | 10.6667 / (50.6667 + 10.6667)   | lambda   | 0.1739 |
-| Error ratio                              | -       | -   | (1.5 / 24.6667) × (50.6667 / 4) | kappa    | 0.7703 |
-| Weighted minus plain average             | -       | -   | 0.9211 - 0.9138                 | delta    | 0.0072 |
-
-Table 4 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를 확인하면 아래 네 항목이다.
-
-- 식 (33): (1 - 0.1739) × 0.0789 = 0.0652 이어서 R2_all = 1 - 0.0652 = 0.9348 이다.
-- 식 (34): 0.7703 × 0.0789 = 0.0608 이어서 R2_avgw = 1 - 0.0608 = 0.9392 이다.
-- 식 (35): 1 - 0.0789 - 0.0072 = 0.9138 이 R2_avgn 이다.
-- 순서: $`\kappa`$ = 0.7703 이 $`1 - \lambda`$ = 0.8261 보다 작아 R2_avgw 가 R2_all 보다 크고, $`\delta`$ = 0.0072 가 $`-\lambda q`$ = -0.0137 보다 커서 R2_all 이 R2_avgn 보다 크다. 그래서 R2_avgw = 0.9392, R2_all = 0.9348, R2_avgn = 0.9138 의 차례이다.
-
-목표를 $`T_{\mathrm{all}} = 0.95,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.90,\ T_{\mathrm{minn}} = 0.90`$ 으로 잡고 Table 4 의 값으로 식 (39) 부터 식 (42) 의 조건과, 목표와 현재 R² 의 차이를 1 에서 현재 R² 를 뺀 값으로 나눈 SSE 감소율을 구하면 아래 네 항목이다. R2_minn 은 측정 위치 1 의 0.8889 이고, $`\gamma_n`$ = (1 - 0.8889) / (1 - 0.9138) = 1.2895 이다.
-
-- 식 (39): SSE_all / SST_all = 4 / 61.3333 = 0.0652 이고 $`(1 - \lambda)\, q`$ = 0.8261 × 0.0789 = 0.0652 이다. 0.05 를 넘으므로 R2_all 의 목표를 충족하지 않으며, $`\eta_{\mathrm{all}}`$ = (0.95 - 0.9348) / (1 - 0.9348) = 0.2333 이다.
-- 식 (40): SSE_avgw / SST_avgw = 1.5 / 24.6667 = 0.0608 이고 $`\kappa q`$ = 0.7703 × 0.0789 = 0.0608 이다. 0.05 를 넘으므로 R2_avgw 의 목표를 충족하지 않으며, $`\eta_{\mathrm{avgw}}`$ = 0.1778 이다.
-- 식 (41): 측정 위치 FVU 의 합은 2 / 18 + 2 / 32.6667 = 0.1723 이고, 오차 예산 2 × (1 - 0.90) = 0.20 이하이므로 R2_avgn 의 목표를 충족한다. $`q + \delta`$ = 0.0789 + 0.0072 = 0.0862 은 그 합의 절반이다.
-- 식 (42): 측정 위치 FVU 의 최댓값은 2 / 18 = 0.1111 이고 $`\gamma_n (q + \delta)`$ = 1.2895 × 0.0862 = 0.1111 이다. 0.10 을 넘으므로 R2_minn 의 목표를 충족하지 않으며, $`\eta_{\mathrm{minn}}`$ = 0.1000 이다.
-
-## 7. Application
-
-### 7.1 Target Setting Methods
+## 6. Target Setting Methods
 
 목표값은 현재 예측에서 목표에 닿는 방법, 곧 개선된 예측의 오차가 어떻게 줄어드는지를 가정해야 정해진다. 아래 네 방법은 입력 하나와 도달 방법의 가정 하나로 네 목표값을 함께 정하며, 방법 1 부터 방법 3 은 목표값을 식 (33) 부터 식 (36) 의 FVU 로 구하므로 그 조합은 식 (39) 부터 식 (42) 를 함께 충족한다.
 
@@ -567,9 +521,9 @@ $`\alpha`$ 와 목표에 닿았다고 가정한 예측을 주고, 평가할 wafe
 
 네 방법은 같은 개선에서도 도달 방법의 가정에 따라 다른 목표 조합을 낸다. 그래서 목표값과 함께 그 가정을 적고, 개선된 예측의 오차가 가정대로 줄었는지를 $`\kappa`$, $`\delta`$, $`\gamma_n`$ 과 오차 성분으로 확인한다.
 
-네 방법의 입력과 가정, 그리고 각 방법이 네 R² 의 목표값을 구하는 식을 모으면 아래 Table 5 이다.
+네 방법의 입력과 가정, 그리고 각 방법이 네 R² 의 목표값을 구하는 식을 모으면 아래 Table 3 이다.
 
-Table 5. Target setting methods
+Table 3. Target setting methods
 
 | Method                      | Input                          | Assumption on how the targets are reached            | T_all   | T_avgw       | T_avgn           | T_minn           |
 | :-------------------------: | :----------------------------: | :--------------------------------------------------: | :-----: | :----------: | :--------------: | :--------------: |
@@ -578,9 +532,9 @@ Table 5. Target setting methods
 | 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (51) | 현재 R2_avgw | 식 (50), 식 (15) | 식 (50), 식 (16) |
 | 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (53) | 식 (53)      | 식 (53)          | 식 (53)          |
 
-### 7.2 Target Reliability
+## 7. Target Reliability
 
-같은 예측도 다른 wafer 로 구하면 R² 가 달라지므로, 목표는 7.1 의 wafer bootstrap 으로 구한 R² 의 표본 분포를 함께 보아 아래 세 가지로 나누어 정한다.
+같은 예측도 다른 wafer 로 구하면 R² 가 달라지므로, 목표는 꼭지 6 의 wafer bootstrap 으로 구한 R² 의 표본 분포를 함께 보아 아래 세 가지로 나누어 정한다.
 
 - 목표값: $`T_{\mathrm{all}}`$ 처럼 R² 가 넘어야 할 값.
 - 검증 기준: 목표를 정할 때 쓰지 않은 독립한 wafer 로 구한 R² 가 목표값을 넘는지.
@@ -588,7 +542,7 @@ Table 5. Target setting methods
 
 R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 충족하려면 점 추정값이 목표값보다 얼마나 커야 하는지를 보여 준다. 목표를 정하는 데 쓴 wafer 와 최종 성능을 검증하는 wafer 는 나눈다.
 
-### 7.3 Error Reduction and Feasibility of Targets
+## 8. Error Reduction and Feasibility of Targets
 
 목표 조합이 주어지면, 현재 예측의 R² 에서 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인한다.
 
@@ -612,9 +566,9 @@ Wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 �
 - 식 (56): R2_all 의 목표로 $`q`$ 를 줄여도, 식 (56) 의 위쪽 끝이 $`1 - T_{\mathrm{avgn}}`$ 보다 크면 오차가 $`\omega_j`$ 가 작은 측정 위치에 몰릴 때 R2_avgn 의 목표를 이루지 못한다. $`q \le N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 이면 오차가 어느 측정 위치에 있어도 이룬다.
 - 식 (39), 식 (56), 식 (55) 에 쓰인 $`\lambda, \omega_j, \mathrm{SST}_{\mathrm{all}}, \mathrm{SST}_{\mathrm{avgw}}`$ 는 측정값만으로 정해지므로, 목표 조합이 요구하는 오차의 크기는 예측을 고치기 전에 구할 수 있다.
 
-각 목표가 줄여야 할 오차는 아래 Table 6 이다.
+각 목표가 줄여야 할 오차는 아래 Table 4 이다.
 
-Table 6. Prediction error that each target constrains
+Table 4. Prediction error that each target constrains
 
 | Target | Condition        | Error to reduce                      |
 | :----: | :--------------: | :----------------------------------: |
@@ -633,11 +587,54 @@ Table 6. Prediction error that each target constrains
 - 현재 예측의 $`E`$ 를 성분으로 나누어, $`q`$ 가 그 값에 닿으려면 어느 성분을 줄여야 하는지를 본다.
 - 식 (42) 로 R2_minn 의 목표가 허용하는 $`\gamma_n`$ 의 위쪽 한계를 구하고 현재의 $`\gamma_n`$ 과 견준다. 이때 $`\gamma_n`$ 은 최악 측정 위치의 오차를 설명하는 진단 지표로 쓴다.
 
-## 8. Related Work
+## 9. Worked Example
+
+Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 5 이다.
+
+Table 5. Measured and predicted values
+
+| Wafer i | y_i1 | y_i2 | Predicted y_i1 | Predicted y_i2 | e_i1 | e_i2 | Wafer average | Predicted wafer average | Wafer average error |
+| :-----: | :--: | :--: | :------------: | :------------: | :--: | :--: | :-----------: | :---------------------: | :-----------------: |
+| 1       | 10   | 12   | 11             | 12             | -1   | 0    | 11            | 11.5                    | -0.5                |
+| 2       | 13   | 15   | 13             | 14             | 0    | 1    | 14            | 13.0                    | 1.0                 |
+| 3       | 16   | 20   | 15             | 19             | 1    | 1    | 18            | 17.5                    | 0.5                 |
+
+Wafer 평균 예측값은 측정 위치 예측값과 따로 구한 값이어서, wafer 2 의 13.0 은 측정 위치 예측값 평균 13.5 와 다르다. 전체 평균은 86/6 = 14.3333, 측정 위치 평균은 13 과 15.6667 이다. 꼭지 4 의 정의 식으로 구한 값은 아래 Table 6 이다.
+
+Table 6. Sums of squares and R2 values
+
+| Quantity                                 | SST     | SSE | Calculation                     | Symbol   | Value  |
+| :--------------------------------------: | :-----: | :-: | :-----------------------------: | :------: | :----: |
+| R2 over all measured values              | 61.3333 | 4   | 1 - 4 / 61.3333                 | R2_all   | 0.9348 |
+| R2 over wafer averages                   | 24.6667 | 1.5 | 1 - 1.5 / 24.6667               | R2_avgw  | 0.9392 |
+| Location 1                               | 18      | 2   | 1 - 2 / 18                      | R2_1     | 0.8889 |
+| Location 2                               | 32.6667 | 2   | 1 - 2 / 32.6667                 | R2_2     | 0.9388 |
+| R2 average over N locations              | -       | -   | (0.8889 + 0.9388) / 2           | R2_avgn  | 0.9138 |
+| SST-weighted R2 average over N locations | 50.6667 | 4   | 1 - 4 / 50.6667                 | R2_wavgn | 0.9211 |
+| Location error share                     | -       | -   | 4 / 50.6667                     | q        | 0.0789 |
+| Location pattern                         | -       | -   | 10.6667 / (50.6667 + 10.6667)   | lambda   | 0.1739 |
+| Error ratio                              | -       | -   | (1.5 / 24.6667) × (50.6667 / 4) | kappa    | 0.7703 |
+| Weighted minus plain average             | -       | -   | 0.9211 - 0.9138                 | delta    | 0.0072 |
+
+Table 6 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를 확인하면 아래 네 항목이다.
+
+- 식 (33): (1 - 0.1739) × 0.0789 = 0.0652 이어서 R2_all = 1 - 0.0652 = 0.9348 이다.
+- 식 (34): 0.7703 × 0.0789 = 0.0608 이어서 R2_avgw = 1 - 0.0608 = 0.9392 이다.
+- 식 (35): 1 - 0.0789 - 0.0072 = 0.9138 이 R2_avgn 이다.
+- 순서: $`\kappa`$ = 0.7703 이 $`1 - \lambda`$ = 0.8261 보다 작아 R2_avgw 가 R2_all 보다 크고, $`\delta`$ = 0.0072 가 $`-\lambda q`$ = -0.0137 보다 커서 R2_all 이 R2_avgn 보다 크다. 그래서 R2_avgw = 0.9392, R2_all = 0.9348, R2_avgn = 0.9138 의 차례이다.
+
+목표를 $`T_{\mathrm{all}} = 0.95,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.90,\ T_{\mathrm{minn}} = 0.90`$ 으로 잡고 Table 6 의 값으로 식 (39) 부터 식 (42) 의 조건과, 목표와 현재 R² 의 차이를 1 에서 현재 R² 를 뺀 값으로 나눈 SSE 감소율을 구하면 아래 네 항목이다. R2_minn 은 측정 위치 1 의 0.8889 이고, $`\gamma_n`$ = (1 - 0.8889) / (1 - 0.9138) = 1.2895 이다.
+
+- 식 (39): SSE_all / SST_all = 4 / 61.3333 = 0.0652 이고 $`(1 - \lambda)\, q`$ = 0.8261 × 0.0789 = 0.0652 이다. 0.05 를 넘으므로 R2_all 의 목표를 충족하지 않으며, $`\eta_{\mathrm{all}}`$ = (0.95 - 0.9348) / (1 - 0.9348) = 0.2333 이다.
+- 식 (40): SSE_avgw / SST_avgw = 1.5 / 24.6667 = 0.0608 이고 $`\kappa q`$ = 0.7703 × 0.0789 = 0.0608 이다. 0.05 를 넘으므로 R2_avgw 의 목표를 충족하지 않으며, $`\eta_{\mathrm{avgw}}`$ = 0.1778 이다.
+- 식 (41): 측정 위치 FVU 의 합은 2 / 18 + 2 / 32.6667 = 0.1723 이고, 오차 예산 2 × (1 - 0.90) = 0.20 이하이므로 R2_avgn 의 목표를 충족한다. $`q + \delta`$ = 0.0789 + 0.0072 = 0.0862 은 그 합의 절반이다.
+- 식 (42): 측정 위치 FVU 의 최댓값은 2 / 18 = 0.1111 이고 $`\gamma_n (q + \delta)`$ = 1.2895 × 0.0862 = 0.1111 이다. 0.10 을 넘으므로 R2_minn 의 목표를 충족하지 않으며, $`\eta_{\mathrm{minn}}`$ = 0.1000 이다.
+
+## 10. Related Work
 
 이 문서의 지표와 식은 이미 쓰이는 평가 방식과 분해에 대응한다. 대응하는 것은 측정 위치별 R² 의 집계, 제곱합 분해, 목표를 함께 이루는 문제, 최악 측정 위치의 오차를 줄이는 문제의 네 가지이다.
 
-### 8.1 Multi-output R2
+### 10.1 Multi-output R2
 
 측정 위치 하나를 output 하나로, wafer 한 장을 sample 하나로 두면, scikit-learn 의 `r2_score` [[1](#ref-1)] 가 `multioutput` 인자로 제공하는 세 집계는 이 문서의 지표와 아래 Table 7 처럼 대응한다.
 
@@ -652,11 +649,11 @@ Table 7. scikit-learn multioutput options and the R2 of this document
 - `variance_weighted` 는 output 마다의 R² 를 측정값의 분산에 비례하는 가중치로 평균한다. 측정 위치 $`j`$ 의 분산은 $`\mathrm{SST}_j / M`$ 이므로 그 가중치는 식 (20) 의 $`\omega_j`$ 와 같다.
 - 그래서 측정 위치 R² 의 산술 평균과 SST 가중 평균의 차이 $`\delta`$ 는 이미 널리 쓰이는 평가 방식 사이의 차이이다.
 
-### 8.2 Analysis of Variance
+### 10.2 Analysis of Variance
 
 식 (31) 은 측정 위치를 집단으로 보는 일원 분산분석의 제곱합 분해이며, 새로운 통계 이론이 아니라 그 분해를 wafer 와 측정 위치의 구조에 적용한 결과이다. 반도체 공정의 통계 방법을 다루는 NIST/SEMATECH e-Handbook of Statistical Methods [[2](#ref-2)] 가 이 분해를 다룬다.
 
-### 8.3 Multi-objective Optimization
+### 10.3 Multi-objective Optimization
 
 세 R² 의 목표를 함께 이루는 예측을 찾는 일은 다목적 최적화 (multi-objective optimization) 문제이다. 대표적인 ε-constraint method 는 목적 하나를 최적화하면서 나머지 목적에 아래쪽 한계를 두며, 예측의 parameter 를 $`\theta`$ 라 하면 아래 식 (57) 로 적는다.
 
@@ -668,7 +665,7 @@ Table 7. scikit-learn multioutput options and the R2 of this document
 - 식 (57) 의 제약은 5.2 의 식 (40) 과 식 (41) 이며, 예측 후보들이 이루는 Pareto frontier 에서 한 R² 를 높일 때 다른 R² 가 얼마나 낮아지는지를 본다.
 - 이 문제를 푸는 방법은 모델 개발에 속하므로 Non-Goal 이다.
 
-### 8.4 Group Distributionally Robust Optimization
+### 10.4 Group Distributionally Robust Optimization
 
 측정 위치 하나를 group 하나로 보면, 최악 측정 위치의 FVU 를 줄이는 문제는 아래 식 (58) 이며 Group Distributionally Robust Optimization (Group DRO) 과 같은 꼴이다.
 
