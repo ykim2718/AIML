@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 109 | Created: 2026-11-09 | Updated: 2026-11-14 00:51 UTC
+Version 110 | Created: 2026-11-09 | Updated: 2026-11-14 00:56 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -310,7 +310,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 
 네 R² 의 목표값은 그 집계 수준의 SSE 를 SST 로 나눈 값, 곧 FVU 의 위쪽 한계와 동치이며, Table 2 로 이 한계를 $`q, \lambda, \kappa, \delta, \gamma_n`$ 의 조건으로 바꾼다.
 
-> **Proposition: Joint R2 target constraints**<br>
+> **Theorem: Joint R2 target constraints**<br>
 > R2_all, R2_avgw, R2_avgn, R2_minn 의 목표값을 $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$ 이라 하자. 네 목표를 함께 충족하는 것은 아래 네 조건을 함께 충족하는 것과 동치이다. 각 조건은 그 집계 수준에서 SSE 를 SST 로 나눈 값의 위쪽 한계이다.
 > ```math
 > R^2_{\mathrm{all}} \ge T_{\mathrm{all}} \;\Leftrightarrow\; \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}} \le 1 - T_{\mathrm{all}} \;\Leftrightarrow\; (1 - \lambda)\, q \le 1 - T_{\mathrm{all}}
