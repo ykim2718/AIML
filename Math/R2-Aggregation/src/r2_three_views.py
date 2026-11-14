@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Compute R2_all, R2_avgw, R2_avgn with lambda, kappa and the SST weights from a wafer CSV, and chart the three R2.
+"""Compute R2_all, R2_avgw, R2_avgn with lambda, kappa and the SST weights from a wafer CSV, and chart the location R2_j.
 
 The CSV holds one wafer per row with columns true_p1..true_pN, pred_p1..pred_pN and pred_avg (the direct prediction of
 the wafer average). The wafer average of the measured values is recomputed from true_p1..true_pN, as in the definition.
+
+Changelog:
+    0.1.0 draw only the location R2_j panel
 """
 __author__ = 'yRocket'
-__version__ = "0.0.2+20261113"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261114"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -60,28 +63,11 @@ def quantities(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarr
     return q
 
 
-def draw(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarray = None, q: dict = None,
-         out_path: pathlib.Path = None) -> pathlib.Path:
-    """Draw the three R2 views side by side and save the figure."""
-    if out_path is None:
-        raise ValueError('out_path is required.')
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5.4), gridspec_kw={'width_ratios': [1, 1, 1.25]})
-    fig.subplots_adjust(left=0.05, right=0.99, top=0.88, bottom=0.2, wspace=0.28)
-    views = ((axes[0], y.ravel(), y_hat.ravel(), q['R2_all'], 'R$^2_{all}$', f"T = {y.size} measured values"),
-             (axes[1], y.mean(axis=1), y_hat_w, q['R2_avgw'], 'R$^2_{avgw}$', f"M = {q['M']} wafer averages"))
-    for ax, actual, pred, r2, name, what in views:
-        lo, hi = min(actual.min(), pred.min()), max(actual.max(), pred.max())
-        pad = 0.04 * (hi - lo)
-        ax.plot([lo - pad, hi + pad], [lo - pad, hi + pad], color=MEAN_COLOR, linewidth=1, linestyle='--')
-        ax.scatter(actual, pred, s=14 if actual.size > 100 else 28, color=POINT_COLOR, alpha=0.7, edgecolors='none')
-        ax.set_xlim(lo - pad, hi + pad)
-        ax.set_ylim(lo - pad, hi + pad)
-        ax.set_aspect('equal')
-        ax.set_xlabel('Measured')
-        ax.set_ylabel('Predicted')
-        ax.set_title(f"{name} = {r2:.4f}   ({what})", fontsize=11)
-        ax.grid(color='0.9', linewidth=0.8)
-    ax = axes[2]
+def draw(q: dict = None, out_path: pathlib.Path = None) -> pathlib.Path:
+    """Draw the location R2_j with R2_avgn and R2_wavgn, and save the figure."""
+    if q is None or out_path is None:
+        raise ValueError('q and out_path are both required.')
+    fig, ax = plt.subplots(figsize=(7.5, 5.0))
     loc = np.arange(1, q['N'] + 1)
     ax.vlines(loc, 0, q['R2_j'], color='0.8', linewidth=1)
     ax.scatter(loc, q['R2_j'], s=10 + 400 * q['omega_j'], color=POINT_COLOR, zorder=3, edgecolors='white')
@@ -92,15 +78,9 @@ def draw(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarray = N
     ax.set_xlabel('Measurement location j (marker area $\\propto$ $\\omega_j$)')
     ax.set_ylabel('R$^2_j$')
     ax.set_ylim(*R2_J_RANGE)
-    ax.set_title(f"R$^2_{{avgn}}$ = {q['R2_avgn']:.4f}   (mean of N = {q['N']} R$^2_j$)", fontsize=11)
     ax.legend(loc='lower right', frameon=False)
     ax.grid(axis='y', color='0.9', linewidth=0.8)
-    fig.suptitle(f"$\\lambda$ = {q['lambda']:.4f},   $\\kappa$ = {q['kappa']:.4f},   1 - $\\lambda$ = {1 - q['lambda']:.4f},"
-                 f"   $\\bar{{r}}_y$ = {q['r_y']:.4f}", fontsize=12)
-    for ax, caption in zip(axes, ('(a) R2 over all measured values', '(b) R2 over wafer averages',
-                                  '(c) R2 average over N locations')):
-        box = ax.get_position()
-        fig.text((box.x0 + box.x1) / 2, 0.03, caption, ha='center', fontsize=12)
+    fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=DPI)
     plt.close(fig)
@@ -108,7 +88,7 @@ def draw(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarray = N
 
 
 parser = argparse.ArgumentParser(prog=pathlib.Path(__file__).name,
-                                 description=f"{pathlib.Path(__file__).name} {__version__}: chart the three R2 of a wafer CSV.")
+                                 description=f"{pathlib.Path(__file__).name} {__version__}: chart the location R2 of a wafer CSV.")
 parser.add_argument('-v', '--version', action='version', version=f"%(prog)s {__version__}")
 parser.add_argument('csv', type=pathlib.Path, nargs='?', default=pathlib.Path(__file__).resolve().parent.parent / 'data' / 'u0_actuals_and_predictions.csv',
                     help='input CSV')
@@ -127,5 +107,5 @@ if __name__ == '__main__':
         print(f"{key:9s} = {q[key]:.4f}" if isinstance(q[key], float) else f"{key:9s} = {q[key]}")
     print('R2_j     =', np.round(q['R2_j'], 4).tolist())
     print('omega_j  =', np.round(q['omega_j'], 4).tolist())
-    print(f"saved {draw(y, y_hat, y_hat_w, q, args.out)}")
+    print(f"saved {draw(q, args.out)}")
     sys.exit(0)

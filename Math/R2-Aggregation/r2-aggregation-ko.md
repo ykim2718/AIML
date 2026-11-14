@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 107 | Created: 2026-11-09 | Updated: 2026-11-14 00:41 UTC
+Version 108 | Created: 2026-11-09 | Updated: 2026-11-14 00:45 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -31,16 +31,16 @@ Version 107 | Created: 2026-11-09 | Updated: 2026-11-14 00:41 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: 반도체 wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정한 같은 데이터로 R² 를 전체 측정값, wafer 평균값, 측정 위치별 측정값에서 구하면 세 값이 서로 다르다. Wafer 평균의 예측값은 측정 위치 예측값의 평균일 수도, 따로 구한 값일 수도 있다.
+- **Problem Statement**: 반도체 wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정한 같은 데이터로 R² 를 전체 측정값, wafer 평균값, 측정 위치별 측정값에서 구하면 세 값이 서로 다르고, 측정 위치 R² 의 최솟값도 따로 움직인다. 그래서 네 R² 에 목표값을 정해도 그 목표 조합을 함께 이룰 수 있는지, 이루려면 어느 오차를 줄여야 하는지를 알 수 없다. Wafer 평균의 예측값은 측정 위치 예측값의 평균일 수도, 따로 구한 값일 수도 있다.
 - **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$, 측정 위치 R² 의 최솟값 $`R^2_{\mathrm{minn}}`$ 사이의 항등식과 부등식을 구하고 증명하여, R² 의 목표값 (target) 을 실제로 달성 가능한 목표 조합으로 만든다.
 - **Non-Goal**: 예측을 만들거나 고르는 방법, R² 의 표본 분포는 다루지 않는다.
 
 ## 2. Summary
 
-전체 측정값, wafer 평균값, 측정 위치별 측정값으로 구한 세 R² 는 SST 가중 fraction of variance unexplained (FVU) $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$ 의 네 양으로 모두 적힌다.
-세 R² 의 순서는 이 네 양의 계수 차이로 정해지며, 이 문서는 세 쌍 모두의 필요충분조건을 구한다.
+네 R² 의 목표값은 SST 가중 fraction of variance unexplained (FVU) $`q`$, 측정 위치 패턴 비율 $`\lambda`$, 오차 비 $`\kappa`$, 가중 평균과 산술 평균의 차이 $`\delta`$, 오차 집중도 $`\gamma_n`$ 에 대한 조건으로 바뀌며, 측정값만으로 정해지는 양으로 그 목표 조합을 함께 이룰 수 있는지와 먼저 줄일 오차를 예측을 고치기 전에 정한다.
+그 바탕은 네 R² 의 FVU 가 $`q`$ 에 계수를 곱하거나 더한 꼴로 모두 적힌다는 항등식과, 세 R² 의 순서를 정하는 필요충분조건과 R2_minn 의 범위를 주는 부등식이다.
 
-예측은 wafer 마다 측정 위치의 측정값 $`y_{ij}`$ 와 wafer 평균 $`\bar{y}_{i\cdot}`$ 이며, 그 예측값이 $`\hat{y}_{ij}`$ 와 $`\hat{y}_{iw}`$ 이다. 이 R² 들은 $`R^2_{\mathrm{minn}}`$ 이 낮은 까닭을 측정 위치 전체의 오차와 오차 집중도로 가르는 데 쓴다. 또 네 R² 의 목표값을 FVU 에 대한 조건으로 옮겨, 함께 이룰 수 있는 목표 조합과 먼저 줄일 오차를 정하는 데 쓴다.
+예측은 wafer 마다 측정 위치의 측정값 $`y_{ij}`$ 와 wafer 평균 $`\bar{y}_{i\cdot}`$ 이며, 그 예측값이 $`\hat{y}_{ij}`$ 와 $`\hat{y}_{iw}`$ 이다.
 
 ## 3. Notations and Assumptions
 
@@ -345,7 +345,7 @@ Table 3. Necessary and sufficient conditions among the R2
 | $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgn}}`$   | $`\delta \ge -\lambda q`$     | 식 (41) |
 | $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{avgn}}`$  | $`\delta \ge (\kappa - 1) q`$ | 식 (42) |
 
-- Goal 의 세 쌍은 아래 세 행이며, 세 쌍 모두 조건이 필요충분조건이다. $`\delta \lt 0`$ 이어도 $`\lambda q`$ 나 $`(1 - \kappa) q`$ 가 충분히 크면 $`R^2_{\mathrm{all}}`$ 이나 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{avgn}}`$ 이상이다.
+- R2_all, R2_avgw, R2_avgn 사이의 세 쌍은 아래 세 행이며, 세 쌍 모두 조건이 필요충분조건이다. $`\delta \lt 0`$ 이어도 $`\lambda q`$ 나 $`(1 - \kappa) q`$ 가 충분히 크면 $`R^2_{\mathrm{all}}`$ 이나 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{avgn}}`$ 이상이다.
 - 식 (40) 은 $`\kappa`$ 로 나누지 않으므로 $`\kappa = 0`$ 일 때도 성립한다.
 - $`q = 0`$ 이면 식 (38), 식 (39), 식 (40) 의 차이가 모두 0 이다.
 
@@ -782,26 +782,15 @@ Table 7. Quantities of the measured data
 - 측정값 $`y_{ij}`$ 는 `true_p1` 부터 `true_p13`, 측정 위치 예측값 $`\hat{y}_{ij}`$ 는 `pred_p1` 부터 `pred_p13`, wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 `pred_avg` 열이다.
 - Wafer 평균은 식 (6) 대로 `true_p1` 부터 `true_p13` 의 평균으로 다시 구했다. 첫 wafer `20260123_0001` 의 `true_avg` 열은 628 이지만 측정값 13 개의 평균은 614.4957 이어서, 이 열은 쓰지 않았다.
 
-세 R² 를 그리면 아래 Fig 2 이다.
+측정 위치 13 곳의 R2_j 를 그리면 아래 Fig 2 이다.
 
-<img src="r2-aggregation-ko_fig/fig2-u0-r2.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="r2-aggregation-ko_fig/fig2-u0-r2.png" width="700" style="max-width: 100%;" alt="Fig 2">
 
-Fig 2. Three R2 of the measured data
+Fig 2. Location R2 of the measured data
 
-- (a): 측정값 572 개와 그 예측값의 산점도이며, 점선은 측정값과 예측값이 같은 선이다. R2_all = 0.8213 이다.
-- (b): wafer 평균 44 개와 wafer 평균 예측값의 산점도이다. 점이 (a) 보다 점선에 가까이 모여 R2_avgw = 0.9436 이다.
-- (c): 측정 위치 13 곳의 R2_j 이며, 점의 넓이는 가중치 $`\omega_j`$ 에 비례한다. 실선은 R2_avgn = 0.7835, 점선은 R2_wavgn = 0.7949 이다.
+- 점의 넓이는 가중치 $`\omega_j`$ 에 비례한다. 실선은 R2_avgn = 0.7835, 점선은 R2_wavgn = 0.7949 이다.
 
-Table 7 과 Fig 2 를 문서의 식에 맞춰 읽은 결과는 아래 다섯 항목이다.
-
-- 세 R² 는 식 (33), 식 (34), 식 (35) 로 모두 맞는다. 1 - (1 - 0.1288) × 0.2051 = 0.8213, 1 - 0.2748 × 0.2051 = 0.9436, 1 - 0.2051 - 0.0114 = 0.7835 이다.
-- 식 (40): $`\kappa`$ = 0.2748 이 $`1 - \lambda`$ = 0.8712 보다 작아 R2_avgw 가 R2_all 보다 0.5964 × 0.2051 = 0.1223 만큼 크다. Wafer 평균 예측의 FVU 0.0564 가 SST 가중 FVU 0.2051 의 0.2748 배에 그친다.
-- 식 (41), 식 (42): R2_all 과 R2_avgw 는 R2_avgn 보다 각각 0.0264 + 0.0114 = 0.0378, 0.1487 + 0.0114 = 0.1601 만큼 크다. $`\delta`$ = 0.0114 가 양수이므로 두 조건 모두 성립한다.
-- 식 (37): $`\delta`$ 가 양수인 것은 SST 가 큰 측정 위치 1, 2, 5 (가중치 0.1252, 0.1082, 0.1105) 의 R2_j 가 0.8990, 0.8396, 0.8553 으로 R2_avgn 보다 크고, R2_j 가 가장 작은 측정 위치 3 (0.6370) 은 가중치가 0.0644 로 작기 때문이다.
-- 식 (43), 식 (26), 식 (27): 측정 위치 R² 의 최솟값은 측정 위치 3 의 0.6370 이다. 오차 집중도는 $`\gamma_n`$ = (1 - 0.6370) / (1 - 0.7835) = 1.6768 로, 최악 측정 위치의 FVU 가 측정 위치 FVU 의 평균의 1.6768 배이다. 위쪽 범위는 R2_avgn 과 R2_wavgn 가운데 작은 0.7835 이고, 아래쪽 범위는 식 (26) 으로 1 - 13 × (1 - 0.7835) = -1.8142 이다.
-    - 실제 최솟값과 아래쪽 범위가 멀리 떨어진 것은, 식 (26) 이 $`\gamma_n = N`$, 곧 측정 위치 한 곳을 뺀 나머지의 R2_j 가 모두 1 인 경우를 가정하기 때문이다. 실제 $`\gamma_n`$ 은 1.6768 로 $`N`$ = 13 보다 훨씬 작다.
-
-Fig 2 와 Table 7 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (33) 과 식 (34) 가 성립하는지 확인한 뒤 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
+Fig 2 와 Table 7 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_three_views.py) 로 구했다. 이 script 는 CSV 에서 세 R² 와 $`\lambda`$, $`\kappa`$ 를 계산하고, 식 (33) 과 식 (34) 가 성립하는지 확인한 뒤 측정 위치별 R2_j 의 그림을 저장하며, 문서 folder 에서 `python3 src/r2_three_views.py` 로 실행한다.
 
 ### D.1 Target Conditions
 
