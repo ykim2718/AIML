@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 129 | Created: 2026-11-09 | Updated: 2026-11-14 22:02 UTC
+Version 130 | Created: 2026-11-09 | Updated: 2026-11-14 22:06 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -468,6 +468,8 @@ wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 �
 
 #### Method 1. Conversion of T_all
 
+방법 1 은 R2_all 의 목표값 T_all 을 입력으로 받아, 나머지 세 R² 의 목표값 T_avgw, T_avgn, T_minn 을 구한다.
+
 $`\kappa`$ 와 $`\delta`$ 가 현재 예측의 값으로 유지된다고 하면, R2_all 의 값에 대응하는 R2_avgw 와 R2_avgn 은 아래 식 (46), 식 (47) 이다. 유도는 [B.5](#b5-target-conditions) 에 있다.
 
 ```math
@@ -489,6 +491,8 @@ R2_all 의 목표 $`T_{\mathrm{all}}`$ 을 주고, $`\kappa`$, $`\delta`$, $`\ga
 
 #### Method 2. Common SSE Reduction
 
+방법 2 는 네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴의 식으로 구한다.
+
 평가에 쓰는 측정값이 정해져 SST 가 바뀌지 않으면, 현재의 R2_all 에서 목표 $`T_{\mathrm{all}}`$ 에 닿으려면 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 아래 식 (48) 의 비율 $`\eta_{\mathrm{all}}`$ 만큼 줄여야 한다. R2_avgw, R2_avgn, R2_minn 의 $`\eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ 도 같은 꼴로 그 집계 수준의 SSE 를 줄일 비율이다.
 
 ```math
@@ -509,6 +513,8 @@ R2_all 의 목표 $`T_{\mathrm{all}}`$ 을 주고, $`\kappa`$, $`\delta`$, $`\ga
 - 같은 $`T_{\mathrm{all}}`$ 에서 방법 1 과 방법 2 는 $`T_{\mathrm{avgw}}`$ 가 같고, $`1 - T_{\mathrm{avgn}}`$ 은 방법 2 가 $`\eta \delta`$ 만큼 작다.
 
 #### Method 3. Error Component Removal
+
+방법 3 은 측정 위치 예측의 오차로 정해지는 세 R² 의 목표값 T_all, T_avgn, T_minn 을 구한다. Wafer 평균 예측값을 따로 구하면 T_avgw 는 현재의 R2_avgw 로 둔다.
 
 없앨 오차 성분 하나를 주고, 개선된 예측이 그 성분만 0 으로 만들고 나머지 오차는 그대로 둔다고 가정한다. 측정 위치마다 wafer 사이에서 일정한 오차는 아래 mean error (offset) 이다.
 
@@ -542,6 +548,8 @@ Mean error (offset) 성분을 없앤다고 가정하면, R2_all 의 목표값은
 
 #### Method 4. Bootstrap Lower Quantile
 
+방법 4 는 네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴로 구한다.
+
 이 문서의 R² 는 주어진 wafer $`M`$ 장으로 구한 값이어서, 같은 예측도 다른 wafer 로 구하면 값이 달라진다. 그래서 목표를 정할 때는 R² 의 표본 분포를 wafer bootstrap 으로 구해, 목표를 충족할 확률과 R² 의 아래쪽 분위수를 함께 본다.
 
 > **Definition: Wafer bootstrap**<br>
@@ -570,16 +578,16 @@ $`\alpha`$ 와 목표에 닿았다고 가정한 예측을 주고, 평가할 wafe
 
 네 방법은 같은 개선에서도 도달 방법의 가정에 따라 다른 목표 조합을 낸다. 그래서 목표값과 함께 그 가정을 적고, 개선된 예측의 오차가 가정대로 줄었는지를 $`\kappa`$, $`\delta`$, $`\gamma_n`$ 과 오차 성분으로 확인한다.
 
-네 방법의 입력과 가정을 모으면 아래 Table 5 이다.
+네 방법의 입력과 가정, 그리고 각 방법이 네 R² 의 목표값을 구하는 식을 모으면 아래 Table 5 이다.
 
 Table 5. Target setting methods
 
-| Method                      | Input                          | Assumption on how the targets are reached            | Equation                  |
-| :-------------------------: | :----------------------------: | :--------------------------------------------------: | :-----------------------: |
-| 1. Conversion of T_all      | T_all                          | κ, δ, γ_n 이 현재 값으로 유지됨                      | 식 (46), 식 (47), 식 (29) |
-| 2. Common SSE reduction     | η                              | 모든 SSE_j 와 SSE_avgw 가 같은 비율 η 로 줄어듦      | 식 (49)                   |
-| 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (50), 식 (51), 식 (52) |
-| 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (54)                   |
+| Method                      | Input                          | Assumption on how the targets are reached            | T_all   | T_avgw       | T_avgn           | T_minn           |
+| :-------------------------: | :----------------------------: | :--------------------------------------------------: | :-----: | :----------: | :--------------: | :--------------: |
+| 1. Conversion of T_all      | T_all                          | κ, δ, γ_n 이 현재 값으로 유지됨                      | 입력    | 식 (46)      | 식 (47)          | 식 (29)          |
+| 2. Common SSE reduction     | η                              | 모든 SSE_j 와 SSE_avgw 가 같은 비율 η 로 줄어듦      | 식 (49) | 식 (49)      | 식 (49)          | 식 (49)          |
+| 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (52) | 현재 R2_avgw | 식 (51), 식 (15) | 식 (51), 식 (16) |
+| 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (54) | 식 (54)      | 식 (54)          | 식 (54)          |
 
 ### 7.4 Target Reliability
 
