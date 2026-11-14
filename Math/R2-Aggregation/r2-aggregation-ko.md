@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 111 | Created: 2026-11-09 | Updated: 2026-11-14 00:59 UTC
+Version 112 | Created: 2026-11-09 | Updated: 2026-11-14 01:03 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -30,13 +30,13 @@ Version 111 | Created: 2026-11-09 | Updated: 2026-11-14 00:59 UTC
 - [Appendix D. Target Setting with Measured Data](#appendix-d-target-setting-with-measured-data)
   - [D.1 Target Conditions](#d1-target-conditions)
   - [D.2 Error to Reduce](#d2-error-to-reduce)
-  - [D.3 Targets after Offset Correction](#d3-targets-after-offset-correction)
+  - [D.3 Four R2 without the Offset Component](#d3-four-r2-without-the-offset-component)
   - [D.4 Target Reliability for the Measured Data](#d4-target-reliability-for-the-measured-data)
 
 ## 1. Purpose
 
 - **Problem Statement**: 반도체 wafer $`M`$ 장에서 wafer 마다 측정 위치 (measurement location) $`N`$ 곳을 측정한 같은 데이터로 R² 를 전체 측정값, wafer 평균값, 측정 위치별 측정값에서 구하면 세 값이 서로 다르고, 측정 위치 R² 의 최솟값도 따로 움직인다. 그래서 네 R² 에 목표값을 정해도 그 목표 조합을 함께 이룰 수 있는지, 이루려면 어느 오차를 줄여야 하는지를 알 수 없다. Wafer 평균의 예측값은 측정 위치 예측값의 평균일 수도, 따로 구한 값일 수도 있다.
-- **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$, 측정 위치 R² 의 최솟값 $`R^2_{\mathrm{minn}}`$ 사이의 항등식과 부등식을 구하고 증명하여, R² 의 목표값 (target) 을 실제로 달성 가능한 목표 조합으로 만든다.
+- **Goal**: 전체 측정값으로 구한 $`R^2_{\mathrm{all}}`$, wafer 평균값으로 구한 $`R^2_{\mathrm{avgw}}`$, 측정 위치 R² 평균 $`R^2_{\mathrm{avgn}}`$, 측정 위치 R² 의 최솟값 $`R^2_{\mathrm{minn}}`$ 사이의 항등식과 부등식을 구하고 증명하여, 네 R² 로 정하는 예측 정확도의 목표값 (target) 을 실제로 달성 가능한 목표 조합으로 만든다.
 - **Non-Goal**: 예측을 만들거나 고르는 방법은 다루지 않는다.
 
 ## 2. Summary
@@ -77,7 +77,7 @@ Table 1. Symbols
 | $`\kappa`$                                                                                | 오차 비 (error ratio). wafer 평균 예측의 FVU 를 SST 가중 FVU $`q`$ 로 나눈 값                                                                             | all wafers,<br>all locations | scalar  | $`\kappa \ge 0`$, $`E \gt 0`$ 일 때만 정의                           |
 | $`\delta`$                                                                                | $`R^2_{\mathrm{wavgn}}`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 뺀 값                                                                                            | all wafers,<br>all locations | scalar  | -                                                                    |
 | $`\gamma_n`$                                                                              | 오차 집중도 (error concentration). $`1 - R^2_{\mathrm{minn}}`$ 을 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값                                                | all wafers,<br>all locations | scalar  | $`1 \le \gamma_n \le N`$, $`R^2_{\mathrm{avgn}} \lt 1`$ 일 때만 정의 |
-| $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$             | R2_all, R2_avgw, R2_avgn, R2_minn 의 목표값 (target)                                                                                                      | -                            | scalar  | 1 이하                                                               |
+| $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$             | 예측 정확도의 목표값 (target). R2_all, R2_avgw, R2_avgn, R2_minn 이 넘어야 할 값                                                                          | -                            | scalar  | 1 이하                                                               |
 | $`\eta_{\mathrm{all}}, \eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ | 현재의 R² 에서 목표값에 닿으려면 그 집계 수준의 SSE 를 줄여야 하는 비율                                                                                   | -                            | scalar  | 1 이하                                                               |
 | $`n_b`$, $`b`$                                                                            | wafer bootstrap 의 표본 수와 표본 번호                                                                                                                    | -                            | integer | $`1 \le b \le n_b`$                                                  |
 | $`R^{2(b)}_{\mathrm{all}}`$                                                               | $`b`$ 번째 wafer bootstrap 표본으로 다시 구한 R2_all. 다른 R² 도 같은 꼴                                                                                  | per sample                   | scalar  | -                                                                    |
@@ -245,7 +245,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 \hspace{19em} (30)
 ```
 
-- 그래서 두 예측을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [D.3](#d3-targets-after-offset-correction) 에 있다.
+- 그래서 두 예측을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [D.3](#d3-four-r2-without-the-offset-component) 에 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
 - $`\gamma_n`$ 은 최악 측정 위치의 FVU 를 설명하는 진단 지표이며, 따로 줄일 목표가 아니다. 식 (29) 에서 $`\gamma_n`$ 이 줄어도 측정 위치 FVU 의 평균이 늘면 $`R^2_{\mathrm{minn}}`$ 은 낮아질 수 있고, $`\gamma_n`$ 이 늘어도 측정 위치 FVU 의 평균이 충분히 줄면 $`R^2_{\mathrm{minn}}`$ 은 그대로이거나 높아진다.
 
@@ -484,7 +484,7 @@ wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 �
 
 ### 7.3 Setting Targets
 
-목표값은 현재 예측의 R² 에서 시작해, 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인하는 차례로 정한다.
+예측 정확도의 목표값은 현재 예측의 R² 에서 시작해, 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인하는 차례로 정한다.
 
 평가에 쓰는 측정값이 정해져 SST 가 바뀌지 않으면, 현재의 R2_all 에서 목표 $`T_{\mathrm{all}}`$ 에 닿으려면 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 아래 식 (50) 의 비율 $`\eta_{\mathrm{all}}`$ 만큼 줄여야 한다. R2_avgw, R2_avgn, R2_minn 의 $`\eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ 도 같은 꼴로 그 집계 수준의 SSE 를 줄일 비율이다.
 
@@ -959,45 +959,45 @@ Table 10. Components of the location error sum E
 
 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 11 이다.
 
-Table 11. Offset share of SSE and R2 after offset correction by location
+Table 11. Offset share of SSE and R2 without the offset by location
 
-| Location j | R2_j   | Mean error (offset) | Offset share of SSE_j | R2_j after offset correction |
-| :--------: | :----: | :-----------------: | :-------------------: | :--------------------------: |
-| 1          | 0.8990 | -1.0253             | 0.0090                | 0.8999                       |
-| 2          | 0.8396 | 0.1226              | 0.0001                | 0.8396                       |
-| 3          | 0.6370 | -10.8077            | 0.5428                | 0.8341                       |
-| 4          | 0.7534 | -12.2493            | 0.6318                | 0.9092                       |
-| 5          | 0.8553 | -2.2286             | 0.0338                | 0.8602                       |
-| 6          | 0.8461 | 5.3257              | 0.3599                | 0.9015                       |
-| 7          | 0.7980 | 7.3241              | 0.4851                | 0.8960                       |
-| 8          | 0.7534 | 8.2137              | 0.5025                | 0.8773                       |
-| 9          | 0.7390 | 8.9966              | 0.5510                | 0.8828                       |
-| 10         | 0.7457 | -10.8761            | 0.7743                | 0.9426                       |
-| 11         | 0.9340 | -0.4417             | 0.0051                | 0.9343                       |
-| 12         | 0.7194 | -10.9931            | 0.7609                | 0.9329                       |
-| 13         | 0.6660 | -12.2198            | 0.7805                | 0.9267                       |
+| Location j | R2_j   | Mean error (offset) | Offset share of SSE_j | R2_j without offset |
+| :--------: | :----: | :-----------------: | :-------------------: | :-----------------: |
+| 1          | 0.8990 | -1.0253             | 0.0090                | 0.8999              |
+| 2          | 0.8396 | 0.1226              | 0.0001                | 0.8396              |
+| 3          | 0.6370 | -10.8077            | 0.5428                | 0.8341              |
+| 4          | 0.7534 | -12.2493            | 0.6318                | 0.9092              |
+| 5          | 0.8553 | -2.2286             | 0.0338                | 0.8602              |
+| 6          | 0.8461 | 5.3257              | 0.3599                | 0.9015              |
+| 7          | 0.7980 | 7.3241              | 0.4851                | 0.8960              |
+| 8          | 0.7534 | 8.2137              | 0.5025                | 0.8773              |
+| 9          | 0.7390 | 8.9966              | 0.5510                | 0.8828              |
+| 10         | 0.7457 | -10.8761            | 0.7743                | 0.9426              |
+| 11         | 0.9340 | -0.4417             | 0.0051                | 0.9343              |
+| 12         | 0.7194 | -10.9931            | 0.7609                | 0.9329              |
+| 13         | 0.6660 | -12.2198            | 0.7805                | 0.9267              |
 
 - Offset share of SSE_j 는 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이며, $`\bar{e}_{\cdot j}`$ 는 측정 위치 $`j`$ 에서 예측 오차 $`M`$ 개의 평균인 mean error (offset) 이다. $`\mathrm{SSE}_j`$ 는 이 비율과, mean error (offset) 를 뺀 나머지의 제곱합으로 나뉜다.
-- R2_j after offset correction 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 mean error (offset) 를 예측값에 더하는 보정으로 그 측정 위치에서 얻는 R² 이고, 1 과의 차이는 그 보정으로는 줄지 않는 FVU 이다.
-- 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 보정 뒤에도 최솟값은 측정 위치 3 이다.
+- R2_j without offset 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 그 측정 위치의 오차에서 mean error (offset) 성분이 없어지면 오르는 R² 이고, 1 과의 차이는 그 성분이 없어져도 남는 FVU 이다. 이 값은 시험 데이터의 측정값으로 구한 mean error (offset) 를 같은 데이터에 쓴 분석값이어서, 예측으로 이룰 수 있는 값이 아니다.
+- 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 이 성분을 빼도 최솟값은 측정 위치 3 이다.
 
-### D.3 Targets after Offset Correction
+### D.3 Four R2 without the Offset Component
 
-측정 위치마다의 mean error (offset) 를 예측값에 더한 예측 (offset correction) 으로 네 R² 를 다시 구해 목표와 견주면 아래 Table 12 이다.
+D.2 의 성분 가운데 측정 위치마다의 mean error (offset) 성분이 0 일 때의 네 R² 를 구해 목표와 견주면 아래 Table 12 이다. 이 값은 시험 데이터의 측정값으로 구한 mean error (offset) 를 같은 데이터의 예측값에 더해 구한 분석값이어서, 예측으로 이룰 수 있는 값이 아니다. 예측이 offset 성분을 없앨 때 네 R² 가 오를 수 있는 위쪽 한계, 곧 그 성분을 줄이는 개선이 목표에 닿을 수 있는지를 보인다.
 
-Table 12. Four R2 before and after offset correction against the targets
+Table 12. Four R2 with and without the offset component against the targets
 
-| Prediction        | R2_all | R2_avgw | R2_avgn | R2_minn | gamma_n |
-| :---------------: | :----: | :-----: | :-----: | :-----: | :-----: |
-| Original          | 0.8213 | 0.9436  | 0.7835  | 0.6370  | 1.6768  |
-| Offset correction | 0.9058 | 0.9436  | 0.8952  | 0.8341  | 1.5827  |
-| Target            | 0.90   | 0.95    | 0.85    | 0.80    | -       |
+| Prediction               | R2_all | R2_avgw | R2_avgn | R2_minn | gamma_n |
+| :----------------------: | :----: | :-----: | :-----: | :-----: | :-----: |
+| Original                 | 0.8213 | 0.9436  | 0.7835  | 0.6370  | 1.6768  |
+| Without offset component | 0.9058 | 0.9436  | 0.8952  | 0.8341  | 1.5827  |
+| Target                   | 0.90   | 0.95    | 0.85    | 0.80    | -       |
 
-- Original 은 CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴 예측이다. Offset correction 은 `pred_avg` 를 바꾸지 않으므로 R2_avgw 는 두 행이 같다.
-- Offset correction 으로 R2_all, R2_avgn, R2_minn 은 목표를 넘지만, R2_avgw 는 목표에 닿지 않는다. 네 목표를 함께 이루려면 wafer 평균 예측의 오차를 따로 줄여야 한다.
-- 식 (30) 으로 나누면 최악 측정 위치의 FVU 는 0.4572 배가 되었고, 이것은 측정 위치 FVU 의 평균의 배수 0.4843 과 $`\gamma_n`$ 의 배수 0.9439 의 곱이다. 그래서 R2_minn 이 오른 것은 주로 측정 위치 FVU 의 평균이 줄어든 결과이다.
-- 보정 뒤의 $`\gamma_n`$ = 1.5827 은 D.1 의 한계 1.3333 보다 크지만, 측정 위치 FVU 의 평균이 0.1048 로 0.15 보다 충분히 작아 1.5827 × 0.1048 = 0.1659 가 0.20 이하이다. 식 (41) 은 $`\gamma_n`$ 과 측정 위치 FVU 의 평균의 곱에 걸리므로, $`\gamma_n`$ 하나만으로 목표의 달성을 판단하지 않는다.
-- 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 에서도 측정 위치 3 의 R² 는 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 의 측정값과 예측값의 상관계수의 제곱이어서, $`T_{\mathrm{minn}}`$ 을 0.8341 보다 높게 잡으면 측정 위치 3 의 오차 가운데 mean error (offset) 가 아닌 나머지를 줄여야 이룬다.
+- Original 은 CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴 예측이다. Offset 성분은 측정 위치 예측의 오차여서 `pred_avg` 와 무관하므로, R2_avgw 는 두 행이 같다.
+- Offset 성분이 0 이면 R2_all, R2_avgn, R2_minn 의 점 추정값은 목표를 넘지만, R2_avgw 는 목표에 닿지 않는다. 그래서 R2_avgw 의 목표는 wafer 평균 예측의 오차를 따로 줄여야 이룬다.
+- 식 (30) 으로 나누면 offset 성분이 0 일 때 최악 측정 위치의 FVU 는 0.4572 배가 되고, 이것은 측정 위치 FVU 의 평균의 배수 0.4843 과 $`\gamma_n`$ 의 배수 0.9439 의 곱이다. 그래서 R2_minn 이 오르는 것은 주로 측정 위치 FVU 의 평균이 줄어든 결과이다.
+- Offset 성분이 0 일 때의 $`\gamma_n`$ = 1.5827 은 D.1 의 한계 1.3333 보다 크지만, 측정 위치 FVU 의 평균이 0.1048 로 0.15 보다 충분히 작아 1.5827 × 0.1048 = 0.1659 가 0.20 이하이다. 식 (41) 은 $`\gamma_n`$ 과 측정 위치 FVU 의 평균의 곱에 걸리므로, $`\gamma_n`$ 하나만으로 목표의 달성을 판단하지 않는다.
+- 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞춰도 (linear recalibration) 측정 위치 3 의 R² 는 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 의 측정값과 예측값의 상관계수의 제곱이어서, $`T_{\mathrm{minn}}`$ 을 0.8341 보다 높게 잡으면 측정 위치 3 의 오차 가운데 mean error (offset) 가 아닌 나머지를 줄여야 이룬다.
 
 ### D.4 Target Reliability for the Measured Data
 
