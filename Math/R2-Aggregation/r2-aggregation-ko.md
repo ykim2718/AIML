@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 133 | Created: 2026-11-09 | Updated: 2026-11-14 22:16 UTC
+Version 134 | Created: 2026-11-09 | Updated: 2026-11-14 22:18 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -45,7 +45,8 @@ Version 133 | Created: 2026-11-09 | Updated: 2026-11-14 22:16 UTC
   4. 목표 달성을 위해 우선적으로 개선할 오차 성분
   5. 목표 달성 판정의 신뢰성
 
-  이를 위한 항등식과 부등식을 유도하고, 실제 wafer 데이터로 적용 방법을 보인다.
+  - 이를 위한 항등식과 부등식을 유도한다.
+  - 실제 wafer 데이터로 적용 방법을 보인다.
 - **Non-Goal**:
   - 본 문서는 centered R² 를 사용한다. R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로, 이 문서의 항등식과 부등식이 성립하지 않는다.
   - 동일한 측정 위치를 갖는 wafer 데이터를 대상으로 한다.
