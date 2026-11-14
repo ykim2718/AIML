@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 123 | Created: 2026-11-09 | Updated: 2026-11-14 21:41 UTC
+Version 124 | Created: 2026-11-09 | Updated: 2026-11-14 21:42 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -464,7 +464,7 @@ wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 �
 
 ### 7.3 Error Reduction and Feasibility of Targets
 
-예측 정확도의 목표값은 현재 예측의 R² 에서 시작해, 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인하는 차례로 정한다.
+목표 조합이 주어지면, 현재 예측의 R² 에서 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인한다.
 
 평가에 쓰는 측정값이 정해져 SST 가 바뀌지 않으면, 현재의 R2_all 에서 목표 $`T_{\mathrm{all}}`$ 에 닿으려면 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 아래 식 (46) 의 비율 $`\eta_{\mathrm{all}}`$ 만큼 줄여야 한다. R2_avgw, R2_avgn, R2_minn 의 $`\eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ 도 같은 꼴로 그 집계 수준의 SSE 를 줄일 비율이다.
 
@@ -510,14 +510,14 @@ Table 5. Prediction error that each target constrains
 | T_avgw | 식 (40), 식 (45) | wafer 평균 예측 오차                 |
 | T_minn | 식 (42)          | 최악 측정 위치의 오차                |
 
-목표 조합은 아래 차례로 정하고 이룬다. 측정 데이터의 예는 [Appendix D](#appendix-d-target-setting-with-measured-data) 에 있다.
+주어진 목표 조합은 아래 차례로 분석한다. 측정 데이터의 예는 [D.3](#d3-conditions-for-the-targets) 에 있다.
 
 - 측정값으로 $`\lambda, \omega_j, \mathrm{SST}_{\mathrm{all}}, \mathrm{SST}_{\mathrm{avgw}}`$ 를 구한다.
 - 현재 예측의 네 R² 에서 식 (46) 으로 목표마다 줄여야 할 SSE 의 비율을 구한다.
 - 식 (47), 식 (48) 로 $`T_{\mathrm{all}}`$ 을 다른 R² 로 환산해, 어느 목표가 가장 엄격한지를 본다.
-- 식 (39) 와 식 (49) 로 $`q`$ 의 목표를 $`(1 - T_{\mathrm{all}}) / (1 - \lambda)`$ 와 $`N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 가운데 작은 값으로 잡는다. $`q`$ 가 이 값 이하이면 R2_all 과 R2_avgn 의 목표를 오차의 분포와 무관하게 이룬다.
-- 식 (40) 과 식 (45) 로 wafer 평균 예측의 FVU 의 목표를 잡는다.
-- 현재 예측의 $`E`$ 를 성분으로 나누어, $`q`$ 의 목표에 닿으려면 어느 성분을 줄여야 하는지를 정한다.
+- 식 (39) 와 식 (49) 로 $`q`$ 가 넘지 않아야 할 값을 $`(1 - T_{\mathrm{all}}) / (1 - \lambda)`$ 와 $`N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 가운데 작은 값으로 구한다. $`q`$ 가 이 값 이하이면 R2_all 과 R2_avgn 의 목표를 오차의 분포와 무관하게 이룬다.
+- 식 (40) 과 식 (45) 로 wafer 평균 예측의 FVU 가 넘지 않아야 할 값을 구한다.
+- 현재 예측의 $`E`$ 를 성분으로 나누어, $`q`$ 가 그 값에 닿으려면 어느 성분을 줄여야 하는지를 본다.
 - 식 (42) 로 R2_minn 의 목표가 허용하는 $`\gamma_n`$ 의 위쪽 한계를 구하고 현재의 $`\gamma_n`$ 과 견준다. 이때 $`\gamma_n`$ 은 최악 측정 위치의 오차를 설명하는 진단 지표로 쓴다.
 
 ### 7.4 Target Reliability
