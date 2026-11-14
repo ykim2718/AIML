@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 130 | Created: 2026-11-09 | Updated: 2026-11-14 22:06 UTC
+Version 131 | Created: 2026-11-09 | Updated: 2026-11-14 22:10 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -466,9 +466,13 @@ wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 �
 
 목표값은 현재 예측에서 목표에 닿는 방법, 곧 개선된 예측의 오차가 어떻게 줄어드는지를 가정해야 정해진다. 아래 네 방법은 입력 하나와 도달 방법의 가정 하나로 네 목표값을 함께 정하며, 방법 1 부터 방법 3 은 목표값을 식 (33) 부터 식 (36) 의 FVU 로 구하므로 그 조합은 식 (39) 부터 식 (42) 를 함께 충족한다.
 
+- 방법 1 은 T_all 을 입력으로 받아 T_avgw, T_avgn, T_minn 을 구한다.
+- 방법 2 와 방법 4 는 네 목표값을 모두 같은 꼴로 구한다.
+- 방법 3 은 T_all, T_avgn, T_minn 을 구하고, T_avgw 는 현재의 R2_avgw 로 둔다.
+
 #### Method 1. Conversion of T_all
 
-방법 1 은 R2_all 의 목표값 T_all 을 입력으로 받아, 나머지 세 R² 의 목표값 T_avgw, T_avgn, T_minn 을 구한다.
+R2_all 의 목표값 T_all 을 입력으로 받아, 나머지 세 R² 의 목표값 T_avgw, T_avgn, T_minn 을 구한다.
 
 $`\kappa`$ 와 $`\delta`$ 가 현재 예측의 값으로 유지된다고 하면, R2_all 의 값에 대응하는 R2_avgw 와 R2_avgn 은 아래 식 (46), 식 (47) 이다. 유도는 [B.5](#b5-target-conditions) 에 있다.
 
@@ -491,7 +495,7 @@ R2_all 의 목표 $`T_{\mathrm{all}}`$ 을 주고, $`\kappa`$, $`\delta`$, $`\ga
 
 #### Method 2. Common SSE Reduction
 
-방법 2 는 네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴의 식으로 구한다.
+네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴의 식으로 구한다.
 
 평가에 쓰는 측정값이 정해져 SST 가 바뀌지 않으면, 현재의 R2_all 에서 목표 $`T_{\mathrm{all}}`$ 에 닿으려면 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 아래 식 (48) 의 비율 $`\eta_{\mathrm{all}}`$ 만큼 줄여야 한다. R2_avgw, R2_avgn, R2_minn 의 $`\eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ 도 같은 꼴로 그 집계 수준의 SSE 를 줄일 비율이다.
 
@@ -514,7 +518,7 @@ R2_all 의 목표 $`T_{\mathrm{all}}`$ 을 주고, $`\kappa`$, $`\delta`$, $`\ga
 
 #### Method 3. Error Component Removal
 
-방법 3 은 측정 위치 예측의 오차로 정해지는 세 R² 의 목표값 T_all, T_avgn, T_minn 을 구한다. Wafer 평균 예측값을 따로 구하면 T_avgw 는 현재의 R2_avgw 로 둔다.
+측정 위치 예측의 오차로 정해지는 세 R² 의 목표값 T_all, T_avgn, T_minn 을 구한다. Wafer 평균 예측값을 따로 구하면 T_avgw 는 현재의 R2_avgw 로 둔다.
 
 없앨 오차 성분 하나를 주고, 개선된 예측이 그 성분만 0 으로 만들고 나머지 오차는 그대로 둔다고 가정한다. 측정 위치마다 wafer 사이에서 일정한 오차는 아래 mean error (offset) 이다.
 
@@ -548,7 +552,7 @@ Mean error (offset) 성분을 없앤다고 가정하면, R2_all 의 목표값은
 
 #### Method 4. Bootstrap Lower Quantile
 
-방법 4 는 네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴로 구한다.
+네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴로 구한다.
 
 이 문서의 R² 는 주어진 wafer $`M`$ 장으로 구한 값이어서, 같은 예측도 다른 wafer 로 구하면 값이 달라진다. 그래서 목표를 정할 때는 R² 의 표본 분포를 wafer bootstrap 으로 구해, 목표를 충족할 확률과 R² 의 아래쪽 분위수를 함께 본다.
 
