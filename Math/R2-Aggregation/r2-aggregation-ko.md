@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 120 | Created: 2026-11-09 | Updated: 2026-11-14 01:22 UTC
+Version 121 | Created: 2026-11-09 | Updated: 2026-11-14 20:44 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -21,6 +21,7 @@ Version 120 | Created: 2026-11-09 | Updated: 2026-11-14 01:22 UTC
   - [8.2 Analysis of Variance](#82-analysis-of-variance)
   - [8.3 Multi-objective Optimization](#83-multi-objective-optimization)
   - [8.4 Group Distributionally Robust Optimization](#84-group-distributionally-robust-optimization)
+- [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Mathematical Derivations](#appendix-b-mathematical-derivations)
   - [B.1 Sums of Squares](#b1-sums-of-squares)
@@ -552,7 +553,7 @@ R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 �
 
 ### 8.1 Multi-output R2
 
-측정 위치 하나를 output 하나로, wafer 한 장을 sample 하나로 두면, scikit-learn 의 `r2_score` 가 `multioutput` 인자로 제공하는 세 집계는 이 문서의 지표와 아래 Table 6 처럼 대응한다.
+측정 위치 하나를 output 하나로, wafer 한 장을 sample 하나로 두면, scikit-learn 의 `r2_score` [[1](#ref-1)] 가 `multioutput` 인자로 제공하는 세 집계는 이 문서의 지표와 아래 Table 6 처럼 대응한다.
 
 Table 6. scikit-learn multioutput options and the R2 of this document
 
@@ -567,7 +568,7 @@ Table 6. scikit-learn multioutput options and the R2 of this document
 
 ### 8.2 Analysis of Variance
 
-식 (31) 은 측정 위치를 집단으로 보는 일원 분산분석의 제곱합 분해이며, 새로운 통계 이론이 아니라 그 분해를 wafer 와 측정 위치의 구조에 적용한 결과이다. 반도체 공정의 통계 방법을 다루는 NIST/SEMATECH e-Handbook of Statistical Methods 가 이 분해를 다룬다.
+식 (31) 은 측정 위치를 집단으로 보는 일원 분산분석의 제곱합 분해이며, 새로운 통계 이론이 아니라 그 분해를 wafer 와 측정 위치의 구조에 적용한 결과이다. 반도체 공정의 통계 방법을 다루는 NIST/SEMATECH e-Handbook of Statistical Methods [[2](#ref-2)] 가 이 분해를 다룬다.
 
 ### 8.3 Multi-objective Optimization
 
@@ -591,7 +592,16 @@ Table 6. scikit-learn multioutput options and the R2 of this document
 ```
 
 - 식 (16) 과 식 (14) 로 $`1 - R^2_{\mathrm{minn}} = \max_j \mathrm{SSE}_j / \mathrm{SST}_j`$ 이므로, 식 (54) 는 R2_minn 을 최대화하는 것과 동치이다.
-- Group DRO 의 대표 연구는 Sagawa, Koh, Hashimoto, Liang 의 ICLR 2020 논문이며, 원래의 Group DRO 는 R² 가 아닌 손실을 쓴다.
+- Group DRO 의 대표 연구는 Sagawa, Koh, Hashimoto, Liang 의 논문 [[3](#ref-3)] 이며, 원래의 Group DRO 는 R² 가 아닌 손실을 쓴다.
+
+## References
+
+<a id="ref-1"></a>
+[1] scikit-learn developers. [sklearn.metrics.r2_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html). *scikit-learn 1.9.1 documentation*.<br>
+<a id="ref-2"></a>
+[2] NIST/SEMATECH. [7.4.3.4. One-way ANOVA calculations](https://www.itl.nist.gov/div898/handbook/prc/section4/prc434.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*. National Institute of Standards and Technology.<br>
+<a id="ref-3"></a>
+[3] Sagawa, S., Koh, P. W., Hashimoto, T. B., & Liang, P. (2019). [Distributionally Robust Neural Networks for Group Shifts: On the Importance of Regularization for Worst-Case Generalization](https://doi.org/10.48550/arXiv.1911.08731). *arXiv preprint* arXiv:1911.08731.
 
 ---
 
