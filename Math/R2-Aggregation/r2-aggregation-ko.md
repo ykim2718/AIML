@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 122 | Created: 2026-11-09 | Updated: 2026-11-14 20:54 UTC
+Version 123 | Created: 2026-11-09 | Updated: 2026-11-14 21:41 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,7 +14,7 @@ Version 122 | Created: 2026-11-09 | Updated: 2026-11-14 20:54 UTC
 - [7. Application](#7-application)
   - [7.1 Breaking Conditions](#71-breaking-conditions)
   - [7.2 Wafer Average Prediction Structure](#72-wafer-average-prediction-structure)
-  - [7.3 Setting Targets](#73-setting-targets)
+  - [7.3 Error Reduction and Feasibility of Targets](#73-error-reduction-and-feasibility-of-targets)
   - [7.4 Target Reliability](#74-target-reliability)
   - [7.5 Target Setting Methods](#75-target-setting-methods)
 - [8. Related Work](#8-related-work)
@@ -462,7 +462,7 @@ wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 �
 - 식 (45): 오른쪽 변의 $`\mathrm{SST}_{\mathrm{all}} / (N\, \mathrm{SST}_{\mathrm{avgw}})`$ 는 측정값만으로 정해진다. R2_all 의 목표를 이루면 R2_avgw 는 $`1 - \mathrm{SST}_{\mathrm{all}} (1 - T_{\mathrm{all}}) / (N\, \mathrm{SST}_{\mathrm{avgw}})`$ 이상이 보장되며, 이 값이 $`T_{\mathrm{avgw}}`$ 이상이면 R2_avgw 의 목표는 R2_all 의 목표를 따라 이루어진다.
 - wafer 평균을 따로 예측하면 식 (45) 는 일반적으로 성립하지 않는다. 그때 R2_avgw 의 목표는 식 (40) 대로 wafer 평균 예측의 오차에만 걸리므로, 측정 위치 예측과 따로 목표와 개선량을 정한다.
 
-### 7.3 Setting Targets
+### 7.3 Error Reduction and Feasibility of Targets
 
 예측 정확도의 목표값은 현재 예측의 R² 에서 시작해, 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인하는 차례로 정한다.
 
