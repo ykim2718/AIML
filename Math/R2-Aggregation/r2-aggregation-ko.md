@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 108 | Created: 2026-11-09 | Updated: 2026-11-14 00:45 UTC
+Version 109 | Created: 2026-11-09 | Updated: 2026-11-14 00:51 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -7,13 +7,16 @@ Version 108 | Created: 2026-11-09 | Updated: 2026-11-14 00:45 UTC
 - [4. Definitions](#4-definitions)
 - [5. Practical Interpretation](#5-practical-interpretation)
   - [5.1 Core Identities](#51-core-identities)
-  - [5.2 Differences](#52-differences)
-  - [5.3 Inequalities](#53-inequalities)
-  - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
+  - [5.2 Target Constraints](#52-target-constraints)
+  - [5.3 Differences](#53-differences)
+  - [5.4 Inequalities](#54-inequalities)
+  - [5.5 Meaning of the Quantities](#55-meaning-of-the-quantities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
   - [7.1 Breaking Conditions](#71-breaking-conditions)
-  - [7.2 Setting Targets](#72-setting-targets)
+  - [7.2 Wafer Average Prediction Structure](#72-wafer-average-prediction-structure)
+  - [7.3 Setting Targets](#73-setting-targets)
+  - [7.4 Target Reliability](#74-target-reliability)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Mathematical Derivations](#appendix-b-mathematical-derivations)
   - [B.1 Sums of Squares](#b1-sums-of-squares)
@@ -46,34 +49,35 @@ Version 108 | Created: 2026-11-09 | Updated: 2026-11-14 00:45 UTC
 
 Table 1. Symbols
 
-| Symbol                                                     | Meaning                                                                                                                                                   | Scope                        | Shape   | Assumption                                                           |
-| :--------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------: | :-----: | :------------------------------------------------------------------: |
-| $`M`$                                                      | wafer 수                                                                                                                                                  | -                            | integer | $`M \ge 2`$                                                          |
-| $`N`$                                                      | wafer 한 장에서 측정하는 위치의 수                                                                                                                        | -                            | integer | $`N \ge 2`$                                                          |
-| $`T`$                                                      | 전체 (all) 측정값의 개수 $`MN`$                                                                                                                           | -                            | integer | -                                                                    |
-| $`i`$                                                      | wafer 번호                                                                                                                                                | -                            | integer | $`1 \le i \le M`$                                                    |
-| $`j`$, $`k`$                                               | 측정 위치의 번호                                                                                                                                          | -                            | integer | $`1 \le j, k \le N`$                                                 |
-| $`y_{ij}`$                                                 | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                                                                                | per wafer,<br>per location   | scalar  | -                                                                    |
-| $`\hat{y}_{ij}`$                                           | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                                                                                             | per wafer,<br>per location   | scalar  | -                                                                    |
-| $`e_{ij}`$                                                 | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                                                       | per wafer,<br>per location   | scalar  | -                                                                    |
-| $`\bar{y}`$                                                | 측정값 $`T`$ 개의 평균                                                                                                                                    | all wafers,<br>all locations | scalar  | -                                                                    |
-| $`\bar{y}_{i\cdot}`$                                       | wafer $`i`$ 의 wafer 평균 (average of wafer, avgw)                                                                                                        | per wafer,<br>all locations  | scalar  | -                                                                    |
-| $`\hat{y}_{iw}`$                                           | wafer $`i`$ 의 wafer 평균에 대한 예측값                                                                                                                   | per wafer,<br>all locations  | scalar  | -                                                                    |
-| $`e_{iw}`$                                                 | wafer 평균에서 그 예측값을 뺀 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                                                                    | per wafer,<br>all locations  | scalar  | -                                                                    |
-| $`\bar{y}_{\cdot j}`$                                      | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                                                         | per location,<br>all wafers  | scalar  | -                                                                    |
-| $`\mathrm{SST}`$, $`\mathrm{SSE}`$                         | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                                                      | 아래첨자에 따름              | scalar  | -                                                                    |
-| $`R^2_j`$                                                  | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)                                           | per location,<br>all wafers  | scalar  | -                                                                    |
-| $`A`$                                                      | 측정 위치마다의 wafer 사이 변동 $`\mathrm{SST}_j`$ 의 합                                                                                                  | all wafers,<br>all locations | scalar  | $`A \gt 0`$                                                          |
-| $`B`$                                                      | 측정 위치 평균이 서로 달라 생기는 제곱합                                                                                                                  | all wafers,<br>all locations | scalar  | $`B \ge 0`$                                                          |
-| $`E`$                                                      | 측정 위치마다의 오차 제곱합 $`\mathrm{SSE}_j`$ 의 합                                                                                                      | all wafers,<br>all locations | scalar  | $`E \ge 0`$                                                          |
-| $`\omega_j`$                                               | 측정 위치 $`j`$ 의 SST 가중치. $`\mathrm{SST}_j`$ 를 $`A`$ 로 나눈 값                                                                                     | per location,<br>all wafers  | scalar  | $`\sum_j \omega_j = 1`$                                              |
-| $`R^2_{\mathrm{wavgn}}`$                                   | 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 (SST-weighted R2 average over $`N`$ locations, wavgn)                   | all wafers,<br>all locations | scalar  | -                                                                    |
-| $`q`$                                                      | SST 가중 FVU (weighted FVU). FVU (fraction of variance unexplained) 는 측정값의 평균을 기준으로 정규화한 제곱예측오차 비율이다. $`E`$ 를 $`A`$ 로 나눈 값 | all wafers,<br>all locations | scalar  | $`q \ge 0`$                                                          |
-| $`\lambda`$                                                | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 (location pattern fraction)                                                    | all wafers,<br>all locations | scalar  | $`0 \le \lambda \lt 1`$                                              |
-| $`\kappa`$                                                 | 오차 비 (error ratio). wafer 평균 예측의 FVU 를 SST 가중 FVU $`q`$ 로 나눈 값                                                                             | all wafers,<br>all locations | scalar  | $`\kappa \ge 0`$, $`E \gt 0`$ 일 때만 정의                           |
-| $`\delta`$                                                 | $`R^2_{\mathrm{wavgn}}`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 뺀 값                                                                                            | all wafers,<br>all locations | scalar  | -                                                                    |
-| $`\gamma_n`$                                               | 오차 집중도 (error concentration). $`1 - R^2_{\mathrm{minn}}`$ 을 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값                                                | all wafers,<br>all locations | scalar  | $`1 \le \gamma_n \le N`$, $`R^2_{\mathrm{avgn}} \lt 1`$ 일 때만 정의 |
-| $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$ | R2_all, R2_avgw, R2_avgn, R2_minn 의 목표값 (target)                                                                                                               | -                            | scalar  | 1 이하                                                               |
+| Symbol                                                                                    | Meaning                                                                                                                                                   | Scope                        | Shape   | Assumption                                                           |
+| :---------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------: | :-----: | :------------------------------------------------------------------: |
+| $`M`$                                                                                     | wafer 수                                                                                                                                                  | -                            | integer | $`M \ge 2`$                                                          |
+| $`N`$                                                                                     | wafer 한 장에서 측정하는 위치의 수                                                                                                                        | -                            | integer | $`N \ge 2`$                                                          |
+| $`T`$                                                                                     | 전체 (all) 측정값의 개수 $`MN`$                                                                                                                           | -                            | integer | -                                                                    |
+| $`i`$                                                                                     | wafer 번호                                                                                                                                                | -                            | integer | $`1 \le i \le M`$                                                    |
+| $`j`$, $`k`$                                                                              | 측정 위치의 번호                                                                                                                                          | -                            | integer | $`1 \le j, k \le N`$                                                 |
+| $`y_{ij}`$                                                                                | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                                                                                                                | per wafer,<br>per location   | scalar  | -                                                                    |
+| $`\hat{y}_{ij}`$                                                                          | wafer $`i`$ 의 측정 위치 $`j`$ 에 대한 예측값                                                                                                             | per wafer,<br>per location   | scalar  | -                                                                    |
+| $`e_{ij}`$                                                                                | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                                                                                                                       | per wafer,<br>per location   | scalar  | -                                                                    |
+| $`\bar{y}`$                                                                               | 측정값 $`T`$ 개의 평균                                                                                                                                    | all wafers,<br>all locations | scalar  | -                                                                    |
+| $`\bar{y}_{i\cdot}`$                                                                      | wafer $`i`$ 의 wafer 평균 (average of wafer, avgw)                                                                                                        | per wafer,<br>all locations  | scalar  | -                                                                    |
+| $`\hat{y}_{iw}`$                                                                          | wafer $`i`$ 의 wafer 평균에 대한 예측값                                                                                                                   | per wafer,<br>all locations  | scalar  | -                                                                    |
+| $`e_{iw}`$                                                                                | wafer 평균에서 그 예측값을 뺀 오차 $`\bar{y}_{i\cdot} - \hat{y}_{iw}`$                                                                                    | per wafer,<br>all locations  | scalar  | -                                                                    |
+| $`\bar{y}_{\cdot j}`$                                                                     | 측정 위치 $`j`$ 에서 wafer $`M`$ 장의 측정값 평균                                                                                                         | per location,<br>all wafers  | scalar  | -                                                                    |
+| $`\mathrm{SST}`$, $`\mathrm{SSE}`$                                                        | 평균에서 벗어난 제곱합 (total sum of squares) 과 오차 제곱합 (sum of squared errors)                                                                      | 아래첨자에 따름              | scalar  | -                                                                    |
+| $`R^2_j`$                                                                                 | 측정 위치 $`j`$ 에서 wafer $`M`$ 장으로 구한 R². $`N`$ 곳에서 산술 평균하면 avgn (average over $`N`$ locations)                                           | per location,<br>all wafers  | scalar  | -                                                                    |
+| $`A`$                                                                                     | 측정 위치마다의 wafer 사이 변동 $`\mathrm{SST}_j`$ 의 합                                                                                                  | all wafers,<br>all locations | scalar  | $`A \gt 0`$                                                          |
+| $`B`$                                                                                     | 측정 위치 평균이 서로 달라 생기는 제곱합                                                                                                                  | all wafers,<br>all locations | scalar  | $`B \ge 0`$                                                          |
+| $`E`$                                                                                     | 측정 위치마다의 오차 제곱합 $`\mathrm{SSE}_j`$ 의 합                                                                                                      | all wafers,<br>all locations | scalar  | $`E \ge 0`$                                                          |
+| $`\omega_j`$                                                                              | 측정 위치 $`j`$ 의 SST 가중치. $`\mathrm{SST}_j`$ 를 $`A`$ 로 나눈 값                                                                                     | per location,<br>all wafers  | scalar  | $`\sum_j \omega_j = 1`$                                              |
+| $`R^2_{\mathrm{wavgn}}`$                                                                  | 측정 위치마다 구한 $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값 (SST-weighted R2 average over $`N`$ locations, wavgn)                   | all wafers,<br>all locations | scalar  | -                                                                    |
+| $`q`$                                                                                     | SST 가중 FVU (weighted FVU). FVU (fraction of variance unexplained) 는 측정값의 평균을 기준으로 정규화한 제곱예측오차 비율이다. $`E`$ 를 $`A`$ 로 나눈 값 | all wafers,<br>all locations | scalar  | $`q \ge 0`$                                                          |
+| $`\lambda`$                                                                               | 측정 위치 평균의 차이가 $`\mathrm{SST}_{\mathrm{all}}`$ 에서 차지하는 비율 (location pattern fraction)                                                    | all wafers,<br>all locations | scalar  | $`0 \le \lambda \lt 1`$                                              |
+| $`\kappa`$                                                                                | 오차 비 (error ratio). wafer 평균 예측의 FVU 를 SST 가중 FVU $`q`$ 로 나눈 값                                                                             | all wafers,<br>all locations | scalar  | $`\kappa \ge 0`$, $`E \gt 0`$ 일 때만 정의                           |
+| $`\delta`$                                                                                | $`R^2_{\mathrm{wavgn}}`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 뺀 값                                                                                            | all wafers,<br>all locations | scalar  | -                                                                    |
+| $`\gamma_n`$                                                                              | 오차 집중도 (error concentration). $`1 - R^2_{\mathrm{minn}}`$ 을 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값                                                | all wafers,<br>all locations | scalar  | $`1 \le \gamma_n \le N`$, $`R^2_{\mathrm{avgn}} \lt 1`$ 일 때만 정의 |
+| $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$             | R2_all, R2_avgw, R2_avgn, R2_minn 의 목표값 (target)                                                                                                      | -                            | scalar  | 1 이하                                                               |
+| $`\eta_{\mathrm{all}}, \eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ | 현재의 R² 에서 목표값에 닿으려면 그 집계 수준의 SSE 를 줄여야 하는 비율                                                                                   | -                            | scalar  | 1 이하                                                               |
 
 🥑 아래첨자의 점 ($`\cdot`$) 은 점 표기 (dot notation) 로, 점으로 바꾼 첨자에 대해 모두 더했다는 뜻이다. 예를 들어 $`y_{i\cdot} = \sum_{j} y_{ij}`$ 는 wafer $`i`$ 의 측정값 $`N`$ 개를 모두 더한 값이다. 점 표기에 bar 를 얹으면 합 대신 평균이 되어, $`\bar{y}_{i\cdot}`$ 는 $`j`$ 에 대한 평균이고 $`\bar{y}_{\cdot j}`$ 는 $`i`$ 에 대한 평균이다.
 
@@ -302,66 +306,97 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 - 식 (36): $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 SST 가중치 $`\omega_j`$ 로 평균한 값이다.
 - 식 (37): $`\delta`$ 는 측정 위치마다의 $`\mathrm{SST}_j`$ 와 $`R^2_j`$ 가 함께 움직이는 정도이다. $`\mathrm{SST}_j`$ 가 큰 측정 위치에서 $`R^2_j`$ 도 큰 경향이 있으면 $`\delta \gt 0`$ 이다. $`\mathrm{SST}_j`$ 가 모두 같으면 $`\delta = 0`$ 이지만, 이것은 충분조건일 뿐이다. 예를 들어 $`R^2_j`$ 가 모두 같으면 $`\mathrm{SST}_j`$ 가 달라도 $`\delta = 0`$ 이다.
 
-### 5.2 Differences
+### 5.2 Target Constraints
 
-세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 사이의 차이는 식 (33), 식 (34), 식 (35) 에서 아래 식 (38) 부터 식 (42) 로 바로 나온다.
+네 R² 의 목표값은 그 집계 수준의 SSE 를 SST 로 나눈 값, 곧 FVU 의 위쪽 한계와 동치이며, Table 2 로 이 한계를 $`q, \lambda, \kappa, \delta, \gamma_n`$ 의 조건으로 바꾼다.
+
+> **Proposition: Joint R2 target constraints**<br>
+> R2_all, R2_avgw, R2_avgn, R2_minn 의 목표값을 $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$ 이라 하자. 네 목표를 함께 충족하는 것은 아래 네 조건을 함께 충족하는 것과 동치이다. 각 조건은 그 집계 수준에서 SSE 를 SST 로 나눈 값의 위쪽 한계이다.
+> ```math
+> R^2_{\mathrm{all}} \ge T_{\mathrm{all}} \;\Leftrightarrow\; \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}} \le 1 - T_{\mathrm{all}} \;\Leftrightarrow\; (1 - \lambda)\, q \le 1 - T_{\mathrm{all}}
+> \hspace{19em} (38)
+> ```
+> ```math
+> R^2_{\mathrm{avgw}} \ge T_{\mathrm{avgw}} \;\Leftrightarrow\; \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \le 1 - T_{\mathrm{avgw}} \;\Leftrightarrow\; \kappa\, q \le 1 - T_{\mathrm{avgw}}
+> \hspace{19em} (39)
+> ```
+> ```math
+> R^2_{\mathrm{avgn}} \ge T_{\mathrm{avgn}} \;\Leftrightarrow\; \sum_{j=1}^{N} \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \le N (1 - T_{\mathrm{avgn}}) \;\Leftrightarrow\; q + \delta \le 1 - T_{\mathrm{avgn}}
+> \hspace{19em} (40)
+> ```
+> ```math
+> R^2_{\mathrm{minn}} \ge T_{\mathrm{minn}} \;\Leftrightarrow\; \max_{j} \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \le 1 - T_{\mathrm{minn}} \;\Leftrightarrow\; \gamma_n (q + \delta) \le 1 - T_{\mathrm{minn}}
+> \hspace{19em} (41)
+> ```
+
+증명은 [B.5](#b5-target-conditions) 에 있다.
+
+- 식 (38): $`\lambda`$ 는 측정값만으로 정해지므로, R2_all 의 목표는 SST 가중 FVU $`q`$ 의 위쪽 한계 $`(1 - T_{\mathrm{all}}) / (1 - \lambda)`$ 하나로 바뀐다.
+- 식 (39): R2_avgw 의 목표는 wafer 평균 예측의 FVU 에만 걸리며, 측정 위치 예측의 오차와 따로 정해진다.
+- 식 (40): R2_avgn 의 목표는 측정 위치 FVU 의 합에 대한 오차 예산 (error budget) $`N (1 - T_{\mathrm{avgn}})`$ 이다. 이 예산은 측정 위치 사이에서 나누어 쓰이므로, 한 측정 위치의 FVU 가 커도 다른 측정 위치의 FVU 가 작으면 충족된다.
+- 식 (41): R2_minn 의 목표는 측정 위치 FVU 의 최댓값에 걸려, 식 (40) 의 예산을 한 측정 위치가 많이 쓰는 것을 막는다. $`\gamma_n \ge 1`$ 이므로 측정 위치 FVU 의 평균이 $`1 - T_{\mathrm{minn}}`$ 이하여야 하고, 측정 위치 FVU 의 평균이 $`1 - T_{\mathrm{avgn}}`$ 일 때 $`\gamma_n`$ 은 $`(1 - T_{\mathrm{minn}}) / (1 - T_{\mathrm{avgn}})`$ 이하여야 한다.
+- $`\lambda`$ 는 측정값만으로 정해지고, $`\kappa, \delta, \gamma_n`$ 은 예측에 따라 바뀐다. 그래서 네 조건은 주어진 예측이 목표를 충족하는지를 정확히 판정하지만, 목표를 충족하는 예측이 있는지까지 보장하지는 않는다.
+
+### 5.3 Differences
+
+세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 사이의 차이는 식 (33), 식 (34), 식 (35) 에서 아래 식 (42) 부터 식 (46) 으로 바로 나온다.
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \lambda\, q
-\hspace{19em} (38)
+\hspace{19em} (42)
 ```
 
 ```math
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{wavgn}} = (1 - \kappa)\, q
-\hspace{19em} (39)
+\hspace{19em} (43)
 ```
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{avgw}} = (\kappa - 1 + \lambda)\, q
-\hspace{19em} (40)
+\hspace{19em} (44)
 ```
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{avgn}} = \lambda\, q + \delta
-\hspace{19em} (41)
+\hspace{19em} (45)
 ```
 
 ```math
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
-\hspace{19em} (42)
+\hspace{19em} (46)
 ```
 
-### 5.3 Inequalities
+### 5.4 Inequalities
 
-$`\lambda \ge 0`$ 이고 $`q \ge 0`$ 이므로, $`q \gt 0`$ 일 때 식 (38) 부터 식 (42) 의 각 차이의 부호에서 아래 Table 3 의 필요충분조건이 나온다.
+$`\lambda \ge 0`$ 이고 $`q \ge 0`$ 이므로, $`q \gt 0`$ 일 때 식 (42) 부터 식 (46) 의 각 차이의 부호에서 아래 Table 3 의 필요충분조건이 나온다.
 
 Table 3. Necessary and sufficient conditions among the R2
 
 | Inequality                                       | Condition                     | From    |
 | :----------------------------------------------: | :---------------------------: | :-----: |
-| $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{wavgn}}`$  | 언제나                        | 식 (38) |
-| $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}}`$ | $`\kappa \le 1`$              | 식 (39) |
-| $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}}`$   | $`\kappa \ge 1 - \lambda`$    | 식 (40) |
-| $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgn}}`$   | $`\delta \ge -\lambda q`$     | 식 (41) |
-| $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{avgn}}`$  | $`\delta \ge (\kappa - 1) q`$ | 식 (42) |
+| $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{wavgn}}`$  | 언제나                        | 식 (42) |
+| $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{wavgn}}`$ | $`\kappa \le 1`$              | 식 (43) |
+| $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgw}}`$   | $`\kappa \ge 1 - \lambda`$    | 식 (44) |
+| $`R^2_{\mathrm{all}} \ge R^2_{\mathrm{avgn}}`$   | $`\delta \ge -\lambda q`$     | 식 (45) |
+| $`R^2_{\mathrm{avgw}} \ge R^2_{\mathrm{avgn}}`$  | $`\delta \ge (\kappa - 1) q`$ | 식 (46) |
 
 - R2_all, R2_avgw, R2_avgn 사이의 세 쌍은 아래 세 행이며, 세 쌍 모두 조건이 필요충분조건이다. $`\delta \lt 0`$ 이어도 $`\lambda q`$ 나 $`(1 - \kappa) q`$ 가 충분히 크면 $`R^2_{\mathrm{all}}`$ 이나 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{avgn}}`$ 이상이다.
-- 식 (40) 은 $`\kappa`$ 로 나누지 않으므로 $`\kappa = 0`$ 일 때도 성립한다.
-- $`q = 0`$ 이면 식 (38), 식 (39), 식 (40) 의 차이가 모두 0 이다.
+- 식 (44) 는 $`\kappa`$ 로 나누지 않으므로 $`\kappa = 0`$ 일 때도 성립한다.
+- $`q = 0`$ 이면 식 (42), 식 (43), 식 (44) 의 차이가 모두 0 이다.
 
-측정 위치 R² 의 최솟값과 최댓값은 아래 식 (43), 식 (44) 로 범위가 정해진다.
+측정 위치 R² 의 최솟값과 최댓값은 아래 식 (47), 식 (48) 로 범위가 정해진다.
 
 ```math
 R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{minn}}
-\hspace{19em} (43)
+\hspace{19em} (47)
 ```
 
 ```math
 R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
-\hspace{19em} (44)
+\hspace{19em} (48)
 ```
 
-- 식 (43), 식 (44): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`R^2_{\mathrm{minn}}`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
+- 식 (47), 식 (48): $`R^2_{\mathrm{wavgn}}`$ 과 $`R^2_{\mathrm{avgn}}`$ 은 모두 $`R^2_j`$ 의 평균이므로 $`R^2_j`$ 의 최솟값과 최댓값 사이에 있다. 그래서 $`R^2_{\mathrm{minn}}`$ 의 위쪽 범위는 두 평균 가운데 작은 값이다.
 - $`R^2_{\mathrm{minn}}`$ 을 세 R² 와 $`R^2_{\mathrm{wavgn}}`$ 으로 정하는 항등식은 없다. 이 값들은 모두 측정 위치 SSE 와 SST 의 합이나 평균으로 정해져, 측정 위치 하나의 값을 가려내지 못한다. $`R^2_{\mathrm{minn}}`$ 은 식 (27) 의 오차 집중도 $`\gamma_n`$ 으로 $`R^2_{\mathrm{avgn}}`$ 과 이어지며, 그 범위는 식 (26) 과 식 (28) 이다.
 
 식 (26) 이 허용하는 $`R^2_{\mathrm{minn}}`$ 의 범위를 측정 위치의 수 $`N`$ 마다 그리면 아래 Fig 1 이다.
@@ -376,10 +411,10 @@ Fig 1. Range of the minimum location R2 for each number of locations
 
 Fig 1 은 같은 folder 의 [src/r2_minn_bounds_figure.py](src/r2_minn_bounds_figure.py) 로 그렸다. 이 script 는 $`N`$ = 2, 5, 13 마다 식 (26) 의 두 범위를 계산해 그림을 저장하며, 문서 folder 에서 `python3 src/r2_minn_bounds_figure.py` 로 실행한다.
 
-### 5.4 Meaning of the Quantities
+### 5.5 Meaning of the Quantities
 
 - **$`q`$**: 측정 위치 $`N`$ 곳의 wafer 사이 변동 $`A`$ 에 대한 측정 위치 오차 $`E`$ 의 비율이다. 세 R² 가 공통으로 쓰는 기준이다.
-- **$`\lambda`$**: 측정값만으로 정해지며 예측값과 무관하다. 식 (38) 의 차이 $`\lambda q`$ 는 예측이 측정 위치 패턴을 맞혔다는 뜻이 아니다. $`\mathrm{SST}_{\mathrm{all}}`$ 에는 측정 위치 평균의 차이 $`B`$ 가 더해지지만 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`E`$ 그대로여서, 두 R² 의 기준 변동이 달라서 생기는 차이다.
+- **$`\lambda`$**: 측정값만으로 정해지며 예측값과 무관하다. 식 (42) 의 차이 $`\lambda q`$ 는 예측이 측정 위치 패턴을 맞혔다는 뜻이 아니다. $`\mathrm{SST}_{\mathrm{all}}`$ 에는 측정 위치 평균의 차이 $`B`$ 가 더해지지만 $`\mathrm{SSE}_{\mathrm{all}}`$ 은 $`E`$ 그대로여서, 두 R² 의 기준 변동이 달라서 생기는 차이다.
 - **$`\kappa`$**: wafer 평균 예측의 FVU 와 SST 가중 FVU 의 비이다. $`1 - \kappa`$ 는 측정 위치 예측과 견주어 wafer 평균 예측의 정규화된 제곱오차가 얼마나 작은지를 나타내며, 양수이면 $`R^2_{\mathrm{avgw}}`$ 가 $`R^2_{\mathrm{wavgn}}`$ 보다 크다. Wafer 평균 예측을 따로 구하면 $`\kappa \gt 1`$ 일 수 있고, 그때 $`1 - \kappa`$ 는 음수이다.
 - **$`\delta`$**: 가중 평균과 산술 평균의 차이이며, 식 (37) 대로 $`\mathrm{SST}_j`$ 와 $`R^2_j`$ 가 함께 움직이는 정도로 정해진다.
 - **R² 의 뜻**: 이 문서의 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 이며, 그 집계 수준의 평균을 예측값으로 쓸 때와 견주어 제곱오차가 얼마나 줄었는지를 나타낸다. 측정값과 예측값의 상관계수를 제곱한 값과는 다르며, 예측이 평균보다 나쁘면 음수이다.
@@ -427,52 +462,57 @@ Table 5 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 ### 7.1 Breaking Conditions
 
 - Wafer 마다 측정 위치의 수나 위치가 다르면 식 (31) 과 식 (33) 은 지금의 정의 그대로는 일반적으로 쓸 수 없다. 측정 위치마다 관측된 wafer 수를 반영하면 SST 의 분해를 새로 정의할 수 있으며, 측정하지 않은 위치가 있는 생산 데이터로 넓힐 때 그 정의가 필요하다. 식 (31) 의 교차항이 0 이 되는 단계와 [C.1](#c1-aggregate-cross-location-correlation) 의 식에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
-- R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (33) 부터 식 (42) 가 모두 성립하지 않는다.
+- R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (33) 부터 식 (46) 이 모두 성립하지 않는다.
 - 어떤 측정 위치에서 측정값이 wafer 사이에서 같아 $`\mathrm{SST}_j = 0`$ 이면 $`R^2_j`$ 와 $`R^2_{\mathrm{avgn}}`$ 이 정의되지 않는다.
 
-### 7.2 Setting Targets
+### 7.2 Wafer Average Prediction Structure
 
-R2_all, R2_avgw, R2_avgn, R2_minn 의 목표값을 $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$ 이라 하면, Table 2 의 네 행에서 네 목표는 예측 오차에 대한 아래 식 (45) 부터 식 (47) 과 식 (48) 의 조건이 된다.
-
-```math
-q \le \frac{1 - T_{\mathrm{all}}}{1 - \lambda}
-\hspace{19em} (45)
-```
+wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 따로 구하느냐에 따라, R2_avgw 의 목표가 R2_all 의 목표에 묶이는지가 갈린다. wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \frac{1}{N} \sum_j \hat{y}_{ij}`$ 이면 wafer 마다 평균의 제곱이 제곱의 평균을 넘지 않아 $`\mathrm{SSE}_{\mathrm{avgw}} \le \mathrm{SSE}_{\mathrm{all}} / N`$ 이고, 아래 식 (49) 가 성립한다. 유도는 [C.2](#c2-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
 
 ```math
-\frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \le 1 - T_{\mathrm{avgw}}
-\hspace{19em} (46)
-```
-
-```math
-q + \delta \le 1 - T_{\mathrm{avgn}}
-\hspace{19em} (47)
-```
-
-```math
-\gamma_n (q + \delta) \le 1 - T_{\mathrm{minn}}
-\hspace{19em} (48)
-```
-
-- 식 (45): $`\lambda`$ 는 측정값만으로 정해지므로, R2_all 의 목표는 SST 가중 FVU $`q`$ 의 위쪽 한계 하나로 바뀐다.
-- 식 (46): R2_avgw 의 목표는 wafer 평균 예측의 FVU 에만 걸리며, 측정 위치 예측의 오차와 따로 정해진다.
-- 식 (47): R2_avgn 의 목표는 측정 위치 FVU 의 평균에 걸린다.
-- 식 (48): R2_minn 의 목표는 최악 측정 위치의 FVU 에 걸린다. $`\gamma_n \ge 1`$ 이므로 측정 위치 FVU 의 평균이 $`1 - T_{\mathrm{minn}}`$ 이하여야 하고, 측정 위치 FVU 의 평균이 $`1 - T_{\mathrm{avgn}}`$ 일 때 $`\gamma_n`$ 은 $`(1 - T_{\mathrm{minn}}) / (1 - T_{\mathrm{avgn}})`$ 이하여야 한다.
-
-네 조건을 함께 이룰 수 있는지는 $`q`$ 와 측정 위치 FVU 의 평균의 관계로 정해진다. $`q`$ 가 정해져도 측정 위치 FVU 의 평균은 오차가 어느 측정 위치에 있느냐에 따라 아래 식 (49) 의 범위에서 바뀌고, wafer 평균 예측값이 측정 위치 예측값의 평균이면 wafer 평균 예측의 FVU 는 아래 식 (50) 을 넘지 않는다. 식 (49) 의 유도는 [B.5](#b5-target-conditions) 에, 식 (50) 의 유도는 [C.2](#c2-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
-
-```math
-\frac{q}{N \max_{j} \omega_j} \le q + \delta \le \frac{q}{N \min_{j} \omega_j}
+1 - R^2_{\mathrm{avgw}} \le \frac{\mathrm{SST}_{\mathrm{all}}}{N\, \mathrm{SST}_{\mathrm{avgw}}} \left( 1 - R^2_{\mathrm{all}} \right)
 \hspace{19em} (49)
 ```
 
+- 식 (49): 오른쪽 변의 $`\mathrm{SST}_{\mathrm{all}} / (N\, \mathrm{SST}_{\mathrm{avgw}})`$ 는 측정값만으로 정해진다. R2_all 의 목표를 이루면 R2_avgw 는 $`1 - \mathrm{SST}_{\mathrm{all}} (1 - T_{\mathrm{all}}) / (N\, \mathrm{SST}_{\mathrm{avgw}})`$ 이상이 보장되며, 이 값이 $`T_{\mathrm{avgw}}`$ 이상이면 R2_avgw 의 목표는 R2_all 의 목표를 따라 이루어진다.
+- wafer 평균을 따로 예측하면 식 (49) 는 일반적으로 성립하지 않는다. 그때 R2_avgw 의 목표는 식 (39) 대로 wafer 평균 예측의 오차에만 걸리므로, 측정 위치 예측과 따로 목표와 개선량을 정한다.
+
+### 7.3 Setting Targets
+
+목표값은 현재 예측의 R² 에서 시작해, 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인하는 차례로 정한다.
+
+평가에 쓰는 측정값이 정해져 SST 가 바뀌지 않으면, 현재의 R2_all 에서 목표 $`T_{\mathrm{all}}`$ 에 닿으려면 $`\mathrm{SSE}_{\mathrm{all}}`$ 을 아래 식 (50) 의 비율 $`\eta_{\mathrm{all}}`$ 만큼 줄여야 한다. R2_avgw, R2_avgn, R2_minn 의 $`\eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ 도 같은 꼴로 그 집계 수준의 SSE 를 줄일 비율이다.
+
 ```math
-\frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \le \frac{N q}{1 + (N-1)\, \bar{r}_y}
+\eta_{\mathrm{all}} := \frac{T_{\mathrm{all}} - R^2_{\mathrm{all}}}{1 - R^2_{\mathrm{all}}}
 \hspace{19em} (50)
 ```
 
-- 식 (49): R2_all 의 목표로 $`q`$ 를 줄여도, 식 (49) 의 위쪽 끝이 $`1 - T_{\mathrm{avgn}}`$ 보다 크면 오차가 $`\omega_j`$ 가 작은 측정 위치에 몰릴 때 R2_avgn 의 목표를 이루지 못한다. $`q \le N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 이면 오차가 어느 측정 위치에 있어도 이룬다.
-- 식 (45) 부터 식 (50) 의 오른쪽 변에 쓰인 $`\lambda, \omega_j, \bar{r}_y`$ 는 측정값만으로 정해지므로, 목표 조합이 요구하는 오차의 크기는 예측을 고치기 전에 구할 수 있다.
+- 식 (50): R² 는 1 에서 SSE 를 SST 로 나눈 값을 뺀 것이고 SST 가 그대로이므로, $`\eta_{\mathrm{all}}`$ 은 목표의 SSE 가 현재의 SSE 보다 줄어야 하는 비율이다. 현재 R² 가 1 에 가까울수록 같은 R² 의 차이에 큰 $`\eta`$ 가 들어, R² 숫자의 차이만으로는 개선의 어려움을 견줄 수 없다.
+
+$`\kappa`$ 와 $`\delta`$ 가 현재 예측의 값으로 유지된다고 하면, R2_all 의 값에 대응하는 R2_avgw 와 R2_avgn 은 아래 식 (51), 식 (52) 이다. 유도는 [B.5](#b5-target-conditions) 에 있다.
+
+```math
+1 - R^2_{\mathrm{avgw}} = \frac{\kappa}{1 - \lambda} \left( 1 - R^2_{\mathrm{all}} \right)
+\hspace{19em} (51)
+```
+
+```math
+1 - R^2_{\mathrm{avgn}} = \frac{1 - R^2_{\mathrm{all}}}{1 - \lambda} + \delta
+\hspace{19em} (52)
+```
+
+- 식 (51), 식 (52): R2_all 을 $`T_{\mathrm{all}}`$ 로 두면 다른 두 R² 의 대응값이 나오고, R2_all 이 $`T_{\mathrm{all}}`$ 이상이면 그 대응값이 다른 두 R² 의 아래쪽 한계이다. 새 예측에서는 $`\kappa`$ 와 $`\delta`$ 가 바뀌므로, 이 환산은 목표를 정하기 위한 시나리오 분석으로만 쓴다.
+
+네 조건을 함께 이룰 수 있는지는 $`q`$ 와 측정 위치 FVU 의 평균의 관계로 정해진다. $`q`$ 가 정해져도 측정 위치 FVU 의 평균은 오차가 어느 측정 위치에 있느냐에 따라 아래 식 (53) 의 범위에서 바뀐다. 유도는 [B.5](#b5-target-conditions) 에 있다.
+
+```math
+\frac{q}{N \max_{j} \omega_j} \le q + \delta \le \frac{q}{N \min_{j} \omega_j}
+\hspace{19em} (53)
+```
+
+- 식 (53): R2_all 의 목표로 $`q`$ 를 줄여도, 식 (53) 의 위쪽 끝이 $`1 - T_{\mathrm{avgn}}`$ 보다 크면 오차가 $`\omega_j`$ 가 작은 측정 위치에 몰릴 때 R2_avgn 의 목표를 이루지 못한다. $`q \le N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 이면 오차가 어느 측정 위치에 있어도 이룬다.
+- 식 (38), 식 (53), 식 (49) 에 쓰인 $`\lambda, \omega_j, \mathrm{SST}_{\mathrm{all}}, \mathrm{SST}_{\mathrm{avgw}}`$ 는 측정값만으로 정해지므로, 목표 조합이 요구하는 오차의 크기는 예측을 고치기 전에 구할 수 있다.
 
 각 목표가 줄여야 할 오차는 아래 Table 6 이다.
 
@@ -480,24 +520,37 @@ Table 6. Prediction error that each target constrains
 
 | Target | Condition        | Error to reduce                      |
 | :----: | :--------------: | :----------------------------------: |
-| T_all  | 식 (45)          | 측정 위치 오차 제곱합 E 전체         |
-| T_avgn | 식 (47), 식 (49) | E, 특히 ω_j 가 작은 측정 위치의 오차 |
-| T_avgw | 식 (46), 식 (50) | wafer 평균 예측 오차                 |
-| T_minn | 식 (48)          | 최악 측정 위치의 오차                |
+| T_all  | 식 (38)          | 측정 위치 오차 제곱합 E 전체         |
+| T_avgn | 식 (40), 식 (53) | E, 특히 ω_j 가 작은 측정 위치의 오차 |
+| T_avgw | 식 (39), 식 (49) | wafer 평균 예측 오차                 |
+| T_minn | 식 (41)          | 최악 측정 위치의 오차                |
 
 목표 조합은 아래 차례로 정하고 이룬다. 측정 데이터의 예는 [Appendix D](#appendix-d-target-setting-with-measured-data) 에 있다.
 
-- 측정값으로 $`\lambda, \omega_j, \bar{r}_y`$ 를 구한다.
-- 식 (45) 와 식 (49) 로 $`q`$ 의 목표를 $`(1 - T_{\mathrm{all}}) / (1 - \lambda)`$ 와 $`N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 가운데 작은 값으로 잡는다. $`q`$ 가 이 값 이하이면 R2_all 과 R2_avgn 의 목표를 오차의 분포와 무관하게 이룬다.
-- 식 (46) 으로 wafer 평균 예측의 FVU 의 목표를 잡는다.
+- 측정값으로 $`\lambda, \omega_j, \mathrm{SST}_{\mathrm{all}}, \mathrm{SST}_{\mathrm{avgw}}`$ 를 구한다.
+- 현재 예측의 네 R² 에서 식 (50) 으로 목표마다 줄여야 할 SSE 의 비율을 구한다.
+- 식 (51), 식 (52) 로 $`T_{\mathrm{all}}`$ 을 다른 R² 로 환산해, 어느 목표가 가장 엄격한지를 본다.
+- 식 (38) 과 식 (53) 으로 $`q`$ 의 목표를 $`(1 - T_{\mathrm{all}}) / (1 - \lambda)`$ 와 $`N \min_j \omega_j \, (1 - T_{\mathrm{avgn}})`$ 가운데 작은 값으로 잡는다. $`q`$ 가 이 값 이하이면 R2_all 과 R2_avgn 의 목표를 오차의 분포와 무관하게 이룬다.
+- 식 (39) 와 식 (49) 로 wafer 평균 예측의 FVU 의 목표를 잡는다.
 - 현재 예측의 $`E`$ 를 성분으로 나누어, $`q`$ 의 목표에 닿으려면 어느 성분을 줄여야 하는지를 정한다.
-- 식 (48) 로 R2_minn 의 목표가 허용하는 $`\gamma_n`$ 의 위쪽 한계를 구하고 현재의 $`\gamma_n`$ 과 견준다. 이때 $`\gamma_n`$ 은 최악 측정 위치의 오차를 설명하는 진단 지표로 쓴다.
+- 식 (41) 로 R2_minn 의 목표가 허용하는 $`\gamma_n`$ 의 위쪽 한계를 구하고 현재의 $`\gamma_n`$ 과 견준다. 이때 $`\gamma_n`$ 은 최악 측정 위치의 오차를 설명하는 진단 지표로 쓴다.
+
+### 7.4 Target Reliability
+
+이 문서의 R² 는 주어진 wafer $`M`$ 장으로 구한 값이어서, 같은 예측도 다른 wafer 로 구하면 값이 달라진다. 그래서 목표는 아래 세 가지를 나누어 정한다.
+
+- 목표값: $`T_{\mathrm{all}}`$ 처럼 R² 가 넘어야 할 값.
+- 검증 기준: 목표를 정할 때 쓰지 않은 독립한 wafer 로 구한 R² 가 목표값을 넘는지.
+- 안정성 기준: wafer 를 나누거나 다시 뽑아 구한 R² 의 변동이 허용 범위 안인지.
+
+목표를 정하는 데 쓴 wafer 와 최종 성능을 검증하는 wafer 는 나눈다. R² 의 표본 분포를 유도하는 일은 Non-Goal 이어서, 이 문서는 변동의 크기를 식으로 주지 않는다.
 
 ---
 
 ## Appendix A. Terminology
 
 - **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
+- **error budget**: 식 (40) 의 $`N (1 - T_{\mathrm{avgn}})`$. R2_avgn 의 목표가 허용하는 측정 위치 FVU 의 합.
 - **error concentration**: 식 (27) 의 $`\gamma_n`$. 최악 측정 위치의 FVU 를 측정 위치 FVU 의 평균으로 나눈 값.
 - **error ratio**: 식 (24) 의 $`\kappa`$. wafer 평균 예측의 FVU 를 SST 가중 FVU 로 나눈 값.
 - **fraction of variance unexplained (FVU)**: R² 를 1 에서 뺀 값. SSE 를 SST 로 나눈 값과 같다.
@@ -534,12 +587,12 @@ Table 6. Prediction error that each target constrains
 
 ```math
 y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\cdot j} - \bar{y} \right)
-\hspace{19em} (51)
+\hspace{19em} (54)
 ```
 
-- 식 (51): $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
+- 식 (54): $`\bar{y}_{\cdot j}`$ 를 빼고 더했다.
 
-식 (51) 을 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (17) 로 $`A`$, 셋째 항의 합은 식 (18) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (31) 이 성립한다. 식 (32) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (19) 로 성립한다.
+식 (54) 를 식 (3) 에 넣고 제곱을 전개한다. 첫 항의 합은 식 (12) 와 식 (17) 로 $`A`$, 셋째 항의 합은 식 (18) 의 $`B`$ 이다. 교차항은 $`\sum_i (y_{ij} - \bar{y}_{\cdot j}) = 0`$ 이므로 0 이다. 따라서 식 (31) 이 성립한다. 식 (32) 도 식 (4) 의 합의 순서를 바꾸면 식 (13) 과 식 (19) 로 성립한다.
 
 ```math
 \mathrm{SST}_{\mathrm{all}} = A + B
@@ -555,12 +608,12 @@ y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\
 
 ```math
 1 - R^2_{\mathrm{all}} = \frac{A}{A + B} \cdot \frac{E}{A}
-\hspace{19em} (52)
+\hspace{19em} (55)
 ```
 
-- 식 (52): 식 (5) 에 식 (31) 과 식 (32) 를 넣고, 분자와 분모에 $`A`$ 를 곱했다.
+- 식 (55): 식 (5) 에 식 (31) 과 식 (32) 를 넣고, 분자와 분모에 $`A`$ 를 곱했다.
 
-식 (52) 의 첫 분수는 식 (23) 으로 $`1 - \lambda`$, 둘째 분수는 식 (22) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (24) 와 식 (22) 로 $`\kappa q`$ 와 같고, 식 (25) 와 식 (21), 식 (22) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (33), 식 (34), 식 (35) 가 성립한다.
+식 (55) 의 첫 분수는 식 (23) 으로 $`1 - \lambda`$, 둘째 분수는 식 (22) 의 $`q`$ 이다. 식 (10) 의 $`\mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 는 식 (24) 와 식 (22) 로 $`\kappa q`$ 와 같고, 식 (25) 와 식 (21), 식 (22) 에서 $`R^2_{\mathrm{avgn}} = R^2_{\mathrm{wavgn}} - \delta = 1 - q - \delta`$ 이다. 따라서 식 (33), 식 (34), 식 (35) 가 성립한다.
 
 ```math
 R^2_{\mathrm{all}} = 1 - (1 - \lambda)\, q
@@ -579,12 +632,12 @@ R^2_{\mathrm{avgn}} = 1 - q - \delta
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \frac{\mathrm{SST}_j}{A} \left( 1 - \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \right)
-\hspace{19em} (53)
+\hspace{19em} (56)
 ```
 
-- 식 (53): 식 (21) 의 1 을 $`\sum_j \mathrm{SST}_j / A`$ 로, $`E/A`$ 를 $`\sum_j \mathrm{SSE}_j / A`$ 로 적고 항마다 묶었다.
+- 식 (56): 식 (21) 의 1 을 $`\sum_j \mathrm{SST}_j / A`$ 로, $`E/A`$ 를 $`\sum_j \mathrm{SSE}_j / A`$ 로 적고 항마다 묶었다.
 
-식 (53) 의 첫 분수는 식 (20) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (36) 이 성립한다.
+식 (56) 의 첫 분수는 식 (20) 의 $`\omega_j`$, 괄호는 식 (14) 의 $`R^2_j`$ 이므로 식 (36) 이 성립한다.
 
 ```math
 R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
@@ -593,12 +646,12 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 
 ```math
 \delta = \sum_{j=1}^{N} \left( \omega_j - \frac{1}{N} \right) R^2_j
-\hspace{19em} (54)
+\hspace{19em} (57)
 ```
 
-- 식 (54): 식 (25) 에 식 (36) 과 식 (15) 를 넣었다.
+- 식 (57): 식 (25) 에 식 (36) 과 식 (15) 를 넣었다.
 
-식 (54) 의 괄호는 $`(\mathrm{SST}_j - A/N)/A`$ 이고 $`j`$ 에 대해 더하면 0 이므로, $`R^2_j`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 빼도 합이 바뀌지 않는다. 따라서 식 (37) 이 성립한다.
+식 (57) 의 괄호는 $`(\mathrm{SST}_j - A/N)/A`$ 이고 $`j`$ 에 대해 더하면 0 이므로, $`R^2_j`$ 에서 $`R^2_{\mathrm{avgn}}`$ 을 빼도 합이 바뀌지 않는다. 따라서 식 (37) 이 성립한다.
 
 ```math
 \delta = \frac{1}{A} \sum_{j=1}^{N} \left( \mathrm{SST}_j - \frac{A}{N} \right) \left( R^2_j - R^2_{\mathrm{avgn}} \right)
@@ -607,64 +660,64 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 
 ### B.3 Differences
 
-식 (38) 부터 식 (42) 는 식 (21), 식 (22) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (33), 식 (34), 식 (35) 에서 두 식을 빼어 얻는다. 따라서 식 (38) 부터 식 (42) 가 성립한다. Table 3 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
+식 (42) 부터 식 (46) 은 식 (21), 식 (22) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (33), 식 (34), 식 (35) 에서 두 식을 빼어 얻는다. 따라서 식 (42) 부터 식 (46) 이 성립한다. Table 3 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \lambda\, q
-\hspace{19em} (38)
+\hspace{19em} (42)
 ```
 
 ```math
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{wavgn}} = (1 - \kappa)\, q
-\hspace{19em} (39)
+\hspace{19em} (43)
 ```
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{avgw}} = (\kappa - 1 + \lambda)\, q
-\hspace{19em} (40)
+\hspace{19em} (44)
 ```
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{avgn}} = \lambda\, q + \delta
-\hspace{19em} (41)
+\hspace{19em} (45)
 ```
 
 ```math
 R^2_{\mathrm{avgw}} - R^2_{\mathrm{avgn}} = (1 - \kappa)\, q + \delta
-\hspace{19em} (42)
+\hspace{19em} (46)
 ```
 
 ### B.4 Inequalities
 
 ```math
 R^2_{\mathrm{wavgn}} - \min_{k} R^2_k = \sum_{j=1}^{N} \omega_j \left( R^2_j - \min_{k} R^2_k \right)
-\hspace{19em} (55)
+\hspace{19em} (58)
 ```
 
-- 식 (55): 식 (36) 에서 가중치의 합이 1 인 것을 써서 $`\min_k R^2_k`$ 를 뺐다.
+- 식 (58): 식 (36) 에서 가중치의 합이 1 인 것을 써서 $`\min_k R^2_k`$ 를 뺐다.
 
-식 (55) 의 가중치와 괄호는 모두 0 이상이므로 식 (43) 이 성립한다. 최솟값 대신 최댓값으로 같은 식을 세우면 식 (44) 가 성립한다.
+식 (58) 의 가중치와 괄호는 모두 0 이상이므로 식 (47) 이 성립한다. 최솟값 대신 최댓값으로 같은 식을 세우면 식 (48) 이 성립한다.
 
 ```math
 R^2_{\mathrm{wavgn}} \ge R^2_{\mathrm{minn}}
-\hspace{19em} (43)
+\hspace{19em} (47)
 ```
 
 ```math
 R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
-\hspace{19em} (44)
+\hspace{19em} (48)
 ```
 
 식 (26) 부터 식 (28) 은 측정 위치마다의 FVU $`1 - R^2_j = \mathrm{SSE}_j / \mathrm{SST}_j \ge 0`$ 의 평균과 최댓값을 견주어 증명한다.
 
 ```math
 1 - R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_{j=1}^{N} \left( 1 - R^2_j \right)
-\hspace{19em} (56)
+\hspace{19em} (59)
 ```
 
-- 식 (56): 식 (15) 를 1 에서 빼고, $`1/N`$ 을 측정 위치에 대해 더하면 1 인 것을 썼다.
+- 식 (59): 식 (15) 를 1 에서 빼고, $`1/N`$ 을 측정 위치에 대해 더하면 1 인 것을 썼다.
 
-식 (16) 대로 $`R^2_{\mathrm{minn}}`$ 은 $`R^2_j`$ 의 최솟값이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (56) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위인 식 (26) 이, 식 (27) 로 나누면 $`\gamma_n`$ 의 범위인 식 (28) 이 나온다. 따라서 식 (26) 부터 식 (28) 이 성립한다.
+식 (16) 대로 $`R^2_{\mathrm{minn}}`$ 은 $`R^2_j`$ 의 최솟값이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 $`1 - R^2_j`$ 의 최댓값이다. 0 이상인 값들의 최댓값은 그 평균 이상이고 그 합 이하이므로, $`1 - R^2_{\mathrm{minn}}`$ 은 식 (59) 의 $`1 - R^2_{\mathrm{avgn}}`$ 이상이고 $`N (1 - R^2_{\mathrm{avgn}})`$ 이하이다. 최댓값이 평균과 같은 것은 모든 값이 같을 때뿐이다. 1 에서 빼면 $`R^2_{\mathrm{minn}}`$ 의 범위인 식 (26) 이, 식 (27) 로 나누면 $`\gamma_n`$ 의 범위인 식 (28) 이 나온다. 따라서 식 (26) 부터 식 (28) 이 성립한다.
 
 ```math
 1 - N \left( 1 - R^2_{\mathrm{avgn}} \right) \le R^2_{\mathrm{minn}} \le R^2_{\mathrm{avgn}}
@@ -683,20 +736,54 @@ R^2_{\mathrm{wavgn}} \le \max_{j} R^2_j
 
 ### B.5 Target Conditions
 
-식 (49) 는 측정 위치 FVU 의 평균을 SST 가중치로 다시 적어 증명한다.
+식 (38) 부터 식 (41) 의 왼쪽 동치는 R² 의 정의에서, 오른쪽 동치는 FVU 의 항등식에서 나온다. 식 (38) 은 식 (5) 와 식 (33), 식 (39) 는 식 (10) 과 식 (34) 이다. 식 (40) 은 식 (15) 와 식 (14) 로 $`1 - R^2_{\mathrm{avgn}} = \frac{1}{N} \sum_j \mathrm{SSE}_j / \mathrm{SST}_j`$ 이고 식 (35) 로 이것이 $`q + \delta`$ 이다. 식 (41) 은 식 (16) 과 식 (14) 로 $`1 - R^2_{\mathrm{minn}} = \max_j \mathrm{SSE}_j / \mathrm{SST}_j`$ 이고 식 (29) 로 이것이 $`\gamma_n (q + \delta)`$ 이다. 각 동치는 등식의 양변을 1 에서 뺀 것이므로 부등호의 방향이 바뀌지 않는다. 따라서 식 (38) 부터 식 (41) 이 성립한다.
+
+```math
+R^2_{\mathrm{all}} \ge T_{\mathrm{all}} \;\Leftrightarrow\; \frac{\mathrm{SSE}_{\mathrm{all}}}{\mathrm{SST}_{\mathrm{all}}} \le 1 - T_{\mathrm{all}} \;\Leftrightarrow\; (1 - \lambda)\, q \le 1 - T_{\mathrm{all}}
+\hspace{19em} (38)
+```
+
+```math
+R^2_{\mathrm{avgw}} \ge T_{\mathrm{avgw}} \;\Leftrightarrow\; \frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \le 1 - T_{\mathrm{avgw}} \;\Leftrightarrow\; \kappa\, q \le 1 - T_{\mathrm{avgw}}
+\hspace{19em} (39)
+```
+
+```math
+R^2_{\mathrm{avgn}} \ge T_{\mathrm{avgn}} \;\Leftrightarrow\; \sum_{j=1}^{N} \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \le N (1 - T_{\mathrm{avgn}}) \;\Leftrightarrow\; q + \delta \le 1 - T_{\mathrm{avgn}}
+\hspace{19em} (40)
+```
+
+```math
+R^2_{\mathrm{minn}} \ge T_{\mathrm{minn}} \;\Leftrightarrow\; \max_{j} \frac{\mathrm{SSE}_j}{\mathrm{SST}_j} \le 1 - T_{\mathrm{minn}} \;\Leftrightarrow\; \gamma_n (q + \delta) \le 1 - T_{\mathrm{minn}}
+\hspace{19em} (41)
+```
+
+식 (33) 에서 $`q = (1 - R^2_{\mathrm{all}}) / (1 - \lambda)`$ 이고, 이것을 식 (34) 와 식 (35) 에 넣으면 식 (51) 과 식 (52) 가 성립한다.
+
+```math
+1 - R^2_{\mathrm{avgw}} = \frac{\kappa}{1 - \lambda} \left( 1 - R^2_{\mathrm{all}} \right)
+\hspace{19em} (51)
+```
+
+```math
+1 - R^2_{\mathrm{avgn}} = \frac{1 - R^2_{\mathrm{all}}}{1 - \lambda} + \delta
+\hspace{19em} (52)
+```
+
+식 (53) 은 측정 위치 FVU 의 평균을 SST 가중치로 다시 적어 증명한다.
 
 ```math
 q + \delta = \frac{1}{N} \sum_{j=1}^{N} \frac{1}{\omega_j} \cdot \frac{\mathrm{SSE}_j}{A}
-\hspace{19em} (57)
+\hspace{19em} (60)
 ```
 
-- 식 (57): 식 (35) 로 $`q + \delta = 1 - R^2_{\mathrm{avgn}}`$ 이고, 식 (15), 식 (14), 식 (20) 으로 이것을 측정 위치 FVU $`\mathrm{SSE}_j / \mathrm{SST}_j = (\mathrm{SSE}_j / A) / \omega_j`$ 의 평균으로 적었다.
+- 식 (60): 식 (35) 로 $`q + \delta = 1 - R^2_{\mathrm{avgn}}`$ 이고, 식 (15), 식 (14), 식 (20) 으로 이것을 측정 위치 FVU $`\mathrm{SSE}_j / \mathrm{SST}_j = (\mathrm{SSE}_j / A) / \omega_j`$ 의 평균으로 적었다.
 
-식 (57) 의 $`\mathrm{SSE}_j / A`$ 는 0 이상이고, $`j`$ 에 대해 더하면 식 (19) 와 식 (22) 로 $`q`$ 이다. $`1/\omega_j`$ 를 가장 작은 값 $`1 / \max_j \omega_j`$ 와 가장 큰 값 $`1 / \min_j \omega_j`$ 로 바꾸면 식 (49) 가 성립한다.
+식 (60) 의 $`\mathrm{SSE}_j / A`$ 는 0 이상이고, $`j`$ 에 대해 더하면 식 (19) 와 식 (22) 로 $`q`$ 이다. $`1/\omega_j`$ 를 가장 작은 값 $`1 / \max_j \omega_j`$ 와 가장 큰 값 $`1 / \min_j \omega_j`$ 로 바꾸면 식 (53) 이 성립한다.
 
 ```math
 \frac{q}{N \max_{j} \omega_j} \le q + \delta \le \frac{q}{N \min_{j} \omega_j}
-\hspace{19em} (49)
+\hspace{19em} (53)
 ```
 
 ## Appendix C. Error Ratio and Cross-location Correlation
@@ -707,7 +794,7 @@ q + \delta = \frac{1}{N} \sum_{j=1}^{N} \frac{1}{\omega_j} \cdot \frac{\mathrm{S
 > $`\bar{r}_y`$ 는 측정 위치 평균에서 벗어난 양 $`x_{ij} = y_{ij} - \bar{y}_{\cdot j}`$ 의 곱을 서로 다른 측정 위치의 모든 순서쌍과 wafer $`M`$ 장에서 더한 값을, $`N - 1`$ 과 $`A`$ 의 곱으로 나눈 값이다.
 > ```math
 > \bar{r}_y := \frac{\sum_{j \ne k} \sum_{i=1}^{M} x_{ij}\, x_{ik}}{(N-1)\, A}
-> \hspace{19em} (58)
+> \hspace{19em} (61)
 > ```
 
 - $`\bar{r}_y`$ 는 측정 위치 쌍마다의 Pearson 상관계수의 산술 평균이 아니다. $`\mathrm{SST}_j`$ 가 모두 같을 때만 그 평균과 같다.
@@ -715,26 +802,26 @@ q + \delta = \frac{1}{N} \sum_{j=1}^{N} \frac{1}{\omega_j} \cdot \frac{\mathrm{S
 
 ```math
 N^2\, \mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \sum_{j=1}^{N} x_{ij} \right)^2
-\hspace{19em} (59)
+\hspace{19em} (62)
 ```
 
-- 식 (59): 식 (6), 식 (2), 식 (11) 로 $`\bar{y}_{i\cdot} - \bar{y} = \frac{1}{N} \sum_j x_{ij}`$ 이고, 이것을 식 (8) 에 넣었다.
+- 식 (62): 식 (6), 식 (2), 식 (11) 로 $`\bar{y}_{i\cdot} - \bar{y} = \frac{1}{N} \sum_j x_{ij}`$ 이고, 이것을 식 (8) 에 넣었다.
 
-식 (59) 의 우변을 $`\sum_{i,j} x_{ij}^2 + \sum_{j \ne k} \sum_i x_{ij} x_{ik}`$ 로 전개하면 첫 합은 $`A`$, 둘째 합은 식 (58) 로 $`(N-1)\, \bar{r}_y A`$ 이다.
+식 (62) 의 우변을 $`\sum_{i,j} x_{ij}^2 + \sum_{j \ne k} \sum_i x_{ij} x_{ik}`$ 로 전개하면 첫 합은 $`A`$, 둘째 합은 식 (61) 로 $`(N-1)\, \bar{r}_y A`$ 이다.
 
 ```math
 \mathrm{SST}_{\mathrm{avgw}} = \frac{A}{N^2} \left[ 1 + (N-1)\, \bar{r}_y \right]
-\hspace{19em} (60)
+\hspace{19em} (63)
 ```
 
 ```math
 \kappa = \frac{N^2\, \mathrm{SSE}_{\mathrm{avgw}}}{\left[ 1 + (N-1)\, \bar{r}_y \right] E}
-\hspace{19em} (61)
+\hspace{19em} (64)
 ```
 
-- 식 (61): 식 (24) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (60) 을 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
+- 식 (64): 식 (24) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (63) 을 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
 
-식 (59) 의 우변은 0 이상이고, 괄호 안의 합의 제곱은 $`N \sum_j x_{ij}^2`$ 를 넘지 않는다. 그래서 식 (60) 의 괄호는 0 이상 $`N`$ 이하이며, $`\bar{r}_y`$ 의 범위는 $`-1/(N-1) \le \bar{r}_y \le 1`$ 이다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 왼쪽 부등호가 엄격해진다.
+식 (62) 의 우변은 0 이상이고, 괄호 안의 합의 제곱은 $`N \sum_j x_{ij}^2`$ 를 넘지 않는다. 그래서 식 (63) 의 괄호는 0 이상 $`N`$ 이하이며, $`\bar{r}_y`$ 의 범위는 $`-1/(N-1) \le \bar{r}_y \le 1`$ 이다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 왼쪽 부등호가 엄격해진다.
 
 ### C.2 Wafer Average Prediction as the Mean of Location Predictions
 
@@ -742,22 +829,22 @@ Wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \fr
 
 ```math
 \mathrm{SSE}_{\mathrm{avgw}} \le \frac{E}{N}
-\hspace{19em} (62)
+\hspace{19em} (65)
 ```
 
 ```math
 \kappa \le \frac{N}{1 + (N-1)\, \bar{r}_y}
-\hspace{19em} (63)
+\hspace{19em} (66)
 ```
 
-- 식 (62): 평균의 제곱은 제곱의 평균을 넘지 않으므로 $`e_{iw}^2 \le \frac{1}{N} \sum_j e_{ij}^2`$ 이고, 이것을 wafer 에 대해 더했다.
-- 식 (63): 식 (61) 에 식 (62) 를 넣었다.
+- 식 (65): 평균의 제곱은 제곱의 평균을 넘지 않으므로 $`e_{iw}^2 \le \frac{1}{N} \sum_j e_{ij}^2`$ 이고, 이것을 wafer 에 대해 더했다.
+- 식 (66): 식 (64) 에 식 (65) 를 넣었다.
 
-이 범위는 wafer 평균을 따로 예측한 일반적인 경우에는 성립하지 않는다. 식 (63) 의 양변에 $`q`$ 를 곱하고 식 (24) 와 식 (22) 로 $`\kappa q = \mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 인 것을 쓰면 식 (50) 이 성립한다.
+이 범위는 wafer 평균을 따로 예측한 일반적인 경우에는 성립하지 않는다. 식 (65) 의 양변을 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나누고, 식 (32) 와 식 (5) 로 $`E = \mathrm{SSE}_{\mathrm{all}} = \mathrm{SST}_{\mathrm{all}} (1 - R^2_{\mathrm{all}})`$ 인 것을 쓰면 식 (49) 가 성립한다.
 
 ```math
-\frac{\mathrm{SSE}_{\mathrm{avgw}}}{\mathrm{SST}_{\mathrm{avgw}}} \le \frac{N q}{1 + (N-1)\, \bar{r}_y}
-\hspace{19em} (50)
+1 - R^2_{\mathrm{avgw}} \le \frac{\mathrm{SST}_{\mathrm{all}}}{N\, \mathrm{SST}_{\mathrm{avgw}}} \left( 1 - R^2_{\mathrm{all}} \right)
+\hspace{19em} (49)
 ```
 
 ## Appendix D. Target Setting with Measured Data
@@ -794,29 +881,44 @@ Fig 2 와 Table 7 의 값은 같은 folder 의 [src/r2_three_views.py](src/r2_th
 
 ### D.1 Target Conditions
 
-이 데이터에서 목표를 $`T_{\mathrm{all}} = 0.90,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.85,\ T_{\mathrm{minn}} = 0.80`$ 으로 잡으면, 7.2 의 조건과 현재 값은 아래 Table 8 이다.
+이 데이터에서 목표를 $`T_{\mathrm{all}} = 0.90,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.85,\ T_{\mathrm{minn}} = 0.80`$ 으로 잡으면, 5.2 와 7.3 의 조건과 현재 값은 아래 Table 8 이다.
 
 Table 8. Conditions for the targets and the current values
 
 | Condition                    | Required | Current | Required / current |
 | :--------------------------: | :------: | :-----: | :----------------: |
-| q, 식 (45)                   | 0.1148   | 0.2051  | 0.5596             |
+| q, 식 (38)                   | 0.1148   | 0.2051  | 0.5596             |
 | q, N min ω_j (1 - T_avgn)    | 0.1085   | 0.2051  | 0.5289             |
-| q + delta, 식 (47)           | 0.1500   | 0.2165  | 0.6929             |
-| SSE_avgw / SST_avgw, 식 (46) | 0.0500   | 0.0564  | 0.8871             |
-| gamma_n (q + delta), 식 (48) | 0.2000   | 0.3630  | 0.5510             |
+| q + delta, 식 (40)           | 0.1500   | 0.2165  | 0.6929             |
+| SSE_avgw / SST_avgw, 식 (39) | 0.0500   | 0.0564  | 0.8871             |
+| gamma_n (q + delta), 식 (41) | 0.2000   | 0.3630  | 0.5510             |
 
 - $`\lambda`$ = 0.1288, 가장 큰 $`\omega_j`$ = 0.1252 (측정 위치 1), 가장 작은 $`\omega_j`$ = 0.0556 (측정 위치 6) 은 측정값만으로 구했다.
-- $`q`$ 를 R2_all 의 목표인 0.1148 까지 줄여도, 식 (49) 로 측정 위치 FVU 의 평균은 0.0705 부터 0.1587 사이에 있어 위쪽 끝이 0.15 를 넘는다. 그래서 오차가 어느 측정 위치에 있어도 R2_all 과 R2_avgn 의 목표를 함께 이루려면 $`q`$ 를 0.1085 이하, 곧 현재의 0.5289 배 이하로 줄여야 한다.
-- R2_avgw 의 목표는 CSV 의 wafer 평균 예측값 `pred_avg` 의 FVU 를 0.0564 에서 0.0500 으로, 0.8871 배로 줄여야 이룬다. 측정 위치 예측값의 평균을 wafer 평균 예측값으로 쓰면 그 FVU 는 0.0540 이어서, 이것만으로는 목표에 닿지 않는다.
-- R2_minn 의 목표는 최악 측정 위치의 FVU 를 0.3630 에서 0.2000 으로, 0.5510 배로 줄여야 이룬다. 측정 위치 FVU 의 평균이 R2_avgn 의 목표인 0.15 이면 식 (48) 로 $`\gamma_n`$ 은 0.20 / 0.15 = 1.3333 이하여야 하며, 현재의 1.6768 보다 작아야 한다.
-- 식 (26) 의 아래쪽 범위만으로 R2_minn 의 목표를 보장하려면 R2_avgn 이 1 - 0.20 / 13 = 0.9846 이상이어야 한다. 그래서 이 데이터에서는 식 (26) 대신 식 (48) 로 $`\gamma_n`$ 을 함께 본다.
+- $`q`$ 를 R2_all 의 목표인 0.1148 까지 줄여도, 식 (53) 으로 측정 위치 FVU 의 평균은 0.0705 부터 0.1587 사이에 있어 위쪽 끝이 0.15 를 넘는다. 그래서 오차가 어느 측정 위치에 있어도 R2_all 과 R2_avgn 의 목표를 함께 이루려면 $`q`$ 를 0.1085 이하, 곧 현재의 0.5289 배 이하로 줄여야 한다.
+- R2_avgw 의 목표는 CSV 의 wafer 평균 예측값 `pred_avg` 의 FVU 를 0.0564 에서 0.0500 으로, 0.8871 배로 줄여야 이룬다. 측정 위치 예측값의 평균을 wafer 평균 예측값으로 쓰면 그 FVU 는 0.0540 이어서, 이것만으로는 목표에 닿지 않는다. 식 (49) 의 계수 $`\mathrm{SST}_{\mathrm{all}} / (N\, \mathrm{SST}_{\mathrm{avgw}})`$ 는 1.5002 여서, R2_all = 0.90 을 이뤄도 식 (49) 가 보장하는 R2_avgw 는 0.8500 이다. 그래서 이 데이터에서 R2_avgw 의 목표는 R2_all 의 목표를 따라 이루어진다고 볼 수 없다.
+- R2_minn 의 목표는 최악 측정 위치의 FVU 를 0.3630 에서 0.2000 으로, 0.5510 배로 줄여야 이룬다. 측정 위치 FVU 의 평균이 R2_avgn 의 목표인 0.15 이면 식 (41) 로 $`\gamma_n`$ 은 0.20 / 0.15 = 1.3333 이하여야 하며, 현재의 1.6768 보다 작아야 한다.
+- 식 (26) 의 아래쪽 범위만으로 R2_minn 의 목표를 보장하려면 R2_avgn 이 1 - 0.20 / 13 = 0.9846 이상이어야 한다. 그래서 이 데이터에서는 식 (26) 대신 식 (41) 로 $`\gamma_n`$ 을 함께 본다.
+
+목표마다 식 (50) 으로 줄여야 할 SSE 의 비율을 구하면 아래 Table 9 이다.
+
+Table 9. Required SSE reduction for each target
+
+| R2      | Current | Target | eta    |
+| :-----: | :-----: | :----: | :----: |
+| R2_all  | 0.8213  | 0.90   | 0.4404 |
+| R2_avgw | 0.9436  | 0.95   | 0.1129 |
+| R2_avgn | 0.7835  | 0.85   | 0.3071 |
+| R2_minn | 0.6370  | 0.80   | 0.4490 |
+
+- R2_minn 은 R2_all 보다 R² 를 두 배 넘게 올려야 하지만 (0.1630 대 0.0787), 줄여야 할 SSE 의 비율은 0.4490 과 0.4404 로 거의 같다.
+- 식 (51), 식 (52) 로 $`\kappa`$ 와 $`\delta`$ 를 지금 값으로 두고 R2_all = 0.90 을 환산하면 R2_avgw = 0.9685, R2_avgn = 0.8738 이다. 둘 다 목표를 넘으므로, 오차가 지금처럼 퍼진 채 $`q`$ 만 줄면 R2_all 의 목표가 셋 가운데 가장 엄격하다. 같은 가정에서 $`\gamma_n`$ 도 지금 값이면 식 (29) 로 R2_minn 은 0.7885 여서 목표 0.80 에 닿지 않는다.
+- 식 (40) 의 오차 예산은 $`13 \times (1 - 0.85) = 1.95`$ 이고, 현재 측정 위치 FVU 의 합은 2.8142 이다.
 
 ### D.2 Error to Reduce
 
-측정 위치 오차 $`e_{ij}`$ 를 전체 평균, wafer 마다의 평균, 측정 위치마다의 평균, 나머지로 나누면 $`E`$ 는 아래 Table 9 의 네 성분의 합이다.
+측정 위치 오차 $`e_{ij}`$ 를 전체 평균, wafer 마다의 평균, 측정 위치마다의 평균, 나머지로 나누면 $`E`$ 는 아래 Table 10 의 네 성분의 합이다.
 
-Table 9. Components of the location error sum E
+Table 10. Components of the location error sum E
 
 | Component           | Sum of squares | Share of E |
 | :-----------------: | :------------: | :--------: |
@@ -829,9 +931,9 @@ Table 9. Components of the location error sum E
 - 전체 평균과 측정 위치마다의 평균을 더한 성분은 측정 위치마다의 mean error (offset) 의 제곱합 $`M \sum_j \bar{e}_{\cdot j}^2`$ 이며, $`E`$ 의 0.4726 을 차지한다. 이 성분이 0 이면 $`q`$ 는 0.1082 가 되어 0.1085 이하이므로, R2_all 과 R2_avgn 의 목표를 오차의 분포와 무관하게 이룬다.
 - 그래서 이 데이터에서 R2_all 과 R2_avgn 의 목표를 위해 가장 먼저 줄일 오차는 측정 위치마다 wafer 사이에서 일정한 오차, 곧 mean error (offset) 이다. R2_avgw 의 목표는 이와 따로 wafer 평균 예측의 오차를 줄여야 이룬다.
 
-측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 10 이다.
+측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 11 이다.
 
-Table 10. Offset share of SSE and R2 after offset correction by location
+Table 11. Offset share of SSE and R2 after offset correction by location
 
 | Location j | R2_j   | Mean error (offset) | Offset share of SSE_j | R2_j after offset correction |
 | :--------: | :----: | :-----------------: | :-------------------: | :--------------------------: |
@@ -855,9 +957,9 @@ Table 10. Offset share of SSE and R2 after offset correction by location
 
 ### D.3 Targets after Offset Correction
 
-측정 위치마다의 mean error (offset) 를 예측값에 더한 예측 (offset correction) 으로 네 R² 를 다시 구해 목표와 견주면 아래 Table 11 이다.
+측정 위치마다의 mean error (offset) 를 예측값에 더한 예측 (offset correction) 으로 네 R² 를 다시 구해 목표와 견주면 아래 Table 12 이다.
 
-Table 11. Four R2 before and after offset correction against the targets
+Table 12. Four R2 before and after offset correction against the targets
 
 | Prediction        | R2_all | R2_avgw | R2_avgn | R2_minn | gamma_n |
 | :---------------: | :----: | :-----: | :-----: | :-----: | :-----: |
@@ -868,5 +970,5 @@ Table 11. Four R2 before and after offset correction against the targets
 - Original 은 CSV 의 `pred_p1` 부터 `pred_p13` 열을 측정 위치 예측값 $`\hat{y}_{ij}`$ 로 그대로 쓴 예측이다. Offset correction 은 `pred_avg` 를 바꾸지 않으므로 R2_avgw 는 두 행이 같다.
 - Offset correction 으로 R2_all, R2_avgn, R2_minn 은 목표를 넘지만, R2_avgw 는 목표에 닿지 않는다. 네 목표를 함께 이루려면 wafer 평균 예측의 오차를 따로 줄여야 한다.
 - 식 (30) 으로 나누면 최악 측정 위치의 FVU 는 0.4572 배가 되었고, 이것은 측정 위치 FVU 의 평균의 배수 0.4843 과 $`\gamma_n`$ 의 배수 0.9439 의 곱이다. 그래서 R2_minn 이 오른 것은 주로 측정 위치 FVU 의 평균이 줄어든 결과이다.
-- 보정 뒤의 $`\gamma_n`$ = 1.5827 은 D.1 의 한계 1.3333 보다 크지만, 측정 위치 FVU 의 평균이 0.1048 로 0.15 보다 충분히 작아 1.5827 × 0.1048 = 0.1659 가 0.20 이하이다. 식 (48) 은 $`\gamma_n`$ 과 측정 위치 FVU 의 평균의 곱에 걸리므로, $`\gamma_n`$ 하나만으로 목표의 달성을 판단하지 않는다.
+- 보정 뒤의 $`\gamma_n`$ = 1.5827 은 D.1 의 한계 1.3333 보다 크지만, 측정 위치 FVU 의 평균이 0.1048 로 0.15 보다 충분히 작아 1.5827 × 0.1048 = 0.1659 가 0.20 이하이다. 식 (41) 은 $`\gamma_n`$ 과 측정 위치 FVU 의 평균의 곱에 걸리므로, $`\gamma_n`$ 하나만으로 목표의 달성을 판단하지 않는다.
 - 측정 위치마다 측정값을 예측값의 일차식으로 다시 맞추는 보정 (linear recalibration) 에서도 측정 위치 3 의 R² 는 0.8341 을 넘지 못한다. 이 값은 측정 위치 3 의 측정값과 예측값의 상관계수의 제곱이어서, $`T_{\mathrm{minn}}`$ 을 0.8341 보다 높게 잡으면 측정 위치 3 의 오차 가운데 mean error (offset) 가 아닌 나머지를 줄여야 이룬다.
