@@ -4,9 +4,14 @@
 Each bootstrap sample draws M wafers with replacement and keeps all N location values of a drawn wafer together,
 because the location values of one wafer are correlated. For each sample the four R2 are recomputed with the
 definitions of the document, and the probability of meeting each target and the alpha quantile are reported.
+The targets come from the four target setting methods of the document: conversion of T_all, a common SSE reduction
+ratio, removal of the location mean error (offset) and the bootstrap lower quantile.
+
+Changelog:
+- 0.1.0: add method_targets for the four target setting methods.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261114"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261114"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -16,9 +21,9 @@ import numpy as np
 
 from r2_three_views import load
 
-__all__ = ['four_r2', 'bootstrap', 'summarize']
+__all__ = ['four_r2', 'bootstrap', 'summarize', 'method_targets']
 
-TARGETS: dict = {'R2_all': 0.90, 'R2_avgw': 0.95, 'R2_avgn': 0.85, 'R2_minn': 0.80}
+NAMES: tuple = ('R2_all', 'R2_avgw', 'R2_avgn', 'R2_minn')
 N_BOOT: int = 2000
 SEED: int = 0
 ALPHA: float = 0.05
@@ -48,7 +53,7 @@ def bootstrap(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarra
         raise ValueError(f"n_boot must be positive: {n_boot=}")
     rng = np.random.default_rng(seed)
     m = y.shape[0]
-    draws = {name: np.empty(n_boot) for name in TARGETS}
+    draws = {name: np.empty(n_boot) for name in NAMES}
     for b in range(n_boot):
         idx = rng.integers(0, m, size=m)
         for name, value in four_r2(y[idx], y_hat[idx], y_hat_w[idx]).items():
@@ -56,13 +61,46 @@ def bootstrap(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarra
     return draws
 
 
-def summarize(draws: dict = None, targets: dict = TARGETS, alpha: float = ALPHA) -> dict:
+def summarize(draws: dict = None, targets: dict = None, alpha: float = ALPHA) -> dict:
     """Return {name: (p_meet, alpha_quantile)} and the joint probability under key 'joint'."""
-    if draws is None:
-        raise ValueError('draws is required.')
+    if draws is None or targets is None:
+        raise ValueError('draws and targets are both required.')
+    if set(targets) != set(NAMES):
+        raise ValueError(f"targets must have exactly the keys {NAMES}: {sorted(targets)=}")
     out = {name: ((draws[name] >= t).mean(), np.quantile(draws[name], alpha)) for name, t in targets.items()}
     out['joint'] = (np.all([draws[name] >= t for name, t in targets.items()], axis=0).mean(), np.nan)
     return out
+
+
+def method_targets(y: np.ndarray = None, y_hat: np.ndarray = None, y_hat_w: np.ndarray = None,
+                   alpha: float = ALPHA, n_boot: int = N_BOOT, seed: int = SEED) -> tuple:
+    """Return ({method: {name: target}}, eta, offset prediction) for the four target setting methods.
+
+    The input of methods 1 to 3 is the improvement that removes the location mean error (offset): eta is the share
+    of the offset component in E, and T_all of method 1 is the R2_all that this eta gives.
+    """
+    current = four_r2(y, y_hat, y_hat_w)
+    e = y - y_hat
+    sst_j = ((y - y.mean(axis=0)) ** 2).sum(axis=0)
+    q = (e ** 2).sum() / sst_j.sum()
+    lam = 1 - sst_j.sum() / ((y - y.mean()) ** 2).sum()
+    kappa = (1 - current['R2_avgw']) / q
+    delta = 1 - current['R2_avgn'] - q
+    gamma_n = (1 - current['R2_minn']) / (1 - current['R2_avgn'])
+    eta = y.shape[0] * (e.mean(axis=0) ** 2).sum() / (e ** 2).sum()
+    t_all = 1 - (1 - eta) * (1 - current['R2_all'])
+    t_avgn = 1 - (1 - t_all) / (1 - lam) - delta
+    offset_pred = y_hat + e.mean(axis=0)
+    targets = {
+        'Method 1': {'R2_all': t_all, 'R2_avgw': 1 - kappa / (1 - lam) * (1 - t_all), 'R2_avgn': t_avgn,
+                     'R2_minn': 1 - gamma_n * (1 - t_avgn)},
+        'Method 2': {name: 1 - (1 - eta) * (1 - value) for name, value in current.items()},
+        'Method 3': four_r2(y, offset_pred, y_hat_w),
+    }
+    for label, pred in (('Method 4, current', y_hat), ('Method 4, offset removed', offset_pred)):
+        draws = bootstrap(y, pred, y_hat_w, n_boot, seed)
+        targets[label] = {name: np.quantile(draws[name], alpha) for name in NAMES}
+    return targets, eta, offset_pred
 
 
 parser = argparse.ArgumentParser(prog=pathlib.Path(__file__).name,
@@ -76,12 +114,16 @@ parser.add_argument('csv', type=pathlib.Path, nargs='?',
 if __name__ == '__main__':
     args = parser.parse_args()
     y, y_hat, y_hat_w, _ = load(args.csv)
-    cases = {'Original': y_hat, 'Offset correction': y_hat + (y - y_hat).mean(axis=0)}
-    for label, pred in cases.items():
+    targets, eta, offset_pred = method_targets(y, y_hat, y_hat_w)
+    print(f"eta (offset share of E) = {eta:.4f}")
+    for label, t in targets.items():
+        print(f"{label:26s} " + ' '.join(f"{name}={t[name]:.4f}" for name in NAMES))
+    for label, pred in (('Current', y_hat), ('Offset removed', offset_pred)):
+        draws = bootstrap(y, pred, y_hat_w)
         point = four_r2(y, pred, y_hat_w)
-        stats = summarize(bootstrap(y, pred, y_hat_w))
-        for name in TARGETS:
-            p, low = stats[name]
-            print(f"{label:18s} {name:8s} R2={point[name]:.4f} q{ALPHA:.2f}={low:.4f} P(>={TARGETS[name]})={p:.4f}")
-        print(f"{label:18s} joint    P(all four)={stats['joint'][0]:.4f}")
+        print(f"{label}: " + ' '.join(f"{name}={point[name]:.4f}" for name in NAMES))
+        for method, t in targets.items():
+            stats = summarize(draws, t)
+            print(f"  P vs {method:24s} " + ' '.join(f"{name}={stats[name][0]:.4f}" for name in NAMES)
+                  + f" joint={stats['joint'][0]:.4f}")
     sys.exit(0)
