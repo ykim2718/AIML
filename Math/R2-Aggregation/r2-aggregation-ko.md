@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 116 | Created: 2026-11-09 | Updated: 2026-11-14 01:12 UTC
+Version 117 | Created: 2026-11-09 | Updated: 2026-11-14 01:14 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -309,7 +309,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 \hspace{19em} (37)
 ```
 
-- 식 (31), 식 (32): $`\mathrm{SST}_{\mathrm{all}}`$ 은 측정 위치마다의 wafer 사이 변동 $`A`$ 에 측정 위치 평균의 차이 $`B`$ 가 더해진 값이고, $`\mathrm{SSE}_{\mathrm{all}}`$ 은 측정 위치 SSE 의 합 $`E`$ 와 같다.
+- 식 (31), 식 (32): 식 (31) 은 측정 위치를 집단으로 보는 일원 분산분석 (one-way analysis of variance, ANOVA) 의 제곱합 분해를 wafer 와 측정 위치의 구조에 적용한 것이다. $`A`$ 는 측정 위치 안에서 wafer 사이의 변동인 집단 내 제곱합 (within-group sum of squares), $`B`$ 는 측정 위치 평균 사이의 변동인 집단 간 제곱합 (between-group sum of squares) 이다. 그래서 $`\mathrm{SST}_{\mathrm{all}}`$ 은 $`A`$ 에 $`B`$ 가 더해진 값이고, $`\mathrm{SSE}_{\mathrm{all}}`$ 은 측정 위치 SSE 의 합 $`E`$ 와 같다.
 - 식 (33), 식 (34), 식 (35): 세 R² 는 모두 1 에서 $`q`$ 에 계수를 곱한 값을 뺀 꼴이며, 계수는 $`R^2_{\mathrm{all}}`$ 이 $`1 - \lambda`$, $`R^2_{\mathrm{avgw}}`$ 가 $`\kappa`$ 이다. $`R^2_{\mathrm{avgn}}`$ 은 계수 1 에 $`\delta`$ 를 더 뺀다. $`q = 1 - R^2_{\mathrm{wavgn}}`$ 이므로 세 식은 $`R^2_{\mathrm{wavgn}}`$ 을 거쳐 이어진다.
 - 식 (34) 는 $`E \gt 0`$ 일 때 쓴다. $`E = 0`$ 이면 측정 위치 R² 는 모두 1 이지만, 따로 구한 wafer 평균 예측의 $`\mathrm{SSE}_{\mathrm{avgw}}`$ 는 0 이 아닐 수 있어 $`R^2_{\mathrm{avgw}}`$ 는 1 보다 작을 수 있다.
 - 식 (36): $`R^2_{\mathrm{wavgn}}`$ 은 $`R^2_j`$ 를 SST 가중치 $`\omega_j`$ 로 평균한 값이다.
@@ -583,6 +583,7 @@ R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 �
 
 ## Appendix A. Terminology
 
+- **between-group sum of squares**: 식 (18) 의 $`B`$. 측정 위치를 집단으로 볼 때 측정 위치 평균 사이의 변동.
 - **centered R2**: 분모의 SST 를 그 집계 수준의 측정값 평균에서 벗어난 제곱합으로 구한 R². 이 문서의 R² 는 모두 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴의 centered R² 이다.
 - **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
 - **error budget**: 식 (40) 의 $`N (1 - T_{\mathrm{avgn}})`$. R2_avgn 의 목표가 허용하는 측정 위치 FVU 의 합.
@@ -593,6 +594,7 @@ R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 �
 - **mean location FVU**: 측정 위치 FVU $`1 - R^2_j`$ 의 산술 평균. $`1 - R^2_{\mathrm{avgn}}`$ 이며 $`q + \delta`$ 와 같다.
 - **measurement location**: wafer 위에서 측정값을 얻는 지점. 모든 wafer 에서 같은 번호 $`j`$ 는 같은 지점이다.
 - **min R2 across N points**: 식 (16) 의 $`R^2_{\mathrm{minn}}`$. 측정 위치 $`N`$ 곳의 $`R^2_j`$ 가운데 가장 작은 값.
+- **one-way analysis of variance (ANOVA)**: 전체 제곱합을 집단 내 제곱합과 집단 간 제곱합으로 나누는 분해. 식 (31) 은 측정 위치를 집단으로 본 이 분해이다.
 - **R2 (coefficient of determination)**: $`1 - \mathrm{SSE}/\mathrm{SST}`$. 평균을 예측값으로 쓸 때와 견주어 제곱오차가 줄어든 정도.
 - **SST-weighted R2 average over N locations**: 식 (21) 의 $`R^2_{\mathrm{wavgn}}`$. 측정 위치 R² $`R^2_j`$ 를 $`\mathrm{SST}_j`$ 에 비례하는 가중치로 평균한 값이며, 측정 위치 $`N`$ 곳의 SSE 합과 SST 합으로 구한 R² 와 같다.
 - **sum of squared errors (SSE)**: 예측 오차를 제곱해 더한 값.
@@ -600,6 +602,7 @@ R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 �
 - **wafer average**: wafer 한 장의 측정값 $`N`$ 개를 산술 평균한 값.
 - **wafer bootstrap**: wafer 를 복원 추출로 다시 뽑아 R² 의 표본 분포를 구하는 방법. 한 wafer 의 측정값은 함께 뽑는다.
 - **weighted FVU**: 식 (22) 의 $`q`$. 측정 위치 FVU 를 SST 가중치 $`\omega_j`$ 로 평균한 값이며 $`1 - R^2_{\mathrm{wavgn}}`$ 과 같다.
+- **within-group sum of squares**: 식 (17) 의 $`A`$. 측정 위치를 집단으로 볼 때 측정 위치 안에서 wafer 사이의 변동.
 - **worst-location FVU**: $`1 - R^2_{\mathrm{minn}}`$. 측정 위치 FVU 의 최댓값이며 $`\gamma_n (q + \delta)`$ 와 같다.
 
 특수 기호를 읽는 법은 아래 목록이다.
@@ -617,7 +620,7 @@ R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 �
 
 ### B.1 Sums of Squares
 
-식 (31) 은 측정값과 전체 평균의 차이를 측정 위치 평균에서 나누어 증명한다.
+식 (31) 은 일원 분산분석의 제곱합 분해와 같은 방법으로, 측정값과 전체 평균의 차이를 측정 위치 평균에서 나누어 증명한다.
 
 ```math
 y_{ij} - \bar{y} = \left( y_{ij} - \bar{y}_{\cdot j} \right) + \left( \bar{y}_{\cdot j} - \bar{y} \right)
