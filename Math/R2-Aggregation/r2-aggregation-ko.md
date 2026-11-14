@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 140 | Created: 2026-11-09 | Updated: 2026-11-14 22:53 UTC
+Version 141 | Created: 2026-11-09 | Updated: 2026-11-14 22:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -40,7 +40,7 @@ Version 140 | Created: 2026-11-09 | Updated: 2026-11-14 22:53 UTC
 
 ## 1. Purpose
 
-- **Problem Statement**: 반도체 wafer 의 동일한 측정·예측 데이터에서도 전체 측정값, wafer 평균값, 측정 위치 (measurement location) 별 측정값으로 계산한 R² 는 서로 다르다. 따라서 한 R² 의 목표를 정해도 다른 R² 의 목표가 자동으로 충족되는 것은 아니며, 각 목표를 달성하기 위해 줄여야 할 예측오차도 다르다.
+**Problem Statement**: 반도체 wafer 의 동일한 측정·예측 데이터에서도 전체 측정값, wafer 평균값, 측정 위치 (measurement location) 별 측정값으로 계산한 R² 는 서로 다르다. 따라서 한 R² 의 목표를 정해도 다른 R² 의 목표가 자동으로 충족되는 것은 아니며, 각 목표를 달성하기 위해 줄여야 할 예측오차도 다르다.
 
 **Goal**: 전체 측정값으로 구한 R2_all, wafer 평균값으로 구한 R2_avgw, 측정 위치별로 구한 R² 의 평균 R2_avgn, 그 최솟값 R2_minn 의 네 R² 의 수학적 관계를 이용하여 다음을 정량적으로 분석한다.
 
