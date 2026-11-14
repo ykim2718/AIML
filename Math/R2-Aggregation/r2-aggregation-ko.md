@@ -1,57 +1,57 @@
 # R2 by Aggregation Level
-Version 134 | Created: 2026-11-09 | Updated: 2026-11-14 22:18 UTC
+Version 135 | Created: 2026-11-09 | Updated: 2026-11-14 22:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Notations and Assumptions](#3-notations-and-assumptions)
 - [4. Definitions](#4-definitions)
 - [5. Practical Interpretation](#5-practical-interpretation)
-  - [5.1 Core Identities](#51-core-identities)
-  - [5.2 Target Constraints](#52-target-constraints)
-  - [5.3 Range of the Minimum Location R2](#53-range-of-the-minimum-location-r2)
-  - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
+    - [5.1 Core Identities](#51-core-identities)
+    - [5.2 Target Constraints](#52-target-constraints)
+    - [5.3 Range of the Minimum Location R2](#53-range-of-the-minimum-location-r2)
+    - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
-  - [7.1 Target Setting Methods](#71-target-setting-methods)
-  - [7.2 Target Reliability](#72-target-reliability)
-  - [7.3 Error Reduction and Feasibility of Targets](#73-error-reduction-and-feasibility-of-targets)
+    - [7.1 Target Setting Methods](#71-target-setting-methods)
+    - [7.2 Target Reliability](#72-target-reliability)
+    - [7.3 Error Reduction and Feasibility of Targets](#73-error-reduction-and-feasibility-of-targets)
 - [8. Related Work](#8-related-work)
-  - [8.1 Multi-output R2](#81-multi-output-r2)
-  - [8.2 Analysis of Variance](#82-analysis-of-variance)
-  - [8.3 Multi-objective Optimization](#83-multi-objective-optimization)
-  - [8.4 Group Distributionally Robust Optimization](#84-group-distributionally-robust-optimization)
+    - [8.1 Multi-output R2](#81-multi-output-r2)
+    - [8.2 Analysis of Variance](#82-analysis-of-variance)
+    - [8.3 Multi-objective Optimization](#83-multi-objective-optimization)
+    - [8.4 Group Distributionally Robust Optimization](#84-group-distributionally-robust-optimization)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Mathematical Derivations](#appendix-b-mathematical-derivations)
-  - [B.1 Sums of Squares](#b1-sums-of-squares)
-  - [B.2 Core Identities](#b2-core-identities)
-  - [B.3 Differences](#b3-differences)
-  - [B.4 Inequalities](#b4-inequalities)
-  - [B.5 Target Conditions](#b5-target-conditions)
+    - [B.1 Sums of Squares](#b1-sums-of-squares)
+    - [B.2 Core Identities](#b2-core-identities)
+    - [B.3 Differences](#b3-differences)
+    - [B.4 Inequalities](#b4-inequalities)
+    - [B.5 Target Conditions](#b5-target-conditions)
 - [Appendix C. Wafer Average Prediction as the Mean of Location Predictions](#appendix-c-wafer-average-prediction-as-the-mean-of-location-predictions)
 - [Appendix D. Target Setting with Measured Data](#appendix-d-target-setting-with-measured-data)
-  - [D.1 Error to Reduce](#d1-error-to-reduce)
-  - [D.2 Targets by the Four Methods](#d2-targets-by-the-four-methods)
-  - [D.3 Conditions for the Targets](#d3-conditions-for-the-targets)
-  - [D.4 Target Reliability for the Measured Data](#d4-target-reliability-for-the-measured-data)
+    - [D.1 Error to Reduce](#d1-error-to-reduce)
+    - [D.2 Targets by the Four Methods](#d2-targets-by-the-four-methods)
+    - [D.3 Conditions for the Targets](#d3-conditions-for-the-targets)
+    - [D.4 Target Reliability for the Measured Data](#d4-target-reliability-for-the-measured-data)
 
 ## 1. Purpose
 
 - **Problem Statement**: 반도체 wafer 의 동일한 측정·예측 데이터에서도 전체 측정값, wafer 평균값, 측정 위치 (measurement location) 별 측정값으로 계산한 R² 는 서로 다르다. 따라서 한 R² 의 목표를 정해도 다른 R² 의 목표가 자동으로 충족되는 것은 아니며, 각 목표를 달성하기 위해 줄여야 할 예측오차도 다르다.
 - **Goal**: 전체 측정값으로 구한 R2_all, wafer 평균값으로 구한 R2_avgw, 측정 위치별로 구한 R² 의 평균 R2_avgn, 그 최솟값 R2_minn 의 네 R² 의 수학적 관계를 이용하여 다음을 정량적으로 분석한다.
-  1. 각 R² 목표가 허용하는 예측오차의 크기
-  2. 여러 R² 목표를 동시에 충족하기 위한 조건
-  3. 현재 모델에서 목표 달성에 필요한 오차 감소량
-  4. 목표 달성을 위해 우선적으로 개선할 오차 성분
-  5. 목표 달성 판정의 신뢰성
+    1. 각 R² 목표가 허용하는 예측오차의 크기
+    2. 여러 R² 목표를 동시에 충족하기 위한 조건
+    3. 현재 모델에서 목표 달성에 필요한 오차 감소량
+    4. 목표 달성을 위해 우선적으로 개선할 오차 성분
+    5. 목표 달성 판정의 신뢰성
 
-  - 이를 위한 항등식과 부등식을 유도한다.
-  - 실제 wafer 데이터로 적용 방법을 보인다.
+    - 이를 위한 항등식과 부등식을 유도한다.
+    - 실제 wafer 데이터로 적용 방법을 보인다.
 - **Non-Goal**:
-  - 본 문서는 centered R² 를 사용한다. R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로, 이 문서의 항등식과 부등식이 성립하지 않는다.
-  - 동일한 측정 위치를 갖는 wafer 데이터를 대상으로 한다.
-  - 제시한 관계식은 목표 충족 조건과 오차 개선 요구량을 분석하지만, 특정 모델이 목표를 실제로 달성할 수 있음을 보장하지는 않는다.
-  - 모델 개발 방법과 공정 규격 설정은 다루지 않는다.
+    - 본 문서는 centered R² 를 사용한다. R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로, 이 문서의 항등식과 부등식이 성립하지 않는다.
+    - 동일한 측정 위치를 갖는 wafer 데이터를 대상으로 한다.
+    - 제시한 관계식은 목표 충족 조건과 오차 개선 요구량을 분석하지만, 특정 모델이 목표를 실제로 달성할 수 있음을 보장하지는 않는다.
+    - 모델 개발 방법과 공정 규격 설정은 다루지 않는다.
 
 ## 2. Summary
 
