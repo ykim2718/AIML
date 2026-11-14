@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 126 | Created: 2026-11-09 | Updated: 2026-11-14 21:51 UTC
+Version 127 | Created: 2026-11-09 | Updated: 2026-11-14 21:54 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -91,7 +91,7 @@ Table 1. Symbols
 | $`\gamma_n`$                                                                              | 오차 집중도 (error concentration). $`1 - R^2_{\mathrm{minn}}`$ 을 $`1 - R^2_{\mathrm{avgn}}`$ 으로 나눈 값                                                | all wafers,<br>all locations | scalar  | $`1 \le \gamma_n \le N`$, $`R^2_{\mathrm{avgn}} \lt 1`$ 일 때만 정의 |
 | $`T_{\mathrm{all}}, T_{\mathrm{avgw}}, T_{\mathrm{avgn}}, T_{\mathrm{minn}}`$             | 예측 정확도의 목표값 (target). R2_all, R2_avgw, R2_avgn, R2_minn 이 넘어야 할 값                                                                          | -                            | scalar  | 1 이하                                                               |
 | $`\eta_{\mathrm{all}}, \eta_{\mathrm{avgw}}, \eta_{\mathrm{avgn}}, \eta_{\mathrm{minn}}`$ | 현재의 R² 에서 목표값에 닿으려면 그 집계 수준의 SSE 를 줄여야 하는 비율                                                                                   | -                            | scalar  | 1 이하                                                               |
-| $`\eta`$                                                                                  | 방법 2 에서 네 집계 수준의 SSE 를 함께 줄이는 공통 비율                                                                        | -                            | scalar  | 1 이하                                                             |
+| $`\eta`$                                                                                  | 네 집계 수준의 SSE 를 함께 줄이는 공통 비율                                                                                    | -                            | scalar  | 1 이하                                                             |
 | $`n_b`$, $`b`$                                                                            | wafer bootstrap 의 표본 수와 표본 번호                                                                                                                    | -                            | integer | $`1 \le b \le n_b`$                                                  |
 | $`R^{2(b)}_{\mathrm{all}}`$                                                               | $`b`$ 번째 wafer bootstrap 표본으로 다시 구한 R2_all. 다른 R² 도 같은 꼴                                                                                  | per sample                   | scalar  | -                                                                    |
 | $`\hat{p}_{\mathrm{all}}`$, $`\hat{p}_{\mathrm{joint}}`$                                  | R2_all 의 목표, 네 목표를 함께 충족할 확률의 추정값                                                                                                       | -                            | scalar  | $`0 \le \hat{p} \le 1`$                                              |
@@ -447,7 +447,7 @@ Table 4 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 ### 7.1 Breaking Conditions
 
 - Wafer 마다 측정 위치의 수나 위치가 다르면 식 (31) 과 식 (33) 은 지금의 정의 그대로는 일반적으로 쓸 수 없다. 측정 위치마다 관측된 wafer 수를 반영해 SST 의 분해를 새로 정의하는 일은 이 문서의 범위 밖이다. 식 (31) 의 교차항이 0 이 되는 단계에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
-- R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (33) 부터 식 (42) 와 식 (63) 부터 식 (67) 이 모두 성립하지 않는다.
+- R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (33) 부터 식 (42) 와 [B.3](#b3-differences) 의 식 (63) 부터 식 (67) 이 모두 성립하지 않는다.
 - 어떤 측정 위치에서 측정값이 wafer 사이에서 같아 $`\mathrm{SST}_j = 0`$ 이면 $`R^2_j`$ 와 $`R^2_{\mathrm{avgn}}`$ 이 정의되지 않는다.
 
 ### 7.2 Wafer Average Prediction Structure
@@ -807,7 +807,7 @@ R^2_{\mathrm{wavgn}} = \sum_{j=1}^{N} \omega_j R^2_j
 
 ### B.3 Differences
 
-식 (63) 부터 식 (67) 은 식 (21), 식 (22) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (33), 식 (34), 식 (35) 에서 두 식을 빼어 얻는다. 따라서 식 (63) 부터 식 (67) 이 성립한다. 이 차이는 한 R² 의 목표값이 다른 R² 의 목표값과 얼마나 떨어져도 되는지를 정하며, Table 8 의 조건은 $`q \gt 0`$ 에서 각 차이의 부호를 본 것이다.
+식 (21), 식 (22) 의 $`R^2_{\mathrm{wavgn}} = 1 - q`$ 와 식 (33), 식 (34), 식 (35) 에서 두 식을 빼면 아래 식 (63) 부터 식 (67) 이 성립한다. 이 차이는 한 R² 의 목표값이 다른 R² 의 목표값과 얼마나 떨어져도 되는지를 정한다.
 
 ```math
 R^2_{\mathrm{all}} - R^2_{\mathrm{wavgn}} = \lambda\, q
@@ -1014,7 +1014,7 @@ Table 10. Components of the location error sum E
 | Total E             | 83042.58       | 1.0000     |
 
 - 전체 평균과 측정 위치마다의 평균을 더한 성분은 측정 위치마다의 mean error (offset) 의 제곱합 $`M \sum_j \bar{e}_{\cdot j}^2`$ 이며, $`E`$ 의 0.4726 을 차지한다. 이 성분이 0 이면 $`E`$ 가 0.4726 만큼 줄어 $`q`$ 는 0.2051 에서 0.1082 가 된다.
-- 그래서 이 데이터에서 가장 먼저 줄일 오차는 측정 위치마다 wafer 사이에서 일정한 오차, 곧 mean error (offset) 이며, D.2 는 이 성분을 없애는 개선을 네 방법의 입력으로 쓴다.
+- 그래서 이 데이터에서 가장 먼저 줄일 오차는 측정 위치마다 wafer 사이에서 일정한 오차, 곧 mean error (offset) 이다.
 
 측정 위치마다 $`\mathrm{SSE}_j`$ 를 mean error (offset) 의 비율과 그 나머지로 나누면 아래 Table 11 이다.
 
@@ -1037,12 +1037,12 @@ Table 11. Offset share of SSE and R2 without the offset by location
 | 13         | 0.6660 | -12.2198            | 0.7805                | 0.9267              |
 
 - Mean error (offset) 는 식 (50) 의 $`\bar{e}_{\cdot j}`$ 이고, Offset share of SSE_j 는 식 (51) 의 둘째 항이 $`\mathrm{SSE}_j`$ 에서 차지하는 비율 $`M \bar{e}_{\cdot j}^2 / \mathrm{SSE}_j`$ 이다.
-- R2_j without offset 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 그 측정 위치의 오차에서 mean error (offset) 성분이 없어지면 오르는 R² 이고, 1 과의 차이는 그 성분이 없어져도 남는 FVU 이다. 이 값은 시험 데이터의 측정값으로 구한 mean error (offset) 를 같은 데이터에 쓴 분석값이어서, 예측으로 이룰 수 있는 값이 아니다. D.2 의 방법 3 은 개선된 예측의 mean error (offset) 성분이 0 이라고 가정하고 이 값을 목표값에 쓴다.
+- R2_j without offset 은 측정 위치 $`j`$ 의 예측값에 mean error (offset) $`\bar{e}_{\cdot j}`$ 를 더한 뒤 식 (14) 대로 다시 구한 R² 이며, $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 와 같다. 이 값은 $`\mathrm{SSE}_j`$ 가운데 mean error (offset) 를 뺀 나머지, 곧 wafer 마다 달라지는 예측 오차만으로 구한 R² 이다. 그래서 R2_j 와의 차이는 그 측정 위치의 오차에서 mean error (offset) 성분이 없어지면 오르는 R² 이고, 1 과의 차이는 그 성분이 없어져도 남는 FVU 이다. 이 값은 시험 데이터의 측정값으로 구한 mean error (offset) 를 같은 데이터에 쓴 분석값이어서, 예측으로 이룰 수 있는 값이 아니다.
 - 최솟값인 측정 위치 3 은 $`\mathrm{SSE}_3`$ = 9467.61 가운데 5139.45 (0.5428) 가 mean error (offset) -10.8077 에서 온다. 이것을 빼면 $`R^2_3`$ 이 0.6370 에서 0.8341 로 오르고 $`R^2_{\mathrm{minn}}`$ 도 0.8341 이 된다. 이 성분을 빼도 최솟값은 측정 위치 3 이다.
 
 ### D.2 Targets by the Four Methods
 
-방법 1 부터 방법 3 의 입력은 D.1 의 개선, 곧 mean error (offset) 성분을 없애는 개선에 맞춘다. 방법 2 의 $`\eta`$ 는 이 성분이 $`E`$ 에서 차지하는 0.4726 이고, 방법 1 의 T_all 은 식 (49) 에 이 $`\eta`$ 를 넣은 0.9058 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, 현재 예측과 방법 3 이 가정한 예측의 wafer bootstrap 을 n_b = 2000 번 되풀이해 구했다. 네 방법의 목표값은 아래 Table 12 이다.
+방법 1 부터 방법 3 의 입력은 D.1 에서 가장 먼저 줄일 오차로 본 mean error (offset) 성분을 없애는 개선에 맞추며, 방법 3 은 Table 11 의 R2_j without offset 을 측정 위치 R² 의 목표에 쓴다. 방법 2 의 $`\eta`$ 는 이 성분이 $`E`$ 에서 차지하는 0.4726 이고, 방법 1 의 T_all 은 식 (49) 에 이 $`\eta`$ 를 넣은 0.9058 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, 현재 예측과 방법 3 이 가정한 예측의 wafer bootstrap 을 n_b = 2000 번 되풀이해 구했다. 네 방법의 목표값은 아래 Table 12 이다.
 
 Table 12. Targets by the four target setting methods
 
