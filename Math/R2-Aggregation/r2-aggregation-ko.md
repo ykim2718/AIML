@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 127 | Created: 2026-11-09 | Updated: 2026-11-14 21:54 UTC
+Version 128 | Created: 2026-11-09 | Updated: 2026-11-14 21:57 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -15,8 +15,8 @@ Version 127 | Created: 2026-11-09 | Updated: 2026-11-14 21:54 UTC
   - [7.1 Breaking Conditions](#71-breaking-conditions)
   - [7.2 Wafer Average Prediction Structure](#72-wafer-average-prediction-structure)
   - [7.3 Target Setting Methods](#73-target-setting-methods)
-  - [7.4 Error Reduction and Feasibility of Targets](#74-error-reduction-and-feasibility-of-targets)
-  - [7.5 Target Reliability](#75-target-reliability)
+  - [7.4 Target Reliability](#74-target-reliability)
+  - [7.5 Error Reduction and Feasibility of Targets](#75-error-reduction-and-feasibility-of-targets)
 - [8. Related Work](#8-related-work)
   - [8.1 Multi-output R2](#81-multi-output-r2)
   - [8.2 Analysis of Variance](#82-analysis-of-variance)
@@ -581,7 +581,17 @@ Table 5. Target setting methods
 | 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (50), 식 (51), 식 (52) |
 | 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (54)                   |
 
-### 7.4 Error Reduction and Feasibility of Targets
+### 7.4 Target Reliability
+
+같은 예측도 다른 wafer 로 구하면 R² 가 달라지므로, 목표는 7.3 의 wafer bootstrap 으로 구한 R² 의 표본 분포를 함께 보아 아래 세 가지로 나누어 정한다.
+
+- 목표값: $`T_{\mathrm{all}}`$ 처럼 R² 가 넘어야 할 값.
+- 검증 기준: 목표를 정할 때 쓰지 않은 독립한 wafer 로 구한 R² 가 목표값을 넘는지.
+- 안정성 기준: $`\hat{L}_{\mathrm{all},0.05} \ge T_{\mathrm{all}}`$ 처럼, wafer 를 다시 뽑아도 표본의 0.95 이상에서 R² 가 목표값을 넘는지.
+
+R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 충족하려면 점 추정값이 목표값보다 얼마나 커야 하는지를 보여 준다. 목표를 정하는 데 쓴 wafer 와 최종 성능을 검증하는 wafer 는 나눈다.
+
+### 7.5 Error Reduction and Feasibility of Targets
 
 목표 조합이 주어지면, 현재 예측의 R² 에서 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인한다.
 
@@ -615,16 +625,6 @@ Table 6. Prediction error that each target constrains
 - 식 (40) 과 식 (45) 로 wafer 평균 예측의 FVU 가 넘지 않아야 할 값을 구한다.
 - 현재 예측의 $`E`$ 를 성분으로 나누어, $`q`$ 가 그 값에 닿으려면 어느 성분을 줄여야 하는지를 본다.
 - 식 (42) 로 R2_minn 의 목표가 허용하는 $`\gamma_n`$ 의 위쪽 한계를 구하고 현재의 $`\gamma_n`$ 과 견준다. 이때 $`\gamma_n`$ 은 최악 측정 위치의 오차를 설명하는 진단 지표로 쓴다.
-
-### 7.5 Target Reliability
-
-같은 예측도 다른 wafer 로 구하면 R² 가 달라지므로, 목표는 7.3 의 wafer bootstrap 으로 구한 R² 의 표본 분포를 함께 보아 아래 세 가지로 나누어 정한다.
-
-- 목표값: $`T_{\mathrm{all}}`$ 처럼 R² 가 넘어야 할 값.
-- 검증 기준: 목표를 정할 때 쓰지 않은 독립한 wafer 로 구한 R² 가 목표값을 넘는지.
-- 안정성 기준: $`\hat{L}_{\mathrm{all},0.05} \ge T_{\mathrm{all}}`$ 처럼, wafer 를 다시 뽑아도 표본의 0.95 이상에서 R² 가 목표값을 넘는지.
-
-R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 충족하려면 점 추정값이 목표값보다 얼마나 커야 하는지를 보여 준다. 목표를 정하는 데 쓴 wafer 와 최종 성능을 검증하는 wafer 는 나눈다.
 
 ## 8. Related Work
 
