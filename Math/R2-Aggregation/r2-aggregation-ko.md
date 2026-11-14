@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 113 | Created: 2026-11-09 | Updated: 2026-11-14 01:05 UTC
+Version 114 | Created: 2026-11-09 | Updated: 2026-11-14 01:06 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -24,9 +24,7 @@ Version 113 | Created: 2026-11-09 | Updated: 2026-11-14 01:05 UTC
   - [B.3 Differences](#b3-differences)
   - [B.4 Inequalities](#b4-inequalities)
   - [B.5 Target Conditions](#b5-target-conditions)
-- [Appendix C. Error Ratio and Cross-location Correlation](#appendix-c-error-ratio-and-cross-location-correlation)
-  - [C.1 Aggregate Cross-location Correlation](#c1-aggregate-cross-location-correlation)
-  - [C.2 Wafer Average Prediction as the Mean of Location Predictions](#c2-wafer-average-prediction-as-the-mean-of-location-predictions)
+- [Appendix C. Wafer Average Prediction as the Mean of Location Predictions](#appendix-c-wafer-average-prediction-as-the-mean-of-location-predictions)
 - [Appendix D. Target Setting with Measured Data](#appendix-d-target-setting-with-measured-data)
   - [D.1 Target Conditions](#d1-target-conditions)
   - [D.2 Error to Reduce](#d2-error-to-reduce)
@@ -95,7 +93,7 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 - $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이다. 그래서 $`R^2_{\mathrm{avgw}}`$ 가 정의된다.
 - $`\gamma_n`$ 은 $`R^2_{\mathrm{avgn}} \lt 1`$ 일 때만 정의한다.
 - $`\kappa`$ 는 $`E \gt 0`$ 일 때만 정의한다. $`E = 0`$ 이면 $`\kappa`$ 대신 $`1 - R^2_{\mathrm{avgw}} = \mathrm{SSE}_{\mathrm{avgw}} / \mathrm{SST}_{\mathrm{avgw}}`$ 를 그대로 쓴다.
-- Wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값의 평균이어도 되고 따로 구한 값이어도 된다. 평균인 경우에만 성립하는 결과는 [C.2](#c2-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
+- Wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 측정 위치 예측값의 평균이어도 되고 따로 구한 값이어도 된다. 평균인 경우에만 성립하는 결과는 [Appendix C](#appendix-c-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
 
 ## 4. Definitions
 
@@ -238,14 +236,14 @@ SST, SSE, R² 의 아래첨자 $`\mathrm{all}`$ 은 측정값 $`T`$ 개, $`\math
 \hspace{19em} (29)
 ```
 
-두 예측 A 와 B 를 견줄 때는 식 (29) 를 두 예측에서 나누어, 최악 측정 위치의 FVU 가 몇 배가 되었는지를 아래 식 (30) 과 같이 측정 위치 FVU 의 평균의 배수와 오차 집중도의 배수의 곱으로 나눈다. 아래첨자 A, B 는 그 값을 구한 예측이다.
+예측의 오차가 바뀌기 전과 뒤를 A 와 B 라 하면, 식 (29) 를 두 경우에서 나누어 최악 측정 위치의 FVU 가 몇 배가 되었는지를 아래 식 (30) 과 같이 측정 위치 FVU 의 평균의 배수와 오차 집중도의 배수의 곱으로 나눈다. 아래첨자 A, B 는 오차가 바뀌기 전과 뒤의 값이다.
 
 ```math
 \frac{1 - R^2_{\mathrm{minn},B}}{1 - R^2_{\mathrm{minn},A}} = \underbrace{\frac{1 - R^2_{\mathrm{avgn},B}}{1 - R^2_{\mathrm{avgn},A}}}_{\text{ratio of mean location FVU}} \, \underbrace{\frac{\gamma_{n,B}}{\gamma_{n,A}}}_{\text{ratio of error concentration}}
 \hspace{19em} (30)
 ```
 
-- 그래서 두 예측을 견줄 때 $`R^2_{\mathrm{minn}}`$ 이 낮아진 까닭이 측정 위치 전체의 오차가 커진 것인지, 오차가 한 측정 위치에 몰린 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [D.3](#d3-four-r2-without-the-offset-component) 에 있다.
+- 그래서 오차가 바뀔 때 $`R^2_{\mathrm{minn}}`$ 이 바뀐 까닭이 측정 위치 전체의 오차가 바뀐 것인지, 오차가 한 측정 위치에 몰리는 정도가 바뀐 것인지를 가를 수 있다. 측정 데이터로 가른 예는 [D.3](#d3-four-r2-without-the-offset-component) 에 있다.
 - $`\gamma_n = 1`$ 은 모든 측정 위치의 $`R^2_j`$ 가 같을 때, 그리고 그때만이다. $`\gamma_n = N`$ 은 측정 위치 한 곳을 뺀 나머지의 $`R^2_j`$ 가 모두 1 일 때이다.
 - $`\gamma_n`$ 은 최악 측정 위치의 FVU 를 설명하는 진단 지표이며, 따로 줄일 목표가 아니다. 식 (29) 에서 $`\gamma_n`$ 이 줄어도 측정 위치 FVU 의 평균이 늘면 $`R^2_{\mathrm{minn}}`$ 은 낮아질 수 있고, $`\gamma_n`$ 이 늘어도 측정 위치 FVU 의 평균이 충분히 줄면 $`R^2_{\mathrm{minn}}`$ 은 그대로이거나 높아진다.
 
@@ -424,8 +422,6 @@ Fig 1 은 같은 folder 의 [src/r2_minn_bounds_figure.py](src/r2_minn_bounds_fi
 - **$`\delta`$**: 가중 평균과 산술 평균의 차이이며, 식 (37) 대로 $`\mathrm{SST}_j`$ 와 $`R^2_j`$ 가 함께 움직이는 정도로 정해진다.
 - **R² 의 뜻**: 이 문서의 R² 는 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 이며, 그 집계 수준의 평균을 예측값으로 쓸 때와 견주어 제곱오차가 얼마나 줄었는지를 나타낸다. 측정값과 예측값의 상관계수를 제곱한 값과는 다르며, 예측이 평균보다 나쁘면 음수이다.
 
-$`\kappa`$ 를 측정값의 상관으로 적는 방법은 [Appendix C](#appendix-c-error-ratio-and-cross-location-correlation) 에 있다.
-
 ## 6. Worked Example
 
 Wafer $`M = 3`$ 장, 측정 위치 $`N = 2`$ 곳의 측정값과 예측값은 아래 Table 4 이다.
@@ -462,17 +458,24 @@ Table 5 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 - 식 (35): 1 - 0.0789 - 0.0072 = 0.9138 이 R2_avgn 이다.
 - 순서: $`\kappa`$ = 0.7703 이 $`1 - \lambda`$ = 0.8261 보다 작아 R2_avgw 가 R2_all 보다 크고, $`\delta`$ = 0.0072 가 $`-\lambda q`$ = -0.0137 보다 커서 R2_all 이 R2_avgn 보다 크다. 그래서 R2_avgw = 0.9392, R2_all = 0.9348, R2_avgn = 0.9138 의 차례이다.
 
+목표를 $`T_{\mathrm{all}} = 0.95,\ T_{\mathrm{avgw}} = 0.95,\ T_{\mathrm{avgn}} = 0.90,\ T_{\mathrm{minn}} = 0.90`$ 으로 잡고 Table 5 의 값으로 식 (38) 부터 식 (41) 의 조건과 식 (50) 의 SSE 감소율을 구하면 아래 네 항목이다. R2_minn 은 측정 위치 1 의 0.8889 이고, $`\gamma_n`$ = (1 - 0.8889) / (1 - 0.9138) = 1.2895 이다.
+
+- 식 (38): SSE_all / SST_all = 4 / 61.3333 = 0.0652 이고 $`(1 - \lambda)\, q`$ = 0.8261 × 0.0789 = 0.0652 이다. 0.05 를 넘으므로 R2_all 의 목표를 충족하지 않으며, $`\eta_{\mathrm{all}}`$ = (0.95 - 0.9348) / (1 - 0.9348) = 0.2333 이다.
+- 식 (39): SSE_avgw / SST_avgw = 1.5 / 24.6667 = 0.0608 이고 $`\kappa q`$ = 0.7703 × 0.0789 = 0.0608 이다. 0.05 를 넘으므로 R2_avgw 의 목표를 충족하지 않으며, $`\eta_{\mathrm{avgw}}`$ = 0.1778 이다.
+- 식 (40): 측정 위치 FVU 의 합은 2 / 18 + 2 / 32.6667 = 0.1723 이고, 오차 예산 2 × (1 - 0.90) = 0.20 이하이므로 R2_avgn 의 목표를 충족한다. $`q + \delta`$ = 0.0789 + 0.0072 = 0.0862 은 그 합의 절반이다.
+- 식 (41): 측정 위치 FVU 의 최댓값은 2 / 18 = 0.1111 이고 $`\gamma_n (q + \delta)`$ = 1.2895 × 0.0862 = 0.1111 이다. 0.10 을 넘으므로 R2_minn 의 목표를 충족하지 않으며, $`\eta_{\mathrm{minn}}`$ = 0.1000 이다.
+
 ## 7. Application
 
 ### 7.1 Breaking Conditions
 
-- Wafer 마다 측정 위치의 수나 위치가 다르면 식 (31) 과 식 (33) 은 지금의 정의 그대로는 일반적으로 쓸 수 없다. 측정 위치마다 관측된 wafer 수를 반영하면 SST 의 분해를 새로 정의할 수 있으며, 측정하지 않은 위치가 있는 생산 데이터로 넓힐 때 그 정의가 필요하다. 식 (31) 의 교차항이 0 이 되는 단계와 [C.1](#c1-aggregate-cross-location-correlation) 의 식에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
+- Wafer 마다 측정 위치의 수나 위치가 다르면 식 (31) 과 식 (33) 은 지금의 정의 그대로는 일반적으로 쓸 수 없다. 측정 위치마다 관측된 wafer 수를 반영하면 SST 의 분해를 새로 정의할 수 있으며, 측정하지 않은 위치가 있는 생산 데이터로 넓힐 때 그 정의가 필요하다. 식 (31) 의 교차항이 0 이 되는 단계에 모든 wafer 의 측정 위치가 같다는 가정이 쓰인다.
 - R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (33) 부터 식 (46) 이 모두 성립하지 않는다.
 - 어떤 측정 위치에서 측정값이 wafer 사이에서 같아 $`\mathrm{SST}_j = 0`$ 이면 $`R^2_j`$ 와 $`R^2_{\mathrm{avgn}}`$ 이 정의되지 않는다.
 
 ### 7.2 Wafer Average Prediction Structure
 
-wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 따로 구하느냐에 따라, R2_avgw 의 목표가 R2_all 의 목표에 묶이는지가 갈린다. wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \frac{1}{N} \sum_j \hat{y}_{ij}`$ 이면 wafer 마다 평균의 제곱이 제곱의 평균을 넘지 않아 $`\mathrm{SSE}_{\mathrm{avgw}} \le \mathrm{SSE}_{\mathrm{all}} / N`$ 이고, 아래 식 (49) 가 성립한다. 유도는 [C.2](#c2-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
+wafer 평균 예측값을 측정 위치 예측값의 평균으로 구하느냐 따로 구하느냐에 따라, R2_avgw 의 목표가 R2_all 의 목표에 묶이는지가 갈린다. wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \frac{1}{N} \sum_j \hat{y}_{ij}`$ 이면 wafer 마다 평균의 제곱이 제곱의 평균을 넘지 않아 $`\mathrm{SSE}_{\mathrm{avgw}} \le \mathrm{SSE}_{\mathrm{all}} / N`$ 이고, 아래 식 (49) 가 성립한다. 유도는 [Appendix C](#appendix-c-wafer-average-prediction-as-the-mean-of-location-predictions) 에 있다.
 
 ```math
 1 - R^2_{\mathrm{avgw}} \le \frac{\mathrm{SST}_{\mathrm{all}}}{N\, \mathrm{SST}_{\mathrm{avgw}}} \left( 1 - R^2_{\mathrm{all}} \right)
@@ -600,10 +603,8 @@ R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 �
 - $`\bar{y}_{\cdot j}`$: 영어로 "y bar dot j", 한국어로 "와이 바 닷 제이" 라 읽는다.
 - $`\hat{y}_{iw}`$: 영어로 "y hat i w", 한국어로 "와이 햇 아이 더블유" 라 읽는다.
 - $`\lambda`$, $`\kappa`$, $`\delta`$, $`\omega_j`$, $`\gamma_n`$: 영어로 "lambda", "kappa", "delta", "omega j", "gamma n", 한국어로 "람다", "카파", "델타", "오메가 제이", "감마 엔" 이라 읽는다.
-- $`\bar{r}_y`$: 영어로 "r bar y", 한국어로 "알 바 와이" 라 읽는다.
 - $`\sum`$: 영어로 "sum", 한국어로 "합" 이라 읽는다.
 - $`\min_j`$, $`\max_j`$: 영어로 "minimum over j", "maximum over j", 한국어로 "제이에 대한 최솟값", "제이에 대한 최댓값" 이라 읽는다.
-- $`\sum_{j \ne k}`$: 영어로 "sum over j not equal to k", 한국어로 "제이와 케이가 다른 모든 순서쌍에 대한 합" 이라 읽는다.
 
 ## Appendix B. Mathematical Derivations
 
@@ -812,61 +813,18 @@ q + \delta = \frac{1}{N} \sum_{j=1}^{N} \frac{1}{\omega_j} \cdot \frac{\mathrm{S
 \hspace{19em} (53)
 ```
 
-## Appendix C. Error Ratio and Cross-location Correlation
+## Appendix C. Wafer Average Prediction as the Mean of Location Predictions
 
-### C.1 Aggregate Cross-location Correlation
-
-> **Definition: Aggregate cross-location correlation**<br>
-> $`\bar{r}_y`$ 는 측정 위치 평균에서 벗어난 양 $`x_{ij} = y_{ij} - \bar{y}_{\cdot j}`$ 의 곱을 서로 다른 측정 위치의 모든 순서쌍과 wafer $`M`$ 장에서 더한 값을, $`N - 1`$ 과 $`A`$ 의 곱으로 나눈 값이다.
-> ```math
-> \bar{r}_y := \frac{\sum_{j \ne k} \sum_{i=1}^{M} x_{ij}\, x_{ik}}{(N-1)\, A}
-> \hspace{19em} (64)
-> ```
-
-- $`\bar{r}_y`$ 는 측정 위치 쌍마다의 Pearson 상관계수의 산술 평균이 아니다. $`\mathrm{SST}_j`$ 가 모두 같을 때만 그 평균과 같다.
-- $`\bar{r}_y = 1`$ 은 모든 측정 위치의 $`x_{ij}`$ 가 wafer 마다 같은 경우이다. 상관이 완전한 것에 더해 변동의 크기까지 같아야 한다.
-
-```math
-N^2\, \mathrm{SST}_{\mathrm{avgw}} = \sum_{i=1}^{M} \left( \sum_{j=1}^{N} x_{ij} \right)^2
-\hspace{19em} (65)
-```
-
-- 식 (65): 식 (6), 식 (2), 식 (11) 로 $`\bar{y}_{i\cdot} - \bar{y} = \frac{1}{N} \sum_j x_{ij}`$ 이고, 이것을 식 (8) 에 넣었다.
-
-식 (65) 의 우변을 $`\sum_{i,j} x_{ij}^2 + \sum_{j \ne k} \sum_i x_{ij} x_{ik}`$ 로 전개하면 첫 합은 $`A`$, 둘째 합은 식 (64) 로 $`(N-1)\, \bar{r}_y A`$ 이다.
-
-```math
-\mathrm{SST}_{\mathrm{avgw}} = \frac{A}{N^2} \left[ 1 + (N-1)\, \bar{r}_y \right]
-\hspace{19em} (66)
-```
-
-```math
-\kappa = \frac{N^2\, \mathrm{SSE}_{\mathrm{avgw}}}{\left[ 1 + (N-1)\, \bar{r}_y \right] E}
-\hspace{19em} (67)
-```
-
-- 식 (67): 식 (24) 의 $`\mathrm{SST}_{\mathrm{avgw}}`$ 에 식 (66) 을 넣었다. $`\bar{r}_y = 1`$ 이면 $`\kappa = N\, \mathrm{SSE}_{\mathrm{avgw}} / E`$ 이다.
-
-식 (65) 의 우변은 0 이상이고, 괄호 안의 합의 제곱은 $`N \sum_j x_{ij}^2`$ 를 넘지 않는다. 그래서 식 (66) 의 괄호는 0 이상 $`N`$ 이하이며, $`\bar{r}_y`$ 의 범위는 $`-1/(N-1) \le \bar{r}_y \le 1`$ 이다. $`\mathrm{SST}_{\mathrm{avgw}} \gt 0`$ 이면 왼쪽 부등호가 엄격해진다.
-
-### C.2 Wafer Average Prediction as the Mean of Location Predictions
-
-Wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \frac{1}{N} \sum_j \hat{y}_{ij}`$ 이면 $`e_{iw} = \frac{1}{N} \sum_j e_{ij}`$ 이어서, $`\kappa`$ 에 위쪽 범위가 생긴다.
+Wafer 평균 예측값이 측정 위치 예측값의 평균 $`\hat{y}_{iw} = \frac{1}{N} \sum_j \hat{y}_{ij}`$ 이면 $`e_{iw} = \frac{1}{N} \sum_j e_{ij}`$ 이어서, $`\mathrm{SSE}_{\mathrm{avgw}}`$ 에 위쪽 범위가 생긴다.
 
 ```math
 \mathrm{SSE}_{\mathrm{avgw}} \le \frac{E}{N}
-\hspace{19em} (68)
+\hspace{19em} (64)
 ```
 
-```math
-\kappa \le \frac{N}{1 + (N-1)\, \bar{r}_y}
-\hspace{19em} (69)
-```
+- 식 (64): 평균의 제곱은 제곱의 평균을 넘지 않으므로 $`e_{iw}^2 \le \frac{1}{N} \sum_j e_{ij}^2`$ 이고, 이것을 wafer 에 대해 더했다.
 
-- 식 (68): 평균의 제곱은 제곱의 평균을 넘지 않으므로 $`e_{iw}^2 \le \frac{1}{N} \sum_j e_{ij}^2`$ 이고, 이것을 wafer 에 대해 더했다.
-- 식 (69): 식 (67) 에 식 (68) 을 넣었다.
-
-이 범위는 wafer 평균을 따로 예측한 일반적인 경우에는 성립하지 않는다. 식 (68) 의 양변을 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나누고, 식 (32) 와 식 (5) 로 $`E = \mathrm{SSE}_{\mathrm{all}} = \mathrm{SST}_{\mathrm{all}} (1 - R^2_{\mathrm{all}})`$ 인 것을 쓰면 식 (49) 가 성립한다.
+이 범위는 wafer 평균을 따로 예측한 일반적인 경우에는 성립하지 않는다. 식 (64) 의 양변을 $`\mathrm{SST}_{\mathrm{avgw}}`$ 로 나누고, 식 (32) 와 식 (5) 로 $`E = \mathrm{SSE}_{\mathrm{all}} = \mathrm{SST}_{\mathrm{all}} (1 - R^2_{\mathrm{all}})`$ 인 것을 쓰면 식 (49) 가 성립한다.
 
 ```math
 1 - R^2_{\mathrm{avgw}} \le \frac{\mathrm{SST}_{\mathrm{all}}}{N\, \mathrm{SST}_{\mathrm{avgw}}} \left( 1 - R^2_{\mathrm{all}} \right)
@@ -889,8 +847,8 @@ Table 7. Quantities of the measured data
 | SSE_avgw | 1343.1469   | R2_avgw  | 0.9436 |
 | A        | 404892.0942 | R2_avgn  | 0.7835 |
 | B        | 59854.8456  | R2_wavgn | 0.7949 |
-| R2_minn  | 0.6370      | r_y      | 0.7456 |
-| E        | 83042.5789  | gamma_n  | 1.6768 |
+| R2_minn  | 0.6370      | gamma_n  | 1.6768 |
+| E        | 83042.5789  |          |        |
 
 - 측정값 $`y_{ij}`$ 는 `true_p1` 부터 `true_p13`, 측정 위치 예측값 $`\hat{y}_{ij}`$ 는 `pred_p1` 부터 `pred_p13`, wafer 평균 예측값 $`\hat{y}_{iw}`$ 는 `pred_avg` 열이다.
 - Wafer 평균은 식 (6) 대로 `true_p1` 부터 `true_p13` 의 평균으로 다시 구했다. 첫 wafer `20260123_0001` 의 `true_avg` 열은 628 이지만 측정값 13 개의 평균은 614.4957 이어서, 이 열은 쓰지 않았다.
