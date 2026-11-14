@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 136 | Created: 2026-11-09 | Updated: 2026-11-14 22:24 UTC
+Version 137 | Created: 2026-11-09 | Updated: 2026-11-14 22:28 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -11,6 +11,10 @@ Version 136 | Created: 2026-11-09 | Updated: 2026-11-14 22:24 UTC
     - [5.3 Range of the Minimum Location R2](#53-range-of-the-minimum-location-r2)
     - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
 - [6. Target Setting Methods](#6-target-setting-methods)
+    - [6.1 Method 1. Conversion of T_all](#61-method-1-conversion-of-t_all)
+    - [6.2 Method 2. Common SSE Reduction](#62-method-2-common-sse-reduction)
+    - [6.3 Method 3. Error Component Removal](#63-method-3-error-component-removal)
+    - [6.4 Method 4. Bootstrap Lower Quantile](#64-method-4-bootstrap-lower-quantile)
 - [7. Target Reliability](#7-target-reliability)
 - [8. Error Reduction and Feasibility of Targets](#8-error-reduction-and-feasibility-of-targets)
 - [9. Worked Example](#9-worked-example)
@@ -409,7 +413,7 @@ Fig 1 은 같은 folder 의 [src/r2_minn_bounds_figure.py](src/r2_minn_bounds_fi
 - 방법 2 와 방법 4 는 네 목표값을 모두 같은 꼴로 구한다.
 - 방법 3 은 T_all, T_avgn, T_minn 을 구하고, T_avgw 는 현재의 R2_avgw 로 둔다.
 
-#### Method 1. Conversion of T_all
+### 6.1 Method 1. Conversion of T_all
 
 R2_all 의 목표값 T_all 을 입력으로 받아, 나머지 세 R² 의 목표값 T_avgw, T_avgn, T_minn 을 구한다.
 
@@ -432,7 +436,7 @@ R2_all 의 목표 $`T_{\mathrm{all}}`$ 을 주고, $`\kappa`$, $`\delta`$, $`\ga
 - $`\kappa`$ 가 유지되므로 wafer 평균 예측의 FVU 는 $`q`$ 와 같은 비율로 줄고, $`\gamma_n`$ 이 유지되므로 최악 측정 위치의 FVU 는 측정 위치 FVU 의 평균과 같은 비율로 준다.
 - $`\delta`$ 가 유지되므로, $`q`$ 가 줄어도 측정 위치 FVU 의 평균과 $`q`$ 의 차이는 줄지 않는다.
 
-#### Method 2. Common SSE Reduction
+### 6.2 Method 2. Common SSE Reduction
 
 네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴의 식으로 구한다.
 
@@ -455,7 +459,7 @@ R2_all 의 목표 $`T_{\mathrm{all}}`$ 을 주고, $`\kappa`$, $`\delta`$, $`\ga
 - 식 (48): $`T_{\mathrm{avgw}}`$, $`T_{\mathrm{avgn}}`$, $`T_{\mathrm{minn}}`$ 도 같은 꼴이다. $`\mathrm{SSE}_j`$ 가 모두 같은 비율로 줄므로 $`\kappa`$ 와 $`\gamma_n`$ 은 그대로이고, $`\delta`$ 는 $`(1 - \eta)`$ 배가 된다.
 - 같은 $`T_{\mathrm{all}}`$ 에서 방법 1 과 방법 2 는 $`T_{\mathrm{avgw}}`$ 가 같고, $`1 - T_{\mathrm{avgn}}`$ 은 방법 2 가 $`\eta \delta`$ 만큼 작다.
 
-#### Method 3. Error Component Removal
+### 6.3 Method 3. Error Component Removal
 
 측정 위치 예측의 오차로 정해지는 세 R² 의 목표값 T_all, T_avgn, T_minn 을 구한다. Wafer 평균 예측값을 따로 구하면 T_avgw 는 현재의 R2_avgw 로 둔다.
 
@@ -489,7 +493,7 @@ Mean error (offset) 성분을 없앤다고 가정하면, R2_all 의 목표값은
 - $`T_{\mathrm{avgn}}`$ 과 $`T_{\mathrm{minn}}`$ 은 측정 위치마다 $`R^2_j`$ 를 $`1 - (\mathrm{SSE}_j - M \bar{e}_{\cdot j}^2) / \mathrm{SST}_j`$ 로 바꾸어 식 (15) 와 식 (16) 대로 구한다. 방법 1, 방법 2 와 달리 측정 위치마다 줄어드는 비율이 달라, mean error (offset) 의 비율이 큰 측정 위치의 $`R^2_j`$ 가 더 오른다.
 - Mean error (offset) 성분은 측정 위치 예측의 오차이므로, wafer 평균 예측값을 따로 구하면 $`T_{\mathrm{avgw}}`$ 는 현재의 R2_avgw 이다.
 
-#### Method 4. Bootstrap Lower Quantile
+### 6.4 Method 4. Bootstrap Lower Quantile
 
 네 R² 의 목표값 T_all, T_avgw, T_avgn, T_minn 을 모두 같은 꼴로 구한다.
 
