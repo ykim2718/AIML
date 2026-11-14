@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 132 | Created: 2026-11-09 | Updated: 2026-11-14 22:13 UTC
+Version 133 | Created: 2026-11-09 | Updated: 2026-11-14 22:16 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,10 +12,9 @@ Version 132 | Created: 2026-11-09 | Updated: 2026-11-14 22:13 UTC
   - [5.4 Meaning of the Quantities](#54-meaning-of-the-quantities)
 - [6. Worked Example](#6-worked-example)
 - [7. Application](#7-application)
-  - [7.1 Breaking Conditions](#71-breaking-conditions)
-  - [7.2 Target Setting Methods](#72-target-setting-methods)
-  - [7.3 Target Reliability](#73-target-reliability)
-  - [7.4 Error Reduction and Feasibility of Targets](#74-error-reduction-and-feasibility-of-targets)
+  - [7.1 Target Setting Methods](#71-target-setting-methods)
+  - [7.2 Target Reliability](#72-target-reliability)
+  - [7.3 Error Reduction and Feasibility of Targets](#73-error-reduction-and-feasibility-of-targets)
 - [8. Related Work](#8-related-work)
   - [8.1 Multi-output R2](#81-multi-output-r2)
   - [8.2 Analysis of Variance](#82-analysis-of-variance)
@@ -47,7 +46,11 @@ Version 132 | Created: 2026-11-09 | Updated: 2026-11-14 22:13 UTC
   5. 목표 달성 판정의 신뢰성
 
   이를 위한 항등식과 부등식을 유도하고, 실제 wafer 데이터로 적용 방법을 보인다.
-- **Non-Goal**: 본 문서는 centered R² 를 사용하며, 동일한 측정 위치를 갖는 wafer 데이터를 대상으로 한다. 제시한 관계식은 목표 충족 조건과 오차 개선 요구량을 분석하지만, 특정 모델이 목표를 실제로 달성할 수 있음을 보장하지는 않는다. 모델 개발 방법과 공정 규격 설정은 다루지 않는다.
+- **Non-Goal**:
+  - 본 문서는 centered R² 를 사용한다. R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로, 이 문서의 항등식과 부등식이 성립하지 않는다.
+  - 동일한 측정 위치를 갖는 wafer 데이터를 대상으로 한다.
+  - 제시한 관계식은 목표 충족 조건과 오차 개선 요구량을 분석하지만, 특정 모델이 목표를 실제로 달성할 수 있음을 보장하지는 않는다.
+  - 모델 개발 방법과 공정 규격 설정은 다루지 않는다.
 
 ## 2. Summary
 
@@ -443,11 +446,7 @@ Table 4 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 
 ## 7. Application
 
-### 7.1 Breaking Conditions
-
-- R² 를 측정값과 예측값의 상관계수 제곱으로 구하면 SSE 와 SST 의 비가 아니므로 식 (33) 부터 식 (42) 와 [B.3](#b3-differences) 의 식 (63) 부터 식 (67) 이 모두 성립하지 않는다.
-
-### 7.2 Target Setting Methods
+### 7.1 Target Setting Methods
 
 목표값은 현재 예측에서 목표에 닿는 방법, 곧 개선된 예측의 오차가 어떻게 줄어드는지를 가정해야 정해진다. 아래 네 방법은 입력 하나와 도달 방법의 가정 하나로 네 목표값을 함께 정하며, 방법 1 부터 방법 3 은 목표값을 식 (33) 부터 식 (36) 의 FVU 로 구하므로 그 조합은 식 (39) 부터 식 (42) 를 함께 충족한다.
 
@@ -578,9 +577,9 @@ Table 5. Target setting methods
 | 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (51) | 현재 R2_avgw | 식 (50), 식 (15) | 식 (50), 식 (16) |
 | 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (53) | 식 (53)      | 식 (53)          | 식 (53)          |
 
-### 7.3 Target Reliability
+### 7.2 Target Reliability
 
-같은 예측도 다른 wafer 로 구하면 R² 가 달라지므로, 목표는 7.2 의 wafer bootstrap 으로 구한 R² 의 표본 분포를 함께 보아 아래 세 가지로 나누어 정한다.
+같은 예측도 다른 wafer 로 구하면 R² 가 달라지므로, 목표는 7.1 의 wafer bootstrap 으로 구한 R² 의 표본 분포를 함께 보아 아래 세 가지로 나누어 정한다.
 
 - 목표값: $`T_{\mathrm{all}}`$ 처럼 R² 가 넘어야 할 값.
 - 검증 기준: 목표를 정할 때 쓰지 않은 독립한 wafer 로 구한 R² 가 목표값을 넘는지.
@@ -588,7 +587,7 @@ Table 5. Target setting methods
 
 R² 의 점 추정값과 $`\hat{L}_{0.05}`$ 의 차이는 안정성 기준을 충족하려면 점 추정값이 목표값보다 얼마나 커야 하는지를 보여 준다. 목표를 정하는 데 쓴 wafer 와 최종 성능을 검증하는 wafer 는 나눈다.
 
-### 7.4 Error Reduction and Feasibility of Targets
+### 7.3 Error Reduction and Feasibility of Targets
 
 목표 조합이 주어지면, 현재 예측의 R² 에서 목표마다 줄여야 할 SSE 의 비율을 구하고, 한 R² 의 목표를 다른 R² 로 환산하고, 네 조건을 함께 이룰 수 있는지를 확인한다.
 
