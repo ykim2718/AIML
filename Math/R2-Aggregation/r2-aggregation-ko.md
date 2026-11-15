@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 144 | Created: 2026-11-09 | Updated: 2026-11-15 01:57 UTC
+Version 145 | Created: 2026-11-09 | Updated: 2026-11-15 02:01 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -532,8 +532,8 @@ $`\alpha`$ 와 목표에 닿았다고 가정한 예측을 주고, 평가할 wafe
 
 - 가정한 예측은 wafer 를 다시 뽑아도 표본의 $`1 - \alpha`$ 정도에서 각 목표값을 넘는다.
 - 가정한 예측에 따라 방법 4 는 아래 두 가지로 쓴다. 방법 1 과 방법 2 는 R² 만 정하고 예측값을 정하지 않으므로 가정한 예측으로 쓸 수 없다.
-    - 4, current prediction: 현재 예측을 그대로 쓴다. 개선 없이 표본의 $`1 - \alpha`$ 정도에서 이루는 목표값이다.
-    - 4, offset removed: 방법 3 의 예측, 곧 측정 위치 예측값에 식 (49) 의 mean error (offset) 를 더해 그 성분을 없앤 예측을 쓴다. 방법 3 의 개선을 이룬 예측이 표본의 $`1 - \alpha`$ 정도에서 이루는 목표값이다.
+    - Current prediction: 현재 예측을 그대로 쓴다. 개선 없이 표본의 $`1 - \alpha`$ 정도에서 이루는 목표값이다.
+    - Offset removed: 방법 3 의 예측, 곧 측정 위치 예측값에 식 (49) 의 mean error (offset) 를 더해 그 성분을 없앤 예측을 쓴다. 방법 3 의 개선을 이룬 예측이 표본의 $`1 - \alpha`$ 정도에서 이루는 목표값이다.
 - 방법 1 부터 방법 3 의 목표값은 가정한 예측의 점 추정값이어서, 그 예측이 다른 wafer 에서 목표값을 넘을 확률은 $`1 - \alpha`$ 보다 작다.
 
 ### 6.5 Summary
