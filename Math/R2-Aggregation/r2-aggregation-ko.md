@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 142 | Created: 2026-11-09 | Updated: 2026-11-14 23:01 UTC
+Version 143 | Created: 2026-11-09 | Updated: 2026-11-15 01:55 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -15,6 +15,7 @@ Version 142 | Created: 2026-11-09 | Updated: 2026-11-14 23:01 UTC
     - [6.2 Method 2. Common SSE Reduction](#62-method-2-common-sse-reduction)
     - [6.3 Method 3. Error Component Removal](#63-method-3-error-component-removal)
     - [6.4 Method 4. Bootstrap Lower Quantile](#64-method-4-bootstrap-lower-quantile)
+    - [6.5 Summary](#65-summary)
 - [7. Target Reliability](#7-target-reliability)
 - [8. Error Reduction and Feasibility of Targets](#8-error-reduction-and-feasibility-of-targets)
 - [9. Worked Example](#9-worked-example)
@@ -534,6 +535,8 @@ $`\alpha`$ 와 목표에 닿았다고 가정한 예측을 주고, 평가할 wafe
 - 방법 1 부터 방법 3 의 목표값은 가정한 예측의 점 추정값이어서, 그 예측이 다른 wafer 에서 목표값을 넘을 확률은 $`1 - \alpha`$ 보다 작다.
 
 네 방법은 같은 개선에서도 도달 방법의 가정에 따라 다른 목표 조합을 낸다. 그래서 목표값과 함께 그 가정을 적고, 개선된 예측의 오차가 가정대로 줄었는지를 $`\kappa`$, $`\delta`$, $`\gamma_n`$ 과 오차 성분으로 확인한다.
+
+### 6.5 Summary
 
 네 방법의 입력과 가정, 그리고 각 방법이 네 R² 의 목표값을 구하는 식을 모으면 아래 Table 3 이다.
 
