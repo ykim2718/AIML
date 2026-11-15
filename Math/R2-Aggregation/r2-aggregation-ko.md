@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 150 | Created: 2026-11-09 | Updated: 2026-11-15 09:01 UTC
+Version 151 | Created: 2026-11-09 | Updated: 2026-11-15 09:03 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -651,19 +651,20 @@ Table 6 의 값을 넣어 식 (33), 식 (34), 식 (35) 와 세 R² 의 순서를
 
 ### 9.2 Targets by the Four Methods
 
-꼭지 6 의 네 방법의 입력은 이 예에서 없앨 수 있는 오차 성분에 맞춘다. 식 (49) 의 mean error (offset) 는 측정 위치 1 에서 (-1 + 0 + 1) / 3 = 0, 측정 위치 2 에서 (0 + 1 + 1) / 3 = 0.6667 이다. 식 (50) 의 offset 성분은 측정 위치 2 의 3 × 0.6667² = 1.3333 뿐이어서 E = 4 의 0.3333 이다. 그래서 방법 2 의 η 는 0.3333 이고, 방법 1 의 T_all 은 식 (48) 로 1 - (1 - 0.3333) × (1 - 0.9348) = 0.9565 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, wafer 3 장에서 복원 추출로 뽑을 수 있는 3³ = 27 개 표본을 모두 써서 wafer bootstrap 을 구했다. Table 6 의 baseline R2 는 R2_all = 0.9348, R2_avgw = 0.9392, R2_avgn = 0.9138, R2_minn = 0.8889 이고, 네 방법의 목표값은 아래 Table 7 이다.
+꼭지 6 의 네 방법의 입력은 이 예에서 없앨 수 있는 오차 성분에 맞춘다. 식 (49) 의 mean error (offset) 는 측정 위치 1 에서 (-1 + 0 + 1) / 3 = 0, 측정 위치 2 에서 (0 + 1 + 1) / 3 = 0.6667 이다. 식 (50) 의 offset 성분은 측정 위치 2 의 3 × 0.6667² = 1.3333 뿐이어서 E = 4 의 0.3333 이다. 그래서 방법 2 의 η 는 0.3333 이고, 방법 1 의 T_all 은 식 (48) 로 1 - (1 - 0.3333) × (1 - 0.9348) = 0.9565 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, wafer 3 장에서 복원 추출로 뽑을 수 있는 3³ = 27 개 표본을 모두 써서 wafer bootstrap 을 구했다. 네 방법의 목표값은 아래 Table 7 이다.
 
 Table 7. Targets of the example by the four methods
 
 | Method                | T_all  | T_avgw | T_avgn | T_minn |
 | :-------------------: | :----: | :----: | :----: | :----: |
+| Baseline R2           | -      | 0.9392 | 0.9138 | 0.8889 |
 | 1                     | 0.9565 | 0.9595 | 0.9401 | 0.9228 |
 | 2                     | 0.9565 | 0.9595 | 0.9426 | 0.9259 |
 | 3                     | 0.9565 | 0.9392 | 0.9342 | 0.8889 |
 | 4, Current prediction | 0.8333 | 0.6250 | 0.7433 | 0.6667 |
 | 4, Offset removed     | 0.8333 | 0.6250 | 0.7500 | 0.6667 |
 
-- 4, Current prediction 과 4, Offset removed 는 6.4 의 두 가지대로 방법 4 에 현재 예측과 방법 3 의 예측을 가정한 예측으로 쓴 것이다.
+- Baseline R2 행은 Table 6 의 R2_avgw, R2_avgn, R2_minn 이며, T_all 은 구할 수 없어 - 로 두었다. 4, Current prediction 과 4, Offset removed 는 6.4 의 두 가지대로 방법 4 에 현재 예측과 방법 3 의 예측을 가정한 예측으로 쓴 것이다.
 - 방법 3 의 T_avgw 는 wafer 평균 예측값을 따로 구했으므로 현재의 0.9392 이고, T_minn 은 최악인 측정 위치 1 의 offset 이 0 이어서 현재의 0.8889 이다.
 - Bootstrap 표본 27 개 가운데 한 wafer 를 세 번 뽑은 3 개는 SST_j = 0 이어서 R² 가 정의되지 않으므로 뺐다. 나머지 24 개에서 0.05 분위수는 최솟값과 같으며, wafer 가 3 장뿐이어서 방법 4 의 목표값은 현재 R² 보다 크게 낮다.
 - 아래 계산은 방법 3 의 목표값으로 한다. 방법 3 은 예측값을 직접 고쳐 목표값을 구하므로, 그 예측으로 신뢰성까지 계산할 수 있다.
@@ -1138,19 +1139,20 @@ Table 14. Offset share of SSE and R2 without the offset by location
 
 ### D.2 Targets by the Four Methods
 
-방법 1 부터 방법 3 의 입력은 D.1 에서 가장 먼저 줄일 오차로 본 mean error (offset) 성분을 없애는 개선에 맞추며, 방법 3 은 Table 14 의 R2_j without offset 을 측정 위치 R² 의 목표에 쓴다. 방법 2 의 $`\eta`$ 는 이 성분이 $`E`$ 에서 차지하는 0.4726 이고, 방법 1 의 T_all 은 식 (48) 에 이 $`\eta`$ 를 넣은 0.9058 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, 현재 예측과 방법 3 이 가정한 예측의 wafer bootstrap 을 n_b = 2000 번 되풀이해 구했다. Table 12 의 baseline R2 는 R2_all = 0.8213, R2_avgw = 0.9436, R2_avgn = 0.7835, R2_minn = 0.6370 이고, 네 방법의 목표값은 아래 Table 15 이다.
+방법 1 부터 방법 3 의 입력은 D.1 에서 가장 먼저 줄일 오차로 본 mean error (offset) 성분을 없애는 개선에 맞추며, 방법 3 은 Table 14 의 R2_j without offset 을 측정 위치 R² 의 목표에 쓴다. 방법 2 의 $`\eta`$ 는 이 성분이 $`E`$ 에서 차지하는 0.4726 이고, 방법 1 의 T_all 은 식 (48) 에 이 $`\eta`$ 를 넣은 0.9058 이며, 방법 3 은 이 성분을 없앤다. 방법 4 는 α = 0.05 로 두고, 현재 예측과 방법 3 이 가정한 예측의 wafer bootstrap 을 n_b = 2000 번 되풀이해 구했다. 네 방법의 목표값은 아래 Table 15 이다.
 
 Table 15. Targets by the four target setting methods
 
 | Method                | T_all  | T_avgw | T_avgn | T_minn |
 | :-------------------: | :----: | :----: | :----: | :----: |
+| Baseline R2           | -      | 0.9436 | 0.7835 | 0.6370 |
 | 1                     | 0.9058 | 0.9703 | 0.8805 | 0.7995 |
 | 2                     | 0.9058 | 0.9703 | 0.8858 | 0.8086 |
 | 3                     | 0.9058 | 0.9436 | 0.8952 | 0.8341 |
 | 4, Current prediction | 0.7628 | 0.9053 | 0.6802 | 0.3634 |
 | 4, Offset removed     | 0.8810 | 0.9053 | 0.8518 | 0.7012 |
 
-- Baseline R2 는 CSV 의 측정값과 `pred_p1` 부터 `pred_p13`, `pred_avg` 의 예측값으로 구한 네 R² 이며 목표값이 아니다. 4, Current prediction 은 현재 예측을, 4, Offset removed 는 방법 3 이 가정한 예측을 방법 4 에 쓴 것이다.
+- Baseline R2 행은 CSV 의 측정값과 `pred_p1` 부터 `pred_p13`, `pred_avg` 의 예측값으로 구한 R2_avgw, R2_avgn, R2_minn 이며, T_all 은 구할 수 없어 - 로 두었다. 4, Current prediction 은 현재 예측을, 4, Offset removed 는 방법 3 이 가정한 예측을 방법 4 에 쓴 것이다.
 - 방법 1 부터 방법 3 은 같은 개선이어서 T_all 이 0.9058 로 같지만, 도달 방법의 가정에 따라 다른 세 목표값이 다르다.
 - T_avgw 는 방법 1 과 방법 2 에서 $`\kappa`$ 가 유지되어 wafer 평균 예측의 오차도 같은 비율로 준다고 가정하므로 0.9703 이다. 방법 3 에서는 mean error (offset) 성분이 측정 위치 예측의 오차여서 `pred_avg` 의 오차가 그대로이므로 현재의 0.9436 이다.
 - T_avgn 은 방법 2 가 방법 1 보다 $`\eta \delta`$ = 0.4726 × 0.0114 = 0.0054 높다. 방법 3 은 mean error (offset) 의 비율이 큰 측정 위치의 R2_j 가 더 올라 $`\delta`$ 가 0.0114 에서 -0.0033 으로 바뀌므로 0.8952 이다.
