@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 151 | Created: 2026-11-09 | Updated: 2026-11-15 09:03 UTC
+Version 152 | Created: 2026-11-09 | Updated: 2026-11-15 09:04 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -546,12 +546,12 @@ Offset 은 측정 위치마다 wafer 사이에서 일정한 오차, 곧 그 측�
 
 Table 3. Target setting methods
 
-| Method                      | Input                          | Assumption on how the targets are reached            | T_all   | T_avgw       | T_avgn           | T_minn           |
-| :-------------------------: | :----------------------------: | :--------------------------------------------------: | :-----: | :----------: | :--------------: | :--------------: |
-| 1. Conversion of T_all      | T_all                          | κ, δ, γ_n 이 현재 값으로 유지됨                      | 입력    | 식 (45)      | 식 (46)          | 식 (29)          |
-| 2. Common SSE reduction     | η                              | 모든 SSE_j 와 SSE_avgw 가 같은 비율 η 로 줄어듦      | 식 (48) | 식 (48)      | 식 (48)          | 식 (48)          |
-| 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (51) | 현재 R2_avgw | 식 (50), 식 (15) | 식 (50), 식 (16) |
-| 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (53) | 식 (53)      | 식 (53)          | 식 (53)          |
+| Method                      | Input                          | Assumption on how the targets are reached            | T_all   | T_avgw           | T_avgn           | T_minn           |
+| :-------------------------: | :----------------------------: | :--------------------------------------------------: | :-----: | :--------------: | :--------------: | :--------------: |
+| 1. Conversion of T_all      | T_all                          | κ, δ, γ_n 이 현재 값으로 유지됨                      | 입력    | 식 (45)          | 식 (46)          | 식 (29)          |
+| 2. Common SSE reduction     | η                              | 모든 SSE_j 와 SSE_avgw 가 같은 비율 η 로 줄어듦      | 식 (48) | 식 (48)          | 식 (48)          | 식 (48)          |
+| 3. Error component removal  | 없앨 오차 성분                 | 그 성분만 0 이 되고 나머지 오차는 그대로 남음        | 식 (51) | baseline R2_avgw | 식 (50), 식 (15) | 식 (50), 식 (16) |
+| 4. Bootstrap lower quantile | α, 목표에 닿았다고 가정한 예측 | 평가할 wafer 가 지금의 wafer M 장과 같은 분포를 따름 | 식 (53) | 식 (53)          | 식 (53)          | 식 (53)          |
 
 ## 7. Target Reliability
 
