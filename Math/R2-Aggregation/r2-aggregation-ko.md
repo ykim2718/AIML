@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 148 | Created: 2026-11-09 | Updated: 2026-11-15 08:57 UTC
+Version 149 | Created: 2026-11-09 | Updated: 2026-11-15 08:58 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -657,14 +657,14 @@ Table 7. Targets of the example by the four methods
 
 | Method                | T_all  | T_avgw | T_avgn | T_minn |
 | :-------------------: | :----: | :----: | :----: | :----: |
-| Current R2            | 0.9348 | 0.9392 | 0.9138 | 0.8889 |
+| Baseline R2           | 0.9348 | 0.9392 | 0.9138 | 0.8889 |
 | 1                     | 0.9565 | 0.9595 | 0.9401 | 0.9228 |
 | 2                     | 0.9565 | 0.9595 | 0.9426 | 0.9259 |
 | 3                     | 0.9565 | 0.9392 | 0.9342 | 0.8889 |
 | 4, Current prediction | 0.8333 | 0.6250 | 0.7433 | 0.6667 |
 | 4, Offset removed     | 0.8333 | 0.6250 | 0.7500 | 0.6667 |
 
-- Current R2 는 Table 5 의 예측값으로 구한 현재 예측의 네 R² 이다. 4, Current prediction 과 4, Offset removed 는 6.4 의 두 가지대로 방법 4 에 현재 예측과 방법 3 의 예측을 가정한 예측으로 쓴 것이다.
+- Baseline R2 는 Table 5 의 측정값과 예측값으로 구한 네 R² 이다. 4, Current prediction 과 4, Offset removed 는 6.4 의 두 가지대로 방법 4 에 현재 예측과 방법 3 의 예측을 가정한 예측으로 쓴 것이다.
 - 방법 3 의 T_avgw 는 wafer 평균 예측값을 따로 구했으므로 현재의 0.9392 이고, T_minn 은 최악인 측정 위치 1 의 offset 이 0 이어서 현재의 0.8889 이다.
 - Bootstrap 표본 27 개 가운데 한 wafer 를 세 번 뽑은 3 개는 SST_j = 0 이어서 R² 가 정의되지 않으므로 뺐다. 나머지 24 개에서 0.05 분위수는 최솟값과 같으며, wafer 가 3 장뿐이어서 방법 4 의 목표값은 현재 R² 보다 크게 낮다.
 - 아래 계산은 방법 3 의 목표값으로 한다. 방법 3 은 예측값을 직접 고쳐 목표값을 구하므로, 그 예측으로 신뢰성까지 계산할 수 있다.
@@ -782,6 +782,7 @@ Table 10. scikit-learn multioutput options and the R2 of this document
 
 ## Appendix A. Terminology
 
+- **baseline R2**: 목표를 정하기 전, 주어진 측정값과 예측값으로 구한 R². 방법 1 부터 방법 4 의 목표값과 견주는 출발점.
 - **between-group sum of squares**: 식 (18) 의 $`B`$. 측정 위치를 집단으로 볼 때 측정 위치 평균 사이의 변동.
 - **centered R2**: 분모의 SST 를 그 집계 수준의 측정값 평균에서 벗어난 제곱합으로 구한 R². 이 문서의 R² 는 모두 $`1 - \mathrm{SSE}/\mathrm{SST}`$ 꼴의 centered R² 이다.
 - **dot notation**: 아래첨자 하나를 점 ($`\cdot`$) 으로 바꾸어 그 첨자에 대해 모두 더했음을 나타내는 표기. 예: $`y_{i\cdot} = \sum_{j} y_{ij}`$.
@@ -1144,14 +1145,14 @@ Table 15. Targets by the four target setting methods
 
 | Method                | T_all  | T_avgw | T_avgn | T_minn |
 | :-------------------: | :----: | :----: | :----: | :----: |
-| Current R2            | 0.8213 | 0.9436 | 0.7835 | 0.6370 |
+| Baseline R2           | 0.8213 | 0.9436 | 0.7835 | 0.6370 |
 | 1                     | 0.9058 | 0.9703 | 0.8805 | 0.7995 |
 | 2                     | 0.9058 | 0.9703 | 0.8858 | 0.8086 |
 | 3                     | 0.9058 | 0.9436 | 0.8952 | 0.8341 |
 | 4, Current prediction | 0.7628 | 0.9053 | 0.6802 | 0.3634 |
 | 4, Offset removed     | 0.8810 | 0.9053 | 0.8518 | 0.7012 |
 
-- Current R2 는 CSV 의 `pred_p1` 부터 `pred_p13` 과 `pred_avg` 로 구한 현재 예측의 네 R² 이다. 4, Current prediction 은 현재 예측을, 4, Offset removed 는 방법 3 이 가정한 예측을 방법 4 에 쓴 것이다.
+- Baseline R2 는 CSV 의 측정값과 `pred_p1` 부터 `pred_p13`, `pred_avg` 의 예측값으로 구한 네 R² 이다. 4, Current prediction 은 현재 예측을, 4, Offset removed 는 방법 3 이 가정한 예측을 방법 4 에 쓴 것이다.
 - 방법 1 부터 방법 3 은 같은 개선이어서 T_all 이 0.9058 로 같지만, 도달 방법의 가정에 따라 다른 세 목표값이 다르다.
 - T_avgw 는 방법 1 과 방법 2 에서 $`\kappa`$ 가 유지되어 wafer 평균 예측의 오차도 같은 비율로 준다고 가정하므로 0.9703 이다. 방법 3 에서는 mean error (offset) 성분이 측정 위치 예측의 오차여서 `pred_avg` 의 오차가 그대로이므로 현재의 0.9436 이다.
 - T_avgn 은 방법 2 가 방법 1 보다 $`\eta \delta`$ = 0.4726 × 0.0114 = 0.0054 높다. 방법 3 은 mean error (offset) 의 비율이 큰 측정 위치의 R2_j 가 더 올라 $`\delta`$ 가 0.0114 에서 -0.0033 으로 바뀌므로 0.8952 이다.
