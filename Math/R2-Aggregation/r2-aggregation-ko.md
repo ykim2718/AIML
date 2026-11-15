@@ -1,5 +1,5 @@
 # R2 by Aggregation Level
-Version 146 | Created: 2026-11-09 | Updated: 2026-11-15 02:17 UTC
+Version 147 | Created: 2026-11-09 | Updated: 2026-11-15 02:19 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -535,6 +535,8 @@ $`\alpha`$ 와 목표에 닿았다고 가정한 예측을 주고, 평가할 wafe
     - Current prediction: 현재 예측을 그대로 쓴다. 개선 없이 표본의 $`1 - \alpha`$ 정도에서 이루는 목표값이다.
     - Offset removed: 방법 3 의 예측, 곧 측정 위치 예측값에 식 (49) 의 mean error (offset) 를 더해 그 성분을 없앤 예측을 쓴다. 방법 3 의 개선을 이룬 예측이 표본의 $`1 - \alpha`$ 정도에서 이루는 목표값이다.
 - 방법 1 부터 방법 3 의 목표값은 가정한 예측의 점 추정값이어서, 그 예측이 다른 wafer 에서 목표값을 넘을 확률은 $`1 - \alpha`$ 보다 작다.
+
+Offset 은 측정 위치마다 wafer 사이에서 일정한 오차, 곧 그 측정 위치에서 예측이 모든 wafer 에 똑같이 내는 치우침이다. Offset removed 는 개선된 예측이 측정 위치마다 이 치우침 없이 측정 위치 평균을 맞힌다고 가정한 예측이고, wafer 마다 달라지는 나머지 오차는 그대로 둔다. 실용적인 의미는 "측정 위치별 치우침만 고치는 개선을 이루면 어디까지 오를 수 있는가" 를 보이는 기준이다.
 
 ### 6.5 Summary
 
