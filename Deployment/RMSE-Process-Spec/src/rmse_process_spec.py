@@ -22,7 +22,7 @@ Changelog:
     0.2.0 - Replace --pt-max with --n-sigma, the least number of RMSE inside the tolerance.
 """
 __author__ = 'yRocket'
-__version__ = "0.2.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
