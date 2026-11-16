@@ -1,17 +1,21 @@
-"""Save a matplotlib figure as SVG by default, and as PNG only when the SVG would be larger than the PNG.
+"""Save a figure as SVG by default, and as PNG only when the SVG would be larger than the PNG.
 
 The figure is rendered to both formats in memory, the smaller file is written to <stem>.svg or <stem>.png, and a file
 of the other format left by an earlier run is removed so that the folder holds one version of the figure.
+save_svg_or_png takes a matplotlib figure; write_smaller takes the two renderings as bytes (e.g. from Graphviz).
+
+Changelog:
+    0.1.0  Added write_smaller for figures rendered outside matplotlib.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import io
 import pathlib
 
 from matplotlib import pyplot as plt
 
-__all__ = ['save_svg_or_png']
+__all__ = ['save_svg_or_png', 'write_smaller']
 
 SVG_SUFFIX: str = '.svg'
 PNG_SUFFIX: str = '.png'
@@ -31,7 +35,17 @@ def save_svg_or_png(fig: plt.Figure = None, stem: pathlib.Path = None, dpi: int 
         buffer = io.BytesIO()
         fig.savefig(buffer, format=fmt, dpi=dpi)
         rendered[suffix] = buffer.getvalue()
-    chosen = SVG_SUFFIX if len(rendered[SVG_SUFFIX]) <= len(rendered[PNG_SUFFIX]) else PNG_SUFFIX
+    return write_smaller(svg=rendered[SVG_SUFFIX], png=rendered[PNG_SUFFIX], stem=stem)
+
+
+def write_smaller(svg: bytes = None, png: bytes = None, stem: pathlib.Path = None) -> pathlib.Path:
+    """Write svg to stem + '.svg', or png to stem + '.png' when the SVG is larger; return the written path."""
+    if not svg or not png or stem is None:
+        raise ValueError(f"svg, png and stem are required: {len(svg or b'')=}, {len(png or b'')=}, {stem=}")
+    if stem.suffix in (SVG_SUFFIX, PNG_SUFFIX):
+        raise ValueError(f"stem must not carry a figure suffix: {stem}")
+    rendered = {SVG_SUFFIX: svg, PNG_SUFFIX: png}
+    chosen = SVG_SUFFIX if len(svg) <= len(png) else PNG_SUFFIX
     other = PNG_SUFFIX if chosen == SVG_SUFFIX else SVG_SUFFIX
     path = stem.with_name(stem.name + chosen)
     path.write_bytes(rendered[chosen])
@@ -39,5 +53,5 @@ def save_svg_or_png(fig: plt.Figure = None, stem: pathlib.Path = None, dpi: int 
     if stale.exists():
         stale.unlink()
         print(f"removed {stale}, replaced by {path.name}")
-    print(f"wrote {path} (SVG {len(rendered[SVG_SUFFIX]):,} bytes, PNG {len(rendered[PNG_SUFFIX]):,} bytes)")
+    print(f"wrote {path} (SVG {len(svg):,} bytes, PNG {len(png):,} bytes)")
     return path
