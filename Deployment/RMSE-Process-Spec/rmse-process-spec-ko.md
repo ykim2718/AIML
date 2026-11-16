@@ -1,25 +1,25 @@
 # Relative Error Band on the 1:1 Line
-Version 43 | Created: 2026-11-16 | Updated: 2026-11-16 22:17 UTC
+Version 44 | Created: 2026-11-16 | Updated: 2026-11-16 22:23 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
-- [3. Principle](#3-principle)
-    - [3.1 Notation](#31-notation)
-    - [3.2 Relative Error Band](#32-relative-error-band)
-    - [3.3 With Raw Data](#33-with-raw-data)
-    - [3.4 Without Raw Data: Normal with Zero Mean](#34-without-raw-data-normal-with-zero-mean)
-    - [3.5 Without Raw Data: Normal with Nonzero Mean](#35-without-raw-data-normal-with-nonzero-mean)
-    - [3.6 Without Raw Data: Distribution-free Upper Bound](#36-without-raw-data-distribution-free-upper-bound)
-    - [3.7 Relation to R2 and RMSE](#37-relation-to-r2-and-rmse)
-- [4. Worked Example](#4-worked-example)
-    - [4.1 Data](#41-data)
-    - [4.2 Relative Error](#42-relative-error)
-    - [4.3 p95 by Method](#43-p95-by-method)
-    - [4.4 R2 and RMSE](#44-r2-and-rmse)
-    - [4.5 Calculation Script](#45-calculation-script)
-- [5. Application](#5-application)
-    - [5.1 Conditions](#51-conditions)
-    - [5.2 Limitations](#52-limitations)
+- [3. Notation](#3-notation)
+- [4. Principle](#4-principle)
+    - [4.1 Relative Error Band](#41-relative-error-band)
+    - [4.2 With Raw Data](#42-with-raw-data)
+    - [4.3 Without Raw Data: Normal with Zero Mean](#43-without-raw-data-normal-with-zero-mean)
+    - [4.4 Without Raw Data: Normal with Nonzero Mean](#44-without-raw-data-normal-with-nonzero-mean)
+    - [4.5 Without Raw Data: Distribution-free Upper Bound](#45-without-raw-data-distribution-free-upper-bound)
+    - [4.6 Relation to R2 and RMSE](#46-relation-to-r2-and-rmse)
+- [5. Worked Example](#5-worked-example)
+    - [5.1 Data](#51-data)
+    - [5.2 Relative Error](#52-relative-error)
+    - [5.3 p95 by Method](#53-p95-by-method)
+    - [5.4 R2 and RMSE](#54-r2-and-rmse)
+    - [5.5 Calculation Script](#55-calculation-script)
+- [6. Application](#6-application)
+    - [6.1 Conditions](#61-conditions)
+    - [6.2 Limitations](#62-limitations)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Normality of Relative Error](#appendix-b-normality-of-relative-error)
@@ -47,38 +47,7 @@ $`p_{95}`$ 는 상대오차 $`e = (x - y)/y`$ 의 절댓값이 짝의 95 % 에�
 원본 데이터가 있으면 $`|e|`$ 의 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정하거나, 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한을 구한다.
 이 상한은 정확한 $`p_{95}`$ 가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
 
-## 3. Principle
-
-$`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
-
-```text
-                      Raw pairs (x_i, y_i) available?
-                     /                               \
-                   yes                                no
-                    |                                  |
-      p95 = 0.95 quantile of |e_i|          Is e_i normally distributed?
-      Eq. (8), rank k for a new pair       /                            \
-      Eq. (9)            [Sec. 3.3]      yes                       no / unknown
-                                          |                              |
-                                 Is the mean mu_e = 0?        p95 <= RMSRE / sqrt(0.05)
-                                 /                  \         upper bound only, Eq. (12)
-                               yes                   no                      [Sec. 3.6]
-                                |                     |
-                      p95 = 1.96 RMSRE       solve Eq. (11) with
-                      Eq. (10)               mu_e and sigma_e
-                           [Sec. 3.4]                [Sec. 3.5]
-
-  Only R2 and RMSE known: p95 cannot be determined.
-  With min y_i: RMSRE <= RMSE / min y_i, then Eq. (12) gives an upper bound.   [Sec. 3.7]
-```
-
-<a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
-
-- 위에서부터 질문에 답하며 내려가면, 맨 아래 칸이 쓸 식과 꼭지이다.
-- 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
-- R² 와 RMSE 만 있는 경우는 나무에 들지 않고 맨 아래 줄에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
-
-### 3.1 Notation
+## 3. Notation
 
 이 문서의 기호는 아래 Table 1 이다.
 
@@ -103,7 +72,38 @@ Table 1. Symbols
 | $`\sigma_y`$           | 측정값 $`T`$ 개의 표준편차 (분모 $`T`$)              | scalar   | $`\sigma_y \gt 0`$ |
 | $`R^2_{\mathrm{all}}`$ | 측정값 $`T`$ 개로 구한 R²                            | scalar   | -                  |
 
-### 3.2 Relative Error Band
+## 4. Principle
+
+$`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
+
+```text
+                      Raw pairs (x_i, y_i) available?
+                     /                               \
+                   yes                                no
+                    |                                  |
+      p95 = 0.95 quantile of |e_i|          Is e_i normally distributed?
+      Eq. (8), rank k for a new pair       /                            \
+      Eq. (9)            [Sec. 4.2]      yes                       no / unknown
+                                          |                              |
+                                 Is the mean mu_e = 0?        p95 <= RMSRE / sqrt(0.05)
+                                 /                  \         upper bound only, Eq. (12)
+                               yes                   no                      [Sec. 4.5]
+                                |                     |
+                      p95 = 1.96 RMSRE       solve Eq. (11) with
+                      Eq. (10)               mu_e and sigma_e
+                           [Sec. 4.3]                [Sec. 4.4]
+
+  Only R2 and RMSE known: p95 cannot be determined.
+  With min y_i: RMSRE <= RMSE / min y_i, then Eq. (12) gives an upper bound.   [Sec. 4.6]
+```
+
+<a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
+
+- 위에서부터 질문에 답하며 내려가면, 맨 아래 칸이 쓸 식과 꼭지이다.
+- 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
+- R² 와 RMSE 만 있는 경우는 나무에 들지 않고 맨 아래 줄에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
+
+### 4.1 Relative Error Band
 
 상대오차는 예측값과 측정값의 차이를 측정값으로 나눈 값이다.
 
@@ -148,7 +148,7 @@ P\left( \lvert e \rvert \le p_{95} \right) = 0.95
 \hspace{19em} (7)
 ```
 
-### 3.3 With Raw Data
+### 4.2 With Raw Data
 
 원본 데이터가 있으면 상대오차를 식 (1) 로 직접 구하고, $`\lvert e_i \rvert`$ 의 95 % 분위수를 $`p_{95}`$ 로 쓴다. 분포를 가정하지 않는다.
 
@@ -164,7 +164,7 @@ k = \lceil 0.95\, (T + 1) \rceil
 \hspace{19em} (9)
 ```
 
-### 3.4 Without Raw Data: Normal with Zero Mean
+### 4.3 Without Raw Data: Normal with Zero Mean
 
 상대오차가 평균 0 인 정규분포를 따르면 식 (7) 에서 $`\mathrm{RMSRE} = \sigma_e`$ 이고, $`\lvert e \rvert \le p_{95}`$ 의 확률이 0.95 가 되는 값은 표준정규분포의 0.975 분위수 $`z = 1.96`$ 배이다.
 
@@ -173,7 +173,7 @@ p_{95} = z\, \mathrm{RMSRE}
 \hspace{19em} (10)
 ```
 
-### 3.5 Without Raw Data: Normal with Nonzero Mean
+### 4.4 Without Raw Data: Normal with Nonzero Mean
 
 상대오차가 평균 $`\mu_e`$, 표준편차 $`\sigma_e`$ 인 정규분포를 따르면, 식 (3) 은 아래 식 (11) 이 되고 $`p_{95}`$ 는 이 식을 수치로 풀어 구한다.
 
@@ -186,7 +186,7 @@ p_{95} = z\, \mathrm{RMSRE}
 - $`\lvert \mu_e \rvert`$ 가 $`\sigma_e`$ 보다 훨씬 크면 한쪽 꼬리만 남아 $`p_{95} \approx \lvert \mu_e \rvert + 1.645\, \sigma_e`$ 이다.
 - 평균이 0 이 아니면 1:1 라인에 대칭인 경계는 오차가 치우친 쪽에서 먼저 넘친다. 식 (11) 은 양쪽을 합쳐 0.95 를 맞춘다.
 
-### 3.6 Without Raw Data: Distribution-free Upper Bound
+### 4.5 Without Raw Data: Distribution-free Upper Bound
 
 분포를 가정할 수 없으면 RMSRE 로 $`p_{95}`$ 의 상한만 구한다. Markov 부등식을 $`e^2`$ 에 쓰면 어떤 분포에서도 $`P(\lvert e \rvert \ge c) = P(e^2 \ge c^2) \le \mathrm{RMSRE}^2 / c^2`$ 이고, 이 상한을 0.05 로 두면 아래 식 (12) 이다.
 
@@ -197,7 +197,7 @@ p_{95} \le \frac{\mathrm{RMSRE}}{\sqrt{0.05}} = 4.472\, \mathrm{RMSRE}
 
 식 (12) 는 정확한 $`p_{95}`$ 가 아니라 보수적인 상한이다. 정규분포라면 식 (10) 의 1.96 배로 충분한 것을 4.472 배로 잡는다.
 
-### 3.7 Relation to R2 and RMSE
+### 4.6 Relation to R2 and RMSE
 
 RMSE 와 $`R^2_{\mathrm{all}}`$ 은 오차 $`y_i - x_i`$ 의 제곱 평균에서 나온다.
 
@@ -221,13 +221,13 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 
 - 따라서 RMSE 와 측정값의 최솟값을 알면 식 (15) 의 오른쪽 값을 식 (12) 에 넣어 $`p_{95}`$ 의 분포 무관 상한을 구할 수 있지만, $`p_{95}`$ 자체는 구할 수 없다.
 
-## 4. Worked Example
+## 5. Worked Example
 
-### 4.1 Data
+### 5.1 Data
 
 반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 박막 두께와 그 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 을 쓴다. 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이며, 측정 위치를 가리지 않고 짝 $`T = 572`$ 개를 한데 모은다. 단위는 nm 이고, 측정값은 530.054 nm 부터 718.857 nm 이다.
 
-### 4.2 Relative Error
+### 5.2 Relative Error
 
 식 (1), (4), (5), (6) 으로 구한 상대오차의 요약값은 아래 Table 2 이다.
 
@@ -244,9 +244,9 @@ Table 2. Summary of the relative error
 - $`0.3727^2 + 1.8877^2 = 1.9241^2`$ 으로 식 (7) 이 성립한다.
 - 짝 572 개를 모은 상대오차의 Shapiro-Wilk 검정 [[2](#ref-2)] 은 p = 0.0238 로, 유의수준 0.05 에서 정규성을 기각한다. 측정 위치마다의 검정은 [Appendix B](#appendix-b-normality-of-relative-error), 유의수준과 p 의 뜻은 [Appendix C](#appendix-c-significance-level-and-p-value) 에 있다.
 
-### 4.3 p95 by Method
+### 5.3 p95 by Method
 
-꼭지 3.3 부터 3.6 의 방법으로 구한 $`p_{95}`$ 와, 그 경계 안에 실제로 든 짝의 비율은 아래 Table 3 이다.
+꼭지 4.2 부터 4.5 의 방법으로 구한 $`p_{95}`$ 와, 그 경계 안에 실제로 든 짝의 비율은 아래 Table 3 이다.
 
 Table 3. p95 by method and the share of pairs inside the band
 
@@ -263,7 +263,7 @@ Table 3. p95 by method and the share of pairs inside the band
 - $`\mu_e = 0.3727`$ % 는 $`\sigma_e = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
 - 분포 무관 상한 8.6048 % 는 식 (8) 의 값의 2.32 배로, 모든 짝을 담지만 경계를 넓게 잡는다.
 
-### 4.4 R2 and RMSE
+### 5.4 R2 and RMSE
 
 같은 데이터에서 $`R^2_{\mathrm{all}} = 0.8213`$, RMSE = 12.0490 nm, $`\bar{y}`$ = 634.5735 nm 이다.
 
@@ -271,22 +271,22 @@ Table 3. p95 by method and the share of pairs inside the band
 - 식 (15) 에서 $`\mathrm{RMSRE} \le 12.0490 / 530.054`$ = 2.2732 % 이고, 이를 식 (12) 에 넣은 분포 무관 상한은 10.1659 % 이다. RMSE 와 측정값의 최솟값만으로 얻는 값은 이 상한뿐이다.
 - $`R^2_{\mathrm{all}} = 0.8213`$ 하나로는 $`\sigma_y`$ 없이 RMSE 도 구할 수 없다.
 
-### 4.5 Calculation Script
+### 5.5 Calculation Script
 
-Table 2 와 Table 3, 꼭지 4.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, 네 가지 $`p_{95}`$ 와 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. scipy 가 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 2 와 Table 3, 꼭지 5.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, 네 가지 $`p_{95}`$ 와 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. scipy 가 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band.py --csv data/u0_actuals_and_predictions.csv
 ```
 
-## 5. Application
+## 6. Application
 
-### 5.1 Conditions
+### 6.1 Conditions
 
 - **측정값이 0 또는 0 근처인 경우**: 식 (1) 은 측정값으로 나누므로, 측정값이 0 에 가까우면 작은 오차도 큰 상대오차가 되고 0 이면 정의되지 않는다. 이 데이터의 측정값은 530.054 nm 이상이어서 문제가 없다. 측정값이 0 근처까지 내려가는 데이터에는 상대오차 대신 절대오차의 경계를 쓴다.
 - **대표성**: 짝을 구한 wafer 가 앞으로 판정할 기간의 장비, recipe, 제품을 대표해야 한다.
 
-### 5.2 Limitations
+### 6.2 Limitations
 
 - **경험적 95 % 와 미래의 보장**: 식 (8) 은 가진 짝의 95 % 를 담는 값일 뿐, 앞으로 얻을 짝이 0.95 의 확률로 경계 안에 든다는 보장은 아니다. 이 데이터에서도 식 (8) 의 경계 안에 든 짝은 94.93 % 이다. 미래의 짝에 대한 보장은 식 (9) 의 순위를 쓰고 짝들이 교환 가능할 때만 성립한다.
 - **교환 가능성이 깨지는 경우**: 같은 wafer 의 측정 위치 13 곳은 서로 독립이 아니고, [Appendix B](#appendix-b-normality-of-relative-error) 처럼 측정 위치마다 상대오차의 평균이 다르다. 장비나 recipe 가 바뀌어 오차가 달라지면 식 (9) 의 보장도 성립하지 않는다.
@@ -383,5 +383,5 @@ P_{H_0}\left( p \lt \alpha \right) = P\left( F(W) \lt \alpha \right) = \alpha
 해석할 때는 아래를 함께 본다.
 
 - p 는 $`H_0`$ 가 참일 확률이 아니다. $`H_0`$ 를 참으로 놓고 계산한 데이터의 확률이다.
-- 표본이 크면 작은 벗어남도 기각된다. 꼭지 4.2 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
+- 표본이 크면 작은 벗어남도 기각된다. 꼭지 5.2 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
 - 여러 번 검정하면 우연한 기각이 늘어난다. [Appendix B](#appendix-b-normality-of-relative-error) 처럼 측정 위치 13 곳을 각각 $`\alpha = 0.05`$ 로 검정하면, 모두 정규분포여도 평균 0.65 곳이 기각된다. 13 번의 검정 전체에서 잘못 기각할 확률을 0.05 이하로 두려면 $`\alpha / 13 = 0.0038`$ 을 쓴다 (Bonferroni).
