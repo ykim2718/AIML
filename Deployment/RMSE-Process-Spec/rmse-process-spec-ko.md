@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 1 | Created: 2026-11-16 | Updated: 2026-11-16 02:31 CST
+Version 2 | Created: 2026-11-16 | Updated: 2026-11-16 03:10 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -34,7 +34,7 @@ Version 1 | Created: 2026-11-16 | Updated: 2026-11-16 02:31 CST
 
 - 예측 model 을 만들거나 고치는 방법은 다루지 않는다.
 - 제품 성능에서 정하는 design spec 은 다루지 않는다. 이 문서의 spec 은 공정 산포와 예측 오차로 정하는 공정 spec 이다.
-- 요구 공정능력지수 (process capability index), P/T 상한, guard band 계수의 값을 정하는 방법은 다루지 않는다. 세 값은 입력으로 받는다.
+- 요구 공정능력지수 (process capability index), P/T (precision-to-tolerance ratio, 측정 system 표준편차의 6 배를 spec 폭으로 나눈 값) 상한, guard band 계수의 값을 정하는 방법은 다루지 않는다. 세 값은 입력으로 받는다.
 
 ## 2. Summary
 
