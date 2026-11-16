@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 5 | Created: 2026-11-16 | Updated: 2026-11-16 03:18 CST
+Version 6 | Created: 2026-11-16 | Updated: 2026-11-16 03:29 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -38,7 +38,7 @@ Version 5 | Created: 2026-11-16 | Updated: 2026-11-16 03:18 CST
 
 ## 2. Summary
 
-Spec 은 target ± tolerance 이며, tolerance 는 Cpk 로 구한 공정 요건 $`3\, C_{\min}\, \sigma_y + |\bar{y} - y_0|`$ 와 예측 요건 $`3\, \mathrm{RMSE} / (P/T)_{\max}`$ 가운데 큰 값이고, 예측값의 acceptance limit 은 spec 을 $`k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다.
+Spec 은 target ± tolerance 이며, tolerance 는 Cpk 로 구한 공정 요건 $`3\, C_{pk,\min}\, \sigma_y + |\bar{y} - y_0|`$ 와 예측 요건 $`3\, \mathrm{RMSE} / (P/T)_{\max}`$ 가운데 큰 값이고, 예측값의 acceptance limit 은 spec 을 $`k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다.
 Wafer 44 장, 측정 위치 13 곳의 데이터에서 thickness spec 은 600 ± 148.3056 nm 로 공정 요건이 tolerance 를 정하고, wafer uniformity spec 은 2.4962 % + 7.7251 % 로 RMSE 0.7725 %p 의 예측 요건이 tolerance 를 정한다.
 Thickness 는 측정값 평균이 target 에서 34.5735 nm 벗어나 공정 요건이 커졌고, RMSE 가 14.8306 nm 를 넘어야 예측 요건이 tolerance 를 정한다.
 
@@ -72,7 +72,7 @@ Table 1. Symbols
 | $`\mathrm{LSL}`$       | lower spec limit                                           | scalar  | -                            |
 | $`y_0`$                | thickness 의 target                                        | scalar  | -                            |
 | $`h`$                  | tolerance. target 에서 spec limit 까지의 거리              | scalar  | $`h \gt 0`$                  |
-| $`C_{\min}`$           | 요구하는 공정능력지수 $`C_{pk}`$ 또는 $`C_{pu}`$ 의 최솟값 | scalar  | $`C_{\min} \gt 0`$           |
+| $`C_{pk,\min}`$        | 요구하는 공정능력지수 $`C_{pk}`$ 또는 $`C_{pu}`$ 의 최솟값 | scalar  | $`C_{pk,\min} \gt 0`$        |
 | $`(P/T)_{\max}`$       | 허용하는 precision-to-tolerance ratio (P/T) 의 최댓값      | scalar  | $`0 \lt (P/T)_{\max} \le 1`$ |
 | $`k`$                  | guard band 계수                                            | scalar  | $`k \ge 0`$                  |
 | $`g`$                  | guard band $`k\, \mathrm{RMSE}`$                           | scalar  | -                            |
@@ -100,16 +100,16 @@ $`R^2_{\mathrm{all}}`$ 은 1 에서 식 (1) 의 제곱합을 식 (2) 의 제곱�
 
 ### 3.3 Tolerance
 
-Thickness spec 은 target $`y_0`$ 에 대칭인 $`y_0 \pm h`$ 로 두며, tolerance $`h`$ 는 측정값의 공정능력지수가 $`C_{\min}`$ 이상이라는 공정 요건과, 예측값의 P/T 가 $`(P/T)_{\max}`$ 이하라는 예측 요건을 함께 만족하는 가장 작은 값이다.
+Thickness spec 은 target $`y_0`$ 에 대칭인 $`y_0 \pm h`$ 로 두며, tolerance $`h`$ 는 측정값의 공정능력지수가 $`C_{pk,\min}`$ 이상이라는 공정 요건과, 예측값의 P/T 가 $`(P/T)_{\max}`$ 이하라는 예측 요건을 함께 만족하는 가장 작은 값이다.
 
-공정 요건은 공정능력지수 $`C_{pk} = \min\left( (\mathrm{USL} - \bar{y}),\ (\bar{y} - \mathrm{LSL}) \right) / (3\sigma_y)`$ [[2](#ref-2)] 에서 나온다. $`\mathrm{USL} = y_0 + h`$, $`\mathrm{LSL} = y_0 - h`$ 를 넣으면 두 값 가운데 작은 쪽은 $`h - |\bar{y} - y_0|`$ 이므로, $`C_{pk} = (h - |\bar{y} - y_0|) / (3\sigma_y) \ge C_{\min}`$ 에서 아래 식 (4) 이다.
+공정 요건은 공정능력지수 $`C_{pk} = \min\left( (\mathrm{USL} - \bar{y}),\ (\bar{y} - \mathrm{LSL}) \right) / (3\sigma_y)`$ [[2](#ref-2)] 에서 나온다. $`\mathrm{USL} = y_0 + h`$, $`\mathrm{LSL} = y_0 - h`$ 를 넣으면 두 값 가운데 작은 쪽은 $`h - |\bar{y} - y_0|`$ 이므로, $`C_{pk} = (h - |\bar{y} - y_0|) / (3\sigma_y) \ge C_{pk,\min}`$ 에서 아래 식 (4) 이다.
 
 ```math
-h \ge 3\, C_{\min}\, \sigma_y + |\bar{y} - y_0|
+h \ge 3\, C_{pk,\min}\, \sigma_y + |\bar{y} - y_0|
 \hspace{19em} (4)
 ```
 
-측정값 평균이 target 과 같으면 ($`\bar{y} = y_0`$) $`C_{pk}`$ 는 $`C_p = (\mathrm{USL} - \mathrm{LSL}) / (6\sigma_y)`$ [[2](#ref-2)] 와 같고, 식 (4) 는 $`h \ge 3\, C_{\min}\, \sigma_y`$ 이다. 평균이 target 에서 벗어난 만큼 tolerance 가 넓어져야 한다.
+측정값 평균이 target 과 같으면 ($`\bar{y} = y_0`$) $`C_{pk}`$ 는 $`C_p = (\mathrm{USL} - \mathrm{LSL}) / (6\sigma_y)`$ [[2](#ref-2)] 와 같고, 식 (4) 는 $`h \ge 3\, C_{pk,\min}\, \sigma_y`$ 이다. 평균이 target 에서 벗어난 만큼 tolerance 가 넓어져야 한다.
 
 예측 요건은 예측값을 표준편차가 RMSE 인 측정 system 으로 보고 구한다. 측정 system 의 P/T 는 $`6\, \mathrm{RMSE} / (\mathrm{USL} - \mathrm{LSL}) = 3\, \mathrm{RMSE} / h`$ 이고, 이것이 $`(P/T)_{\max}`$ 이하이므로 아래 식 (5) 이다. 이 요건은 target 과 측정값 평균의 차이에 따라 달라지지 않는다.
 
@@ -121,25 +121,25 @@ h \ge \frac{3\, \mathrm{RMSE}}{(P/T)_{\max}}
 두 요건을 함께 만족하는 가장 작은 값이 tolerance 이며, spec 은 $`y_0 \pm h`$ 이다.
 
 ```math
-h = \max\left( 3\, C_{\min}\, \sigma_y + |\bar{y} - y_0|,\ \frac{3\, \mathrm{RMSE}}{(P/T)_{\max}} \right)
+h = \max\left( 3\, C_{pk,\min}\, \sigma_y + |\bar{y} - y_0|,\ \frac{3\, \mathrm{RMSE}}{(P/T)_{\max}} \right)
 \hspace{19em} (6)
 ```
 
 식 (5) 의 하한이 식 (4) 의 하한보다 크면 예측 오차가 tolerance 를 정한다. 두 하한을 견주면, 그 조건은 아래 식 (7) 이다.
 
 ```math
-\mathrm{RMSE} \gt (P/T)_{\max} \left( C_{\min}\, \sigma_y + \frac{|\bar{y} - y_0|}{3} \right)
+\mathrm{RMSE} \gt (P/T)_{\max} \left( C_{pk,\min}\, \sigma_y + \frac{|\bar{y} - y_0|}{3} \right)
 \hspace{19em} (7)
 ```
 
 $`\bar{y} = y_0`$ 일 때 식 (7) 의 양변을 $`\sigma_y`$ 로 나누고 식 (3) 을 넣어 제곱하면, 같은 조건은 $`R^2_{\mathrm{all}}`$ 로 아래 식 (8) 이다.
 
 ```math
-R^2_{\mathrm{all}} \lt 1 - \left( C_{\min}\, (P/T)_{\max} \right)^2
+R^2_{\mathrm{all}} \lt 1 - \left( C_{pk,\min}\, (P/T)_{\max} \right)^2
 \hspace{19em} (8)
 ```
 
-$`C_{\min} = 1.33`$, $`(P/T)_{\max} = 0.3`$ 이면 $`C_{\min} (P/T)_{\max} = 0.399`$ 이어서, 평균이 target 과 같을 때 $`R^2_{\mathrm{all}}`$ 이 0.8408 보다 낮으면 예측 오차가 tolerance 를 정한다.
+$`C_{pk,\min} = 1.33`$, $`(P/T)_{\max} = 0.3`$ 이면 $`C_{pk,\min} (P/T)_{\max} = 0.399`$ 이어서, 평균이 target 과 같을 때 $`R^2_{\mathrm{all}}`$ 이 0.8408 보다 낮으면 예측 오차가 tolerance 를 정한다.
 
 ### 3.4 Guard Band
 
@@ -174,7 +174,7 @@ U_i = \frac{s_i}{\bar{y}_{i\cdot}}
 Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고, spec 을 target + tolerance 로 적는다. 정해 둔 target 이 없으므로 target 은 측정값의 평균 $`\bar{U}`$ 로 둔다. 한쪽 공정능력지수 $`C_{pu} = (\mathrm{USL} - \bar{U}) / (3\sigma_U)`$ [[2](#ref-2)] 에서 $`h = \mathrm{USL} - \bar{U}`$ 로 쓰면, 식 (4) 부터 식 (6) 이 $`y_0`$ 와 $`\bar{y}`$ 를 $`\bar{U}`$, $`\sigma_y`$ 를 $`\sigma_U`$, RMSE 를 $`\mathrm{RMSE}_U`$ 로 바꾸어 그대로 성립한다.
 
 ```math
-\mathrm{USL}_U = \bar{U} + \max\left( 3\, C_{\min}\, \sigma_U,\ \frac{3\, \mathrm{RMSE}_U}{(P/T)_{\max}} \right)
+\mathrm{USL}_U = \bar{U} + \max\left( 3\, C_{pk,\min}\, \sigma_U,\ \frac{3\, \mathrm{RMSE}_U}{(P/T)_{\max}} \right)
 \hspace{19em} (13)
 ```
 
@@ -184,7 +184,7 @@ Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고
 
 반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 두 spec 을 구한다. 이 데이터는 R2 by Aggregation Level 문서의 Appendix D 와 같은 데이터이며, 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이다. Thickness 의 단위는 nm 이고, target 은 $`y_0 = 600`$ nm 이다.
 
-입력은 $`C_{\min} = 1.33`$, $`(P/T)_{\max} = 0.3`$, $`k = 1.645`$ 로 두었다. P/T 가 0.1 보다 작으면 측정 system 이 spec 충족 여부를 믿을 만하게 판정하고, 0.3 보다 크면 불합격품을 합격으로 (또는 그 반대로) 판정해 그 공정에 쓰기에 맞지 않는다 [[1](#ref-1)]. $`(P/T)_{\max} = 0.3`$ 은 이 상한이다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[2](#ref-2)].
+입력은 $`C_{pk,\min} = 1.33`$, $`(P/T)_{\max} = 0.3`$, $`k = 1.645`$ 로 두었다. P/T 가 0.1 보다 작으면 측정 system 이 spec 충족 여부를 믿을 만하게 판정하고, 0.3 보다 크면 불합격품을 합격으로 (또는 그 반대로) 판정해 그 공정에 쓰기에 맞지 않는다 [[1](#ref-1)]. $`(P/T)_{\max} = 0.3`$ 은 이 상한이다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[2](#ref-2)].
 
 ### 4.1 RMSE of the Data
 
@@ -273,7 +273,7 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 
 - 측정값과 예측값이 같은 wafer 의 같은 측정 위치 $`N`$ 곳에 있다.
 - RMSE 를 구한 wafer 가 판정할 기간의 장비, recipe, 제품을 대표한다.
-- $`C_{\min}`$, $`(P/T)_{\max}`$, $`k`$ 는 공정과 품질 담당이 정해 입력한다.
+- $`C_{pk,\min}`$, $`(P/T)_{\max}`$, $`k`$ 는 공정과 품질 담당이 정해 입력한다.
 - 공정 요건이 tolerance 를 정하는 경우 (식 (7) 이 성립하지 않는 경우) 에는 spec 이 측정값과 target 만으로 정해지고, RMSE 는 guard band 에만 쓰인다.
 
 ### 5.2 Breaking Conditions
