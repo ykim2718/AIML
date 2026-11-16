@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 50 | Created: 2026-11-16 | Updated: 2026-11-16 22:37 UTC
+Version 51 | Created: 2026-11-16 | Updated: 2026-11-16 22:41 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -234,19 +234,31 @@ Table 2. Summary of the relative error
 
 Table 3. p95 by method and the share of pairs inside the band
 
-| Method                            | Section | p95 (%) | Pairs inside | Share inside (%) |
-| :-------------------------------: | :-----: | :-----: | :----------: | :--------------: |
-| 95 % 분위수, 식 (8)               | 4.2     | 3.7071  | 543          | 94.93            |
-| 순위 $`k = 545`$, 식 (9)          | 4.2     | 3.7518  | 545          | 95.28            |
-| 정규분포, 평균 0, 식 (10)         | 4.3     | 3.7712  | 546          | 95.45            |
-| 정규분포, 평균 $`\mu_e`$, 식 (11) | 4.4     | 3.7707  | 546          | 95.45            |
-| 분포 무관 상한, 식 (12)           | 4.5     | 8.6048  | 572          | 100.00           |
+| #   | Method                        | Equation | Section | p95 (%) | Pairs inside | Share inside (%) |
+| :-: | :---------------------------: | :------: | :-----: | :-----: | :----------: | :--------------: |
+| 1   | Empirical Quantile            | (8)      | 4.2     | 3.7071  | 543          | 94.93            |
+| 2   | Conformal Rank                | (9)      | 4.2     | 3.7518  | 545          | 95.28            |
+| 3   | Normal with Zero Mean         | (10)     | 4.3     | 3.7712  | 546          | 95.45            |
+| 4   | Normal with Nonzero Mean      | (11)     | 4.4     | 3.7707  | 546          | 95.45            |
+| 5   | Distribution-free Upper Bound | (12)     | 4.5     | 8.6048  | 572          | 100.00           |
 
 - Pairs inside 는 짝 $`T = 572`$ 개 가운데 $`\lvert e_i \rvert \le p_{95}`$ 인 짝, 곧 식 (2) 의 경계 안에 든 짝의 수이다. Share inside 는 Pairs inside 를 $`T`$ 로 나누어 % 로 적은 값이다.
+- #2 Conformal Rank 의 $`p_{95}`$ 는 정렬한 $`\lvert e_i \rvert`$ 에서 식 (9) 의 순위 $`k = 545`$ 인 값이다.
 - 원본 데이터로 구한 경계는 1:1 라인 양쪽의 $`x = (1 \pm 0.037071)\, y`$ 이다.
 - 정규분포를 가정한 두 값은 식 (8) 의 값과 0.07 %p 안에서 같다. 짝을 모은 상대오차는 정규성이 기각되었지만, 이 데이터에서는 정규분포 가정의 $`p_{95}`$ 가 크게 어긋나지 않는다.
 - $`\mu_e = 0.3727`$ % 는 $`\sigma_e = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
 - 분포 무관 상한 8.6048 % 는 식 (8) 의 값의 2.32 배로, 모든 짝을 담지만 경계를 넓게 잡는다.
+
+각 방법의 경계를 짝 572 개와 함께 그리면 아래 Fig 2 이다.
+
+<img src="relative-error-band-ko_fig/relative-error-band-fig2-band-by-method.png" width="900" style="max-width: 100%;" alt="Fig 2">
+
+<a id="fig-2"></a>Fig 2. Pred vs. True with the band of each method
+
+- (a) 부터 (e) 는 Table 3 의 #1 부터 #5 의 방법이다. 가로축은 측정값 $`y_i`$, 세로축은 예측값 $`x_i`$ 이며, 점선은 1:1 라인, 초록 띠는 식 (2) 의 경계이다.
+- 파란 점은 경계 안에 든 짝, 빨간 점은 경계 밖의 짝이며, 왼쪽 위의 inside 는 Table 3 의 Pairs inside 이다.
+- (a) 부터 (d) 는 경계의 폭이 거의 같아, 경계 밖의 짝도 26 개에서 29 개로 거의 같다.
+- (e) 는 경계가 (a) 의 2.32 배로 넓어 모든 짝이 경계 안에 든다.
 
 ### 5.4 R2 and RMSE
 
@@ -258,10 +270,10 @@ Table 3. p95 by method and the share of pairs inside the band
 
 ### 5.5 Calculation Script
 
-Table 2 와 Table 3, 꼭지 5.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, 네 가지 $`p_{95}`$ 와 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. scipy 가 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 2 와 Table 3, Fig 2, 꼭지 5.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. `--output-folder` 를 주면 Table 3 을 `relative-error-band-fig2-band-by-method.csv` 로, Fig 2 를 `relative-error-band-fig2-band-by-method.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
-python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv
+python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
 ```
 
 ## 6. Application
@@ -288,6 +300,7 @@ python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and
 
 ## Appendix A. Terminology
 
+- **Conformal Rank**: 정렬한 $`\lvert e_i \rvert`$ 에서 식 (9) 의 순위 $`k`$ 의 값을 $`p_{95}`$ 로 쓰는 방법. 짝들의 순서가 교환 가능하면 앞으로 얻을 짝 하나가 경계 안에 들 확률이 0.95 이상이다 [[1](#ref-1)]
 - **exchangeable**: 교환 가능. 짝들의 순서를 바꾸어도 함께 갖는 분포가 같은 성질
 - **p-value**: 귀무가설이 참일 때 관측한 것만큼 또는 그보다 극단적인 검정통계량이 나올 확률
 - **Q-Q plot**: 정렬한 표본을 표준정규분포의 분위수에 대해 그린 그림. 점이 직선에 가까울수록 정규분포에 가깝다
@@ -328,16 +341,16 @@ Table 4. Normality tests of the relative error by measurement location
 - 측정 위치 13 곳을 각각 유의수준 0.05 로 검정하면, 모두 정규분포여도 평균 $`13 \times 0.05 = 0.65`$ 곳이 기각된다. Shapiro-Wilk 의 p 가 $`0.05 / 13 = 0.0038`$ 보다 작은 곳은 p1 과 p9 이다.
 - 상대오차의 평균은 측정 위치마다 -1.4071 % (p9) 부터 1.9737 % (p13) 까지 다르다.
 
-측정 위치 13 곳의 Q-Q plot 은 아래 Fig 2 이다.
+측정 위치 13 곳의 Q-Q plot 은 아래 Fig 3 이다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig2-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="relative-error-band-ko_fig/relative-error-band-fig3-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 3">
 
-<a id="fig-2"></a>Fig 2. Normal Q-Q plots of the relative error by measurement location
+<a id="fig-3"></a>Fig 3. Normal Q-Q plots of the relative error by measurement location
 
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig2-relative-error.csv` 로, Fig 2 을 `relative-error-band-fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 4 와 Fig 3 은 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig3-relative-error.csv` 로, Fig 3 을 `relative-error-band-fig3-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band_normality.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
