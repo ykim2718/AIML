@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 42 | Created: 2026-11-16 | Updated: 2026-11-16 22:14 UTC
+Version 43 | Created: 2026-11-16 | Updated: 2026-11-16 22:17 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -48,6 +48,35 @@ $`p_{95}`$ 는 상대오차 $`e = (x - y)/y`$ 의 절댓값이 짝의 95 % 에�
 이 상한은 정확한 $`p_{95}`$ 가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
 
 ## 3. Principle
+
+$`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
+
+```text
+                      Raw pairs (x_i, y_i) available?
+                     /                               \
+                   yes                                no
+                    |                                  |
+      p95 = 0.95 quantile of |e_i|          Is e_i normally distributed?
+      Eq. (8), rank k for a new pair       /                            \
+      Eq. (9)            [Sec. 3.3]      yes                       no / unknown
+                                          |                              |
+                                 Is the mean mu_e = 0?        p95 <= RMSRE / sqrt(0.05)
+                                 /                  \         upper bound only, Eq. (12)
+                               yes                   no                      [Sec. 3.6]
+                                |                     |
+                      p95 = 1.96 RMSRE       solve Eq. (11) with
+                      Eq. (10)               mu_e and sigma_e
+                           [Sec. 3.4]                [Sec. 3.5]
+
+  Only R2 and RMSE known: p95 cannot be determined.
+  With min y_i: RMSRE <= RMSE / min y_i, then Eq. (12) gives an upper bound.   [Sec. 3.7]
+```
+
+<a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
+
+- 위에서부터 질문에 답하며 내려가면, 맨 아래 칸이 쓸 식과 꼭지이다.
+- 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
+- R² 와 RMSE 만 있는 경우는 나무에 들지 않고 맨 아래 줄에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
 
 ### 3.1 Notation
 
@@ -314,16 +343,16 @@ Table 4. Normality tests of the relative error by measurement location
 - 측정 위치 13 곳을 각각 유의수준 0.05 로 검정하면, 모두 정규분포여도 평균 $`13 \times 0.05 = 0.65`$ 곳이 기각된다. Shapiro-Wilk 의 p 가 $`0.05 / 13 = 0.0038`$ 보다 작은 곳은 p1 과 p9 이다.
 - 상대오차의 평균은 측정 위치마다 -1.4071 % (p9) 부터 1.9737 % (p13) 까지 다르다.
 
-측정 위치 13 곳의 Q-Q plot 은 아래 Fig 1 이다.
+측정 위치 13 곳의 Q-Q plot 은 아래 Fig 2 이다.
 
-<img src="rmse-process-spec-ko_fig/fig1-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 1">
+<img src="rmse-process-spec-ko_fig/fig2-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
-<a id="fig-1"></a>Fig 1. Normal Q-Q plots of the relative error by measurement location
+<a id="fig-2"></a>Fig 2. Normal Q-Q plots of the relative error by measurement location
 
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 4 와 Fig 1 은 같은 folder 의 [src/relative_error_normality.py](src/relative_error_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig1-relative-error.csv` 로, Fig 1 을 `fig1-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_normality.py](src/relative_error_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig2-relative-error.csv` 로, Fig 2 을 `fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder rmse-process-spec-ko_fig

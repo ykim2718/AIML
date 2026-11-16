@@ -9,7 +9,7 @@ D'Agostino-Pearson and Anderson-Darling. The script prints one row per location,
 Requires scipy and matplotlib.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.2+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -24,8 +24,8 @@ from scipy import stats
 
 __all__ = ['load_relative_error', 'normality_tests', 'draw']
 
-SAMPLE_CSV_NAME: str = 'fig1-relative-error.csv'
-FIGURE_NAME: str = 'fig1-relative-error-qq.png'
+SAMPLE_CSV_NAME: str = 'fig2-relative-error.csv'
+FIGURE_NAME: str = 'fig2-relative-error-qq.png'
 PERCENT: float = 100.0
 ALPHA: float = 0.05
 GRID_COLUMNS: int = 5
