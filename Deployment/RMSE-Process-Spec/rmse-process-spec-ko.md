@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 22 | Created: 2026-11-16 | Updated: 2026-11-16 05:21 CST
+Version 23 | Created: 2026-11-16 | Updated: 2026-11-16 05:23 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -187,7 +187,7 @@ $`\rho`$ 는 이 문서가 정의한 비이며 산업 표준 지표가 아니다
 
 ### 3.4 Guard Band
 
-Spec 은 측정값에 대한 기준인데, 측정하지 않은 wafer 에는 오차가 있는 예측값만 있으므로 예측값에 쓸 기준이 따로 필요하다. 이 기준이 Goal 3 의 acceptance limit 이며, spec limit 을 guard band $`g = k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다.
+Spec 은 측정값에 대한 기준인데, 측정하지 않은 wafer 에는 오차가 있는 예측값만 있으므로 예측값에 쓸 기준이 따로 필요하다. 이 기준이 Goal 3 의 acceptance limit 이며, spec limit 을 guard band $`g = k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다 [[2](#ref-2)].
 
 ```math
 \lvert \hat{y}_{ij} - y_0 \rvert \le h - g
@@ -275,7 +275,7 @@ Table 2. Thickness and wafer uniformity spec rules
 
 반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 두 spec 을 구한다. 이 데이터는 R2 by Aggregation Level 문서의 Appendix D 와 같은 데이터이며, 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이다. Thickness 의 단위는 nm 이고, target 은 $`y_0 = 600`$ nm 이다.
 
-입력은 $`C_{pk,\min} = 1.33`$, $`C_{pu,\min} = 1.33`$, $`n_\sigma = 10`$, $`k = 1.645`$ 로 두었다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[1](#ref-1)]. $`n_\sigma = 10`$ 은 이 예에서 고른 설계 parameter 이다. Gauge R&R 의 측정 system 평가 기준 [[2](#ref-2)] 은 tolerance 에 대한 측정 system 변동의 비율로 정의되어 이 문서의 $`h / \mathrm{RMSE}`$ 와 정의가 다르므로, $`n_\sigma`$ 의 근거로 쓰지 않는다.
+입력은 $`C_{pk,\min} = 1.33`$, $`C_{pu,\min} = 1.33`$, $`n_\sigma = 10`$, $`k = 1.645`$ 로 두었다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[1](#ref-1)]. $`n_\sigma = 10`$ 은 이 예에서 고른 설계 parameter 이다. Gauge R&R 의 측정 system 평가 기준 [[3](#ref-3)] 은 tolerance 에 대한 측정 system 변동의 비율로 정의되어 이 문서의 $`h / \mathrm{RMSE}`$ 와 정의가 다르므로, $`n_\sigma`$ 의 근거로 쓰지 않는다.
 
 ### 4.1 RMSE of the Data
 
@@ -381,7 +381,8 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 ## References
 
 <a id="ref-1"></a>[1] NIST/SEMATECH. [6.1.6. What is Process Capability?](https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.<br>
-<a id="ref-2"></a>[2] Wikipedia. [ANOVA gauge R&R](https://en.wikipedia.org/wiki/ANOVA_gauge_R%26R). 측정 system 평가 기준의 출처로 Burdick, R. K., Borror, C. M., and Montgomery, D. C. (2005). *Design and Analysis of Gauge R and R Studies*. SIAM-ASA, p. 4, ISBN 0898715881 을 인용한다.
+<a id="ref-2"></a>[2] Joint Committee for Guides in Metrology (2012). [JCGM 106:2012 Evaluation of measurement data — The role of measurement uncertainty in conformity assessment](https://www.bipm.org/documents/20126/2071204/JCGM_106_2012_E.pdf). BIPM.<br>
+<a id="ref-3"></a>[3] Wikipedia. [ANOVA gauge R&R](https://en.wikipedia.org/wiki/ANOVA_gauge_R%26R). 측정 system 평가 기준의 출처로 Burdick, R. K., Borror, C. M., and Montgomery, D. C. (2005). *Design and Analysis of Gauge R and R Studies*. SIAM-ASA, p. 4, ISBN 0898715881 을 인용한다.
 
 ---
 
