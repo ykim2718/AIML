@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 31 | Created: 2026-11-16 | Updated: 2026-11-16 05:43 CST
+Version 32 | Created: 2026-11-16 | Updated: 2026-11-16 05:43 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,11 +25,12 @@ Version 31 | Created: 2026-11-16 | Updated: 2026-11-16 05:43 CST
 
 **Problem Statement**: 박막 두께를 측정하지 않은 wafer 를 예측값으로 판정하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 thickness spec 과 WIWNU spec 을 구하는 방법이 없다.
 
-**Goal**: 예측값의 RMSE 로 아래 세 가지를 새로 정한다.
+**Goal**: 예측값의 RMSE 로 아래 네 가지를 새로 정한다.
 
 1. Film thickness 측정값의 합격 범위인 spec limit 을 target ± tolerance 로 제시하고, 그 tolerance 의 가장 작은 값과 근거
 2. Film thickness 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
 3. Film thickness 의 within-wafer non-uniformity (WIWNU, 1σ/mean) 의 upper spec limit 을 제시
+4. Film thickness 의 WIWNU 예측값의 합격 범위인 upper acceptance limit 을 제시
 
 **Non-Goal**:
 
