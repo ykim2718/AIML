@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 15 | Created: 2026-11-16 | Updated: 2026-11-16 04:43 CST
+Version 16 | Created: 2026-11-16 | Updated: 2026-11-16 04:55 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -141,6 +141,8 @@ $`\bar{y} = y_0`$ 일 때 식 (7) 의 양변을 $`\sigma_y`$ 로 나누고 식 (
 R^2_{\mathrm{all}} \lt 1 - \left( \frac{3\, C_{pk,\min}}{n_\sigma} \right)^2
 \hspace{19em} (8)
 ```
+
+식 (8) 이 성립하면 $`h`$ 는 식 (5) 의 하한 $`n_\sigma\, \mathrm{RMSE}`$ 이고, 성립하지 않으면 식 (4) 의 하한 $`3\, C_{pk,\min}\, \sigma_y + |\bar{y} - y_0|`$ 이다. 식 (8) 로 판단할 수 있는 것은 $`\bar{y} = y_0`$ 일 때뿐이고, 그렇지 않으면 식 (7) 로 판단한다.
 
 $`C_{pk,\min} = 1.33`$, $`n_\sigma = 10`$ 이면 $`3\, C_{pk,\min} / n_\sigma = 0.399`$ 이어서, 평균이 target 과 같을 때 $`R^2_{\mathrm{all}}`$ 이 0.8408 보다 낮으면 예측 오차가 tolerance 를 정한다.
 
