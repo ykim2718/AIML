@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 3 | Created: 2026-11-16 | Updated: 2026-11-16 03:13 CST
+Version 4 | Created: 2026-11-16 | Updated: 2026-11-16 03:15 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -73,7 +73,7 @@ Table 1. Symbols
 | $`y_0`$                | thickness 의 target                                        | scalar  | -                          |
 | $`h`$                  | tolerance. target 에서 spec limit 까지의 거리              | scalar  | $`h \gt 0`$                |
 | $`C_{\min}`$           | 요구하는 공정능력지수 $`C_{pk}`$ 또는 $`C_{pu}`$ 의 최솟값 | scalar  | $`C_{\min} \gt 0`$         |
-| $`P_{\max}`$           | 허용하는 P/T 의 최댓값                                     | scalar  | $`0 \lt P_{\max} \le 1`$   |
+| $`P_{\max}`$           | 허용하는 precision-to-tolerance ratio (P/T) 의 최댓값      | scalar  | $`0 \lt P_{\max} \le 1`$   |
 | $`k`$                  | guard band 계수                                            | scalar  | $`k \ge 0`$                |
 | $`g`$                  | guard band $`k\, \mathrm{RMSE}`$                           | scalar  | -                          |
 
