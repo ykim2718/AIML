@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 9 | Created: 2026-11-16 | Updated: 2026-11-16 04:18 CST
+Version 10 | Created: 2026-11-16 | Updated: 2026-11-16 04:19 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -99,7 +99,7 @@ $`R^2_{\mathrm{all}}`$ 은 1 에서 식 (1) 의 제곱합을 식 (2) 의 제곱�
 \hspace{19em} (3) 🌳
 ```
 
-데이터 셋에 따라 임의로 변하는 쪽은 RMSE 가 아니라 $`R^2_{\mathrm{all}}`$ 이다. RMSE 는 식 (1) 에서 예측 오차 $`y_{ij} - \hat{y}_{ij}`$ 만으로 정해지므로, 예측 오차가 같으면 $`\sigma_y`$ 와 상관없이 같은 값이다. 반대로 $`R^2_{\mathrm{all}}`$ 은 식 (3) 에서 RMSE 를 $`\sigma_y`$ 와 견준 값이라, 같은 예측 오차라도 $`\sigma_y`$ 가 큰 데이터 셋에서는 커지고 작은 데이터 셋에서는 작아진다. 그러니 "$`R^2_{\mathrm{all}}`$ 이 그대로인데 $`\sigma_y`$ 가 커진다" 는 상황은 예측 오차 자체가 $`\sigma_y`$ 와 같은 비율로 커진 경우이고, RMSE 가 커지는 것은 그 오차가 실제로 커졌기 때문이다. 이 문서가 예측 요건 식 (5) 에 $`R^2_{\mathrm{all}}`$ 이 아니라 RMSE 를 쓰는 이유도 여기에 있다.
+데이터 셋에 따라 임의로 변하는 쪽은 $`R^2_{\mathrm{all}}`$ 이다. RMSE 는 식 (1) 에서 예측 오차 $`y_{ij} - \hat{y}_{ij}`$ 만으로 정해지므로, 예측 오차가 같으면 $`\sigma_y`$ 와 상관없이 같은 값이다. 반대로 $`R^2_{\mathrm{all}}`$ 은 식 (3) 에서 RMSE 를 $`\sigma_y`$ 와 견준 값이라, 같은 예측 오차라도 $`\sigma_y`$ 가 큰 데이터 셋에서는 커지고 작은 데이터 셋에서는 작아진다. 그러니 "$`R^2_{\mathrm{all}}`$ 이 그대로인데 $`\sigma_y`$ 가 커진다" 는 상황은 예측 오차 자체가 $`\sigma_y`$ 와 같은 비율로 커진 경우이고, RMSE 가 커지는 것은 그 오차가 실제로 커졌기 때문이다. 이 문서가 예측 요건 식 (5) 에 $`R^2_{\mathrm{all}}`$ 대신 RMSE 를 쓰는 이유도 여기에 있다.
 
 ### 3.3 Tolerance
 
