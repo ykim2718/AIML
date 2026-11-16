@@ -2,13 +2,15 @@
 """Draw the decision tree for choosing the p95 method as an image for documents and presentation slides.
 
 The tree asks whether raw pairs are available, whether the relative error is normal and whether its mean is zero, and
-ends at the equation and the section to use. The figure is saved as PNG (300 dpi) and SVG; the SVG can be inserted in
-a slide and scaled without loss.
+ends at the equation and the section to use. The figure is saved as SVG, or as PNG (300 dpi) when the SVG is larger.
 
 Requires matplotlib.
+
+Changelog:
+    0.1.0  One file, SVG or PNG by size, instead of both; text is drawn as paths.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -19,10 +21,11 @@ from matplotlib import colors as mcolors
 from matplotlib import patches
 from matplotlib import pyplot as plt
 
+from relative_error_band_figure import save_svg_or_png
+
 __all__ = ['Node', 'NODES', 'EDGES', 'NOTE', 'draw']
 
-FIGURE_STEM: str = 'relative-error-band-fig1-decision-tree'
-FIGURE_SUFFIXES: tuple = ('.png', '.svg')
+FIGURE_STEM: str = 'relative-error-band-fig1-decision-tree'  # suffix .svg or .png chosen by size
 FIGSIZE: tuple = (13.33, 7.5)  # 16:9 slide
 REFERENCE_WIDTH: float = 13.33
 FONT_SIZES: dict = {'text': 12.0, 'axis_label': 14.0, 'text_box': 14.0, 'pane_caption': 14.0}  # points
@@ -77,12 +80,12 @@ def _box(ax: plt.Axes = None, node: Node = None, fontsize: float = None) -> None
     ax.text(node.x, node.y, node.text, ha='center', va='center', fontsize=fontsize, linespacing=1.5)
 
 
-def draw(paths: list = None) -> None:
-    """Save the decision tree to every path in paths; the file type follows each suffix."""
-    if not paths:
-        raise ValueError('paths is required.')
+def draw(stem: pathlib.Path = None) -> pathlib.Path:
+    """Save the decision tree to stem + '.svg' or '.png' and return the written path."""
+    if stem is None:
+        raise ValueError('stem is required.')
     scale = FIGSIZE[0] / REFERENCE_WIDTH
-    plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale, 'svg.fonttype': 'none'})
+    plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale})
     fig, ax = plt.subplots(figsize=FIGSIZE)
     ax.set_xlim(0, CANVAS[0])
     ax.set_ylim(0, CANVAS[1])
@@ -101,18 +104,18 @@ def draw(paths: list = None) -> None:
         _box(ax=ax, node=node, fontsize=FONT_SIZES['text_box'] * scale)
     _box(ax=ax, node=NOTE, fontsize=FONT_SIZES['text'] * scale)
     fig.tight_layout(pad=0.2)
-    for path in paths:
-        fig.savefig(path, dpi=DPI)
+    path = save_svg_or_png(fig=fig, stem=stem, dpi=DPI)
     plt.close(fig)
+    return path
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=f"{pathlib.Path(__file__).name} {__version__}\n"
-                    'Decision tree for choosing the p95 method, saved as PNG and SVG.',
+                    'Decision tree for choosing the p95 method, saved as SVG, or as PNG when the SVG is larger.',
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('--output-folder', type=pathlib.Path, help='folder for the PNG and SVG files')
+    parser.add_argument('--output-folder', type=pathlib.Path, help='folder for the figure file')
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
@@ -124,7 +127,4 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     ARGS = parse_args()
-    PATHS = [ARGS.output_folder / f"{FIGURE_STEM}{SUFFIX}" for SUFFIX in FIGURE_SUFFIXES]
-    draw(paths=PATHS)
-    for PATH in PATHS:
-        print(f"wrote {PATH}")
+    draw(stem=ARGS.output_folder / FIGURE_STEM)

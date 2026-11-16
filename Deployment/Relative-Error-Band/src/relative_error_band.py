@@ -17,9 +17,10 @@ Requires scipy and matplotlib.
 
 Changelog:
     0.1.0  Added the band chart per method (--output-folder).
+    0.2.0  The chart is saved as SVG, or as PNG when the SVG is larger.
 """
 __author__ = 'yRocket'
-__version__ = "0.1.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -34,6 +35,8 @@ from matplotlib import patches
 from matplotlib import pyplot as plt
 from scipy import optimize, stats
 
+from relative_error_band_figure import save_svg_or_png
+
 __all__ = ['METHODS', 'load_pairs', 'relative_error_band', 'band_table', 'draw']
 
 COVERAGE: float = 0.95
@@ -45,7 +48,7 @@ METHODS: dict = {'empirical': (1, 'Empirical Quantile', 8, '4.2'),
                  'normal': (4, 'Normal with Nonzero Mean', 11, '4.4'),
                  'distribution_free': (5, 'Distribution-free Upper Bound', 12, '4.5')}
 SAMPLE_CSV_NAME: str = 'relative-error-band-fig2-band-by-method.csv'
-FIGURE_NAME: str = 'relative-error-band-fig2-band-by-method.png'
+FIGURE_STEM: str = 'relative-error-band-fig2-band-by-method'  # suffix .svg or .png chosen by size
 GRID: tuple = (2, 3)  # rows, columns
 FIGSIZE: tuple = (12.0, 9.0)
 REFERENCE_WIDTH: float = 12.0
@@ -116,9 +119,10 @@ def band_table(x: np.ndarray = None, y: np.ndarray = None, result: dict = None) 
     return pd.DataFrame(rows).T.rename_axis('number')
 
 
-def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None, path: pathlib.Path = None) -> None:
-    """Save one figure with a Pred vs. True panel per method: pairs inside and outside the band, the 1:1 line and the
-    band x = (1 +/- p95) y."""
+def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
+         stem: pathlib.Path = None) -> pathlib.Path:
+    """Save and return one figure with a Pred vs. True panel per method: pairs inside and outside the band, the 1:1
+    line and the band x = (1 +/- p95) y."""
     if len(table) >= GRID[0] * GRID[1]:
         raise ValueError(f"the grid {GRID} needs one free panel for the legend: {len(table)=}")
     scale = FIGSIZE[0] / REFERENCE_WIDTH
@@ -159,8 +163,9 @@ def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
     for ax in axes.ravel()[len(table) + 1:]:
         ax.set_visible(False)
     fig.subplots_adjust(left=0.08, right=0.98, top=0.98, bottom=0.14, wspace=0.12, hspace=0.42)
-    fig.savefig(path, dpi=DPI)
+    path = save_svg_or_png(fig=fig, stem=stem, dpi=DPI)
     plt.close(fig)
+    return path
 
 
 def parse_args() -> argparse.Namespace:
@@ -193,5 +198,4 @@ if __name__ == '__main__':
         TABLE = band_table(x=X, y=Y, result=RESULT)
         print(TABLE.to_string(float_format='{:.4f}'.format))
         TABLE.to_csv(ARGS.output_folder / SAMPLE_CSV_NAME, float_format='%.6f')
-        draw(x=X, y=Y, table=TABLE, path=ARGS.output_folder / FIGURE_NAME)
-        print(f"wrote {ARGS.output_folder / FIGURE_NAME}")
+        draw(x=X, y=Y, table=TABLE, stem=ARGS.output_folder / FIGURE_STEM)

@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 51 | Created: 2026-11-16 | Updated: 2026-11-16 22:41 UTC
+Version 52 | Created: 2026-11-16 | Updated: 2026-11-16 22:48 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -76,14 +76,14 @@ Table 1. Symbols
 
 $`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig1-decision-tree.png" width="900" style="max-width: 100%;" alt="Fig 1">
+<img src="relative-error-band-ko_fig/relative-error-band-fig1-decision-tree.svg" width="900" style="max-width: 100%;" alt="Fig 1">
 
 <a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
 
 - 위에서부터 파란 칸의 질문에 답하며 내려가면, 화살표가 끝나는 초록 칸과 주황 칸이 쓸 식과 꼭지이다. 초록 칸은 $`p_{95}`$ 를 구하고, 주황 칸은 그 상한만 구한다.
 - 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
 - R² 와 RMSE 만 있는 경우는 나무에 들지 않고 왼쪽의 회색 칸에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
-- Fig 1 은 같은 folder 의 [src/relative_error_band_decision_tree.py](src/relative_error_band_decision_tree.py) 로 그렸다. 문서 folder 에서 `python3 src/relative_error_band_decision_tree.py --output-folder relative-error-band-ko_fig` 로 실행하면 PNG 와 함께 발표 자료에 넣을 수 있는 SVG 를 저장한다.
+- Fig 1 은 같은 folder 의 [src/relative_error_band_decision_tree.py](src/relative_error_band_decision_tree.py) 로 그렸다. 문서 folder 에서 `python3 src/relative_error_band_decision_tree.py --output-folder relative-error-band-ko_fig` 로 실행한다. 이 문서의 그림은 모두 SVG 로 저장하고, SVG 가 PNG 보다 크면 PNG 로 저장한다. 이 형식은 세 script 가 함께 쓰는 [src/relative_error_band_figure.py](src/relative_error_band_figure.py) 가 정한다.
 
 ### 4.1 Relative Error Band
 
@@ -251,7 +251,7 @@ Table 3. p95 by method and the share of pairs inside the band
 
 각 방법의 경계를 짝 572 개와 함께 그리면 아래 Fig 2 이다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig2-band-by-method.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="relative-error-band-ko_fig/relative-error-band-fig2-band-by-method.svg" width="900" style="max-width: 100%;" alt="Fig 2">
 
 <a id="fig-2"></a>Fig 2. Pred vs. True with the band of each method
 
@@ -270,7 +270,7 @@ Table 3. p95 by method and the share of pairs inside the band
 
 ### 5.5 Calculation Script
 
-Table 2 와 Table 3, Fig 2, 꼭지 5.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. `--output-folder` 를 주면 Table 3 을 `relative-error-band-fig2-band-by-method.csv` 로, Fig 2 를 `relative-error-band-fig2-band-by-method.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 2 와 Table 3, Fig 2, 꼭지 5.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. `--output-folder` 를 주면 Table 3 을 `relative-error-band-fig2-band-by-method.csv` 로, Fig 2 를 `relative-error-band-fig2-band-by-method.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
@@ -343,14 +343,14 @@ Table 4. Normality tests of the relative error by measurement location
 
 측정 위치 13 곳의 Q-Q plot 은 아래 Fig 3 이다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig3-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 3">
+<img src="relative-error-band-ko_fig/relative-error-band-fig3-relative-error-qq.svg" width="900" style="max-width: 100%;" alt="Fig 3">
 
 <a id="fig-3"></a>Fig 3. Normal Q-Q plots of the relative error by measurement location
 
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 4 와 Fig 3 은 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig3-relative-error.csv` 로, Fig 3 을 `relative-error-band-fig3-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 4 와 Fig 3 은 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig3-relative-error.csv` 로, Fig 3 을 `relative-error-band-fig3-relative-error-qq.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band_normality.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig

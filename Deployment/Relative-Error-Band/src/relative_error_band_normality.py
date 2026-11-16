@@ -7,9 +7,12 @@ D'Agostino-Pearson and Anderson-Darling. The script prints one row per location,
 (one row per wafer, one column per location), and saves one figure with the normal Q-Q plot of every location.
 
 Requires scipy and matplotlib.
+
+Changelog:
+    0.1.0  The figure is saved as SVG, or as PNG when the SVG is larger.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.4+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -22,10 +25,12 @@ from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from scipy import stats
 
+from relative_error_band_figure import save_svg_or_png
+
 __all__ = ['load_relative_error', 'normality_tests', 'draw']
 
 SAMPLE_CSV_NAME: str = 'relative-error-band-fig3-relative-error.csv'
-FIGURE_NAME: str = 'relative-error-band-fig3-relative-error-qq.png'
+FIGURE_STEM: str = 'relative-error-band-fig3-relative-error-qq'  # suffix .svg or .png chosen by size
 PERCENT: float = 100.0
 ALPHA: float = 0.05
 GRID_COLUMNS: int = 5
@@ -68,8 +73,8 @@ def normality_tests(r: pd.DataFrame = None) -> pd.DataFrame:
     return pd.DataFrame(rows).T.rename_axis('location')
 
 
-def draw(r: pd.DataFrame = None, tests: pd.DataFrame = None, path: pathlib.Path = None) -> None:
-    """Save one figure with the normal Q-Q plot of e (in percent) at every location."""
+def draw(r: pd.DataFrame = None, tests: pd.DataFrame = None, stem: pathlib.Path = None) -> pathlib.Path:
+    """Save and return one figure with the normal Q-Q plot of e (in percent) at every location."""
     scale = FIGSIZE[0] / REFERENCE_WIDTH
     plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
                          'axes.labelsize': FONT_SIZES['axis_label'] * scale})
@@ -90,8 +95,9 @@ def draw(r: pd.DataFrame = None, tests: pd.DataFrame = None, path: pathlib.Path 
     fig.supxlabel('Standard normal quantile', fontsize=FONT_SIZES['axis_label'] * scale)
     fig.supylabel('Ordered relative error e (%)', fontsize=FONT_SIZES['axis_label'] * scale)
     fig.tight_layout()
-    fig.savefig(path, dpi=DPI)
+    path = save_svg_or_png(fig=fig, stem=stem, dpi=DPI)
     plt.close(fig)
+    return path
 
 
 def parse_args() -> argparse.Namespace:
@@ -123,5 +129,4 @@ if __name__ == '__main__':
     print(f"\nlocations with any p < {ALPHA}: "
           f"{list(TESTS.index[(TESTS[['shapiro_p', 'dagostino_p', 'anderson_p']] < ALPHA).any(axis=1)])}")
     R.to_csv(ARGS.output_folder / SAMPLE_CSV_NAME, float_format='%.8f')
-    draw(r=R, tests=TESTS, path=ARGS.output_folder / FIGURE_NAME)
-    print(f"wrote {ARGS.output_folder / FIGURE_NAME}")
+    draw(r=R, tests=TESTS, stem=ARGS.output_folder / FIGURE_STEM)
