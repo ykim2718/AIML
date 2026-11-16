@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 18 | Created: 2026-11-16 | Updated: 2026-11-16 05:08 CST
+Version 19 | Created: 2026-11-16 | Updated: 2026-11-16 05:16 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -187,7 +187,7 @@ $`\rho`$ 는 이 문서가 정의한 비이며 산업 표준 지표가 아니다
 
 ### 3.4 Guard Band
 
-예측값의 acceptance limit 은 spec limit 을 guard band $`g = k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다.
+Spec 은 측정값에 대한 기준인데, 측정하지 않은 wafer 에는 오차가 있는 예측값만 있으므로 예측값에 쓸 기준이 따로 필요하다. 이 기준이 Goal 3 의 acceptance limit 이며, spec limit 을 guard band $`g = k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다.
 
 ```math
 \lvert \hat{y}_{ij} - y_0 \rvert \le h - g
