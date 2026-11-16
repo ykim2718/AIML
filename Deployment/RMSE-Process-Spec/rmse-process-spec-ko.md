@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 7 | Created: 2026-11-16 | Updated: 2026-11-16 03:30 CST
+Version 8 | Created: 2026-11-16 | Updated: 2026-11-16 03:53 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -99,6 +99,21 @@ $`R^2_{\mathrm{all}}`$ 은 1 에서 식 (1) 의 제곱합을 식 (2) 의 제곱�
 \hspace{19em} (3) 🌳
 ```
 
+식 (3) 에서 RMSE 와 $`R^2_{\mathrm{all}}`$ 가운데 데이터 셋의 $`\sigma_y`$ 에 따라 달라지는 값은 아래 Table 2 이다.
+
+Table 2. RMSE and R2_all when sigma_y doubles
+
+| Case                                             | Prediction error | $`\sigma_y`$ | RMSE    | $`R^2_{\mathrm{all}}`$ |
+| :----------------------------------------------: | :--------------: | :----------: | :-----: | :--------------------: |
+| 현재 예측                                        | 그대로           | 28.5043      | 12.0490 | 0.8213                 |
+| $`\sigma_y`$ 2 배, 예측 오차 그대로              | 그대로           | 57.0086      | 12.0490 | 0.9553                 |
+| $`\sigma_y`$ 2 배, $`R^2_{\mathrm{all}}`$ 그대로 | 2 배             | 57.0086      | 24.0981 | 0.8213                 |
+
+- RMSE 는 식 (1) 에서 예측 오차 $`y_{ij} - \hat{y}_{ij}`$ 만으로 정해진다. 예측 오차가 그대로이면 $`\sigma_y`$ 가 2 배가 되어도 RMSE 는 12.0490 이다.
+- $`R^2_{\mathrm{all}}`$ 은 식 (3) 에서 RMSE 를 $`\sigma_y`$ 와 견준 값이다. 같은 예측 오차에서 $`\sigma_y`$ 가 2 배가 되면 $`R^2_{\mathrm{all}}`$ 은 0.8213 에서 0.9553 으로 오른다.
+- 셋째 행처럼 $`R^2_{\mathrm{all}}`$ 이 그대로인데 $`\sigma_y`$ 가 2 배이면 예측 오차가 2 배가 된 경우이다. RMSE 가 커진 것은 예측 오차가 실제로 커졌기 때문이다.
+- 그래서 데이터 셋의 $`\sigma_y`$ 에 따라 달라지는 값은 $`R^2_{\mathrm{all}}`$ 이며, 이 문서는 예측 요건 식 (5) 에 $`R^2_{\mathrm{all}}`$ 대신 RMSE 를 쓴다.
+
 ### 3.3 Tolerance
 
 Thickness spec 은 target $`y_0`$ 에 대칭인 $`y_0 \pm h`$ 로 두며, tolerance $`h`$ 는 측정값의 공정능력지수가 $`C_{pk,\min}`$ 이상이라는 공정 요건과, 예측값의 P/T 가 $`(P/T)_{\max}`$ 이하라는 예측 요건을 함께 만족하는 가장 작은 값이다.
@@ -189,9 +204,9 @@ Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고
 
 ### 4.1 RMSE of the Data
 
-현재 예측과 측정 위치마다의 mean error (offset) 를 없앤 예측으로 구한 RMSE 는 아래 Table 2 이다.
+현재 예측과 측정 위치마다의 mean error (offset) 를 없앤 예측으로 구한 RMSE 는 아래 Table 3 이다.
 
-Table 2. RMSE of the location predictions
+Table 3. RMSE of the location predictions
 
 | Quantity                     | Current prediction | Offset removed |
 | :--------------------------: | :----------------: | :------------: |
@@ -206,9 +221,9 @@ Table 2. RMSE of the location predictions
 
 ### 4.2 Thickness Spec
 
-식 (4) 부터 식 (9) 로 구한 thickness spec 은 아래 Table 3 이며, 값은 모두 nm 이다.
+식 (4) 부터 식 (9) 로 구한 thickness spec 은 아래 Table 4 이며, 값은 모두 nm 이다.
 
-Table 3. Thickness spec from the RMSE
+Table 4. Thickness spec from the RMSE
 
 | Quantity                    | Current prediction | Offset removed |
 | :-------------------------: | :----------------: | :------------: |
@@ -231,9 +246,9 @@ Tolerance 의 근거는 아래이다.
 
 ### 4.3 Wafer Uniformity Spec
 
-식 (10) 부터 식 (13) 로 구한 wafer uniformity spec 은 아래 Table 4 이며, 값은 모두 % 이다.
+식 (10) 부터 식 (13) 로 구한 wafer uniformity spec 은 아래 Table 5 이며, 값은 모두 % 이다.
 
-Table 4. Wafer uniformity spec from the RMSE
+Table 5. Wafer uniformity spec from the RMSE
 
 | Quantity                    | Current prediction | Offset removed  |
 | :-------------------------: | :----------------: | :-------------: |
@@ -260,7 +275,7 @@ Tolerance 의 근거는 아래이다.
 
 ### 4.4 Calculation Script
 
-Table 2 부터 Table 4 의 값은 같은 folder 의 [src/rmse_process_spec.py](src/rmse_process_spec.py) 로 구했다. 이 script 는 CSV 에서 식 (1) 의 RMSE 와 식 (12) 의 $`\mathrm{RMSE}_U`$ 를 구하고, `--target` 으로 받은 thickness target 에 대해 현재 예측과 offset 을 없앤 예측마다 spec limit 과 acceptance limit 을 출력한다. `--output-folder` 를 주면 wafer 마다의 $`U_i`$ 와 $`\hat{U}_i`$ 를 `uniformity_by_wafer.csv` 로 저장한다. 문서 folder 에서 아래처럼 실행한다.
+Table 3 부터 Table 5 의 값은 같은 folder 의 [src/rmse_process_spec.py](src/rmse_process_spec.py) 로 구했다. 이 script 는 CSV 에서 식 (1) 의 RMSE 와 식 (12) 의 $`\mathrm{RMSE}_U`$ 를 구하고, `--target` 으로 받은 thickness target 에 대해 현재 예측과 offset 을 없앤 예측마다 spec limit 과 acceptance limit 을 출력한다. `--output-folder` 를 주면 wafer 마다의 $`U_i`$ 와 $`\hat{U}_i`$ 를 `uniformity_by_wafer.csv` 로 저장한다. 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --target 600 --cp-min 1.33 --pt-max 0.3 --guard-k 1.645
@@ -279,7 +294,7 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 
 ### 5.2 Breaking Conditions
 
-아래 경우에는 Table 3 과 Table 4 의 spec 과 acceptance limit 을 그대로 믿을 수 없다.
+아래 경우에는 Table 4 와 Table 5 의 spec 과 acceptance limit 을 그대로 믿을 수 없다.
 
 - **Offset 이 있는 예측 오차**: 측정 위치마다 mean error (offset) 가 있으면 오차의 평균이 0 이 아니어서, 식 (9) 의 guard band 가 spec 밖 확률 0.05 를 보장하지 않는다. 이 데이터는 offset 을 없애면 RMSE 가 12.0490 에서 8.7503 으로 줄어, offset 이 RMSE 에 큰 비율로 들어 있다.
 - **정규분포가 아닌 wafer uniformity**: $`U_i`$ 의 최댓값 6.3171 % 는 $`\bar{U}`$ 보다 $`\sigma_U`$ 의 3.83 배 크다. 정규분포에서 평균보다 표준편차의 3.83 배 넘게 클 확률은 약 0.00006 인데 wafer 44 장 가운데 하나가 그만큼 크므로, $`U_i`$ 는 오른쪽 꼬리가 긴 분포를 따른다. 이때 $`C_{pu}`$ 로 구한 spec 밖 비율은 실제보다 낮다.
