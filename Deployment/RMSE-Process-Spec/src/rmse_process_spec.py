@@ -12,17 +12,20 @@ For each quantity the tolerance h is the larger of a process requirement and a p
     h_process    = 3 * cp_min * sigma + |mean - target|   (Cpk or Cpu of the measured values >= cp_min)
     h_prediction = n_sigma * RMSE                         (at least n_sigma RMSE inside the tolerance h)
     h            = max(h_process, h_prediction)
+    rho          = h_prediction / h_process            (> 1: the prediction requirement sets h)
 
-and the acceptance limit of a predicted value is the spec moved inward by the guard band g = guard_k * RMSE.
+The RMSE splits into the mean error and the standard deviation of the errors, RMSE^2 = bias^2 + sigma_e^2, and the
+acceptance limit of a predicted value is the spec moved inward by the guard band g = guard_k * RMSE.
 The script prints both quantities for the current prediction and for the prediction whose location mean error
 (offset) is removed, and writes the per-wafer uniformity values to a CSV.
 
 Changelog:
     0.1.0 - Center the thickness spec on a given target and use Cpk for the process requirement.
     0.2.0 - Use --n-sigma, the least number of RMSE inside the tolerance, for the prediction requirement.
+    0.3.0 - Print rho, the error bias and sigma_e, and the skewness of the wafer uniformity.
 """
 __author__ = 'yRocket'
-__version__ = "0.2.2+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.3.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -36,6 +39,7 @@ __all__ = ['SpecInput', 'load', 'uniformity', 'spec', 'build_tables']
 
 UNIFORMITY_CSV_NAME: str = 'uniformity_by_wafer.csv'
 PERCENT: float = 100.0
+UNITLESS_KEYS: tuple = ('RMSE/sigma', 'rho')
 
 
 @dataclass(frozen=True)
@@ -81,7 +85,7 @@ def spec(target: float = None, mean: float = None, sigma: float = None, rmse: fl
     h = max(h_process, h_prediction)
     g = setting.guard_k * rmse
     out = {'target': target, 'mean': mean, 'sigma': sigma, 'RMSE': rmse, 'RMSE/sigma': rmse / sigma,
-           'h_process': h_process, 'h_prediction': h_prediction, 'h': h,
+           'h_process': h_process, 'h_prediction': h_prediction, 'rho': h_prediction / h_process, 'h': h,
            'governed_by': 'prediction' if h_prediction > h_process else 'process', 'USL': target + h,
            'guard_band': g, 'accept_tolerance': h - g, 'accept_upper': target + h - g}
     if two_sided:
@@ -106,12 +110,15 @@ def build_tables(y: np.ndarray = None, y_hat: np.ndarray = None, setting: SpecIn
         rmse = np.sqrt(((y - pred) ** 2).mean())
         thickness[name] = spec(target=target, mean=y.mean(), sigma=sigma_y, rmse=rmse, setting=setting, two_sided=True)
         thickness[name]['R2_all'] = 1 - (rmse / sigma_y) ** 2
+        thickness[name]['bias'] = (y - pred).mean()
+        thickness[name]['sigma_e'] = (y - pred).std()
         u_hat = uniformity(values=pred)
         rmse_u = np.sqrt(((u - u_hat) ** 2).mean())
-        uniform[name] = {k: (v * PERCENT if isinstance(v, float) and k != 'RMSE/sigma' else v)
+        uniform[name] = {k: (v * PERCENT if isinstance(v, float) and k not in UNITLESS_KEYS else v)
                          for k, v in spec(target=u.mean(), mean=u.mean(), sigma=sigma_u, rmse=rmse_u, setting=setting,
                                           two_sided=False).items()}
         uniform[name]['U_max'] = u.max() * PERCENT
+        uniform[name]['U_skewness'] = ((u - u.mean()) ** 3).mean() / sigma_u ** 3
         per_wafer['U_hat' if name == 'current' else 'U_hat_offset_removed'] = u_hat * PERCENT
     frames = [pd.DataFrame(t).rename_axis('quantity') for t in (thickness, uniform)]
     return frames[0], frames[1], pd.DataFrame(per_wafer)
