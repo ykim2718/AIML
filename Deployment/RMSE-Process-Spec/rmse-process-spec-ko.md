@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 26 | Created: 2026-11-16 | Updated: 2026-11-16 05:30 CST
+Version 27 | Created: 2026-11-16 | Updated: 2026-11-16 05:33 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -12,7 +12,7 @@ Version 26 | Created: 2026-11-16 | Updated: 2026-11-16 05:30 CST
 - [4. Worked Example](#4-worked-example)
     - [4.1 RMSE of the Data](#41-rmse-of-the-data)
     - [4.2 Thickness Spec](#42-thickness-spec)
-    - [4.3 Wafer Uniformity Spec](#43-wafer-uniformity-spec)
+    - [4.3 Uniformity Spec](#43-uniformity-spec)
     - [4.4 Calculation Script](#44-calculation-script)
 - [5. Application](#5-application)
     - [5.1 Conditions](#51-conditions)
@@ -27,8 +27,8 @@ Version 26 | Created: 2026-11-16 | Updated: 2026-11-16 05:30 CST
 
 **Goal**: 예측값의 RMSE 로 아래 세 가지를 새로 정한다.
 
-1. Wafer thickness 측정값의 합격 범위인 spec limit 을 target ± tolerance 로 제시하고, 그 tolerance 의 가장 작은 값과 근거
-2. Wafer thickness 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
+1. Film thickness 측정값의 합격 범위인 spec limit 을 target ± tolerance 로 제시하고, 그 tolerance 의 가장 작은 값과 근거
+2. Film thickness 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
 3. Wafer uniformity (1σ/mean) 의 upper spec limit 을 제시
 
 **Non-Goal**:
@@ -320,7 +320,7 @@ Tolerance 의 근거는 아래이다.
 - 측정값 평균이 target 과 같으면 ($`y_0 = 634.5735`$) $`h_P`$ 는 113.7321 로 줄어 $`\rho = 1.0594`$ 가 되고, spec 은 634.5735 ± 120.4904 이다.
 - $`n_\sigma = 30`$ 이면 $`h_E`$ 는 3 배인 361.4712 가 되어 예측 요건이 tolerance 를 정한다.
 
-### 4.3 Wafer Uniformity Spec
+### 4.3 Uniformity Spec
 
 식 (12) 부터 식 (19) 로 구한 wafer uniformity spec 은 아래 Table 5 이며, 값은 $`\rho`$ 를 빼고 모두 % 이다.
 
