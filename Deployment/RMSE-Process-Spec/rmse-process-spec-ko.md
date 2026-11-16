@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 27 | Created: 2026-11-16 | Updated: 2026-11-16 05:33 CST
+Version 28 | Created: 2026-11-16 | Updated: 2026-11-16 05:33 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -8,7 +8,7 @@ Version 27 | Created: 2026-11-16 | Updated: 2026-11-16 05:33 CST
     - [3.2 RMSE](#32-rmse)
     - [3.3 Tolerance](#33-tolerance)
     - [3.4 Guard Band](#34-guard-band)
-    - [3.5 Wafer Uniformity Spec](#35-wafer-uniformity-spec)
+    - [3.5 Uniformity Spec](#35-uniformity-spec)
 - [4. Worked Example](#4-worked-example)
     - [4.1 RMSE of the Data](#41-rmse-of-the-data)
     - [4.2 Thickness Spec](#42-thickness-spec)
@@ -23,7 +23,7 @@ Version 27 | Created: 2026-11-16 | Updated: 2026-11-16 05:33 CST
 
 ## 1. Purpose
 
-**Problem Statement**: 측정하지 않은 wafer 를 예측값으로 판정하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 thickness spec 과 wafer uniformity spec 을 구하는 방법이 없다.
+**Problem Statement**: 박막 두께를 측정하지 않은 wafer 를 예측값으로 판정하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 thickness spec 과 wafer uniformity spec 을 구하는 방법이 없다.
 
 **Goal**: 예측값의 RMSE 로 아래 세 가지를 새로 정한다.
 
@@ -209,7 +209,7 @@ P\left( y_{ij} \gt \mathrm{USL} \mid \hat{y}_{ij} \right) \le \alpha
 - 예측 오차가 정규분포를 따른다.
 - 예측값의 크기와 측정 위치에 상관없이 예측 오차의 표준편차가 RMSE 로 같다.
 
-### 3.5 Wafer Uniformity Spec
+### 3.5 Uniformity Spec
 
 Wafer uniformity 는 wafer 한 장의 측정값 $`N`$ 개의 표준편차를 그 평균으로 나눈 값이며, 예측값 $`\hat{U}_i`$ 는 같은 식에 $`\hat{y}_{ij}`$ 를 넣어 구한다.
 
