@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 10 | Created: 2026-11-16 | Updated: 2026-11-16 04:19 CST
+Version 11 | Created: 2026-11-16 | Updated: 2026-11-16 04:27 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -301,6 +301,7 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 - **guard band**: 예측 오차 때문에 spec limit 을 안쪽으로 좁히는 폭. 이 문서에서는 $`k\, \mathrm{RMSE}`$
 - **mean error (offset)**: 한 측정 위치에서 예측 오차를 wafer 에 대해 평균한 값
 - **P/T**: precision-to-tolerance ratio. 측정 system 표준편차의 6 배를 spec 폭 $`\mathrm{USL} - \mathrm{LSL}`$ 으로 나눈 값
+- **precision**: 같은 대상을 되풀이해 측정한 값이 흩어진 정도. 측정 system 의 표준편차로 나타내며, 이 문서는 예측값을 측정 system 으로 보므로 RMSE 이다
 - **process capability index**: 공정능력지수. Spec limit 까지의 거리를 공정 산포로 나눈 값. 양쪽 spec 은 $`C_p`$ 와 $`C_{pk}`$, upper spec 하나는 $`C_{pu}`$ 를 쓴다
 - **RMSE**: root mean squared error. 예측 오차 제곱 평균의 제곱근
 - **spec limit**: 공정 결과가 합격인 범위의 경계. Upper spec limit (USL) 과 lower spec limit (LSL)
