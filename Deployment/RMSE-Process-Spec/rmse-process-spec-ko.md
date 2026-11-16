@@ -1,43 +1,51 @@
-# Tolerance at Target from Thickness Prediction
-Version 40 | Created: 2026-11-16 | Updated: 2026-11-16 21:54 UTC
+# Relative Error Band on the 1:1 Line
+Version 41 | Created: 2026-11-16 | Updated: 2026-11-16 22:11 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
 - [3. Principle](#3-principle)
     - [3.1 Notation](#31-notation)
-    - [3.2 Prediction Error](#32-prediction-error)
-    - [3.3 Measured Value at Target](#33-measured-value-at-target)
+    - [3.2 Relative Error Band](#32-relative-error-band)
+    - [3.3 With Raw Data](#33-with-raw-data)
+    - [3.4 Without Raw Data: Normal with Zero Mean](#34-without-raw-data-normal-with-zero-mean)
+    - [3.5 Without Raw Data: Normal with Nonzero Mean](#35-without-raw-data-normal-with-nonzero-mean)
+    - [3.6 Without Raw Data: Distribution-free Upper Bound](#36-without-raw-data-distribution-free-upper-bound)
+    - [3.7 Relation to R2 and RMSE](#37-relation-to-r2-and-rmse)
 - [4. Worked Example](#4-worked-example)
     - [4.1 Data](#41-data)
-    - [4.2 Result](#42-result)
-    - [4.3 Calculation Script](#43-calculation-script)
+    - [4.2 Relative Error](#42-relative-error)
+    - [4.3 p95 by Method](#43-p95-by-method)
+    - [4.4 R2 and RMSE](#44-r2-and-rmse)
+    - [4.5 Calculation Script](#45-calculation-script)
 - [5. Application](#5-application)
     - [5.1 Conditions](#51-conditions)
-    - [5.2 Breaking Conditions](#52-breaking-conditions)
+    - [5.2 Limitations](#52-limitations)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 - [Appendix B. Normality of Relative Error](#appendix-b-normality-of-relative-error)
+- [Appendix C. Significance Level and p-value](#appendix-c-significance-level-and-p-value)
 
 ## 1. Purpose
 
-**Problem Statement**: 반도체 wafer에 증착한 박막의 두께를 예측한 데이터로 부터, 예측이 목표값 일떄의 tolerance 와 stdev를 구하는 방법이 정리되어 있지 않다.
+**Problem Statement**: 반도체 wafer 에 증착한 박막의 두께를 예측할 때, Pred vs. True 의 1:1 라인에서 예측값이 측정값의 몇 % 안에 드는지를 나타내는 ±$`p_{95}`$ % 상대오차 경계를 구하는 방법이 정리되어 있지 않다.
 
-**Goal**: 박막 두께의 예측값과 측정값의 짝으로 아래 두 가지를 구한다.
+**Goal**: Pred vs. True 의 1:1 라인에서 ±$`p_{95}`$ % 상대오차 경계 계산 방법을 정리한다.
 
-1. 예측값이 target 일 때 측정값의 stdev
-2. 예측값이 target 일 때 측정값의 tolerance, 곧 측정값이 들어갈 범위
+1. 원본 데이터가 있을 때 $`p_{95}`$ 를 상대오차에서 직접 계산
+2. 원본 데이터가 없을 때 요약값으로 $`p_{95}`$ 를 추정하거나 그 상한을 계산
+3. R² 와 RMSE 만으로 $`p_{95}`$ 를 정할 수 있는지 판단
 
 **Non-Goal**:
 
-- 측정값이 없는 예측값만으로 구하는 방법은 다루지 않는다. 예측값과 측정값의 짝이 있어야 한다.
 - 예측 model 을 만들거나 고치는 방법은 다루지 않는다.
 - 공정 spec 이나 공정능력지수를 정하는 방법은 다루지 않는다.
+- 측정값이 0 이하인 데이터는 다루지 않는다. 상대오차가 정의되지 않는다.
 
 ## 2. Summary
 
-예측값을 입력, 측정값을 출력으로 둔 회귀 직선 $`y = a + \beta x`$ 에서, 예측값이 target $`x_0`$ 일 때 측정값의 평균은 $`\mu_0 = a + \beta x_0`$ 이다.
-그때 측정값의 stdev 는 잔차 (residual) 의 표준편차 $`s`$ 에 회귀 직선의 불확도를 더한 $`s_p`$ 이고, tolerance 는 $`h = k\, s_p`$ 로 측정값은 $`\mu_0 \pm h`$ 안에 든다.
-$`\beta = 1`$ 이고 예측 오차의 평균이 0 이면 $`\mu_0 = x_0`$ 이고, $`s_p`$ 는 예측 오차의 표준편차와 거의 같다.
+$`p_{95}`$ 는 상대오차 $`r = (x - y)/y`$ 의 절댓값이 짝의 95 % 에서 넘지 않는 값이며, Pred vs. True 그림의 경계는 1:1 라인 양쪽의 두 직선 $`x = (1 \pm p_{95})\, y`$ 이다.
+원본 데이터가 있으면 $`|r|`$ 의 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정하거나, 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한을 구한다.
+이 상한은 정확한 $`p_{95}`$ 가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
 
 ## 3. Principle
 
@@ -47,162 +55,230 @@ $`\beta = 1`$ 이고 예측 오차의 평균이 0 이면 $`\mu_0 = x_0`$ 이고,
 
 Table 1. Symbols
 
-| Symbol       | Meaning                                                                    | Shape    | Assumption        |
-| :----------: | :------------------------------------------------------------------------: | :------: | :---------------: |
-| $`T`$        | 예측값과 측정값의 짝의 수. wafer 수와 wafer 한 장의 측정 위치 수를 곱한 값 | integer  | $`T \ge 3`$       |
-| $`i`$        | 짝의 번호                                                                  | integer  | $`1 \le i \le T`$ |
-| $`x_i`$      | $`i`$ 번째 짝의 예측값                                                     | scalar   | -                 |
-| $`y_i`$      | $`i`$ 번째 짝의 측정값                                                     | scalar   | -                 |
-| $`e_i`$      | 예측 오차 $`y_i - x_i`$                                                    | scalar   | -                 |
-| $`b_e`$      | 예측 오차 $`T`$ 개의 평균 (bias)                                           | scalar   | -                 |
-| $`\sigma_e`$ | 예측 오차 $`T`$ 개의 표준편차 (분모 $`T`$)                                 | scalar   | -                 |
-| $`\bar{x}`$  | 예측값 $`T`$ 개의 평균                                                     | scalar   | -                 |
-| $`\bar{y}`$  | 측정값 $`T`$ 개의 평균                                                     | scalar   | -                 |
-| $`S_{xx}`$   | 예측값이 그 평균에서 벗어난 제곱합                                         | scalar   | $`S_{xx} \gt 0`$  |
-| $`a`$        | 회귀 직선의 절편                                                           | scalar   | -                 |
-| $`\beta`$    | 회귀 직선의 기울기                                                         | scalar   | -                 |
-| $`s`$        | 잔차의 표준편차 (분모 $`T - 2`$)                                           | scalar   | -                 |
-| $`x_0`$      | 예측값의 target                                                            | scalar   | -                 |
-| $`\mu_0`$    | 예측값이 $`x_0`$ 일 때 측정값의 평균                                       | scalar   | -                 |
-| $`s_p`$      | 예측값이 $`x_0`$ 일 때 측정값의 stdev                                      | scalar   | $`s_p \gt 0`$     |
-| $`k`$        | coverage factor                                                            | scalar   | $`k \gt 0`$       |
-| $`h`$        | tolerance. $`\mu_0`$ 에서 측정값 범위의 경계까지의 거리                    | scalar   | $`h \gt 0`$       |
-| $`\Phi`$     | 표준정규분포의 누적분포함수                                                | function | -                 |
+| Symbol                 | Meaning                                              | Shape    | Assumption         |
+| :--------------------: | :--------------------------------------------------: | :------: | :----------------: |
+| $`T`$                  | 예측값과 측정값의 짝의 수                            | integer  | $`T \ge 2`$        |
+| $`i`$                  | 짝의 번호                                            | integer  | $`1 \le i \le T`$  |
+| $`x_i`$                | $`i`$ 번째 짝의 예측값 (Pred)                        | scalar   | -                  |
+| $`y_i`$                | $`i`$ 번째 짝의 측정값 (True)                        | scalar   | $`y_i \gt 0`$      |
+| $`r_i`$                | 상대오차 $`(x_i - y_i)/y_i`$                         | scalar   | -                  |
+| $`p_{95}`$             | 짝의 95 % 에서 $`\lvert r_i \rvert`$ 가 넘지 않는 값 | scalar   | $`p_{95} \ge 0`$   |
+| $`\mu_r`$              | 상대오차 $`T`$ 개의 평균                             | scalar   | -                  |
+| $`\sigma_r`$           | 상대오차 $`T`$ 개의 표준편차 (분모 $`T`$)            | scalar   | -                  |
+| $`\mathrm{RMSRE}`$     | root mean squared relative error                     | scalar   | -                  |
+| $`k`$                  | 정렬한 $`\lvert r_i \rvert`$ 에서 고르는 순위        | integer  | $`1 \le k \le T`$  |
+| $`z`$                  | 표준정규분포의 0.975 분위수 1.96                     | scalar   | -                  |
+| $`\Phi`$               | 표준정규분포의 누적분포함수                          | function | -                  |
+| $`\mathrm{RMSE}`$      | 오차 $`y_i - x_i`$ 의 root mean squared error        | scalar   | -                  |
+| $`\bar{y}`$            | 측정값 $`T`$ 개의 평균                               | scalar   | -                  |
+| $`\sigma_y`$           | 측정값 $`T`$ 개의 표준편차 (분모 $`T`$)              | scalar   | $`\sigma_y \gt 0`$ |
+| $`R^2_{\mathrm{all}}`$ | 측정값 $`T`$ 개로 구한 R²                            | scalar   | -                  |
 
-### 3.2 Prediction Error
+### 3.2 Relative Error Band
 
-예측값과 측정값의 차이인 예측 오차 $`e_i = y_i - x_i`$ 의 평균과 표준편차는 모든 예측값을 한데 모은 오차의 크기이다.
+상대오차는 예측값과 측정값의 차이를 측정값으로 나눈 값이다.
 
 ```math
-b_e = \frac{1}{T} \sum_{i=1}^{T} e_i
+r_i = \frac{x_i - y_i}{y_i}
 \hspace{19em} (1)
 ```
 
+$`\lvert r_i \rvert \le p_{95}`$ 는 아래 식 (2) 와 같으므로, 가로축이 True, 세로축이 Pred 인 그림에서 경계는 원점을 지나는 기울기 $`1 - p_{95}`$ 와 $`1 + p_{95}`$ 의 두 직선이고, 그 사이에 1:1 라인이 있다.
+
 ```math
-\sigma_e = \sqrt{\frac{1}{T} \sum_{i=1}^{T} \left( e_i - b_e \right)^2}
+(1 - p_{95})\, y_i \le x_i \le (1 + p_{95})\, y_i
 \hspace{19em} (2)
 ```
 
-$`b_e`$ 와 $`\sigma_e`$ 는 예측값이 어떤 값이든 오차의 평균과 퍼짐이 같다고 볼 때 쓸 수 있다. 예측값이 target 일 때의 측정값을 구하려면, 측정값이 예측값에 따라 어떻게 달라지는지를 [꼭지 3.3](#33-measured-value-at-target) 의 회귀 직선으로 함께 본다.
-
-### 3.3 Measured Value at Target
-
-예측값 $`x_i`$ 를 입력, 측정값 $`y_i`$ 를 출력으로 두고 짝 $`T`$ 개에 맞는 직선 $`y = a + \beta x`$ 를 구한다. 측정값은 바꾸지 않으며, 이 직선으로 예측값이 어떤 값일 때 측정값이 평균적으로 얼마인지를 읽는다. 직선의 기울기, 절편, 잔차의 표준편차는 아래이다.
+$`p_{95}`$ 는 짝의 95 % 가 이 경계 안에 들도록 정한 값이다.
 
 ```math
-S_{xx} = \sum_{i=1}^{T} (x_i - \bar{x})^2
+P\left( \lvert r \rvert \le p_{95} \right) = 0.95
 \hspace{19em} (3)
 ```
 
+원본 데이터가 없을 때 쓰는 요약값은 상대오차의 평균, 표준편차, RMSRE 이며, 세 값 사이에는 식 (7) 이 성립한다.
+
 ```math
-\beta = \frac{1}{S_{xx}} \sum_{i=1}^{T} (x_i - \bar{x})(y_i - \bar{y})
+\mu_r = \frac{1}{T} \sum_{i=1}^{T} r_i
 \hspace{19em} (4)
 ```
 
 ```math
-a = \bar{y} - \beta\, \bar{x}
+\sigma_r = \sqrt{\frac{1}{T} \sum_{i=1}^{T} \left( r_i - \mu_r \right)^2}
 \hspace{19em} (5)
 ```
 
 ```math
-s = \sqrt{\frac{1}{T - 2} \sum_{i=1}^{T} \left( y_i - a - \beta x_i \right)^2}
+\mathrm{RMSRE} = \sqrt{\frac{1}{T} \sum_{i=1}^{T} r_i^2}
 \hspace{19em} (6)
 ```
 
-예측값이 target $`x_0`$ 일 때 측정값의 평균은 회귀 직선의 값이다.
-
 ```math
-\mu_0 = a + \beta\, x_0
+\mathrm{RMSRE}^2 = \mu_r^2 + \sigma_r^2
 \hspace{19em} (7)
 ```
 
-그때 측정값의 stdev 는 측정값 하나의 퍼짐 $`s`$ 와, 회귀 직선을 데이터로 추정해서 생기는 불확도를 제곱합으로 합한 값이다 [[1](#ref-1)].
+### 3.3 With Raw Data
+
+원본 데이터가 있으면 상대오차를 식 (1) 로 직접 구하고, $`\lvert r_i \rvert`$ 의 95 % 분위수를 $`p_{95}`$ 로 쓴다. 분포를 가정하지 않는다.
 
 ```math
-s_p = s \sqrt{1 + \frac{1}{T} + \frac{(x_0 - \bar{x})^2}{S_{xx}}}
+p_{95} = Q_{0.95}\left( \lvert r_1 \rvert, \ldots, \lvert r_T \rvert \right)
 \hspace{19em} (8)
 ```
 
-Tolerance 는 stdev 에 coverage factor $`k`$ 를 곱한 값이며, 예측값이 $`x_0`$ 일 때 측정값은 $`\mu_0 \pm h`$ 안에 든다.
+$`Q_{0.95}`$ 는 표본의 95 % 분위수이며, 이 문서는 정렬한 값 사이를 선형 보간한다. 식 (8) 은 가진 짝의 95 % 를 담는 값이다. 앞으로 얻을 짝 하나가 경계 안에 들 확률을 0.95 이상으로 보장하려면, 정렬한 $`\lvert r \rvert`$ 에서 아래 순위 $`k`$ 의 값을 쓴다. 짝들이 교환 가능 (exchangeable) 할 때 이 보장이 성립한다 [[1](#ref-1)].
 
 ```math
-h = k\, s_p
+k = \lceil 0.95\, (T + 1) \rceil
 \hspace{19em} (9)
 ```
 
-잔차가 정규분포를 따르면 측정값이 $`\mu_0 \pm h`$ 안에 들 확률은 $`1 - 2\left(1 - \Phi(k)\right)`$ 이고, $`k = 1.96`$ 이면 0.95 이다.
+### 3.4 Without Raw Data: Normal with Zero Mean
 
-- $`\beta = 1`$ 이면 식 (5) 에서 $`a = \bar{y} - \bar{x} = b_e`$ 이어서 $`\mu_0 = x_0 + b_e`$ 이고, $`T`$ 가 크면 $`s_p`$ 는 식 (2) 의 $`\sigma_e`$ 와 거의 같다.
-- $`\beta \ne 1`$ 이면 예측값에 따라 오차의 평균이 달라지므로, target 의 측정값은 식 (1) 과 식 (2) 대신 식 (7) 과 식 (8) 로 구한다.
-- 식 (8) 의 셋째 항은 $`x_0`$ 이 예측값의 평균 $`\bar{x}`$ 에서 멀수록 커진다. $`x_0`$ 이 예측값의 범위 밖이면 직선이 그 범위에서도 맞는지 데이터로 확인할 수 없다.
+상대오차가 평균 0 인 정규분포를 따르면 식 (7) 에서 $`\mathrm{RMSRE} = \sigma_r`$ 이고, $`\lvert r \rvert \le p_{95}`$ 의 확률이 0.95 가 되는 값은 표준정규분포의 0.975 분위수 $`z = 1.96`$ 배이다.
+
+```math
+p_{95} = z\, \mathrm{RMSRE}
+\hspace{19em} (10)
+```
+
+### 3.5 Without Raw Data: Normal with Nonzero Mean
+
+상대오차가 평균 $`\mu_r`$, 표준편차 $`\sigma_r`$ 인 정규분포를 따르면, 식 (3) 은 아래 식 (11) 이 되고 $`p_{95}`$ 는 이 식을 수치로 풀어 구한다.
+
+```math
+\Phi\left( \frac{p_{95} - \mu_r}{\sigma_r} \right) - \Phi\left( \frac{-p_{95} - \mu_r}{\sigma_r} \right) = 0.95
+\hspace{19em} (11)
+```
+
+- $`\mu_r = 0`$ 이면 식 (11) 의 해는 식 (10) 과 같다.
+- $`\lvert \mu_r \rvert`$ 가 $`\sigma_r`$ 보다 훨씬 크면 한쪽 꼬리만 남아 $`p_{95} \approx \lvert \mu_r \rvert + 1.645\, \sigma_r`$ 이다.
+- 평균이 0 이 아니면 1:1 라인에 대칭인 경계는 오차가 치우친 쪽에서 먼저 넘친다. 식 (11) 은 양쪽을 합쳐 0.95 를 맞춘다.
+
+### 3.6 Without Raw Data: Distribution-free Upper Bound
+
+분포를 가정할 수 없으면 RMSRE 로 $`p_{95}`$ 의 상한만 구한다. Markov 부등식을 $`r^2`$ 에 쓰면 어떤 분포에서도 $`P(\lvert r \rvert \ge c) = P(r^2 \ge c^2) \le \mathrm{RMSRE}^2 / c^2`$ 이고, 이 상한을 0.05 로 두면 아래 식 (12) 이다.
+
+```math
+p_{95} \le \frac{\mathrm{RMSRE}}{\sqrt{0.05}} = 4.472\, \mathrm{RMSRE}
+\hspace{19em} (12)
+```
+
+식 (12) 는 정확한 $`p_{95}`$ 가 아니라 보수적인 상한이다. 정규분포라면 식 (10) 의 1.96 배로 충분한 것을 4.472 배로 잡는다.
+
+### 3.7 Relation to R2 and RMSE
+
+RMSE 와 $`R^2_{\mathrm{all}}`$ 은 오차 $`y_i - x_i`$ 의 제곱 평균에서 나온다.
+
+```math
+\mathrm{RMSE} = \sqrt{\frac{1}{T} \sum_{i=1}^{T} \left( y_i - x_i \right)^2}
+\hspace{19em} (13)
+```
+
+```math
+R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
+\hspace{19em} (14)
+```
+
+- R² 와 RMSE 만으로는 일반적으로 $`p_{95}`$ 를 정할 수 없다. 두 값은 오차의 제곱 평균 하나만 주고, 상대오차의 평균과 분포 모양은 주지 않는다. 또 R² 에서 RMSE 를 얻으려면 식 (14) 대로 $`\sigma_y`$ 도 있어야 한다.
+- RMSRE 는 오차를 짝마다 그 측정값으로 나눈 뒤 제곱 평균을 내고, RMSE 는 나누지 않고 제곱 평균을 낸다. 그래서 측정값이 모두 같을 때만 $`\mathrm{RMSRE} = \mathrm{RMSE}/\bar{y}`$ 이고, 그 밖에는 측정값의 최솟값과 최댓값 사이에서 아래 식 (15) 만 성립한다.
+
+```math
+\frac{\mathrm{RMSE}}{\max_i y_i} \le \mathrm{RMSRE} \le \frac{\mathrm{RMSE}}{\min_i y_i}
+\hspace{19em} (15)
+```
+
+- 따라서 RMSE 와 측정값의 최솟값을 알면 식 (15) 의 오른쪽 값을 식 (12) 에 넣어 $`p_{95}`$ 의 분포 무관 상한을 구할 수 있지만, $`p_{95}`$ 자체는 구할 수 없다.
 
 ## 4. Worked Example
 
 ### 4.1 Data
 
-반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 박막 두께와 그 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 을 쓴다. 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이며, 측정 위치를 가리지 않고 짝 $`T = 572`$ 개를 한데 모은다. 단위는 nm 이고, target 은 $`x_0 = 600`$ nm, coverage factor 는 $`k = 1.96`$ 으로 두었다.
+반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 박막 두께와 그 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 을 쓴다. 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이며, 측정 위치를 가리지 않고 짝 $`T = 572`$ 개를 한데 모은다. 단위는 nm 이고, 측정값은 530.054 nm 부터 718.857 nm 이다.
 
-### 4.2 Result
+### 4.2 Relative Error
 
-식 (1) 부터 식 (9) 로 구한 값은 아래 Table 2 이며, $`\beta`$ 를 빼고 모두 nm 이다.
+식 (1), (4), (5), (6) 으로 구한 상대오차의 요약값은 아래 Table 2 이다.
 
-Table 2. Measured value when the prediction equals the target 600 nm
+Table 2. Summary of the relative error
 
-| Quantity     | Value   | Quantity    | Value    |
-| :----------: | :-----: | :---------: | :------: |
-| $`b_e`$      | -2.3737 | $`\mu_0`$   | 603.2369 |
-| $`\sigma_e`$ | 11.8129 | $`s_p`$     | 10.8704  |
-| $`a`$        | 94.3506 | $`h`$       | 21.3059  |
-| $`\beta`$    | 0.8481  | Lower bound | 581.9310 |
-| $`s`$        | 10.8475 | Upper bound | 624.5429 |
+| Quantity         | Value  |
+| :--------------: | :----: |
+| $`\mu_r`$ (%)    | 0.3727 |
+| $`\sigma_r`$ (%) | 1.8877 |
+| RMSRE (%)        | 1.9241 |
+| Shapiro-Wilk W   | 0.9940 |
+| Shapiro-Wilk p   | 0.0238 |
 
-- 예측값이 600 nm 이면 측정값의 stdev 는 $`s_p = 10.8704`$ nm 이고, 측정값은 $`603.2369 \pm 21.3059`$ nm, 곧 581.9310 nm 부터 624.5429 nm 사이에 확률 0.95 로 든다.
-- $`\beta = 0.8481`$ 로 1 보다 작아, 측정값은 예측값만큼 넓게 변하지 않는다. 예측값의 평균 636.9473 nm 보다 낮은 600 nm 에서는 측정값의 평균 603.2369 nm 가 target 보다 3.2369 nm 높다.
-- 모든 예측값을 한데 모은 $`b_e = -2.3737`$ nm 로 600 nm 의 측정값 평균을 잡으면 $`600 - 2.3737 = 597.6263`$ nm 로, 회귀 직선의 값과 5.6106 nm 차이가 난다.
-- $`s_p / s = 1.0021`$ 로, 식 (8) 의 둘째와 셋째 항은 $`T = 572`$ 에서 거의 영향이 없다.
-- 예측값이 600 nm 에서 10 nm 이내인 짝 60 개의 측정값은 평균 603.6948 nm, stdev 12.2185 nm 로, 회귀로 구한 $`\mu_0`$ 와 $`s_p`$ 에 가깝다.
+- $`0.3727^2 + 1.8877^2 = 1.9241^2`$ 으로 식 (7) 이 성립한다.
+- 짝 572 개를 모은 상대오차의 Shapiro-Wilk 검정 [[2](#ref-2)] 은 p = 0.0238 로, 유의수준 0.05 에서 정규성을 기각한다. 측정 위치마다의 검정은 [Appendix B](#appendix-b-normality-of-relative-error), 유의수준과 p 의 뜻은 [Appendix C](#appendix-c-significance-level-and-p-value) 에 있다.
 
-### 4.3 Calculation Script
+### 4.3 p95 by Method
 
-Table 2 의 값은 같은 folder 의 [src/target_tolerance.py](src/target_tolerance.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 식 (1) 부터 식 (9) 의 값을 출력하고, `--window` 로 정한 폭 안에서 예측값이 target 에 가까운 짝의 측정값 평균과 stdev 를 함께 출력한다. 문서 folder 에서 아래처럼 실행한다.
+꼭지 3.3 부터 3.6 의 방법으로 구한 $`p_{95}`$ 와, 그 경계 안에 실제로 든 짝의 비율은 아래 Table 3 이다.
+
+Table 3. p95 by method and the share of pairs inside the band
+
+| Method                            | Section | p95 (%) | Pairs inside | Share inside (%) |
+| :-------------------------------: | :-----: | :-----: | :----------: | :--------------: |
+| 95 % 분위수, 식 (8)               | 3.3     | 3.7071  | 543          | 94.93            |
+| 순위 $`k = 545`$, 식 (9)          | 3.3     | 3.7518  | 545          | 95.28            |
+| 정규분포, 평균 0, 식 (10)         | 3.4     | 3.7712  | 546          | 95.45            |
+| 정규분포, 평균 $`\mu_r`$, 식 (11) | 3.5     | 3.7707  | 546          | 95.45            |
+| 분포 무관 상한, 식 (12)           | 3.6     | 8.6048  | 572          | 100.00           |
+
+- 원본 데이터로 구한 경계는 1:1 라인 양쪽의 $`x = (1 \pm 0.037071)\, y`$ 이다.
+- 정규분포를 가정한 두 값은 식 (8) 의 값과 0.07 %p 안에서 같다. 짝을 모은 상대오차는 정규성이 기각되었지만, 이 데이터에서는 정규분포 가정의 $`p_{95}`$ 가 크게 어긋나지 않는다.
+- $`\mu_r = 0.3727`$ % 는 $`\sigma_r = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
+- 분포 무관 상한 8.6048 % 는 식 (8) 의 값의 2.32 배로, 모든 짝을 담지만 경계를 넓게 잡는다.
+
+### 4.4 R2 and RMSE
+
+같은 데이터에서 $`R^2_{\mathrm{all}} = 0.8213`$, RMSE = 12.0490 nm, $`\bar{y}`$ = 634.5735 nm 이다.
+
+- $`\mathrm{RMSE}/\bar{y}`$ = 1.8988 % 로 RMSRE 1.9241 % 와 가깝다. 측정값의 표준편차가 평균의 4.49 % 로 작아, 짝마다 나누는 값이 크게 다르지 않기 때문이다.
+- 식 (15) 에서 $`\mathrm{RMSRE} \le 12.0490 / 530.054`$ = 2.2732 % 이고, 이를 식 (12) 에 넣은 분포 무관 상한은 10.1659 % 이다. RMSE 와 측정값의 최솟값만으로 얻는 값은 이 상한뿐이다.
+- $`R^2_{\mathrm{all}} = 0.8213`$ 하나로는 $`\sigma_y`$ 없이 RMSE 도 구할 수 없다.
+
+### 4.5 Calculation Script
+
+Table 2 와 Table 3, 꼭지 4.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, 네 가지 $`p_{95}`$ 와 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. scipy 가 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
-python3 src/target_tolerance.py --csv data/u0_actuals_and_predictions.csv --target 600 --k 1.96 --window 10
+python3 src/relative_error_band.py --csv data/u0_actuals_and_predictions.csv
 ```
 
 ## 5. Application
 
 ### 5.1 Conditions
 
-이 방법은 짝을 구한 wafer 와 앞으로 예측할 wafer 의 예측 오차가 같은 성질을 가질 때 쓴다.
+- **측정값이 0 또는 0 근처인 경우**: 식 (1) 은 측정값으로 나누므로, 측정값이 0 에 가까우면 작은 오차도 큰 상대오차가 되고 0 이면 정의되지 않는다. 이 데이터의 측정값은 530.054 nm 이상이어서 문제가 없다. 측정값이 0 근처까지 내려가는 데이터에는 상대오차 대신 절대오차의 경계를 쓴다.
+- **대표성**: 짝을 구한 wafer 가 앞으로 판정할 기간의 장비, recipe, 제품을 대표해야 한다.
 
-- 예측값과 측정값이 같은 wafer 의 같은 측정 위치에서 짝을 이룬다.
-- Target 이 예측값의 범위 안에 있다. 이 데이터의 예측값은 497.5943 nm 부터 731.5830 nm 이다.
-- 짝을 구한 wafer 가 예측할 기간의 장비, recipe, 제품을 대표한다.
+### 5.2 Limitations
 
-### 5.2 Breaking Conditions
-
-아래 경우에는 $`s_p`$ 와 $`h`$ 를 그대로 믿을 수 없다.
-
-- **Wafer 안의 상관**: 같은 wafer 의 측정 위치 13 곳은 서로 독립이 아니다. 식 (8) 은 짝 $`T`$ 개가 독립이라고 보므로 회귀 직선의 불확도를 작게 잡는다.
-- **예측값에 따라 다른 퍼짐**: 잔차의 퍼짐이 예측값의 크기에 따라 다르면 $`s`$ 하나로 target 의 stdev 를 정할 수 없다. 이때는 target 근처 짝의 stdev 를 함께 견준다.
-- **정규분포가 아닌 잔차**: 잔차가 정규분포를 따르지 않으면 $`\mu_0 \pm h`$ 안에 들 확률이 $`1 - 2(1 - \Phi(k))`$ 와 다르다. 이 데이터에서 측정 위치마다 상대오차의 정규성을 검정한 결과는 [Appendix B](#appendix-b-normality-of-relative-error) 에 있다.
-- **직선이 아닌 관계**: 측정값과 예측값의 관계가 직선이 아니면 식 (7) 의 $`\mu_0`$ 가 target 에서 측정값의 평균과 다르다.
+- **경험적 95 % 와 미래의 보장**: 식 (8) 은 가진 짝의 95 % 를 담는 값일 뿐, 앞으로 얻을 짝이 0.95 의 확률로 경계 안에 든다는 보장은 아니다. 이 데이터에서도 식 (8) 의 경계 안에 든 짝은 94.93 % 이다. 미래의 짝에 대한 보장은 식 (9) 의 순위를 쓰고 짝들이 교환 가능할 때만 성립한다.
+- **교환 가능성이 깨지는 경우**: 같은 wafer 의 측정 위치 13 곳은 서로 독립이 아니고, [Appendix B](#appendix-b-normality-of-relative-error) 처럼 측정 위치마다 상대오차의 평균이 다르다. 장비나 recipe 가 바뀌어 오차가 달라지면 식 (9) 의 보장도 성립하지 않는다.
+- **정규분포 가정**: 식 (10) 과 식 (11) 은 정규분포에서만 식 (3) 을 맞춘다. 정규성이 기각되면 원본 데이터가 있는 한 식 (8) 이나 식 (9) 를 쓴다.
+- **요약값의 추정 오차**: 식 (10) 부터 식 (12) 는 RMSRE 를 참값으로 보지만, 표본으로 구한 RMSRE 에는 추정 오차가 있다.
 
 ## References
 
-<a id="ref-1"></a>[1] NIST/SEMATECH. [4.5.1.2. How can I predict the value and estimate the uncertainty of a single response?](https://www.itl.nist.gov/div898/handbook/pmd/section5/pmd512.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.<br>
-<a id="ref-2"></a>[2] NIST/SEMATECH. [7.2.1.3. Anderson-Darling and Shapiro-Wilk tests](https://www.itl.nist.gov/div898/handbook/prc/section2/prc213.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.
+<a id="ref-1"></a>[1] Lei, J., G'Sell, M., Rinaldo, A., Tibshirani, R. J., and Wasserman, L. (2018). [Distribution-Free Predictive Inference for Regression](https://doi.org/10.1080/01621459.2017.1307116). *Journal of the American Statistical Association*.<br>
+<a id="ref-2"></a>[2] NIST/SEMATECH. [7.2.1.3. Anderson-Darling and Shapiro-Wilk tests](https://www.itl.nist.gov/div898/handbook/prc/section2/prc213.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.<br>
+<a id="ref-3"></a>[3] NIST/SEMATECH. [7.1.3.1. Critical values and p values](https://www.itl.nist.gov/div898/handbook/prc/section1/prc131.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.
 
 ---
 
 ## Appendix A. Terminology
 
-- **bias**: 예측 오차의 평균. 이 문서에서는 $`b_e`$
-- **coverage factor**: stdev 에 곱해 tolerance 를 정하는 수. 이 문서에서는 $`k`$
+- **exchangeable**: 교환 가능. 짝들의 순서를 바꾸어도 함께 갖는 분포가 같은 성질
+- **p-value**: 귀무가설이 참일 때 관측한 것만큼 또는 그보다 극단적인 검정통계량이 나올 확률
 - **Q-Q plot**: 정렬한 표본을 표준정규분포의 분위수에 대해 그린 그림. 점이 직선에 가까울수록 정규분포에 가깝다
-- **residual**: 잔차. 측정값에서 회귀 직선의 값을 뺀 값
-- **tolerance**: 예측값이 target 일 때 측정값의 평균에서 측정값 범위의 경계까지의 거리. 이 문서에서는 $`h`$
+- **RMSRE**: root mean squared relative error. 상대오차 제곱 평균의 제곱근
+- **significance level**: 유의수준. 귀무가설이 참인데 기각할 확률로 미리 정하는 값
 
 ## Appendix B. Normality of Relative Error
 
@@ -210,12 +286,12 @@ wafer $`m`$ 의 측정 위치 $`j`$ 에서 측정값 $`y_{mj}`$ 와 예측값 $`
 
 ```math
 r_{mj} = \frac{x_{mj} - y_{mj}}{y_{mj}}
-\hspace{19em} (10)
+\hspace{19em} (16)
 ```
 
-검정은 Shapiro-Wilk, D'Agostino-Pearson, Anderson-Darling 의 세 가지이며 [[2](#ref-2)], 유의수준은 0.05 이다. 결과는 아래 Table 3 이다.
+검정은 Shapiro-Wilk, D'Agostino-Pearson, Anderson-Darling 의 세 가지이며 [[2](#ref-2)], 유의수준은 0.05 이다. 결과는 아래 Table 4 이다.
 
-Table 3. Normality tests of the relative error by measurement location
+Table 4. Normality tests of the relative error by measurement location
 
 | Location | Mean (%) | Stdev (%) | Skewness | Shapiro-Wilk p | D'Agostino-Pearson p | Anderson-Darling p | Rejections |
 | :------: | :------: | :-------: | :------: | :------------: | :------------------: | :----------------: | :--------: |
@@ -247,8 +323,36 @@ Table 3. Normality tests of the relative error by measurement location
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 3 과 Fig 1 은 같은 folder 의 [src/relative_error_normality.py](src/relative_error_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (10) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig1-relative-error.csv` 로, Fig 1 을 `fig1-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 4 와 Fig 1 은 같은 folder 의 [src/relative_error_normality.py](src/relative_error_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig1-relative-error.csv` 로, Fig 1 을 `fig1-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder rmse-process-spec-ko_fig
 ```
+
+## Appendix C. Significance Level and p-value
+
+정규성 검정은 "상대오차가 정규분포를 따른다" 를 귀무가설 $`H_0`$ 로 두고, 데이터가 이 가설과 얼마나 맞지 않는지를 검정통계량 하나로 잰다. Shapiro-Wilk 의 통계량 $`W`$ 는 1 에 가까울수록 정규분포에 가깝고, 작을수록 정규분포에서 멀다 [[2](#ref-2)].
+
+**p-value** 는 $`H_0`$ 가 참일 때, 관측한 통계량 $`w`$ 만큼 또는 그보다 극단적인 값이 나올 확률이다 [[3](#ref-3)]. Shapiro-Wilk 에서는 작은 $`W`$ 가 극단적이므로 아래 식 (17) 이다.
+
+```math
+p = P_{H_0}\left( W \le w \right)
+\hspace{19em} (17)
+```
+
+**유의수준** $`\alpha`$ 는 검정 전에 정하는 값으로, $`H_0`$ 가 참인데도 기각할 확률의 허용 한도이다. 이 문서는 $`\alpha = 0.05`$ 를 쓴다.
+
+**p < α 의 뜻**: $`p \lt \alpha`$ 이면 $`H_0`$ 를 기각한다. 정규분포가 참이라면 지금만큼 정규분포에서 벗어난 데이터가 나올 확률이 $`\alpha`$ 보다 작다는 뜻이며, 그래서 정규분포라는 가정을 받아들이지 않는다. $`p \ge \alpha`$ 이면 기각하지 않을 뿐, 정규분포임이 증명되지는 않는다.
+
+**이론적 근거**: $`H_0`$ 아래에서 $`W`$ 의 누적분포함수를 $`F`$ 라 하면 식 (17) 의 $`p`$ 는 $`F(W)`$ 이고, $`W`$ 가 연속분포이면 확률적분변환에 따라 $`F(W)`$ 는 0 과 1 사이의 균등분포를 따른다. 따라서 아래 식 (18) 이 성립하여, "$`p \lt \alpha`$ 이면 기각" 이라는 규칙은 $`H_0`$ 가 참일 때 정확히 $`\alpha`$ 의 확률로 잘못 기각한다.
+
+```math
+P_{H_0}\left( p \lt \alpha \right) = P\left( F(W) \lt \alpha \right) = \alpha
+\hspace{19em} (18)
+```
+
+해석할 때는 아래를 함께 본다.
+
+- p 는 $`H_0`$ 가 참일 확률이 아니다. $`H_0`$ 를 참으로 놓고 계산한 데이터의 확률이다.
+- 표본이 크면 작은 벗어남도 기각된다. 꼭지 4.2 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
+- 여러 번 검정하면 우연한 기각이 늘어난다. [Appendix B](#appendix-b-normality-of-relative-error) 처럼 측정 위치 13 곳을 각각 $`\alpha = 0.05`$ 로 검정하면, 모두 정규분포여도 평균 0.65 곳이 기각된다. 13 번의 검정 전체에서 잘못 기각할 확률을 0.05 이하로 두려면 $`\alpha / 13 = 0.0038`$ 을 쓴다 (Bonferroni).
