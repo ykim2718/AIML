@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 24 | Created: 2026-11-16 | Updated: 2026-11-16 05:24 CST
+Version 25 | Created: 2026-11-16 | Updated: 2026-11-16 05:28 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -27,10 +27,10 @@ Version 24 | Created: 2026-11-16 | Updated: 2026-11-16 05:24 CST
 
 **Goal**: 예측값의 RMSE 로 아래 세 가지를 새로 정한다.
 
-1. 측정값의 합격 범위인 thickness spec 을 target ± tolerance 로 제시
-    - 그 tolerance 의 가장 작은 값과 근거
-2. 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
-3. Wafer uniformity (1σ/mean) 의 upper spec limit 을 제시
+1. Thickness
+    - 측정값의 합격 범위인 spec limit 을 target ± tolerance 로 제시하고, 그 tolerance 의 가장 작은 값과 근거
+    - 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
+2. Wafer uniformity (1σ/mean) 의 upper spec limit 을 제시
 
 **Non-Goal**:
 
@@ -188,7 +188,7 @@ $`\rho`$ 는 이 문서가 정의한 비이며 산업 표준 지표가 아니다
 
 ### 3.4 Guard Band
 
-Spec 은 측정값에 대한 기준인데, 측정하지 않은 wafer 에는 오차가 있는 예측값만 있으므로 예측값에 쓸 기준이 따로 필요하다. 이 기준이 Goal 2 의 acceptance limit 이며, spec limit 을 guard band $`g = k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다 [[2](#ref-2)].
+Spec 은 측정값에 대한 기준인데, 측정하지 않은 wafer 에는 오차가 있는 예측값만 있으므로 예측값에 쓸 기준이 따로 필요하다. 이 기준이 Goal 1 의 acceptance limit 이며, spec limit 을 guard band $`g = k\, \mathrm{RMSE}`$ 만큼 안쪽으로 좁힌 값이다 [[2](#ref-2)].
 
 ```math
 \lvert \hat{y}_{ij} - y_0 \rvert \le h - g
