@@ -1,5 +1,5 @@
 # Tolerance at Target from Thickness Prediction
-Version 39 | Created: 2026-11-16 | Updated: 2026-11-16 12:18 UTC
+Version 40 | Created: 2026-11-16 | Updated: 2026-11-16 21:54 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -16,6 +16,7 @@ Version 39 | Created: 2026-11-16 | Updated: 2026-11-16 12:18 UTC
     - [5.2 Breaking Conditions](#52-breaking-conditions)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
+- [Appendix B. Normality of Relative Error](#appendix-b-normality-of-relative-error)
 
 ## 1. Purpose
 
@@ -185,12 +186,13 @@ python3 src/target_tolerance.py --csv data/u0_actuals_and_predictions.csv --targ
 
 - **Wafer 안의 상관**: 같은 wafer 의 측정 위치 13 곳은 서로 독립이 아니다. 식 (8) 은 짝 $`T`$ 개가 독립이라고 보므로 회귀 직선의 불확도를 작게 잡는다.
 - **예측값에 따라 다른 퍼짐**: 잔차의 퍼짐이 예측값의 크기에 따라 다르면 $`s`$ 하나로 target 의 stdev 를 정할 수 없다. 이때는 target 근처 짝의 stdev 를 함께 견준다.
-- **정규분포가 아닌 잔차**: 잔차가 정규분포를 따르지 않으면 $`\mu_0 \pm h`$ 안에 들 확률이 $`1 - 2(1 - \Phi(k))`$ 와 다르다.
+- **정규분포가 아닌 잔차**: 잔차가 정규분포를 따르지 않으면 $`\mu_0 \pm h`$ 안에 들 확률이 $`1 - 2(1 - \Phi(k))`$ 와 다르다. 이 데이터에서 측정 위치마다 상대오차의 정규성을 검정한 결과는 [Appendix B](#appendix-b-normality-of-relative-error) 에 있다.
 - **직선이 아닌 관계**: 측정값과 예측값의 관계가 직선이 아니면 식 (7) 의 $`\mu_0`$ 가 target 에서 측정값의 평균과 다르다.
 
 ## References
 
-<a id="ref-1"></a>[1] NIST/SEMATECH. [4.5.1.2. How can I predict the value and estimate the uncertainty of a single response?](https://www.itl.nist.gov/div898/handbook/pmd/section5/pmd512.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.
+<a id="ref-1"></a>[1] NIST/SEMATECH. [4.5.1.2. How can I predict the value and estimate the uncertainty of a single response?](https://www.itl.nist.gov/div898/handbook/pmd/section5/pmd512.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.<br>
+<a id="ref-2"></a>[2] NIST/SEMATECH. [7.2.1.3. Anderson-Darling and Shapiro-Wilk tests](https://www.itl.nist.gov/div898/handbook/prc/section2/prc213.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.
 
 ---
 
@@ -198,5 +200,55 @@ python3 src/target_tolerance.py --csv data/u0_actuals_and_predictions.csv --targ
 
 - **bias**: 예측 오차의 평균. 이 문서에서는 $`b_e`$
 - **coverage factor**: stdev 에 곱해 tolerance 를 정하는 수. 이 문서에서는 $`k`$
+- **Q-Q plot**: 정렬한 표본을 표준정규분포의 분위수에 대해 그린 그림. 점이 직선에 가까울수록 정규분포에 가깝다
 - **residual**: 잔차. 측정값에서 회귀 직선의 값을 뺀 값
 - **tolerance**: 예측값이 target 일 때 측정값의 평균에서 측정값 범위의 경계까지의 거리. 이 문서에서는 $`h`$
+
+## Appendix B. Normality of Relative Error
+
+wafer $`m`$ 의 측정 위치 $`j`$ 에서 측정값 $`y_{mj}`$ 와 예측값 $`x_{mj}`$ 의 상대오차를 아래로 정의하고, 측정 위치 13 곳마다 wafer 44 장의 상대오차가 정규분포를 따르는지 따로 검정했다.
+
+```math
+r_{mj} = \frac{x_{mj} - y_{mj}}{y_{mj}}
+\hspace{19em} (10)
+```
+
+검정은 Shapiro-Wilk, D'Agostino-Pearson, Anderson-Darling 의 세 가지이며 [[2](#ref-2)], 유의수준은 0.05 이다. 결과는 아래 Table 3 이다.
+
+Table 3. Normality tests of the relative error by measurement location
+
+| Location | Mean (%) | Stdev (%) | Skewness | Shapiro-Wilk p | D'Agostino-Pearson p | Anderson-Darling p | Rejections |
+| :------: | :------: | :-------: | :------: | :------------: | :------------------: | :----------------: | :--------: |
+| p1       | 0.1169   | 1.7768    | -1.0159  | 0.0029         | 0.0050               | 0.0237             | 3          |
+| p2       | -0.0648  | 2.1097    | -0.5415  | 0.2603         | 0.1849               | ≥ 0.15             | 0          |
+| p3       | 1.6830   | 1.5895    | 1.0327   | 0.0096         | 0.0050               | 0.0396             | 3          |
+| p4       | 1.9090   | 1.5091    | -0.6811  | 0.1167         | 0.0488               | ≥ 0.15             | 1          |
+| p5       | 0.3056   | 1.9838    | -0.6235  | 0.2899         | 0.1123               | ≥ 0.15             | 0          |
+| p6       | -0.8428  | 1.1303    | -0.3811  | 0.0982         | 0.3153               | ≥ 0.15             | 0          |
+| p7       | -1.1359  | 1.1866    | -0.7421  | 0.0380         | 0.0761               | 0.0695             | 1          |
+| p8       | -1.2839  | 1.2918    | -0.9165  | 0.0114         | 0.0120               | 0.0137             | 3          |
+| p9       | -1.4071  | 1.2822    | -0.9892  | 0.0024         | 0.0100               | ≤ 0.01             | 3          |
+| p10      | 1.7481   | 0.9739    | 0.4577   | 0.1052         | 0.2856               | ≥ 0.15             | 0          |
+| p11      | 0.0765   | 1.0094    | -0.4753  | 0.3580         | 0.3588               | ≥ 0.15             | 0          |
+| p12      | 1.7664   | 1.0009    | 0.2958   | 0.1948         | 0.4545               | 0.0867             | 0          |
+| p13      | 1.9737   | 1.0578    | 0.6870   | 0.0233         | 0.1436               | ≤ 0.01             | 2          |
+
+- Rejections 는 세 검정 가운데 p 가 0.05 보다 작은 검정의 수이다. Anderson-Darling 의 p 는 0.01 부터 0.15 사이에서만 구해져, 그 밖은 ≤ 0.01, ≥ 0.15 로 적었다.
+- 세 검정이 모두 정규성을 기각한 측정 위치는 p1, p3, p8, p9 의 4 곳이고, 하나 이상이 기각한 곳은 p4, p7, p13 을 더한 7 곳이다. 세 검정이 모두 기각하지 않은 곳은 p2, p5, p6, p10, p11, p12 의 6 곳이다.
+- 측정 위치 13 곳을 각각 유의수준 0.05 로 검정하면, 모두 정규분포여도 평균 $`13 \times 0.05 = 0.65`$ 곳이 기각된다. Shapiro-Wilk 의 p 가 $`0.05 / 13 = 0.0038`$ 보다 작은 곳은 p1 과 p9 이다.
+- 상대오차의 평균은 측정 위치마다 -1.4071 % (p9) 부터 1.9737 % (p13) 까지 다르다.
+
+측정 위치 13 곳의 Q-Q plot 은 아래 Fig 1 이다.
+
+<img src="rmse-process-spec-ko_fig/fig1-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 1">
+
+<a id="fig-1"></a>Fig 1. Normal Q-Q plots of the relative error by measurement location
+
+- 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
+- p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
+
+Table 3 과 Fig 1 은 같은 folder 의 [src/relative_error_normality.py](src/relative_error_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (10) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig1-relative-error.csv` 로, Fig 1 을 `fig1-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+
+```bash
+python3 src/relative_error_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder rmse-process-spec-ko_fig
+```
