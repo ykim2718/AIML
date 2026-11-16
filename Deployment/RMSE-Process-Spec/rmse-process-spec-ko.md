@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 44 | Created: 2026-11-16 | Updated: 2026-11-16 22:23 UTC
+Version 45 | Created: 2026-11-16 | Updated: 2026-11-16 22:25 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -76,32 +76,14 @@ Table 1. Symbols
 
 $`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
 
-```text
-                      Raw pairs (x_i, y_i) available?
-                     /                               \
-                   yes                                no
-                    |                                  |
-      p95 = 0.95 quantile of |e_i|          Is e_i normally distributed?
-      Eq. (8), rank k for a new pair       /                            \
-      Eq. (9)            [Sec. 4.2]      yes                       no / unknown
-                                          |                              |
-                                 Is the mean mu_e = 0?        p95 <= RMSRE / sqrt(0.05)
-                                 /                  \         upper bound only, Eq. (12)
-                               yes                   no                      [Sec. 4.5]
-                                |                     |
-                      p95 = 1.96 RMSRE       solve Eq. (11) with
-                      Eq. (10)               mu_e and sigma_e
-                           [Sec. 4.3]                [Sec. 4.4]
-
-  Only R2 and RMSE known: p95 cannot be determined.
-  With min y_i: RMSRE <= RMSE / min y_i, then Eq. (12) gives an upper bound.   [Sec. 4.6]
-```
+<img src="rmse-process-spec-ko_fig/fig1-decision-tree.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
 <a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
 
-- 위에서부터 질문에 답하며 내려가면, 맨 아래 칸이 쓸 식과 꼭지이다.
+- 위에서부터 파란 칸의 질문에 답하며 내려가면, 화살표가 끝나는 초록 칸과 주황 칸이 쓸 식과 꼭지이다. 초록 칸은 $`p_{95}`$ 를 구하고, 주황 칸은 그 상한만 구한다.
 - 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
-- R² 와 RMSE 만 있는 경우는 나무에 들지 않고 맨 아래 줄에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
+- R² 와 RMSE 만 있는 경우는 나무에 들지 않고 왼쪽의 회색 칸에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
+- Fig 1 은 같은 folder 의 [src/decision_tree_figure.py](src/decision_tree_figure.py) 로 그렸다. 문서 folder 에서 `python3 src/decision_tree_figure.py --output-folder rmse-process-spec-ko_fig` 로 실행하면 PNG 와 함께 발표 자료에 넣을 수 있는 SVG 를 저장한다.
 
 ### 4.1 Relative Error Band
 
@@ -125,6 +107,8 @@ $`p_{95}`$ 는 짝의 95 % 가 이 경계 안에 들도록 정한 값이다.
 P\left( \lvert e \rvert \le p_{95} \right) = 0.95
 \hspace{19em} (3)
 ```
+
+95 % 는 짝 20 개 가운데 19 개가 경계 안에 들고 1 개가 밖에 나가는 비율이다. 경계를 넓게 잡아 밖에 나가는 짝을 줄이는 것과 경계를 좁게 잡아 상대오차를 작게 보이는 것 사이에서 흔히 고르는 값이며, 상대오차가 평균 0 인 정규분포이면 경계는 RMSRE 의 1.96 배, 곧 약 2 배가 된다. 정규성 검정에 쓰는 유의수준 0.05 도 같은 1 − 0.95 이다 ([Appendix C](#appendix-c-significance-level-and-p-value)). 99 % 로 두면 평균 0 인 정규분포의 경계는 RMSRE 의 1.96 배에서 2.576 배로, 분포를 가정하지 않은 상한은 RMSRE 의 4.472 배에서 10 배로 넓어진다.
 
 원본 데이터가 없을 때 쓰는 요약값은 상대오차의 평균, 표준편차, RMSRE 이며, 세 값 사이에는 식 (7) 이 성립한다.
 
@@ -252,12 +236,13 @@ Table 3. p95 by method and the share of pairs inside the band
 
 | Method                            | Section | p95 (%) | Pairs inside | Share inside (%) |
 | :-------------------------------: | :-----: | :-----: | :----------: | :--------------: |
-| 95 % 분위수, 식 (8)               | 3.3     | 3.7071  | 543          | 94.93            |
-| 순위 $`k = 545`$, 식 (9)          | 3.3     | 3.7518  | 545          | 95.28            |
-| 정규분포, 평균 0, 식 (10)         | 3.4     | 3.7712  | 546          | 95.45            |
-| 정규분포, 평균 $`\mu_e`$, 식 (11) | 3.5     | 3.7707  | 546          | 95.45            |
-| 분포 무관 상한, 식 (12)           | 3.6     | 8.6048  | 572          | 100.00           |
+| 95 % 분위수, 식 (8)               | 4.2     | 3.7071  | 543          | 94.93            |
+| 순위 $`k = 545`$, 식 (9)          | 4.2     | 3.7518  | 545          | 95.28            |
+| 정규분포, 평균 0, 식 (10)         | 4.3     | 3.7712  | 546          | 95.45            |
+| 정규분포, 평균 $`\mu_e`$, 식 (11) | 4.4     | 3.7707  | 546          | 95.45            |
+| 분포 무관 상한, 식 (12)           | 4.5     | 8.6048  | 572          | 100.00           |
 
+- Pairs inside 는 짝 $`T = 572`$ 개 가운데 $`\lvert e_i \rvert \le p_{95}`$ 인 짝, 곧 식 (2) 의 경계 안에 든 짝의 수이다. Share inside 는 Pairs inside 를 $`T`$ 로 나누어 % 로 적은 값이다.
 - 원본 데이터로 구한 경계는 1:1 라인 양쪽의 $`x = (1 \pm 0.037071)\, y`$ 이다.
 - 정규분포를 가정한 두 값은 식 (8) 의 값과 0.07 %p 안에서 같다. 짝을 모은 상대오차는 정규성이 기각되었지만, 이 데이터에서는 정규분포 가정의 $`p_{95}`$ 가 크게 어긋나지 않는다.
 - $`\mu_e = 0.3727`$ % 는 $`\sigma_e = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
