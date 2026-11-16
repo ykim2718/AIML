@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 46 | Created: 2026-11-16 | Updated: 2026-11-16 22:30 UTC
+Version 47 | Created: 2026-11-16 | Updated: 2026-11-16 22:30 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -83,7 +83,7 @@ $`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차�
 - 위에서부터 파란 칸의 질문에 답하며 내려가면, 화살표가 끝나는 초록 칸과 주황 칸이 쓸 식과 꼭지이다. 초록 칸은 $`p_{95}`$ 를 구하고, 주황 칸은 그 상한만 구한다.
 - 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
 - R² 와 RMSE 만 있는 경우는 나무에 들지 않고 왼쪽의 회색 칸에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
-- Fig 1 은 같은 folder 의 [src/decision_tree_figure.py](src/decision_tree_figure.py) 로 그렸다. 문서 folder 에서 `python3 src/decision_tree_figure.py --output-folder relative-error-band-ko_fig` 로 실행하면 PNG 와 함께 발표 자료에 넣을 수 있는 SVG 를 저장한다.
+- Fig 1 은 같은 folder 의 [src/relative_error_band_decision_tree.py](src/relative_error_band_decision_tree.py) 로 그렸다. 문서 folder 에서 `python3 src/relative_error_band_decision_tree.py --output-folder relative-error-band-ko_fig` 로 실행하면 PNG 와 함께 발표 자료에 넣을 수 있는 SVG 를 저장한다.
 
 ### 4.1 Relative Error Band
 
@@ -337,10 +337,10 @@ Table 4. Normality tests of the relative error by measurement location
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_normality.py](src/relative_error_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig2-relative-error.csv` 로, Fig 2 을 `fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig2-relative-error.csv` 로, Fig 2 을 `fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
-python3 src/relative_error_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder relative-error-band-ko_fig
+python3 src/relative_error_band_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder relative-error-band-ko_fig
 ```
 
 ## Appendix C. Significance Level and p-value
