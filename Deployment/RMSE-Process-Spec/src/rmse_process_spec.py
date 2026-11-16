@@ -19,10 +19,10 @@ The script prints both quantities for the current prediction and for the predict
 
 Changelog:
     0.1.0 - Center the thickness spec on a given target and use Cpk for the process requirement.
-    0.2.0 - Replace --pt-max with --n-sigma, the least number of RMSE inside the tolerance.
+    0.2.0 - Use --n-sigma, the least number of RMSE inside the tolerance, for the prediction requirement.
 """
 __author__ = 'yRocket'
-__version__ = "0.2.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.2+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
