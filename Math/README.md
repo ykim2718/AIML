@@ -1,9 +1,9 @@
 # Math
-Version 0 | Created: 2026-11-16 | Updated: 2026-11-16 23:08 UTC
+Version 1 | Created: 2026-11-16 | Updated: 2026-11-16 23:09 UTC
 
 ## 1. Scope
 
-이 folder 는 model 이 기대는 수학과 통계를 다룬다. 선형대수, graph theory, 통계적 공정 관리 (SPC), 실험 계획 (DOE), 분포, 가설 검정, 수치 계산, 시계열, 회귀, 최적화, R² 와 상대오차 경계, z-score 가 하위 folder 로 나뉘어 있다.
+이 folder 는 model 이 기대는 수학과 통계를 다룬다. 선형대수, graph theory, 통계적 공정 관리 (SPC), 실험 계획 (DOE), 분포, 가설 검정, numerical computing, 시계열, 회귀, 최적화, R² 와 상대오차 경계, z-score 가 하위 folder 로 나뉘어 있다.
 
 ## 2. Documents
 
