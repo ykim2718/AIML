@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 48 | Created: 2026-11-16 | Updated: 2026-11-16 22:31 UTC
+Version 49 | Created: 2026-11-16 | Updated: 2026-11-16 22:32 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -209,7 +209,7 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 
 ### 5.1 Data
 
-반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 박막 두께와 그 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 을 쓴다. 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이며, 측정 위치를 가리지 않고 짝 $`T = 572`$ 개를 한데 모은다. 단위는 nm 이고, 측정값은 530.054 nm 부터 718.857 nm 이다.
+반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 박막 두께와 그 예측값 ([data/relative-error-band-u0-actuals-and-predictions.csv](data/relative-error-band-u0-actuals-and-predictions.csv)) 을 쓴다. 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이며, 측정 위치를 가리지 않고 짝 $`T = 572`$ 개를 한데 모은다. 단위는 nm 이고, 측정값은 530.054 nm 부터 718.857 nm 이다.
 
 ### 5.2 Relative Error
 
@@ -261,7 +261,7 @@ Table 3. p95 by method and the share of pairs inside the band
 Table 2 와 Table 3, 꼭지 5.4 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, 네 가지 $`p_{95}`$ 와 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$ 을 출력한다. scipy 가 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
-python3 src/relative_error_band.py --csv data/u0_actuals_and_predictions.csv
+python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv
 ```
 
 ## 6. Application
@@ -340,7 +340,7 @@ Table 4. Normality tests of the relative error by measurement location
 Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig2-relative-error.csv` 로, Fig 2 을 `relative-error-band-fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
-python3 src/relative_error_band_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder relative-error-band-ko_fig
+python3 src/relative_error_band_normality.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
 ```
 
 ## Appendix C. Significance Level and p-value
