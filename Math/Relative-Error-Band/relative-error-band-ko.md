@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 53 | Created: 2026-11-16 | Updated: 2026-11-16 23:06 UTC
+Version 54 | Created: 2026-11-16 | Updated: 2026-11-16 23:08 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -310,7 +310,7 @@ python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and
 
 ## Appendix B. Meaning of the 95 Percent Coverage
 
-95 % 는 짝 20 개 가운데 19 개가 경계 안에 들고 1 개가 밖에 나가는 비율이다. 정규분포에서 95 % 는 평균에서 양쪽으로 표준편차의 1.96 배 안에 드는 비율이므로, sigma 로 적으면 ±1.96 sigma, 곧 약 ±2 sigma 이다. 1.96 은 Table 1 의 $`z`$ 이다.
+95 % 는 짝 20 개 가운데 19 개가 경계 안에 들고 1 개가 밖에 나가는 비율이다. 정규분포에서 95 % 는 평균에서 양쪽으로 표준편차의 1.960 배 안에 드는 비율이므로, sigma 로 적으면 ±1.960 sigma, 곧 약 ±2 sigma 이다. 1.960 은 Table 1 의 $`z`$ 를 4 자리 유효수로 적은 값이다.
 
 95 % 는 경계를 넓게 잡아 밖에 나가는 짝을 줄이는 것과 경계를 좁게 잡아 상대오차를 작게 보이는 것 사이에서 흔히 고르는 값이며, 상대오차가 평균 0 인 정규분포이면 식 (7) 에서 $`\sigma_e = \mathrm{RMSRE}`$ 이므로 경계는 RMSRE 의 1.96 배, 곧 약 2 배가 된다. 정규성 검정에 쓰는 유의수준 0.05 도 같은 1 − 0.95 이다 ([Appendix D](#appendix-d-significance-level-and-p-value)).
 
