@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 29 | Created: 2026-11-16 | Updated: 2026-11-16 05:35 CST
+Version 30 | Created: 2026-11-16 | Updated: 2026-11-16 05:42 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -29,7 +29,7 @@ Version 29 | Created: 2026-11-16 | Updated: 2026-11-16 05:35 CST
 
 1. Film thickness 측정값의 합격 범위인 spec limit 을 target ± tolerance 로 제시하고, 그 tolerance 의 가장 작은 값과 근거
 2. Film thickness 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
-3. Film uniformity (1σ/mean) 의 upper spec limit 을 제시
+3. Film thickness 의 within-wafer non-uniformity (WIWNU, 1σ/mean) 의 upper spec limit 을 제시
 
 **Non-Goal**:
 
