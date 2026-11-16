@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 2 | Created: 2026-11-16 | Updated: 2026-11-16 03:10 CST
+Version 3 | Created: 2026-11-16 | Updated: 2026-11-16 03:13 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -34,7 +34,7 @@ Version 2 | Created: 2026-11-16 | Updated: 2026-11-16 03:10 CST
 
 - 예측 model 을 만들거나 고치는 방법은 다루지 않는다.
 - 제품 성능에서 정하는 design spec 은 다루지 않는다. 이 문서의 spec 은 공정 산포와 예측 오차로 정하는 공정 spec 이다.
-- 요구 공정능력지수 (process capability index), P/T (precision-to-tolerance ratio, 측정 system 표준편차의 6 배를 spec 폭으로 나눈 값) 상한, guard band 계수의 값을 정하는 방법은 다루지 않는다. 세 값은 입력으로 받는다.
+- 요구 공정능력지수 (process capability index), P/T (precision-to-tolerance ratio, 측정 system 표준편차의 6 배를 spec 폭으로 나눈 값) [[1](#ref-1)] 상한, guard band 계수의 값을 정하는 방법은 다루지 않는다. 세 값은 입력으로 받는다.
 
 ## 2. Summary
 
@@ -102,14 +102,14 @@ $`R^2_{\mathrm{all}}`$ 은 1 에서 식 (1) 의 제곱합을 식 (2) 의 제곱�
 
 Thickness spec 은 target $`y_0`$ 에 대칭인 $`y_0 \pm h`$ 로 두며, tolerance $`h`$ 는 측정값의 공정능력지수가 $`C_{\min}`$ 이상이라는 공정 요건과, 예측값의 P/T 가 $`P_{\max}`$ 이하라는 예측 요건을 함께 만족하는 가장 작은 값이다.
 
-공정 요건은 공정능력지수 $`C_{pk} = \min\left( (\mathrm{USL} - \bar{y}),\ (\bar{y} - \mathrm{LSL}) \right) / (3\sigma_y)`$ [[1](#ref-1)] 에서 나온다. $`\mathrm{USL} = y_0 + h`$, $`\mathrm{LSL} = y_0 - h`$ 를 넣으면 두 값 가운데 작은 쪽은 $`h - |\bar{y} - y_0|`$ 이므로, $`C_{pk} = (h - |\bar{y} - y_0|) / (3\sigma_y) \ge C_{\min}`$ 에서 아래 식 (4) 이다.
+공정 요건은 공정능력지수 $`C_{pk} = \min\left( (\mathrm{USL} - \bar{y}),\ (\bar{y} - \mathrm{LSL}) \right) / (3\sigma_y)`$ [[2](#ref-2)] 에서 나온다. $`\mathrm{USL} = y_0 + h`$, $`\mathrm{LSL} = y_0 - h`$ 를 넣으면 두 값 가운데 작은 쪽은 $`h - |\bar{y} - y_0|`$ 이므로, $`C_{pk} = (h - |\bar{y} - y_0|) / (3\sigma_y) \ge C_{\min}`$ 에서 아래 식 (4) 이다.
 
 ```math
 h \ge 3\, C_{\min}\, \sigma_y + |\bar{y} - y_0|
 \hspace{19em} (4)
 ```
 
-측정값 평균이 target 과 같으면 ($`\bar{y} = y_0`$) $`C_{pk}`$ 는 $`C_p = (\mathrm{USL} - \mathrm{LSL}) / (6\sigma_y)`$ [[1](#ref-1)] 와 같고, 식 (4) 는 $`h \ge 3\, C_{\min}\, \sigma_y`$ 이다. 평균이 target 에서 벗어난 만큼 tolerance 가 넓어져야 한다.
+측정값 평균이 target 과 같으면 ($`\bar{y} = y_0`$) $`C_{pk}`$ 는 $`C_p = (\mathrm{USL} - \mathrm{LSL}) / (6\sigma_y)`$ [[2](#ref-2)] 와 같고, 식 (4) 는 $`h \ge 3\, C_{\min}\, \sigma_y`$ 이다. 평균이 target 에서 벗어난 만큼 tolerance 가 넓어져야 한다.
 
 예측 요건은 예측값을 표준편차가 RMSE 인 측정 system 으로 보고 구한다. 측정 system 의 P/T 는 $`6\, \mathrm{RMSE} / (\mathrm{USL} - \mathrm{LSL}) = 3\, \mathrm{RMSE} / h`$ 이고, 이것이 $`P_{\max}`$ 이하이므로 아래 식 (5) 이다. 이 요건은 target 과 측정값 평균의 차이에 따라 달라지지 않는다.
 
@@ -171,7 +171,7 @@ U_i = \frac{s_i}{\bar{y}_{i\cdot}}
 \hspace{19em} (12)
 ```
 
-Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고, spec 을 target + tolerance 로 적는다. 정해 둔 target 이 없으므로 target 은 측정값의 평균 $`\bar{U}`$ 로 둔다. 한쪽 공정능력지수 $`C_{pu} = (\mathrm{USL} - \bar{U}) / (3\sigma_U)`$ [[1](#ref-1)] 에서 $`h = \mathrm{USL} - \bar{U}`$ 로 쓰면, 식 (4) 부터 식 (6) 이 $`y_0`$ 와 $`\bar{y}`$ 를 $`\bar{U}`$, $`\sigma_y`$ 를 $`\sigma_U`$, RMSE 를 $`\mathrm{RMSE}_U`$ 로 바꾸어 그대로 성립한다.
+Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고, spec 을 target + tolerance 로 적는다. 정해 둔 target 이 없으므로 target 은 측정값의 평균 $`\bar{U}`$ 로 둔다. 한쪽 공정능력지수 $`C_{pu} = (\mathrm{USL} - \bar{U}) / (3\sigma_U)`$ [[2](#ref-2)] 에서 $`h = \mathrm{USL} - \bar{U}`$ 로 쓰면, 식 (4) 부터 식 (6) 이 $`y_0`$ 와 $`\bar{y}`$ 를 $`\bar{U}`$, $`\sigma_y`$ 를 $`\sigma_U`$, RMSE 를 $`\mathrm{RMSE}_U`$ 로 바꾸어 그대로 성립한다.
 
 ```math
 \mathrm{USL}_U = \bar{U} + \max\left( 3\, C_{\min}\, \sigma_U,\ \frac{3\, \mathrm{RMSE}_U}{P_{\max}} \right)
@@ -184,7 +184,7 @@ Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고
 
 반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 두 spec 을 구한다. 이 데이터는 R2 by Aggregation Level 문서의 Appendix D 와 같은 데이터이며, 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이다. Thickness 의 단위는 nm 이고, target 은 $`y_0 = 600`$ nm 이다.
 
-입력은 $`C_{\min} = 1.33`$, $`P_{\max} = 0.3`$, $`k = 1.645`$ 로 두었다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[1](#ref-1)].
+입력은 $`C_{\min} = 1.33`$, $`P_{\max} = 0.3`$, $`k = 1.645`$ 로 두었다. P/T 가 0.1 보다 작으면 측정 system 이 spec 충족 여부를 믿을 만하게 판정하고, 0.3 보다 크면 불합격품을 합격으로 (또는 그 반대로) 판정해 그 공정에 쓰기에 맞지 않는다 [[1](#ref-1)]. $`P_{\max} = 0.3`$ 은 이 상한이다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[2](#ref-2)].
 
 ### 4.1 RMSE of the Data
 
@@ -282,12 +282,13 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 
 - **Offset 이 있는 예측 오차**: 측정 위치마다 mean error (offset) 가 있으면 오차의 평균이 0 이 아니어서, 식 (9) 의 guard band 가 spec 밖 확률 0.05 를 보장하지 않는다. 이 데이터는 offset 을 없애면 RMSE 가 12.0490 에서 8.7503 으로 줄어, offset 이 RMSE 에 큰 비율로 들어 있다.
 - **정규분포가 아닌 wafer uniformity**: $`U_i`$ 의 최댓값 6.3171 % 는 $`\bar{U}`$ 보다 $`\sigma_U`$ 의 3.83 배 크다. 정규분포에서 평균보다 표준편차의 3.83 배 넘게 클 확률은 약 0.00006 인데 wafer 44 장 가운데 하나가 그만큼 크므로, $`U_i`$ 는 오른쪽 꼬리가 긴 분포를 따른다. 이때 $`C_{pu}`$ 로 구한 spec 밖 비율은 실제보다 낮다.
-- **표본 수**: RMSE, $`\sigma_y`$, $`\sigma_U`$ 는 wafer 44 장으로 구한 추정값이며, 공정능력 추정에는 일반적으로 표본 100 개 이상이 필요하다 [[1](#ref-1)]. Wafer uniformity 는 wafer 한 장에 값이 하나여서 표본이 44 개이다.
+- **표본 수**: RMSE, $`\sigma_y`$, $`\sigma_U`$ 는 wafer 44 장으로 구한 추정값이며, 공정능력 추정에는 일반적으로 표본 100 개 이상이 필요하다 [[2](#ref-2)]. Wafer uniformity 는 wafer 한 장에 값이 하나여서 표본이 44 개이다.
 - **예측 model 의 변경**: model 을 다시 학습하거나 공정 조건이 바뀌면 RMSE 를 다시 구하고 spec 을 다시 계산한다.
 
 ## References
 
-<a id="ref-1"></a>[1] NIST/SEMATECH. [6.1.6. What is Process Capability?](https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.
+<a id="ref-1"></a>[1] Wikipedia. [ANOVA gauge R&R](https://en.wikipedia.org/wiki/ANOVA_gauge_R%26R). P/T 기준의 출처로 Burdick, R. K., Borror, C. M., and Montgomery, D. C. (2005). *Design and Analysis of Gauge R and R Studies*. SIAM-ASA, p. 4, ISBN 0898715881 을 인용한다.<br>
+<a id="ref-2"></a>[2] NIST/SEMATECH. [6.1.6. What is Process Capability?](https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.
 
 ---
 
