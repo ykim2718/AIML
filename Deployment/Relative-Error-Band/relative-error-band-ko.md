@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 47 | Created: 2026-11-16 | Updated: 2026-11-16 22:30 UTC
+Version 48 | Created: 2026-11-16 | Updated: 2026-11-16 22:31 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -76,7 +76,7 @@ Table 1. Symbols
 
 $`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
 
-<img src="relative-error-band-ko_fig/fig1-decision-tree.png" width="900" style="max-width: 100%;" alt="Fig 1">
+<img src="relative-error-band-ko_fig/relative-error-band-fig1-decision-tree.png" width="900" style="max-width: 100%;" alt="Fig 1">
 
 <a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
 
@@ -330,14 +330,14 @@ Table 4. Normality tests of the relative error by measurement location
 
 측정 위치 13 곳의 Q-Q plot 은 아래 Fig 2 이다.
 
-<img src="relative-error-band-ko_fig/fig2-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="relative-error-band-ko_fig/relative-error-band-fig2-relative-error-qq.png" width="900" style="max-width: 100%;" alt="Fig 2">
 
 <a id="fig-2"></a>Fig 2. Normal Q-Q plots of the relative error by measurement location
 
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `fig2-relative-error.csv` 로, Fig 2 을 `fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 4 와 Fig 2 는 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (16) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig2-relative-error.csv` 로, Fig 2 을 `relative-error-band-fig2-relative-error-qq.png` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band_normality.py --csv data/u0_actuals_and_predictions.csv --output-folder relative-error-band-ko_fig

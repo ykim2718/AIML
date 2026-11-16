@@ -8,7 +8,7 @@ a slide and scaled without loss.
 Requires matplotlib.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -21,7 +21,7 @@ from matplotlib import pyplot as plt
 
 __all__ = ['Node', 'NODES', 'EDGES', 'NOTE', 'draw']
 
-FIGURE_STEM: str = 'fig1-decision-tree'
+FIGURE_STEM: str = 'relative-error-band-fig1-decision-tree'
 FIGURE_SUFFIXES: tuple = ('.png', '.svg')
 FIGSIZE: tuple = (13.33, 7.5)  # 16:9 slide
 REFERENCE_WIDTH: float = 13.33
