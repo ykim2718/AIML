@@ -2,19 +2,19 @@
 """Compute the +/- p95 relative error band around the 1:1 line of predicted vs. measured values.
 
 The CSV holds one wafer per row with columns true_p1..true_pN (measured values y) and pred_p1..pred_pN (predicted
-values x). All T = M * N pairs are pooled and the relative error r = (x - y) / y is formed. The script prints
+values x). All T = M * N pairs are pooled and the relative error e = (x - y) / y is formed. The script prints
 
-    with raw data      p95 = 0.95 quantile of |r|, and the conformal rank ceil(0.95 (T + 1)) of the sorted |r|
+    with raw data      p95 = 0.95 quantile of |e|, and the conformal rank ceil(0.95 (T + 1)) of the sorted |r|
     without raw data   normal, mean 0         p95 = z * RMSRE                 (z: 0.975 standard normal quantile)
                        normal, mean != 0      p95 solves Phi((p - mu)/sd) - Phi((-p - mu)/sd) = 0.95
-                       distribution free      p95 <= RMSRE / sqrt(0.05)       (Markov inequality on r^2)
+                       distribution free      p95 <= RMSRE / sqrt(0.05)       (Markov inequality on e^2)
 
-the share of pairs inside each band, the Shapiro-Wilk test of the pooled r, and RMSE, R2_all and RMSE / y_bar.
+the share of pairs inside each band, the Shapiro-Wilk test of the pooled e, and RMSE, R2_all and RMSE / y_bar.
 
 Requires scipy.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math

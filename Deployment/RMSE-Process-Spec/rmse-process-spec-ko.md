@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 41 | Created: 2026-11-16 | Updated: 2026-11-16 22:11 UTC
+Version 42 | Created: 2026-11-16 | Updated: 2026-11-16 22:14 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -43,8 +43,8 @@ Version 41 | Created: 2026-11-16 | Updated: 2026-11-16 22:11 UTC
 
 ## 2. Summary
 
-$`p_{95}`$ 는 상대오차 $`r = (x - y)/y`$ 의 절댓값이 짝의 95 % 에서 넘지 않는 값이며, Pred vs. True 그림의 경계는 1:1 라인 양쪽의 두 직선 $`x = (1 \pm p_{95})\, y`$ 이다.
-원본 데이터가 있으면 $`|r|`$ 의 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정하거나, 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한을 구한다.
+$`p_{95}`$ 는 상대오차 $`e = (x - y)/y`$ 의 절댓값이 짝의 95 % 에서 넘지 않는 값이며, Pred vs. True 그림의 경계는 1:1 라인 양쪽의 두 직선 $`x = (1 \pm p_{95})\, y`$ 이다.
+원본 데이터가 있으면 $`|e|`$ 의 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정하거나, 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한을 구한다.
 이 상한은 정확한 $`p_{95}`$ 가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
 
 ## 3. Principle
@@ -61,12 +61,12 @@ Table 1. Symbols
 | $`i`$                  | 짝의 번호                                            | integer  | $`1 \le i \le T`$  |
 | $`x_i`$                | $`i`$ 번째 짝의 예측값 (Pred)                        | scalar   | -                  |
 | $`y_i`$                | $`i`$ 번째 짝의 측정값 (True)                        | scalar   | $`y_i \gt 0`$      |
-| $`r_i`$                | 상대오차 $`(x_i - y_i)/y_i`$                         | scalar   | -                  |
-| $`p_{95}`$             | 짝의 95 % 에서 $`\lvert r_i \rvert`$ 가 넘지 않는 값 | scalar   | $`p_{95} \ge 0`$   |
-| $`\mu_r`$              | 상대오차 $`T`$ 개의 평균                             | scalar   | -                  |
-| $`\sigma_r`$           | 상대오차 $`T`$ 개의 표준편차 (분모 $`T`$)            | scalar   | -                  |
+| $`e_i`$                | 상대오차 $`(x_i - y_i)/y_i`$                         | scalar   | -                  |
+| $`p_{95}`$             | 짝의 95 % 에서 $`\lvert e_i \rvert`$ 가 넘지 않는 값 | scalar   | $`p_{95} \ge 0`$   |
+| $`\mu_e`$              | 상대오차 $`T`$ 개의 평균                             | scalar   | -                  |
+| $`\sigma_e`$           | 상대오차 $`T`$ 개의 표준편차 (분모 $`T`$)            | scalar   | -                  |
 | $`\mathrm{RMSRE}`$     | root mean squared relative error                     | scalar   | -                  |
-| $`k`$                  | 정렬한 $`\lvert r_i \rvert`$ 에서 고르는 순위        | integer  | $`1 \le k \le T`$  |
+| $`k`$                  | 정렬한 $`\lvert e_i \rvert`$ 에서 고르는 순위        | integer  | $`1 \le k \le T`$  |
 | $`z`$                  | 표준정규분포의 0.975 분위수 1.96                     | scalar   | -                  |
 | $`\Phi`$               | 표준정규분포의 누적분포함수                          | function | -                  |
 | $`\mathrm{RMSE}`$      | 오차 $`y_i - x_i`$ 의 root mean squared error        | scalar   | -                  |
@@ -79,11 +79,11 @@ Table 1. Symbols
 상대오차는 예측값과 측정값의 차이를 측정값으로 나눈 값이다.
 
 ```math
-r_i = \frac{x_i - y_i}{y_i}
+e_i = \frac{x_i - y_i}{y_i}
 \hspace{19em} (1)
 ```
 
-$`\lvert r_i \rvert \le p_{95}`$ 는 아래 식 (2) 와 같으므로, 가로축이 True, 세로축이 Pred 인 그림에서 경계는 원점을 지나는 기울기 $`1 - p_{95}`$ 와 $`1 + p_{95}`$ 의 두 직선이고, 그 사이에 1:1 라인이 있다.
+$`\lvert e_i \rvert \le p_{95}`$ 는 아래 식 (2) 와 같으므로, 가로축이 True, 세로축이 Pred 인 그림에서 경계는 원점을 지나는 기울기 $`1 - p_{95}`$ 와 $`1 + p_{95}`$ 의 두 직선이고, 그 사이에 1:1 라인이 있다.
 
 ```math
 (1 - p_{95})\, y_i \le x_i \le (1 + p_{95})\, y_i
@@ -93,42 +93,42 @@ $`\lvert r_i \rvert \le p_{95}`$ 는 아래 식 (2) 와 같으므로, 가로축�
 $`p_{95}`$ 는 짝의 95 % 가 이 경계 안에 들도록 정한 값이다.
 
 ```math
-P\left( \lvert r \rvert \le p_{95} \right) = 0.95
+P\left( \lvert e \rvert \le p_{95} \right) = 0.95
 \hspace{19em} (3)
 ```
 
 원본 데이터가 없을 때 쓰는 요약값은 상대오차의 평균, 표준편차, RMSRE 이며, 세 값 사이에는 식 (7) 이 성립한다.
 
 ```math
-\mu_r = \frac{1}{T} \sum_{i=1}^{T} r_i
+\mu_e = \frac{1}{T} \sum_{i=1}^{T} e_i
 \hspace{19em} (4)
 ```
 
 ```math
-\sigma_r = \sqrt{\frac{1}{T} \sum_{i=1}^{T} \left( r_i - \mu_r \right)^2}
+\sigma_e = \sqrt{\frac{1}{T} \sum_{i=1}^{T} \left( e_i - \mu_e \right)^2}
 \hspace{19em} (5)
 ```
 
 ```math
-\mathrm{RMSRE} = \sqrt{\frac{1}{T} \sum_{i=1}^{T} r_i^2}
+\mathrm{RMSRE} = \sqrt{\frac{1}{T} \sum_{i=1}^{T} e_i^2}
 \hspace{19em} (6)
 ```
 
 ```math
-\mathrm{RMSRE}^2 = \mu_r^2 + \sigma_r^2
+\mathrm{RMSRE}^2 = \mu_e^2 + \sigma_e^2
 \hspace{19em} (7)
 ```
 
 ### 3.3 With Raw Data
 
-원본 데이터가 있으면 상대오차를 식 (1) 로 직접 구하고, $`\lvert r_i \rvert`$ 의 95 % 분위수를 $`p_{95}`$ 로 쓴다. 분포를 가정하지 않는다.
+원본 데이터가 있으면 상대오차를 식 (1) 로 직접 구하고, $`\lvert e_i \rvert`$ 의 95 % 분위수를 $`p_{95}`$ 로 쓴다. 분포를 가정하지 않는다.
 
 ```math
-p_{95} = Q_{0.95}\left( \lvert r_1 \rvert, \ldots, \lvert r_T \rvert \right)
+p_{95} = Q_{0.95}\left( \lvert e_1 \rvert, \ldots, \lvert e_T \rvert \right)
 \hspace{19em} (8)
 ```
 
-$`Q_{0.95}`$ 는 표본의 95 % 분위수이며, 이 문서는 정렬한 값 사이를 선형 보간한다. 식 (8) 은 가진 짝의 95 % 를 담는 값이다. 앞으로 얻을 짝 하나가 경계 안에 들 확률을 0.95 이상으로 보장하려면, 정렬한 $`\lvert r \rvert`$ 에서 아래 순위 $`k`$ 의 값을 쓴다. 짝들이 교환 가능 (exchangeable) 할 때 이 보장이 성립한다 [[1](#ref-1)].
+$`Q_{0.95}`$ 는 표본의 95 % 분위수이며, 이 문서는 정렬한 값 사이를 선형 보간한다. 식 (8) 은 가진 짝의 95 % 를 담는 값이다. 앞으로 얻을 짝 하나가 경계 안에 들 확률을 0.95 이상으로 보장하려면, 정렬한 $`\lvert e \rvert`$ 에서 아래 순위 $`k`$ 의 값을 쓴다. 짝들이 교환 가능 (exchangeable) 할 때 이 보장이 성립한다 [[1](#ref-1)].
 
 ```math
 k = \lceil 0.95\, (T + 1) \rceil
@@ -137,7 +137,7 @@ k = \lceil 0.95\, (T + 1) \rceil
 
 ### 3.4 Without Raw Data: Normal with Zero Mean
 
-상대오차가 평균 0 인 정규분포를 따르면 식 (7) 에서 $`\mathrm{RMSRE} = \sigma_r`$ 이고, $`\lvert r \rvert \le p_{95}`$ 의 확률이 0.95 가 되는 값은 표준정규분포의 0.975 분위수 $`z = 1.96`$ 배이다.
+상대오차가 평균 0 인 정규분포를 따르면 식 (7) 에서 $`\mathrm{RMSRE} = \sigma_e`$ 이고, $`\lvert e \rvert \le p_{95}`$ 의 확률이 0.95 가 되는 값은 표준정규분포의 0.975 분위수 $`z = 1.96`$ 배이다.
 
 ```math
 p_{95} = z\, \mathrm{RMSRE}
@@ -146,20 +146,20 @@ p_{95} = z\, \mathrm{RMSRE}
 
 ### 3.5 Without Raw Data: Normal with Nonzero Mean
 
-상대오차가 평균 $`\mu_r`$, 표준편차 $`\sigma_r`$ 인 정규분포를 따르면, 식 (3) 은 아래 식 (11) 이 되고 $`p_{95}`$ 는 이 식을 수치로 풀어 구한다.
+상대오차가 평균 $`\mu_e`$, 표준편차 $`\sigma_e`$ 인 정규분포를 따르면, 식 (3) 은 아래 식 (11) 이 되고 $`p_{95}`$ 는 이 식을 수치로 풀어 구한다.
 
 ```math
-\Phi\left( \frac{p_{95} - \mu_r}{\sigma_r} \right) - \Phi\left( \frac{-p_{95} - \mu_r}{\sigma_r} \right) = 0.95
+\Phi\left( \frac{p_{95} - \mu_e}{\sigma_e} \right) - \Phi\left( \frac{-p_{95} - \mu_e}{\sigma_e} \right) = 0.95
 \hspace{19em} (11)
 ```
 
-- $`\mu_r = 0`$ 이면 식 (11) 의 해는 식 (10) 과 같다.
-- $`\lvert \mu_r \rvert`$ 가 $`\sigma_r`$ 보다 훨씬 크면 한쪽 꼬리만 남아 $`p_{95} \approx \lvert \mu_r \rvert + 1.645\, \sigma_r`$ 이다.
+- $`\mu_e = 0`$ 이면 식 (11) 의 해는 식 (10) 과 같다.
+- $`\lvert \mu_e \rvert`$ 가 $`\sigma_e`$ 보다 훨씬 크면 한쪽 꼬리만 남아 $`p_{95} \approx \lvert \mu_e \rvert + 1.645\, \sigma_e`$ 이다.
 - 평균이 0 이 아니면 1:1 라인에 대칭인 경계는 오차가 치우친 쪽에서 먼저 넘친다. 식 (11) 은 양쪽을 합쳐 0.95 를 맞춘다.
 
 ### 3.6 Without Raw Data: Distribution-free Upper Bound
 
-분포를 가정할 수 없으면 RMSRE 로 $`p_{95}`$ 의 상한만 구한다. Markov 부등식을 $`r^2`$ 에 쓰면 어떤 분포에서도 $`P(\lvert r \rvert \ge c) = P(r^2 \ge c^2) \le \mathrm{RMSRE}^2 / c^2`$ 이고, 이 상한을 0.05 로 두면 아래 식 (12) 이다.
+분포를 가정할 수 없으면 RMSRE 로 $`p_{95}`$ 의 상한만 구한다. Markov 부등식을 $`e^2`$ 에 쓰면 어떤 분포에서도 $`P(\lvert e \rvert \ge c) = P(e^2 \ge c^2) \le \mathrm{RMSRE}^2 / c^2`$ 이고, 이 상한을 0.05 로 두면 아래 식 (12) 이다.
 
 ```math
 p_{95} \le \frac{\mathrm{RMSRE}}{\sqrt{0.05}} = 4.472\, \mathrm{RMSRE}
@@ -206,8 +206,8 @@ Table 2. Summary of the relative error
 
 | Quantity         | Value  |
 | :--------------: | :----: |
-| $`\mu_r`$ (%)    | 0.3727 |
-| $`\sigma_r`$ (%) | 1.8877 |
+| $`\mu_e`$ (%)    | 0.3727 |
+| $`\sigma_e`$ (%) | 1.8877 |
 | RMSRE (%)        | 1.9241 |
 | Shapiro-Wilk W   | 0.9940 |
 | Shapiro-Wilk p   | 0.0238 |
@@ -226,12 +226,12 @@ Table 3. p95 by method and the share of pairs inside the band
 | 95 % 분위수, 식 (8)               | 3.3     | 3.7071  | 543          | 94.93            |
 | 순위 $`k = 545`$, 식 (9)          | 3.3     | 3.7518  | 545          | 95.28            |
 | 정규분포, 평균 0, 식 (10)         | 3.4     | 3.7712  | 546          | 95.45            |
-| 정규분포, 평균 $`\mu_r`$, 식 (11) | 3.5     | 3.7707  | 546          | 95.45            |
+| 정규분포, 평균 $`\mu_e`$, 식 (11) | 3.5     | 3.7707  | 546          | 95.45            |
 | 분포 무관 상한, 식 (12)           | 3.6     | 8.6048  | 572          | 100.00           |
 
 - 원본 데이터로 구한 경계는 1:1 라인 양쪽의 $`x = (1 \pm 0.037071)\, y`$ 이다.
 - 정규분포를 가정한 두 값은 식 (8) 의 값과 0.07 %p 안에서 같다. 짝을 모은 상대오차는 정규성이 기각되었지만, 이 데이터에서는 정규분포 가정의 $`p_{95}`$ 가 크게 어긋나지 않는다.
-- $`\mu_r = 0.3727`$ % 는 $`\sigma_r = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
+- $`\mu_e = 0.3727`$ % 는 $`\sigma_e = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
 - 분포 무관 상한 8.6048 % 는 식 (8) 의 값의 2.32 배로, 모든 짝을 담지만 경계를 넓게 잡는다.
 
 ### 4.4 R2 and RMSE
@@ -285,7 +285,7 @@ python3 src/relative_error_band.py --csv data/u0_actuals_and_predictions.csv
 wafer $`m`$ 의 측정 위치 $`j`$ 에서 측정값 $`y_{mj}`$ 와 예측값 $`x_{mj}`$ 의 상대오차를 아래로 정의하고, 측정 위치 13 곳마다 wafer 44 장의 상대오차가 정규분포를 따르는지 따로 검정했다.
 
 ```math
-r_{mj} = \frac{x_{mj} - y_{mj}}{y_{mj}}
+e_{mj} = \frac{x_{mj} - y_{mj}}{y_{mj}}
 \hspace{19em} (16)
 ```
 

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Test the normality of the relative error r_ij = (x_ij - y_ij) / y_ij at each measurement location, and chart it.
+"""Test the normality of the relative error e_ij = (x_ij - y_ij) / y_ij at each measurement location, and chart it.
 
 The CSV holds one wafer per row with columns true_p1..true_pN (measured values y_ij) and pred_p1..pred_pN (predicted
 values x_ij). For each location j the M relative errors of the M wafers are tested separately with Shapiro-Wilk,
-D'Agostino-Pearson and Anderson-Darling. The script prints one row per location, writes the samples r_ij to a CSV
+D'Agostino-Pearson and Anderson-Darling. The script prints one row per location, writes the samples e_ij to a CSV
 (one row per wafer, one column per location), and saves one figure with the normal Q-Q plot of every location.
 
 Requires scipy and matplotlib.
 """
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.0.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -38,7 +38,7 @@ DPI: int = 300  # matrix chart
 
 
 def load_relative_error(csv_path: pathlib.Path = None) -> pd.DataFrame:
-    """Return r_ij as a frame with index 'wafer' (row number) and columns 'p1'..'pN' (measurement locations)."""
+    """Return e_ij as a frame with index 'wafer' (row number) and columns 'p1'..'pN' (measurement locations)."""
     if csv_path is None:
         raise ValueError('csv_path is required.')
     frame = pd.read_csv(csv_path, encoding='utf-8-sig')
@@ -69,7 +69,7 @@ def normality_tests(r: pd.DataFrame = None) -> pd.DataFrame:
 
 
 def draw(r: pd.DataFrame = None, tests: pd.DataFrame = None, path: pathlib.Path = None) -> None:
-    """Save one figure with the normal Q-Q plot of r (in percent) at every location."""
+    """Save one figure with the normal Q-Q plot of e (in percent) at every location."""
     scale = FIGSIZE[0] / REFERENCE_WIDTH
     plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
                          'axes.labelsize': FONT_SIZES['axis_label'] * scale})
@@ -88,7 +88,7 @@ def draw(r: pd.DataFrame = None, tests: pd.DataFrame = None, path: pathlib.Path 
     for ax in axes.ravel()[r.shape[1]:]:
         ax.set_visible(False)
     fig.supxlabel('Standard normal quantile', fontsize=FONT_SIZES['axis_label'] * scale)
-    fig.supylabel('Ordered relative error r (%)', fontsize=FONT_SIZES['axis_label'] * scale)
+    fig.supylabel('Ordered relative error e (%)', fontsize=FONT_SIZES['axis_label'] * scale)
     fig.tight_layout()
     fig.savefig(path, dpi=DPI)
     plt.close(fig)
