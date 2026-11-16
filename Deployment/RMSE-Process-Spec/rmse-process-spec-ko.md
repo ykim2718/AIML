@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 14 | Created: 2026-11-16 | Updated: 2026-11-16 04:40 CST
+Version 15 | Created: 2026-11-16 | Updated: 2026-11-16 04:43 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -114,7 +114,7 @@ h \ge 3\, C_{pk,\min}\, \sigma_y + |\bar{y} - y_0|
 
 측정값 평균이 target 과 같으면 ($`\bar{y} = y_0`$) $`C_{pk}`$ 는 $`C_p = (\mathrm{USL} - \mathrm{LSL}) / (6\sigma_y)`$ [[1](#ref-1)] 와 같고, 식 (4) 는 $`h \ge 3\, C_{pk,\min}\, \sigma_y`$ 이다. 평균이 target 에서 벗어난 만큼 tolerance 가 넓어져야 한다.
 
-예측 요건은 예측값을 표준편차가 RMSE 인 측정 system 으로 보고 구한다. Tolerance $`h`$ 안에 RMSE 가 들어가는 개수 $`h / \mathrm{RMSE}`$ 가 $`n_\sigma`$ 이상이어야 하므로 아래 식 (5) 이다. 측정 system 의 P/T (표준편차-to-tolerance ratio) 는 $`6\, \mathrm{RMSE} / (\mathrm{USL} - \mathrm{LSL}) = 3\, \mathrm{RMSE} / h`$ [[2](#ref-2)] 이므로, $`n_\sigma`$ 는 3 을 P/T 의 상한으로 나눈 값이다. 이 요건은 target 과 측정값 평균의 차이에 따라 달라지지 않는다.
+예측 요건은 예측값을 표준편차가 RMSE 인 측정 system 으로 보고 구한다. Tolerance $`h`$ 안에 RMSE 가 들어가는 개수 $`h / \mathrm{RMSE}`$ 가 $`n_\sigma`$ 이상이어야 하므로 아래 식 (5) 이다. 이 요건은 target 과 측정값 평균의 차이에 따라 달라지지 않는다.
 
 ```math
 h \ge n_\sigma\, \mathrm{RMSE}
@@ -187,7 +187,7 @@ Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고
 
 반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 값과 예측값 ([data/u0_actuals_and_predictions.csv](data/u0_actuals_and_predictions.csv)) 으로 두 spec 을 구한다. 이 데이터는 R2 by Aggregation Level 문서의 Appendix D 와 같은 데이터이며, 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이다. Thickness 의 단위는 nm 이고, target 은 $`y_0 = 600`$ nm 이다.
 
-입력은 $`C_{pk,\min} = 1.33`$, $`C_{pu,\min} = 1.33`$, $`n_\sigma = 10`$, $`k = 1.645`$ 로 두었다. P/T 가 0.1 보다 작으면 측정 system 이 spec 충족 여부를 믿을 만하게 판정하고, 0.3 보다 크면 불합격품을 합격으로 (또는 그 반대로) 판정해 그 공정에 쓰기에 맞지 않는다 [[2](#ref-2)]. $`n_\sigma = 10`$ 은 P/T 상한 0.3 에 해당한다 ($`3 / 0.3 = 10`$). $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[1](#ref-1)].
+입력은 $`C_{pk,\min} = 1.33`$, $`C_{pu,\min} = 1.33`$, $`n_\sigma = 10`$, $`k = 1.645`$ 로 두었다. $`n_\sigma`$ 가 30 보다 크면 측정 system 이 spec 충족 여부를 믿을 만하게 판정하고, 10 보다 작으면 불합격품을 합격으로 (또는 그 반대로) 판정해 그 공정에 쓰기에 맞지 않는다 [[2](#ref-2)]. $`n_\sigma = 10`$ 은 이 하한이다. $`C_{pk} = C_p = 1.33`$ 은 중심이 맞는 정규분포 공정에서 spec 밖 비율이 약 64 ppm 인 값이다 [[1](#ref-1)].
 
 ### 4.1 RMSE of the Data
 
@@ -229,7 +229,7 @@ Tolerance 의 근거는 아래이다.
 - 현재 예측의 RMSE 12.0490 은 식 (7) 의 $`0.3 \times (1.33 \times 28.5043 + 34.5735 / 3) = 14.8306`$ 보다 작아, 공정 산포와 평균의 벗어남이 tolerance 를 정한다. Offset 을 없애도 tolerance 는 그대로이고, guard band 만 줄어 acceptance 의 폭이 넓어진다.
 - Acceptance 의 limit 은 식 (9) 대로 tolerance 에서 guard band 를 뺀 값이며, 현재 예측에서 $`148.3056 - 19.8207 = 128.4850`$ 이다.
 - 측정값 평균이 target 과 같으면 ($`y_0 = 634.5735`$) 공정 요건은 113.7321 로 줄어 예측 요건 120.4904 가 tolerance 를 정하고, spec 은 634.5735 ± 120.4904 이다.
-- $`n_\sigma = 30`$ (P/T 상한 0.1) 이면 예측 요건은 3 배가 되어 현재 예측에서 361.4712 이고, 예측 요건이 tolerance 를 정한다.
+- $`n_\sigma = 30`$ 이면 예측 요건은 3 배가 되어 현재 예측에서 361.4712 이고, 예측 요건이 tolerance 를 정한다.
 
 ### 4.3 Wafer Uniformity Spec
 
@@ -291,16 +291,16 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 ## References
 
 <a id="ref-1"></a>[1] NIST/SEMATECH. [6.1.6. What is Process Capability?](https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm). *NIST/SEMATECH e-Handbook of Statistical Methods*.<br>
-<a id="ref-2"></a>[2] Wikipedia. [ANOVA gauge R&R](https://en.wikipedia.org/wiki/ANOVA_gauge_R%26R). P/T 기준의 출처로 Burdick, R. K., Borror, C. M., and Montgomery, D. C. (2005). *Design and Analysis of Gauge R and R Studies*. SIAM-ASA, p. 4, ISBN 0898715881 을 인용한다.
+<a id="ref-2"></a>[2] Wikipedia. [ANOVA gauge R&R](https://en.wikipedia.org/wiki/ANOVA_gauge_R%26R). 이 기준의 출처로 Burdick, R. K., Borror, C. M., and Montgomery, D. C. (2005). *Design and Analysis of Gauge R and R Studies*. SIAM-ASA, p. 4, ISBN 0898715881 을 인용한다.
 
 ---
 
 ## Appendix A. Terminology
 
+- **$`n_\sigma`$**: tolerance $`h`$ 안에 들어가야 하는 표준편차 (예측값에서는 RMSE) 의 최소 개수
 - **acceptance limit**: 예측값으로 합격을 판정하는 한계. Spec limit 을 guard band 만큼 안쪽으로 좁힌 값
 - **guard band**: 예측 오차 때문에 spec limit 을 안쪽으로 좁히는 폭. 이 문서에서는 $`k\, \mathrm{RMSE}`$
 - **mean error (offset)**: 한 측정 위치에서 예측 오차를 wafer 에 대해 평균한 값
-- **P/T**: 표준편차-to-tolerance ratio. 측정 system 표준편차의 6 배를 spec 폭 $`\mathrm{USL} - \mathrm{LSL}`$ 으로 나눈 값
 - **process capability index**: 공정능력지수. Spec limit 까지의 거리를 공정 산포로 나눈 값. 양쪽 spec 은 $`C_p`$ 와 $`C_{pk}`$, upper spec 하나는 $`C_{pu}`$ 를 쓴다
 - **RMSE**: root mean squared error. 예측 오차 제곱 평균의 제곱근
 - **spec limit**: 공정 결과가 합격인 범위의 경계. Upper spec limit (USL) 과 lower spec limit (LSL)
