@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 52 | Created: 2026-11-16 | Updated: 2026-11-16 22:48 UTC
+Version 53 | Created: 2026-11-16 | Updated: 2026-11-16 23:06 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,8 +22,9 @@ Version 52 | Created: 2026-11-16 | Updated: 2026-11-16 22:48 UTC
     - [6.2 Limitations](#62-limitations)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
-- [Appendix B. Normality of Relative Error](#appendix-b-normality-of-relative-error)
-- [Appendix C. Significance Level and p-value](#appendix-c-significance-level-and-p-value)
+- [Appendix B. Meaning of the 95 Percent Coverage](#appendix-b-meaning-of-the-95-percent-coverage)
+- [Appendix C. Normality of Relative Error](#appendix-c-normality-of-relative-error)
+- [Appendix D. Significance Level and p-value](#appendix-d-significance-level-and-p-value)
 
 ## 1. Purpose
 
@@ -108,7 +109,7 @@ P\left( \lvert e \rvert \le p_{95} \right) = 0.95
 \hspace{19em} (3)
 ```
 
-95 % 는 짝 20 개 가운데 19 개가 경계 안에 들고 1 개가 밖에 나가는 비율이다. 경계를 넓게 잡아 밖에 나가는 짝을 줄이는 것과 경계를 좁게 잡아 상대오차를 작게 보이는 것 사이에서 흔히 고르는 값이며, 상대오차가 평균 0 인 정규분포이면 경계는 RMSRE 의 1.96 배, 곧 약 2 배가 된다. 정규성 검정에 쓰는 유의수준 0.05 도 같은 1 − 0.95 이다 ([Appendix C](#appendix-c-significance-level-and-p-value)). 99 % 로 두면 평균 0 인 정규분포의 경계는 RMSRE 의 1.96 배에서 2.576 배로, 분포를 가정하지 않은 상한은 RMSRE 의 4.472 배에서 10 배로 넓어진다.
+95 % 를 쓰는 까닭과 그 sigma 값은 [Appendix B](#appendix-b-meaning-of-the-95-percent-coverage) 에 있다.
 
 원본 데이터가 없을 때 쓰는 요약값은 상대오차의 평균, 표준편차, RMSRE 이며, 세 값 사이에는 식 (7) 이 성립한다.
 
@@ -226,7 +227,7 @@ Table 2. Summary of the relative error
 | Shapiro-Wilk p   | 0.0238 |
 
 - $`0.3727^2 + 1.8877^2 = 1.9241^2`$ 으로 식 (7) 이 성립한다.
-- 짝 572 개를 모은 상대오차의 Shapiro-Wilk 검정 [[2](#ref-2)] 은 p = 0.0238 로, 유의수준 0.05 에서 정규성을 기각한다. 측정 위치마다의 검정은 [Appendix B](#appendix-b-normality-of-relative-error), 유의수준과 p 의 뜻은 [Appendix C](#appendix-c-significance-level-and-p-value) 에 있다.
+- 짝 572 개를 모은 상대오차의 Shapiro-Wilk 검정 [[2](#ref-2)] 은 p = 0.0238 로, 유의수준 0.05 에서 정규성을 기각한다. 측정 위치마다의 검정은 [Appendix C](#appendix-c-normality-of-relative-error), 유의수준과 p 의 뜻은 [Appendix D](#appendix-d-significance-level-and-p-value) 에 있다.
 
 ### 5.3 p95 by Method
 
@@ -286,7 +287,7 @@ python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and
 ### 6.2 Limitations
 
 - **경험적 95 % 와 미래의 보장**: 식 (8) 은 가진 짝의 95 % 를 담는 값일 뿐, 앞으로 얻을 짝이 0.95 의 확률로 경계 안에 든다는 보장은 아니다. 이 데이터에서도 식 (8) 의 경계 안에 든 짝은 94.93 % 이다. 미래의 짝에 대한 보장은 식 (9) 의 순위를 쓰고 짝들의 순서가 교환 가능할 때만 성립한다.
-- **교환 가능성이 깨지는 경우**: 같은 wafer 의 측정 위치 13 곳은 서로 독립이 아니고, [Appendix B](#appendix-b-normality-of-relative-error) 처럼 측정 위치마다 상대오차의 평균이 다르다. 장비나 recipe 가 바뀌어 오차가 달라지면 식 (9) 의 보장도 성립하지 않는다.
+- **교환 가능성이 깨지는 경우**: 같은 wafer 의 측정 위치 13 곳은 서로 독립이 아니고, [Appendix C](#appendix-c-normality-of-relative-error) 처럼 측정 위치마다 상대오차의 평균이 다르다. 장비나 recipe 가 바뀌어 오차가 달라지면 식 (9) 의 보장도 성립하지 않는다.
 - **정규분포 가정**: 식 (10) 과 식 (11) 은 정규분포에서만 식 (3) 을 맞춘다. 정규성이 기각되면 원본 데이터가 있는 한 식 (8) 이나 식 (9) 를 쓴다.
 - **요약값의 추정 오차**: 식 (10) 부터 식 (12) 는 RMSRE 를 참값으로 보지만, 표본으로 구한 RMSRE 에는 추정 오차가 있다.
 
@@ -307,7 +308,15 @@ python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and
 - **RMSRE**: root mean squared relative error. 상대오차 제곱 평균의 제곱근
 - **significance level**: 유의수준. 귀무가설이 참인데 기각할 확률로 미리 정하는 값
 
-## Appendix B. Normality of Relative Error
+## Appendix B. Meaning of the 95 Percent Coverage
+
+95 % 는 짝 20 개 가운데 19 개가 경계 안에 들고 1 개가 밖에 나가는 비율이다. 정규분포에서 95 % 는 평균에서 양쪽으로 표준편차의 1.96 배 안에 드는 비율이므로, sigma 로 적으면 ±1.96 sigma, 곧 약 ±2 sigma 이다. 1.96 은 Table 1 의 $`z`$ 이다.
+
+95 % 는 경계를 넓게 잡아 밖에 나가는 짝을 줄이는 것과 경계를 좁게 잡아 상대오차를 작게 보이는 것 사이에서 흔히 고르는 값이며, 상대오차가 평균 0 인 정규분포이면 식 (7) 에서 $`\sigma_e = \mathrm{RMSRE}`$ 이므로 경계는 RMSRE 의 1.96 배, 곧 약 2 배가 된다. 정규성 검정에 쓰는 유의수준 0.05 도 같은 1 − 0.95 이다 ([Appendix D](#appendix-d-significance-level-and-p-value)).
+
+99 % 로 두면 ±2.576 sigma 가 되어, 평균 0 인 정규분포의 경계는 RMSRE 의 1.96 배에서 2.576 배로, 분포를 가정하지 않은 상한은 RMSRE 의 4.472 배에서 10 배로 넓어진다.
+
+## Appendix C. Normality of Relative Error
 
 wafer $`m`$ 의 측정 위치 $`j`$ 에서 측정값 $`y_{mj}`$ 와 예측값 $`x_{mj}`$ 의 상대오차를 아래로 정의하고, 측정 위치 13 곳마다 wafer 44 장의 상대오차가 정규분포를 따르는지 따로 검정했다.
 
@@ -356,7 +365,7 @@ Table 4 와 Fig 3 은 같은 folder 의 [src/relative_error_band_normality.py](s
 python3 src/relative_error_band_normality.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
 ```
 
-## Appendix C. Significance Level and p-value
+## Appendix D. Significance Level and p-value
 
 정규성 검정은 "상대오차가 정규분포를 따른다" 를 귀무가설 $`H_0`$ 로 두고, 데이터가 이 가설과 얼마나 맞지 않는지를 검정통계량 하나로 잰다. Shapiro-Wilk 의 통계량 $`W`$ 는 1 에 가까울수록 정규분포에 가깝고, 작을수록 정규분포에서 멀다 [[2](#ref-2)].
 
@@ -382,4 +391,4 @@ P_{H_0}\left( p \lt \alpha \right) = P\left( F(W) \lt \alpha \right) = \alpha
 
 - p 는 $`H_0`$ 가 참일 확률이 아니다. $`H_0`$ 를 참으로 놓고 계산한 데이터의 확률이다.
 - 표본이 크면 작은 벗어남도 기각된다. 꼭지 5.2 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
-- 여러 번 검정하면 우연한 기각이 늘어난다. [Appendix B](#appendix-b-normality-of-relative-error) 처럼 측정 위치 13 곳을 각각 $`\alpha = 0.05`$ 로 검정하면, 모두 정규분포여도 평균 0.65 곳이 기각된다. 13 번의 검정 전체에서 잘못 기각할 확률을 0.05 이하로 두려면 $`\alpha / 13 = 0.0038`$ 을 쓴다 (Bonferroni).
+- 여러 번 검정하면 우연한 기각이 늘어난다. [Appendix C](#appendix-c-normality-of-relative-error) 처럼 측정 위치 13 곳을 각각 $`\alpha = 0.05`$ 로 검정하면, 모두 정규분포여도 평균 0.65 곳이 기각된다. 13 번의 검정 전체에서 잘못 기각할 확률을 0.05 이하로 두려면 $`\alpha / 13 = 0.0038`$ 을 쓴다 (Bonferroni).

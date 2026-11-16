@@ -1,5 +1,5 @@
 # AIML
-Version 140 | Created: 2026-08-07 | Updated: 2026-11-07 13:46 UTC
+Version 141 | Created: 2026-08-07 | Updated: 2026-11-16 23:05 UTC
 
 - [1. Scope](#1-scope)
 - [2. Repository Map](#2-repository-map)
@@ -169,6 +169,7 @@ Table 8. Math documents
 | [Math/Linear-Algebra/Linear-System-Types/linear-system-types-ko.md](Math/Linear-Algebra/Linear-System-Types/linear-system-types-ko.md) (Korean only) | It classifies linear systems along three independent axes — the shape of the coefficient matrix, the number of solutions and whether the right-hand side is zero — draws the rank test on the coefficient and augmented matrices that decides between no solution, one solution and infinitely many, and maps each case to the inverse, the least squares solution, the minimum norm solution and the pseudo-inverse that unites them. |
 | [Math/Linear-Algebra/Norm-Types/norm-types-ko.md](Math/Linear-Algebra/Norm-Types/norm-types-ko.md) (Korean only) | It states the three conditions a norm must meet, splits norms by the object measured and by whether elements or singular values are measured, compares the L1, L2 and max norms of one vector and the Frobenius, spectral and nuclear norms of one matrix, derives the order of the three vector norms, and maps each norm to its use in least squares, ridge, lasso, the minimum norm solution, element-wise limits and low-rank approximation. |
 | [Math/Graph-Theory/Bipartite-Graph/bipartite-graph-quick-start-ko.md](Math/Graph-Theory/Bipartite-Graph/bipartite-graph-quick-start-ko.md) (Korean only) | It is a quick start on bipartite graphs that orders general, complete and fully connected cases in one hierarchy, defines the two independent sets and the odd-cycle test, draws one complete bipartite graph in a circle and a two-column layout, matches the fully connected layer of a neural network to a directed, weighted complete bipartite graph, and lists the matching, assignment and recommendation problems it models with the courses that teach it and the networkx and scipy functions that compute it. |
+| [Math/Relative-Error-Band/relative-error-band-ko.md](Math/Relative-Error-Band/relative-error-band-ko.md) (Korean only) | It sets out how to compute the plus or minus p95 relative error band around the 1:1 line of predicted against measured values — the empirical quantile and the conformal rank when the raw pairs are at hand, the normal estimates from the RMSRE or from the mean and standard deviation of the relative error, and the distribution-free upper bound from the RMSRE when they are not — shows that R² and RMSE alone cannot give p95, and checks every method on 572 pairs of film thickness. |
 
 ### 3.7 Scripts
 
