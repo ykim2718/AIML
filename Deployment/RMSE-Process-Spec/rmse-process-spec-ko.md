@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 11 | Created: 2026-11-16 | Updated: 2026-11-16 04:27 CST
+Version 12 | Created: 2026-11-16 | Updated: 2026-11-16 04:33 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -34,7 +34,7 @@ Version 11 | Created: 2026-11-16 | Updated: 2026-11-16 04:27 CST
 
 - 예측 model 을 만들거나 고치는 방법은 다루지 않는다.
 - 제품 성능에서 정하는 design spec 은 다루지 않는다. 이 문서의 spec 은 공정 산포와 예측 오차로 정하는 공정 spec 이다.
-- 요구 공정능력지수 (process capability index), P/T (precision-to-tolerance ratio, 측정 system 표준편차의 6 배를 spec 폭으로 나눈 값) [[1](#ref-1)] 상한, guard band 계수의 값을 정하는 방법은 다루지 않는다. 세 값은 입력으로 받는다.
+- 요구 공정능력지수 (process capability index), P/T (표준편차-to-tolerance ratio, 측정 system 표준편차의 6 배를 spec 폭으로 나눈 값) [[1](#ref-1)] 상한, guard band 계수의 값을 정하는 방법은 다루지 않는다. 세 값은 입력으로 받는다.
 
 ## 2. Summary
 
@@ -74,7 +74,7 @@ Table 1. Symbols
 | $`h`$                  | tolerance. target 에서 spec limit 까지의 거리                    | scalar  | $`h \gt 0`$                  |
 | $`C_{pk,\min}`$        | thickness 에서 요구하는 공정능력지수 $`C_{pk}`$ 의 최솟값        | scalar  | $`C_{pk,\min} \gt 0`$        |
 | $`C_{pu,\min}`$        | wafer uniformity 에서 요구하는 공정능력지수 $`C_{pu}`$ 의 최솟값 | scalar  | $`C_{pu,\min} \gt 0`$        |
-| $`(P/T)_{\max}`$       | 허용하는 precision-to-tolerance ratio (P/T) 의 최댓값            | scalar  | $`0 \lt (P/T)_{\max} \le 1`$ |
+| $`(P/T)_{\max}`$       | 허용하는 표준편차-to-tolerance ratio (P/T) 의 최댓값             | scalar  | $`0 \lt (P/T)_{\max} \le 1`$ |
 | $`k`$                  | guard band 계수                                                  | scalar  | $`k \ge 0`$                  |
 | $`g`$                  | guard band $`k\, \mathrm{RMSE}`$                                 | scalar  | -                            |
 
@@ -300,8 +300,7 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 - **acceptance limit**: 예측값으로 합격을 판정하는 한계. Spec limit 을 guard band 만큼 안쪽으로 좁힌 값
 - **guard band**: 예측 오차 때문에 spec limit 을 안쪽으로 좁히는 폭. 이 문서에서는 $`k\, \mathrm{RMSE}`$
 - **mean error (offset)**: 한 측정 위치에서 예측 오차를 wafer 에 대해 평균한 값
-- **P/T**: precision-to-tolerance ratio. 측정 system 표준편차의 6 배를 spec 폭 $`\mathrm{USL} - \mathrm{LSL}`$ 으로 나눈 값
-- **precision**: 같은 대상을 되풀이해 측정한 값이 흩어진 정도. 측정 system 의 표준편차로 나타내며, 이 문서는 예측값을 측정 system 으로 보므로 RMSE 이다
+- **P/T**: 표준편차-to-tolerance ratio. 측정 system 표준편차의 6 배를 spec 폭 $`\mathrm{USL} - \mathrm{LSL}`$ 으로 나눈 값
 - **process capability index**: 공정능력지수. Spec limit 까지의 거리를 공정 산포로 나눈 값. 양쪽 spec 은 $`C_p`$ 와 $`C_{pk}`$, upper spec 하나는 $`C_{pu}`$ 를 쓴다
 - **RMSE**: root mean squared error. 예측 오차 제곱 평균의 제곱근
 - **spec limit**: 공정 결과가 합격인 범위의 경계. Upper spec limit (USL) 과 lower spec limit (LSL)
