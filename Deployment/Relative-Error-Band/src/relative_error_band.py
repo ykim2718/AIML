@@ -19,7 +19,7 @@ Changelog:
     0.1.0  Added the band chart per method (--output-folder).
 """
 __author__ = 'yRocket'
-__version__ = "0.1.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.1+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -144,7 +144,7 @@ def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
         ax.set_axisbelow(True)
         for side in ('top', 'right'):
             ax.spines[side].set_visible(False)
-        ax.text(0.5, PANE_CAPTION_Y, f"({chr(ord('a') + number - 1)}) #{number} {row['method']}",
+        ax.text(0.5, PANE_CAPTION_Y, f"({chr(ord('a') + number - 1)}) {row['method']}",
                 transform=ax.transAxes, ha='center', va='top', fontsize=FONT_SIZES['pane_caption'] * scale)
     for ax in axes[:, 0]:
         ax.set_ylabel('Pred x (nm)')
