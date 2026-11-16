@@ -10,7 +10,7 @@ values at the same locations). Two quantities are judged with the prediction:
 For each quantity the tolerance h is the larger of a process requirement and a prediction requirement:
 
     h_process    = 3 * cp_min * sigma + |mean - target|   (Cpk or Cpu of the measured values >= cp_min)
-    h_prediction = 3 * RMSE / pt_max                      (precision-to-tolerance ratio 3 * RMSE / h <= pt_max)
+    h_prediction = n_sigma * RMSE                         (at least n_sigma RMSE inside the tolerance h)
     h            = max(h_process, h_prediction)
 
 and the acceptance limit of a predicted value is the spec moved inward by the guard band g = guard_k * RMSE.
@@ -19,9 +19,10 @@ The script prints both quantities for the current prediction and for the predict
 
 Changelog:
     0.1.0 - Center the thickness spec on a given target and use Cpk for the process requirement.
+    0.2.0 - Replace --pt-max with --n-sigma, the least number of RMSE inside the tolerance.
 """
 __author__ = 'yRocket'
-__version__ = "0.1.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.2.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
@@ -39,14 +40,14 @@ PERCENT: float = 100.0
 
 @dataclass(frozen=True)
 class SpecInput:
-    """Settings of the spec rule. cp_min: required Cp or Cpu, pt_max: largest P/T, guard_k: guard band in RMSE."""
+    """Settings of the spec rule. cp_min: least Cpk or Cpu, n_sigma: least RMSE count in h, guard_k: guard band in RMSE."""
     cp_min: float = 1.33
-    pt_max: float = 0.3
+    n_sigma: float = 10.0
     guard_k: float = 1.645
 
     def __post_init__(self):
-        if self.cp_min <= 0 or not 0 < self.pt_max <= 1 or self.guard_k < 0:
-            raise ValueError(f"need cp_min > 0, 0 < pt_max <= 1, guard_k >= 0: {self}")
+        if self.cp_min <= 0 or self.n_sigma <= 0 or self.guard_k < 0:
+            raise ValueError(f"need cp_min > 0, n_sigma > 0, guard_k >= 0: {self}")
 
 
 def load(csv_path: pathlib.Path = None) -> tuple:
@@ -76,7 +77,7 @@ def spec(target: float = None, mean: float = None, sigma: float = None, rmse: fl
          setting: SpecInput = None, two_sided: bool = None) -> dict:
     """Return the tolerances, the spec limits and the acceptance limits for one quantity centered on target."""
     h_process = 3 * setting.cp_min * sigma + abs(mean - target)
-    h_prediction = 3 * rmse / setting.pt_max
+    h_prediction = setting.n_sigma * rmse
     h = max(h_process, h_prediction)
     g = setting.guard_k * rmse
     out = {'target': target, 'mean': mean, 'sigma': sigma, 'RMSE': rmse, 'RMSE/sigma': rmse / sigma,
@@ -125,7 +126,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--csv', type=pathlib.Path, help='wafer CSV with true_p*/pred_p* columns')
     parser.add_argument('--target', type=float, help='thickness target (default: mean of the measured values)')
     parser.add_argument('--cp-min', type=float, default=SpecInput.cp_min, help='required Cpk or Cpu (default 1.33)')
-    parser.add_argument('--pt-max', type=float, default=SpecInput.pt_max, help='largest P/T ratio (default 0.3)')
+    parser.add_argument('--n-sigma', type=float, default=SpecInput.n_sigma,
+                        help='least number of RMSE inside the tolerance (default 10)')
     parser.add_argument('--guard-k', type=float, default=SpecInput.guard_k, help='guard band in RMSE (default 1.645)')
     parser.add_argument('--output-folder', type=pathlib.Path, help='folder for the per-wafer uniformity CSV')
     if len(sys.argv) == 1:
@@ -142,7 +144,7 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     ARGS = parse_args()
-    SETTING = SpecInput(cp_min=ARGS.cp_min, pt_max=ARGS.pt_max, guard_k=ARGS.guard_k)
+    SETTING = SpecInput(cp_min=ARGS.cp_min, n_sigma=ARGS.n_sigma, guard_k=ARGS.guard_k)
     _, Y, Y_HAT = load(csv_path=ARGS.csv)
     TARGET = Y.mean() if ARGS.target is None else ARGS.target
     THICKNESS, UNIFORM, PER_WAFER = build_tables(y=Y, y_hat=Y_HAT, setting=SETTING, target=TARGET)

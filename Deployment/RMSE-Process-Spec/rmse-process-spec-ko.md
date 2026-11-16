@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 13 | Created: 2026-11-16 | Updated: 2026-11-16 04:38 CST
+Version 14 | Created: 2026-11-16 | Updated: 2026-11-16 04:40 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -265,7 +265,7 @@ Tolerance 의 근거는 아래이다.
 Table 2 부터 Table 4 의 값은 같은 folder 의 [src/rmse_process_spec.py](src/rmse_process_spec.py) 로 구했다. 이 script 는 CSV 에서 식 (1) 의 RMSE 와 식 (12) 의 $`\mathrm{RMSE}_U`$ 를 구하고, `--target` 으로 받은 thickness target 에 대해 현재 예측과 offset 을 없앤 예측마다 spec limit 과 acceptance limit 을 출력한다. `--output-folder` 를 주면 wafer 마다의 $`U_i`$ 와 $`\hat{U}_i`$ 를 `uniformity_by_wafer.csv` 로 저장한다. 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
-python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --target 600 --cp-min 1.33 --pt-max 0.3 --guard-k 1.645
+python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --target 600 --cp-min 1.33 --n-sigma 10 --guard-k 1.645
 ```
 
 ## 5. Application
