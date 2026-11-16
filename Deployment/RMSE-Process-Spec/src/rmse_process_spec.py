@@ -40,7 +40,7 @@ PERCENT: float = 100.0
 
 @dataclass(frozen=True)
 class SpecInput:
-    """Settings of the spec rule. cp_min: least Cpk or Cpu, n_sigma: least RMSE count in h, guard_k: guard band in RMSE."""
+    """Settings of the spec rule. cp_min: least Cpk or Cpu, n_sigma: least RMSE count in h, guard_k: guard in RMSE."""
     cp_min: float = 1.33
     n_sigma: float = 10.0
     guard_k: float = 1.645
