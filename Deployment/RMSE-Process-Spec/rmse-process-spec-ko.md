@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 35 | Created: 2026-11-16 | Updated: 2026-11-16 05:47 CST
+Version 36 | Created: 2026-11-16 | Updated: 2026-11-16 05:48 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -41,9 +41,9 @@ Version 35 | Created: 2026-11-16 | Updated: 2026-11-16 05:47 CST
 
 ## 2. Summary
 
-Tolerance 는 공정 요건 $`h_P`$ 와 예측 요건 $`h_E = n_\sigma\, \mathrm{RMSE}`$ 가운데 큰 값 $`h = \max(h_P, h_E)`$ 이고, spec 은 target ± $`h`$, acceptance limit 은 target ± $`(h - k\, \mathrm{RMSE})`$ 이며, 비 $`\rho = h_E / h_P`$ 가 1 보다 크면 예측 요건이 tolerance 를 정한다.
-Wafer 44 장, 측정 위치 13 곳의 데이터에서 thickness spec 은 600 ± 148.3056 nm ($`\rho`$ = 0.8124, 공정 요건이 정함), WIWNU spec 은 2.4962 % + 7.7251 % ($`\rho`$ = 1.9417, 예측 요건이 정함) 이다.
-RMSE 에는 예측 오차의 bias 가 들어 있어, $`n_\sigma`$ 와 $`k`$ 는 설계 규칙이며 정규분포의 coverage 를 보장하지 않는다.
+Film thickness 측정값의 spec limit 은 target ± $`h`$, 예측값의 acceptance limit 은 target ± $`(h - k\, \mathrm{RMSE})`$ 이며, tolerance $`h`$ 는 공정 요건 $`h_P`$ 와 예측 요건 $`h_E = n_\sigma\, \mathrm{RMSE}`$ 가운데 큰 값이다.
+WIWNU 측정값의 upper spec limit 은 $`\bar{U} + h_U`$, 예측값의 upper acceptance limit 은 $`\bar{U} + (h_U - k\, \mathrm{RMSE}_U)`$ 이며, $`h_U`$ 도 같은 방식으로 공정 요건과 예측 요건 가운데 큰 값이다.
+비 $`\rho = h_E / h_P`$ 가 1 보다 크면 예측 요건이 tolerance 를 정하며, RMSE 에는 예측 오차의 bias 가 들어 있어 $`n_\sigma`$ 와 $`k`$ 는 정규분포의 coverage 를 보장하지 않는 설계 규칙이다.
 
 ## 3. Principle
 
