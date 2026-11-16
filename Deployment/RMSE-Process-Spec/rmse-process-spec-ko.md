@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 24 | Created: 2026-11-16 | Updated: 2026-11-16 05:24 CST
+Version 25 | Created: 2026-11-16 | Updated: 2026-11-16 05:26 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -29,7 +29,7 @@ Version 24 | Created: 2026-11-16 | Updated: 2026-11-16 05:24 CST
 
 1. 측정값의 합격 범위인 thickness spec 을 target ± tolerance 로 제시
     - 그 tolerance 의 가장 작은 값과 근거
-2. 예측값의 합격 범위인 acceptance limit 을 target ± (tolerance − guard band) 로 제시
+2. 예측값의 합격 범위인 thickness acceptance limit 을 target ± (tolerance − guard band) 로 제시
 3. Wafer uniformity (1σ/mean) 의 upper spec limit 을 제시
 
 **Non-Goal**:
