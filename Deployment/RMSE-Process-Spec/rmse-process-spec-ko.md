@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 17 | Created: 2026-11-16 | Updated: 2026-11-16 05:05 CST
+Version 18 | Created: 2026-11-16 | Updated: 2026-11-16 05:08 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -158,9 +158,30 @@ h = \max\left( h_P,\ h_E \right)
 \hspace{19em} (9)
 ```
 
-- $`\rho \lt 1`$: 공정 요건이 tolerance 를 정한다. Tolerance 를 좁히려면 $`\sigma_y`$ 를 줄이거나 측정값 평균을 target 에 맞춘다.
-- $`\rho = 1`$: 두 요건이 같다.
-- $`\rho \gt 1`$: 예측 요건이 tolerance 를 정한다. Tolerance 를 좁히려면 예측 model 의 RMSE 를 줄인다.
+$`\rho`$ 에 따라 tolerance 를 정하는 요건과 tolerance 를 좁히는 방법은 아래 Fig 1 이다.
+
+```text
+                         rho = h_E / h_P
+
+  0                             1
+  +-----------------------------+-------------------------------->  rho
+  |          rho < 1            |            rho > 1
+  |                             |
+  |  process sets h             |  prediction sets h
+  |  h = h_P                    |  h = h_E
+  |                             |
+  |  to narrow h:               |  to narrow h:
+  |  - reduce sigma_y           |  - reduce RMSE of the
+  |  - move y_bar to y_0        |    prediction model
+                                |
+                       rho = 1: h_P = h_E
+```
+
+<a id="fig-1"></a>Fig 1. Requirement that sets the tolerance
+
+- 가로축은 $`\rho`$ 이며, $`\rho = 1`$ 에서 두 요건이 같다.
+- $`\rho \lt 1`$ 이면 공정 요건이 tolerance 를 정한다. Tolerance 를 좁히려면 $`\sigma_y`$ 를 줄이거나 측정값 평균을 target 에 맞춘다.
+- $`\rho \gt 1`$ 이면 예측 요건이 tolerance 를 정한다. Tolerance 를 좁히려면 예측 model 의 RMSE 를 줄인다.
 
 $`\rho`$ 는 이 문서가 정의한 비이며 산업 표준 지표가 아니다. 측정값 평균이 target 과 같을 때 $`\rho \gt 1`$ 을 $`R^2_{\mathrm{all}}`$ 로 바꾼 조건은 [Appendix B](#appendix-b-rmse-and-r2_all) 에 있다.
 
