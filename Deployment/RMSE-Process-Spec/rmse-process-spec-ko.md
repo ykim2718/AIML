@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 30 | Created: 2026-11-16 | Updated: 2026-11-16 05:42 CST
+Version 31 | Created: 2026-11-16 | Updated: 2026-11-16 05:43 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -23,7 +23,7 @@ Version 30 | Created: 2026-11-16 | Updated: 2026-11-16 05:42 CST
 
 ## 1. Purpose
 
-**Problem Statement**: 박막 두께를 측정하지 않은 wafer 를 예측값으로 판정하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 thickness spec 과 wafer uniformity spec 을 구하는 방법이 없다.
+**Problem Statement**: 박막 두께를 측정하지 않은 wafer 를 예측값으로 판정하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 thickness spec 과 WIWNU spec 을 구하는 방법이 없다.
 
 **Goal**: 예측값의 RMSE 로 아래 세 가지를 새로 정한다.
 
@@ -41,7 +41,7 @@ Version 30 | Created: 2026-11-16 | Updated: 2026-11-16 05:42 CST
 ## 2. Summary
 
 Tolerance 는 공정 요건 $`h_P`$ 와 예측 요건 $`h_E = n_\sigma\, \mathrm{RMSE}`$ 가운데 큰 값 $`h = \max(h_P, h_E)`$ 이고, spec 은 target ± $`h`$, acceptance limit 은 target ± $`(h - k\, \mathrm{RMSE})`$ 이며, 비 $`\rho = h_E / h_P`$ 가 1 보다 크면 예측 요건이 tolerance 를 정한다.
-Wafer 44 장, 측정 위치 13 곳의 데이터에서 thickness spec 은 600 ± 148.3056 nm ($`\rho`$ = 0.8124, 공정 요건이 정함), wafer uniformity spec 은 2.4962 % + 7.7251 % ($`\rho`$ = 1.9417, 예측 요건이 정함) 이다.
+Wafer 44 장, 측정 위치 13 곳의 데이터에서 thickness spec 은 600 ± 148.3056 nm ($`\rho`$ = 0.8124, 공정 요건이 정함), WIWNU spec 은 2.4962 % + 7.7251 % ($`\rho`$ = 1.9417, 예측 요건이 정함) 이다.
 RMSE 에는 예측 오차의 bias 가 들어 있어, $`n_\sigma`$ 와 $`k`$ 는 설계 규칙이며 정규분포의 coverage 를 보장하지 않는다.
 
 ## 3. Principle
@@ -52,44 +52,44 @@ RMSE 에는 예측 오차의 bias 가 들어 있어, $`n_\sigma`$ 와 $`k`$ 는 
 
 Table 1. Symbols
 
-| Symbol                 | Meaning                                                          | Shape   | Assumption                 |
-| :--------------------: | :--------------------------------------------------------------: | :-----: | :------------------------: |
-| $`M`$                  | wafer 수                                                         | integer | $`M \ge 2`$                |
-| $`N`$                  | wafer 한 장의 측정 위치 수                                       | integer | $`N \ge 2`$                |
-| $`T`$                  | 전체 측정값의 개수 $`MN`$                                        | integer | -                          |
-| $`y_{ij}`$             | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                       | scalar  | -                          |
-| $`\hat{y}_{ij}`$       | wafer $`i`$ 의 측정 위치 $`j`$ 에서 예측값                       | scalar  | -                          |
-| $`e_{ij}`$             | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                              | scalar  | -                          |
-| $`b_e`$                | 예측 오차 $`T`$ 개의 평균 (bias)                                 | scalar  | -                          |
-| $`\sigma_e`$           | 예측 오차 $`T`$ 개의 표준편차 (분모 $`T`$)                       | scalar  | -                          |
-| $`\bar{y}`$            | 측정값 $`T`$ 개의 평균                                           | scalar  | -                          |
-| $`\bar{y}_{i\cdot}`$   | wafer $`i`$ 의 측정값 $`N`$ 개의 평균                            | scalar  | $`\bar{y}_{i\cdot} \gt 0`$ |
-| $`\sigma_y`$           | 측정값 $`T`$ 개의 표준편차 (분모 $`T`$)                          | scalar  | $`\sigma_y \gt 0`$         |
-| $`\mathrm{RMSE}`$      | 측정 위치 예측값의 root mean squared error                       | scalar  | -                          |
-| $`R^2_{\mathrm{all}}`$ | 측정값 $`T`$ 개로 구한 R²                                        | scalar  | -                          |
-| $`s_i`$                | wafer $`i`$ 의 측정값 $`N`$ 개의 표준편차 (분모 $`N-1`$)         | scalar  | -                          |
-| $`U_i`$                | wafer $`i`$ 의 wafer uniformity                                  | scalar  | -                          |
-| $`\hat{U}_i`$          | wafer $`i`$ 의 wafer uniformity 예측값                           | scalar  | -                          |
-| $`\bar{U}`$            | $`U_i`$ $`M`$ 개의 평균                                          | scalar  | -                          |
-| $`\sigma_U`$           | $`U_i`$ $`M`$ 개의 표준편차 (분모 $`M`$)                         | scalar  | $`\sigma_U \gt 0`$         |
-| $`\mathrm{RMSE}_U`$    | wafer uniformity 예측값의 RMSE                                   | scalar  | -                          |
-| $`\mathrm{USL}`$       | upper spec limit                                                 | scalar  | -                          |
-| $`\mathrm{LSL}`$       | lower spec limit                                                 | scalar  | -                          |
-| $`y_0`$                | thickness 의 target                                              | scalar  | -                          |
-| $`h`$                  | thickness 의 tolerance. target 에서 spec limit 까지의 거리       | scalar  | $`h \gt 0`$                |
-| $`h_P`$                | thickness 의 공정 요건. 공정능력으로 정한 tolerance 의 하한      | scalar  | -                          |
-| $`h_E`$                | thickness 의 예측 요건. RMSE 로 정한 tolerance 의 하한           | scalar  | -                          |
-| $`\rho`$               | 예측 요건을 공정 요건으로 나눈 비                                | scalar  | $`\rho \gt 0`$             |
-| $`h_U`$                | wafer uniformity 의 tolerance. $`\bar{U}`$ 에서 USL 까지의 거리  | scalar  | $`h_U \gt 0`$              |
-| $`h_{P,U}`$            | wafer uniformity 의 공정 요건                                    | scalar  | -                          |
-| $`h_{E,U}`$            | wafer uniformity 의 예측 요건                                    | scalar  | -                          |
-| $`\mathrm{UAL}_U`$     | wafer uniformity 의 upper acceptance limit                       | scalar  | -                          |
-| $`C_{pk,\min}`$        | thickness 에서 요구하는 공정능력지수 $`C_{pk}`$ 의 최솟값        | scalar  | $`C_{pk,\min} \gt 0`$      |
-| $`C_{pu,\min}`$        | wafer uniformity 에서 요구하는 공정능력지수 $`C_{pu}`$ 의 최솟값 | scalar  | $`C_{pu,\min} \gt 0`$      |
-| $`n_\sigma`$           | tolerance 안에 들어가야 하는 RMSE 의 최소 개수                   | scalar  | $`n_\sigma \gt 0`$         |
-| $`k`$                  | guard band 계수                                                  | scalar  | $`k \ge 0`$                |
-| $`g`$                  | guard band $`k\, \mathrm{RMSE}`$                                 | scalar  | -                          |
-| $`\alpha`$             | 허용하는 오판정 확률                                             | scalar  | $`0 \lt \alpha \lt 1`$     |
+| Symbol                 | Meaning                                                     | Shape   | Assumption                 |
+| :--------------------: | :---------------------------------------------------------: | :-----: | :------------------------: |
+| $`M`$                  | wafer 수                                                    | integer | $`M \ge 2`$                |
+| $`N`$                  | wafer 한 장의 측정 위치 수                                  | integer | $`N \ge 2`$                |
+| $`T`$                  | 전체 측정값의 개수 $`MN`$                                   | integer | -                          |
+| $`y_{ij}`$             | wafer $`i`$ 의 측정 위치 $`j`$ 에서 측정값                  | scalar  | -                          |
+| $`\hat{y}_{ij}`$       | wafer $`i`$ 의 측정 위치 $`j`$ 에서 예측값                  | scalar  | -                          |
+| $`e_{ij}`$             | 예측 오차 $`y_{ij} - \hat{y}_{ij}`$                         | scalar  | -                          |
+| $`b_e`$                | 예측 오차 $`T`$ 개의 평균 (bias)                            | scalar  | -                          |
+| $`\sigma_e`$           | 예측 오차 $`T`$ 개의 표준편차 (분모 $`T`$)                  | scalar  | -                          |
+| $`\bar{y}`$            | 측정값 $`T`$ 개의 평균                                      | scalar  | -                          |
+| $`\bar{y}_{i\cdot}`$   | wafer $`i`$ 의 측정값 $`N`$ 개의 평균                       | scalar  | $`\bar{y}_{i\cdot} \gt 0`$ |
+| $`\sigma_y`$           | 측정값 $`T`$ 개의 표준편차 (분모 $`T`$)                     | scalar  | $`\sigma_y \gt 0`$         |
+| $`\mathrm{RMSE}`$      | 측정 위치 예측값의 root mean squared error                  | scalar  | -                          |
+| $`R^2_{\mathrm{all}}`$ | 측정값 $`T`$ 개로 구한 R²                                   | scalar  | -                          |
+| $`s_i`$                | wafer $`i`$ 의 측정값 $`N`$ 개의 표준편차 (분모 $`N-1`$)    | scalar  | -                          |
+| $`U_i`$                | wafer $`i`$ 의 WIWNU                                        | scalar  | -                          |
+| $`\hat{U}_i`$          | wafer $`i`$ 의 WIWNU 예측값                                 | scalar  | -                          |
+| $`\bar{U}`$            | $`U_i`$ $`M`$ 개의 평균                                     | scalar  | -                          |
+| $`\sigma_U`$           | $`U_i`$ $`M`$ 개의 표준편차 (분모 $`M`$)                    | scalar  | $`\sigma_U \gt 0`$         |
+| $`\mathrm{RMSE}_U`$    | WIWNU 예측값의 RMSE                                         | scalar  | -                          |
+| $`\mathrm{USL}`$       | upper spec limit                                            | scalar  | -                          |
+| $`\mathrm{LSL}`$       | lower spec limit                                            | scalar  | -                          |
+| $`y_0`$                | thickness 의 target                                         | scalar  | -                          |
+| $`h`$                  | thickness 의 tolerance. target 에서 spec limit 까지의 거리  | scalar  | $`h \gt 0`$                |
+| $`h_P`$                | thickness 의 공정 요건. 공정능력으로 정한 tolerance 의 하한 | scalar  | -                          |
+| $`h_E`$                | thickness 의 예측 요건. RMSE 로 정한 tolerance 의 하한      | scalar  | -                          |
+| $`\rho`$               | 예측 요건을 공정 요건으로 나눈 비                           | scalar  | $`\rho \gt 0`$             |
+| $`h_U`$                | WIWNU 의 tolerance. $`\bar{U}`$ 에서 USL 까지의 거리        | scalar  | $`h_U \gt 0`$              |
+| $`h_{P,U}`$            | WIWNU 의 공정 요건                                          | scalar  | -                          |
+| $`h_{E,U}`$            | WIWNU 의 예측 요건                                          | scalar  | -                          |
+| $`\mathrm{UAL}_U`$     | WIWNU 의 upper acceptance limit                             | scalar  | -                          |
+| $`C_{pk,\min}`$        | thickness 에서 요구하는 공정능력지수 $`C_{pk}`$ 의 최솟값   | scalar  | $`C_{pk,\min} \gt 0`$      |
+| $`C_{pu,\min}`$        | WIWNU 에서 요구하는 공정능력지수 $`C_{pu}`$ 의 최솟값       | scalar  | $`C_{pu,\min} \gt 0`$      |
+| $`n_\sigma`$           | tolerance 안에 들어가야 하는 RMSE 의 최소 개수              | scalar  | $`n_\sigma \gt 0`$         |
+| $`k`$                  | guard band 계수                                             | scalar  | $`k \ge 0`$                |
+| $`g`$                  | guard band $`k\, \mathrm{RMSE}`$                            | scalar  | -                          |
+| $`\alpha`$             | 허용하는 오판정 확률                                        | scalar  | $`0 \lt \alpha \lt 1`$     |
 
 ### 3.2 RMSE
 
@@ -211,7 +211,7 @@ P\left( y_{ij} \gt \mathrm{USL} \mid \hat{y}_{ij} \right) \le \alpha
 
 ### 3.5 Uniformity Spec
 
-Wafer uniformity 는 wafer 한 장의 측정값 $`N`$ 개의 표준편차를 그 평균으로 나눈 값이며, 예측값 $`\hat{U}_i`$ 는 같은 식에 $`\hat{y}_{ij}`$ 를 넣어 구한다.
+WIWNU 는 wafer 한 장의 측정값 $`N`$ 개의 표준편차를 그 평균으로 나눈 값이며, 예측값 $`\hat{U}_i`$ 는 같은 식에 $`\hat{y}_{ij}`$ 를 넣어 구한다.
 
 ```math
 s_i = \sqrt{\frac{1}{N-1} \sum_{j=1}^{N} \left( y_{ij} - \bar{y}_{i\cdot} \right)^2}
@@ -228,7 +228,7 @@ U_i = \frac{s_i}{\bar{y}_{i\cdot}}
 \hspace{19em} (14)
 ```
 
-Wafer uniformity 는 작을수록 좋으므로 upper spec limit 하나만 두고, 정해 둔 target 이 없으므로 기준값을 측정값의 평균 $`\bar{U}`$ 로 둔다. 한쪽 공정능력지수 $`C_{pu} = (\mathrm{USL} - \bar{U}) / (3\sigma_U)`$ [[1](#ref-1)] 에서 공정 요건이 나오고, 나머지는 thickness 와 같은 구조이다.
+WIWNU 는 작을수록 좋으므로 upper spec limit 하나만 두고, 정해 둔 target 이 없으므로 기준값을 측정값의 평균 $`\bar{U}`$ 로 둔다. 한쪽 공정능력지수 $`C_{pu} = (\mathrm{USL} - \bar{U}) / (3\sigma_U)`$ [[1](#ref-1)] 에서 공정 요건이 나오고, 나머지는 thickness 와 같은 구조이다.
 
 ```math
 h_{P,U} = 3\, C_{pu,\min}\, \sigma_U
@@ -255,11 +255,11 @@ h_U = \max\left( h_{P,U},\ h_{E,U} \right)
 \hspace{19em} (19)
 ```
 
-Thickness 와 wafer uniformity 의 식을 견주면 아래 Table 2 이다.
+Thickness 와 WIWNU 의 식을 견주면 아래 Table 2 이다.
 
-Table 2. Thickness and wafer uniformity spec rules
+Table 2. Thickness and WIWNU spec rules
 
-| Item                   | Thickness                                                    | Wafer uniformity                       |
+| Item                   | Thickness                                                    | WIWNU                                  |
 | :--------------------: | :----------------------------------------------------------: | :------------------------------------: |
 | Spec type              | 양측                                                         | 상측                                   |
 | Reference              | $`y_0`$                                                      | $`\bar{U}`$                            |
@@ -268,7 +268,7 @@ Table 2. Thickness and wafer uniformity spec rules
 | Tolerance              | 두 요건의 최댓값                                             | 두 요건의 최댓값                       |
 | Acceptance             | 양쪽에서 $`k\, \mathrm{RMSE}`$ 를 뺌                         | 상한에서 $`k\, \mathrm{RMSE}_U`$ 를 뺌 |
 
-- Wafer uniformity 에서는 기준값이 측정값의 평균이어서 공정 요건에 평균과 기준값의 차이가 더해지지 않는다.
+- WIWNU 에서는 기준값이 측정값의 평균이어서 공정 요건에 평균과 기준값의 차이가 더해지지 않는다.
 - 두 경우 모두 RMSE 가 커지면 예측 요건이 커져 tolerance 가 넓어질 수 있다. 이 문서는 RMSE 로 spec 을 새로 정하므로 이 결과를 그대로 두며, spec 을 넓힐 수 없는 경우는 [꼭지 5.2](#52-breaking-conditions) 에 있다.
 
 ## 4. Worked Example
@@ -322,9 +322,9 @@ Tolerance 의 근거는 아래이다.
 
 ### 4.3 Uniformity Spec
 
-식 (12) 부터 식 (19) 로 구한 wafer uniformity spec 은 아래 Table 5 이며, 값은 $`\rho`$ 를 빼고 모두 % 이다.
+식 (12) 부터 식 (19) 로 구한 WIWNU spec 은 아래 Table 5 이며, 값은 $`\rho`$ 를 빼고 모두 % 이다.
 
-Table 5. Wafer uniformity spec from the RMSE
+Table 5. WIWNU spec from the RMSE
 
 | Quantity                                         | Current prediction | Offset removed  |
 | :----------------------------------------------: | :----------------: | :-------------: |
@@ -374,8 +374,8 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 - **Spec 을 넓힐 수 없는 경우**: 식 (8) 과 식 (17) 에서 RMSE 가 커지면 tolerance 가 넓어질 수 있다. 품질 요구로 spec 이 이미 정해져 있으면 정해진 spec 에 대한 판정 방법을 써야 하며, 이 문서는 그 방법을 다루지 않는다.
 - **Bias 와 offset 이 있는 예측 오차**: 식 (4) 에서 RMSE 는 bias 를 포함하므로, $`n_\sigma`$ 와 $`k`$ 를 정규분포의 coverage 로 읽을 수 없다. 이 데이터는 offset 을 없애면 RMSE 가 12.0490 에서 8.7503 으로 줄어, 측정 위치마다의 offset 이 RMSE 에 큰 비율로 들어 있다. 이때 식 (10) 의 guard band 는 식 (11) 을 $`\alpha = 0.05`$ 로 보장하지 않는다.
 - **예측값에 따라 다른 오차**: 예측 오차의 분산이 예측값의 크기에 따라 다르거나, 한 wafer 안의 측정 위치 오차가 서로 상관되어 있으면 식 (11) 의 조건부 확률이 RMSE 하나로 정해지지 않는다.
-- **정규분포 가정이 의심스러운 wafer uniformity**: $`U_i`$ 의 최댓값 6.3171 % 는 둘째로 큰 값 4.4633 % 보다 1.85 %p 크고, $`U_i`$ 44 개의 왜도는 1.6453 이다. 같은 표본으로 평균과 표준편차를 추정했으므로 이 값만으로 분포가 오른쪽 꼬리가 길다고 확정할 수는 없지만, 정규분포를 가정한 $`C_{pu}`$ 의 spec 밖 비율은 실제와 다를 수 있다. 이때는 Q-Q plot 으로 정규성을 확인하고, bootstrap 또는 비모수 분위수로 USL 을 함께 구해 견준다.
-- **표본 수**: RMSE, $`\sigma_y`$, $`\sigma_U`$ 는 wafer 44 장으로 구한 추정값이며, 공정능력 추정에는 일반적으로 표본 100 개 이상이 필요하다 [[1](#ref-1)]. Wafer uniformity 는 wafer 한 장에 값이 하나여서 표본이 44 개이다.
+- **정규분포 가정이 의심스러운 WIWNU**: $`U_i`$ 의 최댓값 6.3171 % 는 둘째로 큰 값 4.4633 % 보다 1.85 %p 크고, $`U_i`$ 44 개의 왜도는 1.6453 이다. 같은 표본으로 평균과 표준편차를 추정했으므로 이 값만으로 분포가 오른쪽 꼬리가 길다고 확정할 수는 없지만, 정규분포를 가정한 $`C_{pu}`$ 의 spec 밖 비율은 실제와 다를 수 있다. 이때는 Q-Q plot 으로 정규성을 확인하고, bootstrap 또는 비모수 분위수로 USL 을 함께 구해 견준다.
+- **표본 수**: RMSE, $`\sigma_y`$, $`\sigma_U`$ 는 wafer 44 장으로 구한 추정값이며, 공정능력 추정에는 일반적으로 표본 100 개 이상이 필요하다 [[1](#ref-1)]. WIWNU 는 wafer 한 장에 값이 하나여서 표본이 44 개이다.
 - **예측 model 의 변경**: model 을 다시 학습하거나 공정 조건이 바뀌면 RMSE 를 다시 구하고 spec 을 다시 계산한다.
 
 ## References
@@ -398,7 +398,7 @@ python3 src/rmse_process_spec.py --csv data/u0_actuals_and_predictions.csv --tar
 - **RMSE**: root mean squared error. 예측 오차 제곱 평균의 제곱근
 - **spec limit**: 공정 결과가 합격인 범위의 경계. Upper spec limit (USL) 과 lower spec limit (LSL)
 - **target ± tolerance**: spec 을 중심값 target 과 그 중심에서 spec limit 까지의 거리 tolerance 로 적는 꼴
-- **wafer uniformity**: wafer 한 장의 측정값 표준편차를 그 평균으로 나눈 값 (1σ/mean). 이 문서에서는 % 로 적는다
+- **WIWNU**: within-wafer non-uniformity. wafer 한 장의 측정값 표준편차를 그 평균으로 나눈 값 (1σ/mean). 이 문서에서는 % 로 적는다
 
 ## Appendix B. RMSE and R2_all
 
