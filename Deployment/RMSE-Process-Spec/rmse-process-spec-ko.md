@@ -1,5 +1,5 @@
 # Process Spec from Prediction RMSE
-Version 36 | Created: 2026-11-16 | Updated: 2026-11-16 05:48 CST
+Version 37 | Created: 2026-11-16 | Updated: 2026-11-16 11:59 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -23,7 +23,7 @@ Version 36 | Created: 2026-11-16 | Updated: 2026-11-16 05:48 CST
 
 ## 1. Purpose
 
-**Problem Statement**: 박막 두께를 측정하지 않은 wafer 를 예측값으로 판정하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 film thickness 와 non-uniformity 각각에 대해 측정값의 spec limit 과 예측값의 acceptance limit 을 구하는 방법이 없다.
+**Problem Statement**: 반도체 wafer에 증착한 박막의 두께를 예측하면 예측 오차가 공정 산포에 더해지는데, 그 오차를 반영해 film thickness 와 non-uniformity 각각에 대해 측정값의 spec limit 과 예측값의 acceptance limit 을 구하는 방법이 없다.
 
 **Goal**: 예측값의 RMSE 로 아래 네 가지를 새로 정한다.
 
