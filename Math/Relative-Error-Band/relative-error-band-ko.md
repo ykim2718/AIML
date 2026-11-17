@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 68 | Created: 2026-11-16 | Updated: 2026-11-17 23:14 UTC
+Version 69 | Created: 2026-11-16 | Updated: 2026-11-17 23:33 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -49,7 +49,7 @@ Version 68 | Created: 2026-11-16 | Updated: 2026-11-17 23:14 UTC
 
 ## 2. Summary
 
-- 오차가 측정값에 비례하는지는 $`\ln \lvert y - x \rvert`$ 를 $`\ln y`$ 에 회귀한 기울기로 가리며, 비례하면 상대오차 $`e = (x - y)/y`$ 와 RMSRE 로, 비례하지 않으면 오차 $`x - y`$ 와 RMSE 로 경계를 구한다.
+- 오차가 측정값에 비례하는지는 측정값과 오차의 크기에 PCA 를 하여 첫 주성분 벡터의 각도로 가리며, 비례하면 상대오차 $`e = (x - y)/y`$ 와 RMSRE 로, 비례하지 않으면 오차 $`x - y`$ 와 RMSE 로 경계를 구한다.
 - $`p_{95}`$ 는 $`|e|`$ 가, $`q_{95}`$ 는 $`|x - y|`$ 가 짝의 95 % 에서 넘지 않는 값이며, Pred vs. True 그림의 경계는 비례하면 원점을 지나는 두 직선 $`x = (1 \pm p_{95})\, y`$, 비례하지 않으면 1:1 라인과 평행한 두 직선 $`x = y \pm q_{95}`$ 이다.
 - 원본 데이터가 있으면 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 RMSE 와 평균, 표준편차로 추정하거나, 분포 가정 없이 그 값을 $`\sqrt{0.05}`$ 로 나누어 상한을 구한다.
 - 이 상한은 정확한 경계가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
@@ -79,8 +79,9 @@ Table 1. Symbols
 | $`\bar{y}`$            | 측정값 $`T`$ 개의 평균                               | scalar   | -                  |
 | $`\sigma_y`$           | 측정값 $`T`$ 개의 표준편차 (분모 $`T`$)              | scalar   | $`\sigma_y \gt 0`$ |
 | $`R^2_{\mathrm{all}}`$ | 측정값 $`T`$ 개로 구한 R²                            | scalar   | -                  |
-| $`a`$                  | 오차 크기를 측정값의 거듭제곱으로 둘 때의 계수       | scalar   | $`a \gt 0`$        |
-| $`b`$                  | 오차 크기를 측정값의 거듭제곱으로 둘 때의 지수       | scalar   | -                  |
+| $`\mathbf{v}_1`$       | 오차 크기 PCA 의 첫 주성분 벡터                      | vector   | 길이 1             |
+| $`\mathbf{v}_2`$       | 오차 크기 PCA 의 둘째 주성분 벡터                    | vector   | 길이 1             |
+| $`\theta`$             | 측정값 축에서 잰 $`\mathbf{v}_1`$ 의 각도 (°)        | scalar   | -90 부터 90        |
 | $`q_{95}`$             | 짝의 95 % 에서 $`\lvert x_i - y_i \rvert`$ 가 넘지 않는 값 | scalar   | $`q_{95} \ge 0`$   |
 
 ## 4. Principle
@@ -219,16 +220,16 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 
 ### 4.7 Proportionality of the Error
 
-오차가 측정값에 비례하는지는 오차의 크기를 측정값의 거듭제곱으로 두고, 그 지수 $`b`$ 를 짝 $`T`$ 개로 추정해 가린다.
+오차가 측정값에 비례하는지는 짝 $`T`$ 개의 측정값 $`y_i`$ 와 오차의 크기 $`\lvert x_i - y_i \rvert`$ 에 PCA 를 하여, 첫 주성분 벡터 $`\mathbf{v}_1`$ 이 측정값 축과 이루는 각도 $`\theta`$ 로 가린다.
 
 ```math
-\ln \lvert y_i - x_i \rvert = \ln a + b \ln y_i
+\theta = \arctan \frac{v_{1,2}}{v_{1,1}}
 \hspace{19em} (16)
 ```
 
-- $`b`$ 는 $`\ln y_i`$ 에 대한 $`\ln \lvert y_i - x_i \rvert`$ 의 최소제곱 기울기로 구하고, 그 95 % 구간은 자유도 $`T - 2`$ 인 t 분포로 구한다.
-- $`b = 1`$ 이면 오차가 측정값에 비례하여 상대오차의 크기가 측정값과 상관이 없고, RMSRE 가 맞다. $`b = 0`$ 이면 오차가 측정값과 상관없이 일정하고, RMSE 가 맞다. 두 경우의 근거는 [Appendix E](#appendix-e-rmse-vs-rmsre) 에 있다.
-- $`b = 1`$ 과 $`b = 0`$ 을 각각 귀무가설로 두고 유의수준 0.05 로 검정한다. 한쪽만 기각되면 기각되지 않은 쪽을 택하고, 둘 다 기각되지 않으면 측정값의 범위가 좁아 가릴 수 없으며, 둘 다 기각되면 어느 쪽도 맞지 않는다. p 의 뜻은 [Appendix D](#appendix-d-significance-level-and-p-value) 에 있다.
+- $`\mathbf{v}_1 = [v_{1,1}, v_{1,2}]^\top`$ 는 $`(y_i, \lvert x_i - y_i \rvert)`$ 의 2 × 2 공분산 행렬에서 가장 큰 고유값의 고유벡터이고, $`v_{1,1} \ge 0`$ 이 되도록 방향을 잡는다. 둘째 주성분 벡터 $`\mathbf{v}_2`$ 는 그에 수직인 2 차원 vector 이다.
+- 오차가 측정값에 비례하면 오차의 크기가 측정값을 따라 커지므로 $`\theta`$ 가 양수이고, RMSRE 가 맞다. 오차가 측정값과 상관없이 일정하면 $`\theta`$ 는 0 에 가깝고, RMSE 가 맞다. 두 경우의 근거는 [Appendix E](#appendix-e-rmse-vs-rmsre) 에 있다.
+- 기울기의 크기는 $`\theta / 90°`$ 를 % 로 적어 나타내며, 수평이면 0 %, 수직이면 100 % 이다.
 - 측정값을 짝 수가 같은 구간 다섯 개로 나누고 구간마다 RMSE 와 RMSRE 를 구하면 같은 판단을 표로 확인할 수 있다. 오차가 측정값에 비례하면 구간의 RMSE 가 측정값을 따라 커지고 RMSRE 는 거의 일정하며, 오차가 일정하면 그 반대이다.
 
 오차가 측정값에 비례하지 않으면 상대오차 대신 오차 $`x_i - y_i`$ 로 경계를 구한다. 식 (8) 부터 식 (12) 에서 $`e_i`$ 를 $`x_i - y_i`$ 로, RMSRE 를 RMSE 로 바꾸면 그대로 성립하고, 그렇게 구한 값 $`q_{95}`$ 는 측정값의 단위를 갖는다. 경계는 1:1 라인과 평행한 두 직선이다.
@@ -246,7 +247,7 @@ y_i - q_{95} \le x_i \le y_i + q_{95}
 
 ### 5.2 Proportionality of the Error
 
-꼭지 4.7 의 방법으로 구한 식 (16) 의 $`b`$ 는 −3.7436 이고, 95 % 구간은 −5.5560 부터 −1.9311 이다. $`b = 1`$ 의 p 는 $`3.8 \times 10^{-7}`$, $`b = 0`$ 의 p 는 $`5.7 \times 10^{-5}`$ 로 둘 다 유의수준 0.05 에서 기각된다. 측정값의 구간마다 구한 RMSE 와 RMSRE 는 아래 Table 2 이다.
+꼭지 4.7 의 PCA 에서 첫 주성분 벡터는 $`\mathbf{v}_1 = [0.9991, -0.0426]^\top`$, 둘째 주성분 벡터는 $`\mathbf{v}_2 = [0.0426, 0.9991]^\top`$ 이고, 식 (16) 의 각도는 $`\theta = -2.44°`$, $`\theta / 90° = -2.72`$ % 이다. 첫 주성분이 측정값 축에서 아래로 기울어, 오차의 크기는 측정값을 따라 커지지 않는다. 측정값의 구간마다 구한 RMSE 와 RMSRE 는 아래 Table 2 이다.
 
 Table 2. RMSE and RMSRE by bin of the measured value
 
@@ -259,20 +260,19 @@ Table 2. RMSE and RMSRE by bin of the measured value
 | 5   | 115   | 657.583    | 718.857    | 10.9683   | 1.6256    |
 
 - 구간의 RMSE 는 측정값을 따라 커지지 않고, 측정값이 가장 작은 구간 1 에서 14.0809 nm 로 가장 크다. 이 데이터의 오차는 측정값에 비례하지 않는다.
-- 측정값이 작은 짝의 오차가 커서 $`b`$ 가 음수로 나왔다. 오차가 측정값과 상관없이 일정하다는 $`b = 0`$ 도 기각되므로, 두 모형 가운데 어느 것도 이 데이터에 맞지 않는다.
+- 측정값이 작은 짝의 오차가 커서 $`\theta`$ 가 음수로 나왔다.
 - 측정값의 범위가 좁아, 어느 지표를 써도 경계는 거의 같다. $`\mathrm{RMSE}/\bar{y}`$ 는 1.8988 % 로 RMSRE 1.9241 % 와 가깝다.
 - 오차가 측정값에 비례하지 않으므로, 이 데이터에는 상대오차 대신 오차 $`x_i - y_i`$ 로 구한 경계를 쓴다.
 
-측정값에 대한 오차와 상대오차를 두 칸에 나란히 그리면 아래 Fig 2 이다.
+측정값에 대한 오차, 상대오차, 오차의 크기와 그 PCA 를 그리면 아래 Fig 2 이다.
 
 <img src="relative-error-band-ko_fig/relative-error-band-fig2-error-vs-measured.svg" width="900" style="max-width: 100%;" alt="Fig 2">
 
-<a id="fig-2"></a>Fig 2. Error and relative error vs. measured value
+<a id="fig-2"></a>Fig 2. Error, relative error and PCA of the error size vs. measured value
 
-- (a) 는 오차 $`x_i - y_i`$, (b) 는 상대오차 $`e_i`$ 를 측정값 $`y_i`$ 에 대해 그린 것이고, 점 하나가 짝 하나이다.
-- 주황 선은 Table 2 의 구간마다 (a) 에서는 RMSE, (b) 에서는 RMSRE 를 위아래로 그린 것으로, 그 구간의 퍼짐을 나타낸다.
-- 오차가 일정하면 (a) 의 주황 선이, 오차가 비례하면 (b) 의 주황 선이 측정값과 상관없이 수평인 띠가 된다.
-- 이 데이터에서는 (a) 와 (b) 모두 측정값이 가장 작은 구간의 주황 선이 가장 넓고, 어느 쪽도 고른 띠가 되지 않는다.
+- (a) 는 오차 $`x_i - y_i`$, (b) 는 상대오차 $`e_i`$ 를 측정값 $`y_i`$ 에 대해 그린 것이고, 주황 선은 Table 2 의 구간마다 (a) 에서는 RMSE, (b) 에서는 RMSRE 를 위아래로 그린 것이다.
+- (c) 는 오차의 크기 $`\lvert x_i - y_i \rvert`$ 를 측정값에 대해 그리고, 점들의 평균에서 빨간 화살표로 $`\mathbf{v}_1`$, 초록 화살표로 $`\mathbf{v}_2`$ 를 그린 것이다. 화살표의 길이는 각 주성분 방향의 표준편차의 2 배이고, 왼쪽 위에 식 (16) 의 $`\theta`$ 와 $`\theta / 90°`$ 를 적었다.
+- (c) 의 빨간 화살표는 측정값 축과 거의 나란하고 조금 아래로 기울어, 오차의 크기가 측정값을 따라 커지지 않음을 보여 준다.
 
 ### 5.3 Non-proportional Error: Absolute Error Band
 
@@ -367,7 +367,7 @@ Table 5. p95 by method and the share of pairs inside the band
 
 ### 5.6 Calculation Script
 
-Table 2 부터 Table 5 와 Fig 2 부터 Fig 4, 꼭지 5.2, 5.3, 5.5 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 과 Table 5 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$, 식 (16) 의 $`b`$ 와 그 검정, 구간마다의 RMSE 와 RMSRE 를 출력한다. `--output-folder` 를 주면 Fig 2 를 `relative-error-band-fig2-error-vs-measured.csv` 와 `.svg` 로, Table 3 과 Fig 3 을 `relative-error-band-fig3-absolute-band-by-method.csv` 와 `.svg` 로, Table 5 와 Fig 4 를 `relative-error-band-fig4-band-by-method.csv` 와 `.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 2 부터 Table 5 와 Fig 2 부터 Fig 4, 꼭지 5.2, 5.3, 5.5 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 과 Table 5 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$, 식 (16) 의 PCA 결과, 구간마다의 RMSE 와 RMSRE 를 출력한다. `--output-folder` 를 주면 Fig 2 를 `relative-error-band-fig2-error-vs-measured.csv` 와 `.svg` 로, Table 3 과 Fig 3 을 `relative-error-band-fig3-absolute-band-by-method.csv` 와 `.svg` 로, Table 5 와 Fig 4 를 `relative-error-band-fig4-band-by-method.csv` 와 `.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig

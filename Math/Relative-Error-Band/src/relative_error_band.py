@@ -10,10 +10,11 @@ values x). All T = M * N pairs are pooled and the relative error e = (x - y) / y
                        distribution free      p95 <= RMSRE / sqrt(0.05)       (Markov inequality on e^2)
 
 the share of pairs inside each band, the Shapiro-Wilk test of the pooled e, and RMSE, R2_all and RMSE / y_bar.
-It also checks whether the error grows in proportion to the measured value: it fits ln|y - x| = ln a + b ln y by
-least squares and tests b = 0 (constant error) and b = 1 (proportional error), and it prints the RMSE and the RMSRE
-in five bins of equal count along y. For an error that is not proportional, the same five estimates are computed on
-the error x - y with the RMSE in place of the RMSRE, giving the band x = y +/- q95 in the unit of y.
+It also checks whether the error grows in proportion to the measured value: it runs a PCA on the pairs
+(y, |x - y|) and prints the first and second principal vectors and the angle of the first from the y axis, and it
+prints the RMSE and the RMSRE in five bins of equal count along y. For an error that is not proportional, the same
+five estimates are computed on the error x - y with the RMSE in place of the RMSRE, giving the band x = y +/- q95 in
+the unit of y.
 With --output-folder the error x - y and the relative error are also drawn against y with the RMS of each bin.
 With --output-folder it also saves one figure with a Pred vs. True panel per method, showing the pairs, the 1:1 line
 and the band x = (1 +/- p95) y, and writes the band of each method to a CSV.
@@ -28,9 +29,10 @@ Changelog:
     0.5.0  The chart of the RMSE by bin is replaced by the scatter of the error against y (draw_error); the band
            table and chart also cover the absolute band (band='absolute').
     0.6.0  draw_error draws two panels, the error and the relative error against y, with the RMS of each bin.
+    0.7.0  The proportionality check uses the PCA of (y, |x - y|) instead of the fit of ln|y - x| on ln y.
 """
 __author__ = 'yRocket'
-__version__ = "0.6.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.7.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -71,9 +73,12 @@ BAND_SPEC: dict = {'relative': ('p_', 'p95_pct', PERCENT, 'p95 = {:.4f} %', r'ba
                    'absolute': ('q_', 'q95_nm', 1.0, 'q95 = {:.4f} nm', r'band $x = y \pm q_{95}$')}
 ERROR_CSV_NAME: str = 'relative-error-band-fig2-error-vs-measured.csv'
 ERROR_FIGURE_STEM: str = 'relative-error-band-fig2-error-vs-measured'  # suffix .svg or .png chosen by size
-ERROR_FIGSIZE: tuple = (12.0, 5.4)
+ERROR_FIGSIZE: tuple = (12.0, 10.0)
 ERROR_REFERENCE_WIDTH: float = 12.0
 ERROR_CAPTION_Y: float = -0.22  # axes fraction, below the x axis label
+RIGHT_ANGLE: float = 90.0  # degrees
+PCA_ARROW_SIGMAS: float = 2.0  # arrow length in standard deviations along each principal vector
+PCA_COLORS: tuple = (mcolors.TABLEAU_COLORS['tab:red'], mcolors.TABLEAU_COLORS['tab:green'])
 MODEL_COLORS: dict = {'constant': mcolors.TABLEAU_COLORS['tab:gray'],
                      'proportional': mcolors.TABLEAU_COLORS['tab:orange']}
 GRID: tuple = (2, 3)  # rows, columns
@@ -158,22 +163,26 @@ def absolute_error_band(x: np.ndarray = None, y: np.ndarray = None, coverage: fl
     return out
 
 
-def error_scaling(x: np.ndarray = None, y: np.ndarray = None, bins: int = SCALING_BINS,
-                  coverage: float = COVERAGE) -> tuple:
-    """Return the fit of ln|y - x| = ln a + b ln y and the RMS error per bin of y.
+def error_scaling(x: np.ndarray = None, y: np.ndarray = None, bins: int = SCALING_BINS) -> tuple:
+    """Return the PCA of the pairs (y, |x - y|) and the RMS error per bin of y.
 
-    The dict holds b, its standard error, its two-sided coverage interval and the p-values of b = 0 and b = 1.
+    The dict holds the mean point (y_mean, d_mean), the eigenvalues (lambda1 >= lambda2) of the covariance matrix,
+    the first and second principal vectors (v1_y, v1_d, v2_y, v2_d; v1_y >= 0, v2_d >= 0) and the angle of v1 from
+    the y axis, theta_deg = atan2(v1_d, v1_y) in degrees, with theta_pct = theta_deg / 90 in percent.
     The frame has index 'bin' (1..bins, by increasing y) and columns n, y_min, y_max, rms_y, rms_error, rmsre_pct.
     """
     d = np.abs(y - x)
-    if (d <= 0).any():
-        raise ValueError(f"ln|y - x| needs nonzero errors: {(d <= 0).sum()} pairs have y == x")
-    fit = stats.linregress(np.log(y), np.log(d))
-    dof = len(d) - 2
-    half = stats.t.ppf((1 + coverage) / 2, dof) * fit.stderr
-    slope = {'b': fit.slope, 'b_stderr': fit.stderr, 'b_low': fit.slope - half, 'b_high': fit.slope + half,
-             'p_b0': 2 * stats.t.sf(abs(fit.slope / fit.stderr), dof),
-             'p_b1': 2 * stats.t.sf(abs((fit.slope - 1) / fit.stderr), dof)}
+    values, vectors = np.linalg.eigh(np.cov(np.column_stack([y, d]), rowvar=False))
+    order = np.argsort(values)[::-1]
+    values, vectors = values[order], vectors[:, order]
+    if vectors[0, 0] < 0:
+        vectors[:, 0] = -vectors[:, 0]
+    if vectors[1, 1] < 0:
+        vectors[:, 1] = -vectors[:, 1]
+    theta = math.degrees(math.atan2(vectors[1, 0], vectors[0, 0]))
+    pca = {'y_mean': y.mean(), 'd_mean': d.mean(), 'lambda1': values[0], 'lambda2': values[1],
+           'v1_y': vectors[0, 0], 'v1_d': vectors[1, 0], 'v2_y': vectors[0, 1], 'v2_d': vectors[1, 1],
+           'theta_deg': theta, 'theta_pct': theta / RIGHT_ANGLE * PERCENT}
     label = pd.qcut(y, bins, labels=False)
     rows = {}
     for k in range(bins):
@@ -182,7 +191,7 @@ def error_scaling(x: np.ndarray = None, y: np.ndarray = None, bins: int = SCALIN
                        'rms_y': math.sqrt((y[m] ** 2).mean()),
                        'rms_error': math.sqrt((d[m] ** 2).mean()),
                        'rmsre_pct': math.sqrt(((d[m] / y[m]) ** 2).mean()) * PERCENT}
-    return slope, pd.DataFrame(rows).T.rename_axis('bin')
+    return pca, pd.DataFrame(rows).T.rename_axis('bin')
 
 
 def _residual(x: np.ndarray = None, y: np.ndarray = None, band: Band = 'relative') -> np.ndarray:
@@ -257,16 +266,19 @@ def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
     return path
 
 
-def draw_error(x: np.ndarray = None, y: np.ndarray = None, bins: pd.DataFrame = None,
+def draw_error(x: np.ndarray = None, y: np.ndarray = None, bins: pd.DataFrame = None, pca: dict = None,
                stem: pathlib.Path = None) -> pathlib.Path:
-    """Save and return the two-panel residual plot against the measured value y: (a) the error x - y with the RMSE
-    of each bin of y, (b) the relative error (x - y) / y in percent with the RMSRE of each bin, both drawn at +/-."""
-    if x is None or y is None or bins is None or stem is None:
-        raise ValueError('x, y, bins and stem are required.')
+    """Save and return the residual plot against the measured value y: (a) the error x - y with the RMSE of each
+    bin of y, (b) the relative error (x - y) / y in percent with the RMSRE of each bin, both drawn at +/-, and
+    (c) the size of the error |x - y| with the first and second principal vectors of its PCA and the angle of v1."""
+    if x is None or y is None or bins is None or pca is None or stem is None:
+        raise ValueError('x, y, bins, pca and stem are required.')
     scale = ERROR_FIGSIZE[0] / ERROR_REFERENCE_WIDTH
     plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
                          'axes.labelsize': FONT_SIZES['axis_label'] * scale})
-    fig, axes = plt.subplots(1, 2, figsize=ERROR_FIGSIZE)
+    fig = plt.figure(figsize=ERROR_FIGSIZE)
+    grid = fig.add_gridspec(2, 2)
+    axes = [fig.add_subplot(grid[0, 0]), fig.add_subplot(grid[0, 1]), fig.add_subplot(grid[1, :])]
     panels = ((axes[0], x - y, bins['rms_error'], 'Error x − y (nm)', 'bin RMSE', '(a) Error'),
               (axes[1], (x - y) / y * PERCENT, bins['rmsre_pct'], 'Relative error e (%)', 'bin RMSRE',
                '(b) Relative error'))
@@ -277,8 +289,21 @@ def draw_error(x: np.ndarray = None, y: np.ndarray = None, bins: pd.DataFrame = 
             for k, (lo, hi, v) in enumerate(zip(bins['y_min'], bins['y_max'], spread)):
                 ax.plot([lo, hi], [sign * v] * 2, color=MODEL_COLORS['proportional'], linewidth=2.2, zorder=4,
                         label=f"±{spread_label}" if sign > 0 and k == 0 else None)
-        ax.set_xlabel('Measured value y (nm)')
         ax.set_ylabel(ylabel)
+    ax = axes[2]
+    ax.scatter(y, np.abs(x - y), s=12, color=INSIDE_COLOR, edgecolor='none', alpha=0.6, zorder=3, label='pair')
+    center = np.array([pca['y_mean'], pca['d_mean']])
+    for k, color in ((1, PCA_COLORS[0]), (2, PCA_COLORS[1])):
+        vector = np.array([pca[f"v{k}_y"], pca[f"v{k}_d"]]) * PCA_ARROW_SIGMAS * math.sqrt(pca[f"lambda{k}"])
+        ax.annotate('', xy=center + vector, xytext=center, zorder=5,
+                    arrowprops={'arrowstyle': '-|>', 'color': color, 'linewidth': 2.4, 'mutation_scale': 18})
+        ax.plot([], [], color=color, linewidth=2.4, label=f"v{k}: principal vector {k}")
+    ax.text(0.02, 0.95, f"θ = {pca['theta_deg']:.2f}°,  θ / 90° = {pca['theta_pct']:.2f} %", transform=ax.transAxes,
+            ha='left', va='top', fontsize=FONT_SIZES['text_box'] * scale)
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.set_ylabel('Error size |x − y| (nm)')
+    for ax, caption in zip(axes, ('(a) Error', '(b) Relative error', '(c) PCA of the error size')):
+        ax.set_xlabel('Measured value y (nm)')
         ax.legend(loc='upper right', frameon=False, fontsize=FONT_SIZES['text'] * scale)
         ax.grid(color='#e6e6e6', linewidth=0.8)
         ax.set_axisbelow(True)
@@ -286,7 +311,7 @@ def draw_error(x: np.ndarray = None, y: np.ndarray = None, bins: pd.DataFrame = 
             ax.spines[side].set_visible(False)
         ax.text(0.5, ERROR_CAPTION_Y, caption, transform=ax.transAxes, ha='center', va='top',
                 fontsize=FONT_SIZES['pane_caption'] * scale)
-    fig.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.27, wspace=0.28)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.97, bottom=0.12, wspace=0.28, hspace=0.55)
     path = save_svg_or_png(fig=fig, stem=stem, dpi=DPI)
     plt.close(fig)
     return path
@@ -321,8 +346,8 @@ if __name__ == '__main__':
     ABSOLUTE = absolute_error_band(x=X, y=Y)
     for KEY, VALUE in ABSOLUTE.items():
         print(f"{KEY:24s} {VALUE:.6f}")
-    SLOPE, BINS = error_scaling(x=X, y=Y)
-    for KEY, VALUE in SLOPE.items():
+    PCA, BINS = error_scaling(x=X, y=Y)
+    for KEY, VALUE in PCA.items():
         print(f"{KEY:24s} {VALUE:.6g}")
     print(BINS.to_string(float_format='{:.4f}'.format))
     if ARGS.output_folder is not None:
@@ -336,4 +361,4 @@ if __name__ == '__main__':
         draw(x=X, y=Y, table=ABSOLUTE_TABLE, stem=ARGS.output_folder / ABSOLUTE_FIGURE_STEM, band='absolute')
         pd.DataFrame({'y': Y, 'error': X - Y, 'relative_error': (X - Y) / Y}).to_csv(
             ARGS.output_folder / ERROR_CSV_NAME, index=False, float_format='%.6f')
-        draw_error(x=X, y=Y, bins=BINS, stem=ARGS.output_folder / ERROR_FIGURE_STEM)
+        draw_error(x=X, y=Y, bins=BINS, pca=PCA, stem=ARGS.output_folder / ERROR_FIGURE_STEM)
