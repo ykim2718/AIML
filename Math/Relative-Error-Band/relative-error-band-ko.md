@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 67 | Created: 2026-11-16 | Updated: 2026-11-17 22:44 UTC
+Version 68 | Created: 2026-11-16 | Updated: 2026-11-17 23:14 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -263,15 +263,16 @@ Table 2. RMSE and RMSRE by bin of the measured value
 - 측정값의 범위가 좁아, 어느 지표를 써도 경계는 거의 같다. $`\mathrm{RMSE}/\bar{y}`$ 는 1.8988 % 로 RMSRE 1.9241 % 와 가깝다.
 - 오차가 측정값에 비례하지 않으므로, 이 데이터에는 상대오차 대신 오차 $`x_i - y_i`$ 로 구한 경계를 쓴다.
 
-측정값에 대한 오차를 두 모형의 경계와 함께 그리면 아래 Fig 2 이다.
+측정값에 대한 오차와 상대오차를 두 칸에 나란히 그리면 아래 Fig 2 이다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig2-error-vs-measured.svg" width="800" style="max-width: 100%;" alt="Fig 2">
+<img src="relative-error-band-ko_fig/relative-error-band-fig2-error-vs-measured.svg" width="900" style="max-width: 100%;" alt="Fig 2">
 
-<a id="fig-2"></a>Fig 2. Error vs. measured value
+<a id="fig-2"></a>Fig 2. Error and relative error vs. measured value
 
-- 가로축은 측정값 $`y_i`$, 세로축은 오차 $`x_i - y_i`$ 이고, 점 하나가 짝 하나이다.
-- 회색 점선은 오차가 일정한 모형의 경계 $`\pm q_{95}`$ 로 수평이고, 주황 선은 오차가 비례하는 모형의 경계 $`\pm p_{95}\, y_i`$ 로 측정값을 따라 벌어진다. 두 경계는 원본 데이터의 95 % 분위수로 구했다.
-- 점의 퍼짐은 측정값을 따라 주황 선처럼 벌어지지 않고, 측정값이 가장 작은 왼쪽 끝에서 경계 밖의 점이 많다.
+- (a) 는 오차 $`x_i - y_i`$, (b) 는 상대오차 $`e_i`$ 를 측정값 $`y_i`$ 에 대해 그린 것이고, 점 하나가 짝 하나이다.
+- 주황 선은 Table 2 의 구간마다 (a) 에서는 RMSE, (b) 에서는 RMSRE 를 위아래로 그린 것으로, 그 구간의 퍼짐을 나타낸다.
+- 오차가 일정하면 (a) 의 주황 선이, 오차가 비례하면 (b) 의 주황 선이 측정값과 상관없이 수평인 띠가 된다.
+- 이 데이터에서는 (a) 와 (b) 모두 측정값이 가장 작은 구간의 주황 선이 가장 넓고, 어느 쪽도 고른 띠가 되지 않는다.
 
 ### 5.3 Non-proportional Error: Absolute Error Band
 
@@ -366,7 +367,7 @@ Table 5. p95 by method and the share of pairs inside the band
 
 ### 5.6 Calculation Script
 
-Table 2 부터 Table 5 와 Fig 2 부터 Fig 4, 꼭지 5.2, 5.3, 5.5 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 과 Table 5 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$, 식 (16) 의 $`b`$ 와 그 검정, 구간마다의 RMSE 와 RMSRE 를 출력한다. `--output-folder` 를 주면 Fig 2 를 `relative-error-band-fig2-error-vs-measured.svg` 로, Table 3 과 Fig 3 을 `relative-error-band-fig3-absolute-band-by-method.csv` 와 `.svg` 로, Table 5 와 Fig 4 를 `relative-error-band-fig4-band-by-method.csv` 와 `.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 2 부터 Table 5 와 Fig 2 부터 Fig 4, 꼭지 5.2, 5.3, 5.5 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 과 Table 5 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$, 식 (16) 의 $`b`$ 와 그 검정, 구간마다의 RMSE 와 RMSRE 를 출력한다. `--output-folder` 를 주면 Fig 2 를 `relative-error-band-fig2-error-vs-measured.csv` 와 `.svg` 로, Table 3 과 Fig 3 을 `relative-error-band-fig3-absolute-band-by-method.csv` 와 `.svg` 로, Table 5 와 Fig 4 를 `relative-error-band-fig4-band-by-method.csv` 와 `.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig

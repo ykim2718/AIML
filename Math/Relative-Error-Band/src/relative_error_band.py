@@ -14,7 +14,7 @@ It also checks whether the error grows in proportion to the measured value: it f
 least squares and tests b = 0 (constant error) and b = 1 (proportional error), and it prints the RMSE and the RMSRE
 in five bins of equal count along y. For an error that is not proportional, the same five estimates are computed on
 the error x - y with the RMSE in place of the RMSRE, giving the band x = y +/- q95 in the unit of y.
-With --output-folder the error x - y is also drawn against y with the absolute and the relative band.
+With --output-folder the error x - y and the relative error are also drawn against y with the RMS of each bin.
 With --output-folder it also saves one figure with a Pred vs. True panel per method, showing the pairs, the 1:1 line
 and the band x = (1 +/- p95) y, and writes the band of each method to a CSV.
 
@@ -27,9 +27,10 @@ Changelog:
     0.4.0  Added the absolute error band (absolute_error_band) and the chart of the RMSE by bin.
     0.5.0  The chart of the RMSE by bin is replaced by the scatter of the error against y (draw_error); the band
            table and chart also cover the absolute band (band='absolute').
+    0.6.0  draw_error draws two panels, the error and the relative error against y, with the RMS of each bin.
 """
 __author__ = 'yRocket'
-__version__ = "0.5.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.6.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -70,8 +71,9 @@ BAND_SPEC: dict = {'relative': ('p_', 'p95_pct', PERCENT, 'p95 = {:.4f} %', r'ba
                    'absolute': ('q_', 'q95_nm', 1.0, 'q95 = {:.4f} nm', r'band $x = y \pm q_{95}$')}
 ERROR_CSV_NAME: str = 'relative-error-band-fig2-error-vs-measured.csv'
 ERROR_FIGURE_STEM: str = 'relative-error-band-fig2-error-vs-measured'  # suffix .svg or .png chosen by size
-ERROR_FIGSIZE: tuple = (9.0, 5.4)
-ERROR_REFERENCE_WIDTH: float = 9.0
+ERROR_FIGSIZE: tuple = (12.0, 5.4)
+ERROR_REFERENCE_WIDTH: float = 12.0
+ERROR_CAPTION_Y: float = -0.22  # axes fraction, below the x axis label
 MODEL_COLORS: dict = {'constant': mcolors.TABLEAU_COLORS['tab:gray'],
                      'proportional': mcolors.TABLEAU_COLORS['tab:orange']}
 GRID: tuple = (2, 3)  # rows, columns
@@ -255,33 +257,36 @@ def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
     return path
 
 
-def draw_error(x: np.ndarray = None, y: np.ndarray = None, q95: float = None, p95: float = None,
+def draw_error(x: np.ndarray = None, y: np.ndarray = None, bins: pd.DataFrame = None,
                stem: pathlib.Path = None) -> pathlib.Path:
-    """Save and return the scatter of the error x - y against the measured value y, with the absolute band
-    +/- q95 (constant error) and the relative band +/- p95 * y (proportional error) as the two reference models."""
-    if x is None or y is None or q95 is None or p95 is None or stem is None:
-        raise ValueError('x, y, q95, p95 and stem are required.')
+    """Save and return the two-panel residual plot against the measured value y: (a) the error x - y with the RMSE
+    of each bin of y, (b) the relative error (x - y) / y in percent with the RMSRE of each bin, both drawn at +/-."""
+    if x is None or y is None or bins is None or stem is None:
+        raise ValueError('x, y, bins and stem are required.')
     scale = ERROR_FIGSIZE[0] / ERROR_REFERENCE_WIDTH
     plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
                          'axes.labelsize': FONT_SIZES['axis_label'] * scale})
-    fig, ax = plt.subplots(figsize=ERROR_FIGSIZE)
-    line_y = np.array([y.min(), y.max()])
-    ax.axhline(0, color=REFERENCE_COLOR, linewidth=1.0)
-    for sign in (-1, 1):
-        ax.plot(line_y, [sign * q95] * 2, color=MODEL_COLORS['constant'], linestyle='--', linewidth=1.8,
-                label=f"constant error: ±q95 = ±{q95:.2f} nm" if sign > 0 else None)
-        ax.plot(line_y, sign * p95 * line_y, color=MODEL_COLORS['proportional'], linewidth=1.8,
-                label=f"proportional error: ±p95 · y = ±{p95 * PERCENT:.2f} % · y" if sign > 0 else None)
-    ax.scatter(y, x - y, s=12, color=INSIDE_COLOR, edgecolor='none', alpha=0.6, zorder=3, label='pair')
-    ax.set_xlabel('Measured value y (nm)')
-    ax.set_ylabel('Error x − y (nm)')
-    ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=3, frameon=False,
-              fontsize=FONT_SIZES['text'] * scale)
-    ax.grid(color='#e6e6e6', linewidth=0.8)
-    ax.set_axisbelow(True)
-    for side in ('top', 'right'):
-        ax.spines[side].set_visible(False)
-    fig.tight_layout()
+    fig, axes = plt.subplots(1, 2, figsize=ERROR_FIGSIZE)
+    panels = ((axes[0], x - y, bins['rms_error'], 'Error x − y (nm)', 'bin RMSE', '(a) Error'),
+              (axes[1], (x - y) / y * PERCENT, bins['rmsre_pct'], 'Relative error e (%)', 'bin RMSRE',
+               '(b) Relative error'))
+    for ax, residual, spread, ylabel, spread_label, caption in panels:
+        ax.axhline(0, color=REFERENCE_COLOR, linewidth=1.0)
+        ax.scatter(y, residual, s=12, color=INSIDE_COLOR, edgecolor='none', alpha=0.6, zorder=3, label='pair')
+        for sign in (-1, 1):
+            for k, (lo, hi, v) in enumerate(zip(bins['y_min'], bins['y_max'], spread)):
+                ax.plot([lo, hi], [sign * v] * 2, color=MODEL_COLORS['proportional'], linewidth=2.2, zorder=4,
+                        label=f"±{spread_label}" if sign > 0 and k == 0 else None)
+        ax.set_xlabel('Measured value y (nm)')
+        ax.set_ylabel(ylabel)
+        ax.legend(loc='upper right', frameon=False, fontsize=FONT_SIZES['text'] * scale)
+        ax.grid(color='#e6e6e6', linewidth=0.8)
+        ax.set_axisbelow(True)
+        for side in ('top', 'right'):
+            ax.spines[side].set_visible(False)
+        ax.text(0.5, ERROR_CAPTION_Y, caption, transform=ax.transAxes, ha='center', va='top',
+                fontsize=FONT_SIZES['pane_caption'] * scale)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.27, wspace=0.28)
     path = save_svg_or_png(fig=fig, stem=stem, dpi=DPI)
     plt.close(fig)
     return path
@@ -329,7 +334,6 @@ if __name__ == '__main__':
         print(ABSOLUTE_TABLE.to_string(float_format='{:.4f}'.format))
         ABSOLUTE_TABLE.to_csv(ARGS.output_folder / ABSOLUTE_CSV_NAME, float_format='%.6f')
         draw(x=X, y=Y, table=ABSOLUTE_TABLE, stem=ARGS.output_folder / ABSOLUTE_FIGURE_STEM, band='absolute')
-        pd.DataFrame({'y': Y, 'error': X - Y}).to_csv(ARGS.output_folder / ERROR_CSV_NAME, index=False,
-                                                     float_format='%.6f')
-        draw_error(x=X, y=Y, q95=ABSOLUTE['q_empirical'], p95=RESULT['p_empirical'],
-                   stem=ARGS.output_folder / ERROR_FIGURE_STEM)
+        pd.DataFrame({'y': Y, 'error': X - Y, 'relative_error': (X - Y) / Y}).to_csv(
+            ARGS.output_folder / ERROR_CSV_NAME, index=False, float_format='%.6f')
+        draw_error(x=X, y=Y, bins=BINS, stem=ARGS.output_folder / ERROR_FIGURE_STEM)
