@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 65 | Created: 2026-11-16 | Updated: 2026-11-17 22:16 UTC
+Version 66 | Created: 2026-11-16 | Updated: 2026-11-17 22:27 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -14,10 +14,10 @@ Version 65 | Created: 2026-11-16 | Updated: 2026-11-17 22:16 UTC
     - [4.7 Proportionality of the Error](#47-proportionality-of-the-error)
 - [5. Worked Example](#5-worked-example)
     - [5.1 Data](#51-data)
-    - [5.2 Relative Error](#52-relative-error)
-    - [5.3 p95 by Method](#53-p95-by-method)
-    - [5.4 R2 and RMSE](#54-r2-and-rmse)
-    - [5.5 Proportionality of the Error](#55-proportionality-of-the-error)
+    - [5.2 Proportionality of the Error](#52-proportionality-of-the-error)
+    - [5.3 Proportional Error: Relative Error Band](#53-proportional-error-relative-error-band)
+    - [5.4 Non-proportional Error: Absolute Error Band](#54-non-proportional-error-absolute-error-band)
+    - [5.5 R2 and RMSE](#55-r2-and-rmse)
     - [5.6 Calculation Script](#56-calculation-script)
 - [6. Application](#6-application)
     - [6.1 Conditions](#61-conditions)
@@ -80,16 +80,18 @@ Table 1. Symbols
 | $`R^2_{\mathrm{all}}`$ | 측정값 $`T`$ 개로 구한 R²                            | scalar   | -                  |
 | $`a`$                  | 오차 크기를 측정값의 거듭제곱으로 둘 때의 계수       | scalar   | $`a \gt 0`$        |
 | $`b`$                  | 오차 크기를 측정값의 거듭제곱으로 둘 때의 지수       | scalar   | -                  |
+| $`q_{95}`$             | 짝의 95 % 에서 $`\lvert x_i - y_i \rvert`$ 가 넘지 않는 값 | scalar   | $`q_{95} \ge 0`$   |
 
 ## 4. Principle
 
-$`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
+$`p_{95}`$ 를 구하는 방법은 오차가 측정값에 비례하는지, 원본 데이터가 있는지, 상대오차가 정규분포인지, 그 평균이 0 인지에 따라 아래 Fig 1 처럼 갈린다.
 
 <img src="relative-error-band-ko_fig/relative-error-band-fig1-decision-tree.svg" width="900" style="max-width: 100%;" alt="Fig 1">
 
 <a id="fig-1"></a>Fig 1. Decision tree for choosing the p95 method
 
-- 위에서부터 파란 마름모의 질문에 답하며 내려가면, 화살표가 끝나는 초록 상자와 주황 상자가 쓸 방법이다. 상자의 첫 줄은 식, 둘째 줄은 Table 3 의 방법 이름과 식과 꼭지의 번호이다. 초록 상자는 $`p_{95}`$ 를 구하고, 주황 상자는 그 상한만 구한다.
+- 맨 위의 질문은 오차가 측정값에 비례하는지이다. 비례하면 상대오차 $`e_i`$ 와 RMSRE 로 아래 나무를 따라가고, 비례하지 않으면 회색 상자처럼 같은 나무를 오차 $`x_i - y_i`$ 와 RMSE 로 따라가 경계 $`x = y \pm q_{95}`$ 를 구한다.
+- 위에서부터 파란 마름모의 질문에 답하며 내려가면, 화살표가 끝나는 초록 상자와 주황 상자가 쓸 방법이다. 상자의 첫 줄은 식, 둘째 줄은 Table 4 의 방법 이름과 식과 꼭지의 번호이다. 초록 상자는 $`p_{95}`$ 를 구하고, 주황 상자는 그 상한만 구한다.
 - 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
 - Fig 1 은 같은 folder 의 Graphviz 원본 [src/relative_error_band_decision_tree.dot](src/relative_error_band_decision_tree.dot) 을 [src/relative_error_band_decision_tree.py](src/relative_error_band_decision_tree.py) 로 그렸다. Graphviz 가 필요하며, 문서 folder 에서 `python3 src/relative_error_band_decision_tree.py --output-folder relative-error-band-ko_fig` 로 실행한다. 이 문서의 그림은 모두 SVG 로 저장하고, SVG 가 PNG 보다 크면 PNG 로 저장한다. 이 형식은 세 script 가 함께 쓰는 [src/relative_error_band_figure.py](src/relative_error_band_figure.py) 가 정한다.
 
@@ -228,17 +230,58 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 - $`b = 1`$ 과 $`b = 0`$ 을 각각 귀무가설로 두고 유의수준 0.05 로 검정한다. 한쪽만 기각되면 기각되지 않은 쪽을 택하고, 둘 다 기각되지 않으면 측정값의 범위가 좁아 가릴 수 없으며, 둘 다 기각되면 어느 쪽도 맞지 않는다. p 의 뜻은 [Appendix D](#appendix-d-significance-level-and-p-value) 에 있다.
 - 측정값을 짝 수가 같은 구간 다섯 개로 나누고 구간마다 RMSE 와 RMSRE 를 구하면 같은 판단을 표로 확인할 수 있다. 오차가 측정값에 비례하면 구간의 RMSE 가 측정값을 따라 커지고 RMSRE 는 거의 일정하며, 오차가 일정하면 그 반대이다.
 
+오차가 측정값에 비례하지 않으면 상대오차 대신 오차 $`x_i - y_i`$ 로 경계를 구한다. 식 (8) 부터 식 (12) 에서 $`e_i`$ 를 $`x_i - y_i`$ 로, RMSRE 를 RMSE 로 바꾸면 그대로 성립하고, 그렇게 구한 값 $`q_{95}`$ 는 측정값의 단위를 갖는다. 경계는 1:1 라인과 평행한 두 직선이다.
+
+```math
+y_i - q_{95} \le x_i \le y_i + q_{95}
+\hspace{19em} (17)
+```
+
 ## 5. Worked Example
 
 ### 5.1 Data
 
 반도체 wafer 44 장의 측정 위치 13 곳에서 측정한 박막 두께와 그 예측값 ([data/relative-error-band-u0-actuals-and-predictions.csv](data/relative-error-band-u0-actuals-and-predictions.csv)) 을 쓴다. 측정값은 `true_p1` 부터 `true_p13`, 예측값은 `pred_p1` 부터 `pred_p13` 열이며, 측정 위치를 가리지 않고 짝 $`T = 572`$ 개를 한데 모은다. 단위는 nm 이고, 측정값은 530.054 nm 부터 718.857 nm 이다.
 
-### 5.2 Relative Error
+### 5.2 Proportionality of the Error
 
-식 (1), (4), (5), (6) 으로 구한 상대오차의 요약값과 식 (13) 의 RMSE 는 아래 Table 2 이다.
+꼭지 4.7 의 방법으로 구한 식 (16) 의 $`b`$ 는 −3.7436 이고, 95 % 구간은 −5.5560 부터 −1.9311 이다. $`b = 1`$ 의 p 는 $`3.8 \times 10^{-7}`$, $`b = 0`$ 의 p 는 $`5.7 \times 10^{-5}`$ 로 둘 다 유의수준 0.05 에서 기각된다. 측정값의 구간마다 구한 RMSE 와 RMSRE 는 아래 Table 2 이다.
 
-Table 2. Summary of the relative error and the RMSE
+Table 2. RMSE and RMSRE by bin of the measured value
+
+| Bin | Pairs | Min y (nm) | Max y (nm) | RMSE (nm) | RMSRE (%) |
+| :-: | :---: | :--------: | :--------: | :-------: | :-------: |
+| 1   | 115   | 530.054    | 609.263    | 14.0809   | 2.4012    |
+| 2   | 114   | 609.363    | 626.724    | 10.5773   | 1.7127    |
+| 3   | 114   | 626.753    | 640.935    | 10.9445   | 1.7272    |
+| 4   | 114   | 640.952    | 657.440    | 13.2444   | 2.0436    |
+| 5   | 115   | 657.583    | 718.857    | 10.9683   | 1.6256    |
+
+- 구간의 RMSE 는 측정값을 따라 커지지 않고, 측정값이 가장 작은 구간 1 에서 14.0809 nm 로 가장 크다. 이 데이터의 오차는 측정값에 비례하지 않는다.
+- 측정값이 작은 짝의 오차가 커서 $`b`$ 가 음수로 나왔다. 오차가 측정값과 상관없이 일정하다는 $`b = 0`$ 도 기각되므로, 두 모형 가운데 어느 것도 이 데이터에 맞지 않는다.
+- 측정값의 범위가 좁아, 어느 지표를 써도 경계는 거의 같다. $`\mathrm{RMSE}/\bar{y}`$ 는 1.8988 % 로 RMSRE 1.9241 % 와 가깝다.
+- 이 데이터에는 꼭지 5.4 의 경계가 맞고, 꼭지 5.3 의 경계는 오차가 비례하는 경우의 계산을 보이려고 같은 데이터에 적용한 것이다.
+
+구간마다의 RMSE 를 두 모형과 함께 그리면 아래 Fig 2 이다.
+
+<img src="relative-error-band-ko_fig/relative-error-band-fig2-rmse-by-bin.svg" width="800" style="max-width: 100%;" alt="Fig 2">
+
+<a id="fig-2"></a>Fig 2. RMSE by bin of the measured value
+
+- 막대는 Table 2 의 구간 RMSE 이고, 가로축은 구간의 측정값 범위이다.
+- 회색 점선은 오차가 일정한 모형으로, 모든 짝의 RMSE 12.0490 nm 이다. 주황 선은 오차가 비례하는 모형으로, 모든 짝의 RMSRE 에 구간 측정값의 제곱평균제곱근을 곱한 값이며 측정값을 따라 커진다.
+- 막대는 주황 선처럼 오른쪽으로 커지지 않고, 구간 1 과 구간 4 에서 두 모형보다 높다.
+
+
+### 5.3 Proportional Error: Relative Error Band
+
+오차가 측정값에 비례하면 꼭지 4.1 부터 4.5 의 상대오차로 경계 $`x = (1 \pm p_{95})\, y`$ 를 구한다. 이 데이터의 오차는 꼭지 5.2 에서 측정값에 비례하지 않았지만, 꼭지 5.4 와 견주려고 같은 데이터에 적용한다.
+
+#### Relative Error
+
+식 (1), (4), (5), (6) 으로 구한 상대오차의 요약값과 식 (13) 의 RMSE 는 아래 Table 3 이다.
+
+Table 3. Summary of the relative error and the RMSE
 
 | Quantity         | Value   |
 | :--------------: | :-----: |
@@ -252,11 +295,11 @@ Table 2. Summary of the relative error and the RMSE
 - $`0.3727^2 + 1.8877^2 = 1.9241^2`$ 으로 식 (7) 이 성립한다.
 - 짝 572 개를 모은 상대오차의 Shapiro-Wilk 검정 [[2](#ref-2)] 은 p = 0.0238 로, 유의수준 0.05 에서 정규성을 기각한다. 측정 위치마다의 검정은 [Appendix C](#appendix-c-normality-of-relative-error), 유의수준과 p 의 뜻은 [Appendix D](#appendix-d-significance-level-and-p-value) 에 있다.
 
-### 5.3 p95 by Method
+#### p95 by Method
 
-꼭지 4.2 부터 4.5 의 방법으로 구한 $`p_{95}`$ 와, 그 경계 안에 실제로 든 짝의 비율은 아래 Table 3 이다.
+꼭지 4.2 부터 4.5 의 방법으로 구한 $`p_{95}`$ 와, 그 경계 안에 실제로 든 짝의 비율은 아래 Table 4 이다.
 
-Table 3. p95 by method and the share of pairs inside the band
+Table 4. p95 by method and the share of pairs inside the band
 
 | #   | Method                        | Equation | Section | p95 (%) | Pairs inside | Share inside (%) |
 | :-: | :---------------------------: | :------: | :-----: | :-----: | :----------: | :--------------: |
@@ -273,18 +316,36 @@ Table 3. p95 by method and the share of pairs inside the band
 - $`\mu_e = 0.3727`$ % 는 $`\sigma_e = 1.8877`$ % 보다 작아, 식 (11) 의 값이 식 (10) 의 값과 거의 같다.
 - 분포 무관 상한 8.6048 % 는 식 (8) 의 값의 2.32 배로, 모든 짝을 담지만 경계를 넓게 잡는다.
 
-각 방법의 경계를 짝 572 개와 함께 그리면 아래 Fig 2 이다.
+각 방법의 경계를 짝 572 개와 함께 그리면 아래 Fig 3 이다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig2-band-by-method.svg" width="900" style="max-width: 100%;" alt="Fig 2">
+<img src="relative-error-band-ko_fig/relative-error-band-fig3-band-by-method.svg" width="900" style="max-width: 100%;" alt="Fig 3">
 
-<a id="fig-2"></a>Fig 2. Pred vs. True with the band of each method
+<a id="fig-3"></a>Fig 3. Pred vs. True with the band of each method
 
-- (a) 부터 (e) 는 Table 3 의 #1 부터 #5 의 방법이다. 가로축은 측정값 $`y_i`$, 세로축은 예측값 $`x_i`$ 이며, 점선은 1:1 라인, 초록 띠는 식 (2) 의 경계이다.
-- 파란 점은 경계 안에 든 짝, 빨간 점은 경계 밖의 짝이며, 왼쪽 위의 inside 는 Table 3 의 Pairs inside 이다.
+- (a) 부터 (e) 는 Table 4 의 #1 부터 #5 의 방법이다. 가로축은 측정값 $`y_i`$, 세로축은 예측값 $`x_i`$ 이며, 점선은 1:1 라인, 초록 띠는 식 (2) 의 경계이다.
+- 파란 점은 경계 안에 든 짝, 빨간 점은 경계 밖의 짝이며, 왼쪽 위의 inside 는 Table 4 의 Pairs inside 이다.
 - (a) 부터 (d) 는 경계의 폭이 거의 같아, 경계 밖의 짝도 26 개에서 29 개로 거의 같다.
 - (e) 는 경계가 (a) 의 2.32 배로 넓어 모든 짝이 경계 안에 든다.
 
-### 5.4 R2 and RMSE
+### 5.4 Non-proportional Error: Absolute Error Band
+
+오차가 측정값에 비례하지 않으면 꼭지 4.7 대로 오차 $`x_i - y_i`$ 와 RMSE 로 경계 $`x = y \pm q_{95}`$ 를 구한다. 오차 $`x_i - y_i`$ 의 평균은 2.3737 nm, 표준편차는 11.8129 nm, RMSE 는 12.0490 nm 이다. 다섯 방법으로 구한 $`q_{95}`$ 와 그 경계 안에 든 짝의 비율은 아래 Table 5 이다.
+
+Table 5. q95 by method and the share of pairs inside the band
+
+| #   | Method                        | Equation | q95 (nm) | Pairs inside | Share inside (%) |
+| :-: | :---------------------------: | :------: | :------: | :----------: | :--------------: |
+| 1   | Empirical Quantile            | (8)      | 23.1986  | 543          | 94.93            |
+| 2   | Conformal Rank                | (9)      | 23.3667  | 545          | 95.28            |
+| 3   | Normal with Zero Mean         | (10)     | 23.6157  | 548          | 95.80            |
+| 4   | Normal with Nonzero Mean      | (11)     | 23.6129  | 548          | 95.80            |
+| 5   | Distribution-free Upper Bound | (12)     | 53.8849  | 572          | 100.00           |
+
+- Equation 열은 $`e_i`$ 를 $`x_i - y_i`$ 로, RMSRE 를 RMSE 로 바꾸어 쓴 식이다. Pairs inside 는 짝 $`T = 572`$ 개 가운데 식 (17) 의 경계 안에 든 짝의 수이다.
+- 원본 데이터로 구한 경계는 1:1 라인 양쪽의 $`x = y \pm 23.1986`$ nm 이다. 측정값 600 nm 에서는 Table 4 의 #1 상대오차 경계 $`600 \times 0.037071 = 22.2426`$ nm 와 1 nm 안에서 같다.
+- 정규분포를 가정한 두 값은 #1 의 값과 0.42 nm 안에서 같고, 분포 무관 상한은 #1 의 2.32 배이다.
+
+### 5.5 R2 and RMSE
 
 같은 데이터에서 $`R^2_{\mathrm{all}} = 0.8213`$, RMSE = 12.0490 nm, $`\bar{y}`$ = 634.5735 nm 이다.
 
@@ -292,27 +353,9 @@ Table 3. p95 by method and the share of pairs inside the band
 - 식 (15) 에서 $`\mathrm{RMSRE} \le 12.0490 / 530.054`$ = 2.2732 % 이고, 이를 식 (12) 에 넣은 분포 무관 상한은 10.1659 % 이다. RMSE 와 측정값의 최솟값만으로 얻는 값은 이 상한뿐이다.
 - $`R^2_{\mathrm{all}} = 0.8213`$ 하나로는 $`\sigma_y`$ 없이 RMSE 도 구할 수 없다.
 
-### 5.5 Proportionality of the Error
-
-꼭지 4.7 의 방법으로 구한 식 (16) 의 $`b`$ 는 −3.7436 이고, 95 % 구간은 −5.5560 부터 −1.9311 이다. $`b = 1`$ 의 p 는 $`3.8 \times 10^{-7}`$, $`b = 0`$ 의 p 는 $`5.7 \times 10^{-5}`$ 로 둘 다 유의수준 0.05 에서 기각된다. 측정값의 구간마다 구한 RMSE 와 RMSRE 는 아래 Table 4 이다.
-
-Table 4. RMSE and RMSRE by bin of the measured value
-
-| Bin | Pairs | Min y (nm) | Max y (nm) | RMSE (nm) | RMSRE (%) |
-| :-: | :---: | :--------: | :--------: | :-------: | :-------: |
-| 1   | 115   | 530.054    | 609.263    | 14.0809   | 2.4012    |
-| 2   | 114   | 609.363    | 626.724    | 10.5773   | 1.7127    |
-| 3   | 114   | 626.753    | 640.935    | 10.9445   | 1.7272    |
-| 4   | 114   | 640.952    | 657.440    | 13.2444   | 2.0436    |
-| 5   | 115   | 657.583    | 718.857    | 10.9683   | 1.6256    |
-
-- 구간의 RMSE 는 측정값을 따라 커지지 않고, 측정값이 가장 작은 구간 1 에서 14.0809 nm 로 가장 크다. 이 데이터의 오차는 측정값에 비례하지 않는다.
-- 측정값이 작은 짝의 오차가 커서 $`b`$ 가 음수로 나왔다. 오차가 측정값과 상관없이 일정하다는 $`b = 0`$ 도 기각되므로, 두 모형 가운데 어느 것도 이 데이터에 맞지 않는다.
-- 측정값의 범위가 좁아, 어느 지표를 써도 경계는 거의 같다. 꼭지 5.4 에서 $`\mathrm{RMSE}/\bar{y}`$ 는 1.8988 % 로 RMSRE 1.9241 % 와 가깝다.
-
 ### 5.6 Calculation Script
 
-Table 2 부터 Table 4 와 Fig 2, 꼭지 5.4 와 5.5 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 3 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$, 식 (16) 의 $`b`$ 와 그 검정, 구간마다의 RMSE 와 RMSRE 를 출력한다. `--output-folder` 를 주면 Table 3 을 `relative-error-band-fig2-band-by-method.csv` 로, Fig 2 를 `relative-error-band-fig2-band-by-method.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 2 부터 Table 5 와 Fig 2, Fig 3, 꼭지 5.2, 5.4, 5.5 의 값은 같은 folder 의 [src/relative_error_band.py](src/relative_error_band.py) 로 구했다. 이 script 는 CSV 의 짝을 한데 모아 상대오차의 요약값, Table 4 와 Table 5 의 다섯 방법으로 구한 값과 그 경계 안에 든 짝의 비율, RMSE 와 $`R^2_{\mathrm{all}}`$, 식 (16) 의 $`b`$ 와 그 검정, 구간마다의 RMSE 와 RMSRE 를 출력한다. `--output-folder` 를 주면 Table 2 와 Fig 2 를 `relative-error-band-fig2-rmse-by-bin.csv` 와 `.svg` 로, Table 4 와 Fig 3 을 `relative-error-band-fig3-band-by-method.csv` 와 `.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
@@ -363,12 +406,12 @@ wafer $`m`$ 의 측정 위치 $`j`$ 에서 측정값 $`y_{mj}`$ 와 예측값 $`
 
 ```math
 e_{mj} = \frac{x_{mj} - y_{mj}}{y_{mj}}
-\hspace{19em} (17)
+\hspace{19em} (18)
 ```
 
-검정은 Shapiro-Wilk, D'Agostino-Pearson, Anderson-Darling 의 세 가지이며 [[2](#ref-2)], 유의수준은 0.05 이다. 결과는 아래 Table 5 이다.
+검정은 Shapiro-Wilk, D'Agostino-Pearson, Anderson-Darling 의 세 가지이며 [[2](#ref-2)], 유의수준은 0.05 이다. 결과는 아래 Table 6 이다.
 
-Table 5. Normality tests of the relative error by measurement location
+Table 6. Normality tests of the relative error by measurement location
 
 | Location | Mean (%) | Stdev (%) | Skewness | Shapiro-Wilk p | D'Agostino-Pearson p | Anderson-Darling p | Rejections |
 | :------: | :------: | :-------: | :------: | :------------: | :------------------: | :----------------: | :--------: |
@@ -391,16 +434,16 @@ Table 5. Normality tests of the relative error by measurement location
 - 측정 위치 13 곳을 각각 유의수준 0.05 로 검정하면, 모두 정규분포여도 평균 $`13 \times 0.05 = 0.65`$ 곳이 기각된다. Shapiro-Wilk 의 p 가 $`0.05 / 13 = 0.0038`$ 보다 작은 곳은 p1 과 p9 이다.
 - 상대오차의 평균은 측정 위치마다 -1.4071 % (p9) 부터 1.9737 % (p13) 까지 다르다.
 
-측정 위치 13 곳의 Q-Q plot 은 아래 Fig 3 이다.
+측정 위치 13 곳의 Q-Q plot 은 아래 Fig 4 이다.
 
-<img src="relative-error-band-ko_fig/relative-error-band-fig3-relative-error-qq.svg" width="900" style="max-width: 100%;" alt="Fig 3">
+<img src="relative-error-band-ko_fig/relative-error-band-fig4-relative-error-qq.svg" width="900" style="max-width: 100%;" alt="Fig 4">
 
-<a id="fig-3"></a>Fig 3. Normal Q-Q plots of the relative error by measurement location
+<a id="fig-4"></a>Fig 4. Normal Q-Q plots of the relative error by measurement location
 
 - 칸마다 측정 위치 하나이며, 칸 안의 p 는 Shapiro-Wilk 의 p 이다. 가로축은 표준정규분포의 분위수, 세로축은 정렬한 상대오차 (%) 이고, 회색 직선은 정규분포일 때 점이 놓일 직선이다.
 - p1, p8, p9 는 왼쪽 아래 점이 직선보다 아래에 있어 왼쪽 꼬리가 길고 (왜도 -1.0159, -0.9165, -0.9892), p3 는 오른쪽 위 점이 직선보다 위에 있어 오른쪽 꼬리가 길다 (왜도 1.0327).
 
-Table 5 와 Fig 3 은 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (17) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig3-relative-error.csv` 로, Fig 3 을 `relative-error-band-fig3-relative-error-qq.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
+Table 6 과 Fig 4 는 같은 folder 의 [src/relative_error_band_normality.py](src/relative_error_band_normality.py) 로 구했다. 이 script 는 측정 위치마다 식 (18) 의 상대오차를 구해 세 검정의 결과를 출력하고, 상대오차를 `relative-error-band-fig4-relative-error.csv` 로, Fig 4 를 `relative-error-band-fig4-relative-error-qq.svg` 로 저장한다. scipy 와 matplotlib 이 필요하며, 문서 folder 에서 아래처럼 실행한다.
 
 ```bash
 python3 src/relative_error_band_normality.py --csv data/relative-error-band-u0-actuals-and-predictions.csv --output-folder relative-error-band-ko_fig
@@ -410,28 +453,28 @@ python3 src/relative_error_band_normality.py --csv data/relative-error-band-u0-a
 
 정규성 검정은 "상대오차가 정규분포를 따른다" 를 귀무가설 $`H_0`$ 로 두고, 데이터가 이 가설과 얼마나 맞지 않는지를 검정통계량 하나로 잰다. Shapiro-Wilk 의 통계량 $`W`$ 는 1 에 가까울수록 정규분포에 가깝고, 작을수록 정규분포에서 멀다 [[2](#ref-2)].
 
-**p-value** 는 $`H_0`$ 가 참일 때, 관측한 통계량 $`w`$ 만큼 또는 그보다 극단적인 값이 나올 확률이다 [[3](#ref-3)]. Shapiro-Wilk 에서는 작은 $`W`$ 가 극단적이므로 아래 식 (18) 이다.
+**p-value** 는 $`H_0`$ 가 참일 때, 관측한 통계량 $`w`$ 만큼 또는 그보다 극단적인 값이 나올 확률이다 [[3](#ref-3)]. Shapiro-Wilk 에서는 작은 $`W`$ 가 극단적이므로 아래 식 (19) 이다.
 
 ```math
 p = P_{H_0}\left( W \le w \right)
-\hspace{19em} (18)
+\hspace{19em} (19)
 ```
 
 **유의수준** $`\alpha`$ 는 검정 전에 정하는 값으로, $`H_0`$ 가 참인데도 기각할 확률의 허용 한도이다. 이 문서는 $`\alpha = 0.05`$ 를 쓴다.
 
 **p < α 의 뜻**: $`p \lt \alpha`$ 이면 $`H_0`$ 를 기각한다. 정규분포가 참이라면 지금만큼 정규분포에서 벗어난 데이터가 나올 확률이 $`\alpha`$ 보다 작다는 뜻이며, 그래서 정규분포라는 가정을 받아들이지 않는다. $`p \ge \alpha`$ 이면 기각하지 않을 뿐, 정규분포임이 증명되지는 않는다.
 
-**이론적 근거**: $`H_0`$ 아래에서 $`W`$ 의 누적분포함수를 $`F`$ 라 하면 식 (18) 의 $`p`$ 는 $`F(W)`$ 이고, $`W`$ 가 연속분포이면 확률적분변환에 따라 $`F(W)`$ 는 0 과 1 사이의 균등분포를 따른다. 따라서 아래 식 (19) 이 성립하여, "$`p \lt \alpha`$ 이면 기각" 이라는 규칙은 $`H_0`$ 가 참일 때 정확히 $`\alpha`$ 의 확률로 잘못 기각한다.
+**이론적 근거**: $`H_0`$ 아래에서 $`W`$ 의 누적분포함수를 $`F`$ 라 하면 식 (19) 의 $`p`$ 는 $`F(W)`$ 이고, $`W`$ 가 연속분포이면 확률적분변환에 따라 $`F(W)`$ 는 0 과 1 사이의 균등분포를 따른다. 따라서 아래 식 (20) 이 성립하여, "$`p \lt \alpha`$ 이면 기각" 이라는 규칙은 $`H_0`$ 가 참일 때 정확히 $`\alpha`$ 의 확률로 잘못 기각한다.
 
 ```math
 P_{H_0}\left( p \lt \alpha \right) = P\left( F(W) \lt \alpha \right) = \alpha
-\hspace{19em} (19)
+\hspace{19em} (20)
 ```
 
 해석할 때는 아래를 함께 본다.
 
 - p 는 $`H_0`$ 가 참일 확률이 아니다. $`H_0`$ 를 참으로 놓고 계산한 데이터의 확률이다.
-- 표본이 크면 작은 벗어남도 기각된다. 꼭지 5.2 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
+- 표본이 크면 작은 벗어남도 기각된다. 꼭지 5.3 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
 - 여러 번 검정하면 우연한 기각이 늘어난다. [Appendix C](#appendix-c-normality-of-relative-error) 처럼 측정 위치 13 곳을 각각 $`\alpha = 0.05`$ 로 검정하면, 모두 정규분포여도 평균 0.65 곳이 기각된다. 13 번의 검정 전체에서 잘못 기각할 확률을 0.05 이하로 두려면 $`\alpha / 13 = 0.0038`$ 을 쓴다 (Bonferroni).
 
 ## Appendix E. RMSE vs. RMSRE
@@ -440,9 +483,9 @@ RMSE 와 RMSRE 는 같은 오차를 측정값으로 나누느냐로 갈리며, �
 
 ### E.1 Comparison
 
-두 지표의 차이는 아래 Table 6 이다.
+두 지표의 차이는 아래 Table 7 이다.
 
-Table 6. RMSE vs. RMSRE
+Table 7. RMSE vs. RMSRE
 
 | Aspect           | RMSE                                                  | RMSRE                                                        |
 | :--------------: | :---------------------------------------------------: | :----------------------------------------------------------: |
@@ -460,46 +503,46 @@ Table 6. RMSE vs. RMSRE
 
 ```math
 y_i - x_i = -\,e_i\, y_i
-\hspace{19em} (20)
-```
-
-식 (20) 를 식 (13) 에 넣으면 RMSE 는 상대오차의 제곱에 측정값의 제곱을 곱한 값의 평균이 된다.
-
-```math
-\mathrm{RMSE}^2 = \frac{1}{T} \sum_{i=1}^{T} e_i^2\, y_i^2
 \hspace{19em} (21)
 ```
 
-두 양의 곱의 평균은 두 평균의 곱에 두 양의 공분산을 더한 값이다. 식 (6) 에서 $`e_i^2`$ 의 평균은 $`\mathrm{RMSRE}^2`$ 이고, Table 1 의 정의에서 $`y_i^2`$ 의 평균은 $`\bar{y}^2 + \sigma_y^2`$ 이므로, 식 (21) 은 아래 식 (22) 이 된다.
+식 (21) 를 식 (13) 에 넣으면 RMSE 는 상대오차의 제곱에 측정값의 제곱을 곱한 값의 평균이 된다.
+
+```math
+\mathrm{RMSE}^2 = \frac{1}{T} \sum_{i=1}^{T} e_i^2\, y_i^2
+\hspace{19em} (22)
+```
+
+두 양의 곱의 평균은 두 평균의 곱에 두 양의 공분산을 더한 값이다. 식 (6) 에서 $`e_i^2`$ 의 평균은 $`\mathrm{RMSRE}^2`$ 이고, Table 1 의 정의에서 $`y_i^2`$ 의 평균은 $`\bar{y}^2 + \sigma_y^2`$ 이므로, 식 (22) 은 아래 식 (23) 이 된다.
 
 ```math
 \mathrm{RMSE}^2 = \mathrm{RMSRE}^2 \left( \bar{y}^2 + \sigma_y^2 \right) + C_e
-\hspace{19em} (22)
+\hspace{19em} (23)
 ```
 
 $`C_e`$ 는 $`e_i^2`$ 와 $`y_i^2`$ 의 공분산이다.
 
 ```math
 C_e = \frac{1}{T} \sum_{i=1}^{T} \left( e_i^2 - \mathrm{RMSRE}^2 \right) \left( y_i^2 - \bar{y}^2 - \sigma_y^2 \right)
-\hspace{19em} (23)
-```
-
-오차가 측정값에 비례하면 상대오차의 크기는 측정값과 상관이 없어 $`C_e = 0`$ 이고, 식 (22) 은 아래 식 (24) 이 된다.
-
-```math
-\mathrm{RMSE} = \mathrm{RMSRE}\; \bar{y} \sqrt{1 + \left( \sigma_y / \bar{y} \right)^2}
 \hspace{19em} (24)
 ```
 
-같은 방법으로 식 (6) 을 오차의 제곱과 $`1/y_i^2`$ 의 곱의 평균으로 보면, RMSRE 는 아래 식 (25) 이다. $`C_d`$ 는 $`(y_i - x_i)^2`$ 와 $`1/y_i^2`$ 의 공분산이다.
+오차가 측정값에 비례하면 상대오차의 크기는 측정값과 상관이 없어 $`C_e = 0`$ 이고, 식 (23) 은 아래 식 (25) 이 된다.
 
 ```math
-\mathrm{RMSRE}^2 = \mathrm{RMSE}^2\, \frac{1}{T} \sum_{i=1}^{T} \frac{1}{y_i^2} + C_d
+\mathrm{RMSE} = \mathrm{RMSRE}\; \bar{y} \sqrt{1 + \left( \sigma_y / \bar{y} \right)^2}
 \hspace{19em} (25)
 ```
 
-- **측정값이 모두 같을 때**: $`\sigma_y = 0`$ 이고 $`C_e = 0`$ 이므로 식 (24) 에서 $`\mathrm{RMSRE} = \mathrm{RMSE}/\bar{y}`$ 이다.
-- **오차가 측정값에 비례할 때**: 식 (24) 에서 RMSE 는 측정값의 범위가 넓을수록 $`\sqrt{1 + (\sigma_y/\bar{y})^2}`$ 배만큼 커지지만, RMSRE 는 측정값의 범위와 상관없이 상대오차의 크기만 나타낸다. 측정값의 범위가 넓으면 RMSRE 가 유리하다.
-- **오차가 측정값과 상관없이 일정할 때**: $`C_d = 0`$ 이고, $`1/y^2`$ 은 볼록함수라서 $`\frac{1}{T}\sum 1/y_i^2 \ge 1/\bar{y}^2`$ 이므로 식 (25) 에서 $`\mathrm{RMSRE} \ge \mathrm{RMSE}/\bar{y}`$ 이다. 측정값의 범위가 넓을수록 작은 측정값의 상대오차가 커져 RMSRE 가 커지므로, RMSE 가 맞다.
+같은 방법으로 식 (6) 을 오차의 제곱과 $`1/y_i^2`$ 의 곱의 평균으로 보면, RMSRE 는 아래 식 (26) 이다. $`C_d`$ 는 $`(y_i - x_i)^2`$ 와 $`1/y_i^2`$ 의 공분산이다.
+
+```math
+\mathrm{RMSRE}^2 = \mathrm{RMSE}^2\, \frac{1}{T} \sum_{i=1}^{T} \frac{1}{y_i^2} + C_d
+\hspace{19em} (26)
+```
+
+- **측정값이 모두 같을 때**: $`\sigma_y = 0`$ 이고 $`C_e = 0`$ 이므로 식 (25) 에서 $`\mathrm{RMSRE} = \mathrm{RMSE}/\bar{y}`$ 이다.
+- **오차가 측정값에 비례할 때**: 식 (25) 에서 RMSE 는 측정값의 범위가 넓을수록 $`\sqrt{1 + (\sigma_y/\bar{y})^2}`$ 배만큼 커지지만, RMSRE 는 측정값의 범위와 상관없이 상대오차의 크기만 나타낸다. 측정값의 범위가 넓으면 RMSRE 가 유리하다.
+- **오차가 측정값과 상관없이 일정할 때**: $`C_d = 0`$ 이고, $`1/y^2`$ 은 볼록함수라서 $`\frac{1}{T}\sum 1/y_i^2 \ge 1/\bar{y}^2`$ 이므로 식 (26) 에서 $`\mathrm{RMSRE} \ge \mathrm{RMSE}/\bar{y}`$ 이다. 측정값의 범위가 넓을수록 작은 측정값의 상대오차가 커져 RMSRE 가 커지므로, RMSE 가 맞다.
 - **한계**: 식 (6) 의 각 항에서 $`y_i`$ 를 측정값의 최댓값과 최솟값으로 바꾸면 식 (15) 를 얻는다. 측정값의 범위가 좁으면 식 (15) 의 두 경계가 가까워져, 어느 지표를 써도 경계가 거의 같다.
-- **이 데이터**: 측정값의 표준편차가 평균의 4.49 % 로 범위가 좁다. 식 (23) 의 $`C_e`$ 는 $`-4.2005\ \mathrm{nm}^2`$ 로 $`\mathrm{RMSE}^2`$ 의 −2.89 % 이고, $`C_e = 0`$ 으로 둔 식 (24) 의 RMSE 는 12.2221 nm 로 실제 12.0490 nm 와 1.44 % 다르다. $`C_d = 0`$ 으로 둔 식 (25) 의 RMSRE 는 1.9046 % 로 실제 1.9241 % 와 가깝다.
+- **이 데이터**: 측정값의 표준편차가 평균의 4.49 % 로 범위가 좁다. 식 (24) 의 $`C_e`$ 는 $`-4.2005\ \mathrm{nm}^2`$ 로 $`\mathrm{RMSE}^2`$ 의 −2.89 % 이고, $`C_e = 0`$ 으로 둔 식 (25) 의 RMSE 는 12.2221 nm 로 실제 12.0490 nm 와 1.44 % 다르다. $`C_d = 0`$ 으로 둔 식 (26) 의 RMSRE 는 1.9046 % 로 실제 1.9241 % 와 가깝다.

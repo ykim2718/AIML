@@ -9,6 +9,7 @@ digraph p95_method {
   // decisions: diamonds (flowchart convention)
   node [shape=diamond, style="filled", fillcolor="#e3eef8", color="#1f77b4", fontcolor="#1a1a1a",
         width=2.6, height=1.15, margin="0.02,0.02"];
+  prop   [width=3.4, height=1.5, label=<Is the error<BR/>proportional to <I>y<SUB>i</SUB></I>?<BR/><FONT POINT-SIZE="11" COLOR="#555555">Eq. (16)  ·  Sec. 4.7</FONT>>];
   raw    [label=<Raw pairs<BR/>(<I>x<SUB>i</SUB></I>, <I>y<SUB>i</SUB></I>) available?>];
   normal [label=<Is <I>e<SUB>i</SUB></I><BR/>normal?>];
   mean   [label=<Is <I>μ<SUB>e</SUB></I> = 0?>];
@@ -24,6 +25,11 @@ digraph p95_method {
   markov    [fillcolor="#fdebd9", color="#ff7f0e",
              label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD><FONT POINT-SIZE="17"><I>p</I><SUB>95</SUB> ≤ RMSRE / √0.05</FONT></TD></TR><TR><TD><FONT POINT-SIZE="12" COLOR="#555555">Upper bound only  ·  Eq. (12)  ·  Sec. 4.5</FONT></TD></TR></TABLE>>];
 
+  absolute  [fillcolor="#f2f2f2", color="#7f7f7f",
+             label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD><FONT POINT-SIZE="17">Use <I>x<SUB>i</SUB></I> − <I>y<SUB>i</SUB></I> and RMSE: <I>x</I> = <I>y</I> ± <I>q</I><SUB>95</SUB></FONT></TD></TR><TR><TD><FONT POINT-SIZE="12" COLOR="#555555">Same tree with <I>e<SUB>i</SUB></I> → <I>x<SUB>i</SUB></I> − <I>y<SUB>i</SUB></I>, RMSRE → RMSE  ·  Eq. (17)  ·  Sec. 4.7</FONT></TD></TR></TABLE>>];
+
+  prop   -> raw       [label=<  yes: <I>e<SUB>i</SUB></I> and RMSRE  >];
+  prop   -> absolute  [label=<  no: <I>x<SUB>i</SUB></I> − <I>y<SUB>i</SUB></I> and RMSE  >];
   raw    -> empirical [label="  yes  "];
   raw    -> normal    [label="  no  "];
   normal -> mean      [label="  yes  "];
@@ -31,6 +37,7 @@ digraph p95_method {
   mean   -> zero      [label="  yes  "];
   mean   -> nonzero   [label="  no  "];
 
+  { rank=same; raw; absolute; }
   { rank=same; empirical; normal; }
   { rank=same; mean; markov; }
   { rank=same; zero; nonzero; }
