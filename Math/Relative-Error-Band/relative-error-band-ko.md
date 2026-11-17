@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 60 | Created: 2026-11-16 | Updated: 2026-11-17 11:01 UTC
+Version 61 | Created: 2026-11-16 | Updated: 2026-11-17 11:09 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -47,6 +47,7 @@ Version 60 | Created: 2026-11-16 | Updated: 2026-11-17 11:01 UTC
 $`p_{95}`$ 는 상대오차 $`e = (x - y)/y`$ 의 절댓값이 짝의 95 % 에서 넘지 않는 값이며, Pred vs. True 그림의 경계는 1:1 라인 양쪽의 두 직선 $`x = (1 \pm p_{95})\, y`$ 이다.
 원본 데이터가 있으면 $`|e|`$ 의 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정하거나, 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한을 구한다.
 이 상한은 정확한 $`p_{95}`$ 가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
+결과는 "Pred = $`y`$ ± $`p_{95}`$ (95 % coverage)" 로 적는다.
 
 ## 3. Notation
 
