@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 56 | Created: 2026-11-16 | Updated: 2026-11-16 23:43 UTC
+Version 57 | Created: 2026-11-16 | Updated: 2026-11-17 01:20 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -193,7 +193,7 @@ RMSE 와 $`R^2_{\mathrm{all}}`$ 은 오차 $`y_i - x_i`$ 의 제곱 평균에서
 
 ```math
 R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
-\hspace{19em} (14)
+\hspace{19em} (14) \ \text{🌳}
 ```
 
 - R² 와 RMSE 만으로는 일반적으로 $`p_{95}`$ 를 정할 수 없다. 두 값은 오차의 제곱 평균 하나만 주고, 상대오차의 평균과 분포 모양은 주지 않는다. 또 R² 에서 RMSE 를 얻으려면 식 (14) 대로 $`\sigma_y`$ 도 있어야 한다.
