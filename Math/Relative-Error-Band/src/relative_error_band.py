@@ -10,6 +10,9 @@ values x). All T = M * N pairs are pooled and the relative error e = (x - y) / y
                        distribution free      p95 <= RMSRE / sqrt(0.05)       (Markov inequality on e^2)
 
 the share of pairs inside each band, the Shapiro-Wilk test of the pooled e, and RMSE, R2_all and RMSE / y_bar.
+It also checks whether the error grows in proportion to the measured value: it fits ln|y - x| = ln a + b ln y by
+least squares and tests b = 0 (constant error) and b = 1 (proportional error), and it prints the RMS error and the
+RMSRE in five bins of equal count along y.
 With --output-folder it also saves one figure with a Pred vs. True panel per method, showing the pairs, the 1:1 line
 and the band x = (1 +/- p95) y, and writes the band of each method to a CSV.
 
@@ -18,9 +21,10 @@ Requires scipy and matplotlib.
 Changelog:
     0.1.0  Added the band chart per method (--output-folder).
     0.2.0  The chart is saved as SVG, or as PNG when the SVG is larger.
+    0.3.0  Added the proportionality check of the error (error_scaling).
 """
 __author__ = 'yRocket'
-__version__ = "0.2.0+20261116"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.3.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -37,10 +41,11 @@ from scipy import optimize, stats
 
 from relative_error_band_figure import save_svg_or_png
 
-__all__ = ['METHODS', 'load_pairs', 'relative_error_band', 'band_table', 'draw']
+__all__ = ['METHODS', 'load_pairs', 'relative_error_band', 'error_scaling', 'band_table', 'draw']
 
 COVERAGE: float = 0.95
 PERCENT: float = 100.0
+SCALING_BINS: int = 5  # bins of equal count along y for the proportionality check
 # key of relative_error_band() -> (number, method name, equation number, section) as in Table 3 of the document
 METHODS: dict = {'empirical': (1, 'Empirical Quantile', 8, '4.2'),
                  'conformal': (2, 'Conformal Rank', 9, '4.2'),
@@ -105,6 +110,32 @@ def relative_error_band(x: np.ndarray = None, y: np.ndarray = None, coverage: fl
         out[name] = p
         out[name.replace('p_', 'inside_')] = (a <= p).mean()
     return out
+
+
+def error_scaling(x: np.ndarray = None, y: np.ndarray = None, bins: int = SCALING_BINS,
+                  coverage: float = COVERAGE) -> tuple:
+    """Return the fit of ln|y - x| = ln a + b ln y and the RMS error per bin of y.
+
+    The dict holds b, its standard error, its two-sided coverage interval and the p-values of b = 0 and b = 1.
+    The frame has index 'bin' (1..bins, by increasing y) and columns n, y_min, y_max, rms_error, rmsre_pct.
+    """
+    d = np.abs(y - x)
+    if (d <= 0).any():
+        raise ValueError(f"ln|y - x| needs nonzero errors: {(d <= 0).sum()} pairs have y == x")
+    fit = stats.linregress(np.log(y), np.log(d))
+    dof = len(d) - 2
+    half = stats.t.ppf((1 + coverage) / 2, dof) * fit.stderr
+    slope = {'b': fit.slope, 'b_stderr': fit.stderr, 'b_low': fit.slope - half, 'b_high': fit.slope + half,
+             'p_b0': 2 * stats.t.sf(abs(fit.slope / fit.stderr), dof),
+             'p_b1': 2 * stats.t.sf(abs((fit.slope - 1) / fit.stderr), dof)}
+    label = pd.qcut(y, bins, labels=False)
+    rows = {}
+    for k in range(bins):
+        m = label == k
+        rows[k + 1] = {'n': int(m.sum()), 'y_min': y[m].min(), 'y_max': y[m].max(),
+                       'rms_error': math.sqrt((d[m] ** 2).mean()),
+                       'rmsre_pct': math.sqrt(((d[m] / y[m]) ** 2).mean()) * PERCENT}
+    return slope, pd.DataFrame(rows).T.rename_axis('bin')
 
 
 def band_table(x: np.ndarray = None, y: np.ndarray = None, result: dict = None) -> pd.DataFrame:
@@ -194,6 +225,10 @@ if __name__ == '__main__':
     RESULT = relative_error_band(x=X, y=Y)
     for KEY, VALUE in RESULT.items():
         print(f"{KEY:24s} {VALUE:.6f}" if isinstance(VALUE, float) else f"{KEY:24s} {VALUE}")
+    SLOPE, BINS = error_scaling(x=X, y=Y)
+    for KEY, VALUE in SLOPE.items():
+        print(f"{KEY:24s} {VALUE:.6g}")
+    print(BINS.to_string(float_format='{:.4f}'.format))
     if ARGS.output_folder is not None:
         TABLE = band_table(x=X, y=Y, result=RESULT)
         print(TABLE.to_string(float_format='{:.4f}'.format))
