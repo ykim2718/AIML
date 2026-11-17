@@ -1,0 +1,6 @@
+number,method,equation,section,q95_nm,pairs_inside,share_inside_pct
+1,Empirical Quantile,8,4.2,23.19856256000004,543,94.93006993006993
+2,Conformal Rank,9,4.2,23.366679100000056,545,95.27972027972028
+3,Normal with Zero Mean,10,4.3,23.615681912059895,548,95.8041958041958
+4,Normal with Nonzero Mean,11,4.4,23.61291620575024,548,95.8041958041958
+5,Distribution-free Upper Bound,12,4.5,53.884939220217554,572,100.0

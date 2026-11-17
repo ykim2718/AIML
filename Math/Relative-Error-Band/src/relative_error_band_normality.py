@@ -12,7 +12,7 @@ Changelog:
     0.1.0  The figure is saved as SVG, or as PNG when the SVG is larger.
 """
 __author__ = 'yRocket'
-__version__ = "0.1.1+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.2+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
@@ -29,8 +29,8 @@ from relative_error_band_figure import save_svg_or_png
 
 __all__ = ['load_relative_error', 'normality_tests', 'draw']
 
-SAMPLE_CSV_NAME: str = 'relative-error-band-fig4-relative-error.csv'
-FIGURE_STEM: str = 'relative-error-band-fig4-relative-error-qq'  # suffix .svg or .png chosen by size
+SAMPLE_CSV_NAME: str = 'relative-error-band-fig5-relative-error.csv'
+FIGURE_STEM: str = 'relative-error-band-fig5-relative-error-qq'  # suffix .svg or .png chosen by size
 PERCENT: float = 100.0
 ALPHA: float = 0.05
 GRID_COLUMNS: int = 5

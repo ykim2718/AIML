@@ -14,7 +14,7 @@ It also checks whether the error grows in proportion to the measured value: it f
 least squares and tests b = 0 (constant error) and b = 1 (proportional error), and it prints the RMSE and the RMSRE
 in five bins of equal count along y. For an error that is not proportional, the same five estimates are computed on
 the error x - y with the RMSE in place of the RMSRE, giving the band x = y +/- q95 in the unit of y.
-With --output-folder the RMSE by bin is also saved as a chart.
+With --output-folder the error x - y is also drawn against y with the absolute and the relative band.
 With --output-folder it also saves one figure with a Pred vs. True panel per method, showing the pairs, the 1:1 line
 and the band x = (1 +/- p95) y, and writes the band of each method to a CSV.
 
@@ -25,14 +25,17 @@ Changelog:
     0.2.0  The chart is saved as SVG, or as PNG when the SVG is larger.
     0.3.0  Added the proportionality check of the error (error_scaling).
     0.4.0  Added the absolute error band (absolute_error_band) and the chart of the RMSE by bin.
+    0.5.0  The chart of the RMSE by bin is replaced by the scatter of the error against y (draw_error); the band
+           table and chart also cover the absolute band (band='absolute').
 """
 __author__ = 'yRocket'
-__version__ = "0.4.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.5.0+20261117"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import math
 import pathlib
 import sys
+from typing import Literal, TypeAlias, get_args
 
 import numpy as np
 import pandas as pd
@@ -45,7 +48,7 @@ from scipy import optimize, stats
 from relative_error_band_figure import save_svg_or_png
 
 __all__ = ['METHODS', 'load_pairs', 'band_estimates', 'relative_error_band', 'absolute_error_band', 'error_scaling',
-           'band_table', 'draw', 'draw_bins']
+           'band_table', 'draw', 'draw_error']
 
 COVERAGE: float = 0.95
 PERCENT: float = 100.0
@@ -56,13 +59,19 @@ METHODS: dict = {'empirical': (1, 'Empirical Quantile', 8, '4.2'),
                  'normal_zero_mean': (3, 'Normal with Zero Mean', 10, '4.3'),
                  'normal': (4, 'Normal with Nonzero Mean', 11, '4.4'),
                  'distribution_free': (5, 'Distribution-free Upper Bound', 12, '4.5')}
-SAMPLE_CSV_NAME: str = 'relative-error-band-fig3-band-by-method.csv'
-FIGURE_STEM: str = 'relative-error-band-fig3-band-by-method'  # suffix .svg or .png chosen by size
-BINS_CSV_NAME: str = 'relative-error-band-fig2-rmse-by-bin.csv'
-BINS_FIGURE_STEM: str = 'relative-error-band-fig2-rmse-by-bin'  # suffix .svg or .png chosen by size
-BINS_FIGSIZE: tuple = (9.0, 5.4)
-BINS_REFERENCE_WIDTH: float = 9.0
-BAR_COLOR: str = mcolors.TABLEAU_COLORS['tab:blue']
+SAMPLE_CSV_NAME: str = 'relative-error-band-fig4-band-by-method.csv'
+FIGURE_STEM: str = 'relative-error-band-fig4-band-by-method'  # suffix .svg or .png chosen by size
+ABSOLUTE_CSV_NAME: str = 'relative-error-band-fig3-absolute-band-by-method.csv'
+ABSOLUTE_FIGURE_STEM: str = 'relative-error-band-fig3-absolute-band-by-method'  # suffix .svg or .png chosen by size
+Band: TypeAlias = Literal['relative', 'absolute']  # x = (1 +/- p95) y, or x = y +/- q95
+BANDS: tuple = get_args(Band)
+# band -> (key prefix in the result, table column, scale of the column, text-box format, legend label)
+BAND_SPEC: dict = {'relative': ('p_', 'p95_pct', PERCENT, 'p95 = {:.4f} %', r'band $x = (1 \pm p_{95})\, y$'),
+                   'absolute': ('q_', 'q95_nm', 1.0, 'q95 = {:.4f} nm', r'band $x = y \pm q_{95}$')}
+ERROR_CSV_NAME: str = 'relative-error-band-fig2-error-vs-measured.csv'
+ERROR_FIGURE_STEM: str = 'relative-error-band-fig2-error-vs-measured'  # suffix .svg or .png chosen by size
+ERROR_FIGSIZE: tuple = (9.0, 5.4)
+ERROR_REFERENCE_WIDTH: float = 9.0
 MODEL_COLORS: dict = {'constant': mcolors.TABLEAU_COLORS['tab:gray'],
                      'proportional': mcolors.TABLEAU_COLORS['tab:orange']}
 GRID: tuple = (2, 3)  # rows, columns
@@ -174,40 +183,51 @@ def error_scaling(x: np.ndarray = None, y: np.ndarray = None, bins: int = SCALIN
     return slope, pd.DataFrame(rows).T.rename_axis('bin')
 
 
-def band_table(x: np.ndarray = None, y: np.ndarray = None, result: dict = None) -> pd.DataFrame:
-    """Return one row per method (index 'number') with columns method, equation, section, p95_pct, pairs_inside,
-    share_inside_pct."""
-    a = np.abs((x - y) / y)
+def _residual(x: np.ndarray = None, y: np.ndarray = None, band: Band = 'relative') -> np.ndarray:
+    """Return |x - y| / y for the relative band or |x - y| for the absolute band."""
+    if band not in BANDS:
+        raise ValueError(f"band must be one of {BANDS}: {band!r}")
+    return np.abs((x - y) / y) if band == 'relative' else np.abs(x - y)
+
+
+def band_table(x: np.ndarray = None, y: np.ndarray = None, result: dict = None,
+               band: Band = 'relative') -> pd.DataFrame:
+    """Return one row per method (index 'number') with columns method, equation, section, p95_pct (relative) or
+    q95_nm (absolute), pairs_inside, share_inside_pct. result is relative_error_band() or absolute_error_band()."""
+    a = _residual(x=x, y=y, band=band)
+    prefix, column, factor = BAND_SPEC[band][:3]
     rows = {}
     for key, (number, name, equation, section) in METHODS.items():
-        p = result[f"p_{key}"]
-        rows[number] = {'method': name, 'equation': equation, 'section': section, 'p95_pct': p * PERCENT,
+        p = result[f"{prefix}{key}"]
+        rows[number] = {'method': name, 'equation': equation, 'section': section, column: p * factor,
                         'pairs_inside': int((a <= p).sum()), 'share_inside_pct': (a <= p).mean() * PERCENT}
     return pd.DataFrame(rows).T.rename_axis('number')
 
 
-def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
-         stem: pathlib.Path = None) -> pathlib.Path:
+def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None, stem: pathlib.Path = None,
+         band: Band = 'relative') -> pathlib.Path:
     """Save and return one figure with a Pred vs. True panel per method: pairs inside and outside the band, the 1:1
-    line and the band x = (1 +/- p95) y."""
+    line and the band x = (1 +/- p95) y (relative) or x = y +/- q95 (absolute)."""
     if len(table) >= GRID[0] * GRID[1]:
         raise ValueError(f"the grid {GRID} needs one free panel for the legend: {len(table)=}")
     scale = FIGSIZE[0] / REFERENCE_WIDTH
     plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
                          'axes.labelsize': FONT_SIZES['axis_label'] * scale})
     fig, axes = plt.subplots(*GRID, figsize=FIGSIZE, sharex=True, sharey=True)
-    a = np.abs((x - y) / y)
+    a = _residual(x=x, y=y, band=band)
+    _, column, factor, text_format, legend_label = BAND_SPEC[band]
     line_y = np.array([y.min(), y.max()])
     for ax, (number, row) in zip(axes.ravel(), table.iterrows()):
-        p = row['p95_pct'] / PERCENT
+        p = row[column] / factor
         inside = a <= p
-        ax.fill_between(line_y, (1 - p) * line_y, (1 + p) * line_y, color=BAND_COLOR, alpha=BAND_ALPHA, linewidth=0)
-        for sign in (-1, 1):
-            ax.plot(line_y, (1 + sign * p) * line_y, color=BAND_COLOR, linewidth=1.6)
+        lower, upper = ((1 - p) * line_y, (1 + p) * line_y) if band == 'relative' else (line_y - p, line_y + p)
+        ax.fill_between(line_y, lower, upper, color=BAND_COLOR, alpha=BAND_ALPHA, linewidth=0)
+        for edge in (lower, upper):
+            ax.plot(line_y, edge, color=BAND_COLOR, linewidth=1.6)
         ax.plot(line_y, line_y, color=REFERENCE_COLOR, linewidth=1.4, linestyle='--')
         ax.scatter(y[inside], x[inside], s=10, color=INSIDE_COLOR, edgecolor='none', alpha=0.7, zorder=3)
         ax.scatter(y[~inside], x[~inside], s=18, color=OUTSIDE_COLOR, edgecolor='none', zorder=4)
-        ax.text(0.04, 0.96, f"p95 = {row['p95_pct']:.4f} %\ninside {row['pairs_inside']} / {len(a)}",
+        ax.text(0.04, 0.96, text_format.format(row[column]) + f"\ninside {row['pairs_inside']} / {len(a)}",
                 transform=ax.transAxes, ha='left', va='top', fontsize=FONT_SIZES['text_box'] * scale)
         ax.set_xlabel('True y (nm)')
         ax.xaxis.set_tick_params(labelbottom=True)
@@ -226,7 +246,7 @@ def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
         mlines.Line2D([], [], marker='o', linestyle='none', color=OUTSIDE_COLOR, label='pair outside the band'),
         mlines.Line2D([], [], color=REFERENCE_COLOR, linestyle='--', label='1:1 line'),
         patches.Patch(facecolor=mcolors.to_rgba(BAND_COLOR, BAND_ALPHA), edgecolor=BAND_COLOR,
-                      label=r'band $x = (1 \pm p_{95})\, y$')], loc='center', frameon=False)
+                      label=legend_label)], loc='center', frameon=False)
     for ax in axes.ravel()[len(table) + 1:]:
         ax.set_visible(False)
     fig.subplots_adjust(left=0.08, right=0.98, top=0.98, bottom=0.14, wspace=0.12, hspace=0.42)
@@ -235,29 +255,29 @@ def draw(x: np.ndarray = None, y: np.ndarray = None, table: pd.DataFrame = None,
     return path
 
 
-def draw_bins(bins: pd.DataFrame = None, rmse: float = None, rmsre: float = None,
-              stem: pathlib.Path = None) -> pathlib.Path:
-    """Save and return a bar chart of the RMSE per bin of y, with the RMSE of all pairs (constant error) and the
-    RMSRE of all pairs times the RMS of y in the bin (proportional error) as the two reference models."""
-    if bins is None or rmse is None or rmsre is None or stem is None:
-        raise ValueError('bins, rmse, rmsre and stem are required.')
-    scale = BINS_FIGSIZE[0] / BINS_REFERENCE_WIDTH
+def draw_error(x: np.ndarray = None, y: np.ndarray = None, q95: float = None, p95: float = None,
+               stem: pathlib.Path = None) -> pathlib.Path:
+    """Save and return the scatter of the error x - y against the measured value y, with the absolute band
+    +/- q95 (constant error) and the relative band +/- p95 * y (proportional error) as the two reference models."""
+    if x is None or y is None or q95 is None or p95 is None or stem is None:
+        raise ValueError('x, y, q95, p95 and stem are required.')
+    scale = ERROR_FIGSIZE[0] / ERROR_REFERENCE_WIDTH
     plt.rcParams.update({'font.size': FONT_SIZES['text'] * scale,
                          'axes.labelsize': FONT_SIZES['axis_label'] * scale})
-    fig, ax = plt.subplots(figsize=BINS_FIGSIZE)
-    pos = np.arange(1, len(bins) + 1)
-    bars = ax.bar(pos, bins['rms_error'], width=0.6, color=mcolors.to_rgba(BAR_COLOR, 0.8), label='RMSE in the bin')
-    ax.bar_label(bars, labels=[f"{v:.2f}" for v in bins['rms_error']], padding=3, fontsize=FONT_SIZES['text_box'] * scale)
-    ax.axhline(rmse, color=MODEL_COLORS['constant'], linestyle='--', linewidth=1.8,
-               label=f"constant error: RMSE of all pairs ({rmse:.2f} nm)")
-    ax.plot(pos, rmsre * bins['rms_y'], color=MODEL_COLORS['proportional'], marker='o', linewidth=1.8,
-            label='proportional error: RMSRE × RMS of y in the bin')
-    ax.set_xticks(pos, [f"{lo:.0f}–{hi:.0f}" for lo, hi in zip(bins['y_min'], bins['y_max'])])
-    ax.set_xlabel('Bin of the measured value y (nm)')
-    ax.set_ylabel('RMSE (nm)')
-    ax.set_ylim(0, bins['rms_error'].max() * 1.35)
-    ax.legend(loc='upper right', frameon=False, fontsize=FONT_SIZES['text'] * scale)
-    ax.grid(axis='y', color='#e6e6e6', linewidth=0.8)
+    fig, ax = plt.subplots(figsize=ERROR_FIGSIZE)
+    line_y = np.array([y.min(), y.max()])
+    ax.axhline(0, color=REFERENCE_COLOR, linewidth=1.0)
+    for sign in (-1, 1):
+        ax.plot(line_y, [sign * q95] * 2, color=MODEL_COLORS['constant'], linestyle='--', linewidth=1.8,
+                label=f"constant error: ±q95 = ±{q95:.2f} nm" if sign > 0 else None)
+        ax.plot(line_y, sign * p95 * line_y, color=MODEL_COLORS['proportional'], linewidth=1.8,
+                label=f"proportional error: ±p95 · y = ±{p95 * PERCENT:.2f} % · y" if sign > 0 else None)
+    ax.scatter(y, x - y, s=12, color=INSIDE_COLOR, edgecolor='none', alpha=0.6, zorder=3, label='pair')
+    ax.set_xlabel('Measured value y (nm)')
+    ax.set_ylabel('Error x − y (nm)')
+    ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.0), ncol=3, frameon=False,
+              fontsize=FONT_SIZES['text'] * scale)
+    ax.grid(color='#e6e6e6', linewidth=0.8)
     ax.set_axisbelow(True)
     for side in ('top', 'right'):
         ax.spines[side].set_visible(False)
@@ -293,7 +313,8 @@ if __name__ == '__main__':
     RESULT = relative_error_band(x=X, y=Y)
     for KEY, VALUE in RESULT.items():
         print(f"{KEY:24s} {VALUE:.6f}" if isinstance(VALUE, float) else f"{KEY:24s} {VALUE}")
-    for KEY, VALUE in absolute_error_band(x=X, y=Y).items():
+    ABSOLUTE = absolute_error_band(x=X, y=Y)
+    for KEY, VALUE in ABSOLUTE.items():
         print(f"{KEY:24s} {VALUE:.6f}")
     SLOPE, BINS = error_scaling(x=X, y=Y)
     for KEY, VALUE in SLOPE.items():
@@ -304,5 +325,11 @@ if __name__ == '__main__':
         print(TABLE.to_string(float_format='{:.4f}'.format))
         TABLE.to_csv(ARGS.output_folder / SAMPLE_CSV_NAME, float_format='%.6f')
         draw(x=X, y=Y, table=TABLE, stem=ARGS.output_folder / FIGURE_STEM)
-        BINS.to_csv(ARGS.output_folder / BINS_CSV_NAME, float_format='%.6f')
-        draw_bins(bins=BINS, rmse=RESULT['RMSE'], rmsre=RESULT['RMSRE'], stem=ARGS.output_folder / BINS_FIGURE_STEM)
+        ABSOLUTE_TABLE = band_table(x=X, y=Y, result=ABSOLUTE, band='absolute')
+        print(ABSOLUTE_TABLE.to_string(float_format='{:.4f}'.format))
+        ABSOLUTE_TABLE.to_csv(ARGS.output_folder / ABSOLUTE_CSV_NAME, float_format='%.6f')
+        draw(x=X, y=Y, table=ABSOLUTE_TABLE, stem=ARGS.output_folder / ABSOLUTE_FIGURE_STEM, band='absolute')
+        pd.DataFrame({'y': Y, 'error': X - Y}).to_csv(ARGS.output_folder / ERROR_CSV_NAME, index=False,
+                                                     float_format='%.6f')
+        draw_error(x=X, y=Y, q95=ABSOLUTE['q_empirical'], p95=RESULT['p_empirical'],
+                   stem=ARGS.output_folder / ERROR_FIGURE_STEM)
