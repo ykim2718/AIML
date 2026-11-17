@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 57 | Created: 2026-11-16 | Updated: 2026-11-17 01:20 UTC
+Version 58 | Created: 2026-11-16 | Updated: 2026-11-17 10:59 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -201,7 +201,7 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 
 ```math
 \frac{\mathrm{RMSE}}{\max_i y_i} \le \mathrm{RMSRE} \le \frac{\mathrm{RMSE}}{\min_i y_i}
-\hspace{19em} (15)
+\hspace{19em} (15) \ \text{🌳}
 ```
 
 - 따라서 RMSE 와 측정값의 최솟값을 알면 식 (15) 의 오른쪽 값을 식 (12) 에 넣어 $`p_{95}`$ 의 분포 무관 상한을 구할 수 있지만, $`p_{95}`$ 자체는 구할 수 없다.
