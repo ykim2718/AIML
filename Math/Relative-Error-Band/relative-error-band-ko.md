@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 58 | Created: 2026-11-16 | Updated: 2026-11-17 10:59 UTC
+Version 59 | Created: 2026-11-16 | Updated: 2026-11-17 11:00 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -214,17 +214,18 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 
 ### 5.2 Relative Error
 
-식 (1), (4), (5), (6) 으로 구한 상대오차의 요약값은 아래 Table 2 이다.
+식 (1), (4), (5), (6) 으로 구한 상대오차의 요약값과 식 (13) 의 RMSE 는 아래 Table 2 이다.
 
-Table 2. Summary of the relative error
+Table 2. Summary of the relative error and the RMSE
 
-| Quantity         | Value  |
-| :--------------: | :----: |
-| $`\mu_e`$ (%)    | 0.3727 |
-| $`\sigma_e`$ (%) | 1.8877 |
-| RMSRE (%)        | 1.9241 |
-| Shapiro-Wilk W   | 0.9940 |
-| Shapiro-Wilk p   | 0.0238 |
+| Quantity         | Value   |
+| :--------------: | :-----: |
+| $`\mu_e`$ (%)    | 0.3727  |
+| $`\sigma_e`$ (%) | 1.8877  |
+| RMSE (nm)        | 12.0490 |
+| RMSRE (%)        | 1.9241  |
+| Shapiro-Wilk W   | 0.9940  |
+| Shapiro-Wilk p   | 0.0238  |
 
 - $`0.3727^2 + 1.8877^2 = 1.9241^2`$ 으로 식 (7) 이 성립한다.
 - 짝 572 개를 모은 상대오차의 Shapiro-Wilk 검정 [[2](#ref-2)] 은 p = 0.0238 로, 유의수준 0.05 에서 정규성을 기각한다. 측정 위치마다의 검정은 [Appendix C](#appendix-c-normality-of-relative-error), 유의수준과 p 의 뜻은 [Appendix D](#appendix-d-significance-level-and-p-value) 에 있다.
