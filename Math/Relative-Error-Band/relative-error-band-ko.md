@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 62 | Created: 2026-11-16 | Updated: 2026-11-17 21:48 UTC
+Version 63 | Created: 2026-11-16 | Updated: 2026-11-17 21:51 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -25,7 +25,7 @@ Version 62 | Created: 2026-11-16 | Updated: 2026-11-17 21:48 UTC
 - [Appendix B. Meaning of the 95 Percent Coverage](#appendix-b-meaning-of-the-95-percent-coverage)
 - [Appendix C. Normality of Relative Error](#appendix-c-normality-of-relative-error)
 - [Appendix D. Significance Level and p-value](#appendix-d-significance-level-and-p-value)
-- [Appendix E. Use of RMSE and RMSRE](#appendix-e-use-of-rmse-and-rmsre)
+- [Appendix E. RMSE vs. RMSRE](#appendix-e-rmse-vs-rmsre)
 
 ## 1. Purpose
 
@@ -45,11 +45,10 @@ Version 62 | Created: 2026-11-16 | Updated: 2026-11-17 21:48 UTC
 
 ## 2. Summary
 
-- **$`p_{95}`$**: 상대오차 $`e = (x - y)/y`$ 의 절댓값이 짝의 95 % 에서 넘지 않는 값, Pred vs. True 그림의 경계는 1:1 라인 양쪽의 두 직선 $`x = (1 \pm p_{95})\, y`$
-- **원본 데이터가 있을 때**: $`|e|`$ 의 95 % 분위수, 분포 가정 없음
-- **원본 데이터가 없을 때**: 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정, 또는 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한
-- **상한의 뜻**: 정확한 $`p_{95}`$ 가 아닌 보수적인 값, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없음
-- **결과 표기**: "Pred = $`y`$ ± $`p_{95}`$ (95 % coverage)"
+- $`p_{95}`$ 는 상대오차 $`e = (x - y)/y`$ 의 절댓값이 짝의 95 % 에서 넘지 않는 값이며, Pred vs. True 그림의 경계는 1:1 라인 양쪽의 두 직선 $`x = (1 \pm p_{95})\, y`$ 이다.
+- 원본 데이터가 있으면 $`|e|`$ 의 95 % 분위수로 분포 가정 없이 구하고, 없으면 정규분포 가정 아래 RMSRE 또는 평균과 표준편차로 추정하거나, 분포 가정 없이 $`\mathrm{RMSRE}/\sqrt{0.05}`$ 로 상한을 구한다.
+- 이 상한은 정확한 $`p_{95}`$ 가 아니라 보수적인 값이며, R² 와 RMSE 만으로는 상대오차의 분포를 알 수 없어 일반적으로 $`p_{95}`$ 를 구할 수 없다.
+- 결과는 "Pred = $`y`$ ± $`p_{95}`$ (95 % coverage)" 로 적는다.
 
 ## 3. Notation
 
@@ -207,7 +206,7 @@ R^2_{\mathrm{all}} = 1 - \frac{\mathrm{RMSE}^2}{\sigma_y^2}
 ```
 
 - 따라서 RMSE 와 측정값의 최솟값을 알면 식 (15) 의 오른쪽 값을 식 (12) 에 넣어 $`p_{95}`$ 의 분포 무관 상한을 구할 수 있지만, $`p_{95}`$ 자체는 구할 수 없다.
-- RMSE 와 RMSRE 가운데 어느 것을 쓸지는 [Appendix E](#appendix-e-use-of-rmse-and-rmsre) 에 있다.
+- RMSE 와 RMSRE 의 수학적 관계와 용도 비교는 [Appendix E](#appendix-e-rmse-vs-rmsre) 에 있다.
 
 ## 5. Worked Example
 
@@ -397,11 +396,11 @@ P_{H_0}\left( p \lt \alpha \right) = P\left( F(W) \lt \alpha \right) = \alpha
 - 표본이 크면 작은 벗어남도 기각된다. 꼭지 5.2 에서 짝 572 개를 모은 상대오차는 p = 0.0238 로 기각되었지만, 정규분포로 구한 $`p_{95}`$ 는 원본 데이터의 값과 0.07 %p 안에서 같았다.
 - 여러 번 검정하면 우연한 기각이 늘어난다. [Appendix C](#appendix-c-normality-of-relative-error) 처럼 측정 위치 13 곳을 각각 $`\alpha = 0.05`$ 로 검정하면, 모두 정규분포여도 평균 0.65 곳이 기각된다. 13 번의 검정 전체에서 잘못 기각할 확률을 0.05 이하로 두려면 $`\alpha / 13 = 0.0038`$ 을 쓴다 (Bonferroni).
 
-## Appendix E. Use of RMSE and RMSRE
+## Appendix E. RMSE vs. RMSRE
 
-RMSE 는 오차의 크기가 측정값과 상관없이 일정할 때 쓰고, RMSRE 는 오차가 측정값에 비례해 커질 때 쓴다. 두 지표의 차이는 아래 Table 5 이다.
+RMSE 와 RMSRE 는 같은 오차를 측정값으로 나누느냐로 갈리며, 두 값의 관계는 측정값의 평균과 표준편차, 그리고 상대오차의 크기와 측정값 사이의 공분산으로 정해진다. 두 지표의 차이는 아래 Table 5 이다.
 
-Table 5. RMSE and RMSRE
+Table 5. RMSE vs. RMSRE
 
 | Aspect           | RMSE                                                  | RMSRE                                                        |
 | :--------------: | :---------------------------------------------------: | :----------------------------------------------------------: |
@@ -413,7 +412,50 @@ Table 5. RMSE and RMSRE
 | Breaks           | 오차가 측정값에 비례하면 큰 측정값의 오차가 값을 정함 | 측정값이 0 에 가까우면 값이 커지고, 0 이하이면 정의되지 않음 |
 | This data        | 12.0490 nm                                            | 1.9241 %                                                     |
 
-- 측정값의 범위가 넓고 오차가 측정값에 비례하면 RMSRE 가 유리하다. 이때 RMSE 는 큰 측정값의 큰 오차가 정하므로, 작은 측정값에서는 경계가 너무 넓다.
-- 측정값의 범위가 넓어도 오차가 측정값과 상관없이 일정하면, 작은 측정값의 상대오차가 커져 RMSRE 가 커진다. 이때는 RMSE 가 맞다.
-- 측정값의 범위가 좁으면 식 (15) 의 두 경계가 가까워 $`\mathrm{RMSRE} \approx \mathrm{RMSE}/\bar{y}`$ 이고, 어느 것을 써도 경계가 거의 같다. 이 데이터는 측정값의 표준편차가 평균의 4.49 % 이고, $`\mathrm{RMSE}/\bar{y}`$ = 1.8988 % 와 RMSRE 1.9241 % 가 가깝다.
+식 (1) 에서 짝마다의 오차는 상대오차와 측정값의 곱이다.
 
+```math
+y_i - x_i = -\,e_i\, y_i
+\hspace{19em} (19)
+```
+
+식 (19) 를 식 (13) 에 넣으면 RMSE 는 상대오차의 제곱에 측정값의 제곱을 곱한 값의 평균이 된다.
+
+```math
+\mathrm{RMSE}^2 = \frac{1}{T} \sum_{i=1}^{T} e_i^2\, y_i^2
+\hspace{19em} (20)
+```
+
+두 양의 곱의 평균은 두 평균의 곱에 두 양의 공분산을 더한 값이다. 식 (6) 에서 $`e_i^2`$ 의 평균은 $`\mathrm{RMSRE}^2`$ 이고, Table 1 의 정의에서 $`y_i^2`$ 의 평균은 $`\bar{y}^2 + \sigma_y^2`$ 이므로, 식 (20) 은 아래 식 (21) 이 된다.
+
+```math
+\mathrm{RMSE}^2 = \mathrm{RMSRE}^2 \left( \bar{y}^2 + \sigma_y^2 \right) + C_e
+\hspace{19em} (21)
+```
+
+$`C_e`$ 는 $`e_i^2`$ 와 $`y_i^2`$ 의 공분산이다.
+
+```math
+C_e = \frac{1}{T} \sum_{i=1}^{T} \left( e_i^2 - \mathrm{RMSRE}^2 \right) \left( y_i^2 - \bar{y}^2 - \sigma_y^2 \right)
+\hspace{19em} (22)
+```
+
+오차가 측정값에 비례하면 상대오차의 크기는 측정값과 상관이 없어 $`C_e = 0`$ 이고, 식 (21) 은 아래 식 (23) 이 된다.
+
+```math
+\mathrm{RMSE} = \mathrm{RMSRE}\; \bar{y} \sqrt{1 + \left( \sigma_y / \bar{y} \right)^2}
+\hspace{19em} (23)
+```
+
+같은 방법으로 식 (6) 을 오차의 제곱과 $`1/y_i^2`$ 의 곱의 평균으로 보면, RMSRE 는 아래 식 (24) 이다. $`C_d`$ 는 $`(y_i - x_i)^2`$ 와 $`1/y_i^2`$ 의 공분산이다.
+
+```math
+\mathrm{RMSRE}^2 = \mathrm{RMSE}^2\, \frac{1}{T} \sum_{i=1}^{T} \frac{1}{y_i^2} + C_d
+\hspace{19em} (24)
+```
+
+- **측정값이 모두 같을 때**: $`\sigma_y = 0`$ 이고 $`C_e = 0`$ 이므로 식 (23) 에서 $`\mathrm{RMSRE} = \mathrm{RMSE}/\bar{y}`$ 이다.
+- **오차가 측정값에 비례할 때**: 식 (23) 에서 RMSE 는 측정값의 범위가 넓을수록 $`\sqrt{1 + (\sigma_y/\bar{y})^2}`$ 배만큼 커지지만, RMSRE 는 측정값의 범위와 상관없이 상대오차의 크기만 나타낸다. 측정값의 범위가 넓으면 RMSRE 가 유리하다.
+- **오차가 측정값과 상관없이 일정할 때**: $`C_d = 0`$ 이고, $`1/y^2`$ 은 볼록함수라서 $`\frac{1}{T}\sum 1/y_i^2 \ge 1/\bar{y}^2`$ 이므로 식 (24) 에서 $`\mathrm{RMSRE} \ge \mathrm{RMSE}/\bar{y}`$ 이다. 측정값의 범위가 넓을수록 작은 측정값의 상대오차가 커져 RMSRE 가 커지므로, RMSE 가 맞다.
+- **한계**: 식 (6) 의 각 항에서 $`y_i`$ 를 측정값의 최댓값과 최솟값으로 바꾸면 식 (15) 를 얻는다. 측정값의 범위가 좁으면 식 (15) 의 두 경계가 가까워져, 어느 지표를 써도 경계가 거의 같다.
+- **이 데이터**: 측정값의 표준편차가 평균의 4.49 % 로 범위가 좁다. 식 (22) 의 $`C_e`$ 는 $`-4.2005\ \mathrm{nm}^2`$ 로 $`\mathrm{RMSE}^2`$ 의 −2.89 % 이고, $`C_e = 0`$ 으로 둔 식 (23) 의 RMSE 는 12.2221 nm 로 실제 12.0490 nm 와 1.44 % 다르다. $`C_d = 0`$ 으로 둔 식 (24) 의 RMSRE 는 1.9046 % 로 실제 1.9241 % 와 가깝다.
