@@ -24,10 +24,6 @@ digraph p95_method {
   markov    [fillcolor="#fdebd9", color="#ff7f0e",
              label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD><FONT POINT-SIZE="17"><I>p</I><SUB>95</SUB> ≤ RMSRE / √0.05</FONT></TD></TR><TR><TD><FONT POINT-SIZE="12" COLOR="#555555">Upper bound only  ·  Eq. (12)  ·  Sec. 4.5</FONT></TD></TR></TABLE>>];
 
-  // note for the case outside the tree
-  note [shape=note, style="filled", fillcolor="#f2f2f2", color="#9e9e9e", fontsize=13, margin="0.20,0.12",
-        label=<<B>Only R<SUP>2</SUP> and RMSE known:</B> <I>p</I><SUB>95</SUB> cannot be determined.<BR/>With min <I>y<SUB>i</SUB></I>: RMSRE ≤ RMSE / min <I>y<SUB>i</SUB></I>, then Eq. (12)  ·  Sec. 4.6>];
-
   raw    -> empirical [label="  yes  "];
   raw    -> normal    [label="  no  "];
   normal -> mean      [label="  yes  "];
@@ -38,6 +34,4 @@ digraph p95_method {
   { rank=same; empirical; normal; }
   { rank=same; mean; markov; }
   { rank=same; zero; nonzero; }
-  zero -> note [style=invis];
-  { rank=sink; note; }
 }

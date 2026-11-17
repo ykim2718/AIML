@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 59 | Created: 2026-11-16 | Updated: 2026-11-17 11:00 UTC
+Version 60 | Created: 2026-11-16 | Updated: 2026-11-17 11:01 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -83,7 +83,6 @@ $`p_{95}`$ 를 구하는 방법은 원본 데이터가 있는지, 상대오차�
 
 - 위에서부터 파란 마름모의 질문에 답하며 내려가면, 화살표가 끝나는 초록 상자와 주황 상자가 쓸 방법이다. 상자의 첫 줄은 식, 둘째 줄은 Table 3 의 방법 이름과 식과 꼭지의 번호이다. 초록 상자는 $`p_{95}`$ 를 구하고, 주황 상자는 그 상한만 구한다.
 - 원본 데이터가 있으면 분포를 묻지 않고 식 (8) 을 쓴다. 원본 데이터가 없을 때만 분포와 평균을 묻는다.
-- R² 와 RMSE 만 있는 경우는 나무에 들지 않고 아래의 회색 상자에 따로 적었다. 이 경우 $`p_{95}`$ 는 구할 수 없고 상한만 구할 수 있다.
 - Fig 1 은 같은 folder 의 Graphviz 원본 [src/relative_error_band_decision_tree.dot](src/relative_error_band_decision_tree.dot) 을 [src/relative_error_band_decision_tree.py](src/relative_error_band_decision_tree.py) 로 그렸다. Graphviz 가 필요하며, 문서 folder 에서 `python3 src/relative_error_band_decision_tree.py --output-folder relative-error-band-ko_fig` 로 실행한다. 이 문서의 그림은 모두 SVG 로 저장하고, SVG 가 PNG 보다 크면 PNG 로 저장한다. 이 형식은 세 script 가 함께 쓰는 [src/relative_error_band_figure.py](src/relative_error_band_figure.py) 가 정한다.
 
 ### 4.1 Relative Error Band
