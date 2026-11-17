@@ -1,5 +1,5 @@
 # Relative Error Band on the 1:1 Line
-Version 63 | Created: 2026-11-16 | Updated: 2026-11-17 21:51 UTC
+Version 64 | Created: 2026-11-16 | Updated: 2026-11-17 22:09 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -26,6 +26,8 @@ Version 63 | Created: 2026-11-16 | Updated: 2026-11-17 21:51 UTC
 - [Appendix C. Normality of Relative Error](#appendix-c-normality-of-relative-error)
 - [Appendix D. Significance Level and p-value](#appendix-d-significance-level-and-p-value)
 - [Appendix E. RMSE vs. RMSRE](#appendix-e-rmse-vs-rmsre)
+    - [E.1 Comparison](#e1-comparison)
+    - [E.2 Mathematical Relation](#e2-mathematical-relation)
 
 ## 1. Purpose
 
@@ -398,7 +400,11 @@ P_{H_0}\left( p \lt \alpha \right) = P\left( F(W) \lt \alpha \right) = \alpha
 
 ## Appendix E. RMSE vs. RMSRE
 
-RMSE 와 RMSRE 는 같은 오차를 측정값으로 나누느냐로 갈리며, 두 값의 관계는 측정값의 평균과 표준편차, 그리고 상대오차의 크기와 측정값 사이의 공분산으로 정해진다. 두 지표의 차이는 아래 Table 5 이다.
+RMSE 와 RMSRE 는 같은 오차를 측정값으로 나누느냐로 갈리며, 두 값의 관계는 측정값의 평균과 표준편차, 그리고 상대오차의 크기와 측정값 사이의 공분산으로 정해진다.
+
+### E.1 Comparison
+
+두 지표의 차이는 아래 Table 5 이다.
 
 Table 5. RMSE vs. RMSRE
 
@@ -411,6 +417,8 @@ Table 5. RMSE vs. RMSRE
 | Suits            | 오차가 측정값과 상관없이 일정, spec 이 ± nm           | 오차가 측정값에 비례, spec 이 ± %                            |
 | Breaks           | 오차가 측정값에 비례하면 큰 측정값의 오차가 값을 정함 | 측정값이 0 에 가까우면 값이 커지고, 0 이하이면 정의되지 않음 |
 | This data        | 12.0490 nm                                            | 1.9241 %                                                     |
+
+### E.2 Mathematical Relation
 
 식 (1) 에서 짝마다의 오차는 상대오차와 측정값의 곱이다.
 
