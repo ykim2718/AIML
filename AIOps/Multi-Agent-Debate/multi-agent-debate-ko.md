@@ -1,5 +1,5 @@
 # Multi-Agent Debate (MAD) for Model Specification
-Version 2 | Created: 2026-11-18 | Updated: 2026-11-18 09:34 UTC
+Version 3 | Created: 2026-11-18 | Updated: 2026-11-18 10:34 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -22,7 +22,8 @@ Version 2 | Created: 2026-11-18 | Updated: 2026-11-18 09:34 UTC
 
 ## 1. Purpose
 
-**Problem Statement**: 이미 있는 model code 를 읽고 spec 을 쓰면, 한 agent 가 code 에 없는 의도를 지어 넣거나 code 에 있는 동작을 빠뜨려, 그 spec 으로 다시 build 한 model 이 기존 model 과 다르게 동작한다.
+**Problem Statement**:<br>
+이미 있는 model code 를 읽고 spec 을 쓰면, 한 agent 가 code 에 없는 의도를 지어 넣거나 code 에 있는 동작을 빠뜨려, 그 spec 으로 다시 build 한 model 이 기존 model 과 다르게 동작한다.
 
 **Goal**:
 
