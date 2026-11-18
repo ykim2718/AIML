@@ -1,5 +1,5 @@
 # Multi-Agent Debate (MAD) for Model Specification
-Version 0 | Created: 2026-11-18 | Updated: 2026-11-18 02:05 CST
+Version 1 | Created: 2026-11-18 | Updated: 2026-11-18 01:52 CST
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
@@ -187,7 +187,7 @@ Spec debate 의 round 는 아래 차례로 진행하며, 통신 구조는 작성
 5. Round 상한에 닿으면 judge 가 종료하고, 남은 결함을 `[NEEDS CLARIFICATION]` 으로 적는다.
 6. 사람이 `[NEEDS CLARIFICATION]` 마다 값을 적고, 그 값이 다른 요소와 어긋나는지 보도록 2 부터 한 round 를 더 돌린다.
 
-Round 상한은 문헌의 설정을 따른다. Liang 등 [[2](#ref-2)] 은 상한을 3 회로 두었고, Du 등 [[1](#ref-1)] 에서는 4 round 를 넘긴 성능이 4 round 와 같았다.
+Round 상한은 문헌의 설정을 따른다. Liang 등 [[2](#ref-2)] 은 상한을 3 회로 두었고, Du 등 [[1](#ref-1)] 에서는 4 round 를 넘긴 성능이 4 round 와 거의 같았다.
 
 세 역할의 prompt 는 아래이다. 비판자 prompt 의 "You need not agree with the author" 는 Liang 등 [[2](#ref-2)] 의 meta prompt 가 debater 에게 서로 완전히 동의할 필요가 없다고 한 것을 따른다.
 
