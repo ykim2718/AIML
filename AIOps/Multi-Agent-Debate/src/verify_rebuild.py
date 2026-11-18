@@ -2,23 +2,28 @@
 
 AC-1 to AC-3 test the rebuild alone. AC-4 fits the original model (pls_rsm.py) and the rebuild to the same data,
 a rotatable central composite design and correlated operating data over many replicates, and compares the results.
+With --spec draft, the rebuild from the draft spec v0 (pls_rsm_rebuilt_v0.py) is compared instead, on the three
+outputs v0 names, since v0 has no acceptance criterion that can be run.
 
 Changelog:
+- 0.1.0+20261118: add --spec draft to compare the rebuild from the draft spec v0
 - 0.0.0+20261118: initial release
 """
 
 __author__ = 'yRocket'
-__version__ = "0.0.0+20261118"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
+__version__ = "0.1.0+20261118"  # Semantic Versioning: Major.Minor.Patch+YYYYMMDD
 
 import argparse
 import pathlib
 import sys
+from typing import Final, Literal, TypeAlias, get_args
 
 import numpy as np
 import pandas as pd
 
 import pls_rsm
 import pls_rsm_rebuilt
+import pls_rsm_rebuilt_v0
 
 __all__ = [
     'check_column_order',
@@ -28,6 +33,12 @@ __all__ = [
 ]
 
 EXPECTED_COLUMNS: list = ['x1', 'x2', 'x3', 'x1^2', 'x2^2', 'x3^2', 'x1x2', 'x1x3', 'x2x3']
+Spec: TypeAlias = Literal['final', 'draft']
+SPECS: Final[tuple] = get_args(Spec)
+COMPARED_KEYS: dict = {
+    'final': ('coefficients', 'cv_rmse', 'stationary_point', 'eigenvalues'),
+    'draft': ('stationary_point', 'eigenvalues'),
+}
 
 
 def check_column_order() -> bool:
@@ -66,15 +77,25 @@ def _fit_original(x: np.ndarray, y: np.ndarray, max_components: int, n_splits: i
             'stationary_point': point, 'eigenvalues': eigenvalues}
 
 
-def compare_with_original(n_replicates: int, seed: int, n_runs: int, correlation: float, noise_sd: float,
-                          max_components: int, n_splits: int, rtol: float, atol: float) -> pd.DataFrame:
+def _fit_rebuilt(spec: Spec, x: np.ndarray, y: np.ndarray, max_components: int, n_splits: int) -> dict:
+    """Fit the rebuild made from the given spec; the draft rebuild takes no search settings, as v0 names none."""
+    if spec not in SPECS:
+        raise ValueError(f"spec must be one of {SPECS}, got {spec!r}.")
+    if spec == 'draft':
+        return pls_rsm_rebuilt_v0.fit_surface(x=x, y=y)
+    return pls_rsm_rebuilt.fit_surface(x=x, y=y, max_components=max_components, n_splits=n_splits)
+
+
+def compare_with_original(spec: Spec, n_replicates: int, seed: int, n_runs: int, correlation: float,
+                          noise_sd: float, max_components: int, n_splits: int, rtol: float,
+                          atol: float) -> pd.DataFrame:
     """AC-4: fit both models to the same data and record, per replicate and design, whether they agree.
 
     Returns a pd.DataFrame with a default RangeIndex and columns replicate, design, n_components_original,
-    n_components_rebuilt, max_abs_diff_coefficients, max_abs_diff_cv_rmse, max_abs_diff_stationary_point,
-    max_abs_diff_eigenvalues and match.
+    n_components_rebuilt, one max_abs_diff_<key> column per key of COMPARED_KEYS[spec], and match.
     """
     records = []
+    compared: tuple = COMPARED_KEYS[spec]
     ccd = pls_rsm.central_composite_design()
     for replicate in range(n_replicates):
         rng = np.random.default_rng(seed + replicate)
@@ -86,9 +107,9 @@ def compare_with_original(n_replicates: int, seed: int, n_runs: int, correlation
         for design, x in designs.items():
             y = pls_rsm.true_response(x=x, noise_sd=noise_sd, rng=rng)
             original = _fit_original(x=x, y=y, max_components=max_components, n_splits=n_splits)
-            rebuilt = pls_rsm_rebuilt.fit_surface(x=x, y=y, max_components=max_components, n_splits=n_splits)
+            rebuilt = _fit_rebuilt(spec=spec, x=x, y=y, max_components=max_components, n_splits=n_splits)
             same_count = original['n_components'] == rebuilt['n_components']
-            same_length = len(original['cv_rmse']) == len(rebuilt['cv_rmse'])
+            same_length = spec == 'draft' or len(original['cv_rmse']) == len(rebuilt['cv_rmse'])
             record = {
                 'replicate': replicate,
                 'design': design,
@@ -96,7 +117,7 @@ def compare_with_original(n_replicates: int, seed: int, n_runs: int, correlation
                 'n_components_rebuilt': rebuilt['n_components'],
             }
             match = same_count and same_length
-            for key in ('coefficients', 'cv_rmse', 'stationary_point', 'eigenvalues'):
+            for key in compared:
                 left = np.asarray(original[key], dtype=float)
                 right = np.asarray(rebuilt[key], dtype=float)
                 if left.shape != right.shape:
@@ -118,6 +139,8 @@ def parse_args() -> argparse.Namespace:
                     "Check the rebuilt PLS response surface against the acceptance criteria of the final spec.",
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--version', action='version', version=f"{pathlib.Path(__file__).name} {__version__}")
+    parser.add_argument('--spec', choices=list(SPECS), default='final',
+                        help='final: rebuild from the final spec, AC-1 to AC-4; draft: rebuild from v0, AC-4 only')
     parser.add_argument('--output-folder', type=pathlib.Path, required=True,
                         help='folder for the per-replicate comparison table')
     parser.add_argument('--n-replicates', type=int, default=200, help='independent draws compared in AC-4')
@@ -148,18 +171,22 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     arguments = parse_args()
-    checks = {'AC-1': check_column_order(), 'AC-2': check_too_few_rows(), 'AC-3': check_singular_matrix()}
+    checks = {}
+    if arguments.spec == 'final':
+        checks = {'AC-1': check_column_order(), 'AC-2': check_too_few_rows(), 'AC-3': check_singular_matrix()}
     comparison = compare_with_original(
-        n_replicates=arguments.n_replicates, seed=arguments.seed, n_runs=arguments.n_runs,
+        spec=arguments.spec, n_replicates=arguments.n_replicates, seed=arguments.seed, n_runs=arguments.n_runs,
         correlation=arguments.correlation, noise_sd=arguments.noise_sd, max_components=arguments.max_components,
         n_splits=arguments.n_splits, rtol=arguments.rtol, atol=arguments.atol)
     arguments.output_folder.mkdir(parents=True, exist_ok=True)
-    comparison.to_csv(arguments.output_folder / 'rebuild_comparison.csv', index=False)
+    comparison.to_csv(arguments.output_folder / f"rebuild_comparison_{arguments.spec}.csv", index=False)
     checks['AC-4'] = bool(comparison['match'].all())
     for name, passed in checks.items():
         print(f"{name}: {'pass' if passed else 'FAIL'}")
+    same_count = int((comparison['n_components_original'] == comparison['n_components_rebuilt']).sum())
     print(f"AC-4 matched {int(comparison['match'].sum())} of {len(comparison)} fits; "
-          f"largest coefficient difference {comparison['max_abs_diff_coefficients'].max():.3g}, "
-          f"largest stationary point difference {comparison['max_abs_diff_stationary_point'].max():.3g}")
+          f"same component count in {same_count}; "
+          f"largest stationary point difference {comparison['max_abs_diff_stationary_point'].max():.3g}; "
+          f"median stationary point difference {comparison['max_abs_diff_stationary_point'].median():.3g}")
     if not all(checks.values()):
         sys.exit(1)
