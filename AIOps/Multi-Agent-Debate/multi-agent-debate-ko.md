@@ -1,255 +1,186 @@
 # Multi-Agent Debate (MAD) for Model Specification
-Version 1 | Created: 2026-11-18 | Updated: 2026-11-18 01:52 CST
+Version 2 | Created: 2026-11-18 | Updated: 2026-11-18 09:34 UTC
 
 - [1. Purpose](#1-purpose)
 - [2. Summary](#2-summary)
-- [3. Taxonomy and its Hierarchy](#3-taxonomy-and-its-hierarchy)
-    - [3.1 Comparison](#31-comparison)
-- [4. Principle](#4-principle)
-- [5. Spec Debate](#5-spec-debate)
-    - [5.1 Spec Prompt](#51-spec-prompt)
-    - [5.2 Roles](#52-roles)
-    - [5.3 Round Procedure](#53-round-procedure)
-    - [5.4 Human-Settled Defects](#54-human-settled-defects)
-- [6. Application](#6-application)
+- [3. Process Flow](#3-process-flow)
+- [4. Roles and Prompts](#4-roles-and-prompts)
+    - [4.1 Spec Prompt](#41-spec-prompt)
+    - [4.2 Roles](#42-roles)
+    - [4.3 Defect Checklist](#43-defect-checklist)
+    - [4.4 Prompts](#44-prompts)
+    - [4.5 Code-Settled and Human-Settled Defects](#45-code-settled-and-human-settled-defects)
+- [5. Worked Example: pls_rsm.py](#5-worked-example-pls_rsmpy)
+    - [5.1 Source Model](#51-source-model)
+    - [5.2 Draft Spec](#52-draft-spec)
+    - [5.3 Debate Rounds](#53-debate-rounds)
+    - [5.4 Human Clarification](#54-human-clarification)
+    - [5.5 Final Spec](#55-final-spec)
+    - [5.6 Rebuild Verification](#56-rebuild-verification)
 - [References](#references)
 - [Appendix A. Terminology](#appendix-a-terminology)
 
 ## 1. Purpose
 
-**Problem Statement**: 한 agent 나 한 사람이 쓴 model spec 에는 빠진 요구사항, 모호한 문장, 서로 어긋나는 조건이 남아, 그 spec 으로 구현한 model 이 의도와 다르게 동작한다.
+**Problem Statement**: 이미 있는 model code 를 읽고 spec 을 쓰면, 한 agent 가 code 에 없는 의도를 지어 넣거나 code 에 있는 동작을 빠뜨려, 그 spec 으로 다시 build 한 model 이 기존 model 과 다르게 동작한다.
 
 **Goal**:
 
-1. 독자가 MAD 를 역할 구조, 통신 구조, 종료와 결론 집계의 세 축으로 나누고, 그 가운데 spec 작성에 맞는 구성을 고를 수 있다.
-2. 독자가 agent 끼리 prompt 로 주고받는 debate 로 spec 의 네 요소 (scope, data schema, behavior, acceptance criteria) 에서 빠진 것, 모호한 것, 어긋난 것을 찾아 고칠 수 있다.
-3. 독자가 debate 가 끝난 뒤 agent 가 합의해서 확정할 항목과 사람이 확정해야 할 항목 (`[NEEDS CLARIFICATION]`) 을 가를 수 있다.
+1. 독자가 기존 model code 를 읽어 markdown spec prompt 를 쓰는 process flow 를 단계마다 입력, 출력, 맡는 역할로 따라갈 수 있다.
+2. 독자가 실제 model 의 spec 예에서 비판자가 code 와 spec 을 견주어 빠진 것, 모호한 것, 어긋난 것을 찾고 작성자가 고치는 과정을 확인할 수 있다.
+3. 독자가 code 로 확정할 수 있는 항목과 사람이 확정해야 할 항목 (`[NEEDS CLARIFICATION]`) 을 가를 수 있다.
 
 **Non-Goal**:
 
-- Debate 로 model 을 학습시키거나 학습 데이터와 보상을 만드는 방법은 다루지 않는다.
-- Spec 을 받은 뒤의 구현과 검증은 다루지 않는다.
-- 구현 code 와 특정 framework (AutoGen 등) 사용법은 다루지 않는다.
+- 기존 model 없이 새 model 의 spec 을 처음부터 쓰는 방법은 다루지 않는다.
+- Spec 으로 model 을 다시 build 하는 code 의 작성 방법은 다루지 않는다.
+- MAD 의 갈래 비교와 문헌 조사는 다루지 않는다.
 
 ## 2. Summary
 
-- MAD 는 여러 LLM agent 가 prompt 로 서로의 답을 받아 여러 round 에 걸쳐 고쳐 쓰게 하는 방법이며, 이 문서는 MAD 로 model build 에 쓰는 markdown prompt 형식의 spec 을 다듬는다.
-- Spec 작성에는 작성자 (author) 가 쓴 spec 한 판을 비판자 (critic) 가 검사하고 작성자가 고치는 구성에, 합의하지 못한 결함을 판정하고 종료를 정하는 judge 를 더해 쓴다.
-- 비판자는 spec 의 네 요소마다 빠진 것, 모호한 것, 어긋난 것을 찾고, 이 round 는 judge 가 남은 결함이 없다고 판정하거나 round 상한에 닿을 때까지 되풀이된다.
-- 요구사항 안에서 근거를 찾을 수 있는 결함은 agent 가 확정하고, 요구사항에 없는 사실이 필요한 결함과 round 상한까지 판정되지 않은 결함은 `[NEEDS CLARIFICATION]` 으로 남겨 사람이 확정한다.
-- MAD 는 단일 agent 방법보다 늘 낫지는 않고 역할 prompt 와 반박 강도에 따라 결과가 크게 달라지며, 호출 수가 agent 수와 round 수를 곱한 만큼 는다.
+- 기존 model 의 spec 은 작성자가 code 를 읽어 쓴 초안을 비판자가 code 와 견주어 검사하고, 작성자가 고치거나 반박하며, judge 가 종료를 정하는 debate 로 다듬는다.
+- Process flow 는 code 읽기, 초안 작성, debate round, 사람의 확정, spec 만으로 다시 build, 원본과의 비교 검증의 여섯 단계이다.
+- 기존 code 가 동작의 기준이므로, code 에 있는 동작에 관한 결함은 agent 가 code 를 근거로 확정하고, 허용 오차나 library version 처럼 code 에 없는 사실이 필요한 결함만 `[NEEDS CLARIFICATION]` 으로 사람에게 넘긴다.
+- 검증은 같은 data 를 원본 model 과 다시 build 한 model 에 넣어 acceptance criteria 를 돌리는 것이며, 실패하면 원인이 spec 에 있으면 debate 로, code 에 있으면 다시 build 로 돌아간다.
 
-## 3. Taxonomy and its Hierarchy
+## 3. Process Flow
 
-MAD 구성은 역할 구조, 통신 구조, 종료와 결론 집계의 세 축으로 나뉘며, spec 작성에는 작성자와 비판자가 spec 한 판을 두고 결함 목록을 주고받고 judge 가 종료와 결론을 정하는 구성을 쓴다.
-
-세 축과 축마다의 값은 아래 Fig 1 이다.
+기존 model 에서 spec 을 얻는 일은 여섯 단계이며, debate 와 검증 두 곳에서 앞 단계로 돌아가는 loop 가 있다. 단계마다의 역할, 입력, 출력은 아래 Fig 1 이다.
 
 ```text
-AXIS                         VALUES
+STEP           ROLE           INPUT                                 OUTPUT
 
-Role structure           >   Symmetric peers | Author + critic | Affirmative + negative + judge
-Communication            >   One-by-one | Simultaneous-talk | Simultaneous-talk with summarizer
-Termination/aggregation  >   Fixed rounds, converged answer | Checker pass, final revision | Judge break, judge extraction
+1. Read        Author         existing model code                   function list, in-scope / out-of-scope
+2. Draft       Author         code, scope                           draft spec (v0)
+3. Debate      Critics        code, spec                            defect list
+               Author         code, defect list                     revised spec, rebuttals, [NEEDS CLARIFICATION]
+               Judge          code, defect list, author response    CONTINUE -> 3 | STOP -> 4
+4. Clarify     Human          [NEEDS CLARIFICATION] list            settled values written into the spec
+5. Rebuild     Coding agent   final spec only                       rebuilt model code
+6. Verify      Script         original code, rebuilt code, data     all AC pass -> done
+                                                                    AC fail, defect in spec -> 3
+                                                                    AC fail, defect in rebuilt code -> 5
 ```
 
 <a id="fig-1"></a>
-Fig 1. Three axes of a MAD configuration
+Fig 1. Process flow from an existing model to a verified spec
 
-세 축은 서로 독립이어서, 한 구성은 축마다 값 하나를 골라 정한다. Du 등 [[1](#ref-1)] 은 대등한 동료 (symmetric peers) 세 agent 가 매 round 다른 agent 의 앞 round 답을 함께 받아 고쳐 쓰고, 정한 round 수가 끝나면 수렴한 답을 결론으로 삼는다. Liang 등 [[2](#ref-2)] 은 찬성 (affirmative) 과 반대 (negative) 두 debater 가 정한 차례로 말하고, judge 가 round 마다 종료를 판정하며 상한까지 결론이 없으면 debate 기록에서 답을 뽑는다.
+- 1 Read: 작성자가 code 의 함수와 상수를 훑어, spec 이 다룰 model 부분과 다루지 않을 부분 (data 생성, 그림, CLI 등) 을 가른다.
+- 2 Draft: 작성자가 code 를 읽어 spec 의 네 요소를 채운 초안 v0 을 쓴다.
+- 3 Debate: 비판자는 spec 의 문장마다 code 의 해당 줄과 견주어 결함을 찾고, 작성자는 결함마다 고치거나 반박하며, judge 는 반박이 맞는지 판정한 뒤 계속과 종료를 정한다.
+- 4 Clarify: 사람이 `[NEEDS CLARIFICATION]` 마다 값을 정해 spec 에 적는다.
+- 5 Rebuild: Coding agent 가 기존 code 를 보지 않고 최종 spec 만으로 model code 를 다시 쓴다.
+- 6 Verify: Script 가 acceptance criteria 를 돌리고, 같은 data 로 원본과 다시 build 한 model 의 결과를 견준다.
 
-세 역할 구조가 무엇을 가정하고, 한 단계 내려갈 때 무엇을 버리고 무엇을 더하는지는 아래 Fig 2 이다.
+단계 5 와 6 은 SDD 와 겹치며, 구현과 자가 검증의 진행은 [Spec-Driven Development (SDD) 4.4 Phase 3: Implementation](../SDD/spec-driven-development-ko.md#44-phase-3-implementation) 과 [4.5 Phase 4: Self-Verification Loop](../SDD/spec-driven-development-ko.md#45-phase-4-self-verification-loop) 에 있다. 이 문서의 단계 6 은 SDD 와 달리 기존 model 이 있으므로, 같은 data 에서 원본과 결과가 같은지를 acceptance criteria 에 넣는다.
 
-```text
-Multi-agent debate (MAD)
-├── Symmetric peers                  each agent writes a full answer; answers converge          Du et al.
-│     assumes   one short answer that every agent can produce alone
-├── Author + critic                  one draft; critics report defects; author revises          MARE
-│     drops     independent full answers
-│     adds      one artifact under revision, a defect checklist
-└── Affirmative + negative + judge   two sides argue; a judge stops the debate and decides      Liang et al.
-      drops     agreement as the stop rule
-      adds      a judge that decides when to stop, with its own bias
-```
+## 4. Roles and Prompts
 
-<a id="fig-2"></a>
-Fig 2. Role structures of MAD and what each one assumes, drops and adds
+Spec debate 는 작성자, 비판자, judge 의 세 agent 와, `[NEEDS CLARIFICATION]` 을 정하는 사람이 맡으며, 모든 agent 는 기존 code 를 함께 받는다.
 
-대등한 동료 구성은 agent 마다 답 전체를 따로 쓰게 하므로, 답이 짧아 같은지 다른지를 바로 가릴 수 있어야 수렴을 판정할 수 있다. 작성자 + 비판자 구성은 따로 쓴 답을 버리고 고쳐 갈 판 하나를 두며, MARE [[3](#ref-3)] 에서는 checker 가 요구사항 초안의 결함 (requirements smell) 을 찾으면 collector 와 modeler 가 초안과 요구사항 model 을 차례로 고치고, 결함이 없을 때 documenter 가 요구사항 명세 (SRS) 를 쓴다. 찬성 + 반대 + judge 구성은 합의를 종료 조건에서 빼고, 그 대신 judge 가 종료와 결론을 정한다.
-
-Spec 은 여러 꼭지로 이루어진 markdown 문서이므로, agent 마다 spec 전체를 따로 쓰게 하면 어느 판으로 수렴했는지를 가릴 수 없다. 그래서 spec 작성에는 작성자 + 비판자 구성으로 spec 한 판을 고쳐 가고, 작성자가 반박해 합의하지 못한 결함만 judge 가 판정한다.
-
-### 3.1 Comparison
-
-Table 1. Role structures compared for spec writing
-
-| Role structure                 | Use for spec              | Assumption                               | Setting in source                              | Breaks when                                            | Source        |
-| :----------------------------: | :-----------------------: | :--------------------------------------: | :--------------------------------------------: | :----------------------------------------------------: | :-----------: |
-| Symmetric peers                | 쓰지 않음                 | 각 agent 가 혼자 쓸 수 있는 짧은 답 하나 | agent 3 개, round 2 회                         | 답이 긴 문서여서 수렴을 판정할 수 없음                 | [[1](#ref-1)] |
-| Author + critic                | spec 작성과 결함 탐지     | 고쳐 갈 판 하나와 결함 기준              | agent 5 개, checker 가 결함을 찾지 못할 때까지 | 결함 기준에 없는 결함은 찾지 못함                      | [[3](#ref-3)] |
-| Affirmative + negative + judge | 합의하지 못한 결함의 판정 | judge 가 두 쪽을 공정하게 판정           | debater 2 개, judge 1 개, round 상한 3 회      | debater 와 judge 의 LLM 이 다르면 judge 가 한쪽을 편듦 | [[2](#ref-2)] |
-
-Setting in source 열은 각 문헌의 실험 설정이다. Liang 등 [[2](#ref-2)] 에서 debater 와 judge 가 서로 다른 LLM 을 쓰면 judge 는 자기와 같은 LLM 을 쓰는 쪽을 편들었다.
-
-Table 2. Communication strategies compared for spec writing
-
-| Communication                     | Use for spec                                       | Message flow                                                           | Source                       |
-| :-------------------------------: | :------------------------------------------------: | :--------------------------------------------------------------------: | :--------------------------: |
-| One-by-one                        | 작성자 다음에 비판자가 말하는 차례                 | 정한 차례로 말하고, 말한 답을 뒤 agent 의 대화 이력에 더함             | [[4](#ref-4)]                |
-| Simultaneous-talk                 | 여러 비판자가 서로의 결함 목록을 보지 않고 찾을 때 | 각자 자기 이력으로 답하고, round 끝에 모든 답을 모든 agent 이력에 더함 | [[4](#ref-4)]                |
-| Simultaneous-talk with summarizer | 결함 목록이 길어 context 길이를 넘을 때            | round 끝에 다른 LLM 이 답을 요약하고, 요약만 이력에 더함               | [[4](#ref-4)], [[1](#ref-1)] |
-
-Du 등 [[1](#ref-1)] 은 agent 가 많아 context 길이 오류가 날 때 다른 agent 의 답을 이어 붙이는 대신 요약해 넘겼고, 요약했을 때 성능이 이어 붙였을 때보다 높았으며 agent 를 다섯 개 이상 쓸 수 있었다.
-
-## 4. Principle
-
-MAD 의 한 round 는 각 agent 가 역할 prompt 와 앞 round 까지의 debate 기록을 받아 답하는 호출이며, 결과는 역할 prompt 의 다양성, 반박 강도, judge 의 종료 판정에 따라 달라진다.
-
-한 LLM 이 자기 답을 스스로 고치는 self-reflection 에서는, LLM 이 자기 답에 확신을 가지면 처음 답이 틀렸어도 새 생각을 하지 못하는 Degeneration-of-Thought (DoT) 가 생긴다 [[2](#ref-2)]. Debate 에서는 다른 agent 의 반박이 들어오므로, 한 agent 가 처음 답에 머물러도 다른 관점의 결함이 기록에 남는다.
-
-Round 마다 agent 가 받는 prompt 는 다른 agent 의 앞 round 답과 고쳐 쓰라는 요청으로 이루어진다. Du 등 [[1](#ref-1)] 이 쓴 짧은 형식의 prompt 는 아래이다.
-
-```text
-These are the solutions to the problem from other agents: [other answers]
-Based off the opinion of other agents, can you give an updated response
-```
-
-같은 문헌에서 요청을 "Using the opinion of other agents as additional advice" 로 바꾼 긴 형식은 agent 가 답을 덜 바꾸게 해 수렴이 늦었다 [[1](#ref-1)]. Round 를 늘리면 성능이 올랐지만, 4 round 를 넘긴 성능은 4 round 와 거의 같았다 [[1](#ref-1)].
-
-역할 prompt 는 agent 마다 달라야 한다. ChatEval [[4](#ref-4)] 에서 두 agent 에게 같은 역할 설명을 주면 정확도가 53.8 % 로 단일 agent 의 53.8 % 와 같았고, 서로 다른 역할을 주면 60 % 였다.
-
-반박 강도 (tit for tat) 는 중간에 둔다. Liang 등 [[2](#ref-2)] 은 모두 합의하라는 수준 0 부터 모든 점에서 반대하라는 수준 3 까지 네 수준을 견주었고, 기본 설정은 반대를 요구하되 완전한 합의는 요구하지 않는 수준이었다. 반대를 더 요구하면 결과가 나아졌지만 모든 점에서 반대하라는 수준 3 은 가장 좋은 결과를 주지 않았으며, 문헌은 끝없는 반대가 양극화를 낳는다고 보았다. Smit 등 [[5](#ref-5)] 도 agent 가 서로에게 동의하는 정도를 조절하면 성능이 크게 나아진다고 보고했다.
-
-Judge 는 두 방식으로 결론을 정한다 [[2](#ref-2)].
-
-- Discriminative mode: round 마다 모든 debater 가 말한 뒤, 올바른 답에 이르렀는지 판정해 종료하거나 이어 간다.
-- Extractive mode: round 상한까지 올바른 답이 나오지 않으면, debate 기록 전체에서 결론을 뽑는다.
-
-Judge 가 최선의 답에 이른 round 에서 debate 를 끝내는 adaptive break 가 성능에 중요했고, 그 round 를 지나서도 debate 를 이어 가게 하면 번역 품질이 떨어졌다 [[2](#ref-2)].
-
-## 5. Spec Debate
-
-Spec debate 는 작성자가 쓴 markdown spec prompt 를 비판자가 네 요소와 세 결함 유형으로 검사하고 작성자가 고치는 round 를, judge 가 남은 결함이 없다고 판정하거나 round 상한에 닿을 때까지 되풀이한다.
-
-### 5.1 Spec Prompt
+### 4.1 Spec Prompt
 
 Spec 은 coding agent 에 model build 를 맡길 때 주는 markdown 형식의 prompt 이며, scope, data schema, behavior, acceptance criteria 의 네 요소로 이루어진다. 이 네 요소는 SDD 와 겹치며, 각 요소의 정의는 [Spec-Driven Development (SDD) 3.2 Spec Components](../SDD/spec-driven-development-ko.md#32-spec-components) 에 있다.
 
-- Scope: 손댈 파일, 쓸 library 와 그 version.
-- Data schema: 입력과 출력의 열, type, 단위.
-- Behavior: 번호를 붙인 MUST 요구사항과 경계 조건에서의 동작.
-- Acceptance criteria: 통과 여부를 가르는 test 와 명령.
+- Scope: 만들 파일, 쓸 library 와 그 version, 다루지 않는 부분.
+- Data schema: 함수의 인자와 반환값, 그 shape 와 type, 중간 행렬의 열 순서.
+- Behavior: 번호를 붙인 요구사항 (FR) 과 예외에서의 동작.
+- Acceptance criteria: 통과 여부를 가르는 test 와 원본과의 비교 기준 (AC).
 
-Debate 가 다루는 spec 의 꼴은 아래이다.
+### 4.2 Roles
 
-```markdown
-# Spec: <MODEL_NAME>
-## Scope
-## Data Schema
-## Behavior
-## Acceptance Criteria
-```
+Table 1. Roles in a spec debate on an existing model
 
-### 5.2 Roles
+| Role         | Input                          | Output                                   | Prompt focus                                        |
+| :----------: | :----------------------------: | :--------------------------------------: | :-------------------------------------------------: |
+| Author       | code, 앞 round 의 결함 목록    | 고친 spec, 결함마다 고침 또는 반박       | code 에 없는 동작은 쓰지 않음                       |
+| Critic       | code, spec                     | 결함 목록 (요소, 유형, 위치, code 근거)  | 비판자마다 다른 관점, spec 은 고쳐 쓰지 않음        |
+| Judge        | code, 결함 목록, 작성자의 응답 | 반박된 결함마다 판정, CONTINUE 또는 STOP | code 를 근거로 판정, 마지막 round 면 남은 결함 표시 |
+| Human        | `[NEEDS CLARIFICATION]` 목록   | 확정한 값                                | -                                                   |
+| Coding agent | 최종 spec                      | 다시 build 한 model code                 | 기존 code 를 보지 않음                              |
 
-Spec debate 에는 작성자, 비판자, judge 의 세 agent 역할과, `[NEEDS CLARIFICATION]` 을 확정하는 사람이 있다.
+작성자와 비판자의 loop 는 MARE [[1](#ref-1)] 를 따른다. MARE 에서는 checker 가 요구사항 초안에서 결함 (requirements smell) 을 찾으면 collector 와 modeler 가 초안을 고치고, 결함이 없을 때 documenter 가 요구사항 명세를 쓴다. Judge 는 Liang 등 [[2](#ref-2)] 의 debate 에서 종료를 정하는 역할을 따른다. 같은 문헌에서 debater 와 judge 가 서로 다른 LLM 을 쓰면 judge 가 자기와 같은 LLM 을 쓰는 쪽을 편들었으므로, 세 agent 는 같은 LLM 으로 둔다. 비판자에게는 서로 다른 관점의 역할 prompt 를 준다. ChatEval [[3](#ref-3)] 에서 두 agent 에게 같은 역할 설명을 주면 정확도가 단일 agent 와 같았다.
 
-Table 3. Roles in a spec debate
+### 4.3 Defect Checklist
 
-| Role   | Input                           | Output                               | Prompt focus                                                   |
-| :----: | :-----------------------------: | :----------------------------------: | :------------------------------------------------------------: |
-| Author | 요구사항, 앞 round 의 결함 목록 | 고친 spec, 결함마다 고침 또는 반박   | 모르는 사실은 지어 쓰지 않고 `[NEEDS CLARIFICATION]` 으로 표시 |
-| Critic | spec                            | 결함 목록 (요소, 유형, 위치, 이유)   | 비판자마다 다른 관점, spec 은 고쳐 쓰지 않음                   |
-| Judge  | spec, 결함 목록, 작성자의 반박  | 반박된 결함마다 판정, 계속 또는 종료 | 결함이 남으면 계속, 마지막 round 면 남은 결함 표시             |
-| Human  | `[NEEDS CLARIFICATION]` 목록    | 확정한 값                            | -                                                              |
+비판자가 찾는 결함은 spec 의 네 요소와 세 결함 유형의 조합이며, 기존 model 이 있으면 결함의 근거는 언제나 code 의 줄이다. Spec Kit [[4](#ref-4)] 은 spec 에서 모호한 것 (ambiguity), 어긋난 것 (contradiction), 빠진 것 (gap) 을 찾으라고 하고, MARE [[1](#ref-1)] 의 checker 는 요구사항의 correctness, completeness, consistency 를 검사한다.
 
-비판자에게는 서로 다른 역할 prompt 를 준다. 예를 들어 한 비판자는 data schema 와 behavior 를, 다른 비판자는 acceptance criteria 가 behavior 의 요구사항을 모두 검사하는지를 본다. 같은 역할 설명을 준 두 agent 의 정확도는 단일 agent 와 같았다 [[4](#ref-4)]. 작성자, 비판자, judge 는 같은 LLM 으로 둔다. Debater 와 judge 가 서로 다른 LLM 을 쓰면 judge 가 자기와 같은 LLM 을 쓰는 쪽을 편든다 [[2](#ref-2)].
+Table 2. Defect checklist against existing code
 
-비판자가 찾는 결함은 spec 의 네 요소와 세 결함 유형의 조합이다. Spec Kit [[6](#ref-6)] 은 spec 에서 모호한 것 (ambiguity), 어긋난 것 (contradiction), 빠진 것 (gap) 을 찾으라고 하고, MARE [[3](#ref-3)] 의 checker 는 요구사항의 correctness, completeness, consistency 를 검사한다.
+| Element             | Missing                                  | Ambiguous                                     | Contradictory                                    |
+| :-----------------: | :--------------------------------------: | :-------------------------------------------: | :----------------------------------------------: |
+| Scope               | code 가 쓰는 library 가 빠짐             | library 의 version 을 정하지 않음             | scope 밖이라 한 함수의 동작을 behavior 가 요구함 |
+| Data schema         | 인자, 반환값, 중간 행렬의 열 순서가 빠짐 | shape 나 type 을 정하지 않음                  | schema 의 출력을 만드는 FR 이 없음               |
+| Behavior            | code 의 분기, 예외, 경고가 빠짐          | 난수 seed, fold, 동점 처리 규칙을 정하지 않음 | 식이나 상수가 code 와 다름                       |
+| Acceptance criteria | FR 번호에 짝지은 test 가 없음            | 허용 오차나 비교할 data 가 없음               | 기대값이 behavior 로 계산한 값과 다름            |
 
-Table 4. Defect checklist for a model spec
+### 4.4 Prompts
 
-| Element             | Missing                                         | Ambiguous                                        | Contradictory                                 |
-| :-----------------: | :---------------------------------------------: | :----------------------------------------------: | :-------------------------------------------: |
-| Scope               | 손댈 파일이나 library 의 version 이 없음        | "최신 library" 처럼 version 을 정하지 않은 문장  | Behavior 가 scope 밖의 파일을 고치라고 요구함 |
-| Data schema         | target 열이나 입력 열의 type 이 없음            | 결측값 처리나 단위를 정하지 않은 열              | Behavior 가 schema 에 없는 열을 씀            |
-| Behavior            | 빈 입력, 결측값 같은 경계 조건의 동작이 없음    | MUST 대신 "가능하면" 으로 적은 요구사항          | 두 요구사항이 같은 입력에 다른 동작을 요구함  |
-| Acceptance criteria | Behavior 의 요구사항 번호에 짝지은 test 가 없음 | metric 이름만 있고 문턱값이나 data split 이 없음 | 기준이 behavior 와 다른 metric 을 씀          |
-
-### 5.3 Round Procedure
-
-Spec debate 의 round 는 아래 차례로 진행하며, 통신 구조는 작성자 다음에 비판자와 judge 가 말하는 one-by-one 이다.
-
-1. 작성자가 사람이 준 요구사항으로 spec 초안을 쓴다.
-2. 비판자가 spec 을 받아 Table 4 의 결함을 찾고, 결함마다 요소, 유형, 위치, 이유를 적은 목록을 돌려준다. 비판자가 여럿이면 simultaneous-talk 로 서로의 목록을 보지 않고 찾게 한다.
-3. 작성자가 결함마다 spec 을 고치거나 한 문장의 근거로 반박한다. 고치는 데 요구사항에 없는 사실이 필요하면 `[NEEDS CLARIFICATION: <QUESTION>]` 으로 적는다.
-4. Judge 가 반박된 결함마다 결함이 맞는지 반박이 맞는지 판정한다. 남은 결함이 있으면 2 로 돌아가고, 없으면 종료한다.
-5. Round 상한에 닿으면 judge 가 종료하고, 남은 결함을 `[NEEDS CLARIFICATION]` 으로 적는다.
-6. 사람이 `[NEEDS CLARIFICATION]` 마다 값을 적고, 그 값이 다른 요소와 어긋나는지 보도록 2 부터 한 round 를 더 돌린다.
-
-Round 상한은 문헌의 설정을 따른다. Liang 등 [[2](#ref-2)] 은 상한을 3 회로 두었고, Du 등 [[1](#ref-1)] 에서는 4 round 를 넘긴 성능이 4 round 와 거의 같았다.
-
-세 역할의 prompt 는 아래이다. 비판자 prompt 의 "You need not agree with the author" 는 Liang 등 [[2](#ref-2)] 의 meta prompt 가 debater 에게 서로 완전히 동의할 필요가 없다고 한 것을 따른다.
+세 agent 의 prompt 는 아래이다. 비판자 prompt 의 "You need not agree with the author" 는 Liang 등 [[2](#ref-2)] 의 meta prompt 가 debater 에게 서로 완전히 동의할 필요가 없다고 한 것을 따른다.
 
 ```markdown
-You are a critic of the model spec below. Your view: <CRITIC_VIEW>.
-List every defect in the spec, one item per defect, in this format:
-- element: Scope | Data Schema | Behavior | Acceptance Criteria
-- type: missing | ambiguous | contradictory
-- location: <HEADING_AND_LINE>
-- reason: one sentence
-Do not rewrite the spec. Do not assume facts the spec does not state.
-You need not agree with the author; the goal is a spec with no defects.
+You are the author of a spec for the existing model code below.
+Write the spec in four sections: Scope, Data Schema, Behavior (numbered FR-n), Acceptance Criteria (numbered AC-n).
+State only what the code does. Do not add checks, defaults or intentions that the code does not contain.
+In later rounds, for each defect in the critics' list, either revise the spec or rebut the defect in one sentence
+that cites the code line. If a revision needs a fact the code does not contain, write
+[NEEDS CLARIFICATION: <QUESTION>] instead of guessing.
 
-<SPEC>
-```
-
-```markdown
-You are the author of the model spec below.
-For each defect in the critic's list, either revise the spec or rebut the defect in one sentence.
-If a revision needs a fact the requirement does not give, write [NEEDS CLARIFICATION: <QUESTION>] instead of guessing.
-Return the full revised spec, then one line per defect: defect, action (revised | rebutted | clarification), reason.
-
-<REQUIREMENT>
+<CODE>
 <SPEC>
 <DEFECT_LIST>
 ```
 
 ```markdown
-You are the judge of a spec debate.
-For each defect the author rebutted, decide "defect stands" or "rebuttal stands", with one sentence of reason.
-Answer CONTINUE if any defect stands or was not handled; otherwise answer STOP.
+You are a critic of a spec written for the existing model code below. Your view: <CRITIC_VIEW>.
+Compare every spec sentence with the code and list every defect, one item per defect:
+- element: Scope | Data Schema | Behavior | Acceptance Criteria
+- type: missing | ambiguous | contradictory
+- location: <SPEC_ITEM>
+- evidence: <CODE_LINE>
+Do not rewrite the spec. You need not agree with the author; the goal is a spec that rebuilds the same model.
+
+<CODE>
+<SPEC>
+```
+
+```markdown
+You are the judge of a spec debate on the existing model code below.
+For each defect the author rebutted, decide "defect stands" or "rebuttal stands" from the code, in one sentence.
+Answer CONTINUE if the spec changed in this round or any defect stands; otherwise answer STOP.
 If this is round <MAX_ROUND>, answer STOP and write each defect that still stands as [NEEDS CLARIFICATION: <QUESTION>].
 
-<SPEC>
+<CODE>
 <DEFECT_LIST>
 <AUTHOR_RESPONSE>
 ```
 
-### 5.4 Human-Settled Defects
+Round 상한은 Liang 등 [[2](#ref-2)] 의 실험 설정인 3 회를 쓴다.
 
-Agent 가 확정하는 결함은 요구사항과 spec 의 문장끼리 견주어 가릴 수 있는 결함이고, 사람이 확정하는 결함은 요구사항에 없는 사실이 필요한 결함과 round 상한까지 판정되지 않은 결함이다. `[NEEDS CLARIFICATION]` 표시는 SDD 와 겹치며, 그 표기는 [Spec-Driven Development (SDD) 3.3 Requirement Notation](../SDD/spec-driven-development-ko.md#33-requirement-notation) 에 있다.
+### 4.5 Code-Settled and Human-Settled Defects
 
-Table 5. Who settles a defect
+기존 model 이 있으면 code 가 동작의 기준이므로, code 에 있는 동작에 관한 결함은 agent 가 code 를 근거로 확정하고, code 에 없는 사실이 필요한 결함과 round 상한까지 판정되지 않은 결함만 사람이 확정한다. `[NEEDS CLARIFICATION]` 표시는 SDD 와 겹치며, 그 표기는 [Spec-Driven Development (SDD) 3.3 Requirement Notation](../SDD/spec-driven-development-ko.md#33-requirement-notation) 에 있다.
+
+Table 3. Who settles a defect
 
 <table>
   <thead>
     <tr>
       <th align="center">Settled by</th>
       <th align="center">Defect</th>
-      <th align="center">Example</th>
+      <th align="center">Example in section 5</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center">Agent</td>
-      <td align="center">요구사항 안에서 근거를 찾을 수 있는 결함</td>
-      <td align="center">두 요구사항의 충돌, 요구사항 번호와 test 의 짝 누락</td>
+      <td align="center">code 에 있는 동작을 빠뜨리거나 다르게 적은 결함</td>
+      <td align="center">fold 의 seed, 열 순서, 성분 수의 상한</td>
     </tr>
     <tr>
       <td align="center" rowspan="2">Human</td>
-      <td align="center">요구사항에 없는 사실이 필요한 결함</td>
-      <td align="center">metric 의 문턱값, 학습 data 의 기간</td>
+      <td align="center">code 에 없는 사실이 필요한 결함</td>
+      <td align="center">원본과 견줄 허용 오차, library version</td>
     </tr>
     <tr>
       <td align="center">round 상한까지 판정되지 않은 결함</td>
@@ -258,57 +189,215 @@ Table 5. Who settles a defect
   </tbody>
 </table>
 
-요구사항에 없는 사실을 agent 끼리 합의로 채우지 않는다. Spec Kit [[6](#ref-6)] 은 정하지 않은 것을 추측하지 말고 `[NEEDS CLARIFICATION: <QUESTION>]` 으로 표시하라고 하며, 이 표시가 LLM 이 그럴듯하지만 틀릴 수 있는 가정을 세우는 것을 막는다고 적는다. 같은 문서는 spec 을 완성으로 보기 전에 `[NEEDS CLARIFICATION]` 이 하나도 남지 않아야 한다고 정한다.
+Code 에 없는 사실을 agent 끼리 합의로 채우지 않는다. Spec Kit [[4](#ref-4)] 은 정하지 않은 것을 추측하지 말고 `[NEEDS CLARIFICATION: <QUESTION>]` 으로 표시하라고 하며, 이 표시가 LLM 이 그럴듯하지만 틀릴 수 있는 가정을 세우는 것을 막는다고 적는다. 작성자는 code 에 없는 검사나 의도를 spec 에 넣자는 결함을 반박하고, judge 는 code 에 그 동작이 없으면 반박을 받아들인다.
 
-## 6. Application
+## 5. Worked Example: pls_rsm.py
 
-MAD 는 spec 의 결함을 찾는 데 쓸 수 있지만 단일 agent 방법보다 늘 낫지는 않으므로, 같은 spec 을 한 agent 의 자기 검토로 다듬은 결과와 견준 뒤에 쓴다. Smit 등 [[5](#ref-5)] 은 현재 형태의 MAD 가 self-consistency 나 여러 추론 경로의 ensemble 보다 늘 낫지는 않았고, hyperparameter 에 더 민감해 최적화가 어렵다고 보고했다.
+이 예는 이 문서와 같은 folder 의 [`src/pls_rsm.py`](src/pls_rsm.py) 를 기존 model 로 삼아 Fig 1 의 여섯 단계를 실제로 진행한 기록이다. 단계 1 에서 4 의 작성자, 비판자, judge, 사람 역할과 단계 5 의 coding agent 역할은 이 문서의 작성자가 차례로 맡았다.
 
-Table 6. Failure cases of a spec debate
+### 5.1 Source Model
 
-| Failure                       | Symptom                                         | Countermeasure                                        | Source        |
-| :---------------------------: | :---------------------------------------------: | :---------------------------------------------------: | :-----------: |
-| Same role prompt              | 비판자들이 같은 결함만 되풀이해 찾음            | 비판자마다 다른 관점의 역할 prompt                    | [[4](#ref-4)] |
-| Full agreement                | 작성자의 첫 판을 비판 없이 받아들임             | 완전한 합의를 요구하지 않는 meta prompt               | [[2](#ref-2)] |
-| Full disagreement             | 고친 문장까지 다시 반박해 debate 가 끝나지 않음 | 모든 점에서 반대하라고 요구하지 않는 meta prompt      | [[2](#ref-2)] |
-| Mixed LLM backbones           | judge 가 자기와 같은 LLM 쪽을 편듦              | 작성자, 비판자, judge 를 같은 LLM 으로 둠             | [[2](#ref-2)] |
-| Debate past the best round    | 고친 spec 이 이전 round 보다 나빠짐             | judge 의 adaptive break, round 상한                   | [[2](#ref-2)] |
-| Defects outside the checklist | Table 4 에 없는 결함이 그대로 남음              | 사람이 확정한 결함을 다음 debate 의 checklist 에 더함 | -             |
+`pls_rsm.py` 는 coded factor 설정 x 와 response y 로 2차 response surface 를 partial least squares (PLS) 로 맞추고, 그 surface 의 stationary point 를 구하는 script 이다. Script 는 같은 참 surface 에서 rotatable central composite design 과 factor 끼리 상관된 operating data 를 만들어 PLS 와 OLS 의 결과를 견주며, 아래 명령으로 실행한다.
 
-비용은 호출 수로 정해진다. 한 round 에 agent 마다 한 번 호출하므로 호출 수는 agent 수와 round 수를 곱한 값이며, Du 등 [[1](#ref-1)] 도 계산 비용 때문에 agent 3 개와 round 2 회를 주로 썼다.
+```bash
+python3 src/pls_rsm.py --output-folder <OUTPUT_FOLDER>
+```
+
+단계 1 에서 작성자는 함수를 아래처럼 갈랐다.
+
+Table 4. Functions of pls_rsm.py in and out of the spec scope
+
+| Function                        | Scope | Role in the script                           |
+| :-----------------------------: | :---: | :------------------------------------------: |
+| `expand_quadratic`              | In    | x 에 제곱 열과 두 factor 곱 열을 더함        |
+| `fit_pls_surface`               | In    | 교차 검증으로 PLS 성분 수를 고르고 다시 맞춤 |
+| `quadratic_from_coefficients`   | In    | 계수를 1차 vector b 와 대칭 행렬 B 로 나눔   |
+| `stationary_point`              | In    | B 의 고유값과 stationary point 를 구함       |
+| `true_response`                 | Out   | 참 surface 로 y 를 만듦                      |
+| `central_composite_design`      | Out   | rotatable central composite design 을 만듦   |
+| `correlated_operating_data`     | Out   | 상관된 operating data 를 만듦                |
+| `fit_ols_surface`               | Out   | 같은 확장 행렬로 OLS 를 풂                   |
+| `evaluate_design`,<br>`run`     | Out   | 두 방법의 결과를 모으고 표와 그림을 씀       |
+| `plot_results`,<br>`parse_args` | Out   | 그림과 CLI                                   |
+
+### 5.2 Draft Spec
+
+단계 2 에서 작성자가 code 를 한 번 읽고 쓴 초안 v0 은 아래이다.
+
+```markdown
+# Spec: PLS response surface
+
+## Scope
+- File: pls_rsm_rebuilt.py
+- Python, numpy, scikit-learn
+
+## Data Schema
+- Input x: array (n, k), coded factor settings
+- Input y: array (n,), response
+- Output: stationary point (k,), eigenvalues (k,), component count
+
+## Behavior
+- FR-1: Expand x with squares and pairwise products.
+- FR-2: Fit PLSRegression, choosing the number of components by cross-validation.
+- FR-3: Convert the coefficients into a linear vector b and a matrix B.
+- FR-4: Return the stationary point -0.5 B^-1 b and the eigenvalues of B.
+
+## Acceptance Criteria
+- Results should be close to the original model.
+```
+
+### 5.3 Debate Rounds
+
+단계 3 은 세 round 로 끝났다. 비판자 A 의 관점은 "data schema 와 behavior 가 code 와 같은가" 이고, 비판자 B 의 관점은 "scope 와 acceptance criteria 로 같은 model 을 다시 build 하고 검증할 수 있는가" 이다.
+
+Table 5. Defects found in round 1
+
+| ID    | Critic | Element             | Type          | Code evidence                                                     | Author     | Judge           |
+| :---: | :----: | :-----------------: | :-----------: | :---------------------------------------------------------------: | :--------: | :-------------: |
+| D1    | A      | Data schema         | missing       | 확장 행렬의 열을 1차, 제곱, i < j 인 곱의 차례로 쌓음             | 고침       | -               |
+| D2    | A      | Behavior            | ambiguous     | `KFold(min(n_splits, n), shuffle=True, random_state=0)` 과 RMSE   | 고침       | -               |
+| D3    | A      | Behavior            | missing       | 성분 수 상한을 rank 와 fold 크기로 제한하고 1 미만이면 오류       | 고침       | -               |
+| D4    | A      | Behavior            | missing       | 예측이 유한하지 않으면 그 성분 수에서 탐색을 멈추고 stderr 에 씀  | 고침       | -               |
+| D5    | A      | Behavior            | ambiguous     | B 의 비대각 원소는 곱 계수의 절반                                 | 고침       | -               |
+| D6    | A      | Behavior            | missing       | B 가 singular 이면 `LinAlgError`                                  | 고침       | -               |
+| D7    | A      | Data schema         | missing       | x 가 coded 범위 안에 있어야 한다는 조건이 없음                    | 반박       | rebuttal stands |
+| D8    | A      | Behavior            | ambiguous     | `PLSRegression` 기본값 (scale=True), intercept 없이 `coef_` 만 씀 | 고침       | -               |
+| D9    | B      | Data schema         | missing       | 인자 `max_components`, `n_splits` 와 반환값 cv RMSE, b, B         | 고침       | -               |
+| D10   | B      | Acceptance criteria | ambiguous     | 비교할 data 와 허용 오차가 없음                                   | 고침, 질문 | -               |
+| D11   | B      | Scope               | ambiguous     | code 가 library version 을 정하지 않음                            | 질문       | -               |
+| D12   | B      | Acceptance criteria | missing       | FR 번호에 짝지은 test 가 없음                                     | 고침       | -               |
+| D13   | B      | Data schema         | contradictory | 출력의 component count 를 만드는 FR 이 없음                       | 고침       | -               |
+
+Author 열의 "질문" 은 작성자가 그 결함을 `[NEEDS CLARIFICATION]` 으로 적었다는 뜻이다.
+
+- D7: 작성자는 code 에 x 의 범위를 검사하는 줄이 없고 `correlated_operating_data` 가 x 를 coded 범위가 아니라 표준편차 1 로 맞춘다는 것을 근거로 반박했고, judge 는 code 에 없는 검사를 spec 에 넣지 않는다고 보아 반박을 받아들였다.
+- D10: 비교할 data 는 code 의 두 design 과 CLI 기본값으로 정했고, 허용 오차는 code 에 없어 `[NEEDS CLARIFICATION]` 으로 남겼다.
+- Judge 는 spec 이 바뀌었으므로 CONTINUE 로 답했다.
+
+Table 6. Defects found in round 2
+
+| ID    | Critic | Element             | Type          | Code evidence                                                                          | Author | Judge |
+| :---: | :----: | :-----------------: | :-----------: | :------------------------------------------------------------------------------------: | :----: | :---: |
+| D14   | A      | Behavior            | ambiguous     | 상한의 fold 크기는 `ceil(n / folds.get_n_splits())` 이고, fold 수는 `min(n_splits, n)` | 고침   | -     |
+| D15   | B      | Acceptance criteria | contradictory | v1 의 AC-2 는 4 행에서 오류를 기대하지만, FR-3 대로면 4 행의 상한은 2                  | 고침   | -     |
+
+- D14: v1 의 FR-3 은 fold 크기를 `ceil(n / n_splits)` 로 적어, 행이 `n_splits` 보다 적을 때 code 와 다른 상한을 준다.
+- D15: 4 행이면 fold 4 개, fold 크기 1 이므로 상한은 min(9, rank, 4 - 1 - 1) = 2 이고 오류가 나지 않는다. 작성자는 상한이 1 미만이 되는 2 행으로 AC-2 를 고쳤다.
+- Judge 는 spec 이 바뀌었으므로 CONTINUE 로 답했다.
+
+Round 3 에서 두 비판자는 새 결함을 찾지 못했고, judge 는 STOP 으로 답하며 D10 과 D11 의 `[NEEDS CLARIFICATION]` 두 개를 단계 4 로 넘겼다.
+
+### 5.4 Human Clarification
+
+단계 4 에서 사람 역할이 두 항목을 아래처럼 정했다.
+
+Table 7. Values settled by the human
+
+| ID    | Question                                | Settled value                                                   |
+| :---: | :-------------------------------------: | :-------------------------------------------------------------: |
+| C1    | 원본과 다시 build 한 model 의 허용 오차 | 성분 수는 같고, 실수 결과는 `np.allclose(rtol=1e-9, atol=1e-9)` |
+| C2    | library version                         | scikit-learn 1.9.1, numpy 2.5.3                                 |
+
+C2 는 이 예를 실행한 환경에 설치된 version 이다.
+
+### 5.5 Final Spec
+
+단계 4 까지 마친 최종 spec v3 은 아래이며, 단계 5 의 coding agent 는 이 spec 만 받는다.
+
+```markdown
+# Spec: PLS second-order response surface and its stationary point
+
+## Scope
+- New module: pls_rsm_rebuilt.py. No CLI, no plotting.
+- Python 3, numpy 2.5.3, scikit-learn 1.9.1 (PLSRegression, KFold, cross_val_predict).
+- Out of scope: generating designs, the true surface, the OLS comparison, figures.
+
+## Data Schema
+- x: float array of shape (n, k), coded factor settings, one run per row. No range check.
+- y: float array of shape (n,), response.
+- max_components: int >= 1, default 9.
+- n_splits: int >= 2, default 5.
+- Expanded matrix: shape (n, 2k + k(k-1)/2), columns in this order:
+  x1..xk, then x1^2..xk^2, then xi*xj for i < j in lexicographic order, named "xixj".
+- Public functions:
+  - expand_quadratic(x) -> (expanded matrix, column names)
+  - stationary_point(b, B) -> (stationary point of shape (k,), eigenvalues of shape (k,), ascending)
+  - fit_surface(x, y, max_components=9, n_splits=5) -> dict with keys
+    coefficients (shape (2k + k(k-1)/2,)), n_components (int), cv_rmse (list of float, one per tried count),
+    b (shape (k,)), B (shape (k, k), symmetric), stationary_point, eigenvalues
+
+## Behavior
+- FR-1: Build the expanded matrix in the column order above.
+- FR-2: folds = KFold(n_splits=min(n_splits, n), shuffle=True, random_state=0).
+- FR-3: upper = min(max_components, rank of the column-centered expanded matrix,
+  n - ceil(n / number of folds) - 1). If upper < 1, raise ValueError.
+- FR-4: For count = 1..upper, predict y with cross_val_predict(PLSRegression(n_components=count), cv=folds),
+  using PLSRegression defaults (scale=True), and record RMSE = sqrt(mean((y - prediction)^2)).
+  If any prediction is not finite, print one line to stderr and stop before that count.
+  If no count is usable, raise ValueError.
+- FR-5: n_components = the count with the smallest RMSE; on a tie, the smallest count.
+  Refit PLSRegression(n_components) on all rows; coefficients = coef_ flattened. The intercept is not used.
+- FR-6: b_i = coefficient of xi; B_ii = coefficient of xi^2; B_ij = B_ji = half the coefficient of xixj.
+- FR-7: eigenvalues = eigvalsh(B). If min |eigenvalue| < machine epsilon * max(1, max |eigenvalue|),
+  raise numpy.linalg.LinAlgError. Otherwise stationary point = -0.5 * solve(B, b).
+
+## Acceptance Criteria
+- AC-1 (FR-1): for k = 3 the column names are x1 x2 x3 x1^2 x2^2 x3^2 x1x2 x1x3 x2x3.
+- AC-2 (FR-3): fit_surface on 2 rows raises ValueError.
+- AC-3 (FR-7): stationary_point(b=[1, 1], B=diag(1, 0)) raises numpy.linalg.LinAlgError.
+- AC-4 (FR-1 to FR-7): on the central composite design and the correlated operating data of the original
+  pls_rsm.py (n_runs 20, correlation 0.85, noise_sd 0.35, seed 20260906 + replicate, 200 replicates),
+  n_components equals the original, and coefficients, cv_rmse, stationary point and eigenvalues satisfy
+  np.allclose(rtol=1e-9, atol=1e-9) against the original.
+```
+
+### 5.6 Rebuild Verification
+
+단계 5 에서 coding agent 가 최종 spec 으로 [`src/pls_rsm_rebuilt.py`](src/pls_rsm_rebuilt.py) 를 썼고, 단계 6 의 [`src/verify_rebuild.py`](src/verify_rebuild.py) 가 AC-1 에서 AC-4 를 돌렸다. `verify_rebuild.py` 는 AC-1 에서 AC-3 을 다시 build 한 module 로 검사하고, AC-4 는 원본 `pls_rsm.py` 의 함수와 다시 build 한 `fit_surface` 에 같은 data 를 넣어 결과를 견준 뒤, replicate 와 design 마다 한 행씩 `rebuild_comparison.csv` 에 쓴다.
+
+```bash
+cd src
+python3 verify_rebuild.py --output-folder <OUTPUT_FOLDER>
+```
+
+Table 8. Acceptance criteria results of the rebuild
+
+| AC    | Check                                      | Result                        |
+| :---: | :----------------------------------------: | :---------------------------: |
+| AC-1  | k = 3 의 확장 열 이름과 차례               | pass                          |
+| AC-2  | 2 행에서 ValueError                        | pass                          |
+| AC-3  | singular B 에서 LinAlgError                | pass                          |
+| AC-4  | 200 replicate × 2 design 의 원본 대비 결과 | pass, 400 fit 가운데 400 일치 |
+
+AC-4 의 400 fit 에서 계수와 stationary point 의 최대 절대 차이는 모두 0 이었다. 이 예의 coding agent 는 단계 1 에서 원본 code 를 읽은 작성자와 같은 agent 이므로, 이 결과는 spec 만으로 같은 model 을 다시 build 할 수 있음을 보여 주지만, 원본을 본 적 없는 coding agent 로도 같은 결과가 나오는지는 확인하지 않았다.
 
 ## References
 
 <a id="ref-1"></a>
-[1] Du, Y., Li, S., Torralba, A., Tenenbaum, J. B., & Mordatch, I. (2023). [Improving Factuality and Reasoning in Language Models through Multiagent Debate](https://doi.org/10.48550/arXiv.2305.14325). *arXiv preprint* arXiv:2305.14325.<br>
+[1] Jin, D., Jin, Z., Chen, X., & Wang, C. (2024). [MARE: Multi-Agents Collaboration Framework for Requirements Engineering](https://doi.org/10.48550/arXiv.2405.03256). *arXiv preprint* arXiv:2405.03256.<br>
 <a id="ref-2"></a>
 [2] Liang, T., He, Z., Jiao, W., Wang, X., Wang, Y., Wang, R., Yang, Y., Shi, S., & Tu, Z. (2024). [Encouraging Divergent Thinking in Large Language Models through Multi-Agent Debate](https://doi.org/10.48550/arXiv.2305.19118). *Proceedings of EMNLP 2024*.<br>
 <a id="ref-3"></a>
-[3] Jin, D., Jin, Z., Chen, X., & Wang, C. (2024). [MARE: Multi-Agents Collaboration Framework for Requirements Engineering](https://doi.org/10.48550/arXiv.2405.03256). *arXiv preprint* arXiv:2405.03256.<br>
+[3] Chan, C.-M., Chen, W., Su, Y., Yu, J., Xue, W., Zhang, S., Fu, J., & Liu, Z. (2023). [ChatEval: Towards Better LLM-based Evaluators through Multi-Agent Debate](https://doi.org/10.48550/arXiv.2308.07201). *arXiv preprint* arXiv:2308.07201.<br>
 <a id="ref-4"></a>
-[4] Chan, C.-M., Chen, W., Su, Y., Yu, J., Xue, W., Zhang, S., Fu, J., & Liu, Z. (2023). [ChatEval: Towards Better LLM-based Evaluators through Multi-Agent Debate](https://doi.org/10.48550/arXiv.2308.07201). *arXiv preprint* arXiv:2308.07201.<br>
-<a id="ref-5"></a>
-[5] Smit, A., Duckworth, P., Grinsztajn, N., Barrett, T. D., & Pretorius, A. (2023). [Should we be going MAD? A Look at Multi-Agent Debate Strategies for LLMs](https://doi.org/10.48550/arXiv.2311.17371). *arXiv preprint* arXiv:2311.17371.<br>
-<a id="ref-6"></a>
-[6] GitHub. (n.d.). [Specification-Driven Development (SDD)](https://github.com/github/spec-kit/blob/main/spec-driven.md). *Spec Kit repository*.
+[4] GitHub. (n.d.). [Specification-Driven Development (SDD)](https://github.com/github/spec-kit/blob/main/spec-driven.md). *Spec Kit repository*.
 
 ---
 
 ## Appendix A. Terminology
 
-- **Acceptance criteria**: spec 의 네 요소 가운데 하나로, 통과 여부를 가르는 test 와 명령.
-- **Adaptive break**: judge 가 최선의 답에 이른 round 에서 debate 를 끝내는 종료 방식.
-- **Author**: spec 을 쓰고 비판자의 결함마다 고치거나 반박하는 agent.
-- **Behavior**: spec 의 네 요소 가운데 하나로, 번호를 붙인 MUST 요구사항과 경계 조건에서의 동작.
-- **Critic**: spec 을 고쳐 쓰지 않고 결함 목록만 돌려주는 agent.
-- **Data schema**: spec 의 네 요소 가운데 하나로, 입력과 출력의 열, type, 단위.
-- **Degeneration-of-Thought (DoT)**: LLM 이 자기 답에 확신을 가진 뒤에는 처음 답이 틀렸어도 self-reflection 으로 새 생각을 하지 못하는 현상.
-- **Judge**: 반박된 결함을 판정하고 debate 의 계속과 종료를 정하는 agent.
-- **Multi-Agent Debate (MAD)**: 여러 LLM agent 가 prompt 로 서로의 답을 받아 여러 round 에 걸쳐 고쳐 쓰게 하는 방법. Liang 등은 자기 framework 의 이름으로도 MAD 를 쓴다.
+- **Acceptance criteria**: spec 의 네 요소 가운데 하나로, 통과 여부를 가르는 test 와 원본과의 비교 기준. 항목마다 AC 번호를 붙인다.
+- **Author**: code 를 읽어 spec 을 쓰고, 비판자의 결함마다 고치거나 반박하는 agent.
+- **Behavior**: spec 의 네 요소 가운데 하나로, 번호를 붙인 요구사항 (FR) 과 예외에서의 동작.
+- **Central composite design**: factorial 점, 축 위의 star 점, 중심점을 합친 실험 설계. Rotatable 이면 중심에서 같은 거리의 점에서 예측 분산이 같다.
+- **Coding agent**: 최종 spec 만 받아 model code 를 다시 쓰는 agent.
+- **Critic**: code 와 spec 을 견주어 결함 목록만 돌려주고 spec 은 고쳐 쓰지 않는 agent.
+- **Data schema**: spec 의 네 요소 가운데 하나로, 함수의 인자와 반환값, 그 shape 와 type, 중간 행렬의 열 순서.
+- **Judge**: 반박된 결함을 code 를 근거로 판정하고 debate 의 계속 (CONTINUE) 과 종료 (STOP) 를 정하는 agent.
+- **Multi-Agent Debate (MAD)**: 여러 LLM agent 가 prompt 로 서로의 답을 받아 여러 round 에 걸쳐 고쳐 쓰게 하는 방법.
 - **NEEDS CLARIFICATION**: spec 에서 정하지 못한 것을 추측으로 채우지 않고 사람에게 묻도록 남기는 표시.
-- **Round**: debate 에 참여한 agent 가 차례대로 또는 동시에 한 번씩 답하는 단위.
-- **Scope**: spec 의 네 요소 가운데 하나로, 손댈 파일, 쓸 library 와 그 version.
-- **Self-consistency**: 한 LLM 이 여러 추론 경로로 답을 여러 번 쓰고 가장 많이 나온 답을 고르는 방법.
-- **Self-reflection**: 한 LLM 이 자기 답에 스스로 feedback 을 주어 고치는 방법.
+- **Partial least squares (PLS)**: 입력과 출력의 공분산이 큰 방향으로 성분을 뽑아 회귀하는 방법. 성분 수가 model 의 hyperparameter 이다.
+- **Round**: debate 에서 비판자, 작성자, judge 가 차례로 한 번씩 답하는 단위.
+- **Scope**: spec 의 네 요소 가운데 하나로, 만들 파일, 쓸 library 와 그 version, 다루지 않는 부분.
 - **Spec**: coding agent 에 model build 를 맡길 때 주는 markdown 형식의 prompt.
-- **Tit for tat**: debater 가 상대의 주장에 반박하는 정도. 이 문서는 반박 강도로 적는다.
+- **Stationary point**: response surface 의 gradient 가 0 인 점. B 의 고유값 부호로 최대, 최소, saddle 을 가른다.
