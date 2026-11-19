@@ -1,5 +1,5 @@
 # AI/ML Model Development Engineering Workflow
-Version 1 | Created: 2026-11-19 | Updated: 2026-11-19 18:05 CST
+Version 2 | Created: 2026-11-19 | Updated: 2026-11-19 17:59 CST
 
 ## 1. Purpose
 
@@ -44,7 +44,7 @@ Table 1. Activities by stage
 <tr><td align="center">Monitoring</td><td align="center">Drift, 성능 추적과 rollback</td></tr>
 </table>
 
-PSM 의 Solutions 는 Problem Statement 하나에 해결책 후보를 여럿 둔다 (one-to-many relationship). 단계마다의 산출물과 관문은 아래 Table 2 이다.
+PSM 의 Solutions 는 Problem Statement 하나에 해결책 후보를 여럿 둔다 (one-to-many relationship). 엔지니어가 칸을 채워 쓰는 PSM 표는 [Appendix B](#appendix-b-psm-table-example) 에 있다. 단계마다의 산출물과 관문은 아래 Table 2 이다.
 
 Table 2. Outputs and gates by stage
 
@@ -89,3 +89,34 @@ Review 는 Deployment 뒤에 결과를 평가하고 피드백을 모아 개선 �
 - **latency**: 입력을 받은 뒤 model 이 출력을 내놓기까지 걸리는 시간이다.
 - **robustness**: 입력에 잡음이나 분포 변화가 있어도 model 성능이 유지되는 정도이다.
 - **rollback**: 배포한 model 에 문제가 생겼을 때 이전 판으로 되돌리는 것이다.
+
+## Appendix B. PSM Table Example
+
+PSM 단계에서 엔지니어가 채우는 표의 예시는 아래 Table 5 이다.
+
+Table 5. PSM table example
+
+<table>
+<tr><th align="center">Item</th><th align="center">Field</th><th align="center">Example</th></tr>
+<tr><td align="center" rowspan="3">Problem Statement</td><td align="center">Performance gap</td><td align="center">현재 성능 &lt;현재값&gt; 이 목표 &lt;목표값&gt; 에 못 미친다</td></tr>
+<tr><td align="center">Root cause</td><td align="center">학습 데이터에 &lt;조건&gt; 의 표본이 적어 그 조건에서 오차가 크다</td></tr>
+<tr><td align="center">Success criterion</td><td align="center">검증 데이터에서 &lt;metric&gt; 이 &lt;목표값&gt; 을 만족한다</td></tr>
+<tr><td align="center" rowspan="2">Solution S1</td><td align="center">Approach</td><td align="center">&lt;조건&gt; 의 표본을 더 모아 다시 학습한다</td></tr>
+<tr><td align="center">Mechanism</td><td align="center">부족한 조건의 표본이 늘면 그 조건의 오차가 줄어든다</td></tr>
+<tr><td align="center" rowspan="2">Solution S2</td><td align="center">Approach</td><td align="center">&lt;입력 변수&gt; 를 입력에 더한다</td></tr>
+<tr><td align="center">Mechanism</td><td align="center">&lt;입력 변수&gt; 가 root cause 의 변동을 설명한다</td></tr>
+<tr><td align="center" rowspan="3">Model Candidate M1</td><td align="center">Model</td><td align="center">&lt;model 이름&gt;</td></tr>
+<tr><td align="center">Solution</td><td align="center">S1</td></tr>
+<tr><td align="center">Rationale</td><td align="center">&lt;조건&gt; 별 오차를 따로 볼 수 있다</td></tr>
+<tr><td align="center" rowspan="3">Model Candidate M2</td><td align="center">Model</td><td align="center">&lt;model 이름&gt;</td></tr>
+<tr><td align="center">Solution</td><td align="center">S2</td></tr>
+<tr><td align="center">Rationale</td><td align="center">더한 입력 변수의 영향을 해석할 수 있다</td></tr>
+<tr><td align="center" rowspan="3">Gate 1</td><td align="center">Approver</td><td align="center">&lt;이름&gt;</td></tr>
+<tr><td align="center">Decision</td><td align="center">승인, 보류, 기각 가운데 하나</td></tr>
+<tr><td align="center">Date</td><td align="center">&lt;YYYY-MM-DD&gt;</td></tr>
+</table>
+
+- Example 열의 문구는 예시이며, `<...>` 를 과제의 값으로 바꾸어 채운다.
+- Solution 은 Problem Statement 하나에 둘 이상 둔다. 행이 모자라면 Solution S3 부터 같은 Field 로 행을 더한다.
+- Model Candidate 의 Solution 칸에는 그 model 이 따르는 Solution 의 번호를 적는다.
+- Gate 1 의 Decision 이 승인이면 이 표가 합의한 개발 계획이 되고, EVD 단계로 넘어간다.
