@@ -1,33 +1,33 @@
 # AI/ML Model Development Engineering Workflow
-Version 0 | Created: 2026-11-19 | Updated: 2026-11-19 17:52 CST
+Version 1 | Created: 2026-11-19 | Updated: 2026-11-19 18:05 CST
 
 ## 1. Purpose
 
-**Problem Statement**: 발표 자료 `Y's study on ML` 의 11 page 에 있는 AI/ML model 개발 workflow 에 글로 된 설명이 없다.
+**Problem Statement**: AI/ML model 개발 workflow 의 단계, 산출물, 관문이 글로 정리되어 있지 않다.
 
 **Goal**:
 
-- 11 page 의 세 단계와 단계별 작업, 산출물, 관문 (gate) 을 글로 옮긴다.
+- Workflow 의 세 단계와 단계별 작업, 산출물, 관문 (gate) 을 정리한다.
 - 세 단계를 R&D 관리의 Plan, Develop, Review 에 대응시킨다.
 
 **Non-Goal**: 특정 과제의 일정과 실측값은 다루지 않는다.
 
 ## 2. Summary
 
-- 11 page 의 workflow 는 PSM, EVD, Deployment 세 단계를 차례로 거쳐 방향을 합의하고, 근거로 model 을 고르고, 운영 환경에 배포한다.
+- AI/ML model 개발 workflow 는 PSM, EVD, Deployment 세 단계를 차례로 거쳐 방향을 합의하고, 근거로 model 을 고르고, 운영 환경에 배포한다.
 - 단계마다 산출물이 하나씩 있고, 다음 단계로 넘어가려면 Gate 1, Gate 2, Gate 3 의 승인을 차례로 받는다.
 - 문제 하나에는 해결책 후보를 여럿 둔다 (one-to-many relationship).
 - R&D 관리에서 PSM 은 Plan 에, EVD 와 Deployment 는 Develop 에 들고, Review 는 배포 뒤의 결과 평가와 다음 계획 결정을 맡는다.
 
 ## 3. Workflow
 
-11 page 는 아래 Fig 1 이다.
+Workflow 는 아래 Fig 1 이다.
 
-<img src="aiml-model-development-workflow-ko_fig/page11.png" width="800" style="max-width: 100%;" alt="Fig 1">
+<img src="aiml-model-development-workflow-ko_fig/workflow.png" width="800" style="max-width: 100%;" alt="Fig 1">
 
 Fig 1. AI/ML Model Development | Engineering Workflow
 
-세 단계의 일은 page 머리 문구 `Agree on direction → Prove with evidence → Deliver to production` 의 세 구절과 차례로 같다. 첫 단계 PSM (Problem Statement, Solutions, Model Candidates) 은 방향을 합의하고 (Direction Alignment), 둘째 단계 EVD (Evidence-Based Decision) 는 근거로 결정하며, 셋째 단계 Deployment 는 운영 환경에 넘긴다 (Production Delivery). 단계별 작업은 아래 Table 1 이다.
+첫 단계 PSM (Problem Statement, Solutions, Model Candidates) 은 방향을 합의하고 (Direction Alignment), 둘째 단계 EVD (Evidence-Based Decision) 는 근거로 결정하며, 셋째 단계 Deployment 는 운영 환경에 넘긴다 (Production Delivery). 단계별 작업은 아래 Table 1 이다.
 
 Table 1. Activities by stage
 
@@ -44,7 +44,7 @@ Table 1. Activities by stage
 <tr><td align="center">Monitoring</td><td align="center">Drift, 성능 추적과 rollback</td></tr>
 </table>
 
-PSM 의 Solutions 는 Problem Statement 하나에 후보를 여럿 두며, page 아래 문장 `Each problem should map to multiple potential solutions (one-to-many relationship).` 에 그 관계가 있다. 단계마다의 산출물과 관문은 아래 Table 2 이다.
+PSM 의 Solutions 는 Problem Statement 하나에 해결책 후보를 여럿 둔다 (one-to-many relationship). 단계마다의 산출물과 관문은 아래 Table 2 이다.
 
 Table 2. Outputs and gates by stage
 
@@ -68,16 +68,16 @@ Table 3. R&D management stages
 
 Plan 은 PSM 하나에, Develop 은 EVD 와 Deployment 두 단계에 대응한다. 대응 관계와 단계별 관문은 아래 Table 4 이다.
 
-Table 4. Mapping to page 11 stages
+Table 4. Mapping to workflow stages
 
 <table>
-<tr><th align="center">R&amp;D stage</th><th align="center">Page 11 stage</th><th align="center">Gate</th></tr>
+<tr><th align="center">R&amp;D stage</th><th align="center">Workflow stage</th><th align="center">Gate</th></tr>
 <tr><td align="center">Plan</td><td align="center">PSM</td><td align="center">Gate 1</td></tr>
 <tr><td align="center" rowspan="2">Develop</td><td align="center">EVD</td><td align="center">Gate 2</td></tr>
 <tr><td align="center">Deployment</td><td align="center">Gate 3</td></tr>
 </table>
 
-Review 는 Deployment 뒤에 결과를 평가하고 피드백을 모아 개선 방향과 다음 계획을 정하며, 그 결정이 다음 Plan 의 입력이 된다. 11 page 에는 Review 단계와 그 관문이 그려져 있지 않으므로 Table 4 에 Review 행이 없다.
+Review 는 Deployment 뒤에 결과를 평가하고 피드백을 모아 개선 방향과 다음 계획을 정하며, 그 결정이 다음 Plan 의 입력이 된다. Workflow 에는 Review 단계와 그 관문이 없으므로 Table 4 에 Review 행이 없다.
 
 ---
 
