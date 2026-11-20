@@ -1,5 +1,5 @@
 # AI/ML Model Development Engineering Workflow
-Version 6 | Created: 2026-11-19 | Updated: 2026-11-19 18:05 CST
+Version 7 | Created: 2026-11-19 | Updated: 2026-11-19 18:07 CST
 
 ## 1. Purpose
 
@@ -87,6 +87,8 @@ Review 는 Deployment 뒤에 결과를 평가하고 피드백을 모아 개선 �
 - **drift**: 운영 중에 입력 데이터나 입력과 출력의 관계가 학습 때와 달라지는 현상이다.
 - **gate**: 다음 단계로 넘어가기 전에 받아야 하는 승인이다.
 - **latency**: 입력을 받은 뒤 model 이 출력을 내놓기까지 걸리는 시간이다.
+- **PCA (Principal Component Analysis)**: 상관이 있는 여러 변수를 분산이 큰 순서의 서로 상관없는 score 몇 개로 줄이는 방법이다.
+- **PLS (Partial Least Squares)**: 입력 변수와 출력 변수의 공분산이 최대가 되는 score 를 뽑아 그 score 로 출력을 예측하는 회귀 방법이다.
 - **robustness**: 입력에 잡음이나 분포 변화가 있어도 model 성능이 유지되는 정도이다.
 - **rollback**: 배포한 model 에 문제가 생겼을 때 이전 판으로 되돌리는 것이다.
 
@@ -100,10 +102,11 @@ Table 5. PSM table example
 <tr><th align="center" rowspan="2">Problem<br>Statement</th><th align="center" colspan="2">Solution</th><th align="center" rowspan="2">Model<br>Candidate</th></tr>
 <tr><th align="center">Approach</th><th align="center">Mechanism</th></tr>
 <tr><td align="center">학습 데이터에 &lt;조건&gt; 의 표본이 적어 성능 &lt;현재값&gt; 이 목표 &lt;목표값&gt; 에 못 미친다</td><td align="center">&lt;조건&gt; 표본 추가 학습</td><td align="center">부족한 조건의 표본이 늘면 그 조건의 오차가 줄어든다</td><td align="center">&lt;model 이름&gt; (근거: &lt;조건&gt; 별 오차를 따로 볼 수 있다)</td></tr>
-<tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
+<tr><td align="center">Wafer profile model 이 측정 위치마다 따로 예측해, 가장자리 (edge) 측정 위치에서 오차가 크고 profile 모양을 재현하지 못한다</td><td align="center">Profile 을 PCA (Principal Component Analysis) score 로 압축한 뒤 score 를 예측한다</td><td align="center">측정 위치 사이의 상관이 score 에 담겨, 위치마다 따로 예측할 때 생기는 위치 간 불일치가 줄어든다</td><td align="center">PLS (Partial Least Squares) (근거: 공정 변수와 profile score 의 공분산이 최대인 방향으로 예측한다)</td></tr>
 <tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 <tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 </table>
 
-- 첫 행의 문구는 예시이며, `<...>` 를 과제의 값으로 바꾸어 채운다.
+- 첫 행은 채우는 법을 보이는 예시이며, `<...>` 를 과제의 값으로 바꾸어 채운다.
+- 둘째 행은 wafer profile model 과제를 채운 예이다.
 - Problem Statement 하나에 Solution 을 여럿 두면, 같은 Problem Statement 아래 행을 나누어 Solution 마다 한 행씩 적는다.
