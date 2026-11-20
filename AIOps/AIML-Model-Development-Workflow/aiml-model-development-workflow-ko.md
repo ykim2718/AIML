@@ -1,5 +1,5 @@
 # AI/ML Model Development Engineering Workflow
-Version 7 | Created: 2026-11-19 | Updated: 2026-11-19 18:07 CST
+Version 8 | Created: 2026-11-19 | Updated: 2026-11-19 18:11 CST
 
 ## 1. Purpose
 
@@ -34,7 +34,7 @@ Table 1. Activities by stage
 <table>
 <tr><th align="center">Stage</th><th align="center">Activity</th><th align="center">Description</th></tr>
 <tr><td align="center" rowspan="3">PSM</td><td align="center">Problem Statement</td><td align="center">성능 차이 (performance gap) 와 근본 원인 정의</td></tr>
-<tr><td align="center">Solutions</td><td align="center">Approach 와 Mechanism 제안</td></tr>
+<tr><td align="center">Solutions</td><td align="center">Method 와 Mechanism 제안</td></tr>
 <tr><td align="center">Model Candidates</td><td align="center">근거를 붙인 model 후보 선정</td></tr>
 <tr><td align="center" rowspan="3">EVD</td><td align="center">Experiment</td><td align="center">Baseline, metric, 시험 설계 결정</td></tr>
 <tr><td align="center">Validation</td><td align="center">성능과 robustness 비교</td></tr>
@@ -99,14 +99,15 @@ PSM 단계에서 엔지니어가 채우는 표의 예시는 아래 Table 5 이�
 Table 5. PSM table example
 
 <table>
-<tr><th align="center" rowspan="2">Problem<br>Statement</th><th align="center" colspan="2">Solution</th><th align="center" rowspan="2">Model<br>Candidate</th></tr>
-<tr><th align="center">Approach</th><th align="center">Mechanism</th></tr>
-<tr><td align="center">학습 데이터에 &lt;조건&gt; 의 표본이 적어 성능 &lt;현재값&gt; 이 목표 &lt;목표값&gt; 에 못 미친다</td><td align="center">&lt;조건&gt; 표본 추가 학습</td><td align="center">부족한 조건의 표본이 늘면 그 조건의 오차가 줄어든다</td><td align="center">&lt;model 이름&gt; (근거: &lt;조건&gt; 별 오차를 따로 볼 수 있다)</td></tr>
-<tr><td align="center">Wafer profile model 이 측정 위치마다 따로 예측해, 가장자리 (edge) 측정 위치에서 오차가 크고 profile 모양을 재현하지 못한다</td><td align="center">Profile 을 PCA (Principal Component Analysis) score 로 압축한 뒤 score 를 예측한다</td><td align="center">측정 위치 사이의 상관이 score 에 담겨, 위치마다 따로 예측할 때 생기는 위치 간 불일치가 줄어든다</td><td align="center">PLS (Partial Least Squares) (근거: 공정 변수와 profile score 의 공분산이 최대인 방향으로 예측한다)</td></tr>
-<tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
+<tr><th align="center" rowspan="2">Problem<br>Statement</th><th align="center" colspan="2">Solution</th><th align="center" colspan="2">Model<br>Candidate</th></tr>
+<tr><th align="center">Method</th><th align="center">Mechanism</th><th align="center">Name</th><th align="center">Rationale</th></tr>
+<tr><td align="center">학습 데이터에 &lt;조건&gt; 의 표본이 적어 성능 &lt;현재값&gt; 이 목표 &lt;목표값&gt; 에 못 미친다</td><td align="center">&lt;조건&gt; 표본 추가 학습</td><td align="center">부족한 조건의 표본이 늘면 그 조건의 오차가 줄어든다</td><td align="center">&lt;model 이름&gt;</td><td align="center">&lt;조건&gt; 별 오차를 따로 볼 수 있다</td></tr>
+<tr><td align="center">Wafer profile model 이 측정 위치마다 따로 예측해, 가장자리 (edge) 측정 위치에서 오차가 크고 profile 모양을 재현하지 못한다</td><td align="center">PCA (Principal Component Analysis) 기반 profile 압축 예측</td><td align="center">측정 위치 사이의 상관이 score 에 담겨, 위치마다 따로 예측할 때 생기는 위치 간 불일치가 줄어든다</td><td align="center">PLS (Partial Least Squares)</td><td align="center">공정 변수와 profile score 의 공분산이 최대인 방향으로 예측한다</td></tr>
+<tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
+<tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 </table>
 
 - 첫 행은 채우는 법을 보이는 예시이며, `<...>` 를 과제의 값으로 바꾸어 채운다.
 - 둘째 행은 wafer profile model 과제를 채운 예이다.
+- Method 칸에는 그 해결책을 부르는 이름 (Method name) 을 적는다.
 - Problem Statement 하나에 Solution 을 여럿 두면, 같은 Problem Statement 아래 행을 나누어 Solution 마다 한 행씩 적는다.
