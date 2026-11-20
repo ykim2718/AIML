@@ -1,5 +1,5 @@
 # AI/ML Model Development Engineering Workflow
-Version 5 | Created: 2026-11-19 | Updated: 2026-11-19 18:04 CST
+Version 6 | Created: 2026-11-19 | Updated: 2026-11-19 18:05 CST
 
 ## 1. Purpose
 
@@ -34,7 +34,7 @@ Table 1. Activities by stage
 <table>
 <tr><th align="center">Stage</th><th align="center">Activity</th><th align="center">Description</th></tr>
 <tr><td align="center" rowspan="3">PSM</td><td align="center">Problem Statement</td><td align="center">성능 차이 (performance gap) 와 근본 원인 정의</td></tr>
-<tr><td align="center">Solutions</td><td align="center">해결 접근법과 동작 원리 (mechanism) 제안</td></tr>
+<tr><td align="center">Solutions</td><td align="center">Approach 와 Mechanism 제안</td></tr>
 <tr><td align="center">Model Candidates</td><td align="center">근거를 붙인 model 후보 선정</td></tr>
 <tr><td align="center" rowspan="3">EVD</td><td align="center">Experiment</td><td align="center">Baseline, metric, 시험 설계 결정</td></tr>
 <tr><td align="center">Validation</td><td align="center">성능과 robustness 비교</td></tr>
