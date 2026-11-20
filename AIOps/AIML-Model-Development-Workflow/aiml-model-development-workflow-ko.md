@@ -1,5 +1,5 @@
 # AI/ML Model Development Engineering Workflow
-Version 4 | Created: 2026-11-19 | Updated: 2026-11-19 18:03 CST
+Version 5 | Created: 2026-11-19 | Updated: 2026-11-19 18:04 CST
 
 ## 1. Purpose
 
@@ -98,7 +98,7 @@ Table 5. PSM table example
 
 <table>
 <tr><th align="center" rowspan="2">Problem<br>Statement</th><th align="center" colspan="2">Solution</th><th align="center" rowspan="2">Model<br>Candidate</th></tr>
-<tr><th align="center">Method</th><th align="center">Mechanism</th></tr>
+<tr><th align="center">Approach</th><th align="center">Mechanism</th></tr>
 <tr><td align="center">학습 데이터에 &lt;조건&gt; 의 표본이 적어 성능 &lt;현재값&gt; 이 목표 &lt;목표값&gt; 에 못 미친다</td><td align="center">&lt;조건&gt; 표본 추가 학습</td><td align="center">부족한 조건의 표본이 늘면 그 조건의 오차가 줄어든다</td><td align="center">&lt;model 이름&gt; (근거: &lt;조건&gt; 별 오차를 따로 볼 수 있다)</td></tr>
 <tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 <tr><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
